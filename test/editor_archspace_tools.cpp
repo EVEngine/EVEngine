@@ -18,7 +18,7 @@ using eve::archspace::OpeningKind;
 using eve::archspace::Vec2;
 using eve::archspace::Vec3;
 using eve::archspace_editing::ArchSpaceDocumentTarget;
-using eve::archspace_editing::EditorResult;
+using eve::archspace_editing::Result;
 using eve::editing::DomainOperation;
 using eve::editor::ArchSpaceItemPlaceTool;
 using eve::editor::ArchSpaceOpeningPlaceTool;
@@ -30,7 +30,7 @@ using eve::editor::IEditorOverlay;
 using eve::editor::OverlayPoint;
 using eve::editor::OverlayStyle;
 
-void apply(ArchSpaceDocumentTarget& target, EditorResult<DomainOperation> operation) {
+void apply(ArchSpaceDocumentTarget& target, Result<DomainOperation> operation) {
     REQUIRE(operation.ok());
     REQUIRE(target.applyDomainOperation(operation.value()).ok());
 }

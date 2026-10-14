@@ -21,6 +21,7 @@ layout(location = 7) in vec3 vInstanceTint;
 struct Light3D {
     vec4 posRadius;
     vec4 color;
+    vec4 spot;
 };
 
 layout(set = 0, binding = 0, std140) uniform Frame {

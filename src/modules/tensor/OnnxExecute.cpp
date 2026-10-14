@@ -1,12 +1,16 @@
+#include <algorithm>
+#include <cmath>
+#include <limits>
+#include <numeric>
+#include <set>
+#include <sstream>
+#include "tensor/AffineQuant.h"
 #include "tensor/CpuKernels.h"
+#include "tensor/OnnxGpuKernels.h"
 #include "tensor/OnnxInternal.h"
 #include "tensor/Tensor.h"
 
-#include <algorithm>
-#include <cmath>
-#include <numeric>
-#include <set>
-
+// OnnxExecute.cpp
 namespace eve::tensor::onnx_detail {
 bool isSupported(const Node& n) {
     if (n.domain == "com.microsoft" && n.op == "DynamicQuantizeLSTM") {
@@ -373,5 +377,417 @@ std::vector<RuntimeTensor> execute(const Node& n, const std::vector<const Runtim
     std::vector<float> out(a.size());
     kernels::unaryOp(op->second, a.data(), static_cast<int>(a.size()), out.data(), 0, 0);
     return single(make(OnnxElement::Float32, x.shape, out));
+}
+}  // namespace eve::tensor::onnx_detail
+
+// OnnxGpuKernels.cpp
+namespace eve::tensor::onnx_detail {
+namespace {
+std::string prefix(bool as, bool bs) {
+    std::ostringstream s;
+    s << "#version 450\nlayout(local_size_x=64) in;\n"
+         "layout(std430,binding=0) readonly buffer A {uint a[];};\n"
+         "layout(std430,binding=1) readonly buffer B {uint b[];};\n"
+         "layout(std430,binding=2) readonly buffer Z {int zp[];};\n"
+         "layout(std430,binding=3) writeonly buffer Y {int y[];};\n"
+         "int av(uint i){int v=int((a[i/4]>>((i%4)*8))&255u);return "
+      << (as ? "v>=128?v-256:v" : "v")
+      << ";}\n"
+         "int bv(uint i){int v=int((b[i/4]>>((i%4)*8))&255u);return "
+      << (bs ? "v>=128?v-256:v" : "v") << ";}\n";
+    return s.str();
+}
+// Compatibility host-byte calls use the same resident kernel generators. The
+// adapter below requests completion through the provider's synchronous contract.
+class Synchronous final : public OnnxCompute {
+    OnnxCompute& target;
+
+public:
+    explicit Synchronous(OnnxCompute& t) : target(t) {}
+    Result<std::vector<uint8_t>> dispatch(const OnnxKernel& k) override { return target.dispatch(k); }
+};
+OnnxBuffer hostBuffer(std::span<const uint8_t> bytes) {
+    auto p = std::make_shared<const std::vector<uint8_t>>(bytes.begin(), bytes.end());
+    return {p, {}, p->size()};
+}
+std::vector<int32_t> integerOutput(const OnnxBuffer& result) {
+    if (!result.host || result.host->size() % 4) throw Failure("Invalid synchronous integer output");
+    std::vector<int32_t> out(result.host->size() / 4);
+    std::memcpy(out.data(), result.host->data(), result.host->size());
+    return out;
+}
+}  // namespace
+std::vector<int32_t> gpuMatmul(OnnxCompute& d, affine::ByteView a, affine::ByteView b, size_t m, size_t k, size_t n,
+                               int az, std::span<const int32_t> bz) {
+    Synchronous sync(d);
+    return integerOutput(gpuMatmulResident(sync, hostBuffer(a.bytes), hostBuffer(b.bytes), a.signedValues,
+                                           b.signedValues, m, k, n, az, bz));
+}
+std::vector<int32_t> gpuConv(OnnxCompute& d, affine::ByteView x, affine::ByteView w, const affine::ConvShape& c, int xz,
+                             std::span<const int32_t> wz) {
+    Synchronous sync(d);
+    return integerOutput(
+        gpuConvResident(sync, hostBuffer(x.bytes), hostBuffer(w.bytes), x.signedValues, w.signedValues, c, xz, wz));
+}
+OnnxBuffer enqueueInteger(OnnxCompute& d, const std::string& source, OnnxBuffer a, OnnxBuffer b,
+                          std::span<const int32_t> z, size_t size, size_t terms) {
+    if (terms > INT32_MAX / 65025 || !size || size > 64u * 65535u)
+        throw Failure("GPU integer kernel exceeds exact accumulator or dispatch limit", DiagnosticCode::Unsupported);
+    std::vector<uint8_t> bytes(z.size_bytes());
+    std::memcpy(bytes.data(), z.data(), bytes.size());
+    auto                          host = std::make_shared<const std::vector<uint8_t>>(std::move(bytes));
+    const std::vector<OnnxBuffer> inputs{a, b, {host, {}, host->size()}};
+    auto                          r = d.enqueue(source, inputs, size * 4, static_cast<uint32_t>(size));
+    if (!r.ok()) throw Failure(r.error()->message(), r.error()->code());
+    return std::move(r.value());
+}
+OnnxBuffer gpuMatmulResident(OnnxCompute& d, OnnxBuffer a, OnnxBuffer b, bool as, bool bs, size_t m, size_t k, size_t n,
+                             int az, std::span<const int32_t> bz, size_t bOffset) {
+    if (bz.size() != 1 && bz.size() != n) throw Failure("GPU matmul zero-point extent mismatch");
+    std::ostringstream s;
+    s << prefix(as, bs) << "void main(){uint i=gl_GlobalInvocationID.x;if(i>=" << m * n << "u)return;"
+      << "uint r=i/" << n << "u,c=i%" << n << "u;int v=0;for(uint j=0;j<" << k << "u;++j)"
+      << "v+=(av(r*" << k << "u+j)-(" << az << "))*(bv(" << bOffset << "u+j*" << n << "u+c)-zp["
+      << (bz.size() == 1 ? "0" : "c") << "]);y[i]=v;}";
+    return enqueueInteger(d, s.str(), a, b, bz, m * n, k);
+}
+
+OnnxBuffer gpuConvResident(OnnxCompute& d, OnnxBuffer x, OnnxBuffer w, bool xs, bool ws, const affine::ConvShape& c,
+                           int xz, std::span<const int32_t> wz) {
+    const int64_t oh =
+        (int64_t(c.height) + c.padTop + c.padBottom - int64_t(c.dilationH) * (c.kernelH - 1) - 1) / c.strideH + 1;
+    const int64_t ow =
+        (int64_t(c.width) + c.padLeft + c.padRight - int64_t(c.dilationW) * (c.kernelW - 1) - 1) / c.strideW + 1;
+    if ((oh - 1) * c.strideH > INT32_MAX || (ow - 1) * c.strideW > INT32_MAX ||
+        (oh - 1) * c.strideH - c.padTop + int64_t(c.kernelH - 1) * c.dilationH > INT32_MAX ||
+        (ow - 1) * c.strideW - c.padLeft + int64_t(c.kernelW - 1) * c.dilationW > INT32_MAX)
+        throw Failure("GPU convolution coordinate overflow", DiagnosticCode::Unsupported);
+    const size_t       size = size_t(c.batch) * c.outputs * oh * ow;
+    const int          cg   = c.channels / c.groups;
+    std::ostringstream s;
+    s << prefix(xs, ws) << "void main(){uint i=gl_GlobalInvocationID.x;if(i>=" << size << "u)return;"
+      << "int xx=int(i%" << ow << "u),yy=int(i/" << ow << "u%" << oh << "u),o=int(i/" << ow * oh << "u%" << c.outputs
+      << "u),batch=int(i/" << ow * oh * c.outputs << "u);int v=0;"
+      << "for(int ch=0;ch<" << cg << ";++ch)for(int ky=0;ky<" << c.kernelH << ";++ky)for(int kx=0;kx<" << c.kernelW
+      << ";++kx){"
+      << "int iy=yy*" << c.strideH << "-" << c.padTop << "+ky*" << c.dilationH << ",ix=xx*" << c.strideW << "-"
+      << c.padLeft << "+kx*" << c.dilationW << ";"
+      << "if(iy<0||ix<0||iy>=" << c.height << "||ix>=" << c.width << ")continue;"
+      << "uint ai=uint(((batch*" << c.channels << "+o/" << c.outputs / c.groups << "*" << cg << "+ch)*" << c.height
+      << "+iy)*" << c.width << "+ix);"
+      << "uint bi=uint(((o*" << cg << "+ch)*" << c.kernelH << "+ky)*" << c.kernelW << "+kx);"
+      << "v+=(av(ai)-(" << xz << "))*(bv(bi)-zp[" << (wz.size() == 1 ? "0" : "o") << "]);}y[i]=v;}";
+    return enqueueInteger(d, s.str(), x, w, wz, size, size_t(cg) * c.kernelH * c.kernelW);
+}
+}  // namespace eve::tensor::onnx_detail
+
+// OnnxIndexOps.cpp
+namespace eve::tensor::onnx_detail {
+std::optional<std::vector<RuntimeTensor>> executeIndex(const Node& n, const std::vector<const RuntimeTensor*>& in) {
+    const auto& x   = required(in, 0);
+    auto        one = [](RuntimeTensor t) { return std::vector<RuntimeTensor>{std::move(t)}; };
+    if (n.op == "Range") {
+        const auto& end   = required(in, 1);
+        const auto& delta = required(in, 2);
+        if (count(x.shape) != 1 || count(end.shape) != 1 || count(delta.shape) != 1 || x.element != end.element ||
+            x.element != delta.element)
+            throw Failure("Range requires matching scalars");
+        if (x.element == OnnxElement::Float32) {
+            const double start = read<float>(x, 0), stop = read<float>(end, 0), step = read<float>(delta, 0);
+            if (!std::isfinite(start) || !std::isfinite(stop) || !std::isfinite(step) || step == 0)
+                throw Failure("Invalid Range");
+            const double length = std::max(0., std::ceil((stop - start) / step));
+            if (length > 128u * 1024u * 1024u) throw Failure("Range too large");
+            std::vector<float> v(static_cast<size_t>(length));
+            for (size_t i = 0; i < v.size(); ++i) v[i] = static_cast<float>(start + i * step);
+            return one(make(x.element, {static_cast<int64_t>(v.size())}, v));
+        }
+        if (x.element != OnnxElement::Int64 && x.element != OnnxElement::Int32)
+            throw Failure("Range integer dtype unsupported");
+        const int64_t start = integer(x), stop = integer(end), step = integer(delta);
+        if (!step || step == INT64_MIN) throw Failure("Invalid Range step");
+        uint64_t length = 0;
+        if (step > 0 && stop > start) length = 1 + (uint64_t(stop) - uint64_t(start) - 1) / uint64_t(step);
+        if (step < 0 && stop < start) length = 1 + (uint64_t(start) - uint64_t(stop) - 1) / uint64_t(-step);
+        if (length > 128u * 1024u * 1024u) throw Failure("Range too large");
+        RuntimeTensor out{
+            x.element, {static_cast<int64_t>(length)}, std::vector<uint8_t>(length * elementSize(x.element))};
+        int64_t v = start;
+        for (size_t i = 0; i < length; ++i) {
+            std::memcpy(out.bytes.data() + i * elementSize(x.element), &v, elementSize(x.element));
+            if (i + 1 < length) v += step;
+        }
+        return one(std::move(out));
+    }
+    if (n.op == "TopK") {
+        const auto& kt = required(in, 1);
+        if (count(kt.shape) != 1) throw Failure("TopK requires one K");
+        int           a = axis(attr(n, "axis", -1), x.shape.size());
+        const int64_t k = integer(kt), size = x.shape[a];
+        if (k < 0 || k > size) throw Failure("Invalid TopK K");
+        size_t outer = 1, inner = 1;
+        for (int j = 0; j < a; ++j) outer *= x.shape[j];
+        for (size_t j = a + 1; j < x.shape.size(); ++j) inner *= x.shape[j];
+        auto shape = x.shape;
+        shape[a]   = k;
+        RuntimeTensor        values{x.element, shape, std::vector<uint8_t>(count(shape) * elementSize(x.element))};
+        std::vector<int64_t> indices(count(shape));
+        for (size_t o = 0; o < outer; ++o)
+            for (size_t i = 0; i < inner; ++i) {
+                std::vector<int64_t> order(size);
+                std::iota(order.begin(), order.end(), 0);
+                std::stable_sort(order.begin(), order.end(), [&](int64_t aa, int64_t bb) {
+                    auto         compare = [&](auto u, auto v) { return attr(n, "largest", 1) ? u > v : u < v; };
+                    const size_t ai = (o * size + aa) * inner + i, bi = (o * size + bb) * inner + i;
+                    return x.element == OnnxElement::Float32 ? compare(read<float>(x, ai), read<float>(x, bi))
+                                                             : compare(integer(x, ai), integer(x, bi));
+                });
+                for (int64_t j = 0; j < k; ++j) {
+                    size_t dst = (o * k + j) * inner + i, src = (o * size + order[j]) * inner + i;
+                    indices[dst] = order[j];
+                    std::memcpy(values.bytes.data() + dst * elementSize(x.element),
+                                x.bytes.data() + src * elementSize(x.element), elementSize(x.element));
+                }
+            }
+        return std::vector<RuntimeTensor>{std::move(values), make(OnnxElement::Int64, shape, indices)};
+    }
+    if (n.op == "ScatterElements" || n.op == "ScatterND") {
+        const auto& idx     = required(in, 1);
+        const auto& updates = required(in, 2);
+        if (updates.element != x.element || (idx.element != OnnxElement::Int64 && idx.element != OnnxElement::Int32))
+            throw Failure("Scatter dtype mismatch");
+        auto       out   = x;
+        const auto bytes = elementSize(x.element);
+        if (n.op == "ScatterElements") {
+            if (idx.shape != updates.shape || idx.shape.size() != x.shape.size())
+                throw Failure("ScatterElements shape mismatch");
+            int a = axis(attr(n, "axis", 0), x.shape.size());
+            for (size_t j = 0; j < x.shape.size(); ++j)
+                if (j != a && idx.shape[j] > x.shape[j]) throw Failure("Scatter index shape exceeds data");
+            for (size_t i = 0; i < count(idx.shape); ++i) {
+                size_t rest = i, source = 0, stride = 1;
+                for (size_t j = x.shape.size(); j > 0; --j) {
+                    int64_t c = rest % idx.shape[j - 1];
+                    rest /= idx.shape[j - 1];
+                    if (j - 1 == a) {
+                        c = integer(idx, i);
+                        if (c < 0) c += x.shape[j - 1];
+                    }
+                    if (c < 0 || c >= x.shape[j - 1]) throw Failure("Scatter index out of range");
+                    source += c * stride;
+                    stride *= x.shape[j - 1];
+                }
+                std::memcpy(out.bytes.data() + source * bytes, updates.bytes.data() + i * bytes, bytes);
+            }
+        } else {
+            if (idx.shape.empty() || idx.shape.back() < 1 || static_cast<size_t>(idx.shape.back()) > x.shape.size())
+                throw Failure("ScatterND index rank mismatch");
+            const size_t         depth = idx.shape.back();
+            std::vector<int64_t> expected(idx.shape.begin(), idx.shape.end() - 1);
+            expected.insert(expected.end(), x.shape.begin() + depth, x.shape.end());
+            if (expected != updates.shape) throw Failure("ScatterND updates shape mismatch");
+            size_t chunk = 1;
+            for (size_t j = depth; j < x.shape.size(); ++j) chunk *= x.shape[j];
+            for (size_t i = 0; i < count(idx.shape) / depth; ++i) {
+                size_t target = 0;
+                for (size_t j = 0; j < depth; ++j) {
+                    auto c = integer(idx, i * depth + j);
+                    if (c < 0) c += x.shape[j];
+                    if (c < 0 || c >= x.shape[j]) throw Failure("ScatterND index out of range");
+                    target = target * x.shape[j] + c;
+                }
+                if (chunk)
+                    std::memcpy(out.bytes.data() + target * chunk * bytes, updates.bytes.data() + i * chunk * bytes,
+                                chunk * bytes);
+            }
+        }
+        return one(std::move(out));
+    }
+    if (n.op == "ReduceProd" || n.op == "ReduceMax") {
+        auto axes = attrs(n, "axes", {});
+        if (axes.empty())
+            for (size_t i = 0; i < x.shape.size(); ++i) axes.push_back(i);
+        std::set<int> reduced;
+        for (auto a : axes)
+            if (!reduced.insert(axis(a, x.shape.size())).second) throw Failure("Duplicate reduction axis");
+        auto                 mapShape = x.shape;
+        std::vector<int64_t> shape;
+        for (size_t j = 0; j < x.shape.size(); ++j) {
+            if (reduced.contains(static_cast<int>(j))) {
+                mapShape[j] = 1;
+                if (attr(n, "keepdims", 1)) shape.push_back(1);
+            } else
+                shape.push_back(x.shape[j]);
+        }
+        if (x.element == OnnxElement::Float32) {
+            std::vector<float> out(count(shape), n.op == "ReduceProd" ? 1.f : -std::numeric_limits<float>::infinity());
+            for (size_t i = 0; i < count(x.shape); ++i) {
+                size_t      t = broadcastIndex(i, mapShape, x.shape);
+                const float v = read<float>(x, i);
+                out[t]        = n.op == "ReduceProd" ? out[t] * v : std::max(out[t], v);
+            }
+            return one(make(x.element, shape, out));
+        }
+        if (x.element != OnnxElement::Int64 && x.element != OnnxElement::Int32)
+            throw Failure("Integer reduction dtype unsupported");
+        std::vector<int64_t> out(count(shape), n.op == "ReduceProd" ? 1 : INT64_MIN);
+        for (size_t i = 0; i < count(x.shape); ++i) {
+            auto&      a = out[broadcastIndex(i, mapShape, x.shape)];
+            const auto b = integer(x, i);
+            if (n.op == "ReduceMax")
+                a = std::max(a, b);
+            else {
+                if (a && b &&
+                    (a > 0 ? (b > 0 ? a > INT64_MAX / b : b < INT64_MIN / a)
+                           : (b > 0 ? a < INT64_MIN / b : a < INT64_MAX / b)))
+                    throw Failure("ReduceProd overflow");
+                a *= b;
+            }
+        }
+        if (x.element == OnnxElement::Int64) return one(make(x.element, shape, out));
+        std::vector<int32_t> narrow;
+        for (auto v : out) {
+            if (v < INT32_MIN || v > INT32_MAX) throw Failure("Int32 reduction overflow");
+            narrow.push_back(static_cast<int32_t>(v));
+        }
+        return one(make(x.element, shape, narrow));
+    }
+    return std::nullopt;
+}
+}  // namespace eve::tensor::onnx_detail
+
+// OnnxLstm.cpp
+namespace eve::tensor::onnx_detail {
+namespace {
+template <class T>
+T checked(Result<T> r) {
+    if (!r.ok()) throw Failure(r.error()->message(), r.error()->code());
+    return std::move(r.value());
+}
+void shape(const RuntimeTensor& t, const std::vector<int64_t>& expected) {
+    if (t.shape != expected) throw Failure("LSTM input shape mismatch");
+}
+std::vector<float> optionalFloats(const std::vector<const RuntimeTensor*>& in, size_t i,
+                                  const std::vector<int64_t>& dims) {
+    if (i >= in.size() || !in[i]) return std::vector<float>(count(dims), 0);
+    shape(*in[i], dims);
+    return floats(*in[i]);
+}
+struct Weights {
+    const RuntimeTensor& tensor;
+    std::vector<float>   scales;
+    std::vector<int64_t> zeros;
+    size_t               directions, gates, rows;
+    Weights(const RuntimeTensor& t, const RuntimeTensor& s, const RuntimeTensor& z, size_t d, size_t g, size_t r)
+        : tensor(t), scales(floats(s)), zeros(ints(z)), directions(d), gates(g), rows(r) {
+        if (t.element != OnnxElement::Int8 && t.element != OnnxElement::UInt8)
+            throw Failure("LSTM weights must be 8-bit");
+        if (t.element != z.element || s.shape != z.shape ||
+            (s.shape != std::vector<int64_t>{static_cast<int64_t>(d)} &&
+             s.shape != std::vector<int64_t>{static_cast<int64_t>(d), static_cast<int64_t>(g)}))
+            throw Failure("LSTM quantization parameter shape mismatch");
+        shape(t, {static_cast<int64_t>(d), static_cast<int64_t>(r), static_cast<int64_t>(g)});
+        for (float v : scales)
+            if (!(v > 0) || !std::isfinite(v)) throw Failure("Invalid LSTM weight scale");
+    }
+    std::vector<float> multiply(const affine::QuantizedActivation& a, size_t batch, size_t direction,
+                                OnnxCompute* compute) const {
+        std::vector<float> out(batch * gates);
+        const bool         sign = tensor.element == OnnxElement::Int8;
+        if (compute) {
+            std::vector<int32_t> z(scales.size() == directions ? 1 : gates);
+            for (size_t i = 0; i < z.size(); ++i) z[i] = static_cast<int32_t>(zeros[direction * z.size() + i]);
+            ByteStorage activation(a.values);
+            ByteStorage accumulator(gpuMatmulResident(*compute, activation.buffer(), tensor.bytes.buffer(), false, sign,
+                                                      batch, rows, gates, a.zeroPoint, z, direction * rows * gates));
+            std::vector<int32_t> sums(batch * gates);
+            std::memcpy(sums.data(), static_cast<const ByteStorage&>(accumulator).data(),
+                        sums.size() * sizeof(int32_t));
+            for (size_t b = 0; b < batch; ++b)
+                for (size_t g = 0; g < gates; ++g)
+                    out[b * gates + g] = static_cast<float>(sums[b * gates + g]) * a.scale *
+                                         scales[direction * z.size() + (z.size() == 1 ? 0 : g)];
+            return out;
+        }
+        // Per-output-channel affine zero points do not require unpacking a weight matrix.
+        for (size_t b = 0; b < batch; ++b)
+            for (size_t g = 0; g < gates; ++g) {
+                const size_t p   = scales.size() == directions ? direction : direction * gates + g;
+                int64_t      sum = 0;
+                for (size_t k = 0; k < rows; ++k) {
+                    const int byte = tensor.bytes[(direction * rows + k) * gates + g];
+                    const int w    = sign && byte >= 128 ? byte - 256 : byte;
+                    sum += static_cast<int64_t>(int(a.values[b * rows + k]) - a.zeroPoint) * (w - zeros[p]);
+                }
+                if (sum < INT32_MIN || sum > INT32_MAX) throw Failure("LSTM integer accumulator overflow");
+                out[b * gates + g] = static_cast<float>(sum) * a.scale * scales[p];
+            }
+        return out;
+    }
+};
+}  // namespace
+std::vector<RuntimeTensor> executeQuantLstm(const Node& n, const std::vector<const RuntimeTensor*>& in,
+                                            OnnxCompute* compute) {
+    const auto& xt = required(in, 0);
+    if (xt.shape.size() != 3) throw Failure("LSTM X must be [time,batch,input]");
+    const auto    x    = floats(xt);
+    const int64_t time = xt.shape[0], batch = xt.shape[1], input = xt.shape[2], hidden = attr(n, "hidden_size", 0);
+    const auto    direction = n.attrs.contains("direction") ? n.attrs.at("direction").text : "forward";
+    const int64_t dirs      = direction == "bidirectional" ? 2 : 1;
+    if (time <= 0 || batch <= 0 || input <= 0 || hidden <= 0 || hidden > 16384)
+        throw Failure("Invalid LSTM dimensions");
+    const size_t gates          = 4 * hidden;
+    const size_t projectionSize = count({time, batch, static_cast<int64_t>(gates)});
+    if (projectionSize > 128u * 1024u * 1024u) throw Failure("LSTM projection exceeds memory limit");
+    Weights w(required(in, 1), required(in, 8), required(in, 9), dirs, gates, input);
+    Weights r(required(in, 2), required(in, 10), required(in, 11), dirs, gates, hidden);
+    auto    biases = optionalFloats(in, 3, {dirs, 8 * hidden});
+    auto    h = optionalFloats(in, 5, {dirs, batch, hidden}), c = optionalFloats(in, 6, {dirs, batch, hidden});
+    auto    p = optionalFloats(in, 7, {dirs, 3 * hidden});
+    std::vector<int64_t> lengths(batch, time);
+    if (in.size() > 4 && in[4]) {
+        if (in[4]->element != OnnxElement::Int32) throw Failure("LSTM sequence lengths require int32");
+        shape(*in[4], {batch});
+        lengths = ints(*in[4]);
+    }
+    for (auto len : lengths)
+        if (len < 0 || len > time) throw Failure("Invalid LSTM sequence length");
+    const int64_t coupled = attr(n, "input_forget", 0);
+    if (coupled != 0 && coupled != 1) throw Failure("Invalid coupled gate flag");
+    const float clip = n.attrs.contains("clip") ? n.attrs.at("clip").real : std::numeric_limits<float>::max();
+    if (!(clip > 0) || !std::isfinite(clip)) throw Failure("Invalid LSTM clipping threshold");
+    auto               sigmoid = [clip](float z) { return 1.f / (1.f + std::exp(-std::clamp(z, -clip, clip))); };
+    auto               tanh    = [clip](float z) { return std::tanh(std::clamp(z, -clip, clip)); };
+    std::vector<float> y(count({time, dirs, batch, hidden}), 0);
+    const auto         qx = checked(affine::dynamicQuantize(x));
+    for (int64_t d = 0; d < dirs; ++d) {
+        const auto projected = w.multiply(qx, time * batch, d, compute);
+        const bool reverse   = direction == "reverse" || d == 1;
+        for (int64_t step = 0; step < time; ++step) {
+            const auto qh = checked(affine::dynamicQuantize(std::span(h).subspan(d * batch * hidden, batch * hidden)));
+            const auto recurrent = r.multiply(qh, batch, d, compute);
+            for (int64_t b = 0; b < batch; ++b) {
+                if (step >= lengths[b]) continue;
+                const int64_t t     = reverse ? lengths[b] - 1 - step : step;
+                const size_t  state = (d * batch + b) * hidden;
+                for (int64_t j = 0; j < hidden; ++j) {
+                    auto gate = [&](int g) {
+                        const size_t channel = g * hidden + j;
+                        return projected[(t * batch + b) * gates + channel] + recurrent[b * gates + channel] +
+                               biases[d * 8 * hidden + channel] + biases[d * 8 * hidden + gates + channel];
+                    };
+                    const float i = sigmoid(gate(0) + p[d * 3 * hidden + j] * c[state + j]);
+                    const float f =
+                        coupled ? 1 - i : sigmoid(gate(2) + p[d * 3 * hidden + 2 * hidden + j] * c[state + j]);
+                    c[state + j]  = f * c[state + j] + i * tanh(gate(3));
+                    const float o = sigmoid(gate(1) + p[d * 3 * hidden + hidden + j] * c[state + j]);
+                    h[state + j]  = o * tanh(c[state + j]);
+                    y[((t * dirs + d) * batch + b) * hidden + j] = h[state + j];
+                }
+            }
+        }
+    }
+    return {make(OnnxElement::Float32, {time, dirs, batch, hidden}, y),
+            make(OnnxElement::Float32, {dirs, batch, hidden}, h), make(OnnxElement::Float32, {dirs, batch, hidden}, c)};
 }
 }  // namespace eve::tensor::onnx_detail

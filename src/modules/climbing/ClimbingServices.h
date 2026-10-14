@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /**
  * @file ClimbingServices.h
@@ -15,7 +16,9 @@
 namespace eve::climbing {
 
 namespace detail {
+/** @brief ClimbingServiceSubjectTag public API. */
 struct ClimbingServiceSubjectTag {};
+/** @brief ClimbingStaminaReservationTag public API. */
 struct ClimbingStaminaReservationTag {};
 }  // namespace detail
 
@@ -36,6 +39,7 @@ enum class ClimbingOptionalServiceState : std::uint8_t { Disabled, ProviderAbsen
 class IClimbingStaminaAuthority {
 public:
     static constexpr const char* capabilityName = "eve.climbing.stamina-authority.v1";
+    /** @brief Releases IClimbingStaminaAuthority resources. */
     virtual ~IClimbingStaminaAuthority() = default;
 
     /** @brief Stable adapter identity matched against ClimbingProfileDefinition::staminaAdapter. */
@@ -63,6 +67,7 @@ enum class ClimbingConditionDecision : std::uint8_t { Allowed, Denied };
 class IClimbingConditionAuthority {
 public:
     static constexpr const char* capabilityName = "eve.climbing.condition-authority.v1";
+    /** @brief Releases IClimbingConditionAuthority resources. */
     virtual ~IClimbingConditionAuthority() = default;
     /** @brief Evaluate every required tag for one subject at the injected simulation tick. */
     [[nodiscard]] virtual eve::Result<ClimbingConditionDecision> evaluate(
@@ -74,6 +79,7 @@ public:
 class IClimbingEventSink {
 public:
     static constexpr const char* capabilityName = "eve.climbing.event-sink.v1";
+    /** @brief Releases IClimbingEventSink resources. */
     virtual ~IClimbingEventSink() = default;
     /** @brief Consume an owning event view after all ECS simulation views have closed. */
     [[nodiscard]] virtual eve::Result<void> publish(ClimbingServiceSubject subject,
@@ -84,6 +90,7 @@ public:
 class IClimbingPoseAdapter {
 public:
     static constexpr const char* capabilityName = "eve.climbing.pose-adapter.v1";
+    /** @brief Releases IClimbingPoseAdapter resources. */
     virtual ~IClimbingPoseAdapter() = default;
     /** @brief Apply one derived pose projection; failure never invalidates authoritative climbing motion. */
     [[nodiscard]] virtual eve::Result<void> apply(ClimbingServiceSubject subject,
@@ -97,7 +104,7 @@ struct ClimbingServiceStart {
 };
 
 /** @brief Selection transaction that atomically joins external stamina reservation to runtime publication. */
-class ClimbingServiceSelectionSystem {
+class EVENGINE_API_DOMAINS ClimbingServiceSelectionSystem {
 public:
     /**
      * @brief Start one action and publish any configured stamina debit exactly once.
@@ -110,11 +117,11 @@ public:
 };
 
 /** @brief Dispatch to the optional event sink, returning ProviderAbsent instead of silently dropping. */
-[[nodiscard]] eve::Result<ClimbingOptionalServiceState> dispatchClimbingEvents(
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingOptionalServiceState> dispatchClimbingEvents(
     ClimbingServiceSubject subject, std::span<const ClimbingEvent> events);
 
 /** @brief Dispatch to the optional pose/IK adapter, returning ProviderAbsent when trimmed out. */
-[[nodiscard]] eve::Result<ClimbingOptionalServiceState> applyClimbingPose(
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingOptionalServiceState> applyClimbingPose(
     ClimbingServiceSubject subject, const ClimbingAdvance& advance);
 
 }  // namespace eve::climbing

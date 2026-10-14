@@ -5,6 +5,7 @@
 #include "asset/import/AssetImporter.h"
 #include "asset/import/LegacyAnimationImporter.h"
 #include "asset/import/ShaderImporter.h"
+#include "asset/import/StructuredModelImporter.h"
 #include "asset/import/UnityImporter.h"
 #include "asset/import/UnitySource.h"
 #include "asset/import/UnrealImporter.h"
@@ -13,8 +14,9 @@
 
 #include <CLI11.hpp>
 
-#include <filesystem>
 #include <algorithm>
+#include <cctype>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -70,7 +72,7 @@ Result<ImportPackageIdentity> packageIdentity(std::string_view id, std::string n
 }
 
 Result<asset_import::UnitySourceFiles> readTree(const std::filesystem::path& root, std::uint64_t maximumBytes,
-                                                std::uint64_t maximumFiles = 200000) {
+                                                std::uint64_t maximumFiles = 200000, bool ldrawOnly = false) {
     std::error_code ec;
     if (!std::filesystem::is_directory(root, ec))
         return Result<asset_import::UnitySourceFiles>::failure(
@@ -87,6 +89,12 @@ Result<asset_import::UnitySourceFiles> readTree(const std::filesystem::path& roo
         const bool regular = it->is_regular_file(ec);
         if (ec) break;
         if (!regular) continue;
+        if (ldrawOnly) {
+            auto extension = it->path().extension().string();
+            std::transform(extension.begin(), extension.end(), extension.begin(),
+                           [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+            if (extension != ".ldr" && extension != ".dat" && extension != ".mpd") continue;
+        }
         const auto size = it->file_size(ec);
         if (ec) break;
         if (size > maximumBytes || total > maximumBytes - size || files.size() >= maximumFiles)
@@ -160,7 +168,9 @@ struct AssetArgs final : Handler {
     CLI::App* diffCommand = nullptr;
     std::string from, input, secondInput, output, packageId, packageName = "imported.asset", packageVersion = "1.0.0";
     bool        strict = false;
-    std::string descriptor, terrain, prefab, colorSpace = "srgb", usage = "color", target;
+    std::string descriptor, terrain, terrainDetails, prefab, colorSpace = "srgb", usage = "color", target;
+    std::string   openscad    = "openscad", ldrawLibrary;
+    std::uint32_t scadTimeout = 120;
 
     void setup(CLI::App& app, std::shared_ptr<CLI::Formatter> formatter) override {
         assetCommand = app.add_subcommand("asset", "Import, validate, inspect and Cook EVEngine asset packages");
@@ -170,13 +180,19 @@ struct AssetArgs final : Handler {
         scanCommand->add_option("input", input)->required();
         importCommand = assetCommand->add_subcommand("import", "Import source content into a canonical .eva");
         importCommand->add_option("input", input)->required();
-        importCommand->add_option("--from", from, "image|gltf|unity|ue5|shader")->required();
+        importCommand->add_option("--from", from, "image|gltf|unity|ue5|shader|scad|ldraw")->required();
+        importCommand->add_option("--openscad", openscad, "OpenSCAD executable used only for SCAD import");
+        importCommand->add_option("--scad-timeout", scadTimeout, "SCAD compilation timeout in seconds (1..3600)");
+        importCommand->add_option("--ldraw-library", ldrawLibrary,
+                                  "LDraw library root containing parts/, p/ and LDConfig.ldr");
         importCommand->add_option("--out", output)->required();
         importCommand->add_option("--package-id", packageId)->required();
         importCommand->add_option("--name", packageName);
         importCommand->add_option("--version", packageVersion);
         importCommand->add_option("--descriptor", descriptor, "UE adapter descriptor relative to input root");
         importCommand->add_option("--terrain", terrain, "Unity TerrainData relative to input root");
+        importCommand->add_option("--terrain-details", terrainDetails,
+                                  "Unity Terrain Detail sidecar relative to input root");
         importCommand->add_option("--prefab", prefab, "Unity Prefab relative to input root");
         importCommand->add_option("--color-space", colorSpace, "srgb|linear");
         importCommand->add_option("--usage", usage);
@@ -264,7 +280,47 @@ struct AssetArgs final : Handler {
         Result<PreparedAssetImport> prepared = Result<PreparedAssetImport>::failure(
             Diagnostic::error(DiagnosticCode::Unsupported, "unknown importer", from, {}, "cmd.asset"));
         asset_import::AssetImportLimits limits;
-        if (from == "shader") {
+        if (from == "scad") {
+            prepared.ignore();
+            const auto sourceUtf8   = std::filesystem::path(input).u8string();
+            const auto compilerUtf8 = std::filesystem::path(openscad).u8string();
+            prepared                = asset_import::prepareScadFileImport(
+                {identity.value(), std::string(reinterpret_cast<const char*>(sourceUtf8.data()), sourceUtf8.size()),
+                                std::string(reinterpret_cast<const char*>(compilerUtf8.data()), compilerUtf8.size()), scadTimeout,
+                                limits});
+        } else if (from == "ldraw") {
+            const auto sourcePath = std::filesystem::path(input);
+            const auto parent =
+                sourcePath.parent_path().empty() ? std::filesystem::path(".") : sourcePath.parent_path();
+            auto files = readTree(parent, limits.maximumSourceBytes, limits.maximumAssets, true);
+            if (!files) {
+                prepared.ignore();
+                printFailure(files.status());
+                return 2;
+            }
+            if (!ldrawLibrary.empty()) {
+                const auto libraryPath = std::filesystem::path(ldrawLibrary);
+                auto       library     = readTree(libraryPath, limits.maximumSourceBytes, limits.maximumAssets, true);
+                if (!library) {
+                    prepared.ignore();
+                    printFailure(library.status());
+                    return 2;
+                }
+                for (auto& [name, bytes] : library.value()) {
+                    if (files.value().contains(name)) {
+                        prepared.ignore();
+                        std::cerr << "duplicate LDraw source/library path: " << name << "\n";
+                        return 2;
+                    }
+                    files.value().emplace(name, std::move(bytes));
+                }
+            }
+            prepared.ignore();
+            const auto utf8Name = sourcePath.filename().u8string();
+            prepared            = asset_import::prepareLDrawImport(
+                {identity.value(), std::string(reinterpret_cast<const char*>(utf8Name.data()), utf8Name.size()),
+                            std::move(files).takeValue(), limits});
+        } else if (from == "shader") {
             auto source = readFile(input, 8 * 1024 * 1024);
             if (!source) {
                 prepared.ignore();
@@ -309,10 +365,16 @@ struct AssetArgs final : Handler {
             auto files = from == "unity" ? readUnityInput(input, limits) : readTree(input, limits.maximumSourceBytes);
             if (!files) { prepared.ignore(); printFailure(files.status()); return 2; }
             prepared.ignore();
-            if (from == "unity")
-                prepared = asset_import::prepareUnityProjectImport(
-                    {identity.value(), std::move(files).takeValue(), terrain, prefab, limits});
-            else
+            if (from == "unity") {
+                asset_import::UnityProjectImportRequest request;
+                request.package            = identity.value();
+                request.files              = std::move(files).takeValue();
+                request.terrainDataPath    = terrain;
+                request.prefabPath         = prefab;
+                request.limits             = limits;
+                request.terrainDetailsPath = terrainDetails;
+                prepared                   = asset_import::prepareUnityProjectImport(request);
+            } else
                 prepared = asset_import::prepareUnrealM4Import(
                     {identity.value(), std::move(files).takeValue(), descriptor, limits});
         }

@@ -13,19 +13,13 @@
 namespace eve::physics {
 namespace {
 
-template <class T>
-eve::Result<T> bodyValueFailure(eve::DiagnosticCode code, std::string message, std::string path) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "physics.body3d"));
-}
-
 eve::Result<void> validateOwnedTransformInput(const Body3D& body, float x, float y, float z) {
     if (!body.isValid())
-        return bodyValueFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                      "physics body is no longer valid", "body");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "physics body is no longer valid", "body", {}, "physics.body3d"));
     if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z))
-        return bodyValueFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                      "transform input must be finite", "value");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "transform input must be finite", "value", {}, "physics.body3d"));
     return eve::Result<void>::success();
 }
 

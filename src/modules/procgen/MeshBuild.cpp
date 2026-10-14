@@ -76,7 +76,7 @@ eve::Result<void> MeshBuild::restoreGroupData(std::vector<std::string> names, st
                                               int activeGroup) {
     const auto invalid = [&](std::string message, std::string path) {
         return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::ProcgenGroupDataInvalid, std::move(message), std::move(path), {}, "procgen.mesh"));
+            eve::DiagnosticCode::ProcgenGroupDataInvalid, message, path, {}, "procgen.mesh"));
     };
     if (assignments.size() != indices_.size() / 3u || activeGroup < -1 ||
         activeGroup >= static_cast<int>(names.size()) ||
@@ -219,6 +219,21 @@ eve::Result<void> MeshBuild::setVertexColors(std::vector<float> colors) {
         return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
             "mesh vertex colors must be finite", "colors", {}, "procgen.mesh"));
     colors_ = std::move(colors);
+    return eve::Result<void>::success();
+}
+eve::Result<void> MeshBuild::setColor(int vertexIndex, float r, float g, float b, float a) {
+    if (vertexIndex < 0 || vertexIndex >= getVertexCount())
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+            "mesh vertex index is out of range", "vertexIndex", {}, "procgen.mesh"));
+    if (!std::isfinite(r) || !std::isfinite(g) || !std::isfinite(b) || !std::isfinite(a))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+            "mesh vertex color components must be finite", "color", {}, "procgen.mesh"));
+    if (!hasVertexColors()) colors_.assign(std::size_t(getVertexCount()) * 4u, 1.f);
+    const auto base                 = std::size_t(vertexIndex) * 4u;
+    colors_[base]                   = r;
+    colors_[base + 1u]              = g;
+    colors_[base + 2u]              = b;
+    colors_[base + 3u]              = a;
     return eve::Result<void>::success();
 }
 int MeshBuild::getIndex(int i) const {

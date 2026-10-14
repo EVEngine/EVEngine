@@ -2,7 +2,8 @@
 
 Physics-driven side-scrolling action demo for EVEngine. The three connected regions teach
 combo launching, wall jumping, air dashing, kicking props, momentum damage, and finally a
-Dragon boss encounter.
+Dragon boss encounter. Actors are script ECS entities (`Player` / `Enemy` / `Boss` / …)
+driven by `eve.System` queries in `ecs.nut`; Box2D remains the physics authority.
 
 Run from the repository root with the platform-specific engine target, for example:
 

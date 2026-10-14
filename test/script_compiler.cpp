@@ -1,5 +1,7 @@
+#include "common/BindingContracts.h"
 #include "common/Runtime.h"
 #include "common/ScriptCompiler.h"
+#include "common/ScriptModule.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -10,6 +12,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iterator>
+#include <memory>
 #include <string>
 
 using namespace eve;
@@ -80,6 +83,40 @@ TEST_CASE("scriptCompiler.bindingContractsAreReplaceableAndSorted") {
     CHECK_EQ(static_cast<int>(found->parameters[0].unit), static_cast<int>(script::ScriptUnit::Radians));
     CHECK_EQ(registry.snapshot().size(), size_t(1));
     CHECK(registry.unregisterContract("camera/CameraController.setYaw"));
+}
+
+TEST_CASE("scriptCompiler.bindingContractSearchRanksExactMethod") {
+    script::BindingContractRegistry registry;
+    script::BindingContract         camera;
+    camera.module      = "camera";
+    camera.scriptClass = "CameraController";
+    camera.method      = "setYaw";
+    camera.parameters.push_back({"yaw", "float", false, std::nullopt, script::ScriptUnit::Radians, {}});
+    camera.returnType      = "void";
+    camera.documentationId = "camera.CameraController.setYaw";
+    registry.registerContract(camera);
+
+    script::BindingContract other;
+    other.module      = "camera";
+    other.scriptClass = "CameraController";
+    other.method      = "setPitch";
+    other.returnType  = "void";
+    registry.registerContract(other);
+
+    const auto hits = registry.search("setYaw");
+    REQUIRE(hits.size() == size_t(1));
+    CHECK_EQ(hits[0].contract.method, std::string("setYaw"));
+    CHECK(hits[0].score > 100);
+    CHECK(hits[0].contract.toJson().find("\"unit\":\"Radians\"") != std::string::npos);
+
+    const auto filtered = registry.search("set", "camera", "CameraController", 8);
+    CHECK_EQ(filtered.size(), size_t(2));
+}
+
+TEST_CASE("scriptCompiler.generatedBindingContractsAreSearchable") {
+    const auto hits = script::generatedBindingContracts().search("newWorld", {}, {}, 8);
+    CHECK(!hits.empty());
+    CHECK(hits[0].contract.toJson().find("\"method\":\"") != std::string::npos);
 }
 
 TEST_CASE("scriptCompiler.generatedModuleContractIsExecutable") {
@@ -341,6 +378,31 @@ TEST_CASE("scriptCompiler.validatesConfigModulesWithoutExecution") {
 
 TEST_CASE("scriptCompiler.compilesRepositoryNutCompatibilityBaseline") {
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS)
+    // Keep corpus identities virtual while resolving imports against the same repository tree.
+    class CorpusModules final : public script::IScriptModuleProvider {
+    public:
+        script::ScriptModuleStatus resolve(const script::ScriptModuleRequest& request, std::string& canonicalUri,
+                                           std::string& error) override {
+            if (!script::ScriptModuleResolver::canonicalize(request, canonicalUri, error))
+                return script::ScriptModuleStatus::Error;
+            return canonicalUri.rfind("baseline:/", 0) == 0 ? script::ScriptModuleStatus::Found
+                                                            : script::ScriptModuleStatus::NotHandled;
+        }
+        script::ScriptModuleStatus load(std::string_view canonicalUri, script::ScriptModuleSource& source,
+                                        std::string& error) override {
+            if (canonicalUri.rfind("baseline:/", 0) != 0) return script::ScriptModuleStatus::NotHandled;
+            const auto    path = std::filesystem::path(EVENGINE_SOURCE_DIR) / std::string(canonicalUri.substr(10));
+            std::ifstream input(path, std::ios::binary);
+            if (!input) {
+                error = "missing corpus module: " + path.string();
+                return script::ScriptModuleStatus::Error;
+            }
+            source.canonicalUri = std::string(canonicalUri);
+            source.utf8Source.assign(std::istreambuf_iterator<char>(input), {});
+            source.debugOrigin = path.string();
+            return script::ScriptModuleStatus::Found;
+        }
+    };
     const std::filesystem::path root(EVENGINE_SOURCE_DIR);
     size_t                      compiled = 0;
     using Clock                          = std::chrono::steady_clock;
@@ -363,7 +425,8 @@ TEST_CASE("scriptCompiler.compilesRepositoryNutCompatibilityBaseline") {
         try {
             auto phaseStart = Clock::now();
             {
-                Runtime    runtime(1024, ssq::Libs::ALL);
+                Runtime runtime(1024, ssq::Libs::ALL);
+                REQUIRE(runtime.scriptModules().registerProvider(std::make_shared<CorpusModules>()) != 0);
                 const auto ready = Clock::now();
                 vmMs += milliseconds(ready - phaseStart);
                 runtime.compileSource(source, "baseline:/" + relative);

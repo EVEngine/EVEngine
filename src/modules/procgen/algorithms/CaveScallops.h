@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/algorithms/CaveHydrology.h"
 
@@ -7,6 +9,7 @@
 
 namespace eve::procgen {
 
+/** @brief CaveScallopInput public API. */
 struct CaveScallopInput {
     float    along              = 0.f;
     float    angle              = 0.f;
@@ -24,12 +27,14 @@ struct CaveScallopInput {
     uint32_t seed               = 0;
 };
 
+/** @brief CaveScallopSample public API. */
 struct CaveScallopSample {
     float erosion         = 0.f;
     float scale           = 0.12f;
     float scaleMultiplier = 1.f;
 };
 
+/** @brief CavePassageFrame public API. */
 struct CavePassageFrame {
     float             along              = 0.f;
     float             angle              = 0.f;
@@ -41,7 +46,9 @@ struct CavePassageFrame {
     CaveHydrologyVec3 tangent{1.f, 0.f, 0.f};
 };
 
-CaveScallopSample sampleCaveScallops(const CaveScallopInput& input);
+/** @brief Sample cave scallops. */
+EVENGINE_API_DOMAINS CaveScallopSample sampleCaveScallops(const CaveScallopInput& input);
+/** @brief Nearest cave passage frame. */
 CavePassageFrame  nearestCavePassageFrame(const CaveHydrologyVec3& point, const std::vector<CaveHydrologyPoint>& path,
                                           const std::vector<float>& hydraulicIntensity);
 

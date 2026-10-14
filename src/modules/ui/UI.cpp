@@ -1,20 +1,22 @@
 #include "ui/UI.h"
 #include "ui/DatabasePanel.h"
+#include "ui/EditorHostCapabilities.h"
 #include "ui/EditorShell.h"
+#include "ui/EventSinkOwner.h"
+#include "ui/ObjectRegistry.h"
 #include "ui/PcgColorPreviewSync.h"
 #include "ui/PcgControllerSelection.h"
 #include "ui/PcgDraggableWindow.h"
-#include "ui/PcgPhotoModeApplyPlan.h"
-#include "ui/PcgPhotoModePanels.h"
-#include "ui/PcgPhotoModeRuntimeUI.h"
-#include "ui/PcgPhotoModeValues.h"
-#include "ui/PcgPhotoModeSession.h"
-#include "ui/PcgPhotoModeRanges.h"
-#include "ui/PcgPhotoModeColorPicker.h"
-#include "ui/PcgScreenshotSavedNotice.h"
 #include "ui/PcgLoadingScreen.h"
+#include "ui/PcgPhotoModeApplyPlan.h"
+#include "ui/PcgPhotoModeColorPicker.h"
+#include "ui/PcgPhotoModePanels.h"
+#include "ui/PcgPhotoModeRanges.h"
+#include "ui/PcgPhotoModeRuntimeUI.h"
+#include "ui/PcgPhotoModeSession.h"
+#include "ui/PcgPhotoModeValues.h"
+#include "ui/PcgScreenshotSavedNotice.h"
 #include "ui/PcgTooltip.h"
-#include "ui/EditorHostCapabilities.h"
 #include "ui/UIAutomationCapabilities.h"
 
 #include "ui/Inspector.h"
@@ -24,17 +26,23 @@
 #include "ui/Widget.h"
 #include "ui/ParentScaler.h"
 
+#include "common/Capability.h"
 #include "common/Module.h"
+#include "common/Json.h"
+#include "common/Value.h"
 #include "common/SquirrelBinding.h"
+#include "common/SquirrelOwnership.h"
 #include "common/config.h"
 #include "graphics/Graphics.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
+#include "property_access/squirrel/ReflectedPropertyModel.h"
 #include "window/Window.h"
 #include "window/sdl/Window.h"
 
-#include <simplesquirrel/simplesquirrel.hpp>
 #include <SDL2/SDL_events.h>
+#include <squirrel.h>
+#include <simplesquirrel/simplesquirrel.hpp>
 
 #if !(defined(EVENGINE_WEBGPU) && defined(__EMSCRIPTEN__))
 #include <Poco/JSON/Array.h>
@@ -44,14 +52,159 @@
 #endif
 
 #include <algorithm>
-#include <chrono>
 #include <cstdio>
 #include <cstring>
+#include <iterator>
 #include <sstream>
 #include <stdexcept>
 
 namespace eve::ui {
+namespace detail {
+// Internal module binding entry point; no cross-module callers.
+void injectUIComponentClass(ssq::Table &eveTable);
+}  // namespace detail
 namespace {
+
+UI *uiFromStack(HSQUIRRELVM vm) {
+    UI *self = nullptr;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, reinterpret_cast<SQUserPointer *>(&self), nullptr)) || !self) return nullptr;
+    return self;
+}
+
+std::string optionalEase(HSQUIRRELVM vm, SQInteger idx, SQInteger n) {
+    if (n < idx) return "smoothstep";
+    const SQChar *ease = nullptr;
+    if (SQ_FAILED(sq_getstring(vm, idx, &ease)) || !ease) return "smoothstep";
+    return ease;
+}
+
+float optionalDelay(HSQUIRRELVM vm, SQInteger idx, SQInteger n) {
+    if (n < idx) return 0.f;
+    SQFloat delay = 0.f;
+    if (SQ_FAILED(sq_getfloat(vm, idx, &delay))) return 0.f;
+    return float(delay);
+}
+
+/** Script: animateHostPos(x, y, durationMs [, ease [, delayMs]]). */
+SQInteger sqAnimateHostPos(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 4 || n > 6) return sq_throwerror(vm, "UI.animateHostPos expects (x, y, durationMs [, ease [, delayMs]])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    SQFloat x = 0.f, y = 0.f, durationMs = 0.f;
+    if (SQ_FAILED(sq_getfloat(vm, 2, &x)) || SQ_FAILED(sq_getfloat(vm, 3, &y)) ||
+        SQ_FAILED(sq_getfloat(vm, 4, &durationMs)))
+        return sq_throwerror(vm, "UI.animateHostPos expects float x/y/durationMs");
+    self->animateHostPos(float(x), float(y), float(durationMs), optionalEase(vm, 5, n), optionalDelay(vm, 6, n));
+    return 0;
+}
+
+/** Script: animateHostSize(w, h, durationMs [, ease [, delayMs]]). */
+SQInteger sqAnimateHostSize(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 4 || n > 6) return sq_throwerror(vm, "UI.animateHostSize expects (w, h, durationMs [, ease [, delayMs]])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    SQFloat w = 0.f, h = 0.f, durationMs = 0.f;
+    if (SQ_FAILED(sq_getfloat(vm, 2, &w)) || SQ_FAILED(sq_getfloat(vm, 3, &h)) ||
+        SQ_FAILED(sq_getfloat(vm, 4, &durationMs)))
+        return sq_throwerror(vm, "UI.animateHostSize expects float w/h/durationMs");
+    self->animateHostSize(float(w), float(h), float(durationMs), optionalEase(vm, 5, n), optionalDelay(vm, 6, n));
+    return 0;
+}
+
+/** Script: animateHostOverlayAlpha(alpha, durationMs [, ease [, delayMs]]). */
+SQInteger sqAnimateHostOverlayAlpha(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 3 || n > 5)
+        return sq_throwerror(vm, "UI.animateHostOverlayAlpha expects (alpha, durationMs [, ease [, delayMs]])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    SQFloat alpha = 0.f, durationMs = 0.f;
+    if (SQ_FAILED(sq_getfloat(vm, 2, &alpha)) || SQ_FAILED(sq_getfloat(vm, 3, &durationMs)))
+        return sq_throwerror(vm, "UI.animateHostOverlayAlpha expects float alpha/durationMs");
+    self->animateHostOverlayAlpha(float(alpha), float(durationMs), optionalEase(vm, 4, n), optionalDelay(vm, 5, n));
+    return 0;
+}
+
+/** Script: animateItemOpacity(id, opacity, durationMs [, ease [, delayMs]]). */
+SQInteger sqAnimateItemOpacity(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 4 || n > 6)
+        return sq_throwerror(vm, "UI.animateItemOpacity expects (id, opacity, durationMs [, ease [, delayMs]])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    const SQChar *id      = nullptr;
+    SQFloat       opacity = 0.f, durationMs = 0.f;
+    if (SQ_FAILED(sq_getstring(vm, 2, &id)) || SQ_FAILED(sq_getfloat(vm, 3, &opacity)) ||
+        SQ_FAILED(sq_getfloat(vm, 4, &durationMs)))
+        return sq_throwerror(vm, "UI.animateItemOpacity expects (string id, float opacity, float durationMs)");
+    self->animateItemOpacity(id ? id : "", float(opacity), float(durationMs), optionalEase(vm, 5, n),
+                             optionalDelay(vm, 6, n));
+    return 0;
+}
+
+/** Script: animateItemPos(id, x, y, durationMs [, ease [, delayMs]]). */
+SQInteger sqAnimateItemPos(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 5 || n > 7)
+        return sq_throwerror(vm, "UI.animateItemPos expects (id, x, y, durationMs [, ease [, delayMs]])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    const SQChar *id = nullptr;
+    SQFloat       x = 0.f, y = 0.f, durationMs = 0.f;
+    if (SQ_FAILED(sq_getstring(vm, 2, &id)) || SQ_FAILED(sq_getfloat(vm, 3, &x)) || SQ_FAILED(sq_getfloat(vm, 4, &y)) ||
+        SQ_FAILED(sq_getfloat(vm, 5, &durationMs)))
+        return sq_throwerror(vm, "UI.animateItemPos expects (string id, float x/y/durationMs)");
+    self->animateItemPos(id ? id : "", float(x), float(y), float(durationMs), optionalEase(vm, 6, n),
+                         optionalDelay(vm, 7, n));
+    return 0;
+}
+
+/** Script: cancelItemTweens([id]). */
+SQInteger sqCancelItemTweens(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 1 || n > 2) return sq_throwerror(vm, "UI.cancelItemTweens expects ([id])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    if (n < 2) {
+        self->cancelItemTweens("");
+        return 0;
+    }
+    const SQChar *id = nullptr;
+    if (SQ_FAILED(sq_getstring(vm, 2, &id))) return sq_throwerror(vm, "UI.cancelItemTweens id must be a string");
+    self->cancelItemTweens(id ? id : "");
+    return 0;
+}
+
+void addOptionalTweenFunc(ssq::Class &cls, const char *name, SQFUNCTION func, SQInteger minParams,
+                          const SQChar *typemask) {
+    HSQUIRRELVM vm = cls.getHandle();
+    sq_pushobject(vm, cls.getRaw());
+    sq_pushstring(vm, name, -1);
+    sq_newclosure(vm, func, 0);
+    sq_setparamscheck(vm, -minParams, typemask);
+    sq_newslot(vm, -3, SQFalse);
+    sq_poptop(vm);
+}
+
+std::string jsonQuoted(const std::string &value) {
+    std::string out = "\"";
+    for (const unsigned char ch : value) {
+        switch (ch) {
+        case '\"': out += "\\\""; break;
+        case '\\': out += "\\\\"; break;
+        case '\n': out += "\\n"; break;
+        case '\r': out += "\\r"; break;
+        case '\t': out += "\\t"; break;
+        default:
+            if (ch >= 0x20) out += static_cast<char>(ch);
+            break;
+        }
+    }
+    out += '\"';
+    return out;
+}
 
 /** Call a registered script handler with the event's payload. */
 void callScriptHandler(ssq::Function &fn, const std::string &kind, const UIEvent &ev) {
@@ -84,128 +237,20 @@ void nodeToJson(const UIHost::Tree &tree, const UINode &n, Poco::JSON::Object &o
 WidgetDesc descFromJson(const Poco::JSON::Object &o);
 #endif
 
-/** Script base: `class X extends eve.UIComponent { function build() { ... } }`. */
-const char *kUIComponentScript = R"SQ(
-eve.UIComponent <- class {
-    hostName = ""
-    dirty = true
-    forceFull = false
-    props = null
-    state = null
-    _ui = null
-    _parent = null
-    _mounted = false
 
-    constructor(uiInstance = null, initialProps = null) {
-        _ui = uiInstance
-        hostName = ""
-        dirty = true
-        forceFull = false
-        props = initialProps != null ? initialProps : {}
-        state = {}
-        _parent = null
-        _mounted = false
+class UiRootReleaser final : public eve::script::ISquirrelRootReleaser {
+public:
+    void releaseSquirrelRoots() noexcept override {
+        if (auto* ui = ModuleManager::getInstance<UI>("UI")) ui->releaseSquirrelRoots();
     }
+};
 
-    function setUI(uiInstance) { _ui = uiInstance; return this }
-
-    function setProps(nextProps, replace = false) {
-        if (nextProps == null) return this
-        if (replace) props = {}
-        foreach (key, value in nextProps) props.rawset(key, value)
-        markDirty()
-        return this
+struct RegisterUiRoots {
+    RegisterUiRoots() {
+        static UiRootReleaser releaser;
+        eve::cap::addListener<eve::script::ISquirrelRootReleaser>(&releaser);
     }
-
-    function mountAs(name) {
-        hostName = name
-        dirty = true
-        forceFull = true
-        updateIfDirty()
-        return this
-    }
-
-    function setState(patch = null) {
-        if (patch != null) {
-            foreach (key, value in patch) state.rawset(key, value)
-        }
-        markDirty()
-        return this
-    }
-    function markDirty() {
-        dirty = true
-        if (_parent != null && _parent != this) _parent.markDirty()
-        return this
-    }
-
-    // Compose a persistent child instance inside this component's active build pass.
-    function renderChild(component, nextProps = null) {
-        if (component == null) return null
-        component._parent = this
-        component.setUI(ui())
-        if (nextProps != null) component.props = nextProps
-        component.build()
-        component.dirty = false
-        return component
-    }
-
-    // Override in subclass: call this.ui().beginWindow / text / button / end ...
-    function build() {}
-    function onMount() {}
-    function onUpdated() {}
-
-    function ui() {
-        if (_ui != null) return _ui
-        try {
-            if (::ui != null) return ::ui
-        } catch (e) {}
-        _ui = ::eve.UI()
-        return _ui
-    }
-
-    function updateIfDirty() {
-        if (!dirty) return false
-        local firstMount = !_mounted
-        local u = ui()
-        u.beginBuild()
-        build()
-        local name = hostName
-        if (name == null || name == "") name = "default"
-        if (forceFull) {
-            u.mountBuildAs(name)
-            forceFull = false
-        } else {
-            u.remountBuildAs(name)
-        }
-        dirty = false
-        _mounted = true
-        if (firstMount) onMount()
-        else onUpdated()
-        return true
-    }
-
-    function rebuild(force = false) {
-        dirty = true
-        forceFull = force
-        return updateIfDirty()
-    }
-}
-// Note: eve.Component is reserved for script ECS (see exposeECS). Use eve.UIComponent.
-)SQ";
-
-void injectUIComponentClass(ssq::Table &eveTable) {
-    HSQUIRRELVM vm = eveTable.getHandle();
-    const SQInteger top = sq_gettop(vm);
-    if (SQ_FAILED(sq_compilebuffer(vm, kUIComponentScript,
-                                   static_cast<SQInteger>(std::strlen(kUIComponentScript)),
-                                   "UIComponent.nut", SQTrue))) {
-        sq_settop(vm, top);
-        return;
-    }
-    sq_pushroottable(vm);
-    sq_call(vm, 1, SQFalse, SQTrue);
-    sq_settop(vm, top);
-}
+} g_uiRoots;
 
 }  // namespace
 
@@ -214,8 +259,21 @@ Module_IMPL(UI, new UI());
 UI::UI() : backend_(createImGuiBackend()) {
     registerEditorHostCapabilities();
     registerUIAutomationCapabilities();
+    bindUIEventSinkOwner(this);
 }
-UI::~UI() { shutdownBackend(); }
+UI::~UI() {
+    bindUIEventSinkOwner(nullptr);
+    shutdownBackend();
+}
+
+void UI::releaseSquirrelRoots() noexcept {
+    databasePanel_.reset();
+    if (!ModuleManager::runtime()) return;
+    try {
+        ObjectRegistry::instance().clearAll();
+    } catch (...) {
+    }
+}
 
 bool UI::isBackendReady() const { return backend_ && backend_->isInitialized(); }
 
@@ -235,6 +293,7 @@ bool UI::initBackend() {
 }
 
 void UI::shutdownBackend() {
+    releaseSquirrelRoots();
     releaseNinePatches();
     UISystem::clearBackend();
     if (backend_) backend_->shutdown();
@@ -251,40 +310,18 @@ void UI::beginFrameAndRender() {
     if (!isBackendReady()) {
         if (!initBackend()) return;
     }
-    updateHostTweens();
+    tickTweens(uiTweenWallClockMs());
     if (inspector_ && inspector_->isOpen()) inspector_->sync();
     if (databasePanel_ && databasePanel_->isOpen()) databasePanel_->sync();
     backend_->newFrame();
     UISystem::render();
 }
 
-void UI::updateHostTweens() {
-    if (hostTweens_.empty()) return;
-    const double now =
-        std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now().time_since_epoch())
-            .count();
-    for (auto &t : hostTweens_) {
-        auto host = UIHost::resolve(t.host);
-        if (!host) continue;
-        auto         m       = host->get().meta();
-        const double elapsed = now - t.startMs;
-        if (t.durationMs <= 0.0 || elapsed >= t.durationMs) {
-            m->hasPos = true;
-            m->posX = t.toX;
-            m->posY = t.toY;
-            t.host    = {};  // done; removed below
-            continue;
-        }
-        const float k = float(elapsed / t.durationMs);
-        const float ease = k * k * (3.f - 2.f * k);  // smoothstep
-        m->hasPos = true;
-        m->posX = t.fromX + (t.toX - t.fromX) * ease;
-        m->posY = t.fromY + (t.toY - t.fromY) * ease;
-    }
-    hostTweens_.erase(std::remove_if(hostTweens_.begin(), hostTweens_.end(),
-                                     [](const HostTween &t) { return !UIHost::resolve(t.host).has_value(); }),
-                      hostTweens_.end());
-}
+void UI::tickTweens(double nowMs) { tweens_.tick(nowMs); }
+
+std::size_t UI::getHostTweenCount() const { return tweens_.hostTweenCount(); }
+
+std::size_t UI::getItemTweenCount() const { return tweens_.itemTweenCount(); }
 
 void UI::dispatchEvents() {
     // Copy before dispatch: UISystem::dispatchEvents() consumes the pending list.
@@ -322,6 +359,28 @@ void UI::onChange(const std::string &id, ssq::Function fn) {
     for (const char *kind : {"toggle", "value", "text"}) {
         scriptHandlers_.push_back(ScriptHandler(host->get().getName(), id, kind, fn));
     }
+}
+
+void UI::componentOnClick(uint64_t owner, const std::string &id, ssq::Function fn) {
+    auto host = resolveSelected();
+    if (!host || owner == 0 || id.empty()) return;
+    scriptHandlers_.push_back(
+        ScriptHandler(host->get().getName(), id, "click", std::move(fn), owner));
+}
+
+void UI::componentOnChange(uint64_t owner, const std::string &id, ssq::Function fn) {
+    auto host = resolveSelected();
+    if (!host || owner == 0 || id.empty()) return;
+    for (const char *kind : {"toggle", "value", "text"}) {
+        scriptHandlers_.push_back(ScriptHandler(host->get().getName(), id, kind, fn, owner));
+    }
+}
+
+void UI::componentClearHandlers(uint64_t owner) {
+    if (owner == 0) return;
+    std::erase_if(scriptHandlers_, [owner](const ScriptHandler &handler) {
+        return handler.owner == owner;
+    });
 }
 
 bool UI::wantCaptureMouse() const {
@@ -473,6 +532,39 @@ void UI::beginSidebar(const std::string &id, float width) {
 
 void UI::beginStatusBar(const std::string &id) { pushOpen(statusBar({}, id)); }
 
+void UI::beginTabBar(const std::string &id) { pushOpen(tabBar({}, id)); }
+
+void UI::beginTabContainer(const std::string &activePageId, const std::string &id) {
+    WidgetDesc d;
+    d.type          = NodeType::TabContainer;
+    d.id            = id;
+    d.key           = id;
+    d.valueText     = activePageId;
+    d.flexDirection = FlexDirection::Column;
+    d.flexGrow      = 1.f;
+    pushOpen(std::move(d));
+}
+
+void UI::beginPanelFrame(const std::string &title, const std::string &id) { pushOpen(panelFrame(title, {}, id)); }
+
+void UI::beginDockArea(const std::string &region, const std::string &id) { pushOpen(dockArea(region, {}, id)); }
+
+void UI::beginAppFrame(const std::string &id) {
+    WidgetDesc d;
+    d.type          = NodeType::AppFrame;
+    d.id            = id;
+    d.key           = id;
+    d.flexDirection = FlexDirection::Column;
+    d.flexGrow      = 1.f;
+    d.percentW      = 1.f;
+    d.percentH      = 1.f;
+    pushOpen(std::move(d));
+}
+
+void UI::addTab(const std::string &label, const std::string &pageId, bool selected, const std::string &id) {
+    currentParent().children.push_back(tab(label, pageId, selected, id));
+}
+
 void UI::beginScrollList(const std::string &id, float height, float itemHeight) {
     pushOpen(scrollList(id, {}, height, itemHeight));
 }
@@ -508,6 +600,13 @@ FlexJustify parseFlexJustify(const std::string &justify) {
         return FlexJustify::SpaceBetween;
     if (j == "spacearound" || j == "space-around" || j == "around") return FlexJustify::SpaceAround;
     return FlexJustify::Start;
+}
+
+OverflowMode parseOverflowMode(const std::string &overflow) {
+    const std::string value = toLowerCopy(overflow);
+    if (value == "clip" || value == "hidden") return OverflowMode::Clip;
+    if (value == "scroll" || value == "auto") return OverflowMode::Scroll;
+    return OverflowMode::Visible;
 }
 
 FocusMode parseFocusMode(const std::string &mode) {
@@ -573,6 +672,13 @@ void UI::beginFlex(const std::string &direction, const std::string &id, float ga
 void UI::beginRow(const std::string &id, float gap) { beginFlex("row", id, gap); }
 
 void UI::beginColumn(const std::string &id, float gap) { beginFlex("column", id, gap); }
+
+void UI::beginGrid(int columns, const std::string &id, float columnGap, float rowGap) {
+    WidgetDesc d = grid(columns, {}, id);
+    d.columnGap = columnGap;
+    d.rowGap = rowGap;
+    pushOpen(std::move(d));
+}
 
 void UI::beginSplitPane(const std::string &direction, float ratio, const std::string &id) {
     WidgetDesc d;
@@ -725,6 +831,32 @@ void UI::setItemFlexGrow(float grow) {
     parent.children.back().flexGrow = grow;
 }
 
+void UI::setItemFlexShrink(float shrink) {
+    WidgetDesc &parent = currentParent();
+    if (!parent.children.empty()) parent.children.back().flexShrink = std::max(0.f, shrink);
+}
+
+void UI::setItemFlexBasis(float basis) {
+    WidgetDesc &parent = currentParent();
+    if (!parent.children.empty()) parent.children.back().flexBasis = basis;
+}
+
+void UI::setItemAlignSelf(const std::string &align) {
+    WidgetDesc &parent = currentParent();
+    if (parent.children.empty()) return;
+    parent.children.back().alignSelf = align == "inherit" ? -1 : int(parseFlexAlign(align));
+}
+
+void UI::setItemAspectRatio(float ratio) {
+    WidgetDesc &parent = currentParent();
+    if (!parent.children.empty()) parent.children.back().aspectRatio = std::max(0.f, ratio);
+}
+
+void UI::setItemGridColumnSpan(int span) {
+    WidgetDesc &parent = currentParent();
+    if (!parent.children.empty()) parent.children.back().gridColumnSpan = std::max(1, span);
+}
+
 void UI::setItemSize(float width, float height) {
     WidgetDesc &parent = currentParent();
     if (parent.children.empty()) return;
@@ -833,6 +965,13 @@ void UI::setThemeScope(const std::string &theme) {
     currentParent().themePreset = parseThemePreset(theme);
 }
 
+void UI::setItemStyleClass(const std::string &name) {
+    WidgetDesc &parent = currentParent();
+    if (!parent.children.empty()) parent.children.back().styleClass = name;
+}
+
+void UI::setStyleScope(const std::string &name) { currentParent().styleClass = name; }
+
 void UI::setItemTabIndex(int index) {
     WidgetDesc &parent = currentParent();
     if (!parent.children.empty()) parent.children.back().tabIndex = index;
@@ -874,6 +1013,25 @@ void UI::setFlexJustify(const std::string &justify) {
     WidgetDesc &parent = currentParent();
     if (parent.type != NodeType::Flex) return;
     parent.justifyContent = parseFlexJustify(justify);
+}
+
+void UI::setLayoutGaps(float columnGap, float rowGap) {
+    WidgetDesc &parent = currentParent();
+    if (parent.type != NodeType::Flex && parent.type != NodeType::Grid) return;
+    parent.columnGap = columnGap;
+    parent.rowGap = rowGap;
+}
+
+void UI::setFlexWrap(bool wrap) {
+    WidgetDesc &parent = currentParent();
+    if (parent.type == NodeType::Flex)
+        parent.flexWrap = wrap ? FlexWrap::Wrap : FlexWrap::NoWrap;
+}
+
+void UI::setLayoutOverflow(const std::string &overflow) {
+    WidgetDesc &parent = currentParent();
+    if (parent.type == NodeType::Flex || parent.type == NodeType::Grid)
+        parent.overflow = parseOverflowMode(overflow);
 }
 
 void UI::addListItem(const std::string &label, const std::string &id) {
@@ -1101,7 +1259,16 @@ UI::NinePatchResource *UI::loadNinePatch(const std::string &path) {
     auto *graphics = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
     if (!images || !graphics) return nullptr;
     try {
-        eve::ref<eve::image::ImageData> source(images->newImageDataFromFile(path));
+        // The provider hands back a cache-owned ImageData; the pin keeps it alive
+        // while the nine-patch border is measured and stripped.
+        eve::image::ImageData *source = images->newImageDataFromFile(path);
+        if (source == nullptr) return nullptr;
+        auto sourcePin = eve::ResourceManager::getInstance().pin(source);
+        if (!sourcePin.ok()) return nullptr;
+        eve::ResourcePin keepAlive = std::move(sourcePin).takeValue();
+        // The pin is the authority from here on; the borrowed pointer may have gone stale
+        // before the pin was taken.
+        source = static_cast<eve::image::ImageData *>(keepAlive.get());
         NinePatchResource resource;
         std::string error;
         if (!parseNinePatch(*source, resource.info, &error)) {
@@ -1282,22 +1449,19 @@ void UI::setHostPercent(float w, float h) {
     m->percentH = h;
 }
 
-void UI::animateHostPos(float x, float y, float durationMs) {
-    auto host = resolveSelected();
-    if (!host) return;
-    auto      m = host->get().meta();
-    HostTween t;
-    t.host = selected_;
-    t.fromX = m->hasPos ? m->posX : 0.f;
-    t.fromY = m->hasPos ? m->posY : 0.f;
-    t.toX = x;
-    t.toY = y;
-    t.startMs =
-        std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now().time_since_epoch())
-            .count();
-    t.durationMs = std::max(0.0, double(durationMs));
-    m->hasPos = true;
-    hostTweens_.push_back(t);
+void UI::animateHostPos(float x, float y, float durationMs, const std::string &ease, float delayMs) {
+    if (!resolveSelected()) return;
+    tweens_.animateHostPos(selected_, x, y, durationMs, ease, delayMs, uiTweenWallClockMs());
+}
+
+void UI::animateHostSize(float w, float h, float durationMs, const std::string &ease, float delayMs) {
+    if (!resolveSelected()) return;
+    tweens_.animateHostSize(selected_, w, h, durationMs, ease, delayMs, uiTweenWallClockMs());
+}
+
+void UI::animateHostOverlayAlpha(float alpha, float durationMs, const std::string &ease, float delayMs) {
+    if (!resolveSelected()) return;
+    tweens_.animateHostOverlayAlpha(selected_, alpha, durationMs, ease, delayMs, uiTweenWallClockMs());
 }
 
 std::string UI::consumeClick() { return UISystem::consumeClick(); }
@@ -1340,6 +1504,52 @@ bool UI::setTheme(const std::string &name) { return setThemeByName(name); }
 
 std::string UI::getTheme() const { return globalThemeName(); }
 
+std::string UI::defineStyleClass(const std::string &name, const std::string &parent) {
+    return styleClassStatusName(eve::ui::defineStyleClass(name, parent));
+}
+
+void UI::animateItemOpacity(const std::string &id, float opacity, float durationMs, const std::string &ease,
+                            float delayMs) {
+    if (!resolveSelected()) return;
+    // Script-facing facade: missing hosts/nodes are no-ops (same as other UI setters).
+    tweens_.animateItemOpacity(selected_, id, opacity, durationMs, ease, delayMs, uiTweenWallClockMs())
+        .ignore("UI.animateItemOpacity: host/node unavailable");
+}
+
+void UI::animateItemPos(const std::string &id, float x, float y, float durationMs, const std::string &ease,
+                        float delayMs) {
+    if (!resolveSelected()) return;
+    tweens_.animateItemPos(selected_, id, x, y, durationMs, ease, delayMs, uiTweenWallClockMs())
+        .ignore("UI.animateItemPos: host/node unavailable");
+}
+
+void UI::cancelHostTweens() {
+    if (!resolveSelected()) return;
+    tweens_.cancelHost(selected_);
+}
+
+void UI::cancelItemTweens(const std::string &id) {
+    if (!resolveSelected()) return;
+    tweens_.cancelItem(selected_, id);
+}
+
+void UI::cancelAllTweens() {
+    if (!resolveSelected()) return;
+    tweens_.cancelAll(selected_);
+}
+
+std::string UI::setStyleClassColor(const std::string &name, const std::string &property, float r,
+                                   float g, float b, float a) {
+    return styleClassStatusName(eve::ui::setStyleClassColor(name, property, r, g, b, a));
+}
+
+std::string UI::setStyleClassMetric(const std::string &name, const std::string &property, float x,
+                                    float y) {
+    return styleClassStatusName(eve::ui::setStyleClassMetric(name, property, x, y));
+}
+
+void UI::clearStyleClasses() { eve::ui::clearStyleClasses(); }
+
 void UI::setNavKeyboard(bool enabled) {
     globalTheme().navEnableKeyboard = enabled;
 }
@@ -1368,12 +1578,54 @@ std::string UI::getStats() const {
     return buf;
 }
 
+std::string UI::getLayoutDiagnostics() const {
+    auto host = resolveSelected();
+    if (!host) return "{\"nodes\":[]}";
+    std::ostringstream out;
+    out << "{\"host\":" << jsonQuoted(host->get().getName()) << ",\"nodes\":[";
+    bool first = true;
+    for (const UINode &node : host->get().tree()->nodes) {
+        if (!first) out << ',';
+        first = false;
+        out << "{\"id\":" << jsonQuoted(node.id) << ",\"width\":" << node.measuredW
+            << ",\"height\":" << node.measuredH << ",\"overflowX\":"
+            << node.layoutOverflowX << ",\"overflowY\":" << node.layoutOverflowY << '}';
+    }
+    out << "]}";
+    return out.str();
+}
+
+std::string UI::getAccessibilitySnapshot() const {
+    auto host = resolveSelected();
+    if (!host) return "{\"nodes\":[]}";
+    std::ostringstream out;
+    out << "{\"host\":" << jsonQuoted(host->get().getName()) << ",\"nodes\":[";
+    bool first = true;
+    for (const UINode &node : host->get().tree()->nodes) {
+        if (node.accessibilityRole == AccessibilityRole::Auto &&
+            node.accessibilityName.empty())
+            continue;
+        if (!first) out << ',';
+        first = false;
+        out << "{\"id\":" << jsonQuoted(node.id) << ",\"role\":"
+            << static_cast<int>(node.accessibilityRole) << ",\"name\":"
+            << jsonQuoted(node.accessibilityName) << ",\"description\":"
+            << jsonQuoted(node.accessibilityDescription) << ",\"enabled\":"
+            << (node.enabled ? "true" : "false") << ",\"focused\":"
+            << (node.focused ? "true" : "false") << '}';
+    }
+    out << "]}";
+    return out.str();
+}
+
 #if !(defined(EVENGINE_WEBGPU) && defined(__EMSCRIPTEN__))
 std::string UI::saveTreeJson() const {
     auto host = resolveSelected();
     if (!host) return "{}";
     auto               t = host->get().tree();
     Poco::JSON::Object root;
+    root.set("schema", "eve.ui.tree");
+    root.set("version", 4);
     root.set("host", host->get().getName());
     if (t->root >= 0) nodeToJson(*t, t->nodes[size_t(t->root)], root);
     std::ostringstream oss;
@@ -1389,6 +1641,10 @@ bool UI::loadTreeJson(const std::string &json) {
         const Poco::Dynamic::Var result = parser.parse(json);
         const Poco::JSON::Object::Ptr obj = result.extract<Poco::JSON::Object::Ptr>();
         if (!obj) return false;
+        if (obj->has("schema") && obj->getValue<std::string>("schema") != "eve.ui.tree")
+            return false;
+        const int version = obj->optValue<int>("version", 1);
+        if (version < 1 || version > 4) return false;
         WidgetDesc root = descFromJson(*obj);
         host->get().setTree(std::move(root));
         return true;
@@ -1397,9 +1653,133 @@ bool UI::loadTreeJson(const std::string &json) {
     }
 }
 #else
-// The Emscripten/WebGPU runtime trims Poco; keep the API but no-op.
-std::string UI::saveTreeJson() const { return "{}"; }
-bool UI::loadTreeJson(const std::string &) { return false; }
+// WebGPU trims Poco. Use EVCommon's owning Value/JSON path so UI assets retain
+// their portable core rather than degrading to a silent no-op.
+std::string UI::saveTreeJson() const {
+    auto host = resolveSelected();
+    if (!host) return "{}";
+    static const char *types[] = {
+        "window", "text", "button", "sameLine", "group", "separator", "checkbox",
+        "slider", "progress", "inputText", "collapsingHeader", "child", "flex", "spacer",
+        "image", "imageButton", "combo", "scrollList", "viewport", "searchField", "switch",
+        "badge", "card", "sectionHeader", "menuBar", "menu", "menuItem", "toolbar", "toolbox",
+        "sidebar", "statusBar", "splitPane", "ninePatchPanel", "colorPalette", "grid"};
+    const auto tree = host->get().tree();
+    std::function<eve::Value(int)> encode = [&](int index) -> eve::Value {
+        const UINode &n = tree->nodes[size_t(index)];
+        eve::Value node = eve::Value::object({});
+        const int typeIndex = static_cast<int>(n.type);
+        node.set("type", typeIndex >= 0 && typeIndex < int(std::size(types)) ? types[typeIndex]
+                                                                            : "text");
+        if (!n.id.empty()) node.set("id", n.id);
+        if (!n.key.empty()) node.set("key", n.key);
+        if (!n.text.empty()) node.set("text", n.text);
+        if (!n.valueText.empty()) node.set("valueText", n.valueText);
+        if (!n.tooltip.empty()) node.set("tooltip", n.tooltip);
+        if (!n.styleClass.empty()) node.set("styleClass", n.styleClass);
+        node.set("visible", n.visible);
+        node.set("enabled", n.enabled);
+        node.set("checked", n.checked);
+        node.set("value", n.value);
+        node.set("minValue", n.minValue);
+        node.set("maxValue", n.maxValue);
+        node.set("sizeX", n.sizeX);
+        node.set("sizeY", n.sizeY);
+        node.set("flexDirection", n.flexDirection == FlexDirection::Column ? "column" : "row");
+        node.set("alignItems", int(n.alignItems));
+        node.set("justifyContent", int(n.justifyContent));
+        node.set("gap", n.gap);
+        node.set("columnGap", n.columnGap);
+        node.set("rowGap", n.rowGap);
+        node.set("flexGrow", n.flexGrow);
+        node.set("flexShrink", n.flexShrink);
+        node.set("flexBasis", n.flexBasis);
+        node.set("alignSelf", n.alignSelf);
+        node.set("aspectRatio", n.aspectRatio);
+        node.set("flexWrap", n.flexWrap == FlexWrap::Wrap ? "wrap" : "nowrap");
+        node.set("overflow", int(n.overflow));
+        node.set("gridColumns", n.gridColumns);
+        node.set("gridColumnSpan", n.gridColumnSpan);
+        node.set("accessibilityRole", int(n.accessibilityRole));
+        node.set("accessibilityName", n.accessibilityName);
+        node.set("accessibilityDescription", n.accessibilityDescription);
+        eve::Value children = eve::Value::array({});
+        for (int child = n.firstChild; child >= 0;
+             child = tree->nodes[size_t(child)].nextSibling)
+            children.pushBack(encode(child));
+        node.set("children", std::move(children));
+        return node;
+    };
+    eve::Value root = tree->root >= 0 ? encode(tree->root) : eve::Value::object({});
+    root.set("schema", "eve.ui.tree");
+    root.set("version", 4);
+    root.set("host", host->get().getName());
+    auto encoded = eve::json::stringify(root);
+    return encoded.ok() ? std::move(encoded).takeValue() : "{}";
+}
+
+bool UI::loadTreeJson(const std::string &text) {
+    auto host = resolveSelected();
+    if (!host || text.empty()) return false;
+    std::string error;
+    const eve::json::Document document = eve::json::Document::parse(text, &error);
+    const eve::json::Value root = document.root();
+    if (!document.valid() || !root.isObject()) return false;
+    if (root.has("schema") && root.getString("schema") != "eve.ui.tree") return false;
+    const int version = root.getInt("version", 1);
+    if (version < 1 || version > 4) return false;
+    static const char *types[] = {
+        "window", "text", "button", "sameLine", "group", "separator", "checkbox",
+        "slider", "progress", "inputText", "collapsingHeader", "child", "flex", "spacer",
+        "image", "imageButton", "combo", "scrollList", "viewport", "searchField", "switch",
+        "badge", "card", "sectionHeader", "menuBar", "menu", "menuItem", "toolbar", "toolbox",
+        "sidebar", "statusBar", "splitPane", "ninePatchPanel", "colorPalette", "grid"};
+    std::function<WidgetDesc(eve::json::Value)> decode = [&](eve::json::Value value) {
+        WidgetDesc node;
+        const std::string type = value.getString("type", "text");
+        for (int i = 0; i < int(std::size(types)); ++i)
+            if (type == types[i]) node.type = static_cast<NodeType>(i);
+        node.id = value.getString("id");
+        node.key = value.getString("key");
+        node.text = value.getString("text");
+        node.valueText = value.getString("valueText");
+        node.tooltip = value.getString("tooltip");
+        node.styleClass = value.getString("styleClass");
+        node.visible = value.getBool("visible", true);
+        node.enabled = value.getBool("enabled", true);
+        node.checked = value.getBool("checked", false);
+        node.value = value.getFloat("value");
+        node.minValue = value.getFloat("minValue");
+        node.maxValue = value.getFloat("maxValue", 1.f);
+        node.sizeX = value.getFloat("sizeX");
+        node.sizeY = value.getFloat("sizeY");
+        node.flexDirection = value.getString("flexDirection") == "column" ? FlexDirection::Column
+                                                                           : FlexDirection::Row;
+        node.alignItems = static_cast<FlexAlign>(value.getInt("alignItems"));
+        node.justifyContent = static_cast<FlexJustify>(value.getInt("justifyContent"));
+        node.gap = value.getFloat("gap", -1.f);
+        node.columnGap = value.getFloat("columnGap", -1.f);
+        node.rowGap = value.getFloat("rowGap", -1.f);
+        node.flexGrow = value.getFloat("flexGrow");
+        node.flexShrink = value.getFloat("flexShrink", 1.f);
+        node.flexBasis = value.getFloat("flexBasis", -1.f);
+        node.alignSelf = value.getInt("alignSelf", -1);
+        node.aspectRatio = value.getFloat("aspectRatio");
+        node.flexWrap = value.getString("flexWrap") == "wrap" ? FlexWrap::Wrap : FlexWrap::NoWrap;
+        node.overflow = static_cast<OverflowMode>(value.getInt("overflow"));
+        node.gridColumns = std::max(1, value.getInt("gridColumns", 1));
+        node.gridColumnSpan = std::max(1, value.getInt("gridColumnSpan", 1));
+        node.accessibilityRole = static_cast<AccessibilityRole>(value.getInt("accessibilityRole"));
+        node.accessibilityName = value.getString("accessibilityName");
+        node.accessibilityDescription = value.getString("accessibilityDescription");
+        const eve::json::Value children = value.get("children");
+        for (size_t i = 0; i < children.size(); ++i)
+            if (children.at(i).isObject()) node.children.push_back(decode(children.at(i)));
+        return node;
+    };
+    host->get().setTree(decode(root));
+    return true;
+}
 #endif
 
 graphics::Canvas *UI::viewportCanvas(const std::string &id) {
@@ -1491,6 +1871,7 @@ const char *nodeTypeName(NodeType t) {
     case NodeType::Card: return "card";
     case NodeType::NinePatchPanel: return "ninePatchPanel";
     case NodeType::ColorPalette: return "colorPalette";
+    case NodeType::Grid: return "grid";
     case NodeType::SectionHeader: return "sectionHeader";
     case NodeType::MenuBar: return "menuBar";
     case NodeType::Menu: return "menu";
@@ -1500,6 +1881,12 @@ const char *nodeTypeName(NodeType t) {
     case NodeType::Sidebar: return "sidebar";
     case NodeType::StatusBar: return "statusBar";
     case NodeType::SplitPane: return "splitPane";
+    case NodeType::Tab: return "tab";
+    case NodeType::TabBar: return "tabBar";
+    case NodeType::TabContainer: return "tabContainer";
+    case NodeType::PanelFrame: return "panelFrame";
+    case NodeType::DockArea: return "dockArea";
+    case NodeType::AppFrame: return "appFrame";
     }
     return "text";
 }
@@ -1529,6 +1916,7 @@ NodeType nodeTypeFromName(const std::string &s) {
     if (s == "card") return NodeType::Card;
     if (s == "ninePatchPanel") return NodeType::NinePatchPanel;
     if (s == "colorPalette" || s == "color-palette" || s == "color") return NodeType::ColorPalette;
+    if (s == "grid") return NodeType::Grid;
     if (s == "sectionHeader") return NodeType::SectionHeader;
     if (s == "menuBar") return NodeType::MenuBar;
     if (s == "menu") return NodeType::Menu;
@@ -1538,6 +1926,12 @@ NodeType nodeTypeFromName(const std::string &s) {
     if (s == "sidebar") return NodeType::Sidebar;
     if (s == "statusBar") return NodeType::StatusBar;
     if (s == "splitPane") return NodeType::SplitPane;
+    if (s == "tab") return NodeType::Tab;
+    if (s == "tabBar") return NodeType::TabBar;
+    if (s == "tabContainer") return NodeType::TabContainer;
+    if (s == "panelFrame") return NodeType::PanelFrame;
+    if (s == "dockArea") return NodeType::DockArea;
+    if (s == "appFrame") return NodeType::AppFrame;
     return NodeType::Text;
 }
 
@@ -1556,6 +1950,7 @@ void nodeToJson(const UIHost::Tree &tree, const UINode &n, Poco::JSON::Object &o
         o.set("mouseFilter", n.mouseFilter == MouseFilter::Pass ? "pass" : "ignore");
     if (n.themePreset != ThemePreset::Inherit)
         o.set("theme", n.themePreset == ThemePreset::Dark ? "dark" : "light");
+    if (!n.styleClass.empty()) o.set("styleClass", n.styleClass);
     if (n.tabIndex != 0) o.set("tabIndex", n.tabIndex);
     if (!n.focusPrevious.empty()) o.set("focusPrevious", n.focusPrevious);
     if (!n.focusNext.empty()) o.set("focusNext", n.focusNext);
@@ -1612,6 +2007,7 @@ void nodeToJson(const UIHost::Tree &tree, const UINode &n, Poco::JSON::Object &o
     if (n.maxSizeY != 0.f) o.set("maxSizeY", n.maxSizeY);
     if (n.percentW != 0.f) o.set("percentW", n.percentW);
     if (n.percentH != 0.f) o.set("percentH", n.percentH);
+    if (n.aspectRatio > 0.f) o.set("aspectRatio", n.aspectRatio);
     if (n.absolute) {
         o.set("absolute", true);
         o.set("anchorX", n.anchorX);
@@ -1626,6 +2022,15 @@ void nodeToJson(const UIHost::Tree &tree, const UINode &n, Poco::JSON::Object &o
     if (n.justifyContent != FlexJustify::Start) o.set("justifyContent", int(n.justifyContent));
     if (n.gap >= 0.f) o.set("gap", n.gap);
     if (n.flexGrow != 0.f) o.set("flexGrow", n.flexGrow);
+    if (n.flexShrink != 1.f) o.set("flexShrink", n.flexShrink);
+    if (n.flexBasis >= 0.f) o.set("flexBasis", n.flexBasis);
+    if (n.alignSelf >= 0) o.set("alignSelf", n.alignSelf);
+    if (n.columnGap >= 0.f) o.set("columnGap", n.columnGap);
+    if (n.rowGap >= 0.f) o.set("rowGap", n.rowGap);
+    if (n.flexWrap == FlexWrap::Wrap) o.set("flexWrap", "wrap");
+    if (n.overflow != OverflowMode::Visible) o.set("overflow", int(n.overflow));
+    if (n.type == NodeType::Grid) o.set("gridColumns", n.gridColumns);
+    if (n.gridColumnSpan != 1) o.set("gridColumnSpan", n.gridColumnSpan);
     if (n.type == NodeType::ColorPalette || n.tintR != 1.f || n.tintG != 1.f || n.tintB != 1.f ||
         n.tintA != 1.f)
         o.set("tint", Poco::Dynamic::Array({n.tintR, n.tintG, n.tintB, n.tintA}));
@@ -1666,6 +2071,7 @@ void applyCommonFields(WidgetDesc &d, const Poco::JSON::Object &o) {
         d.mouseFilter = parseMouseFilter(o.getValue<std::string>("mouseFilter"));
     if (o.has("theme"))
         d.themePreset = parseThemePreset(o.getValue<std::string>("theme"));
+    if (o.has("styleClass")) d.styleClass = o.getValue<std::string>("styleClass");
     if (o.has("tabIndex")) d.tabIndex = int(fnum(o.get("tabIndex")));
     if (o.has("focusPrevious"))
         d.focusPrevious = o.getValue<std::string>("focusPrevious");
@@ -1698,21 +2104,21 @@ void applyCommonFields(WidgetDesc &d, const Poco::JSON::Object &o) {
     if (o.has("sizeX")) d.sizeX = fnum(o.get("sizeX"));
     if (o.has("sizeY")) d.sizeY = fnum(o.get("sizeY"));
     if (o.has("margin")) {
-        const Poco::Dynamic::Array a = o.get("margin").extract<Poco::Dynamic::Array>();
-        if (a.size() >= 4) {
-            d.marginL = fnum(a[0]);
-            d.marginT = fnum(a[1]);
-            d.marginR = fnum(a[2]);
-            d.marginB = fnum(a[3]);
+        const Poco::JSON::Array::Ptr a = o.getArray("margin");
+        if (a && a->size() >= 4) {
+            d.marginL = fnum(a->get(0));
+            d.marginT = fnum(a->get(1));
+            d.marginR = fnum(a->get(2));
+            d.marginB = fnum(a->get(3));
         }
     }
     if (o.has("padding")) {
-        const Poco::Dynamic::Array a = o.get("padding").extract<Poco::Dynamic::Array>();
-        if (a.size() >= 4) {
-            d.paddingL = fnum(a[0]);
-            d.paddingT = fnum(a[1]);
-            d.paddingR = fnum(a[2]);
-            d.paddingB = fnum(a[3]);
+        const Poco::JSON::Array::Ptr a = o.getArray("padding");
+        if (a && a->size() >= 4) {
+            d.paddingL = fnum(a->get(0));
+            d.paddingT = fnum(a->get(1));
+            d.paddingR = fnum(a->get(2));
+            d.paddingB = fnum(a->get(3));
         }
     }
     if (o.has("minSizeX")) d.minSizeX = fnum(o.get("minSizeX"));
@@ -1721,6 +2127,7 @@ void applyCommonFields(WidgetDesc &d, const Poco::JSON::Object &o) {
     if (o.has("maxSizeY")) d.maxSizeY = fnum(o.get("maxSizeY"));
     if (o.has("percentW")) d.percentW = fnum(o.get("percentW"));
     if (o.has("percentH")) d.percentH = fnum(o.get("percentH"));
+    if (o.has("aspectRatio")) d.aspectRatio = fnum(o.get("aspectRatio"));
     if (o.has("absolute")) d.absolute = o.getValue<bool>("absolute");
     if (o.has("anchorX")) d.anchorX = fnum(o.get("anchorX"));
     if (o.has("anchorY")) d.anchorY = fnum(o.get("anchorY"));
@@ -1735,32 +2142,45 @@ void applyCommonFields(WidgetDesc &d, const Poco::JSON::Object &o) {
         d.justifyContent = FlexJustify(int(fnum(o.get("justifyContent"))));
     if (o.has("gap")) d.gap = fnum(o.get("gap"), -1.f);
     if (o.has("flexGrow")) d.flexGrow = fnum(o.get("flexGrow"));
+    if (o.has("flexShrink")) d.flexShrink = fnum(o.get("flexShrink"), 1.f);
+    if (o.has("flexBasis")) d.flexBasis = fnum(o.get("flexBasis"), -1.f);
+    if (o.has("alignSelf")) d.alignSelf = int(fnum(o.get("alignSelf"), -1.f));
+    if (o.has("columnGap")) d.columnGap = fnum(o.get("columnGap"), -1.f);
+    if (o.has("rowGap")) d.rowGap = fnum(o.get("rowGap"), -1.f);
+    if (o.has("flexWrap"))
+        d.flexWrap = o.getValue<std::string>("flexWrap") == "wrap" ? FlexWrap::Wrap
+                                                                    : FlexWrap::NoWrap;
+    if (o.has("overflow")) d.overflow = OverflowMode(int(fnum(o.get("overflow"))));
+    if (o.has("gridColumns"))
+        d.gridColumns = std::max(1, int(fnum(o.get("gridColumns"), 1.f)));
+    if (o.has("gridColumnSpan"))
+        d.gridColumnSpan = std::max(1, int(fnum(o.get("gridColumnSpan"), 1.f)));
     if (o.has("tint")) {
-        const Poco::Dynamic::Array a = o.get("tint").extract<Poco::Dynamic::Array>();
-        if (a.size() >= 4) {
-            d.tintR = fnum(a[0], 1.f);
-            d.tintG = fnum(a[1], 1.f);
-            d.tintB = fnum(a[2], 1.f);
-            d.tintA = fnum(a[3], 1.f);
+        const Poco::JSON::Array::Ptr a = o.getArray("tint");
+        if (a && a->size() >= 4) {
+            d.tintR = fnum(a->get(0), 1.f);
+            d.tintG = fnum(a->get(1), 1.f);
+            d.tintB = fnum(a->get(2), 1.f);
+            d.tintA = fnum(a->get(3), 1.f);
         }
     }
     if (o.has("border")) {
-        const Poco::Dynamic::Array a = o.get("border").extract<Poco::Dynamic::Array>();
-        if (a.size() >= 4) {
-            d.borderL = fnum(a[0]);
-            d.borderT = fnum(a[1]);
-            d.borderR = fnum(a[2]);
-            d.borderB = fnum(a[3]);
+        const Poco::JSON::Array::Ptr a = o.getArray("border");
+        if (a && a->size() >= 4) {
+            d.borderL = fnum(a->get(0));
+            d.borderT = fnum(a->get(1));
+            d.borderR = fnum(a->get(2));
+            d.borderB = fnum(a->get(3));
         }
     }
     if (o.has("cornerRadius")) d.cornerRadius = fnum(o.get("cornerRadius"));
     if (o.has("uv")) {
-        const Poco::Dynamic::Array a = o.get("uv").extract<Poco::Dynamic::Array>();
-        if (a.size() >= 4) {
-            d.uv0x = fnum(a[0]);
-            d.uv0y = fnum(a[1]);
-            d.uv1x = fnum(a[2], 1.f);
-            d.uv1y = fnum(a[3], 1.f);
+        const Poco::JSON::Array::Ptr a = o.getArray("uv");
+        if (a && a->size() >= 4) {
+            d.uv0x = fnum(a->get(0));
+            d.uv0y = fnum(a->get(1));
+            d.uv1x = fnum(a->get(2), 1.f);
+            d.uv1y = fnum(a->get(3), 1.f);
         }
     }
 }
@@ -1886,6 +2306,66 @@ bool UI::inspectPickScene() {
 
 bool UI::inspectAddInstance() {
     return inspector_ && inspector_->addInstance();
+}
+
+namespace {
+
+const char *propertyKindName(property_access::PropertyKind kind) {
+    using property_access::PropertyKind;
+    switch (kind) {
+        case PropertyKind::Auto: return "auto";
+        case PropertyKind::Bool: return "bool";
+        case PropertyKind::Integer: return "integer";
+        case PropertyKind::Number: return "number";
+        case PropertyKind::String: return "string";
+        case PropertyKind::Enum: return "enum";
+        case PropertyKind::Color: return "color";
+        case PropertyKind::Vec2: return "vec2";
+        case PropertyKind::Vec3: return "vec3";
+        case PropertyKind::Vec4: return "vec4";
+        case PropertyKind::AssetRef: return "assetRef";
+        case PropertyKind::ObjectRef: return "objectRef";
+        case PropertyKind::Struct: return "struct";
+        case PropertyKind::Array: return "array";
+        case PropertyKind::Map: return "map";
+        case PropertyKind::Action: return "action";
+        case PropertyKind::ReadOnlyText: return "readOnlyText";
+    }
+    return "auto";
+}
+
+}  // namespace
+
+ssq::Object UI::propertySchema(ssq::Object instance) {
+    Runtime *runtime = ModuleManager::runtime();
+    if (!runtime) return ssq::Object();
+    if (instance.getType() != ssq::Type::INSTANCE) return ssq::Object(runtime->handle());
+    property_access::ReflectedPropertyModel model(*runtime, instance);
+    ssq::VM &vm = runtime->vm();
+    ssq::Table out = vm.newTable();
+    out.set("typeId", model.schema().typeId);
+    out.set("version", static_cast<int>(model.schema().version));
+    ssq::Array properties = vm.newArray();
+    for (const property_access::PropertyDescriptor &property : model.schema().properties) {
+        ssq::Table entry = vm.newTable();
+        entry.set("path", property.path);
+        entry.set("kind", std::string(propertyKindName(property.kind)));
+        entry.set("displayName", property.displayName);
+        entry.set("description", property.description);
+        entry.set("category", property.category);
+        entry.set("readOnly", property_access::hasFlag(property.flags, property_access::PropertyFlag::ReadOnly));
+        entry.set("presenterHint", property.presenterHint);
+        entry.set("units", property.numeric.units);
+        if (property.numeric.minimum) entry.set("min", *property.numeric.minimum);
+        if (property.numeric.maximum) entry.set("max", *property.numeric.maximum);
+        if (property.numeric.step) entry.set("step", *property.numeric.step);
+        ssq::Array choices = vm.newArray();
+        for (const std::string &choice : property.choices) choices.push(choice);
+        entry.set("choices", choices);
+        properties.push(entry);
+    }
+    out.set("properties", properties);
+    return out;
 }
 
 bool UI::dbOpen() {
@@ -2025,7 +2505,7 @@ void UI::callScenePickHandler(const std::string &nodeId) {
 void UI::expose(ssq::Table &table) {
     auto cls = table.addClass(name, UI::create, false);
     expose(cls);
-    injectUIComponentClass(table);
+    detail::injectUIComponentClass(table);
     exposeParentScalerBindings(table);
     exposePcgColorPreviewSyncBindings(table);
     exposePcgControllerSelectionBindings(table);
@@ -2071,10 +2551,17 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("beginSidebar", &UI::beginSidebar);
     cls.addFunc("beginStatusBar", &UI::beginStatusBar);
     cls.addFunc("beginSplitPane", &UI::beginSplitPane);
+    cls.addFunc("beginTabBar", &UI::beginTabBar);
+    cls.addFunc("beginTabContainer", &UI::beginTabContainer);
+    cls.addFunc("beginPanelFrame", &UI::beginPanelFrame);
+    cls.addFunc("beginDockArea", &UI::beginDockArea);
+    cls.addFunc("beginAppFrame", &UI::beginAppFrame);
+    cls.addFunc("addTab", &UI::addTab);
     cls.addFunc("beginScrollList", &UI::beginScrollList);
     cls.addFunc("beginFlex", &UI::beginFlex);
     cls.addFunc("beginRow", &UI::beginRow);
     cls.addFunc("beginColumn", &UI::beginColumn);
+    cls.addFunc("beginGrid", &UI::beginGrid);
     cls.addFunc("end", &UI::end);
     cls.addFunc("text", &UI::addText);
     cls.addFunc("textWrapped", &UI::addTextWrapped);
@@ -2100,6 +2587,11 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("menuItem", &UI::addMenuItem);
     cls.addFunc("spacer", &UI::addSpacer);
     cls.addFunc("setItemFlexGrow", &UI::setItemFlexGrow);
+    cls.addFunc("setItemFlexShrink", &UI::setItemFlexShrink);
+    cls.addFunc("setItemFlexBasis", &UI::setItemFlexBasis);
+    cls.addFunc("setItemAlignSelf", &UI::setItemAlignSelf);
+    cls.addFunc("setItemAspectRatio", &UI::setItemAspectRatio);
+    cls.addFunc("setItemGridColumnSpan", &UI::setItemGridColumnSpan);
     cls.addFunc("setItemSize", &UI::setItemSize);
     cls.addFunc("setItemMargin", &UI::setItemMargin);
     cls.addFunc("setItemPadding", &UI::setItemPadding);
@@ -2116,12 +2608,17 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("setItemMouseFilter", &UI::setItemMouseFilter);
     cls.addFunc("setItemTheme", &UI::setItemTheme);
     cls.addFunc("setThemeScope", &UI::setThemeScope);
+    cls.addFunc("setItemStyleClass", &UI::setItemStyleClass);
+    cls.addFunc("setStyleScope", &UI::setStyleScope);
     cls.addFunc("setItemTabIndex", &UI::setItemTabIndex);
     cls.addFunc("setItemFocusOrder", &UI::setItemFocusOrder);
     cls.addFunc("setItemFocusNeighbors", &UI::setItemFocusNeighbors);
     cls.addFunc("setItemAccessibility", &UI::setItemAccessibility);
     cls.addFunc("setFlexAlign", &UI::setFlexAlign);
     cls.addFunc("setFlexJustify", &UI::setFlexJustify);
+    cls.addFunc("setLayoutGaps", &UI::setLayoutGaps);
+    cls.addFunc("setFlexWrap", &UI::setFlexWrap);
+    cls.addFunc("setLayoutOverflow", &UI::setLayoutOverflow);
     cls.addFunc("listItem", &UI::addListItem);
     cls.addFunc("mountBuild", &UI::mountBuild);
 
@@ -2170,7 +2667,19 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("setHostAnchor", &UI::setHostAnchor);
     cls.addFunc("setHostSize", &UI::setHostSize);
     cls.addFunc("setHostPercent", &UI::setHostPercent);
-    cls.addFunc("animateHostPos", &UI::animateHostPos);
+    // Trailing ease/delay (and cancelItemTweens id) are optional in script; C++
+    // defaults do not reach Squirrel through member-function pointers.
+    addOptionalTweenFunc(cls, "animateHostPos", sqAnimateHostPos, 4, _SC("xfffsf"));
+    addOptionalTweenFunc(cls, "animateHostSize", sqAnimateHostSize, 4, _SC("xfffsf"));
+    addOptionalTweenFunc(cls, "animateHostOverlayAlpha", sqAnimateHostOverlayAlpha, 3, _SC("xffsf"));
+    addOptionalTweenFunc(cls, "animateItemOpacity", sqAnimateItemOpacity, 4, _SC("xsffsf"));
+    addOptionalTweenFunc(cls, "animateItemPos", sqAnimateItemPos, 5, _SC("xsfffsf"));
+    cls.addFunc("cancelHostTweens", &UI::cancelHostTweens);
+    addOptionalTweenFunc(cls, "cancelItemTweens", sqCancelItemTweens, 1, _SC("xs"));
+    cls.addFunc("cancelAllTweens", &UI::cancelAllTweens);
+    cls.addFunc("tickTweens", &UI::tickTweens);
+    cls.addFunc("getHostTweenCount", &UI::getHostTweenCount);
+    cls.addFunc("getItemTweenCount", &UI::getItemTweenCount);
     cls.addFunc("consumeClick", &UI::consumeClick);
     cls.addFunc("consumeChange", &UI::consumeChange);
     cls.addFunc("dragDropSupport", &UI::dragDropSupport);
@@ -2181,16 +2690,25 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("getDropOrigin", &UI::getDropOrigin);
     cls.addFunc("onClick", &UI::onClick);
     cls.addFunc("onChange", &UI::onChange);
+    cls.addFunc("componentOnClick", &UI::componentOnClick);
+    cls.addFunc("componentOnChange", &UI::componentOnChange);
+    cls.addFunc("componentClearHandlers", &UI::componentClearHandlers);
 
     cls.addFunc("setThemeDark", &UI::setThemeDark);
     cls.addFunc("setThemeLight", &UI::setThemeLight);
     cls.addFunc("setTheme", &UI::setTheme);
+    cls.addFunc("defineStyleClass", &UI::defineStyleClass);
+    cls.addFunc("setStyleClassColor", &UI::setStyleClassColor);
+    cls.addFunc("setStyleClassMetric", &UI::setStyleClassMetric);
+    cls.addFunc("clearStyleClasses", &UI::clearStyleClasses);
     cls.addFunc("getTheme", &UI::getTheme);
     cls.addFunc("setNavKeyboard", &UI::setNavKeyboard);
     cls.addFunc("setNavGamepad", &UI::setNavGamepad);
     cls.addFunc("setScale", &UI::setScale);
     cls.addFunc("getScale", &UI::getScale);
     cls.addFunc("getStats", &UI::getStats);
+    cls.addFunc("getLayoutDiagnostics", &UI::getLayoutDiagnostics);
+    cls.addFunc("getAccessibilitySnapshot", &UI::getAccessibilitySnapshot);
     cls.addFunc("saveTreeJson", &UI::saveTreeJson);
     cls.addFunc("loadTreeJson", &UI::loadTreeJson);
     cls.addFunc("viewportCanvas", &UI::viewportCanvas);
@@ -2212,6 +2730,7 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("inspectSetPickHandler", &UI::inspectSetPickHandler);
     cls.addFunc("inspectPickScene", &UI::inspectPickScene);
     cls.addFunc("inspectAddInstance", &UI::inspectAddInstance);
+    cls.addFunc("propertySchema", &UI::propertySchema);
 
     cls.addFunc("dbOpen", &UI::dbOpen);
     cls.addFunc("dbClose", &UI::dbClose);

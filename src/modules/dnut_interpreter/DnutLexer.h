@@ -2,6 +2,7 @@
 
 /** @file DnutLexer.h @brief Shared lexer for every `.dnut` dialect. */
 
+#include "common/Export.h"
 #include "common/Result.h"
 #include "dnut_interpreter/DnutDiagnostic.h"
 
@@ -29,7 +30,7 @@ enum class DnutTokenKind : std::uint8_t {
 /** @brief One lexed token with its exact source anchor. */
 struct DnutToken {
     DnutTokenKind kind = DnutTokenKind::EndOfFile;
-    std::string text;
+    std::string   text;
     /** @brief One-based source line. */
     int line = 1;
     /** @brief One-based source column of the first character. */
@@ -49,9 +50,10 @@ struct DnutToken {
  * @thread Reentrant and side-effect free; the caller owns the returned buffer.
  * @reentrancy Invokes no callbacks.
  */
-[[nodiscard]] eve::Result<std::vector<DnutToken>> lexDnut(std::string_view source, const std::string& path);
+[[nodiscard]] EVENGINE_API_PLATFORM eve::Result<std::vector<DnutToken>> lexDnut(std::string_view   source,
+                                                                                const std::string& path);
 
 /** @brief Return the stable lowercase spelling of a token kind. */
-[[nodiscard]] const char* dnutTokenKindName(DnutTokenKind kind) noexcept;
+[[nodiscard]] EVENGINE_API_PLATFORM const char* dnutTokenKindName(DnutTokenKind kind) noexcept;
 
 }  // namespace eve::dnut

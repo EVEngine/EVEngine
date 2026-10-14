@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "particles-sim-system-contract",
+      "rule": "ecs-system",
+      "scope": "src/modules/particles/ParticleSystem.h",
+      "owner": "particles::ParticleSimSystem",
+      "issue": "EVENGINE-ARCH-SYSTEM-CONTRACTS",
+      "reason": "Particle simulation advances emitter components from an injected deterministic step.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/particles/ParticleSystem.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/particles.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "systems": [
+        "ParticleSimSystem"
+      ],
+      "entity_scope": "ParticleEmitter simulation components in the current ECS world.",
+      "view": "Generation-checked emitter view for the current scheduler step.",
+      "read_set": "Emitter spawn state, particle lifetimes, simulation step and configured randomness stream.",
+      "write_set": "Emitter particle buffers and derived alive/dead counts.",
+      "structural_changes": "No ECS structural mutation while iterating emitters.",
+      "events": "Particle lifecycle remains internal to emitter buffers; external events are emitted only after mutation if configured.",
+      "services": "Injected SimulationStep and optional scheduler services; no wall-clock reads.",
+      "phase": "Particle simulation phase."
+    }
+  ]
+}

@@ -9,20 +9,22 @@ namespace eve::image {
 
 namespace eve::mouse::sdl {
 
-/** @brief SDL 鼠标光标实现（自定义图像或系统光标）。 */
+/** @brief SDL mouse cursor (custom image or named system cursor). */
 class Cursor : public eve::mouse::Cursor
 {
 public:
-	/** @brief 从图像数据创建自定义光标（热点 hotx/hoty）。 */
+	/** @brief Builds a custom cursor from image data with hotspot (hotx, hoty). */
 	Cursor(image::ImageData *imageData, int hotx, int hoty);
-	/** @brief 创建系统光标（类型如 "arrow" / "ibeam"）。 */
+	/** @brief Builds a system cursor (type such as "arrow" / "ibeam"). */
 	Cursor(std::string cursortype);
+	/** @brief Frees the underlying SDL_Cursor. */
 	~Cursor();
 
-	/** @brief 底层 SDL_Cursor 句柄。 */
+	/** @brief Underlying SDL_Cursor handle. */
 	void *getHandle() const;
-	/** @brief 是否自定义 / 系统光标类型名。 */
+	/** @brief True when this cursor was built from custom image data. */
 	bool isCustom() const override { return is_custom; }
+	/** @brief System cursor type name, or empty for custom cursors. */
 	std::string getSystemType() const override { return systemType; }
 
 private:
@@ -34,5 +36,3 @@ private:
 };
 
 } // eve::mouse::sdl
-
-

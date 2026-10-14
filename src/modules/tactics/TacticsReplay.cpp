@@ -5,10 +5,6 @@
 namespace eve::tactics {
 namespace {
 
-Result<void> fail(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 template <class T>
 Result<void> consume(Result<T>&& result) {
     if (!result) return Result<void>::failure(result.status());
@@ -18,7 +14,7 @@ Result<void> consume(Result<T>&& result) {
 
 Result<void> apply(Battle& battle, const BattleCommand& command) {
     switch (command.kind) {
-        case BattleCommandKind::Start: return BattleSystem::start(battle, command.policy);
+        case BattleCommandKind::Start: return BattleSystem::start(battle, command.policyId);
         case BattleCommandKind::Advance: return consume(BattleSystem::advance(battle, command.step));
         case BattleCommandKind::Move:
             return consume(BattleSystem::moveUnit(battle, command.actor, command.cell, command.step.tick));
@@ -34,8 +30,14 @@ Result<void> apply(Battle& battle, const BattleCommand& command) {
         case BattleCommandKind::DeclineReaction: return BattleSystem::declineReaction(battle);
         case BattleCommandKind::DefeatUnit: return BattleSystem::defeatUnit(battle, command.actor);
         case BattleCommandKind::RollRandom: return consume(BattleSystem::roll(battle, command.action));
+        case BattleCommandKind::UseAbility:
+            // The declared target and the opaque payload are part of the command, so a
+            // replay reproduces the same declaration instead of dropping the effect data
+            // the adapter needs.
+            return consume(BattleSystem::useAbility(battle, command.actor, command.action, command.cell,
+                                                    command.targetUnit, command.payload));
     }
-    return fail(DiagnosticCode::UnknownVersion, "unknown tactics replay command kind", "command.kind");
+    return Result<void>::failure(Diagnostic::error(DiagnosticCode::UnknownVersion, "unknown tactics replay command kind", "command.kind"));
 }
 
 }  // namespace
@@ -54,20 +56,20 @@ Result<void> BattleReplay::replay(Battle& battle, std::span<const BattleCommand>
         const BattleCommand& command = commands[index];
         const std::string path = "commands[" + std::to_string(index) + "]";
         if (command.sequence == 0 || (index > 0 && command.sequence != previousSequence + 1))
-            return fail(DiagnosticCode::Conflict, "tactics replay command sequence is not contiguous", path);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "tactics replay command sequence is not contiguous", path));
         if (battle.commands()->nextSequence != command.sequence)
-            return fail(DiagnosticCode::Conflict, "tactics replay command sequence differs from target", path);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "tactics replay command sequence differs from target", path));
         if (battle.turn()->revision != command.expectedRevision)
-            return fail(DiagnosticCode::Conflict, "tactics replay expected revision differs from target", path);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "tactics replay expected revision differs from target", path));
         auto applied = apply(battle, command);
         if (!applied) return Result<void>::failure(applied.status());
         if (battle.turn()->revision != command.resultingRevision)
-            return fail(DiagnosticCode::InvariantViolation, "tactics replay produced a different revision", path);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, "tactics replay produced a different revision", path));
         const auto& recorded = battle.commands()->values.back();
         if (recorded.kind != command.kind || recorded.sequence != command.sequence ||
             recorded.expectedRevision != command.expectedRevision ||
             recorded.resultingRevision != command.resultingRevision)
-            return fail(DiagnosticCode::InvariantViolation, "tactics replay recorded a different command", path);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, "tactics replay recorded a different command", path));
         previousSequence = command.sequence;
     }
     return Result<void>::success(Status::success(StatusCode::Applied));

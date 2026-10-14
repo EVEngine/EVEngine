@@ -207,6 +207,26 @@ if (!("hotReload" in config)) {
     config.hotReload <- !("hostDrivesFrames" in eve && eve.hostDrivesFrames);
 }
 
+function hot_reload_watch_roots() {
+    if (!("hotReloadWatch" in config) || config.hotReloadWatch == null)
+        return ["."];
+    local w = config.hotReloadWatch;
+    if (typeof w == "string") {
+        if (w == "") return ["."];
+        return [w];
+    }
+    if (typeof w != "array")
+        throw "config.hotReloadWatch must be a string or an array of strings";
+    local out = [];
+    foreach (item in w) {
+        if (typeof item != "string")
+            throw "config.hotReloadWatch entries must be strings";
+        if (item != "") out.append(item);
+    }
+    if (out.len() == 0) return ["."];
+    return out;
+}
+
 // `eve run --dev-server <url>` overrides config.devServer (useful on mobile
 // builds where config.nut is baked into a read-only bundle).
 if ("devServerArg" in eve && eve.devServerArg != null && eve.devServerArg != "")
@@ -267,20 +287,35 @@ if (!has_module("win") || !has_module("gfx")) {
     print("engine build is missing the window or graphics module\n");
     return;
 }
-local s = eve.WindowSettings();
-s.width = config.width;
-s.height = config.height;
-s.centered = true;
-if (!win.setWindowSettings(s)) {
-    print("setWindowSettings failed\n");
-    return;
+
+local editor_host = ("editorHost" in config) && config.editorHost;
+
+function boot_create_window() {
+    local s = eve.WindowSettings();
+    s.width = config.width;
+    s.height = config.height;
+    s.centered = true;
+    if (!win.setWindowSettings(s)) {
+        print("setWindowSettings failed\n");
+        return false;
+    }
+    // Keep script layout in sync with the real window (mobile may ignore 800x600).
+    config.width = win.getWidth();
+    config.height = win.getHeight();
+    _startup_ms("window created + vulkan initialized");
+    _log("boot: window + vulkan initialized (" + config.width + "x" + config.height + ")");
+    return true;
 }
 
-// Keep script layout in sync with the real window (mobile may ignore 800x600).
-config.width = win.getWidth();
-config.height = win.getHeight();
-_startup_ms("window created + vulkan initialized");
-_log("boot: window + vulkan initialized (" + config.width + "x" + config.height + ")");
+// Editor apps: do not CreateWindow here. EditorHost::openWindow used to call
+// setWindowSettings() which always close()+SDL_CreateWindow, so the user saw
+// the OS window flash twice. Defer creation until the host is started.
+if (!editor_host) {
+    if (!boot_create_window()) return;
+} else {
+    _startup_ms("window deferred to editor host");
+    _log("boot: editorHost=true, OS window deferred to EditorHost");
+}
 
 // Node-style async (Promise / nextTick / setTimeout). Embedded via eve.asyncScript.
 if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {
@@ -302,12 +337,12 @@ if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {
 }
 _startup_ms("async runtime loaded");
 
+// The Scene binding replaces this hook when exposed. Trimmed/optional builds
+// keep a callable no-op, avoiding a per-frame string-keyed provider lookup.
+if (!("eve_scene_flush_components" in getroottable()))
+    eve_scene_flush_components <- function() {};
 eve_init <- function() {};
-eve_update <- function(dt) {
-    // Keep scene node world transforms fresh for games that mutate nodes from
-    // scripts. Clean trees skip the pass entirely (incremental transform).
-    if (has_module("scene")) scene.updateTransformsAll();
-};
+eve_update <- function(dt) {};
 eve_render <- function() {
     gfx.clear();
 };
@@ -420,6 +455,96 @@ function reset_transient_state() {
     // Candidate scripts declare the complete next policy set. This makes
     // deleting an obsolete declaration effective; abort restores the old set.
     eve.dev.clearStateRoots();
+}
+
+// Soft-restart the running game without unloading ResourceManager / GPU /
+// MCP. Opposite of soft_reload_scripts: state is reset, not migrated. Optional
+// parameters arrive as `eve.restartArgs` (set by the MCP eve_restart tool or
+// eve.dev.softRestart). Games may hook eve_before_restart / eve_after_restart.
+function soft_restart_game(reload_scripts = true) {
+    local args = ("restartArgs" in eve && eve.restartArgs != null) ? eve.restartArgs : {};
+
+    if ("async_cancel_continuations" in getroottable())
+        async_cancel_continuations("soft restart");
+
+    if ("eve_before_restart" in getroottable()) {
+        try {
+            eve_before_restart(args);
+        } catch (e) {
+            report_reload_failure("eve_before_restart failed: " + format_script_error(e));
+            return false;
+        }
+    }
+
+    // Snapshot the binding surface so a failed re-dofile can roll definitions
+    // back. Mutable state is intentionally NOT captured — restart means reset.
+    local oldBindings = capture_reload_bindings();
+
+    if (reload_scripts) {
+        local root = getroottable();
+        if ("dev" in eve) {
+            local names = [];
+            foreach (name in eve.dev.stateRoots()) names.append(name);
+            foreach (name in eve.dev.transientStateRoots()) names.append(name);
+            foreach (name in names) {
+                if (name in root) delete root[name];
+            }
+            eve.dev.clearStateRoots();
+            eve.dev.resetNativeState();
+        }
+
+        local candidates = null;
+        try {
+            candidates = compile_reload_candidates();
+        } catch (e) {
+            restore_reload_bindings(oldBindings);
+            report_reload_failure("soft-restart compile failed: " + format_script_error(e));
+            return false;
+        }
+        foreach (candidate in candidates) {
+            try {
+                candidate.closure.call(getroottable());
+                print("soft-restart script: " + candidate.path + "\n");
+            } catch (e) {
+                restore_reload_bindings(oldBindings);
+                report_reload_failure(
+                    "soft-restart script failed: " + candidate.path + ": " + format_script_error(e));
+                return false;
+            }
+        }
+
+        try {
+            eve_init();
+        } catch (e) {
+            restore_reload_bindings(oldBindings);
+            report_reload_failure("soft-restart eve_init failed: " + format_script_error(e));
+            return false;
+        }
+    } else {
+        // Keep script definitions and persist roots; only reset native providers
+        // and re-enter the game's restart/init path (for param-only retries).
+        if ("dev" in eve) eve.dev.resetNativeState();
+        try {
+            if ("eve_restart" in getroottable())
+                eve_restart(args);
+            else
+                eve_init();
+        } catch (e) {
+            report_reload_failure("soft-restart (no script reload) failed: " + format_script_error(e));
+            return false;
+        }
+    }
+
+    if ("eve_after_restart" in getroottable()) {
+        try {
+            eve_after_restart(args);
+        } catch (e) {
+            if ("dev" in eve) eve.dev.reportError("" + e);
+            print("eve_after_restart failed: " + format_script_error(e) + "\n");
+        }
+    }
+    print("soft-restart: game restarted (resource cache kept)\n");
+    return true;
 }
 
 function soft_reload_scripts() {
@@ -630,7 +755,9 @@ if (config.hotReload && has_module("fs") && has_module("hot")) {
     try {
         // Ensure VFS source is set when Run did not mount (e.g. custom root).
         try { fs.setSource("."); } catch (e) {}
-        local n = hot.watchTree(".");
+        local n = 0;
+        foreach (root in hot_reload_watch_roots())
+            n += hot.watchTree(root);
         // Explicit file watch as a second registration (same OS dir, basename filter).
         if (file_exists("main.nut"))
             fs.watch("main.nut");
@@ -641,6 +768,24 @@ if (config.hotReload && has_module("fs") && has_module("hot")) {
     }
 }
 _startup_ms("hot reload watch registered");
+
+if (editor_host) {
+    if (!("startEditorHost" in eve))
+        throw "config.editorHost requires eve.startEditorHost";
+    local started = eve.startEditorHost();
+    if (started != "ok")
+        throw "startEditorHost failed: " + started;
+    if (!("host" in eve) || eve.host == null)
+        throw "startEditorHost did not expose eve.host";
+    local title = ("title" in config) ? config.title : "EVEngine";
+    local opened = eve.host.openWindow(title, config.width, config.height);
+    if (opened != "ok")
+        throw "editor host openWindow failed: " + opened;
+    config.width = win.getWidth();
+    config.height = win.getHeight();
+    _startup_ms("window created + vulkan initialized");
+    _log("boot: window + vulkan initialized (" + config.width + "x" + config.height + ")");
+}
 
 _startup_ms("eve_init start");
 try {
@@ -736,6 +881,12 @@ function handle_dev_key(key, scancode) {
     if (key == "F4") {
         eve.dev.console.toggleVisible();
         print("dev: console " + (eve.dev.console.isVisible() ? "shown" : "hidden") + "\n");
+        return;
+    }
+    // F3 = toggle DevTools FPS / frame-time overlay.
+    if (key == "F3") {
+        eve.dev.stats.toggleVisible();
+        print("dev: frame stats " + (eve.dev.stats.isVisible() ? "shown" : "hidden") + "\n");
     }
 }
 
@@ -747,6 +898,16 @@ function dev_draw_ai() {
 function dev_draw_console() {
     if (has_dev())
         eve.dev.console.draw();
+}
+
+function dev_draw_stats() {
+    if (has_dev())
+        eve.dev.stats.draw();
+}
+
+function dev_sample_stats(dt) {
+    if (has_dev())
+        eve.dev.stats.sample(dt);
 }
 
 // ---------------------------------------------------------------------------
@@ -818,10 +979,20 @@ eve_frame <- function() {
             }
             dev_notify_frame_done();
         }
+        // Prepare scene components independently of a game's eve_update override.
+        eve_scene_flush_components();
+        if (has_module("scene")) scene.updateTransformsAll();
+        // Coalesce dirty declarative UI components after game logic and before
+        // rendering. State changes made by dispatched UI events are therefore
+        // applied at the start of the following frame.
+        if ("eve_ui_flush_components" in getroottable())
+            eve_ui_flush_components();
         eve_render();
-        // ImGui AI/MCP panel (requires ui.beginFrameAndRender in eve_render).
+        // ImGui AI/MCP / console / frame-stats panels (need ui.beginFrameAndRender).
+        dev_sample_stats(dt);
         dev_draw_ai();
         dev_draw_console();
+        dev_draw_stats();
         clear_loop_error("frame");
     } catch (e) {
         emit_loop_error("frame", "frame error: ", e);
@@ -831,8 +1002,8 @@ eve_frame <- function() {
     // later frame fails with "begin3DFrame: swapchain pass already open".
     try {
         gfx.present();
-        if (has_module("system") && (!("hostDrivesFrames" in eve) || !eve.hostDrivesFrames)) {
-            system.limitFrame();
+        if (has_module("os") && (!("hostDrivesFrames" in eve) || !eve.hostDrivesFrames)) {
+            os.limitFrame();
         }
         if (has_module("ui")) ui.dispatchEvents();
         clear_loop_error("present");
@@ -852,8 +1023,11 @@ eve_frame <- function() {
 // The browser build has no blocking loop: C++ picks eve_frame up from the root
 // table and hands it to emscripten_set_main_loop.
 if (!("hostDrivesFrames" in eve) || !eve.hostDrivesFrames) {
-    while (eve_frame()) {
+    local editorHost = ("editorHost" in config) && config.editorHost;
+    if (!editorHost) {
+        while (eve_frame()) {
+        }
+        eve_quit();
+        win.close();
     }
-    eve_quit();
-    win.close();
 }

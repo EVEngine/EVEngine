@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "common/Value.h"
@@ -16,7 +18,7 @@ namespace eve::physics {
  * defaults. Version 1 rejects unknown fields and unsupported versions; there
  * is no older released version requiring migration.
  */
-struct SoftBody3DDefinition {
+struct EVENGINE_API_BACKENDS SoftBody3DDefinition {
     static constexpr std::string_view SchemaId      = "physics:softbody3d";
     static constexpr std::uint32_t    SchemaVersion = 1;
 

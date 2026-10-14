@@ -19,6 +19,9 @@ int appendNode(UIHost::Tree &tree, WidgetDesc &&desc, int parent = -1) {
     node.focusMode = desc.focusMode;
     node.mouseFilter = desc.mouseFilter;
     node.themePreset = desc.themePreset;
+    node.styleClass = std::move(desc.styleClass);
+    node.hasResolvedStyle =
+        resolveStyleClass(node.styleClass, &node.resolvedStyle) == StyleClassStatus::Applied;
     node.tabIndex = desc.tabIndex;
     node.focusNext = std::move(desc.focusNext);
     node.focusPrevious = std::move(desc.focusPrevious);
@@ -53,6 +56,7 @@ int appendNode(UIHost::Tree &tree, WidgetDesc &&desc, int parent = -1) {
     node.maxSizeY = desc.maxSizeY;
     node.percentW = desc.percentW;
     node.percentH = desc.percentH;
+    node.aspectRatio = desc.aspectRatio;
     node.anchorX = desc.anchorX;
     node.anchorY = desc.anchorY;
     node.posX = desc.posX;
@@ -79,6 +83,15 @@ int appendNode(UIHost::Tree &tree, WidgetDesc &&desc, int parent = -1) {
     node.justifyContent = desc.justifyContent;
     node.gap = desc.gap;
     node.flexGrow = desc.flexGrow;
+    node.flexShrink = desc.flexShrink;
+    node.flexBasis = desc.flexBasis;
+    node.alignSelf = desc.alignSelf;
+    node.columnGap = desc.columnGap;
+    node.rowGap = desc.rowGap;
+    node.flexWrap = desc.flexWrap;
+    node.overflow = desc.overflow;
+    node.gridColumns = desc.gridColumns;
+    node.gridColumnSpan = desc.gridColumnSpan;
     node.parent = parent;
     node.firstChild = -1;
     node.nextSibling = -1;
@@ -159,6 +172,9 @@ void patchProps(UIHost::Tree &tree, int nodeIndex, WidgetDesc &&desc) {
     n.focusMode = desc.focusMode;
     n.mouseFilter = desc.mouseFilter;
     n.themePreset = desc.themePreset;
+    n.styleClass = std::move(desc.styleClass);
+    n.hasResolvedStyle =
+        resolveStyleClass(n.styleClass, &n.resolvedStyle) == StyleClassStatus::Applied;
     n.tabIndex = desc.tabIndex;
     n.focusNext = std::move(desc.focusNext);
     n.focusPrevious = std::move(desc.focusPrevious);
@@ -193,6 +209,7 @@ void patchProps(UIHost::Tree &tree, int nodeIndex, WidgetDesc &&desc) {
     n.maxSizeY = desc.maxSizeY;
     n.percentW = desc.percentW;
     n.percentH = desc.percentH;
+    n.aspectRatio = desc.aspectRatio;
     n.anchorX = desc.anchorX;
     n.anchorY = desc.anchorY;
     n.posX = desc.posX;
@@ -219,6 +236,15 @@ void patchProps(UIHost::Tree &tree, int nodeIndex, WidgetDesc &&desc) {
     n.justifyContent = desc.justifyContent;
     n.gap = desc.gap;
     n.flexGrow = desc.flexGrow;
+    n.flexShrink = desc.flexShrink;
+    n.flexBasis = desc.flexBasis;
+    n.alignSelf = desc.alignSelf;
+    n.columnGap = desc.columnGap;
+    n.rowGap = desc.rowGap;
+    n.flexWrap = desc.flexWrap;
+    n.overflow = desc.overflow;
+    n.gridColumns = desc.gridColumns;
+    n.gridColumnSpan = desc.gridColumnSpan;
     if (!desc.id.empty()) n.id = desc.id;
 
     if (desc.onClick) {
@@ -594,6 +620,105 @@ WidgetDesc splitPane(FlexDirection direction, WidgetDesc first, WidgetDesc secon
     return d;
 }
 
+WidgetDesc tab(std::string label, std::string pageId, bool selected, std::string id, std::function<void()> onClick) {
+    WidgetDesc d;
+    d.type              = NodeType::Tab;
+    d.id                = id.empty() ? ("tab/" + pageId) : std::move(id);
+    d.key               = d.id;
+    d.text              = std::move(label);
+    d.valueText         = std::move(pageId);
+    d.checked           = selected;
+    d.accessibilityRole = AccessibilityRole::Tab;
+    d.onClick           = std::move(onClick);
+    return d;
+}
+
+WidgetDesc tabBar(std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type          = NodeType::TabBar;
+    d.id            = std::move(id);
+    d.key           = d.id;
+    d.flexDirection = FlexDirection::Row;
+    d.alignItems    = FlexAlign::Center;
+    d.children      = std::move(children);
+    return d;
+}
+
+WidgetDesc tabContainer(std::vector<WidgetDesc> pages, std::string activePageId, std::string id,
+                        std::function<void(const std::string &)> onSelect) {
+    WidgetDesc d;
+    d.type          = NodeType::TabContainer;
+    d.id            = std::move(id);
+    d.key           = d.id;
+    d.valueText     = activePageId;
+    d.flexDirection = FlexDirection::Column;
+    d.flexGrow      = 1.f;
+    d.onTextChange  = std::move(onSelect);
+
+    std::vector<WidgetDesc> tabs;
+    tabs.reserve(pages.size());
+    if (d.valueText.empty() && !pages.empty()) {
+        d.valueText = pages.front().id.empty() ? pages.front().key : pages.front().id;
+    }
+    for (auto &page : pages) {
+        const std::string pageId   = page.id.empty() ? page.key : page.id;
+        const std::string label    = page.text.empty() ? pageId : page.text;
+        const bool        selected = !d.valueText.empty() && pageId == d.valueText;
+        page.visible               = selected;
+        tabs.push_back(tab(label, pageId, selected));
+    }
+    d.children.push_back(tabBar(std::move(tabs), d.id.empty() ? "tabs" : d.id + "/bar"));
+    for (auto &page : pages) d.children.push_back(std::move(page));
+    return d;
+}
+
+WidgetDesc panelFrame(std::string title, std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type          = NodeType::PanelFrame;
+    d.id            = std::move(id);
+    d.key           = d.id;
+    d.text          = std::move(title);
+    d.flexDirection = FlexDirection::Column;
+    d.flexGrow      = 1.f;
+    d.overflow      = OverflowMode::Clip;
+    d.children      = std::move(children);
+    return d;
+}
+
+WidgetDesc dockArea(std::string region, std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type          = NodeType::DockArea;
+    d.id            = id.empty() ? ("dock/" + region) : std::move(id);
+    d.key           = d.id;
+    d.valueText     = std::move(region);
+    d.flexDirection = FlexDirection::Column;
+    d.flexGrow      = 1.f;
+    d.overflow      = OverflowMode::Clip;
+    d.children      = std::move(children);
+    return d;
+}
+
+WidgetDesc appFrame(WidgetDesc body, WidgetDesc toolbarWidget, WidgetDesc statusBarWidget, std::string id) {
+    WidgetDesc d;
+    d.type          = NodeType::AppFrame;
+    d.id            = std::move(id);
+    d.key           = d.id;
+    d.flexDirection = FlexDirection::Column;
+    d.flexGrow      = 1.f;
+    d.percentW      = 1.f;
+    d.percentH      = 1.f;
+    if (toolbarWidget.type == NodeType::Toolbar || !toolbarWidget.children.empty() || !toolbarWidget.id.empty()) {
+        d.children.push_back(std::move(toolbarWidget));
+    }
+    body.flexGrow = std::max(body.flexGrow, 1.f);
+    d.children.push_back(std::move(body));
+    if (statusBarWidget.type == NodeType::StatusBar || !statusBarWidget.children.empty() ||
+        !statusBarWidget.id.empty()) {
+        d.children.push_back(std::move(statusBarWidget));
+    }
+    return d;
+}
+
 WidgetDesc collapsingHeader(std::string label, std::vector<WidgetDesc> children, std::string id,
                             bool defaultOpen) {
     WidgetDesc d;
@@ -656,6 +781,16 @@ WidgetDesc row(std::vector<WidgetDesc> children, std::string id) {
 
 WidgetDesc column(std::vector<WidgetDesc> children, std::string id) {
     return flex(FlexDirection::Column, std::move(children), std::move(id));
+}
+
+WidgetDesc grid(int columns, std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::Grid;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.gridColumns = std::max(1, columns);
+    d.children = std::move(children);
+    return d;
 }
 
 WidgetDesc spacer(std::string id, float grow) {

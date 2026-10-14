@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "sky-timeline-time-contract",
+      "rule": "time-rng",
+      "scope": "src/modules/daynight/sky/**",
+      "owner": "daynight::SkyTimeline",
+      "issue": "EVENGINE-ARCH-TIME-RNG-INJECTION",
+      "reason": "Independent sky weather and cloud travel use injected integer simulation duration and analytical transition integration.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/daynight/sky/SkyTimeline.h",
+        "src/modules/daynight/sky/SkyTimeline.cpp",
+        "src/modules/daynight/sky/SkySolarOrbit.h",
+        "src/modules/daynight/sky/SkySolarOrbit.cpp",
+        "src/modules/daynight/sky/SkyRuntime.h",
+        "src/modules/daynight/sky/SkyRuntime.cpp",
+        "src/modules/daynight/sky/SkyScriptBindings.cpp",
+        "docs/dev/uds-sky-runtime-contract.md"
+      ],
+      "tests": [
+        "test/SkyTimeline.cpp",
+        "test/SkySolarOrbit.cpp",
+        "test/SkyRuntime.cpp",
+        "test/SkyScriptBindings.cpp"
+      ],
+      "time_source": "Caller-supplied eve::Duration; checked accumulated integer nanoseconds.",
+      "rng_stream": "No RNG in this deterministic interpolation layer.",
+      "determinism": "Equal commands at equal simulation times preserve weather and cloud travel across frame subdivision. Authored cloud time derives from the same accumulated timeline, including explicit source speed/time/wind multipliers; only normalized phase is converted to GPU float.",
+      "tolerance": "1e-9 in ordinary-duration CPU contract tests; no cross-platform bitwise claim.",
+      "module_interface": {
+        "capability_in": "Caller injects Duration and typed weather commands; SkyRuntime preparation receives the existing Graphics provider and copied settings.",
+        "capability_out": "Validated SkyTimeline and SkySolarOrbit values; owning SkyRuntime publishes the same evaluated solar light to main-view and capture contributors.",
+        "ecs_links": "None; timeline retains only owned values.",
+        "events": "None.",
+        "script_bindings": "DayNight.prepareSky(gfx, profileJson) returns an owned SkyRuntime Result; attach/detach/advanceSeconds/frame use common Result projection and VM-owned lifetime.",
+        "tool_protocol": "SkyProfile decodes eve.sky-profile versions 1 through 6. Version 6 selects procedural-v1 via null wispsAsset and an explicit uint32 proceduralSeed; a supplied path must load successfully. Version 3 references an optional graphics-owned wisps asset loaded during preparation; no new tool endpoint.",
+        "hard_dependencies": "Common Result/Duration and daynight's already-declared graphics dependency; public runtime header uses forward declarations and Pimpl.",
+        "connection": "One simulation owner; frequent direct typed updates and copied read projections. No hot-path registry.",
+        "trim_claim": "No L2/L3/L4 trim claim."
+      }
+    },
+    {
+      "id": "sky-profile-persistence-contract",
+      "rule": "persistence",
+      "scope": "src/modules/daynight/sky/SkyProfile.*",
+      "owner": "daynight::SkyProfile",
+      "issue": "EVENGINE-ARCH-PERSISTENCE-CONTRACTS",
+      "reason": "Authored atmospheric profiles validate completely before GPU preparation or runtime publication.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/daynight/sky/SkyProfile.h",
+        "src/modules/daynight/sky/SkyProfile.cpp",
+        "docs/dev/uds-sky-runtime-contract.md"
+      ],
+      "tests": [
+        "test/SkyProfile.cpp",
+        "test/SkyRuntime.cpp"
+      ],
+      "schema": "eve.sky-profile; explicit atmosphere mode with complete clock, weather, sun and optical parameters.",
+      "version": "Integer version 6 adds proceduralSeed and null wispsAsset selection; version 5 adds directional fog elevation range; version 4 adds cloudMotion controls (phase, speed, timeScale, windMultiplier). Version 3 adds wisps; version 2 adds background height fog. Not a simulation save.",
+      "migration": "Version 1 disables height fog; versions 1/2 disable wisps; versions 1/2/3 explicitly freeze cloud motion with speed zero. Versions 1 through 4 disable directional fog elevation fading; version 5 requires its explicit elevation range. Unsupported versions and modes fail.",
+      "unknown_fields": "Reject unknown or missing fields at every object level, wrong types, vector dimensions and nonfinite/out-of-range numbers.",
+      "restore_atomicity": "Decode creates an immutable candidate without provider calls; existing profiles and runtimes are never mutated on import failure."
+    }
+  ]
+}

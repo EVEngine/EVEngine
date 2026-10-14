@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file Targeting.h
@@ -40,10 +42,11 @@ enum class CoordinateSpace : std::uint8_t {
 };
 
 /** @brief Returns the stable protocol name for a coordinate space. */
-[[nodiscard]] std::string_view coordinateSpaceName(CoordinateSpace space) noexcept;
+[[nodiscard]] EVENGINE_API_PLATFORM std::string_view coordinateSpaceName(CoordinateSpace space) noexcept;
 
 /** @brief Writes the stable coordinate-space protocol name. */
 inline std::ostream& operator<<(std::ostream& stream, CoordinateSpace space) {
+    /** @brief Coordinate space name. */
     return stream << coordinateSpaceName(space);
 }
 
@@ -78,7 +81,7 @@ using SubjectRef = ::eve::SubjectRef;
  * ZoneRef names a logical zone; its shape and membership are supplied by a
  * candidate provider. It is intentionally distinct from SubjectRef.
  */
-class ZoneRef {
+class EVENGINE_API_PLATFORM ZoneRef {
 public:
     /** @brief Constructs an invalid zone reference. */
     ZoneRef() = default;
@@ -110,7 +113,7 @@ private:
  * Grid coordinates use GridPoint and cannot be passed as a WorldPoint. The
  * constructors validate finite values and preserve the dimension tag.
  */
-class WorldPoint {
+class EVENGINE_API_PLATFORM WorldPoint {
 public:
     /** @brief Constructs an invalid default point; use world2D/world3D for values. */
     WorldPoint() = default;
@@ -157,7 +160,7 @@ private:
  * Grid units are cells, not world meters. No implicit conversion to
  * WorldPoint exists; a project-specific map adapter must perform any mapping.
  */
-class GridPoint {
+class EVENGINE_API_PLATFORM GridPoint {
 public:
     /** @brief Constructs an invalid default grid point. */
     GridPoint() = default;
@@ -201,8 +204,9 @@ using TargetLocation = std::variant<WorldPoint, GridPoint>;
  * from the wrong coordinate space, so a 2D area cannot accidentally consume a
  * 3D point or a grid point.
  */
-class WorldArea {
+class EVENGINE_API_PLATFORM WorldArea {
 public:
+    /** @brief Shape public API. */
     enum class Shape : std::uint8_t { Circle2D, Box2D, Sphere3D, Box3D, Cone2D };
 
     /** @brief Constructs an invalid default area. */
@@ -266,8 +270,9 @@ private:
  * Grid distances and world distances have different units. A grid area must
  * be authored and queried in the same Grid2D or Grid3D space.
  */
-class GridArea {
+class EVENGINE_API_PLATFORM GridArea {
 public:
+    /** @brief Shape public API. */
     enum class Shape : std::uint8_t { Box2D, Box3D };
 
     /** @brief Constructs an invalid default grid area. */
@@ -376,7 +381,7 @@ struct TargetCandidate {
 /**
  * @brief Owning target result containing primary-independent subjects and optional geometry.
  */
-class TargetSet {
+class EVENGINE_API_PLATFORM TargetSet {
 public:
     /** @brief Adds a valid subject once; duplicate subjects are a NoOp success. */
     [[nodiscard]] Result<void> addSubject(SubjectRef subject);
@@ -426,6 +431,7 @@ struct LineOfSightResult {
 class ILineOfSightQuery {
 public:
     static constexpr const char* capabilityName = "eve.sensing.ILineOfSightQuery";
+    /** @brief Releases ILineOfSightQuery resources. */
     virtual ~ILineOfSightQuery()                = default;
 
     /**
@@ -448,6 +454,7 @@ public:
 class ISensingCandidateProvider {
 public:
     static constexpr const char* capabilityName = "eve.sensing.ISensingCandidateProvider";
+    /** @brief Releases ISensingCandidateProvider resources. */
     virtual ~ISensingCandidateProvider()        = default;
 
     /**
@@ -466,10 +473,11 @@ public:
  * The implementation has no physics, scene, or UI dependency; a production
  * provider may replace its linear scan with a spatial index.
  */
-class SensingCandidateProvider final : public ISensingCandidateProvider {
+class EVENGINE_API_PLATFORM SensingCandidateProvider final : public ISensingCandidateProvider {
 public:
     /** @brief Creates an empty provider; registration with capability is explicit. */
     SensingCandidateProvider()           = default;
+    /** @brief Sensing candidate provider. */
     ~SensingCandidateProvider() override = default;
 
     /** @brief Adds or replaces one candidate using its SubjectRef as the key. */
@@ -480,6 +488,7 @@ public:
     [[nodiscard]] std::size_t size() const noexcept { return candidates_.size(); }
 
     /** @copydoc ISensingCandidateProvider::query */
+    /** @brief Queries . */
     [[nodiscard]] Result<std::vector<TargetCandidate>> query(const TargetingQuery& query) const override;
 
 private:
@@ -505,16 +514,18 @@ using FactionRelationFn =
  * @ownership Non-owning pointer to SensingWorld; the world must outlive this provider.
  * @thread Call on the same simulation thread as the bound SensingWorld.
  */
-class SensingWorldCandidateProvider final : public ISensingCandidateProvider {
+class EVENGINE_API_PLATFORM SensingWorldCandidateProvider final : public ISensingCandidateProvider {
 public:
     /** @brief Binds a non-owning SensingWorld; capability registration remains explicit. */
     explicit SensingWorldCandidateProvider(SensingWorld& world) noexcept : world_(&world) {}
+    /** @brief Sensing world candidate provider. */
     ~SensingWorldCandidateProvider() override = default;
 
     /** @brief Installs optional faction→domain projection used when domain != Any. */
     void setFactionRelation(FactionRelationFn relation) { relation_ = std::move(relation); }
 
     /** @copydoc ISensingCandidateProvider::query */
+    /** @brief Queries . */
     [[nodiscard]] Result<std::vector<TargetCandidate>> query(const TargetingQuery& query) const override;
 
 private:
@@ -529,7 +540,7 @@ private:
  * selects a primary target. Missing capabilities are observable Unsupported
  * failures rather than empty successful sets.
  */
-class TargetingResolver {
+class EVENGINE_API_PLATFORM TargetingResolver {
 public:
     /**
      * @brief Resolves a constrained candidate set through registered capabilities.

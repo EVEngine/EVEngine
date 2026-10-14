@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ActionDamageSink.h @brief CombatState adapter for timeline damage blocks. */
 
@@ -29,10 +31,11 @@ using ActionCombatStateResolver = std::function<OptionalRef<CombatState>(ecs::En
  * owns only its resolver, deterministic DamageRuntime, and the latest owning outcome.
  * All methods are owner-thread-only; destruction automatically unregisters the sink.
  */
-class CombatActionDamageSink final : public action::IActionDamageSink {
+class EVENGINE_API_BACKENDS CombatActionDamageSink final : public action::IActionDamageSink {
 public:
     /** @brief Construct with a synchronous resolver copied into the adapter. */
     explicit CombatActionDamageSink(ActionCombatStateResolver resolver);
+    /** @brief Combat action damage sink. */
     ~CombatActionDamageSink() override;
 
     /** @brief Opt this adapter into or out of Action damage dispatch. */
@@ -47,8 +50,10 @@ public:
     /** @brief Return whether this exact adapter is currently registered. */
     [[nodiscard]] bool enabled() const;
     /** @copydoc action::IActionDamageSink::supports */
+    /** @brief Supports. */
     [[nodiscard]] bool supports(ecs::EntityHandle target) const override;
     /** @copydoc action::IActionDamageSink::apply */
+    /** @brief Applies . */
     [[nodiscard]] Result<void> apply(const action::ActionDamageBinding& binding,
                                      const action::ActionNotifyContext& context) override;
     /** @brief Return an owning copy of the latest committed damage outcome. */

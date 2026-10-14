@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorAuthority.h"
 #include "editor/EditorTarget.h"
@@ -40,40 +42,50 @@ struct EditorCurvePreview {
 /** @brief Stable key/gradient editing capability shared by effects and animation presenters. */
 class ICurveDocumentEditTarget {
 public:
+    /** @brief Releases ICurveDocumentEditTarget resources. */
     virtual ~ICurveDocumentEditTarget() = default;
+    /** @brief Editor capability id. */
     static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.curve-document"); }
     /** @brief Plan creation or replacement of a scalar key. */
-    virtual EditorResult<DomainOperation> makeSetKey(const EditorCurveKey& key) const = 0;
+    virtual Result<DomainOperation> makeSetKey(const EditorCurveKey& key) const = 0;
     /** @brief Plan deletion of a scalar key. */
-    virtual EditorResult<DomainOperation> makeDeleteKey(const StableId& key) const = 0;
+    virtual Result<DomainOperation> makeDeleteKey(const StableId& key) const = 0;
     /** @brief Plan creation or replacement of a gradient stop. */
-    virtual EditorResult<DomainOperation> makeSetStop(const EditorGradientStop& stop) const = 0;
+    virtual Result<DomainOperation> makeSetStop(const EditorGradientStop& stop) const = 0;
     /** @brief Plan deletion of a gradient stop. */
-    virtual EditorResult<DomainOperation> makeDeleteStop(const StableId& stop) const = 0;
+    virtual Result<DomainOperation> makeDeleteStop(const StableId& stop) const = 0;
 };
 
 /** @brief UI-neutral reversible curve and gradient timeline document. */
-class EditorCurveDocument final : public virtual IEditableTarget,
-                                  public IDomainOperationTarget,
-                                  public IDomainOperationTargetStaging,
-                                  public ICurveDocumentEditTarget {
+class EVENGINE_API_ORCHESTRATION EditorCurveDocument final : public ::eve::editing::EditableTargetState,
+                                                             public virtual IEditableTarget,
+                                                             public IDomainOperationTarget,
+                                                             public IDomainOperationTargetStaging,
+                                                             public ICurveDocumentEditTarget {
 public:
+    /** @brief Editor curve document. */
     explicit EditorCurveDocument(std::string id);
-    TargetId targetId() const override { return TargetId(id_); }
-    std::uint64_t revision() const override { return revision_; }
-    EditRegion dirtyRegion() const override { return dirty_; }
-    void clearDirtyRegion() override { dirty_.clear(); }
+    /** @brief Target id. */
+    TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Applies domain operation. */
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    [[nodiscard]] EditorResult<void> commitDomainState(
+    /** @brief Commits domain state. */
+    [[nodiscard]] Result<void> commitDomainState(
         std::unique_ptr<IDomainOperationTarget> candidate) override;
-    EditorResult<DomainOperation> makeSetKey(const EditorCurveKey& key) const override;
-    EditorResult<DomainOperation> makeDeleteKey(const StableId& key) const override;
-    EditorResult<DomainOperation> makeSetStop(const EditorGradientStop& stop) const override;
-    EditorResult<DomainOperation> makeDeleteStop(const StableId& stop) const override;
+    /** @brief Make set key. */
+    Result<DomainOperation> makeSetKey(const EditorCurveKey& key) const override;
+    /** @brief Make delete key. */
+    Result<DomainOperation> makeDeleteKey(const StableId& key) const override;
+    /** @brief Make set stop. */
+    Result<DomainOperation> makeSetStop(const EditorGradientStop& stop) const override;
+    /** @brief Make delete stop. */
+    Result<DomainOperation> makeDeleteStop(const StableId& stop) const override;
     /** @brief Return scalar keys in stable timeline order. */
     std::vector<EditorCurveKey> keys() const;
     /** @brief Return gradient stops in stable timeline order. */
@@ -87,12 +99,10 @@ public:
     /** @brief Capture deterministic schema-version-one timeline data. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load a validated timeline snapshot. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
-    std::string id_;
-    Revision revision_ = 1;
-    EditRegion dirty_;
+    std::string                            id_;
     std::map<StableId, EditorCurveKey> keys_;
     std::map<StableId, EditorGradientStop> stops_;
 };

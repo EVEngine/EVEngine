@@ -8,9 +8,9 @@ using namespace eve::avatar_editing;
 using namespace eve::editing;
 
 namespace {
-void apply(AvatarDocumentTarget&target,EditorResult<DomainOperation>operation){REQUIRE(operation.ok());REQUIRE(target.applyDomainOperation(operation.value()).ok());}
+void apply(AvatarDocumentTarget&target,Result<DomainOperation>operation){REQUIRE(operation.ok());REQUIRE(target.applyDomainOperation(operation.value()).ok());}
 SelectionSnapshot select(const AvatarDocumentTarget&target,const char*id,const char*type){SelectionSnapshot s;s.channel="avatar";s.items.push_back({SelectionDomain::Asset,TargetId(target.targetId()),StableId(id),type});return s;}
-class MissingTextures final:public IAvatarTextureResolver{public:EditorResult<eve::graphics::Texture*> texture(const std::string&)const override{return eve::editing::failed<eve::graphics::Texture*>(EditorStatus::NotFound,RuleId("test.texture"),"missing texture");}};
+class MissingTextures final:public IAvatarTextureResolver{public:Result<eve::graphics::Texture*> texture(const std::string&)const override{return eve::editing::failed<eve::graphics::Texture*>(EditorStatus::NotFound,RuleId("test.texture"),"missing texture");}};
 }
 
 TEST_CASE("editor.avatar.layers_and_parameters_have_dynamic_reversible_inspectors") {

@@ -2,6 +2,8 @@
 #include "zeroerr/unittest.h"
 
 #include "attributes/AttributeSet.h"
+#include "common/Capability.h"
+#include "common/StateAccess.h"
 
 using eve::attributes::AttributeSet;
 
@@ -62,4 +64,20 @@ TEST_CASE("attributes.modifierEnumerationIsStable") {
     CHECK_EQ(removedOne.value(), 2);
     REQUIRE_EQ(set.modifierCount(), 1);
     CHECK_EQ(set.modifierAt(0)->id, "b");
+}
+
+TEST_CASE("attributes.publishesWorldStateListeners") {
+    eve::cap::detail::clearAllRaw();
+    int listeners = 0;
+    {
+        AttributeSet set("actor");
+        eve::cap::forEach<eve::IStateQuery>([&](eve::IStateQuery*) { ++listeners; });
+        CHECK_EQ(listeners, 1);
+        listeners = 0;
+        eve::cap::forEach<eve::IStateMutation>([&](eve::IStateMutation*) { ++listeners; });
+        CHECK_EQ(listeners, 1);
+    }
+    listeners = 0;
+    eve::cap::forEach<eve::IStateQuery>([&](eve::IStateQuery*) { ++listeners; });
+    CHECK_EQ(listeners, 0);
 }

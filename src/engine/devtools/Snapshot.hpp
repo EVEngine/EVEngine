@@ -26,7 +26,7 @@ namespace eve::dev {
  *    "native": { "<stateKind>": <captured>, ... } }`
  * v1 files (roots only) are still readable.
  */
-class EVENGINE_API Snapshot {
+class EVENGINE_API_FOUNDATION Snapshot {
 public:
     static Snapshot& instance();
 

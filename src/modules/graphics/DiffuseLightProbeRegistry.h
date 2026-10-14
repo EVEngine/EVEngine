@@ -10,10 +10,12 @@
 
 namespace eve::graphics {
 
+/** @brief DiffuseLightProbeSample public API. */
 struct DiffuseLightProbeSample {
     std::array<glm::vec4, 9> coefficients{};
 };
 
+/** @brief DiffuseLightProbeVolumeSample public API. */
 struct DiffuseLightProbeVolumeSample {
     static constexpr int kMaxProbes = 8;
     std::array<glm::vec4, kMaxProbes> positions{};
@@ -24,7 +26,7 @@ struct DiffuseLightProbeVolumeSample {
 };
 
 /** @brief Owns generated diffuse probes and samples their baked L0 irradiance. */
-class DiffuseLightProbeRegistry {
+class EVENGINE_API_BACKENDS DiffuseLightProbeRegistry {
 public:
     /** @brief Return the process-wide graphics-owned registry. */
     static DiffuseLightProbeRegistry& instance();

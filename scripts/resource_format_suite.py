@@ -25,6 +25,24 @@ FAMILIES = {
     "asset": [p.name for p in sorted((ROOT / "test").glob("asset_*.cpp"))],
     "resource": ["filesystem_cpp.cpp", "resource.cpp", "resource_uri.cpp", "resource_lifetime.cpp"],
 }
+CONSOLIDATED_SOURCES = {
+    "resource_format_image.cpp": "resource.cpp",
+    "editor_audio_import_diagnostics.cpp": "editor_audio_editor.cpp",
+    "resource_uri.cpp": "resource.cpp",
+}
+
+
+def source_section(root, name):
+    physical = CONSOLIDATED_SOURCES.get(name, name)
+    source = (root / "test" / physical).read_text(encoding="utf-8-sig")
+    marker = f"// {name}"
+    start = source.find(marker)
+    if start >= 0:
+        source = source[start + len(marker):]
+        next_section = re.search(r"^// [A-Za-z0-9_]+\.cpp\s*$", source, re.MULTILINE)
+        if next_section:
+            source = source[:next_section.start()]
+    return physical, source
 
 
 def inventory(root=ROOT):
@@ -32,11 +50,11 @@ def inventory(root=ROOT):
     for family, files in FAMILIES.items():
         cases = {}
         for name in files:
-            path = root / "test" / name
-            for case in re.findall(r'TEST_CASE\(\s*"([^"\n]+)"', path.read_text(encoding="utf-8-sig")):
+            physical, source = source_section(root, name)
+            for case in re.findall(r'TEST_CASE\(\s*"([^"\n]+)"', source):
                 if case in cases:
                     raise ValueError("duplicate test: " + case)
-                cases[case] = "test/" + name
+                cases[case] = "test/" + physical
         extensions = []
         loader = {"image": "image/ImageLoader.cpp", "sound": "sound/SoundLoader.cpp", "model": "model3d/ModelLoader.cpp"}.get(family)
         if loader:
@@ -130,7 +148,7 @@ def run_cases(build_dir, selected):
                 name = case.attrib["name"]
                 status = "passed"
                 if (case.find("failure") is not None or case.find("error") is not None
-                        or "Assertion Failed" in case.findtext("system-out", "")):
+                        or "ERROR Assertion Failed:" in case.findtext("system-out", "")):
                     status = "failed"
                 elif case.find("skipped") is not None or case.get("status") in ("notrun", "disabled"):
                     status = "skipped"

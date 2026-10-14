@@ -16,7 +16,9 @@ namespace eve::physics_editor {
 class PhysicsEditorModule final : public Module {
 public:
     Module_REG(PhysicsEditorModule);
+    /** @brief Constructs a PhysicsEditorModule. */
     PhysicsEditorModule();
+    /** @brief Releases PhysicsEditorModule resources. */
     ~PhysicsEditorModule() override;
 
 private:

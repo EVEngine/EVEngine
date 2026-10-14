@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "asset/import/UnitySource.h"
 #include "common/Utf8Validation.h"
@@ -13,8 +15,9 @@ struct UnityExpandedPrefab {
     std::vector<ImportFinding> findings;
 };
 /** @brief Resolve bounded nested prefab references into an unpublished owning text candidate. */
-[[nodiscard]] Result<UnityExpandedPrefab> expandUnityPrefab(const UnityProjectImportRequest&, const UnitySourceIndex&,
-                                                            const UnitySourceAsset&);
+[[nodiscard]] EVENGINE_API_PLATFORM Result<UnityExpandedPrefab> expandUnityPrefab(const UnityProjectImportRequest&,
+                                                                                  const UnitySourceIndex&,
+                                                                                  const UnitySourceAsset&);
 /** @brief Convert an explicit SpriteRenderer timeline and referenced metadata into an owning canonical candidate. */
 [[nodiscard]] Result<PreparedAssetImport> prepareUnitySpriteAnimation(const UnityProjectImportRequest& request,
                                                                       const UnitySourceAsset&          source);
@@ -24,13 +27,42 @@ struct UnityExpandedPrefab {
 /** @brief Prepare one prefab without copying or re-indexing the source collection. */
 [[nodiscard]] Result<PreparedAssetImport> prepareUnityPrefab(const UnityProjectImportRequest& request,
                                                              const std::string&               path);
-/** @brief Convert a static FBX with explicit Unity importer settings and hashed subasset identities. */
-[[nodiscard]] Result<PreparedAssetImport> prepareUnityFbx(const UnityProjectImportRequest& request,
-                                                          const UnitySourceAsset&          source);
+/** @brief Prepare static meshes or a skinned FBX character with explicit Unity importer settings.
+ * @return Owning candidate or a structured unsupported-feature/budget diagnostic.
+ * @thread Worker-safe; source bytes are borrowed for this call only.
+ * @reentrancy Does not invoke game callbacks or publish assets.
+ * @cost Whole-file decode and character conversion, amortized over asset import.
+ */
+[[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareUnityFbx(
+    const UnityProjectImportRequest& request, const UnitySourceAsset& source);
 /** @brief Decode a bounded static Unity text Mesh into owning canonical submesh candidates. */
-[[nodiscard]] Result<PreparedAssetImport> prepareUnityNativeMesh(const UnityProjectImportRequest&,
-                                                                 const UnitySourceAsset&);
-/** @brief Convert supported built-in Standard material properties to canonical PBR data. */
+[[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareUnityNativeMesh(const UnityProjectImportRequest&,
+                                                                                       const UnitySourceAsset&);
+/** @brief Convert embedded BC3 text Texture2D to an owning image candidate.
+ * @remarks Synchronous and reentrant; no
+ * external mutation, callbacks or retained source pointers.
+ */
+[[nodiscard]] Result<PreparedAssetImport> prepareUnityNativeTexture(const UnityProjectImportRequest&,
+                                                                    const UnitySourceAsset&);
+/** @brief Convert embedded linear R8 Unity Texture3D to an owning canonical volume candidate.
+ * @remarks Synchronous
+ * and reentrant; no callbacks, external mutation or retained source pointers.
+ */
+[[nodiscard]] Result<PreparedAssetImport> prepareUnityNativeVolumeTexture(const UnityProjectImportRequest&,
+                                                                          const UnitySourceAsset&);
+/** @brief Convert admitted TVE primary material data; remaining source features are reported explicitly.
+ * @remarks
+ * Owning unpublished candidate, synchronous/reentrant; no GPU allocation or retained source pointers.
+ */
+[[nodiscard]] Result<PreparedAssetImport> prepareUnityVegetationMaterial(const UnityProjectImportRequest& request,
+                                                                         const UnitySourceAsset&          source);
+/** @brief Parse one TVE conversion preset into a bounded versioned command tree. */
+[[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareUnityVegetationPreset(
+    const UnityProjectImportRequest& request, const UnitySourceAsset& source);
+/** @brief Convert a complete TVE manager component set from one Unity scene. */
+[[nodiscard]] Result<PreparedAssetImport> prepareUnityVegetationScene(const UnityProjectImportRequest& request,
+                                                                      const UnitySourceAsset&          source);
+/** @brief Dispatch built-in Standard and admitted vegetation materials to canonical PBR data. */
 [[nodiscard]] Result<PreparedAssetImport> prepareUnityMaterial(const UnityProjectImportRequest& request,
                                                                const UnitySourceAsset&          source);
 /** @brief Resolve renderer references after all collection assets are prepared; unpublished candidate only. */
@@ -40,23 +72,21 @@ struct UnityExpandedPrefab {
 
 namespace eve::asset_import::unity_detail {
 
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, "asset.import.unity"));
-}
-
+/** @brief Fold ascii. */
 inline std::string foldAscii(std::string value) {
     for (char& c : value)
         if (c >= 'A' && c <= 'Z') c += 'a' - 'A';
     return value;
 }
 
+/** @brief Valid guid. */
 inline bool validGuid(std::string_view value) {
     return value.size() == 32 && std::all_of(value.begin(), value.end(), [](char c) {
                return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
            });
 }
 
+/** @brief Valid path. */
 inline bool validPath(std::string_view path, const AssetImportLimits& limits) {
     if (path.empty() || path.size() > limits.maximumStringBytes || path.front() == '/' ||
         path.find_first_of("\\:<>\"|?*") != std::string_view::npos || !isValidUtf8(path, Utf8NullPolicy::Reject))

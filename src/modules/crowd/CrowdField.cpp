@@ -272,42 +272,38 @@ void CrowdField::flowAtWorld(float wx, float wy, float &dx, float &dy) const {
 bool CrowdField::resolvePenetration(float &wx, float &wy, float radius) const {
     if (!valid() || radius <= 0.f) return false;
     const float cs = cellSize_;
-    const float minX = wx - radius;
-    const float maxX = wx + radius;
-    const float minY = wy - radius;
-    const float maxY = wy + radius;
-
-    const auto cellAt = [this](float w) {
-        return int(std::floor((w - originX_) / cellSize_));
-    };
-    const int cx0 = cellAt(minX);
-    const int cx1 = cellAt(maxX);
-    const int cy0 = cellAt(minY);
-    const int cy1 = cellAt(maxY);
-
+    const int   cx0    = std::max(0, int(std::floor((wx - radius - originX_) / cs)));
+    const int   cx1    = std::min(width_ - 1, int(std::floor((wx + radius - originX_) / cs)));
+    const int   cy0    = std::max(0, int(std::floor((wy - radius - originY_) / cs)));
+    const int   cy1    = std::min(height_ - 1, int(std::floor((wy + radius - originY_) / cs)));
     bool pushed = false;
     for (int cy = cy0; cy <= cy1; ++cy) {
         for (int cx = cx0; cx <= cx1; ++cx) {
-            if (!inBounds(cx, cy) || !isBlocked(cx, cy)) continue;
-            const float bminX = originX_ + float(cx) * cs;
-            const float bmaxX = bminX + cs;
-            const float bminY = originY_ + float(cy) * cs;
-            const float bmaxY = bminY + cs;
-
-            const float overlapX = std::min(maxX, bmaxX) - std::max(minX, bminX);
-            const float overlapY = std::min(maxY, bmaxY) - std::max(minY, bminY);
-            if (overlapX <= 0.f || overlapY <= 0.f) continue;
-
-            if (overlapX < overlapY) {
-                if (wx < bminX)
-                    wx = bminX - radius;
-                else
-                    wx = bmaxX + radius;
+            if (!isBlocked(cx, cy)) continue;
+            const float loX = originX_ + float(cx) * cs, hiX = loX + cs;
+            const float loY = originY_ + float(cy) * cs, hiY = loY + cs;
+            const float dx = wx - std::clamp(wx, loX, hiX);
+            const float dy = wy - std::clamp(wy, loY, hiY);
+            const float d2 = dx * dx + dy * dy;
+            if (d2 >= radius * radius) continue;
+            if (d2 > 1e-12f) {
+                const float distance = std::sqrt(d2);
+                const float scale    = (radius - distance) / distance;
+                wx += dx * scale;
+                wy += dy * scale;
             } else {
-                if (wy < bminY)
-                    wy = bminY - radius;
+                // Inside the box: choose the nearest expanded face, including radius.
+                const float left = wx - loX, right = hiX - wx;
+                const float down = wy - loY, up = hiY - wy;
+                const float nearest = std::min({left, right, down, up});
+                if (nearest == left)
+                    wx = loX - radius;
+                else if (nearest == right)
+                    wx = hiX + radius;
+                else if (nearest == down)
+                    wy = loY - radius;
                 else
-                    wy = bmaxY + radius;
+                    wy = hiY + radius;
             }
             pushed = true;
         }

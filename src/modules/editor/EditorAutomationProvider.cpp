@@ -6,9 +6,12 @@
 #include "common/Capability.h"
 #include "rx/Rx.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <optional>
+#include <string>
 #include <utility>
+#include <vector>
 
 namespace eve::editor {
 
@@ -65,7 +68,7 @@ EditorValue resultValue(EditorStatus status, const std::vector<EditorDiagnostic>
     return EditorValue(std::move(result));
 }
 
-EditorValue receiptValue(const EditorResult<TransactionReceipt>& result) {
+EditorValue receiptValue(const Result<TransactionReceipt>& result) {
     EditorValue response = resultValue(result.code(), result.diagnostics());
     if (result.ok()) {
         auto* object                = response.getIf<EditorValue::Object>();
@@ -131,11 +134,12 @@ void EditorAutomationProvider::targetUnregistered(const TargetId& target) {
 
 std::string EditorAutomationProvider::invoke(const std::string& operation, const std::string& requestJson) {
     refreshProfile();
-    EditorResult<EditorValue> parsed = editorValueFromJson(requestJson.empty() ? "{}" : requestJson);
+    Result<EditorValue> parsed = editorValueFromJson(requestJson.empty() ? "{}" : requestJson);
     if (!parsed.ok() || parsed.value().type() != EditorValue::Type::Object)
         return errorJson(EditorStatus::Rejected, "editor.automation.invalid-json", "Request must be a JSON object");
     const auto& request = *parsed.value().getIf<EditorValue::Object>();
     if (operation == "commands") return commandsJson();
+    if (operation == "target-list") return targetList();
     if (operation == "target-create") return createTarget(request);
     if (operation == "target-close") return closeTarget(request);
     if (operation == "observe-start") return startObservation(request);
@@ -172,11 +176,11 @@ std::string EditorAutomationProvider::invoke(const std::string& operation, const
     }
     if (operation == "execute") {
         const CommandId command(stringField(request, "command"));
-        std::optional<EditorResult<TransactionReceipt>> result;
+        std::optional<Result<TransactionReceipt>> result;
         if (commands_->supportsPlanning(command)) {
             auto planned = session_.planCommand(command, valueField(request, "payload"), CommandSource::Automation);
             if (!planned.ok()) {
-                result.emplace(EditorResult<TransactionReceipt>::failure(planned.status()));
+                result.emplace(Result<TransactionReceipt>::failure(planned.status()));
             } else {
                 result.emplace(session_.executePlan(planned.value(), valueField(request, "payload"),
                                                     CommandSource::Automation));
@@ -269,7 +273,7 @@ std::string EditorAutomationProvider::pollObservation(const EditorValue::Object&
         return errorJson(EditorStatus::NotFound, "editor.automation.observe-session", "Observation session not found");
     EditorValue::Array events;
     for (const std::string& encoded : found->second->pending) {
-        EditorResult<EditorValue> parsed = editorValueFromJson(encoded);
+        Result<EditorValue> parsed = editorValueFromJson(encoded);
         if (parsed.ok()) events.push_back(std::move(parsed).takeValue());
     }
     found->second->pending.clear();
@@ -292,6 +296,43 @@ std::string EditorAutomationProvider::closeObservation(const EditorValue::Object
     return editorValueToJson(response);
 }
 
+std::string EditorAutomationProvider::targetList() const {
+    EditorValue response = resultValue(EditorStatus::Applied, {});
+    auto*       value    = response.getIf<EditorValue::Object>();
+    if (!value) return errorJson(EditorStatus::Failed, "editor.automation.target-list", "Could not build response");
+
+    const TargetId     bound = session_.boundTargetId();
+    EditorValue::Array entries;
+    for (const auto& summary : targets_->targets()) {
+        EditorValue::Object item;
+        item["id"]         = summary.id;
+        item["bound"]      = summary.id == bound.value();
+        item["owned"]      = ownedTargets_.contains(TargetId(summary.id));
+        item["revision"]   = static_cast<std::int64_t>(summary.revision);
+        item["generation"] = static_cast<std::int64_t>(summary.generation);
+        if (!summary.type.empty()) item["type"] = summary.type;
+        entries.emplace_back(std::move(item));
+    }
+    (*value)["targets"] = std::move(entries);
+    if (!bound.empty()) (*value)["boundTarget"] = bound.value();
+
+    // Type discovery: the accepted names come from the loaded factories, so the
+    // advertised list cannot drift from what create actually accepts.
+    std::vector<std::string> types;
+    eve::cap::forEach<IEditorAutomationTargetFactory>([&](IEditorAutomationTargetFactory* factory) {
+        if (!factory) return;
+        for (const std::string_view type : factory->types()) types.emplace_back(type);
+    });
+    std::sort(types.begin(), types.end());
+    types.erase(std::unique(types.begin(), types.end()), types.end());
+    EditorValue::Array advertised;
+    advertised.reserve(types.size());
+    for (auto& type : types) advertised.emplace_back(std::move(type));
+    (*value)["supportedTypes"] = std::move(advertised);
+
+    return editorValueToJson(response);
+}
+
 std::string EditorAutomationProvider::createTarget(const EditorValue::Object& request) {
     const TargetId target(stringField(request, "target"));
     const std::string type = stringField(request, "type");
@@ -300,7 +341,7 @@ std::string EditorAutomationProvider::createTarget(const EditorValue::Object& re
     if (ownedTargets_.contains(target))
         return errorJson(EditorStatus::Conflict, "editor.automation.target-exists", "Target already exists");
 
-    std::optional<EditorResult<AutomationOwnedTarget>> created;
+    std::optional<Result<AutomationOwnedTarget>> created;
     const bool handled = eve::cap::forEachUntil<IEditorAutomationTargetFactory>(
         [&](IEditorAutomationTargetFactory* factory) {
             if (!factory->supports(type)) return false;
@@ -366,7 +407,7 @@ std::string EditorAutomationProvider::commandsJson() {
     return editorValueToJson(response);
 }
 
-EditorResult<void> EditorAutomationProvider::bindRequestedTarget(const EditorValue::Object& request) {
+Result<void> EditorAutomationProvider::bindRequestedTarget(const EditorValue::Object& request) {
     const std::string target = stringField(request, "target");
     if (target.empty()) return eve::editing::applied<void>();
     return targets_->bind(session_, TargetId(target));

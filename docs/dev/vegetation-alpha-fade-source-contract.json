@@ -1,0 +1,33 @@
+{
+  "source": "The Vegetation Engine 12.6.0 Plant Standard shader",
+  "sourceSemantics": {
+    "derivativeNormal": "normalize(cross(ddy(worldPosition), ddx(worldPosition)))",
+    "glancing": "lerp(1, saturate(abs(dot(viewDirection, derivativeNormal)) * 3), _FadeGlancingValue)",
+    "camera": "lerp(1, saturate((distance(worldPosition, cameraPosition) - TVE_CameraFadeMin) / (TVE_CameraFadeMax - TVE_CameraFadeMin + 0.0001)), _FadeCameraValue)",
+    "detailMask": "lerp(1 - detailBlend, 1, _DetailFadeMode)",
+    "effects": "lerp(1, glancing * camera * (1 - _FadeConstantValue), detailMask)",
+    "noise": "sample repeating TVE_NoiseTex3D at worldPosition * tiling",
+    "clip": "min((blendAlpha - alphaCutoff) * globalAlpha, saturate(effects - noise.r))"
+  },
+  "nativeOwnership": {
+    "materialLocal": [
+      "eve.material/12 vegetationAlpha.glancing",
+      "eve.material/12 vegetationAlpha.camera",
+      "eve.material/12 vegetationAlpha.constant"
+    ],
+    "runtimeGlobal": [
+      "3D noise texture",
+      "world-space noise tiling",
+      "camera fade minimum",
+      "camera fade maximum"
+    ],
+    "textureLifetime": "IResourceFactory owns each published Texture until releaseTexture succeeds; bindings borrow it through all draws"
+  },
+  "evidence": [
+    "strict RGBA8 volume upload validation",
+    "Vulkan e3D image and repeat sampler inspection",
+    "validation-layer Canvas pixel threshold test",
+    "strict and atomic v11 to v12 migration",
+    "Unity property import through cook and runtime load"
+  ]
+}

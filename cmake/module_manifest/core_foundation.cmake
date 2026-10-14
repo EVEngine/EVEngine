@@ -56,7 +56,7 @@ eve_declare_module(NAME platform_event REQUIRED LAYER 0 SCRIPT PlatformEvent SLO
                    THIRDPARTY sdl2)
 eve_declare_module(NAME timer REQUIRED LAYER 0 SCRIPT Timer SLOT timer
                    THIRDPARTY sdl2)
-eve_declare_module(NAME system LAYER 0 SCRIPT HostSystem SLOT system
+eve_declare_module(NAME os LAYER 0 SCRIPT OS SLOT os
                    THIRDPARTY sdl2
                    GROUP minimal 2d 3d web)
 # Profiler: built-in engine-wide profiler. Scoped zones (common/Profile.h) are
@@ -81,7 +81,7 @@ eve_declare_module(NAME ik LIB EVIK LAYER 0 SCRIPT IK
                    GROUP 2d 3d web)
 # L6 -- editor orchestration
 eve_declare_module(NAME editor LAYER 6 SCRIPT Editor SLOT editor
-                   DEPS asset editing property_access rx tags transaction
+                   DEPS asset editing property_access rx settlement tags transaction
                    GROUP 3d web
                    OPTIONAL_DEPS graphics)
 # L0 -- foundation (continued)
@@ -100,9 +100,10 @@ eve_declare_module(NAME pixelworld_streaming LAYER 1
                    DEPS asset pixelworld
                    GROUP 2d 3d web)
 eve_declare_module(NAME rpg LIB EVRPG LAYER 1 SCRIPT RPG
-                   DEPS action attributes decision definitions dnut_interpreter effects inventory settlement)
+                   DEPS action attributes decision definitions dnut_interpreter effects inventory production settlement transaction)
 # L0 -- foundation (continued)
-eve_declare_module(NAME inventory LAYER 0 SCRIPT Inventory)
+eve_declare_module(NAME inventory LAYER 0 SCRIPT Inventory
+                   GROUP minimal 2d 3d web)
 eve_declare_module(NAME economy LAYER 0 SCRIPT Economy SLOT economy
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME attributes LAYER 0 SCRIPT Attributes SLOT attributes
@@ -110,6 +111,11 @@ eve_declare_module(NAME attributes LAYER 0 SCRIPT Attributes SLOT attributes
 eve_declare_module(NAME authority LAYER 0 SCRIPT Authority SLOT authority
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME decision LAYER 0 SCRIPT Decision SLOT decision
+                   GROUP minimal 2d 3d web)
+# Indexed emergent rule triggers (watch-key inverted index + deferred activations).
+# Reuses decision::Condition; economy actions go through IEconomy capability.
+eve_declare_module(NAME emergence LAYER 0 SCRIPT Emergence SLOT emergence
+                   DEPS decision
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME definitions LAYER 0 SCRIPT Definitions SLOT definitions
                    DEPS schema
@@ -120,8 +126,8 @@ eve_declare_module(NAME effects LAYER 0 SCRIPT Effects SLOT effects
 eve_declare_module(NAME game_event LAYER 0 SCRIPT GameEvent SLOT game_event
                    DEPS schema
                    GROUP minimal 2d 3d web)
-eve_declare_module(NAME settlement LIB EVSettlement LAYER 0
-                   DEPS game_event
+eve_declare_module(NAME settlement LIB EVSettlement LAYER 0 SCRIPT Settlement SLOT settlement
+                   DEPS effects game_event
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME orders LAYER 0 SCRIPT Orders SLOT orders
                    GROUP minimal 2d 3d web)
@@ -137,19 +143,20 @@ eve_declare_module(NAME sensing LAYER 1 SCRIPT Sensing SLOT sensing
 # Data-oriented NPC AI orchestration. Domain adapters provide navigation,
 # animation, combat and smart-object tasks without making the core depend on
 # those higher-level modules.
-eve_declare_module(NAME npc_ai LAYER 1
+eve_declare_module(NAME npc_ai LAYER 1 SCRIPT NpcAi SLOT npc_ai
                    GROUP minimal 2d 3d web)
 # Renderer- and ruleset-neutral gameplay action lifecycle. Domain adapters
 # (RPG Skill, Weapon Attack, Card Play, RTS Command) depend on this protocol;
 # the core depends on sensing/decision values but never on a gameplay domain.
-eve_declare_module(NAME action LIB EVAction LAYER 1
+eve_declare_module(NAME action LIB EVAction LAYER 1 SCRIPT Action SLOT action
                    DEPS decision sensing tags transaction
                    GROUP minimal 2d 3d web)
 # `.dnut` authored-sequence language. Owns the shared lexer, the registry-driven
 # compiler, the compiled sequence model and the cross-frame interpreter. Domain
 # vocabularies (dialogue lines and pools, RPG story steps) are registered by the
 # modules that own them; this core never interprets a domain payload.
-eve_declare_module(NAME dnut_interpreter LIB EVDnutInterpreter LAYER 1)
+eve_declare_module(NAME dnut_interpreter LIB EVDnutInterpreter LAYER 1
+                   GROUP minimal 2d 3d web)
 # L2 -- combat resolution and optional adapters consuming the action protocol
 # Optional persistent GameEventLog adapter for action timeline events.
 eve_declare_module(NAME action_game_event DIR action/game_event LAYER 2
@@ -161,7 +168,7 @@ eve_declare_module(NAME action_input DIR action/input LAYER 2
                    GROUP minimal 2d 3d web)
 # L2 -- combat resolution consuming the action protocol
 eve_declare_module(NAME combat LIB EVCombat LAYER 2 SCRIPT Combat SLOT combat
-                   DEPS action attributes tags
+                   DEPS action action_input attributes settlement tags
                    GROUP minimal 2d 3d web)
 # Shared fixed-step/backend contract extracted from the physics host so
 # independently switchable simulation satellites do not depend back upward.
@@ -181,8 +188,6 @@ eve_declare_module(NAME social LAYER 0 SCRIPT Social SLOT social
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME statepatch LAYER 0 SCRIPT StatePatch SLOT statepatch
                    DEPS transaction
-                   GROUP minimal 2d 3d web)
-eve_declare_module(NAME steering LAYER 0 SCRIPT Steering SLOT steering
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME tags LAYER 0 SCRIPT Tags SLOT tags
                    GROUP minimal 2d 3d web)

@@ -1,10 +1,11 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "common/Runtime.h"
 #include "common/Capability.h"
 #include "common/EditorAutomation.h"
+#include "common/ProcgenQuery.h"
 #include "common/RenderCapture.h"
+#include "common/Runtime.h"
 #include "common/SceneQuery.h"
 #include "common/ScriptCompiler.h"
 #include "devtools/AiPanel.hpp"
@@ -42,7 +43,10 @@ class ClosedLoopCapture final : public eve::IRenderCapture {
 public:
     eve::RenderStatusInfo status() const override { return {}; }
     void setReadbackEnabled(bool) override {}
-    bool savePng(const std::string&, int*, int*, std::string*) override { return false; }
+    eve::Result<eve::CaptureImageInfo> savePng(const std::string&) override {
+        return eve::Result<eve::CaptureImageInfo>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "ClosedLoopCapture has no framebuffer", "capture"));
+    }
     std::string capturePngDataUrl() override { return {}; }
     bool ensureCamera() override { return false; }
     bool setCameraPose(float, float, float, float, float, float, float) override { return false; }
@@ -60,8 +64,14 @@ public:
         return "{}";
     }
     std::string entityIdMaskJson(int*, int*, bool*) override { return "{}"; }
-    bool entityIdMaskPng(const std::string&, std::string*) override { return false; }
-    bool gbufferPng(const std::string&, const std::string&, std::string*) override { return false; }
+    eve::Result<void> entityIdMaskPng(const std::string&) override {
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "ClosedLoopCapture has no id mask", "id_mask"));
+    }
+    eve::Result<void> gbufferPng(const std::string&, const std::string&) override {
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "ClosedLoopCapture has no gbuffer", "gbuffer"));
+    }
 
     eve::Renderable3DInfo info{42, 7, 1.f, 2.f, 3.f, 0.1f, 0.2f, 0.3f, 1.f};
 };
@@ -103,25 +113,31 @@ public:
     std::vector<eve::SceneNodeInfo> nodesOf(const std::string& host, int) const override {
         return host == "world" ? std::vector<eve::SceneNodeInfo>{node} : std::vector<eve::SceneNodeInfo>{};
     }
-    bool getNode(const std::string& id, eve::SceneNodeInfo* out) const override {
-        return getNodeIn("world", id, out);
+    eve::Result<eve::SceneNodeInfo> getNode(const std::string& id) const override { return getNodeIn("world", id); }
+    eve::Result<eve::SceneNodeInfo> getNodeIn(const std::string& host, const std::string& id) const override {
+        if (host != "world" || id != node.id) {
+            return eve::Result<eve::SceneNodeInfo>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "scene node not found", "node"));
+        }
+        return eve::Result<eve::SceneNodeInfo>::success(node);
     }
-    bool getNodeIn(const std::string& host, const std::string& id, eve::SceneNodeInfo* out) const override {
-        if (host != "world" || id != node.id || !out) return false;
-        *out = node;
-        return true;
-    }
-    bool setNodeTransform(const std::string& id, float x, float y, float z) override {
-        if (id != node.id) return false;
+    eve::Result<void> setNodeTransform(const std::string& id, float x, float y, float z) override {
+        if (id != node.id) {
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "scene node not found", "node"));
+        }
         node.x = x;
         node.y = y;
         node.z = z;
-        return true;
+        return eve::Result<void>::success();
     }
-    bool setNodeVisible(const std::string& id, bool visible) override {
-        if (id != node.id) return false;
+    eve::Result<void> setNodeVisible(const std::string& id, bool visible) override {
+        if (id != node.id) {
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "scene node not found", "node"));
+        }
         node.visible = visible;
-        return true;
+        return eve::Result<void>::success();
     }
     void syncTransforms() override {}
 
@@ -358,6 +374,8 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     bool foundPixelCatalog    = false;
     bool foundPixelValidate   = false;
     bool foundPixelApply      = false;
+    bool foundApiSearch       = false;
+    bool foundApiGet          = false;
     for (size_t i = 0; i < tools->size(); ++i) {
         auto              t    = tools->getObject(static_cast<unsigned>(i));
         const std::string name = t->getValue<std::string>("name");
@@ -401,6 +419,8 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
         if (name == "eve_pixelworld_catalog_builtin") foundPixelCatalog = true;
         if (name == "eve_pixelworld_catalog_validate") foundPixelValidate = true;
         if (name == "eve_pixelworld_catalog_apply") foundPixelApply = true;
+        if (name == "eve_api_search") foundApiSearch = true;
+        if (name == "eve_api_get") foundApiGet = true;
     }
     CHECK(foundStatus);
     CHECK(foundGameplay);
@@ -442,6 +462,8 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     CHECK(foundPixelCatalog);
     CHECK(foundPixelValidate);
     CHECK(foundPixelApply);
+    CHECK(foundApiSearch);
+    CHECK(foundApiGet);
 
     client.sendRequest(3, "tools/call", "{\"name\":\"eve_status\",\"arguments\":{}}");
     auto statusMsg = client.expectResult(3);
@@ -452,6 +474,15 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     const std::string text = content->getObject(0)->getValue<std::string>("text");
     CHECK(text.find("\"attached\":true") != std::string::npos);
     CHECK(text.find("\"mcpPort\":") != std::string::npos);
+
+    client.sendRequest(41, "tools/call",
+                       "{\"name\":\"eve_api_search\",\"arguments\":{\"query\":\"newWorld\",\"limit\":8}}");
+    auto apiSearchMsg = client.expectResult(41);
+    REQUIRE(apiSearchMsg);
+    const std::string apiSearchText =
+        apiSearchMsg->getObject("result")->getArray("content")->getObject(0)->getValue<std::string>("text");
+    CHECK(apiSearchText.find("\"ok\":true") != std::string::npos);
+    CHECK(apiSearchText.find("\"method\":\"newWorld\"") != std::string::npos);
 
     client.sendRequest(
         40, "tools/call",
@@ -507,22 +538,22 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     CHECK(vcfgText.find("{") != std::string::npos);
     CHECK(vcfgText.find("apiKeySet") != std::string::npos);
 
-    // Scene-director tools: auto-install the Squirrel kit into the plain test VM
-    // and drive it over MCP (no Graphics / modules mounted -> geometry-only ops).
+    // A plain VM has no native authoring providers. Tools report the absence
+    // instead of creating an independent script-only scene owner.
     const std::string sdStat = textOf(11, "{\"name\":\"eve_scene_director_status\",\"arguments\":{}}");
-    CHECK(sdStat.find("\"installed\":true") != std::string::npos);
+    CHECK(sdStat.find("error") != std::string::npos);
 
     const std::string resetText = textOf(12, "{\"name\":\"eve_scene_reset\",\"arguments\":{}}");
-    CHECK(resetText.find("ok") != std::string::npos);
+    CHECK(resetText.find("error") != std::string::npos);
 
     const std::string infoText = textOf(13, "{\"name\":\"eve_scene_info\",\"arguments\":{}}");
-    CHECK(infoText.find("\"count\":0") != std::string::npos);
+    CHECK(infoText.find("error") != std::string::npos);
 
     const std::string camText = textOf(14, "{\"name\":\"eve_camera_generate\",\"arguments\":{\"count\":2}}");
-    CHECK(camText.find("\"cam_0\"") != std::string::npos);
+    CHECK(camText.find("error") != std::string::npos);
 
     const std::string modInfo = textOf(15, "{\"name\":\"eve_scene_modify\",\"arguments\":{\"action\":\"info\"}}");
-    CHECK(modInfo.find("\"count\":0") != std::string::npos);
+    CHECK(modInfo.find("error") != std::string::npos);
     // Unknown action must surface as a controlled error, not crash the server.
     const std::string modBad = textOf(16, "{\"name\":\"eve_scene_modify\",\"arguments\":{\"action\":\"no_such\"}}");
     const bool        modBadHasError =
@@ -565,6 +596,73 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
 
     mcp.stop();
     dt.detach();
+}
+
+TEST_CASE("devtools.procgenQuery.generateMapReportsStructuredFailure") {
+    class AbsentProcgen final : public eve::IProcgenQuery {
+    public:
+        std::vector<std::string> algorithms() override { return {}; }
+        std::vector<std::string> meshRecipes() override { return {}; }
+        std::vector<std::string> textureRecipes() override { return {}; }
+        std::vector<std::string> pbrRecipes() override { return {}; }
+        eve::Result<std::string> generateMap(const std::string&, int, int, uint32_t,
+                                             const std::vector<std::pair<std::string, std::string>>&) override {
+            return eve::Result<std::string>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "Procgen module not available", "procgen"));
+        }
+        eve::Result<std::string> buildMesh(const std::string&, uint32_t, int, int, int) override {
+            return eve::Result<std::string>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "Procgen module not available", "procgen"));
+        }
+    } query;
+
+    auto map = query.generateMap("bsp", 8, 8, 1, {});
+    REQUIRE(!map.ok());
+    REQUIRE(map.status().primaryDiagnostic() != nullptr);
+    CHECK_EQ(map.status().primaryDiagnostic()->code(), eve::DiagnosticCode::Unsupported);
+
+    auto mesh = query.buildMesh("mesh.fence", 1, -1, -1, -1);
+    REQUIRE(!mesh.ok());
+    CHECK_EQ(mesh.status().primaryDiagnostic()->code(), eve::DiagnosticCode::Unsupported);
+}
+
+TEST_CASE("devtools.sceneQuery.getSetReportStructuredFailure") {
+    ClosedLoopScene scene;
+    auto            missing = scene.getNode("missing");
+    REQUIRE(!missing.ok());
+    REQUIRE(missing.status().primaryDiagnostic() != nullptr);
+    CHECK_EQ(missing.status().primaryDiagnostic()->code(), eve::DiagnosticCode::NotFound);
+
+    auto badSet = scene.setNodeTransform("missing", 0.f, 0.f, 0.f);
+    REQUIRE(!badSet.ok());
+    REQUIRE(badSet.status().primaryDiagnostic() != nullptr);
+    CHECK_EQ(badSet.status().primaryDiagnostic()->code(), eve::DiagnosticCode::NotFound);
+
+    auto ok = scene.getNode("player");
+    REQUIRE(ok.ok());
+    CHECK_EQ(std::move(ok).value().id, "player");
+    auto visible = scene.setNodeVisible("player", false);
+    REQUIRE(visible.ok());
+    CHECK(!scene.node.visible);
+}
+
+TEST_CASE("devtools.renderCapture.savePngReportsStructuredFailure") {
+    ClosedLoopCapture capture;
+    auto              saved = capture.savePng("unused.png");
+    REQUIRE(!saved.ok());
+    REQUIRE(saved.status().primaryDiagnostic() != nullptr);
+    CHECK_EQ(saved.status().primaryDiagnostic()->code(), eve::DiagnosticCode::Unsupported);
+    CHECK_EQ(saved.status().primaryDiagnostic()->path(), "capture");
+
+    auto mask = capture.entityIdMaskPng("unused_id.png");
+    REQUIRE(!mask.ok());
+    REQUIRE(mask.status().primaryDiagnostic() != nullptr);
+    CHECK_EQ(mask.status().primaryDiagnostic()->code(), eve::DiagnosticCode::Unsupported);
+
+    auto gbuf = capture.gbufferPng("depth", "unused_depth.png");
+    REQUIRE(!gbuf.ok());
+    REQUIRE(gbuf.status().primaryDiagnostic() != nullptr);
+    CHECK_EQ(gbuf.status().primaryDiagnostic()->code(), eve::DiagnosticCode::Unsupported);
 }
 
 TEST_CASE("devtools.mcp.executeObserveCorrelatesEditorTransactionWithLiveRuntime") {

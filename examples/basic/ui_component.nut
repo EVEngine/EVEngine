@@ -38,7 +38,6 @@ eve_update = function(dt) {
             local nextHp = hud.state.hp - 10;
             if (nextHp < 0) nextHp = 0;
             hud.setState({ hp = nextHp });
-            hud.updateIfDirty();
         }
         c = ui.consumeClick();
     }

@@ -32,8 +32,8 @@ const SURFACE_WALL    = 5;
 const SURFACE_FEATURE = 6;
 const SURFACE_COUNT   = 7;
 
-// Procedural map tunables, passed straight through to `hexmap.generateMap` and
-// identical to the module's own `HexMapGeneratorSettings` defaults.
+// Procedural map tunables, passed through `procgen.generateHexTerrain` Params
+// (same defaults as `HexMapGeneratorSettings`).
 const SEED_LAND_PERCENT = 50;   // target share of the map left above the water line
 const SEED_WATER_LEVEL  = 3;    // cells at or below this elevation are flooded
 const SEED_RIVER_PERCENT = 10;  // target share of the map covered by rivers
@@ -259,8 +259,8 @@ function updateCamera(st, dt) {
 function createShaders(st) {
     if (st.shaders.len() > 0) return;
     // The engine's built-in Mesh3D vertex stage already produces the varyings these
-    // fragment shaders consume, so only the fragment stages are shipped (as SPIR-V:
-    // runtime GLSL compilation is unavailable on Windows). The list is indexed by
+    // fragment shaders consume, so only the fragment stages are shipped (as SPIR-V,
+    // which needs no runtime compiler). The list is indexed by
     // surface stream, so it must stay in `HexSurface` order; the wall and the
     // feature stream share one shader, which is therefore listed twice.
     local frags = ["shaders/hex_map_terrain.frag.spv", "shaders/hex_map_water.frag.spv",
@@ -416,20 +416,44 @@ function buildMap(st) {
 /**
  * Replaces the grid with a procedurally generated map at the current size.
  *
- * `generateMap` re-seeds the grid at the size that is already set, releases every
- * chunk mesh and drops all units and all fog state. Its contract then mirrors the
- * end of `buildMap` exactly, so this runs the same sequence: the caller places new
- * units, re-explores (a generated map starts with no explored cell, and the
- * pathfinder refuses to enter one), rebuilds every chunk -- the module marked them
- * all dirty, and no renderable points at the new meshes yet -- and hides the pool
- * slots outside the new chunk count. The generator honours the generator seed, so
- * the same seed and the same size always produce the same map.
+ * Procgen bakes the terrain; hexmap only applies it. `applyTerrain` re-seeds
+ * the grid from the bake, releases every chunk mesh and drops all units and
+ * all fog state. Its contract then mirrors the end of `buildMap`: the caller
+ * places new units, re-explores (a generated map starts with no explored cell,
+ * and the pathfinder refuses to enter one), rebuilds every chunk -- the module
+ * marked them all dirty, and no renderable points at the new meshes yet -- and
+ * hides the pool slots outside the new chunk count. The generator honours the
+ * bake seed, so the same seed and the same size always produce the same map.
  */
 function reseedProceduralMap(st) {
     st.seed = procgen.randomSeed();
-    local generated = hexmap.generateMap(gfx, st.seed, SEED_LAND_PERCENT, SEED_WATER_LEVEL, SEED_RIVER_PERCENT);
-    if (!generated.ok) {
-        st.statusText = "generate failed: " + generated.status.summary;
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) {
+        st.statusText = "generate failed: " + paramsResult.status.summary;
+        print("hex map: " + st.statusText + "\n");
+        return;
+    }
+    local params = paramsResult.value;
+    params.setSeed(st.seed);
+    params.setSize(hexmap.cellCountX(), hexmap.cellCountZ());
+    local defaults = procgen.applyAlgorithmDefaults("hex.terrain", params);
+    if (!defaults.ok) {
+        st.statusText = "generate failed: " + defaults.status.summary;
+        print("hex map: " + st.statusText + "\n");
+        return;
+    }
+    params.setInt("landPercentage", SEED_LAND_PERCENT);
+    params.setInt("waterLevel", SEED_WATER_LEVEL);
+    params.setInt("riverPercentage", SEED_RIVER_PERCENT);
+    local baked = procgen.generateHexTerrain(params);
+    if (!baked.ok) {
+        st.statusText = "generate failed: " + baked.status.summary;
+        print("hex map: " + st.statusText + "\n");
+        return;
+    }
+    local applied = hexmap.applyTerrain(gfx, baked.value);
+    if (!applied.ok) {
+        st.statusText = "apply failed: " + applied.status.summary;
         print("hex map: " + st.statusText + "\n");
         return;
     }

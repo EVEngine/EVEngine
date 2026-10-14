@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 
@@ -7,8 +9,9 @@
 namespace eve::graphics {
 
 /** @brief Analytic local participating-media volume injected into atmospheric fog. */
-class FogVolume {
+class EVENGINE_API_BACKENDS FogVolume {
 public:
+    /** @brief Shape public API. */
     enum class Shape { sphere, box, cylinder };
 
     /** @brief Set shape using "sphere", "box" or "cylinder"; unknown selects box. */

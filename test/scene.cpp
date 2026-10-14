@@ -3,11 +3,14 @@
 
 #include "scene/NodeDesc.h"
 #include "scene/Scene.h"
+#include "scene/SceneCameraProjection.h"
 #include "scene/SceneComponent.h"
 #include "scene/SceneHost.h"
 #include "scene/SceneNodeRef.h"
 #include "scene/SceneObject.h"
 #include "scene/TransformSystem.h"
+
+#include "common/Capability.h"
 
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
@@ -695,7 +698,7 @@ TEST_CASE("Scene.objectId.preservedAcrossFullRebuild") {
     REQUIRE(p != nullptr);
 
     SceneObject *o = sceneValue(SceneObject::createObject("objid", "p"));
-    p->objectId = uint32_t(o->id);
+    p->objectId    = uint32_t(o->id) + 1u;
 
     // Full rebuild keeps the binding marker on same-id nodes, not on new ones.
     h->setTree(node("root", {node("p"), node("q")}));
@@ -703,14 +706,14 @@ TEST_CASE("Scene.objectId.preservedAcrossFullRebuild") {
     SceneNode *q  = sceneValue(h->findById("q"));
     REQUIRE(p2 != nullptr);
     REQUIRE(q != nullptr);
-    CHECK_EQ(uint32_t(p2->objectId), uint32_t(o->id));
+    CHECK_EQ(uint32_t(p2->objectId), uint32_t(o->id) + 1u);
     CHECK_EQ(q->objectId, 0u);
 
     // Reconcile patch keeps the marker too.
     h->setTreeReconcile(node("root", {node("p").withPosition(1.f, 0.f, 0.f)}));
     SceneNode *p3 = sceneValue(h->findById("p"));
     REQUIRE(p3 != nullptr);
-    CHECK_EQ(uint32_t(p3->objectId), uint32_t(o->id));
+    CHECK_EQ(uint32_t(p3->objectId), uint32_t(o->id) + 1u);
 
     o->release();
 }
@@ -1103,6 +1106,30 @@ TEST_CASE("Scene.cull.frustum") {
     ecs::DestroyEntity(cam);
 }
 
+// The camera projection the picking entry points need is an optional
+// capability: without a provider they must fail explicitly instead of silently
+// returning a result, and with it restored they must work again.
+TEST_CASE("Scene.pick.withoutProjectionProvider") {
+    Scene *mod = Scene::create();
+    mod->mountAs("np", node("root", {node("target").withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f)})).ignore("test setup");
+    mod->updateTransformsAll();
+    auto *cam = eve::graphics::Camera3D::createCamera();
+    cam->setEye(0.f, 0.f, 5.f);
+    cam->setTarget(0.f, 0.f, 0.f);
+    cam->setFov(60.f);
+
+    auto *provider = eve::cap::query<eve::scene::ISceneCameraProjection>();
+    REQUIRE(provider != nullptr);
+    eve::cap::revoke<eve::scene::ISceneCameraProjection>(provider);
+    CHECK(mod->pickScreenAt("np", cam, 320.f, 240.f, 640.f, 480.f).empty());
+    CHECK(mod->collectFrustumIdsAt("np", cam, 640.f, 480.f).empty());
+    CHECK(!mod->applyPcgTerrainCullingAt("np", cam, 640.f, 480.f, "terrain").ok());
+
+    eve::cap::provide<eve::scene::ISceneCameraProjection>(provider);
+    CHECK(mod->pickScreenAt("np", cam, 320.f, 240.f, 640.f, 480.f) == "target");
+    ecs::DestroyEntity(cam);
+}
+
 TEST_CASE("Scene.spatial.syncOctree") {
     Scene *mod = Scene::create();
     mod->mountAs("sp",
@@ -1215,6 +1242,54 @@ function testSceneEntityViewCacheAfterDetach() {
 
     scene.detachEntity("b", b)
     if (eve.view(Unit).len() != 0) return false
+    return true
+}
+
+function testSceneEntityEnableAndDelayedDetach() {
+    class ToggleAI extends eve.SceneEntity {
+        ticks = 0
+        enables = 0
+        disables = 0
+        detached = false
+        function onEnable() { enables += 1 }
+        function onDisable() { disables += 1 }
+        function update(dt) {
+            ticks += 1
+            if (ticks == 1) scene().scheduleDetachEntity(nodeId, this)
+        }
+        function onDetach() { detached = true }
+    }
+
+    local scene = eve.Scene()
+    scene.beginBuild()
+    scene.beginNode("root")
+    scene.addNode("npc")
+    scene.addNode("prop")
+    scene.end()
+    scene.mountBuildAs("life")
+
+    local e = scene.attachEntity("npc", ToggleAI)
+    if (e == null) return false
+    local other = scene.attachEntity("prop", ToggleAI)
+    if (other == null) return false
+
+    e.disable()
+    if (e.disables != 1 || e.isEnabled()) return false
+    scene.update(0.1)
+    if (e.ticks != 0) return false  // disabled skips update
+    if (other.ticks != 1) return false
+    if (!other.detached) return false  // delayed detach flushed at end of update
+    if (eve.view(ToggleAI).len() != 1) return false
+
+    e.enable()
+    if (e.enables != 1 || !e.isEnabled()) return false
+    scene.update(0.1)
+    if (e.ticks != 1) return false
+    if (!e.detached) return false
+    if (eve.view(ToggleAI).len() != 0) return false
+
+    local ids = scene.collectIdsWith(ToggleAI)
+    if (ids.len() != 0) return false
     return true
 }
 
@@ -1435,6 +1510,10 @@ TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityLifecycle") {
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityViewCacheAfterDetach") {
     CHECK(vm.callFunc(vm.findFunc("testSceneEntityViewCacheAfterDetach"), vm).toBool());
+}
+
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityEnableAndDelayedDetach") {
+    CHECK(vm.callFunc(vm.findFunc("testSceneEntityEnableAndDelayedDetach"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.linkPhysics2D") {

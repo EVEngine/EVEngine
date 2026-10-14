@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <vector>
 
@@ -12,11 +14,13 @@ class AnimSkeleton;
  *
  * The skeleton is borrowed and must outlive the stack. Targets are owning values.
  */
-class AnimConstraintStack {
+class EVENGINE_API_WORLD AnimConstraintStack {
 public:
     /** @brief Construct for a non-null borrowed skeleton. */
     explicit AnimConstraintStack(AnimSkeleton* skeleton);
+    /** @brief Anim constraint stack. */
     AnimConstraintStack(const AnimConstraintStack&)            = default;
+    /** @brief Operator =. */
     AnimConstraintStack& operator=(const AnimConstraintStack&) = default;
 
     /** @brief Rebind the borrowed skeleton; changing it clears old index constraints. */

@@ -1,26 +1,65 @@
 #include "ui/ObjectRegistry.h"
 
+#include "common/Capability.h"
 #include "common/Module.h"
 #include "common/Runtime.h"
 #include "common/SquirrelOwnership.h"
 
 #include <algorithm>
 #include <exception>
+#include <squirrel.h>
 #include <utility>
 
 namespace eve::ui {
 namespace {
 
-template <typename T>
-eve::Result<T> registryFailure(eve::DiagnosticCode code, std::string message) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message)));
+void abandonSquirrelObject(ssq::Object& object) noexcept {
+    // Null the HSQOBJECT so ssq::Object::reset() will not call sq_release on a
+    // VM that has already been destroyed. The VM owns the remaining cells.
+    sq_resetobject(&object.getRaw());
+}
+
+class RegistryRootReleaser final : public eve::script::ISquirrelRootReleaser {
+public:
+    void releaseSquirrelRoots() noexcept override {
+        try {
+            ObjectRegistry::instance().clearAll();
+        } catch (...) {
+        }
+    }
+};
+
+RegistryRootReleaser& registryRootReleaser() {
+    static RegistryRootReleaser releaser;
+    return releaser;
+}
+
+void ensureRegistryRootReleaser() {
+    auto& releaser = registryRootReleaser();
+    eve::cap::removeListener<eve::script::ISquirrelRootReleaser>(&releaser);
+    eve::cap::addListener<eve::script::ISquirrelRootReleaser>(&releaser);
 }
 
 }  // namespace
 
 ObjectRegistry& ObjectRegistry::instance() {
     static ObjectRegistry registry;
+    ensureRegistryRootReleaser();
     return registry;
+}
+
+ObjectRegistry::~ObjectRegistry() {
+    if (ModuleManager::runtime()) {
+        clearAll();
+        return;
+    }
+    for (auto& target : slots_) {
+        if (target.entry) abandonSquirrelObject(target.entry->object);
+        target.entry.reset();
+    }
+    slots_.clear();
+    freeSlots_.clear();
+    byClass_.clear();
 }
 
 ObjectRegistry::Slot* ObjectRegistry::slot(ObjectHandle handle) noexcept {
@@ -35,23 +74,24 @@ const ObjectRegistry::Slot* ObjectRegistry::slot(ObjectHandle handle) const noex
 
 eve::Result<ObjectHandle> ObjectRegistry::create(const std::string& className) {
     if (className.empty()) {
-        return registryFailure<ObjectHandle>(eve::DiagnosticCode::InvalidArgument,
-                                             "UI object class name must not be empty");
+        return eve::Result<ObjectHandle>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "UI object class name must not be empty"));
     }
 
     Runtime* runtime = ModuleManager::runtime();
     if (!runtime) {
-        return registryFailure<ObjectHandle>(eve::DiagnosticCode::Failed,
-                                             "UI object registry requires an active Runtime");
+        return eve::Result<ObjectHandle>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "UI object registry requires an active Runtime"));
     }
 
     try {
         return registerObject(className, runtime->createInstance(className));
     } catch (const std::exception& error) {
-        return registryFailure<ObjectHandle>(eve::DiagnosticCode::Failed,
-                                             std::string("UI object construction failed: ") + error.what());
+        return eve::Result<ObjectHandle>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, std::string("UI object construction failed: ") + error.what()));
     } catch (...) {
-        return registryFailure<ObjectHandle>(eve::DiagnosticCode::Failed, "UI object construction failed");
+        return eve::Result<ObjectHandle>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "UI object construction failed"));
     }
 }
 
@@ -61,21 +101,21 @@ eve::Result<ObjectHandle> ObjectRegistry::registerObject(const std::string& clas
     bool          appendedSlot   = false;
     try {
         if (object.getType() != ssq::Type::INSTANCE) {
-            return registryFailure<ObjectHandle>(eve::DiagnosticCode::InvalidArgument,
-                                                 "UI object registry accepts only script instances");
+            return eve::Result<ObjectHandle>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "UI object registry accepts only script instances"));
         }
 
         std::string group = className;
         if (group.empty()) {
             Runtime* runtime = ModuleManager::runtime();
             if (!runtime) {
-                return registryFailure<ObjectHandle>(
-                    eve::DiagnosticCode::Failed, "UI object registry requires an active Runtime to derive the class");
+                return eve::Result<ObjectHandle>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Failed, "UI object registry requires an active Runtime to derive the class"));
             }
             group = runtime->classNameOf(object);
             if (group.empty()) {
-                return registryFailure<ObjectHandle>(eve::DiagnosticCode::InvalidArgument,
-                                                     "UI object registry could not derive a script class name");
+                return eve::Result<ObjectHandle>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "UI object registry could not derive a script class name"));
             }
         }
 
@@ -83,8 +123,8 @@ eve::Result<ObjectHandle> ObjectRegistry::registerObject(const std::string& clas
             allocatedIndex = freeSlots_.back();
         } else {
             if (slots_.size() >= ObjectHandle::invalidIndex) {
-                return registryFailure<ObjectHandle>(eve::DiagnosticCode::Failed,
-                                                     "UI object registry exhausted its slot index space");
+                return eve::Result<ObjectHandle>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Failed, "UI object registry exhausted its slot index space"));
             }
             allocatedIndex = static_cast<std::uint32_t>(slots_.size());
             slots_.emplace_back();
@@ -94,8 +134,8 @@ eve::Result<ObjectHandle> ObjectRegistry::registerObject(const std::string& clas
         Slot& target = slots_[allocatedIndex];
         if (target.retired || target.entry.has_value()) {
             if (appendedSlot) slots_.pop_back();
-            return registryFailure<ObjectHandle>(eve::DiagnosticCode::InvariantViolation,
-                                                 "UI object registry selected an occupied or retired slot");
+            return eve::Result<ObjectHandle>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvariantViolation, "UI object registry selected an occupied or retired slot"));
         }
 
         const ObjectHandle handle(allocatedIndex, target.generation);
@@ -128,40 +168,44 @@ eve::Result<ObjectHandle> ObjectRegistry::registerObject(const std::string& clas
             !slots_.back().entry.has_value()) {
             slots_.pop_back();
         }
-        return registryFailure<ObjectHandle>(eve::DiagnosticCode::Failed,
-                                             std::string("UI object registration failed: ") + error.what());
+        return eve::Result<ObjectHandle>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, std::string("UI object registration failed: ") + error.what()));
     } catch (...) {
         if (appendedSlot && !slots_.empty() && allocatedIndex + 1 == slots_.size() &&
             !slots_.back().entry.has_value()) {
             slots_.pop_back();
         }
-        return registryFailure<ObjectHandle>(eve::DiagnosticCode::Failed, "UI object registration failed");
+        return eve::Result<ObjectHandle>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "UI object registration failed"));
     }
 }
 
 eve::Result<void> ObjectRegistry::unregister(ObjectHandle handle) {
     if (!handle.isValid()) {
-        return registryFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                     "cannot unregister an invalid UI object handle");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "cannot unregister an invalid UI object handle"));
     }
 
     Slot* target = slot(handle);
     if (!target) {
-        return registryFailure<void>(eve::DiagnosticCode::NotFound, "UI object handle index is outside the registry");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "UI object handle index is outside the registry"));
     }
     if (!target->entry.has_value() || target->generation != handle.generation()) {
-        return registryFailure<void>(eve::DiagnosticCode::StaleHandle, "UI object handle is stale");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "UI object handle is stale"));
     }
 
     auto classIt = byClass_.find(target->entry->className);
     if (classIt == byClass_.end()) {
-        return registryFailure<void>(eve::DiagnosticCode::InvariantViolation, "UI object class index is missing");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "UI object class index is missing"));
     }
     auto&      classEntries = classIt->second;
     const auto handleIt     = std::find(classEntries.begin(), classEntries.end(), handle);
     if (handleIt == classEntries.end()) {
-        return registryFailure<void>(eve::DiagnosticCode::InvariantViolation,
-                                     "UI object class index does not contain its handle");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                                                 "UI object class index does not contain its handle"));
     }
 
     const auto next = ObjectHandle::nextGeneration(target->generation);
@@ -171,10 +215,11 @@ eve::Result<void> ObjectRegistry::unregister(ObjectHandle handle) {
             // entry unreachable. The remaining operations are noexcept.
             freeSlots_.push_back(handle.index());
         } catch (const std::exception& error) {
-            return registryFailure<void>(eve::DiagnosticCode::Failed,
-                                         std::string("UI object slot release failed: ") + error.what());
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, std::string("UI object slot release failed: ") + error.what()));
         } catch (...) {
-            return registryFailure<void>(eve::DiagnosticCode::Failed, "UI object slot release failed");
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "UI object slot release failed"));
         }
     }
 

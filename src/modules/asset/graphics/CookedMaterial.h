@@ -1,8 +1,11 @@
 #pragma once
+
 #include "asset/EvpackResourceReader.h"
+#include "common/Export.h"
 #include "graphics/BlendMode.h"
 #include "graphics/Color.h"
 #include "graphics/PbrSurface.h"
+#include "graphics/VegetationRender.h"
 namespace eve::asset_graphics::detail {
 /** @brief Validated material value; image references own identity, GPU bindings initially empty. */
 struct CookedMaterial {
@@ -11,13 +14,17 @@ struct CookedMaterial {
     bool                                    transparent = false, masked = false, doubleSided = false;
     graphics::BlendMode                     blend = graphics::BlendMode::Alpha;
     graphics::PbrSurface                    surface;
+    std::optional<graphics::VegetationSurface> vegetationSurface;
     std::array<std::optional<AssetRef>, 11> images;
+    std::array<std::optional<AssetRef>, 3>     detailImages;
 };
-/** @brief Decode material schemas 1/2 without allocating graphics resources.
- * Unknown additive fields are ignored; known fields are validated, with no coercion.
+/** @brief Decode material schemas 5 through 9 without allocating graphics resources.
+ * Unknown additive fields are
+ * ignored; known fields are validated, with no coercion.
  * @thread Reentrant; reader is borrowed synchronously, no callbacks or retained pointers.
  * @return Validated owning material or a diagnostic; no externally visible mutation.
  */
-[[nodiscard]] Result<CookedMaterial> readCookedMaterial(const asset::EvpackResourceReader& reader, const AssetRef& ref,
-                                                        const asset::EvpackCapabilities& caps);
+[[nodiscard]] EVENGINE_API_WORLD Result<CookedMaterial> readCookedMaterial(const asset::EvpackResourceReader& reader,
+                                                                           const AssetRef&                    ref,
+                                                                           const asset::EvpackCapabilities&   caps);
 }  // namespace eve::asset_graphics::detail

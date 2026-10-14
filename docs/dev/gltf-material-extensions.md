@@ -189,3 +189,11 @@ The three `runtime-pbr/` captures were regenerated after both corrections.
 The misplaced mannequin patches are gone. Mech source base-color maps contain
 weathering, but no matched UE reference is available: these captures still do not
 certify UE visual parity or completeness of converted UE material graphs.
+
+## Material v3 runtime update
+
+The importer continues to emit v2. Cooking now migrates it to v3, and the runtime
+reader accepts v2/v3. V1 must be migrated using the preceding tool version first.
+The native color-mask contract and its unknown-field policy are documented in
+[canonical-material-v3.md](canonical-material-v3.md). Earlier validation records
+in this document describe the prior v1/v2 reader.

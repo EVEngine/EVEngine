@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "NetTypes.h"
 
@@ -17,10 +19,11 @@ class Network;
  * @brief Background thread that runs blocking socket I/O and HTTP jobs.
  * Completions are queued and drained by Network::pump on the main thread.
  */
-class NetWorker {
+class EVENGINE_API_PLATFORM NetWorker {
 public:
     /** @brief Creates a worker owned by `owner` (not started yet). */
     explicit NetWorker(Network* owner);
+    /** @brief Net worker. */
     ~NetWorker();
 
     /** @brief Starts the worker thread. */

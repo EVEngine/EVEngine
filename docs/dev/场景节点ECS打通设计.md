@@ -220,8 +220,9 @@ eve_update(dt) { scene.update(dt) }     // 引擎约定，与 eve.System.update 
 - [x] `hostName/nodeId → SceneObject` 哈希：`findById` 惰性 id→index 索引落地（O(1)）。
 - [x] TransformSystem 增量 dirty（只重算脏子树、只同步受影响 link；全净树零开销）。
 - [x] 生命周期钩子：`SceneComponent.onMount`（C++ + 脚本）。
-- [ ] `collectIdsWith(cls)`；`enable/disable` + `onEnable/onDisable`。
-- 延迟销毁队列（update 中安全 detach）。
+- [x] `collectIdsWith(cls)`；`enable/disable` + `onEnable/onDisable`。
+- [x] 延迟销毁队列（update 中安全 detach：`scheduleDetachEntity` / `flushDelayedDetaches`）。
+- DX cookbook：[`场景对象模型使用指南.md`](场景对象模型使用指南.md)。
 
 ### P2
 

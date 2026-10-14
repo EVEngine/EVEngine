@@ -20,34 +20,34 @@ InstanceDone InitFlow::createInstance() {
     // Native (Dawn) requires the TimedWaitAny instance feature so the
     // ProcessEvents busy-wait below can drive the request callbacks.
     const WGPUInstanceFeatureName requiredFeatures[] = {WGPUInstanceFeatureName_TimedWaitAny};
-    WGPUInstanceDescriptor instanceDesc{};
+    WGPUInstanceDescriptor        instanceDesc{};
     instanceDesc.requiredFeatureCount = 1;
-    instanceDesc.requiredFeatures = requiredFeatures;
-    instance = wgpu::CreateInstance(reinterpret_cast<const wgpu::InstanceDescriptor *>(&instanceDesc));
+    instanceDesc.requiredFeatures     = requiredFeatures;
+    instance = wgpu::CreateInstance(reinterpret_cast<const wgpu::InstanceDescriptor*>(&instanceDesc));
 #endif
     if (!instance) throw Exception("WebGPU: wgpuCreateInstance failed");
     return InstanceDone{std::move(instance)};
 }
 
-AdapterDone InitFlow::requestAdapter(InstanceDone &&prev, const wgpu::Surface &compatibleSurface) {
-    wgpu::Instance &instance = prev.instance;
+AdapterDone InitFlow::requestAdapter(InstanceDone&& prev, const wgpu::Surface& compatibleSurface) {
+    wgpu::Instance& instance = prev.instance;
 
     struct Result {
-        wgpu::Adapter adapter;
-        std::string error;
+        wgpu::Adapter     adapter;
+        std::string       error;
         std::atomic<bool> received{false};
     } result;
 
     WGPURequestAdapterOptions opts{};
     opts.compatibleSurface = compatibleSurface.Get();
-    opts.powerPreference = WGPUPowerPreference_HighPerformance;
+    opts.powerPreference   = WGPUPowerPreference_HighPerformance;
 
     WGPURequestAdapterCallbackInfo cbInfo{};
     cbInfo.nextInChain = nullptr;
-    cbInfo.mode = WGPUCallbackMode_AllowProcessEvents;
-    cbInfo.callback = [](WGPURequestAdapterStatus status, WGPUAdapter a, WGPUStringView msg,
-                         void *userdata1, void * /*userdata2*/) {
-        auto *r = static_cast<Result *>(userdata1);
+    cbInfo.mode        = WGPUCallbackMode_AllowProcessEvents;
+    cbInfo.callback    = [](WGPURequestAdapterStatus status, WGPUAdapter a, WGPUStringView msg, void* userdata1,
+                            void* /*userdata2*/) {
+        auto* r = static_cast<Result*>(userdata1);
         if (status == WGPURequestAdapterStatus_Success && a) {
             r->adapter = wgpu::Adapter(a);
         } else {
@@ -73,30 +73,51 @@ AdapterDone InitFlow::requestAdapter(InstanceDone &&prev, const wgpu::Surface &c
     return AdapterDone{std::move(instance), std::move(result.adapter)};
 }
 
-DeviceDone InitFlow::requestDevice(AdapterDone &&prev) {
-    wgpu::Instance &instance = prev.instance;
-    wgpu::Adapter &adapter = prev.adapter;
+DeviceDone InitFlow::requestDevice(AdapterDone&& prev) {
+    wgpu::Instance& instance = prev.instance;
+    wgpu::Adapter&  adapter  = prev.adapter;
 
     struct Result {
-        wgpu::Device device;
-        std::string error;
+        wgpu::Device      device;
+        std::string       error;
         std::atomic<bool> received{false};
     } result;
 
     WGPUDeviceDescriptor devDesc{};
     devDesc.label = sv("eve_device");
-    devDesc.uncapturedErrorCallbackInfo.callback =
-        [](WGPUDevice const *, WGPUErrorType type, WGPUStringView message, void *, void *) {
-            std::fprintf(stderr, "[webgpu] uncaptured error type=%d: %.*s\n", int(type),
-                         int(message.length), message.data ? message.data : "");
-        };
+    // Mesh3D bind group samples albedo/normal/env/shadow/height/depth/AO/extras.
+    constexpr std::uint32_t requiredSampledTextures = 17;
+    // Phase B GBuffer is five RGBA8Unorm color targets (5×8 = 40 bytes/sample).
+    // WebGPU's default maxColorAttachmentBytesPerSample is 32; Dawn/macOS
+    // adapters advertise 128 but only grant it when requested here.
+    constexpr std::uint32_t requiredColorAttachmentBytes = 40;
+    wgpu::Limits            adapterLimits{};
+    if (adapter.GetLimits(&adapterLimits) != wgpu::Status::Success ||
+        adapterLimits.maxSampledTexturesPerShaderStage < requiredSampledTextures)
+        throw Exception("WebGPU: adapter exposes fewer than %u sampled textures per shader stage",
+                        requiredSampledTextures);
+    if (adapterLimits.maxColorAttachmentBytesPerSample < requiredColorAttachmentBytes)
+        throw Exception(
+            "WebGPU: adapter maxColorAttachmentBytesPerSample (%u) is below the "
+            "GBuffer requirement (%u)",
+            adapterLimits.maxColorAttachmentBytesPerSample, requiredColorAttachmentBytes);
+    WGPULimits requiredLimits                       = WGPU_LIMITS_INIT;
+    requiredLimits.maxSampledTexturesPerShaderStage = requiredSampledTextures;
+    requiredLimits.maxColorAttachmentBytesPerSample = requiredColorAttachmentBytes;
+    // Leave maxColorAttachments at the WGPU default (8); only raise bytes/sample.
+    devDesc.requiredLimits                          = &requiredLimits;
+    devDesc.uncapturedErrorCallbackInfo.callback    = [](WGPUDevice const*, WGPUErrorType type, WGPUStringView message,
+                                                         void*, void*) {
+        std::fprintf(stderr, "[webgpu] uncaptured error type=%d: %.*s\n", int(type), int(message.length),
+                     message.data ? message.data : "");
+    };
 
     WGPURequestDeviceCallbackInfo cbInfo{};
     cbInfo.nextInChain = nullptr;
-    cbInfo.mode = WGPUCallbackMode_AllowProcessEvents;
-    cbInfo.callback = [](WGPURequestDeviceStatus status, WGPUDevice d, WGPUStringView msg,
-                         void *userdata1, void * /*userdata2*/) {
-        auto *r = static_cast<Result *>(userdata1);
+    cbInfo.mode        = WGPUCallbackMode_AllowProcessEvents;
+    cbInfo.callback    = [](WGPURequestDeviceStatus status, WGPUDevice d, WGPUStringView msg, void* userdata1,
+                            void* /*userdata2*/) {
+        auto* r = static_cast<Result*>(userdata1);
         if (status == WGPURequestDeviceStatus_Success && d) {
             r->device = wgpu::Device(d);
         } else {
@@ -118,11 +139,11 @@ DeviceDone InitFlow::requestDevice(AdapterDone &&prev) {
         throw Exception("WebGPU: device request failed (%s)", result.error.c_str());
     }
 
-    wgpu::Queue queue = result.device.GetQueue();
+    wgpu::Queue  queue = result.device.GetQueue();
     Capabilities caps;
     caps.capture(adapter, result.device);
-    return DeviceDone{std::move(instance), std::move(adapter), std::move(result.device),
-                      std::move(queue), std::move(caps)};
+    return DeviceDone{std::move(instance), std::move(adapter), std::move(result.device), std::move(queue),
+                      std::move(caps)};
 }
 
 }  // namespace eve::graphics::webgpu

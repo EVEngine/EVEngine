@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "physics-destruction-bone-link-contract",
+      "rule": "link",
+      "scope": "src/modules/physics/destruction/**",
+      "owner": "physics::GeometryCollectionInstance",
+      "issue": "EVENGINE-DESTRUCTION-P0",
+      "reason": "Geometry-collection bones bind to World3D bodies only through PhysicsLink; either destruction order must stale-resolve without retained Body3D pointers.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/physics/destruction/GeometryCollectionInstance.h",
+        "src/modules/physics/destruction/graphics/GeometryCollectionRenderer.h",
+        "docs/dev/2026-09-29-chaos-destruction-geometry-collection设计.md"
+      ],
+      "tests": [
+        "test/physics_destruction.cpp",
+        "test/physics_destruction_graphics.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "symbols": [
+        "GeometryCollectionInstance",
+        "PhysicsLink",
+        "BonePresentation",
+        "GeometryCollectionRenderer"
+      ],
+      "create": "GeometryCollectionInstance::create builds Body3D per bone and stores PhysicsLink::fromBody; rollback destroys partial bodies on failure.",
+      "ownership": "Instance owns bodies it creates; World3D owns the solver registry; Asset remains the immutable geometry/connection authority; GeometryCollectionRenderer borrows Instance/Graphics only for the call.",
+      "destroy_order": "Instance-first destroys owned bodies then clears links; World-first makes findWorld/resolve return StaleHandle and step/applyField/draw reject without mutating topology.",
+      "restore": "Process-local links are not persistent; restore/hot-reload must recreate Instance against a restored World3D from asset identity; presentation rebuilds from bonePresentation + sleepBatchRevision.",
+      "stale": "boneLink/step/applyField/bonePresentation/draw resolve World3D::findWorld and PhysicsLink::resolve; encoded link validity alone is insufficient."
+    },
+    {
+      "id": "physics-link-contract",
+      "rule": "link",
+      "scope": "src/modules/physics/PhysicsLink.h",
+      "owner": "physics::World3D and physics::World",
+      "issue": "EVENGINE-ARCH-LINK-CONTRACTS",
+      "reason": "Physics links are process-local projections and must be stale-safe across either destruction order and restore.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/physics/PhysicsLink.h",
+        "docs/dev/物理系统分层与后端契约.md"
+      ],
+      "tests": [
+        "test/physics_artifact_provider.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "symbols": [
+        "PhysicsLink",
+        "PhysicsShapeLink",
+        "PhysicsJointLink"
+      ],
+      "create": "attach/fromBody/fromShape/fromJoint validate owner-qualified runtime handles",
+      "ownership": "World owns bodies, shapes and joints; gameplay stores only the typed link projection.",
+      "destroy_order": "Shape/Joint before Body/World and World before dependants both invalidate to StaleHandle.",
+      "restore": "Rebuild process-local links from persistent identity after transactional world restore or hot reload.",
+      "stale": "Generation and owner identity are checked by resolve; encoded validity alone is insufficient."
+    },
+    {
+      "id": "physics-trajectory-world-lifetime-contract",
+      "rule": "link",
+      "scope": "src/modules/physics/trajectory/**",
+      "owner": "physics::trajectory::TrajectoryCollisionRuntime and physics::World3D",
+      "issue": "EVENGINE-ARCH-LINK-CONTRACTS",
+      "reason": "Bone-bound trajectory sweeps borrow World3D and IAttachmentPointSource; either destruction order must stale-fail without retained Body3D pointers.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/physics/trajectory/TrajectoryCollision.h",
+        "docs/usr/modules/physics_trajectory.md"
+      ],
+      "tests": [
+        "test/physics_trajectory_collision.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "symbols": [
+        "TrajectoryCollisionRuntime",
+        "BoneColliderDefinition",
+        "TrajectoryHit"
+      ],
+      "create": "TrajectoryCollisionRuntime observes World3D via weak lifetime token and runtimeHandle; arm samples IAttachmentPointSource before storing previous==current.",
+      "ownership": "World3D solely owns bodies and shapes; the runtime owns catalog/armed/hit-memory state and publishes process-local body/shape handles on hits only.",
+      "destroy_order": "Runtime-first drops borrowed world/pose pointers without mutating World3D; world-first makes liveWorld null and advance/arm return StaleHandle.",
+      "restore": "Process-local handles and armed samples are not persistent; callers rebind pose sources and re-arm colliders after world restore or hot reload.",
+      "stale": "advance/arm resolve lifetimeToken plus runtimeHandle equality before any cast; pose sources are cleared with clearPoseSource before subject teardown."
+    }
+  ]
+}

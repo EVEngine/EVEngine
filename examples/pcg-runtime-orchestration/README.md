@@ -30,7 +30,7 @@ make run/<platform>-debug GAME=examples/pcg-runtime-orchestration
 **任务队列**：`add(0.25)` → `tick(0.25)` → `getReadyTaskId()` 必须等于 `add` 返回的 id →
 `resolveReady(true)` 收尾。
 
-另外打印宿主系统探测行 `PCG_HOST_SYSTEM limitFrame=... type=...`。示例保持正常帧循环，
+另外打印 OS 模块探测行 `PCG_HOST_OS limitFrame=... type=...`。示例保持正常帧循环，
 以便 `scripts/smoke_examples.sh` 能验证它在启动后持续存活。
 
 成功标记：`PCG_RUNTIME_ORCHESTRATION_PASS stamp=6 progress=0.35 queue=0`

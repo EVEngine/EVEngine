@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "editing/EditingAuthority.h"
@@ -19,8 +21,7 @@ using DomainOperation    = editing::DomainOperation;
 using EditRegion         = editing::EditRegion;
 using EditorDiagnostic   = editing::Diagnostic;
 
-template <class T>
-using EditorResult           = editing::Result<T>;
+using editing::Result;
 using EditorStatus           = editing::Status;
 using EditorValue            = editing::Value;
 using IDomainOperationTarget = editing::IDomainOperationTarget;
@@ -70,26 +71,33 @@ struct FluidSimulationPreview {
 };
 
 /** @brief Reversible property document for fluid simulation authoring. */
-class FluidSimulationTarget final : public virtual IEditableTarget,
-                                    public IDomainOperationTarget,
-                                    public IPropertyProvider {
+class EVENGINE_API_ORCHESTRATION FluidSimulationTarget final : public ::eve::editing::EditableTargetState,
+                                                               public virtual IEditableTarget,
+                                                               public IDomainOperationTarget,
+                                                               public IPropertyProvider {
 public:
+    /** @brief Fluid simulation target. */
     explicit FluidSimulationTarget(std::string id);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
-    std::uint64_t    revision() const override { return revision_; }
-    EditRegion       dirtyRegion() const override { return dirty_; }
-    void             clearDirtyRegion() override { dirty_.clear(); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
     void*                         queryCapability(const CapabilityId& capability) override;
-    EditorResult<void>            applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Applies domain operation. */
+    Result<void>            applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     PropertySchema                schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    /** @brief Make set. */
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    /** @brief Make reset. */
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath&      path) const override;
     /** @brief Return an immutable settings copy. */
     FluidSimulationSettings settings() const { return settings_; }
@@ -101,13 +109,12 @@ public:
     /** @brief Capture deterministic settings. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load schema-version-one settings. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
+    /** @brief Matches. */
     bool                    matches(const SelectionSnapshot& selection) const;
     std::string             id_;
-    Revision                revision_ = 1;
-    EditRegion              dirty_;
     FluidSimulationSettings settings_;
 };
 
@@ -115,7 +122,7 @@ private:
 class FluidSimulationRuntimeApplier {
 public:
     /** @brief Apply validated mutable solver parameters; capacity remains runtime-owned. */
-    EditorResult<void> apply(const FluidSimulationTarget& target, fluids::FluidSimulation* simulation) const;
+    Result<void> apply(const FluidSimulationTarget& target, fluids::FluidSimulation* simulation) const;
 };
 
 }  // namespace eve::fluids_editing

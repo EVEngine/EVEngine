@@ -1,15 +1,19 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <vector>
 
 namespace eve::procgen {
 
+/** @brief CaveSedimentPathPoint public API. */
 struct CaveSedimentPathPoint {
     float x = 0.f, y = 0.f, z = 0.f;
     float radius = 0.16f;
 };
 
+/** @brief CaveSedimentClast public API. */
 struct CaveSedimentClast {
     float x = 0.f, y = 0.f, z = 0.f;
     float flowX = 1.f, flowZ = 0.f;
@@ -17,6 +21,7 @@ struct CaveSedimentClast {
     float pitch = 0.f;
 };
 
+/** @brief CaveSedimentBar public API. */
 struct CaveSedimentBar {
     float                          x = 0.f, y = 0.f, z = 0.f;
     float                          ceilingY = 0.f;
@@ -29,6 +34,7 @@ struct CaveSedimentBar {
     std::vector<CaveSedimentClast> clasts;
 };
 
+/** @brief CaveSedimentSet public API. */
 struct CaveSedimentSet {
     std::vector<CaveSedimentBar> bars;
     int                          clastCount             = 0;
@@ -52,16 +58,18 @@ struct CaveSedimentSet {
  * @param seed Deterministic generator seed.
  * @return Bars, clasts, and observable deposition statistics.
  */
-CaveSedimentSet createCaveSediment(const std::vector<CaveSedimentPathPoint>& path, int barCount, float strength,
-                                   float paragenesis, uint32_t seed);
+EVENGINE_API_DOMAINS CaveSedimentSet createCaveSediment(const std::vector<CaveSedimentPathPoint>& path, int barCount,
+                                                        float strength, float paragenesis, uint32_t seed);
 
 /** @brief Carve flow-aligned antigravitative ceiling channels above generated sediment bars. */
-float carveCaveParagenesis(float x, float y, float z, float current, const CaveSedimentSet& sediment);
+EVENGINE_API_DOMAINS float carveCaveParagenesis(float x, float y, float z, float current,
+                                                const CaveSedimentSet& sediment);
 
 /** @brief Union sediment bars and imbricated clasts into a cave SDF. */
-float addCaveSediment(float x, float y, float z, float current, const CaveSedimentSet& sediment);
+EVENGINE_API_DOMAINS float addCaveSediment(float x, float y, float z, float current, const CaveSedimentSet& sediment);
 
 /** @brief Test whether a point lies on a generated sediment surface. */
-bool isCaveSedimentSurface(float x, float y, float z, float tolerance, const CaveSedimentSet& sediment);
+EVENGINE_API_DOMAINS bool isCaveSedimentSurface(float x, float y, float z, float tolerance,
+                                                const CaveSedimentSet& sediment);
 
 }  // namespace eve::procgen

@@ -5,6 +5,7 @@
 #include "asset/graphics/EvpackImageLoader.h"
 #include "asset/scene/EvpackSceneTemplateLoader.h"
 #include "graphics/Graphics.h"
+#include "graphics/Material.h"
 
 #include <algorithm>
 #include <cmath>
@@ -17,11 +18,6 @@
 
 namespace eve::asset_graphics {
 namespace {
-template <class T>
-Result<T> fail(std::string message) {
-    return Result<T>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), {}, {}, "asset.graphics.prefab"));
-}
 using MaterialData = detail::CookedMaterial;
 }  // namespace
 
@@ -37,8 +33,12 @@ struct EvpackStaticPrefab::Impl {
         graphics::Mesh*    mesh;
         graphics::Texture* image;
         MaterialData       material;
+        bool               castShadows = true;
+        bool               receiveShadows = true;
     };
     std::vector<Draw> draws;
+    std::vector<std::unique_ptr<graphics::Material>> gpuMaterials;
+    graphics::Graphics* gpuGraphics = nullptr;
     bool              released = false;
 };
 EvpackStaticPrefab::EvpackStaticPrefab(std::unique_ptr<Impl> impl) : impl_(std::move(impl)) {}
@@ -49,6 +49,14 @@ EvpackStaticPrefab::~EvpackStaticPrefab() {
 std::size_t  EvpackStaticPrefab::drawCount() const noexcept { return impl_->draws.size(); }
 Result<void> EvpackStaticPrefab::release() {
     impl_->released = true;
+    if (impl_->gpuGraphics) {
+        for (const auto& material : impl_->gpuMaterials) {
+            auto released = impl_->gpuGraphics->gpuDrivenReleaseMaterialRecord(material.get());
+            if (!released) return released;
+        }
+        impl_->gpuGraphics = nullptr;
+    }
+    impl_->gpuMaterials.clear();
     impl_->draws.clear();
     Status failure;
     for (auto it = impl_->meshLeases.begin(); it != impl_->meshLeases.end();) {
@@ -71,6 +79,89 @@ Result<void> EvpackStaticPrefab::release() {
     }
     if (failure.isFailure()) return Result<void>::failure(failure);
     return Result<void>::success();
+}
+Result<std::vector<StaticPrefabGpuPart>> EvpackStaticPrefab::prepareGpuDriven(graphics::Graphics& gfx) {
+    if (impl_->released)
+        return Result<std::vector<StaticPrefabGpuPart>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "prefab resources have been released", {}, {}, "asset.graphics.prefab"));
+    if (!impl_->gpuMaterials.empty())
+        return Result<std::vector<StaticPrefabGpuPart>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "prefab GPU-driven parts are already registered", {}, {},
+                              "asset.graphics.prefab"));
+    std::vector<std::unique_ptr<graphics::Material>> materials;
+    std::vector<StaticPrefabGpuPart> parts;
+    materials.reserve(impl_->draws.size());
+    parts.reserve(impl_->draws.size());
+    for (const auto& draw : impl_->draws) {
+        if (draw.material.transparent)
+            return Result<std::vector<StaticPrefabGpuPart>>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "transparent prefab Detail cannot use opaque GPU submission", {}, {},
+                "asset.graphics.prefab"));
+        bool unsupportedImage = false;
+        for (std::size_t role = 1; role < draw.material.images.size(); ++role) {
+            if (role != std::size_t(graphics::PbrTextureSlot::Normal) && draw.material.images[role])
+                unsupportedImage = true;
+        }
+        const auto conventionalBinding = [](const graphics::PbrTextureBinding& binding) {
+            return binding.texcoord == 0 && binding.offset == std::array<float, 2>{0.f, 0.f} &&
+                   binding.scale == std::array<float, 2>{1.f, 1.f} && binding.rotation == 0.f;
+        };
+        if (unsupportedImage ||
+            std::any_of(draw.material.detailImages.begin(), draw.material.detailImages.end(),
+                        [](const auto& image) { return image.has_value(); }) ||
+            draw.material.vegetationSurface || draw.material.surface.normalScale != 1.f ||
+            draw.material.surface.normalMode != graphics::PbrNormalMode::TangentXYZ ||
+            !conventionalBinding(draw.material.surface.textures[0]) ||
+            !conventionalBinding(draw.material.surface.textures[std::size_t(graphics::PbrTextureSlot::Normal)]))
+            return Result<std::vector<StaticPrefabGpuPart>>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "extended prefab material requires a GPU-driven PBR surface record",
+                {}, {}, "asset.graphics.prefab"));
+        auto material = std::make_unique<graphics::Material>();
+        material->setTint(draw.material.color.r, draw.material.color.g, draw.material.color.b, draw.material.color.a);
+        material->setMetallic(draw.material.metallic);
+        material->setRoughness(draw.material.roughness);
+        material->setSurfaceMode(draw.material.masked ? "masked" : "opaque");
+        material->setAlphaCutoff(draw.material.alphaCutoff);
+        material->setDoubleSided(draw.material.doubleSided);
+        material->setAlbedoTexture(draw.image);
+        material->setNormalTexture(
+            draw.material.surface.textures[std::size_t(graphics::PbrTextureSlot::Normal)].texture);
+        if (!gfx.gpuDrivenMaterialUsable(material.get()))
+            return Result<std::vector<StaticPrefabGpuPart>>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "prefab material is unavailable to GPU-driven rendering", {}, {},
+                "asset.graphics.prefab"));
+        materials.push_back(std::move(material));
+    }
+    const auto releaseRegistered = [&gfx](const std::vector<std::unique_ptr<graphics::Material>>& owned,
+                                          std::size_t count) {
+        for (std::size_t i = 0; i < count; ++i) {
+            auto released = gfx.gpuDrivenReleaseMaterialRecord(owned[i].get());
+            if (!released) return released;
+        }
+        return Result<void>::success();
+    };
+    for (std::size_t drawIndex = 0; drawIndex < impl_->draws.size(); ++drawIndex) {
+        const auto& draw = impl_->draws[drawIndex];
+        auto& material = materials[drawIndex];
+        StaticPrefabGpuPart part;
+        std::copy(glm::value_ptr(draw.transform), glm::value_ptr(draw.transform) + 16, part.localTransform.begin());
+        part.meshId     = gfx.gpuDrivenMeshRecord(draw.mesh);
+        part.materialId = gfx.gpuDrivenMaterialRecord(material.get());
+        if (part.meshId == graphics::kInvalidGpuDrivenSlot || part.materialId == graphics::kInvalidGpuDrivenSlot) {
+            auto cleanup = releaseRegistered(materials, drawIndex + 1);
+            if (!cleanup) return Result<std::vector<StaticPrefabGpuPart>>::failure(cleanup.status());
+            return Result<std::vector<StaticPrefabGpuPart>>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "prefab GPU table registration failed", {}, {},
+                                  "asset.graphics.prefab"));
+        }
+        parts.push_back(part);
+    }
+    if (parts.empty())
+        return Result<std::vector<StaticPrefabGpuPart>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "prefab has no enabled renderer", {}, {}, "asset.graphics.prefab"));
+    impl_->gpuMaterials = std::move(materials);
+    impl_->gpuGraphics = &gfx;
+    return Result<std::vector<StaticPrefabGpuPart>>::success(std::move(parts));
 }
 Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset::EvpackResourceReader& reader,
                                                                      graphics::IMeshResourceFactory&    meshes,
@@ -113,7 +204,9 @@ Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset
             const auto& sets     = out->impl_->meshUvSets.at(meshKey);
             auto        selected = parameters.value().surface.textures[role].texcoord;
             if (std::find(sets.begin(), sets.end(), selected) == sets.end())
-                return fail<std::unique_ptr<EvpackStaticPrefab>>("material references missing mesh UV channel");
+                return Result<std::unique_ptr<EvpackStaticPrefab>>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "material references missing mesh UV channel",
+                                      {}, {}, "asset.graphics.prefab"));
             const auto& ref      = *parameters.value().images[role];
             const auto  imageKey = ref.format();
             if (!out->impl_->imageLeases.contains(imageKey)) {
@@ -123,19 +216,39 @@ Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset
             }
             parameters.value().surface.textures[role].texture = out->impl_->imageLeases.at(imageKey);
         }
+        for (size_t role = 0; role < 3; ++role) {
+            if (!parameters.value().detailImages[role]) continue;
+            const auto& ref      = *parameters.value().detailImages[role];
+            const auto  imageKey = ref.format();
+            if (!out->impl_->imageLeases.contains(imageKey)) {
+                auto loaded = imageLoader.load(ref, caps);
+                if (!loaded) return Result<std::unique_ptr<EvpackStaticPrefab>>::failure(loaded.status());
+                out->impl_->imageLeases.emplace(imageKey, loaded.value().texture);
+            }
+            parameters.value().surface.vegetationDetail.textures[role].texture = out->impl_->imageLeases.at(imageKey);
+        }
+        auto validatedSurface = graphics::validatePbrSurface(parameters.value().surface);
+        if (!validatedSurface) return Result<std::unique_ptr<EvpackStaticPrefab>>::failure(validatedSurface.status());
         image = parameters.value().surface.textures[0].texture;
         out->impl_->draws.push_back({transforms.at(binding.object), out->impl_->meshLeases.at(meshKey), image,
-                                     std::move(parameters).takeValue()});
+                                     std::move(parameters).takeValue(), binding.castShadows,
+                                     binding.receiveShadows});
     }
     return Result<std::unique_ptr<EvpackStaticPrefab>>::success(std::move(out));
 }
 Result<void> EvpackStaticPrefab::draw(graphics::Graphics& gfx, const std::array<float, 16>& transform,
                                       const std::array<float, 16>& cameraView) const {
-    if (impl_->released) return fail<void>("prefab resources have been released");
+    if (impl_->released)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "prefab resources have been released", {}, {}, "asset.graphics.prefab"));
     for (float value : transform)
-        if (!std::isfinite(value)) return fail<void>("nonfinite instance transform");
+        if (!std::isfinite(value))
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "nonfinite instance transform", {}, {}, "asset.graphics.prefab"));
     for (float value : cameraView)
-        if (!std::isfinite(value)) return fail<void>("nonfinite camera view");
+        if (!std::isfinite(value))
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "nonfinite camera view", {},
+                                                           {}, "asset.graphics.prefab"));
     const auto instance = glm::make_mat4(transform.data());
     const auto               view     = glm::make_mat4(cameraView.data());
     std::vector<std::size_t> order(impl_->draws.size());
@@ -162,10 +275,40 @@ Result<void> EvpackStaticPrefab::draw(graphics::Graphics& gfx, const std::array<
         gfx.setMesh3DVirtualTexture(false, 1, 1, 1, 1, 0.f);
         gfx.setMesh3DTexCellBomb(1.f, 0.f, 0.f);
         gfx.setMesh3DParallax(0.f);
-        gfx.setMesh3DShadowReceive(true);
+        gfx.setMesh3DShadowReceive(draw.receiveShadows);
         auto color = draw.material.color;
         gfx.drawMesh(draw.mesh, instance * draw.transform, draw.image, color);
     }
     return gfx.setMesh3DPbrSurface(nullptr);
+}
+
+Result<void> EvpackStaticPrefab::drawShadow(graphics::Graphics& gfx,
+                                            const std::array<float, 16>& transform,
+                                            const std::array<float, 16>& lightViewProjection) const {
+    if (impl_->released)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "prefab resources have been released", {}, {}, "asset.graphics.prefab"));
+    for (float value : transform)
+        if (!std::isfinite(value))
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "nonfinite instance transform", {}, {}, "asset.graphics.prefab"));
+    for (float value : lightViewProjection)
+        if (!std::isfinite(value))
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "nonfinite shadow view projection", {}, {}, "asset.graphics.prefab"));
+    const glm::mat4 instance = glm::make_mat4(transform.data());
+    const glm::mat4 lightVP  = glm::make_mat4(lightViewProjection.data());
+    for (const auto& draw : impl_->draws) {
+        if (!draw.castShadows || draw.material.transparent) continue;
+        const glm::mat4 lightMvp = lightVP * instance * draw.transform;
+        const bool doubleSided = draw.material.surface.cullMode == graphics::PbrCullMode::None ||
+                                 (draw.material.surface.cullMode == graphics::PbrCullMode::Inherit &&
+                                  draw.material.doubleSided);
+        if (draw.material.masked)
+            gfx.drawMeshShadowAlpha(draw.mesh, lightMvp, draw.image, doubleSided);
+        else
+            gfx.drawMeshShadow(draw.mesh, lightMvp, doubleSided);
+    }
+    return Result<void>::success();
 }
 }  // namespace eve::asset_graphics

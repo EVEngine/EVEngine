@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorCommandService.h"
 
@@ -18,12 +20,15 @@ enum class ExtensionAudience : std::uint32_t {
     Automation = 1u << 3
 };
 
+/** @brief Operator |. */
 constexpr ExtensionAudience operator|(ExtensionAudience left, ExtensionAudience right) {
     return static_cast<ExtensionAudience>(static_cast<std::uint32_t>(left) | static_cast<std::uint32_t>(right));
 }
+/** @brief Operator &. */
 constexpr ExtensionAudience operator&(ExtensionAudience left, ExtensionAudience right) {
     return static_cast<ExtensionAudience>(static_cast<std::uint32_t>(left) & static_cast<std::uint32_t>(right));
 }
+/** @brief True when audience. */
 constexpr bool hasAudience(ExtensionAudience value, ExtensionAudience audience) {
     return (value & audience) == audience;
 }
@@ -58,21 +63,23 @@ struct ExtensionRuleDescriptor {
 /** @brief Scoped registration surface exposed to game modules. */
 class IEditorExtensionRegistry {
 public:
+    /** @brief Releases IEditorExtensionRegistry resources. */
     virtual ~IEditorExtensionRegistry() = default;
     /** @brief Register a command; the registry overwrites ownerModule with the active extension owner. */
-    virtual EditorResult<EditorValue> registerCommand(CommandDescriptor descriptor, EditorCommandHandler handler,
+    virtual Result<EditorValue> registerCommand(CommandDescriptor descriptor, EditorCommandHandler handler,
                                                       ExtensionAudience audiences) = 0;
     /** @brief Register semantic tool metadata. */
-    virtual EditorResult<void> registerTool(ExtensionToolDescriptor descriptor) = 0;
+    virtual Result<void> registerTool(ExtensionToolDescriptor descriptor) = 0;
     /** @brief Register a host-specific palette for existing tools/commands. */
-    virtual EditorResult<void> registerPalette(ExtensionPaletteDescriptor descriptor) = 0;
+    virtual Result<void> registerPalette(ExtensionPaletteDescriptor descriptor) = 0;
     /** @brief Register gameplay validation metadata. */
-    virtual EditorResult<void> registerRule(ExtensionRuleDescriptor descriptor) = 0;
+    virtual Result<void> registerRule(ExtensionRuleDescriptor descriptor) = 0;
 };
 
 /** @brief Entry point implemented by a gameplay module to inject editor behavior. */
 class IGameEditorExtension {
 public:
+    /** @brief Releases IGameEditorExtension resources. */
     virtual ~IGameEditorExtension() = default;
     /** @brief Stable module owner used for unload and duplicate protection. */
     virtual std::string ownerModule() const = 0;
@@ -86,12 +93,13 @@ public:
  * The command service is non-owning and must outlive this registry. Extension
  * unload removes every command and descriptor owned by the module.
  */
-class EditorExtensionRegistry final : public IEditorExtensionRegistry {
+class EVENGINE_API_ORCHESTRATION EditorExtensionRegistry final : public IEditorExtensionRegistry {
 public:
+    /** @brief Editor extension registry. */
     explicit EditorExtensionRegistry(EditorCommandService* commands) : commands_(commands) {}
 
     /** @brief Load one extension under its stable owner module. */
-    EditorResult<void> load(IGameEditorExtension& extension);
+    Result<void> load(IGameEditorExtension& extension);
     /** @brief Remove every component registered by an owner module. */
     std::size_t unload(const std::string& ownerModule);
     /** @brief Add player/admin/automation extension commands to a deny-by-default profile. */
@@ -104,11 +112,15 @@ public:
     /** @brief Return validation descriptors visible to a host. */
     std::vector<ExtensionRuleDescriptor> rules(const HostProfile& profile) const;
 
-    EditorResult<EditorValue> registerCommand(CommandDescriptor descriptor, EditorCommandHandler handler,
+    /** @brief Registers command. */
+    Result<EditorValue> registerCommand(CommandDescriptor descriptor, EditorCommandHandler handler,
                                               ExtensionAudience audiences) override;
-    EditorResult<void>        registerTool(ExtensionToolDescriptor descriptor) override;
-    EditorResult<void>        registerPalette(ExtensionPaletteDescriptor descriptor) override;
-    EditorResult<void>        registerRule(ExtensionRuleDescriptor descriptor) override;
+    /** @brief Registers tool. */
+    Result<void>        registerTool(ExtensionToolDescriptor descriptor) override;
+    /** @brief Registers palette. */
+    Result<void>        registerPalette(ExtensionPaletteDescriptor descriptor) override;
+    /** @brief Registers rule. */
+    Result<void>        registerRule(ExtensionRuleDescriptor descriptor) override;
 
 private:
     struct CommandVisibility {
@@ -118,7 +130,7 @@ private:
     };
 
     static ExtensionAudience  audienceFor(const HostProfile& profile);
-    static EditorResult<void> invalid(const char* rule, std::string message);
+    static Result<void> invalid(const char* rule, std::string message);
 
     EditorCommandService*                   commands_ = nullptr;
     std::string                             activeOwner_;

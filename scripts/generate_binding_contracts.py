@@ -11,17 +11,36 @@ silently publishing arg0/arg1 placeholders.
 from __future__ import annotations
 
 import argparse
+import hashlib
 from dataclasses import dataclass, field
 import json
 from pathlib import Path
 import re
 import sys
 import utf8_stdio
+from binding_architecture import attach_architecture
+from binding_semantics import attach_semantics
 
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOTS = (ROOT / "src" / "engine", ROOT / "src" / "modules")
 SOURCE_SUFFIXES = {".h", ".hpp", ".cpp"}
+
+# C++ attributes such as [[nodiscard]] / [[nodiscard("...")]] may precede a
+# declaration. Skip them before matching the return type so member bindings to
+# attributed getters stay resolvable. Attribute bodies may contain '(' (message
+# arguments), so callers must take the function '(' from the end of the regex
+# match rather than the first '(' after match.start().
+CXX_ATTRIBUTE = r"(?:\[\[[^\]]*\]\]\s*)*"
+CXX_DECL_PREFIX = (
+    r"(?:virtual\s+|static\s+|inline\s+|constexpr\s+|explicit\s+|"
+    rf"{CXX_ATTRIBUTE})*"
+)
+
+
+def declaration_opening_paren(match: re.Match[str]) -> int:
+    """Return the index of the function '(' that ends a declaration regex match."""
+    return match.end() - 1
 
 
 @dataclass
@@ -48,6 +67,9 @@ class Contract:
     platforms: list[str]
     documentation_id: str
     source: str
+    cpp_symbol: str = ""
+    architecture: dict | None = None
+    semantics: dict | None = None
 
     @property
     def key(self) -> str:
@@ -221,7 +243,14 @@ def parse_parameters(text: str) -> list[Parameter]:
 def class_blocks(source: str) -> dict[str, list[str]]:
     result: dict[str, list[str]] = {}
     masked = mask_comments(source)
-    pattern = re.compile(r"\b(?:class|struct)\s+([A-Za-z_]\w*)[^;{]*\{")
+    # The engine's per-link-group export macro (src/engine/common/Export.h) sits
+    # between the class key and the class name -- `class EVENGINE_API_DOMAINS
+    # Widget {` -- so the token after `class`/`struct` is not always the name.
+    # Without this the class is registered under the macro's name and every
+    # member binding of it is reported as unresolved.
+    pattern = re.compile(
+        r"\b(?:class|struct)\s+(?:EVENGINE_API\w*\s+)?([A-Za-z_]\w*)[^;{]*\{"
+    )
     for match in pattern.finditer(masked):
         opening = masked.find("{", match.start())
         closing = matching(masked, opening, "{", "}")
@@ -257,12 +286,12 @@ class SignatureIndex:
         lookup_class = self.aliases.get(class_name, class_name)
         candidates: list[tuple[str, list[Parameter]]] = []
         declaration_pattern = re.compile(
-            rf"(?m)(?:^|[;{{}}])\s*(?:virtual\s+|static\s+|inline\s+|constexpr\s+|explicit\s+)*"
+            rf"(?m)(?:^|[;{{}}])\s*{CXX_DECL_PREFIX}"
             rf"([A-Za-z_~][\w:\s<>,*&]*?)\b{re.escape(method)}\s*\(")
         for block in self.classes.get(lookup_class, []):
             masked = mask_comments(block)
             for match in declaration_pattern.finditer(masked):
-                opening = masked.find("(", match.start())
+                opening = declaration_opening_paren(match)
                 closing = matching(block, opening)
                 if closing is None:
                     continue
@@ -270,13 +299,14 @@ class SignatureIndex:
                                    parse_parameters(block[opening + 1 : closing])))
         if not candidates:
             definition_pattern = re.compile(
-                rf"(?m)([A-Za-z_~][\w:\s<>,*&]*?)\b{re.escape(lookup_class)}::{re.escape(method)}\s*\(")
+                rf"(?m){CXX_DECL_PREFIX}"
+                rf"([A-Za-z_~][\w:\s<>,*&]*?)\b{re.escape(lookup_class)}::{re.escape(method)}\s*\(")
             needle = f"{lookup_class}::{method}"
             for path, source in self.sources.items():
                 if needle not in source:
                     continue
                 for match in definition_pattern.finditer(self.masked[path]):
-                    opening = self.masked[path].find("(", match.start())
+                    opening = declaration_opening_paren(match)
                     closing = matching(source, opening)
                     if closing is None:
                         continue
@@ -290,7 +320,7 @@ class SignatureIndex:
                 for block in blocks:
                     masked = mask_comments(block)
                     for match in declaration_pattern.finditer(masked):
-                        opening = masked.find("(", match.start())
+                        opening = declaration_opening_paren(match)
                         closing = matching(block, opening)
                         if closing is not None:
                             inherited.append((match.group(1).strip().splitlines()[-1].strip(),
@@ -312,14 +342,16 @@ class SignatureIndex:
     def free(self, name: str) -> tuple[str, list[Parameter]] | None:
         if name in self.free_cache:
             return self.free_cache[name]
-        pattern = re.compile(rf"(?m)^\s*(?:static\s+)?([A-Za-z_][\w:\s<>,*&]*?)\b{re.escape(name)}\s*\(")
+        pattern = re.compile(
+            rf"(?m)^\s*(?:static\s+|{CXX_ATTRIBUTE})*"
+            rf"([A-Za-z_][\w:\s<>,*&]*?)\b{re.escape(name)}\s*\(")
         candidates = []
         needle = f"{name}("
         for path, source in self.sources.items():
             if needle not in source and f"{name} (" not in source:
                 continue
             for match in pattern.finditer(self.masked[path]):
-                opening = self.masked[path].find("(", match.start())
+                opening = declaration_opening_paren(match)
                 closing = matching(source, opening)
                 if closing is not None:
                     candidates.append((match.group(1).strip(), parse_parameters(source[opening + 1 : closing])))
@@ -385,7 +417,13 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
     signatures = SignatureIndex(sources)
     contracts: dict[str, Contract] = {}
     unresolved: list[str] = []
-    call_pattern = re.compile(r"\b([A-Za-z_]\w*)\.addFunc\s*\(")
+    # SimpleSquirrel addFunc plus the table-driven helpers in SquirrelBindContext.h.
+    # Helpers must be qualified (`script::bindMethod`) so the helper definitions themselves
+    # are not scraped. Method names stay string literals in argument 1.
+    call_pattern = re.compile(
+        r"(?:(?:eve::)?script::(?P<helper>bindMethod|bindNullSafe)\s*\()|"
+        r"(?:(?P<receiver>[A-Za-z_]\w*)\.addFunc\s*\()"
+    )
     for path, source in sources.items():
         relative = path.relative_to(ROOT).parts
         if (enabled_modules is not None and len(relative) >= 3 and relative[:2] == ("src", "modules")
@@ -396,32 +434,56 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
         for match in call_pattern.finditer(masked):
             opening = source.find("(", match.start())
             closing = matching(source, opening)
+            helper = match.group("helper")
+            receiver = match.group("receiver") or ""
+            label = helper or f"{receiver}.addFunc"
             if closing is None:
-                unresolved.append(f"{path.relative_to(ROOT)}:{source.count(chr(10), 0, match.start()) + 1}: unclosed addFunc")
+                unresolved.append(
+                    f"{path.relative_to(ROOT)}:{source.count(chr(10), 0, match.start()) + 1}: unclosed {label}"
+                )
                 continue
             arguments = split_top_level(source[opening + 1 : closing])
-            method_match = re.match(r'\s*"([^"]+)"', arguments[0]) if arguments else None
-            if not method_match or len(arguments) < 2:
-                unresolved.append(f"{path.relative_to(ROOT)}:{source.count(chr(10), 0, match.start()) + 1}: dynamic addFunc")
+            if helper:
+                # bindMethod(cls, "name", expr) / bindNullSafe(cls, "name", getter, whenNull)
+                if len(arguments) < 3:
+                    unresolved.append(
+                        f"{path.relative_to(ROOT)}:{source.count(chr(10), 0, match.start()) + 1}: dynamic {helper}"
+                    )
+                    continue
+                method_match = re.match(r'\s*"([^"]+)"', arguments[1])
+                expression = ",".join(arguments[2:3] if helper == "bindNullSafe" else arguments[2:])
+                receiver_expr = arguments[0].strip()
+            else:
+                method_match = re.match(r'\s*"([^"]+)"', arguments[0]) if arguments else None
+                if not method_match or len(arguments) < 2:
+                    unresolved.append(
+                        f"{path.relative_to(ROOT)}:{source.count(chr(10), 0, match.start()) + 1}: dynamic addFunc"
+                    )
+                    continue
+                expression = ",".join(arguments[1:])
+                receiver_expr = receiver
+            if not method_match:
+                unresolved.append(
+                    f"{path.relative_to(ROOT)}:{source.count(chr(10), 0, match.start()) + 1}: dynamic {label}"
+                )
                 continue
             method = method_match.group(1)
-            expression = ",".join(arguments[1:])
             signature = callable_signature(expression, signatures)
             if signature is None:
                 unresolved.append(
-                    f"{path.relative_to(ROOT)}:{source.count(chr(10), 0, match.start()) + 1}: {match.group(1)}.{method}"
+                    f"{path.relative_to(ROOT)}:{source.count(chr(10), 0, match.start()) + 1}: {label}.{method}"
                 )
                 continue
             cpp_class, return_cpp, parameters = signature
             script_class = ""
-            for position, receiver, bound_class in reversed(bindings):
-                if position < match.start() and receiver == match.group(1):
+            for position, bound_receiver, bound_class in reversed(bindings):
+                if position < match.start() and bound_receiver == receiver_expr:
                     script_class = bound_class
                     break
             if not script_class:
-                script_class = cpp_class if match.group(1) not in {"table", "eve", "root", "vm"} else ""
+                script_class = cpp_class if receiver_expr not in {"table", "eve", "root", "vm", "cls"} else ""
             if (parameters and cpp_class == "" and "*" in parameters[0].cpp_type
-                    and match.group(1) not in {"table", "eve", "root", "vm"}):
+                    and receiver_expr not in {"table", "eve", "root", "vm"}):
                 parameters = parameters[1:]
             mapped_return, return_nullable = script_type(return_cpp)
             ownership = "borrowed" if "*" in return_cpp else "value"
@@ -431,6 +493,9 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
                                 f"{module}.{script_class + '.' if script_class else ''}{method}",
                                 f"{path.relative_to(ROOT).as_posix()}:{source.count(chr(10), 0, match.start()) + 1}")
             existing = contracts.get(contract.key)
+            direct_member = re.fullmatch(r"\s*&\s*([A-Za-z_]\w*(?:::[A-Za-z_]\w*)+)\s*", expression)
+            if direct_member:
+                contract.cpp_symbol = direct_member.group(1)
             if existing is None or sum(p.name.startswith("arg") for p in contract.parameters) < sum(
                 p.name.startswith("arg") for p in existing.parameters
             ):
@@ -440,6 +505,83 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
 
 def cpp_string(value: str) -> str:
     return json.dumps(value, ensure_ascii=False)
+
+
+def contract_to_dict(contract: Contract) -> dict:
+    parameters = []
+    for parameter in contract.parameters:
+        item: dict = {
+            "name": parameter.name,
+            "type": parameter.script_type,
+            "nullable": parameter.nullable,
+        }
+        if parameter.default:
+            item["default"] = parameter.default
+        if parameter.unit != "None":
+            item["unit"] = parameter.unit
+        if parameter.choices:
+            item["choices"] = parameter.choices
+        parameters.append(item)
+    return {
+        "key": contract.key,
+        "module": contract.module,
+        "scriptClass": contract.script_class,
+        "method": contract.method,
+        "parameters": parameters,
+        "returnType": contract.return_type,
+        "returnNullable": contract.return_nullable,
+        "ownership": contract.ownership,
+        "threadAffinity": contract.thread_affinity,
+        "platforms": contract.platforms,
+        "documentationId": contract.documentation_id,
+        "source": contract.source,
+        "cppSymbol": contract.cpp_symbol,
+        "semantics": contract.semantics,
+        "architecture": contract.architecture or {
+            "status": "unknown", "reason": "No reviewed owner mapping for this binding"
+        },
+    }
+
+
+def write_json(path: Path, contracts: list[Contract]) -> None:
+    payload = {
+        "schema": "eve.binding-api",
+        "schemaVersion": 1,
+        "count": len(contracts),
+        "contracts": [contract_to_dict(contract) for contract in contracts],
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def dts_type(script_type: str, nullable: bool) -> str:
+    mapped = script_type if script_type else "any"
+    return f"{mapped} | null" if nullable else mapped
+
+
+def write_dts(path: Path, contracts: list[Contract]) -> None:
+    grouped: dict[str, list[Contract]] = {}
+    for contract in contracts:
+        grouped.setdefault(contract.script_class or contract.module or "eve", []).append(contract)
+    lines = [
+        "/** Generated EveScript Binding Contracts as TypeScript-shaped signatures.",
+        " *  Not a second runtime language. Agents may use this for recall; the engine still runs .nut.",
+        " */",
+        "",
+    ]
+    for owner in sorted(grouped):
+        lines.append(f"export interface {owner} {{")
+        for contract in grouped[owner]:
+            params = ", ".join(
+                f"{parameter.name}: {dts_type(parameter.script_type, parameter.nullable)}"
+                for parameter in contract.parameters
+            )
+            returned = dts_type(contract.return_type, contract.return_nullable)
+            lines.append(f"  {contract.method}({params}): {returned};")
+        lines.append("}")
+        lines.append("")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines), encoding="utf-8")
 
 
 def write_cpp(path: Path, contracts: list[Contract]) -> None:
@@ -464,7 +606,10 @@ def write_cpp(path: Path, contracts: list[Contract]) -> None:
         'void addContract(BindingContractRegistry& registry, const char* module, const char* scriptClass,',
         '                 const char* method, const char* returnType, bool returnNullable, const char* ownership,',
         '                 const char* threadAffinity, std::initializer_list<const char*> platforms,',
-        '                 const char* documentationId, std::initializer_list<ParameterSeed> parameters) {',
+        '                 const char* documentationId, const char* source, const char* cppSymbol,',
+        '                 std::optional<BindingArchitectureContract> architecture,',
+        '                 std::optional<BindingSemanticContract> semantics,',
+        '                 std::initializer_list<ParameterSeed> parameters) {',
         '    BindingContract contract;',
         '    contract.module = module;',
         '    contract.scriptClass = scriptClass;',
@@ -475,6 +620,10 @@ def write_cpp(path: Path, contracts: list[Contract]) -> None:
         '    contract.threadAffinity = threadAffinity;',
         '    for (const char* platform : platforms) contract.platforms.emplace_back(platform);',
         '    contract.documentationId = documentationId;',
+        '    contract.source = source;',
+        '    contract.cppSymbol = cppSymbol;',
+        '    contract.architecture = std::move(architecture);',
+        '    contract.semantics = std::move(semantics);',
         '    for (const ParameterSeed& seed : parameters) {',
         '        BindingParameterContract parameter;',
         '        parameter.name = seed.name;',
@@ -490,6 +639,22 @@ def write_cpp(path: Path, contracts: list[Contract]) -> None:
     ]
     calls: list[str] = []
     for contract in contracts:
+        architecture = 'std::nullopt'
+        semantics = 'std::nullopt'
+        if contract.semantics:
+            values = [cpp_string(contract.semantics[key]) for key in ('factory', 'role', 'resultClass')]
+            values += [str(contract.semantics[key]) for key in ('identityArgument', 'relatedArgument')]
+            values += [cpp_string(json.dumps(contract.semantics['schema'], ensure_ascii=False, separators=(',', ':')))
+                       if contract.semantics.get('schema') else cpp_string('')]
+            semantics = 'BindingSemanticContract{' + ', '.join(values) + '}'
+        if contract.architecture:
+            mapping = contract.architecture
+            values = [cpp_string(mapping[key]) for key in (
+                'implementationSource', 'stateOwner', 'ownerSource', 'inputHash', 'limitations'
+            )]
+            values += ['{' + ', '.join(cpp_string(value) for value in mapping[key]) + '}'
+                       for key in ('writes', 'tests', 'reads')]
+            architecture = 'BindingArchitectureContract{' + ', '.join(values) + '}'
         parameters = []
         for parameter in contract.parameters:
             default = cpp_string(parameter.default) if parameter.default else 'nullptr'
@@ -504,7 +669,8 @@ def write_cpp(path: Path, contracts: list[Contract]) -> None:
             f'{str(contract.return_nullable).lower()}, {cpp_string(contract.ownership)}, '
             f'{cpp_string(contract.thread_affinity)}, '
             f'{{{", ".join(cpp_string(platform) for platform in contract.platforms)}}}, '
-            f'{cpp_string(contract.documentation_id)}, {{{", ".join(parameters)}}});'
+            f'{cpp_string(contract.documentation_id)}, {cpp_string(contract.source)}, '
+            f'{cpp_string(contract.cpp_symbol)}, {architecture}, {semantics}, {{{", ".join(parameters)}}});'
         )
     chunk_size = 128
     chunk_count = (len(calls) + chunk_size - 1) // chunk_size
@@ -520,7 +686,18 @@ def write_cpp(path: Path, contracts: list[Contract]) -> None:
             *calls[index * chunk_size : (index + 1) * chunk_size],
             '}',
         ]
-    lines += ['}  // namespace', '', 'void registerEngineBindingContracts(BindingContractRegistry& registry) {']
+    provider_hash = hashlib.sha256(b'eve-script-structure-v1')
+    for name in ('scripts/binding_semantics.py', 'src/engine/common/ScriptStructure.hpp',
+                 'src/engine/common/ScriptStructure.cpp', 'src/engine/devtools/ProjectIndexAutomatic.cpp',
+                 'src/engine/devtools/ProjectIndexGraph.cpp', 'src/engine/devtools/ProjectIndexScan.cpp',
+                 'src/engine/devtools/McpProjectIndexTools.cpp'):
+        source_path = ROOT / name
+        if source_path.exists():
+            provider_hash.update(name.encode())
+            provider_hash.update(source_path.read_text(encoding='utf-8').replace('\r\n', '\n').encode())
+    lines += ['}  // namespace', '',
+              f'std::string_view scriptStructureProviderHash() {{ return "{provider_hash.hexdigest()}"; }}', '',
+              'void registerEngineBindingContracts(BindingContractRegistry& registry) {']
     for index in range(chunk_count):
         lines.append(f'    registerChunk{index}(registry);')
     lines += ['}', '', '}  // namespace eve::script', '']
@@ -535,14 +712,20 @@ def source_files() -> dict[Path, str]:
     result = {}
     for root in SOURCE_ROOTS:
         for path in root.rglob("*"):
-            if path.suffix in SOURCE_SUFFIXES and ".generated." not in path.name:
-                result[path] = path.read_text(encoding="utf-8", errors="replace")
+            if path.suffix not in SOURCE_SUFFIXES or ".generated." in path.name:
+                continue
+            # Helper templates only — their addFunc(name, ...) bodies are not contracts.
+            if path.name == "SquirrelBindContext.h":
+                continue
+            result[path] = path.read_text(encoding="utf-8", errors="replace")
     return result
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--json-output", type=Path, help="Write eve.binding-api JSON catalog for agents")
+    parser.add_argument("--dts-output", type=Path, help="Write TypeScript-shaped signatures (not a second language)")
     parser.add_argument("--allow-unresolved", action="store_true")
     parser.add_argument("--report", type=Path)
     parser.add_argument("--modules", help="Comma-separated enabled src/modules directories; engine bindings are always included")
@@ -550,7 +733,17 @@ def main() -> int:
     args = parser.parse_args()
 
     enabled_modules = ({item for item in args.modules.split(",") if item} if args.modules is not None else None)
-    contracts, unresolved = extract_contracts(source_files(), enabled_modules, args.platform)
+    sources = source_files()
+    contracts, unresolved = extract_contracts(sources, enabled_modules, args.platform)
+    try:
+        metadata_files = sorted((ROOT / "src/modules").glob("*/binding_architecture.json"))
+        attach_architecture(contracts, sources, ROOT, metadata_files,
+                            mask_comments, enabled_modules)
+        attach_semantics(contracts, sources, ROOT,
+                         sorted((ROOT / "src/modules").glob("*/binding_semantics.json")), mask_comments)
+    except (ValueError, KeyError, OSError) as error:
+        print(f"Architecture mapping error: {error}", file=sys.stderr)
+        return 1
     placeholder_count = sum(parameter.name.startswith("arg") for contract in contracts for parameter in contract.parameters)
     print(f"Binding Contract: {len(contracts)} contracts, {len(unresolved)} unresolved bindings, "
           f"{placeholder_count} placeholder parameter names")
@@ -567,6 +760,10 @@ def main() -> int:
         args.report.write_text("\n".join(report) + ("\n" if report else ""), encoding="utf-8")
     if args.output:
         write_cpp(args.output, contracts)
+    if args.json_output:
+        write_json(args.json_output, contracts)
+    if args.dts_output:
+        write_dts(args.dts_output, contracts)
     if (unresolved or placeholder_count) and not args.allow_unresolved:
         for item in unresolved[:50]:
             print(f"UNRESOLVED {item}")

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <glm/mat4x4.hpp>
 
@@ -34,8 +36,12 @@ struct DecalInstance {
     float metalStrength = 0.f;
     float emissiveStrength = 0.f;
     int blendMode = 0;       // 0 = premultiplied over, 1 = additive (emissive)
-    int projectionMode = 0;  // 0 = planar (local.xy), 1 = triplanar
+    int projectionMode = 0;  // 0 = planar, 1 = triplanar, 2 = spherical, 3 = world-aligned
     float blendSharpness = 4.f;
+    float parallaxScale = 0.f;
+    float parallaxMinLayers = 8.f;
+    float parallaxMaxLayers = 24.f;
+    float edgeFadeWidth = 0.06f;
     std::string kind;  // quota group ("blood", "dirt", ...)
 };
 
@@ -52,6 +58,21 @@ enum class DecalProjectionStatus : std::uint8_t {
     InvalidSharpness = 3,
 };
 
+/** @brief Outcome of applying height-driven parallax settings to a live decal. */
+enum class DecalParallaxStatus : std::uint8_t {
+    Applied = 0,
+    UnknownId = 1,
+    InvalidScale = 2,
+    InvalidLayers = 3,
+};
+
+/** @brief Outcome of changing the projection-volume edge mask width. */
+enum class DecalEdgeFadeStatus : std::uint8_t {
+    Applied = 0,
+    UnknownId = 1,
+    InvalidWidth = 2,
+};
+
 /**
  * @brief CPU-side decal registry: spawn / remove / fade / quotas, and the
  * per-frame drawer that feeds the graphics decal pass.
@@ -61,8 +82,9 @@ enum class DecalProjectionStatus : std::uint8_t {
  * instance it builds the box transform (Z axis = surface normal, optional
  * random yaw) and calls gfx.drawDecal.
  */
-class DecalManager {
+class EVENGINE_API_WORLD DecalManager {
 public:
+    /** @brief Inst. */
     static DecalManager &inst();
 
     /** @brief Spawn a decal at a world-space point facing along (nx,ny,nz). */
@@ -72,13 +94,21 @@ public:
                 float normalStrength, float roughnessStrength, float metalStrength,
                 float emissiveStrength);
 
+    /** @brief Removes . */
     bool remove(int id);
+    /** @brief Whether a projected decal id is still registered. */
+    [[nodiscard]] bool contains(int id) const;
     void clearAll();
+    /** @brief Returns the number of . */
     int count() const;
+    /** @brief Sets the strength. */
     bool setStrength(int id, float normalStrength, float roughnessStrength, float metalStrength,
                      float emissiveStrength);
+    /** @brief Sets the uv rect. */
     bool setUvRect(int id, float x, float y, float w, float h);
+    /** @brief Sets the textures. */
     bool setTextures(int id, graphics::Texture *normal, graphics::Texture *params);
+    /** @brief Sets the blend. */
     bool setBlend(int id, const std::string &mode);
     /**
      * @brief Projection mode: "planar" (default) or "triplanar".
@@ -87,6 +117,11 @@ public:
      */
     [[nodiscard]] DecalProjectionStatus setProjection(int id, const std::string &mode,
                                                       float blendSharpness = 4.f);
+    /** @brief Configure POM; scale zero disables it and layers satisfy 1 <= min <= max <= 64. */
+    [[nodiscard]] DecalParallaxStatus setParallax(int id, float scale, float minLayers = 8.f,
+                                                 float maxLayers = 24.f);
+    /** @brief Configure normalized edge feather width in [0, 0.49]. */
+    [[nodiscard]] DecalEdgeFadeStatus setEdgeFade(int id, float width);
 
     /**
      * @brief Atomically install a fully configured instance and remove a previous generation.
@@ -114,7 +149,9 @@ public:
     void drawAll(graphics::Graphics &gfx, float eyeX, float eyeY, float eyeZ,
                  const glm::mat4 &viewProj, float aspect);
 
+    /** @brief Instances. */
     std::vector<DecalInstance> &instances() { return decals_; }
+    /** @brief Instances. */
     const std::vector<DecalInstance> &instances() const { return decals_; }
 
 private:

@@ -38,7 +38,7 @@ function eve_render() {
 `drawGrid2D(world, gfx)` 在 2D 相机下绘制放置网格；建筑视觉用 `getVisualCount`
 轮询当前已同步实例数，便于调试。
 
-## API 快查
+## 绑定与行为说明
 
 ### `BuildingFx`（模块）
 
@@ -112,4 +112,3 @@ schema v8 提供。Graphics 仍是上传后 Mesh 的唯一所有者，BuildingFX
   `world.destroy()` 前先 `detach`。
 - `attach` 按 `world.getId()` 记录，多个世界可同时挂接。
 - `CurveMeshData` 由调用方持有；生成期间只同步借用 `world`，不会保留引用，也不会修改图形状态。
-

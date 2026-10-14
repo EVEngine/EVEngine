@@ -22,7 +22,7 @@ Windows 下可执行文件为 `build/win32-debug/src/engine/eve.exe`。
 
 - 模块装配：`reset_demo` 创建 `eve.Attributes`、`eve.Social`、`eve.Orders`、`eve.Tags`、`eve.Effects`、
   `eve.GameEvent`、`eve.Transaction`、`eve.StatePatch`、`eve.Definitions`、`eve.Authority`、`eve.Production`、
-  `eve.PolicyRegistryModule`、`eve.Sensing`、`eve.Steering`、`eve.Decision`——引擎侧没有叛乱专用类型。
+  `eve.PolicyRegistryModule`、`eve.Sensing`、`eve.Math`、`eve.Decision`——引擎侧没有叛乱专用类型。
 - 事实与授权：`setBase` 写入 `administration` 80、`loyalty` 48、`ambition` 82 与 `production_speed` 1.0；
   `setOwner` / `assign` / `setRelation` 建立 `general.arden`、`base.north`、`army.first` 的归属和
   `officer.vela` 对将领的 `support` 关系；`Authority.grant` 授予 `govern_base` / `command_army`，
@@ -30,7 +30,7 @@ Windows 下可执行文件为 `build/win32-debug/src/engine/eve.exe`。
 - 生产与 AI：`Production.setSlotCount` / `enqueue` 在同一基地混放 `build_unit`(`tank.medium`) 与
   `issue_decree`(`decree.tax_reform`)，`advance` 按 `production_speed` 最终值推进；
   `Sensing.circle` 查到最近敌军后交给 `Decision.setState` / `addTransition` / `trigger` / `choose`，
-  `Steering.arrive` 求朝向速度，`Decision.sample("threat", ...)` 采样 8×8 威胁网格。
+  `Math.steeringArrive2` 求朝向速度，`Decision.sample("threat", ...)` 采样 8×8 威胁网格。
 - 状态效果与判定：`Effects.apply` 施加 `salary_unpaid`，`addTag("politics")` 打标签、payload 写入
   `loyalty_delta`，再用 `addModifier` 叠加 `loyalty` 负修正；`evaluate_rebellion` 按
   `getFinal("loyalty")`、`ambition`、`relation(..., "support")` 三重阈值判定，并由

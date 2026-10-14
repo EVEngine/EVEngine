@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "network-udp-link-contract",
+      "rule": "link",
+      "scope": "src/modules/network/UdpLink.h",
+      "owner": "network::UdpLink",
+      "issue": "EVENGINE-ARCH-LINK-CONTRACTS",
+      "reason": "UDP reliability/fragmentation link owns process-local socket state and must define teardown and stale message handling.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/network/UdpLink.h",
+        "docs/dev/重构代码质量与系统完整性规范.md"
+      ],
+      "tests": [
+        "test/network.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "symbols": [
+        "UdpLink"
+      ],
+      "create": "Opening a UdpLink binds endpoint/socket state and initializes reliability sequence windows before payload admission.",
+      "ownership": "UdpLink owns its socket queues, reliability windows and fragment reassembly buffers; callers own payload bytes handed in or out.",
+      "destroy_order": "Link destruction drops queued fragments/acks before socket release; peer-first teardown is observed as send/receive failure without dereferencing peer state.",
+      "restore": "Network links are process-local and never persisted; reconnect recreates socket state and sequence windows.",
+      "stale": "Message id, fragment count/index and reliability windows reject duplicate, expired or incomplete packets before publication."
+    }
+  ]
+}

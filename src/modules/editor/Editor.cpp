@@ -196,7 +196,7 @@ ssq::Array diagnosticArray(HSQUIRRELVM vm, const std::vector<EditorDiagnostic>& 
 }
 
 template <class T>
-ssq::Table resultTable(HSQUIRRELVM vm, const EditorResult<T>& result) {
+ssq::Table resultTable(HSQUIRRELVM vm, const Result<T>& result) {
     ssq::Table out(vm);
     out.set("status", std::string(statusName(result.code())));
     out.set("accepted", result.ok());
@@ -204,7 +204,7 @@ ssq::Table resultTable(HSQUIRRELVM vm, const EditorResult<T>& result) {
     return out;
 }
 
-EditorResult<EditorValue> invalidScriptPayload() {
+Result<EditorValue> invalidScriptPayload() {
     return eve::editing::failed<EditorValue>(
         EditorStatus::Rejected, RuleId("editor.script.invalid-payload"),
         "Script payload must contain only null, bool, number, string, array, or table values");
@@ -282,15 +282,15 @@ Editor::~Editor() {
     eve::cap::revoke<eve::editing::IEditingCommandRegistry>(targets_.get());
 }
 
-EditorResult<void> Editor::registerEditingTarget(IEditableTarget& target) { return targets_->registerTarget(target); }
+Result<void> Editor::registerEditingTarget(IEditableTarget& target) { return targets_->registerTarget(target); }
 
-EditorResult<void> Editor::unregisterEditingTarget(const TargetId& target) {
+Result<void> Editor::unregisterEditingTarget(const TargetId& target) {
     auto result = targets_->unregisterTarget(target);
     if (result.code() == EditorStatus::Applied) automation_->targetUnregistered(target);
     return result;
 }
 
-EditorResult<void> Editor::bindEditingTarget(EditorSession& session, const TargetId& target) {
+Result<void> Editor::bindEditingTarget(EditorSession& session, const TargetId& target) {
     return targets_->bind(session, target);
 }
 
@@ -310,7 +310,7 @@ std::unique_ptr<EditorSession> Editor::newSession() {
     return session;
 }
 
-EditorResult<std::unique_ptr<EditorWorkspace>> Editor::newWorkspace(const std::string& id, const std::string& title) {
+Result<std::unique_ptr<EditorWorkspace>> Editor::newWorkspace(const std::string& id, const std::string& title) {
     if (id.empty())
         return eve::editing::failed<std::unique_ptr<EditorWorkspace>>(
             EditorStatus::Rejected, RuleId("editor.workspace.empty-id"), "Workspace id must be non-empty");
@@ -661,7 +661,7 @@ void Editor::expose(ssq::Table& table) {
         HSQUIRRELVM vm = payload.getHandle();
         EditorValue value;
         if (!self || !objectToEditorValue(payload, value)) return resultTable(vm, invalidScriptPayload());
-        const EditorResult<PlanId> planned = self->retainPlan(CommandId(id), value, CommandSource::Script);
+        const Result<PlanId> planned = self->retainPlan(CommandId(id), value, CommandSource::Script);
         ssq::Table                 out     = resultTable(vm, planned);
         if (planned.ok()) out.set("planId", planned.value().value());
         return out;
@@ -673,7 +673,7 @@ void Editor::expose(ssq::Table& table) {
                 return resultTable(vm, eve::editing::failed<TransactionReceipt>(EditorStatus::Failed,
                                                                                RuleId("editor.script.missing-session"),
                                                                                "Editor session is not available"));
-            const EditorResult<TransactionReceipt> executed =
+            const Result<TransactionReceipt> executed =
                 self->executeRetainedPlan(PlanId(planId), CommandSource::Script);
             ssq::Table out = resultTable(vm, executed);
             if (executed.ok()) {
@@ -691,7 +691,7 @@ void Editor::expose(ssq::Table& table) {
                         EditorValue value;
                         if (!self || !objectToEditorValue(payload, value))
                             return resultTable(vm, invalidScriptPayload());
-                        const EditorResult<EditorValue> executed =
+                        const Result<EditorValue> executed =
                             self->executeCommand(CommandId(id), value, CommandSource::Script);
                         ssq::Table out = resultTable(vm, executed);
                         if (executed.ok()) setValue(out, "value", executed.value());

@@ -7,12 +7,7 @@
 #include <utility>
 
 namespace eve::editing {
-namespace {
-template <class T>
-Result<T> failure(Status status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-}  // namespace
+namespace {}  // namespace
 
 struct ExtensionProviderRegistry::Impl {
     struct Entry {
@@ -43,18 +38,20 @@ ExtensionProviderRegistry::~ExtensionProviderRegistry() {
 Result<ProviderHandle> ExtensionProviderRegistry::registerProvider(
     ExtensionDescriptor descriptor, std::shared_ptr<IEditingExtensionProvider> provider) {
     if (descriptor.id.empty() || descriptor.schemaVersion == 0 || !provider)
-        return failure<ProviderHandle>(Status::Rejected, "editing.extension.invalid-provider",
-                                       "Extension provider requires id, schema version and implementation");
+        return eve::editing::failed<ProviderHandle>(
+            Status::Rejected, RuleId("editing.extension.invalid-provider"),
+            "Extension provider requires id, schema version and implementation");
     {
         std::scoped_lock lock(impl_->mutex);
         if (impl_->entries.contains(descriptor.id))
-            return failure<ProviderHandle>(Status::Conflict, "editing.extension.duplicate-provider",
-                                           "Extension provider id is already published");
+            return eve::editing::failed<ProviderHandle>(Status::Conflict,
+                                                        RuleId("editing.extension.duplicate-provider"),
+                                                        "Extension provider id is already published");
     }
     auto activated = provider->activate();
     if (!activated.ok())
-        return failure<ProviderHandle>(Status::Failed, "editing.extension.activation-failed",
-                                       "Extension provider activation failed");
+        return eve::editing::failed<ProviderHandle>(Status::Failed, RuleId("editing.extension.activation-failed"),
+                                                    "Extension provider activation failed");
     ProviderHandle handle;
     bool duplicate = false;
     {
@@ -69,8 +66,8 @@ Result<ProviderHandle> ExtensionProviderRegistry::registerProvider(
     }
     if (duplicate) {
         provider->deactivate();
-        return failure<ProviderHandle>(Status::Conflict, "editing.extension.duplicate-provider",
-                                       "Extension provider id was concurrently published");
+        return eve::editing::failed<ProviderHandle>(Status::Conflict, RuleId("editing.extension.duplicate-provider"),
+                                                    "Extension provider id was concurrently published");
     }
     return eve::editing::applied<ProviderHandle>(handle);
 }
@@ -80,16 +77,16 @@ Result<ProviderLease> ExtensionProviderRegistry::acquire(const ProviderHandle& h
     const auto found = impl_->entries.find(handle.id);
     if (found == impl_->entries.end()) {
         const auto generation = impl_->generations.find(handle.id);
-        return failure<ProviderLease>(
+        return eve::editing::failed<ProviderLease>(
             generation == impl_->generations.end() ? Status::Unsupported : Status::Conflict,
-            generation == impl_->generations.end() ? "editing.extension.provider-absent"
-                                                   : "editing.extension.stale-handle",
+            RuleId(generation == impl_->generations.end() ? "editing.extension.provider-absent"
+                                                          : "editing.extension.stale-handle"),
             generation == impl_->generations.end() ? "Editing extension provider is not available"
                                                    : "Editing extension handle is stale");
     }
     if (found->second.handle != handle)
-        return failure<ProviderLease>(Status::Conflict, "editing.extension.stale-handle",
-                                      "Editing extension handle is stale");
+        return eve::editing::failed<ProviderLease>(Status::Conflict, RuleId("editing.extension.stale-handle"),
+                                                   "Editing extension handle is stale");
     return eve::editing::applied<ProviderLease>(ProviderLease(handle, found->second.provider));
 }
 
@@ -97,8 +94,8 @@ Result<ProviderLease> ExtensionProviderRegistry::acquire(const std::string& id) 
     std::scoped_lock lock(impl_->mutex);
     const auto found = impl_->entries.find(id);
     if (found == impl_->entries.end())
-        return failure<ProviderLease>(Status::Unsupported, "editing.extension.provider-absent",
-                                      "Editing extension provider is not available");
+        return eve::editing::failed<ProviderLease>(Status::Unsupported, RuleId("editing.extension.provider-absent"),
+                                                   "Editing extension provider is not available");
     return eve::editing::applied<ProviderLease>(ProviderLease(found->second.handle, found->second.provider));
 }
 
@@ -108,20 +105,20 @@ Result<void> ExtensionProviderRegistry::unload(const ProviderHandle& handle) {
         std::scoped_lock lock(impl_->mutex);
         const auto found = impl_->entries.find(handle.id);
         if (found == impl_->entries.end() || found->second.handle != handle)
-            return failure<void>(Status::Conflict, "editing.extension.stale-handle",
-                                 "Editing extension handle is stale");
+            return eve::editing::failed<void>(Status::Conflict, RuleId("editing.extension.stale-handle"),
+                                              "Editing extension handle is stale");
         provider = found->second.provider;
     }
     auto stopping = provider->beginUnload();
     if (!stopping.ok())
-        return failure<void>(Status::Failed, "editing.extension.unload-rejected",
-                             "Editing extension refused to stop accepting work");
+        return eve::editing::failed<void>(Status::Failed, RuleId("editing.extension.unload-rejected"),
+                                          "Editing extension refused to stop accepting work");
     {
         std::scoped_lock lock(impl_->mutex);
         const auto found = impl_->entries.find(handle.id);
         if (found == impl_->entries.end() || found->second.handle != handle)
-            return failure<void>(Status::Conflict, "editing.extension.stale-handle",
-                                 "Editing extension handle is stale");
+            return eve::editing::failed<void>(Status::Conflict, RuleId("editing.extension.stale-handle"),
+                                              "Editing extension handle is stale");
         impl_->entries.erase(found);
     }
     provider->deactivate();
@@ -169,8 +166,8 @@ Result<ProviderHandle> registerStaticProvider(ExtensionProviderRegistry& registr
                                               CapabilityId capability,
                                               std::shared_ptr<void> implementation) {
     if (!implementation)
-        return failure<ProviderHandle>(Status::Rejected, "editing.extension.null-capability",
-                                       "Static editing provider requires an owned capability");
+        return eve::editing::failed<ProviderHandle>(Status::Rejected, RuleId("editing.extension.null-capability"),
+                                                    "Static editing provider requires an owned capability");
     if (std::find(descriptor.capabilities.begin(), descriptor.capabilities.end(), capability) ==
         descriptor.capabilities.end())
         descriptor.capabilities.push_back(capability);

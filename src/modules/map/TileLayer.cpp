@@ -436,6 +436,14 @@ float TileLayer::getRenderSpacingY() {
     return config()->tileH != 0.f ? 1.f + config()->cellGapY / config()->tileH : 1.f;
 }
 
+void TileLayer::setVisualScale(float scaleX, float scaleY) {
+    draw()->visualScaleX = scaleX > 0.f ? scaleX : 1.f;
+    draw()->visualScaleY = scaleY > 0.f ? scaleY : 1.f;
+}
+
+float TileLayer::getVisualScaleX() { return draw()->visualScaleX; }
+float TileLayer::getVisualScaleY() { return draw()->visualScaleY; }
+
 void TileLayer::setTileVisual(int gid, int x, int y, int width, int height, float pivotX,
                               float pivotY, float sortBias) {
     if (gid <= 0 || width <= 0 || height <= 0) return;
@@ -517,6 +525,9 @@ int TileLayer::getLayer() { return draw()->layer; }
 
 void TileLayer::setVisible(bool visible) { draw()->visible = visible; }
 bool TileLayer::isVisible() { return draw()->visible; }
+
+void TileLayer::setReceiveLight(bool receive) { draw()->receiveLight = receive; }
+bool TileLayer::getReceiveLight() { return draw()->receiveLight; }
 
 void TileLayer::setTint(float r, float g, float b, float a) {
     draw()->tint = Color{r, g, b, a};

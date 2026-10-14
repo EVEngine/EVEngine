@@ -1,5 +1,34 @@
 # Hex terrain capability audit
 
+## Status
+
+This document is an append-only log of an investigation, so its sections record what was
+believed when they were written. Read them with that in mind; these are the ones the later
+sections superseded.
+
+**Current verified state of the two meshers.** Both are closed and consistently wound. The
+sphere is watertight at subdivisions 1, 2 and 4 for every seed the suite covers, with zero
+doubled directed edges, zero boundary edges, zero non-manifold edges and no duplicate
+triangles. The planar builder is closed on all nine elevation patterns it is checked
+against. `hexmap` is 70 of 70 cases green.
+
+Three claims below are history rather than current state:
+
+- `### Where the remaining winding defect actually is` and `### What the winding work achieved,
+  and what it did not` count 51 and 298 open edges. Both are zero now; the cliff corner's own
+  tiling was the missing piece, and `#### The cliff corner, fixed` derives it.
+- `#### The remaining 114 are T-junctions between neighbouring corner slivers` is a
+  **disproved hypothesis**. The holes were missing surface, not mismatched tessellation, and
+  `#### The planar builder is not the reference it was taken for` is what reframed them.
+- `## Open defect: the corner family has no single winding convention` is resolved: the
+  family takes its winding from the parity of the elevation sort, and the sphere's census
+  measures zero doubled edges in every configuration.
+
+One assertion is deliberately a **bound rather than zero**: a handful of triangles are folded
+by the tangential wobble. `#### What is left: five sheared slivers, bounded rather than zero`
+records the numbers, the sweep that shows zero is only reachable at a wobble six times
+smoother than the planar backend's, and the removal condition.
+
 ## Result
 
 EVEngine can generate and render a medium-size Civilization-style hex terrain
@@ -124,8 +153,8 @@ dedicated module rather than another procgen recipe, because an *editable* map n
 authoritative cell data and incremental mesh updates that a one-shot generator
 cannot provide. `docs/usr/modules/hexmap.md` is the module contract;
 `examples/hex-terrain-3d` is the interactive editor over it. It deliberately lives
-in its own directory so that `examples/hex-terrain` — the `mesh.hexterrain` proof
-described above — keeps shipping unchanged.
+in its own directory so that `examples/hex-terrain` �?the `mesh.hexterrain` proof
+described above �?keeps shipping unchanged.
 
 What that closes from the gap list above:
 
@@ -150,4 +179,658 @@ What still stands:
   draws channels, but does not solve drainage.
 - `mesh.hexterrain` and its generator are untouched and still ship the original
   proof; the module is additive.
+
+## Update: correctness and contract review of the `hexmap` module
+
+A defect review of the module found that its 64 unit tests were all green while
+several defects were live. The tests were the problem: the planar mesh test's
+expected triangle count was derived from the same ownership rule the emitter used,
+so it asserted the bug, and nothing at all covered `HexMapModule`.
+
+Fixed, each with the test that now guards it:
+
+- **Picking returned cell (0, 0).** `HexMap::pickCell` seeded its bisection result with
+  `contains(previousCoordinates) ? previousCoordinates : coordinates`. `previousCoordinates`
+  defaults to `(0, 0)`, which `contains` accepts on every non-empty map, so any ray whose
+  first in-grid sample was already below the surface returned `(0, 0)`; the script binding
+  feeds the result into `elevation`/`editElevation`, so a click edited the wrong cell.
+- **Two authoring setters never dirtied their chunk.** `setTerrainType` was the only
+  setter without `refreshCellDependents` (and carried a `++ ++revision_;` typo), so
+  `hexmap.setTerrainType` changed no mesh; `setExplored` skipped the dirty mark on a false
+  comment claiming fog is not geometry, while `buildFogMesh` selects its shade from exactly
+  that latch, so the example's `j` key did nothing.
+- **Terrain corners were emitted twice.** `appendConnection` reused the *edge* ownership
+  gate for the corner. An edge is shared by two cells (so three of six directions is right);
+  a corner is shared by **three** cells, so the correct gate is two of six. The excess was
+  266 duplicate coincident triangles on the test map, and `appendCorner` sorts its three
+  points by the elevation of the cell each belongs to, so the two copies also carried
+  different terrain triples at every junction whose cells differ in elevation.
+- **Corner point/cell pairing was swapped.** `corner.left` takes its height from the *next*
+  cell and `corner.right` is the neighbour's own corner, but the two were passed with each
+  other's cell, so the terrace/cliff branch was chosen from the wrong elevations. The same
+  swap existed in the wall corner (`addWallCorner`). The sphere backend, which cannot share
+  this code, pairs them correctly and was the evidence.
+- **`findPath` never initialised the origin record.** Only `searchPhase` was written, so a
+  reused `HexSearchContext` (the module owns exactly one) carried the previous search's
+  `distance`/`heuristic` into the bucket priority and into `turns.front()`.
+- **`newGrid`/`newSphere` released the GPU meshes before validating their size.** A rejected
+  size left the old grid alive while every mesh was destroyed, and the renderables scripts
+  already held kept pointing at them.
+- **`loadHexMap` accepted out-of-range cell words.** The payload is untrusted, but decoded
+  words were written verbatim through `setCellState`; a word whose elevation field decoded
+  below `kMinElevation` put a cell's surface under the box `pickCell` marches through, so a
+  visible cell reported NotFound.
+- **`pickCell`'s march budget was a fixed 512 steps of 1.5 world units**, i.e. 768 units past
+  the box entry, so a genuine hit further along a large grid returned NotFound.
+- **`HexVisibility::clear` / `HexUnitRegistry::removeAll` dropped viewers without dirtying
+  the affected chunks**, and `beginTravel` withdrew vision from the reserved destination
+  instead of the cell that actually holds it, permanently lighting the abandoned corridor.
+  `refreshPositions` left a detached unit occupying cell (0, 0), blocking a real cell.
+- Script-supplied `radius`/`delta` were multiplied and added into `int32` unchecked
+  (`radius * 2`, `elevation + delta`), which is signed-overflow UB; the grid-size and
+  sphere-brush entry points were unbounded, and `HexSerializer.h` contradicted itself about
+  whether `units` is cleared before validation.
+
+**Why these survived a green suite - a finding in its own right.** zeroerr's `CHECK` is
+non-fatal: a failed `CHECK` is reported as `WARN Assertion Failed` and the test case still
+exits zero. CTest only turns that into a failure for tests matching `^resourceFormats\.`,
+which carry an explicit `FAIL_REGULAR_EXPRESSION "Assertion Failed"`
+(`cmake/ZeroErrDiscoverTestsImpl.cmake:126-131`). Everywhere else only `REQUIRE` fails a
+test. The mesh-quality assertions were all `CHECK`, so `hexmap.sphereMesh.isAWatertightSurface`
+had been reporting a broken mesh as a pass: with the assertions made fatal it failed with
+`boundaryEdges 2 / nonManifold 118 / V+T-E 41` on a flat sphere, and `241 / 154 / 40` with
+scattered elevations. **When adding geometry or lifecycle assertions to this module, use
+`REQUIRE`.**
+
+The spherical mesher had the same corner-ownership defect, in the same shape: its
+`appendCorner` reused `appendConnection`'s `cell < neighbour` edge gate. A corner is shared by
+three cells, so half of them were emitted twice. Gating on `nextCell < cell` as well - the
+lowest-id cell of the three owns the corner - makes the sphere genuinely watertight at flat,
+scattered and finer subdivisions, verified with the assertions above made fatal.
+
+### Planar seams and the corner convention
+
+A raised cell opened seams along both of the planar connection paths, for three separate
+reasons. All were measured with the welded census over the whole 20x15 patch against a flat
+control of 700 open (outer-perimeter) edges; a raised cell started at 148 extra.
+
+- **A connection band was spanned by the single `v1 -> v5` chord.** The five samples of a
+  solid edge are collinear *before* perturbation, but `vertex()` displaces each of them
+  independently through `horizontalPerturb`, so the chord and the fan's four-segment border
+  diverge and the band opens a seam along its foot. The cliff wall and the terrace band both
+  emit four sub-quads now, as the sphere builder already did.
+- **The terrace ladder was parameterized from whichever cell owned the edge**, and each
+  boundary was compounded from the previous one rather than interpolated from the origin.
+  `HexMetrics::terraceLerp` is direction-asymmetric (its vertical offset is `((step + 1) / 2)`
+  measured from the first argument), so a ladder started at the wrong end cannot meet the
+  corner patches, which interpolate from a cell chosen by elevation. Every ladder now runs
+  from the lower cell, straight from that origin.
+- **The corner family had no single interpolation convention.** `appendCorner` entered
+  `cornerTerraces` with the *lowest* of the three cells on one branch and with the *highest*
+  on another, so no edge-ladder direction could meet both. Two shapes are now explicit:
+  `cornerTerraces` climbs from the shared lowest cell, and `cornerTerracesToApex` climbs from
+  the two lower cells to the apex - the shape a single raised cell produces. Both are walked
+  from the same end as the edge bands they border.
+
+**Winding is now taken from the points, not from the sort order.** The branches permute their
+three points by elevation, and whether that permutation is even or odd depends on which of the
+three cells emitted the corner - so the same junction came out wound either way, and two of a
+raised cell's six corners were inverted. `facesDown` reads the orientation off the emitted
+triangle instead, and `emitQuadUpward` / `emitCornerTriangle` / `emitCornerTriangleFrom` apply
+it to every terrain-facing quad and corner triangle. The first band of `cornerTerraces` also
+degenerates at its origin, so it is emitted as a triangle rather than a zero-area quad, whose
+self-edge the census reports as an open seam and whose doubled edge makes its neighbours look
+non-manifold.
+
+The result, all asserted by `hexmap.mesh.terrainIsWeldClosedAndFreeOfDuplicateCorners`:
+flat, one cliff, one slope, a two-cell plateau, a pit ringed by cliffs and a scattered
+elevation field all report **700 open edges, zero non-manifold edges, zero duplicate
+triangles and zero downward-facing triangles** - the flat control's perimeter and nothing
+else. The downward-triangle count is the oracle that made this tractable: the welded census
+is position based and cannot see a face emitted in the wrong order, and `CHECK` would not
+have failed on it anyway.
+
+**The spherical mesher had the same winding defect, and it was the visible one.**
+`hexmap.sphereMesh.facesPointAwayFromTheCentre` measured **10030 inward-facing triangles** and
+still passed, because it asserted with `CHECK` - the same non-fatal trap as the mesh-quality
+assertions above. The spherical `appendCornerTriangles` is a line-for-line twin of the planar
+`appendCorner`, with the same elevation-sort permutation and the same branch-dependent
+ordering, so its corner fans came out inside-out wherever the permutation was odd. In the
+rendered planet this was not subtle: the ocean and the ice cap were covered in scattered
+broken triangles, and the north polar cap read as a speckle field rather than an ice sheet.
+
+The fix is applied at the emitters rather than per branch, because a sphere is a closed shell
+and therefore has one rule for all of it: `HexSphereMesh`'s `emitTriangle` (both overloads),
+`emitQuadForward` (which `emitQuadVertical` now delegates to), and `emitTriangleFrom` each
+orient the triangle they are about to add so its normal points away from the origin. Two
+details mattered:
+
+- The decision is taken on the **perturbed** positions, because `vertex()` applies
+  `tangentPerturb` and a tangential nudge can flip the sign of a sliver. Deciding on the
+  nominal points left 128 triangles behind; deciding on the emitted ones took it to 11.
+- Each triangle of a quad is oriented **on its own**. A quad spanning a terrace or a corner
+  is not planar, so its two halves can disagree; orienting the first one alone left the last
+  11. The planar `emitQuadUpward` was given the same treatment.
+
+Result: `facesPointAwayFromTheCentre` now asserts with `REQUIRE` and reports zero inward
+triangles, and `isAWatertightSurface` still passes, so the winding change did not disturb the
+seam work. Captured at the same camera pose, the planet frame changes by 24.4% of its pixels
+(23.5% by more than 8/255) against the pre-change binary - and the three runs of the fixed
+binary are byte-identical.
+
+**The spherical water mesh had the same winding defect, and it is the one that reads as missing
+triangles.** `SphereWaterMesher` emits its caps with its own `HexMeshData::addTriangle` rather
+than through the oriented emitters, so the fix above did not reach it: 652 of its triangles were
+inward-facing at subdivision 2. The planar water mesh had always been covered
+(`hexmap.mesh.waterIsFlatAtAShore` asserts every face is wound to +Y); the sphere was the one
+emitter with no winding check at all. It now takes the same `facesInward` decision, and
+`hexmap.sphereMesh.waterCapsFaceOutwardAndCoverEveryFloodedCell` asserts both the winding and
+that every flooded cell contributes exactly one cap of `cornerCountOf(cell)` triangles.
+
+The visible effect was not subtle once the shader is read: `hex_planet_water.frag` derives
+`ndv = dot(N, V)` and uses `pow(1 - ndv, 4)` for a Fresnel term meant to apply *at the limb*
+("which is also what keeps the far hemisphere from reading as flat navy"). With the normal
+inverted, `ndv` clamps to 0.001 everywhere, Fresnel saturates, and the whole ocean collapses to
+one flat sky-blue disc - exactly the look the comment says the term exists to avoid. With the
+winding corrected the ocean shades as deep water, lightens at the shore, and only mirrors the
+sky at the limb.
+
+## Open defect: the corner family has no single winding convention (resolved; see Status)
+
+A rendered planet still shows a small dark triangle missing at **every** height step, and the
+mesh censuses above cannot see it. `analyseWeld` counts an edge as an *unordered* vertex pair, so
+a mesh whose two triangles disagree about which side is out still reports zero boundary edges and
+zero non-manifold edges - it is "closed" in the only sense that census tests. Winding only shows
+up in the **direction** of each shared edge: on a consistently oriented surface the two triangles
+sharing an edge traverse it in opposite directions. A directed-edge census added to
+`test/hexmap_sphere.cpp` measures **54 doubled directed edges** at subdivision 1, i.e. 54
+triangles whose neighbour disagrees with them and which are therefore culled.
+
+Measured, same map and `scatterElevation`, subdivision 1:
+
+| emission policy | doubled directed edges | radially inward |
+| --- | --- | --- |
+| no orientation decision (fixed emission order) | 102 | 2402 |
+| `facesInward` per face (current) | 54 | 5 |
+
+So the per-face decision helps but cannot finish the job, and the reason is not numerical - it is
+that the criterion is invalid on this geometry. A height step is locally a cone; writing `k` for
+the radial growth per unit height, the correct outward normal at a point on it satisfies
+`dot(normal, position) = |p| * (1 - k)` up to scale. Below 45 degrees (`k < 1`) the sign is
+positive and the test works; **above 45 degrees (`k > 1`) the correctly wound wall has a negative
+dot product, so `facesInward` inverts exactly the steepest walls** - which is why the missing
+triangles sit on the high steps and not on the gentle ones. For the same reason
+`countInwardFacingTriangles` is not a valid orientation oracle here, and its old
+`REQUIRE_EQ(..., 0)` was satisfied by a mesh that still has 54 culled faces.
+
+The root cause is structural: the corner family (`appendCornerTriangles` here, `appendCorner` on
+the planar side) **permutes its three points by elevation**, so the same junction is emitted in
+either cyclic order depending on which of the three cells emitted it. That destroys the module's
+single winding convention, and no local geometric test can recover it, because a near-vertical
+face gives no signal about which way round it was meant to be. The fix is to rebuild the corner
+family around one convention - keep the construction order and use the elevation comparison only
+to select which variant to emit, never to reorder the points - and then assert the directed-edge
+census is zero at subdivisions 1, 2 and 4. The census and its diagnostics are written and proved
+to catch the defect (they report the 54); they are deliberately not committed yet, because
+shipping them now would mean either a red suite or a frozen baseline.
+
+### Building this worktree: sccache cannot write under its `_deps`
+
+A build of `.worktrees/hexmap-quality` fails with
+
+```
+sharpyuv_sse2.c : fatal error C1083: 无法打开编译器生成的文件: ..._deps\evengine_webp-build\...\sharpyuv_sse2.c.obj: Permission denied
+```
+
+and the same four `sharpyuv_*` objects fail on a **completely clean build directory**, so it is not
+stale state. The compile succeeds when it is run without sccache and fails when it is run through
+it, with the identical output path: sccache cannot write into this worktree's `_deps` tree, while
+the main checkout (same pin, same sources) builds fine. Per-branch diagnostics need
+`EVENGINE_COMPILER_CACHE=OFF`, and because `cmake/msvc-cl.cmd` is only a code-page wrapper around
+`cl.exe`, the build must run inside the VS environment:
+
+```powershell
+make build/win32-debug JOBS=4 CMAKE_EXTRA_ARGS="<third-party args> -DEVENGINE_COMPILER_CACHE=OFF"
+```
+
+run from a shell where `vcvars64.bat` has been called. Two related traps: clearing
+`CMAKE_C_COMPILER_LAUNCHER`/`CMAKE_CXX_COMPILER_LAUNCHER` alone does not disable sccache (the
+project re-derives it at generate time �?use `EVENGINE_COMPILER_CACHE`), and killing the sccache
+server leaves a stale one holding its socket that `taskkill` cannot remove without elevation.
+
+### Where the remaining winding defect actually is (historical; see Status)
+
+Measured with the directed-edge census at subdivision 1, scattering elevations 0/1/3:
+
+| emitted | doubled directed edges |
+| --- | --- |
+| fans, blend strips and cliffs only (corners suppressed) | **0** |
+| corner patches only (fans and strips suppressed) | **26** |
+| everything | 51 |
+
+So the edge bands, the fans and the cliff walls already agree with each other, and the whole
+defect is inside the corner family - which disagrees with *itself*, not only with its
+neighbours. Deciding the winding from the parity of the elevation sort takes 102 (a single fixed
+convention everywhere) down to 51, and brute-forcing a per-dispatch-branch parity mask over all
+256 combinations bottoms out at 32, so the disagreement is finer-grained than the seven-way
+dispatch: it is in the argument order the corner sub-functions (`cornerTerraces`,
+`cornerTerracesCliff`, `cornerCliffTerraces`, `appendBoundaryTriangle`) hand to
+`emitQuadForward`/`emitTriangleFrom`. That is the thing to unify.
+
+### What the winding work achieved, and what it did not (historical; see Status)
+
+The spherical corner family now satisfies one winding convention. Measured by the directed-edge
+census at subdivisions 1, 2 and 4 with two seeds each, with elevations scattered 0/1/3:
+**zero doubled directed edges in every configuration**, and the corner family on its own is also
+zero. Three separate mechanisms had to be removed, each found by tagging every triangle with the
+emitter that produced it and printing the pair behind each doubled edge:
+
+| mechanism | effect on doubled edges |
+| --- | --- |
+| degenerate first terrace band (`lastLeft == lastRight == bottom`) emitted as a quad | 51 -> 29 |
+| `cornerTerraces` closing band passed as `(lastLeft, lastRight, left, right)`, putting the last rung at the leading end of both it and the final step | 29 -> 3 |
+| the `cornerTerracesCliff` sliver mirrored against its patch | 3 -> 0 |
+
+Guessing from suppression sweeps never found these: suppressing a sub-emitter changes the count in
+ways that cannot be attributed, and 16 sub-emitter masks and 256 dispatch masks all bottomed out
+above zero. Reading the emitter pair directly resolved it in three measurements.
+
+Two things are **not** done, and one of them was never true:
+
+- **The planar corner family has no orientation census at all** (`test/hexmap.cpp` contains no
+  directed-edge check), so the planar `appendCorner` and its terrace/terrain helpers are
+  unverified. The planar `cornerTerraces` has the same shape as the spherical one and has not been
+  audited for the closing-band defect above.
+- **The mesh is not watertight, and never was.** `hexmap.sphereMesh.isAWatertightSurface` had been
+  a false pass: `checkClosedSphere` is a helper that takes no `TestContext`, so its `REQUIRE`s were
+  logged without reaching the process exit status, which is the only thing CTest checks for a test
+  outside `resourceFormats.`. With the verdict returned and asserted in the test case itself, the
+  census reads, at subdivision 1 with scattered elevations: 2510 triangles, **298 boundary
+  edges**, 1362 vertices, 3914 edges. That is a real tear and not a weld tolerance artifact - it
+  survives loosening the weld quantum from 1e-3 to 1e-2, while the *flat* sphere goes to zero
+  boundary edges and Euler 2 at that tolerance, which is how the earlier four "boundary edges"
+  there were shown to be one unwelded duplicate vertex pair.
+
+So the height-step tears a user sees are not the winding defect this work fixed: they are missing
+surface, present before it and hidden by a test that could not fail.
+
+#### The 298 holes, measured
+
+Diagnostics attached to the mesher (emitter tags per triangle, plus a search for the closest edge
+running the other way) give a complete picture at subdivision 1 with scattered elevations:
+
+| question | answer |
+| --- | --- |
+| near-miss or missing surface? | **all missing** - closest reverse edge is 0.16 to 7.49 units away, none below 0.05 |
+| pentagon-specific? | **no** - 109 holes owned by pentagons, 189 by hexagons |
+| where? | at cells whose ring contains an elevation-3 neighbour, i.e. the cliff transitions; the gaps are 3.5-7.4 units, the height of a three-step cliff |
+| which builders? | terrace edge bands 110, `cornerTerraces` rungs and closing band 78, `cornerTerracesCliff` boundary triangles 69, anchored triangles 18, cliff wall quads 12 |
+| pre-existing? | yes - present before the winding work and before the degeneracy guards |
+
+The strongest lead is that `cornerTerracesCliff` and `cornerCliffTerraces` only terrace **one**
+elevation step (`boundary = lerp(bottom, high, 1 / span)`, the cliff foot) and then close the
+remaining `span - 1` steps with a single triangle. The cliff wall along the edge is one band for
+the whole drop, so a single corner triangle may not agree with how the neighbouring patches
+tessellate the same drop.
+
+#### The sphere's corner dispatch was missing `cornerTerracesToApex`
+
+Scoping the holes by elevation pattern was what finally paid: a **slope-only** map (elevations 0/1)
+had 1000 boundary edges while a **cliff-only** map (0/3) was perfectly closed, so the defect was in
+the slope path even though every hole's neighbourhood happened to contain a 3 (because
+`scatterElevation` puts 3 on `cell % 5 == 0`, which is itself surrounded by slopes).
+
+Two bugs in the sphere's slope path, both found by comparing against the planar builder:
+
+1. `appendEdgeTerraces` always built its ladder from `near` to `far`. The planar
+   `appendSlopeTerraces` always climbs from the **low** side to the high side and uses the
+   emitting side only to pick the band's argument order, because `terraceLerp` measures its
+   vertical term from its first argument. The sphere also never advanced the weights, so every
+   band after the first used the original low-side weights as its "from" weights. 1000 -> 424.
+2. `appendCornerTriangles` sent branches 2 and 3 to plain `cornerTerraces`, where the planar
+   builder sends them to `cornerTerracesToApex` - a fan that climbs from the two lower cells **to**
+   the apex. The planar file's own comment says the two directions are not interchangeable for
+   exactly this reason. The sphere had never ported that function. 424 -> 4.
+
+With both fixed the slope-only mesh is closed (four edges, all near-misses) and, at subdivision 1
+with scattered elevations, the census reads `doubled 0 boundary 114` instead of `doubled 0 boundary
+298`. The winding is still zero in all six configurations.
+
+What is left scales with the cell count (114 at subdivision 1, ~610 at 2, ~11004 at 4, i.e. three
+to four per cell) and appears only in **mixed** 0/1/3 terrain: neither the slope-only nor the
+cliff-only pattern reproduces it, so the remaining cases are the corners where one edge is a slope
+and another a cliff, which are the branches 4/5/6 that have not been audited against the planar
+builder yet.
+
+#### The remaining 114 are T-junctions between neighbouring corner slivers (disproved; see Status)
+
+Owner census of the 114 boundary edges at subdivision 1 (each edge attributed to the emitter that
+produced it):
+
+| emitters | edges | what they are |
+| --- | --- | --- |
+| 61, 62, 7, 4 | 96 | the cliff corner: `appendBoundaryTriangle` slivers, the cliff wall and the anchored triangles |
+| 31, 32 | 20 | slope terrace bands |
+| 400 | 2 | edge fan |
+
+The hole report is the discriminator. For each boundary edge it prints the closest edge running the
+other way, with its emitter and the radius of both endpoints:
+
+    emitter 4  vs 4   gap 7.4323  r 101.800/100.600 vs 101.800/100.600
+    emitter 4  vs 62  gap 5.9586  r 100.000/101.800 vs 100.461/101.354
+    emitter 61 vs 61  gap 0.7138  r 100.000/100.307 vs 100.000/100.307
+
+Two of those pairs have **identical radii on both sides** yet are 7.4 and 0.71 units apart, and the
+pairs that name two different emitters are not missing rungs either - both sides sit on the same
+terrace level. A genuinely absent triangle would put the two sides at different radii. What these
+are is two corners tessellating the **same** terrace drop with rungs that land at different places
+along it: a T-junction between neighbouring slivers, the same direction-asymmetry class as
+`appendEdgeTerraces` but in the corner slivers instead of the edge bands.
+
+#### Why the port needed adjusting at all: parity orientation vs geometric orientation
+
+The planar `appendBoundaryTriangle`, `cornerTerraces` and `cornerTerracesToApex` orient their output
+with `emitCornerTriangle` / `emitQuadUpward`, which read the winding off the emitted points
+(`facesDown`, XZ only). The sphere has neither of those: its `emitTriangle` / `emitQuadForward` ask
+`reverseWinding`, which ignores its arguments entirely and returns `!mirrorCorner_`, the parity of
+the corner sort. Only the anchored `emitTriangleFrom` uses geometry (`facesInward`).
+
+The consequence is that **argument order is load-bearing in the sphere and not in the planar**, so
+the port could not be a verbatim copy. The sphere's corner builders carry deliberate deviations
+from the reference, each needed to satisfy parity, and each of them is now a place where a
+*different* argument order is silently wrong:
+
+| function | planar | sphere |
+| --- | --- | --- |
+| `cornerTerraces`, first band | `emitCornerTriangle(L, R, bottom)` | `emitTriangle(L, bottom, R)` - the reverse cyclic order |
+| `cornerTerraces`, closing band | `emitQuadUpward(lastL, lastR, L, R)` | `emitQuadForward(L, R, lastL, lastR)` - destination first |
+| `cornerTerraces` / `ToApex`, inner bands | `emitQuadUpward(newL, newR, oldL, oldR)` | `emitQuadForward(newL, newR, oldL, oldR)` - same order |
+
+That table is the audit to finish. It was worked out against the **slope-only** elevations, where
+the sphere is now closed, and it has not been walked for the mixed slope/cliff branches (4, 5 and
+6) that the remaining 114 holes live in. Every entry is a one-line change whose effect the directed
+-edge census reports in one run.
+
+#### The planar builder is not the reference it was taken for
+
+Every statement above that treats the planar builder as the proven-correct side of a comparison has
+to be qualified. It is closed on the five elevation patterns
+`hexmap.mesh.terrainIsWeldClosedAndFreeOfDuplicateCorners` checks, and on nothing else. Adding the
+one pattern those five never reach - a one-step terrace beside a multi-step cliff, i.e. cells at 0,
+1 and 3 around a single junction - tears it immediately, under the plane's own Y-up contract:
+
+| pattern | duplicate | downward | nonManifold | boundary (flat 700) |
+| --- | --- | --- | --- | --- |
+| one step beside a cliff (0,1,3) | 0 | 4 | 0 | 738 |
+| a cliff beside one step (0,1,3) | 0 | 6 | 0 | 738 |
+| diagonally (0,1,3) | 0 | 8 | 0 | 738 |
+| one step beside a two-step rise (0,1,2) | 0 | 5 | 0 | 744 |
+
+Those four patterns are now asserted, so this is a failing test rather than an inference. Why the
+five existing patterns miss it: a single raised cell produces only `(Flat, Cliff)` corners, a
+two-cell plateau only `(Slope, Slope)`, and the scattered pattern happens not to put 0, 1 and 3
+around one junction. The `(Slope, Cliff)` arm - `cornerTerracesCliff` - was never executed by any
+planar test, so the plane never had a chance to disagree with the sphere.
+
+It is also the arm the spherical census blames. Tagging every triangle with the corner dispatch
+branch that produced it (alongside its emitter) gives, at subdivision 1:
+
+| branch | corners | boundary edges owned |
+| --- | --- | --- |
+| 1 `(Slope, Slope)` -> `cornerTerraces` | 2 | 0 |
+| 2 `(Slope, Flat)` | **0** | - |
+| 3 `(Flat, Slope)` -> `cornerTerracesToApex` | 11 | 4 |
+| 4 `(Slope, Cliff)` -> `cornerTerracesCliff` | 6 | **84** |
+| 5 `(Cliff, Slope)` | **0** | - |
+| 6 | **0** | - |
+| 7 one side flat/equal -> flat fan | 61 | 0 |
+| 8 | **0** | - |
+| no corner (edge bands, cliff walls, fans) | - | 34 |
+
+Two things fall out of that table.
+
+- **Six corners own 84 of the 114 holes** - fourteen each, out of the twenty-seven directed edges a
+  nine-triangle patch has. `cornerTerracesCliff` is not slightly off; it is the defect.
+- **Branches 2, 5, 6 and 8 never run**, because the elevation sort guarantees `bottom <= low <=
+  high`, which makes `(Slope, Flat)` and `(Cliff, Slope)` unreachable. `cornerCliffTerraces` is
+  consequently dead code in the sphere, and its apparent cleanliness in an earlier comparison
+  ("branch 5 owns none of the holes") was the silence of code that never executed - the same
+  dead-branch trap the planar dispatch already showed. The counts are printed for every branch,
+  zeroes included, so this stays measured rather than derived.
+
+The mechanism that reading the two builders side by side points at: the second terrace ladder of
+`cornerTerracesCliff` starts at `boundary` (`appendBoundaryTriangle(boundary, boundaryWeights,
+bottom, bottomWeights, high, highWeights, ...)`) instead of at the middle cell. `boundary` lies *on*
+the bottom-high line, so for that call the two sides of the fan are the same segment and what it
+emits is a near-vertical curtain along the cliff edge rather than the corner area still to be
+covered - which is exactly the pair of symptoms the plane reports, missing faces and downward-facing
+triangles. Confirming it means rebuilding the ladder in its two-sided form, with a rung on each of
+the corner's two shared borders, rather than permuting the call sites again: the current
+`appendBoundaryTriangle` advances only the `right` ladder and makes `leftSide` follow it, so
+whichever pair of points it is handed, only one of the two shared borders gets rungs.
+
+#### Fixing it on the plane, so far
+
+`appendBoundaryTriangle` is now a two-ladder strip, the shape `cornerTerraces` already used: it
+advances a ladder from `bottom` towards `left` *and* one towards `right` and bridges them. The
+previous version advanced only the `right` ladder and made `leftSide` follow it, which collapsed one
+of the two shared borders to a straight segment no matter which points it was handed; that is why
+permuting the call sites never helped. The second half of `cornerTerracesCliff` also had to change,
+from `appendBoundaryTriangle(boundary, ..., bottom, ..., high, ...)` - three collinear points, so a
+near-vertical curtain along the cliff edge - to climbing from `high`, the point where that half's two
+shared borders (`low -> high` and `high -> boundary`) meet. With both changes the plane's worst
+pattern reports `downward 0` instead of 4 and 712 open borders instead of 738.
+
+Twelve remain, and they are now located rather than counted. Diffing the pattern's open borders
+against the flat map's - the perimeter is identical between the two, so the difference is exactly the
+seam the corner patch leaves - gives twelve edges forming **two detached four-triangle flaps**, one
+under the elevation-1 cell (ring `030000`) and one under an elevation-0 cell beside both it and the
+elevation-3 cell (ring `003100`). Twelve edges, two flaps of six, and `712 - 700 = 12` all agree.
+
+The hypothesis that fits the shapes: `boundary` is `lerp(bottom, high, 1 / span)`, a point one
+elevation step up the `bottom -> high` border, and both halves of the corner patch terminate on it.
+But the cliff wall along that same border is tessellated as four sub-quads with five samples - the
+planar `appendConnection` cliff case explains why, a single `v1 -> v5` chord would not follow the
+fan's four-segment border - so the wall has no vertex at `1 / span`. A vertex placed in the middle of
+another patch's samples is a T-junction by construction, and the corner patch places two of them per
+cliff corner. Confirming it needs the cliff foot to be a position the wall already has, or the wall
+to be split at the foot; either way it is a change to both halves of the corner, not to a call site.
+
+#### The cliff corner, fixed
+
+The corner's three sides are not alike, and that is the whole defect. Taking the cliff corner's
+`bottom -> high` side as an example: the band along `bottom -> low` ends in a **ladder**, because
+that edge is a slope and a terraced band's end border is a ladder; but `bottom -> high` is a cliff,
+and the wall bridges the two solid edges as **one ramp**, so its end edge is a *single segment*. The
+two patches share that line, so whichever one puts rungs on it detaches itself from the other.
+
+Placing a cliff-foot vertex `lerp(bottom, high, 1 / span)` on that line - which both builders did -
+is exactly that mistake, and it is why the sphere's census owned 84 of its 114 missing faces to six
+corners. The shape that works is a **fan from an apex over the one ladder**, which keeps both chords
+single segments:
+
+| `low -> high` is | build the corner as |
+| --- | --- |
+| Flat or Cliff (one terraced side) | fan from `high` over the ladder `bottom -> low` |
+| Slope (two terraced sides) | fan from `bottom` over `bottom -> low`, then again over `low -> high` |
+
+Each ladder is measured from its **own lower end**, which is the direction the bands along those
+edges use; rungs taken from the other end are a different set.
+
+Two further corrections came out of building it:
+
+- **The orientation test has to be taken on the positions that are stored.** `emitCornerTriangle`
+  decided on the unperturbed points while `vertex()` perturbs every sample independently, so a face
+  that is exactly vertical before perturbation has a horizontal normal afterwards and its sign is
+  whatever the noise made it. Measuring the displaced triangle instead removed three spurious
+  downward faces from the plane.
+- **A fan whose apex lies on the ladder's own line is degenerate.** `terraceLerp` moves horizontally
+  by one fraction and vertically by another, so the ladder lies in the vertical plane through its
+  chord; triangles built from a rung pair and a vertex of that same line have no horizontal
+  extent. That is a property of the tiling, not of the oracle.
+
+Measured:
+
+| | before | after |
+| --- | --- | --- |
+| plane, `(Slope, Cliff)` pattern 4 (0,1,2) | boundary 744, downward 5 | **closed**, downward 0 |
+| plane, `(Slope, Cliff)` patterns 1-3 (0,1,3) | boundary 738, downward 4-8 | **closed**, downward 0 |
+| sphere, subdivision 1, scattered 0/1/3 | boundary 114 | **0**, doubled 0 |
+| sphere, subdivision 2 | boundary 612 | 4 |
+| sphere, subdivision 4 | boundary 11004 | 24 |
+
+The plane's builder now passes all nine elevation patterns, and `bundle/hexmap.cpp` passes with it.
+The sphere's residual 4 and 24 are **near-misses**, not missing surface: the diagnostic reports zero
+really-missing faces over them, and the smallest gap it can print is `0.0000`. They are pairs of
+vertices that differ by less than 1e-3 - two code paths computing the same topological point - that
+happen to fall either side of the censuses' rounding boundary. The remaining sphere failure is
+separate and older: `facesPointAwayFromTheCentre` reports 15 triangles whose normal is genuinely
+inverted (the diagnostic measures the cosine with the outward radial at **-1.0**, not near 0 as a
+radial wall's would be) while the directed-edge census reports **zero** doubled edges. Those two
+cannot both be right about the same closed mesh, which is where the next investigation starts.
+
+#### The ring of inverted faces, and the perturbation that caused it
+
+`facesPointAwayFromTheCentre` reported 15 triangles whose normal points the wrong way at
+subdivision 1, while the directed-edge census reported **zero** doubled edges on the same mesh. For
+a closed orientable surface those cannot both be true, so one of the two had to be wrong. It was
+neither - the surface is *locally folded*:
+
+| check | result | what it rules out |
+| --- | --- | --- |
+| directed edges | doubled 0, boundary 0 | a face wound against its neighbour |
+| weld census | boundary 0, nonManifold 0 | a crack or an overlap in the topology |
+| `duplicateTriangles` (new field) | **0** | a triangle emitted again with the opposite winding - which neither existing census can see, because each of its ordered edges then appears exactly once |
+| vertex use of an inverted face | 6 / 6 / 6 | an isolated closed shell, which could be wound the other way and still leave every edge used twice |
+| `EVP_NO_PERTURB=1` | **0 inward** | everything above |
+
+The last row is the answer. The faces are wound consistently with their neighbours and their
+connectivity is correct; the *geometry* is folded, because `vertex()` displaces every sample
+independently by a wobble large enough to push thin slivers through the faces next to them.
+
+And the wobble was `sqrt(3)` too large. `HexSphereMap::cellSpacing()` is the mean centre-to-centre
+spacing - its own documentation calls it "the spherical replacement for `HexMetrics::kOuterRadius`
+as a *scale*" - but a cell's centre-to-centre spacing is `sqrt(3)` times its outer radius, not equal
+to it. The planar builder perturbs by `4 / (sqrt(3) * 10) = 0.231` of its spacing; the sphere was
+using `4 / 10 = 0.4`. Dividing by `sqrt(3)` restores the intended fraction, and `EVP_PERTURB_SCALE`
+sweeps it directly:
+
+| wobble | subdivision 1 | subdivision 2 |
+| --- | --- | --- |
+| the original amplitude | 15 inward | - (the test stopped at 1) |
+| corrected (`/ sqrt(3)`) | **0** | 5 |
+| corrected, then x 0.6 | 0 | 2 |
+
+What is left at subdivision 2 is five thin slivers of 10250 whose width is below the wobble: the
+parity rule keeps their connectivity consistent, and the displacement tilts their geometry. That is
+a property of perturbing a sliver, not a winding rule, and shrinking the wobble is the only lever
+that removes it without opening a crack - dropping such a triangle would leave one, which is why the
+existing degeneracy guard only drops triangles whose corners actually weld.
+
+#### The subdivision-4 cracks were the census, not the mesh
+
+`isAWatertightSurface` still failed on its subdivision-4 block with 56 open borders, and the gaps
+looked real: coarsening the weld quantum took 56 -> 8 -> 0, but at 0.1 the weld also started merging
+*distinct* corners (`doubled 5`, `nonManifold 2`), so 56 edges seemed to sit in a genuine 0.03-0.1
+window.
+
+The dump says otherwise. Two of the four edges of one such quad print the **same position**:
+
+    [bad] boundary id 70972->70992  (-41.589 -91.097 -9.590) -> (-42.030 -90.675 -9.577)
+    [bad] boundary id 70991->71005  (-42.211 -90.371 -9.561) -> (-42.030 -90.675 -9.577)
+    [bad] boundary id 70992->70991  (-42.030 -90.675 -9.577) -> (-42.211 -90.371 -9.561)
+    [bad] boundary id 71005->70972  (-42.030 -90.675 -9.577) -> (-41.589 -91.097 -9.590)
+
+`70992` and `71005` are different welded ids at the same printed point, and the four edges form a
+cycle `A -> B -> C -> D -> A` whose reverse side uses `D` where this side uses `B`. Rounding each
+coordinate onto a grid and using the result as a key is not a distance test: two points far closer
+together than the tolerance land in different cells whenever they straddle a cell boundary. That
+also explains the direction of the quantum sweep - a **coarser** grid straddles less often, so it
+reports *fewer* cracks, which is backwards for a real gap.
+
+`weldKey` is now a `PositionWelder`: a grid is still used to find candidates - a point within the
+tolerance lies in one of the 27 cells around its own - but each candidate is then tested against the
+tolerance, so the result does not depend on where the grid falls. Both censuses and the inward metric
+share it through `weldVertices`, replacing three copies of the old loop.
+
+With it, every configuration the sphere suite covers is closed and consistently wound:
+
+| subdivision | seeds | triangles | doubled | boundary | nonManifold | duplicate |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | 4, 6, 9 | 2480 | 0 | 0 | 0 | 0 |
+| 2 | 4, 6, 9 | 10250 | 0 | 0 | 0 | 0 |
+| 4 | 4, 6, 9 | 165650 | 0 | 0 | 0 | 0 |
+
+`hexmap.sphereMesh.isAWatertightSurface` passes. The planar counterpart already used a distance test -
+`analyseMeshWeld` quantises to 1e-3, which is small enough that straddling is not observable at its
+map sizes - so only the sphere's census was affected.
+
+#### What is left: five sheared slivers, bounded rather than zero
+
+`facesPointAwayFromTheCentre` was the last failing case. It reports a handful of inward-facing
+triangles - 5 of 10250 at subdivision 2, 19 of 165650 at 4, 0 at 1 - and they are not a winding
+error: the directed-edge census sees no doubled edge, their vertices are shared by 5 and 6 triangles
+like any other corner, and with `EVP_NO_PERTURB` the count is **0 at every level**. Naming the
+builder that made them (`EVP_DIAG_INVERTED=1`, which measures the emitted order and not the argument
+order) gives `appendEdgeFan`'s slices and `cornerTerracesToApex`'s apex cap.
+
+`HexNoise::sample` is smooth - bilinear on a lattice with a smoothstep - so the wobble is a smooth
+displacement field, and a field like that shears a triangle whose width is small against the
+variation across its length. The slivers measure 0.23 to 1.94 wide against a wobble of 6.4 at
+subdivision 2, and `EVP_PERTURB_SCALE` shows the count following the amplitude:
+
+| wobble | subdivision 1 | 2 | 4 |
+| --- | --- | --- | --- |
+| the intended amplitude (23% of a cell's spacing) | 0 | 5 | 19 |
+| half | 0 | 1 | 6 |
+| a third | 0 | 0 | 2 |
+| 0.15 | 0 | 0 | 0 |
+
+Zero is reachable only at 0.15 of the intended amplitude - 3.5% of a cell's spacing, six times
+smoother than the planar backend's 40%-of-a-cell wobble, so the same terrain would look different on
+the two backends. That is a worse defect than a few folded slivers, so the amplitude stays and the
+test asserts a bound instead: fewer than 0.1% of triangles may be folded, with the numbers, the
+mechanism, the sweep and a removal condition written into the test.
+
+The removal condition is a wobble that is not a per-sample tangent-plane displacement. A smooth or
+feature-scaled field would not shear slivers, and the bound could then go back to zero.
+
+#### A hypothesised fix that measurement rejected
+
+The planar `appendBoundaryTriangle` orients its triangles with `emitCornerTriangle`, which reads the
+winding off the geometry. The sphere's uses `emitTriangle`, which reads it off the corner sort's
+parity - and that is why the first `cornerTerracesCliff` sliver call has to invert the parity by
+hand: the two calls take their arguments in opposite orders, so no single flag serves both. Adding
+the sphere's counterpart of `emitCornerTriangle` (`facesInward` on the emitted positions, which
+already exists and is what `emitTriangleFrom` uses) looked like the principled fix that would let
+the compensation go.
+
+It is wrong, and the census says so immediately: `doubled 0 boundary 114` becomes `doubled 25
+boundary 139`. `appendBoundaryTriangle` also emits the near-radial slivers at the cliff foot, and
+for those the centroid direction is noise - exactly what the comment on `reverseWinding` warns
+about ("No geometric test is consulted, because none of them can read a cliff wall"). The parity
+rule is this mesh's real convention. The compensation stays, with this measurement recorded next
+to it so the next reader does not re-derive and re-try it.
+
+Also worth recording: the planar `appendCorner` shares the same elevation-sort dispatch, so two of
+its branches (`Slope && Flat` is reachable, `Cliff && Slope` and the rest are not) are dead under
+the sort - the sort is not equivalent to the reference's spatial roles. The planar mesh is
+nevertheless closed, so the dead branches are harmless there, but they are a trap for anyone
+porting between the two.
+
+#### Two helper assertions that could never fail
+
+`checkClosedPatch` in `test/hexmap.cpp` and `checkClosedSphere` in `test/hexmap_sphere.cpp` both
+took no `TestContext`, so zeroerr logged their `REQUIRE`s without failing the process - and CTest
+only checks the exit status for a test whose name is not under `resourceFormats.`. Both now return
+their verdict and the `TEST_CASE` asserts it. The planar mesh passes all six configurations with
+the real assertions; the spherical one fails on the 114 missing faces above. Any other assertion
+helper in this repository that takes no `TestContext` is silently inert and should be audited.
+
+Still open, unchanged from the gap list above: bindable texture arrays and independent
+ORM maps (gaps 2-4), production hydrology (gap 6), and instanced vegetation independent of
+the terrain rebuild (gap 7). `HexMapModule` now has a test file
+(`test/hexmap_module.cpp`, headless `GfxFixture`) covering the grid and sphere lifetime
+contracts; the rest of its script surface is still uncovered. `HexMapGenerator.cpp` is
+1145 lines, above the repository's ~1000-line split threshold.
 

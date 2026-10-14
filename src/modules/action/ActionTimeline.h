@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file ActionTimeline.h
@@ -43,6 +45,7 @@ struct ActionMontageSettings {
     bool          rootMotionVertical   = true;
     bool          rootMotionRotation   = true;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionMontageSettings&) const = default;
 };
 
@@ -65,13 +68,15 @@ struct ActionAnimationSection {
     /** @brief Curve used for the incoming cross-fade. */
     ActionBlendCurve blendCurve = ActionBlendCurve::EaseInOut;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionAnimationSection&) const = default;
 };
 
 /** @brief Stable persisted name for a montage cross-fade curve. */
-[[nodiscard]] std::string_view actionBlendCurveName(ActionBlendCurve curve) noexcept;
+[[nodiscard]] EVENGINE_API_PLATFORM std::string_view actionBlendCurveName(ActionBlendCurve curve) noexcept;
 /** @brief Parse a persisted montage cross-fade curve name. */
-[[nodiscard]] std::optional<ActionBlendCurve> actionBlendCurveFromName(std::string_view name) noexcept;
+[[nodiscard]] EVENGINE_API_PLATFORM std::optional<ActionBlendCurve> actionBlendCurveFromName(
+    std::string_view name) noexcept;
 
 /** @brief Semantic lane kind; hosts choose presentation without changing data. */
 enum class ActionTrackKind : std::uint8_t {
@@ -86,9 +91,9 @@ enum class ActionTrackKind : std::uint8_t {
 };
 
 /** @brief Stable lowercase protocol spelling for a track kind. */
-[[nodiscard]] std::string_view actionTrackKindName(ActionTrackKind kind) noexcept;
+[[nodiscard]] EVENGINE_API_PLATFORM std::string_view actionTrackKindName(ActionTrackKind kind) noexcept;
 /** @brief Parse a stable track kind spelling. */
-[[nodiscard]] Result<ActionTrackKind> parseActionTrackKind(std::string_view text);
+[[nodiscard]] EVENGINE_API_PLATFORM Result<ActionTrackKind> parseActionTrackKind(std::string_view text);
 
 /** @brief Instantaneous typed event placed on an action track. */
 struct ActionNotify {
@@ -98,6 +103,7 @@ struct ActionNotify {
     Value::Object payload;
     bool          enabled = true;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionNotify&) const = default;
 };
 
@@ -110,6 +116,7 @@ struct ActionNotifyState {
     Value::Object payload;
     bool          enabled = true;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionNotifyState&) const = default;
 };
 
@@ -123,6 +130,7 @@ struct ActionTrack {
     std::vector<ActionNotify>      notifies;
     std::vector<ActionNotifyState> states;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionTrack&) const = default;
 };
 
@@ -143,6 +151,7 @@ struct ActionTimelineEvent {
     Duration                time = Duration::zero();
     Value::Object           payload;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionTimelineEvent&) const = default;
 };
 
@@ -155,6 +164,7 @@ struct ActionActiveBlock {
     Duration      duration  = Duration::zero();
     Value::Object payload;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionActiveBlock&) const = default;
 };
 
@@ -165,7 +175,7 @@ struct ActionActiveBlock {
  * resources are referenced by URI/type payloads and resolved by downstream
  * adapters; this L1 module never depends on those presentation modules.
  */
-struct ActionTimeline {
+struct EVENGINE_API_PLATFORM ActionTimeline {
     SchemaVersion schemaVersion{kActionTimelineSchemaVersion};
     LogicalId     actionId;
     Duration      duration = Duration::zero();

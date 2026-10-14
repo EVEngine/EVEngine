@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file HexMap.h @brief Editable hex cell grid: topology, queries, picking and authoring. */
 
@@ -35,6 +37,15 @@ enum class HexSurface : std::int32_t {
 /** @brief Number of chunk surface streams. */
 inline constexpr std::int32_t kHexSurfaceCount = 7;
 
+/**
+ * @brief Largest grid edge, in cells, any entry point may request.
+ *
+ * Both the script bindings and the save format check against this before allocating,
+ * so the limit has exactly one definition. 512 x 512 cells is the largest map the
+ * chunked mesh path is validated for.
+ */
+inline constexpr std::int32_t kMaxHexGridDimension = 512;
+
 /** @brief Stable identifier of one chunk surface stream. */
 struct HexSurfaceId {
     std::int32_t chunkIndex = 0;
@@ -58,8 +69,9 @@ struct HexSurfaceId {
  * derived from the construction seed and the cell coordinates only. Two maps
  * built with the same size and seed produce identical positions.
  */
-class HexMap {
+class EVENGINE_API_WORLD HexMap {
 public:
+    /** @brief Hex map. */
     HexMap() = default;
 
     /**

@@ -172,6 +172,30 @@ TEST_CASE("map.render.sparseChunksBoundCollectionWork") {
     layer->setVisible(false);
 }
 
+TEST_CASE("map.tileLayer.receiveLightDefaultsOffAndPropagates") {
+    hideAllTileLayers();
+    auto *mod = Map::create();
+    TileLayer *layer = mod->newLayer(2, 2, 16.f, 16.f);
+    CHECK(!layer->getReceiveLight());
+    layer->setTile(0, 0, 1);
+    layer->setTile(1, 0, 2);
+    std::vector<eve::graphics::DrawItem2D> items;
+    TileRenderSystem::collect(items);
+    REQUIRE(items.size() >= 2);
+    CHECK(!items[0].receiveLight);
+    CHECK(!items[0].litPath);
+
+    layer->setReceiveLight(true);
+    CHECK(layer->getReceiveLight());
+    items.clear();
+    TileRenderSystem::collect(items);
+    REQUIRE(items.size() >= 2);
+    // No tileset texture → solid color path; still marks receiveLight for modulateUnlit.
+    CHECK(items[0].receiveLight);
+    CHECK(!items[0].litPath);
+    layer->setVisible(false);
+}
+
 TEST_CASE("map.layer.applyConfigFlat") {
     auto *mod = Map::create();
     TileLayer *layer = mod->newLayer(2, 2, 16.f, 16.f);

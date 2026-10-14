@@ -92,7 +92,9 @@ public:
 
     /** @brief 座位：进入 / 离开 / 按玩家找座位。 */
     static bool enterSeat(VehicleEntity& v, int seatIndex, int playerId);
+    /** @brief Exit seat. */
     static bool exitSeat(VehicleEntity& v, int seatIndex);
+    /** @brief Finds seat by player. */
     static int  findSeatByPlayer(VehicleEntity& v, int playerId);
 };
 

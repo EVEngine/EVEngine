@@ -1,0 +1,8 @@
+# Local/imported sky packs and machine-specific selections must never be published.
+/assets/
+/packs/
+/sky-local.nut
+*.r8
+*.rgba8
+*.rgba16f
+*.zip

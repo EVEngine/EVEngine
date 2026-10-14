@@ -882,3 +882,45 @@ story village.emote {
 
     RpgStoryCatalogue::clear();
 }
+
+TEST_CASE("rpg.dnut.persistsCursorIntoGameStateAcrossSaveRestore") {
+    StoryFixture    fixture;
+    RpgStoryBinding binding = fixture.binding();
+    RpgStoryCatalogue::clear();
+    REQUIRE(RpgStoryCatalogue::replaceFromDnutStrict(R"(
+story forest.arrival {
+    message text=hello
+    wait 0.5
+    variable name=done op=set value=1
+}
+)",
+                                                     "persist.dnut")
+                .ok());
+
+    RpgStorySession session;
+    REQUIRE(session.begin("forest.arrival", &binding).ok());
+    CHECK_EQ(session.getStepKind(), std::string("message"));
+    CHECK(fixture.state.hasSelfString("story.forest.arrival", "cursor"));
+    REQUIRE(session.advance().ok());
+    CHECK_EQ(session.getStepKind(), std::string("wait"));
+
+    auto snapshot = fixture.state.snapshotJson();
+    REQUIRE(snapshot.ok());
+
+    GameState restoredState;
+    REQUIRE(restoredState.restoreSnapshotJson(snapshot.value()).ok());
+    CHECK(restoredState.hasSelfString("story.forest.arrival", "cursor"));
+
+    RpgStoryBinding restoredBinding = binding;
+    restoredBinding.gameState       = &restoredState;
+    RpgStorySession resumed;
+    REQUIRE(resumed.begin("forest.arrival", &restoredBinding).ok());
+    CHECK_EQ(resumed.getStepKind(), std::string("wait"));
+    REQUIRE(resumed.advance().ok());
+    CHECK(!resumed.isActive());
+    CHECK_EQ(restoredState.getVariable("done"), 1.0);
+    CHECK_EQ(restoredState.getSelfVariable("story.forest.arrival", "completed"), 1.0);
+    CHECK(!restoredState.hasSelfString("story.forest.arrival", "cursor"));
+
+    RpgStoryCatalogue::clear();
+}

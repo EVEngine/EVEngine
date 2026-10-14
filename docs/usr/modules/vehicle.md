@@ -42,7 +42,7 @@ vehicle.setPlayerControls(1001, throttle, steer, brake, fire, aimYaw, aimPitch);
 `exitSeatByPlayer`。物理 World 必须比载具活得久；销毁 World 或切换空间前先调用
 `detachPhysics`。不要跨帧保存 `getMount` / `getSeatMount` 返回的借用引用。
 
-## API 快查
+## 绑定与行为说明
 
 ### 定义、创建与移动
 

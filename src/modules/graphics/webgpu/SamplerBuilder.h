@@ -25,10 +25,12 @@ public:
     static SamplerBuilder fromEngine(const eve::graphics::TextureSampler &s, uint32_t mipLevels,
                                      float maxDeviceAnisotropy);
 
+    /** @brief Label. */
     SamplerBuilder &label(const char *l) {
         label_ = l;
         return *this;
     }
+    /** @brief Address. */
     SamplerBuilder &address(wgpu::AddressMode u, wgpu::AddressMode v,
                             wgpu::AddressMode w = wgpu::AddressMode::ClampToEdge) {
         addrU_ = u;
@@ -36,22 +38,26 @@ public:
         addrW_ = w;
         return *this;
     }
+    /** @brief Filter. */
     SamplerBuilder &filter(wgpu::FilterMode mag, wgpu::FilterMode min) {
         mag_ = mag;
         min_ = min;
         return *this;
     }
+    /** @brief Mipmap. */
     SamplerBuilder &mipmap(wgpu::MipmapFilterMode mip, float lodMin = 0.f, float lodMax = 1000.f) {
         mip_ = mip;
         lodMin_ = lodMin;
         lodMax_ = lodMax;
         return *this;
     }
+    /** @brief Compare. */
     SamplerBuilder &compare(wgpu::CompareFunction cmp) {
         compare_ = cmp;
         hasCompare_ = true;
         return *this;
     }
+    /** @brief Anisotropy. */
     SamplerBuilder &anisotropy(float maxAniso) {
         aniso_ = maxAniso > 1.f ? maxAniso : 1.f;
         return *this;

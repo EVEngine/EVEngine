@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "font/FontData.h"
@@ -14,11 +16,13 @@ namespace font {
  * @brief Resource module for decoding TrueType / OpenType fonts via FreeType.
  * Produces FontData (CPU metrics + glyph raster); GPU upload/draw is graphics'.
  */
-class Font : public Module {
+class EVENGINE_API_BACKENDS Font : public Module {
 public:
     Module_REG(Font);
 
+    /** @brief Font. */
     Font();
+    /** @brief Font. */
     ~Font() override;
 
     /**

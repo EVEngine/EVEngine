@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /**
  * @file Climbing.h
@@ -342,8 +343,11 @@ public:
     void sortAndLimit(std::size_t limit);
     /** @brief Exchange complete owning slot storage without allocating. */
     void swap(ClimbingCandidateSet& other) noexcept;
+    /** @brief Empty. */
     [[nodiscard]] bool empty() const noexcept { return size_ == 0; }
+    /** @brief Returns the size of . */
     [[nodiscard]] std::size_t size() const noexcept { return size_; }
+    /** @brief Front. */
     [[nodiscard]] const ClimbingCandidate& front() const noexcept { return values_[0]; }
     /** @brief Move the best candidate out of a non-empty set. */
     [[nodiscard]] ClimbingCandidate takeFront() noexcept { return std::move(values_[0]); }
@@ -368,6 +372,7 @@ private:
 };
 
 namespace detail {
+/** @brief ClimbingPredictionSequenceTag public API. */
 struct ClimbingPredictionSequenceTag {};
 }
 
@@ -387,12 +392,13 @@ struct ClimbingCandidateKey {
     std::uint64_t           definitionGeneration = 0;
     std::uint32_t           sortedRank = 0;
     std::uint64_t           fingerprint = 0;
+    /** @brief Operator ==. */
     friend bool operator==(const ClimbingCandidateKey&, const ClimbingCandidateKey&) noexcept = default;
 };
 
 /** @brief Creates the opaque key for one candidate at its deterministic sorted rank. */
-[[nodiscard]] ClimbingCandidateKey makeClimbingCandidateKey(const ClimbingCandidate& candidate,
-                                                             std::uint32_t sortedRank) noexcept;
+[[nodiscard]] EVENGINE_API_DOMAINS ClimbingCandidateKey makeClimbingCandidateKey(const ClimbingCandidate& candidate,
+                                                                                 std::uint32_t sortedRank) noexcept;
 
 /** @brief Client-to-server request containing selection identity only, never a world-space target. */
 struct ClimbingPredictionRequest {
@@ -442,13 +448,17 @@ struct ClimbingPredictionDecision {
 };
 
 /** @brief Encodes a validated prediction request to its canonical owning Value representation. */
-[[nodiscard]] eve::Result<eve::Value> encodeClimbingPredictionRequest(const ClimbingPredictionRequest& request);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<eve::Value> encodeClimbingPredictionRequest(
+    const ClimbingPredictionRequest& request);
 /** @brief Decodes a complete request and rejects unknown schema versions transactionally. */
-[[nodiscard]] eve::Result<ClimbingPredictionRequest> decodeClimbingPredictionRequest(const eve::Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingPredictionRequest> decodeClimbingPredictionRequest(
+    const eve::Value& value);
 /** @brief Encodes a validated authoritative decision to its canonical owning Value representation. */
-[[nodiscard]] eve::Result<eve::Value> encodeClimbingPredictionDecision(const ClimbingPredictionDecision& decision);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<eve::Value> encodeClimbingPredictionDecision(
+    const ClimbingPredictionDecision& decision);
 /** @brief Decodes a complete authoritative decision transactionally. */
-[[nodiscard]] eve::Result<ClimbingPredictionDecision> decodeClimbingPredictionDecision(const eve::Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingPredictionDecision> decodeClimbingPredictionDecision(
+    const eve::Value& value);
 
 /** @brief Owning evidence returned by one committed climbing selection transaction. */
 struct ClimbingStart {
@@ -640,7 +650,7 @@ struct ClimbingDebugSnapshot {
  * The runtime owns definitions and execution state, but never retains a World3D pointer. Every
  * physics call accepts a borrowed world for that synchronous call and validates its runtime handle.
  */
-class ClimbingRuntime {
+class EVENGINE_API_DOMAINS ClimbingRuntime {
 public:
     /** @brief Stable schema id for owning runtime snapshots. */
     static constexpr std::string_view SnapshotSchemaId = "evengine.climbing-runtime";
@@ -649,10 +659,13 @@ public:
     /** @brief Hard bound for undelivered post-simulation events owned by one runtime. */
     static constexpr std::size_t PendingEventCapacity = 64;
 
+    /** @brief Climbing runtime. */
     ClimbingRuntime() = default;
     ClimbingRuntime(const ClimbingRuntime&) = delete;
     ClimbingRuntime& operator=(const ClimbingRuntime&) = delete;
+    /** @brief Climbing runtime. */
     ClimbingRuntime(ClimbingRuntime&&) noexcept = default;
+    /** @brief Operator =. */
     ClimbingRuntime& operator=(ClimbingRuntime&&) noexcept = default;
     /** @brief Releases any live anchor reservation before runtime storage is destroyed. */
     ~ClimbingRuntime() noexcept;
@@ -875,7 +888,7 @@ struct ClimbingRuntimeHandleTag {};
 using ClimbingRuntimeHandleRef = eve::script::RuntimeHandleRef<ClimbingRuntimeHandleTag>;
 
 /** @brief Script-facing factory and owner for independent climbing runtimes. */
-class Climbing : public Module {
+class EVENGINE_API_DOMAINS Climbing : public Module {
 public:
     Module_REG(Climbing);
     /** @brief Creates a module-owned runtime and returns its generation-qualified reference. */

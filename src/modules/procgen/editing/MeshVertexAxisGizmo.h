@@ -8,7 +8,7 @@
 namespace eve::procgen_editing {
 
 /** @brief Renderer-neutral runtime vertex-selection axis gizmo adapter. */
-class MeshVertexAxisGizmoBuilder {
+class EVENGINE_API_ORCHESTRATION MeshVertexAxisGizmoBuilder {
 public:
     /** @brief Build three pickable axis arrows at the current selection center. */
     [[nodiscard]] editing::GizmoSnapshot build(const procgen::MeshDeformationSession& session,

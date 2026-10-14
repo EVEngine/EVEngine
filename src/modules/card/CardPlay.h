@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file CardPlay.h
@@ -54,18 +56,25 @@ public:
                              CardPlayConditionQueries queries = {});
 
     /** @copydoc decision::EvaluationContext::value */
+    /** @brief Value. */
     [[nodiscard]] std::optional<eve::Value> value(std::string_view key) const override;
     /** @copydoc decision::EvaluationContext::hasTag */
+    /** @brief True when tag. */
     [[nodiscard]] std::optional<bool> hasTag(std::string_view tag) const override;
     /** @copydoc decision::EvaluationContext::attribute */
+    /** @brief Attribute. */
     [[nodiscard]] std::optional<eve::Value> attribute(std::string_view key) const override;
     /** @copydoc decision::EvaluationContext::resource */
+    /** @brief Resource. */
     [[nodiscard]] std::optional<eve::Value> resource(std::string_view key) const override;
     /** @copydoc decision::EvaluationContext::state */
+    /** @brief State. */
     [[nodiscard]] std::optional<eve::Value> state(std::string_view key) const override;
     /** @copydoc decision::EvaluationContext::authority */
+    /** @brief Authority. */
     [[nodiscard]] std::optional<bool> authority(std::string_view scope) const override;
     /** @copydoc decision::EvaluationContext::policy */
+    /** @brief Policy. */
     [[nodiscard]] std::optional<decision::ConditionResult> policy(std::string_view  name,
                                                                   const eve::Value& arguments) const override;
 
@@ -76,7 +85,7 @@ private:
 };
 
 /** @brief Evaluates one card play condition without moving or mutating a card. */
-class CardPlayConditionAdapter {
+class EVENGINE_API_WORLD CardPlayConditionAdapter {
 public:
     /**
      * @brief Evaluate a card definition's play condition against one instance.
@@ -107,12 +116,16 @@ public:
     /** @brief Stable transaction diagnostic name. */
     [[nodiscard]] std::string_view name() const noexcept override { return "card-play-effect"; }
     /** @copydoc eve::transaction::ITransactionParticipant::prepare */
+    /** @brief Prepare. */
     [[nodiscard]] eve::Result<void> prepare(const eve::transaction::TransactionContext& context) override;
     /** @copydoc eve::transaction::ITransactionParticipant::commit */
+    /** @brief Commits . */
     [[nodiscard]] eve::Result<void> commit(const eve::transaction::TransactionContext& context) override;
     /** @copydoc eve::transaction::ITransactionParticipant::rollback */
+    /** @brief Rollback. */
     [[nodiscard]] eve::Result<void> rollback(const eve::transaction::TransactionContext& context) override;
     /** @copydoc eve::transaction::ITransactionParticipant::compensate */
+    /** @brief Compensate. */
     [[nodiscard]] eve::Result<void> compensate(const eve::transaction::TransactionContext& context) override;
 
 private:
@@ -162,7 +175,7 @@ struct CardPlayRequest {
  * account is supplied by the composition root, and the payment is routed
  * through AtomicResourcePayment, so card state and mana are one transaction.
  */
-class CardPlayPaymentAdapter final {
+class EVENGINE_API_WORLD CardPlayPaymentAdapter final {
 public:
     /**
      * @brief Execute condition, movement, card effect and Mana as one transaction.

@@ -1,5 +1,11 @@
 # EVEngine 用户指南
 
+[English](../en/usr/README.md)
+
+中文是唯一权威来源，英文手工维护在 `docs/en/usr/`；修改使用行为时先更新中文，再同步对应英文。
+尚未翻译的模块在英文导航中明确标为 Chinese。手册保留任务、示例和注意事项；补充绑定参考从源码生成，不手工维护第二份完整方法清单：
+C++ 接口查 Doxygen，脚本接口查 SDK 绑定目录（见 [API 使用约定](../dev/API-CONVENTIONS.md)）。
+
 EVEngine 是一个以 Squirrel 脚本驱动的轻量游戏引擎，适合快速制作 2D、第三人称 3D，以及 2D/3D 混合的游戏原型。本指南面向“使用引擎制作游戏”的用户；如果你要修改引擎实现，请阅读[开发者文档](https://github.com/EVEngine/EVEngine/blob/main/docs/dev/README.md)。
 
 > 在线版文档（API + 用户手册）持续构建于 GitHub Pages：
@@ -7,7 +13,7 @@ EVEngine 是一个以 Squirrel 脚本驱动的轻量游戏引擎，适合快速�
 
 > 当前版本为早期开发版本，API 仍在演进。最可靠的学习方式是运行并修改示例：下载的 SDK 自带 `share/eve/examples/basic/`，仓库中还有更多 `examples/` 可参考。
 
-本指南从“下载引擎”讲到“打包发布”；[EveScript 完整教程](EVESCRIPT.md)讲解脚本语法、规范和与标准 Squirrel 的区别，覆盖全部脚本模块的[模块使用手册](MODULES.md)则按功能逐章说明 API 与示例。先跑通一个示例，再按需查阅对应文档即可。
+本指南从“下载引擎”讲到“打包发布”；[EveScript 完整教程](EVESCRIPT.md)讲解脚本语法、数据类型、数组/表、作用域、引用、标准库与 import/export，以及热重载和游戏帧循环；其中[收集方块小游戏](EVESCRIPT.md#20-实践用键盘收集方块)提供完整工程代码。覆盖全部脚本模块的[模块使用手册](MODULES.md)按功能逐章说明 API 与示例。给编程 Agent 的入口是仓库根目录 [`llms.txt`](../../llms.txt)。先跑通一个示例，再按需查阅对应文档即可。
 
 ## 1. 获取引擎：从官网下载，无需编译
 
@@ -25,6 +31,8 @@ EVEngine 是一个以 Squirrel 脚本驱动的轻量游戏引擎，适合快速�
 
 - `bin/eve(.exe)`：引擎运行时（桌面平台）；
 - `share/eve/examples/basic/`：可直接运行的参考游戏；
+- `share/eve/ai/`：本 SDK 构建的 EveScript API 目录（`eve-api.json`）与 Agent skill / MCP 桥；
+- `llms.txt`：给编程 Agent 的入口（解压后打开 SDK 目录即可被 Cursor 等读取）；
 - `platform/`：目标平台打包模板（Android APK 工程等）；
 - `share/eve/licenses/`：引擎与第三方许可文本；
 - `include/`、`lib/`、`cmake/`：原生插件开发文件（做纯脚本游戏用不到）。
@@ -127,7 +135,15 @@ my-game/
 | `eve_asset_reload(path)` | 非脚本资源变化后（可选） | 响应纹理、地图等资源变化 |
 | `eve_quit()` | 退出时（可选） | 保存数据或执行清理 |
 
-启用 `config.hotReload` 后，引擎会监视脚本和资源。需要跨热重载保存的 root 状态使用 EveScript 的 `persist` 声明：
+启用 `config.hotReload` 后，引擎会监视脚本和资源。默认监视游戏工作目录（`hot.watchTree(".")`）。
+`apps/<editor>` 这类入口需要看见父级的 `editors/`、`lib/` 时，在 `config.nut` 里设置：
+
+```squirrel
+hotReload = true
+hotReloadWatch = [".."]   // 字符串或数组；默认 ["."]
+```
+
+事件路径相对监视根报告：工作目录内仍是 `main.nut`，父级兄弟目录是 `editors/skill.vm.nut`。需要跨热重载保存的 root 状态使用 EveScript 的 `persist` 声明：
 
 ```squirrel
 persist player = null
@@ -208,7 +224,7 @@ SDK 中的 `eve` 可执行文件本身就是命令行工具：
 | `eve dev [--port 8765]` | 启动热重载开发服务器（移动端真机热更新用） |
 | `eve zip <目录>` | 把游戏压缩为 `.eve` 归档 |
 | `eve package <目录> -o <输出> --sdk <SDK目录>` | 打包为含运行时的可分发游戏目录 |
-| `eve test` | 运行游戏目录中的测试配置 |
+| `eve test` | 当前源码为空实现，不可作为测试通过证据；仓库使用 Make/CTest |
 | `eve doc <名字>` | 查询在线文档 |
 | `eve build` | 从源码构建（需要源码与工具链，见[开发者文档](https://github.com/EVEngine/EVEngine/blob/main/docs/dev/README.md)） |
 
@@ -303,13 +319,18 @@ config.devServer = "http://192.168.1.5:8765"   # 开发机局域网 IP
 
 ## 9. 下一步
 
+从[完整游戏开发教程](GAME_DEVELOPMENT.md)开始：一个工程串起 import、输入、规则、
+纹理、HUD、严格版本化存档、热重载、调试和发布；完整源码在
+[game-tutorial](../../examples/game-tutorial/)。
+
 建议按以下顺序学习：
 
 1. 运行 `share/eve/examples/basic/`，修改背景色、重力和粒子配置；
 2. 用 `eve create` 建新游戏，熟悉 `eve_init` / `eve_update` / `eve_render` 与热重载；
 3. 阅读 [EveScript 完整教程](EVESCRIPT.md)，再把脚本拆成显式 `import` / `export` 模块；
 4. 按需求查阅[模块使用手册](MODULES.md)（UI、ECS、RPG、程序化生成等）；
-5. 需要原生能力时，再使用 SDK 的 CMake 包编写插件（见仓库 `examples/native-plugin`）；
-6. 发布前阅读第 6 节打包步骤与许可条款。
+5. 需要持久化进度时阅读[跨模块存档用法](SAVE.md)；
+6. 需要原生能力时，再使用 SDK 的 CMake 包编写插件（见仓库 `examples/native-plugin`）；
+7. 发布前阅读第 6 节打包步骤与许可条款。
 
 本指南讲解稳定的使用流程，内部架构、设计取舍和实现进度统一维护在 [`docs/dev/`](https://github.com/EVEngine/EVEngine/blob/main/docs/dev/README.md)，避免把尚未实现的设计稿误当作用户 API。

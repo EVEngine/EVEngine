@@ -87,6 +87,7 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/engine/common/"
     FILES_MATCHING
         PATTERN "*.h"
         PATTERN "*.hpp"
+        PATTERN "ModuleRegistryState.h" EXCLUDE
 )
 install(FILES "${CMAKE_BINARY_DIR}/src/engine/common/config.h"
     DESTINATION include/eve/common
@@ -135,6 +136,14 @@ foreach(_eve_mod IN LISTS EVE_ENABLED_MODULES)
     foreach(_eve_nested IN LISTS _eve_nested_heads)
         list(APPEND _eve_install_excludes PATTERN "${_eve_nested}" EXCLUDE)
     endforeach()
+    # UiMotionSinks.h includes animation/MotionTypes.h and its .cpp is omitted when
+    # animation is trimmed; do not install a header the UI-only SDK cannot satisfy.
+    if(_eve_mod STREQUAL "ui")
+        list(FIND EVE_ENABLED_MODULES animation _eve_sdk_anim_idx)
+        if(_eve_sdk_anim_idx EQUAL -1)
+            list(APPEND _eve_install_excludes PATTERN "UiMotionSinks.h" EXCLUDE)
+        endif()
+    endif()
     install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod_dir}/"
         DESTINATION include/eve/${_eve_mod_dir}
         FILES_MATCHING
@@ -185,6 +194,27 @@ endforeach()
 # back to the embedded demo.
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/examples/basic"
     DESTINATION share/eve/examples
+)
+
+# ---- Agent knowledge pack (this SDK build, no engine git tree required) ----
+# eve-api.json / eve-api.d.ts are generated next to BindingContracts.generated.cpp.
+install(FILES
+    "${CMAKE_BINARY_DIR}/src/engine/common/eve-api.json"
+    "${CMAKE_BINARY_DIR}/src/engine/common/eve-api.d.ts"
+    DESTINATION share/eve/ai
+)
+install(FILES "${CMAKE_SOURCE_DIR}/.cursor/skills/evescript/SKILL.md"
+    DESTINATION share/eve/ai
+)
+install(FILES "${CMAKE_SOURCE_DIR}/.cursor/skills/evescript/SKILL.md"
+    DESTINATION .cursor/skills/evescript
+)
+install(FILES "${CMAKE_SOURCE_DIR}/cmake/sdk/llms.txt"
+    DESTINATION .
+    RENAME llms.txt
+)
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/tools/eve-mcp/"
+    DESTINATION share/eve/ai/eve-mcp
 )
 
 # ---- Target-platform packaging template only ----
@@ -300,6 +330,11 @@ install(CODE "
         endforeach()
     endif()
 ")
+
+# Plugins use the same member and stateless binding templates as the engine.
+install(DIRECTORY "${CMAKE_BINARY_DIR}/generated/simplesquirrel/simplesquirrel"
+    DESTINATION include)
+install(FILES "${CMAKE_BINARY_DIR}/generated/ecs/ECS.hpp" DESTINATION include OPTIONAL)
 
 # ---- Marker files ----
 install(CODE "

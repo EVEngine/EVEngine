@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file HexVisibility.h @brief Reference-counted cell visibility and explored state. */
 
@@ -27,8 +29,9 @@ namespace eve::hexmap {
  *
  * Thread affinity: main thread only; no locking.
  */
-class HexVisibility {
+class EVENGINE_API_WORLD HexVisibility {
 public:
+    /** @brief Hex visibility. */
     HexVisibility() = default;
 
     /**
@@ -80,9 +83,16 @@ public:
 
     /**
      * @brief Drops every viewer, leaving the map's explored flags untouched.
-     * @cost Proportional to the number of cell counters, not to the visible region.
+     *
+     * Cells that lose their last viewer change the fog overlay, so their chunks are
+     * marked dirty in `map`, exactly as `decrease` does. Leaving that to the caller
+     * meant dropping the viewers could leave stale fog geometry on screen until an
+     * unrelated edit happened to dirty the same chunk.
+     *
+     * @param map The annotated map whose fog geometry is dirtied.
+     * @cost Proportional to the number of visible cells, not to the whole map.
      */
-    void clear() noexcept;
+    void clear(HexMap& map) noexcept;
 
 private:
     std::vector<std::int32_t> counts_;

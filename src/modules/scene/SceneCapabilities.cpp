@@ -80,7 +80,7 @@ private:
     static eve::Result<eve::EntitySpatialPose> failure(eve::DiagnosticCode code, std::string message,
                                                         std::string path) {
         return eve::Result<eve::EntitySpatialPose>::failure(
-            eve::Diagnostic::error(code, std::move(message), std::move(path)));
+            eve::Diagnostic::error(code, message, path));
     }
 };
 
@@ -157,37 +157,52 @@ public:
         return out;
     }
 
-    bool getNode(const std::string &id, SceneNodeInfo *out) const override {
+    eve::Result<SceneNodeInfo> getNode(const std::string& id) const override {
         auto *h = host();
-        return h ? getNodeIn(h->getName(), id, out) : false;
+        if (!h) {
+            return eve::Result<SceneNodeInfo>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "no active scene host", "host"));
+        }
+        return getNodeIn(h->getName(), id);
     }
 
-    bool getNodeIn(const std::string &hostName, const std::string &id,
-                   SceneNodeInfo *out) const override {
+    eve::Result<SceneNodeInfo> getNodeIn(const std::string& hostName, const std::string& id) const override {
         SceneHost *h = hostName.empty() ? host() : hostByName(hostName);
-        SceneNode *n = h ? borrowSceneResult(h->findById(id)) : nullptr;
-        if (!n || !out) return false;
-        *out = toInfo(h, *n);
-        return true;
+        if (!h) {
+            return eve::Result<SceneNodeInfo>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "scene host not found", "host"));
+        }
+        SceneNode* n = borrowSceneResult(h->findById(id));
+        if (!n) {
+            return eve::Result<SceneNodeInfo>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "scene node not found", "node"));
+        }
+        return eve::Result<SceneNodeInfo>::success(toInfo(h, *n));
     }
 
-    bool setNodeTransform(const std::string &id, float x, float y, float z) override {
+    eve::Result<void> setNodeTransform(const std::string& id, float x, float y, float z) override {
         auto *h = host();
         SceneNode *n = h ? borrowSceneResult(h->findById(id)) : nullptr;
-        if (!n) return false;
+        if (!n) {
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "scene node not found", "node"));
+        }
         n->x = x;
         n->y = y;
         n->z = z;
         h->markTransformDirty();
-        return true;
+        return eve::Result<void>::success();
     }
 
-    bool setNodeVisible(const std::string &id, bool visible) override {
+    eve::Result<void> setNodeVisible(const std::string& id, bool visible) override {
         auto *h = host();
         SceneNode *n = h ? borrowSceneResult(h->findById(id)) : nullptr;
-        if (!n) return false;
+        if (!n) {
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "scene node not found", "node"));
+        }
         n->visible = visible;
-        return true;
+        return eve::Result<void>::success();
     }
 
     void syncTransforms() override { TransformSystem::updateAll(); }

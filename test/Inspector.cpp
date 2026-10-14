@@ -293,7 +293,7 @@ class NestedHolder {
     UIHost* host = resolveHost(inspector.host());
     REQUIRE(host != nullptr);
 
-    UINode* skill0 = nodeById(host, "arr_NestedHolder_skills_0");
+    UINode* skill0 = nodeById(host, "prop_skills_0");
     REQUIRE(skill0 != nullptr);
     auto tree = host->tree();
     REQUIRE_GE(skill0->handlerText, 1u);
@@ -301,7 +301,7 @@ class NestedHolder {
     const ssq::Object selected = inspector.selectedInstance();
     CHECK_EQ(runtime.arrayGet(selected, "skills", 0).asString(), std::string("spin"));
 
-    UINode* buffHaste = nodeById(host, "tbl_NestedHolder_buffs_haste");
+    UINode* buffHaste = nodeById(host, "prop_buffs_haste");
     REQUIRE(buffHaste != nullptr);
     REQUIRE_GE(buffHaste->handlerText, 1u);
     tree->textHandlers[size_t(buffHaste->handlerText - 1)]("1.5");
@@ -325,7 +325,7 @@ class NestedHolder {
     REQUIRE(back != nullptr);
     REQUIRE_GE(back->handlerClick, 1u);
     tree2->clickHandlers[size_t(back->handlerClick - 1)]();
-    REQUIRE(nodeById(host, "arr_NestedHolder_skills_0") != nullptr);
+    REQUIRE(nodeById(host, "prop_skills_0") != nullptr);
     CHECK_EQ(runtime.classNameOf(inspector.selectedInstance()),
              std::string("NestedHolder"));
 }

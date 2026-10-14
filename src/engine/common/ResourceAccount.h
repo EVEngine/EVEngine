@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file ResourceAccount.h
@@ -25,7 +27,9 @@
 
 namespace eve::detail {
 
+/** @brief ResourceReservationIdTag public API. */
 struct ResourceReservationIdTag {};
+/** @brief ResourceReceiptIdTag public API. */
 struct ResourceReceiptIdTag {};
 
 }  // namespace eve::detail
@@ -52,6 +56,7 @@ public:
     [[nodiscard]] const std::string& value() const noexcept { return value_; }
 
     friend bool operator==(const ResourceId&, const ResourceId&) noexcept  = default;
+    /** @brief Operator <=>. */
     friend auto operator<=>(const ResourceId&, const ResourceId&) noexcept = default;
 
 private:
@@ -102,6 +107,7 @@ public:
     [[nodiscard]] eve::Result<Amount> checkedAdd(Amount other) const;
 
     friend constexpr bool operator==(const Amount&, const Amount&) noexcept  = default;
+    /** @brief Operator <=>. */
     friend constexpr auto operator<=>(const Amount&, const Amount&) noexcept = default;
 
 private:
@@ -109,10 +115,11 @@ private:
 };
 
 /** @brief One positive resource and quantity pair in a canonical cost. */
-struct ResourceCost {
+struct EVENGINE_API_FOUNDATION ResourceCost {
     ResourceId resource;
     Amount     amount;
 
+    /** @brief Operator ==. */
     friend bool operator==(const ResourceCost&, const ResourceCost&) noexcept = default;
 
     /**
@@ -137,7 +144,7 @@ struct CostInput {
  * checked arithmetic. Empty costs and zero/negative items are rejected, so a
  * successful CostSpec is safe to use in reserve/debit/credit operations.
  */
-class CostSpec {
+class EVENGINE_API_FOUNDATION CostSpec {
 public:
     /** @brief Construct an invalid empty cost; use create/from/single for input. */
     CostSpec() = default;
@@ -239,12 +246,13 @@ public:
     [[nodiscard]] constexpr bool isZero() const noexcept { return value_ == 0; }
 
     friend constexpr bool operator==(const AccountNonce&, const AccountNonce&) noexcept  = default;
+    /** @brief Operator <=>. */
     friend constexpr auto operator<=>(const AccountNonce&, const AccountNonce&) noexcept = default;
 
 private:
     explicit constexpr AccountNonce(std::uint64_t value) noexcept : value_(value) {}
 
-    friend eve::Result<AccountNonce> allocateAccountNonce();
+    friend EVENGINE_API_FOUNDATION eve::Result<AccountNonce> allocateAccountNonce();
 
     std::uint64_t value_ = 0;
 };
@@ -258,7 +266,7 @@ using ReceiptId = eve::detail::StrongUint64<eve::detail::ResourceReceiptIdTag>;
  * @remarks The nonce is an opaque value and is not a pointer or persistent
  *          object identity. Each adapter instance must retain its own nonce.
  */
-[[nodiscard]] eve::Result<AccountNonce> allocateAccountNonce();
+[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<AccountNonce> allocateAccountNonce();
 
 /**
  * @brief Reservation credential returned by a successful reserve operation.
@@ -307,6 +315,7 @@ struct Receipt {
  */
 class IResourceAccount {
 public:
+    /** @brief Releases IResourceAccount resources. */
     virtual ~IResourceAccount() = default;
 
     /**
@@ -357,6 +366,7 @@ public:
 namespace std {
 
 template <>
+/** @brief hash public API. */
 struct hash<eve::resource::ResourceId> {
     /** @brief Hash a canonical resource id for account reservation maps. */
     std::size_t operator()(const eve::resource::ResourceId& value) const noexcept {

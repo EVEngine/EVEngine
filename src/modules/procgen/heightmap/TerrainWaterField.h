@@ -42,8 +42,8 @@ struct TerrainWaterFlowMapSettings {
  * order, a pooled step raises only the private terrain, the last step deposits the full absorption amount,
  * and smoothing is the source's order-dependent in-place clamped four-neighbor pass.
  */
-[[nodiscard]] Result<int> generateTerrainWaterFlowMap(Heightmap& target, const Heightmap& source,
-                                                       const TerrainWaterFlowMapSettings& settings);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateTerrainWaterFlowMap(Heightmap& target, const Heightmap& source,
+                                                                           const TerrainWaterFlowMapSettings& settings);
 
 /**
  * @brief Generate Pcg HeightMap.FlowMap's normalized four-direction velocity magnitude.
@@ -54,7 +54,8 @@ struct TerrainWaterFlowMapSettings {
  * @throws std::bad_alloc Target remains unchanged.
  * @thread Synchronous caller-owned access; deterministic with no RNG, callbacks, or implicit time.
  */
-[[nodiscard]] Result<int> generateTerrainVelocityFlowMap(Heightmap& target, const Heightmap& source, int iterations);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateTerrainVelocityFlowMap(Heightmap&       target,
+                                                                              const Heightmap& source, int iterations);
 
 /**
  * @brief Owned water/flux/velocity state for deterministic execution of the Pcg water stage.
@@ -67,7 +68,7 @@ struct TerrainWaterFlowMapSettings {
  * Thread affinity is caller-owned: exclusive reset/advance, immutable sampling when idle;
  * no callbacks, borrowed output pointers, ECS handles, implicit clock or RNG.
  */
-class TerrainWaterField {
+class EVENGINE_API_DOMAINS TerrainWaterField {
 public:
     /** @brief Construct an empty field; reset must succeed before advance or sample. */
     TerrainWaterField();

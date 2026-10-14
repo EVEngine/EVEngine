@@ -1,5 +1,8 @@
 # AI Game — 让 AI Agent 驾驶一个真实游戏
 
+[English](README.en.md)
+
+
 一个最小但真实的 2D 对战游戏，专为展示 EVEngine 的 **Play Host**：
 Agent 通过 `game.agent.json` 声明观察面，再用 `eve_play` 暂停、推进帧、观察、截图、checkpoint 复位。
 不要把 `eve_eval` 当作官方读状态路径。
@@ -23,6 +26,9 @@ make run/<platform>-debug GAME=examples/ai-game RUN_ARGS="--debug --mcp-port=752
 | 检查点 | `checkpoint` `mode=capture\|restore` | 标记脚本根快照 |
 
 完整请求对象的 `schemaId` 为 `evengine.play-request`，`schemaVersion` 为 `1`。底层工具 `eve_pause` / `eve_eval` 仍可用，但本示例的验收不依赖它们。
+
+调试迭代请用 MCP `eve_restart`（可传 `args`，如 `{ "seed": 7, "enemyHp": 120 }`），它会软重启游戏并
+**保留资源缓存**，不要反复杀进程。`reloadScripts=false` 时走脚本 `eve_restart(args)` 快速重开。
 
 示例同时使用 `eve_agent_session_*` 把这些调用组织为版本化开发会话。开始时声明状态观察、快照恢复和
 视觉证据三项验收条件；只有 required 条件都有证据，且阶段已经走到 Verify，才允许 Complete。

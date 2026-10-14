@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/BorrowedRef.h"
 #include "common/ECS.h"
@@ -15,44 +17,57 @@ using UIHostHandle = ecs::EntityHandle;
 
 /** @brief Widget node kinds understood by the UI renderer. */
 enum class NodeType : uint8_t {
-    Window = 0,
-    Text = 1,
-    Button = 2,
-    SameLine = 3,
-    Group = 4,
-    Separator = 5,
-    Checkbox = 6,
-    Slider = 7,
-    Progress = 8,
-    InputText = 9,
+    Window           = 0,
+    Text             = 1,
+    Button           = 2,
+    SameLine         = 3,
+    Group            = 4,
+    Separator        = 5,
+    Checkbox         = 6,
+    Slider           = 7,
+    Progress         = 8,
+    InputText        = 9,
     CollapsingHeader = 10,
-    Child = 11,
-    Flex = 12,    // elastic row/column container
-    Spacer = 13,  // flexible empty space (default flexGrow=1)
-    Image = 14,   // colored rect or engine texture (nine-patch capable)
-    ImageButton = 15,  // clickable image
-    Combo = 16,   // dropdown; options newline-separated in valueText, index in value
-    ScrollList = 17,  // virtualized scrollable list (uniform itemHeight)
-    Viewport = 18,  // embedded render target: offscreen Canvas shown + input routed
-    SearchField = 19,   // compact input with a search hint/icon
-    Switch = 20,        // modern boolean toggle
-    Badge = 21,         // compact status/category pill
-    Card = 22,          // bordered surface container
-    SectionHeader = 23, // non-collapsible editor section heading
-    MenuBar = 24,       // native ImGui window menu bar
-    Menu = 25,          // popup menu container
-    MenuItem = 26,      // selectable menu command
-    Toolbar = 27,       // horizontal editor command strip
-    Toolbox = 28,       // wrapping grid of editor tools
-    Sidebar = 29,       // vertical editor side panel
-    StatusBar = 30,     // compact horizontal status strip
-    SplitPane = 31,      // two resizable panes
-    NinePatchPanel = 32, // .9.png-backed stretchable content container
-    ColorPalette = 33,   // color editor + swatch grid; RGBA lives in tint*
+    Child            = 11,
+    Flex             = 12,  // elastic row/column container
+    Spacer           = 13,  // flexible empty space (default flexGrow=1)
+    Image            = 14,  // colored rect or engine texture (nine-patch capable)
+    ImageButton      = 15,  // clickable image
+    Combo            = 16,  // dropdown; options newline-separated in valueText, index in value
+    ScrollList       = 17,  // virtualized scrollable list (uniform itemHeight)
+    Viewport         = 18,  // embedded render target: offscreen Canvas shown + input routed
+    SearchField      = 19,  // compact input with a search hint/icon
+    Switch           = 20,  // modern boolean toggle
+    Badge            = 21,  // compact status/category pill
+    Card             = 22,  // bordered surface container
+    SectionHeader    = 23,  // non-collapsible editor section heading
+    MenuBar          = 24,  // native ImGui window menu bar
+    Menu             = 25,  // popup menu container
+    MenuItem         = 26,  // selectable menu command
+    Toolbar          = 27,  // horizontal editor command strip
+    Toolbox          = 28,  // wrapping grid of editor tools
+    Sidebar          = 29,  // vertical editor side panel
+    StatusBar        = 30,  // compact horizontal status strip
+    SplitPane        = 31,  // two resizable panes
+    NinePatchPanel   = 32,  // .9.png-backed stretchable content container
+    ColorPalette     = 33,  // color editor + swatch grid; RGBA lives in tint*
+    Grid             = 34,  // fixed-column retained grid container
+    Tab              = 35,  // selectable tab label (page id in valueText)
+    TabBar           = 36,  // horizontal strip of Tab children
+    TabContainer     = 37,  // TabBar + pages; active page id in valueText
+    PanelFrame       = 38,  // titled fixed chrome (not a free-floating Window host)
+    DockArea         = 39,  // named fill slot for a dock region (region in valueText)
+    AppFrame         = 40,  // fixed editor frame: toolbar + body + status bar
 };
 
 /** @brief Main-axis direction for Flex containers. */
 enum class FlexDirection : uint8_t { Row = 0, Column = 1 };
+
+/** @brief Whether Flex children remain on one line or wrap onto additional lines. */
+enum class FlexWrap : uint8_t { NoWrap = 0, Wrap = 1 };
+
+/** @brief Behavior when arranged children exceed the retained layout box. */
+enum class OverflowMode : uint8_t { Visible = 0, Clip = 1, Scroll = 2 };
 
 /** @brief Cross-axis alignment of Flex children. */
 enum class FlexAlign : uint8_t { Start = 0, Center = 1, End = 2, Stretch = 3 };
@@ -130,6 +145,10 @@ struct UINode {
     FocusMode focusMode = FocusMode::All;
     MouseFilter mouseFilter = MouseFilter::Stop;
     ThemePreset themePreset = ThemePreset::Inherit;
+    std::string styleClass;
+    StyleClass resolvedStyle;
+    bool hasResolvedStyle = false;
+    float opacity = 1.f;  // transient visual state; animation never changes persistent style data
     int tabIndex = 0;
     std::string focusNext;
     std::string focusPrevious;
@@ -167,6 +186,7 @@ struct UINode {
     float maxSizeY = 0.f;
     float percentW = 0.f;  // 0..1 fraction of parent content width; overrides basis
     float percentH = 0.f;  // 0..1 fraction of parent content height
+    float aspectRatio = 0.f; // width / height; 0 disables ratio-derived sizing
     float anchorX = 0.f;   // absolute placement inside Flex: anchor point in parent (0..1)
     float anchorY = 0.f;
     float posX = 0.f;      // absolute placement offset (relative to anchor edge)
@@ -197,8 +217,19 @@ struct UINode {
     FlexAlign alignItems = FlexAlign::Start;
     FlexJustify justifyContent = FlexJustify::Start;
     float gap = -1.f;  // <0 → theme ItemSpacing on that axis
+    float columnGap = -1.f;
+    float rowGap = -1.f;
+    FlexWrap flexWrap = FlexWrap::NoWrap;
+    OverflowMode overflow = OverflowMode::Visible;
+    int gridColumns = 1;
     // Flex item props (any child inside Flex)
     float flexGrow = 0.f;
+    float flexShrink = 1.f;
+    float flexBasis = -1.f;  // <0 = measured/automatic basis
+    int alignSelf = -1;      // <0 = inherit parent alignItems
+    int gridColumnSpan = 1;
+    float layoutOverflowX = 0.f;
+    float layoutOverflowY = 0.f;
     int parent = -1;
     int firstChild = -1;
     int nextSibling = -1;
@@ -215,12 +246,15 @@ struct WidgetDesc;
  * Subclass to attach UI to game entities, e.g. `class Hud : public UIHost`.
  * UISystem walks `ecs::View<UIHost, Meta, Tree>` (includes subclasses).
  */
-class UIHost : public ecs::Entity {
+class EVENGINE_API_WORLD UIHost : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(UIHost, ecs::Entity)
 
+    /** @brief Release. */
     void release() override {}
 
+    /** @brief Meta public API. */
     struct Meta {
         bool visible = true;
         int layer = 0;
@@ -228,12 +262,16 @@ public:
         bool overlay = false;  // no title bar / chrome (HUD-style)
         bool hasPos = false;
         bool lockPos = true;       // false: initial position only; user may move/persist it
+        /** @brief When true, renderer applies pos with Always for this frame (tween/Motion). */
+        bool  animDrivePos = false;
         float posX = 0.f;
         float posY = 0.f;
         float pivotX = 0.f;
         float pivotY = 0.f;
         bool hasSize = false;      // explicit window size
         bool lockSize = true;      // false: initial size only; user may resize/persist it
+        /** @brief When true, renderer applies size with Always for this frame (tween/Motion). */
+        bool         animDriveSize = false;
         float sizeX = 0.f;
         float sizeY = 0.f;
         float percentW = 0.f;      // 0..1 of display width; overrides sizeX
@@ -253,9 +291,13 @@ public:
         bool dirty = true;
         std::vector<UINode> nodes;
         int root = -1;
+        /** @brief Void. */
         std::vector<std::function<void()>> clickHandlers;
+        /** @brief Void. */
         std::vector<std::function<void(bool)>> toggleHandlers;
+        /** @brief Void. */
         std::vector<std::function<void(float)>> valueHandlers;
+        /** @brief Void. */
         std::vector<std::function<void(const std::string &)>> textHandlers;
     };
 

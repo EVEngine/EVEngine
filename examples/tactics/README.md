@@ -1,8 +1,8 @@
 # KayKit 战棋示例
 
 这是一个固定镜头的交互式 3D 战棋：4 名冒险者在 12×5 方格地图上迎战 6 种骷髅敌人。
-`tactics` 模块负责棋盘占位、行动顺序、移动合法性和胜负目标；示例脚本负责 HP、技能、
-敌方 AI 及表现层。
+`tactics` 模块负责棋盘占位、行动顺序、移动合法性和胜负目标；示例脚本把 HP、技能、
+敌方 AI 及表现做成脚本 ECS（`Hero` / `Foe` extends `Combatant`，由 `ActorAnimSystem` 驱动）。
 
 ```sh
 make run/linux-debug GAME=examples/tactics
@@ -44,3 +44,25 @@ GLB 文件，没有加入付费扩展包内容。
 生命、伤害和技能不是 tactics 的权威状态。示例结算 HP 后，仅在单位阵亡时调用
 `defeatUnit(subject)`，让 tactics 释放占位并评估 objective。正式游戏可以把这部分替换成
 RPG/技能模块，而不改变战棋模块的棋盘与回合职责。
+
+## 快照与回放（脚本出口）
+
+战局权威状态可通过 JSON 整份存读；跨脚本边界只传文本：
+
+```squirrel
+local baseline = battle.revision();
+local doc = battle.snapshotJson();            // Result；value 为完整存档 JSON
+local log = battle.commandLogJson(baseline);  // baseline 之后接受的命令
+
+battle.restoreSnapshotJson(doc.value);
+battle.replayJson(log.value);                 // 日志必须锚定 baseline revision
+```
+
+HP / 动画等脚本侧状态需自行另存。产品级「棋盘 + RPG」单事务编排见
+[跨模块存档用法](../../docs/usr/SAVE.md)；API 契约见 [tactics 手册](../../docs/usr/modules/tactics.md)。
+
+## Smoke
+
+```bash
+MIN_RUN_SECONDS=2 RUN_SECONDS=4 bash scripts/smoke_examples.sh tactics
+```

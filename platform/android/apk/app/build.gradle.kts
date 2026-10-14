@@ -14,8 +14,8 @@ android {
         targetSdk = 34
         // Derived from EVENGINE_*_VERSION by scripts/release.py:
         // major*10000 + minor*100 + patch. Do not edit by hand.
-        versionCode = 502
-        versionName = "0.5.2"
+        versionCode = 600
+        versionName = "0.6.0"
 
         ndk {
             abiFilters += listOf(evengineAbi)

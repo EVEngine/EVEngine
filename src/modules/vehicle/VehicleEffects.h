@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file VehicleEffects.h
@@ -70,7 +72,7 @@ public:
 };
 
 /** @brief Vehicle adapter with one common container and one typed executor. */
-class VehicleEffectAdapter {
+class EVENGINE_API_DOMAINS VehicleEffectAdapter {
 public:
     /** @brief Apply one typed vehicle effect to a stable subject. */
     [[nodiscard]] eve::Result<effects::EffectHandle> apply(const VehicleEffectDefinition& definition,

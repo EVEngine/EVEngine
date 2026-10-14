@@ -14,12 +14,6 @@ namespace eve::rpg {
 
 namespace {
 
-template <typename T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "rpg.party"));
-}
-
 bool validId(const std::string &value) {
     return !value.empty() && value.size() <= 256 &&
            std::none_of(value.begin(), value.end(), [](unsigned char ch) {
@@ -40,22 +34,23 @@ RPGActor *resolve(const ecs::EntityHandle &handle) noexcept {
 
 eve::Result<void> Party::addMember(const std::string &memberId, RPGActor *actor) {
     if (!validId(memberId))
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "party member id must be stable, non-empty, and free of controls", "memberId");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "party member id must be stable, non-empty, and free of controls",
+            "memberId", {}, "rpg.party"));
     if (!actor)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "party member actor must not be null", "actor");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "party member actor must not be null", "actor", {}, "rpg.party"));
     const auto handle = ecs::handle_of(actor);
     if (!resolve(handle))
-        return failure<void>(eve::DiagnosticCode::StaleHandle,
-                             "party member actor is not live", "actor");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "party member actor is not live", "actor", {}, "rpg.party"));
     for (const auto &member : members_) {
         if (member.id == memberId)
-            return failure<void>(eve::DiagnosticCode::AlreadyExists,
-                                 "party member id is already present", "memberId");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::AlreadyExists, "party member id is already present", "memberId", {}, "rpg.party"));
         if (sameHandle(member.actor, handle))
-            return failure<void>(eve::DiagnosticCode::AlreadyExists,
-                                 "actor is already linked to the party", "actor");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::AlreadyExists, "actor is already linked to the party", "actor", {}, "rpg.party"));
     }
     members_.push_back(Member{memberId, handle});
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -66,8 +61,8 @@ eve::Result<void> Party::removeMember(const std::string &memberId) {
         return member.id == memberId;
     });
     if (found == members_.end())
-        return failure<void>(eve::DiagnosticCode::NotFound,
-                             "party member id is not present", "memberId");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "party member id is not present", "memberId", {}, "rpg.party"));
     members_.erase(found);
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
@@ -108,19 +103,20 @@ RPGActor *Party::findMemberActor(const std::string &memberId) const {
 
 eve::Result<int> Party::addToBattle(Battle *battle, int side) const {
     if (!battle)
-        return failure<int>(eve::DiagnosticCode::InvalidArgument,
-                            "battle must not be null", "battle");
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                "battle must not be null", "battle", {}, "rpg.party"));
     if (members_.empty())
-        return failure<int>(eve::DiagnosticCode::PreconditionViolation,
-                            "party must contain at least one member", "party");
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                "party must contain at least one member", "party", {},
+                                                                "rpg.party"));
     std::vector<RPGActor *> resolved;
     resolved.reserve(members_.size());
     for (std::size_t index = 0; index < members_.size(); ++index) {
         auto *actor = resolve(members_[index].actor);
         if (!actor)
-            return failure<int>(eve::DiagnosticCode::StaleHandle,
-                                "party contains a stale member link",
-                                "party.members[" + std::to_string(index) + "]");
+            return eve::Result<int>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "party contains a stale member link",
+                                       "party.members[" + std::to_string(index) + "]", {}, "rpg.party"));
         resolved.push_back(actor);
     }
     for (auto *actor : resolved) battle->addActor(actor, side);
@@ -132,18 +128,19 @@ eve::Result<int> Party::recoverAtCheckpoint(const std::string &healthResource,
                                              const std::string &secondaryResource,
                                              double secondaryRatio) {
     if (members_.empty())
-        return failure<int>(eve::DiagnosticCode::PreconditionViolation,
-                            "party recovery requires at least one member", "party");
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                "party recovery requires at least one member", "party",
+                                                                {}, "rpg.party"));
     if (healthResource.empty() || !std::isfinite(healthRatio) || healthRatio <= 0.0 ||
         healthRatio > 1.0)
-        return failure<int>(eve::DiagnosticCode::InvalidArgument,
-                            "party recovery requires a health resource and ratio in (0, 1]",
-                            "healthRatio");
+        return eve::Result<int>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "party recovery requires a health resource and ratio in (0, 1]",
+            "healthRatio", {}, "rpg.party"));
     if ((!secondaryResource.empty() && secondaryResource == healthResource) ||
         !std::isfinite(secondaryRatio) || secondaryRatio < 0.0 || secondaryRatio > 1.0)
-        return failure<int>(eve::DiagnosticCode::InvalidArgument,
-                            "secondary recovery resource must be distinct and ratio in [0, 1]",
-                            "secondaryRatio");
+        return eve::Result<int>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "secondary recovery resource must be distinct and ratio in [0, 1]",
+            "secondaryRatio", {}, "rpg.party"));
     std::vector<RPGActor *> actors;
     std::vector<double> healthValues;
     std::vector<double> secondaryValues;
@@ -153,21 +150,22 @@ eve::Result<int> Party::recoverAtCheckpoint(const std::string &healthResource,
     for (std::size_t index = 0; index < members_.size(); ++index) {
         auto *actor = resolve(members_[index].actor);
         if (!actor)
-            return failure<int>(eve::DiagnosticCode::StaleHandle,
-                                "party recovery found a stale member",
-                                "members[" + std::to_string(index) + "]");
+            return eve::Result<int>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "party recovery found a stale member",
+                                       "members[" + std::to_string(index) + "]", {}, "rpg.party"));
         const double healthMax = actor->getMax(healthResource);
         if (!std::isfinite(healthMax) || healthMax <= 0.0)
-            return failure<int>(eve::DiagnosticCode::PreconditionViolation,
-                                "party member has no positive finite health maximum",
-                                "members[" + std::to_string(index) + "]." + healthResource);
+            return eve::Result<int>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::PreconditionViolation, "party member has no positive finite health maximum",
+                "members[" + std::to_string(index) + "]." + healthResource, {}, "rpg.party"));
         double secondaryMax = 0.0;
         if (!secondaryResource.empty()) {
             secondaryMax = actor->getMax(secondaryResource);
             if (!std::isfinite(secondaryMax) || secondaryMax < 0.0)
-                return failure<int>(eve::DiagnosticCode::PreconditionViolation,
-                                    "party member has an invalid secondary resource maximum",
-                                    "members[" + std::to_string(index) + "]." + secondaryResource);
+                return eve::Result<int>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::PreconditionViolation,
+                    "party member has an invalid secondary resource maximum",
+                    "members[" + std::to_string(index) + "]." + secondaryResource, {}, "rpg.party"));
         }
         actors.push_back(actor);
         healthValues.push_back(healthMax * healthRatio);
@@ -183,16 +181,17 @@ eve::Result<int> Party::recoverAtCheckpoint(const std::string &healthResource,
 
 eve::Result<std::string> Party::checkpointJson() const {
     if (members_.empty())
-        return failure<std::string>(eve::DiagnosticCode::PreconditionViolation,
-                                    "party checkpoint requires at least one member", "party");
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                        "party checkpoint requires at least one member",
+                                                                        "party", {}, "rpg.party"));
     eve::Value::Array memberValues;
     memberValues.reserve(members_.size());
     for (std::size_t index = 0; index < members_.size(); ++index) {
         auto *actor = resolve(members_[index].actor);
         if (!actor)
-            return failure<std::string>(eve::DiagnosticCode::StaleHandle,
-                                        "party checkpoint found a stale member",
-                                        "members[" + std::to_string(index) + "]");
+            return eve::Result<std::string>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "party checkpoint found a stale member",
+                                       "members[" + std::to_string(index) + "]", {}, "rpg.party"));
         auto checkpoint = actor->checkpointJson();
         if (!checkpoint.ok()) return eve::Result<std::string>::failure(checkpoint.status());
         auto actorValue = eve::Value::fromJson(checkpoint.value());
@@ -217,14 +216,16 @@ eve::Result<Party::CheckpointCandidate> Party::prepareCheckpointJson(std::string
     const auto *version = root.isObject() ? root.find("version") : nullptr;
     const auto *members = root.isObject() ? root.find("members") : nullptr;
     if (!schema || !schema->isString() || schema->asString() != "eve.rpg.party")
-        return failure<CheckpointCandidate>(eve::DiagnosticCode::InvalidArgument,
-                                            "checkpoint does not belong to RPG Party", "schema");
+        return eve::Result<CheckpointCandidate>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "checkpoint does not belong to RPG Party",
+                                   "schema", {}, "rpg.party"));
     if (!version || !version->isInt64() || version->asInt() != 1)
-        return failure<CheckpointCandidate>(eve::DiagnosticCode::UnknownVersion,
-                                            "unsupported party checkpoint version", "version");
+        return eve::Result<CheckpointCandidate>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::UnknownVersion, "unsupported party checkpoint version", "version", {}, "rpg.party"));
     if (!members || !members->isArray() || members->arraySize() != members_.size())
-        return failure<CheckpointCandidate>(eve::DiagnosticCode::Conflict,
-                                            "checkpoint roster size does not match the live party", "members");
+        return eve::Result<CheckpointCandidate>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                   "checkpoint roster size does not match the live party", "members", {}, "rpg.party"));
     CheckpointCandidate candidate;
     candidate.actors.reserve(members_.size());
     for (std::size_t index = 0; index < members_.size(); ++index) {
@@ -232,18 +233,18 @@ eve::Result<Party::CheckpointCandidate> Party::prepareCheckpointJson(std::string
         const auto *id = member.isObject() ? member.find("id") : nullptr;
         const auto *actorValue = member.isObject() ? member.find("actor") : nullptr;
         if (!id || !id->isString() || id->asString() != members_[index].id)
-            return failure<CheckpointCandidate>(eve::DiagnosticCode::Conflict,
-                                                "checkpoint member ID/order does not match the live party",
-                                                "members[" + std::to_string(index) + "].id");
+            return eve::Result<CheckpointCandidate>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "checkpoint member ID/order does not match the live party",
+                "members[" + std::to_string(index) + "].id", {}, "rpg.party"));
         if (!actorValue || !actorValue->isObject())
-            return failure<CheckpointCandidate>(eve::DiagnosticCode::ParseError,
-                                                "checkpoint member actor must be an object",
-                                                "members[" + std::to_string(index) + "].actor");
+            return eve::Result<CheckpointCandidate>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "checkpoint member actor must be an object",
+                                       "members[" + std::to_string(index) + "].actor", {}, "rpg.party"));
         auto *actor = resolve(members_[index].actor);
         if (!actor)
-            return failure<CheckpointCandidate>(eve::DiagnosticCode::StaleHandle,
-                                                "live party contains a stale member",
-                                                "members[" + std::to_string(index) + "]");
+            return eve::Result<CheckpointCandidate>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "live party contains a stale member",
+                                       "members[" + std::to_string(index) + "]", {}, "rpg.party"));
         auto actorJson = actorValue->toJson();
         if (!actorJson.ok()) return eve::Result<CheckpointCandidate>::failure(actorJson.status());
         auto prepared = actor->prepareCheckpointJson(actorJson.value());

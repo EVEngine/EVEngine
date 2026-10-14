@@ -116,7 +116,7 @@ if (world.raycast(eye.x, eye.y, eye.z, dir.x, dir.y, dir.z, 8.0)) {
 }
 ```
 
-## API 快查
+## 绑定与行为说明
 
 ### `Voxel`（模块）
 
@@ -132,21 +132,16 @@ if (world.raycast(eye.x, eye.y, eye.z, dir.x, dir.y, dir.z, 8.0)) {
 ### `VoxelWorld`（世界）
 
 - 编辑：`getVoxel(x,y,z)`、`setVoxel(x,y,z,texId)`（0=空气，不创建空 chunk）、
-  `setVoxelByName(x,y,z,name,orientation)`、`getCubeTypeName` / `getCubeTypeTex`、
   `getRevision()`（内容真实变化时单调增长，供编辑器、存档和预览失效检测）。
 - 网格：`remeshDirty()`（自动并行）、`getChunkCount()`、`hasChunk`、`removeChunk`、`clear`。
 - 存档/流式：`saveWorld()`（返回 `data.newByteData` 可直接落盘）、`loadWorld(byteData)`、
   `unloadChunksOutside(cx,cy,cz,radiusChunks)`（卸载半径外的 chunk，返回卸载数）、
   `setStreamCacheChunks(extra)` / `getStreamCacheChunks()`（`streamAround` 卸载半径 = 加载半径 + extra）、
   `streamAround(cx,cy,cz,radiusChunks [,maxCreates])`（自动补建+生成+卸载+重建，返回本帧插入世界的数量；内置噪声 + maxCreates>0 时后台填充，就绪帧插入）、
-  `getDirtyCount()`、`getInflightStreamCount()`、
   `setTerrain(seed, top, sub, stone, base, amp, scale)`（快速配置）、
   `setTerrainParam(key, value)`（细粒度配置，见下方参数表）、
-  `loadTerrainAsset(bytes, offset, scale)`、
-  `streamTerrainAssetAround(worldX,worldZ,radius,maxLoads)`、
   `setTerrainAssetMaterials(vegetation,sand,snow,alpine,riverbed)` / `disableTerrain()`。
 - 渲染：`selectVisible(viewProj16, eyeX,eyeY,eyeZ, viewRange, faceCull)`、
-  `drawVisible(gfx, atlasTex, tilesPerRow)`、`getVisibleBatchCount` / `getVisibleChunkCount` /
   `getVisibleRectCount`。
 - 拾取：`raycast(ox,oy,oz,dx,dy,dz,maxDist)` + `lastRaycastHit()`、
   `getRaycastHitX/Y/Z`、`getRaycastPrevX/Y/Z`（命中前一个空气方块）、
@@ -154,6 +149,10 @@ if (world.raycast(eye.x, eye.y, eye.z, dir.x, dir.y, dir.z, 8.0)) {
 
 ## 生命周期
 
+- Vulkan 与原生 WebGPU（Dawn）均有实例化面绘制路径。浏览器
+  `EVENGINE_PROFILE=web` 仍不编本模块：`VoxelWorld` 公共头嵌入
+  `procgen::TerrainStreamingCache`，且 `procgen` 会拖 `map`→Poco。要进 `web`
+  需先把地形流式 API 拆成可选卫星，不是 WebGPU 画不出体素。
 - 世界与注册表由脚本 VM 持有，不要直接构造 `VoxelWorld` / `VoxelCubeTypes`。
 - 边界编辑会同时把相邻 chunk 标记 dirty；`remeshDirty()` 后接缝两侧一起重建，
   不会残留被遮挡的旧面。
@@ -168,3 +167,7 @@ if (world.raycast(eye.x, eye.y, eye.z, dir.x, dir.y, dir.z, 8.0)) {
   （归一化采样高度阈值，>0 且 `sand` 非 0 时启用沙滩带）、`enable`（1 打开地形）。
   `setTerrainParam` 只覆盖传入的键，其余参数保持默认；地形默认关闭，需 `enable=1`。
 - 存档格式为可移植小端二进制（`EVVX` + 版本 + chunk 坐标与体素），加载后网格按需重建。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](voxel/api-reference.md)，使用前先确认本章的前置条件与生命周期。

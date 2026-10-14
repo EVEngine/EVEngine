@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "physics/PhysicsHandles.h"
@@ -10,11 +12,15 @@ namespace eve::physics { class Body3D; class World3D; }
 namespace eve::procgen { class GtsTerrainLodSet; }
 namespace eve::procgen_physics {
 /** @brief Transactional owner of optional static triangle-mesh colliders for a GTS tile batch. */
-class GtsTerrainColliderRuntime {
+class EVENGINE_API_ORCHESTRATION GtsTerrainColliderRuntime {
 public:
+    /** @brief Gts terrain collider runtime. */
     GtsTerrainColliderRuntime();
+    /** @brief Gts terrain collider runtime. */
     ~GtsTerrainColliderRuntime();
+    /** @brief Gts terrain collider runtime. */
     GtsTerrainColliderRuntime(const GtsTerrainColliderRuntime&)=delete;
+    /** @brief Operator =. */
     GtsTerrainColliderRuntime& operator=(const GtsTerrainColliderRuntime&)=delete;
     /**
      * @brief Replace all colliders from one selected LOD after every candidate has succeeded.
@@ -37,4 +43,4 @@ public:
 private:
     struct Impl; std::unique_ptr<Impl> impl_;
 };
-}
+}  // namespace eve::procgen_physics

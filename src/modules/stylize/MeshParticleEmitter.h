@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "graphics/Color.h"
 
@@ -95,13 +97,24 @@ struct MeshParticleAdvanceReport {
  * bitwise stable on the same floating-point implementation. Structural changes
  * are deferred until each simulation step has finished iterating live particles.
  */
-class MeshParticleEmitter {
+class EVENGINE_API_WORLD MeshParticleEmitter {
 public:
     /** @brief Construct an emitter and sanitize invalid scalar ranges. */
     explicit MeshParticleEmitter(MeshParticleEmitterConfig config = {});
 
     /** @brief Destroy owned particle state after its private type is complete. */
     ~MeshParticleEmitter();
+
+    // Class-level dllexport instantiates every member, and the implicitly declared
+    // copy assignment would instantiate `std::vector<Particle>::operator=`, which
+    // needs a complete `Particle` -- but `Particle` is only forward declared here
+    // (defined in the .cpp), so that is `error C2036: unknown size` in every TU that
+    // includes this header.  A user-declared destructor does *not* suppress the
+    // implicit copy assignment.  The emitter owns live particle state and was never
+    // copied anywhere in the tree, so deleting the copy operations preserves the
+    // existing semantics without requiring the private type to be complete.
+    MeshParticleEmitter(const MeshParticleEmitter&)            = delete;
+    MeshParticleEmitter& operator=(const MeshParticleEmitter&) = delete;
 
     /** @brief Start from timeline zero and arm every configured burst. */
     void start();

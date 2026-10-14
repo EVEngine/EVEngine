@@ -84,7 +84,6 @@ CORE_SEEDS = {
         "schema",
         "social",
         "statepatch",
-        "steering",
         "tags",
         "transaction",
         "economy",

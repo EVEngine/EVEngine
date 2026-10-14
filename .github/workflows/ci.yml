@@ -7,6 +7,8 @@
 #   ios     → ios debug; ios-release when asked
 #   linux   → linux debug (+ unit tests); linux-release when asked
 #   webgpu  → webgpu (Emscripten/WASM) release
+# Native Dawn: Windows owns parity; macOS checks Metal on relevant changes.
+# Scheduled/manual/reusable runs retain the complete native Dawn test selection.
 #
 # iOS signing (optional repo secrets):
 #   IOS_CERTIFICATE_P12_BASE64, IOS_CERTIFICATE_PASSWORD, IOS_DEVELOPMENT_TEAM
@@ -71,7 +73,10 @@ jobs:
       asan: ${{ steps.scope.outputs.asan }}
       fuzz: ${{ steps.scope.outputs.fuzz }}
       webgpu: ${{ steps.scope.outputs.webgpu }}
+      dawn_metal: ${{ steps.scope.outputs.dawn_metal }}
       tools: ${{ steps.scope.outputs.tools }}
+      test_mode: ${{ steps.scope.outputs.test_mode }}
+      test_label_regex: ${{ steps.scope.outputs.test_label_regex }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -84,17 +89,22 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           if [ "$EVENT_NAME" = "pull_request" ]; then
             python3 scripts/ci_change_scope.py \
               --base "$BASE_SHA" --head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT"
+          elif [ "$EVENT_NAME" = "push" ] && [ -n "$BEFORE_SHA" ] && \
+               [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
+            python3 scripts/ci_change_scope.py \
+              --base "$BEFORE_SHA" --head "$HEAD_SHA" --diff-mode direct \
+              --github-output "$GITHUB_OUTPUT"
           else
             python3 scripts/ci_change_scope.py --all --github-output "$GITHUB_OUTPUT"
           fi
 
-  # Fast source-only gate for formatting, module boundaries, architecture
-  # contracts and the Python scripts that make later CI results trustworthy.
+  # Fast source-only gate. Local equivalent: `make check` (scripts/check_source_quality.sh).
   source-quality:
     name: Source quality
     runs-on: ubuntu-24.04
@@ -123,69 +133,27 @@ jobs:
           sudo ln -sf /usr/bin/clang-format-18 /usr/local/bin/clang-format
           python3 -m pip install --user --quiet pillow ruff
 
-      - name: Check changed lines are clang-format clean
-        run: bash .github/scripts/check-format.sh "${{ github.event.pull_request.base.sha || 'origin/dev' }}"
-
-      - name: Check module dependency layering
-        timeout-minutes: 5
-        run: python3 scripts/module_depgraph.py --check
-
-      - name: Check script bindings are documented (all modules)
-        timeout-minutes: 5
-        run: python3 scripts/check_bindings.py --strict
-
-      - name: Check binding gap ownership and budget metadata
-        timeout-minutes: 5
-        run: python3 scripts/check_binding_gap_metadata.py
-
-      - name: Check declared module layers vs includes
-        timeout-minutes: 5
-        run: python3 scripts/module_depgraph.py --check-layers
+      - name: Run source-quality gate
+        # Same entry point as local `make check`. Groups inside
+        # scripts/check_source_quality.sh show up in the job log.
+        timeout-minutes: 15
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          CHECK_REF: ${{ inputs.ref || github.ref }}
+        run: |
+          base="${PR_BASE:-origin/dev}"
+          # An isolated release must check its own complete changes, not
+          # reversals of interface migrations that landed on dev afterwards.
+          if [ -z "$PR_BASE" ] && [[ "$CHECK_REF" =~ ^(refs/(heads|tags)/)?v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            base="$(git merge-base HEAD origin/dev)"
+          fi
+          echo "Source-quality comparison base: $base"
+          make check CI_BASE="$base"
 
       - name: Report dependency graph
         timeout-minutes: 5
         if: always()
         run: python3 scripts/module_depgraph.py
-
-      - name: Check test source manifest
-        timeout-minutes: 5
-        run: python3 scripts/check_test_manifest.py
-
-      - name: Check examples layout and overview registration
-        # Every examples/<name>/ is either a runnable example (main.nut +
-        # config.nut) or explicitly exempted with a reason, owns a README.md and
-        # is listed in examples/README.md.  A new example therefore cannot dodge
-        # the runtime smoke test in the Linux lane by simply not being runnable.
-        timeout-minutes: 5
-        run: python3 scripts/check_examples.py
-
-      - name: Check critical return-value diagnostics
-        timeout-minutes: 5
-        run: python3 scripts/check_nodiscard.py
-
-      - name: Check release version consistency
-        timeout-minutes: 5
-        run: python3 scripts/release.py check-versions
-
-      - name: Check bounded quality debt and profile matrix
-        timeout-minutes: 5
-        run: make check/quality
-
-      - name: Audit top-level architecture contracts and changed API shapes
-        timeout-minutes: 5
-        run: |
-          python3 scripts/check_architecture_contracts.py \
-            --base "${{ github.event.pull_request.base.sha || github.event.before || 'HEAD^' }}"
-      - name: Ruff lint CI and repository scripts
-        timeout-minutes: 5
-        run: python3 -m ruff check scripts
-
-      - name: Test CI and repository scripts
-        timeout-minutes: 10
-        # -X utf8 so the runner's own output never follows the host ANSI code
-        # page; on Linux CI this is already the default. Test modules are
-        # imported by the runner, so they cannot guard their own stdio.
-        run: python3 -X utf8 -m unittest discover -s scripts/tests -p "test_*.py" -v
 
   profile-matrix:
     name: Profile ${{ matrix.profile }}
@@ -195,7 +163,7 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && github.event_name != 'pull_request' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 130
     strategy:
       fail-fast: false
       matrix:
@@ -223,14 +191,16 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             build-essential cmake ninja-build libvulkan-dev \
             libx11-dev libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev \
-            libxext-dev libxss-dev libwayland-dev libxkbcommon-dev
+            libxext-dev libxss-dev libwayland-dev libxkbcommon-dev \
+            libbz2-dev libpng-dev libxxf86vm-dev libasound2-dev
 
       - name: Configure profile
         timeout-minutes: 30
         run: make profile/configure
 
       - name: Build independent profile smoke target
-        timeout-minutes: 35
+        # Cold 3d builds reached 1609/1758 edges at the old 35-minute limit.
+        timeout-minutes: 60
         run: make profile/build
 
       - name: Run independent capability smoke probes
@@ -288,9 +258,12 @@ jobs:
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.windows == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: windows-latest
     # This lane builds and tests both Vulkan and native Dawn configurations.
-    # Release run 35436382201 exhausted the former 180-minute job budget while
-    # the bounded native Dawn build step was still making progress.
-    timeout-minutes: 300
+    # A cold Windows runner needs more than 90 minutes for the two independent
+    # unit_test builds; keep the per-step limits below as the hang guards.
+    # The Vulkan and native Dawn lanes are both cold-built on Windows. Their
+    # existing per-step guards sum to more than three hours; keep the job
+    # ceiling above that sum so a healthy compile cannot be cancelled mid-way.
+    timeout-minutes: 360
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64
@@ -404,11 +377,16 @@ jobs:
           key: ${{ steps.third-party-cache.outputs.cache-primary-key }}
 
       - name: Run win32 unit tests
-        timeout-minutes: 40
+        # Run 35519931809 reached 5548/5550 passing cases when the 40-minute
+        # guard fired. Keep a bounded margin for the final structural tests and
+        # normal hosted-runner variance when CI/build files require a full run.
+        timeout-minutes: 50
         # Headless runners have no WASAPI endpoint (0x80070490); OpenAL Soft null backend.
         env:
           ALSOFT_DRIVERS: "null"
-        run: make test/win32-debug
+        run: >-
+          make test/win32-debug
+          LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
 
       - name: Capture Vulkan parity artifacts
         timeout-minutes: 10
@@ -446,8 +424,11 @@ jobs:
             } catch {
               Write-Host $_ -ForegroundColor Yellow
             }
-            Remove-Item -Recurse -Force build/webgpu-native/_deps/dawn-src/third_party/abseil-cpp -ErrorAction SilentlyContinue
-            Remove-Item -Force build/webgpu-native/CMakeCache.txt -ErrorAction SilentlyContinue
+            # A failed Dawn dependency fetch can leave dawn-src with a stale
+            # fetch stamp while the dependency directory is absent. Reusing
+            # that tree makes all retries repeat the same CMake error; reset
+            # the configure tree so the next attempt refetches dependencies.
+            Remove-Item -Recurse -Force build/webgpu-native -ErrorAction SilentlyContinue
             Start-Sleep -Seconds (10 * $attempt)
           }
           throw 'Dawn parity configure failed after 3 attempts'
@@ -467,11 +448,10 @@ jobs:
           }
 
       - name: Build native Dawn parity lane
-        # A cold Dawn/Tint build compiles roughly 2,400 targets and reached
-        # 95% only when the former 40-minute guard fired on windows-latest. The
-        # growing module matrix crossed the later 75-minute guard in the v0.5.1
-        # release gate, so retain a bounded 30-minute link/cache variance margin.
-        timeout-minutes: 105
+        # The v0.6.0 cold build finished 3,842/3,843 edges before its 105-minute
+        # guard interrupted the final link. Keep bounded headroom for linking
+        # and cache variance without dropping the native parity test lane.
+        timeout-minutes: 150
         shell: pwsh
         run: cmake\with-msvc.cmd cmake.exe --build build/webgpu-native --target unit_test -j 8
 
@@ -530,7 +510,7 @@ jobs:
     # A cold Release build took 55 minutes and the process-isolated 3510-case
     # suite reached 3060/3510 at the former 30-minute test guard. Preserve
     # bounded hang detection while budgeting setup, build, and the full suite.
-    timeout-minutes: 240
+    timeout-minutes: 300
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64-release
@@ -576,9 +556,8 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build win32 release
-        # Cold release builds reached the former 90- and 120-minute guards
-        # without a compiler failure in runs 35419568563 and 35436382201.
-        timeout-minutes: 160
+        # Release run 38235152198 reached 2622/2840 edges at 160 minutes.
+        timeout-minutes: 210
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -594,15 +573,39 @@ jobs:
         timeout-minutes: 45
         env:
           ALSOFT_DRIVERS: "null"
-        run: make test/win32
+        run: >-
+          make test/win32
+          LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
+
+      - name: Sample settlement release benchmark
+        timeout-minutes: 5
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_SETTLEMENT_BENCHMARK: "1"
+        shell: bash
+        run: |
+          set -o pipefail
+          ctest --test-dir build/win32 -C Release \
+            -R '^settlement\.benchmark\.' -V \
+            | tee build/settlement-benchmark-windows.log
+
+      - name: Upload settlement benchmark sample
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: settlement-benchmark-windows-release
+          path: build/settlement-benchmark-windows.log
+          if-no-files-found: error
 
   android:
     name: Android
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.android == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: windows-latest
-    # Release run 35436382201 reached 1363/1408 with no compiler failures at
-    # the former 60-minute build guard. Leave setup/cleanup headroom as well.
+    # Cold NDK rebuilds (PR sccache is READ_ONLY; graphics header churn →
+    # ~55-60 min of C++) leave little room for Gradle packaging of the ~2GB
+    # debug libmain.so. Keep the build-step timeout as the hang guard while
+    # leaving job budget for setup/cleanup beyond that step.
     timeout-minutes: 120
     env:
       SCCACHE_GHA_ENABLED: "true"
@@ -637,14 +640,14 @@ jobs:
 
       - name: Setup Java 17
         timeout-minutes: 10
-        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: temurin
           java-version: "17"
 
       - name: Setup Android SDK
         timeout-minutes: 20
-        uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
         with:
           packages: >-
             platform-tools
@@ -665,7 +668,7 @@ jobs:
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
 
       - name: Build android debug
-        timeout-minutes: 85
+        timeout-minutes: 90
         run: |
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
           make build/android-debug \
@@ -677,6 +680,7 @@ jobs:
 
       - name: Report C/C++ compilation cache
         if: always()
+        continue-on-error: true
         timeout-minutes: 5
         run: sccache --show-stats
 
@@ -687,7 +691,7 @@ jobs:
     runs-on: windows-latest
     # The release build step alone may take up to 90 minutes on a cold runner.
     # Leave room for toolchain setup and cache reporting at the job level.
-    timeout-minutes: 150
+    timeout-minutes: 180
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-android-arm64-release
@@ -721,14 +725,14 @@ jobs:
 
       - name: Setup Java 17
         timeout-minutes: 10
-        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: temurin
           java-version: "17"
 
       - name: Setup Android SDK
         timeout-minutes: 20
-        uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
         with:
           packages: >-
             platform-tools
@@ -747,7 +751,8 @@ jobs:
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
 
       - name: Build android release
-        timeout-minutes: 90
+        # Native compilation consumed 88 minutes before Gradle APK packaging.
+        timeout-minutes: 120
         run: |
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
           make build/android \
@@ -759,6 +764,7 @@ jobs:
 
       - name: Report C/C++ compilation cache
         if: always()
+        continue-on-error: true
         timeout-minutes: 5
         run: sccache --show-stats
 
@@ -808,9 +814,13 @@ jobs:
         run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
 
       - name: Build macosx debug
-        # A cold build reached 96% of unit_test before the former 40-minute
-        # guard terminated release run 35419568563.
-        timeout-minutes: 75
+        # Same reasoning as the win32 guard above: a cache-cold pull-request ref
+        # compiles the whole engine. Run 37331690856 was killed at exactly 60m
+        # standing at ~90% with 421 sccache hits / 3549 misses / 3549 write
+        # errors and no compiler error, while the warm sibling run 37316201997
+        # finished the whole macOS job. Keep a bounded hang guard with room for
+        # the cold/write-fail case (match Windows debug's 90m budget).
+        timeout-minutes: 90
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -821,7 +831,9 @@ jobs:
         timeout-minutes: 60
         env:
           ALSOFT_DRIVERS: "null"
-        run: make test/macosx-debug
+        run: >-
+          make test/macosx-debug
+          LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
 
       - name: Report network phase timings
         if: always()
@@ -832,10 +844,12 @@ jobs:
           fi
 
       - name: Configure native Dawn Metal lane
-        # Dawn's DAWN_FETCH_DEPENDENCIES shallow-clones abseil (and friends)
+        if: ${{ needs.change-scope.outputs.dawn_metal == 'true' }}
+        # Dawn's DAWN_FETCH_DEPENDENCIES shallow-clones abseil/glfw3 (and friends)
         # from chromium.googlesource.com. That clone can land an empty
-        # directory without CMakeLists.txt (run 34850493956 / job 103997514884),
-        # so retry after wiping incomplete third_party checkouts.
+        # directory without CMakeLists.txt (run 34850493956 / job 103997514884;
+        # glfw3 empty tree: run 37870280409 / job 113637632268), so retry after
+        # wiping incomplete third_party checkouts.
         timeout-minutes: 30
         run: |
           set -euo pipefail
@@ -848,14 +862,18 @@ jobs:
               -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
               -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
           }
-          abseil_cmake=build/webgpu-macos/_deps/dawn-src/third_party/abseil-cpp/CMakeLists.txt
+          dawn_tp=build/webgpu-macos/_deps/dawn-src/third_party
+          dawn_deps_ok() {
+            [[ -f "$dawn_tp/abseil-cpp/CMakeLists.txt" ]] &&
+              [[ -f "$dawn_tp/glfw3/CMakeLists.txt" || -f "$dawn_tp/glfw3/src/CMakeLists.txt" ]]
+          }
           for attempt in 1 2 3; do
             echo "Dawn Metal configure attempt ${attempt}/3"
-            if configure_dawn && [[ -f "$abseil_cmake" ]]; then
+            if configure_dawn && dawn_deps_ok; then
               exit 0
             fi
             echo "Dawn dependency checkout incomplete; clearing for retry" >&2
-            rm -rf build/webgpu-macos/_deps/dawn-src/third_party/abseil-cpp
+            rm -rf "$dawn_tp/abseil-cpp" "$dawn_tp/glfw3"
             rm -f build/webgpu-macos/CMakeCache.txt
             sleep $((attempt * 10))
           done
@@ -863,6 +881,7 @@ jobs:
           exit 1
 
       - name: Verify native Dawn Metal platform selection
+        if: ${{ needs.change-scope.outputs.dawn_metal == 'true' }}
         timeout-minutes: 5
         run: |
           grep -Eq '^#define EVENGINE_WEBGPU[[:space:]]*$' \
@@ -876,9 +895,12 @@ jobs:
           fi
 
       - name: Build native Dawn Metal lane
-        # A cold Dawn/Tint build was still progressing with zero compiler
-        # failures at the former 40-minute guard in release run 35436382201.
-        timeout-minutes: 75
+        if: ${{ needs.change-scope.outputs.dawn_metal == 'true' }}
+        # A warm sccache builds this lane in 10-29 minutes (10.4 on PR #443,
+        # 28.6 on dev), but a cache-cold pull-request ref compiles the whole
+        # webgpu-native unit_test target and ran past the former 40-minute guard
+        # on PR #428. Keep this a hang guard rather than a build budget.
+        timeout-minutes: 90
         run: cmake --build build/webgpu-macos --target unit_test -j "$(sysctl -n hw.ncpu)"
 
       - name: Report C/C++ compilation cache
@@ -886,7 +908,20 @@ jobs:
         timeout-minutes: 5
         run: sccache --show-stats
 
-      - name: Test native Dawn Metal surface and rendering
+      - name: Test native Dawn Metal surface and rendering (targeted)
+        if: ${{ needs.change-scope.outputs.dawn_metal == 'true' && (github.event_name == 'pull_request' || github.event_name == 'push') && inputs.build_type != 'release' && inputs.build_type != 'both' }}
+        timeout-minutes: 10
+        env:
+          ALSOFT_DRIVERS: "null"
+        # Present/readback exercises the native surface; texture updates/blending
+        # and 3D lighting cover Metal translation without duplicating Windows parity.
+        run: |
+          ctest --test-dir build/webgpu-macos \
+            -R '^(Graphics\.screenGetPixelAfterPresent|graphics\.backendParity\.textureUpdateAndAlphaBlend|RenderSystem3D\.(textureCheckerPixels|lightingAffectsPixels))$' \
+            --no-tests=error --output-on-failure
+
+      - name: Test native Dawn Metal surface and rendering (full)
+        if: ${{ needs.change-scope.outputs.dawn_metal == 'true' && (github.event_name != 'pull_request' && github.event_name != 'push' || inputs.build_type == 'release' || inputs.build_type == 'both') }}
         timeout-minutes: 20
         env:
           ALSOFT_DRIVERS: "null"
@@ -957,7 +992,29 @@ jobs:
         timeout-minutes: 30
         env:
           ALSOFT_DRIVERS: "null"
-        run: make test/macosx
+        run: >-
+          make test/macosx
+          LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
+
+      - name: Sample settlement release benchmark
+        timeout-minutes: 5
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_SETTLEMENT_BENCHMARK: "1"
+        shell: bash
+        run: |
+          set -o pipefail
+          ctest --test-dir build/macosx \
+            -R '^settlement\.benchmark\.' -V \
+            | tee build/settlement-benchmark-macos.log
+
+      - name: Upload settlement benchmark sample
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: settlement-benchmark-macos-release
+          path: build/settlement-benchmark-macos.log
+          if-no-files-found: error
 
   ios:
     name: iOS
@@ -1001,7 +1058,9 @@ jobs:
         run: bash .github/scripts/setup-ios-signing.sh
 
       - name: Build ios debug
-        timeout-minutes: 40
+        # Healthy iOS debug builds finish in ~32-35 min; macOS arm64 capacity
+        # jitter can push xcodebuild past 40 without a compile error.
+        timeout-minutes: 50
         run: |
           set -euo pipefail
           JOBS="$(sysctl -n hw.ncpu)"
@@ -1059,7 +1118,7 @@ jobs:
         run: bash .github/scripts/setup-ios-signing.sh
 
       - name: Build ios release
-        timeout-minutes: 40
+        timeout-minutes: 50
         run: |
           set -euo pipefail
           JOBS="$(sysctl -n hw.ncpu)"
@@ -1227,7 +1286,8 @@ jobs:
           # CTEST_JOBS=2: Lavapipe renders several window/GPU tests in
           # parallel; -j4 hits a pre-existing race (voxel.render.sceneHillsIsland
           # SEGFAULT) that is not reproducible in isolation.
-          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-debug CTEST_JOBS=2
+          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-debug CTEST_JOBS=2 \
+            LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
 
       - name: Verify resource test results without skipped or warning-only cases
         timeout-minutes: 20
@@ -1350,7 +1410,9 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build linux release
-        timeout-minutes: 75
+        # The v0.6.0 cold build reached 93% at 75 minutes; allow the remaining
+        # compilation and links to finish while retaining a bounded hang guard.
+        timeout-minutes: 105
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -1368,6 +1430,26 @@ jobs:
           ALSOFT_DRIVERS: "null"
         run: xvfb-run -a -s "-screen 0 1280x800x24" make test/linux
 
+      - name: Sample settlement release benchmark
+        timeout-minutes: 5
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_SETTLEMENT_BENCHMARK: "1"
+        shell: bash
+        run: |
+          set -o pipefail
+          ctest --test-dir build/linux \
+            -R '^settlement\.benchmark\.' -V \
+            | tee build/settlement-benchmark-linux.log
+
+      - name: Upload settlement benchmark sample
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: settlement-benchmark-linux-release
+          path: build/settlement-benchmark-linux.log
+          if-no-files-found: error
+
   linux-asan:
     name: Linux (ASan+UBSan)
     needs: [source-quality, change-scope]
@@ -1375,7 +1457,7 @@ jobs:
     runs-on: ubuntu-24.04
     # Allow a cold optimized sanitizer build (PRs are sccache READ_ONLY) and
     # the 90-minute test guard, plus dependency/toolchain setup and reporting.
-    timeout-minutes: 270
+    timeout-minutes: 330
     env:
       # Leak detection off: the zeroerr discovery run during the build (and a
       # few tests) allocates process-lifetime state that LeakSanitizer flags;
@@ -1447,10 +1529,10 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build linux RelWithDebInfo (ASan+UBSan)
-        # PRs cannot populate the shared sccache, so sanitizer flag sets are a
-        # cold rebuild. Runs 34820985249 / 34823491554 reached ~94% after 100m;
-        # keep headroom for linking unit_test. Job budget is 270m.
-        timeout-minutes: 140
+        # Release run 38235152198 reached 92% after 140m with 1.21% cache hits.
+        # Allow cold optimized sanitizer compilation and final test links;
+        # the separate 90-minute test guard remains intact.
+        timeout-minutes: 180
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -1660,7 +1742,7 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.webgpu == 'true' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 90
     env:
       EMSCRIPTEN_VERSION: "6.0.9"
       EMDAWNWEBGPU_RELEASE: "v20260423.175430"
@@ -1769,10 +1851,13 @@ jobs:
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           source "$HOME/emsdk/emsdk_env.sh"
-          emcmake cmake -B build/webgpu-web -G Ninja -DCMAKE_BUILD_TYPE=Release
+          # Keep Release object compilation; avoid expensive -O3 Binaryen
+          # optimization in this browser smoke lane. Asyncify still runs.
+          emcmake cmake -B build/webgpu-web -G Ninja -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_EXE_LINKER_FLAGS_RELEASE=-O1
 
       - name: Build webgpu (Emscripten/WASM)
-        timeout-minutes: 40
+        timeout-minutes: 60
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           source "$HOME/emsdk/emsdk_env.sh"

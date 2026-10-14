@@ -6,11 +6,13 @@
 
 namespace eve::climbing::detail {
 
+/** @brief Smooth step. */
 inline float smoothStep(float value) noexcept {
     value = std::clamp(value, 0.f, 1.f);
     return value * value * (3.f - 2.f * value);
 }
 
+/** @brief Interpolate. */
 inline Vec3 interpolate(Vec3 start, Vec3 end, float amount) noexcept {
     return {start.x + (end.x - start.x) * amount, start.y + (end.y - start.y) * amount,
             start.z + (end.z - start.z) * amount};
@@ -22,6 +24,7 @@ inline Vec3 interpolate(Vec3 start, Vec3 end, float amount) noexcept {
  * Vaults with takeoff clearance and ledge
  * approaches retain an arc.
  */
+/** @brief Trajectory point. */
 inline Vec3 trajectoryPoint(Vec3 start, const ClimbingCandidate& candidate,
                             const ClimbingActionDefinition& action, const ClimbingProfileDefinition& profile,
                             float normalizedTime) noexcept {
@@ -44,7 +47,9 @@ inline Vec3 trajectoryPoint(Vec3 start, const ClimbingCandidate& candidate,
         const Vec3      raisedLanding{candidate.landingFeet.x, clearance, candidate.landingFeet.z};
         if (t < riseEnd) return interpolate(start, raisedStart, smoothStep(t / riseEnd));
         if (t < crossEnd)
+            /** @brief Interpolate. */
             return interpolate(raisedStart, raisedLanding, smoothStep((t - riseEnd) / (crossEnd - riseEnd)));
+        /** @brief Interpolate. */
         return interpolate(raisedLanding, candidate.landingFeet, smoothStep((t - crossEnd) / (1.f - crossEnd)));
     }
 
@@ -54,6 +59,7 @@ inline Vec3 trajectoryPoint(Vec3 start, const ClimbingCandidate& candidate,
         action.kind == ClimbingActionKind::LadderMount || action.kind == ClimbingActionKind::LadderClimb ||
         action.kind == ClimbingActionKind::LadderDismount || action.kind == ClimbingActionKind::Slide ||
         action.kind == ClimbingActionKind::BeamBalance)
+        /** @brief Interpolate. */
         return interpolate(start, candidate.landingFeet, smoothStep(t));
 
     Vec3 point = interpolate(start, candidate.landingFeet, t);

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file HexUnits.h @brief Units that occupy cells, travel along paths and carry vision. */
 
@@ -64,8 +66,9 @@ struct HexUnitSample {
  *
  * Thread affinity: main thread only; no locking and no callbacks.
  */
-class HexUnitRegistry {
+class EVENGINE_API_WORLD HexUnitRegistry {
 public:
+    /** @brief Hex unit registry. */
     HexUnitRegistry() = default;
 
     /** @brief Current tuning. */
@@ -100,8 +103,14 @@ public:
     [[nodiscard]] Result<void> removeUnit(HexMap& map, HexVisibility& visibility, HexSearchContext& scratch,
                                           std::int32_t unitId);
 
-    /** @brief Removes every unit and clears the visibility counters of the map. */
-    void removeAll(HexVisibility& visibility) noexcept;
+    /**
+     * @brief Removes every unit and clears the visibility counters of the map.
+     *
+     * @param map The annotated map, whose fog chunks are dirtied for every cell that
+     *            loses its last viewer.
+     * @param visibility Counters to clear.
+     */
+    void removeAll(HexMap& map, HexVisibility& visibility) noexcept;
 
     /** @brief Id of the unit occupying a cell, or -1 when the cell is free. */
     [[nodiscard]] std::int32_t unitIdAt(HexCoordinates coordinates) const noexcept;

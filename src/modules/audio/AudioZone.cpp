@@ -6,14 +6,13 @@
 
 namespace eve::audio {
 namespace {
-template<class T> Result<T> fail(const char* message) { return Result<T>::failure(
-    Diagnostic::error(DiagnosticCode::InvalidArgument,message,"audio.zone")); }
 bool finiteItem(const AudioZoneItem& v) { return std::isfinite(v.volume)&&std::isfinite(v.fadeInTime)&&
     std::isfinite(v.fadeOutTime)&&std::isfinite(v.duration)&&v.volume>=0&&v.fadeInTime>=0&&v.fadeOutTime>=0&&v.duration>=0; }
 float unit(std::uint32_t seed) { seed=seed*1664525u+1013904223u; return float(seed>>8u)*(1.f/16777216.f); }
 }
 Result<int> AudioZoneProfile::addItem(const AudioZoneItem& item) {
-    if(!finiteItem(item)) return fail<int>("audio-zone track values must be finite and non-negative");
+    if(!finiteItem(item)) return Result<int>::failure(
+    Diagnostic::error(DiagnosticCode::InvalidArgument,"audio-zone track values must be finite and non-negative","audio.zone"));
     items_.push_back(item); return Result<int>::success(itemCount()-1);
 }
 const AudioZoneItem* AudioZoneProfile::itemAt(int index) const noexcept {
@@ -25,7 +24,8 @@ Result<AudioZoneOutput> evaluateAudioZone(const AudioZoneProfile& p,AudioZoneSta
        !std::isfinite(p.x)||!std::isfinite(p.y)||!std::isfinite(p.z)||!std::isfinite(p.radius)||
        !std::isfinite(p.minimumBreakTime)||!std::isfinite(p.maximumBreakTime)||!std::isfinite(p.deactivationTime)||
        now<0||master<0||p.radius<0||p.minimumBreakTime<0||p.maximumBreakTime<p.minimumBreakTime||p.deactivationTime<0)
-        return fail<AudioZoneOutput>("audio-zone inputs must be finite and ranges valid");
+        return Result<AudioZoneOutput>::failure(
+    Diagnostic::error(DiagnosticCode::InvalidArgument,"audio-zone inputs must be finite and ranges valid","audio.zone"));
     AudioZoneState next=state; AudioZoneOutput out;
     const float dx=p.x-px,dy=p.y-py,dz=p.z-pz;
     const bool inRange=p.global||dx*dx+dy*dy+dz*dz<=p.radius*p.radius;
@@ -58,7 +58,8 @@ Result<AudioZoneOutput> evaluateAudioZone(const AudioZoneProfile& p,AudioZoneSta
 }
 Result<void> applyAudioZoneOutput(Source* source,const AudioZoneOutput& output) {
     if(!source||!std::isfinite(output.volume)||output.volume<0.f)
-        return fail<void>("audio-zone output requires a source and finite non-negative volume");
+        return Result<void>::failure(
+    Diagnostic::error(DiagnosticCode::InvalidArgument,"audio-zone output requires a source and finite non-negative volume","audio.zone"));
     source->setVolume(output.volume);
     if(output.stop) source->stop();
     if(output.play) source->play();

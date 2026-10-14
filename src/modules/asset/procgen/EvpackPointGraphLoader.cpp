@@ -8,12 +8,6 @@
 namespace eve::asset_procgen {
 namespace {
 
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {},
-                                                "asset.procgen"));
-}
-
 const Value* field(const Value::Object& object, std::string_view name) {
     const auto found = object.find(std::string(name));
     return found == object.end() ? nullptr : &found->second;
@@ -30,18 +24,20 @@ Result<LoadedPointGraph> EvpackPointGraphLoader::load(
     const asset::RuntimeAssetChunk* plan = nullptr;
     for (const auto& chunk : payload.value().chunks) {
         if (chunk.kind == asset::EvpackChunkKind::Definition) {
-            if (definition) return failure<LoadedPointGraph>(DiagnosticCode::Conflict,
-                                                              "PCG asset has duplicate definitions");
+            if (definition)
+                return Result<LoadedPointGraph>::failure(Diagnostic::error(
+                    DiagnosticCode::Conflict, "PCG asset has duplicate definitions", {}, {}, "asset.procgen"));
             definition = &chunk;
         } else if (chunk.kind == asset::EvpackChunkKind::Bulk) {
-            if (plan) return failure<LoadedPointGraph>(DiagnosticCode::Conflict,
-                                                       "PCG asset has duplicate execution plans");
+            if (plan)
+                return Result<LoadedPointGraph>::failure(Diagnostic::error(
+                    DiagnosticCode::Conflict, "PCG asset has duplicate execution plans", {}, {}, "asset.procgen"));
             plan = &chunk;
         }
     }
     if (!definition || !plan || plan->chunkId != 1)
-        return failure<LoadedPointGraph>(DiagnosticCode::ParseError,
-                                         "PCG definition or execution plan is missing");
+        return Result<LoadedPointGraph>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "PCG definition or execution plan is missing", {}, {}, "asset.procgen"));
     asset::RuntimeDefinitionLimits definitionLimits;
     definitionLimits.maximumBytes = maximumDecodedBytes;
     auto metadata = asset::decodeRuntimeDefinition(definition->bytes, definitionLimits);
@@ -59,16 +55,17 @@ Result<LoadedPointGraph> EvpackPointGraphLoader::load(
         !planReference->isString() || planReference->asString() != "chunk:1" || !format ||
         !format->isString() || format->asString() != "EVPCG_POINT_GRAPH/1" ||
         !output || !output->isString() || output->asString().empty() || !slots || slots->empty())
-        return failure<LoadedPointGraph>(DiagnosticCode::ParseError,
-                                         "PCG runtime metadata is invalid");
+        return Result<LoadedPointGraph>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "PCG runtime metadata is invalid", {}, {}, "asset.procgen"));
     auto graph = std::make_unique<procgen::PointGraph>();
     const std::string planText(reinterpret_cast<const char*>(plan->bytes.data()), plan->bytes.size());
     if (!graph->deserializeDefinition(planText))
-        return failure<LoadedPointGraph>(DiagnosticCode::ParseError,
-                                         "PCG execution plan is invalid: " + graph->getError());
+        return Result<LoadedPointGraph>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "PCG execution plan is invalid: " + graph->getError(), {}, {},
+                              "asset.procgen"));
     if (!graph->hasNode(output->asString()))
-        return failure<LoadedPointGraph>(DiagnosticCode::ParseError,
-                                         "PCG output node does not exist", "$.outputNode");
+        return Result<LoadedPointGraph>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "PCG output node does not exist", "$.outputNode", {}, "asset.procgen"));
     procgen::SpatialData terrainCopy = terrain;
     for (std::size_t i = 0; i < slots->size(); ++i) {
         const auto* slot = (*slots)[i].getIf<Value::Object>();
@@ -77,13 +74,13 @@ Result<LoadedPointGraph> EvpackPointGraphLoader::load(
         if (!node || !node->isString() || !role || !role->isString() ||
             role->asString() != "terrain" ||
             !graph->setNodeSpatial(node->asString(), &terrainCopy))
-            return failure<LoadedPointGraph>(DiagnosticCode::ParseError,
-                                             "PCG spatial slot is invalid",
-                                             "$.spatialSlots[" + std::to_string(i) + "]");
+            return Result<LoadedPointGraph>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "PCG spatial slot is invalid",
+                                  "$.spatialSlots[" + std::to_string(i) + "]", {}, "asset.procgen"));
     }
     if (!graph->validate())
-        return failure<LoadedPointGraph>(DiagnosticCode::ParseError,
-                                         "bound PCG graph is invalid: " + graph->getError());
+        return Result<LoadedPointGraph>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "bound PCG graph is invalid: " + graph->getError(), {}, {}, "asset.procgen"));
     return Result<LoadedPointGraph>::success(
         {graphRef, std::move(graph), output->asString(), std::move(payload).takeValue().variant});
 }

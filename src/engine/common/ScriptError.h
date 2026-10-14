@@ -10,7 +10,7 @@
 namespace eve::script {
 
 /** @brief One call-stack frame captured while the script error is still live. */
-struct EVENGINE_API ScriptFrame {
+struct EVENGINE_API_FOUNDATION_INLINE ScriptFrame {
     std::string source;    /**< @brief Source name of the frame ("main.nut", "buffer", ...). */
     std::string function;  /**< @brief Function name, when Squirrel debug info knows it. */
     int line = -1;         /**< @brief 1-based source line; -1 when unknown. */
@@ -22,7 +22,7 @@ struct EVENGINE_API ScriptFrame {
  * Captured from inside the Squirrel error handler while the native call stack
  * is still intact, so the throw-site line and every caller frame are known.
  */
-struct EVENGINE_API ScriptErrorContext {
+struct EVENGINE_API_FOUNDATION_INLINE ScriptErrorContext {
     std::string message;   /**< @brief Raw error value ("kaboom", "42", ...). */
     std::string source;    /**< @brief Source of the throwing frame. */
     std::string function;  /**< @brief Function of the throwing frame. */
@@ -41,14 +41,14 @@ struct EVENGINE_API ScriptErrorContext {
  * @param vm VM whose error handler is executing (error value at stack slot 2).
  * @return Context with the message and the still-live call stack.
  */
-EVENGINE_API ScriptErrorContext captureScriptError(HSQUIRRELVM vm);
+EVENGINE_API_FOUNDATION ScriptErrorContext captureScriptError(HSQUIRRELVM vm);
 
 /**
  * @brief Captures the last compilation error recorded by the VM.
  * @param vm VM whose compile just failed (ssq's compiler handler stores it).
  * @return Context with message, source, line and column.
  */
-EVENGINE_API ScriptErrorContext captureCompileError(HSQUIRRELVM vm);
+EVENGINE_API_FOUNDATION ScriptErrorContext captureCompileError(HSQUIRRELVM vm);
 
 /**
  * @brief Parses the ssq compile message "Compile error at source:line:column msg".
@@ -59,8 +59,8 @@ EVENGINE_API ScriptErrorContext captureCompileError(HSQUIRRELVM vm);
  * @param message Receives the raw compiler description (may be nullptr).
  * @return True when the message matched the expected layout.
  */
-EVENGINE_API bool parseCompileError(const std::string& text, std::string* source,
-                                    int* line, int* column, std::string* message);
+EVENGINE_API_FOUNDATION bool parseCompileError(const std::string& text, std::string* source, int* line, int* column,
+                                               std::string* message);
 
 /**
  * @brief Extracts one 1-based line from script source text.
@@ -68,54 +68,54 @@ EVENGINE_API bool parseCompileError(const std::string& text, std::string* source
  * @param line       1-based line number.
  * @return The line without trailing newline, or empty when out of range.
  */
-EVENGINE_API std::string sourceLineText(const std::string& sourceText, int line);
+EVENGINE_API_FOUNDATION std::string sourceLineText(const std::string& sourceText, int line);
 
 /**
  * @brief Formats a context into a human-readable multi-line report.
  * @param ctx Context to format.
  * @return "source:line (function): message" plus optional hint and stack.
  */
-EVENGINE_API std::string formatScriptError(const ScriptErrorContext& ctx);
+EVENGINE_API_FOUNDATION std::string formatScriptError(const ScriptErrorContext& ctx);
 
 /**
  * @brief Formats just the call-stack portion of a context.
  * @param frames Frames to render, innermost first.
  * @return One "source:line in function" line per frame, newline separated.
  */
-EVENGINE_API std::string formatStackTrace(const std::vector<ScriptFrame>& frames);
+EVENGINE_API_FOUNDATION std::string formatStackTrace(const std::vector<ScriptFrame>& frames);
 
 /**
  * @brief Records the last error for a VM (thread-local, synchronous consumers).
  * @param vm VM the error belongs to.
  * @param ctx Context to store.
  */
-EVENGINE_API void setLastScriptError(HSQUIRRELVM vm, ScriptErrorContext ctx);
+EVENGINE_API_FOUNDATION void setLastScriptError(HSQUIRRELVM vm, ScriptErrorContext ctx);
 
 /**
  * @brief Consumes and clears the last recorded error for a VM.
  * @param vm VM the error belongs to.
  * @return The stored context, or an empty context when none is pending.
  */
-EVENGINE_API ScriptErrorContext takeLastScriptError(HSQUIRRELVM vm);
+EVENGINE_API_FOUNDATION ScriptErrorContext takeLastScriptError(HSQUIRRELVM vm);
 
 /**
  * @brief Peeks at the last recorded error for a VM without clearing it.
  * @param vm VM the error belongs to.
  * @return Pointer to the stored context, or nullptr when none is pending.
  */
-EVENGINE_API const ScriptErrorContext* peekLastScriptError(HSQUIRRELVM vm);
+EVENGINE_API_FOUNDATION const ScriptErrorContext* peekLastScriptError(HSQUIRRELVM vm);
 
 /**
  * @brief Drops any recorded error for a VM.
  * @param vm VM whose pending error should be forgotten.
  */
-EVENGINE_API void clearLastScriptError(HSQUIRRELVM vm);
+EVENGINE_API_FOUNDATION void clearLastScriptError(HSQUIRRELVM vm);
 
 /**
  * @brief Formats the last captured error for a VM without consuming it.
  * @param vm VM to read.
  * @return Multi-line report, or empty when no error is pending.
  */
-EVENGINE_API std::string formatLastScriptError(HSQUIRRELVM vm);
+EVENGINE_API_FOUNDATION std::string formatLastScriptError(HSQUIRRELVM vm);
 
 }  // namespace eve::script

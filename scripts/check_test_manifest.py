@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
-"""Verify the test suite retains automatic source discovery.
+"""Verify the test suite keeps automatic source discovery and a complete domain
+partition.
 
 Top-level test/*.cpp files are globbed at configure time and recorded in
 test_src.txt. Make reconfigures when an individual test/*.cpp is newer than
 that list. This check prevents a regression to a central append-only list,
 Ninja CONFIGURE_DEPENDS glob restacking, or a glob that never re-runs after
 a new file is added.
+
+The suite links as one `unit_test_<domain>` executable per domain so an agent
+can link only the domain it is testing (see test/test_domains.cmake). The
+partition rule lives in scripts/test_domains.py, which the configure step also
+consumes; this check runs it *without* configuring so a test that matches no
+rule -- or two rules -- fails in CI as well.
 """
 
 from __future__ import annotations
@@ -15,8 +22,20 @@ import sys
 from pathlib import Path
 import utf8_stdio
 
+# Re-exported so this module stays the single entry point for the test manifest
+# contract. The implementation is shared with the configure step.
+from test_domains import (  # noqa: F401
+    DOMAIN_TABLE,
+    SHARED_SOURCES,
+    TEST_DIR,
+    classify,
+    parse_domain_table,
+    partition,
+    shared_source_errors,
+    table_contract_errors,
+)
+
 REPO = Path(__file__).resolve().parent.parent
-TEST_DIR = REPO / "test"
 CMAKE_LIST = TEST_DIR / "CMakeLists.txt"
 MAKEFILE = REPO / "Makefile"
 
@@ -35,6 +54,16 @@ DEMO_EXCLUSION_RE = re.compile(
     r'"\$\{CMAKE_CURRENT_SOURCE_DIR\}/demo\.cpp"\s*\)'
 )
 DEMO_APPEND_RE = re.compile(r"list\(APPEND\s+all_test_cpp\s+demo\.cpp\s*\)")
+
+# The configure step must obtain the partition from scripts/test_domains.py
+# rather than re-implementing the rule; two implementations would drift.
+DOMAIN_EMIT_RE = re.compile(r"test_domains\.py")
+DOMAIN_INCLUDE_RE = re.compile(r"test_domain_sources\.cmake")
+DOMAIN_INTERFACE_RE = re.compile(r"EVE_TEST_DOMAIN_\$\{")
+# A shared helper translation unit is useless unless the domain target compiles
+# it, so the generated *_SHARED_SOURCES list must reach add_executable().
+DOMAIN_SHARED_SOURCES_RE = re.compile(r"EVE_TEST_DOMAIN_\$\{[^}]*\}_SHARED_SOURCES")
+DISCOVER_PER_TARGET_RE = re.compile(r"zeroerr_discover_tests\(\s*\$\{")
 
 
 def discovery_contract_errors(cmake_text: str, makefile_text: str = "") -> list[str]:
@@ -60,6 +89,33 @@ def discovery_contract_errors(cmake_text: str, makefile_text: str = "") -> list[
     return errors
 
 
+def domain_wiring_errors(cmake_text: str) -> list[str]:
+    """Return errors when CMake stops consuming the shared partition rule."""
+    errors: list[str] = []
+    if not DOMAIN_EMIT_RE.search(cmake_text):
+        errors.append(
+            "test/CMakeLists.txt must obtain the domain partition from "
+            "scripts/test_domains.py instead of re-implementing the rule"
+        )
+    if not DOMAIN_INCLUDE_RE.search(cmake_text):
+        errors.append("test/CMakeLists.txt must include the generated domain partition")
+    if not DOMAIN_INTERFACE_RE.search(cmake_text):
+        errors.append(
+            "test/CMakeLists.txt must create one target per generated "
+            "EVE_TEST_DOMAIN_<domain>_SOURCES list"
+        )
+    if not DISCOVER_PER_TARGET_RE.search(cmake_text):
+        errors.append(
+            "every domain target must register its own zeroerr_discover_tests()"
+        )
+    if SHARED_SOURCES and not DOMAIN_SHARED_SOURCES_RE.search(cmake_text):
+        errors.append(
+            "test/CMakeLists.txt must compile the shared helper translation units "
+            "listed in scripts/test_domains.py SHARED_SOURCES into their domains"
+        )
+    return errors
+
+
 def main() -> int:
     if not CMAKE_LIST.exists():
         print(f"error: {CMAKE_LIST} not found", file=sys.stderr)
@@ -67,18 +123,40 @@ def main() -> int:
     if not MAKEFILE.exists():
         print(f"error: {MAKEFILE} not found", file=sys.stderr)
         return 1
+    if not DOMAIN_TABLE.exists():
+        print(f"error: {DOMAIN_TABLE} not found", file=sys.stderr)
+        return 1
 
-    errors = discovery_contract_errors(
-        CMAKE_LIST.read_text(encoding="utf-8"),
-        MAKEFILE.read_text(encoding="utf-8"),
-    )
+    cmake_text = CMAKE_LIST.read_text(encoding="utf-8")
+    makefile_text = MAKEFILE.read_text(encoding="utf-8")
+
+    errors = discovery_contract_errors(cmake_text, makefile_text)
+    errors.extend(domain_wiring_errors(cmake_text))
+
+    tables = parse_domain_table(DOMAIN_TABLE.read_text(encoding="utf-8"))
+    errors.extend(table_contract_errors(tables))
+
+    buckets, partition_errors = partition(tables)
+    errors.extend(partition_errors)
+
     if errors:
         for error in errors:
             print(f"error: {error}", file=sys.stderr)
         return 1
 
-    count = sum(1 for _ in TEST_DIR.glob("*.cpp"))
-    print(f"test auto-discovery OK: test_src.txt covers {count} sources")
+    total = sum(len(members) for members in buckets.values())
+    print(f"test auto-discovery OK: test_src.txt covers {total + 1 + len(SHARED_SOURCES)} sources")
+    print(
+        f"test domains OK: {len(buckets)} domains, {total} tests + 1 shared runner "
+        f"+ {len(SHARED_SOURCES)} shared helper TU"
+    )
+    for name in tables["domains"]:  # type: ignore[union-attr]
+        shared = [base for base, consumers in SHARED_SOURCES.items() if name in consumers]
+        suffix = f"  + shared: {', '.join(shared)}" if shared else ""
+        print(f"  {name:14s} {len(buckets[name]):4d}{suffix}")
+    empty = [name for name, members in buckets.items() if not members]
+    if empty:
+        print("note: domain(s) with no test in this profile: " + ", ".join(sorted(empty)))
     return 0
 
 

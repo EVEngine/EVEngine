@@ -43,7 +43,7 @@ namespace eve::procgen {
 using ArtifactId = eve::ArtifactId;
 
 /** @brief Stable key for deterministic-equivalent generation inputs. */
-class BuildKey {
+class EVENGINE_API_DOMAINS BuildKey {
 public:
     /** @brief Construct an empty invalid build key. */
     BuildKey() = default;
@@ -78,7 +78,9 @@ private:
 
 namespace std {
 template <>
+/** @brief hash public API. */
 struct hash<eve::procgen::BuildKey> {
+    /** @brief Operator . */
     size_t operator()(const eve::procgen::BuildKey& key) const noexcept {
         return std::hash<std::string>{}(key.format());
     }
@@ -88,7 +90,7 @@ struct hash<eve::procgen::BuildKey> {
 namespace eve::procgen {
 
 /** @brief Axis-aligned bounds in the artifact's declared world coordinate space. */
-struct Bounds {
+struct EVENGINE_API_DOMAINS Bounds {
     float minX  = 0.f;
     float minY  = 0.f;
     float minZ  = 0.f;
@@ -126,7 +128,7 @@ struct ImageData {
 };
 
 /** @brief Backend-neutral collider product, normally a triangle mesh or hull. */
-struct Collider {
+struct EVENGINE_API_DOMAINS Collider {
     std::vector<float>         vertices;
     std::vector<std::uint32_t> indices;
     Bounds                     bounds;
@@ -156,7 +158,7 @@ struct ArtifactPart {
 };
 
 /** @brief A coherent set of products published from one deterministic build. */
-struct CompositeArtifact {
+struct EVENGINE_API_DOMAINS CompositeArtifact {
     std::vector<ArtifactPart> children;
 
     /**
@@ -205,17 +207,14 @@ struct GeneratedArtifact {
  * @brief Validate and construct one artifact record.
  * @return A complete owning artifact or a structured rejection diagnostic.
  */
-[[nodiscard]] eve::Result<GeneratedArtifact> makeArtifact(ArtifactId id, ArtifactType type,
-                                                          eve::SchemaVersion schemaVersion, BuildKey buildKey,
-                                                          Bounds bounds, std::vector<ArtifactId> dependencies,
-                                                          eve::Value::Object         metadata,
-                                                          GeneratedArtifact::Payload payload);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<GeneratedArtifact> makeArtifact(
+    ArtifactId id, ArtifactType type, eve::SchemaVersion schemaVersion, BuildKey buildKey, Bounds bounds,
+    std::vector<ArtifactId> dependencies, eve::Value::Object metadata, GeneratedArtifact::Payload payload);
 
 /** @brief Validate and construct a leaf part for a composite artifact. */
-[[nodiscard]] eve::Result<ArtifactPart> makeArtifactPart(std::string role, ArtifactId id, ArtifactType type,
-                                                         eve::SchemaVersion schemaVersion, BuildKey buildKey,
-                                                         Bounds bounds, std::vector<ArtifactId> dependencies,
-                                                         eve::Value::Object metadata, ArtifactLeafPayload payload);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ArtifactPart> makeArtifactPart(
+    std::string role, ArtifactId id, ArtifactType type, eve::SchemaVersion schemaVersion, BuildKey buildKey,
+    Bounds bounds, std::vector<ArtifactId> dependencies, eve::Value::Object metadata, ArtifactLeafPayload payload);
 
 /**
  * @brief In-memory owner and publisher for generated artifacts.
@@ -225,7 +224,7 @@ struct GeneratedArtifact {
  * an existing identity; build keys are lookup metadata and do not become
  * identities.
  */
-class ArtifactStore {
+class EVENGINE_API_DOMAINS ArtifactStore {
 public:
     /**
      * @brief Validate and atomically publish one artifact and all composite parts.
@@ -323,7 +322,8 @@ private:
  * @param id Non-nil identity for the top-level artifact instance.
  * @return An owning composite artifact, or a structured generation failure.
  */
-[[nodiscard]] eve::Result<GeneratedArtifact> generateHexTerrainArtifact(const Params& params, ArtifactId id);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<GeneratedArtifact> generateHexTerrainArtifact(const Params& params,
+                                                                                             ArtifactId    id);
 
 /**
  * @brief Generate a castle composite containing mesh, collider, ring topology
@@ -332,16 +332,31 @@ private:
  * @param id Non-nil identity for the top-level artifact instance.
  * @return An owning composite artifact, or a structured generation failure.
  */
-[[nodiscard]] eve::Result<GeneratedArtifact> generateCastleArtifact(const Params& params, ArtifactId id);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<GeneratedArtifact> generateCastleArtifact(const Params& params,
+                                                                                         ArtifactId    id);
+
+/**
+ * @brief Generate a road composite containing mesh, collider, terrain footprint, navigation and placement points.
+ * @param
+ * params Deterministic mesh.roadNetwork recipe parameters.
+ * @param id Non-nil identity for the top-level artifact
+ * instance.
+ * @return An owning composite artifact, or a structured generation failure.
+ * @cost Linear in road mesh
+ * triangles plus the bounded terrain-footprint raster.
+ */
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<GeneratedArtifact> generateRoadNetworkArtifact(const Params& params,
+                                                                                              ArtifactId    id);
 
 /**
  * @brief Generate any registered mesh recipe as a CPU artifact.
  * @param recipeId Registered mesh recipe id.
  * @param params Deterministic recipe parameters.
  * @param id Non-nil artifact instance identity.
- * @return Hex terrain and castle become composites; other recipes become MeshData artifacts.
+ * @return Hex terrain, castle and road network become composites; other recipes become MeshData artifacts.
  */
-[[nodiscard]] eve::Result<GeneratedArtifact> generateMeshArtifact(std::string_view recipeId, const Params& params,
-                                                                  ArtifactId id);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<GeneratedArtifact> generateMeshArtifact(std::string_view recipeId,
+                                                                                       const Params&    params,
+                                                                                       ArtifactId       id);
 
 }  // namespace eve::procgen

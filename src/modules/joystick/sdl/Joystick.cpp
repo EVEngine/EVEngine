@@ -2,6 +2,7 @@
 
 #include "common/Exception.h"
 #include "common/StartupTiming.h"
+#include "joystick/sdl/EventSinkOwner.h"
 
 #include <SDL2/SDL.h>
 
@@ -20,9 +21,11 @@ Joystick::Joystick() {
 
     SDL_JoystickEventState(SDL_ENABLE);
     SDL_GameControllerEventState(SDL_ENABLE);
+    bindJoystickEventSinkOwner(this);
 }
 
 Joystick::~Joystick() {
+    bindJoystickEventSinkOwner(nullptr);
     for (auto* stick : joysticks_) {
         stick->close();
         delete stick;

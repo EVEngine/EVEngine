@@ -203,3 +203,55 @@ TEST_CASE("tactics.commandReplayProducesByteIdenticalFinalSnapshot") {
     CHECK_EQ(replayed.value().contentHash, direct.value().contentHash);
     CHECK_EQ(replayed.value().payload, direct.value().payload);
 }
+
+/**
+ * @brief An ability declaration replays from the command log, including its targets.
+ *
+ * The declaration is not just "spend a point": the targeted unit and the opaque payload
+ * are facts a replay has to reproduce, or the effect owner would receive a different
+ * declaration after a restore than it did live.
+ */
+TEST_CASE("tactics.abilityDeclarationReplaysWithTargetAndPayload") {
+    ecs::Table       world;
+    ecs::ScopedTable guard(world);
+    eve::tactics::Tactics tactics;
+    const auto battleSubject = subject("00000000-0000-0000-0000-0000000000b0");
+    const auto unitSubject   = subject("00000000-0000-0000-0000-0000000000b2");
+    const auto allySubject   = subject("00000000-0000-0000-0000-0000000000b3");
+    auto battleResult = tactics.newBattle(battleSubject, 37);
+    REQUIRE(battleResult.ok());
+    const auto battleHandle = std::move(battleResult).takeValue();
+    REQUIRE(tactics.addCell(battleHandle, {0, 0, 0}).ok());
+    REQUIRE(tactics.addCell(battleHandle, {1, 0, 0}).ok());
+    REQUIRE(tactics.addCell(battleHandle, {2, 0, 0}).ok());
+    auto sideResult = tactics.newSide(battleHandle, subject("00000000-0000-0000-0000-0000000000b1"));
+    REQUIRE(sideResult.ok());
+    const auto side = std::move(sideResult).takeValue();
+    REQUIRE(tactics.newUnit(battleHandle, side, unitSubject, {}, {0, 0, 0}, {2, 100, 1, 10}).ok());
+    REQUIRE(tactics.newUnit(battleHandle, side, allySubject, {}, {2, 0, 0}, {1, 100, 1, 5}).ok());
+    REQUIRE(tactics.start(battleHandle, eve::tactics::TurnPolicyKind::Initiative).ok());
+    REQUIRE(tactics.advance(battleHandle, step(1)).ok());
+    REQUIRE(tactics.advance(battleHandle, step(2)).ok());
+    REQUIRE(tactics.advance(battleHandle, step(3)).ok());
+    auto* battle = dynamic_cast<eve::tactics::Battle*>(ecs::try_get(battleHandle));
+    REQUIRE(battle != nullptr);
+    const auto hash = testHash();
+    const auto baselineRevision = battle->turn()->revision;
+    auto baseline = eve::tactics::TacticsPersistence::snapshot(*battle, hash);
+    REQUIRE(baseline.ok());
+
+    const auto strike = eve::LogicalId::parse("test:strike");
+    REQUIRE(strike.has_value());
+    REQUIRE(tactics.useAbility(battleHandle, unitSubject, *strike, {2, 0, 0}, allySubject, "{\"power\":5}").ok());
+    const auto commands = eve::tactics::BattleReplay::commandsFrom(*battle, baselineRevision);
+    REQUIRE_EQ(commands.size(), 1u);
+    auto direct = eve::tactics::TacticsPersistence::snapshot(*battle, hash);
+    REQUIRE(direct.ok());
+
+    REQUIRE(eve::tactics::TacticsPersistence::restore(*battle, baseline.value(), hash).ok());
+    REQUIRE(eve::tactics::BattleReplay::replay(*battle, commands).ok());
+    auto replayed = eve::tactics::TacticsPersistence::snapshot(*battle, hash);
+    REQUIRE(replayed.ok());
+    CHECK_EQ(replayed.value().contentHash, direct.value().contentHash);
+    CHECK_EQ(replayed.value().payload, direct.value().payload);
+}

@@ -1,8 +1,10 @@
 # House generator runtime example
 
 Run with `make run/win32-debug GAME=examples/housegen`. The example exercises the Squirrel
-generation API and prints a serializable layout. To display it, place the converted CC0 GLB kit
-under `assets/`. Native integrations call `HouseLayout::instantiate`; it returns a checked
+generation API, exports its footprint to `Grid2D` and its component placements to `PointSet`,
+runs both through the existing GridGraph/PointGraph paths, and renders a compact isometric
+diagnostic view. To display the converted CC0 GLB kit instead, place it under `assets/` and use
+the native instantiation path. Native integrations call `HouseLayout::instantiate`; it returns a checked
 `Result<vector<ecs::EntityHandle>>`, so the graphics ECS world remains the sole owner of
 created entities and callers resolve handles only for the current operation.
 

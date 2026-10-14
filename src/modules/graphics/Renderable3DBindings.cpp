@@ -3,9 +3,11 @@
 #include "common/SquirrelBinding.h"
 #include "graphics/Mesh.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/RenderableInstances.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
 
+// Renderable3DBindings.cpp
 namespace eve::graphics::detail {
 void exposeRenderable3DBindings(ssq::Table& table) {
     auto ent = table.addClass<Renderable3D>(
@@ -64,6 +66,7 @@ void exposeRenderable3DBindings(ssq::Table& table) {
     ent.addFunc("getTintG", &Renderable3D::getTintG);
     ent.addFunc("getTintB", &Renderable3D::getTintB);
     ent.addFunc("getRoughness", &Renderable3D::getRoughness);
+    ent.addFunc("getMetallic", &Renderable3D::getMetallic);
     ent.addFunc("setMetallic", &Renderable3D::setMetallic);
     ent.addFunc("setRoughness", &Renderable3D::setRoughness);
     ent.addFunc("setTexCellBomb", &Renderable3D::setTexCellBomb);
@@ -92,3 +95,30 @@ void exposeRenderable3DBindings(ssq::Table& table) {
     ent.addFunc("getMeshLodLevelAtDistance", &Renderable3D::getMeshLodLevelAtDistance);
 }
 }  // namespace eve::graphics::detail
+
+// RenderableInstances.cpp
+namespace eve::graphics {
+namespace detail {
+Result<void> validateInstancedRenderable(const Renderable3D::MeshRenderer& mr) {
+    auto* shader = mr.material ? mr.material->effectiveShader() : mr.shader;
+    if (!mr.mesh || !shader || shader->getKind() != Shader::Kind::eMesh3D || shader->isXray() || mr.usesParts() ||
+        mr.effectiveHair() || mr.xrayHighlight || mr.lodCount || mr.mesh->hasGpuSkinning() ||
+        mr.effectiveCastShadow() || mr.castOcclusion)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported,
+            "Instanced renderables require one custom static mesh without shadow/occlusion casting, LOD, hair or Xray",
+            "graphics.instances"));
+    return Result<void>::success();
+}
+}  // namespace detail
+Result<void> Renderable3D::setInstanceRange(const MeshInstanceRange& range) {
+    auto valid = validateMeshInstanceRange(range);
+    if (!valid) return valid;
+    auto mr        = meshRenderer();
+    auto supported = detail::validateInstancedRenderable(*mr);
+    if (!supported) return supported;
+    mr->instances = range;
+    return Result<void>::success();
+}
+void Renderable3D::clearInstanceRange() { meshRenderer()->instances.reset(); }
+}  // namespace eve::graphics

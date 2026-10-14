@@ -1,21 +1,15 @@
 #include "effects/EffectDefinitionRuntime.h"
-
-#include "common/Value.h"
-
 #include <algorithm>
 #include <cmath>
 #include <iterator>
 #include <limits>
 #include <utility>
+#include "common/Value.h"
+#include "effects/EffectTypes.h"
 
+// EffectDefinitionRuntime.cpp
 namespace eve::effects {
 namespace {
-
-template <class T>
-eve::Result<T> invalid(std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message),
-                                                          std::move(path), {}, "effects.definition_runtime"));
-}
 
 eve::Result<eve::definition::DefinitionHandle> currentHandle(eve::definitions::DefinitionRegistry& registry,
                                                              const eve::DefinitionRef&             reference) {
@@ -97,81 +91,114 @@ eve::Result<EffectRuntimeState> parseState(const eve::definitions::Definition& d
     if (!parsed) return eve::Result<EffectRuntimeState>::failure(parsed.status());
     auto        value  = std::move(parsed).takeValue();
     const auto* object = value.getIf<eve::Value::Object>();
-    if (!object) return invalid<EffectRuntimeState>("effect definition payload must be an object", "json");
+    if (!object)
+        return eve::Result<EffectRuntimeState>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect definition payload must be an object",
+                                   "json", {}, "effects.definition_runtime"));
 
     EffectRuntimeState state;
     state.stackKey = std::string(reference.id().name());
     if (const auto* value = field(*object, "stackKey")) {
         const auto* text = value->getIf<std::string>();
-        if (!text) return invalid<EffectRuntimeState>("effect stackKey must be a string", "stackKey");
+        if (!text)
+            return eve::Result<EffectRuntimeState>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect stackKey must be a string",
+                                       "stackKey", {}, "effects.definition_runtime"));
         state.stackKey = *text;
     }
     if (const auto* value = field(*object, "priority")) {
         if (!readInt(*object, "priority", state.priority))
-            return invalid<EffectRuntimeState>("effect priority must be Int64", "priority");
+            return eve::Result<EffectRuntimeState>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect priority must be Int64",
+                                       "priority", {}, "effects.definition_runtime"));
     }
     if (const auto* value = field(*object, "duration")) {
         (void)value;
         if (!readDouble(*object, "duration", state.duration))
-            return invalid<EffectRuntimeState>("effect duration must be finite", "duration");
+            return eve::Result<EffectRuntimeState>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect duration must be finite",
+                                       "duration", {}, "effects.definition_runtime"));
     }
     if (const auto* value = field(*object, "magnitude")) {
         (void)value;
         if (!readDouble(*object, "magnitude", state.magnitude))
-            return invalid<EffectRuntimeState>("effect magnitude must be finite", "magnitude");
+            return eve::Result<EffectRuntimeState>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect magnitude must be finite",
+                                       "magnitude", {}, "effects.definition_runtime"));
     }
     if (const auto* value = field(*object, "stackCount")) {
         (void)value;
         if (!readUInt(*object, "stackCount", state.stackCount) || state.stackCount == 0)
-            return invalid<EffectRuntimeState>("effect stackCount must be positive", "stackCount");
+            return eve::Result<EffectRuntimeState>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect stackCount must be positive",
+                                       "stackCount", {}, "effects.definition_runtime"));
     }
     if (const auto* value = field(*object, "maxStacks")) {
         (void)value;
         if (!readUInt(*object, "maxStacks", state.maxStacks))
-            return invalid<EffectRuntimeState>("effect maxStacks must be UInt32", "maxStacks");
+            return eve::Result<EffectRuntimeState>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect maxStacks must be UInt32",
+                                       "maxStacks", {}, "effects.definition_runtime"));
     }
     if (state.maxStacks != 0 && state.stackCount > state.maxStacks)
-        return invalid<EffectRuntimeState>("effect stackCount exceeds maxStacks", "stackCount");
+        return eve::Result<EffectRuntimeState>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect stackCount exceeds maxStacks",
+                                   "stackCount", {}, "effects.definition_runtime"));
     constexpr const char* stackModeNames[]  = {"replace", "new_instance", "reuse", "accumulate"};
     constexpr StackMode   stackModeValues[] = {StackMode::Replace, StackMode::NewInstance, StackMode::Reuse,
                                                StackMode::Accumulate};
     if (!readOptionalEnum(*object, "stackMode", stackModeNames, stackModeValues, std::size(stackModeNames),
                           state.policy.stackMode))
-        return invalid<EffectRuntimeState>("effect stackMode is invalid", "stackMode");
+        return eve::Result<EffectRuntimeState>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect stackMode is invalid", "stackMode", {},
+                                   "effects.definition_runtime"));
     constexpr const char*      stackCountPolicyNames[]  = {"keep", "increment", "set"};
     constexpr StackCountPolicy stackCountPolicyValues[] = {StackCountPolicy::Keep, StackCountPolicy::Increment,
                                                            StackCountPolicy::Set};
     if (!readOptionalEnum(*object, "stackCountPolicy", stackCountPolicyNames, stackCountPolicyValues,
                           std::size(stackCountPolicyNames), state.policy.stackCount))
-        return invalid<EffectRuntimeState>("effect stackCountPolicy is invalid", "stackCountPolicy");
+        return eve::Result<EffectRuntimeState>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect stackCountPolicy is invalid",
+                                   "stackCountPolicy", {}, "effects.definition_runtime"));
     constexpr const char*    durationPolicyNames[]  = {"keep", "replace", "extend"};
     constexpr DurationPolicy durationPolicyValues[] = {DurationPolicy::Keep, DurationPolicy::Replace,
                                                        DurationPolicy::Extend};
     if (!readOptionalEnum(*object, "durationPolicy", durationPolicyNames, durationPolicyValues,
                           std::size(durationPolicyNames), state.policy.duration))
-        return invalid<EffectRuntimeState>("effect durationPolicy is invalid", "durationPolicy");
+        return eve::Result<EffectRuntimeState>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect durationPolicy is invalid",
+                                   "durationPolicy", {}, "effects.definition_runtime"));
     constexpr const char*     magnitudePolicyNames[]  = {"keep", "replace", "add", "max"};
     constexpr MagnitudePolicy magnitudePolicyValues[] = {MagnitudePolicy::Keep, MagnitudePolicy::Replace,
                                                          MagnitudePolicy::Add, MagnitudePolicy::Max};
     if (!readOptionalEnum(*object, "magnitudePolicy", magnitudePolicyNames, magnitudePolicyValues,
                           std::size(magnitudePolicyNames), state.policy.magnitude))
-        return invalid<EffectRuntimeState>("effect magnitudePolicy is invalid", "magnitudePolicy");
+        return eve::Result<EffectRuntimeState>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect magnitudePolicy is invalid",
+                                   "magnitudePolicy", {}, "effects.definition_runtime"));
     constexpr const char*    overflowPolicyNames[]  = {"reject", "clamp", "replace_oldest"};
     constexpr OverflowPolicy overflowPolicyValues[] = {OverflowPolicy::Reject, OverflowPolicy::Clamp,
                                                        OverflowPolicy::ReplaceOldest};
     if (!readOptionalEnum(*object, "overflowPolicy", overflowPolicyNames, overflowPolicyValues,
                           std::size(overflowPolicyNames), state.policy.overflow))
-        return invalid<EffectRuntimeState>("effect overflowPolicy is invalid", "overflowPolicy");
+        return eve::Result<EffectRuntimeState>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect overflowPolicy is invalid",
+                                   "overflowPolicy", {}, "effects.definition_runtime"));
     state.policy.maxStacks = state.maxStacks;
     state.remaining        = state.duration > 0.0 ? state.duration : -1.0;
 
     if (const auto* value = field(*object, "tags")) {
         const auto* array = value->getIf<eve::Value::Array>();
-        if (!array) return invalid<EffectRuntimeState>("effect tags must be an array", "tags");
+        if (!array)
+            return eve::Result<EffectRuntimeState>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect tags must be an array", "tags", {},
+                                       "effects.definition_runtime"));
         for (const auto& item : *array) {
             const auto* tag = item.getIf<std::string>();
             if (!tag || tag->empty())
-                return invalid<EffectRuntimeState>("effect tag must be a non-empty string", "tags");
+                return eve::Result<EffectRuntimeState>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "effect tag must be a non-empty string", "tags", {},
+                    "effects.definition_runtime"));
             state.tags.push_back(*tag);
         }
         std::sort(state.tags.begin(), state.tags.end());
@@ -179,13 +206,18 @@ eve::Result<EffectRuntimeState> parseState(const eve::definitions::Definition& d
     }
     if (const auto* value = field(*object, "payload")) {
         const auto* payload = value->getIf<eve::Value::Object>();
-        if (!payload) return invalid<EffectRuntimeState>("effect payload must be an object", "payload");
+        if (!payload)
+            return eve::Result<EffectRuntimeState>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect payload must be an object",
+                                       "payload", {}, "effects.definition_runtime"));
         for (const auto& [key, item] : *payload) {
             auto json = item.toJson();
             if (!json) return eve::Result<EffectRuntimeState>::failure(json.status());
             auto stored = state.payload.setJson(key, std::move(json).takeValue());
             if (!stored.ok())
-                return invalid<EffectRuntimeState>("effect payload member could not be stored", "payload." + key);
+                return eve::Result<EffectRuntimeState>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "effect payload member could not be stored", "payload." + key,
+                    {}, "effects.definition_runtime"));
         }
     }
     return eve::Result<EffectRuntimeState>::success(std::move(state));
@@ -205,8 +237,14 @@ eve::Result<EffectDefinitionRuntime> EffectDefinitionRuntime::create(eve::defini
                                                                      eve::DefinitionRef definition, std::string subject,
                                                                      std::string source, eve::PersistentId instanceId,
                                                                      eve::definition::ReloadPolicy policy) {
-    if (!definition.id().isValid()) return invalid<EffectDefinitionRuntime>("effect definition reference is invalid");
-    if (subject.empty()) return invalid<EffectDefinitionRuntime>("effect subject must not be empty", "subject");
+    if (!definition.id().isValid())
+        return eve::Result<EffectDefinitionRuntime>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect definition reference is invalid", {},
+                                   {}, "effects.definition_runtime"));
+    if (subject.empty())
+        return eve::Result<EffectDefinitionRuntime>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect subject must not be empty", "subject",
+                                   {}, "effects.definition_runtime"));
     auto handle = currentHandle(registry, definition);
     if (!handle) return eve::Result<EffectDefinitionRuntime>::failure(handle.status());
     auto state = resolveState(registry, definition, handle.value());
@@ -263,7 +301,9 @@ eve::Result<void> EffectDefinitionRuntime::applyTo(EffectInstance* effect) const
 
 eve::Result<eve::definition::ReloadOutcome> EffectDefinitionRuntime::reload(eve::definition::ReloadPolicy policy) {
     if (registry_ == nullptr)
-        return invalid<eve::definition::ReloadOutcome>("effect definition registry is not bound", "registry");
+        return eve::Result<eve::definition::ReloadOutcome>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect definition registry is not bound",
+                                   "registry", {}, "effects.definition_runtime"));
     auto next = currentHandle(*registry_, identity().definition);
     if (!next) return eve::Result<eve::definition::ReloadOutcome>::failure(next.status());
     auto defaults = resolveState(*registry_, identity().definition, next.value());
@@ -282,6 +322,150 @@ eve::Result<eve::definition::ReloadOutcome> EffectDefinitionRuntime::reload(eve:
     auto result = runtime_.reload(next.value(), policy, defaultState, std::move(rebuild));
     if (result.ok()) policy_ = policy;
     return result;
+}
+
+}  // namespace eve::effects
+
+// EffectTypes.cpp
+namespace eve::effects {
+// namespace
+
+void EffectPayload::setString(const std::string& key, const std::string& value) {
+    if (!key.empty()) values_[key] = eve::Value(value);
+}
+
+void EffectPayload::setNumber(const std::string& key, double value) {
+    if (key.empty() || !std::isfinite(value)) return;
+    values_[key] = eve::Value(value);
+}
+
+void EffectPayload::setBool(const std::string& key, bool value) {
+    if (!key.empty()) values_[key] = eve::Value(value);
+}
+
+void EffectPayload::setNull(const std::string& key) {
+    if (!key.empty()) values_[key] = eve::Value();
+}
+
+eve::Result<void> EffectPayload::setJson(const std::string& key, const std::string& json) {
+    if (key.empty())
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect payload key must not be empty"));
+    auto parsed = eve::Value::fromJson(json);
+    if (!parsed.ok()) return eve::Result<void>::failure(parsed.status());
+    values_[key] = std::move(parsed).takeValue();
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+bool EffectPayload::has(const std::string& key) const { return values_.contains(key); }
+
+eve::Result<void> EffectPayload::erase(const std::string& key) {
+    if (key.empty())
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect payload key must not be empty"));
+    const bool removed = values_.erase(key) != 0;
+    return eve::Result<void>::success(eve::Status::success(removed ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
+}
+
+std::string EffectPayload::getJson(const std::string& key) const {
+    const auto it = values_.find(key);
+    if (it == values_.end()) return {};
+    auto result = it->second.toJson();
+    if (!result) return {};
+    return std::move(result).takeValue();
+}
+
+std::string EffectPayload::toJson() const {
+    auto result = eve::Value(values_).toJson();
+    if (!result) return {};
+    return std::move(result).takeValue();
+}
+
+const eve::Value::Object& EffectPayload::object() const noexcept { return values_; }
+
+void EffectPayload::clear() { values_.clear(); }
+
+eve::Result<void> EffectDefinition::validate() const {
+    if (id.empty())
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect definition id must not be empty"));
+    if (!std::isfinite(duration))
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect definition duration must be finite"));
+    if (!std::isfinite(period) || period < 0.0)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "effect definition period must be finite and non-negative"));
+    if (!std::isfinite(magnitude))
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect definition magnitude must be finite"));
+    if (stackCount == 0)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "effect definition stack count must be positive"));
+    if (policy.stackCount == StackCountPolicy::Set && policy.maxStacks != 0 && stackCount > policy.maxStacks &&
+        policy.overflow == OverflowPolicy::Reject) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "effect definition stack count exceeds its maximum"));
+    }
+    return eve::Result<void>::success();
+}
+
+eve::Result<void> EffectInstance::addTag(const std::string& tag) {
+    if (tag.empty())
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effect tag must not be empty"));
+    const auto it = std::lower_bound(tags.begin(), tags.end(), tag);
+    if (it != tags.end() && *it == tag) return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
+    tags.insert(it, tag);
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> EffectInstance::removeTag(const std::string& tag) {
+    const auto it = std::lower_bound(tags.begin(), tags.end(), tag);
+    if (it == tags.end() || *it != tag) return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
+    tags.erase(it);
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+bool EffectInstance::hasTag(const std::string& tag) const { return std::binary_search(tags.begin(), tags.end(), tag); }
+
+int EffectInstance::tagCount() const { return static_cast<int>(tags.size()); }
+
+std::string EffectInstance::tagAt(int index) const {
+    return index < 0 || static_cast<std::size_t>(index) >= tags.size() ? std::string{}
+                                                                       : tags[static_cast<std::size_t>(index)];
+}
+
+std::string policyName(StackPolicy policy) {
+    switch (policy) {
+        case StackPolicy::Replace: return "replace";
+        case StackPolicy::Stack: return "stack";
+        case StackPolicy::Refresh: return "refresh";
+    }
+    return "unknown";
+}
+
+bool parsePolicy(const std::string& name, StackPolicy& policy) {
+    if (name == "replace")
+        policy = StackPolicy::Replace;
+    else if (name == "stack")
+        policy = StackPolicy::Stack;
+    else if (name == "refresh")
+        policy = StackPolicy::Refresh;
+    else
+        return false;
+    return true;
+}
+
+std::string eventKindName(EffectEventKind kind) {
+    switch (kind) {
+        case EffectEventKind::Applied: return "applied";
+        case EffectEventKind::Refreshed: return "refreshed";
+        case EffectEventKind::Stacked: return "stacked";
+        case EffectEventKind::Periodic: return "periodic";
+        case EffectEventKind::Expired: return "expired";
+        case EffectEventKind::Removed: return "removed";
+    }
+    return "unknown";
 }
 
 }  // namespace eve::effects

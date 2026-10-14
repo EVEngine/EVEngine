@@ -24,10 +24,11 @@
 namespace eve {
 
 /** @brief Render-surface host for the window module (provided by graphics). */
-class EVENGINE_API IWindowSurfaceHost {
+class EVENGINE_API_FOUNDATION_INLINE IWindowSurfaceHost {
 public:
     static constexpr const char* capabilityName = "IWindowSurfaceHost";
 
+    /** @brief I window surface host. */
     virtual ~IWindowSurfaceHost() = default;
 
     /** @brief Bind the render surface to a freshly created native window. */
@@ -40,10 +41,10 @@ public:
     /** @brief Native window is about to be destroyed; drop the surface/swapchain. */
     virtual void onNativeWindowDestroyed() = 0;
 
-    /** @brief Pause/resume presenting (mobile background/foreground). */
+    /** @brief Pause/resume presenting (mobile background/foreground, desktop minimize/restore). */
     virtual void setActive(bool active) = 0;
 
-    /** @brief Rebuild the render surface on the next frame (mobile foreground). */
+    /** @brief Rebuild the render surface on the next frame (mobile foreground; surface was destroyed). */
     virtual void requestSurfaceRecreate() = 0;
 };
 

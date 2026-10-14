@@ -44,6 +44,7 @@ struct ActionAudioWaveform {
 class IActionAudioWaveformProvider {
 public:
     static constexpr const char* capabilityName = "IActionAudioWaveformProvider";
+    /** @brief Releases IActionAudioWaveformProvider resources. */
     virtual ~IActionAudioWaveformProvider() = default;
 
     /**

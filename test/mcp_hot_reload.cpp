@@ -1,6 +1,10 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "common/Capability.h"
+#include "common/Module.h"
+#include "common/Runtime.h"
+#include "common/ServiceInterfaces.h"
 #include "ui/EditorHost.h"
 
 #include <Poco/JSON/Object.h>
@@ -12,6 +16,8 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace {
 
@@ -99,5 +105,55 @@ TEST_CASE("devtools.mcp.hostResourceHotReload") {
     CHECK(status->getValue<int>("failureCount") >= 2);
 
     host.stop();
+    std::filesystem::remove_all(root);
+}
+
+namespace {
+
+class MemoryFileSystem final : public eve::service::IFileSystem {
+public:
+    std::unordered_map<std::string, std::string> files;
+
+    bool readFile(const std::string& path, std::vector<uint8_t>& output) override {
+        const auto found = files.find(path);
+        if (found == files.end()) return false;
+        output.assign(found->second.begin(), found->second.end());
+        return true;
+    }
+    bool writeFile(const std::string&, const void*, size_t) override { return false; }
+    bool fileExists(const std::string& path) override { return files.find(path) != files.end(); }
+};
+
+}  // namespace
+
+TEST_CASE("devtools.mcp.hostScriptImport") {
+    auto& host = eve::ui::EditorHost::instance();
+    host.stop();
+
+    const auto root =
+        std::filesystem::temp_directory_path() /
+        ("eve_mcp_host_import_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    writeText(root / "mcp.nut",
+              "import { VALUE } from \"game:/lib/value.nut\"\n"
+              "imported_value <- VALUE + 1\n");
+
+    MemoryFileSystem filesystem;
+    filesystem.files["lib/value.nut"] = "export const VALUE = 41\n";
+    eve::cap::detail::clearAllRaw();
+    eve::cap::provide<eve::service::IFileSystem>(&filesystem);
+
+    eve::Runtime runtime(512, ssq::Libs::ALL);
+    eve::ModuleManager::expose(runtime);
+    host.start(runtime.vm(), root.string(), /*allowWindow=*/false);
+
+    CHECK(host.reloadResource("mcp.nut") == "ok");
+    CHECK(runtime.vm().get<int64_t>("imported_value") == int64_t(42));
+
+    filesystem.files["lib/value.nut"] = "export const VALUE = 7\n";
+    CHECK(host.reloadResource("mcp.nut") == "ok");
+    CHECK(runtime.vm().get<int64_t>("imported_value") == int64_t(8));
+
+    host.stop();
+    eve::cap::detail::clearAllRaw();
     std::filesystem::remove_all(root);
 }

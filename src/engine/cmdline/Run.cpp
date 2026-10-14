@@ -1,5 +1,7 @@
 #include "cmdline.h"
 #include "scripts.h"
+#include "common/Capability.h"
+#include "common/EditorHost.h"
 #include "common/Module.h"
 #include "common/Runtime.h"
 #include "common/ScriptCompiler.h"
@@ -488,6 +490,15 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
                     throw std::runtime_error(error);
                 return !runtime.scriptModules().reloadAffected(canonical).empty();
             });
+            // Editor apps (`config.editorHost=true`) start the same MVVM host
+            // `eve mcp` uses, then C++ pumps EditorHost::frame after load.nut.
+            eve.addFunc("startEditorHost", [&runtime, gameDir]() {
+                auto* host = eve::cap::query<eve::IEditorHost>();
+                if (!host) return std::string("error: editor host unavailable");
+                host->start(runtime.vm(), gameDir, /*allowWindow=*/true);
+                host->exposeScriptApi(runtime.vm());
+                return std::string("ok");
+            });
             // Scene-director authoring kit (src/scripts/scene_director.nut). Host
             // games load it via `compilestring(eve.sceneDirectorScript)()`; the
             // MCP tools auto-install it on demand.
@@ -518,6 +529,27 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
         std::fprintf(stderr, "[startup] load.nut begins at process clock %.1f ms\n",
                      (double) std::clock() * 1000.0 / (double) CLOCKS_PER_SEC);
         runtime.runSource(root, "load.nut");
+#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
+        bool editorHostDrive = false;
+        try {
+            editorHostDrive = runtime.root().find("config").toTable().find("editorHost").toBool();
+        } catch (...) {
+        }
+        if (editorHostDrive) {
+            auto* host = eve::cap::query<eve::IEditorHost>();
+            if (!host) {
+                std::cerr << "config.editorHost=true but the editor host is unavailable\n";
+                return 3;
+            }
+            if (!host->isWindowOpen()) {
+                std::cerr << "editor host did not open a window "
+                             "(eve_init should call eve.host.applyEditor)\n";
+                return 3;
+            }
+            while (!host->exitRequested() && host->isWindowOpen()) host->frame();
+            host->stop();
+        }
+#endif
 #if defined(__EMSCRIPTEN__)
         // Instead of a blocking while(running) Squirrel loop (which the browser
         // never composites), drive the global eve_frame() function from an

@@ -1,8 +1,11 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Result.h"
 #include "common/Snapshot.h"
+#include "common/UuidV7.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -34,8 +37,11 @@ public:
      * @param causationId Identifier of the command/event that caused it, if any.
      */
     TransactionContext(std::string transactionId, std::string correlationId = {}, std::string causationId = {})
+        /** @brief Transaction id. */
         : transactionId_(std::move(transactionId)),
+          /** @brief Correlation id. */
           correlationId_(std::move(correlationId)),
+          /** @brief Causation id. */
           causationId_(std::move(causationId)) {}
 
     /**
@@ -47,9 +53,13 @@ public:
      */
     explicit TransactionContext(eve::TransactionId transactionId, std::string correlationId = {},
                                 std::string causationId = {})
+        /** @brief Identity. */
         : identity_(transactionId),
+          /** @brief Transaction id. */
           transactionId_(transactionId.isNil() ? std::string{} : transactionId.format()),
+          /** @brief Correlation id. */
           correlationId_(std::move(correlationId)),
+          /** @brief Causation id. */
           causationId_(std::move(causationId)) {}
 
     /** @brief Canonical UUID-backed identity; nil only for the legacy string facade. */
@@ -118,6 +128,7 @@ struct TransactionReceipt {
  */
 class ITransactionParticipant {
 public:
+    /** @brief Releases ITransactionParticipant resources. */
     virtual ~ITransactionParticipant() = default;
 
     /**
@@ -165,7 +176,7 @@ public:
  * compensate in reverse order. The coordinator never substitutes rollback
  * for compensation and never hides a failed compensation.
  */
-class Coordinator {
+class EVENGINE_API_FOUNDATION Coordinator {
 public:
     /**
      * @brief Atomically execute borrowed participants for one context.
@@ -228,7 +239,7 @@ struct Event {
  * The plan records intent and validation results only. It deliberately does
  * not execute operations against other engine modules.
  */
-class Plan {
+class EVENGINE_API_FOUNDATION Plan {
 public:
     /** @brief Returns the stable ledger-local transaction identifier. */
     const std::string& id() const;
@@ -332,11 +343,22 @@ private:
 };
 
 /** @brief Deterministic owner and identifier allocator for transaction plans. */
-class Ledger {
+class EVENGINE_API_FOUNDATION Ledger {
 public:
     /** @brief Creates an empty ledger with an optional persistent identity. */
     explicit Ledger(eve::PersistentId instanceId = {}, eve::UuidEntropySource transactionEntropy = {},
                     eve::UuidClock transactionClock = {});
+
+    // std::vector<std::unique_ptr<Plan>> makes the implicit copy operations
+    // ill-formed (C2280) as soon as a class-level dllexport instantiates them;
+    // spell the four out so the export surface stays defined. Semantics unchanged:
+    // the ledger was never copyable in practice.
+    Ledger(const Ledger&)            = delete;
+    Ledger& operator=(const Ledger&) = delete;
+    /** @brief Ledger. */
+    Ledger(Ledger&&)                 = default;
+    /** @brief Operator =. */
+    Ledger& operator=(Ledger&&)      = default;
     /**
      * @brief Creates an open plan with a UUID-backed identity.
      * @param correlation Stable business-chain projection.
@@ -396,14 +418,27 @@ private:
 };
 
 /** @brief Returns the stable lowercase name of a transaction state. */
-std::string stateName(State state);
+EVENGINE_API_FOUNDATION std::string stateName(State state);
 
 /** @brief Script module factory for generic transaction ledgers. */
-class Transaction : public Module {
+class EVENGINE_API_FOUNDATION Transaction : public Module {
 public:
     Module_REG(Transaction);
+    /** @brief Transaction. */
     Transaction()           = default;
+    /** @brief Transaction. */
     ~Transaction() override = default;
+
+    // std::vector<std::unique_ptr<Ledger>> makes the implicit copy operations
+    // ill-formed (C2280) as soon as a class-level dllexport instantiates them;
+    // spell the four out so the export surface stays defined. Semantics unchanged:
+    // a module instance was never copyable in practice.
+    Transaction(const Transaction&)            = delete;
+    Transaction& operator=(const Transaction&) = delete;
+    /** @brief Transaction. */
+    Transaction(Transaction&&)                 = default;
+    /** @brief Operator =. */
+    Transaction& operator=(Transaction&&)      = default;
 
     /**
      * @brief Allocates a module-owned transaction ledger.

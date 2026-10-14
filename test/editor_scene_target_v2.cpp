@@ -11,7 +11,7 @@ using namespace eve::editor;
 
 namespace {
 
-EditorResult<TransactionReceipt> commitOperation(SceneTargetBase& target, LocalTransactionBackend& transactions,
+Result<TransactionReceipt> commitOperation(SceneTargetBase& target, LocalTransactionBackend& transactions,
                                                  const DomainOperation& operation, const std::string& id) {
     TransactionSpec specification;
     specification.id           = TransactionId(id);

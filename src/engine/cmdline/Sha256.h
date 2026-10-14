@@ -7,9 +7,12 @@
 
 namespace eve::cmd::sdk::detail {
 
+/** @brief Sha256 public API. */
 class Sha256 {
 public:
+    /** @brief Updates . */
     void        update(const char* data, std::size_t size);
+    /** @brief Finish. */
     std::string finish();
 
 private:
