@@ -26,6 +26,7 @@ set(EVE_TP_ORDER
     physfs
     lz4
     box2d
+    jolt
     box3d
     audio_codecs
     openal

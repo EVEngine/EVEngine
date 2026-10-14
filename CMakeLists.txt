@@ -213,6 +213,7 @@ option(EVENGINE_ANDROID_TEST_APP
 option(EVENGINE_IOS_TEST_APP
     "Build the unit_test suite as an iOS test app (eve executable replaced by the zeroerr runner)"
     OFF)
+option(EVENGINE_BUILD_JOLT "Enable the Jolt rigid-body provider" ON)
 option(EVENGINE_ENABLE_ASSERTS
     "Keep zeroerr ASSERT checks (parameter validation, invariants) in non-Debug builds.
      Debug builds always enable them; this option is for Release-style builds."

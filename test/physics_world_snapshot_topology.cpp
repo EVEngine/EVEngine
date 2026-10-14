@@ -93,6 +93,22 @@ TEST_CASE("physics.snapshot_v2_rebuilds_mesh_heightfield_and_joint_sources_from_
     CHECK_EQ(roundTrip.value().payload.find("joints")->arraySize(), std::size_t{1});
 }
 
+TEST_CASE("physics.snapshot_restored_world_keeps_live_step_driver") {
+    const auto            hash = topologyHash();
+    eve::physics::World3D world(0.f, -9.f, 0.f, false);
+    auto*                 original = world.newBody("dynamic", 0.f, 10.f, 0.f);
+    const int             id       = original->getId();
+    auto                  captured = world.snapshot(hash);
+    REQUIRE(captured.ok());
+    REQUIRE(world.restore(captured.value(), hash).ok());
+    auto* restored = world.findBodyById(id);
+    REQUIRE(restored != nullptr);
+    CHECK(!original->isValid());
+    world.update(0.02f);
+    CHECK(restored->getY() < 10.f);
+    CHECK(world.rigidBackendKind() == eve::physics::RigidBackend3D::Box3D);
+}
+
 // physics_world_snapshot_v2.cpp
 namespace {
 

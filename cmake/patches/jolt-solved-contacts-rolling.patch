@@ -1,0 +1,247 @@
+diff --git a/Jolt/Physics/Collision/ContactListener.h b/Jolt/Physics/Collision/ContactListener.h
+index 07dacf3a..df2e495c 100644
+--- a/Jolt/Physics/Collision/ContactListener.h
++++ b/Jolt/Physics/Collision/ContactListener.h
+@@ -35,11 +35,23 @@ public:
+ 	ContactPoints			mRelativeContactPointsOn2;			///< Contact points on the surface of shape 2 relative to mBaseOffset. If there's no penetration, this will be the same as mRelativeContactPointsOn1. If there is penetration they will be different.
+ };
+ 
++/// EVEngine extension: one real solver point. Borrowed only during OnContactSolved.
++/// Discrete position/velocity are sampled before velocity solving; CCD uses its impact point.
++struct ContactSolveResult
++{
++ RVec3 mPosition1, mPosition2;
++ Vec3 mNormal;
++ float mNormalImpulse = 0.0f, mNormalVelocity = 0.0f, mSeparation = 0.0f;
++ uint32 mPointIndex = 0;
++ bool mPersisted = false, mCCD = false;
++};
++
+ /// When a contact point is added or persisted, the callback gets a chance to override certain properties of the contact constraint.
+ /// The values are filled in with their defaults by the system so the callback doesn't need to modify anything, but it can if it wants to.
+ class ContactSettings
+ {
+ public:
++	float mCombinedRollingResistance = 0.0f; ///< Angular impulse limit per normal impulse, in metres; zero disables it.
+ 	float					mCombinedFriction;					///< Combined friction for the body pair (see: PhysicsSystem::SetCombineFriction)
+ 	float					mCombinedRestitution;				///< Combined restitution for the body pair (see: PhysicsSystem::SetCombineRestitution)
+ 	float					mInvMassScale1 = 1.0f;				///< Scale factor for the inverse mass of body 1 (0 = infinite mass, 1 = use original mass, 2 = body has half the mass). For the same contact pair, you should strive to keep the value the same over time.
+@@ -78,6 +90,13 @@ enum class ValidateResult
+ class ContactListener
+ {
+ public:
++	/// EVEngine extension. Called after velocity solving with actual accumulated normal lambda.
++	/// Same lock/thread rules as OnContactAdded; no body mutation or locking APIs permitted.
++	/// No callback for sensors or rejected contacts. May occur once per point per collision substep.
++	virtual void OnContactSolved([[maybe_unused]] const Body &inBody1, [[maybe_unused]] const SubShapeID &inSubShape1,
++	 [[maybe_unused]] const Body &inBody2, [[maybe_unused]] const SubShapeID &inSubShape2,
++	 [[maybe_unused]] const ContactSolveResult &inResult) { }
++
+ 	/// Ensure virtual destructor
+ 	virtual					~ContactListener() = default;
+ 
+diff --git a/Jolt/Physics/Constraints/ConstraintPart/RotationEulerConstraintPart.h b/Jolt/Physics/Constraints/ConstraintPart/RotationEulerConstraintPart.h
+index 387c0d97..6f51f76e 100644
+--- a/Jolt/Physics/Constraints/ConstraintPart/RotationEulerConstraintPart.h
++++ b/Jolt/Physics/Constraints/ConstraintPart/RotationEulerConstraintPart.h
+@@ -138,9 +138,15 @@ public:
+ 	/// Calculate properties used during the functions below
+ 	inline void					CalculateConstraintProperties(const Body &inBody1, Mat44Arg inRotation1, const Body &inBody2, Mat44Arg inRotation2)
+ 	{
+-		// Calculate properties used during constraint solving
+-		mInvI1 = inBody1.IsDynamic()? inBody1.GetMotionProperties()->GetInverseInertiaForRotation(inRotation1) : Mat44::sZero();
+-		mInvI2 = inBody2.IsDynamic()? inBody2.GetMotionProperties()->GetInverseInertiaForRotation(inRotation2) : Mat44::sZero();
++        CalculateConstraintPropertiesWithMassOverride(inBody1, inRotation1, 1.0f, inBody2, inRotation2, 1.0f);
++    }
++
++    /// EVEngine extension: rolling constraints obey contact inverse-inertia scales.
++    inline void CalculateConstraintPropertiesWithMassOverride(const Body &inBody1, Mat44Arg inRotation1, float inScale1,
++                                                              const Body &inBody2, Mat44Arg inRotation2, float inScale2)
++    {
++        mInvI1 = inBody1.IsDynamic()? inScale1 * inBody1.GetMotionProperties()->GetInverseInertiaForRotation(inRotation1) : Mat44::sZero();
++        mInvI2 = inBody2.IsDynamic()? inScale2 * inBody2.GetMotionProperties()->GetInverseInertiaForRotation(inRotation2) : Mat44::sZero();
+ 
+ 		// Calculate effective mass: K^-1 = (J M^-1 J^T)^-1
+ 		Mat44 inertia_sum = mInvI1 + mInvI2;
+@@ -191,6 +197,17 @@ public:
+ 		return ApplyVelocityStep(ioBody1, ioBody2, lambda);
+ 	}
+ 
++    /// EVEngine extension: accumulated angular friction impulse, projected onto a sphere.
++    inline bool SolveVelocityConstraintWithLimit(Body &ioBody1, Body &ioBody2, float inLimit)
++    {
++        Vec3 previous = mTotalLambda;
++        Vec3 next = previous + mEffectiveMass.Multiply3x3(ioBody1.GetAngularVelocity() - ioBody2.GetAngularVelocity());
++        float length_sq = next.LengthSq();
++        if (length_sq > Square(inLimit)) next *= inLimit / sqrt(length_sq);
++        mTotalLambda = next;
++        return ApplyVelocityStep(ioBody1, ioBody2, next - previous);
++    }
++
+ 	/// Iteratively update the position constraint. Makes sure C(...) = 0.
+ 	inline bool					SolvePositionConstraint(Body &ioBody1, Body &ioBody2, QuatArg inInvInitialOrientation, float inBaumgarte) const
+ 	{
+diff --git a/Jolt/Physics/Constraints/ContactConstraintManager.cpp b/Jolt/Physics/Constraints/ContactConstraintManager.cpp
+index 7de3a448..f9394ab6 100644
+--- a/Jolt/Physics/Constraints/ContactConstraintManager.cpp
++++ b/Jolt/Physics/Constraints/ContactConstraintManager.cpp
+@@ -92,6 +92,11 @@ JPH_INLINE void ContactConstraintManager::WorldContactPoint::TemplatedCalculateF
+ 		gravity_dt_dot_normal = 0.0f;
+ 	}
+ 	float normal_velocity = relative_velocity.Dot(inWorldSpaceNormal);
++    mSolveResult.mPosition1 = inWorldSpacePosition1;
++    mSolveResult.mPosition2 = inWorldSpacePosition2;
++    mSolveResult.mNormal = inWorldSpaceNormal;
++    mSolveResult.mNormalVelocity = normal_velocity;
++    mSolveResult.mSeparation = Vec3(inWorldSpacePosition2 - inWorldSpacePosition1).Dot(inWorldSpaceNormal);
+ 
+ 	// How much the shapes are penetrating (> 0 if penetrating, < 0 if separated)
+ 	float penetration = Vec3(inWorldSpacePosition1 - inWorldSpacePosition2).Dot(inWorldSpaceNormal);
+@@ -952,6 +957,10 @@ void ContactConstraintManager::GetContactsFromCache(ContactAllocator &ioContactA
+ 			constraint.mSortKey = input_hash;
+ 			world_space_normal.StoreFloat3(&constraint.mWorldSpaceNormal);
+ 			constraint.mCombinedFriction = settings.mCombinedFriction;
++			constraint.mPair = input_key;
++			constraint.mRollingResistance = settings.mCombinedRollingResistance;
++			if (constraint.mRollingResistance > 0.0f)
++			    constraint.mRollingConstraint.CalculateConstraintPropertiesWithMassOverride(*constraint.mBody1, Mat44::sRotation(constraint.mBody1->GetRotation()), settings.mInvInertiaScale1, *constraint.mBody2, Mat44::sRotation(constraint.mBody2->GetRotation()), settings.mInvInertiaScale2);
+ 			constraint.mInvMass1 = body1->GetMotionPropertiesUnchecked() != nullptr? settings.mInvMassScale1 * body1->GetMotionPropertiesUnchecked()->GetInverseMassUnchecked() : 0.0f;
+ 			constraint.mInvInertiaScale1 = settings.mInvInertiaScale1;
+ 			constraint.mInvMass2 = body2->GetMotionPropertiesUnchecked() != nullptr? settings.mInvMassScale2 * body2->GetMotionPropertiesUnchecked()->GetInverseMassUnchecked() : 0.0f;
+@@ -965,6 +974,7 @@ void ContactConstraintManager::GetContactsFromCache(ContactAllocator &ioContactA
+ 				wcp.mFrictionConstraint1.SetTotalLambda(ccp.mFrictionLambda[0]);
+ 				wcp.mFrictionConstraint2.SetTotalLambda(ccp.mFrictionLambda[1]);
+ 				wcp.mContactPoint = &ccp;
++				wcp.mSolveResult.mPersisted = true;
+ 			}
+ 
+ 			JPH_DET_LOG("GetContactsFromCache: id1: " << constraint.mBody1->GetID() << " id2: " << constraint.mBody2->GetID() << " key: " << constraint.mSortKey);
+@@ -1134,6 +1144,10 @@ bool ContactConstraintManager::TemplatedAddContactConstraint(ContactAllocator &i
+ 		constraint.mSortKey = key_hash;
+ 		inManifold.mWorldSpaceNormal.StoreFloat3(&constraint.mWorldSpaceNormal);
+ 		constraint.mCombinedFriction = settings.mCombinedFriction;
++		constraint.mPair = key;
++		constraint.mRollingResistance = settings.mCombinedRollingResistance;
++		if (constraint.mRollingResistance > 0.0f)
++		    constraint.mRollingConstraint.CalculateConstraintPropertiesWithMassOverride(*constraint.mBody1, Mat44::sRotation(constraint.mBody1->GetRotation()), settings.mInvInertiaScale1, *constraint.mBody2, Mat44::sRotation(constraint.mBody2->GetRotation()), settings.mInvInertiaScale2);
+ 		constraint.mInvMass1 = inBody1.GetMotionPropertiesUnchecked() != nullptr? settings.mInvMassScale1 * inBody1.GetMotionPropertiesUnchecked()->GetInverseMassUnchecked() : 0.0f;
+ 		constraint.mInvInertiaScale1 = settings.mInvInertiaScale1;
+ 		constraint.mInvMass2 = inBody2.GetMotionPropertiesUnchecked() != nullptr? settings.mInvMassScale2 * inBody2.GetMotionPropertiesUnchecked()->GetInverseMassUnchecked() : 0.0f;
+@@ -1215,6 +1229,8 @@ bool ContactConstraintManager::TemplatedAddContactConstraint(ContactAllocator &i
+ 				wcp.mFrictionConstraint2.SetTotalLambda(0.0f);
+ 			}
+ 
++			wcp.mSolveResult.mPersisted = lambda_set;
++
+ 			// Create new contact point
+ 			CachedContactPoint &cp = new_manifold->mContactPoints[i];
+ 			p1_ls.StoreFloat3(&cp.mPosition1);
+@@ -1637,6 +1653,14 @@ JPH_INLINE bool ContactConstraintManager::sSolveVelocityConstraint(ContactConstr
+ 			any_impulse_applied = true;
+ 	}
+ 
++    if (ioConstraint.mRollingResistance > 0.0f)
++    {
++        float normal_impulse = 0.0f;
++        for (const WorldContactPoint &point : ioConstraint.mContactPoints)
++            normal_impulse += point.mNonPenetrationConstraint.GetTotalLambda();
++        any_impulse_applied |= ioConstraint.mRollingConstraint.SolveVelocityConstraintWithLimit(
++            *ioConstraint.mBody1, *ioConstraint.mBody2, ioConstraint.mRollingResistance * normal_impulse);
++    }
+ 	return any_impulse_applied;
+ }
+ 
+@@ -1714,6 +1738,14 @@ void ContactConstraintManager::StoreAppliedImpulses(const uint32 *inConstraintId
+ 			wcp.mContactPoint->mNonPenetrationLambda = wcp.mNonPenetrationConstraint.GetTotalLambda();
+ 			wcp.mContactPoint->mFrictionLambda[0] = wcp.mFrictionConstraint1.GetTotalLambda();
+ 			wcp.mContactPoint->mFrictionLambda[1] = wcp.mFrictionConstraint2.GetTotalLambda();
++            if (mContactListener != nullptr)
++            {
++                ContactSolveResult result = wcp.mSolveResult;
++                result.mNormalImpulse = wcp.mNonPenetrationConstraint.GetTotalLambda();
++                result.mPointIndex = uint32(&wcp - constraint.mContactPoints.data());
++                mContactListener->OnContactSolved(*constraint.mBody1, constraint.mPair.GetSubShapeID1(),
++                                                 *constraint.mBody2, constraint.mPair.GetSubShapeID2(), result);
++            }
+ 		}
+ 	}
+ }
+diff --git a/Jolt/Physics/Constraints/ContactConstraintManager.h b/Jolt/Physics/Constraints/ContactConstraintManager.h
+index 0b5938b7..c8d1e78a 100644
+--- a/Jolt/Physics/Constraints/ContactConstraintManager.h
++++ b/Jolt/Physics/Constraints/ContactConstraintManager.h
+@@ -12,6 +12,7 @@
+ #include <Jolt/Physics/Collision/ManifoldBetweenTwoFaces.h>
+ #include <Jolt/Physics/Constraints/ConstraintPart/AxisConstraintPart.h>
+ #include <Jolt/Physics/Constraints/ConstraintPart/DualAxisConstraintPart.h>
++#include <Jolt/Physics/Constraints/ConstraintPart/RotationEulerConstraintPart.h>
+ #include <Jolt/Core/HashCombine.h>
+ #include <Jolt/Core/NonCopyable.h>
+ 
+@@ -429,6 +430,8 @@ private:
+ 		template <EMotionType Type1, EMotionType Type2>
+ 		JPH_INLINE void			TemplatedCalculateFrictionAndNonPenetrationConstraintProperties(float inDeltaTime, float inGravityDeltaTimeDotNormal, const Body &inBody1, const Body &inBody2, float inInvM1, float inInvM2, Mat44Arg inInvI1, Mat44Arg inInvI2, RVec3Arg inWorldSpacePosition1, RVec3Arg inWorldSpacePosition2, Vec3Arg inWorldSpaceNormal, Vec3Arg inWorldSpaceTangent1, Vec3Arg inWorldSpaceTangent2, const ContactSettings &inSettings, float inMinVelocityForRestitution);
+ 
++		ContactSolveResult mSolveResult;
++
+ 		/// The constraint parts
+ 		AxisConstraintPart		mNonPenetrationConstraint;
+ 		AxisConstraintPart		mFrictionConstraint1;
+@@ -465,6 +468,9 @@ private:
+ 
+ 		Body *					mBody1;
+ 		Body *					mBody2;
++		SubShapeIDPair mPair;
++		float mRollingResistance = 0.0f;
++		RotationEulerConstraintPart mRollingConstraint;
+ 		uint64					mSortKey;
+ 		Float3					mWorldSpaceNormal;
+ 		float					mCombinedFriction;
+diff --git a/Jolt/Physics/PhysicsSystem.cpp b/Jolt/Physics/PhysicsSystem.cpp
+index 7b4babfc..bc095654 100644
+--- a/Jolt/Physics/PhysicsSystem.cpp
++++ b/Jolt/Physics/PhysicsSystem.cpp
+@@ -2065,6 +2065,7 @@ void PhysicsSystem::JobFindCCDContacts(const PhysicsUpdateContext *ioContext, Ph
+ 			manifold.mBaseOffset = shape_cast.mCenterOfMassStart.GetTranslation();
+ 			ManifoldBetweenTwoFaces(cast_shape_result.mContactPointOn1, cast_shape_result.mContactPointOn2, cast_shape_result.mPenetrationAxis, mPhysicsSettings.mManifoldTolerance, cast_shape_result.mShape1Face, cast_shape_result.mShape2Face, manifold.mRelativeContactPointsOn1, manifold.mRelativeContactPointsOn2 JPH_IF_DEBUG_RENDERER(, manifold.mBaseOffset));
+ 			manifold.mSubShapeID1 = cast_shape_result.mSubShapeID1;
++			ccd_body.mSubShapeID1 = cast_shape_result.mSubShapeID1;
+ 			manifold.mSubShapeID2 = cast_shape_result.mSubShapeID2;
+ 			manifold.mPenetrationDepth = cast_shape_result.mPenetrationDepth;
+ 			manifold.mWorldSpaceNormal = ccd_body.mContactNormal;
+@@ -2217,6 +2218,23 @@ void PhysicsSystem::JobResolveCCDContacts(PhysicsUpdateContext *ioContext, Physi
+ 						AxisConstraintPart contact_constraint;
+ 						contact_constraint.CalculateConstraintPropertiesWithMassOverride(body1, inv_m1, contact_settings.mInvInertiaScale1, r1_plus_u, body2, inv_m2, contact_settings.mInvInertiaScale2, r2, ccd_body->mContactNormal, normal_velocity_bias);
+ 						contact_constraint.SolveVelocityConstraintWithMassOverride(body1, inv_m1, body2, inv_m2, ccd_body->mContactNormal, -FLT_MAX, FLT_MAX);
++                        if (contact_settings.mCombinedRollingResistance > 0.0f)
++                        {
++                            RotationEulerConstraintPart rolling;
++                            rolling.CalculateConstraintPropertiesWithMassOverride(body1, Mat44::sRotation(body1.GetRotation()), contact_settings.mInvInertiaScale1,
++                                body2, Mat44::sRotation(body2.GetRotation()), contact_settings.mInvInertiaScale2);
++                            rolling.SolveVelocityConstraintWithLimit(body1, body2, contact_settings.mCombinedRollingResistance * max(0.0f, contact_constraint.GetTotalLambda()));
++                        }
++                        if (ContactListener *listener = mContactManager.GetContactListener())
++                        {
++                            ContactSolveResult result;
++                            result.mPosition1 = result.mPosition2 = ccd_body->mContactPointOn2;
++                            result.mNormal = ccd_body->mContactNormal;
++                            result.mNormalImpulse = contact_constraint.GetTotalLambda();
++                            result.mNormalVelocity = normal_velocity;
++                            result.mCCD = true;
++                            listener->OnContactSolved(body1, ccd_body->mSubShapeID1, body2, ccd_body->mSubShapeID2, result);
++                        }
+ 
+ 						// Apply friction
+ 						if (contact_settings.mCombinedFriction > 0.0f)
+diff --git a/Jolt/Physics/PhysicsUpdateContext.h b/Jolt/Physics/PhysicsUpdateContext.h
+index c0987a2f..67d19cb7 100644
+--- a/Jolt/Physics/PhysicsUpdateContext.h
++++ b/Jolt/Physics/PhysicsUpdateContext.h
+@@ -105,6 +105,7 @@ public:
+ 			RVec3			mContactPointOn2;										///< World space contact point on body 2 of closest hit (only valid if mFractionPlusSlop < 1)
+ 			BodyID			mBodyID1;												///< Body 1 (the body that is performing collision detection)
+ 			BodyID			mBodyID2;												///< Body 2 (the body of the closest hit, only valid if mFractionPlusSlop < 1)
++			SubShapeID mSubShapeID1;
+ 			SubShapeID		mSubShapeID2;											///< Sub shape of body 2 that was hit (only valid if mFractionPlusSlop < 1)
+ 			float			mFraction = 1.0f;										///< Fraction at which the hit occurred
+ 			float			mFractionPlusSlop = 1.0f;								///< Fraction at which the hit occurred + extra delta to allow body to penetrate by mMaxPenetration
