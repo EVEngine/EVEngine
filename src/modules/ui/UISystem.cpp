@@ -503,7 +503,7 @@ void walkFlex(UIHost *host, UIHost::Tree *tree, UINode &flex) {
     // Own content box: an explicit size (set by the parent's arrange) wins;
     // otherwise use the available region (root flex inside a window/child).
     const ImVec2 avail = ImGui::GetContentRegionAvail();
-    const bool fillsContainer = flex.type == NodeType::Toolbar || flex.type == NodeType::StatusBar ||
+    const bool   fillsContainer = flex.type == NodeType::Toolbar || flex.type == NodeType::StatusBar ||
                                 flex.type == NodeType::TabBar || flex.type == NodeType::AppFrame;
     const float flexW = flex.sizeX > 0.f ? flex.sizeX : avail.x;
     const float flexH =
@@ -814,10 +814,8 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         if (hasDirectChildType(*tree, n, NodeType::MenuBar)) flags |= ImGuiWindowFlags_MenuBar;
         const bool desktopChrome =
             hasDirectChildType(*tree, n, NodeType::AppFrame) ||
-            ((hasDirectChildType(*tree, n, NodeType::SplitPane) ||
-              hasDirectChildType(*tree, n, NodeType::DockArea)) &&
-             (hasDirectChildType(*tree, n, NodeType::Toolbar) ||
-              hasDirectChildType(*tree, n, NodeType::StatusBar)));
+            ((hasDirectChildType(*tree, n, NodeType::SplitPane) || hasDirectChildType(*tree, n, NodeType::DockArea)) &&
+             (hasDirectChildType(*tree, n, NodeType::Toolbar) || hasDirectChildType(*tree, n, NodeType::StatusBar)));
         if (desktopChrome)
             flags |= ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
         float winW = 0.f;
@@ -1580,15 +1578,13 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
     }
     case NodeType::Tab: {
         const std::string label = nodeLabel(n, "Tab");
-        const Theme &theme = globalTheme();
-        const float *color = n.checked ? theme.tabActive : theme.tab;
+        const Theme      &theme = globalTheme();
+        const float      *color = n.checked ? theme.tabActive : theme.tab;
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(color[0], color[1], color[2], color[3]));
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered,
-                              ImVec4(theme.tabHovered[0], theme.tabHovered[1], theme.tabHovered[2],
-                                     theme.tabHovered[3]));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(theme.tabHovered[0], theme.tabHovered[1],
+                                                             theme.tabHovered[2], theme.tabHovered[3]));
         ImGui::PushStyleColor(ImGuiCol_ButtonActive,
-                              ImVec4(theme.tabActive[0], theme.tabActive[1], theme.tabActive[2],
-                                     theme.tabActive[3]));
+                              ImVec4(theme.tabActive[0], theme.tabActive[1], theme.tabActive[2], theme.tabActive[3]));
         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, theme.tabRounding * themeUiScale());
         if (ImGui::Button(label.c_str())) pushPending(host, n, "click", n.handlerClick);
         ImGui::PopStyleVar();
@@ -1597,16 +1593,15 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
     }
     case NodeType::TabBar: {
         const ThemeLayout &layout = globalTheme().layout;
-        const float scale = themeUiScale();
-        const float height = n.sizeY > 0.f ? n.sizeY : layout.tabBarHeight * scale;
-        const ImVec2 size(n.sizeX > 0.f ? n.sizeX : 0.f, height);
-        const std::string id = n.id.empty() ? "tabbar" : n.id;
+        const float        scale  = themeUiScale();
+        const float        height = n.sizeY > 0.f ? n.sizeY : layout.tabBarHeight * scale;
+        const ImVec2       size(n.sizeX > 0.f ? n.sizeX : 0.f, height);
+        const std::string  id = n.id.empty() ? "tabbar" : n.id;
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,
                             ImVec2(layout.barPaddingX * scale, layout.barPaddingY * scale));
         ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg));
         if (ImGui::BeginChild(id.c_str(), size, false,
-                              ImGuiWindowFlags_AlwaysUseWindowPadding |
-                                  ImGuiWindowFlags_NoScrollbar)) {
+                              ImGuiWindowFlags_AlwaysUseWindowPadding | ImGuiWindowFlags_NoScrollbar)) {
             walkFlex(host, tree, n);
         }
         ImGui::EndChild();
@@ -1615,15 +1610,15 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         break;
     }
     case NodeType::TabContainer: {
-        const ImVec2 avail = ImGui::GetContentRegionAvail();
-        const ImVec2 size(n.sizeX > 0.f ? n.sizeX : avail.x, n.sizeY > 0.f ? n.sizeY : avail.y);
+        const ImVec2      avail = ImGui::GetContentRegionAvail();
+        const ImVec2      size(n.sizeX > 0.f ? n.sizeX : avail.x, n.sizeY > 0.f ? n.sizeY : avail.y);
         const std::string id = n.id.empty() ? "tabcontainer" : n.id;
         ImGui::PushID(id.c_str());
         ImGui::BeginGroup();
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
         if (ImGui::BeginChild("tabcontainer-body", size, false,
                               ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse)) {
-            int tabBarIndex = -1;
+            int              tabBarIndex = -1;
             std::vector<int> pageIndices;
             for (int c = n.firstChild; c >= 0; c = tree->nodes[size_t(c)].nextSibling) {
                 UINode &child = tree->nodes[size_t(c)];
@@ -1635,7 +1630,7 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             }
             if (n.valueText.empty() && !pageIndices.empty()) {
                 const UINode &first = tree->nodes[size_t(pageIndices.front())];
-                n.valueText = first.id.empty() ? first.key : first.id;
+                n.valueText         = first.id.empty() ? first.key : first.id;
             }
             if (tabBarIndex >= 0) {
                 UINode &bar = tree->nodes[size_t(tabBarIndex)];
@@ -1656,23 +1651,21 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
                         if (tabNode.valueText.empty() || tabNode.valueText == n.valueText) continue;
                         n.valueText = tabNode.valueText;
                         pushPending(host, n, "text", n.handlerText, false, 0.f, n.valueText);
-                        for (int u = bar.firstChild; u >= 0;
-                             u = tree->nodes[size_t(u)].nextSibling) {
+                        for (int u = bar.firstChild; u >= 0; u = tree->nodes[size_t(u)].nextSibling) {
                             UINode &sibling = tree->nodes[size_t(u)];
-                            if (sibling.type == NodeType::Tab)
-                                sibling.checked = sibling.valueText == n.valueText;
+                            if (sibling.type == NodeType::Tab) sibling.checked = sibling.valueText == n.valueText;
                         }
                     }
                 }
             }
             for (int pageIndex : pageIndices) {
-                UINode &page = tree->nodes[size_t(pageIndex)];
+                UINode           &page   = tree->nodes[size_t(pageIndex)];
                 const std::string pageId = page.id.empty() ? page.key : page.id;
-                page.visible = !n.valueText.empty() && pageId == n.valueText;
+                page.visible             = !n.valueText.empty() && pageId == n.valueText;
                 if (!page.visible) continue;
                 const ImVec2 pageAvail = ImGui::GetContentRegionAvail();
-                page.sizeX = pageAvail.x;
-                page.sizeY = pageAvail.y;
+                page.sizeX             = pageAvail.x;
+                page.sizeY             = pageAvail.y;
                 walkNode(host, tree, pageIndex);
             }
         }
@@ -1684,23 +1677,22 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
     }
     case NodeType::PanelFrame: {
         const ThemeLayout &layout = globalTheme().layout;
-        const float scale = themeUiScale();
-        const ImVec2 avail = ImGui::GetContentRegionAvail();
-        const ImVec2 size(n.sizeX > 0.f ? n.sizeX : avail.x, n.sizeY > 0.f ? n.sizeY : avail.y);
-        const std::string id = n.id.empty() ? "panelframe" : n.id;
-        const float headerH = layout.panelHeaderHeight * scale;
+        const float        scale  = themeUiScale();
+        const ImVec2       avail  = ImGui::GetContentRegionAvail();
+        const ImVec2       size(n.sizeX > 0.f ? n.sizeX : avail.x, n.sizeY > 0.f ? n.sizeY : avail.y);
+        const std::string  id      = n.id.empty() ? "panelframe" : n.id;
+        const float        headerH = layout.panelHeaderHeight * scale;
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,
                             ImVec2(layout.panelPaddingX * scale, layout.panelPaddingY * scale));
         ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_ChildBg));
         if (ImGui::BeginChild(id.c_str(), size, true, ImGuiWindowFlags_AlwaysUseWindowPadding)) {
             if (!n.text.empty()) {
-                const ImVec2 pos = ImGui::GetCursorScreenPos();
-                const float width = ImGui::GetContentRegionAvail().x;
-                ImGui::GetWindowDrawList()->AddRectFilled(
-                    pos, ImVec2(pos.x + width, pos.y + headerH),
-                    ImGui::GetColorU32(ImGuiCol_MenuBarBg));
-                ImGui::SetCursorScreenPos(ImVec2(pos.x + layout.barPaddingX * scale,
-                                                 pos.y + (headerH - ImGui::GetTextLineHeight()) * 0.5f));
+                const ImVec2 pos   = ImGui::GetCursorScreenPos();
+                const float  width = ImGui::GetContentRegionAvail().x;
+                ImGui::GetWindowDrawList()->AddRectFilled(pos, ImVec2(pos.x + width, pos.y + headerH),
+                                                          ImGui::GetColorU32(ImGuiCol_MenuBarBg));
+                ImGui::SetCursorScreenPos(
+                    ImVec2(pos.x + layout.barPaddingX * scale, pos.y + (headerH - ImGui::GetTextLineHeight()) * 0.5f));
                 ImGui::TextUnformatted(n.text.c_str());
                 ImGui::SetCursorScreenPos(ImVec2(pos.x, pos.y + headerH + layout.sectionSpacingY * scale));
             }
@@ -1713,24 +1705,22 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
     }
     case NodeType::DockArea: {
         const ThemeLayout &layout = globalTheme().layout;
-        const float scale = themeUiScale();
-        const ImVec2 avail = ImGui::GetContentRegionAvail();
-        const ImVec2 size(n.sizeX > 0.f ? n.sizeX : avail.x, n.sizeY > 0.f ? n.sizeY : avail.y);
-        const std::string id = n.id.empty() ? "dockarea" : n.id;
+        const float        scale  = themeUiScale();
+        const ImVec2       avail  = ImGui::GetContentRegionAvail();
+        const ImVec2       size(n.sizeX > 0.f ? n.sizeX : avail.x, n.sizeY > 0.f ? n.sizeY : avail.y);
+        const std::string  id = n.id.empty() ? "dockarea" : n.id;
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,
                             ImVec2(layout.panelPaddingX * scale, layout.panelPaddingY * scale));
         ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::GetStyleColorVec4(ImGuiCol_ChildBg));
         if (ImGui::BeginChild(id.c_str(), size, false,
-                              ImGuiWindowFlags_AlwaysUseWindowPadding |
-                                  ImGuiWindowFlags_NoScrollbar)) {
+                              ImGuiWindowFlags_AlwaysUseWindowPadding | ImGuiWindowFlags_NoScrollbar)) {
             if (n.firstChild >= 0) {
                 // Single growing child fills the dock slot.
-                if (n.firstChild >= 0 &&
-                    tree->nodes[size_t(n.firstChild)].nextSibling < 0) {
-                    UINode &child = tree->nodes[size_t(n.firstChild)];
+                if (n.firstChild >= 0 && tree->nodes[size_t(n.firstChild)].nextSibling < 0) {
+                    UINode      &child      = tree->nodes[size_t(n.firstChild)];
                     const ImVec2 childAvail = ImGui::GetContentRegionAvail();
-                    child.sizeX = childAvail.x;
-                    child.sizeY = childAvail.y;
+                    child.sizeX             = childAvail.x;
+                    child.sizeY             = childAvail.y;
                 }
                 walkSiblings(host, tree, n.firstChild);
             }
@@ -1742,9 +1732,9 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
     }
     case NodeType::AppFrame: {
         const ImVec2 avail = ImGui::GetContentRegionAvail();
-        n.sizeX = n.sizeX > 0.f ? n.sizeX : avail.x;
-        n.sizeY = n.sizeY > 0.f ? n.sizeY : avail.y;
-        n.flexDirection = FlexDirection::Column;
+        n.sizeX            = n.sizeX > 0.f ? n.sizeX : avail.x;
+        n.sizeY            = n.sizeY > 0.f ? n.sizeY : avail.y;
+        n.flexDirection    = FlexDirection::Column;
         walkFlex(host, tree, n);
         break;
     }

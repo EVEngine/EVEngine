@@ -368,7 +368,7 @@ MSVC_COMPILER_WRAPPER   := $(abspath cmake/msvc-cl.cmd)
 # reconfigure-if-args-changed, so switching it reconfigures).
 WIN32_CMAKE_ARGS        = -G Ninja -DCMAKE_BUILD_TYPE=Release -DEVENGINE_MODULE_LINKAGE=OBJECT -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(CMAKE_EXTRA_ARGS) -B build/win32 -S .
 WIN32_DEBUG_CMAKE_ARGS  = -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_ARGS) -B build/win32-debug -S .
-LINUX_CMAKE_ARGS        = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=linux $(CMAKE_EXTRA_ARGS) -B build/linux -S .
+LINUX_CMAKE_ARGS        = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=linux -DEVENGINE_MODULE_LINKAGE=OBJECT $(CMAKE_EXTRA_ARGS) -B build/linux -S .
 LINUX_DEBUG_CMAKE_ARGS  = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_ARGS) -B build/linux-debug -S .
 MACOSX_CMAKE_ARGS       = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=macosx $(CMAKE_EXTRA_ARGS) -B build/macosx -S .
 MACOSX_DEBUG_CMAKE_ARGS = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=macosx $(CMAKE_EXTRA_ARGS) -B build/macosx-debug -S .
@@ -822,7 +822,7 @@ reinstall/third-party/ios-debug:
 # In Android test-app mode the runner lives in test/libmain.so (zeroerr suite);
 # otherwise it is the engine's src/engine/libmain.so.
 sync/android-libs:
-	cmake -DBUILD_DIR="$(BUILD_DIR)" -DJNI_LIBS="$(JNI_LIBS)" -DANDROID_NDK="$(ANDROID_NDK)" -DANDROID_ABI="$(ANDROID_ABI)" -P cmake/sync_android_libs.cmake
+	cmake -DBUILD_DIR="$(BUILD_DIR)" -DJNI_LIBS="$(JNI_LIBS)" -DANDROID_ABI="$(ANDROID_ABI)" -DANDROID_NDK="$(ANDROID_NDK)" -P cmake/sync_android_libs.cmake
 
 # Populate APK assets/game from a source tree (do not hand-edit assets/game).
 #   make sync/android-assets                 # default: demo shell

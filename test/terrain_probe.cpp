@@ -194,8 +194,8 @@ TEST_CASE("procgen.probe.multiTileAddReplaceRemoveAndAtomicFailure") {
 #include <algorithm>
 #include <simplesquirrel/simplesquirrel.hpp>
 
-#include "procgen/PointSet.h"
 #include "common/Value.h"
+#include "procgen/PointSet.h"
 #include "procgen/heightmap/Heightmap.h"
 #include "procgen/heightmap/TerrainBiomePreset.h"
 #include "procgen/heightmap/TerrainDetailLayer.h"
@@ -211,20 +211,20 @@ using namespace eve::procgen;
 namespace {
 TerrainWorldCreationSettings worldSettings() {
     TerrainWorldCreationSettings settings;
-    settings.tilesX = 2;
-    settings.tilesZ = 1;
-    settings.tileSize = 2;
-    settings.heightmapResolution = 3;
+    settings.tilesX                   = 2;
+    settings.tilesZ                   = 1;
+    settings.tileSize                 = 2;
+    settings.heightmapResolution      = 3;
     settings.controlTextureResolution = settings.detailResolution = 2;
     settings.treeResolution = settings.objectResolution = 2;
-    settings.splatLayers = 2;
+    settings.splatLayers                                = 2;
     return settings;
 }
 TerrainStampSettings bounds() {
     TerrainStampSettings value;
     value.centerX = value.centerZ = 0;
-    value.width = 4;
-    value.depth = 2;
+    value.width                   = 4;
+    value.depth                   = 2;
     return value;
 }
 Heightmap fitness() {
@@ -237,19 +237,19 @@ TerrainTreePlacementSettings trees() {
     value.spacing = value.spawnDensity = 1;
     value.jitterPercent = value.failureRate = value.minimumFitness = 0;
     value.minimumWidth = value.maximumWidth = value.minimumHeight = value.maximumHeight = 1;
-    value.asset = "oak";
-    value.namespaceId = 1201;
-    value.maxPoints = 100;
+    value.asset                                                                         = "oak";
+    value.namespaceId                                                                   = 1201;
+    value.maxPoints                                                                     = 100;
     return value;
 }
 TerrainObjectPlacementSettings objects() {
     TerrainObjectPlacementSettings value;
     value.spacing = value.spawnDensity = 1;
     value.jitterPercent = value.failureRate = value.minimumFitness = value.minimumInstanceFitness = 0;
-    value.boundsRadius = 0.2F;
-    value.prototype = "rocks";
-    value.namespaceId = 1301;
-    value.maxPoints = 100;
+    value.boundsRadius                                                                            = 0.2F;
+    value.prototype                                                                               = "rocks";
+    value.namespaceId                                                                             = 1301;
+    value.maxPoints                                                                               = 100;
     TerrainObjectInstanceSettings child;
     child.asset = "rock";
     REQUIRE(value.addInstance(child).ok());
@@ -260,24 +260,24 @@ TerrainObjectPlacementSettings objects() {
 TEST_CASE("procgen.spawnPlan.mixedRulesPublishAndUndoAsOneWorldOperation") {
     TerrainWorldWorkspace world;
     REQUIRE(world.create(worldSettings()).ok());
-    auto map = fitness();
-    auto operation = bounds();
+    auto                  map       = fitness();
+    auto                  operation = bounds();
     TerrainDetailSettings detail;
     detail.minimumFitness = detail.fadeStart = 0;
-    detail.density = 3;
-    detail.namespaceId = 1101;
-    auto tree = trees();
-    auto object = objects();
+    detail.density                           = 3;
+    detail.namespaceId                       = 1101;
+    auto                          tree       = trees();
+    auto                          object     = objects();
     TerrainProbePlacementSettings probe;
-    probe.name = "reflection-grid";
-    probe.spacing = 1;
+    probe.name          = "reflection-grid";
+    probe.spacing       = 1;
     probe.jitterPercent = probe.minimumFitness = 0;
-    probe.namespaceId = 1401;
-    probe.maxPoints = 100;
+    probe.namespaceId                          = 1401;
+    probe.maxPoints                            = 100;
     Heightmap modifier(1, 1), one(1, 1);
     modifier.data()[0] = one.data()[0] = 1;
-    auto modifierOperation = operation;
-    modifierOperation.operation = TerrainStampOperation::Set;
+    auto modifierOperation             = operation;
+    modifierOperation.operation        = TerrainStampOperation::Set;
     TerrainSpawnPlan plan;
     REQUIRE(plan.addModifierStamp("modifier-guid", modifier, modifierOperation, one, one).ok());
     REQUIRE(plan.addSplat("texture-guid", map, 1, operation).ok());
@@ -295,10 +295,10 @@ TEST_CASE("procgen.spawnPlan.mixedRulesPublishAndUndoAsOneWorldOperation") {
     tree.namespaceId = 0;
     REQUIRE(world.spawn(roundTrip).ok());
     CHECK(world.getOperationCount() == 1);
-    TerrainSplatmap splatOut;
+    TerrainSplatmap    splatOut;
     TerrainDetailLayer detailOut;
-    PointSet treeOut, objectOut, probeOut;
-    Heightmap heightsOut;
+    PointSet           treeOut, objectOut, probeOut;
+    Heightmap          heightsOut;
     REQUIRE(world.copyHeightmap(0, heightsOut).ok());
     CHECK(std::any_of(heightsOut.data().begin(), heightsOut.data().end(), [](float value) { return value > 0; }));
     REQUIRE(world.copySplatmap(0, splatOut).ok());
@@ -328,14 +328,14 @@ TEST_CASE("procgen.spawnPlan.mixedRulesPublishAndUndoAsOneWorldOperation") {
 TEST_CASE("procgen.spawnPlan.failureAndDisabledRulesAreAtomic") {
     TerrainWorldWorkspace world;
     REQUIRE(world.create(worldSettings()).ok());
-    auto map = fitness();
-    auto operation = bounds();
+    auto                  map       = fitness();
+    auto                  operation = bounds();
     TerrainDetailSettings detail;
     detail.minimumFitness = detail.fadeStart = 0;
-    detail.density = 4;
-    detail.namespaceId = 2101;
-    auto invalidObject = objects();
-    invalidObject.namespaceId = 0;
+    detail.density                           = 4;
+    detail.namespaceId                       = 2101;
+    auto invalidObject                       = objects();
+    invalidObject.namespaceId                = 0;
     TerrainSpawnPlan failing;
     REQUIRE(failing.addDetail("detail", map, detail, operation, TerrainDetailMode::Add, 2).ok());
     REQUIRE(failing.addObjects("bad-object", map, invalidObject, operation, TerrainObjectOperationMode::Add).ok());
@@ -354,11 +354,11 @@ TEST_CASE("procgen.spawnPlan.failureAndDisabledRulesAreAtomic") {
 
 TEST_CASE("procgen.spawnPlan.executesOwnedPlanThroughRealVm") {
     TerrainWorldWorkspace world;
-    Heightmap map = fitness();
-    auto settings = worldSettings();
+    Heightmap             map      = fitness();
+    auto                  settings = worldSettings();
     REQUIRE(world.create(settings).ok());
     ssq::VM vm(1024);
-    auto table = vm.addTable("eve");
+    auto    table = vm.addTable("eve");
     exposeHeightmap(table);
     vm.addFunc("world", [&]() { return &world; });
     vm.addFunc("fitness", [&]() { return &map; });
@@ -386,12 +386,12 @@ TEST_CASE("procgen.spawnPlan.executesOwnedPlanThroughRealVm") {
 }
 
 TEST_CASE("procgen.spawnPlan.stagedWorldSpawnPublishesOnceAndFailureRollsBack") {
-    auto map = fitness();
-    auto operation = bounds();
+    auto                  map       = fitness();
+    auto                  operation = bounds();
     TerrainDetailSettings detail;
     detail.minimumFitness = detail.fadeStart = 0;
-    detail.density = 7;
-    detail.namespaceId = 6101;
+    detail.density                           = 7;
+    detail.namespaceId                       = 6101;
     TerrainSpawnPlan plan;
     REQUIRE(plan.addSplat("texture", map, 1, operation).ok());
     REQUIRE(plan.addDetail("detail", map, detail, operation, TerrainDetailMode::Replace, 31).ok());
@@ -402,7 +402,7 @@ TEST_CASE("procgen.spawnPlan.stagedWorldSpawnPublishesOnceAndFailureRollsBack") 
     REQUIRE(pending.ok());
     CHECK(pending.value() == TerrainWorldRunStatus::Pending);
     CHECK(world.getSpawnCompletedRules() == 1);
-    TerrainSplatmap splat;
+    TerrainSplatmap    splat;
     TerrainDetailLayer details;
     REQUIRE(world.copySplatmap(0, splat).ok());
     REQUIRE(world.copyDetail(0, details).ok());
@@ -423,7 +423,7 @@ TEST_CASE("procgen.spawnPlan.stagedWorldSpawnPublishesOnceAndFailureRollsBack") 
     CHECK(splat.sample(1, 0, 0).value() == 1.0F);
     CHECK(details.sampleResource(6101, 0, 0).value() == 7);
 
-    auto invalidObject = objects();
+    auto invalidObject        = objects();
     invalidObject.namespaceId = 0;
     TerrainSpawnPlan failing;
     REQUIRE(failing.addSplat("candidate-texture", map, 1, operation).ok());
@@ -439,12 +439,12 @@ TEST_CASE("procgen.spawnPlan.stagedWorldSpawnPublishesOnceAndFailureRollsBack") 
 }
 
 TEST_CASE("procgen.biomePreset.activationScopesOwnershipAndStableComposition") {
-    auto map = fitness();
-    auto operation = bounds();
+    auto                  map       = fitness();
+    auto                  operation = bounds();
     TerrainDetailSettings detail;
     detail.minimumFitness = detail.fadeStart = 0;
-    detail.density = 5;
-    detail.namespaceId = 5101;
+    detail.density                           = 5;
+    detail.namespaceId                       = 5101;
     TerrainSpawnPlan ground, canopy;
     REQUIRE(ground.addSplat("shared", map, 1, operation).ok());
     REQUIRE(ground.addDetail("detail", map, detail, operation, TerrainDetailMode::Replace, 23).ok());
@@ -456,7 +456,7 @@ TEST_CASE("procgen.biomePreset.activationScopesOwnershipAndStableComposition") {
     REQUIRE(preset.getAutoAssignResources("ground").ok());
     CHECK(preset.getAutoAssignResources("ground").value());
     CHECK(!preset.getAutoAssignResources("canopy").value());
-    auto biome = preset.compileForBiome();
+    auto biome   = preset.compileForBiome();
     auto stamper = preset.compileForStamper();
     REQUIRE(biome.ok());
     REQUIRE(stamper.ok());
@@ -468,9 +468,9 @@ TEST_CASE("procgen.biomePreset.activationScopesOwnershipAndStableComposition") {
     TerrainWorldWorkspace world;
     REQUIRE(world.create(worldSettings()).ok());
     REQUIRE(world.spawnBiome(preset).ok());
-    TerrainSplatmap splat;
+    TerrainSplatmap    splat;
     TerrainDetailLayer details;
-    PointSet treePoints;
+    PointSet           treePoints;
     REQUIRE(world.copySplatmap(0, splat).ok());
     REQUIRE(world.copyDetail(0, details).ok());
     REQUIRE(world.copyTrees(0, treePoints).ok());
@@ -487,8 +487,8 @@ TEST_CASE("procgen.biomePreset.activationScopesOwnershipAndStableComposition") {
 }
 
 TEST_CASE("procgen.biomePreset.strictSnapshotMigrationAndAtomicFailure") {
-    auto map = fitness();
-    auto operation = bounds();
+    auto             map       = fitness();
+    auto             operation = bounds();
     TerrainSpawnPlan plan;
     REQUIRE(plan.addTrees("tree", map, trees(), operation, TerrainTreeOperationMode::Add).ok());
     TerrainBiomePreset source;
@@ -499,7 +499,10 @@ TEST_CASE("procgen.biomePreset.strictSnapshotMigrationAndAtomicFailure") {
     REQUIRE(restored.restoreJson(json.value()).ok());
     CHECK(restored.snapshotJson().value() == json.value());
     const auto before = restored.snapshotJson().value();
-    CHECK(!restored.restoreJson("{\"schema\":\"eve.procgen.terrain-biome-preset\",\"version\":1,\"entries\":[],\"extra\":1}").ok());
+    CHECK(
+        !restored
+             .restoreJson("{\"schema\":\"eve.procgen.terrain-biome-preset\",\"version\":1,\"entries\":[],\"extra\":1}")
+             .ok());
     CHECK(restored.snapshotJson().value() == before);
     CHECK(!restored.restoreJson("{broken").ok());
     CHECK(restored.snapshotJson().value() == before);
@@ -522,12 +525,12 @@ TEST_CASE("procgen.biomePreset.strictSnapshotMigrationAndAtomicFailure") {
 }
 
 TEST_CASE("procgen.spawnPlan.strictSnapshotRoundTripMigrationAndAtomicFailure") {
-    auto map = fitness();
-    auto operation = bounds();
+    auto                  map       = fitness();
+    auto                  operation = bounds();
     TerrainDetailSettings detail;
     detail.minimumFitness = detail.fadeStart = 0;
-    detail.density = 6;
-    detail.namespaceId = 4101;
+    detail.density                           = 6;
+    detail.namespaceId                       = 4101;
     TerrainSpawnPlan source;
     REQUIRE(source.addDetail("stable-rule", map, detail, operation, TerrainDetailMode::Add, -17).ok());
     REQUIRE(source.setEnabled("stable-rule", false).ok());
@@ -539,7 +542,10 @@ TEST_CASE("procgen.spawnPlan.strictSnapshotRoundTripMigrationAndAtomicFailure") 
     CHECK(restored.snapshotJson().value() == json.value());
 
     const auto before = restored.snapshotJson().value();
-    CHECK(!restored.restoreJson("{\"schema\":\"eve.procgen.terrain-spawn-plan\",\"version\":1,\"payload\":\"00\",\"extra\":1}").ok());
+    CHECK(!restored
+               .restoreJson(
+                   "{\"schema\":\"eve.procgen.terrain-spawn-plan\",\"version\":1,\"payload\":\"00\",\"extra\":1}")
+               .ok());
     CHECK(restored.snapshotJson().value() == before);
     CHECK(!restored.restoreJson("{broken").ok());
     CHECK(restored.snapshotJson().value() == before);
@@ -550,7 +556,7 @@ TEST_CASE("procgen.spawnPlan.strictSnapshotRoundTripMigrationAndAtomicFailure") 
     auto* payload = legacyValue.value().find("payload");
     REQUIRE(payload != nullptr);
     REQUIRE(payload->isString());
-    std::string legacyPayload = payload->asString();
+    std::string       legacyPayload     = payload->asString();
     const std::size_t enabledByteOffset = 4 + 1 + 4 + std::string("stable-rule").size();
     // Strip the two v4 stamp fields before converting this 5x3 fixture to v0.
     const std::size_t rasterBytes   = 8 + map.data().size() * sizeof(float);

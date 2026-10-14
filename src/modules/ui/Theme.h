@@ -29,7 +29,7 @@ struct ThemeLayout {
     float sectionSpacingY = 6.f;
     float searchMinWidth = 120.f;
     float searchIconGap = 7.f;
-    float tabBarHeight = 32.f;
+    float tabBarHeight      = 32.f;
     float panelHeaderHeight = 28.f;
 };
 

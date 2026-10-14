@@ -976,11 +976,11 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
             // an unattended loop keeps polling instead of giving up.
             const bool              retryable = !status.readbackEnabled;
             const auto*             diag      = captured.status().primaryDiagnostic();
-            Poco::JSON::Object::Ptr o         = mcpFailureObject(
-                retryable ? "no-presented-frame" : "capture-failed",
-                retryable ? "Wait one rendered frame and call eve_screenshot again"
-                          : "Check eve_render_status / graphics readiness, then retry",
-                retryable, {"eve_render_status", "eve_screenshot"});
+            Poco::JSON::Object::Ptr o =
+                mcpFailureObject(retryable ? "no-presented-frame" : "capture-failed",
+                                 retryable ? "Wait one rendered frame and call eve_screenshot again"
+                                           : "Check eve_render_status / graphics readiness, then retry",
+                                 retryable, {"eve_render_status", "eve_screenshot"});
             o->set("reason", retryable ? "no-presented-frame" : "capture-failed");
             o->set("readbackEnabled", status.readbackEnabled);
             o->set("message", diag ? diag->message() : captured.status().describe());
@@ -1569,7 +1569,7 @@ std::string handleInitialize(McpServer& mcp, const std::string& idJson, Poco::JS
     const std::string resultJson =
         std::string("{\"protocolVersion\":\"") + mcpJsonEscape(protocol) +
         "\",\"capabilities\":{\"tools\":{},\"resources\":{},\"prompts\":{}},"
-        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.5.2\"},"
+        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.6.0\"},"
         "\"instructions\":\"EVEngine MCP for AI-assisted game development. Call eve_api_search/eve_api_get to look up "
         "this build's EveScript bindings before writing .nut (do not invent Unity C# names); prefer eve_play and "
         "editor commands over eve_eval for gameplay. Diagnose through the game's own channels: "
@@ -2019,7 +2019,7 @@ std::string handleToolsList(const std::string& idJson) {
 
     // Project-exported tools come last and are re-read every call: a script may
     // register or drop one at any time (hot reload of mcp.nut).
-    std::string body = kToolsBody;
+    std::string       body     = kToolsBody;
     const std::string scripted = scriptToolSchemas();
     if (!scripted.empty()) {
         body += ',';
@@ -2027,7 +2027,7 @@ std::string handleToolsList(const std::string& idJson) {
     }
     // Toolset / read-only / exclude filters apply to both built-ins and script tools
     // so tools/list and tools/call stay consistent.
-    body = filterMcpToolsBody(body);
+    body              = filterMcpToolsBody(body);
     std::string tools = "{\"tools\":[";
     tools += body;
     tools += "]}";

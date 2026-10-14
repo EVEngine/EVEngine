@@ -317,9 +317,9 @@ public:
 
     /** @brief Constructs an empty compatibility identifier. */
     UuidIdAdapter() = default;
-    UuidIdAdapter(const UuidIdAdapter&) = default;
-    UuidIdAdapter& operator=(const UuidIdAdapter&) = default;
-    UuidIdAdapter(UuidIdAdapter&&) noexcept = default;
+    UuidIdAdapter(const UuidIdAdapter&)                = default;
+    UuidIdAdapter& operator=(const UuidIdAdapter&)     = default;
+    UuidIdAdapter(UuidIdAdapter&&) noexcept            = default;
     UuidIdAdapter& operator=(UuidIdAdapter&&) noexcept = default;
 
     /** @brief Constructs from a legacy spelling or canonical UUID text. */
