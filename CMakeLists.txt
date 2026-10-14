@@ -548,8 +548,7 @@ function(main)
     # skipped without touching anything when the checkout already carries it.
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src/ECS.hpp")
         foreach(_eve_ecs_patch IN ITEMS
-                ecs-shared-default-table.patch
-                ecs-view-entity-staging-handle.patch)
+                ecs-shared-default-table.patch)
             execute_process(
                 COMMAND ${CMAKE_COMMAND}
                     -DPATCH=${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/${_eve_ecs_patch}
