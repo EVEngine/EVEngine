@@ -236,8 +236,8 @@ function(set_include)
     elseif(Vulkan_FOUND AND Vulkan_INCLUDE_DIRS AND Vulkan_LIBRARIES)
         message(STATUS "Vulkan found: ${Vulkan_LIBRARY}")
         if(APPLE AND EVENGINE_THIRD_PARTY_BINARY_DIR)
-            # macOS source builds use the SDK's Vulkan-Hpp. Preserve that choice
-            # with prebuilt dependencies so every TU sees the same dispatcher layout.
+            # The archived header causes invalid-device dispatch in macOS
+            # graphics tests; use the SDK's Vulkan-Hpp for the prebuilt path.
             target_include_directories(eve_engine_includes BEFORE INTERFACE ${Vulkan_INCLUDE_DIRS})
         else()
             target_include_directories(eve_engine_includes INTERFACE ${Vulkan_INCLUDE_DIRS})
