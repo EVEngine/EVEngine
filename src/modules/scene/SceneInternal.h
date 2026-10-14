@@ -6,6 +6,7 @@
 // Anonymous namespace: each translation unit gets its own internal copy,
 // exactly like the original single file.
 
+#include "common/Export.h"
 #include "common/TransformEuler.h"
 #include "scene/SceneHost.h"
 
@@ -26,7 +27,7 @@ namespace eve::scene {
  * @remarks Defined in `scene/ScriptLinks.cpp` so the link kind, its marshalling and
  *          its script binding stay in one translation unit.
  */
-void exposeScriptLinkBindings(ssq::Class& cls);
+EVENGINE_API_PLATFORM void exposeScriptLinkBindings(ssq::Class& cls);
 
 namespace {
 

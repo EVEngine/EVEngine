@@ -250,19 +250,15 @@ std::vector<SceneComponentPayloadRef> ScriptComponentPayloadProvider::components
     if (sceneModule == nullptr) return out;
 
     const std::string host = hostNameOf(scene);
-    for (const ssq::Object& instance : sceneModule->scriptEntitiesAt(host, object.value())) {
-        auto states = scriptComponentInstancesOf(instance);
-        if (!states.ok()) continue;
-        for (const ScriptComponentInstanceState& state : states.value()) {
-            SceneComponentPayloadRef ref;
-            ref.target     = scene;
-            ref.object     = object;
-            ref.component  = StableId(encodeComponentId(object.value(), state.name, state.version.value()));
-            ref.type       = payloadType();
-            ref.generation = state.generation.value();
-            ref.revision   = scriptComponentStoreRevision();
-            out.push_back(std::move(ref));
-        }
+    for (const ScriptComponentInstanceState& state : sceneModule->scriptComponentStatesAt(host, object.value())) {
+        SceneComponentPayloadRef ref;
+        ref.target     = scene;
+        ref.object     = object;
+        ref.component  = StableId(encodeComponentId(object.value(), state.name, state.version.value()));
+        ref.type       = payloadType();
+        ref.generation = state.generation.value();
+        ref.revision   = scriptComponentStoreRevision();
+        out.push_back(std::move(ref));
     }
     return out;
 }
@@ -293,17 +289,14 @@ std::vector<scene_editing::EditorDiagnostic> ScriptComponentPayloadProvider::val
                                              RuleId("editor.scene.script-component.no-scene"),
                                              DiagnosticSeverity::Error, "Scene module is not available")};
 
-    for (const ssq::Object& instance : sceneModule->scriptEntitiesAt(hostNameOf(component.target), nodeId)) {
-        auto states = scriptComponentInstancesOf(instance);
-        if (!states.ok()) continue;
-        for (const ScriptComponentInstanceState& state : states.value()) {
-            if (state.name != name || state.version.value() != version) continue;
-            if (state.generation.value() != component.generation)
-                return {eve::editing::ruleDiagnostic(
-                    eve::DiagnosticCode::Conflict, RuleId("editor.scene.script-component.stale"),
-                    DiagnosticSeverity::Error, "Script component generation changed since the reference")};
-            return {};
-        }
+    for (const ScriptComponentInstanceState& state :
+         sceneModule->scriptComponentStatesAt(hostNameOf(component.target), nodeId)) {
+        if (state.name != name || state.version.value() != version) continue;
+        if (state.generation.value() != component.generation)
+            return {eve::editing::ruleDiagnostic(
+                eve::DiagnosticCode::Conflict, RuleId("editor.scene.script-component.stale"),
+                DiagnosticSeverity::Error, "Script component generation changed since the reference")};
+        return {};
     }
     return {eve::editing::ruleDiagnostic(eve::DiagnosticCode::NotFound, RuleId("editor.scene.script-component.missing"),
                                          DiagnosticSeverity::Error, "Script component is no longer on this node")};
@@ -474,13 +467,10 @@ eve::Result<ScriptComponentPayloadProvider::Resolved> ScriptComponentPayloadProv
     if (sceneModule == nullptr)
         return failure(eve::DiagnosticCode::Failed, "scene module is not available", item.target.value());
 
-    for (const ssq::Object& instance : sceneModule->scriptEntitiesAt(hostNameOf(item.target), nodeId)) {
-        auto states = scriptComponentInstancesOf(instance);
-        if (!states.ok()) continue;
-        for (const ScriptComponentInstanceState& state : states.value()) {
-            if (state.name != name || state.version.value() != version) continue;
-            return eve::Result<Resolved>::success(Resolved{item.target, nodeId, state});
-        }
+    for (const ScriptComponentInstanceState& state :
+         sceneModule->scriptComponentStatesAt(hostNameOf(item.target), nodeId)) {
+        if (state.name != name || state.version.value() != version) continue;
+        return eve::Result<Resolved>::success(Resolved{item.target, nodeId, state});
     }
     return failure(eve::DiagnosticCode::NotFound, "script component is no longer on this node", item.item.value());
 }

@@ -354,7 +354,7 @@ struct TargetingSpec {
 };
 
 /** @brief A query passed from a domain targeting algorithm to sensing. */
-struct TargetingQuery {
+struct EVENGINE_API_PLATFORM TargetingQuery {
     /** @brief Subject issuing the query; it is not implicitly selected as a result. */
     SubjectRef origin;
     /** @brief Origin location in exactly `spec.space`. */

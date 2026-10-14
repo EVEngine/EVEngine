@@ -4,6 +4,7 @@
 
 #include "common/Module.h"
 #include "common/Result.h"
+#include "common/ScriptComponentSnapshot.h"
 #include "scene/NodeDesc.h"
 #include "scene/SceneHost.h"
 #include "scene/SceneNodeRef.h"
@@ -415,6 +416,20 @@ public:
      */
     [[nodiscard]] std::vector<ssq::Object> scriptEntitiesAt(const std::string& hostName,
                                                             const std::string& nodeId) const;
+
+    /**
+     * @brief 一个节点上所有脚本实体的**已登记**组件状态（编辑器/工具面）。
+     *
+     * 与 `scriptEntitiesAt` 的区别是**不把 `ssq::Object` 交给调用方**：编辑器组（EVEditors）
+     * 只是读一次组件数据，不该为此把 VM 类型拉进自己的链接单元——那会让 EVEditors.dll 成为
+     * Squirrel 静态库的又一个导出者，与同样静态链接 Squirrel 的测试可执行文件撞成 LNK2005。
+     * VM 侧的取数留在本模块（EVPlatform 本来就用 Squirrel）。
+     *
+     * @return 按 (名字, 版本) 升序的状态数组；节点上没有脚本实体（或场景不可用）时为空。
+     * @cost 与节点上的脚本实体数成正比（一次拷贝 + 每个一次 addref）；工具/诊断路径用，不在逐帧路径上。
+     */
+    [[nodiscard]] std::vector<ScriptComponentInstanceState> scriptComponentStatesAt(const std::string& hostName,
+                                                                                   const std::string& nodeId) const;
 
     /** @brief updateTransformsAll() + call update(dt) on every rooted instance. */
     void updateScripts(float dt);

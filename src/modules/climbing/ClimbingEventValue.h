@@ -11,6 +11,7 @@
  * 要改三处且没有任何东西会发现漏改。这里收敛成一张表 + 两个方向。
  */
 
+#include "common/Export.h"
 #include "climbing/Climbing.h"
 
 #include "common/Value.h"
@@ -37,7 +38,7 @@ enum class EventKindParse : std::uint8_t {
  * @remarks 新增枚举值必须同时更新 `kClimbingEventKindCount` 与 `climbingEventValue.cpp` 里的表；
  *          `test/climbing_events.cpp` 会遍历整个范围做双向验证，漏改会红。
  */
-[[nodiscard]] std::string_view climbingEventKindName(ClimbingEventKind kind);
+[[nodiscard]] EVENGINE_API_DOMAINS std::string_view climbingEventKindName(ClimbingEventKind kind);
 
 /**
  * @brief 名字 → `ClimbingEventKind`（`climbingEventKindName` 的严格逆）。
@@ -45,16 +46,16 @@ enum class EventKindParse : std::uint8_t {
  * @param out 解析结果，仅在返回 `EventKindParse::Parsed` 时写入。
  * @return 解析结果；**不认识时返回 `Unknown` 而不是猜一个默认值**。
  */
-[[nodiscard]] EventKindParse parseClimbingEventKind(std::string_view name, ClimbingEventKind& out);
+[[nodiscard]] EVENGINE_API_DOMAINS EventKindParse parseClimbingEventKind(std::string_view name, ClimbingEventKind& out);
 
 /**
  * @brief 一个事件 → `{kind, actionId, tick, executionId, metadata}`。
  * @remarks `tick` 与 `executionId` 是**十进制字符串**：`u64` 装不进 JSON 数字，这是既有约定
  *          （快照与脚本绑定都照它写），不要改成数字。
  */
-[[nodiscard]] Value climbingEventValue(const ClimbingEvent& event);
+[[nodiscard]] EVENGINE_API_DOMAINS Value climbingEventValue(const ClimbingEvent& event);
 
 /** @brief 一批事件 → Value 数组，顺序与传入一致。 */
-[[nodiscard]] Value climbingEventArrayValue(std::span<const ClimbingEvent> events);
+[[nodiscard]] EVENGINE_API_DOMAINS Value climbingEventArrayValue(std::span<const ClimbingEvent> events);
 
 }  // namespace eve::climbing

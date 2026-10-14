@@ -1000,6 +1000,20 @@ std::vector<ssq::Object> Scene::scriptEntitiesAt(const std::string& hostName, co
     return out;
 }
 
+std::vector<ScriptComponentInstanceState> Scene::scriptComponentStatesAt(const std::string& hostName,
+                                                                        const std::string& nodeId) const {
+    // The VM-side lookup stays here (EVPlatform already links Squirrel): handing `ssq::Object`
+    // values to the editor group would drag the Squirrel C API into EVEditors.dll, which then
+    // collides with the statically linked Squirrel of the domain test executables (LNK2005).
+    std::vector<ScriptComponentInstanceState> out;
+    for (const ssq::Object& instance : scriptEntitiesAt(hostName, nodeId)) {
+        auto states = scriptComponentInstancesOf(instance);
+        if (!states.ok()) continue;
+        for (ScriptComponentInstanceState& state : states.value()) out.push_back(std::move(state));
+    }
+    return out;
+}
+
 void Scene::updateScripts(float dt) {
     updateTransformsAll();
     if (!vm_) return;
