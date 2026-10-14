@@ -65,13 +65,13 @@ Result<std::uint64_t> parseEntityId(const Value& value, std::size_t index) {
 
 }  // namespace
 
-LogicalId scriptComponentSnapshotSchema() {
+EVENGINE_API_FOUNDATION LogicalId scriptComponentSnapshotSchema() {
     // `LogicalId` 的构造是私有的：只能经语法校验的解析入口拿到（命名空间必须小写开头）。
     static const LogicalId schema = *LogicalId::parse("eve:script-components");
     return schema;
 }
 
-Result<SnapshotEnvelope> snapshotScriptComponents(PersistentId instanceId, Revision revision, SimulationTick tick,
+EVENGINE_API_FOUNDATION Result<SnapshotEnvelope> snapshotScriptComponents(PersistentId instanceId, Revision revision, SimulationTick tick,
                                                   const SnapshotHashProvider& hashProvider) {
     Value::Array components;
     for (const ScriptComponentStoreEntry& entry : scriptComponentStoreEntries()) {
@@ -90,7 +90,7 @@ Result<SnapshotEnvelope> snapshotScriptComponents(PersistentId instanceId, Revis
                                 Value::object(std::move(payload)), hashProvider);
 }
 
-Result<void> restoreScriptComponents(const SnapshotEnvelope& snapshot, const SnapshotHashProvider& hashProvider) {
+EVENGINE_API_FOUNDATION Result<void> restoreScriptComponents(const SnapshotEnvelope& snapshot, const SnapshotHashProvider& hashProvider) {
     if (snapshot.type != kScriptComponentSnapshotType || snapshot.schema != scriptComponentSnapshotSchema())
         return snapshotFailure(DiagnosticCode::InvalidArgument,
                                "snapshot does not belong to the script component store");
@@ -170,20 +170,20 @@ Result<void> restoreScriptComponents(const SnapshotEnvelope& snapshot, const Sna
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
-Result<std::string> serializeScriptComponentSnapshot(PersistentId instanceId, Revision revision, SimulationTick tick,
+EVENGINE_API_FOUNDATION Result<std::string> serializeScriptComponentSnapshot(PersistentId instanceId, Revision revision, SimulationTick tick,
                                                      const SnapshotHashProvider& hashProvider) {
     auto envelope = snapshotScriptComponents(instanceId, revision, tick, hashProvider);
     if (!envelope.ok()) return Result<std::string>::failure(envelope.status());
     return std::move(envelope).andThen([](SnapshotEnvelope&& value) { return serializeSnapshotEnvelope(value); });
 }
 
-Result<void> restoreScriptComponentSnapshotJson(std::string_view json, const SnapshotHashProvider& hashProvider) {
+EVENGINE_API_FOUNDATION Result<void> restoreScriptComponentSnapshotJson(std::string_view json, const SnapshotHashProvider& hashProvider) {
     auto parsed = parseSnapshotEnvelope(json, hashProvider);
     if (!parsed.ok()) return Result<void>::failure(parsed.status());
     return restoreScriptComponents(parsed.value(), hashProvider);
 }
 
-Result<std::vector<ScriptComponentInstanceState>> scriptComponentInstancesOf(const ssq::Object& entityInstance) {
+EVENGINE_API_FOUNDATION Result<std::vector<ScriptComponentInstanceState>> scriptComponentInstancesOf(const ssq::Object& entityInstance) {
     if (entityInstance.getType() != ssq::Type::INSTANCE)
         return Result<std::vector<ScriptComponentInstanceState>>::failure(
             Diagnostic::error(DiagnosticCode::InvalidArgument, "script component inspection needs an entity instance",
@@ -276,7 +276,7 @@ Result<std::vector<ScriptComponentInstanceState>> scriptComponentInstancesOf(con
     return Result<std::vector<ScriptComponentInstanceState>>::success(std::move(out));
 }
 
-Result<std::string> scriptComponentStatesJson() {
+EVENGINE_API_FOUNDATION Result<std::string> scriptComponentStatesJson() {
     // 存储本身就是按 (实体, 名字, 版本) 排序的 `std::map`，所以按实体分组只需要顺序扫一遍。
     Value::Array  entities;
     Value::Array  components;

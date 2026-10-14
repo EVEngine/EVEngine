@@ -123,7 +123,7 @@ ScriptPhotoModeApplyProviders& scriptPhotoModeApplyProviders() {
 
 }  // namespace
 
-void declareScriptPhotoModeApplySeam() {
+EVENGINE_API_WORLD void declareScriptPhotoModeApplySeam() {
     ScriptPhotoModeApplyProviders& owned = scriptPhotoModeApplyProviders();
     ScriptProviderRegistry::instance().declareCapability(
         IPhotoModeApplySink::capabilityName,
@@ -157,7 +157,7 @@ void declareScriptPhotoModeApplySeam() {
         });
 }
 
-void withdrawScriptPhotoModeApplySeam() {
+EVENGINE_API_WORLD void withdrawScriptPhotoModeApplySeam() {
     ScriptPhotoModeApplyProviders& owned = scriptPhotoModeApplyProviders();
     for (auto& adapter : owned.live) {
         cap::revoke<IPhotoModeApplySink>(adapter.get());

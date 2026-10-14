@@ -259,7 +259,7 @@ void clearScriptMotionSinkStore(ScriptMotionSinkStore<Adapter>& store) {
 
 }  // namespace
 
-void clearScriptMotionSinkAdapters() {
+EVENGINE_API_WORLD void clearScriptMotionSinkAdapters() {
     ScriptMotionSinkStores& stores = scriptMotionSinkStores();
     clearScriptMotionSinkStore(stores.floats);
     clearScriptMotionSinkStore(stores.vec2s);
@@ -658,7 +658,7 @@ void exposeNonFloatMotionBuilders(ssq::Table& table, ssq::Class& animationClass)
 
 }  // namespace
 
-void exposeMotionScriptBindings(ssq::Table &table, ssq::Class &animationClass) {
+EVENGINE_API_WORLD void exposeMotionScriptBindings(ssq::Table &table, ssq::Class &animationClass) {
     auto motion = table.addClass<ScriptMotionHandle>(
         "Motion", std::function<ScriptMotionHandle *()>([]() -> ScriptMotionHandle * { return nullptr; }),
         true);

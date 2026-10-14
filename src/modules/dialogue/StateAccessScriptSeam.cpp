@@ -191,11 +191,11 @@ ScriptStateAccessProviders& scriptStateAccessProviders() {
 
 }  // namespace
 
-std::uint64_t scriptStateQueryFailures() { return scriptStateQueryFailureCount(); }
+EVENGINE_API_ORCHESTRATION std::uint64_t scriptStateQueryFailures() { return scriptStateQueryFailureCount(); }
 
-void resetScriptStateQueryFailures() { scriptStateQueryFailureCount() = 0; }
+EVENGINE_API_ORCHESTRATION void resetScriptStateQueryFailures() { scriptStateQueryFailureCount() = 0; }
 
-void declareScriptStateQuerySeam() {
+EVENGINE_API_ORCHESTRATION void declareScriptStateQuerySeam() {
     ScriptStateAccessProviders& owned = scriptStateAccessProviders();
     eve::ScriptProviderRegistry::instance().declareCapability(
         eve::IStateQuery::capabilityName,
@@ -222,7 +222,7 @@ void declareScriptStateQuerySeam() {
         });
 }
 
-void withdrawScriptStateQuerySeam() {
+EVENGINE_API_ORCHESTRATION void withdrawScriptStateQuerySeam() {
     ScriptStateAccessProviders& owned = scriptStateAccessProviders();
     for (auto& adapter : owned.liveQueries) {
         eve::cap::removeListener<eve::IStateQuery>(adapter.get());
@@ -234,7 +234,7 @@ void withdrawScriptStateQuerySeam() {
         .ignore("a module may be destroyed without ever having declared the seam");
 }
 
-void declareScriptStateMutationSeam() {
+EVENGINE_API_ORCHESTRATION void declareScriptStateMutationSeam() {
     ScriptStateAccessProviders& owned = scriptStateAccessProviders();
     eve::ScriptProviderRegistry::instance().declareCapability(
         eve::IStateMutation::capabilityName,
@@ -264,7 +264,7 @@ void declareScriptStateMutationSeam() {
         });
 }
 
-void withdrawScriptStateMutationSeam() {
+EVENGINE_API_ORCHESTRATION void withdrawScriptStateMutationSeam() {
     ScriptStateAccessProviders& owned = scriptStateAccessProviders();
     for (auto& adapter : owned.liveMutations) {
         eve::cap::revoke<eve::IStateMutation>(adapter.get());

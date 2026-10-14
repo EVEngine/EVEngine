@@ -118,7 +118,7 @@ eve::Result<ClimbingServiceStart> ClimbingServiceSelectionSystem::tryStart(
                                                        eve::Status::success(eve::StatusCode::Applied));
 }
 
-eve::Result<ClimbingOptionalServiceState> dispatchClimbingEvents(
+EVENGINE_API_DOMAINS eve::Result<ClimbingOptionalServiceState> dispatchClimbingEvents(
     ClimbingServiceSubject subject, std::span<const ClimbingEvent> events) {
     if (subject.isZero())
         return eve::Result<ClimbingOptionalServiceState>::failure(
@@ -134,7 +134,7 @@ eve::Result<ClimbingOptionalServiceState> dispatchClimbingEvents(
                                                                eve::Status::success(eve::StatusCode::Applied));
 }
 
-eve::Result<ClimbingOptionalServiceState> applyClimbingPose(ClimbingServiceSubject subject,
+EVENGINE_API_DOMAINS eve::Result<ClimbingOptionalServiceState> applyClimbingPose(ClimbingServiceSubject subject,
                                                             const ClimbingAdvance& advance) {
     if (subject.isZero())
         return eve::Result<ClimbingOptionalServiceState>::failure(
@@ -194,7 +194,7 @@ ScriptClimbingEventProviders& scriptClimbingEventProviders() {
 
 }  // namespace
 
-void declareScriptClimbingEventSeam() {
+EVENGINE_API_DOMAINS void declareScriptClimbingEventSeam() {
     ScriptClimbingEventProviders& owned = scriptClimbingEventProviders();
     eve::ScriptProviderRegistry::instance().declareCapability(
         IClimbingEventSink::capabilityName,
@@ -227,7 +227,7 @@ void declareScriptClimbingEventSeam() {
         });
 }
 
-void withdrawScriptClimbingEventSeam() {
+EVENGINE_API_DOMAINS void withdrawScriptClimbingEventSeam() {
     ScriptClimbingEventProviders& owned = scriptClimbingEventProviders();
     for (auto& adapter : owned.live) {
         eve::cap::revoke<IClimbingEventSink>(adapter.get());

@@ -89,11 +89,11 @@ ScriptTileCollisionSinks& scriptTileCollisionSinks() {
 
 }  // namespace
 
-std::uint64_t scriptTileCollisionSinkFailures() { return scriptTileCollisionSinkFailureCount(); }
+EVENGINE_API_WORLD std::uint64_t scriptTileCollisionSinkFailures() { return scriptTileCollisionSinkFailureCount(); }
 
-void resetScriptTileCollisionSinkFailures() { scriptTileCollisionSinkFailureCount() = 0; }
+EVENGINE_API_WORLD void resetScriptTileCollisionSinkFailures() { scriptTileCollisionSinkFailureCount() = 0; }
 
-void declareScriptTileCollisionSinkSeam() {
+EVENGINE_API_WORLD void declareScriptTileCollisionSinkSeam() {
     ScriptTileCollisionSinks& owned = scriptTileCollisionSinks();
     ScriptProviderRegistry::instance().declareCapability(
         ITileCollisionSink::capabilityName,
@@ -120,7 +120,7 @@ void declareScriptTileCollisionSinkSeam() {
         });
 }
 
-void withdrawScriptTileCollisionSinkSeam() {
+EVENGINE_API_WORLD void withdrawScriptTileCollisionSinkSeam() {
     ScriptTileCollisionSinks& owned = scriptTileCollisionSinks();
     for (auto& adapter : owned.live) {
         cap::removeListener<ITileCollisionSink>(adapter.get());

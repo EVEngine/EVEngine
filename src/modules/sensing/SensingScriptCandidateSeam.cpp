@@ -400,7 +400,7 @@ ScriptSensingCandidateProviders& scriptSensingCandidateProviders() {
 
 }  // namespace
 
-void declareScriptSensingCandidateSeam() {
+EVENGINE_API_PLATFORM void declareScriptSensingCandidateSeam() {
     ScriptSensingCandidateProviders& owned = scriptSensingCandidateProviders();
     ScriptProviderRegistry::instance().declareCapability(
         ISensingCandidateProvider::capabilityName,
@@ -434,7 +434,7 @@ void declareScriptSensingCandidateSeam() {
         });
 }
 
-void withdrawScriptSensingCandidateSeam() {
+EVENGINE_API_PLATFORM void withdrawScriptSensingCandidateSeam() {
     ScriptSensingCandidateProviders& owned = scriptSensingCandidateProviders();
     for (auto& adapter : owned.live) {
         cap::revoke<ISensingCandidateProvider>(adapter.get());
