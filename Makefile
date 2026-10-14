@@ -193,10 +193,8 @@ check/examples:
 check/module-layers:
 	python3 scripts/module_depgraph.py --check-layers
 
-# Verify every script-facing addFunc is actually documented (see
-# docs/usr/REVIEW.md). Pre-existing debt is registered in
-# scripts/check_bindings_gaps.txt (regenerate with --write-gaps); new gaps
-# fail, so docs cannot silently drift from the bindings.
+# Verify script-facing bindings have a guide explanation or generated SDK
+# signature. Unresolved signatures and new unreferenced bindings fail CI.
 check/bindings:
 	python3 scripts/check_bindings.py --strict
 

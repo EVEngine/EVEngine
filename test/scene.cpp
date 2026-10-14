@@ -698,7 +698,7 @@ TEST_CASE("Scene.objectId.preservedAcrossFullRebuild") {
     REQUIRE(p != nullptr);
 
     SceneObject *o = sceneValue(SceneObject::createObject("objid", "p"));
-    p->objectId = uint32_t(o->id);
+    p->objectId    = uint32_t(o->id) + 1u;
 
     // Full rebuild keeps the binding marker on same-id nodes, not on new ones.
     h->setTree(node("root", {node("p"), node("q")}));
@@ -706,14 +706,14 @@ TEST_CASE("Scene.objectId.preservedAcrossFullRebuild") {
     SceneNode *q  = sceneValue(h->findById("q"));
     REQUIRE(p2 != nullptr);
     REQUIRE(q != nullptr);
-    CHECK_EQ(uint32_t(p2->objectId), uint32_t(o->id));
+    CHECK_EQ(uint32_t(p2->objectId), uint32_t(o->id) + 1u);
     CHECK_EQ(q->objectId, 0u);
 
     // Reconcile patch keeps the marker too.
     h->setTreeReconcile(node("root", {node("p").withPosition(1.f, 0.f, 0.f)}));
     SceneNode *p3 = sceneValue(h->findById("p"));
     REQUIRE(p3 != nullptr);
-    CHECK_EQ(uint32_t(p3->objectId), uint32_t(o->id));
+    CHECK_EQ(uint32_t(p3->objectId), uint32_t(o->id) + 1u);
 
     o->release();
 }

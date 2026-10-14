@@ -1,4 +1,5 @@
 #include "devtools/DevTool.hpp"
+#include "common/StringMapInstances.h"
 
 #include "devtools/AiPanel.hpp"
 #include "devtools/ConsolePanel.hpp"

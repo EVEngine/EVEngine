@@ -26,9 +26,23 @@ class CardStateProvider : public eve::caps::IStateProvider {
 public:
     const char* stateKind() const override { return "card"; }
 
-    bool captureState(StateValue& out) override { return captureCardState(out); }
-    bool restoreState(const StateValue& in, std::string* err) override { return restoreCardState(in, err); }
-    bool resetToDefaults() override { return resetCardState(); }
+    Result<Value> capture() override {
+        StateValue state;
+        if (!captureCardState(state))
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::Failed, "card capture failed"));
+        return Result<Value>::success(toCanonicalStateValue(state));
+    }
+    Result<void> restore(const Value& in) override {
+        std::string error;
+        if (!restoreCardState(toLegacyStateValue(in), &error))
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, error));
+        return Result<void>::success();
+    }
+    Result<void> resetToDefaults() override {
+        if (!resetCardState())
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, "card reset failed"));
+        return Result<void>::success();
+    }
 };
 
 struct Register {

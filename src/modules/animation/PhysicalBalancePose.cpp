@@ -1,18 +1,22 @@
 #include "animation/PhysicalBalancePose.h"
-
+#include <cmath>
+#include <functional>
+#include <simplesquirrel/simplesquirrel.hpp>
+#include <string>
 #include "animation/AnimControlMath.h"
 #include "animation/AnimMath.h"
+#include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
+#include "animation/AnimationBindings.h"
 #include "animation/AnimationTime.h"
 #include "common/Exception.h"
+#include "common/SquirrelBinding.h"
 
-#include <cmath>
-#include <string>
-
+// PhysicalBalancePose.cpp
 namespace eve::animation {
 namespace {
 
-constexpr float kTwoPi = 6.283185307179586f;
+constexpr float kTwoPi      = 6.283185307179586f;
 constexpr float kImpulseEps = 1e-8f;
 
 void quatMul(float ax, float ay, float az, float aw, float bx, float by, float bz, float bw, float& ox, float& oy,
@@ -89,24 +93,24 @@ eve::Result<void> PhysicalBalancePose::requireFinitePositive(const char* name, f
 
 eve::Result<void> PhysicalBalancePose::setSupportBone(int boneIndex) {
     if (!boneInRange(boneIndex))
-        return eve::Result<void>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "physical balance support bone is out of range"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "physical balance support bone is out of range"));
     supportBone_ = boneIndex;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> PhysicalBalancePose::setBalanceBone(int boneIndex) {
     if (!boneInRange(boneIndex))
-        return eve::Result<void>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "physical balance balance bone is out of range"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "physical balance balance bone is out of range"));
     balanceBone_ = boneIndex;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> PhysicalBalancePose::setBoneMass(int boneIndex, float mass) {
     if (!boneInRange(boneIndex))
-        return eve::Result<void>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "physical balance bone mass index is out of range"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "physical balance bone mass index is out of range"));
     auto ok = requireFinitePositive("bone mass", mass, true);
     if (!ok) return ok;
     masses_[static_cast<size_t>(boneIndex)] = mass;
@@ -124,7 +128,7 @@ eve::Result<void> PhysicalBalancePose::setRecovery(float frequencyHz, float damp
     if (!std::isfinite(dampingZeta) || dampingZeta < 0.f)
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "physical balance recovery damping must be finite and non-negative"));
-    const float omega = kTwoPi * frequencyHz;
+    const float omega  = kTwoPi * frequencyHz;
     const float height = std::max(pendulumHeight_, 1e-4f);
     if (omega * omega <= gravity_ / height)
         return eve::Result<void>::failure(eve::Diagnostic::error(
@@ -152,9 +156,9 @@ eve::Result<void> PhysicalBalancePose::setGravity(float metersPerSecondSquared) 
     const float omega  = kTwoPi * recoveryHz_;
     const float height = std::max(pendulumHeight_, 1e-4f);
     if (omega * omega <= metersPerSecondSquared / height)
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument,
-            "physical balance gravity would overcome the current recovery frequency"));
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "physical balance gravity would overcome the current recovery frequency"));
     gravity_ = metersPerSecondSquared;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
@@ -164,9 +168,9 @@ eve::Result<void> PhysicalBalancePose::setPendulumHeight(float meters) {
     if (!ok) return ok;
     const float omega = kTwoPi * recoveryHz_;
     if (omega * omega <= gravity_ / meters)
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument,
-            "physical balance pendulum height would make gravity stronger than recovery"));
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "physical balance pendulum height would make gravity stronger than recovery"));
     pendulumHeight_ = meters;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
@@ -199,8 +203,9 @@ eve::Result<void> PhysicalBalancePose::setTargetPose(const AnimPose* target) {
         return eve::Result<void>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "physical balance target pose is null"));
     if (target->getBoneCount() != skeleton_->getBoneCount())
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "physical balance target pose bone count does not match the skeleton"));
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "physical balance target pose bone count does not match the skeleton"));
     target_.copyFrom(target);
     hasTarget_ = true;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -225,15 +230,14 @@ eve::Result<void> PhysicalBalancePose::snapToTarget() {
 eve::Result<void> PhysicalBalancePose::applyImpulse(int boneIndex, float impulseX, float impulseY, float impulseZ,
                                                     float pointX, float pointY, float pointZ) {
     if (!boneInRange(boneIndex))
-        return eve::Result<void>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "physical balance impulse bone is out of range"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "physical balance impulse bone is out of range"));
     if (!std::isfinite(impulseX) || !std::isfinite(impulseY) || !std::isfinite(impulseZ) || !std::isfinite(pointX) ||
         !std::isfinite(pointY) || !std::isfinite(pointZ))
-        return eve::Result<void>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "physical balance impulse values must be finite"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "physical balance impulse values must be finite"));
     const float mag2 = impulseX * impulseX + impulseY * impulseY + impulseZ * impulseZ;
-    if (mag2 < kImpulseEps)
-        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
+    if (mag2 < kImpulseEps) return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
 
     pose_.computeWorld(skeleton_);
     const TransformTRS& support = pose_.world(supportBone_);
@@ -285,7 +289,7 @@ void PhysicalBalancePose::writeOverlayPose() {
 
 void PhysicalBalancePose::refreshDiagnostics() {
     pose_.computeWorld(skeleton_);
-    const int n = pose_.getBoneCount();
+    const int n       = pose_.getBoneCount();
     float     massSum = 0.f;
     comX_ = comY_ = comZ_ = 0.f;
     for (int i = 0; i < n; ++i) {
@@ -395,5 +399,84 @@ float         PhysicalBalancePose::getCenterOfMassZ() const { return comZ_; }
 float         PhysicalBalancePose::getSupportX() const { return supportX_; }
 float         PhysicalBalancePose::getSupportY() const { return supportY_; }
 float         PhysicalBalancePose::getSupportZ() const { return supportZ_; }
+
+}  // namespace eve::animation
+
+// PhysicalBalancePoseBindings.cpp
+namespace eve::animation {
+
+void exposePhysicalBalancePoseBindings(ssq::Table& table) {
+    auto pose = table.addClass<PhysicalBalancePose>(
+        "PhysicalBalancePose", std::function<PhysicalBalancePose*()>([]() -> PhysicalBalancePose* { return nullptr; }),
+        true);
+    pose.addFunc("getSkeleton", &PhysicalBalancePose::getSkeleton);
+    pose.addFunc("setSupportBone", [vm = table.getHandle()](PhysicalBalancePose* self, int bone) {
+        return script::projectResult(vm, self->setSupportBone(bone));
+    });
+    pose.addFunc("getSupportBone", &PhysicalBalancePose::getSupportBone);
+    pose.addFunc("setBalanceBone", [vm = table.getHandle()](PhysicalBalancePose* self, int bone) {
+        return script::projectResult(vm, self->setBalanceBone(bone));
+    });
+    pose.addFunc("getBalanceBone", &PhysicalBalancePose::getBalanceBone);
+    pose.addFunc("setBoneMass", [vm = table.getHandle()](PhysicalBalancePose* self, int bone, float mass) {
+        return script::projectResult(vm, self->setBoneMass(bone, mass));
+    });
+    pose.addFunc("getBoneMass", &PhysicalBalancePose::getBoneMass);
+    pose.addFunc("setRecovery",
+                 [vm = table.getHandle()](PhysicalBalancePose* self, float frequencyHz, float dampingZeta) {
+                     return script::projectResult(vm, self->setRecovery(frequencyHz, dampingZeta));
+                 });
+    pose.addFunc("getRecoveryFrequency", &PhysicalBalancePose::getRecoveryFrequency);
+    pose.addFunc("getRecoveryDamping", &PhysicalBalancePose::getRecoveryDamping);
+    pose.addFunc("setRecoil",
+                 [vm = table.getHandle()](PhysicalBalancePose* self, float frequencyHz, float dampingZeta) {
+                     return script::projectResult(vm, self->setRecoil(frequencyHz, dampingZeta));
+                 });
+    pose.addFunc("getRecoilFrequency", &PhysicalBalancePose::getRecoilFrequency);
+    pose.addFunc("getRecoilDamping", &PhysicalBalancePose::getRecoilDamping);
+    pose.addFunc("setGravity", [vm = table.getHandle()](PhysicalBalancePose* self, float gravity) {
+        return script::projectResult(vm, self->setGravity(gravity));
+    });
+    pose.addFunc("getGravity", &PhysicalBalancePose::getGravity);
+    pose.addFunc("setPendulumHeight", [vm = table.getHandle()](PhysicalBalancePose* self, float height) {
+        return script::projectResult(vm, self->setPendulumHeight(height));
+    });
+    pose.addFunc("getPendulumHeight", &PhysicalBalancePose::getPendulumHeight);
+    pose.addFunc("setInertia", [vm = table.getHandle()](PhysicalBalancePose* self, float inertia) {
+        return script::projectResult(vm, self->setInertia(inertia));
+    });
+    pose.addFunc("getInertia", &PhysicalBalancePose::getInertia);
+    pose.addFunc("setRecoilInertia", [vm = table.getHandle()](PhysicalBalancePose* self, float inertia) {
+        return script::projectResult(vm, self->setRecoilInertia(inertia));
+    });
+    pose.addFunc("getRecoilInertia", &PhysicalBalancePose::getRecoilInertia);
+    pose.addFunc("setMaxLean", [vm = table.getHandle()](PhysicalBalancePose* self, float radians) {
+        return script::projectResult(vm, self->setMaxLean(radians));
+    });
+    pose.addFunc("getMaxLean", &PhysicalBalancePose::getMaxLean);
+    pose.addFunc("setTargetPose", [vm = table.getHandle()](PhysicalBalancePose* self, AnimPose* target) {
+        return script::projectResult(vm, self->setTargetPose(target));
+    });
+    pose.addFunc("snapToTarget", [vm = table.getHandle()](PhysicalBalancePose* self) {
+        return script::projectResult(vm, self->snapToTarget());
+    });
+    pose.addFunc("applyImpulse", [vm = table.getHandle()](PhysicalBalancePose* self, int bone, float ix, float iy,
+                                                          float iz, float px, float py, float pz) {
+        return script::projectResult(vm, self->applyImpulse(bone, ix, iy, iz, px, py, pz));
+    });
+    pose.addFunc("update", &PhysicalBalancePose::update);
+    pose.addFunc("getPose", &PhysicalBalancePose::getPose);
+    pose.addFunc("getTargetPose", &PhysicalBalancePose::getTargetPose);
+    pose.addFunc("getLeanX", &PhysicalBalancePose::getLeanX);
+    pose.addFunc("getLeanZ", &PhysicalBalancePose::getLeanZ);
+    pose.addFunc("getLeanVelocityX", &PhysicalBalancePose::getLeanVelocityX);
+    pose.addFunc("getLeanVelocityZ", &PhysicalBalancePose::getLeanVelocityZ);
+    pose.addFunc("getCenterOfMassX", &PhysicalBalancePose::getCenterOfMassX);
+    pose.addFunc("getCenterOfMassY", &PhysicalBalancePose::getCenterOfMassY);
+    pose.addFunc("getCenterOfMassZ", &PhysicalBalancePose::getCenterOfMassZ);
+    pose.addFunc("getSupportX", &PhysicalBalancePose::getSupportX);
+    pose.addFunc("getSupportY", &PhysicalBalancePose::getSupportY);
+    pose.addFunc("getSupportZ", &PhysicalBalancePose::getSupportZ);
+}
 
 }  // namespace eve::animation

@@ -1,21 +1,32 @@
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-
-#include "fluids/FluidMath.h"
-#include "fluids/FluidSdf.h"
-#include "fluids/FluidSimulation.h"
 #include "fluids/Fluids.h"
-#include "graphics/Graphics.h"
-
 #include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
 #include <fstream>
+#include <limits>
+#include <numeric>
 #include <utility>
 #include <vector>
+#include "fluids/FluidMath.h"
+#include "fluids/FluidSdf.h"
+#include "fluids/FluidSimulation.h"
+#include "fluids/FluidSurfaceBinding.h"
+#include "fluids/FluidSurfaceRenderer.h"
+#include "fluids/SurfaceDropletSimulation.h"
+#include "fluids/SurfaceFluidRenderData.h"
+#include "fluids/SurfaceFluidSceneRenderer.h"
+#include "fluids/SurfaceWetnessField.h"
+#include "fluids/VolumeFluid.h"
+#include "fluids/VolumeFluidCodec.h"
+#include "fluids/VolumeFluidDiffuse.h"
+#include "graphics/Graphics.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
 
+// fluids.cpp
 using namespace eve::fluids;
 
 namespace {
@@ -476,4 +487,1323 @@ TEST_CASE("fluids.ssf.gpu.pipeline") {
     f.close();
     CHECK(size > 100);
     std::remove("fluid_ssf_gpu.ppm");
+}
+
+// fluids_foam_surface.cpp
+using namespace eve::fluids;
+
+TEST_CASE("fluids.ssf.uniformVolumeTintUsesReconstructedCoverage") {
+    VolumeFluidSettings settings;
+    settings.gravity = glm::vec3(0.f);
+    auto created     = VolumeFluid::create(settings);
+    REQUIRE(created.ok());
+    auto                             solver = std::move(created).takeValue();
+    std::vector<VolumeFluidParticle> particles(512);
+    for (size_t i = 0; i < particles.size(); ++i) {
+        particles[i].position = {0.f, 1.f, 0.f};
+        particles[i].color    = {0.8f, 0.1f, 0.05f, 0.5f};
+    }
+    REQUIRE(solver->emit(particles).ok());
+
+    FluidSurfaceParams params;
+    params.width            = 65;
+    params.height           = 65;
+    params.eye              = {0, 0, 3};
+    params.target           = {0, 1, 0};
+    params.smoothIterations = 0;
+    FluidSurfaceRenderer renderer(params, false);
+    renderer.renderVolume(*solver);
+
+    const size_t middle = (32 * 65 + 32) * 4;
+    REQUIRE(renderer.color()[middle + 3] > 0);
+    REQUIRE(renderer.color()[middle] > renderer.color()[middle + 1]);
+    REQUIRE(renderer.color()[0] == 0);
+    REQUIRE(renderer.color()[3] == 0);
+}
+
+TEST_CASE("fluids.ssf.surfaceDisabledVolumeIncludesEveryPhaseWhileGasPathFilters") {
+    VolumeFluidSettings settings;
+    settings.gravity = glm::vec3(0.f);
+    auto created     = VolumeFluid::create(settings);
+    REQUIRE(created.ok());
+    auto                solver = std::move(created).takeValue();
+    VolumeFluidParticle liquid;
+    liquid.position       = {0.f, 1.f, 0.f};
+    liquid.color          = {0.9f, 0.1f, 0.05f, 1.f};
+    liquid.material.phase = VolumeFluidPhase::Liquid;
+    REQUIRE(solver->emit(std::span(&liquid, 1)).ok());
+
+    FluidSurfaceParams params;
+    params.width  = 65;
+    params.height = 65;
+    params.eye    = {0.f, 0.f, 3.f};
+    params.target = {0.f, 1.f, 0.f};
+    FluidSurfaceRenderer renderer(params, false);
+    REQUIRE(renderer.renderGasVolume(*solver, 5.f).ok());
+    const size_t middle = (32u * 65u + 32u) * 4u;
+    REQUIRE(renderer.color()[middle + 3u] == 0u);
+
+    REQUIRE(renderer.renderVolumeWithoutSurface(*solver, 5.f).ok());
+    REQUIRE(renderer.color()[middle + 3u] > 0u);
+    REQUIRE(renderer.color()[middle] > renderer.color()[middle + 1u]);
+    const auto allPhase = renderer.color();
+    REQUIRE(!renderer.renderVolumeWithoutSurface(*solver, 0.f).ok());
+    REQUIRE(renderer.color() == allPhase);
+}
+
+TEST_CASE("fluids.ssf.diffuseDepthOcclusionAndFade") {
+    FluidSurfaceParams params;
+    params.width            = 65;
+    params.height           = 65;
+    params.eye              = {0, 0, 3};
+    params.target           = {0, 0, 0};
+    params.smoothIterations = 0;
+    FluidSurfaceRenderer renderer(params, false);
+    renderer.render(std::vector<glm::vec3>{{0, 0, 0}}, .5f);
+    const auto                 original  = renderer.color();
+    const auto                 depth     = renderer.depth();
+    const auto                 normals   = renderer.normals();
+    const auto                 thickness = renderer.thickness();
+    VolumeFluidDiffuse         pool;
+    VolumeFluidDiffuseParticle p{{0, 0, -1}, {0, 0, 0}, 1.f};
+    REQUIRE(pool.emit(std::span(&p, 1)).ok());
+    REQUIRE(renderer.compositeDiffuse(pool, .1f, 1.f, .5f).ok());
+    REQUIRE(renderer.color() == original);
+    pool.clear();
+    p.position.z = 1.f;
+    REQUIRE(pool.emit(std::span(&p, 1)).ok());
+    REQUIRE(renderer.compositeDiffuse(pool, .1f, 1.f, .5f).ok());
+    const size_t middle = (32 * 65 + 32) * 4;
+    REQUIRE(renderer.color()[middle] == 255);
+    REQUIRE(renderer.color()[middle + 3] == 255);
+    REQUIRE(renderer.depth() == depth);
+    REQUIRE(renderer.normals() == normals);
+    REQUIRE(renderer.thickness() == thickness);
+    renderer.render({}, .5f);
+    pool.clear();
+    p.life = .25f;
+    REQUIRE(pool.emit(std::span(&p, 1)).ok());
+    REQUIRE(renderer.compositeDiffuse(pool, .1f, 1.f, .5f).ok());
+    REQUIRE(renderer.color()[middle] == 255);
+    REQUIRE(renderer.color()[middle + 3] == 128);
+    renderer.render({}, .5f);
+    REQUIRE(renderer.color()[middle + 3] == 0);
+}
+TEST_CASE("fluids.ssf.diffuseBudgetAtomicityAndClipping") {
+    FluidSurfaceParams params;
+    params.width  = 65;
+    params.height = 65;
+    params.eye    = {0, 0, 3};
+    params.target = {0, 0, 0};
+    FluidSurfaceRenderer renderer(params, false);
+    renderer.render({}, .1f);
+    const auto         original = renderer.color();
+    VolumeFluidDiffuse pool;
+    auto               state = pool.snapshot();
+    state.particles.resize(1000);
+    for (auto& p : state.particles) p.position = {0, 0, 2.8f};
+    REQUIRE(pool.restore(state).ok());
+    REQUIRE(!renderer.compositeDiffuse(pool, 1.f, 1.f, .5f).ok());
+    REQUIRE(renderer.color() == original);
+    pool.clear();
+    VolumeFluidDiffuseParticle p{{1e30f, 0, 0}, {0, 0, 0}, 1.f};
+    REQUIRE(pool.emit(std::span(&p, 1)).ok());
+    REQUIRE(renderer.compositeDiffuse(pool, .1f, 1.f, .5f).ok());
+    REQUIRE(renderer.color() == original);
+    REQUIRE(!renderer.compositeDiffuse(pool, 0.f, 1.f, .5f).ok());
+    REQUIRE(!renderer.compositeDiffuse(pool, .1f, std::numeric_limits<float>::quiet_NaN(), .5f).ok());
+    REQUIRE(renderer.color() == original);
+}
+
+TEST_CASE("fluids.ssf.foamToggleAndDownsampleAreAtomicAndPreserveAuxiliaries") {
+    FluidSurfaceParams params;
+    params.width            = 65;
+    params.height           = 65;
+    params.eye              = {0, 0, 3};
+    params.target           = {0, 0, 0};
+    params.smoothIterations = 0;
+    FluidSurfaceRenderer renderer(params, false);
+    renderer.render(std::vector<glm::vec3>{{0, 0, 0}}, .5f);
+    const auto                 depth     = renderer.depth();
+    const auto                 normals   = renderer.normals();
+    const auto                 thickness = renderer.thickness();
+    VolumeFluidDiffuse         pool;
+    VolumeFluidDiffuseParticle foam{{0, 0, 1.f}, {0, 0, 0}, 1.f};
+    REQUIRE(pool.emit(std::span(&foam, 1)).ok());
+
+    REQUIRE(renderer.configureFoam(false, 2).ok());
+    const auto disabled = renderer.color();
+    REQUIRE(renderer.compositeDiffuse(pool, .1f, 1.f, .5f).ok());
+    REQUIRE(renderer.color() == disabled);
+    REQUIRE(renderer.configureFoam(true, 2).ok());
+    REQUIRE(!renderer.configureFoam(false, 0).ok());
+    REQUIRE(renderer.compositeDiffuse(pool, .1f, 1.f, .5f).ok());
+    const size_t center = (32u * 65u + 32u) * 4u;
+    REQUIRE(renderer.color()[center] == 255u);
+    REQUIRE(renderer.color()[center + 3u] > disabled[center + 3u]);
+    REQUIRE(renderer.depth() == depth);
+    REQUIRE(renderer.normals() == normals);
+    REQUIRE(renderer.thickness() == thickness);
+}
+
+TEST_CASE("fluids.ssf.sceneDepthOccludesLiquidAndFoamAtomically") {
+    FluidSurfaceParams params;
+    params.width            = 65;
+    params.height           = 65;
+    params.eye              = {0, 0, 3};
+    params.target           = {0, 0, 0};
+    params.smoothIterations = 0;
+    FluidSurfaceRenderer renderer(params, false);
+    renderer.render(std::vector<glm::vec3>{{0, 0, 0}}, .5f);
+    VolumeFluidDiffuse         pool;
+    VolumeFluidDiffuseParticle foam{{0, 0, 1.f}, {0, 0, 0}, 1.f};
+    REQUIRE(pool.emit(std::span(&foam, 1)).ok());
+    REQUIRE(renderer.compositeDiffuse(pool, .1f, 1.f, .5f).ok());
+    const auto   fluidDepth = renderer.depth();
+    const auto   normals    = renderer.normals();
+    const auto   thickness  = renderer.thickness();
+    const size_t center     = 32u * 65u + 32u;
+    REQUIRE(renderer.color()[center * 4u + 3u] > 0);
+
+    std::vector<float> sceneDepth(fluidDepth.size(), 1e30f);
+    sceneDepth[center] = fluidDepth[center] - .1f;
+    REQUIRE(renderer.occludeWithSceneDepth(sceneDepth, .001f).ok());
+    REQUIRE(renderer.color()[center * 4u + 3u] == 0);
+    REQUIRE(renderer.depth() == fluidDepth);
+    REQUIRE(renderer.normals() == normals);
+    REQUIRE(renderer.thickness() == thickness);
+
+    renderer.render(std::vector<glm::vec3>{{0, 0, 0}}, .5f);
+    const auto original = renderer.color();
+    sceneDepth[center]  = fluidDepth[center] + .1f;
+    REQUIRE(renderer.occludeWithSceneDepth(sceneDepth, .001f).ok());
+    REQUIRE(renderer.color() == original);
+    sceneDepth[0] = std::numeric_limits<float>::quiet_NaN();
+    REQUIRE(!renderer.occludeWithSceneDepth(sceneDepth, .001f).ok());
+    REQUIRE(renderer.color() == original);
+}
+
+TEST_CASE("fluids.ssf.sceneRefractionCompositesWithoutChangingAuxiliaries") {
+    FluidSurfaceParams params;
+    params.width            = 65;
+    params.height           = 65;
+    params.eye              = {0, 0, 3};
+    params.target           = {0, 0, 0};
+    params.smoothIterations = 0;
+    FluidSurfaceRenderer renderer(params, false);
+    renderer.render(std::vector<glm::vec3>{{0, 0, 0}}, .5f);
+    const auto           fluid     = renderer.color();
+    const auto           depth     = renderer.depth();
+    const auto           normals   = renderer.normals();
+    const auto           thickness = renderer.thickness();
+    std::vector<uint8_t> scene(65u * 65u * 4u, 255u);
+    for (size_t y = 0; y < 65u; ++y)
+        for (size_t x = 0; x < 65u; ++x) {
+            const size_t at = (y * 65u + x) * 4u;
+            scene[at]       = (x < 32u) ? 220u : 20u;
+            scene[at + 1u]  = (x < 32u) ? 20u : 220u;
+            scene[at + 2u]  = 40u;
+        }
+    REQUIRE(renderer.compositeSceneRefraction(scene, 8.f, 3.f).ok());
+    REQUIRE(renderer.color()[3u] == 255u);
+    REQUIRE(renderer.color()[0u] == scene[0u]);
+    bool changedFluid = false;
+    for (size_t i = 0; i < 65u * 65u; ++i) {
+        REQUIRE(renderer.color()[i * 4u + 3u] == 255u);
+        if (fluid[i * 4u + 3u] > 0u && renderer.color()[i * 4u] != scene[i * 4u]) changedFluid = true;
+    }
+    REQUIRE(changedFluid);
+    REQUIRE(renderer.depth() == depth);
+    REQUIRE(renderer.normals() == normals);
+    REQUIRE(renderer.thickness() == thickness);
+
+    const auto composited = renderer.color();
+    REQUIRE(
+        !renderer.compositeSceneRefraction(std::span<const uint8_t>(scene.data(), scene.size() - 1u), 8.f, 3.f).ok());
+    REQUIRE(!renderer.compositeSceneRefraction(scene, std::numeric_limits<float>::quiet_NaN(), 3.f).ok());
+    REQUIRE(renderer.color() == composited);
+    FluidSurfaceRenderer fresh(params, false);
+    REQUIRE(!fresh.compositeSceneRefraction(scene, 8.f, 3.f).ok());
+}
+
+TEST_CASE("fluids.ssf.configuredRefractionSupportsSignedBendAndDownsampleAtomically") {
+    FluidSurfaceParams params;
+    params.width            = 65;
+    params.height           = 65;
+    params.eye              = {0, 0, 3};
+    params.target           = {0, 0, 0};
+    params.smoothIterations = 0;
+    FluidSurfaceRenderer         renderer(params, false);
+    const std::vector<glm::vec3> particle{{0, 0, 0}};
+    std::vector<uint8_t>         scene(65u * 65u * 4u, 255u);
+    for (size_t y = 0; y < 65u; ++y)
+        for (size_t x = 0; x < 65u; ++x) {
+            const size_t at = (y * 65u + x) * 4u;
+            scene[at]       = uint8_t(x * 3u);
+            scene[at + 1u]  = uint8_t(255u - x * 3u);
+            scene[at + 2u]  = 32u;
+        }
+
+    renderer.render(particle, .8f);
+    size_t probe     = 0;
+    float  strongest = 0.f;
+    for (size_t i = 0; i < renderer.normals().size(); ++i) {
+        if (renderer.color()[i * 4u + 3u] == 0u) continue;
+        const float strength = std::abs(renderer.normals()[i].x) * renderer.thickness()[i];
+        if (strength > strongest) {
+            strongest = strength;
+            probe     = i;
+        }
+    }
+    REQUIRE(strongest > .05f);
+    REQUIRE(renderer.configureRefraction(1.f, 0.f, .1f, 2).ok());
+    REQUIRE(renderer.compositeConfiguredSceneRefraction(scene).ok());
+    const auto positive = renderer.color();
+
+    renderer.render(particle, .8f);
+    REQUIRE(renderer.configureRefraction(1.f, 0.f, -.1f, 2).ok());
+    REQUIRE(!renderer.configureRefraction(1.f, 0.f, .11f, 2).ok());
+    REQUIRE(renderer.compositeConfiguredSceneRefraction(scene).ok());
+    const auto negative = renderer.color();
+    REQUIRE(positive[probe * 4u] != negative[probe * 4u]);
+    REQUIRE(renderer.depth()[probe] < 1e29f);
+
+    const auto before = renderer.color();
+    REQUIRE(
+        !renderer.compositeConfiguredSceneRefraction(std::span<const uint8_t>(scene.data(), scene.size() - 1u)).ok());
+    REQUIRE(renderer.color() == before);
+    REQUIRE(!renderer.configureRefraction(-.01f, 0.f, 0.f, 1).ok());
+    REQUIRE(!renderer.configureRefraction(1.f, 0.f, 0.f, 5).ok());
+}
+
+TEST_CASE("fluids.ssf.refractionToggleSkipsSceneWorkAndRestoresConfiguredControls") {
+    FluidSurfaceParams params;
+    params.width            = 65;
+    params.height           = 65;
+    params.eye              = {0, 0, 3};
+    params.target           = {0, 0, 0};
+    params.smoothIterations = 0;
+    FluidSurfaceRenderer renderer(params, false);
+    renderer.render(std::vector<glm::vec3>{{0, 0, 0}}, .8f);
+    REQUIRE(renderer.configureRefraction(1.f, 0.f, .08f, 2).ok());
+    REQUIRE(renderer.configureRefractionEnabled(false).ok());
+    const auto                 fluid = renderer.color();
+    const std::vector<uint8_t> emptyScene;
+    REQUIRE(renderer.compositeConfiguredSceneRefraction(emptyScene).ok());
+    REQUIRE(renderer.color() == fluid);
+
+    REQUIRE(renderer.configureRefractionEnabled(true).ok());
+    std::vector<uint8_t> scene(65u * 65u * 4u, 255u);
+    for (size_t i = 0; i < 65u * 65u; ++i) {
+        scene[i * 4u]      = 20u;
+        scene[i * 4u + 1u] = 180u;
+        scene[i * 4u + 2u] = 40u;
+    }
+    REQUIRE(renderer.compositeConfiguredSceneRefraction(scene).ok());
+    REQUIRE(renderer.color() != fluid);
+}
+
+TEST_CASE("fluids.ssf.surfaceAndMaterialControlsAreAtomicAndObservable") {
+    FluidSurfaceParams params;
+    params.width            = 65;
+    params.height           = 65;
+    params.eye              = {0, 0, 3};
+    params.target           = {0, 0, 0};
+    params.smoothIterations = 0;
+    FluidSurfaceRenderer renderer(params, false);
+    renderer.render(std::vector<glm::vec3>{{0, 0, 0}}, .5f);
+    const size_t center   = (32u * 65u + 32u) * 4u;
+    const auto   baseline = renderer.color();
+    REQUIRE(renderer.configureColors({.8f, .05f, .02f}, {.1f, .9f, .2f}).ok());
+    REQUIRE(renderer.configureMaterial(false, 0.f, 0.f, 1.f, 0.f, 2.f).ok());
+    REQUIRE(renderer.configureSurface(1.f, 0.f, .03f, 1).ok());
+    renderer.render(std::vector<glm::vec3>{{0, 0, 0}}, .5f);
+    REQUIRE(renderer.color()[center] > renderer.color()[center + 1u]);
+    REQUIRE(renderer.color()[center + 3u] > baseline[center + 3u]);
+    const auto coverage = [](const std::vector<uint8_t>& color) {
+        size_t count = 0;
+        for (size_t i = 3; i < color.size(); i += 4) count += color[i] > 0;
+        return count;
+    };
+    const size_t uncutCoverage = coverage(renderer.color());
+
+    REQUIRE(renderer.configureSurface(1.f, 5.f, .03f, 0).ok());
+    renderer.render(std::vector<glm::vec3>{{0, 0, 0}}, .5f);
+    REQUIRE(renderer.color()[center + 3u] > 0u);
+    REQUIRE(coverage(renderer.color()) < uncutCoverage);
+    const auto discarded = renderer.color();
+    REQUIRE(!renderer.configureSurface(-1.f, 0.f, .03f, 0).ok());
+    REQUIRE(!renderer.configureMaterial(true, 2.f, 0.f, 1.f, .2f, .35f).ok());
+    REQUIRE(!renderer.configureColors({0, 0, std::numeric_limits<float>::quiet_NaN()}, {0, 0, 0}).ok());
+    renderer.render(std::vector<glm::vec3>{{0, 0, 0}}, .5f);
+    REQUIRE(renderer.color() == discarded);
+}
+
+TEST_CASE("fluids.ssf.reflectionToggleRestoresConfiguredCoefficient") {
+    FluidSurfaceParams params;
+    params.width            = 65;
+    params.height           = 65;
+    params.eye              = {0, 0, 3};
+    params.target           = {0, 0, 0};
+    params.smoothIterations = 0;
+    FluidSurfaceRenderer renderer(params, false);
+    REQUIRE(renderer.configureColors({0.f, 0.f, 0.f}, {1.f, 1.f, 1.f}).ok());
+    REQUIRE(renderer.configureMaterial(false, 0.f, 0.f, 0.f, 1.f, 1.f).ok());
+    renderer.render(std::vector<glm::vec3>{{0, 0, 0}}, .5f);
+    const size_t center    = (32u * 65u + 32u) * 4u;
+    const auto   reflected = renderer.color()[center];
+    REQUIRE(reflected > 0u);
+
+    REQUIRE(renderer.configureReflection(false).ok());
+    renderer.render(std::vector<glm::vec3>{{0, 0, 0}}, .5f);
+    REQUIRE(renderer.color()[center] < reflected);
+    REQUIRE(renderer.configureReflection(true).ok());
+    renderer.render(std::vector<glm::vec3>{{0, 0, 0}}, .5f);
+    REQUIRE(renderer.color()[center] == reflected);
+}
+
+TEST_CASE("fluids.ssf.anisotropicProjectionIsOptionalAndGpuMatchesCpu") {
+    auto* graphics = eve::graphics::Graphics::create();
+    REQUIRE(graphics != nullptr);
+    graphics->initHeadless(64, 64);
+    VolumeFluidSettings settings;
+    settings.gravity = glm::vec3(0.f);
+    settings.spacing = .2f;
+    auto created     = VolumeFluid::create(settings);
+    REQUIRE(created.ok());
+    auto                solver = std::move(created).takeValue();
+    VolumeFluidParticle particle;
+    particle.position    = {0, 1, 0};
+    particle.radii       = {.1f, .4f, .1f};
+    particle.orientation = {0, 0, .70710677f, .70710677f};
+    REQUIRE(solver->emit(std::span(&particle, 1)).ok());
+    FluidSurfaceParams params;
+    params.width            = 97;
+    params.height           = 97;
+    params.eye              = {0, 1, 3};
+    params.target           = {0, 1, 0};
+    params.smoothIterations = 0;
+    auto bounds             = [](const FluidSurfaceRenderer& renderer) {
+        int x0 = 97, y0 = 97, x1 = -1, y1 = -1;
+        for (int y = 0; y < 97; ++y)
+            for (int x = 0; x < 97; ++x)
+                if (renderer.color()[(size_t(y) * 97u + size_t(x)) * 4u + 3u]) {
+                    x0 = std::min(x0, x);
+                    x1 = std::max(x1, x);
+                    y0 = std::min(y0, y);
+                    y1 = std::max(y1, y);
+                }
+        return glm::ivec4(x0, y0, x1, y1);
+    };
+    FluidSurfaceRenderer spherical(params, false);
+    spherical.renderVolume(*solver);
+    const auto           sphericalBounds = bounds(spherical);
+    FluidSurfaceRenderer cpu(params, false);
+    REQUIRE(cpu.configureAnisotropy(true).ok());
+    cpu.renderVolume(*solver);
+    const auto cpuBounds = bounds(cpu);
+    REQUIRE(cpuBounds.z - cpuBounds.x > sphericalBounds.z - sphericalBounds.x + 4);
+    REQUIRE(cpuBounds.w - cpuBounds.y <= sphericalBounds.w - sphericalBounds.y - 4);
+
+    FluidSurfaceRenderer gpu(params, true);
+    REQUIRE(gpu.configureAnisotropy(true).ok());
+    REQUIRE(gpu.prepare().ok());
+    gpu.renderVolume(*solver);
+    REQUIRE(gpu.usingGpu());
+    const auto gpuBounds = bounds(gpu);
+    REQUIRE(glm::all(glm::lessThanEqual(glm::abs(gpuBounds - cpuBounds), glm::ivec4(1))));
+    const size_t center = 48u * 97u + 48u;
+    REQUIRE(std::abs(gpu.depth()[center] - cpu.depth()[center]) < 1e-4f);
+}
+
+TEST_CASE("fluids.ssf.isotropicPerParticleRadiusChangesRenderedCoverage") {
+    auto makeSolver = [&](float radius) {
+        VolumeFluidSettings settings;
+        settings.gravity = glm::vec3(0.f);
+        settings.spacing = .4f;
+        auto created     = VolumeFluid::create(settings);
+        REQUIRE(created.ok());
+        auto                solver = std::move(created).takeValue();
+        VolumeFluidParticle particle;
+        particle.position = {0, 1, 0};
+        particle.radii    = glm::vec3(radius);
+        REQUIRE(solver->emit(std::span(&particle, 1)).ok());
+        return solver;
+    };
+    auto               small = makeSolver(.05f), large = makeSolver(.2f);
+    FluidSurfaceParams params;
+    params.width = params.height = 97;
+    params.eye                   = {0, 1, 3};
+    params.target                = {0, 1, 0};
+    params.smoothIterations      = 0;
+    FluidSurfaceRenderer smallRenderer(params, false), largeRenderer(params, false);
+    REQUIRE(smallRenderer.configureAnisotropy(true).ok());
+    REQUIRE(largeRenderer.configureAnisotropy(true).ok());
+    smallRenderer.renderVolume(*small);
+    largeRenderer.renderVolume(*large);
+    const auto coverage = [](const FluidSurfaceRenderer& renderer) {
+        size_t count = 0;
+        for (size_t i = 3; i < renderer.color().size(); i += 4u)
+            if (renderer.color()[i] > 0u) ++count;
+        return count;
+    };
+    REQUIRE(coverage(largeRenderer) > coverage(smallRenderer) * 4);
+}
+
+TEST_CASE("fluids.ssf.surfaceDownsampleRunsReducedCpuAndGpuTargets") {
+    auto* graphics = eve::graphics::Graphics::create();
+    REQUIRE(graphics != nullptr);
+    graphics->initHeadless(64, 64);
+    FluidSurfaceParams params;
+    params.width            = 96;
+    params.height           = 96;
+    params.eye              = {0, 0, 3};
+    params.target           = {0, 0, 0};
+    params.smoothIterations = 0;
+    const std::vector<glm::vec3> particles{{0, 0, 0}};
+    FluidSurfaceRenderer         cpu(params, false);
+    REQUIRE(cpu.configureSurfaceDownsample(2).ok());
+    REQUIRE(!cpu.configureSurfaceDownsample(5).ok());
+    cpu.render(particles, .5f);
+    REQUIRE(cpu.color().size() == 96u * 96u * 4u);
+    REQUIRE(cpu.depth().size() == 96u * 96u);
+    for (int y = 42; y < 54; y += 2)
+        for (int x = 42; x < 54; x += 2) {
+            const size_t a = size_t(y) * 96u + size_t(x);
+            REQUIRE(cpu.depth()[a] == cpu.depth()[a + 1u]);
+            REQUIRE(cpu.depth()[a] == cpu.depth()[a + 96u]);
+            REQUIRE(std::memcmp(cpu.color().data() + a * 4u, cpu.color().data() + (a + 1u) * 4u, 4u) == 0);
+        }
+    FluidSurfaceRenderer gpu(params, true);
+    REQUIRE(gpu.configureSurfaceDownsample(2).ok());
+    gpu.render(particles, .5f);
+    REQUIRE(gpu.usingGpu());
+    const size_t center = 48u * 96u + 48u;
+    REQUIRE(std::abs(gpu.depth()[center] - cpu.depth()[center]) < 2e-5f);
+    REQUIRE(glm::length(gpu.normals()[center] - cpu.normals()[center]) < .002f);
+}
+
+TEST_CASE("fluids.ssf.thicknessDownsampleIsIndependentBeforeVolumeShading") {
+    auto* graphics = eve::graphics::Graphics::create();
+    REQUIRE(graphics != nullptr);
+    graphics->initHeadless(64, 64);
+    VolumeFluidSettings settings;
+    settings.gravity = glm::vec3(0.f);
+    settings.spacing = .4f;
+    auto created     = VolumeFluid::create(settings);
+    REQUIRE(created.ok());
+    auto                solver = std::move(created).takeValue();
+    VolumeFluidParticle particle;
+    particle.position = {0, 1, 0};
+    particle.color    = {.2f, .6f, .9f, 1.f};
+    REQUIRE(solver->emit(std::span(&particle, 1)).ok());
+    FluidSurfaceParams params;
+    params.width = params.height = 96;
+    params.eye                   = {0, 1, 3};
+    params.target                = {0, 1, 0};
+    params.smoothIterations      = 0;
+    FluidSurfaceRenderer cpu(params, false);
+    REQUIRE(cpu.configureSurfaceDownsample(2).ok());
+    REQUIRE(cpu.configureThicknessDownsample(4).ok());
+    REQUIRE(!cpu.configureThicknessDownsample(0).ok());
+    cpu.renderVolume(*solver);
+    const size_t center = 48u * 96u + 48u;
+    REQUIRE(cpu.color()[center * 4u + 3u] > 0u);
+    for (int oy = 0; oy < 4; ++oy)
+        for (int ox = 0; ox < 4; ++ox)
+            REQUIRE(cpu.thickness()[center] == cpu.thickness()[size_t(48 + oy) * 96u + size_t(48 + ox)]);
+    REQUIRE(cpu.depth()[center] == cpu.depth()[center + 1u]);
+
+    FluidSurfaceRenderer gpu(params, true);
+    REQUIRE(gpu.configureSurfaceDownsample(2).ok());
+    REQUIRE(gpu.configureThicknessDownsample(4).ok());
+    REQUIRE(gpu.prepare().ok());
+    gpu.renderVolume(*solver);
+    REQUIRE(gpu.usingGpu());
+    REQUIRE(std::abs(gpu.depth()[center] - cpu.depth()[center]) < 2e-5f);
+    REQUIRE(std::abs(gpu.thickness()[center] - cpu.thickness()[center]) < 1.f / 256.f + .000001f);
+    REQUIRE(std::abs(int(gpu.color()[center * 4u + 3u]) - int(cpu.color()[center * 4u + 3u])) <= 1);
+}
+
+// fluids_ssf.cpp
+using namespace eve::fluids;
+
+TEST_CASE("fluids.ssf.uniformVolumeColorOnlyGpuPath") {
+    auto* graphics = eve::graphics::Graphics::create();
+    REQUIRE(graphics != nullptr);
+    graphics->initHeadless(64, 64);
+    VolumeFluidSettings settings;
+    settings.gravity = glm::vec3(0.f);
+    auto created     = VolumeFluid::create(settings);
+    REQUIRE(created.ok());
+    auto                solver = std::move(created).takeValue();
+    VolumeFluidParticle particle;
+    particle.position = glm::vec3(0.f, 1.f, 0.f);
+    particle.color    = glm::vec4(.8f, .1f, .05f, .5f);
+    REQUIRE(solver->emit(std::span(&particle, 1)).ok());
+    FluidSurfaceParams params;
+    params.width            = 64;
+    params.height           = 64;
+    params.eye              = glm::vec3(0.f, 1.f, 3.f);
+    params.target           = glm::vec3(0.f, 1.f, 0.f);
+    params.smoothIterations = 0;
+    FluidSurfaceRenderer renderer(params, true);
+    const auto           depthBefore = renderer.depth();
+    renderer.renderVolumeColorOnly(*solver);
+    REQUIRE(renderer.usingGpu());
+    const size_t middle = (32u * 64u + 32u) * 4u;
+    REQUIRE(renderer.color()[middle + 3u] > 0);
+    REQUIRE(renderer.color()[middle] > renderer.color()[middle + 1u]);
+    REQUIRE(renderer.depth() == depthBefore);
+    const auto         colorBefore = renderer.color();
+    std::vector<float> sceneDepth(64u * 64u, 1e30f);
+    REQUIRE(!renderer.occludeWithSceneDepth(sceneDepth).ok());
+    REQUIRE(renderer.color() == colorBefore);
+}
+
+TEST_CASE("fluids.ssf.customMaterialUniformColorOnlyRemainsGpuFastPath") {
+    auto* graphics = eve::graphics::Graphics::create();
+    REQUIRE(graphics != nullptr);
+    graphics->initHeadless(64, 64);
+    VolumeFluidSettings settings;
+    settings.gravity = glm::vec3(0.f);
+    auto created     = VolumeFluid::create(settings);
+    REQUIRE(created.ok());
+    auto                solver = std::move(created).takeValue();
+    VolumeFluidParticle particle;
+    particle.position = glm::vec3(0.f, 1.f, 0.f);
+    particle.color    = glm::vec4(.65f, .2f, .08f, .75f);
+    REQUIRE(solver->emit(std::span(&particle, 1)).ok());
+
+    FluidSurfaceParams params;
+    params.width = params.height = 64;
+    params.eye                   = glm::vec3(0.f, 1.f, 3.f);
+    params.target                = glm::vec3(0.f, 1.f, 0.f);
+    params.smoothIterations      = 0;
+    FluidSurfaceRenderer cpu(params, false), gpu(params, true);
+    for (auto* renderer : {&cpu, &gpu}) {
+        REQUIRE(renderer->configureSurface(1.f, .2f, .08f, 0).ok());
+        REQUIRE(renderer->configureMaterial(true, .35f, .4f, 1.25f, .3f, .7f).ok());
+        REQUIRE(renderer->configureColors(glm::vec3(.1f, .2f, .3f), glm::vec3(.2f, .7f, .9f)).ok());
+    }
+
+    cpu.renderVolume(*solver);
+    const auto depthBefore = gpu.depth();
+    gpu.renderVolumeColorOnly(*solver);
+    REQUIRE(gpu.usingGpu());
+    REQUIRE(gpu.depth() == depthBefore);
+    const size_t middle = (32u * 64u + 32u) * 4u;
+    for (size_t channel = 0; channel < 4; ++channel)
+        CHECK(std::abs(int(cpu.color()[middle + channel]) - int(gpu.color()[middle + channel])) <= 3);
+}
+
+TEST_CASE("fluids.ssf.multicolorVolumeColorOnlyRemainsDeviceLocal") {
+    auto* graphics = eve::graphics::Graphics::create();
+    REQUIRE(graphics != nullptr);
+    graphics->initHeadless(64, 64);
+    VolumeFluidSettings settings;
+    settings.gravity = glm::vec3(0.f);
+    auto created     = VolumeFluid::create(settings);
+    REQUIRE(created.ok());
+    auto                solver = std::move(created).takeValue();
+    VolumeFluidParticle particles[2];
+    particles[0].position    = glm::vec3(-.025f, 1.f, 0.f);
+    particles[0].color       = glm::vec4(.9f, .1f, .05f, .8f);
+    particles[0].radii       = glm::vec3(.1f, .25f, .1f);
+    particles[0].orientation = glm::vec4(0.f, 0.f, .70710677f, .70710677f);
+    particles[1].position    = glm::vec3(.025f, 1.f, 0.f);
+    particles[1].color       = glm::vec4(.05f, .2f, .9f, .6f);
+    particles[1].radii       = glm::vec3(.1f, .25f, .1f);
+    particles[1].orientation = particles[0].orientation;
+    REQUIRE(solver->emit(particles).ok());
+
+    FluidSurfaceParams params;
+    params.width = params.height = 64;
+    params.eye                   = glm::vec3(0.f, 1.f, 3.f);
+    params.target                = glm::vec3(0.f, 1.f, 0.f);
+    params.smoothIterations      = 0;
+    FluidSurfaceRenderer cpu(params, false), gpu(params, true);
+    REQUIRE(cpu.configureAnisotropy(true).ok());
+    REQUIRE(gpu.configureAnisotropy(true).ok());
+    cpu.renderVolume(*solver);
+    const auto depthBefore = gpu.depth();
+    gpu.renderVolumeColorOnly(*solver);
+    REQUIRE(gpu.usingGpu());
+    REQUIRE(gpu.depth() == depthBefore);
+    const size_t middle = (32u * 64u + 32u) * 4u;
+    REQUIRE(gpu.color()[middle + 3u] > 0);
+    for (size_t channel = 0; channel < 4; ++channel)
+        CHECK(std::abs(int(cpu.color()[middle + channel]) - int(gpu.color()[middle + channel])) <= 4);
+}
+
+TEST_CASE("fluids.ssf.volumeRenderUsesFixedStepInterpolationWithoutReplacingOnFailure") {
+    VolumeFluidSettings settings;
+    settings.gravity = glm::vec3(0.f);
+    auto created     = VolumeFluid::create(settings);
+    REQUIRE(created.ok());
+    auto                solver = std::move(created).takeValue();
+    VolumeFluidParticle particle;
+    particle.position = {-.5f, 1.f, 0.f};
+    particle.velocity = {60.f, 0.f, 0.f};
+    REQUIRE(solver->emit(std::span(&particle, 1)).ok());
+    REQUIRE(solver->step(1.f / 120.f, 1).ok());
+    FluidSurfaceParams params;
+    params.width = params.height = 65;
+    params.eye                   = {0.f, 1.f, 3.f};
+    params.target                = {0.f, 1.f, 0.f};
+    params.orthographic          = true;
+    params.orthographicSize      = 1.f;
+    params.smoothIterations      = 0;
+    FluidSurfaceRenderer renderer(params, false);
+    REQUIRE(renderer.renderVolumeInterpolated(*solver, 0.f).ok());
+    auto centroid = [](const std::vector<uint8_t>& rgba) {
+        double sum = 0, weight = 0;
+        for (size_t i = 0; i < rgba.size() / 4; ++i) {
+            const double a = rgba[i * 4 + 3];
+            sum += double(i % 65) * a;
+            weight += a;
+        }
+        return sum / weight;
+    };
+    const double previousX = centroid(renderer.color());
+    REQUIRE(renderer.renderVolumeInterpolated(*solver, 1.f).ok());
+    const double currentX = centroid(renderer.color());
+    REQUIRE(currentX > previousX + 10.0);
+    const auto preserved = renderer.color();
+    REQUIRE(!renderer.renderVolumeInterpolated(*solver, -.01f).ok());
+    REQUIRE(renderer.color() == preserved);
+}
+
+TEST_CASE("fluids.ssf.gasVolumeSelectsGasAndAccumulatesOpacity") {
+    VolumeFluidSettings settings;
+    settings.gravity = glm::vec3(0.f);
+    auto created     = VolumeFluid::create(settings);
+    REQUIRE(created.ok());
+    auto                solver = std::move(created).takeValue();
+    VolumeFluidParticle particles[2];
+    particles[0].position       = {0.f, 1.f, 0.f};
+    particles[0].color          = {.9f, .15f, .05f, .8f};
+    particles[0].material.phase = VolumeFluidPhase::Gas;
+    particles[1].position       = {.8f, 1.f, 0.f};
+    particles[1].color          = {.05f, .1f, .95f, 1.f};
+    particles[1].material.phase = VolumeFluidPhase::Liquid;
+    REQUIRE(solver->emit(particles).ok());
+
+    FluidSurfaceParams params;
+    params.width  = 65;
+    params.height = 65;
+    params.eye    = {0.f, 1.f, 3.f};
+    params.target = {0.f, 1.f, 0.f};
+    FluidSurfaceRenderer renderer(params, false);
+    auto                 rendered = renderer.renderGasVolume(*solver, 5.f);
+    REQUIRE(rendered.ok());
+    const size_t center = (32u * 65u + 32u) * 4u;
+    REQUIRE(renderer.color()[center + 3u] > 0);
+    CHECK(renderer.color()[center] > renderer.color()[center + 2u]);
+    CHECK(glm::length(renderer.normals()[32u * 65u + 32u]) == 0.f);
+    CHECK(!renderer.renderGasVolume(*solver, 0.f).ok());
+}
+
+TEST_CASE("fluids.ssf.generateSurfaceToggleSelectsExistingBoundedRenderPaths") {
+    VolumeFluidSettings settings;
+    settings.gravity = glm::vec3(0.f);
+    auto created     = VolumeFluid::create(settings);
+    REQUIRE(created.ok());
+    auto                solver = std::move(created).takeValue();
+    VolumeFluidParticle particle;
+    particle.position = {0.f, 1.f, 0.f};
+    particle.color    = {.8f, .2f, .1f, 1.f};
+    REQUIRE(solver->emit(std::span(&particle, 1)).ok());
+    FluidSurfaceParams params;
+    params.width = params.height = 65;
+    params.eye                   = {0.f, 1.f, 3.f};
+    params.target                = {0.f, 1.f, 0.f};
+    params.smoothIterations      = 0;
+    FluidSurfaceRenderer renderer(params, false);
+
+    REQUIRE(renderer.configureSurfaceEnabled(false).ok());
+    REQUIRE(renderer.renderConfiguredVolume(*solver).ok());
+    const size_t center = 32u * 65u + 32u;
+    REQUIRE(renderer.color()[center * 4u + 3u] > 0);
+    REQUIRE(glm::length(renderer.normals()[center]) == 0.f);
+    REQUIRE(renderer.configureSurfaceEnabled(true).ok());
+    REQUIRE(renderer.renderConfiguredVolume(*solver).ok());
+    REQUIRE(renderer.color()[center * 4u + 3u] > 0);
+    REQUIRE(glm::length(renderer.normals()[center]) > .5f);
+}
+
+TEST_CASE("fluids.ssf.completeFluid3DRendererSettingsApplyAtomically") {
+    FluidSurfaceParams params;
+    params.width = params.height = 32;
+    FluidSurfaceRenderer  renderer(params, false);
+    FluidRendererSettings settings;
+    REQUIRE(settings.blendSource == 5);
+    REQUIRE(settings.blendDestination == 10);
+    REQUIRE(settings.thicknessCutoff == 1.2f);
+    REQUIRE(settings.thicknessDownsample == 2);
+    REQUIRE(settings.blurRadius == .02f);
+    settings.generateSurface      = false;
+    settings.generateReflection   = false;
+    settings.generateRefraction   = false;
+    settings.generateFoam         = false;
+    settings.particleZWrite       = true;
+    settings.surfaceDownsample    = 3;
+    settings.refractionDownsample = 4;
+    REQUIRE(renderer.configureRendererSettings(settings).ok());
+    const auto applied = renderer.rendererSettings();
+    REQUIRE(!applied.generateSurface);
+    REQUIRE(!applied.generateReflection);
+    REQUIRE(!applied.generateRefraction);
+    REQUIRE(!applied.generateFoam);
+    REQUIRE(applied.particleZWrite);
+    REQUIRE(applied.surfaceDownsample == 3);
+    REQUIRE(applied.refractionDownsample == 4);
+
+    auto encoded = encodeFluidRendererSettings(settings);
+    REQUIRE(decodeFluidRendererSettings(encoded).ok());
+    encoded.set("futureField", int64_t(1));
+    REQUIRE(!decodeFluidRendererSettings(encoded).ok());
+    settings.foamDownsample = 5;
+    REQUIRE(!renderer.configureRendererSettings(settings).ok());
+    REQUIRE(renderer.rendererSettings().foamDownsample == applied.foamDownsample);
+    REQUIRE(renderer.rendererSettings().surfaceDownsample == applied.surfaceDownsample);
+}
+
+TEST_CASE("fluids.ssf.gasVolumeParticleBudgetPreservesFrame") {
+    VolumeFluidSettings settings;
+    settings.capacity = 65537;
+    settings.gravity  = glm::vec3(0.f);
+    auto created      = VolumeFluid::create(settings);
+    REQUIRE(created.ok());
+    auto                             solver = std::move(created).takeValue();
+    std::vector<VolumeFluidParticle> particles(settings.capacity);
+    for (auto& particle : particles) {
+        particle.position       = {0.f, 1.f, 0.f};
+        particle.material.phase = VolumeFluidPhase::Gas;
+    }
+    REQUIRE(solver->emit(particles).ok());
+    FluidSurfaceParams params;
+    params.width = params.height = 16;
+    FluidSurfaceRenderer renderer(params, false);
+    renderer.render(std::vector<glm::vec3>{{0.f, 0.f, 0.f}}, .1f);
+    const auto previous = renderer.color();
+    auto       rendered = renderer.renderGasVolume(*solver, 5.f);
+    REQUIRE(!rendered.ok());
+    CHECK(renderer.color() == previous);
+}
+
+TEST_CASE("fluids.ssf.sphericalDepthAndNormalParity") {
+    auto* graphics = eve::graphics::Graphics::create();
+    REQUIRE(graphics != nullptr);
+    graphics->initHeadless(64, 64);
+    for (int passes : {0, 1, 2}) {
+        FluidSurfaceParams params;
+        params.width            = 64;
+        params.height           = 64;
+        params.eye              = {0, 0, 3};
+        params.target           = {0, 0, 0};
+        params.smoothIterations = passes;
+        FluidSurfaceRenderer         cpu(params, false), gpu(params, true);
+        const std::vector<glm::vec3> particles{{0, 0, 0}};
+        cpu.render(particles, .6f);
+        gpu.render(particles, .6f);
+        REQUIRE(gpu.usingGpu());
+        const size_t middle = 32 * 64 + 32, left = 32 * 64 + 26, right = 32 * 64 + 38;
+        const size_t top = 26 * 64 + 32, bottom = 38 * 64 + 32;
+        REQUIRE(cpu.depth()[middle] < 2.42f);
+        REQUIRE(cpu.depth()[right] > cpu.depth()[middle] + .06f);
+        REQUIRE(gpu.normals()[left].x < -.2f);
+        REQUIRE(gpu.normals()[right].x > .2f);
+        REQUIRE(gpu.normals()[top].y > .2f);
+        REQUIRE(gpu.normals()[bottom].y < -.2f);
+        REQUIRE(gpu.normals()[middle].z > .95f);
+        for (size_t i = 0; i < cpu.depth().size(); ++i) {
+            if (cpu.depth()[i] >= 1e29f) {
+                REQUIRE(gpu.depth()[i] >= 1e29f);
+                continue;
+            }
+            REQUIRE(std::abs(cpu.depth()[i] - gpu.depth()[i]) < .00002f);
+            REQUIRE(glm::length(cpu.normals()[i] - gpu.normals()[i]) < .002f);
+            // GPU thickness uses 1/256-unit fixed-point accumulation.
+            REQUIRE(std::abs(cpu.thickness()[i] - gpu.thickness()[i]) < 1.f / 256.f + .000001f);
+        }
+        gpu.render({}, .6f);
+        REQUIRE(gpu.depth()[middle] >= 1e29f);
+        REQUIRE(glm::length(gpu.normals()[middle]) == 0.f);
+        REQUIRE(gpu.thickness()[middle] == 0.f);
+        REQUIRE(gpu.color()[middle * 4 + 3] == 0);
+    }
+}
+
+TEST_CASE("fluids.ssf.worldSpaceBlurRadiusUsesExistingBoundedPass") {
+    auto* graphics = eve::graphics::Graphics::create();
+    REQUIRE(graphics != nullptr);
+    graphics->initHeadless(64, 64);
+    FluidSurfaceParams params;
+    params.width = params.height = 64;
+    params.eye                   = {0, 0, 3};
+    params.target                = {0, 0, 0};
+    params.smoothIterations      = 1;
+    const std::vector<glm::vec3> particles{{-.18f, 0, 0}, {.18f, 0, -.12f}};
+    FluidSurfaceRenderer         unblurred(params, false);
+    REQUIRE(unblurred.configureSurfaceBlurRadius(0.f).ok());
+    REQUIRE(!unblurred.configureSurfaceBlurRadius(.1001f).ok());
+    unblurred.render(particles, .35f);
+    auto noPassParams             = params;
+    noPassParams.smoothIterations = 0;
+    FluidSurfaceRenderer noPass(noPassParams, false);
+    noPass.render(particles, .35f);
+    REQUIRE(unblurred.depth() == noPass.depth());
+
+    params.smoothIterations = 1;
+    FluidSurfaceRenderer cpu(params, false), gpu(params, true);
+    REQUIRE(cpu.configureSurfaceBlurRadius(.02f).ok());
+    REQUIRE(gpu.configureSurfaceBlurRadius(.02f).ok());
+    cpu.render(particles, .35f);
+    gpu.render(particles, .35f);
+    REQUIRE(gpu.usingGpu());
+    for (size_t i = 0; i < cpu.depth().size(); ++i) {
+        if (cpu.depth()[i] >= 1e29f || gpu.depth()[i] >= 1e29f) continue;
+        REQUIRE(std::abs(cpu.depth()[i] - gpu.depth()[i]) < 1e-4f);
+    }
+}
+
+TEST_CASE("fluids.ssf.configuredSurfaceBlendSupportsUnityFactorsAtomically") {
+    FluidSurfaceParams params;
+    params.width = params.height = 17;
+    params.eye                   = {0.f, 0.f, 3.f};
+    params.target                = {0.f, 0.f, 0.f};
+    params.smoothIterations      = 0;
+    FluidSurfaceRenderer renderer(params, false);
+    renderer.render(std::vector<glm::vec3>{{0.f, 0.f, 0.f}}, .8f);
+    const size_t         center = (8u * 17u + 8u) * 4u;
+    const auto           source = renderer.color();
+    std::vector<uint8_t> scene(source.size(), 0u);
+    for (size_t i = 0; i < scene.size(); i += 4u) {
+        scene[i + 0u] = 128u;
+        scene[i + 1u] = 64u;
+        scene[i + 2u] = 32u;
+        scene[i + 3u] = 255u;
+    }
+
+    REQUIRE(renderer.configureSurfaceBlend(2, 0).ok());  // DstColor, Zero.
+    REQUIRE(renderer.compositeConfiguredSurfaceBlend(scene).ok());
+    CHECK(renderer.color()[center] == uint8_t((unsigned(source[center]) * 128u + 127u) / 255u));
+    CHECK(renderer.color()[center + 1u] == uint8_t((unsigned(source[center + 1u]) * 64u + 127u) / 255u));
+
+    const auto preserved = renderer.color();
+    REQUIRE(!renderer.configureSurfaceBlend(-1, 10).ok());
+    REQUIRE(!renderer.configureSurfaceBlend(5, 11).ok());
+    REQUIRE(!renderer.compositeConfiguredSurfaceBlend(std::span<const uint8_t>(scene.data(), 4)).ok());
+    CHECK(renderer.color() == preserved);
+}
+
+TEST_CASE("fluids.ssf.particleBlendAndDepthWriteMatchFluid3DColorPass") {
+    VolumeFluidSettings settings;
+    settings.gravity = glm::vec3(0.f);
+    auto created     = VolumeFluid::create(settings);
+    REQUIRE(created.ok());
+    auto                solver = std::move(created).takeValue();
+    VolumeFluidParticle particles[2];
+    particles[0].position = {-.05f, .5f, 0.f};
+    particles[1].position = {.05f, .5f, 0.f};
+    particles[0].color    = {.8f, .5f, .25f, .3f};
+    particles[1].color    = {.5f, .25f, .8f, .7f};
+    REQUIRE(solver->emit(particles).ok());
+
+    FluidSurfaceParams params;
+    params.width = params.height = 33;
+    params.eye                   = {0.f, .5f, 3.f};
+    params.target                = {0.f, .5f, 0.f};
+    params.smoothIterations      = 0;
+    FluidSurfaceRenderer renderer(params, false);
+    REQUIRE(renderer.configureMaterial(false, 0.f, 0.f, 0.f, 0.f, 1.f).ok());
+    REQUIRE(renderer.configureParticleBlend(2, 0, false).ok());
+    renderer.renderVolume(*solver);
+    const size_t center = (16u * 33u + 16u) * 4u;
+    CHECK(std::abs(int(renderer.color()[center + 0u]) - int(255.f * .8f * .5f)) <= 1);
+    CHECK(std::abs(int(renderer.color()[center + 1u]) - int(255.f * .5f * .25f)) <= 1);
+    CHECK(std::abs(int(renderer.color()[center + 2u]) - int(255.f * .25f * .8f)) <= 1);
+
+    REQUIRE(renderer.configureParticleBlend(2, 0, true).ok());
+    renderer.renderVolume(*solver);
+    CHECK(std::abs(int(renderer.color()[center + 0u]) - int(255.f * .8f)) <= 1);
+    CHECK(std::abs(int(renderer.color()[center + 1u]) - int(255.f * .5f)) <= 1);
+    CHECK(std::abs(int(renderer.color()[center + 2u]) - int(255.f * .25f)) <= 1);
+    const auto preserved = renderer.color();
+    REQUIRE(!renderer.configureParticleBlend(11, 0, false).ok());
+    renderer.renderVolume(*solver);
+    CHECK(renderer.color() == preserved);
+}
+
+TEST_CASE("fluids.ssf.orthographicDepthIndependentCoverageAndGpuParity") {
+    auto* graphics = eve::graphics::Graphics::create();
+    REQUIRE(graphics != nullptr);
+    graphics->initHeadless(64, 64);
+    FluidSurfaceParams params;
+    params.width            = 64;
+    params.height           = 64;
+    params.eye              = {0, 0, 3};
+    params.target           = {0, 0, 0};
+    params.smoothIterations = 0;
+    params.orthographic     = true;
+    params.orthographicSize = 1.f;
+    FluidSurfaceRenderer nearCpu(params, false), farCpu(params, false), gpu(params, true);
+    nearCpu.render(std::vector<glm::vec3>{{0, 0, 0}}, .25f);
+    farCpu.render(std::vector<glm::vec3>{{0, 0, -1}}, .25f);
+    gpu.render(std::vector<glm::vec3>{{0, 0, 0}}, .25f);
+    REQUIRE(gpu.usingGpu());
+
+    size_t nearCoverage = 0, farCoverage = 0;
+    for (size_t i = 0; i < nearCpu.depth().size(); ++i) {
+        nearCoverage += nearCpu.depth()[i] < 1e29f;
+        farCoverage += farCpu.depth()[i] < 1e29f;
+        if (nearCpu.depth()[i] >= 1e29f) {
+            REQUIRE(gpu.depth()[i] >= 1e29f);
+            continue;
+        }
+        REQUIRE(std::abs(nearCpu.depth()[i] - gpu.depth()[i]) < .00002f);
+        REQUIRE(glm::length(nearCpu.normals()[i] - gpu.normals()[i]) < .002f);
+    }
+    CHECK(nearCoverage == farCoverage);
+    CHECK(nearCoverage > 150);
+
+    const auto previous = nearCpu.depth();
+    REQUIRE(!nearCpu.configureProjection(true, 0.f).ok());
+    nearCpu.render(std::vector<glm::vec3>{{0, 0, 0}}, .25f);
+    CHECK(nearCpu.depth() == previous);
+}
+
+TEST_CASE("fluids.ssf.orthographicVolumeTintAndGasCoverageAreDepthIndependent") {
+    auto makeSolver = [&](float depthOffset, VolumeFluidPhase phase) {
+        VolumeFluidSettings settings;
+        settings.gravity = glm::vec3(0.f);
+        auto created     = VolumeFluid::create(settings);
+        REQUIRE(created.ok());
+        auto                solver = std::move(created).takeValue();
+        VolumeFluidParticle particles[2];
+        particles[0].position       = {-.2f, .5f, depthOffset};
+        particles[0].color          = {1.f, .1f, .05f, .8f};
+        particles[0].material.phase = phase;
+        particles[1].position       = {.2f, .5f, depthOffset};
+        particles[1].color          = {.05f, .2f, 1.f, .8f};
+        particles[1].material.phase = phase;
+        REQUIRE(solver->emit(particles).ok());
+        return solver;
+    };
+    FluidSurfaceParams params;
+    params.width = params.height = 65;
+    params.eye                   = {0.f, .5f, 3.f};
+    params.target                = {0.f, .5f, 0.f};
+    params.orthographic          = true;
+    params.orthographicSize      = 1.f;
+    params.smoothIterations      = 0;
+
+    auto                 nearLiquid = makeSolver(0.f, VolumeFluidPhase::Liquid);
+    auto                 farLiquid  = makeSolver(-.8f, VolumeFluidPhase::Liquid);
+    FluidSurfaceRenderer nearLiquidRenderer(params, false), farLiquidRenderer(params, false);
+    nearLiquidRenderer.renderVolume(*nearLiquid);
+    farLiquidRenderer.renderVolume(*farLiquid);
+    CHECK(nearLiquidRenderer.color() == farLiquidRenderer.color());
+
+    auto                 nearGas = makeSolver(0.f, VolumeFluidPhase::Gas);
+    auto                 farGas  = makeSolver(-.8f, VolumeFluidPhase::Gas);
+    FluidSurfaceRenderer nearGasRenderer(params, false), farGasRenderer(params, false);
+    REQUIRE(nearGasRenderer.renderGasVolume(*nearGas, 5.f).ok());
+    REQUIRE(farGasRenderer.renderGasVolume(*farGas, 5.f).ok());
+    CHECK(nearGasRenderer.color() == farGasRenderer.color());
+}
+
+TEST_CASE("fluids.ssf.occlusionDoesNotTiltForegroundNormals") {
+    auto* graphics = eve::graphics::Graphics::create();
+    REQUIRE(graphics != nullptr);
+    graphics->initHeadless(64, 64);
+    FluidSurfaceParams params;
+    params.width            = 64;
+    params.height           = 64;
+    params.eye              = {0, 0, 3};
+    params.target           = {0, 0, 0};
+    params.smoothIterations = 0;
+    FluidSurfaceRenderer foreground(params, false), combined(params, true), reference(params, false);
+    foreground.render(std::vector<glm::vec3>{{0, 0, 0}}, .6f);
+    const std::vector<glm::vec3> particles{{0, 0, 0}, {.9f, 0, -2.f}};
+    combined.render(particles, .6f);
+    reference.render(particles, .6f);
+    REQUIRE(combined.usingGpu());
+    unsigned occludedEdges = 0;
+    for (size_t i = 0; i < foreground.depth().size(); ++i) {
+        if (foreground.depth()[i] >= 1e29f) continue;
+        REQUIRE(std::abs(combined.depth()[i] - foreground.depth()[i]) < .00002f);
+        REQUIRE(glm::length(combined.normals()[i] - reference.normals()[i]) < .002f);
+        const size_t x = i % 64;
+        if (x < 63 && foreground.depth()[i + 1] >= 1e29f && combined.depth()[i + 1] < 1e29f) {
+            ++occludedEdges;
+            REQUIRE(glm::length(combined.normals()[i] - foreground.normals()[i]) < .002f);
+        }
+    }
+    REQUIRE(occludedEdges >= 8);
+}
+
+// fluids_surface.cpp
+using namespace eve::fluids;
+
+TEST_CASE("fluids.surfaceBinding.rigidPosePreservesMaterialLocation") {
+    FluidSurfaceBinding          binding;
+    const std::vector<glm::vec3> positions = {
+        {0.f, 0.f, 0.f},
+        {1.f, 0.f, 0.f},
+        {0.f, 1.f, 0.f},
+    };
+    const std::vector<uint32_t>  indices = {0, 1, 2};
+    const std::vector<glm::vec2> uvs     = {{0.f, 0.f}, {1.f, 0.f}, {0.f, 1.f}};
+    REQUIRE(binding.build(positions, indices, uvs));
+
+    const SurfaceLocation location{0, glm::vec3(0.25f, 0.25f, 0.5f)};
+    const SurfaceSample   initial = binding.evaluate(location, 1.f);
+    REQUIRE(glm::distance(initial.position, glm::vec3(0.25f, 0.5f, 0.f)) < 1e-5f);
+    REQUIRE(glm::distance(initial.uv, glm::vec2(0.25f, 0.5f)) < 1e-5f);
+
+    glm::mat4 pose(1.f);
+    pose[3] = glm::vec4(2.f, -1.f, 3.f, 1.f);
+    binding.setTransform(pose);
+    const SurfaceSample moved = binding.evaluate(location, 0.5f);
+    REQUIRE(glm::distance(moved.position, initial.position + glm::vec3(2.f, -1.f, 3.f)) < 1e-5f);
+    REQUIRE(glm::distance(moved.velocity, glm::vec3(4.f, -2.f, 6.f)) < 1e-5f);
+    REQUIRE(glm::distance(moved.uv, initial.uv) < 1e-5f);
+}
+
+TEST_CASE("fluids.surfaceBinding.deformationVelocityUsesBarycentricPose") {
+    FluidSurfaceBinding          binding;
+    const std::vector<glm::vec3> positions = {
+        {-1.f, 0.f, 0.f},
+        {1.f, 0.f, 0.f},
+        {0.f, 1.f, 0.f},
+    };
+    REQUIRE(binding.build(positions, {0, 1, 2}));
+    std::vector<glm::vec3> deformed = positions;
+    deformed[2].z                   = 2.f;
+    REQUIRE(binding.setDeformedPositions(deformed));
+
+    const SurfaceSample anchored = binding.evaluate({0, glm::vec3(0.f, 0.f, 1.f)}, 0.25f);
+    REQUIRE(glm::distance(anchored.position, glm::vec3(0.f, 1.f, 2.f)) < 1e-5f);
+    REQUIRE(glm::distance(anchored.previousPosition, glm::vec3(0.f, 1.f, 0.f)) < 1e-5f);
+    REQUIRE(glm::distance(anchored.velocity, glm::vec3(0.f, 0.f, 8.f)) < 1e-5f);
+}
+
+TEST_CASE("fluids.surfaceBinding.walkCrossesSharedEdge") {
+    FluidSurfaceBinding          binding;
+    const std::vector<glm::vec3> positions = {
+        {0.f, 0.f, 0.f},
+        {1.f, 0.f, 0.f},
+        {0.f, 1.f, 0.f},
+        {1.f, 1.f, 0.f},
+    };
+    REQUIRE(binding.build(positions, {0, 1, 2, 2, 1, 3}));
+    REQUIRE_EQ(binding.adjacentTriangle(0, 0), 1);
+
+    SurfaceLocation start;
+    REQUIRE(binding.project(glm::vec3(0.25f, 0.25f, 0.1f), 0.2f, start));
+    REQUIRE(start.triangle == 0);
+    const SurfaceWalkResult walked = binding.walkAcrossSurface(start, glm::vec3(0.5f, 0.5f, 0.f));
+    REQUIRE(walked.valid);
+    REQUIRE(!walked.reachedBoundary);
+    REQUIRE(walked.location.triangle == 1);
+    const SurfaceSample end = binding.evaluate(walked.location, 0.f);
+    REQUIRE(glm::distance(end.position, glm::vec3(0.75f, 0.75f, 0.f)) < 1e-4f);
+}
+
+TEST_CASE("fluids.surfaceBinding.openEdgeReturnsDetachRemainder") {
+    FluidSurfaceBinding binding;
+    REQUIRE(binding.build({{0.f, 0.f, 0.f}, {1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}}, {0, 1, 2}));
+    const SurfaceLocation   start{0, glm::vec3(0.8f, 0.1f, 0.1f)};
+    const SurfaceWalkResult walked = binding.walkAcrossSurface(start, glm::vec3(-0.5f, -0.5f, 0.f));
+    REQUIRE(walked.valid);
+    REQUIRE(walked.reachedBoundary);
+    REQUIRE(glm::length(walked.remainingDisplacement) > 0.1f);
+    const SurfaceSample edge = binding.evaluate(walked.location, 0.f);
+    REQUIRE(edge.position.x >= -1e-5f);
+    REQUIRE(edge.position.y >= -1e-5f);
+}
+
+TEST_CASE("fluids.surfaceDroplet.gravityFlowsTangentially") {
+    FluidSurfaceBinding binding;
+    REQUIRE(binding.build({{-2.f, -2.f, 0.f}, {2.f, -2.f, 0.f}, {-2.f, 2.f, 0.f}}, {0, 1, 2}));
+    SurfaceDropletParams params;
+    params.friction = 0.f;
+    SurfaceDropletSimulation droplets(&binding, params);
+    const SurfaceLocation    start{0, glm::vec3(0.25f, 0.25f, 0.5f)};
+    REQUIRE(droplets.addDroplet(start));
+    const float y0 = binding.evaluate(start, 0.f).position.y;
+
+    droplets.step(0.05f);
+    REQUIRE(droplets.droplets().size() == 1u);
+    const SurfaceDroplet& droplet = droplets.droplets().front();
+    const SurfaceSample   sample  = binding.evaluate(droplet.location, 0.f);
+    REQUIRE(sample.position.y < y0);
+    REQUIRE(droplet.relativeVelocity.y < 0.f);
+    REQUIRE(std::fabs(glm::dot(droplet.relativeVelocity, sample.normal)) < 1e-5f);
+}
+
+TEST_CASE("fluids.surfaceDroplet.largeStepMatchesFixedSubsteps") {
+    const std::vector<glm::vec3> positions = {
+        {-10.f, -10.f, 0.f},
+        {10.f, -10.f, 0.f},
+        {-10.f, 10.f, 0.f},
+    };
+    FluidSurfaceBinding oneFrameBinding;
+    FluidSurfaceBinding fixedBinding;
+    REQUIRE(oneFrameBinding.build(positions, {0, 1, 2}));
+    REQUIRE(fixedBinding.build(positions, {0, 1, 2}));
+    SurfaceDropletParams params;
+    params.friction = 0.f;
+    SurfaceDropletSimulation oneFrame(&oneFrameBinding, params);
+    SurfaceDropletSimulation fixed(&fixedBinding, params);
+    const SurfaceLocation    start{0, glm::vec3(0.25f, 0.25f, 0.5f)};
+    REQUIRE(oneFrame.addDroplet(start));
+    REQUIRE(fixed.addDroplet(start));
+    oneFrame.step(0.2f);
+    for (int i = 0; i < 4; ++i) fixed.step(0.05f);
+    REQUIRE(oneFrame.droplets().size() == 1u);
+    REQUIRE(fixed.droplets().size() == 1u);
+    const glm::vec3 oneFramePosition = oneFrameBinding.evaluate(oneFrame.droplets().front().location, 0.f).position;
+    const glm::vec3 fixedPosition    = fixedBinding.evaluate(fixed.droplets().front().location, 0.f).position;
+    CHECK(glm::distance(oneFramePosition, fixedPosition) < 1e-4f);
+    CHECK(glm::distance(oneFrame.droplets().front().relativeVelocity, fixed.droplets().front().relativeVelocity) <
+          1e-4f);
+}
+
+TEST_CASE("fluids.surfaceDroplet.openEdgeDetachesToWorld") {
+    FluidSurfaceBinding binding;
+    REQUIRE(binding.build({{0.f, 0.f, 0.f}, {1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}}, {0, 1, 2}));
+    SurfaceDropletParams params;
+    params.gravity  = glm::vec3(0.f);
+    params.friction = 0.f;
+    SurfaceDropletSimulation droplets(&binding, params);
+    REQUIRE(droplets.addDroplet({0, glm::vec3(0.8f, 0.1f, 0.1f)}, 2.f, glm::vec3(-5.f, -5.f, 0.f)));
+
+    droplets.step(0.05f);
+    REQUIRE(droplets.droplets().empty());
+    REQUIRE(droplets.detachedDroplets().size() == 1u);
+    REQUIRE(std::fabs(droplets.detachedDroplets().front().volume - 2.f) < 1e-6f);
+    REQUIRE(glm::length(droplets.detachedDroplets().front().velocity) > 5.f);
+}
+
+TEST_CASE("fluids.surfaceDroplet.surfaceAccelerationCanBreakAdhesion") {
+    FluidSurfaceBinding binding;
+    REQUIRE(binding.build({{0.f, 0.f, 0.f}, {1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}}, {0, 1, 2}));
+    SurfaceDropletParams params;
+    params.gravity              = glm::vec3(0.f);
+    params.friction             = 0.f;
+    params.adhesionAcceleration = 10.f;
+    SurfaceDropletSimulation droplets(&binding, params);
+    REQUIRE(droplets.addDroplet({0, glm::vec3(0.4f, 0.3f, 0.3f)}));
+
+    glm::mat4 pose1(1.f);
+    pose1[3].z = -0.1f;
+    binding.setTransform(pose1);
+    droplets.step(0.1f);
+    REQUIRE(droplets.droplets().size() == 1u);
+
+    glm::mat4 pose2(1.f);
+    pose2[3].z = -0.4f;
+    binding.setTransform(pose2);
+    droplets.step(0.1f);
+    REQUIRE(droplets.droplets().empty());
+    REQUIRE(droplets.detachedDroplets().size() == 1u);
+    REQUIRE(droplets.detachedDroplets().front().velocity.z < -2.f);
+}
+
+TEST_CASE("fluids.surfaceDroplet.nearbyCapsMergeConservingVolume") {
+    FluidSurfaceBinding binding;
+    REQUIRE(binding.build({{-2.f, -2.f, 0.f}, {2.f, -2.f, 0.f}, {-2.f, 2.f, 0.f}}, {0, 1, 2}));
+    // Both legacy scenarios used zero initial velocity: keep default and zero friction.
+    for (float friction : {SurfaceDropletParams{}.friction, 0.f}) {
+        SurfaceDropletParams params;
+        params.gravity  = glm::vec3(0.f);
+        params.friction = friction;
+        SurfaceDropletSimulation droplets(&binding, params);
+        REQUIRE(droplets.addDroplet({0, glm::vec3(0.25f, 0.25f, 0.5f)}, 0.001f));
+        REQUIRE(droplets.addDroplet({0, glm::vec3(0.24f, 0.26f, 0.5f)}, 0.002f));
+
+        droplets.step(0.01f);
+        REQUIRE(droplets.droplets().size() == 1u);
+        REQUIRE(std::fabs(droplets.droplets().front().volume - 0.003f) < 1e-6f);
+        REQUIRE(droplets.dropletRadius(0.003f) > droplets.dropletRadius(0.001f));
+    }
+}
+
+TEST_CASE("fluids.surfaceWetness.depositDiffuseAndEvaporate") {
+    FluidSurfaceBinding binding;
+    REQUIRE(binding.build({{0.f, 0.f, 0.f}, {1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {1.f, 1.f, 0.f}}, {0, 1, 2, 2, 1, 3}));
+    SurfaceWetnessField wetness;
+    REQUIRE(wetness.build(binding));
+    wetness.deposit({0, glm::vec3(1.f, 0.f, 0.f)}, 1.f);
+    REQUIRE(wetness.values()[0] > 0.99f);
+    REQUIRE(wetness.values()[3] < 1e-6f);
+
+    SurfaceWetnessParams params;
+    params.diffusion   = 1.f;
+    params.evaporation = 0.5f;
+    wetness.step(0.1f, params);
+    REQUIRE(wetness.values()[1] > 0.f);
+    REQUIRE(wetness.values()[0] < 1.f);
+}
+
+TEST_CASE("fluids.surfaceWetness.diffusionConservesFilmMass") {
+    FluidSurfaceBinding binding;
+    REQUIRE(binding.build({{0.f, 0.f, 0.f}, {1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {1.f, 1.f, 0.f}}, {0, 1, 2, 2, 1, 3}));
+    SurfaceWetnessField wetness;
+    REQUIRE(wetness.build(binding));
+    wetness.deposit({0, glm::vec3(1.f, 0.f, 0.f)}, 0.8f);
+    const float          before = std::accumulate(wetness.values().begin(), wetness.values().end(), 0.f);
+    SurfaceWetnessParams params;
+    params.diffusion   = 1.f;
+    params.evaporation = 0.f;
+    params.maxWetness  = 10.f;
+    wetness.step(0.1f, params);
+    const float after = std::accumulate(wetness.values().begin(), wetness.values().end(), 0.f);
+    CHECK(std::fabs(after - before) < 1e-6f);
+}
+
+TEST_CASE("fluids.surfaceRenderData.buildsTangentAreaPreservingCaps") {
+    FluidSurfaceBinding binding;
+    REQUIRE(binding.build({{-2.f, -2.f, 0.f}, {2.f, -2.f, 0.f}, {-2.f, 2.f, 0.f}}, {0, 1, 2}));
+    SurfaceDropletParams params;
+    params.gravity = glm::vec3(0.f);
+    SurfaceDropletSimulation simulation(&binding, params);
+    REQUIRE(simulation.addDroplet({0, glm::vec3(0.25f, 0.25f, 0.5f)}, 0.001f, glm::vec3(2.f, 0.f, 0.f)));
+    SurfaceFluidRenderData renderData;
+    renderData.update(binding, simulation);
+    REQUIRE(renderData.droplets().size() == 1u);
+    const SurfaceDropletRenderInstance& instance = renderData.droplets().front();
+    CHECK(std::fabs(glm::dot(instance.normal, instance.majorAxis)) < 1e-6f);
+    CHECK(std::fabs(glm::dot(instance.normal, instance.minorAxis)) < 1e-6f);
+    CHECK(glm::length(instance.majorAxis) > glm::length(instance.minorAxis));
+    const float footprint = glm::length(instance.majorAxis) * glm::length(instance.minorAxis);
+    const float radius    = simulation.dropletRadius(0.001f);
+    CHECK(std::fabs(footprint - radius * radius) < 1e-6f);
+    CHECK(instance.capHeight > 0.f);
+}
+
+TEST_CASE("fluids.surfaceRenderData.wetnessDrivesPbrResponse") {
+    const WetSurfaceMaterialSample dry = SurfaceFluidRenderData::evaluateMaterial(0.f);
+    const WetSurfaceMaterialSample wet = SurfaceFluidRenderData::evaluateMaterial(1.f);
+    CHECK(wet.roughness < dry.roughness);
+    CHECK(wet.specular > dry.specular);
+    CHECK(wet.darkening > dry.darkening);
+    CHECK(wet.normalStrength > dry.normalStrength);
+}
+
+TEST_CASE("fluids.surfaceSceneRenderer.capModelTouchesBoundSurface") {
+    SurfaceDropletRenderInstance instance;
+    instance.position         = glm::vec3(2.f, 3.f, 4.f);
+    instance.normal           = glm::normalize(glm::vec3(0.2f, 1.f, 0.3f));
+    instance.majorAxis        = glm::vec3(0.4f, 0.f, 0.f);
+    instance.minorAxis        = glm::vec3(0.f, 0.f, 0.2f);
+    instance.capHeight        = 0.1f;
+    const glm::mat4 model     = SurfaceFluidSceneRenderer::modelMatrix(instance);
+    const glm::vec3 lowerPole = glm::vec3(model * glm::vec4(0.f, -1.f, 0.f, 1.f));
+    CHECK(glm::distance(lowerPole, instance.position) < 1e-6f);
+    CHECK(glm::distance(glm::vec3(model[0]), instance.majorAxis) < 1e-6f);
+    CHECK(glm::distance(glm::vec3(model[2]), instance.minorAxis) < 1e-6f);
 }

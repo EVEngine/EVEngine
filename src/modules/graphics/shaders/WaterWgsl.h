@@ -27,7 +27,11 @@ fn waveHeight(inputXZ:vec2f)->f32{
  let dz=(waveHeight(baseWorld.xz+vec2f(0,eps))-waveHeight(baseWorld.xz-vec2f(0,eps)))/(2.0*eps);
  let localPos=in.pos+vec3f(0,height,0);let world=frame.model*vec4f(localPos,1.0);
  var out:VSOut;out.pos=frame.mvp*vec4f(localPos,1.0);out.pos.y=-out.pos.y;
- out.normal=normalize(mat3x3f(frame.model[0].xyz,frame.model[1].xyz,frame.model[2].xyz)*normalize(vec3f(-dx,1,-dz)));
+ let meshN=select(vec3f(0.0,1.0,0.0),normalize(in.normal),length(in.normal)>1e-5);
+ let waveN=normalize(vec3f(-dx,1.0,-dz));
+ let waveW=clamp(p(2u)/0.08,0.0,1.0);
+ let localN=normalize(mix(meshN,waveN,waveW));
+ out.normal=normalize(mat3x3f(frame.model[0].xyz,frame.model[1].xyz,frame.model[2].xyz)*localN);
  out.uv=in.uv;out.tint=frame.tint;out.worldPos=world.xyz;out.cameraPos=frame.cameraPos.xyz;out.viewPos=(frame.view*world).xyz;return out;
 }
 )wgsl";

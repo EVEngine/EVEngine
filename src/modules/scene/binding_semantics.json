@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "factory": "Scene",
+  "bindings": {
+    "getNodeRefAt": {"role":"scene_ref","resultClass":"SceneNodeRef","identityArgument":1,"relatedArgument":0},
+    "beginNode": {"role":"scene_define","identityArgument":0},
+    "SceneNodeRef.setVisible": {"role":"scene_write"}
+  }
+}

@@ -7,6 +7,7 @@
 #include "common/Revision.h"
 #include "common/SchemaVersion.h"
 #include "common/Time.h"
+#include "common/UuidV7.h"
 
 #include <array>
 #include <chrono>

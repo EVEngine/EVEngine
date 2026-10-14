@@ -7,7 +7,6 @@
 #include "graphics/GpuDrivenTypes.h"
 #include "graphics/Material.h"
 #include "graphics/MeshInstanceRange.h"
-#include "zeroerr/assert.h"
 
 #include <array>
 #include <cstdint>
@@ -83,14 +82,15 @@ public:
 
     COMPONENT(Data, data)
 
-    /** @ownership ECS owns the result. @lifetime Valid until ECS destroys the entity. */
-    static Camera3D *createCamera() {
-        Camera3D* c = Camera3D::create();
-        ASSERT(c != nullptr);
-        c->data()->entity = c;
-        c->data()->active = true;
-        return c;
-    }
+    /**
+     * @brief Create an active camera in the current ECS table.
+     * @param table ECS table owning the result; defaults to the calling thread's current table.
+     * @return ECS-owned camera with its self reference initialized.
+     * @ownership ECS owns the result. @lifetime Valid until ECS destroys the entity.
+     * @note Call on the current ECS table owner thread; no external callbacks are invoked.
+     * @cost Allocates entity/component storage per camera creation.
+     */
+    static Camera3D* createCamera(ecs::Table& table = *ecs::current());
 
     void setEye(float x, float y, float z);
     /** @brief Camera eye position (world space). */
@@ -214,6 +214,12 @@ public:
         float x = 0, y = 0, z = 0;
         float yaw = 0, pitch = 0, roll = 0;  // radians
         float sx = 1, sy = 1, sz = 1;
+        /** @brief Derived scene-link projection, preserving reflection and parent shear.
+         * @ownership Value owned; SceneHost supplies it on its owner thread.
+         * @remarks Direct TRS setters return this component to local TRS mode.
+         */
+        glm::mat4 linkedWorld{1.f};
+        bool      hasLinkedWorld = false;
     };
 
     struct MeshRenderer {
@@ -419,6 +425,8 @@ public:
     /** @brief Return the field-backed material roughness. */
     float getRoughness() { return meshRenderer()->roughness; }
     void  setMetallic(float metallic);
+    /** @brief Read the current material metallic scalar on the render thread. */
+    float getMetallic() { return meshRenderer()->metallic; }
     void  setRoughness(float roughness);
     /**
      * @brief Texture cell bombing — random per-cell UV offset/rotation blended across a 2×2

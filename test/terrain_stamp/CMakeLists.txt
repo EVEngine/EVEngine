@@ -13,7 +13,6 @@ target_compile_definitions(zeroerr PUBLIC ZEROERR_NO_MAIN)
 add_library(terrain_stamp_core STATIC
     "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainStamp.cpp"
     "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainDetailLayer.cpp"
-    "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainDetailPlacement.cpp"
     "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainTreePlacement.cpp"
     "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainMultiTile.cpp"
     "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainGenerationSession.cpp"

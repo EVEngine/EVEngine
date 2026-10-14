@@ -5,7 +5,9 @@
 #include "graphics/Graphics.h"
 
 #include <algorithm>
+#include <atomic>
 #include <cmath>
+#include <limits>
 
 namespace eve::graphics {
 Result<void> Mesh::setTexcoordSet(uint32_t set, std::span<const float> values) {
@@ -91,6 +93,9 @@ Result<void> Mesh::setSkinPalette(const float* matrices, int matrixCount) {
 }
 
 void Mesh::computeBounds(const float *posXYZ, int vertexCount) {
+    static std::atomic<uint64_t> generation{0};
+    geometryGeneration_ = ++generation;
+    hasLocalBounds_     = false;
     boundsCx     = 0.f;
     boundsCy     = 0.f;
     boundsCz     = 0.f;
@@ -98,13 +103,24 @@ void Mesh::computeBounds(const float *posXYZ, int vertexCount) {
     if (!posXYZ || vertexCount <= 0) return;
 
     const size_t n = size_t(vertexCount);
+    for (int axis = 0; axis < 3; ++axis) {
+        localBounds_[axis]     = std::numeric_limits<float>::max();
+        localBounds_[axis + 3] = std::numeric_limits<float>::lowest();
+    }
     glm::vec3    c(0.f);
     for (size_t i = 0; i < n; ++i) {
+        for (int axis = 0; axis < 3; ++axis) {
+            const float value = posXYZ[i * 3u + static_cast<std::size_t>(axis)];
+            if (!std::isfinite(value)) return;
+            localBounds_[axis]     = std::min(localBounds_[axis], value);
+            localBounds_[axis + 3] = std::max(localBounds_[axis + 3], value);
+        }
         c.x += posXYZ[i * 3u + 0u];
         c.y += posXYZ[i * 3u + 1u];
         c.z += posXYZ[i * 3u + 2u];
     }
     c /= float(n);
+    if (!std::isfinite(c.x) || !std::isfinite(c.y) || !std::isfinite(c.z)) return;
     boundsCx = c.x;
     boundsCy = c.y;
     boundsCz = c.z;
@@ -119,7 +135,17 @@ void Mesh::computeBounds(const float *posXYZ, int vertexCount) {
     }
     // Degenerate (single-point) meshes still get a tiny non-zero sphere so
     // hasBounds() stays meaningful and the culler never drops point geometry.
-    boundsRadius = r > 0.f ? r : 1e-4f;
+    if (std::isfinite(r)) {
+        boundsRadius    = r > 0.f ? r : 1e-4f;
+        hasLocalBounds_ = true;
+    }
+}
+
+Result<std::array<float, 6>> Mesh::localBounds() const {
+    if (!hasLocalBounds_)
+        return Result<std::array<float, 6>>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "Mesh has no finite vertex bounds", "graphics.mesh.localBounds"));
+    return Result<std::array<float, 6>>::success(localBounds_);
 }
 
 void Mesh::drawOcclusion(Graphics *gfx, const glm::mat4 &matrix) const {

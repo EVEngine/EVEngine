@@ -454,20 +454,10 @@ local road = procgen.newPointSet(); ls.trace(road);   // 枝段 → 控制点
 local scatter = procgen.poissonDisk(100, 100, 2.5, 99, 500);  // 最多 500 点
 ```
 
-## API 快查
+## 绑定与行为说明
 
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
-
-- `abort()`、`abortSystem()`、`add()`、`addObject()`、`addObjectAt()`、`analyzeTerrain()`、`analyzeTerrainScaled()`、`appendTransformed()`、`applyToLayer()`、`autotileGrid()`、`bakeTerrainAsset()`、`beginSystem()`、`buildMesh()`、`buildTerrainChunk()`、`clear()`、`clearObjects()`、`commitSystem()`、`copyGroup()`、`createTerrainMaterialShader()`、`createTerrainWaterShader()`、`deriveSeed()`、`empty()`、`erodeTerrainFluvial()`、`erodeTerrainFluvialAdvanced()`、`erodeTerrainFluvialDetailed()`、`erodeTerrainFluvialScaled()`、`erodeTerrainHydraulic()`、`erodeTerrainThermal()`、`excludeRadius()`、`fail()`、`fill()`、`filterDensity()`、`filterHeight()`、`generate()`、`generateHeightmap()`、`generateImage()`、`generateNormalImage()`
-- `generatePbrMaterial()`、`generateTerrainAlbedoMap()`、`generateTerrainChunkMesh()`、`generateTerrainDepositionMap()`、`generateTerrainErosionMap()`、`generateTerrainLakeMesh()`、`generateTerrainRiverMesh()`、`generateTerrainRiverMeshAdvanced()`、`generateTerrainSplatMap()`、`generateTerrainWearMap()`、`generateTexture()`、`generateTo()`、`getAlgorithmCount()`、`getAlgorithmId()`、`getCell()`、`getDetail()`、`getFloat()`、`getHeight()`、`getInt()`
 - 地形层与网格查询：`getBaseVertexCount()`、`getFlowDirection()`、`getFlowVectorX()`、`getFlowVectorY()`、`getGeometricError()`、`getLodStep()`、`getOriginX()`、`getOriginY()`、`getSplatHeight()`、`getSplatWidth()`、`getStreamOrder()`、`selectTerrainLod()`。
-- `getGroupCount()`、`getGroupName()`、`getLayer()`、`getMeshRecipeCount()`、`getMeshRecipeId()`、`getMeshRecipeSchema()`、`getMeta()`、`getName()`、`getObjectCount()`、`getObjectGid()`、`getObjectHeight()`、`getObjectName()`、`getObjectType()`
-- `getObjectWidth()`、`getObjectX()`、`getObjectY()`、`getPalette()`、`getPaletteGid()`、`getPath()`、`getSeed()`、`getString()`
-- `getTarget()`、`getTextureRecipeCount()`、`getTextureRecipeId()`、`getWidth()`、`gridToJson()`、`has()`、`hasAlgorithm()`、`hasMeshRecipe()`、`hasTextureRecipe()`、`applyMeshRecipeDefaults()`
-- `getDensity()`、`getError()`、`getFloatAttribute()`、`getNormalX()`、`getNormalY()`、`getNormalZ()`、`getOutput()`、`getOutputCount()`、`getOutputName()`、`getPointSeed()`、`getScaleX()`、`getScaleY()`、`getScaleZ()`、`getStringAttribute()`、`getSystemDebugReport()`、`getSystemOutput()`、`getSystemOutputCount()`、`getSystemOutputName()`、`getSystemRevision()`、`getSystemSeed()`、`getTraceCount()`、`getTraceInputCount()`、`getTraceMilliseconds()`、`getTraceName()`、`getTraceOutputCount()`、`getTriangleGroup()`、`getX()`、`getY()`、`getYaw()`、`getZ()`、`hasFailed()`、`hasFloatAttribute()`、`hasOutput()`、`hasStringAttribute()`、`hasSystem()`、`isActive()`、`jitterPoints()`、`newGrid()`、`newOutput()`、`newParams()`、`newPointSet()`、`publish()`、`randomSeed()`、`removeSystem()`、`resize()`、`sampleGrid()`、`seedFor()`、`selfPrune()`、`setCell()`、`setDensity()`、`setDetail()`、`setFloat()`、`setFloatAttribute()`、`setInt()`
-- `setLayer()`、`setMeta()`、`setNormal()`、`setPalette()`、`setPaletteGid()`、`setPath()`、`setPointSeed()`、`setPosition()`、`setScale()`、`setSeed()`、`setSize()`、`setString()`、`setStringAttribute()`、`setYaw()`、`trace()`、`setActiveGroup()`
 - L-system 引擎(`ProcgenLSystem`)：`addRule()`、`addRules()`、`clearRules()`、`derive()`、`getIterations()`、`getSeed()`、`setAngle()`、`setAxiom()`、`setBranchRadius()`、`setBranchRadiusFalloff()`、`setInitialHeading()`、`setIterations()`、`setLeafSize()`、`setLeafSymbols()`、`setStep()`、`setTropism()`；蓝噪声撒点：`poissonDisk()`。这些创建与转换入口返回统一 Result，其 `value` 是带所有权的代理。
-- `setTarget()`
 - Handle 生命周期：`ownership()`、`ownerEpoch()`、`isStale()`、`release()`；这些接口用于检查资源所属模块、拒绝过期引用并显式释放模块持有对象。
 - UE PCG 扩展：`clearCache()`、`clearGenerationSources()`、`clearParameterOverride()`、`continueGenerationRefresh()`、`disconnect()`、`exposeParameter()`、`getActiveCellCount()`、`getAssetCount()`、`getAssetName()`、`getCacheHitCount()`、`getCellRevision()`、`getCommittedRefreshRevision()`、`getCompiledSegmentCount()`、`getComputeBufferReuseCount()`、`getComputeDispatchCount()`、`getComputeFallbackReason()`、`getComputeMinimumPoints()`、`getComputePeakBufferBytes()`、`getComputePolicy()`、`getComputeReadbackCount()`、`getComputeUploadCount()`、`getDirectionWeight()`、`getExclusionCount()`、`getExecutionCount()`、`getExecutionNodeBudget()`、`getExecutionPlanBuildCount()`、`getFailedCellCount()`、`getFrameTimeBudget()`、`getFrustumBehindRadius()`、`getFrustumHalfAngle()`、`getGeneratingCount()`、`getGenerationSourceCount()`、`getGenerationSourceId()`、`getInputNode()`、`getLastFusedTransformCount()`、`getLayerCount()`、`getLayerDensity()`、`getLayerName()`、`getLayerPriority()`、`getLevelCellSize()`、`getLevelCleanupRadius()`、`getLevelCount()`、`getLevelGenerationRadius()`、`getMaxActiveCells()`、`getMaxGenerating()`、`getMaxGenerationRetries()`、`getMaxY()`、`getMetricBackend()`、`getMetricCount()`、`getMetricMilliseconds()`、`getMetricNodeId()`、`getMetricOutputCount()`、`getMinY()`、`getModuleCount()`、`getModuleSymbol()`、`getNodeCount()`、`getNodeId()`、`getNodeOperation()`、`getOperationInputCount()`、`getOperationParamCount()`、`getOperationParamDefault()`、`getOperationParamKey()`、`getOperationParamKind()`、`getParameterCount()`、`getParameterFloat()`、`getParameterInt()`、`getParameterKind()`、`getParameterName()`、`getParameterString()`、`getPendingCleanupCount()`、`getPendingGenerateCount()`、`getRefreshWorkBudget()`、`getRevision()`、`getTicket()`、`getVariantAsset()`、`getVariantCount()`、`getVariantLength()`、`hasCell()`、`hasLayer()`、`hasModule()`、`hasNode()`、`hasParameterOverride()`、`intersectSpatial()`、`isFrustumCullingEnabled()`、`isMetricCacheHit()`、`isRefreshPending()`、`pointData()`、`refreshGenerationSources()`、`removeLayer()`、`removeModule()`、`removeNode()`、`requestCancel()`、`resetCancellation()`、`retryFailedCells()`、`setComputeMinimumPoints()`、`setComputePolicy()`、`setExecutionNodeBudget()`、`setMaxActiveCells()`、`setMaxGenerationRetries()`、`setNodeString()`、`setParameterFloat()`、`setParameterInt()`、`setParameterString()`、`setRefreshWorkBudget()`、`wasCancelled()`。
 
@@ -585,3 +575,17 @@ v1 无前驱迁移，不恢复 placement；调用成本随 JSON/连接器大小�
 房屋不定义专用图类型。`writeFootprintGrid` 输出 `Grid2D`，供现有 `GridGraph.grid.input` 使用；
 `writeComponentPoints` 输出 `PointSet`，供现有 `PointGraph.input` 使用。后续筛选、变换、合并、
 缓存与序列化全部由既有 graph 系统处理。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](procgen/api-reference.md)，使用前先确认本章的前置条件与生命周期。
+
+## 集成任务：生成、发布和失效处理
+
+按示例先加载生成脚本和输入参数，明确 seed、区域及算法版本；生成 CPU Output 后验证类型和非空内容，再发布图形/物理消费者。地图、mesh、image 的输出不是互换的。缓存键包含参数、种子与资源版本；不要在每帧噪声查询中重建整张地形。编辑热更使用候选 revision，晚到结果如果不匹配则丢弃；失败保留旧发布结果。GTS 渲染 LOD 与碰撞 LOD 分别选定，再共享同一世界变换。
+
+完整项目：[examples/procgen-script-pipeline](../../../examples/procgen-script-pipeline/README.md)，
+其 [main.nut](../../../examples/procgen-script-pipeline/main.nut) 展示实际生命周期。
+先验证现有资产可加载，再换成自己的资源。测试失败、取消、资源缺失和旧 revision，
+不能只以脚本没有语法错误作为渲染或玩法正确的证据。
+详细流程：[专题](procgen/guides.md)。

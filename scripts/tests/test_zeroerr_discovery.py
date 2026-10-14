@@ -16,7 +16,7 @@ DISCOVERY = ROOT / "cmake" / "ZeroErrDiscoverTestsImpl.cmake"
 
 @unittest.skipUnless(shutil.which("cmake"), "CMake is required for discovery tests")
 class ZeroerrDiscoveryTests(unittest.TestCase):
-    def discover(self, entries, listing_format):
+    def discover(self, entries, listing_format, name_prefix=""):
         with tempfile.TemporaryDirectory(prefix="eve discovery ") as directory:
             root = Path(directory)
             listing = root / "listing.py"
@@ -55,6 +55,7 @@ class ZeroerrDiscoveryTests(unittest.TestCase):
                     f"-DZEROERR_EXE={runner.as_posix()}",
                     f"-DCTEST_FILE={registry.as_posix()}",
                     f"-DZEROERR_WORKING_DIRECTORY={root.as_posix()}",
+                    f"-DZEROERR_NAME_PREFIX={name_prefix}",
                     "-P",
                     str(DISCOVERY),
                 ],
@@ -97,6 +98,14 @@ class ZeroerrDiscoveryTests(unittest.TestCase):
                     self.assertEqual(generated.count(f'add_test("{name}"'), 1)
                     self.assertIn(f'"--testcase=^{name}$"', generated)
                 self.assertIn("bundle", self.labels_of(generated, "bundle/fluid.cpp"))
+
+    def test_composition_prefix_preserves_filters_and_bundle_labels(self):
+        result, generated = self.discover([("fixture.lifecycle", "fixture.cpp", 7)], "plain", "authoring-contract/")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn('add_test("authoring-contract/fixture.lifecycle"', generated)
+        self.assertIn('"--testcase=^fixture.lifecycle$"', generated)
+        self.assertIn("bundle", self.labels_of(generated, "authoring-contract/bundle/fixture.cpp"))
+        self.assertNotIn('add_test("fixture.lifecycle"', generated)
 
     def test_classic_assets_report_skips_and_full_fps_sweep_is_labeled(self):
         entries = [("ClassicScenes.perf.maxFps", "ClassicScenes.cpp", 20),

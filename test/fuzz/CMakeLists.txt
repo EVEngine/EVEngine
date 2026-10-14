@@ -35,7 +35,11 @@ find_library(_fuzzer_no_main
 
 add_executable(evengine_json_fuzz
     json_fuzz.cpp
-    "${CMAKE_CURRENT_LIST_DIR}/../../src/engine/common/Json.cpp")
+    "${CMAKE_CURRENT_LIST_DIR}/../../src/engine/common/Json.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/../../src/engine/common/Value.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/../../src/engine/common/Diagnostic.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/../../src/engine/common/Status.cpp"
+    "${CMAKE_CURRENT_LIST_DIR}/../../src/engine/common/Result.cpp")
 target_include_directories(evengine_json_fuzz PRIVATE
     "${CMAKE_CURRENT_LIST_DIR}/../../src/engine")
 target_link_libraries(evengine_json_fuzz PRIVATE zeroerr "${_fuzzer_no_main}")
