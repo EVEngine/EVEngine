@@ -131,6 +131,12 @@ eve::Result<void> EconomyLedgerResourceAccount::validateLedgerRange(const CostSp
             return eve::Result<void>::failure(eve::Status::failure(
                 eve::StatusCode::Unsupported,
                 unsupported("EconomyLedger cannot represent this resource amount", item.resource.value())));
+        const int counter =
+            debit ? ledger_.getExpense(item.resource.value()) : ledger_.getIncome(item.resource.value());
+        if (counter < 0 || item.amount.value() > std::numeric_limits<int>::max() - counter)
+            return eve::Result<void>::failure(eve::Status::failure(
+                eve::StatusCode::Failed,
+                invariantFailure("economy ledger accounting counter would overflow", item.resource.value())));
         if (debit) continue;
 
         auto balance = balanceOf(item.resource);

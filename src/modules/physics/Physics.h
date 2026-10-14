@@ -60,6 +60,22 @@ public:
      */
     World3D *newWorld3D(float gravityX, float gravityY, float gravityZ, bool sleep = true);
 
+    /** @brief Compatibility script factory selecting "box3d" or "jolt" explicitly.
+     * @param backend Stable solver name; missing providers fail without selecting another solver.
+     * @param gravityX Gravity in metres per second squared along X.
+     * @param gravityY Gravity in metres per second squared along Y.
+     * @param gravityZ Gravity in metres per second squared along Z.
+     * @param sleep Whether bodies may sleep.
+     * @return Owning world; caller deletes it on the simulation thread.
+     * @throws eve::Exception For invalid names or rejected creation. Canonical inward API is
+     * World3D::createWithBackend returning Result.
+     * @ownership Transfers ownership; no callbacks or retained Physics reference.
+     * @cost Allocates solver workspace once per world creation; reuse the world across frames.
+     */
+    World3D *newWorld3DWithBackend(const std::string &backend, float gravityX, float gravityY, float gravityZ,
+                                   bool sleep = true);
+
+
     /**
      * @brief Create a regular 3D signed-distance grid for map collision queries.
      * @return Owning nullable field pointer transferred to the caller.

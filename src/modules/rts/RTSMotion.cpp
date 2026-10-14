@@ -79,13 +79,13 @@ Result<std::size_t> MotionSystem::step(const SimulationStep& step) {
         if (!std::isfinite(distance))
             return Result<std::size_t>::failure(Diagnostic::error(
                 DiagnosticCode::InvariantViolation, "RTS motion target distance is non-finite", "order.target"));
-        float arrivalRadius = motion->arrivalRadius;
+        float arrivalRadius = systems_internal::interactionArrivalRadius(*unit, *record);
         if (record->kind == OrderKind::Attack)
             arrivalRadius = std::max(arrivalRadius, combat->engagementRange);
         else if (record->kind == OrderKind::Resupply || record->kind == OrderKind::SupplyRelay)
             arrivalRadius = std::max(arrivalRadius, supply->range * 0.8f);
         if (distance <= arrivalRadius) {
-            if (record->kind != OrderKind::Attack) {
+            if (record->kind != OrderKind::Attack && !systems_internal::isInteractionOrder(record->kind)) {
                 motion->x = target.x;
                 motion->y = target.y;
             }
@@ -105,7 +105,7 @@ Result<std::size_t> MotionSystem::step(const SimulationStep& step) {
             motion->y += dy / distance * amount;
             motion->arrived = static_cast<double>(amount) >= distance - arrivalRadius;
             if (motion->arrived) {
-                if (record->kind != OrderKind::Attack) {
+                if (record->kind != OrderKind::Attack && !systems_internal::isInteractionOrder(record->kind)) {
                     motion->x = target.x;
                     motion->y = target.y;
                 }
@@ -116,6 +116,9 @@ Result<std::size_t> MotionSystem::step(const SimulationStep& step) {
         if (movingSlot)
             motion->arrived = distanceSquared(motion->x, motion->y, record->target.x, record->target.y) <=
                               motion->arrivalRadius * motion->arrivalRadius;
+        if (systems_internal::isInteractionOrder(record->kind))
+            motion->arrived = distanceSquared(motion->x, motion->y, record->target.x, record->target.y) <=
+                              arrivalRadius * arrivalRadius;
         if (navigation->trafficRecoveryTarget) motion->arrived = false;
         ++processed;
     }

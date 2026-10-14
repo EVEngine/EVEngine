@@ -5,9 +5,11 @@
 #include "economy/EconomyLedger.h"
 
 #include <functional>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include "common/ResourceAccount.h"
 
 namespace eve::economy {
 
@@ -63,6 +65,12 @@ public:
     static int eventCount();
     /** @brief Event at. */
     static const EconomyEvent& eventAt(int index);
+
+    /** @brief Share a cached protocol adapter over the canonical player ledger.
+     * @ownership The adapter is shared; EconomySystem retains the ledger. clear
+     * invalidates existing adapters before destroying ledgers; stale calls fail.
+     * @thread Simulation owner thread; no callbacks or reentry. */
+    [[nodiscard]] static std::shared_ptr<resource::IResourceAccount> resourceAccount(int player);
 
 private:
     static EconomyLedger& ledger(int player);

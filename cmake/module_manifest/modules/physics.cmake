@@ -18,7 +18,7 @@ eve_declare_module(NAME physics_softbody_cook DIR physics/softbody/cook LAYER 4
 eve_declare_module(NAME physics LAYER 4 SCRIPT Physics SLOT physics
                    DEPS physics_backend physics_softbody physics_softbody_graphics platform_event graphics gpgpu sensing
                    OPTIONAL_DEPS scene
-                   THIRDPARTY box2d box3d
+                   THIRDPARTY box2d box3d jolt
                    GROUP 2d 3d web)
 
 # L5 -- physics

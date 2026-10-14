@@ -86,6 +86,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [metroidvania](metroidvania/README.md) | 物理驱动的横版动作游戏：连击、蹬墙跳、空中冲刺、Boss；脚本 ECS 实体 + System |
 | [commandery-rts](commandery-rts/README.md) | 将领行政 RTS：框选/编队移动、占领经济点、生产、军饷与叛乱；单位/炮弹为脚本 ECS |
 | [rts-sandbox](rts-sandbox/README.md) | RTS 端到端 Squirrel 组合剖面：命令、生产、编队与结算 |
+| [rts-cardfront](rts-cardfront/README.md) | 可玩联动任务：真实采集、工人建造、单位生产与原子卡牌技能 |
 | [hex-levels](hex-levels/README.md) | 六边形引擎功能测试关卡：寻路 / FOV / 光照 / 掉落 / WFC（31 关） |
 | [map-fog](map-fog/README.md) | 大地图迷雾：`MapFog` 双层云 + mask（解锁 / 选中 / 溶解） |
 | [i18n](i18n/README.md) | 本地化：翻译表、占位符、复数规则、热重载 |

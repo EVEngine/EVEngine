@@ -111,6 +111,9 @@ TEST_CASE("devtools.mcp.toolTagsClassifyFamilies") {
     CHECK_EQ(mcpToolTags("eve_status")[0], std::string("core"));
     CHECK(mcpToolTags("eve_eval")[0] == "debug");
     CHECK(mcpToolTags("eve_input_batch")[0] == "input");
+    CHECK(mcpToolTags("eve_whitebox_playtest")[0] == "input");
+    CHECK(mcpToolMutates("eve_scene_batch"));
+    CHECK(mcpToolMutates("eve_whitebox_playtest"));
     CHECK(mcpToolTags("eve_host_status")[0] == "host");
     CHECK(mcpToolMutates("eve_eval"));
     CHECK(!mcpToolMutates("eve_status"));
