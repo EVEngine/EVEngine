@@ -3,7 +3,6 @@
 
 
 #include "common/ECS.h"
-#include "zeroerr/assert.h"
 
 #include <algorithm>
 #include <array>

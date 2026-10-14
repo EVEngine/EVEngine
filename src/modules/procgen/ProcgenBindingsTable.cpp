@@ -54,6 +54,7 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <charconv>
 #include <cstdint>
 #include <functional>
 #include <memory>

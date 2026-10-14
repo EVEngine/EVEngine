@@ -3,6 +3,8 @@
 #include "common/BorrowedRef.h"
 
 #include "common/Export.h"
+#include "common/ScriptStructure.hpp"
+#include "common/StringMapInstances.h"
 
 #include <simplesquirrel/script.hpp>
 
@@ -80,6 +82,8 @@ struct EVENGINE_API_FOUNDATION_INLINE ScriptPropertyMetadata {
 
 /** @brief Metadata retained for one compiled EveScript source unit. */
 struct EVENGINE_API_FOUNDATION_INLINE ScriptMetadata {
+    /** @brief Lexed source structure retained for compiler and project tooling; not a runtime trace. */
+    ScriptStructure                     structure;
     uint32_t                            languageVersion = 1;
     std::string                         sourceHash;
     std::string                         canonicalUri;
@@ -140,6 +144,15 @@ struct EVENGINE_API_FOUNDATION_INLINE BindingArchitectureContract {
     std::string              limitations;
     std::vector<std::string> writes;
     std::vector<std::string> tests;
+    std::vector<std::string> reads;
+};
+
+/** @brief Complete script-facing contract for a native function or method. */
+struct EVENGINE_API_FOUNDATION_INLINE BindingSemanticContract {
+    std::string factory, role, resultClass;
+    int         identityArgument = -1, relatedArgument = -1;
+    /** @brief Generator-validated JSON schema projection; empty when no source schema is supplied. */
+    std::string schemaJson;
 };
 
 /** @brief Complete script-facing contract for a native function or method. */
@@ -160,6 +173,8 @@ struct EVENGINE_API_FOUNDATION BindingContract {
     std::string cppSymbol;
     /** @brief Optional reviewed mapping; absence is explicitly reported as unknown. */
     std::optional<BindingArchitectureContract> architecture;
+    /** @brief Engine-owned source semantics; never supplied by a project relation manifest. */
+    std::optional<BindingSemanticContract> semantics;
 
     /** @brief Stable lookup key in the form module/class.method. */
     std::string key() const;

@@ -14,6 +14,7 @@ Result<PreparedAssetImport> prepareUnityFbx(const UnityProjectImportRequest&, co
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <xxHash/xxhash.h>
+#include <assimp/Exporter.hpp>
 #include <assimp/IOSystem.hpp>
 #include <assimp/Importer.hpp>
 
@@ -22,6 +23,7 @@ Result<PreparedAssetImport> prepareUnityFbx(const UnityProjectImportRequest&, co
 #include <cmath>
 #include <filesystem>
 #include <functional>
+#include <memory>
 #include <regex>
 #include <set>
 
@@ -205,6 +207,26 @@ Result<PreparedAssetImport> meshImport(const UnityProjectImportRequest& request,
                                (submesh ? "/submesh/" + std::to_string(*submesh) : std::string{});
     return result;
 }
+
+Result<PreparedAssetImport> characterImport(const UnityProjectImportRequest& request, const UnitySourceAsset& source,
+                                            const aiScene& scene) {
+    // Keep bones, inverse bind matrices and channels in one document. Splitting meshes
+    // here would lose the node indices shared by skins and animation tracks.
+    Assimp::Exporter exporter;
+    const auto*      blob = exporter.ExportToBlob(&scene, "glb2");
+    if (!blob || !blob->data || blob->size == 0 || blob->size > request.limits.maximumSourceBytes)
+        return Result<PreparedAssetImport>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "FBX character could not be converted to bounded glTF 2.0",
+                              source.path, {}, "asset.import"));
+    const auto* begin    = static_cast<const std::uint8_t*>(blob->data);
+    auto        identity = request.package;
+    identity.packageId   = identity.packageId.child("unity:" + source.guid + ":character");
+    auto prepared        = prepareGltfImport({identity, source.path, {begin, begin + blob->size}, {}, request.limits});
+    if (!prepared) return prepared;
+    prepared.value().findings.push_back({source.path, "FBX.character", ImportDisposition::Translated,
+                                         "skinned meshes, skeleton and animation clips converted through glTF 2.0"});
+    return prepared;
+}
 }  // namespace
 
 Result<PreparedAssetImport> prepareUnityFbx(const UnityProjectImportRequest& request, const UnitySourceAsset& source) {
@@ -230,10 +252,9 @@ Result<PreparedAssetImport> prepareUnityFbx(const UnityProjectImportRequest& req
     if (!scene || !scene->mRootNode)
         return Result<PreparedAssetImport>::failure(
             Diagnostic::error(DiagnosticCode::ParseError, importer.GetErrorString(), source.path, {}, "asset.import"));
-    if (scene->mNumAnimations || scene->mNumMeshes > request.limits.maximumAssets)
-        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
-                                                                      "FBX animation or mesh budget is unsupported",
-                                                                      source.path, {}, "asset.import"));
+    if (scene->mNumMeshes > request.limits.maximumAssets)
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "FBX mesh budget is unsupported", source.path, {}, "asset.import"));
     std::uint64_t meshBytes = 0;
     for (unsigned i = 0; i < scene->mNumMeshes; ++i) {
         const auto& mesh  = *scene->mMeshes[i];
@@ -254,6 +275,18 @@ Result<PreparedAssetImport> prepareUnityFbx(const UnityProjectImportRequest& req
     if (!std::isfinite(factor) || factor <= 0 || factor > std::numeric_limits<float>::max())
         return Result<PreparedAssetImport>::failure(Diagnostic::error(
             DiagnosticCode::Unsupported, "FBX file unit scale is unavailable", source.path, {}, "asset.import"));
+    if (scene->mNumAnimations || std::any_of(scene->mMeshes, scene->mMeshes + scene->mNumMeshes,
+                                             [](const aiMesh* mesh) { return mesh->HasBones(); })) {
+        // The static converter applies this basis and metre scale to vertices.
+        // For a character it must instead encompass the entire node/skin/clip tree.
+        std::unique_ptr<aiScene> characterScene(importer.GetOrphanedScene());
+        aiMatrix4x4              correction;
+        correction.a1                              = -float(factor);
+        correction.b2                              = float(factor);
+        correction.c3                              = -float(factor);
+        characterScene->mRootNode->mTransformation = correction * characterScene->mRootNode->mTransformation;
+        return characterImport(request, source, *characterScene);
+    }
     auto manifest = detail::baseManifest(request.package, "eve.unity-fbx/1");
     if (!manifest) return Result<PreparedAssetImport>::failure(manifest.status());
     PreparedAssetImport out;

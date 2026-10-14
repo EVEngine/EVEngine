@@ -349,6 +349,12 @@ make log/android
 
 If `sccache` is installed and available on `PATH`, CMake detects it by default
 and caches each C/C++ translation unit. Nothing changes when it is unavailable.
+
+Windows worktrees can explicitly opt into ccache hardlinks with
+`-DEVENGINE_COMPILER_CACHE=CCACHE_HARDLINK`. This requires a shared cache on the
+same volume and debugger source mappings; see the
+[Windows worktree setup and verification guide](docs/dev/windows-ccache-hardlinks.md).
+
 Use `sccache --show-stats` to inspect local hits, or configure explicitly with:
 
 ```sh
@@ -457,8 +463,11 @@ Optional CMake variables:
 | `CMAKE_BUILD_TYPE` | `Debug` (if unset) | `Debug` or `Release`; affects third-party install path suffixes (e.g. `win32-debug`) |
 | `BUILD_PLATFORM` | Auto from host | `win32` / `linux` / `macosx`, etc. |
 | `BUILD_TESTING` | `ON` | Build unit tests |
-| `EVENGINE_COMPILER_CACHE` | `AUTO` | `AUTO` uses `sccache` when found; `SCCACHE` requires it; `OFF` disables auto-detection |
+| `EVENGINE_COMPILER_CACHE` | `AUTO` | `AUTO` uses `sccache` when found; `SCCACHE` requires it; `CCACHE_HARDLINK` opts into Windows/Ninja/MSVC object sharing; `OFF` disables auto-detection |
 | `EVENGINE_SCCACHE_EXECUTABLE` | Auto from `PATH` | Optional explicit path to `sccache` |
+| `EVENGINE_CCACHE_EXECUTABLE` | Auto from `PATH` | `ccache` >= 4.14.1, required by `CCACHE_HARDLINK` |
+| `EVENGINE_CCACHE_DIR` | `%LOCALAPPDATA%/EVEngine/ccache` | Shared local cache on the same volume as build outputs |
+| `EVENGINE_CCACHE_TRIM_FILE_PATHS` | `OFF` | Opt into behavior-probed, undocumented MSVC `/d1trimfile` to share objects containing header `__FILE__` expansions; requires debugger source mappings |
 
 #### 2. Build third-party (deps)
 

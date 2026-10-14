@@ -163,7 +163,7 @@ scripts/architecture_contracts.json   # 兼容层：生成物或薄包装
 
 - 不改脚本绑定符号名与 Result 形状。  
 - 匿名命名空间助手跟着调用方走，避免 `Procgen.cpp` 再变汇合点。  
-- 单文件行数软上限 ~1000（与协作约定一致）；超限再拆。
+- 单文件超过 2000 行提示审查；达到 5000 行时再结合内聚性和协作冲突风险判断是否拆分。
 
 #### 4.3.2 `Graphics*.h`（枢纽头，禁止拆运行时模块）
 
@@ -288,7 +288,7 @@ S4 与 Graphics API 子头仍保留在本文，不拆前置 PR。
 ## 8. 与既有规范的关系
 
 - 遵守「One manifest, one boot list」：**逻辑**仍是一份 manifest；本设计只规定其**物理切片与组合方式**。  
-- 遵守「Big files get split」：`Procgen.cpp` / 过长头文件按已有段切开。  
+- 遵守「Group cohesive implementation, split contention hotspots」：`Procgen.cpp` 等实际冲突热点按稳定段切开，高内聚且低冲突的实现可保持较大编译单元。
 - 遵守「Domain satellites under host package」：声明碎片按宿主包聚合卫星，而不是按 `*_editor` 铺成顶层清单。  
 - 不削弱 Result / Link / 架构契约语义；只改变契约条目的存储位置。
 

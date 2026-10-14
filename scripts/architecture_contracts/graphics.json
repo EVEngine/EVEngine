@@ -296,7 +296,7 @@
         "docs/usr/modules/graphics.md",
         "src/modules/graphics/vulkan/GraphicsSampler.cpp",
         "src/modules/graphics/webgpu/GraphicsSampler.cpp",
-        "src/modules/graphics/hair/GroomInstance.cpp"
+        "src/modules/graphics/hair/GroomAsset.cpp"
       ],
       "tests": [
         "test/resource_lifetime.cpp",
@@ -395,7 +395,7 @@
       ],
       "hot_path": [
         "src/modules/graphics/RenderSystem3D.cpp",
-        "src/modules/graphics/hair/GroomInstance.cpp",
+        "src/modules/graphics/hair/GroomAsset.cpp",
         "src/modules/graphics/vulkan/GraphicsSampler.cpp",
         "src/modules/graphics/webgpu/GraphicsSampler.cpp"
       ]

@@ -174,6 +174,49 @@
       "cost_notes": []
     },
     {
+      "id": "game-save-session-module-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/common/GameSaveSession*",
+      "owner": "foundation save coordinator",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "One versioned envelope prepares every registered gameplay owner before a no-fail cross-domain publication.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/GameSaveSession.h",
+        "docs/usr/SAVE.md"
+      ],
+      "tests": [
+        "test/common_game_save_session.cpp",
+        "test/game_save_integration.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IGameSaveParticipant",
+          "impl": "GameSaveSession registration contract",
+          "absent_behavior": "an unregistered domain is not part of this save schema"
+        }
+      ],
+      "requires": [
+        {
+          "capability": "SnapshotHashProvider",
+          "required": true,
+          "fallback": "save or restore fails with a structured diagnostic"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "a game without a gameplay domain omits its participant and uses a distinct explicit save schema"
+      },
+      "thread_affinity": "paused owning simulation thread",
+      "hot_path": [],
+      "cost_notes": [
+        "Capture and restore scale with the complete serialized game state and run only at explicit save/load boundaries."
+      ]
+    },
+    {
       "id": "platform-event-input-injection-interface",
       "rule": "module-interface",
       "scope": "src/modules/platform_event/sdl/InputInjection.cpp",
