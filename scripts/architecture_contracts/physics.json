@@ -114,7 +114,7 @@
         "src/modules/physics/jolt/JoltGeometryQueries.cpp",
         "src/modules/physics/jolt/JoltExplosion.cpp",
         "src/modules/physics/jolt/JoltSolvedContacts.cpp",
-        "cmake/patches/jolt-solved-contacts-rolling.patch"
+        "cmake/third_party_pin.cmake"
       ],
       "tests": [
         "test/physics_contact_query.cpp",

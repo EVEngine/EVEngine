@@ -208,40 +208,7 @@ function(check_third_party_project name repo)
         # supplied launcher or, on MSVC, cannot execute our .cmd wrapper.
         list(APPEND _eve_tp_cmake_args -DASSIMP_BUILD_USE_CCACHE=OFF)
     endif()
-    # Windows only: force md/mdd before any add_subdirectory so squirrel/OpenAL
-    # match the names the engine already links. Do not set these on Apple/Linux.
-    if(WIN32)
-        list(APPEND _eve_tp_cmake_args
-            -DCMAKE_DEBUG_POSTFIX=mdd
-            -DCMAKE_RELEASE_POSTFIX=md
-            -DCMAKE_MINSIZEREL_POSTFIX=md
-            -DCMAKE_RELWITHDEBINFO_POSTFIX=md
-        )
-    endif()
-    # SDL keeps the video subsystem's state in the library itself. The engine
-    # links SDL from several link groups, so with the archive alone every group
-    # and every test executable owns a copy and a window the test created is
-    # invisible to the engine's modules (the particles/graphics/procgen failures
-    # in spec section 7.3). Building SDL shared *as well as* static gives the
-    # dynamic route a single instance, while the archive-only OBJECT route
-    # (release/SDK) keeps linking the static library. SDL_STATIC_PIC is needed
-    # because that archive also ends up inside the group shared objects on ELF.
-    if(NOT ANDROID AND NOT IOS AND NOT CMAKE_SYSTEM_NAME STREQUAL "iOS"
-       AND NOT EMSCRIPTEN AND NOT BUILD_PLATFORM STREQUAL "webgpu")
-        list(APPEND _eve_tp_cmake_args
-            -DSDL_SHARED=ON
-            -DSDL_STATIC=ON
-            -DSDL_STATIC_PIC=ON)
-        # box3d keeps its world registry in file scope and Box2D registers contact
-        # types in file scope. The engine reaches both from more than one link
-        # group, so the dynamic route needs one shared copy of each; the patch
-        # files build a dynamic twin next to the canonical archive (see
-        # cmake/patches/box3d-shared-library.patch and box2d-shared-library.patch)
-        # rather than switching the library type, so the archive route keeps
-        # linking a static library and the release artifact stays one
-        # self-contained executable. No flag is passed here: the twin is always
-        # built, which also keeps this install tree usable by both routes.
-    endif()
+    # Library ABI defaults are owned by third-party/cmake/release_defaults.cmake.
     if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
         list(APPEND _eve_tp_cmake_args
             -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
@@ -263,7 +230,7 @@ function(check_third_party_project name repo)
         message(STATUS "third-party Android toolchain: ABI=${ANDROID_ABI} PLATFORM=${ANDROID_PLATFORM}")
     elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS")
         find_program(_eve_ninja ninja REQUIRED)
-        set(_eve_ios_tp_toolchain "${CMAKE_SOURCE_DIR}/cmake/ios.toolchain.cmake")
+        set(_eve_ios_tp_toolchain "${CMAKE_SOURCE_DIR}/third-party/cmake/ios.toolchain.cmake")
         list(APPEND _eve_tp_cmake_args
             -DCMAKE_TOOLCHAIN_FILE=${_eve_ios_tp_toolchain}
             -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
@@ -313,176 +280,6 @@ function(check_third_party_project name repo)
     # --config is required for multi-config generators (VS); ignored by Ninja.
     set(_eve_tp_build_cmd ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}/ --target install --config ${_eve_tp_build_type} --parallel 8)
 
-    # Tracked patch applied at build time (never by mutating the checkout at
-    # configure time). Paths in the patch are relative to the medialoader
-    # submodule root. See cmake/patch_third_party.cmake.
-    set(_eve_tp_patch_cmd ${CMAKE_COMMAND}
-        -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/medialoader-smooth-normals.patch
-        -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/medialoader
-        -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Independent image fixtures cover memory-backed BMP and GIF first-frame decoding.
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/medialoader-image-formats.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/medialoader
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/medialoader-audio-gapless.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/medialoader
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Second patch: export squirrel/ssq symbols from the win32 host binary
-    # (paths relative to the third-party aggregate root).
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/third-party-squirrel-ssq-export.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Third patch: ssq class allocators must translate C++ exceptions from
-    # module constructors into Squirrel errors. Without this, a throwing ctor
-    # (e.g. Audio with no audio device) escapes the native call, corrupts the
-    # VM's exception state and hangs during sq_close (SQInstance::Release).
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/simplesquirrel-constructor-exceptions.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Fourth patch: SimpleSquirrel's Object move constructor swaps an
-    # uninitialized `weak` flag. Optimized arm64 builds can observe that UB
-    # when script bindings pass Array/Object wrappers by value.
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/simplesquirrel-object-move-init.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Fifth patch: mpg123's K&R-style signal handler type is rejected by GCC
-    # 15; use the POSIX void(int) signature accepted by sigaction.
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/mpg123-signal-handler.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/medialoader
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Sixth patch: SDL2's Android sensor loop uses ALooper_pollAll, which the
-    # NDK 27+ headers mark unavailable (obsoleted in Android 1). Use the
-    # equivalent ALooper_pollOnce (same non-blocking semantics at timeout 0).
-    # This is upstream SDL's own fix for libsdl-org/SDL#9792 (the exact NDK-27
-    # build failure): commit 558630d "Use ALooper_pollOnce() instead of
-    # ALooper_pollAll()" notes the existing draining loop already handles all
-    # events, so no events are lost. SDL2 2.0.x never adopted it, hence the patch.
-    # The sensor looper is dedicated (not the Android UI message loop), so this
-    # cannot affect the main UI looper.
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/sdl2-android-alooper-pollonce.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Seventh patch: Binding Contract constraints describe the argument as a
-    # whole. Consume them at the expression's first factor so a string result
-    # does not reject numeric literals nested in concatenations or ternaries.
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/squirrel-binding-contract-expression-scope.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Eighth patch: RTTI hash_code is not stable across macOS dynamic-library
-    # boundaries. Use a type-name hash so returned native objects retain their
-    # registered Squirrel class when producer and consumer live in different modules.
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/simplesquirrel-stable-type-hash.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Ninth patch: preserve an outer signature while nested binding discovery grows its storage.
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/squirrel-nested-call-signature-lifetime.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Tenth patch: avoid an invalid fixed-point plus NEON64 mpg123 configuration on Apple Silicon.
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/mpg123-apple-fpu-detection.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/medialoader
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Eleventh patch: Box3D upstream selects the STATIC MSVC CRT so that
-    # _crtBreakAlloc leak checking works standalone, while the engine and every
-    # other third-party archive use the dynamic CRT. An executable link only warns
-    # about that mix (LNK4098); a shared library cannot link at all, because
-    # MSVCRTD.lib's startup object cannot resolve __acrt_initialize /
-    # __vcrt_initialize once the static CRT is also in the image. Paths are
-    # relative to the box3d submodule root.
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/box3d-dynamic-crt.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/box3d
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Thirteenth patch: box3d keeps its world registry (b3_worlds) in file scope,
-    # so a statically linked copy per link group means every group owns different
-    # worlds and a world the test code created is unknown to the engine's modules.
-    # The patch adds a dynamic twin (box3d-dynamic) next to the canonical archive
-    # and installs it in bin/; thirdparty_libs.cmake picks the twin for the shared
-    # route and the archive for the OBJECT / release SDK route, which stays one
-    # self-contained executable. Building both forms removes any dependence on
-    # which configuration built this install tree. Paths are relative to the box3d
-    # submodule root.
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/box3d-shared-library.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/box3d
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Fourteenth patch: Box2D keeps its contact-type registry (b2Contact's
-    # s_registers / s_initialized) in file scope, and the engine wraps rigid
-    # bodies from two different link groups (EVWorld's physics module and the
-    # EVDomains physics satellites). Two archive copies therefore disagree about
-    # which contacts exist, which surfaces as "Box2D assertion failed:
-    # s_initialized == true" when one group destroys a contact the other created
-    # (spec section 7.25). Same shape as the box3d patch: a dynamic twin next to
-    # the canonical archive, its runtime image installed in bin/ next to the other
-    # shared dependencies, plus explicit data-symbol exports (MSVC's all-symbols
-    # .def generation covers functions only). Paths are relative to the
-    # third-party aggregate root.
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/box2d-shared-library.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/box2d-shared-library.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Twelfth patch: SDL2's library carries a CRT-less _DllMainCRTStartup stub
-    # while HAVE_LIBC is undefined, which is SDL's default on MSVC. The linker
-    # then takes that stub as the entry point of any DLL linking the library, so
-    # the CRT's startup object is never pulled and ucrt/vcruntime are never
-    # searched: every engine link group DLL failed with LNK2019
-    # __acrt_initialize / __vcrt_initialize in MSVCRTD.lib(utility.obj). SDL
-    # ships the SDL_STATIC_LIB guard (bug 4034) for the static build; upstream
-    # also made the static library use the system C library (commit 26a56a4).
-    # This pinned 2.0.16 predates that CMake change, and the narrow guard macro is
-    # verified to leave SDL's public headers byte-identical (HAVE_LIBC=1 there
-    # does not). The same patch drops /NODEFAULTLIB from the *shared* target, so
-    # SDL2.dll is CRT-backed like its consumers.
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/sdl2-static-library-crt-entry.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-
-    # Fifteenth patch: the same pinned SDL 2.0.16 loads Wayland dynamically, so it
-    # never links libwayland-client. With Wayland headers from 1.20 on,
-    # wl_proxy_marshal() routes through wl_proxy_marshal_flags(), which leaves
-    # direct references behind in the objects SDL compiles; the static archive
-    # never notices (the engine links the Wayland libraries itself, see
-    # cmake/system_libraries.cmake) but building SDL *shared* fails with
-    # "undefined reference to wl_proxy_marshal_flags" on current Linux images.
-    # Paths are relative to the third-party aggregate root.
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/sdl2-shared-wayland-link.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-
     # Stamp the git versions into the install tree after every install so
     # prebuilt-mode consumers (and eve's build info) can report exactly which
     # third-party commit the libraries were built from.
@@ -502,7 +299,6 @@ function(check_third_party_project name repo)
             CMAKE_GENERATOR "Ninja"
             LIST_SEPARATOR "|"
             CMAKE_ARGS ${_eve_tp_cmake_args}
-            PATCH_COMMAND ${_eve_tp_patch_cmd}
             BUILD_COMMAND ${_eve_tp_build_cmd} COMMAND ${_eve_tp_version_cmd}
             BUILD_ALWAYS 0
             EXCLUDE_FROM_ALL 1
@@ -515,7 +311,6 @@ function(check_third_party_project name repo)
             BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}
             LIST_SEPARATOR "|"
             CMAKE_ARGS ${_eve_tp_cmake_args}
-            PATCH_COMMAND ${_eve_tp_patch_cmd}
             BUILD_COMMAND ${_eve_tp_build_cmd} COMMAND ${_eve_tp_version_cmd}
             BUILD_ALWAYS 0
             EXCLUDE_FROM_ALL 1
@@ -537,6 +332,8 @@ function(check_third_party_project name repo)
     # Recorded for cmake/thirdparty_libs.cmake: on ELF/Mach-O the archive route has
     # to select a third-party archive by path, because the linker prefers the
     # same-named shared library that also lives in this directory.
+    set(EVENGINE_TP_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}"
+        CACHE INTERNAL "Effective third-party install prefix" FORCE)
     set(EVENGINE_TP_LIB_DIR
         "${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/lib"
         CACHE INTERNAL "Third-party install lib directory")
@@ -570,6 +367,15 @@ function(load_third_party)
     # the pinned checkout available on fresh CI runners as well as local builds.
     ensure_third_party_checkout()
 
+    # The aggregate owns these patches; engine-owned external/* patches stay here.
+    execute_process(COMMAND "${CMAKE_COMMAND}"
+        -P "${CMAKE_SOURCE_DIR}/third-party/cmake/apply_patches.cmake"
+        COMMAND_ERROR_IS_FATAL ANY)
+    include("${CMAKE_SOURCE_DIR}/cmake/third_party_release.cmake")
+    eve_resolve_third_party_release()
+    set(EVENGINE_THIRD_PARTY_BINARY_ONLY OFF CACHE INTERNAL
+        "Use installed third-party prefix" FORCE)
+
     if(EVENGINE_THIRD_PARTY_BINARY_DIR)
         cmake_path(ABSOLUTE_PATH EVENGINE_THIRD_PARTY_BINARY_DIR NORMALIZE
                    OUTPUT_VARIABLE _eve_prebuilt_tp)
@@ -582,6 +388,8 @@ function(load_third_party)
         target_include_directories(eve_engine_includes INTERFACE "${_eve_prebuilt_tp}/include")
         eve_external_include("${_eve_prebuilt_tp}/include")
         target_link_directories(eve_engine_includes INTERFACE "${_eve_prebuilt_tp}/lib")
+        set(EVENGINE_TP_INSTALL_PREFIX "${_eve_prebuilt_tp}" CACHE INTERNAL
+            "Effective third-party install prefix" FORCE)
         set(EVENGINE_TP_LIB_DIR "${_eve_prebuilt_tp}/lib" CACHE INTERNAL
             "Third-party install lib directory")
         set(EVENGINE_THIRD_PARTY_BINARY_ONLY ON CACHE INTERNAL
@@ -651,7 +459,7 @@ function(load_third_party)
     #
     # Normal generation for assets without authored normals: medialoader maps
     # generateNormalsIfMissing to aiProcess_GenNormals (per-face, flat shading).
-    # A tracked patch (cmake/patches/medialoader-smooth-normals.patch) switches
+    # A tracked patch (third-party/cmake/patches/medialoader-smooth-normals.patch) switches
     # it to aiProcess_GenSmoothNormals, so sphere-like models shade smoothly
     # while hard edges (default smoothing angle 80 degrees) keep seams. The
     # patch is applied by the third-party ExternalProject's PATCH_COMMAND at
