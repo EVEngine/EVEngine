@@ -29,12 +29,12 @@ public:
 };
 
 /**
- * @brief Composition adapter that publishes the fluid automation-target factory.
- * @ownership Owns the registered factory and removes it before destruction.
+ * @brief Composition adapter that publishes the fluid automation-target factory and EditorPackage.
+ * @ownership Owns the registered factory and package provider; removes both before destruction.
  * @thread Owner/composition-thread affine.
  * @reentrancy Do not construct or destroy while factory listeners are being enumerated.
  */
-class FluidsEditorModule final : public Module {
+class EVENGINE_API_EDITORS FluidsEditorModule final : public Module {
 public:
     Module_REG(FluidsEditorModule);
     /** @brief Constructs a FluidsEditorModule. */
