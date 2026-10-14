@@ -150,7 +150,7 @@ Result<std::size_t> CrowdMotionSystem::step(const SimulationStep& step, crowd::C
             target = {entry.tactics->guardX, entry.tactics->guardY};
         }
         const float remaining     = std::sqrt(distanceSquared(state.x, state.y, target.x, target.y));
-        float       arrivalRadius = entry.motion->arrivalRadius;
+        float       arrivalRadius = systems_internal::interactionArrivalRadius(*entry.unit, *record);
         if (record->kind == OrderKind::Attack)
             arrivalRadius = std::max(arrivalRadius, entry.combat->engagementRange);
         else if (record->kind == OrderKind::Resupply || record->kind == OrderKind::SupplyRelay)

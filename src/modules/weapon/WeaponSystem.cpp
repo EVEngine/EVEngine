@@ -416,7 +416,7 @@ void WeaponSystem::startReload(WeaponEntity& w) {
     if (r.reloading || r.value >= r.max) return;
     if (AmmoPoolEntity* pool = state->ammoPool) {
         if (pool->state()->count <= 0) return;
-    } else if (def->reserveSize == 0 || r.reserve <= 0) {
+    } else if (!r.infinite && (def->reserveSize == 0 || r.reserve <= 0)) {
         return;
     }
 

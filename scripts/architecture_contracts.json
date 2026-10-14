@@ -1614,6 +1614,47 @@
       }
     },
     {
+      "id": "card-payment-composition-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/card/*",
+      "owner": "card-maintainers",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACES",
+      "reason": "Payment composition retains canonical ledger ownership and shared transaction lifecycle.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/usr/GAMEPLAY_PAYMENT_COMPOSITION.md",
+        "src/modules/card/CardPlay.h",
+        "src/modules/card/CardPlayFacade.cpp",
+        "src/modules/card/CardStageBindings.cpp"
+      ],
+      "tests": [
+        "test/card_payment_composition.cpp",
+        "test/card_rts_script_composition.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Card",
+          "methods": [
+            "stagePlay"
+          ]
+        }
+      ],
+      "protocol": [
+        "Native synchronous Result-based payment; no persistent wire format.",
+        "Card contributes independent effects and Mana to AtomicBatch; no RTS dependency. Generation handles validate entity lifetime; GC-visible owner roots keep facades alive through commit/disposal."
+      ],
+      "thread_affinity": "Owner thread; borrowed participants live until return; no same-account reentrancy.",
+      "trim": {
+        "absent_profile": "No new optional provider or trim claim; free Card plays remain account-free."
+      },
+      "cost_notes": [],
+      "hot_path": []
+    },
+    {
       "id": "crowd-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/crowd/Crowd*",
@@ -1871,6 +1912,47 @@
       "hot_path": [],
       "protocol": [],
       "cost_notes": []
+    },
+    {
+      "id": "economy-payment-composition-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/economy/*",
+      "owner": "economy-maintainers",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACES",
+      "reason": "Payment composition retains canonical ledger ownership and shared transaction lifecycle.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/usr/GAMEPLAY_PAYMENT_COMPOSITION.md",
+        "src/modules/economy/EconomyLedgerResourceAccount.h",
+        "src/modules/economy/EconomySystem.cpp",
+        "src/modules/economy/Economy.cpp"
+      ],
+      "tests": [
+        "test/card_payment_composition.cpp",
+        "test/card_rts_script_composition.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Economy",
+          "methods": [
+            "stagePayment"
+          ]
+        }
+      ],
+      "protocol": [
+        "Native synchronous Result-based payment; no persistent wire format.",
+        "Shared cached protocol adapters over canonical player ledgers; clear advances generation before destroying ledgers. Stale adapter operations fail before touching retired ledger storage."
+      ],
+      "thread_affinity": "Owner thread; borrowed participants live until return; no same-account reentrancy.",
+      "trim": {
+        "absent_profile": "No new optional provider or trim claim; free Card plays remain account-free."
+      },
+      "cost_notes": [],
+      "hot_path": []
     },
     {
       "id": "game-save-session-module-interface",
@@ -2940,6 +3022,91 @@
       ]
     },
     {
+      "id": "rts-operation-batch-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/rts/RTSStageBindings.cpp",
+      "owner": "rts-maintainers",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACES",
+      "reason": "RTS contributes canonical ability/production/payment operations to the shared transaction protocol without a Card dependency.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/rts/RTSStageBindings.cpp",
+        "src/modules/rts/RTSScriptActions.cpp",
+        "src/modules/rts/RTSProductionAction.cpp",
+        "docs/usr/GAMEPLAY_PAYMENT_COMPOSITION.md"
+      ],
+      "tests": [
+        "test/card_rts_script_composition.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.RTS",
+          "methods": [
+            "stageAbility",
+            "stageProduction",
+            "stagePayment"
+          ]
+        }
+      ],
+      "protocol": [
+        "Canonical RTS participants plus owning CostSpec contributions; existing queues, Action, production settlement and refund metadata remain authoritative.",
+        "GC-visible script facade roots plus entity-generation/account/tick guards; production resource floors apply to merged payment. No Card include or dependency."
+      ],
+      "thread_affinity": "Single VM/simulation owner thread; no reentry. Guards reject stale entity/account/tick before account access. Native callers retain borrowed stores; script owners are GC-visible retained roots until commit/disposal.",
+      "trim": {
+        "absent_profile": "minimal+card+font+devtools with RTS excluded",
+        "evidence": "Transaction has no Card/RTS/Economy includes. Trimmed host checks Card plus Economy without RTS at L1 compile, L2 link and L3 runtime."
+      },
+      "cost_notes": [
+        {
+          "api": "RTS::prepareScriptUnit",
+          "shape": "staged-operation",
+          "why": "Existing production participants defer queue snapshot preparation and payment to the outer coordinator."
+        }
+      ],
+      "hot_path": []
+    },
+    {
+      "id": "rts-payment-composition-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/rts/RTSEconomy.*",
+      "owner": "rts-maintainers",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACES",
+      "reason": "Payment composition retains canonical ledger ownership and shared transaction lifecycle.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/usr/GAMEPLAY_PAYMENT_COMPOSITION.md",
+        "src/modules/rts/RTSEconomy.h",
+        "src/modules/rts/RTSProductionAction.h",
+        "src/modules/rts/RTSProductionAction.cpp",
+        "src/modules/rts/RTSScriptActions.cpp",
+        "src/modules/rts/RTSScriptEconomy.cpp",
+        "src/modules/rts/RTSAbilityAdmission.cpp"
+      ],
+      "tests": [
+        "test/card_payment_composition.cpp",
+        "test/card_rts_script_composition.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [
+        "Native synchronous Result-based payment; no persistent wire format."
+      ],
+      "thread_affinity": "Owner thread; borrowed participants live until return; no same-account reentrancy.",
+      "trim": {
+        "absent_profile": "No new optional provider or trim claim; free Card plays remain account-free."
+      },
+      "cost_notes": [],
+      "hot_path": []
+    },
+    {
       "id": "scene-authoring-editor-interface",
       "rule": "module-interface",
       "scope": "src/modules/scene/editor/Scene*",
@@ -3374,6 +3541,58 @@
       "hot_path": [
         "src/modules/touch/sdl/EventSink.cpp"
       ]
+    },
+    {
+      "id": "transaction-atomic-batch-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/transaction/AtomicBatch.*",
+      "owner": "transaction-maintainers",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACES",
+      "reason": "Existing transaction protocol exposes independent domain stages to scripts without pair-specific modules.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/transaction/AtomicBatch.h",
+        "src/modules/transaction/AtomicBatch.cpp",
+        "docs/usr/GAMEPLAY_PAYMENT_COMPOSITION.md"
+      ],
+      "tests": [
+        "test/card_rts_script_composition.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Transaction",
+          "methods": [
+            "newAtomicBatch"
+          ]
+        },
+        {
+          "script_class": "eve.AtomicBatch",
+          "methods": [
+            "commit"
+          ]
+        }
+      ],
+      "protocol": [
+        "Single-use owner-thread builder of owning ITransactionParticipant stages, canonical CostSpec and one payer; no arbitrary script commit callbacks or persistent/wire format.",
+        "Staging errors poison execution. Merged payment obeys maximum resource floors. Existing Coordinator handles rollback/compensation. VM-visible owner roots permit safe pending-batch disposal at VM shutdown."
+      ],
+      "thread_affinity": "Single VM/simulation owner thread; no reentry. Guards reject stale entity/account/tick before account access. Native callers retain borrowed stores; script owners are GC-visible retained roots until commit/disposal.",
+      "trim": {
+        "absent_profile": "minimal+card+font+devtools with RTS excluded",
+        "evidence": "L1 compile and L2 link: minimal+card+font+devtools with RTS=OFF linked an OBJECT host. L3 runtime: actual engine asserts RTS class absence, consumes a card, pays Mana plus ore via Economy and presents frames. Transaction has no Card/RTS/Economy includes; SHARED full scene also wins through the same batch protocol."
+      },
+      "cost_notes": [
+        {
+          "api": "AtomicBatch::commit",
+          "shape": "builder",
+          "why": "Independent domain stages and one merged reservation amortize work across an atomic request."
+        }
+      ],
+      "hot_path": []
     },
     {
       "id": "ui-component-scheduling-interface",

@@ -11,6 +11,7 @@
 #include "economy/EconomyLedgerResourceAccount.h"
 #include "transaction/AtomicResourcePayment.h"
 
+#include <span>
 #include <string>
 
 namespace eve::rts {
@@ -50,6 +51,19 @@ public:
      */
     [[nodiscard]] eve::Result<eve::transaction::TransactionReceipt> pay(
         const eve::resource::CostSpec& cost, eve::transaction::ITransactionParticipant& effect,
+        std::string transactionId = {});
+
+    /**
+     * @brief Pay a multi-resource cost and publish several effects atomically.
+     * @param cost Valid canonical cost, borrowed until return.
+     * @param effects Unique non-null borrowed participants in commit order.
+     * @param transactionId Correlation id; empty uses rts.economy.payment.
+     * @return Receipt or rollback/compensation diagnostics.
+     * @remarks Synchronous owner-thread call; effects must not reenter the account.
+     * The ledger remains authoritative; no extra balance or effect store is created.
+     */
+    [[nodiscard]] eve::Result<eve::transaction::TransactionReceipt> pay(
+        const eve::resource::CostSpec& cost, std::span<eve::transaction::ITransactionParticipant*> effects,
         std::string transactionId = {});
 
     /**
