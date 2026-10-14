@@ -77,7 +77,7 @@ public:
  *          记一条日志，避免"原生实现悄悄失效"。
  * @cost 组合期一次 map 插入；每次开火一次脚本调用，成本见 `ScriptProjectileService`。
  */
-void declareScriptProjectileSeam();
+EVENGINE_API_WORLD void declareScriptProjectileSeam();
 
 /**
  * @brief 撤回本模块声明的脚本接缝，并卸载全部脚本提供方。
@@ -88,6 +88,6 @@ void declareScriptProjectileSeam();
  * @remarks 接缝状态是进程级的（能力表就是进程级的），所以第二个存活的 `Weapon` 实例
  *          （测试场景；生产侧经 `ModuleManager::requireInstance`）与它共享同一份状态。
  */
-void withdrawScriptProjectileSeam();
+EVENGINE_API_WORLD void withdrawScriptProjectileSeam();
 
 }  // namespace eve::weapon

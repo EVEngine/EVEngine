@@ -31,7 +31,7 @@ namespace eve {
 /** @brief 脚本侧 ECS：Entity / Component / System / ShaderSystem / view（见 ECS.cpp）。
  * C++ 游戏实体仍直接用 ECS.hpp 的 ENTITY / COMPONENT / View。
  * GPU System：eve.ShaderSystem + gpgpu::ShaderSystem / EcsGpu.h。 */
-void exposeECS(ssq::Table& table);
+EVENGINE_API_FOUNDATION void exposeECS(ssq::Table& table);
 
 /**
  * @brief 脚本组件注册表的一条记录。
@@ -81,13 +81,13 @@ struct ScriptComponentRecord {
  * @return 只读指针，指向注册表内部记录；没有该名字+版本时返回 nullptr。
  * @lifetime 在下一次 `registerScriptComponent` 或 `prepareEcsScriptInjection` 前有效。
  */
-[[nodiscard]] const ScriptComponentRecord* findScriptComponent(const std::string& name, SchemaVersion version);
+[[nodiscard]] EVENGINE_API_FOUNDATION const ScriptComponentRecord* findScriptComponent(const std::string& name, SchemaVersion version);
 
 /**
  * @brief 当前 VM 的全部登记（含 retired 历史），按名字、版本、代际排序。
  * @cost 一次拷贝；仅供编辑器/诊断/测试等非热路径使用。
  */
-[[nodiscard]] std::vector<ScriptComponentRecord> scriptComponentRecords();
+[[nodiscard]] EVENGINE_API_FOUNDATION std::vector<ScriptComponentRecord> scriptComponentRecords();
 
 /**
  * @brief 一条已登记组件的**声明 schema**：字段名与它们的声明默认值。
@@ -120,7 +120,7 @@ struct ScriptComponentDeclaredSchema {
  *          声明值，所以默认值只能从这里取。**不**读实例、不读引擎侧存储。
  * @cost 一次 map 查找 + 一次字段/默认值拷贝；给编辑器与工具用，不在逐帧路径上。
  */
-[[nodiscard]] EVENGINE_API Result<ScriptComponentDeclaredSchema> scriptComponentDeclaredSchema(const std::string& name,
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<ScriptComponentDeclaredSchema> scriptComponentDeclaredSchema(const std::string& name,
                                                                                                SchemaVersion version);
 
 /**
@@ -137,7 +137,7 @@ struct ScriptComponentDeclaredSchema {
  * @cost 登记组件一次存储查找（键含字段名）；未登记组件一次 Squirrel 槽位查找。
  *        热路径请按 `(实体, 组件名, 版本)` 直接用 `common/ScriptComponentStore.h`，不要按名字反复问。
  */
-[[nodiscard]] EVENGINE_API Result<Value> readScriptComponentField(const ssq::Object& instance,
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<Value> readScriptComponentField(const ssq::Object& instance,
                                                                   const std::string& field);
 
 /**
@@ -150,14 +150,14 @@ struct ScriptComponentDeclaredSchema {
  * @remarks 未登记组件写的是实例槽位；登记组件写的是引擎侧存储——脚本侧下一次读就看见新值。
  * @cost 同 `readScriptComponentField`。
  */
-[[nodiscard]] EVENGINE_API Result<void> writeScriptComponentField(const ssq::Object& instance, const std::string& field,
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<void> writeScriptComponentField(const ssq::Object& instance, const std::string& field,
                                                                   const Value& value);
 
 /** @brief Resets per-VM script injection bookkeeping before a new VM is exposed. */
-void prepareEcsScriptInjection();
+EVENGINE_API_FOUNDATION void prepareEcsScriptInjection();
 
 /** @brief 在 ModuleManager::expose 之后调用；保证 eve.Component 等不被其它模块覆盖。 */
-void exposeECSToVM(ssq::VM& vm);
+EVENGINE_API_FOUNDATION void exposeECSToVM(ssq::VM& vm);
 
 /**
  * @brief C++ 实体 → 脚本 eve.view() 桥接。
@@ -184,6 +184,6 @@ EVENGINE_API_FOUNDATION void registerPostEcsHook(PostEcsHook fn);
  * register a hook (or depend on Entity already existing) after the initial
  * `exposeECS` call; this flushes those pending hooks onto the live `eve` table.
  */
-void flushPostEcsHooks(ssq::Table& table);
+EVENGINE_API_FOUNDATION void flushPostEcsHooks(ssq::Table& table);
 
 }  // namespace eve

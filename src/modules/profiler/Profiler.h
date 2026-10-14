@@ -166,6 +166,6 @@ private:
  * Called by the module constructor so devtools/MCP can read the last completed
  * frame's zone tree without linking this module.
  */
-void registerProfilerCapabilities();
+EVENGINE_API_FOUNDATION void registerProfilerCapabilities();
 
 }  // namespace eve::profiler
