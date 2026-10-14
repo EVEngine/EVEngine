@@ -251,7 +251,10 @@ endif()
 eve_module_enabled(physics _eve_jolt_physics)
 if(EVENGINE_BUILD_JOLT AND (_eve_jolt_physics OR EVENGINE_BUILD_PHYSICS_CORE_CHECK OR EVENGINE_PROFILE STREQUAL "physics-core-only"))
   if(EVENGINE_THIRD_PARTY_BINARY_DIR)
-    find_package(Jolt CONFIG REQUIRED PATHS "${EVENGINE_THIRD_PARTY_BINARY_DIR}" NO_DEFAULT_PATH)
+    find_package(Jolt CONFIG REQUIRED PATHS "${EVENGINE_THIRD_PARTY_BINARY_DIR}"
+      NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
+    # Link groups and tests are assembled in parent/sibling directories.
+    set_property(TARGET Jolt::Jolt PROPERTY IMPORTED_GLOBAL TRUE)
   else()
     include(${CMAKE_SOURCE_DIR}/third-party/cmake/Jolt.cmake)
     eve_add_jolt()

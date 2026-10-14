@@ -149,6 +149,32 @@ class ThirdPartyPackageTests(unittest.TestCase):
 
 
 class CMakeReleaseSelectionTests(unittest.TestCase):
+    def test_installed_jolt_is_visible_to_parent_and_sibling_with_cross_root(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            package = root / "prefix/lib/cmake/Jolt"
+            package.mkdir(parents=True)
+            (package / "JoltConfig.cmake").write_text(
+                "add_library(Jolt::Jolt INTERFACE IMPORTED)\n", encoding="utf-8")
+            modules = (tp.ROOT / "src/modules/CMakeLists.txt").read_text(encoding="utf-8")
+            # Exercise the production import policy with an Android-style package root.
+            import_policy = modules.split("    find_package(Jolt", 1)[1].split("  else()", 1)[0]
+            (root / "modules").mkdir()
+            (root / "modules/CMakeLists.txt").write_text(
+                "find_package(Jolt" + import_policy, encoding="utf-8")
+            assertion = 'if(NOT TARGET Jolt::Jolt)\nmessage(FATAL_ERROR "Jolt scope lost")\nendif()\n'
+            (root / "tests").mkdir()
+            (root / "tests/CMakeLists.txt").write_text(assertion, encoding="utf-8")
+            (root / "CMakeLists.txt").write_text(
+                "cmake_minimum_required(VERSION 3.21)\nproject(JoltScope NONE)\n"
+                f'set(EVENGINE_THIRD_PARTY_BINARY_DIR "{(root / "prefix").as_posix()}")\n'
+                f'set(CMAKE_FIND_ROOT_PATH "{(root / "sysroot").as_posix()}")\n'
+                "set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)\nadd_subdirectory(modules)\n"
+                + assertion + "add_subdirectory(tests)\n", encoding="utf-8")
+            result = subprocess.run(["cmake", "-G", "Ninja", "-S", str(root), "-B", str(root / "build")],
+                                    capture_output=True, text=True, encoding="utf-8")
+            self.assertEqual(result.returncode, 0, result.stderr)
+
     def configure(self, mode, target="win32", download_result=0, cached_prefix=False):
         with tempfile.TemporaryDirectory() as raw:
             root = Path(raw)
