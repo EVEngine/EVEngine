@@ -25,6 +25,7 @@ set(EVE_TP_ORDER
     zlib
     physfs
     lz4
+    protobuf
     box2d
     jolt
     box3d

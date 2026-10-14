@@ -985,6 +985,29 @@
       "lock_callback_policy": "release internal locks before invoking unknown callbacks or scripts."
     },
     {
+      "id": "inventory-protobuf-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/inventory/InventorySaveSession.*",
+      "owner": "inventory::InventorySaveSession",
+      "issue": "EVENGINE-ARCH-INVENTORY-TRANSACTIONS",
+      "reason": "Inventory snapshots use the protobuf message descriptor as their structural contract and validate domain policies before publication.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "proto/inventory_save.proto",
+        "src/modules/inventory/InventorySaveSession.h",
+        "src/modules/inventory/InventorySaveSession.cpp"
+      ],
+      "tests": [
+        "test/inventory_save_protobuf.cpp",
+        "test/inventory_gameplay_control.cpp"
+      ],
+      "schema": "eve.inventory.proto.InventorySave in proto/inventory_save.proto; legacy JSON is a protobuf JSON projection",
+      "version": "schema eve.inventory.save-session, wire version 1",
+      "migration": "Existing version-1 JSON is read through protobuf JSON mapping. Unsupported versions fail before mutation; future changes require explicit migration.",
+      "unknown_fields": "Reject unknown protobuf fields recursively and reject unknown JSON fields during protobuf JSON parsing.",
+      "restore_atomicity": "Parse and validate into private Bag and EquipmentSet candidates, then publish both via no-fail swaps."
+    },
+    {
       "id": "persistence-contract-policy",
       "rule": "persistence",
       "scope": "src/**",
@@ -2580,6 +2603,47 @@
         "common",
         "graphics"
       ]
+    },
+    {
+      "id": "inventory-protobuf-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/inventory/**",
+      "owner": "inventory::InventorySaveSession",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Inventory exposes an owning-thread protobuf save boundary alongside its existing script-facing JSON projection.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/inventory/InventorySaveSession.h",
+        "src/modules/inventory/Inventory.cpp",
+        "cmake/module_manifest/core_foundation.cmake"
+      ],
+      "tests": [
+        "test/inventory_save_protobuf.cpp",
+        "test/inventory_gameplay_control.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.InventorySaveSession",
+          "methods": [
+            "bind",
+            "snapshotJson",
+            "restoreSnapshotJson"
+          ]
+        }
+      ],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "No L1-L4 trim claim is made for this change."
+      },
+      "thread_affinity": "All capture, validation and commit calls run on the owning simulation thread.",
+      "cost_notes": [
+        "Binary and JSON snapshot operations are O(total inventory state) at save/load boundaries."
+      ],
+      "hot_path": []
     },
     {
       "id": "joystick-module-interface",

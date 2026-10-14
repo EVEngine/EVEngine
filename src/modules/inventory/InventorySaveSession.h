@@ -57,12 +57,40 @@ public:
 
     /**
      * @brief Capture the complete bag and equipment state.
-     * @return Deterministic `eve.inventory.save-session` version 1 JSON, or a structured failure.
+     * @return `eve.inventory.save-session` version 1 protobuf JSON, or a structured failure.
      * @remarks Item definitions and runtime change events are external content/transient state and are excluded.
+     *          This compatibility projection shares its schema and validation with snapshotBinary().
      * @thread Owning simulation thread only.
      * @reentrancy No callbacks or inventory hooks are invoked.
      */
     [[nodiscard]] eve::Result<std::string> snapshotJson() const;
+
+    /**
+     * @brief Capture versioned protobuf bytes using proto/inventory_save.proto.
+     * @return Owning wire bytes, or a structured failure.
+     * @thread Owning simulation thread only.
+     * @cost O(total inventory state), once per save.
+     */
+    [[nodiscard]] eve::Result<std::string> snapshotBinary() const;
+
+    /**
+     * @brief Validate protobuf bytes and prepare an atomic restore.
+     * @param bytes Borrowed wire bytes needed only during this call.
+     * @return Move-only state ready for no-fail publication.
+     * @remarks Unknown fields and unsupported versions are rejected to avoid silently losing state.
+     * @thread Owning simulation thread only.
+     * @cost O(total inventory state), once per load.
+     */
+    [[nodiscard]] eve::Result<PreparedRestore> prepareRestoreSnapshotBinary(std::string_view bytes) const;
+
+    /**
+     * @brief Validate and atomically restore a protobuf inventory save.
+     * @param bytes Borrowed wire bytes needed only during this call.
+     * @return Applied status, or a failure with both participants unchanged.
+     * @thread Owning simulation thread only.
+     * @cost O(total inventory state), once per load.
+     */
+    [[nodiscard]] eve::Result<void> restoreSnapshotBinary(std::string_view bytes);
 
     /**
      * @brief Parse and validate a snapshot without mutating either participant.

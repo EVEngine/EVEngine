@@ -654,6 +654,28 @@ include(${CMAKE_SOURCE_DIR}/cmake/ZeroErrDiscoverTests.cmake)
 foreach(_eve_test_target IN LISTS EVE_TEST_TARGETS)
   zeroerr_discover_tests(${_eve_test_target} LABEL "${_eve_test_target}")
 endforeach()
+
+# Inventory's protobuf codec belongs to Foundation. This narrow target proves
+# the save contract in a trimmed host without unrelated RPG test sources that
+# still reference optional gameplay modules.
+if(TARGET EVInventory AND TARGET EVFoundation)
+  add_executable(inventory_save_protobuf_test EXCLUDE_FROM_ALL
+    main.cpp inventory_save_protobuf.cpp)
+  target_link_libraries(inventory_save_protobuf_test PRIVATE
+    eve_engine_includes EVFoundation zeroerr)
+  target_compile_options(inventory_save_protobuf_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(inventory_save_protobuf_test PRIVATE EVBacktrace)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/inventory_save_protobuf_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/inventory_save_protobuf_test_zeroerr_tests.cmake"
+      "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(inventory_save_protobuf_test
+    LABEL "inventory_save_protobuf_test" NAME_PREFIX "inventory-protobuf/")
+endif()
 endif()
 include(asset_shader/GraphicsProbe.cmake)
 

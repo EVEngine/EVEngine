@@ -103,6 +103,7 @@ eve_declare_module(NAME rpg LIB EVRPG LAYER 1 SCRIPT RPG
                    DEPS action attributes decision definitions dnut_interpreter effects inventory production settlement transaction)
 # L0 -- foundation (continued)
 eve_declare_module(NAME inventory LAYER 0 SCRIPT Inventory
+                   THIRDPARTY protobuf
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME economy LAYER 0 SCRIPT Economy SLOT economy
                    DEPS transaction

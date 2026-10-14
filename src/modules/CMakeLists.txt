@@ -280,6 +280,18 @@ foreach(_mod IN LISTS EVE_ENABLED_MODULES)
   create_module(${EVE_MODULE_${_mod}_LIB} ${_mod})
 endforeach()
 
+if(TARGET EVInventory)
+  # Generated with the pinned third-party protoc from proto/inventory_save.proto.
+  # Checked in so Android, iOS and WebAssembly only need the target runtime.
+  target_sources(EVInventory PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/inventory_save.pb.cc)
+  target_include_directories(EVInventory PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  if(MSVC)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/inventory_save.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+  endif()
+  target_link_libraries(EVInventory PUBLIC protobuf::libprotobuf)
+endif()
+
 if(TARGET EVPhysics)
   target_compile_definitions(EVPhysics PRIVATE EVENGINE_HAS_JOLT=$<BOOL:${EVENGINE_BUILD_JOLT}>)
   if(TARGET Jolt)

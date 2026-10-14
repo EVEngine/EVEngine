@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package eve.inventory.proto;
+
+// Version 1 of the inventory save wire format. Business rules (registered
+// policies, unique instance IDs, equipment compatibility) are validated by
+// InventorySaveSession before any live state is published.
+message ItemStack {
+  optional int32 instance_id = 1;
+  optional string item_id = 2;
+  optional int32 quantity = 3;
+  optional float durability = 4;
+  map<string, string> props = 5;
+  repeated string tags = 6;
+}
+
+message Bag {
+  optional string id = 1;
+  optional string kind = 2;
+  optional float max_weight = 3;
+  optional float max_volume = 4;
+  optional string accept_rule = 5;
+  optional string capacity_policy = 6;
+  optional string stack_rule = 7;
+  repeated string accept_tags = 8;
+  repeated string reject_tags = 9;
+  map<string, string> extra = 10;
+  repeated ItemStack slots = 11;
+}
+
+message EquipmentSlot {
+  optional string name = 1;
+  repeated string allowed_tags = 2;
+  optional ItemStack stack = 3;
+}
+
+message Equipment {
+  optional string id = 1;
+  repeated EquipmentSlot slots = 2;
+}
+
+message InventorySave {
+  optional string schema = 1;
+  optional uint32 version = 2;
+  optional Bag bag = 3;
+  optional Equipment equipment = 4;
+}
