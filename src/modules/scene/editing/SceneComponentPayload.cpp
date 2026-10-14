@@ -330,12 +330,12 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
             auto current = capability->readTransform(editing::ObjectId(*object));
             if (!current.ok())
                 return eve::editing::failed<editing::CommandPlan>(current.code(),
-                                                                      editing::RuleId("scene.editing.transform-object"),
-                                                                      "Scene object transform is unavailable");
+                                                                  editing::RuleId("scene.editing.transform-object"),
+                                                                  "Scene object transform is unavailable");
             SceneTransformValue transform = current.value();
             if (!assignVector3(request.payload, "position", transform.x, transform.y, transform.z) ||
                 !assignVector3(request.payload, "rotation", transform.rotationX, transform.rotationY,
-                                   transform.rotationZ) ||
+                               transform.rotationZ) ||
                 !assignVector3(request.payload, "scale", transform.scaleX, transform.scaleY, transform.scaleZ))
                 return eve::editing::failed<editing::CommandPlan>(
                     editing::Status::Rejected, editing::RuleId("scene.editing.transform-vector"),
@@ -343,8 +343,8 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
             auto operation = capability->makeSetTransform(editing::ObjectId(*object), transform);
             if (!operation.ok())
                 return eve::editing::failed<editing::CommandPlan>(operation.code(),
-                                                                      editing::RuleId("scene.editing.transform-operation"),
-                                                                      "Scene target rejected the transform");
+                                                                  editing::RuleId("scene.editing.transform-operation"),
+                                                                  "Scene target rejected the transform");
             editing::CommandPlan plan;
             plan.operations.push_back(std::move(operation.value()));
             plan.summary = editing::Value::Object{{"object", *object}};
@@ -409,8 +409,8 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
                 const auto* id      = idValue ? idValue->getIf<std::string>() : nullptr;
                 if (!id || id->empty())
                     return eve::editing::failed<editing::CommandPlan>(editing::Status::Rejected,
-                                                                        editing::RuleId("scene.editing.object-required"),
-                                                                        "A nonempty object id is required");
+                                                                      editing::RuleId("scene.editing.object-required"),
+                                                                      "A nonempty object id is required");
                 const auto* nameValue   = field(request.payload, "name");
                 const auto* name        = nameValue ? nameValue->getIf<std::string>() : nullptr;
                 const auto* parentValue = field(request.payload, "parent");
@@ -460,8 +460,8 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
             const auto* id         = idValue ? idValue->getIf<std::string>() : nullptr;
             if (!hierarchy || !transforms || !id)
                 return eve::editing::failed<editing::CommandPlan>(editing::Status::Rejected,
-                                                                        editing::RuleId("scene.editing.update-payload"),
-                                                                        "Scene object and editing capabilities are required");
+                                                                  editing::RuleId("scene.editing.update-payload"),
+                                                                  "Scene object and editing capabilities are required");
             auto current = transforms->get().readTransform(editing::ObjectId(*id));
             if (!current.ok()) return editing::Result<editing::CommandPlan>::failure(current.status());
             auto t = current.value();
@@ -480,11 +480,11 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
                 const auto* text = value->getIf<std::string>();
                 if (!text)
                     return eve::editing::failed<editing::CommandPlan>(editing::Status::Rejected,
-                                                                            editing::RuleId("scene.editing.update-text"),
-                                                                            "Name and parent must be strings");
+                                                                      editing::RuleId("scene.editing.update-text"),
+                                                                      "Name and parent must be strings");
                 auto operation = std::string_view(key) == "name"
-                                           ? hierarchy->get().makeRename(editing::ObjectId(*id), *text)
-                                           : hierarchy->get().makeReparent(editing::ObjectId(*id), editing::ObjectId(*text));
+                                     ? hierarchy->get().makeRename(editing::ObjectId(*id), *text)
+                                     : hierarchy->get().makeReparent(editing::ObjectId(*id), editing::ObjectId(*text));
                 if (!operation.ok()) return editing::Result<editing::CommandPlan>::failure(operation.status());
                 plan.operations.push_back(std::move(operation.value()));
             }
@@ -503,8 +503,8 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
             auto* scene = dynamic_cast<SceneTargetBase*>(&value);
             if (!scene)
                 return eve::editing::failed<editing::CommandPlan>(editing::Status::Unsupported,
-                                                                        editing::RuleId("scene.restore.target"),
-                                                                        "Target does not support scene snapshots");
+                                                                  editing::RuleId("scene.restore.target"),
+                                                                  "Target does not support scene snapshots");
             auto operation = scene->makeRestore(request.payload);
             if (!operation.ok()) return editing::Result<editing::CommandPlan>::failure(operation.status());
             editing::CommandPlan plan;
