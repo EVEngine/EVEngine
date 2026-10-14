@@ -296,7 +296,7 @@
         "docs/usr/modules/graphics.md",
         "src/modules/graphics/vulkan/GraphicsSampler.cpp",
         "src/modules/graphics/webgpu/GraphicsSampler.cpp",
-        "src/modules/graphics/hair/GroomInstance.cpp"
+        "src/modules/graphics/hair/GroomAsset.cpp"
       ],
       "tests": [
         "test/resource_lifetime.cpp",
@@ -395,10 +395,79 @@
       ],
       "hot_path": [
         "src/modules/graphics/RenderSystem3D.cpp",
-        "src/modules/graphics/hair/GroomInstance.cpp",
+        "src/modules/graphics/hair/GroomAsset.cpp",
         "src/modules/graphics/vulkan/GraphicsSampler.cpp",
         "src/modules/graphics/webgpu/GraphicsSampler.cpp"
       ]
+    },
+    {
+      "id": "graphics-raytracing-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/graphics/raytracing/**",
+      "owner": "graphics::raytracing::VulkanRayTracing",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Optional Vulkan reflections own acceleration structures, retire in-flight resources, and publish premultiplied material-weighted visible hits.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/graphics/IRayTracing.h",
+        "src/modules/graphics/raytracing/vulkan/VulkanRayTracing.cpp",
+        "src/modules/graphics/shaders/rt_reflection.rgen",
+        "cmake/module_manifest/modules/graphics.cmake"
+      ],
+      "tests": [
+        "test/graphics_raytracing.cpp",
+        "test/graphics_raytracing_alignment.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IRayTracing",
+          "impl": "VulkanRayTracing",
+          "absent_behavior": "RenderSystem3D selects portable SSR when absent, unsupported, failed, or NoOp."
+        }
+      ],
+      "requires": [
+        {
+          "capability": "IRayTracing",
+          "required": false,
+          "fallback": "RayTracing facade reports unavailable."
+        },
+        {
+          "capability": "Graphics",
+          "required": true,
+          "fallback": "Non-Vulkan or unsupported devices return Unsupported before allocation."
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.RayTracing",
+          "methods": [
+            "isAvailable",
+            "capsAvailable"
+          ]
+        }
+      ],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "2d / minimal / web exclude graphics_raytracing; no new L2 trim claim."
+      },
+      "thread_affinity": "Render thread; no callbacks. Graphics owns the device and detaches the provider before device destruction.",
+      "cost_notes": [
+        {
+          "api": "addMesh / rebuildScene / applyReflections / clearScene",
+          "shape": "two-step",
+          "why": "Registration and acceleration build precede tracing; the current implementation rebuilds each frame and retires GPU references synchronously."
+        }
+      ],
+      "hot_path": [
+        "src/modules/graphics/raytracing/vulkan/VulkanRayTracing.cpp"
+      ],
+      "module_interface": {
+        "ecs_links": "None; copied geometry and transforms are owned by the backend.",
+        "hard_dependencies": "graphics Vulkan device and upload pool through existing backend adaptation.",
+        "connection": "One provider, per-frame interface calls, known render consumer, ordered graphics-queue operations; existing capability discovery only at backend boundaries."
+      }
     },
     {
       "id": "graphics-scene-visibility",

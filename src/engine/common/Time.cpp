@@ -1,4 +1,5 @@
 #include "common/Time.h"
+#include "common/Assert.h"
 
 #include <cmath>
 #include <limits>

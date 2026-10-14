@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "transaction-atomic-batch-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/transaction/AtomicBatch.*",
+      "owner": "transaction-maintainers",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACES",
+      "reason": "Existing transaction protocol exposes independent domain stages to scripts without pair-specific modules.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/transaction/AtomicBatch.h",
+        "src/modules/transaction/AtomicBatch.cpp",
+        "docs/usr/GAMEPLAY_PAYMENT_COMPOSITION.md"
+      ],
+      "tests": [
+        "test/card_rts_script_composition.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Transaction",
+          "methods": [
+            "newAtomicBatch"
+          ]
+        },
+        {
+          "script_class": "eve.AtomicBatch",
+          "methods": [
+            "commit"
+          ]
+        }
+      ],
+      "protocol": [
+        "Single-use owner-thread builder of owning ITransactionParticipant stages, canonical CostSpec and one payer; no arbitrary script commit callbacks or persistent/wire format.",
+        "Staging errors poison execution. Merged payment obeys maximum resource floors. Existing Coordinator handles rollback/compensation. VM-visible owner roots permit safe pending-batch disposal at VM shutdown."
+      ],
+      "thread_affinity": "Single VM/simulation owner thread; no reentry. Guards reject stale entity/account/tick before account access. Native callers retain borrowed stores; script owners are GC-visible retained roots until commit/disposal.",
+      "trim": {
+        "absent_profile": "minimal+card+font+devtools with RTS excluded",
+        "evidence": "L1 compile and L2 link: minimal+card+font+devtools with RTS=OFF linked an OBJECT host. L3 runtime: actual engine asserts RTS class absence, consumes a card, pays Mana plus ore via Economy and presents frames. Transaction has no Card/RTS/Economy includes; SHARED full scene also wins through the same batch protocol."
+      },
+      "cost_notes": [
+        {
+          "api": "AtomicBatch::commit",
+          "shape": "builder",
+          "why": "Independent domain stages and one merged reservation amortize work across an atomic request."
+        }
+      ],
+      "hot_path": []
+    }
+  ]
+}

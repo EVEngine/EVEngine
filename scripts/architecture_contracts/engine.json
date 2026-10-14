@@ -2,6 +2,51 @@
   "schema_version": 1,
   "entries": [
     {
+      "id": "devtools-game-world-context-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/devtools/GameWorldContext*",
+      "owner": "devtools maintainers",
+      "issue": "EVENGINE-MCP-GAME-WORLD",
+      "reason": "AI Discover must learn the live game world from MCP without eve_eval: config.title/modules + live slots + gameplay domains; publishWorldContext only for optional narrative fields (not a passthrough of on-disk prose).",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/devtools/GameWorldContext.hpp",
+        "src/engine/devtools/GameWorldContext.cpp",
+        "docs/dev/AI与MCP支持.md",
+        "docs/dev/2026-09-05-play-verify-evolve.md"
+      ],
+      "tests": [
+        "test/game_world_context.cpp",
+        "test/play_host.cpp"
+      ],
+      "provides": [],
+      "requires": [
+        {
+          "capability": "IGameplayControlProvider",
+          "required": false,
+          "fallback": "domains array stays empty when no gameplay control providers are registered"
+        }
+      ],
+      "emits": [],
+      "observes": [
+        "config.title; config.modules / optionalModules; instantiated eve.moduleList slots; optional eve.dev.publishWorldContext overlay."
+      ],
+      "binds": [],
+      "protocol": [
+        "eve_game_world tool, eve://game-world resource, eve_play op=status.gameWorld; schema evengine.game-world v1. source is config|runtime|none. Soft restart with reloadScripts clears the runtime overlay. game.agent.json is not world authority."
+      ],
+      "thread_affinity": "Game-loop / MCP poll thread only; snapshot is an owning Value with no retained VM pointers.",
+      "trim": {
+        "claim": "none",
+        "evidence": "Desktop EVDevTools only; trimmed builds without DevTools omit MCP entirely.",
+        "absent_profile": "No DevTools profile: tools and resources are absent with the rest of MCP."
+      },
+      "cost_notes": [
+        "Module enumeration walks eve.moduleList once per snapshot; bounded Squirrel conversion (depth 8 / 4096 elements)."
+      ],
+      "hot_path": []
+    },
+    {
       "id": "devtools-mcp-input-tools-interface",
       "rule": "module-interface",
       "scope": "src/engine/devtools/McpInputTools*",
@@ -79,7 +124,7 @@
       ],
       "binds": [],
       "protocol": [
-        "eve_play: evengine.play-request v1 / evengine.play-response v1; game.agent.json v1 unchanged. Unknown request fields remain rejected."
+        "eve_play: evengine.play-request v1 / evengine.play-response v1; game.agent.json v1 has no world field. status returns runtime gameWorld snapshot. Unknown request/contract fields remain rejected."
       ],
       "thread_affinity": "Owner simulation thread; synchronous owning Value projection. Raw table path lookup invokes no getters or callbacks and retains no VM pointers.",
       "trim": {
@@ -127,6 +172,49 @@
       "hot_path": [],
       "protocol": [],
       "cost_notes": []
+    },
+    {
+      "id": "game-save-session-module-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/common/GameSaveSession*",
+      "owner": "foundation save coordinator",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "One versioned envelope prepares every registered gameplay owner before a no-fail cross-domain publication.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/GameSaveSession.h",
+        "docs/usr/SAVE.md"
+      ],
+      "tests": [
+        "test/common_game_save_session.cpp",
+        "test/game_save_integration.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IGameSaveParticipant",
+          "impl": "GameSaveSession registration contract",
+          "absent_behavior": "an unregistered domain is not part of this save schema"
+        }
+      ],
+      "requires": [
+        {
+          "capability": "SnapshotHashProvider",
+          "required": true,
+          "fallback": "save or restore fails with a structured diagnostic"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "a game without a gameplay domain omits its participant and uses a distinct explicit save schema"
+      },
+      "thread_affinity": "paused owning simulation thread",
+      "hot_path": [],
+      "cost_notes": [
+        "Capture and restore scale with the complete serialized game state and run only at explicit save/load boundaries."
+      ]
     },
     {
       "id": "platform-event-input-injection-interface",

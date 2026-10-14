@@ -16,8 +16,7 @@
 #include <utility>
 #include <vector>
 
-#include <box3d/id.h>
-#include <box3d/types.h>
+#include "physics/rigid/WorldBackend3D.h"
 
 namespace eve::physics {
 
@@ -25,37 +24,16 @@ namespace action_adapter {
 class ActionCollisionIgnoreState;
 }
 
+namespace jolt {
+class WorldBackend;
+}
+namespace box3d {
+class WorldBackend;
+}
 class Body3D;
 class Shape3D;
 class Joint3D;
 class Mechanism3D;
-/** @brief CameraSphereHit3D public API. */
-struct CameraSphereHit3D {
-    bool  hit = false;
-    int   bodyId = -1;
-    float fraction = 1.f;
-    float x = 0.f, y = 0.f, z = 0.f;
-    float nx = 0.f, ny = 0.f, nz = 0.f;
-};
-
-/**
- * @brief Result of a 3D point probe: deepest non-sensor shape within radius.
- * Normal points from the shape toward the probed point (meters).
- */
-struct ClothContact3D {
-    bool   hit = false;
-    float  nx = 0.f;
-    float  ny = 0.f;
-    float  nz = 0.f;
-    float  depth = 0.f;  // radius - distance (meters); > 0 when inside
-    Body3D *body = nullptr;
-    float   friction = 0.f;
-    float   restitution = 0.f;
-};
-
-/** @brief Named outcome for a filtered cloth particle probe. */
-enum class ClothProbeStatus { Miss, Hit };
-
 /**
  * @brief Box3D rigid-body world. Script coordinates are meters (Box3D native),
  * unlike 2D World which uses pixels + Physics.setMeter.
@@ -109,6 +87,15 @@ public:
      */
     World3D(float gravityX, float gravityY, float gravityZ, bool sleep,
             eve::PersistentId instanceId = eve::PersistentId::nil());
+    /** @brief Creates a world with an explicit solver; absent providers return Unsupported without fallback.
+     * @ownership Caller owns the world. Simulation-thread creation; callbacks are not invoked.
+     * @cost Allocates a solver world once per simulation domain; reuse across frames.
+     */
+    [[nodiscard]] static eve::Result<std::unique_ptr<World3D>> createWithBackend(
+        RigidBackend3D backend, float gravityX, float gravityY, float gravityZ, bool sleep,
+        eve::PersistentId instanceId = eve::PersistentId::nil());
+    /** @brief Returns the immutable rigid solver identity; constant-time, simulation thread. */
+    [[nodiscard]] RigidBackend3D rigidBackendKind() const noexcept { return rigidBackendKind_; }
     ~World3D();
 
     World3D(const World3D &)            = delete;
@@ -842,7 +829,19 @@ public:
     void clearContactEvents();
 
     /**
-     * @brief Caches current touching manifold points for one stable Body3D ID.
+     * @brief Reads bounded contact data without changing the legacy query cache.
+     * @param body Generation-qualified body handle belonging to this world.
+     * @param maxPoints Maximum returned points in [1,4096].
+     * @return Owning points and explicit coverage, or StaleHandle/InvalidArgument.
+     * @ownership The result owns all data and contains no borrowed solver pointers.
+     * @lifetime Values survive further simulation and world destruction; IDs are historical.
+     * @thread Call on the owning simulation thread, outside a simulation step.
+     * @reentrancy Does not invoke callbacks or mutate the world.
+     */
+    [[nodiscard]] eve::Result<BodyContacts3D> queryBodyContactsOwned(PhysicsBodyHandle body, int maxPoints) const;
+
+    /**
+     * @brief Compatibility cache adapter over queryBodyContactsOwned for script callers.
      * Results are oriented from the queried body toward the other body.
      * @param maxPoints Maximum cached points in [1,4096].
      * @return Number of cached points.
@@ -966,7 +965,7 @@ public:
     [[nodiscard]] ClothProbeStatus pointProbeFiltered(float x, float y, float z, float radius, ClothContact3D *out,
                                                       uint64_t categoryBits, uint64_t maskBits) const;
     /** @brief Raw Box3D world id. */
-    b3WorldId raw() const { return worldId_; }
+
 
     /** @brief Internal: wrapper teardown bookkeeping. */
     void forgetBody(Body3D *body);
@@ -999,6 +998,8 @@ public:
     void emitContactEvents();
 
 private:
+    friend class box3d::WorldBackend;
+    friend class jolt::WorldBackend;
     friend class action_adapter::ActionCollisionIgnoreState;
     friend struct WorldSnapshotAccess;
     friend class Body3D;
@@ -1008,10 +1009,11 @@ private:
     friend class TargetingLineOfSightAdapter;
     friend void registerCameraObstructionWorld(World3D *world);
 
-    World3D(float gravityX, float gravityY, float gravityZ, bool sleep,
-            eve::PersistentId instanceId, bool registerQueries);
+    World3D(float gravityX, float gravityY, float gravityZ, bool sleep, eve::PersistentId instanceId,
+            bool registerQueries, RigidBackend3D backend);
 
-    b3WorldId worldId_{};
+    RigidBackend3D                      rigidBackendKind_ = RigidBackend3D::Box3D;
+    std::unique_ptr<IWorldBackend3D>    rigidBackend_;
     std::unique_ptr<ISimulationBackend> simulation_;
     PhysicsWorldHandle                  runtimeHandle_          = PhysicsWorldHandle::invalid();
     eve::PersistentId                   instanceId_             = eve::PersistentId::nil();
@@ -1045,35 +1047,17 @@ private:
     std::vector<HitEvent> hits_;
     std::vector<JointStressEvent> jointStressEvents_;
 
-    struct ContactPointResult {
-        int shapeId = -1;
-        int shapeTag = 0;
-        int otherBodyId = -1;
-        int otherShapeId = -1;
-        int otherShapeTag = 0;
-        uint32_t featureId = 0;
-        float x = 0.f, y = 0.f, z = 0.f;
-        float normalX = 0.f, normalY = 0.f, normalZ = 0.f;
-        float separation = 0.f;
-        float normalImpulse = 0.f;
-        float totalNormalImpulse = 0.f;
-        float normalVelocity = 0.f;
-        bool persisted = false;
-    };
+    using ContactPointResult = BodyContactPoint3D;
     std::vector<ContactPointResult> contactPoints_;
     [[nodiscard]] eve::Result<void> prepareRuntimeHandleRefresh() const;
     void refreshRuntimeHandlesAfterRestore();
+    void                            indexShapeHandle(Shape3D *shape);
     void adoptPreparedTopology(World3D &prepared);
-    const ContactPointResult &contactPointAt(int index, const char *operation) const;
-    static bool preSolveCallback(b3ShapeId shapeIdA, b3ShapeId shapeIdB, b3Pos point,
-                                 b3Vec3 normal, void *context);
-    static bool customFilterCallback(b3ShapeId shapeIdA, b3ShapeId shapeIdB,
-                                     void *context);
+    const ContactPointResult       &contactPointAt(int index, const char *operation) const;
     void refreshContactFilter(Shape3D *shape);
     void removeCollisionOverridesForBody(int bodyId);
     void removeCollisionOverridesForShape(int shapeId);
 
-    EventShape eventShapeFrom(b3ShapeId shapeId) const;
     const ContactEvent &contactEventAt(const std::vector<ContactEvent> &events, int index,
                                        const char *operation) const;
     const TriggerEvent &triggerEventAt(const std::vector<TriggerEvent> &events, int index,
@@ -1110,12 +1094,6 @@ private:
     std::vector<int> queryBodyIds_;
     std::vector<std::pair<int, int>> queryShapes_;
 
-    int overlapProxy(b3Pos origin, const b3ShapeProxy &proxy);
-    int castProxyAll(b3Pos origin, const b3ShapeProxy &proxy, b3Vec3 translation, int maxHits);
-    int rayCastAllInternal(float x1, float y1, float z1, float x2, float y2, float z2,
-                           int maxHits, b3QueryFilter filter);
-    b3QueryFilter makeQueryFilter() const;
-    bool shouldIgnoreQueryShape(b3ShapeId shapeId) const;
 
     int shapeCastBodyId_ = -1;
     int shapeCastShapeId_ = -1;
@@ -1148,8 +1126,7 @@ private:
     float moverDeltaX_ = 0.f, moverDeltaY_ = 0.f, moverDeltaZ_ = 0.f;
     float moverNormalX_ = 0.f, moverNormalY_ = 0.f, moverNormalZ_ = 0.f;
     int moverPlaneCount_ = 0;
-    int moverIterations_ = 0;
-    b3Vec3 moverUp_ = b3Vec3{0.f, 1.f, 0.f};
+    int   moverIterations_ = 0;
     float moverSlopeCos_ = 0.6427876f;
     float moverGroundDot_ = -1.f;
     bool moverGrounded_ = false;

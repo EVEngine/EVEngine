@@ -2,11 +2,21 @@
 #include "common/Export.h"
 
 
+#include "common/Result.h"
 #include "common/StateValue.h"
 
 #include <string>
 
 namespace eve::rpg {
+
+/** @brief Capture RPG hot-reload state as an owning canonical value. */
+[[nodiscard]] EVENGINE_API_PLATFORM Result<Value> captureRpgState();
+
+/** @brief Validate every actor snapshot before publishing any RPG hot-reload state. */
+[[nodiscard]] EVENGINE_API_PLATFORM Result<void> restoreRpgState(const Value& state);
+
+/** @brief Cancel all in-flight RPG casts. */
+[[nodiscard]] EVENGINE_API_PLATFORM Result<void> resetRpgStateResult();
 
 /**
  * @brief Compatibility facade for RPGActor skill-state serialization during state hot reload.

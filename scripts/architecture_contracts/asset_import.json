@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "asset-import-structured-models-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/asset/import/*",
+      "owner": "asset-import maintainers",
+      "issue": "EVENGINE-STRUCTURED-MODEL-IMPORT",
+      "reason": "SCAD compiler output and native LDraw expansion prepare canonical mesh/material/scene candidates; only the existing asset store publishes them.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/asset/import/StructuredModelImporter.h",
+        "src/modules/asset/import/AssetCommand.cpp",
+        "docs/usr/modules/asset-structured-models.md"
+      ],
+      "tests": [
+        "test/asset_import_structured_models.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [
+        "eve asset import --from scad|ldraw prepares .eva; existing asset cook produces .evpack"
+      ],
+      "thread_affinity": "Pure parsing/encoding is worker-safe and reentrant; external OpenSCAD process is desktop authoring only. GPU consumption uses the existing graphics-thread adapter.",
+      "hot_path": [],
+      "cost_notes": [
+        "Offline builder-style requests expand/copy geometry once per import; no runtime per-frame compilation or string lookup."
+      ],
+      "trim": {
+        "absent_profile": "L4 observable: OpenSCAD executable absent returns a checked failure, covered by structuredModelsScadCompilerAbsent; mobile/browser compiler adapter returns Unsupported. Cooked consumers do not invoke the compiler. No new independently trimmable module is claimed."
+      }
+    }
+  ]
+}

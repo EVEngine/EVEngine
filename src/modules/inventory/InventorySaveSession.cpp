@@ -1,4 +1,5 @@
 #include "inventory/InventorySaveSession.h"
+#include "common/StringMapInstances.h"
 
 #include "common/Value.h"
 #include "inventory/Bag.h"

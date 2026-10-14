@@ -29,6 +29,10 @@ namespace eve::resource {
 class IResourceAccount;
 }
 
+namespace eve::transaction {
+class AtomicBatch;
+}
+
 namespace eve::card {
 
 class CardControl;
@@ -205,6 +209,27 @@ public:
      */
     [[nodiscard]] decision::ConditionResult evaluatePlay(const CardData          *card,
                                                          CardPlayConditionQueries queries = {}) const;
+    /**
+     * @brief Resolve one owned card's canonical definition payment for composition.
+     * @return Owning Mana cost, no cost for a free card, or a stale/definition error.
+     * @remarks Synchronous owner-thread query; does not reserve resources or mutate the card.
+     */
+    [[nodiscard]] Result<std::optional<resource::CostSpec>> playCost(CardData &card) const;
+    /**
+     * @brief Stage removal from the unique owning hand for an outer gameplay transaction.
+     * @cost Linear in hand membership; copies only the affected hand per play.
+     * @return Owning compensatable participant, or absent/ambiguous membership error.
+     * @remarks Consume synchronously on the owner thread while Card and Hand live;
+     * no participant may advance/destroy this hand during the transaction. The
+     * participant owns no card. CardPlayParticipant remains the phase authority.
+     */
+    /** @brief Stage card rules, phase, hand consumption and cost in any atomic batch.
+     * @cost Linear in hand size; clones only the affected hand during prepare.
+     * @remarks Card owns its facts; no other gameplay domain is required.
+     * Native callers retain this facade through batch execution. */
+    [[nodiscard]] Result<void> stagePlay(transaction::AtomicBatch &batch, CardData &card) const;
+    [[nodiscard]] Result<std::unique_ptr<transaction::ITransactionParticipant>> prepareHandConsumption(
+        CardData &card) const;
 
     /**
      * @brief Read one canonical combat attribute through the Card facade.

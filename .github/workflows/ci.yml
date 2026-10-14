@@ -435,11 +435,10 @@ jobs:
           }
 
       - name: Build native Dawn parity lane
-        # A cold Dawn/Tint build compiles roughly 2,400–3,800 targets and has
-        # repeatedly reached >95% only when the former 40/75/105-minute guards
-        # fired on windows-latest (e.g. run 38156754042 at 3847/3848; PR #526
-        # at 3842/3843 then stalled in unit_test link). Keep a hang guard with
-        # margin for cold sccache + MSVC link variance.
+        # Cold Dawn/Tint + full unit_test builds hit the former 105-minute guard
+        # near completion (run 38162266736 at 3,844/3,846; run 38156754042 at
+        # 3,847/3,848; PR #526 stalled in unit_test link after 3,842/3,843).
+        # Keep a hang guard with ~30 minutes of final-link / cold-sccache margin.
         timeout-minutes: 135
         shell: pwsh
         run: cmake\with-msvc.cmd cmake.exe --build build/webgpu-native --target unit_test -j 8
@@ -1731,7 +1730,7 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.webgpu == 'true' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 90
     env:
       EMSCRIPTEN_VERSION: "6.0.9"
       EMDAWNWEBGPU_RELEASE: "v20260423.175430"
@@ -1840,10 +1839,13 @@ jobs:
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           source "$HOME/emsdk/emsdk_env.sh"
-          emcmake cmake -B build/webgpu-web -G Ninja -DCMAKE_BUILD_TYPE=Release
+          # Keep Release object compilation; avoid expensive -O3 Binaryen
+          # optimization in this browser smoke lane. Asyncify still runs.
+          emcmake cmake -B build/webgpu-web -G Ninja -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_EXE_LINKER_FLAGS_RELEASE=-O1
 
       - name: Build webgpu (Emscripten/WASM)
-        timeout-minutes: 40
+        timeout-minutes: 60
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           source "$HOME/emsdk/emsdk_env.sh"

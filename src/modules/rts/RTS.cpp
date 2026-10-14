@@ -6,6 +6,7 @@
 #include "map/Pathfinder.h"
 #include "rts/RTSAttributes.h"
 #include "rts/RTSScriptInternal.h"
+#include "rts/RTSScriptRuntimeInternal.h"
 #include "sensing/Sensing.h"
 #include "weapon/WeaponDefinitionRuntime.h"
 
@@ -26,56 +27,13 @@ namespace {
 using script_internal::fanOutValue;
 using script_internal::parseScriptSubject;
 using script_internal::parseScriptSubjects;
+using script_internal::resolveEffectDefinition;
 
 bool validSubject(SubjectRef subject) { return subject.isValid(); }
 
 bool sameHandle(const ecs::EntityHandle& left, const ecs::EntityHandle& right) noexcept {
     return left.table == right.table && left.type == right.type && left.id == right.id &&
            left.generation == right.generation;
-}
-
-Result<RTSEffectDefinition> resolveEffectDefinition(definitions::DefinitionRegistry& registry, std::string_view id,
-                                                    SubjectRef source, double durationOverride = -1.0) {
-    if (id.empty() || !source.isValid() || !std::isfinite(durationOverride))
-        return Result<RTSEffectDefinition>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument,
-            "RTS status effect requires an id, valid source, and finite duration override", "effect"));
-    auto resolved = registry.resolve("effect", std::string(id));
-    if (!resolved) return Result<RTSEffectDefinition>::failure(resolved.status());
-    auto parsed = Value::fromJson(resolved.value().get().json);
-    if (!parsed) return Result<RTSEffectDefinition>::failure(parsed.status());
-    const auto* object = parsed.value().getIf<Value::Object>();
-    if (object == nullptr)
-        return Result<RTSEffectDefinition>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "RTS status effect definition must be an object", "effect"));
-    const auto number = [object](std::string_view name, double fallback) -> std::optional<double> {
-        const auto found = object->find(std::string(name));
-        if (found == object->end()) return fallback;
-        if (const auto* integer = found->second.getIf<std::int64_t>()) return static_cast<double>(*integer);
-        if (const auto* real = found->second.getIf<double>()) return *real;
-        return std::nullopt;
-    };
-    const auto duration = number("duration", 0.0);
-    const auto speed    = number("speedMultiplier", 1.0);
-    const auto damage   = number("damageMultiplier", 1.0);
-    const auto incoming = number("incomingDamageMultiplier", 1.0);
-    const auto healing  = number("healingPerSecond", 0.0);
-    if (!duration || !speed || !damage || !incoming || !healing || !std::isfinite(*duration) ||
-        !std::isfinite(*speed) || !std::isfinite(*damage) || !std::isfinite(*incoming) || !std::isfinite(*healing) ||
-        *duration < 0.0 || *speed < 0.0 || *damage < 0.0 || *incoming < 0.0 || *healing < 0.0)
-        return Result<RTSEffectDefinition>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument,
-            "RTS status effect duration and modifiers must be finite non-negative numbers", "effect"));
-    RTSEffectDefinition definition;
-    definition.id                       = std::string(id);
-    definition.source                   = source.format();
-    definition.duration                 = durationOverride >= 0.0 ? durationOverride : *duration;
-    definition.speedMultiplier          = *speed;
-    definition.damageMultiplier         = *damage;
-    definition.incomingDamageMultiplier = *incoming;
-    definition.healingPerSecond         = *healing;
-    definition.tags                     = {"status:" + std::string(id)};
-    return Result<RTSEffectDefinition>::success(std::move(definition), Status::success(StatusCode::Applied));
 }
 
 Result<resource::CostSpec> scaledCost(const resource::CostSpec& source, double factor) {
@@ -198,79 +156,10 @@ Result<LogicalId> parseScriptDefinition(std::string_view text) {
     return Result<LogicalId>::success(*parsed);
 }
 
-Result<CombatStance> parseCombatStance(std::string_view text) {
-    if (text == "passive") return Result<CombatStance>::success(CombatStance::Passive);
-    if (text == "defensive") return Result<CombatStance>::success(CombatStance::Defensive);
-    if (text == "aggressive") return Result<CombatStance>::success(CombatStance::Aggressive);
-    return Result<CombatStance>::failure(Diagnostic::error(
-        DiagnosticCode::InvalidArgument, "RTS combat stance must be passive, defensive, or aggressive", "stance"));
-}
 
 }  // namespace
 
 Module_IMPL(RTS, new RTS());
-
-struct RTS::ScriptRuntime {
-    struct EconomySlot {
-        economy::EconomyLedger                ledger;
-        economy::EconomyLedgerResourceAccount account{ledger};
-    };
-
-    struct PaidProduction {
-        SubjectRef         producer;
-        SubjectRef         resultSubject;
-        std::string        kind;
-        std::string        product;
-        std::string        taskId;
-        std::string        orderId;
-        resource::CostSpec refund;
-    };
-
-    struct PaidConstruction {
-        SubjectRef         building;
-        SubjectRef         faction;
-        resource::CostSpec cost;
-    };
-
-    struct Checkpoint {
-        RTSStateSnapshot                                        roots;
-        std::map<std::string, economy::EconomyLedger::Snapshot> economies;
-        std::map<std::string, map::Fov::Snapshot>               fovs;
-        std::map<std::string, SubjectRef>                       pendingProductionSubjects;
-        std::vector<PaidProduction>                             paidProduction;
-        std::vector<PaidConstruction>                           paidConstruction;
-        RTSCommandLog                                           commandLog;
-        std::vector<float>                                      navigationCosts;
-        std::vector<float>                                      terrainElevations;
-        std::uint64_t                                           nextTick             = 1;
-        std::uint64_t                                           aiProductionSequence = 1;
-    };
-
-    action::ActionRuntime                               actions;
-    ActionAdapter                                       adapter{actions};
-    map::Pathfinder                                     pathfinder;
-    crowd::Crowd                                        crowd;
-    sensing::SensingWorld                               sensing;
-    combat::DamageRuntime                               damage;
-    definitions::DefinitionRegistry                     definitions;
-    RTSCommandLog                                       commandLog;
-    std::map<std::string, std::unique_ptr<EconomySlot>> economies;
-    std::map<std::string, std::unique_ptr<map::Fov>>    fovs;
-    std::map<std::string, SubjectRef>                   pendingProductionSubjects;
-    std::vector<PaidProduction>                         paidProduction;
-    std::vector<PaidConstruction>                       paidConstruction;
-    std::map<std::string, Checkpoint>                   checkpoints;
-    std::uint64_t                                       nextTick             = 1;
-    std::uint64_t                                       aiProductionSequence = 1;
-    bool                                                spawningProduction   = false;
-    int                                                 width                = 0;
-    int                                                 height               = 0;
-    float                                               cellSize             = 1.0f;
-    float                                               originX              = 0.0f;
-    float                                               originY              = 0.0f;
-    std::vector<float>                                  terrainElevations;
-    bool                                                configured = false;
-};
 
 struct RTS::GameplayRuntime {
     action::ActionRuntime action;
@@ -1621,27 +1510,6 @@ Result<effects::EffectHandle> RTS::applyStatusEffect(SubjectRef source, SubjectR
         Diagnostic::error(DiagnosticCode::NotFound, "RTS status-effect target was not found", "target"));
 }
 
-Result<RTSBuildReceipt> RTS::build(Building& building, action::ActionRuntime& action,
-                                   resource::IResourceAccount& account, resource::CostSpec cost, std::string product,
-                                   Duration duration, std::string productionKind, int priority,
-                                   std::string transactionId, definition::DefinitionHandle definition) {
-    if (!owns(buildings_, building))
-        return Result<RTSBuildReceipt>::failure(
-            Diagnostic::error(DiagnosticCode::StaleHandle, "RTS Building does not belong to this facade", "building"));
-    std::vector<RTSProductionResourceReserve> reserves;
-    if (auto* faction = dynamic_cast<Faction*>(building.faction()->link.resolve()); faction != nullptr) {
-        reserves.reserve(faction->productionPolicy()->resourceReserves.size());
-        for (const auto& [resource, policy] : faction->productionPolicy()->resourceReserves) {
-            auto item = resource::ResourceCost::create(resource, policy.amount);
-            if (!item) return Result<RTSBuildReceipt>::failure(item.status());
-            reserves.push_back({std::move(item).takeValue(), policy.minimumPriority});
-        }
-    }
-    return RTSProductionActionAdapter::build(building, action, account, std::move(cost), std::move(product),
-                                             std::move(duration), std::move(productionKind), priority,
-                                             std::move(transactionId), std::move(reserves), std::move(definition));
-}
-
 Result<void> RTS::setProductionResourceReserve(Faction& faction, std::string resource, std::int64_t amount,
                                                int minimumPriority) {
     if (!owns(factions_, faction))
@@ -2308,79 +2176,6 @@ Result<ContentImportReceipt> RTS::loadScriptContent(std::string_view json) {
     return loadContent(scriptRuntime_->definitions, json);
 }
 
-Result<RTSBuildReceipt> RTS::queueScriptUnit(Building& producer, SubjectRef unitSubject, LogicalId unitDefinition,
-                                             int priority) {
-    if (!owns(buildings_, producer))
-        return Result<RTSBuildReceipt>::failure(
-            Diagnostic::error(DiagnosticCode::StaleHandle, "RTS producer does not belong to this facade", "producer"));
-    if (!scriptRuntime_ || !scriptRuntime_->configured || definitions_ == nullptr)
-        return Result<RTSBuildReceipt>::failure(Diagnostic::error(
-            DiagnosticCode::Conflict, "RTS script world and content must be configured", "scriptRuntime"));
-    if (!unitSubject.isValid() || ownsSubject(unitSubject, SubjectClaimScope::LiveOrReserved))
-        return Result<RTSBuildReceipt>::failure(Diagnostic::error(
-            DiagnosticCode::Conflict, "RTS produced unit subject is invalid or already owned", "unitSubject"));
-    if (!unitDefinition.isValid())
-        return Result<RTSBuildReceipt>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "RTS production requires a unit definition", "unitDefinition"));
-    auto resolved = definitions_->resolve("unit", std::string(unitDefinition.name()));
-    if (!resolved) return Result<RTSBuildReceipt>::failure(resolved.status());
-    auto parsed = Value::fromJson(resolved.value().get().json);
-    if (!parsed) return Result<RTSBuildReceipt>::failure(parsed.status());
-    const auto* object = parsed.value().getIf<Value::Object>();
-    if (object == nullptr)
-        return Result<RTSBuildReceipt>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "RTS unit definition must be an object", "unitDefinition"));
-    const auto resourceIt = object->find("costResource");
-    const auto costIt     = object->find("cost");
-    const auto timeIt     = object->find("buildTime");
-    const auto producerIt = object->find("producer");
-    if (resourceIt == object->end() || costIt == object->end() || timeIt == object->end())
-        return Result<RTSBuildReceipt>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS unit definition lacks production cost or duration",
-                              "unitDefinition"));
-    const auto* resourceName = resourceIt->second.getIf<std::string>();
-    const auto  number       = [](const Value& value) -> std::optional<double> {
-        if (const auto* integer = value.getIf<std::int64_t>()) return static_cast<double>(*integer);
-        if (const auto* real = value.getIf<double>()) return *real;
-        return std::nullopt;
-    };
-    const auto costNumber = number(costIt->second);
-    const auto timeNumber = number(timeIt->second);
-    if (resourceName == nullptr || resourceName->empty() || !costNumber || !timeNumber || !std::isfinite(*costNumber) ||
-        *costNumber < 0.0 || std::floor(*costNumber) != *costNumber || !std::isfinite(*timeNumber) ||
-        *timeNumber <= 0.0)
-        return Result<RTSBuildReceipt>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "RTS unit production values are invalid", "unitDefinition"));
-    if (producerIt != object->end()) {
-        const auto* requiredProducer = producerIt->second.getIf<std::string>();
-        if (requiredProducer == nullptr || *requiredProducer != producer.definition()->id.name())
-            return Result<RTSBuildReceipt>::failure(Diagnostic::error(
-                DiagnosticCode::Conflict, "RTS building cannot produce this unit definition", "producer"));
-    }
-    auto* faction = dynamic_cast<Faction*>(producer.faction()->link.resolve());
-    if (faction == nullptr)
-        return Result<RTSBuildReceipt>::failure(
-            Diagnostic::error(DiagnosticCode::StaleHandle, "RTS producer faction link is stale", "producer.faction"));
-    const auto economy = scriptRuntime_->economies.find(faction->identity()->subject.format());
-    if (economy == scriptRuntime_->economies.end())
-        return Result<RTSBuildReceipt>::failure(
-            Diagnostic::error(DiagnosticCode::NotFound, "RTS producer economy was not found", "producer.faction"));
-    auto cost = resource::CostSpec::single(*resourceName, static_cast<std::int64_t>(*costNumber));
-    if (!cost) return Result<RTSBuildReceipt>::failure(cost.status());
-    const resource::CostSpec paidCost = cost.value();
-    auto                     duration = Duration::fromSeconds(*timeNumber);
-    if (!duration) return Result<RTSBuildReceipt>::failure(duration.status());
-    auto receipt = build(producer, scriptRuntime_->actions, economy->second->account, std::move(cost).takeValue(),
-                         std::string(unitDefinition.name()), std::move(duration).takeValue(), "unit", priority,
-                         "rts.script.production." + unitSubject.format());
-    if (!receipt) return receipt;
-    scriptRuntime_->pendingProductionSubjects.emplace(receipt.value().productionTaskId, unitSubject);
-    scriptRuntime_->paidProduction.push_back({producer.identity()->subject, unitSubject, "unit",
-                                              std::string(unitDefinition.name()), receipt.value().productionTaskId,
-                                              receipt.value().orderId, paidCost});
-    return receipt;
-}
-
 Result<ReinforcementRequestReceipt> RTS::queueScriptReinforcement(Building& producer, SubjectRef unitSubject,
                                                                   LogicalId preferredDefinition, int priority) {
     if (!owns(buildings_, producer))
@@ -2997,124 +2792,6 @@ Result<void> RTS::setReinforcementTransport(Building& producer, Unit* transport,
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
-Result<void> RTS::castScriptAbility(Unit& caster, std::string ability, SubjectRef target, WorldPosition point) {
-    if (!owns(units_, caster))
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle,
-                                                       "RTS ability caster does not belong to this facade", "caster"));
-    if (!scriptRuntime_ || !scriptRuntime_->configured || definitions_ == nullptr || ability.empty())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                       "RTS ability requires configured script content", "ability"));
-    auto resolved = definitions_->resolve("ability", ability);
-    if (!resolved) return Result<void>::failure(resolved.status());
-    auto parsed = Value::fromJson(resolved.value().get().json);
-    if (!parsed) return Result<void>::failure(parsed.status());
-    const auto* object = parsed.value().getIf<Value::Object>();
-    if (object == nullptr)
-        return Result<void>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS ability definition must be an object", "ability"));
-    const auto textField = [object](std::string_view name, std::string fallback = {}) {
-        const auto found = object->find(std::string(name));
-        if (found == object->end()) return fallback;
-        const auto* value = found->second.getIf<std::string>();
-        return value == nullptr ? fallback : *value;
-    };
-    const auto numberField = [object](std::string_view name, double fallback) {
-        const auto found = object->find(std::string(name));
-        if (found == object->end()) return std::optional<double>{fallback};
-        if (const auto* integer = found->second.getIf<std::int64_t>())
-            return std::optional<double>{static_cast<double>(*integer)};
-        if (const auto* real = found->second.getIf<double>()) return std::optional<double>{*real};
-        return std::optional<double>{};
-    };
-    const auto boolField = [object](std::string_view name, bool fallback) {
-        const auto found = object->find(std::string(name));
-        if (found == object->end()) return std::optional<bool>{fallback};
-        const auto* value = found->second.getIf<bool>();
-        return value == nullptr ? std::optional<bool>{} : std::optional<bool>{*value};
-    };
-    AbilitySpec spec;
-    spec.id                            = ability;
-    const std::string casterDefinition = textField("casterUnit");
-    if (!casterDefinition.empty()) {
-        const auto id = LogicalId::fromParts("unit", casterDefinition);
-        if (!id)
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                           "RTS ability caster definition is invalid", "casterUnit"));
-        spec.casterDefinition = *id;
-    }
-    const std::string targetType = textField("targetType", "enemy");
-    if (targetType == "self")
-        spec.target = AbilityTarget::Self;
-    else if (targetType == "ally")
-        spec.target = AbilityTarget::Ally;
-    else if (targetType == "enemy")
-        spec.target = AbilityTarget::Enemy;
-    else if (targetType == "point")
-        spec.target = AbilityTarget::Point;
-    else
-        return Result<void>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS ability target type is invalid", "targetType"));
-    const auto range        = numberField("range", 0.0);
-    const auto radius       = numberField("radius", 0.0);
-    const auto cooldown     = numberField("cooldown", 0.0);
-    const auto damage       = numberField("damage", 0.0);
-    const auto healing      = numberField("healing", 0.0);
-    const auto castTime     = numberField("castTime", 0.0);
-    const auto tickInterval = numberField("tickInterval", 0.0);
-    const auto resourceCost = numberField("resourceCost", 0.0);
-    const auto interrupt    = boolField("interruptOnDamage", true);
-    if (!range || !radius || !cooldown || !damage || !healing || !castTime || !tickInterval || !resourceCost ||
-        !interrupt || std::floor(*resourceCost) != *resourceCost)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                       "RTS ability definition contains an invalid field", "ability"));
-    spec.range                     = static_cast<float>(*range);
-    spec.radius                    = static_cast<float>(*radius);
-    spec.cooldown                  = static_cast<float>(*cooldown);
-    spec.damage                    = static_cast<float>(*damage);
-    spec.healing                   = static_cast<float>(*healing);
-    spec.castTime                  = static_cast<float>(*castTime);
-    spec.channelTickInterval       = static_cast<float>(*tickInterval);
-    spec.resourceCost              = static_cast<std::int64_t>(*resourceCost);
-    spec.resourceType              = textField("resourceType");
-    spec.damageType                = textField("damageType", "normal");
-    spec.interruptOnDamage         = *interrupt;
-    const std::string statusEffect = textField("statusEffect");
-    if (!statusEffect.empty()) {
-        auto effectDefinition = resolveEffectDefinition(*definitions_, statusEffect, caster.identity()->subject);
-        if (!effectDefinition) return Result<void>::failure(effectDefinition.status());
-        spec.appliesEffect = true;
-        spec.effect        = std::move(effectDefinition).takeValue();
-    }
-    ecs::EntityHandle targetHandle{};
-    if (target.isValid()) {
-        ecs::Entity* entity = findUnit(target);
-        if (entity == nullptr) entity = findBuilding(target);
-        if (entity == nullptr)
-            return Result<void>::failure(
-                Diagnostic::error(DiagnosticCode::NotFound, "RTS ability target was not found", "target"));
-        targetHandle = ecs::handle_of(entity);
-    }
-    const AbilityResourceDebit debit = [this](Unit& unit, const resource::CostSpec& cost) -> Result<resource::Receipt> {
-        auto* faction = dynamic_cast<Faction*>(unit.faction()->link.resolve());
-        if (faction == nullptr || !scriptRuntime_)
-            return Result<resource::Receipt>::failure(Diagnostic::error(
-                DiagnosticCode::StaleHandle, "RTS ability caster faction is stale", "caster.faction"));
-        const auto economy = scriptRuntime_->economies.find(faction->identity()->subject.format());
-        if (economy == scriptRuntime_->economies.end())
-            return Result<resource::Receipt>::failure(
-                Diagnostic::error(DiagnosticCode::NotFound, "RTS ability economy was not found", "caster.faction"));
-        return economy->second->account.debit(cost);
-    };
-    const DamageEventSink damageEvents =
-        [this](const combat::DamageRequest& request, const combat::DamageOutcome& outcome, SimulationTick tick,
-               DamageChannel channel) { recordDamageEvent(request, outcome, tick, channel); };
-    const LifecycleEventSink lifecycleEvents = [this](const LifecycleEvent& event, SimulationTick tick) {
-        recordLifecycleEvent(event, tick);
-    };
-    return AbilitySystem::cast(caster, spec, targetHandle, point, scriptRuntime_->damage, debit, damageEvents,
-                               SimulationTick(scriptTick()), lifecycleEvents);
-}
-
 Result<void> RTS::cancelScriptAbility(Unit& caster) {
     if (!owns(units_, caster))
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle,
@@ -3642,7 +3319,7 @@ Unit* RTS::resolveUnit(SubjectRef subject) const noexcept {
 }
 
 void RTS::expose(ssq::Table& table) {
-    auto cls = table.addClass(name, RTS::create, false);
+    auto cls = table.addClass(name, ssq::Class::Ctor<RTS()>(), true);
     expose(cls);
 }
 
@@ -4624,6 +4301,8 @@ void RTS::expose(ssq::Class& cls) {
                     return queueEntityOrder(self, tick, subjects, target, OrderKind::BoardTransport);
                 });
     script_internal::exposeFormationBindings(cls);
+    script_internal::exposeEconomyBindings(cls);
+    script_internal::exposeStageBindings(cls);
     cls.addFunc("attackUnits",
                 [vm](RTS* self, const std::vector<std::string>& subjectTexts, const std::string& targetText,
                      bool append) -> ssq::Table {
@@ -4675,16 +4354,6 @@ void RTS::expose(ssq::Class& cls) {
                     return script::projectResult(
                         vm, self->escortUnits(std::move(subjects).takeValue(), target.value(), guardRadius, spacing),
                         fanOutValue);
-                });
-    cls.addFunc("setUnitStance",
-                [vm](RTS* self, const std::vector<std::string>& subjectTexts, const std::string& stanceText,
-                     float leashRange) -> ssq::Table {
-                    auto subjects = parseScriptSubjects(subjectTexts);
-                    if (!subjects) return script::projectStatusResult(vm, subjects.status());
-                    auto stance = parseCombatStance(stanceText);
-                    if (!stance) return script::projectStatusResult(vm, stance.status());
-                    return script::projectResult(
-                        vm, self->setUnitStance(std::move(subjects).takeValue(), stance.value(), leashRange));
                 });
     cls.addFunc("setUnitMovementPriority",
                 [vm](RTS* self, const std::vector<std::string>& subjectTexts, int priority) -> ssq::Table {

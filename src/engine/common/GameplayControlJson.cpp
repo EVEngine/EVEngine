@@ -147,40 +147,40 @@ Result<IGameplayControlProvider*> provider(std::string_view domain, SubjectRef i
 }
 
 Value encodeObservation(GameplayObservation observation) {
-    return Value(Value::Object{{"domain", Value(observation.domain.format())},
-                               {"instance", Value(observation.instance.format())},
-                               {"revision", Value(static_cast<std::int64_t>(observation.revision))},
-                               {"state", std::move(observation.state)},
-                               {"tick", Value(static_cast<std::int64_t>(observation.tick.value()))}});
+    return Value::object({{"domain", Value(observation.domain.format())},
+                          {"instance", Value(observation.instance.format())},
+                          {"revision", Value(static_cast<std::int64_t>(observation.revision))},
+                          {"state", std::move(observation.state)},
+                          {"tick", Value(static_cast<std::int64_t>(observation.tick.value()))}});
 }
 
 Value encodeActions(std::vector<GameplayActionDescriptor> actions) {
-    Value::Array output;
+    Value output = Value::array({});
     for (auto& action : actions)
-        output.emplace_back(Value::Object{{"id", Value(action.id.format())},
-                                          {"parameterSchema", std::move(action.parameterSchema)}});
-    return Value(std::move(output));
+        output.pushBack(
+            Value::object({{"id", Value(action.id.format())}, {"parameterSchema", std::move(action.parameterSchema)}}));
+    return output;
 }
 
 Value encodeReceipt(GameplayCommandReceipt receipt) {
-    return Value(Value::Object{{"acceptedTick", Value(static_cast<std::int64_t>(receipt.acceptedTick.value()))},
-                               {"commandId", Value(std::move(receipt.commandId))},
-                               {"details", std::move(receipt.details)},
-                               {"executionId", Value(std::move(receipt.executionId))},
-                               {"resultingRevision", Value(static_cast<std::int64_t>(receipt.resultingRevision))}});
+    return Value::object({{"acceptedTick", Value(static_cast<std::int64_t>(receipt.acceptedTick.value()))},
+                          {"commandId", Value(std::move(receipt.commandId))},
+                          {"details", std::move(receipt.details)},
+                          {"executionId", Value(std::move(receipt.executionId))},
+                          {"resultingRevision", Value(static_cast<std::int64_t>(receipt.resultingRevision))}});
 }
 
 Value encodeInstances(const IGameplayInstanceCatalog* catalog) {
-    Value::Array output;
-    if (catalog == nullptr) return Value(std::move(output));
-    for (const auto& instance : catalog->gameplayInstances()) output.emplace_back(instance.format());
-    return Value(std::move(output));
+    Value output = Value::array({});
+    if (catalog == nullptr) return output;
+    for (const auto& instance : catalog->gameplayInstances()) output.pushBack(instance.format());
+    return output;
 }
 
 Value encodeEvents(std::vector<GameplayEvent> events) {
-    Value::Array output;
+    Value output = Value::array({});
     for (auto& event : events)
-        output.emplace_back(Value::Object{
+        output.pushBack(Value::object({
             {"causationCommandId", Value(std::move(event.causationCommandId))},
             {"correlationId", Value(std::move(event.correlationId))},
             {"payload", std::move(event.payload)},
@@ -188,8 +188,8 @@ Value encodeEvents(std::vector<GameplayEvent> events) {
             {"subject", Value(event.subject.format())},
             {"tick", Value(static_cast<std::int64_t>(event.tick.value()))},
             {"type", Value(std::move(event.type))},
-        });
-    return Value(std::move(output));
+        }));
+    return output;
 }
 
 Result<void> validateRoot(const Value::Object& root) {
@@ -233,9 +233,9 @@ Result<Value> executeGameplayControlRequest(const Value& request) {
         // can appear several times; discovery lists it once while an operation on
         // that domain still reports the duplicate-provider conflict.
         domains.erase(std::unique(domains.begin(), domains.end()), domains.end());
-        Value::Array output;
-        for (auto& domain : domains) output.emplace_back(std::move(domain));
-        return Result<Value>::success(Value(Value::Object{{"domains", Value(std::move(output))}}));
+        Value output = Value::array({});
+        for (auto& domain : domains) output.pushBack(std::move(domain));
+        return Result<Value>::success(Value::object({{"domains", Value(std::move(output))}}));
     }
     if (operation.value() == "instances") {
         // Discovery needs neither a session nor an authority check: it reports
@@ -255,7 +255,7 @@ Result<Value> executeGameplayControlRequest(const Value& request) {
                                                                 "that gameplay domain cannot enumerate its instances",
                                                                 "request.domain"));
             return Result<Value>::success(
-                Value(Value::Object{{"domain", Value(wanted)}, {"instances", encodeInstances(match)}}));
+                Value::object({{"domain", Value(wanted)}, {"instances", encodeInstances(match)}}));
         }
         std::vector<std::pair<std::string, Value>> catalogs;
         std::vector<std::string>                   catalogDomains;
@@ -267,10 +267,10 @@ Result<Value> executeGameplayControlRequest(const Value& request) {
         });
         std::sort(catalogs.begin(), catalogs.end(),
                   [](const auto& left, const auto& right) { return left.first < right.first; });
-        Value::Array encoded;
+        Value encoded = Value::array({});
         for (auto& entry : catalogs)
-            encoded.emplace_back(
-                Value::Object{{"domain", Value(std::move(entry.first))}, {"instances", std::move(entry.second)}});
+            encoded.pushBack(
+                Value::object({{"domain", Value(std::move(entry.first))}, {"instances", std::move(entry.second)}}));
         std::vector<std::string> unenumerable;
         cap::forEach<IGameplayControlProvider>([&](auto* candidate) {
             if (!candidate) return;
@@ -279,10 +279,10 @@ Result<Value> executeGameplayControlRequest(const Value& request) {
                 unenumerable.push_back(domain);
         });
         std::sort(unenumerable.begin(), unenumerable.end());
-        Value::Array missing;
-        for (auto& domain : unenumerable) missing.emplace_back(std::move(domain));
-        return Result<Value>::success(
-            Value(Value::Object{{"catalogs", Value(std::move(encoded))}, {"unenumerable", Value(std::move(missing))}}));
+        Value missing = Value::array({});
+        for (auto& domain : unenumerable) missing.pushBack(std::move(domain));
+        return Result<Value>::success(Value(
+            Value::object({{"catalogs", Value(std::move(encoded))}, {"unenumerable", Value(std::move(missing))}})));
     }
     auto domain = stringMember(*root.value(), "domain", "request");
     if (!domain) return Result<Value>::failure(domain.status());
@@ -305,7 +305,7 @@ Result<Value> executeGameplayControlRequest(const Value& request) {
         if (!actor) return Result<Value>::failure(actor.status());
         auto result = target.value()->availableGameplayActions(access.value(), instance.value(), actor.value());
         if (!result) return Result<Value>::failure(result.status());
-        return Result<Value>::success(Value(Value::Object{{"actions", encodeActions(std::move(result).takeValue())}}));
+        return Result<Value>::success(Value::object({{"actions", encodeActions(std::move(result).takeValue())}}));
     }
     if (operation.value() == "submit") {
         const auto found = root.value()->find("command");
@@ -347,7 +347,7 @@ Result<Value> executeGameplayControlRequest(const Value& request) {
         command.parameters = parameters->second;
         auto result = target.value()->submitGameplay(access.value(), instance.value(), command);
         if (!result) return Result<Value>::failure(result.status());
-        return Result<Value>::success(Value(Value::Object{{"receipt", encodeReceipt(std::move(result).takeValue())}}));
+        return Result<Value>::success(Value::object({{"receipt", encodeReceipt(std::move(result).takeValue())}}));
     }
     if (operation.value() == "advance") {
         auto tick = uintMember(*root.value(), "tick", "request");
@@ -367,7 +367,7 @@ Result<Value> executeGameplayControlRequest(const Value& request) {
         if (!cursor) return Result<Value>::failure(cursor.status());
         auto result = target.value()->gameplayEvents(access.value(), instance.value(), cursor.value());
         if (!result) return Result<Value>::failure(result.status());
-        return Result<Value>::success(Value(Value::Object{{"events", encodeEvents(std::move(result).takeValue())}}));
+        return Result<Value>::success(Value::object({{"events", encodeEvents(std::move(result).takeValue())}}));
     }
     return Result<Value>::failure(
         Diagnostic::error(DiagnosticCode::Unsupported, "unsupported gameplay control operation", "request.op"));
