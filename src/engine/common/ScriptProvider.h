@@ -24,7 +24,7 @@ namespace eve {
  * Stable data rather than a pointer: it survives the provider being retired, so a
  * stale handle is reported instead of resolving to whatever took its place.
  */
-struct ScriptProviderHandle {
+struct EVENGINE_API_FOUNDATION_INLINE ScriptProviderHandle {
     std::string   name;
     std::uint64_t generation                                                           = 0;
     friend bool   operator==(const ScriptProviderHandle&, const ScriptProviderHandle&) = default;
@@ -43,7 +43,7 @@ struct ScriptProviderHandle {
  *          `common/SquirrelBinding.h` 那一套权威转换（递归/元素数上限、环检测、非有限数拒绝），
  *          桥本身不新增第二套递归转换。
  */
-struct ScriptArg {
+struct EVENGINE_API_FOUNDATION ScriptArg {
     /** @brief Active argument kind. */
     enum class Kind : std::uint8_t { Integer, Number, Boolean, Text, Table };
 
@@ -66,7 +66,7 @@ struct ScriptArg {
 class ScriptProviderRegistry;
 
 /** @brief Read-only view of one published provider, for discovery and diagnostics. */
-struct ScriptProviderInfo {
+struct EVENGINE_API_FOUNDATION_INLINE ScriptProviderInfo {
     std::string   name;
     std::uint64_t generation = 0;
     /** Capability it was published for; empty when published plainly. */
@@ -111,7 +111,7 @@ using ScriptCapabilityUnbinder = std::function<Result<void>(const ScriptProvider
  *             the call only for its own bookkeeping and never holds a reference to
  *             the provider across an invocation it does not own.
  */
-class EVENGINE_API ScriptProviderRegistry {
+class EVENGINE_API_FOUNDATION ScriptProviderRegistry {
 public:
     /** @brief Process-lifetime registry; `clearAll` is the only reset. */
     static ScriptProviderRegistry& instance();

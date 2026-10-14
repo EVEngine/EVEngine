@@ -2,6 +2,7 @@
 
 /** @file ScriptComponentStore.h @brief 脚本组件字段的引擎侧权威存储。 */
 
+#include "common/Export.h"
 #include "common/Result.h"
 #include "common/SchemaVersion.h"
 #include "common/Value.h"
@@ -19,7 +20,7 @@ namespace eve {
  * 用名字 + 版本而不是类对象：热重载会换掉类对象，而这两者不变（见 `ECS.h` 的
  * `ScriptComponentRecord`）。这两个身份合起来才能回答"这份数据属于哪个组件的哪一代"。
  */
-struct ScriptComponentStoreKey {
+struct EVENGINE_API_FOUNDATION_INLINE ScriptComponentStoreKey {
     std::uint64_t entityId = 0;
     /** @brief 脚本侧声明的组件名。 */
     std::string name;
@@ -42,7 +43,8 @@ struct ScriptComponentStoreKey {
  *          （见 `_get`/`_set` 接缝），原生侧（打包/存档/编辑器）也从这里读。
  * @cost 一次 map 插入 + 一次 `Value` 拷贝。
  */
-[[nodiscard]] Result<void> setScriptComponentValues(const ScriptComponentStoreKey& key, Value values);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<void> setScriptComponentValues(const ScriptComponentStoreKey& key,
+                                                                            Value                          values);
 
 /**
  * @brief 读一条组件数据。
@@ -51,13 +53,14 @@ struct ScriptComponentStoreKey {
  * @remarks 字段按**名字**查找；需要稳定顺序时（序列化/Git diff）按注册表记录里的**声明顺序**
  *          遍历，而不是遍历这个 map（`Value::Object` 是 `std::map`，顺序是字典序）。
  */
-[[nodiscard]] const Value* findScriptComponentValues(const ScriptComponentStoreKey& key);
+[[nodiscard]] EVENGINE_API_FOUNDATION const Value* findScriptComponentValues(const ScriptComponentStoreKey& key);
 
 /**
  * @brief 读一个字段。
  * @return 字段值，或 `NotFound`（键或字段不存在）。
  */
-[[nodiscard]] Result<Value> scriptComponentField(const ScriptComponentStoreKey& key, const std::string& field);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<Value> scriptComponentField(const ScriptComponentStoreKey& key,
+                                                                         const std::string&             field);
 
 /**
  * @brief 写一个字段（脚本侧的写入与原生侧的写入都走这里）。
@@ -65,14 +68,14 @@ struct ScriptComponentStoreKey {
  * @remarks **不**接受未在 schema 里的新字段：组件的数据形状由 schema 决定，凭空加字段会让
  *          序列化与编辑器看到一份没有声明的数据。要加字段就改脚本里的组件类并升版本。
  */
-[[nodiscard]] Result<void> setScriptComponentField(const ScriptComponentStoreKey& key, const std::string& field,
-                                                   Value value);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<void> setScriptComponentField(const ScriptComponentStoreKey& key,
+                                                                           const std::string& field, Value value);
 
 /**
  * @brief 存储里的一条数据：键 + 一份字段对象。
  * @remarks 存在的意义是**快照/诊断**要能整体枚举存储；日常读写请用下面按键的函数。
  */
-struct ScriptComponentStoreEntry {
+struct EVENGINE_API_FOUNDATION_INLINE ScriptComponentStoreEntry {
     ScriptComponentStoreKey key;
     /** @brief 字段名 → 值（必须是 Object）。 */
     Value values;
@@ -83,7 +86,7 @@ struct ScriptComponentStoreEntry {
  * @return 条目的拷贝；顺序由 `ScriptComponentStoreKey::operator<` 决定，因此跨进程稳定。
  * @cost 一次全量深拷贝；只给快照/编辑器/诊断用，不在热路径上。
  */
-[[nodiscard]] std::vector<ScriptComponentStoreEntry> scriptComponentStoreEntries();
+[[nodiscard]] EVENGINE_API_FOUNDATION std::vector<ScriptComponentStoreEntry> scriptComponentStoreEntries();
 
 /**
  * @brief 用给定条目**整体替换**存储（恢复快照用）。
@@ -91,7 +94,7 @@ struct ScriptComponentStoreEntry {
  * @param entries 新内容；调用方负责先校验完（未知组件/未知字段/重复键），因为本函数只做替换。
  * @remarks 全有或全无：先把条目插进一张临时表，再一次性换掉，恢复失败不会留下半套数据。
  */
-void replaceScriptComponentValues(std::vector<ScriptComponentStoreEntry> entries);
+EVENGINE_API_FOUNDATION void replaceScriptComponentValues(std::vector<ScriptComponentStoreEntry> entries);
 
 /**
  * @brief 把某个组件（名字 + 版本）在**所有实体**上的数据重建到新 schema 上（热重载换代）。
@@ -106,20 +109,21 @@ void replaceScriptComponentValues(std::vector<ScriptComponentStoreEntry> entries
  *          必须显式对齐 schema。实例的重接由脚本侧 ECS 负责（它才知道哪些实体活着）。
  * @cost 与"该组件已存在的实体数"成正比；只应在脚本重载时调用，不在任何热路径上。
  */
-void reconcileScriptComponentValues(const std::string& name, SchemaVersion version,
-                                    const std::vector<std::string>& fields, const std::vector<Value>& defaults);
+EVENGINE_API_FOUNDATION void reconcileScriptComponentValues(const std::string& name, SchemaVersion version,
+                                                            const std::vector<std::string>& fields,
+                                                            const std::vector<Value>&       defaults);
 
 /**
  * @brief 实体销毁时清掉它的全部组件数据。
  * @return 被清掉的条数。
  */
-std::size_t removeScriptComponentValues(std::uint64_t entityId);
+EVENGINE_API_FOUNDATION std::size_t removeScriptComponentValues(std::uint64_t entityId);
 
 /** @brief 换 VM 时清空：脚本世界连同它的组件数据一起消失。 */
-void clearScriptComponentStore();
+EVENGINE_API_FOUNDATION void clearScriptComponentStore();
 
 /** @brief 当前数据条数（诊断与测试用）。 */
-[[nodiscard]] std::size_t scriptComponentStoreSize();
+[[nodiscard]] EVENGINE_API_FOUNDATION std::size_t scriptComponentStoreSize();
 
 /**
  * @brief 存储的单调版本号：任何一次写（含恢复、换代对齐、实体销毁）都会 +1。
@@ -130,6 +134,6 @@ void clearScriptComponentStore();
  * @return 当前版本号；进程内从 1 开始单调递增，**不会**因为清空而回退。
  * @cost O(1)。
  */
-[[nodiscard]] std::uint64_t scriptComponentStoreRevision();
+[[nodiscard]] EVENGINE_API_FOUNDATION std::uint64_t scriptComponentStoreRevision();
 
 }  // namespace eve

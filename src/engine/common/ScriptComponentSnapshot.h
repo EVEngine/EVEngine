@@ -35,7 +35,7 @@ inline constexpr const char* kScriptComponentSnapshotType = "eve.script-componen
  *          不是脚本实例的槽位。**未登记**的组件（纯槽位语义）不出现在这里——它们没有名字与
  *          版本，引擎工具无从寻址（§9.62.1 的成本策略）。
  */
-struct ScriptComponentInstanceState {
+struct EVENGINE_API_FOUNDATION_INLINE ScriptComponentInstanceState {
     /**
      * @brief 脚本 VM 内的实体 id（实例上的 `_eid`）。
      *
@@ -65,11 +65,11 @@ struct ScriptComponentInstanceState {
  * @lifetime 返回值拥有自己的存储，脚本 VM 销毁后依然可用。
  * @cost 与"实例上的组件数 × 字段数"成正比；供编辑器/工具按需调用，不在逐帧路径上。
  */
-[[nodiscard]] EVENGINE_API Result<std::vector<ScriptComponentInstanceState>> scriptComponentInstancesOf(
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::vector<ScriptComponentInstanceState>> scriptComponentInstancesOf(
     const ssq::Object& entityInstance);
 
 /** @brief 脚本组件快照的 payload schema：`eve:script-components` 版本 1。 */
-[[nodiscard]] EVENGINE_API LogicalId scriptComponentSnapshotSchema();
+[[nodiscard]] EVENGINE_API_FOUNDATION LogicalId scriptComponentSnapshotSchema();
 
 /**
  * @brief 把引擎侧的脚本组件数据封成一个快照信封。
@@ -88,9 +88,8 @@ struct ScriptComponentInstanceState {
  *          里，序列化与哈希输入因此是字典序。同一份状态两次快照得到同一个哈希，也不含墙钟字段。
  * @cost 与存储里的条目数成正比（一次全量拷贝 + 一次 JSON 规范化）；只在存档/编辑器读时调用。
  */
-[[nodiscard]] EVENGINE_API Result<SnapshotEnvelope> snapshotScriptComponents(PersistentId instanceId, Revision revision,
-                                                                             SimulationTick              tick,
-                                                                             const SnapshotHashProvider& hashProvider);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<SnapshotEnvelope> snapshotScriptComponents(
+    PersistentId instanceId, Revision revision, SimulationTick tick, const SnapshotHashProvider& hashProvider);
 
 /**
  * @brief 用快照里的数据**整体替换**当前的脚本组件数据。
@@ -105,16 +104,16 @@ struct ScriptComponentInstanceState {
  *          存档要先有稳定的实体身份（阶段 5 的 `RuntimeObjectRegistry` + `ownerEpoch`），那之前
  *          跨会话恢复只能按创建顺序对上号。
  */
-[[nodiscard]] EVENGINE_API Result<void> restoreScriptComponents(const SnapshotEnvelope&     snapshot,
-                                                                const SnapshotHashProvider& hashProvider);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<void> restoreScriptComponents(const SnapshotEnvelope&     snapshot,
+                                                                           const SnapshotHashProvider& hashProvider);
 
 /** @brief 采集并序列化成确定性 JSON（存档写盘用）。 @cost 同 `snapshotScriptComponents` + 一次序列化。 */
-[[nodiscard]] EVENGINE_API Result<std::string> serializeScriptComponentSnapshot(
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::string> serializeScriptComponentSnapshot(
     PersistentId instanceId, Revision revision, SimulationTick tick, const SnapshotHashProvider& hashProvider);
 
 /** @brief 从 JSON 解析、校验并恢复。 @return 成功，或解析/校验/未知组件失败。 */
-[[nodiscard]] EVENGINE_API Result<void> restoreScriptComponentSnapshotJson(std::string_view            json,
-                                                                           const SnapshotHashProvider& hashProvider);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<void> restoreScriptComponentSnapshotJson(
+    std::string_view json, const SnapshotHashProvider& hashProvider);
 
 /**
  * @brief 引擎侧脚本组件数据的**工具视图**（MCP `eve_script_components` 与诊断用）。
@@ -130,6 +129,6 @@ struct ScriptComponentInstanceState {
  *          编辑器 payload provider）。
  * @cost 与存储里的条目数成正比（一次拷贝 + 一次序列化）；工具/诊断用，不在逐帧路径上。
  */
-[[nodiscard]] EVENGINE_API Result<std::string> scriptComponentStatesJson();
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::string> scriptComponentStatesJson();
 
 }  // namespace eve

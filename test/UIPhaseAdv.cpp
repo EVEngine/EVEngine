@@ -117,7 +117,12 @@ function testScriptComponent() {
         unmounted = false
         function onUnmount() { unmounted = true }
         function build() {
-            ui().text(props.prefix + state.amount, "gold")
+            // This label doubles as the keyed child, whose factory creates it with an empty
+            // state on the first pass; only the composed child gets `setState({amount})`.
+            // Read it defensively so the case keeps testing keyed reuse and dirty coalescing
+            // instead of throwing here.
+            local amount = ("amount" in state) ? state.amount : 0
+            ui().text(props.prefix + amount, "gold")
         }
     }
     class ShopPanel extends eve.UIComponent {

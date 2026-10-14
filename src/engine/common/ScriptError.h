@@ -28,7 +28,7 @@ namespace eve::script {
  *          captured context has real frames. Idempotent, and it does not stack
  *          handlers: the last closure installed wins.
  */
-EVENGINE_API void installScriptErrorHook(HSQUIRRELVM vm);
+EVENGINE_API_FOUNDATION void installScriptErrorHook(HSQUIRRELVM vm);
 
 /** @brief One call-stack frame captured while the script error is still live. */
 struct EVENGINE_API_FOUNDATION_INLINE ScriptFrame {

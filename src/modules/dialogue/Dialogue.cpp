@@ -1421,6 +1421,11 @@ void Dialogue::expose(ssq::Class &cls) {
     cls.addFunc("unregisterCondition", &Dialogue::unregisterCondition);
     cls.addFunc("evalCondition", &Dialogue::evalCondition);
 
+    // `loadPoolsFromTable` is the documented script entry point for pool registration
+    // (`docs/dev/对话与Avatar模块设计.md` §池注册) and the table-taking counterpart of
+    // `loadPoolsFromData`. The dnut refactor dropped the binding while keeping the method,
+    // so `DialogueProcScriptTest.basicPools` called a name no VM could resolve.
+    cls.addFunc("loadPoolsFromTable", &Dialogue::loadPoolsFromTable);
     cls.addFunc("clearPools", &Dialogue::clearPools);
     cls.addFunc("getPoolCount", &Dialogue::getPoolCount);
     cls.addFunc("getPoolId", &Dialogue::getPoolId);

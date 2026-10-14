@@ -150,13 +150,13 @@ decltype(auto) scriptArgument(const Arg& arg) {
  * @note Thread affinity: the owning VM's thread only.
  * @note Reentrancy: not reentrant; takes an internal lock.
  */
-EVENGINE_API std::string reportScriptCallFailure(HSQUIRRELVM vm, const char* what);
+EVENGINE_API_FOUNDATION std::string reportScriptCallFailure(HSQUIRRELVM vm, const char* what);
 
 /** @brief Count of engine-to-script call failures reported since the last reset. */
-[[nodiscard]] EVENGINE_API int reportedScriptCallFailures();
+[[nodiscard]] EVENGINE_API_FOUNDATION int reportedScriptCallFailures();
 
 /** @brief Clear the failure count and the deduplication memory (diagnostics and tests). */
-EVENGINE_API void resetReportedScriptCallFailures();
+EVENGINE_API_FOUNDATION void resetReportedScriptCallFailures();
 
 /**
  * @brief Compile and run one embedded script chunk against the root table.
@@ -177,7 +177,7 @@ EVENGINE_API void resetReportedScriptCallFailures();
  * @note Thread affinity: the owning VM's thread only.
  * @note Reentrancy: runs script, so do not hold a lock across the call.
  */
-EVENGINE_API SQRESULT compileAndRunChunk(HSQUIRRELVM vm, const char* name, const char* source);
+EVENGINE_API_FOUNDATION SQRESULT compileAndRunChunk(HSQUIRRELVM vm, const char* name, const char* source);
 
 /**
  * @brief Call a script function, deriving `sq_call`'s parameter count from the pushes.
@@ -261,7 +261,7 @@ SQRESULT callFunctionResult(HSQUIRRELVM vm, const HSQOBJECT& fn, const Receiver&
  * @remarks `ok` is derived from `status`, so a caller can no longer hand the same
  *          outcome twice and make the table contradict itself.
  */
-[[nodiscard]] EVENGINE_API ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status& status);
+[[nodiscard]] EVENGINE_API_FOUNDATION ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status& status);
 
 /**
  * @brief Project a checked native status together with its canonical payload.
@@ -347,6 +347,6 @@ EVENGINE_API_FOUNDATION void exposeResultBindings(ssq::Table& eveTable);
  * @remarks Idempotent for the initial root-table exposure; call once from the
  *          common composition root, before any module constructor runs.
  */
-EVENGINE_API void exposeProviderBindings(ssq::Table& eveTable);
+EVENGINE_API_FOUNDATION void exposeProviderBindings(ssq::Table& eveTable);
 
 }  // namespace eve::script
