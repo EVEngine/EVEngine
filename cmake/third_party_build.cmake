@@ -174,9 +174,14 @@ function(check_third_party_project name repo)
     # Comma encoding keeps one CMake argument intact across ExternalProject's
     # list expansion on POSIX, Ninja, MSBuild and Emscripten.
     string(JOIN "," _eve_tp_groups_arg ${EVE_THIRDPARTY_GROUPS})
+    set(_eve_tp_build_jolt OFF)
+    if(EVENGINE_BUILD_JOLT AND "jolt" IN_LIST EVE_THIRDPARTY_GROUPS)
+        set(_eve_tp_build_jolt ON)
+    endif()
     list(APPEND _eve_tp_cmake_args
         -DEVENGINE_THIRD_PARTY_GROUPS=${_eve_tp_groups_arg}
-        -DEVENGINE_BUILD_HOST=${EVENGINE_BUILD_HOST})
+        -DEVENGINE_BUILD_HOST=${EVENGINE_BUILD_HOST}
+        -DEVENGINE_BUILD_JOLT=${_eve_tp_build_jolt})
     # ExternalProject configures the dependency aggregate in a separate CMake
     # process, so non-MSVC builds must receive the parent's compiler launcher
     # explicitly. LIST_SEPARATOR preserves compound launchers such as

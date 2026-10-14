@@ -23,6 +23,14 @@ eve::Result<eve::resource::Receipt> RTSEconomyAdapter::credit(const eve::resourc
     return account_.credit(cost);
 }
 
+eve::Result<eve::transaction::TransactionReceipt> RTSEconomyAdapter::pay(
+    const eve::resource::CostSpec& cost, std::span<eve::transaction::ITransactionParticipant*> effects,
+    std::string transactionId) {
+    if (transactionId.empty()) transactionId = "rts.economy.payment";
+    return eve::transaction::AtomicResourcePayment::execute(
+        eve::transaction::TransactionContext(std::move(transactionId)), account_, cost, effects);
+}
+
 }  // namespace eve::rts
 
 // RTSEffects.cpp

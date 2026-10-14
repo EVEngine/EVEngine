@@ -28,6 +28,47 @@
       "events": "Transfer events are delivered after balance mutation through registered synchronous hooks.",
       "services": "Injected hook functions and caller-supplied transfer requests; hooks are not invoked while mutating registry structure.",
       "phase": "Economy command/settlement phase."
+    },
+    {
+      "id": "economy-payment-composition-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/economy/*",
+      "owner": "economy-maintainers",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACES",
+      "reason": "Payment composition retains canonical ledger ownership and shared transaction lifecycle.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/usr/GAMEPLAY_PAYMENT_COMPOSITION.md",
+        "src/modules/economy/EconomyLedgerResourceAccount.h",
+        "src/modules/economy/EconomySystem.cpp",
+        "src/modules/economy/Economy.cpp"
+      ],
+      "tests": [
+        "test/card_payment_composition.cpp",
+        "test/card_rts_script_composition.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Economy",
+          "methods": [
+            "stagePayment"
+          ]
+        }
+      ],
+      "protocol": [
+        "Native synchronous Result-based payment; no persistent wire format.",
+        "Shared cached protocol adapters over canonical player ledgers; clear advances generation before destroying ledgers. Stale adapter operations fail before touching retired ledger storage."
+      ],
+      "thread_affinity": "Owner thread; borrowed participants live until return; no same-account reentrancy.",
+      "trim": {
+        "absent_profile": "No new optional provider or trim claim; free Card plays remain account-free."
+      },
+      "cost_notes": [],
+      "hot_path": []
     }
   ]
 }

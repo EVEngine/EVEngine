@@ -79,7 +79,7 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | `eve_restart` | **软重启**：不杀掉进程、不卸载 `ResourceManager` 缓存，重新跑 `eve_init`（可选 `args` → `eve.restartArgs`）；AI 调试时优先用它而不是反复 `eve run` |
 | `eve_ai_note` / `eve_ai_log` | 写入 / 读取 DevTools AI 日志 |
 | `eve_scene_status` / `eve_scene_nodes` / `eve_scene_node_get` / `eve_scene_node_set` | 运行时场景 / 实体查询与变换 |
-| `eve_scene_director_install` / `eve_scene_director_status` / `eve_scene_reset` / `eve_scene_modify` / `eve_scene_info` / `eve_camera_generate` | AI 场景导演：搭台 kit 安装 / 状态 / 清场 / 摆物调光摄像机 / 场景真值 / 生成机位（见 [AI 场景导演](AI场景导演.md)） |
+| `eve_scene_director_install` / `eve_scene_director_status` / `eve_scene_reset` / `eve_scene_modify` / `eve_scene_batch` / `eve_scene_info` / `eve_camera_generate` / `eve_whitebox_playtest` | AI 场景导演：搭台 kit / 单步与批量摆物 / 快速白盒游玩测试（见 [AI 场景导演](AI场景导演.md)、[`tools/whitebox-playtest`](../../tools/whitebox-playtest/)） |
 | `eve_procgen_recipes` / `eve_procgen_map` / `eve_procgen_mesh` | 程序化生成：算法/配方枚举、生成地图网格、构建网格 |
 | `eve_physics_new_world` / `eve_physics_list_worlds` / `eve_physics_raycast` / `eve_physics_remove_world` | 2D 物理世界与射线检测 |
 | `eve_render_status` / `eve_screenshot` | 渲染状态、当前帧截图（PNG）；相对路径按项目根解析并返回绝对路径与字节数 |

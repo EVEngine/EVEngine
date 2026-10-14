@@ -23,6 +23,7 @@ set_tests_properties(cmake.third_party_patch_idempotence PROPERTIES LABELS "qual
 # reconfigures when an individual test/*.cpp is newer than that list (not when
 # anything under test/ is written).
 file(GLOB all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+set_source_files_properties(physics_jolt.cpp physics_jolt_cooking.cpp physics_jolt_contacts.cpp PROPERTIES COMPILE_DEFINITIONS "EVENGINE_TEST_HAS_JOLT=$<BOOL:${EVENGINE_BUILD_JOLT}>")
 # Resource sharing must test the same optional validation provider as EVGraphics.
 get_target_property(_eve_graphics_definitions EVGraphics COMPILE_DEFINITIONS)
 if("EVENGINE_SPIRV_ASSET_VALIDATION=1" IN_LIST _eve_graphics_definitions)

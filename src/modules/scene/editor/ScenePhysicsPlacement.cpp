@@ -1,6 +1,5 @@
 #include "scene/editor/ScenePhysicsPlacement.h"
 
-#include <box3d/box3d.h>
 #include "common/Exception.h"
 #include "common/Time.h"
 #include "common/TransformEuler.h"
@@ -608,20 +607,18 @@ editing::Result<PhysicsPlacementFrame> ScenePhysicsPlacementBackend::relationFra
     std::map<int, editing::ObjectId> ids;
     for (const auto& object : impl_->objects) ids.emplace(object.body->getId(), object.admitted.object);
     for (const auto& object : impl_->objects) {
-        if (b3Body_GetContactCapacity(object.body->raw()) > 4096) frame.contactsComplete = false;
-        const int count = impl_->world.queryBodyContacts(object.body->getId(), 4096);
-        if (count == 4096) frame.contactsComplete = false;
-        for (int i = 0; i < count; ++i) {
-            const auto other = ids.find(impl_->world.getContactPointOtherBodyId(i));
+        auto contacts = impl_->world.queryBodyContactsOwned(object.body->runtimeHandle(), 4096);
+        if (!contacts) return editing::Result<PhysicsPlacementFrame>::failure(contacts.status());
+        const auto& snapshot = contacts.value();
+        if (snapshot.coverage != physics::ContactQueryCoverage3D::Complete) frame.contactsComplete = false;
+        for (const auto& point : snapshot.points) {
+            const auto other = ids.find(point.otherBodyId);
             if (other == ids.end()) {
                 frame.contactsComplete = false;
                 continue;
             }
-            frame.contacts.push_back({object.admitted.object, other->second, impl_->world.getContactPointX(i),
-                                      impl_->world.getContactPointY(i), impl_->world.getContactPointZ(i),
-                                      impl_->world.getContactPointNormalX(i), impl_->world.getContactPointNormalY(i),
-                                      impl_->world.getContactPointNormalZ(i),
-                                      impl_->world.getContactPointSeparation(i)});
+            frame.contacts.push_back({object.admitted.object, other->second, point.x, point.y, point.z, point.normalX,
+                                      point.normalY, point.normalZ, point.separation});
         }
     }
     return captured;

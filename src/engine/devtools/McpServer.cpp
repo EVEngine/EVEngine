@@ -19,10 +19,12 @@
 #include "devtools/McpJson.hpp"
 #include "devtools/McpProjectIndexTools.hpp"
 #include "devtools/McpRuntimeTools.hpp"
+#include "devtools/McpSceneDirector.hpp"
 #include "devtools/McpSceneLiteral.hpp"
 #include "devtools/McpScriptTools.hpp"
 #include "devtools/McpSquirrelJson.hpp"
 #include "devtools/McpToolFilter.hpp"
+#include "devtools/McpWhiteboxTools.hpp"
 #include "devtools/PlayHost.h"
 #include "devtools/RenderVision.hpp"
 #include "devtools/SceneInspect.hpp"
@@ -70,9 +72,6 @@
 
 namespace eve::dev {
 namespace {
-
-constexpr const SQChar* kMcpSnippetSource       = _SC("memory://mcp/snippet");
-constexpr const SQChar* kMcpSceneDirectorSource = _SC("memory://mcp/scene-director");
 
 std::string idToJson(const Poco::Dynamic::Var& id) {
     if (id.isEmpty()) return "null";
@@ -160,84 +159,8 @@ Poco::JSON::Array::Ptr vec3ToArray(const glm::vec3& v) {
 }
 
 // ============================= Scene Director (AI scene-authoring) =============
-// Thin C++ dispatchers over the Squirrel `scene_director` kit (src/scripts/
-// scene_director.nut, embedded as eve::scene_director_content). Agents build /
-// inspect scenes through `eve_scene_modify` / `eve_scene_info` /
-// `eve_camera_generate` / `eve_scene_reset`; the kit owns the live Renderable3D /
-// Camera3D / lighting state.
-
-std::string snippetErrorText(HSQUIRRELVM vm, bool compile) {
-    eve::script::ScriptErrorContext ctx =
-        compile ? eve::script::captureCompileError(vm) : eve::script::takeLastScriptError(vm);
-    if (!ctx.empty()) return eve::script::formatScriptError(ctx);
-    return compile ? "compile failed" : "runtime failed";
-}
-
-// Compile + run a snippet against the live VM (no return value captured).
-bool runVmSnippet(HSQUIRRELVM vm, const std::string& source, std::string* err) {
-    const SQInteger top = sq_gettop(vm);
-    // MCP snippets are transient input, not project scripts. Compile them
-    // directly from memory so the unified project compiler cannot register a
-    // file-shaped source that hot reload may later treat as user content.
-    if (SQ_FAILED(
-            sq_compilebuffer(vm, source.c_str(), static_cast<SQInteger>(source.size()), kMcpSnippetSource, SQTrue))) {
-        sq_settop(vm, top);
-        if (err) *err = snippetErrorText(vm, true);
-        return false;
-    }
-    sq_pushroottable(vm);
-    if (SQ_FAILED(sq_call(vm, 1, SQFalse, SQTrue))) {
-        sq_settop(vm, top);
-        if (err) *err = snippetErrorText(vm, false);
-        return false;
-    }
-    sq_settop(vm, top);
-    return true;
-}
-
-// Serialize a Squirrel value (at stack idx) to compact JSON.
-// sqValueToJson lives in devtools/McpSquirrelJson.hpp so the script tool
-// registry serializes handler results exactly the same way.
-
-/** Compile a snippet that returns a value, run it, and return the JSON of the
- *  return value (e.g. `return ::scene_director.info();`). */
-std::string callSceneDirectorReturn(HSQUIRRELVM vm, const std::string& snippet, std::string* err) {
-    const SQInteger top = sq_gettop(vm);
-    if (SQ_FAILED(sq_compilebuffer(vm, snippet.c_str(), static_cast<SQInteger>(snippet.size()), kMcpSceneDirectorSource,
-                                   SQTrue))) {
-        sq_settop(vm, top);
-        if (err) *err = snippetErrorText(vm, true);
-        return {};
-    }
-    sq_pushroottable(vm);
-    if (SQ_FAILED(sq_call(vm, 1, SQTrue, SQTrue))) {
-        sq_settop(vm, top);
-        std::string text = snippetErrorText(vm, false);
-        if (err)
-            *err = text == "runtime failed" ? "runtime failed (is the scene_director kit installed?)" : std::move(text);
-        return {};
-    }
-    std::string json = sqValueToJson(vm, -1);
-    sq_settop(vm, top);
-    return json;
-}
-
-// Install the scene_director kit into the live VM (idempotent).
-bool ensureSceneDirectorInstalled(HSQUIRRELVM vm, std::string* err) {
-    const std::string check = "return (\"scene_director\" in getroottable()) ? (scene_director != null) : false;";
-    const std::string out   = callSceneDirectorReturn(vm, check, nullptr);
-    if (!out.empty() && out.find("true") != std::string::npos) return true;
-    const char* kit = eve::scene_director_content;
-    if (!kit || !*kit) {
-        if (err) *err = "scene_director.nut not embedded (rebuild EVScripts)";
-        return false;
-    }
-    return runVmSnippet(vm, kit, err);
-}
-
-std::string sceneDirectorToolError(const std::string& name, const std::string& err) {
-    return "error: " + name + ": " + (err.empty() ? "unknown" : err);
-}
+// Thin C++ dispatchers over the Squirrel `scene_director` kit live in
+// McpSceneDirector.*; Agents build / inspect scenes through eve_scene_* tools.
 
 std::string renderStatusText(eve::IRenderCapture* cap) {
     Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
@@ -1400,7 +1323,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         const std::string source = getArgString(args, "source");
         if (source.empty()) return "error: missing source";
         std::string error;
-        if (!runVmSnippet(vm, source, &error)) return "error: " + error;
+        if (!runMcpVmSnippet(vm, source, &error)) return "error: " + error;
         return "ok";
     }
 
@@ -1464,6 +1387,40 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         const std::string snippet = "return ::scene_director.modify(" + actionLiteral.value() + "," +
                                     targetLiteral.value() + "," + paramsLiteral.value() + ");";
         const std::string out     = callSceneDirectorReturn(vm, snippet, &err);
+        if (!err.empty()) return sceneDirectorToolError(name, err);
+        return out;
+    }
+
+    // Batch white-box authoring: many scene_director.modify calls in one round-trip.
+    if (name == "eve_scene_batch") {
+        HSQUIRRELVM vm = dbg.vm();
+        if (!vm) return "error: no VM";
+        std::string err;
+        if (!ensureSceneDirectorInstalled(vm, &err)) return sceneDirectorToolError(name, err);
+        if (!args || !args->has("actions")) return sceneDirectorToolError(name, "actions array is required");
+        Poco::Dynamic::Var actionsVar;
+        try {
+            actionsVar = Poco::Dynamic::Var(args->getArray("actions"));
+        } catch (...) {
+            return sceneDirectorToolError(name, "actions must be a JSON array");
+        }
+        Poco::JSON::Object::Ptr options = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        if (args->has("stopOnError")) {
+            try {
+                options->set("stopOnError", args->get("stopOnError").convert<bool>());
+            } catch (...) {
+                return sceneDirectorToolError(name, "stopOnError must be a boolean");
+            }
+        } else {
+            options->set("stopOnError", true);
+        }
+        auto actionsLiteral = sceneLiteral(actionsVar);
+        if (!actionsLiteral.ok()) return sceneDirectorToolError(name, actionsLiteral.status().describe());
+        auto optionsLiteral = sceneLiteral(Poco::Dynamic::Var(options));
+        if (!optionsLiteral.ok()) return sceneDirectorToolError(name, optionsLiteral.status().describe());
+        const std::string snippet =
+            "return ::scene_director.batch(" + actionsLiteral.value() + "," + optionsLiteral.value() + ");";
+        const std::string out = callSceneDirectorReturn(vm, snippet, &err);
         if (!err.empty()) return sceneDirectorToolError(name, err);
         return out;
     }
@@ -1881,6 +1838,14 @@ std::string handleToolsList(const std::string& idJson) {
         "{timeOfDay,atmosphere,intensity,background}; camera params: {eye,target,fov}. Returns JSON.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"action\":{\"type\":\"string\"},\"target\":{\"type\":"
         "\"string\"},\"params\":{\"type\":\"object\"}},\"required\":[\"action\"]}},"
+        "{\"name\":\"eve_scene_batch\",\"description\":\"Batch white-box scene authoring: apply many "
+        "eve_scene_modify-shaped actions in one round-trip via scene_director.batch. Each action is "
+        "{action,target?,params?}. stopOnError (default true) aborts on first failure. Returns "
+        "{ok,applied,failed,count,results[],revision}. Prefer this over N×eve_scene_modify for blockouts.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"actions\":{\"type\":\"array\",\"items\":{\"type\":"
+        "\"object\",\"properties\":{\"action\":{\"type\":\"string\"},\"target\":{\"type\":\"string\"},\"params\":{"
+        "\"type\":\"object\"}},\"required\":[\"action\"]}},\"stopOnError\":{\"type\":\"boolean\"}},\"required\":["
+        "\"actions\"]}},"
         "{\"name\":\"eve_camera_generate\",\"description\":\"Generate standardized QC camera rigs (eye/target/fov) "
         "orbiting the staged scene.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"count\":{\"type\":\"integer\"}}}},"
@@ -2053,7 +2018,7 @@ std::string handleToolsList(const std::string& idJson) {
         for (const char* part : kToolsParts) out += part;
         for (std::string_view family :
              {agentDevelopmentToolSchemas(), mcpRuntimeToolSchemas(), mcpDomainToolSchemas(), mcpInputToolSchemas(),
-              mcpArchitectureToolSchemas(), mcpProjectIndexToolSchemas()}) {
+              mcpWhiteboxToolSchemas(), mcpArchitectureToolSchemas(), mcpProjectIndexToolSchemas()}) {
             if (family.empty()) continue;
             out += ',';
             out += family;
@@ -2109,6 +2074,16 @@ std::string handleToolsCall(McpServer& mcp, const std::string& idJson, Poco::JSO
     if (isMcpInputTool(name)) {
         try {
             return makeResult(idJson, callMcpInputTool(name, args));
+        } catch (const std::exception& e) {
+            AiPanel::instance().addLog("error", name, e.what());
+            return makeResult(idJson, textContentResult(std::string("error: ") + e.what(), true));
+        }
+    }
+
+    // White-box batch scene + playtest recipe (scene_director + input + play).
+    if (isMcpWhiteboxTool(name)) {
+        try {
+            return makeResult(idJson, callMcpWhiteboxTool(name, args));
         } catch (const std::exception& e) {
             AiPanel::instance().addLog("error", name, e.what());
             return makeResult(idJson, textContentResult(std::string("error: ") + e.what(), true));

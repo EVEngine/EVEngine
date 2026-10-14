@@ -1,10 +1,65 @@
 #include "economy/EconomySystem.h"
+#include "economy/EconomyLedgerResourceAccount.h"
 
 #include "common/Assert.h"
 
 #include <utility>
 
 namespace eve::economy {
+
+namespace {
+std::uint64_t& accountEpoch() {
+    static std::uint64_t epoch = 1;
+    return epoch;
+}
+std::unordered_map<int, std::weak_ptr<resource::IResourceAccount>>& accountCache() {
+    static std::unordered_map<int, std::weak_ptr<resource::IResourceAccount>> cache;
+    return cache;
+}
+class PlayerAccount final : public resource::IResourceAccount {
+public:
+    explicit PlayerAccount(EconomyLedger& ledger) : adapter_(ledger), epoch_(accountEpoch()) {}
+    Result<resource::Affordability> canAfford(const resource::CostSpec& cost) const override {
+        if (stale()) return Result<resource::Affordability>::failure(error());
+        return adapter_.canAfford(cost);
+    }
+    Result<resource::Reservation> reserve(const resource::CostSpec& cost) override {
+        if (stale()) return Result<resource::Reservation>::failure(error());
+        return adapter_.reserve(cost);
+    }
+    Result<resource::Receipt> debit(const resource::CostSpec& cost) override {
+        if (stale()) return Result<resource::Receipt>::failure(error());
+        return adapter_.debit(cost);
+    }
+    Result<resource::Receipt> credit(const resource::CostSpec& cost) override {
+        if (stale()) return Result<resource::Receipt>::failure(error());
+        return adapter_.credit(cost);
+    }
+    Result<resource::Receipt> commit(const resource::Reservation& reservation) override {
+        if (stale()) return Result<resource::Receipt>::failure(error());
+        return adapter_.commit(reservation);
+    }
+    Result<void> rollback(const resource::Reservation& reservation) override {
+        if (stale()) return Result<void>::failure(error());
+        return adapter_.rollback(reservation);
+    }
+
+private:
+    bool              stale() const { return epoch_ != accountEpoch(); }
+    static Diagnostic error() {
+        return Diagnostic::error(DiagnosticCode::StaleHandle, "player ledger was reset", "account");
+    }
+    EconomyLedgerResourceAccount adapter_;
+    std::uint64_t                epoch_;
+};
+}  // namespace
+std::shared_ptr<resource::IResourceAccount> EconomySystem::resourceAccount(int player) {
+    auto& slot = accountCache()[player];
+    if (auto existing = slot.lock()) return existing;
+    auto account = std::make_shared<PlayerAccount>(ledger(player));
+    slot         = account;
+    return account;
+}
 
 std::unordered_map<int, EconomyLedger>& EconomySystem::ledgers() {
     static std::unordered_map<int, EconomyLedger> s_ledgers;
@@ -24,6 +79,8 @@ std::unordered_map<std::string, EconomyHook>& EconomySystem::hooks() {
 EconomyLedger& EconomySystem::ledger(int player) { return ledgers()[player]; }
 
 void EconomySystem::clear() {
+    ++accountEpoch();
+    accountCache().clear();
     ledgers().clear();
     events().clear();
     hooks().clear();

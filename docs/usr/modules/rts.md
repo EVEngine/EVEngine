@@ -1,5 +1,8 @@
 # RTS：世界、阵营、命令与固定步进
 
+原生游戏的卡牌消耗、生产队列与经济联动见
+[玩法支付组合](../GAMEPLAY_PAYMENT_COMPOSITION.md)。这些组合入口使用共享事务协议。
+
 **入口：** `eve.RTS()`，槽位 `rts`。RTS facade 组合领域服务并拥有 RTS ECS roots；
 经济、群体运动、动作、战斗与生产仍各自拥有事实。渲染与 HUD 消费 inspectState，
 不能另写一套位置或资源来绕过 RTS 命令。
@@ -73,3 +76,9 @@ newFaction/newUnit 等返回 Result，既要检查 ok，也要只在成功后保
 ## 补充绑定参考
 
 参数与接收者见 [源码生成参考](rts/api-reference.md)，使用前先确认本章的前置条件与生命周期。
+
+## 脚本事务组合
+
+`sim.stageAbility(batch, casterId, ability, targetId, x, y)`、`sim.stageProduction(batch, producerId, newUnitId, definitionId)` 和 `sim.stagePayment(batch, factionId, costJson)` 提交本域操作，不依赖 Card。
+
+生命周期、费用合并与完整示例见 [玩法事务组合](../GAMEPLAY_PAYMENT_COMPOSITION.md#script-composition)。
