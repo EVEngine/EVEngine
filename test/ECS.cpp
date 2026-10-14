@@ -143,6 +143,67 @@ TEST_CASE("ECS.deferredCreateDestroyDuringView") {
     CHECK_EQ(countNodes(), 1);
 }
 
+TEST_CASE("ECS.stagingHandleSurvivesCommit") {
+    ecs::Table world;
+    ecs::ScopedTable guard(world);
+
+    Node* live = Node::create();
+    live->position()->x = 1.f;
+    const ecs::EntityHandle liveHandle = ecs::handle_of(live);
+
+    ecs::EntityHandle stagedHandle;
+    {
+        ecs::ScopedDefer defer;
+        Node* staged = Node::create();
+        staged->position()->x = 11.f;
+        stagedHandle = ecs::handle_of(staged);
+        CHECK(stagedHandle.id != liveHandle.id);
+        CHECK(ecs::try_get(stagedHandle) == staged);
+        CHECK(ecs::try_get(liveHandle) == live);
+    }
+
+    ecs::Entity* published = ecs::try_get(stagedHandle);
+    CHECK(published != nullptr);
+    CHECK(published != live);
+    CHECK(ecs::try_get(liveHandle) == live);
+    CHECK(std::abs(static_cast<Node*>(published)->position()->x - 11.f) < 1e-5f);
+    CHECK_EQ(countNodes(), 2);
+}
+
+TEST_CASE("ECS.viewEntityAndRow") {
+    ecs::Table world;
+    ecs::ScopedTable guard(world);
+
+    Node* a = Node::create();
+    Movable* b = Movable::create();
+    a->position()->x = 3.f;
+    b->position()->x = 5.f;
+
+    int n = 0;
+    float sum = 0.f;
+    auto view = ecs::View<Node, Node::Position>();
+    for (auto it = view.begin(); it != view.end(); ++it) {
+        Node* e = it.entity();
+        CHECK(e != nullptr);
+        auto [rowE, pos] = it.row();
+        CHECK(rowE == e);
+        CHECK(pos != nullptr);
+        sum += pos->x;
+        ++n;
+    }
+    CHECK_EQ(n, 2);
+    CHECK(std::abs(sum - 8.f) < 1e-5f);
+
+    {
+        auto kill = ecs::View<Node, Node::Position>();
+        for (auto it = kill.begin(); it != kill.end(); ++it) {
+            if (it.entity()->position()->x == 3.f)
+                ecs::DestroyEntity(it.entity());
+        }
+    }
+    CHECK_EQ(countNodes(), 1);
+}
+
 // ---------------------------------------------------------------------------
 // Script side: extend C++ entity classes from Squirrel, drive them with a
 // script System, and have eve.view() return the C++ entities.

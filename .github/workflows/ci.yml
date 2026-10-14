@@ -137,7 +137,18 @@ jobs:
         # Same entry point as local `make check`. Groups inside
         # scripts/check_source_quality.sh show up in the job log.
         timeout-minutes: 15
-        run: make check CI_BASE="${{ github.event.pull_request.base.sha || 'origin/dev' }}"
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          CHECK_REF: ${{ inputs.ref || github.ref }}
+        run: |
+          base="${PR_BASE:-origin/dev}"
+          # An isolated release must check its own complete changes, not
+          # reversals of interface migrations that landed on dev afterwards.
+          if [ -z "$PR_BASE" ] && [[ "$CHECK_REF" =~ ^(refs/(heads|tags)/)?v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            base="$(git merge-base HEAD origin/dev)"
+          fi
+          echo "Source-quality comparison base: $base"
+          make check CI_BASE="$base"
 
       - name: Report dependency graph
         timeout-minutes: 5
@@ -152,7 +163,7 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && github.event_name != 'pull_request' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 130
     strategy:
       fail-fast: false
       matrix:
@@ -180,14 +191,16 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             build-essential cmake ninja-build libvulkan-dev \
             libx11-dev libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev \
-            libxext-dev libxss-dev libwayland-dev libxkbcommon-dev
+            libxext-dev libxss-dev libwayland-dev libxkbcommon-dev \
+            libbz2-dev libpng-dev libxxf86vm-dev libasound2-dev
 
       - name: Configure profile
         timeout-minutes: 30
         run: make profile/configure
 
       - name: Build independent profile smoke target
-        timeout-minutes: 35
+        # Cold 3d builds reached 1609/1758 edges at the old 35-minute limit.
+        timeout-minutes: 60
         run: make profile/build
 
       - name: Run independent capability smoke probes
@@ -432,10 +445,10 @@ jobs:
           }
 
       - name: Build native Dawn parity lane
-        # Cold Dawn/Tint + full unit_test builds hit the 105-minute guard near
-        # completion: run 38162266736 at 3,844/3,846 actions and run 38156754042
-        # at 3,847/3,848. Keep a bounded 30-minute final-link / runner margin.
-        timeout-minutes: 135
+        # The v0.6.0 cold build finished 3,842/3,843 edges before its 105-minute
+        # guard interrupted the final link. Keep bounded headroom for linking
+        # and cache variance without dropping the native parity test lane.
+        timeout-minutes: 150
         shell: pwsh
         run: cmake\with-msvc.cmd cmake.exe --build build/webgpu-native --target unit_test -j 8
 
@@ -494,7 +507,7 @@ jobs:
     # A cold Release build took 55 minutes and the process-isolated 3510-case
     # suite reached 3060/3510 at the former 30-minute test guard. Preserve
     # bounded hang detection while budgeting setup, build, and the full suite.
-    timeout-minutes: 240
+    timeout-minutes: 300
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64-release
@@ -540,9 +553,8 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build win32 release
-        # Cold release builds reached the former 90- and 120-minute guards
-        # without a compiler failure in runs 35419568563 and 35436382201.
-        timeout-minutes: 160
+        # Release run 38235152198 reached 2622/2840 edges at 160 minutes.
+        timeout-minutes: 210
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -570,7 +582,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          ctest --test-dir build/win32 -C Release
+          ctest --test-dir build/win32 -C Release \
             -R '^settlement\.benchmark\.' -V \
             | tee build/settlement-benchmark-windows.log
 
@@ -676,7 +688,7 @@ jobs:
     runs-on: windows-latest
     # The release build step alone may take up to 90 minutes on a cold runner.
     # Leave room for toolchain setup and cache reporting at the job level.
-    timeout-minutes: 150
+    timeout-minutes: 180
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-android-arm64-release
@@ -736,7 +748,8 @@ jobs:
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
 
       - name: Build android release
-        timeout-minutes: 90
+        # Native compilation consumed 88 minutes before Gradle APK packaging.
+        timeout-minutes: 120
         run: |
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
           make build/android \
@@ -989,7 +1002,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          ctest --test-dir build/macosx
+          ctest --test-dir build/macosx \
             -R '^settlement\.benchmark\.' -V \
             | tee build/settlement-benchmark-macos.log
 
@@ -1391,7 +1404,9 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build linux release
-        timeout-minutes: 75
+        # The v0.6.0 cold build reached 93% at 75 minutes; allow the remaining
+        # compilation and links to finish while retaining a bounded hang guard.
+        timeout-minutes: 105
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -1417,7 +1432,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          ctest --test-dir build/linux
+          ctest --test-dir build/linux \
             -R '^settlement\.benchmark\.' -V \
             | tee build/settlement-benchmark-linux.log
 
@@ -1436,7 +1451,6 @@ jobs:
     runs-on: ubuntu-24.04
     # Allow a cold optimized sanitizer build (PRs are sccache READ_ONLY) and
     # the 90-minute test guard, plus dependency/toolchain setup and reporting.
-    # Build step alone can approach 180m on a cold PR; keep job headroom.
     timeout-minutes: 330
     env:
       # Leak detection off: the zeroerr discovery run during the build (and a
@@ -1509,10 +1523,9 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build linux RelWithDebInfo (ASan+UBSan)
-        # PRs cannot populate the shared sccache, so sanitizer flag sets are a
-        # cold rebuild. Runs 34820985249 / 34823491554 reached ~94% after 100m;
-        # run 38181213947 hit the 140m step budget at ~97% still compiling
-        # unit_test_* shards. Keep headroom for linking. Job budget is 330m.
+        # Release run 38235152198 reached 92% after 140m with 1.21% cache hits.
+        # Allow cold optimized sanitizer compilation and final test links;
+        # the separate 90-minute test guard remains intact.
         timeout-minutes: 180
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

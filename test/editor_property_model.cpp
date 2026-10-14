@@ -225,10 +225,10 @@ class TransformPropertyTarget final : public IDomainOperationTarget, public IDom
 public:
     explicit TransformPropertyTarget(unsigned long long initialRevision = 0) : revision_(initialRevision) {}
 
-    TargetId targetId() const override { return TargetId(id_); }
+    TargetId      targetId() const override { return TargetId(id_); }
     std::uint64_t revision() const override { return revision_; }
-    EditRegion         dirtyRegion() const override { return {}; }
-    void               clearDirtyRegion() override {}
+    EditRegion    dirtyRegion() const override { return {}; }
+    void          clearDirtyRegion() override {}
 
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override {
         return std::make_unique<TransformPropertyTarget>(*this);
@@ -238,7 +238,7 @@ public:
         auto* typed = dynamic_cast<TransformPropertyTarget*>(candidate.get());
         if (!typed)
             return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("scene.property.candidate"),
-                                             "Compensation candidate has an incompatible type");
+                                              "Compensation candidate has an incompatible type");
         position_ = typed->position_;
         revision_ = typed->revision_;
         return eve::editing::applied<void>();
@@ -247,10 +247,10 @@ public:
     Result<void> applyDomainOperation(const DomainOperation& operation) override {
         if (operation.type != "scene.transform.position.set.v1")
             return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("scene.property.unsupported"),
-                                             "Unsupported property operation");
+                                              "Unsupported property operation");
         if (!operation.payload.getIf<EditorValue::Array>())
             return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("scene.property.invalid-value"),
-                                             "Position must be an array");
+                                              "Position must be an array");
         position_ = operation.payload;
         ++revision_;
         return eve::editing::applied<void>();
@@ -308,10 +308,11 @@ public:
     }
 
     Result<DomainOperation> makeSet(const SelectionSnapshot&, const PropertyPath& path, const EditorValue& value,
-                                          PropertySetMode mode) const override {
+                                    PropertySetMode mode) const override {
         if (path != PropertyPath("transform.position") || mode != PropertySetMode::Absolute)
-            return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("scene.property.unsupported"),
-                                                        "Only absolute position changes are supported");
+            return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported,
+                                                         RuleId("scene.property.unsupported"),
+                                                         "Only absolute position changes are supported");
         DomainOperation operation;
         operation.type       = "scene.transform.position.set.v1";
         operation.target     = TargetId(target_->targetId());
@@ -322,8 +323,7 @@ public:
         return eve::editing::applied<DomainOperation>(std::move(operation));
     }
 
-    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
-                                            const PropertyPath&      path) const override {
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection, const PropertyPath& path) const override {
         return makeSet(selection, path, EditorValue::Array{0.0, 0.0, 0.0}, PropertySetMode::Absolute);
     }
 
@@ -340,11 +340,10 @@ public:
         return provider_.read(selection, path);
     }
     Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
-                                          const EditorValue& value, PropertySetMode mode) const override {
+                                    const EditorValue& value, PropertySetMode mode) const override {
         return provider_.makeSet(selection, path, value, mode);
     }
-    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
-                                            const PropertyPath&      path) const override {
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection, const PropertyPath& path) const override {
         return provider_.makeReset(selection, path);
     }
 
@@ -419,8 +418,8 @@ TEST_CASE("editor.v2.developer_and_game_property_ui_execute_same_command") {
                       const auto* payload = request.payload.getIf<EditorValue::Object>();
                       if (!payload || !payload->contains("path") || !payload->contains("value"))
                           return eve::editing::failed<CommandPlan>(EditorStatus::Rejected,
-                                                                  RuleId("editor.property.payload"),
-                                                                  "Property command payload is incomplete");
+                                                                   RuleId("editor.property.payload"),
+                                                                   "Property command payload is incomplete");
                       const auto* path = payload->at("path").getIf<std::string>();
                       if (!path)
                           return eve::editing::failed<CommandPlan>(
@@ -441,7 +440,7 @@ TEST_CASE("editor.v2.developer_and_game_property_ui_execute_same_command") {
                       auto begun                 = backend.begin(std::move(specification));
                       if (!begun.ok())
                           return eve::editing::failed<TransactionReceipt>(begun.code(), RuleId("editor.property.begin"),
-                                                                         "Could not begin property transaction");
+                                                                          "Could not begin property transaction");
                       for (const DomainOperation& operation : plan.operations) {
                           const auto appended = backend.append(operation);
                           if (!appended.ok())

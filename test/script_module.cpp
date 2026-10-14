@@ -327,12 +327,11 @@ TEST_CASE("property_access.writes_and_refreshes_through_shared_mvvm_contract") {
     Runtime runtime(512, ssq::Libs::ALL);
     runtime.initialize();
     runtime.runSource(kModelScript, "property_access.nut");
-    ssq::Object hero = runtime.createInstance("ModelHero");
+    ssq::Object            hero = runtime.createInstance("ModelHero");
     ReflectedPropertyModel model(runtime, hero);
 
     std::vector<PropertyChange> changes;
-    auto subscription = model.subscribe(
-        [&](const PropertyChange &change) { changes.push_back(change); });
+    auto subscription = model.subscribe([&](const PropertyChange &change) { changes.push_back(change); });
 
     CHECK(model.write("hp", Value(42.0)).ok());
     CHECK_EQ(runtime.readProperty(hero, "hp").asFloat(), 42.0);
@@ -363,7 +362,7 @@ TEST_CASE("property_access.writes_and_refreshes_through_shared_mvvm_contract") {
     CHECK_EQ(runtime.tableGet(hero, "stats", "resist").asFloat(), 1.5);
 
     ReflectedValue external;
-    external.kind = ReflectedValueKind::Bool;
+    external.kind    = ReflectedValueKind::Bool;
     external.boolean = false;
     REQUIRE(runtime.writeProperty(hero, "alive", external));
     const std::size_t before = changes.size();
@@ -427,9 +426,9 @@ TEST_CASE("property_access.script_validation_matches_shared_contract") {
     CHECK_EQ(writeRule(sharedChoice), std::string("property_access.property.choice"));
     CHECK_EQ(writeRule(runtimeChoice), std::string("property_access.script.choice"));
 
-    Value::Array badArity = {Value(1.0), Value(2.0)};
-    const auto sharedArity  = validatePropertyValue(*tint, Value(badArity));
-    const auto runtimeArity = model.write("tint", Value(badArity));
+    Value::Array badArity     = {Value(1.0), Value(2.0)};
+    const auto   sharedArity  = validatePropertyValue(*tint, Value(badArity));
+    const auto   runtimeArity = model.write("tint", Value(badArity));
     CHECK(!sharedArity.ok());
     CHECK(!runtimeArity.ok());
     CHECK_EQ(writeRule(sharedArity), std::string("property_access.property.arity"));

@@ -519,8 +519,8 @@ EVENGINE_API_WORLD WidgetDesc splitPane(FlexDirection direction, WidgetDesc firs
  * @param pageId Stable page identifier stored in valueText.
  * @param selected When true, the tab renders in the active style.
  */
-EVENGINE_API_WORLD WidgetDesc tab(std::string label, std::string pageId, bool selected = false,
-                                  std::string id = "", std::function<void()> onClick = {});
+EVENGINE_API_WORLD WidgetDesc tab(std::string label, std::string pageId, bool selected = false, std::string id = "",
+                                  std::function<void()> onClick = {});
 /** @brief Horizontal strip of Tab children. */
 EVENGINE_API_WORLD WidgetDesc tabBar(std::vector<WidgetDesc> children = {}, std::string id = "");
 /**
@@ -528,27 +528,24 @@ EVENGINE_API_WORLD WidgetDesc tabBar(std::vector<WidgetDesc> children = {}, std:
  * @param pages Page widgets; each page uses id as pageId and text as tab label.
  * @param activePageId Currently visible page id (stored in valueText).
  */
-EVENGINE_API_WORLD WidgetDesc tabContainer(std::vector<WidgetDesc> pages, std::string activePageId,
-                                           std::string id = "",
+EVENGINE_API_WORLD WidgetDesc tabContainer(std::vector<WidgetDesc> pages, std::string activePageId, std::string id = "",
                                            std::function<void(const std::string &)> onSelect = {});
 /**
  * @brief Fixed titled panel chrome for dock regions (not a free-floating Window host).
  * @param title Header label shown above the body.
  */
-EVENGINE_API_WORLD WidgetDesc panelFrame(std::string title, std::vector<WidgetDesc> children = {},
-                                         std::string id = "");
+EVENGINE_API_WORLD WidgetDesc panelFrame(std::string title, std::vector<WidgetDesc> children = {}, std::string id = "");
 /**
  * @brief Named dock fill slot; region name is stored in valueText (left/right/top/bottom/center).
  * Children fill the allocated area. Prefer this over a separate movable UIHost per panel.
  */
-EVENGINE_API_WORLD WidgetDesc dockArea(std::string region, std::vector<WidgetDesc> children = {},
-                                       std::string id = "");
+EVENGINE_API_WORLD WidgetDesc dockArea(std::string region, std::vector<WidgetDesc> children = {}, std::string id = "");
 /**
  * @brief Fixed editor frame: optional toolbar, growing body, optional status bar.
  * Place as a Window child (MenuBar, if any, remains a direct Window child for ImGui).
  */
-EVENGINE_API_WORLD WidgetDesc appFrame(WidgetDesc body, WidgetDesc toolbar = {},
-                                       WidgetDesc statusBarWidget = {}, std::string id = "");
+EVENGINE_API_WORLD WidgetDesc appFrame(WidgetDesc body, WidgetDesc toolbar = {}, WidgetDesc statusBarWidget = {},
+                                       std::string id = "");
 /** @brief Collapsible header containing child widgets. */
 EVENGINE_API_WORLD WidgetDesc collapsingHeader(std::string label, std::vector<WidgetDesc> children = {},
                                                std::string id = "", bool defaultOpen = true);

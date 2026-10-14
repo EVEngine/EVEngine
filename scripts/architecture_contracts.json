@@ -1424,6 +1424,60 @@
       }
     },
     {
+      "id": "action-editor-package-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/action/editor/**",
+      "owner": "action_editor::ActionEditorModule",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Action editor advertises an EditorPackage for Host autoMount and keeps automation target/command registration on the shared editing host.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/action/editor/ActionEditorModule.cpp",
+        "src/modules/action/editor/ActionEditorPackage.cpp",
+        "docs/dev/2026-10-13-editor-host-package-automount-mcp.md"
+      ],
+      "tests": [
+        "test/editor_host_package.cpp",
+        "test/action_editor_adapter.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IEditorAutomationTargetFactory",
+          "impl": "ActionEditorModule::TargetFactory",
+          "absent_behavior": "action/action-timeline automation targets are unavailable when the action editor satellite is trimmed"
+        },
+        {
+          "capability": "IEditorPackageProvider",
+          "impl": "ActionEditorPackageProvider",
+          "absent_behavior": "EditorHost cannot autoMount the action package; panels and createSchema are absent from discovery"
+        }
+      ],
+      "requires": [
+        {
+          "capability": "IEditingCommandRegistry",
+          "required": true,
+          "fallback": "module construction fails explicitly when the editor command registry is absent or rejects action command registration"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.ActionEditorModule",
+          "methods": [
+            "create"
+          ]
+        }
+      ],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "runtime profiles exclude the editor leaf; no action editing commands, package provider or automation target factory are registered"
+      },
+      "thread_affinity": "owner/editor composition thread; construction, package advertisement and teardown must not race command execution",
+      "cost_notes": [],
+      "hot_path": []
+    },
+    {
       "id": "asset-import-structured-models-interface",
       "rule": "module-interface",
       "scope": "src/modules/asset/import/*",
@@ -1787,6 +1841,51 @@
       ]
     },
     {
+      "id": "devtools-game-world-context-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/devtools/GameWorldContext*",
+      "owner": "devtools maintainers",
+      "issue": "EVENGINE-MCP-GAME-WORLD",
+      "reason": "AI Discover must learn the live game world from MCP without eve_eval: config.title/modules + live slots + gameplay domains; publishWorldContext only for optional narrative fields (not a passthrough of on-disk prose).",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/devtools/GameWorldContext.hpp",
+        "src/engine/devtools/GameWorldContext.cpp",
+        "docs/dev/AI与MCP支持.md",
+        "docs/dev/2026-09-05-play-verify-evolve.md"
+      ],
+      "tests": [
+        "test/game_world_context.cpp",
+        "test/play_host.cpp"
+      ],
+      "provides": [],
+      "requires": [
+        {
+          "capability": "IGameplayControlProvider",
+          "required": false,
+          "fallback": "domains array stays empty when no gameplay control providers are registered"
+        }
+      ],
+      "emits": [],
+      "observes": [
+        "config.title; config.modules / optionalModules; instantiated eve.moduleList slots; optional eve.dev.publishWorldContext overlay."
+      ],
+      "binds": [],
+      "protocol": [
+        "eve_game_world tool, eve://game-world resource, eve_play op=status.gameWorld; schema evengine.game-world v1. source is config|runtime|none. Soft restart with reloadScripts clears the runtime overlay. game.agent.json is not world authority."
+      ],
+      "thread_affinity": "Game-loop / MCP poll thread only; snapshot is an owning Value with no retained VM pointers.",
+      "trim": {
+        "claim": "none",
+        "evidence": "Desktop EVDevTools only; trimmed builds without DevTools omit MCP entirely.",
+        "absent_profile": "No DevTools profile: tools and resources are absent with the rest of MCP."
+      },
+      "cost_notes": [
+        "Module enumeration walks eve.moduleList once per snapshot; bounded Squirrel conversion (depth 8 / 4096 elements)."
+      ],
+      "hot_path": []
+    },
+    {
       "id": "devtools-mcp-input-tools-interface",
       "rule": "module-interface",
       "scope": "src/engine/devtools/McpInputTools*",
@@ -1864,7 +1963,7 @@
       ],
       "binds": [],
       "protocol": [
-        "eve_play: evengine.play-request v1 / evengine.play-response v1; game.agent.json v1 unchanged. Unknown request fields remain rejected."
+        "eve_play: evengine.play-request v1 / evengine.play-response v1; game.agent.json v1 has no world field. status returns runtime gameWorld snapshot. Unknown request/contract fields remain rejected."
       ],
       "thread_affinity": "Owner simulation thread; synchronous owning Value projection. Raw table path lookup invokes no getters or callbacks and retains no VM pointers.",
       "trim": {
@@ -1955,6 +2054,124 @@
       "hot_path": []
     },
     {
+      "id": "editor-host-package-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/editor/**",
+      "owner": "editor::EditorHost",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "EditorHost discovers EditorPackage providers, installs panels, routes selection/undo, and scopes Mode A MCP projection when attached.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/editor/EditorHost.cpp",
+        "src/modules/editor/EditorMcpProjector.cpp",
+        "src/modules/editor/EditorSelectionRouter.cpp",
+        "src/modules/editor/EditorUndoCoordinator.cpp",
+        "src/modules/editor/EditorAutomationProvider.cpp",
+        "src/modules/editing/EditorPackage.h",
+        "src/engine/common/EditorMcpAttach.h",
+        "docs/dev/2026-10-13-editor-host-package-automount-mcp.md"
+      ],
+      "tests": [
+        "test/editor_host_package.cpp",
+        "test/editing_property_schema_json.cpp",
+        "test/mcp_editor_targets.cpp"
+      ],
+      "provides": [],
+      "requires": [
+        {
+          "capability": "IEditorPackageProvider",
+          "required": false,
+          "fallback": "autoMount succeeds with an empty report when no packages are loaded; target-list omits createSchema"
+        },
+        {
+          "capability": "IEditorAutomationTargetFactory",
+          "required": false,
+          "fallback": "exportTargetCatalog and target-list advertise an empty supportedTypes array when no factories are loaded"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Editor",
+          "methods": [
+            "newHost",
+            "registerAutomatedScriptCommand"
+          ]
+        },
+        {
+          "script_class": "eve.EditorHost",
+          "methods": [
+            "autoMount",
+            "mount",
+            "unmount",
+            "isMounted",
+            "exportMcp",
+            "focusUndoOwner"
+          ]
+        },
+        {
+          "script_class": "eve.mcp",
+          "methods": [
+            "attachEditor",
+            "detachEditor"
+          ]
+        }
+      ],
+      "protocol": [
+        "eve_editor_commands includes inputSchema projected from CommandDescriptor.payloadSchema",
+        "eve_editor_target_list supportedTypes entries are objects with type and optional createSchema",
+        "Attached Host filters commands/target types to mounted packages; package-audit lists incomplete packages and orphan factory types"
+      ],
+      "trim": {
+        "absent_profile": "runtime-3d excludes editing/editor; Host and MCP editor tools are unavailable"
+      },
+      "thread_affinity": "owner/editor composition thread and MCP poll thread; Host does not retain package provider pointers across frames",
+      "cost_notes": [
+        "autoMount walks every IEditorPackageProvider once and installs panel descriptors; schema projection is O(properties) per command/type"
+      ],
+      "hot_path": []
+    },
+    {
+      "id": "fluids-editor-incomplete-package-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/fluids/editor/**",
+      "owner": "fluids_editor::FluidsEditorModule",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Fluids advertise an incomplete EditorPackage so Host completeness gates skip half-registered factory-only adapters.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/fluids/editor/FluidsEditorPackage.cpp",
+        "src/modules/fluids/editor/FluidsEditorModule.cpp"
+      ],
+      "tests": [
+        "test/editor_host_package.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IEditorAutomationTargetFactory",
+          "impl": "FluidsAutomationTargetFactory",
+          "absent_behavior": "fluid automation targets unavailable when trimmed"
+        },
+        {
+          "capability": "IEditorPackageProvider",
+          "impl": "FluidsEditorPackageProvider",
+          "absent_behavior": "package-audit no longer reports fluids_editor as incomplete"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "runtime profiles exclude the editor leaf"
+      },
+      "thread_affinity": "owner/editor composition thread",
+      "cost_notes": [],
+      "hot_path": []
+    },
+    {
       "id": "game-save-session-module-interface",
       "rule": "module-interface",
       "scope": "src/engine/common/GameSaveSession*",
@@ -1996,6 +2213,45 @@
       "cost_notes": [
         "Capture and restore scale with the complete serialized game state and run only at explicit save/load boundaries."
       ]
+    },
+    {
+      "id": "gpuagents-editor-incomplete-package-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/gpuagents/editor/**",
+      "owner": "gpuagents_editor::GpuAgentsEditorModule",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "GPU Agents advertise an incomplete EditorPackage so Host completeness gates skip half-registered factory-only adapters.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/gpuagents/editor/GpuAgentsEditorPackage.cpp",
+        "src/modules/gpuagents/editor/GpuAgentsEditorModule.cpp"
+      ],
+      "tests": [
+        "test/editor_host_package.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IEditorAutomationTargetFactory",
+          "impl": "GpuAgentsAutomationTargetFactory",
+          "absent_behavior": "gpuagents automation targets unavailable when trimmed"
+        },
+        {
+          "capability": "IEditorPackageProvider",
+          "impl": "GpuAgentsEditorPackageProvider",
+          "absent_behavior": "package-audit no longer reports gpuagents_editor as incomplete"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "runtime profiles exclude the editor leaf"
+      },
+      "thread_affinity": "owner/editor composition thread",
+      "cost_notes": [],
+      "hot_path": []
     },
     {
       "id": "graphics-import-surface",
@@ -3372,6 +3628,59 @@
       }
     },
     {
+      "id": "spritestack-editing-runtime-dependency",
+      "rule": "module-interface",
+      "scope": "src/modules/spritestack/editing/**",
+      "owner": "spritestack-maintainers",
+      "issue": "https://github.com/EVEngine/EVEngine/actions/runs/38156485292",
+      "reason": "The editing target includes and calls SpriteStack runtime types; its manifest must pull in that runtime in the 3d authoring profile.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "cmake/module_manifest/modules/spritestack.cmake",
+        "src/modules/spritestack/editing/SpriteStackTarget.h",
+        "src/modules/spritestack/editing/SpriteStackTarget.cpp",
+        "src/modules/spritestack/editing/SpriteStackRuntime.cpp"
+      ],
+      "tests": [
+        "test/editor_offscreen_preview.cpp",
+        "test/spritestack.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "eve.editor.target.spritestack-properties",
+          "impl": "SpriteStackDocumentTarget::queryCapability",
+          "absent_behavior": "Unknown target capability identifiers return nullptr; the editing host owns the target lifetime."
+        }
+      ],
+      "requires": [
+        {
+          "capability": "editing::IEditableTarget",
+          "required": true,
+          "fallback": "No editing target without the editing host."
+        },
+        {
+          "capability": "spritestack::SpriteStack2D",
+          "required": true,
+          "fallback": "The manifest enables the runtime through dependency closure; explicitly disabling it rejects the dependent editor configuration."
+        },
+        {
+          "capability": "model3d::ModelData",
+          "required": false,
+          "fallback": "SpriteStackRuntime.cpp is excluded when model3d is absent; the document editing target remains available."
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "thread_affinity": "Editor owning thread; document state is owned by SpriteStackDocumentTarget and runtime resources follow the existing resource ownership contract.",
+      "trim": {
+        "absent_profile": "runtime-3d excludes authoring directories. No new L2/L3/L4 trim claim; this repair restores manifest dependency closure."
+      },
+      "cost_notes": [],
+      "hot_path": []
+    },
+    {
       "id": "statepatch-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/statepatch/**",
@@ -3791,6 +4100,59 @@
       "hot_path": [
         "src/modules/ui/UISystem.cpp"
       ]
+    },
+    {
+      "id": "voxel-editor-package-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/voxel/editor/**",
+      "owner": "voxel_editor::VoxelEditorModule",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Voxel editor advertises a complete EditorPackage (panels, schema-bearing commands, target types) for Host autoMount.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/voxel/editor/VoxelEditorPackage.cpp",
+        "src/modules/voxel/editor/voxel_editor.cpp",
+        "src/modules/voxel/editing/VoxelEditingCommands.cpp"
+      ],
+      "tests": [
+        "test/editor_host_package.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IEditorAutomationTargetFactory",
+          "impl": "VoxelEditorModule::TargetFactory",
+          "absent_behavior": "voxel-catalog/voxel-model automation targets unavailable when trimmed"
+        },
+        {
+          "capability": "IEditorPackageProvider",
+          "impl": "VoxelEditorPackageProvider",
+          "absent_behavior": "EditorHost cannot autoMount the voxel package"
+        }
+      ],
+      "requires": [
+        {
+          "capability": "IEditingCommandRegistry",
+          "required": true,
+          "fallback": "module construction fails when the editing command registry is absent"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.VoxelEditorModule",
+          "methods": [
+            "create"
+          ]
+        }
+      ],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "runtime profiles exclude the editor leaf"
+      },
+      "thread_affinity": "owner/editor composition thread",
+      "cost_notes": [],
+      "hot_path": []
     },
     {
       "id": "window-module-interface",

@@ -10,6 +10,8 @@
 
 namespace eve::gpuagents_editor {
 
+class GpuAgentsEditorPackageProvider;
+
 /**
  * @brief Creates schema-driven GPU Agents documents for editor automation.
  * @ownership Returned targets own their authoring state; the factory retains nothing.
@@ -41,6 +43,7 @@ public:
 
 private:
     std::unique_ptr<GpuAgentsAutomationTargetFactory> factory_;
+    std::unique_ptr<GpuAgentsEditorPackageProvider>   packageProvider_;
 };
 
 }  // namespace eve::gpuagents_editor

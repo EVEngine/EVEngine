@@ -51,7 +51,7 @@ jobs:
   windows:
     name: Windows SDK
     runs-on: windows-latest
-    timeout-minutes: 180
+    timeout-minutes: 240
     defaults:
       run:
         shell: bash
@@ -89,7 +89,8 @@ jobs:
           bash .github/scripts/setup-software-vulkan.sh || echo "WARN: software Vulkan unavailable; in-memory run skipped"
 
       - name: Build win32 SDK
-        timeout-minutes: 90
+        # Release run 38296135959 reached 1784/1900 edges at 90 minutes.
+        timeout-minutes: 130
         run: make sdk/win32 VS_GENERATOR="$VS_GENERATOR" CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" JOBS="${NUMBER_OF_PROCESSORS:-8}"
 
       - name: Test win32 SDK usability
@@ -907,6 +908,8 @@ jobs:
             -no-window
             -gpu swiftshader
             -no-snapshot
+            -partition-size 8192
+            -wipe-data
             -noaudio
             -no-boot-anim
             -accel on

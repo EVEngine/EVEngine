@@ -11,6 +11,8 @@
 
 namespace eve::fluids_editor {
 
+class FluidsEditorPackageProvider;
+
 /**
  * @brief Creates schema-driven fluid documents for editor automation.
  * @ownership Returned targets own their authoring state; the factory retains nothing.
@@ -27,12 +29,12 @@ public:
 };
 
 /**
- * @brief Composition adapter that publishes the fluid automation-target factory.
- * @ownership Owns the registered factory and removes it before destruction.
+ * @brief Composition adapter that publishes the fluid automation-target factory and EditorPackage.
+ * @ownership Owns the registered factory and package provider; removes both before destruction.
  * @thread Owner/composition-thread affine.
  * @reentrancy Do not construct or destroy while factory listeners are being enumerated.
  */
-class FluidsEditorModule final : public Module {
+class EVENGINE_API_EDITORS FluidsEditorModule final : public Module {
 public:
     Module_REG(FluidsEditorModule);
     /** @brief Constructs a FluidsEditorModule. */
@@ -42,6 +44,7 @@ public:
 
 private:
     std::unique_ptr<FluidsAutomationTargetFactory> factory_;
+    std::unique_ptr<FluidsEditorPackageProvider>   packageProvider_;
 };
 
 }  // namespace eve::fluids_editor

@@ -1,7 +1,7 @@
 # EditorHost / EditorPackage：自动装配与 MCP 投影
 
 日期：2026-10-13  
-状态：设计提案（未实施）  
+状态：P0–P3 最小切片已落地（schema/MCP attach、Host routers、Action+Voxel 包、fluids/gpuagents incomplete、金样例 editor-host-world）；Mode B 仍延后  
 存放：`docs/dev/`
 
 相关：

@@ -196,8 +196,7 @@ public:
     /** @brief Opens a fixed editor frame body that hosts toolbar/dock/status children. */
     void beginAppFrame(const std::string &id = "");
     /** @brief Adds a selectable tab label; pageId identifies the page to activate. */
-    void addTab(const std::string &label, const std::string &pageId, bool selected = false,
-                const std::string &id = "");
+    void addTab(const std::string &label, const std::string &pageId, bool selected = false, const std::string &id = "");
     /** Virtualized scroll list; rows are the children added before end(). */
     /** @brief Begins scroll list. */
     void beginScrollList(const std::string &id = "", float height = 0.f, float itemHeight = 0.f);

@@ -4,6 +4,7 @@
 #include "devtools/AiPanel.hpp"
 #include "devtools/ConsolePanel.hpp"
 #include "devtools/FrameStatsPanel.hpp"
+#include "devtools/GameWorldContext.hpp"
 #include "devtools/McpDevBridge.hpp"
 #include "devtools/McpScriptTools.hpp"
 #include "devtools/McpServer.hpp"
@@ -12,11 +13,15 @@
 #include "devtools/ScenarioRecorder.h"
 #include "devtools/SoftRestart.hpp"
 
+#include "common/Diagnostic.h"
 #include "common/Module.h"
 #include "common/GameplayControlJson.h"
 #include "common/RenderTrace.h"
 #include "common/Runtime.h"
 #include "common/ScriptError.h"
+#include "common/Status.h"
+#include "common/SquirrelBinding.h"
+#include "common/Value.h"
 #include "platform_event/PlatformEvent.h"
 
 #include <Poco/JSON/Parser.h>
@@ -371,6 +376,27 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
         dev.addFunc("clearStateRoots", []() { Snapshot::instance().clearRoots(); });
         dev.addFunc("stateRoots", [this]() { return snapshot().rootsFor(vm_); });
         dev.addFunc("transientStateRoots", []() { return Snapshot::instance().transientRoots(); });
+        // After scripts initialize configured game systems, publish a runtime
+        // world brief so MCP Discover can report what is live (not on-disk prose).
+        const HSQUIRRELVM handle = vm.getHandle();
+        dev.addFunc("publishWorldContext", [handle](ssq::Object world) {
+            auto value = script::valueFromSquirrel(world);
+            if (!value) return script::projectStatusResult(handle, value.status());
+            return script::projectResult(handle, publishWorldContext(std::move(value).takeValue()));
+        });
+        dev.addFunc("clearWorldContext", []() { clearWorldContext(); });
+        dev.addFunc("hasWorldContext", []() { return hasWorldContext(); });
+        dev.addFunc("worldContext", [handle]() {
+            const Value* world = runtimeWorldContext();
+            if (!world)
+                return script::projectStatusResult(
+                    handle, Status::failure(Diagnostic::error(DiagnosticCode::NotFound, "no runtime world context",
+                                                              "worldContext")));
+            return script::projectStatusResult(handle, Status::success(), *world);
+        });
+        dev.addFunc("gameWorldSnapshot", [handle]() {
+            return script::projectResult(handle, liveGameWorldSnapshot(), [](Value value) { return value; });
+        });
         auto markSnapshotPause = [this]() {
             if (!debugger().isPaused()) return;
             debugger().pauseAt(PauseReason::Snapshot, debugger().pauseLocation());
