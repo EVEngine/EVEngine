@@ -2,13 +2,15 @@
 #include "common/Export.h"
 
 
-#include "common/Snapshot.h"
+#include "common/BorrowedRef.h"
 #include "common/Result.h"
+#include "common/Snapshot.h"
 #include "physics/OwnedQuery3D.h"
 #include "physics/PhysicsHandles.h"
 #include "physics/backend/SimulationBackend.h"
 
 #include <cstdint>
+#include <map>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -19,6 +21,7 @@
 #include "physics/rigid/WorldBackend3D.h"
 
 namespace eve::physics {
+struct ForceStepState;
 
 namespace action_adapter {
 class ActionCollisionIgnoreState;
@@ -29,8 +32,10 @@ class WorldBackend;
 }
 namespace box3d {
 class WorldBackend;
+struct Access;
 }
 class Body3D;
+class Coupling3D;
 class Shape3D;
 class Joint3D;
 class Mechanism3D;
@@ -111,7 +116,9 @@ public:
      * @param step Tick and fixed duration supplied by SimulationClock or replay.
      * @param settings Solver policy; subStepCount controls Box3D substeps.
      * @return Applied when the step completed, or a structured rejection/failure.
-     * @remarks A rejected step leaves solver state and the current tick unchanged.
+     * @remarks A rejected step leaves solver state and the current tick unchanged. Pending ForceBatch submissions
+     * require this exact tick/duration; failure retains them for retry, success completes their receipts.
+     * @thread Simulation owner only; stepping is non-reentrant.
      */
     [[nodiscard("check the physics step outcome or explicitly ignore it")]]
     eve::Result<void> step(const eve::SimulationStep &step, const SimulationSettings &settings = {});
@@ -151,7 +158,7 @@ public:
      * @brief Captures a versioned, integrity-checked 3D world snapshot.
      * @param hashProvider Injected digest provider used to seal the envelope.
      * @return A snapshot containing bodies plus shape and joint topology, including mesh and height-field sources.
-     * @remarks Schema v2 rejects unknown fields. The provider is not retained; this call is owner-thread-only.
+     * @remarks Schema v3 rejects unknown fields. The provider is not retained; this call is owner-thread-only.
      */
     [[nodiscard("check or persist the physics snapshot")]]
     eve::Result<eve::SnapshotEnvelope> snapshot(const eve::SnapshotHashProvider &hashProvider) const;
@@ -160,11 +167,17 @@ public:
      * @brief Restores a verified snapshot without exposing partial state.
      * @param snapshot Versioned envelope produced for this world schema.
      * @param hashProvider Provider used to verify its content hash.
-     * @return Applied after replacing live bodies, supported shapes, and supported joint topology from detached prepared state.
+     * @return Applied after replacing live bodies, supported shapes, and supported joint topology from detached
+     * prepared state.
      * @remarks The snapshot is borrowed for this call and runtime handles are
-     *          never persisted or reused from its payload. Preparation is detached and failure leaves the live world unchanged.
-     *          Schema v2 reconstructs shape sources and joint kind/local frames; joint motor, spring, limit, threshold, and
-     *          collide-connected runtime settings are not represented and therefore restore to constructor defaults.
+     *          never persisted or reused from its payload. Preparation is detached and failure leaves the live world
+     * unchanged. Schema v3 reconstructs shape sources, joint frames and joint motor/spring/limit/threshold settings.
+     *          Older v1/v2 joints migrate with constructor-default parameters; solver warm-start caches are not saved.
+     * @lifetime Successful restore invalidates previous body, shape/fixture and joint wrappers and runtime handles.
+     *           Caller-owned wrappers remain invalid objects; prior world-owned restored wrappers are released.
+     *           Resolve links against the rebuilt world; rejected restore leaves existing wrappers valid.
+     * @ownership Reconstructed wrappers belong to this world. Lookup results are borrowed until destruction or the
+     *            next successful restore; never delete a borrowed wrapper.
      */
     [[nodiscard("check the physics snapshot restore outcome")]]
     eve::Result<void> restore(const eve::SnapshotEnvelope &snapshot, const eve::SnapshotHashProvider &hashProvider);
@@ -305,10 +318,16 @@ public:
      * @reentrancy Creation does not invoke callbacks; do not re-enter structural world mutation while using the result.
      */
     Body3D *newBody(const std::string &bodyType, float x, float y, float z);
-    /** @brief Resolves a live body handle; returns null for a stale or foreign handle. */
+    /** @brief Borrows a live body; null for stale/foreign handles. Never delete lookup results. */
     [[nodiscard]] Body3D *findBody(PhysicsBodyHandle handle) const;
-    /** @brief Resolves a live body by its world-local stable event/query id. */
+    /** @brief Borrows a live body by stable event/query id; never delete lookup results. */
     [[nodiscard]] Body3D *findBodyById(int bodyId) const;
+    /** @brief Borrow a live transmission by persistent id, or return a stale-handle diagnostic.
+     * @ownership World or caller owns the result; never delete this borrow.
+     * @lifetime Until destruction or successful restore; reacquire after restore.
+     * @thread Simulation owner only, outside step/callbacks. No callbacks or retained arguments.
+     */
+    [[nodiscard]] ResultRef<Coupling3D> resolveCoupling3D(int id) const;
     /** @brief Resolves a live shape handle; returns null when stale or foreign. */
     [[nodiscard]] Shape3D *findShape(PhysicsShapeHandle handle) const;
     /** @brief Resolves a live shape by its world-local stable event/query id. */
@@ -999,12 +1018,22 @@ public:
 
 private:
     friend class box3d::WorldBackend;
+    friend struct box3d::Access;
     friend class jolt::WorldBackend;
+    std::shared_ptr<ForceStepState> pendingForceStep_;
+    [[nodiscard]] Result<void>      validateForceStep(const SimulationStep &step) const;
+    void                            finishForceStep() noexcept;
+    void                            cancelForceStep() noexcept;
     friend class action_adapter::ActionCollisionIgnoreState;
     friend struct WorldSnapshotAccess;
+    friend struct PortableWorldSnapshotAccess;
+    [[nodiscard]] Result<SnapshotEnvelope> snapshotPortable(const SnapshotHashProvider &) const;
+    [[nodiscard]] Result<void>             restorePortable(const SnapshotEnvelope &, const SnapshotHashProvider &);
     friend class Body3D;
     friend class Joint3D;
     friend class Mechanism3D;
+    friend class Coupling3D;
+    friend class ForceBatch;
     friend class Shape3D;
     friend class TargetingLineOfSightAdapter;
     friend void registerCameraObstructionWorld(World3D *world);
@@ -1014,6 +1043,14 @@ private:
 
     RigidBackend3D                      rigidBackendKind_ = RigidBackend3D::Box3D;
     std::unique_ptr<IWorldBackend3D>    rigidBackend_;
+    std::map<int, Coupling3D *>         couplings3D_;
+    int                                 nextCoupling3DId_   = 1;
+    bool                                couplingStepActive_ = false;
+    void                                invalidateCouplings3D() noexcept;
+    void                                adoptCouplings3D(World3D &prepared) noexcept;
+    void                                releaseCouplingsForBody(PhysicsBodyHandle body) noexcept;
+    void                                releaseCouplingsForJoint(PhysicsJointHandle joint) noexcept;
+    [[nodiscard]] Result<void> stepCoupledBackend(const SimulationStep &step, const SimulationSettings &settings);
     std::unique_ptr<ISimulationBackend> simulation_;
     PhysicsWorldHandle                  runtimeHandle_          = PhysicsWorldHandle::invalid();
     eve::PersistentId                   instanceId_             = eve::PersistentId::nil();
@@ -1034,6 +1071,10 @@ private:
     std::unordered_set<Shape3D *> shapes_;
     std::unordered_set<Joint3D *> joints_;
     std::unordered_set<Mechanism3D *> mechanisms_;
+    std::vector<std::unique_ptr<Body3D>>              restoredBodies_;
+    std::vector<std::unique_ptr<Shape3D>>             restoredShapes_;
+    std::vector<std::unique_ptr<Joint3D>>             restoredJoints_;
+    std::vector<std::unique_ptr<Coupling3D>>          restoredCouplings3D_;
     std::unordered_set<uint64_t> disabledBodyPairs_;
     std::unordered_set<uint64_t> disabledShapePairs_;
     std::unordered_map<uint64_t, EventShape> shapeRecords_;
@@ -1049,7 +1090,8 @@ private:
 
     using ContactPointResult = BodyContactPoint3D;
     std::vector<ContactPointResult> contactPoints_;
-    [[nodiscard]] eve::Result<void> prepareRuntimeHandleRefresh() const;
+    [[nodiscard]] eve::Result<void> prepareRuntimeHandleRefresh(std::size_t bodyCount, std::size_t shapeCount,
+                                                                std::size_t jointCount) const;
     void refreshRuntimeHandlesAfterRestore();
     void                            indexShapeHandle(Shape3D *shape);
     void adoptPreparedTopology(World3D &prepared);

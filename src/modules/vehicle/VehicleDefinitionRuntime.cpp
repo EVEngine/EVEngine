@@ -218,7 +218,20 @@ eve::Result<VehicleDefinition> parseVehicleDefinition(const eve::definitions::De
                                        "suspension", {}, "vehicle.definition_runtime"));
         if (!readNumber(*value, "maxTravel", result.suspension.maxTravel, result.suspension.maxTravel) ||
             !readNumber(*value, "driveForce", result.suspension.driveForce, result.suspension.driveForce) ||
-            !readNumber(*value, "lateralGrip", result.suspension.lateralGrip, result.suspension.lateralGrip))
+            !readNumber(*value, "lateralGrip", result.suspension.lateralGrip, result.suspension.lateralGrip) ||
+            !readNumber(*value, "wheelInertia", result.suspension.wheelInertia, result.suspension.wheelInertia) ||
+            !readNumber(*value, "tireFriction", result.suspension.tireFriction, result.suspension.tireFriction) ||
+            !readNumber(*value, "longitudinalStiffness", result.suspension.longitudinalStiffness,
+                        result.suspension.longitudinalStiffness) ||
+            !readNumber(*value, "corneringStiffness", result.suspension.corneringStiffness,
+                        result.suspension.corneringStiffness) ||
+            !readNumber(*value, "rollingResistance", result.suspension.rollingResistance,
+                        result.suspension.rollingResistance) ||
+            !readNumber(*value, "brakeTorque", result.suspension.brakeTorque, result.suspension.brakeTorque) ||
+            !readNumber(*value, "maxSteerAngle", result.suspension.maxSteerAngle, result.suspension.maxSteerAngle) ||
+            !readNumber(*value, "supportAcceleration2D", result.suspension.supportAcceleration2D,
+                        result.suspension.supportAcceleration2D) ||
+            result.suspension.wheelInertia <= 0 || result.suspension.maxSteerAngle > 1.4f)
             return eve::Result<VehicleDefinition>::failure(
                 eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "suspension numeric field is invalid",
                                        "suspension", {}, "vehicle.definition_runtime"));

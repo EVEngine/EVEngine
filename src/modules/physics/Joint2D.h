@@ -1,43 +1,63 @@
 #pragma once
 #include "common/Export.h"
 
+#include "common/Result.h"
 #include "physics/PhysicsHandles.h"
 
-#include <string>
+#include <array>
+#include <memory>
 
 class b2Joint;
-
 namespace eve::physics {
-
-class Body;
 class World;
+class Body;
+
+/** @brief Closed set of planar mechanical constraints. Gear couples two existing joints. */
+enum class Joint2DKind { Revolute, Prismatic, Distance, Pulley, Gear, Wheel, Weld, Motor };
+
+/** @brief Owning world-space point/direction in SI (meters), not pixel coordinates. */
+struct JointPoint2D {
+    float x = 0, y = 0;
+};
 
 /**
- * @brief Script-facing Box2D joint owned by a World.
- *
- * Anchors, lengths and linear motor quantities use pixel space (same as Body).
- * Angles and angular motors use radians.
+ * @brief Validated-at-creation joint parameters; all lengths are meters, angles radians.
+ * @details anchorA/B are body attachment points in world space; revolute/prismatic/wheel/weld
+ * use anchorA as their common world anchor. axis is normalized after validation.
+ * Distance length must be positive. Pulley ground anchors are fixed world points and ratio > 0.
+ * springHertz/dampingRatio configure distance/wheel/weld softness (zero Hertz is rigid).
+ */
+struct Joint2DSettings {
+    Joint2DKind  kind = Joint2DKind::Revolute;
+    JointPoint2D anchorA, anchorB;
+    JointPoint2D axis{1, 0};
+    JointPoint2D groundA{-1, 1}, groundB{1, 1};
+    float        length = 1, ratio = 1;
+    float        springHertz = 0, dampingRatio = 0;
+    bool         collideConnected = false;
+};
+
+/** @brief Owning solver observation. Coordinate is angle/radians or translation/meters by kind. */
+struct Joint2DState {
+    Joint2DKind  kind = Joint2DKind::Revolute;
+    JointPoint2D anchorA, anchorB, reactionForce;
+    float        reactionTorque = 0;
+    float        coordinate     = 0;  ///< Distance length, revolute angle, prismatic/wheel translation, or gear ratio.
+    float        secondaryCoordinate = 0;  ///< Pulley segment B; coordinate is pulley segment A.
+};
+
+/**
+ * @brief Owning planar joint wrapper observing World-owned backend state.
+ * @ownership Caller/VM owns factory wrappers; World owns restored wrappers and all solver joints.
+ * @lifetime Body/world/source-joint destruction or restore invalidates observers; never retain a raw backend pointer.
+ * @thread All methods and destruction are simulation-owner-thread only, outside solver callbacks/step.
+ * @reentrancy No callbacks; no locks or reentrant world mutation. Inputs are borrowed only during calls.
+ * @details Gear source identities use generation handles. Source-first destroys dependent gears;
+ * gear-first leaves sources intact. No state is reconstructed from pointer addresses.
  */
 class EVENGINE_API_WORLD Joint2D {
 public:
-    /** @brief Supported joint geometry.
-     * @remarks Kind codes: 0 Distance, 1 Revolute, 2 Prismatic, 3 Weld, 4 Wheel,
-     *          5 Motor, 6 Gear.
-     */
-    enum class Kind { Distance, Revolute, Prismatic, Weld, Wheel, Motor, Gear };
-
-    /** @brief Internal wrapper constructor; use World::new*Joint. */
-    Joint2D(World *world, Body *bodyA, Body *bodyB, b2Joint *joint, PhysicsJointHandle runtimeHandle,
-            Kind kind, int id);
-    ~Joint2D();
-
-    Joint2D(const Joint2D &) = delete;
-    Joint2D &operator=(const Joint2D &) = delete;
-
-    /** @brief Stable world-local identifier. */
-    int getId() const { return id_; }
-    /** @brief Process-local generation-qualified handle owned by World. */
-    PhysicsJointHandle runtimeHandle() const { return runtimeHandle_; }
+    using Kind = Joint2DKind;
     /** @brief Joint kind string for script/debug. */
     std::string getKind() const;
     /** @brief Stable ID of attached body A, or -1 after invalidation. */
@@ -47,7 +67,7 @@ public:
     /**
      * @brief Owning world, or null after joint destruction.
      * @return Borrowed world pointer.
-     * @ownership World owns this joint; the returned world pointer is borrowed.
+     * @ownership The returned world pointer is borrowed; wrapper ownership follows the factory contract.
      * @lifetime Valid until World::destroy() or this joint's invalidation.
      */
     World *getWorld() const { return world_; }
@@ -126,40 +146,81 @@ public:
      * @ownership World owns the joint; this wrapper only borrows it.
      * @lifetime Valid until that joint or this gear is destroyed.
      */
-    Joint2D *getGearJoint1() const { return gearJoint1_; }
+    Joint2D* getGearJoint1() const;
     /**
      * @brief Second joint linked by a gear, or null.
      * @return Borrowed joint owned by World.
      * @ownership World owns the joint; this wrapper only borrows it.
      * @lifetime Valid until that joint or this gear is destroyed.
      */
-    Joint2D *getGearJoint2() const { return gearJoint2_; }
+    Joint2D* getGearJoint2() const;
 
-    /** @brief Destroys the backend joint and invalidates this wrapper. */
-    void destroy();
-    /** @brief Whether the backend joint still exists. */
-    bool isValid() const;
-    /** @brief Internal invalidation used by body/world destruction. */
-    void invalidate();
-    /** @brief Internal raw Box2D joint. */
+
+    /** @brief Internal borrowed solver joint; valid only while this wrapper is valid. */
     b2Joint *raw() const { return joint_; }
+    /** @brief Legacy throwing destruction; delegates to destroyChecked(). */
+    void destroy();
+    /** @brief Release this joint and dependent gears on the unlocked simulation owner thread. */
+    ~Joint2D();
+    Joint2D(const Joint2D&)            = delete;
+    Joint2D& operator=(const Joint2D&) = delete;
+
+    /** @brief Create a constraint; rejects invalid input, foreign/dead bodies, Gear kind and locked worlds atomically.
+     * @return Owning wrapper or InvalidArgument/PreconditionViolation; caller owns the successful value.
+     */
+    [[nodiscard]] static Result<std::unique_ptr<Joint2D>> create(World& world, Body& a, Body& b,
+                                                                 const Joint2DSettings& settings);
+    /** @brief Couple two revolute/prismatic joints in the same world with coordinate1 + ratio*coordinate2 constant.
+     * @param ratio Finite nonzero signed transmission ratio; mixed rotation/translation has length-dependent units.
+     * @return Owning gear or structured failure. Source joints must have distinct dynamic body-B endpoints.
+     */
+    [[nodiscard]] static Result<std::unique_ptr<Joint2D>> createGear(World& world, Joint2D& first, Joint2D& second,
+                                                                     float ratio);
+    /** @brief True until wrapper release or a body/world/source-joint is destroyed. */
+    [[nodiscard]] bool isValid() const noexcept;
+    /** @brief Process-local generation handle; invalid after destruction, never serialized. */
+    [[nodiscard]] PhysicsJointHandle runtimeHandle() const noexcept { return handle_; }
+    /** @brief World-local persistent topology id, retained after invalidation; not a runtime handle. */
+    [[nodiscard]] int getId() const noexcept { return id_; }
+    /** @brief Constraint kind, unchanged after invalidation. */
+    [[nodiscard]] Joint2DKind kind() const noexcept { return kind_; }
+    /** @brief Set revolute/prismatic/wheel motor; speed rad/s for revolute/wheel, m/s for prismatic.
+     * @param maximumForce Nonnegative maximum Nm for revolute/wheel, N for prismatic.
+     * @return Success, StaleHandle, Unsupported kind or invalid input; failures do not mutate.
+     */
+    [[nodiscard]] Result<void> setMotor(bool enabled, float speed, float maximumForce);
+    /** @brief Set revolute angular or prismatic linear limits; lower <= upper.
+     * @return Success or structured failure before mutation. Other kinds return Unsupported.
+     */
+    [[nodiscard]] Result<void> setLimits(bool enabled, float lower, float upper);
+    /** @brief Read owning SI observation; dt must be the positive duration of the last completed solver step.
+     * @return Solver observation or invalid input/stale diagnostic; never retains world references.
+     */
+    [[nodiscard]] Result<Joint2DState> sample(float dt) const;
+    /** @brief Remove this constraint and dependent gears; repeat destruction is successful.
+     * @return PreconditionViolation when called during a locked solver step; no mutation then.
+     */
+    [[nodiscard]] Result<void> destroyChecked();
 
 private:
     friend class Body;
-    friend class World;
     friend class Mechanism2D;
     void requireKind(Kind expected, const char *operation) const;
-    void setGearMembers(Joint2D *joint1, Joint2D *joint2);
-
-    World *world_ = nullptr;
-    Body *bodyA_ = nullptr;
-    Body *bodyB_ = nullptr;
-    b2Joint *joint_ = nullptr;
-    PhysicsJointHandle runtimeHandle_ = PhysicsJointHandle::invalid();
-    Kind kind_ = Kind::Distance;
-    int id_ = 0;
-    Joint2D *gearJoint1_ = nullptr;
-    Joint2D *gearJoint2_ = nullptr;
+    friend class World;
+    friend struct WorldSnapshotAccess;
+    friend struct PhysicsJointLink;
+    Joint2D(World& world, b2Joint& joint, Joint2DKind kind, PhysicsJointHandle handle);
+    void release();
+    void invalidate() noexcept;
+    int  id_ = 0;
+    // Immutable constructor inputs for backend constants without public getters.
+    std::array<float, 12> gearReferencePoses_{};
+    JointPoint2D          pulleyLocalA_, pulleyLocalB_;
+    World*                world_ = nullptr;
+    b2Joint*              joint_ = nullptr;
+    Joint2DKind           kind_;
+    PhysicsJointHandle    handle_;
+    PhysicsJointHandle    firstSource_  = PhysicsJointHandle::invalid();
+    PhysicsJointHandle    secondSource_ = PhysicsJointHandle::invalid();
 };
-
 }  // namespace eve::physics
