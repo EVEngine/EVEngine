@@ -174,7 +174,7 @@ TEST_CASE("dialogueState.conversationLocalsDoNotBecomeWorldState") {
     runner.setConditionEvaluator([&context](const Value& specification) {
         const auto result = context.evaluate(specification);
         return eve::dnut::SequenceConditionOutcome{
-            result.passed(), std::string(eve::decision::conditionReasonCodeName(result.reasonCode())), {}};
+            result.passed(), std::string(eve::condition::conditionReasonCodeName(result.reasonCode())), {}};
     });
 
     Value bindings = Value::Object{{"mood", Value("local-mood")}};
@@ -198,8 +198,8 @@ TEST_CASE("dialogueState.usesSharedConditionExplanation") {
 
     const auto result = context.evaluate(specification);
     CHECK(!result.passed());
-    CHECK(static_cast<int>(result.reasonCode()) == static_cast<int>(eve::decision::ConditionReasonCode::ValueMismatch));
-    CHECK(std::string(eve::decision::conditionReasonCodeName(result.reasonCode())) == "value_mismatch");
+    CHECK(static_cast<int>(result.reasonCode()) == static_cast<int>(eve::condition::ConditionReasonCode::ValueMismatch));
+    CHECK(std::string(eve::condition::conditionReasonCodeName(result.reasonCode())) == "value_mismatch");
     const Value* key = result.details().find("key");
     REQUIRE(key != nullptr);
     CHECK(key->asString() == "tag:unlocked");
@@ -209,7 +209,7 @@ TEST_CASE("dialogueState.usesSharedConditionExplanation") {
     const auto comparisonResult = context.evaluate(comparison);
     CHECK(comparisonResult.passed());
     CHECK(static_cast<int>(comparisonResult.reasonCode()) ==
-          static_cast<int>(eve::decision::ConditionReasonCode::Passed));
+          static_cast<int>(eve::condition::ConditionReasonCode::Passed));
 }
 
 TEST_CASE("dialogueState.statePatchTransactionFailureDoesNotPartiallyModify") {
@@ -294,7 +294,7 @@ TEST_CASE("dialogueState.dialogueFlowConfiguresAllCrossDomainHooks") {
     config.stateMutation      = &mutation;
     config.conditionEvaluator = [&customConditionCalled](const Value&) {
         customConditionCalled = true;
-        return eve::decision::ConditionResult::success(Value(true));
+        return eve::condition::ConditionResult::success(Value(true));
     };
     config.operationHandler = [&requests](const CommandRequest& request) {
         requests.push_back(request);

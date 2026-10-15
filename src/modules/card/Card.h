@@ -152,7 +152,7 @@ public:
      * @param condition Owning condition tree; it is copied into the definition.
      * @return Success, or NotFound/Rejected when the definition or tree is invalid.
      */
-    [[nodiscard]] eve::Result<void> setCardPlayCondition(const std::string &id, decision::Condition condition);
+    [[nodiscard]] eve::Result<void> setCardPlayCondition(const std::string &id, condition::Condition condition);
     std::string getCardDefinitionName(const std::string &id);
     /** @brief Returns the card definition kind. */
     std::string getCardDefinitionKind(const std::string &id);
@@ -207,7 +207,7 @@ public:
      * @param queries Optional read-only resource, authority and policy providers.
      * @return Stable passed/rejected result with evidence and UI details.
      */
-    [[nodiscard]] decision::ConditionResult evaluatePlay(const CardData          *card,
+    [[nodiscard]] condition::ConditionResult evaluatePlay(const CardData          *card,
                                                          CardPlayConditionQueries queries = {}) const;
     /**
      * @brief Resolve one owned card's canonical definition payment for composition.

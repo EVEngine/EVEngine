@@ -3,7 +3,7 @@
 
 /**
  * @file ConditionCodec.h
- * @brief Shared Value codec for thin decision::Condition trees.
+ * @brief Shared Value codec for thin condition::Condition trees.
  *
  * Encode emits only All/Any/Not/Compare/PolicyCall. Decode additionally accepts
  * legacy leaf kinds (`has_tag`, `has_attribute`, `has_resource`, `state_equals`,
@@ -12,9 +12,9 @@
 
 #include "common/Result.h"
 #include "common/Value.h"
-#include "decision/Condition.h"
+#include "condition/Condition.h"
 
-namespace eve::decision {
+namespace eve::condition {
 
 /**
  * @brief Encode one validated condition tree as an owning Value.
@@ -30,4 +30,4 @@ namespace eve::decision {
  */
 [[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<Condition> decodeCondition(const eve::Value& value);
 
-}  // namespace eve::decision
+}  // namespace eve::condition

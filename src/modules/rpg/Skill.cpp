@@ -8,8 +8,8 @@
 #include <utility>
 #include "common/Json.h"
 #include "common/Value.h"
-#include "decision/ConditionCodec.h"
-#include "decision/ConditionKeys.h"
+#include "condition/ConditionCodec.h"
+#include "condition/ConditionKeys.h"
 #include "rpg/AttributeSystem.h"
 #include "rpg/RPGActor.h"
 #include "rpg/SkillAction.h"
@@ -322,7 +322,7 @@ SkillConditionContext::SkillConditionContext(const RPGActor* actor, const SkillD
     : actor_(actor), definition_(&definition), queries_(std::move(queries)) {}
 
 std::optional<eve::Value> SkillConditionContext::value(std::string_view key) const {
-    if (auto tag = decision::stripPrefix(key, decision::kTagPrefix)) {
+    if (auto tag = condition::stripPrefix(key, condition::kTagPrefix)) {
         if (!actor_) return std::nullopt;
         if (definition_->hasTag(std::string(*tag))) return eve::Value(true);
         return eve::Value(const_cast<RPGActor*>(actor_)->hasStatusTag(std::string(*tag)));
@@ -333,21 +333,21 @@ std::optional<eve::Value> SkillConditionContext::value(std::string_view key) con
         if (!AttributeSystem::hasAttribute(mutableActor, std::string(name))) return std::nullopt;
         return eve::Value(AttributeSystem::getFinal(mutableActor, std::string(name)));
     };
-    if (auto attr = decision::stripPrefix(key, decision::kAttrPrefix)) return attributeOf(*attr);
-    if (auto resource = decision::stripPrefix(key, decision::kResourcePrefix)) {
+    if (auto attr = condition::stripPrefix(key, condition::kAttrPrefix)) return attributeOf(*attr);
+    if (auto resource = condition::stripPrefix(key, condition::kResourcePrefix)) {
         // RPG resources are attributes by design (mana, stamina, and game-defined
         // resources use the same canonical AttributeSet source).
         return attributeOf(*resource);
     }
-    if (auto state = decision::stripPrefix(key, decision::kStatePrefix)) {
+    if (auto state = condition::stripPrefix(key, condition::kStatePrefix)) {
         return skillValue(actor_, *definition_, *state);
     }
     return skillValue(actor_, *definition_, key);
 }
 
-std::optional<decision::ConditionResult> SkillConditionContext::policy(std::string_view  name,
+std::optional<condition::ConditionResult> SkillConditionContext::policy(std::string_view  name,
                                                                        const eve::Value& arguments) const {
-    if (auto authority = decision::resolveAuthorityAllow(name, arguments, [this](std::string_view scope) {
+    if (auto authority = condition::resolveAuthorityAllow(name, arguments, [this](std::string_view scope) {
             if (!queries_.authority) return std::optional<bool>{};
             return queries_.authority(scope);
         })) {
@@ -357,8 +357,8 @@ std::optional<decision::ConditionResult> SkillConditionContext::policy(std::stri
     return queries_.policy(name, arguments);
 }
 
-decision::ConditionResult SkillConditionAdapter::evaluate(const RPGActor* actor, const SkillDefinition& definition,
-                                                          const decision::Condition& condition,
+condition::ConditionResult SkillConditionAdapter::evaluate(const RPGActor* actor, const SkillDefinition& definition,
+                                                          const condition::Condition& condition,
                                                           SkillConditionQueries      queries) {
     SkillConditionContext context(actor, definition, std::move(queries));
     return condition.evaluate(context);
@@ -369,12 +369,12 @@ decision::ConditionResult SkillConditionAdapter::evaluate(const RPGActor* actor,
 // SkillConditionCodec.cpp
 namespace eve::rpg {
 
-eve::Result<eve::Value> encodeSkillCondition(const eve::decision::Condition& condition) {
-    return eve::decision::encodeCondition(condition);
+eve::Result<eve::Value> encodeSkillCondition(const eve::condition::Condition& condition) {
+    return eve::condition::encodeCondition(condition);
 }
 
-eve::Result<eve::decision::Condition> decodeSkillCondition(const eve::Value& value) {
-    return eve::decision::decodeCondition(value);
+eve::Result<eve::condition::Condition> decodeSkillCondition(const eve::Value& value) {
+    return eve::condition::decodeCondition(value);
 }
 
 }  // namespace eve::rpg

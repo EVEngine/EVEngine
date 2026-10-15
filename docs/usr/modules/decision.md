@@ -1,16 +1,15 @@
 # 决策：黑板、状态机和空间权重
 
-**入口：** `eve.Decision()`，槽位 `decision`。`newContext()` 返回 Result，其 value 是
-owned proxy；context 的权威状态在模块 handle pool，脚本代理不保留临时裸指针。
-本模块不自动读取输入、模拟时间或玩家坐标，由游戏提供事实。
+**入口：** `eve.Decision()`，槽位 `decision`（由 `npc_ai` 模块托管；独立 `decision`
+模块已撤消）。`newContext()` 返回 Result，其 value 是 owned proxy；context 的权威状态在
+模块 handle pool，脚本代理不保留临时裸指针。本 API 不自动读取输入、模拟时间或玩家坐标，
+由游戏提供事实。
 
-共享条件树 `decision::Condition` 只保留 `All`/`Any`/`Not`/`Compare`/`PolicyCall`。
-tag / attribute / resource / state / authority 通过 `ConditionKeys.h` 的 key 前缀与
-`authority.allow` 策略约定表达；作者面旧叶子（`has_tag` 等）由统一 codec 展开。
+共享条件树已迁至独立的 [`condition`](condition.md) 模块（`eve::condition::Condition`）。
 
 ## 任务一：巡逻状态机
 
-放在初始化或关卡加载阶段；项目需 `decision`。
+放在初始化或关卡加载阶段；项目需启用 `npc_ai`（以获得 `decision` 槽位）。
 
 ```squirrel
 function decision_value(result) {
@@ -52,9 +51,9 @@ sample 按世界坐标读取并提供 fallback。游戏决定何时更新权重�
 导航或避障。utility/choose 接收本模块定义的 JSON 格式；复杂 AI 组织优先参考
 [NpcAi](npc_ai.md)，不要把黑板、动作执行与路径服务塞进一个万能 context。
 
-源码：[Decision.cpp](../../../src/modules/decision/Decision.cpp)，语义测试：
-[decision.cpp](../../../test/unit/decision/decision_tests.cpp)。验证合法/非法 scalar、无转移、非法网格、
-坏快照和失效代理，确定性由输入事实及游戏的模拟 tick 顺序保证。
+源码：[Decision.cpp](../../../src/modules/npc_ai/Decision.cpp)，语义测试：
+[decision_context_tests.cpp](../../../test/unit/npc_ai/decision_context_tests.cpp)。验证合法/非法
+scalar、无转移、非法网格、坏快照和失效代理，确定性由输入事实及游戏的模拟 tick 顺序保证。
 
 ## 补充绑定参考
 

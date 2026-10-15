@@ -9,13 +9,13 @@
  * over Compare keys and PolicyCall names, not ConditionKind variants.
  */
 
-#include "decision/Condition.h"
+#include "condition/Condition.h"
 
 #include <optional>
 #include <string>
 #include <string_view>
 
-namespace eve::decision {
+namespace eve::condition {
 
 /** @brief Prefix for tag membership booleans (`tag:<name>`). */
 inline constexpr std::string_view kTagPrefix = "tag:";
@@ -176,4 +176,4 @@ template <class AuthorityQuery>
                                    Value::Object{{"scope", Value(*scope)}});
 }
 
-}  // namespace eve::decision
+}  // namespace eve::condition

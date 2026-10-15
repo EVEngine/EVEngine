@@ -1,6 +1,6 @@
-#include "decision/ConditionKeys.h"
+#include "condition/ConditionKeys.h"
 
-namespace eve::decision {
+namespace eve::condition {
 
 std::optional<std::string> authorityAllowScope(const Value& arguments) {
     const Value* scopeValue = arguments.find(std::string("scope"));
@@ -9,4 +9,4 @@ std::optional<std::string> authorityAllowScope(const Value& arguments) {
     return *scopeText;
 }
 
-}  // namespace eve::decision
+}  // namespace eve::condition

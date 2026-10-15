@@ -151,7 +151,7 @@ namespace {
 #include "common/IEconomy.h"
 #include "common/IEmergenceActionHandler.h"
 #include "common/Value.h"
-#include "decision/Condition.h"
+#include "condition/Condition.h"
 #include "emergence/RuleEngine.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -159,7 +159,7 @@ namespace {
 namespace test_emergence_perf {
 // emergence_perf.cpp
 TEST_CASE("emergence.perf.tenThousandRulesSingleKeyWakeIsSublinear") {
-    using namespace eve::decision;
+    using namespace eve::condition;
     using namespace eve::emergence;
 
     constexpr int               kRules = 10000;
@@ -255,7 +255,7 @@ public:
 };
 
 [[maybe_unused]] eve::emergence::RuleDefinition makeGoldRule(std::string id, int threshold, std::string emitType) {
-    using namespace eve::decision;
+    using namespace eve::condition;
     using namespace eve::emergence;
     RuleDefinition rule;
     rule.id        = std::move(id);

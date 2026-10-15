@@ -1,6 +1,6 @@
 #include "action/AbilityAsset.h"
 
-#include "decision/ConditionCodec.h"
+#include "condition/ConditionCodec.h"
 
 #include <algorithm>
 #include <array>
@@ -113,8 +113,8 @@ Result<TargetingMode> parseTargetingMode(std::string_view value) {
     return invalid<TargetingMode>("unknown targeting mode", "action.targetingMode");
 }
 
-Value encodeAbilityCondition(const decision::Condition& condition) {
-    auto encoded = eve::decision::encodeCondition(condition);
+Value encodeAbilityCondition(const condition::Condition& condition) {
+    auto encoded = eve::condition::encodeCondition(condition);
     if (!encoded) {
         Value::Object object;
         object.emplace("kind", Value("invalid"));
@@ -125,9 +125,9 @@ Value encodeAbilityCondition(const decision::Condition& condition) {
 
 Result<std::vector<std::string>> decodeStrings(const Value& parent, std::string_view name, std::string path);
 
-Result<decision::Condition> decodeAbilityCondition(const Value& value, const std::string& path) {
+Result<condition::Condition> decodeAbilityCondition(const Value& value, const std::string& path) {
     (void)path;
-    return eve::decision::decodeCondition(value);
+    return eve::condition::decodeCondition(value);
 }
 
 Value::Array strings(const std::vector<std::string>& values) {

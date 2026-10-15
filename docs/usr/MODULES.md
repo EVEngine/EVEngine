@@ -59,7 +59,8 @@
 
 - [属性](modules/attributes.md)：基础属性与来源可追踪的修饰，避免装备/效果重复应用。
 - [资源经济](modules/economy.md)：玩家账本、容量、消费、溢出与采集边界。
-- [决策](modules/decision.md)：黑板、状态机与空间采样。
+- [条件树](modules/condition.md)：可解释 Compare / PolicyCall AST（C++）。
+- [决策](modules/decision.md)：黑板、状态机与空间采样（`eve.Decision()`，由 `npc_ai` 托管）。
 - [标签](modules/tags.md)：主体标签、能力与层级 GameplayTag 的区别。
 - [游戏事件日志](modules/game_event.md)：持久事件、消费者游标与快照。
 - [策略目录](modules/policyregistry.md)：元数据发现与选择，脚本自己管理回调。

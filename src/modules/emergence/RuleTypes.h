@@ -7,7 +7,7 @@
  */
 
 #include "common/Value.h"
-#include "decision/Condition.h"
+#include "condition/Condition.h"
 
 #include <cstdint>
 #include <string>
@@ -41,7 +41,7 @@ struct RuleDefinition {
     FireMode                     fireMode      = FireMode::Rising;
     bool                         once          = false;
     std::uint64_t                cooldownTicks = 0;
-    decision::Condition          condition;
+    condition::Condition          condition;
     std::vector<std::string>     watchKeys;
     std::vector<EmergenceAction> actions;
 };

@@ -5862,6 +5862,23 @@
         "capability_owned.cpp"
       ]
     },
+    "unit/condition/condition_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "decision.condition.supportsAllLeafNodes",
+          "decision.condition.compoundsExplainFailureWithoutMutation",
+          "decision.condition.scriptDeclarationIsExplicit",
+          "decision.conditionUnavailableIsDifferentFromFalse",
+          "decision.condition.legacyCodecExpandsDomainLeaves"
+        ]
+      },
+      "module": "condition",
+      "origins": [
+        "condition.cpp"
+      ]
+    },
     "unit/crowd/crowd_tests.cpp": {
       "role": "tests",
       "default": "local-logic",
@@ -6012,27 +6029,6 @@
       "module": "decal",
       "origins": [
         "decal.cpp"
-      ]
-    },
-    "unit/decision/decision_tests.cpp": {
-      "role": "tests",
-      "default": "local-logic",
-      "cases": {
-        "local-logic": [
-          "decision.condition.supportsAllLeafNodes",
-          "decision.condition.compoundsExplainFailureWithoutMutation",
-          "decision.condition.scriptDeclarationIsExplicit",
-          "decision.conditionUnavailableIsDifferentFromFalse",
-          "decision.condition.legacyCodecExpandsDomainLeaves",
-          "decision.blackboardsAndFsmAreExplicit",
-          "decision.utilityIsDeterministic",
-          "decision.influenceAndSnapshotRoundTrip"
-        ]
-      },
-      "module": "decision",
-      "origins": [
-        "condition.cpp",
-        "decision.cpp"
       ]
     },
     "unit/definitions/definitions_unit.cpp": {
@@ -7370,6 +7366,21 @@
       "module": "model3d",
       "origins": [
         "model3d_normals.cpp"
+      ]
+    },
+    "unit/npc_ai/decision_context_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "decision.blackboardsAndFsmAreExplicit",
+          "decision.utilityIsDeterministic",
+          "decision.influenceAndSnapshotRoundTrip"
+        ]
+      },
+      "module": "npc_ai",
+      "origins": [
+        "decision_context.cpp"
       ]
     },
     "unit/npc_ai/npc_ai_tests.cpp": {

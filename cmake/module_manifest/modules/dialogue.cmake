@@ -16,4 +16,4 @@ eve_declare_module(NAME dialogue_editing LAYER 6
 eve_declare_module(NAME dialogue LAYER 6
                    SCRIPT Dialogue DialogueUX DialogueVoice DialogueFlow
                    SLOT dialogue dialogueUX dialogueVoice dialogueFlow
-                   DEPS avatar audio decision dnut_interpreter filesystem transaction)
+                   DEPS avatar audio condition dnut_interpreter filesystem transaction)

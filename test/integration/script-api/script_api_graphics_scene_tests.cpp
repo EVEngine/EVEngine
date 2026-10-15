@@ -2817,7 +2817,7 @@ TEST_CASE("property_access.script_validation_matches_shared_contract") {
 #include <string>
 #include "authority/Authority.h"
 #include "common/SquirrelOwnership.h"
-#include "decision/Decision.h"
+#include "npc_ai/Decision.h"
 #include "effects/Effects.h"
 #include "orders/CommandQueue.h"
 #include "procgen/Procgen.h"

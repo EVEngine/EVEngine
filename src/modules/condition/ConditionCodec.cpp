@@ -1,13 +1,13 @@
-#include "decision/ConditionCodec.h"
+#include "condition/ConditionCodec.h"
 
 #include "common/Diagnostic.h"
-#include "decision/ConditionKeys.h"
+#include "condition/ConditionKeys.h"
 
 #include <set>
 #include <string>
 #include <utility>
 
-namespace eve::decision {
+namespace eve::condition {
 namespace {
 
 const eve::Value* field(const eve::Value::Object& object, std::string_view name) {
@@ -297,4 +297,4 @@ eve::Result<eve::Value> encodeCondition(const Condition& condition) {
 
 eve::Result<Condition> decodeCondition(const eve::Value& value) { return decodeNode(value); }
 
-}  // namespace eve::decision
+}  // namespace eve::condition

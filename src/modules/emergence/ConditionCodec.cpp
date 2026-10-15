@@ -1,8 +1,8 @@
 #include "emergence/ConditionCodec.h"
 
 #include "common/Diagnostic.h"
-#include "decision/ConditionCodec.h"
-#include "decision/ConditionKeys.h"
+#include "condition/ConditionCodec.h"
+#include "condition/ConditionKeys.h"
 #include "emergence/ConditionWatch.h"
 #include "emergence/FactStore.h"
 
@@ -12,7 +12,7 @@
 
 namespace eve::emergence {
 
-eve::Result<decision::Condition> decodeCondition(const eve::Value& value) { return decision::decodeCondition(value); }
+eve::Result<condition::Condition> decodeCondition(const eve::Value& value) { return condition::decodeCondition(value); }
 
 }  // namespace eve::emergence
 
@@ -24,8 +24,8 @@ void insertUnique(std::set<std::string>& out, std::string key) {
     if (!key.empty()) out.insert(std::move(key));
 }
 
-eve::Result<void> walk(const decision::Condition& condition, std::set<std::string>& out) {
-    using K = decision::ConditionKind;
+eve::Result<void> walk(const condition::Condition& condition, std::set<std::string>& out) {
+    using K = condition::ConditionKind;
     switch (condition.kind()) {
         case K::All:
         case K::Any:
@@ -50,7 +50,7 @@ eve::Result<void> walk(const decision::Condition& condition, std::set<std::strin
         }
         case K::PolicyCall: {
             insertUnique(out, makeFactKey(FactDomain::Policy, condition.key()));
-            if (condition.key() == decision::kAuthorityAllowPolicy) {
+            if (condition.key() == condition::kAuthorityAllowPolicy) {
                 if (const eve::Value* scope = condition.arguments().find(std::string("scope"))) {
                     if (const auto* text = scope->getIf<std::string>(); text && !text->empty())
                         insertUnique(out, makeFactKey(FactDomain::Authority, *text));
@@ -84,7 +84,7 @@ eve::Result<void> walk(const decision::Condition& condition, std::set<std::strin
 
 }  // namespace
 
-eve::Result<std::vector<std::string>> collectWatchKeys(const decision::Condition& condition) {
+eve::Result<std::vector<std::string>> collectWatchKeys(const condition::Condition& condition) {
     if (!condition.isValid())
         return eve::Result<std::vector<std::string>>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "condition tree is invalid", "condition", {}, "emergence.watch"));

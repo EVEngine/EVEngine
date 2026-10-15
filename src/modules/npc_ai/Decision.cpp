@@ -1,4 +1,4 @@
-#include "decision/Decision.h"
+#include "npc_ai/Decision.h"
 
 #include "common/Json.h"
 #include "common/SquirrelBinding.h"
@@ -12,7 +12,7 @@
 #include <sstream>
 #include <utility>
 
-namespace eve::decision {
+namespace eve::npc_ai {
 namespace {
 
 /** @brief Script-owned handle proxy; the decision context remains module-owned. */
@@ -661,4 +661,4 @@ void Decision::expose(ssq::Class& c) {
             vm, Decision::newContext(), [](DecisionContextHandleRef ref) { return Decision::release(ref); });
     });
 }
-}  // namespace eve::decision
+}  // namespace eve::npc_ai

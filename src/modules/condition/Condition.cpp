@@ -1,10 +1,10 @@
-#include "decision/Condition.h"
+#include "condition/Condition.h"
 
 #include <cmath>
 #include <initializer_list>
 #include <utility>
 
-namespace eve::decision {
+namespace eve::condition {
 namespace {
 
 Value object(std::initializer_list<std::pair<std::string, Value>> fields) {
@@ -253,4 +253,4 @@ ConditionResult Condition::evaluate(const EvaluationContext& context) const {
     return ConditionResult::failed(ConditionReasonCode::InvalidCondition);
 }
 
-}  // namespace eve::decision
+}  // namespace eve::condition

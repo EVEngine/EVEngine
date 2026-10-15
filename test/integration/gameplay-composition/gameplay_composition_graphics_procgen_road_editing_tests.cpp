@@ -2391,7 +2391,7 @@ TEST_CASE("procgen.simulation.lootPropBake") {
 #include "card/Card.h"
 #include "card/CardContainers.h"
 #include "card/CardPlay.h"
-#include "decision/ConditionKeys.h"
+#include "condition/ConditionKeys.h"
 #include "economy/EconomyLedger.h"
 #include "economy/EconomyLedgerResourceAccount.h"
 #include "economy/ResourceType.h"
@@ -3059,7 +3059,7 @@ TEST_CASE("resource.gameplay.rtsBuildUsesSharedActionOrdersProductionPayment") {
     actionFailure.product                    = "tank";
     actionFailure.duration                   = eve::Duration::fromNanoseconds(1000000000);
     actionFailure.transactionId              = "rts.build.action-failure";
-    actionFailure.actionDefinition.condition = eve::decision::tagPresent("missing");
+    actionFailure.actionDefinition.condition = eve::condition::tagPresent("missing");
     auto failedAction                        = eve::rts::RTSProductionActionAdapter::build(std::move(actionFailure));
     CHECK(!failedAction.ok());
     CHECK_EQ(ledger.get("gold"), 15);

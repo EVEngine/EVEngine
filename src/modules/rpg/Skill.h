@@ -15,7 +15,7 @@
 //    任何自定义资源；RPG 不再维护一份私有 Cost 类型。
 
 #include "common/ResourceAccount.h"
-#include "decision/Condition.h"
+#include "condition/Condition.h"
 #include "definitions/Definitions.h"
 
 #include <optional>
@@ -36,7 +36,7 @@ struct SkillDefinition {
     std::vector<std::string> grantedEffects;  ///< 命中/释放后施加给目标的效果 id 列表
     std::vector<std::string> tags;
     /** @brief Side-effect-free condition tree required before this skill can cast. */
-    eve::decision::Condition                     castCondition;
+    eve::condition::Condition                     castCondition;
     std::unordered_map<std::string, std::string> extra;  ///< 游戏自定义附加数据
 
     /** @brief True when tag. */

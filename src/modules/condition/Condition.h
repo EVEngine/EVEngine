@@ -20,7 +20,7 @@
 #include <string_view>
 #include <vector>
 
-namespace eve::decision {
+namespace eve::condition {
 
 /** @brief Node kind in the side-effect-free condition AST. */
 enum class ConditionKind : std::uint8_t {
@@ -255,4 +255,4 @@ private:
     std::optional<ScriptConditionDeclaration> scriptDeclaration_;
 };
 
-}  // namespace eve::decision
+}  // namespace eve::condition

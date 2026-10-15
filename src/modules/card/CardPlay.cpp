@@ -1,6 +1,6 @@
 #include "card/CardPlay.h"
 
-#include "decision/ConditionKeys.h"
+#include "condition/ConditionKeys.h"
 
 #include <algorithm>
 #include <exception>
@@ -31,23 +31,23 @@ CardPlayConditionContext::CardPlayConditionContext(const CardData* card, const C
     : card_(card), definition_(&definition), queries_(std::move(queries)) {}
 
 std::optional<eve::Value> CardPlayConditionContext::value(std::string_view key) const {
-    if (auto tag = decision::stripPrefix(key, decision::kTagPrefix)) {
+    if (auto tag = condition::stripPrefix(key, condition::kTagPrefix)) {
         if (!card_) return std::nullopt;
         return eve::Value(std::find(definition_->tags.begin(), definition_->tags.end(), *tag) !=
                           definition_->tags.end());
     }
-    if (auto attr = decision::stripPrefix(key, decision::kAttrPrefix)) {
+    if (auto attr = condition::stripPrefix(key, condition::kAttrPrefix)) {
         if (!card_) return std::nullopt;
         if (*attr == "cost" || *attr == "card.cost") return eve::Value(definition_->cost);
         if (*attr == "attack" || *attr == "card.attack") return eve::Value(definition_->attack);
         if (*attr == "health" || *attr == "card.health") return eve::Value(definition_->health);
         return std::nullopt;
     }
-    if (auto resource = decision::stripPrefix(key, decision::kResourcePrefix)) {
+    if (auto resource = condition::stripPrefix(key, condition::kResourcePrefix)) {
         if (!queries_.resource) return std::nullopt;
         return queries_.resource(*resource);
     }
-    if (auto state = decision::stripPrefix(key, decision::kStatePrefix)) {
+    if (auto state = condition::stripPrefix(key, condition::kStatePrefix)) {
         return cardValue(card_, *definition_, *state);
     }
     if (queries_.resource) {
@@ -56,9 +56,9 @@ std::optional<eve::Value> CardPlayConditionContext::value(std::string_view key) 
     return cardValue(card_, *definition_, key);
 }
 
-std::optional<decision::ConditionResult> CardPlayConditionContext::policy(std::string_view  name,
+std::optional<condition::ConditionResult> CardPlayConditionContext::policy(std::string_view  name,
                                                                           const eve::Value& arguments) const {
-    if (auto authority = decision::resolveAuthorityAllow(name, arguments, [this](std::string_view scope) {
+    if (auto authority = condition::resolveAuthorityAllow(name, arguments, [this](std::string_view scope) {
             if (!queries_.authority) return std::optional<bool>{};
             return queries_.authority(scope);
         })) {
@@ -68,8 +68,8 @@ std::optional<decision::ConditionResult> CardPlayConditionContext::policy(std::s
     return queries_.policy(name, arguments);
 }
 
-decision::ConditionResult CardPlayConditionAdapter::evaluate(const CardData* card, const CardDefinition& definition,
-                                                             const decision::Condition& condition,
+condition::ConditionResult CardPlayConditionAdapter::evaluate(const CardData* card, const CardDefinition& definition,
+                                                             const condition::Condition& condition,
                                                              CardPlayConditionQueries   queries) {
     CardPlayConditionContext context(card, definition, std::move(queries));
     return condition.evaluate(context);
@@ -357,7 +357,7 @@ eve::Result<eve::transaction::TransactionReceipt> CardPlayPaymentAdapter::play(C
                                                               request.composition.conditionQueries);
     if (!condition.passed()) {
         DiagnosticDetails details;
-        details.emplace_back("reason", decision::conditionReasonCodeName(condition.reasonCode()));
+        details.emplace_back("reason", condition::conditionReasonCodeName(condition.reasonCode()));
         return eve::Result<eve::transaction::TransactionReceipt>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "card play condition was rejected",
                                    "condition", details));

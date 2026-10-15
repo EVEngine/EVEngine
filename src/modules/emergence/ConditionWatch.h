@@ -3,11 +3,11 @@
 
 /**
  * @file ConditionWatch.h
- * @brief Derive inverted-index watch keys from a decision::Condition AST.
+ * @brief Derive inverted-index watch keys from a condition::Condition AST.
  */
 
 #include "common/Result.h"
-#include "decision/Condition.h"
+#include "condition/Condition.h"
 
 #include <string>
 #include <vector>
@@ -27,6 +27,6 @@ namespace eve::emergence {
  * @thread Pure; reentrant; no callbacks.
  */
 [[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<std::vector<std::string>> collectWatchKeys(
-    const decision::Condition& condition);
+    const condition::Condition& condition);
 
 }  // namespace eve::emergence

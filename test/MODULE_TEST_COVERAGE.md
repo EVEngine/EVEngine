@@ -500,12 +500,17 @@ Source directory: `src/modules/decal/editing`. Status: **referenced-by-other-tes
 
 - Direct header evidence: [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp)
 
-### decision
+### condition
 
-Source directory: `src/modules/decision`. Status: **local-rules-recorded**. Local cases: **8**.
+Source directory: `src/modules/condition`. Status: **local-rules-recorded**. Local cases: **5**.
 
-- Unit: [unit/decision/decision_tests.cpp](unit/decision/decision_tests.cpp)
-- Direct header evidence: [gameplay_composition_graphics_gameplay_action_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_gameplay_action_tests.cpp), [gameplay_composition_graphics_procgen_road_editing_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_procgen_road_editing_tests.cpp), [performance_graphics_tests.cpp](integration/performance/performance_graphics_tests.cpp), [script_api_graphics_ScriptECS_tests.cpp](integration/script-api/script_api_graphics_ScriptECS_tests.cpp), [script_api_graphics_scene_tests.cpp](integration/script-api/script_api_graphics_scene_tests.cpp), [action_tests.cpp](unit/action/action_tests.cpp), [authority_tests.cpp](unit/authority/authority_tests.cpp), [card_tests.cpp](unit/card/card_tests.cpp), [decision_tests.cpp](unit/decision/decision_tests.cpp), [emergence_perf_unit.cpp](unit/emergence/emergence_perf_unit.cpp), [rpg_tests.cpp](unit/rpg/rpg_tests.cpp)
+- Unit: [unit/condition/condition_tests.cpp](unit/condition/condition_tests.cpp)
+- Direct header evidence: action / card / dialogue / emergence / rpg adapters and composition suites that include `condition/Condition*.h`.
+
+### decision (dissolved)
+
+The former `decision` module was split: `Condition*` → `condition`, `DecisionContext` → `npc_ai` (`eve.Decision()` slot retained on `npc_ai`).
+
 
 ### definitions
 

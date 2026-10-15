@@ -258,12 +258,12 @@ void DialogueFlow::configureIntegration(IntegrationConfig config) {
                                                            "dialogue expression did not return bool"};
             return eve::dnut::SequenceConditionOutcome{value.asBool(), value.asBool() ? "" : "expression_false", {}};
         }
-        eve::decision::ConditionResult result = configuredConditionEvaluator_
+        eve::condition::ConditionResult result = configuredConditionEvaluator_
                                                     ? configuredConditionEvaluator_(specification)
                                                     : stateContext_.evaluate(specification);
         lastConditionResult_                  = result;
         return eve::dnut::SequenceConditionOutcome{
-            result.passed(), std::string(eve::decision::conditionReasonCodeName(result.reasonCode())), {}};
+            result.passed(), std::string(eve::condition::conditionReasonCodeName(result.reasonCode())), {}};
     });
 
     updateRuntimeCommandDispatcher();
