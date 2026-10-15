@@ -6,6 +6,8 @@
 #ifndef rpg_5fgame_5fstate_2eproto_2epb_2eh
 #define rpg_5fgame_5fstate_2eproto_2epb_2eh
 
+#include "common/Export.h"
+
 #include <limits>
 #include <string>
 #include <type_traits>
@@ -39,7 +41,7 @@
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-#define PROTOBUF_INTERNAL_EXPORT_rpg_5fgame_5fstate_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_rpg_5fgame_5fstate_2eproto EVENGINE_API_PLATFORM
 
 namespace google {
 namespace protobuf {
@@ -51,11 +53,11 @@ template <typename T>
 }  // namespace google
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_rpg_5fgame_5fstate_2eproto {
+struct EVENGINE_API_PLATFORM TableStruct_rpg_5fgame_5fstate_2eproto {
   static const ::uint32_t offsets[];
 };
 extern "C" {
-extern const ::google::protobuf::internal::DescriptorTable descriptor_table_rpg_5fgame_5fstate_2eproto;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::DescriptorTable descriptor_table_rpg_5fgame_5fstate_2eproto;
 }  // extern "C"
 namespace eve {
 namespace rpg {
@@ -63,58 +65,58 @@ namespace proto {
 class GameStateSave;
 struct GameStateSaveGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern GameStateSaveGlobalsTypeInternal GameStateSave_globals_;
-extern const ::google::protobuf::internal::ClassDataFull GameStateSave_class_data_;
+EVENGINE_API_PLATFORM extern GameStateSaveGlobalsTypeInternal GameStateSave_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull GameStateSave_class_data_;
 #else
-extern const GameStateSaveGlobalsTypeInternal GameStateSave_globals_;
+EVENGINE_API_PLATFORM extern const GameStateSaveGlobalsTypeInternal GameStateSave_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class GameStateSave_SwitchesEntry_DoNotUse;
 struct GameStateSave_SwitchesEntry_DoNotUseGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern GameStateSave_SwitchesEntry_DoNotUseGlobalsTypeInternal GameStateSave_SwitchesEntry_DoNotUse_globals_;
-extern const ::google::protobuf::internal::ClassDataFull GameStateSave_SwitchesEntry_DoNotUse_class_data_;
+EVENGINE_API_PLATFORM extern GameStateSave_SwitchesEntry_DoNotUseGlobalsTypeInternal GameStateSave_SwitchesEntry_DoNotUse_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull GameStateSave_SwitchesEntry_DoNotUse_class_data_;
 #else
-extern const GameStateSave_SwitchesEntry_DoNotUseGlobalsTypeInternal GameStateSave_SwitchesEntry_DoNotUse_globals_;
+EVENGINE_API_PLATFORM extern const GameStateSave_SwitchesEntry_DoNotUseGlobalsTypeInternal GameStateSave_SwitchesEntry_DoNotUse_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class GameStateSave_VariablesEntry_DoNotUse;
 struct GameStateSave_VariablesEntry_DoNotUseGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern GameStateSave_VariablesEntry_DoNotUseGlobalsTypeInternal GameStateSave_VariablesEntry_DoNotUse_globals_;
-extern const ::google::protobuf::internal::ClassDataFull GameStateSave_VariablesEntry_DoNotUse_class_data_;
+EVENGINE_API_PLATFORM extern GameStateSave_VariablesEntry_DoNotUseGlobalsTypeInternal GameStateSave_VariablesEntry_DoNotUse_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull GameStateSave_VariablesEntry_DoNotUse_class_data_;
 #else
-extern const GameStateSave_VariablesEntry_DoNotUseGlobalsTypeInternal GameStateSave_VariablesEntry_DoNotUse_globals_;
+EVENGINE_API_PLATFORM extern const GameStateSave_VariablesEntry_DoNotUseGlobalsTypeInternal GameStateSave_VariablesEntry_DoNotUse_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class ScopedNumberFacts;
 struct ScopedNumberFactsGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern ScopedNumberFactsGlobalsTypeInternal ScopedNumberFacts_globals_;
-extern const ::google::protobuf::internal::ClassDataFull ScopedNumberFacts_class_data_;
+EVENGINE_API_PLATFORM extern ScopedNumberFactsGlobalsTypeInternal ScopedNumberFacts_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull ScopedNumberFacts_class_data_;
 #else
-extern const ScopedNumberFactsGlobalsTypeInternal ScopedNumberFacts_globals_;
+EVENGINE_API_PLATFORM extern const ScopedNumberFactsGlobalsTypeInternal ScopedNumberFacts_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class ScopedNumberFacts_ValuesEntry_DoNotUse;
 struct ScopedNumberFacts_ValuesEntry_DoNotUseGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern ScopedNumberFacts_ValuesEntry_DoNotUseGlobalsTypeInternal ScopedNumberFacts_ValuesEntry_DoNotUse_globals_;
-extern const ::google::protobuf::internal::ClassDataFull ScopedNumberFacts_ValuesEntry_DoNotUse_class_data_;
+EVENGINE_API_PLATFORM extern ScopedNumberFacts_ValuesEntry_DoNotUseGlobalsTypeInternal ScopedNumberFacts_ValuesEntry_DoNotUse_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull ScopedNumberFacts_ValuesEntry_DoNotUse_class_data_;
 #else
-extern const ScopedNumberFacts_ValuesEntry_DoNotUseGlobalsTypeInternal ScopedNumberFacts_ValuesEntry_DoNotUse_globals_;
+EVENGINE_API_PLATFORM extern const ScopedNumberFacts_ValuesEntry_DoNotUseGlobalsTypeInternal ScopedNumberFacts_ValuesEntry_DoNotUse_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class ScopedStringFacts;
 struct ScopedStringFactsGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern ScopedStringFactsGlobalsTypeInternal ScopedStringFacts_globals_;
-extern const ::google::protobuf::internal::ClassDataFull ScopedStringFacts_class_data_;
+EVENGINE_API_PLATFORM extern ScopedStringFactsGlobalsTypeInternal ScopedStringFacts_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull ScopedStringFacts_class_data_;
 #else
-extern const ScopedStringFactsGlobalsTypeInternal ScopedStringFacts_globals_;
+EVENGINE_API_PLATFORM extern const ScopedStringFactsGlobalsTypeInternal ScopedStringFacts_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class ScopedStringFacts_ValuesEntry_DoNotUse;
 struct ScopedStringFacts_ValuesEntry_DoNotUseGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern ScopedStringFacts_ValuesEntry_DoNotUseGlobalsTypeInternal ScopedStringFacts_ValuesEntry_DoNotUse_globals_;
-extern const ::google::protobuf::internal::ClassDataFull ScopedStringFacts_ValuesEntry_DoNotUse_class_data_;
+EVENGINE_API_PLATFORM extern ScopedStringFacts_ValuesEntry_DoNotUseGlobalsTypeInternal ScopedStringFacts_ValuesEntry_DoNotUse_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull ScopedStringFacts_ValuesEntry_DoNotUse_class_data_;
 #else
-extern const ScopedStringFacts_ValuesEntry_DoNotUseGlobalsTypeInternal ScopedStringFacts_ValuesEntry_DoNotUse_globals_;
+EVENGINE_API_PLATFORM extern const ScopedStringFacts_ValuesEntry_DoNotUseGlobalsTypeInternal ScopedStringFacts_ValuesEntry_DoNotUse_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 }  // namespace proto
 }  // namespace rpg
@@ -329,7 +331,7 @@ class PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GameStateSave_SwitchesEntry_DoNotUse
 };
 // -------------------------------------------------------------------
 
-class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ScopedStringFacts final : public ::google::protobuf::Message
+class EVENGINE_API_PLATFORM  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ScopedStringFacts final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.rpg.proto.ScopedStringFacts) */ {
  public:
   inline ScopedStringFacts() : ScopedStringFacts(nullptr) {}
@@ -555,7 +557,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ScopedStringFacts final : public ::
 };
 // -------------------------------------------------------------------
 
-class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ScopedNumberFacts final : public ::google::protobuf::Message
+class EVENGINE_API_PLATFORM  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ScopedNumberFacts final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.rpg.proto.ScopedNumberFacts) */ {
  public:
   inline ScopedNumberFacts() : ScopedNumberFacts(nullptr) {}
@@ -781,7 +783,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ScopedNumberFacts final : public ::
 };
 // -------------------------------------------------------------------
 
-class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GameStateSave final : public ::google::protobuf::Message
+class EVENGINE_API_PLATFORM  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GameStateSave final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.rpg.proto.GameStateSave) */ {
  public:
   inline GameStateSave() : GameStateSave(nullptr) {}

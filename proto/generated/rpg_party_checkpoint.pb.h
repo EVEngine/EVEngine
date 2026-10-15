@@ -6,6 +6,8 @@
 #ifndef rpg_5fparty_5fcheckpoint_2eproto_2epb_2eh
 #define rpg_5fparty_5fcheckpoint_2eproto_2epb_2eh
 
+#include "common/Export.h"
+
 #include <limits>
 #include <string>
 #include <type_traits>
@@ -36,7 +38,7 @@
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-#define PROTOBUF_INTERNAL_EXPORT_rpg_5fparty_5fcheckpoint_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_rpg_5fparty_5fcheckpoint_2eproto EVENGINE_API_PLATFORM
 
 namespace google {
 namespace protobuf {
@@ -48,11 +50,11 @@ template <typename T>
 }  // namespace google
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_rpg_5fparty_5fcheckpoint_2eproto {
+struct EVENGINE_API_PLATFORM TableStruct_rpg_5fparty_5fcheckpoint_2eproto {
   static const ::uint32_t offsets[];
 };
 extern "C" {
-extern const ::google::protobuf::internal::DescriptorTable descriptor_table_rpg_5fparty_5fcheckpoint_2eproto;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::DescriptorTable descriptor_table_rpg_5fparty_5fcheckpoint_2eproto;
 }  // extern "C"
 namespace eve {
 namespace rpg {
@@ -60,18 +62,18 @@ namespace proto {
 class PartyCheckpointSave;
 struct PartyCheckpointSaveGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern PartyCheckpointSaveGlobalsTypeInternal PartyCheckpointSave_globals_;
-extern const ::google::protobuf::internal::ClassDataFull PartyCheckpointSave_class_data_;
+EVENGINE_API_PLATFORM extern PartyCheckpointSaveGlobalsTypeInternal PartyCheckpointSave_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull PartyCheckpointSave_class_data_;
 #else
-extern const PartyCheckpointSaveGlobalsTypeInternal PartyCheckpointSave_globals_;
+EVENGINE_API_PLATFORM extern const PartyCheckpointSaveGlobalsTypeInternal PartyCheckpointSave_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class PartyMemberSave;
 struct PartyMemberSaveGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern PartyMemberSaveGlobalsTypeInternal PartyMemberSave_globals_;
-extern const ::google::protobuf::internal::ClassDataFull PartyMemberSave_class_data_;
+EVENGINE_API_PLATFORM extern PartyMemberSaveGlobalsTypeInternal PartyMemberSave_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull PartyMemberSave_class_data_;
 #else
-extern const PartyMemberSaveGlobalsTypeInternal PartyMemberSave_globals_;
+EVENGINE_API_PLATFORM extern const PartyMemberSaveGlobalsTypeInternal PartyMemberSave_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 }  // namespace proto
 }  // namespace rpg
@@ -90,7 +92,7 @@ namespace proto {
 
 // -------------------------------------------------------------------
 
-class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED PartyMemberSave final : public ::google::protobuf::Message
+class EVENGINE_API_PLATFORM  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED PartyMemberSave final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.rpg.proto.PartyMemberSave) */ {
  public:
   inline PartyMemberSave() : PartyMemberSave(nullptr) {}
@@ -316,7 +318,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED PartyMemberSave final : public ::go
 };
 // -------------------------------------------------------------------
 
-class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED PartyCheckpointSave final : public ::google::protobuf::Message
+class EVENGINE_API_PLATFORM  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED PartyCheckpointSave final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.rpg.proto.PartyCheckpointSave) */ {
  public:
   inline PartyCheckpointSave() : PartyCheckpointSave(nullptr) {}

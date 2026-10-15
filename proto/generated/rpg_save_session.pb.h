@@ -6,6 +6,8 @@
 #ifndef rpg_5fsave_5fsession_2eproto_2epb_2eh
 #define rpg_5fsave_5fsession_2eproto_2epb_2eh
 
+#include "common/Export.h"
+
 #include <limits>
 #include <string>
 #include <type_traits>
@@ -40,7 +42,7 @@
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-#define PROTOBUF_INTERNAL_EXPORT_rpg_5fsave_5fsession_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_rpg_5fsave_5fsession_2eproto EVENGINE_API_PLATFORM
 
 namespace google {
 namespace protobuf {
@@ -52,11 +54,11 @@ template <typename T>
 }  // namespace google
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_rpg_5fsave_5fsession_2eproto {
+struct EVENGINE_API_PLATFORM TableStruct_rpg_5fsave_5fsession_2eproto {
   static const ::uint32_t offsets[];
 };
 extern "C" {
-extern const ::google::protobuf::internal::DescriptorTable descriptor_table_rpg_5fsave_5fsession_2eproto;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::DescriptorTable descriptor_table_rpg_5fsave_5fsession_2eproto;
 }  // extern "C"
 namespace eve {
 namespace rpg {
@@ -64,18 +66,18 @@ namespace proto {
 class RPGSaveEnvelope;
 struct RPGSaveEnvelopeGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern RPGSaveEnvelopeGlobalsTypeInternal RPGSaveEnvelope_globals_;
-extern const ::google::protobuf::internal::ClassDataFull RPGSaveEnvelope_class_data_;
+EVENGINE_API_PLATFORM extern RPGSaveEnvelopeGlobalsTypeInternal RPGSaveEnvelope_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull RPGSaveEnvelope_class_data_;
 #else
-extern const RPGSaveEnvelopeGlobalsTypeInternal RPGSaveEnvelope_globals_;
+EVENGINE_API_PLATFORM extern const RPGSaveEnvelopeGlobalsTypeInternal RPGSaveEnvelope_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class RPGSavePayload;
 struct RPGSavePayloadGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern RPGSavePayloadGlobalsTypeInternal RPGSavePayload_globals_;
-extern const ::google::protobuf::internal::ClassDataFull RPGSavePayload_class_data_;
+EVENGINE_API_PLATFORM extern RPGSavePayloadGlobalsTypeInternal RPGSavePayload_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull RPGSavePayload_class_data_;
 #else
-extern const RPGSavePayloadGlobalsTypeInternal RPGSavePayload_globals_;
+EVENGINE_API_PLATFORM extern const RPGSavePayloadGlobalsTypeInternal RPGSavePayload_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 }  // namespace proto
 }  // namespace rpg
@@ -94,7 +96,7 @@ namespace proto {
 
 // -------------------------------------------------------------------
 
-class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED RPGSaveEnvelope final : public ::google::protobuf::Message
+class EVENGINE_API_PLATFORM  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED RPGSaveEnvelope final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.rpg.proto.RPGSaveEnvelope) */ {
  public:
   inline RPGSaveEnvelope() : RPGSaveEnvelope(nullptr) {}
@@ -369,7 +371,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED RPGSaveEnvelope final : public ::go
 };
 // -------------------------------------------------------------------
 
-class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED RPGSavePayload final : public ::google::protobuf::Message
+class EVENGINE_API_PLATFORM  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED RPGSavePayload final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.rpg.proto.RPGSavePayload) */ {
  public:
   inline RPGSavePayload() : RPGSavePayload(nullptr) {}

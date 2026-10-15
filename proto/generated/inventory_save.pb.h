@@ -6,6 +6,8 @@
 #ifndef inventory_5fsave_2eproto_2epb_2eh
 #define inventory_5fsave_2eproto_2epb_2eh
 
+#include "common/Export.h"
+
 #include <limits>
 #include <string>
 #include <type_traits>
@@ -39,7 +41,7 @@
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-#define PROTOBUF_INTERNAL_EXPORT_inventory_5fsave_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_inventory_5fsave_2eproto EVENGINE_API_FOUNDATION
 
 namespace google {
 namespace protobuf {
@@ -51,11 +53,11 @@ template <typename T>
 }  // namespace google
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_inventory_5fsave_2eproto {
+struct EVENGINE_API_FOUNDATION TableStruct_inventory_5fsave_2eproto {
   static const ::uint32_t offsets[];
 };
 extern "C" {
-extern const ::google::protobuf::internal::DescriptorTable descriptor_table_inventory_5fsave_2eproto;
+EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::DescriptorTable descriptor_table_inventory_5fsave_2eproto;
 }  // extern "C"
 namespace eve {
 namespace inventory {
@@ -63,58 +65,58 @@ namespace proto {
 class Bag;
 struct BagGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern BagGlobalsTypeInternal Bag_globals_;
-extern const ::google::protobuf::internal::ClassDataFull Bag_class_data_;
+EVENGINE_API_FOUNDATION extern BagGlobalsTypeInternal Bag_globals_;
+EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull Bag_class_data_;
 #else
-extern const BagGlobalsTypeInternal Bag_globals_;
+EVENGINE_API_FOUNDATION extern const BagGlobalsTypeInternal Bag_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class Bag_ExtraEntry_DoNotUse;
 struct Bag_ExtraEntry_DoNotUseGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern Bag_ExtraEntry_DoNotUseGlobalsTypeInternal Bag_ExtraEntry_DoNotUse_globals_;
-extern const ::google::protobuf::internal::ClassDataFull Bag_ExtraEntry_DoNotUse_class_data_;
+EVENGINE_API_FOUNDATION extern Bag_ExtraEntry_DoNotUseGlobalsTypeInternal Bag_ExtraEntry_DoNotUse_globals_;
+EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull Bag_ExtraEntry_DoNotUse_class_data_;
 #else
-extern const Bag_ExtraEntry_DoNotUseGlobalsTypeInternal Bag_ExtraEntry_DoNotUse_globals_;
+EVENGINE_API_FOUNDATION extern const Bag_ExtraEntry_DoNotUseGlobalsTypeInternal Bag_ExtraEntry_DoNotUse_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class Equipment;
 struct EquipmentGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern EquipmentGlobalsTypeInternal Equipment_globals_;
-extern const ::google::protobuf::internal::ClassDataFull Equipment_class_data_;
+EVENGINE_API_FOUNDATION extern EquipmentGlobalsTypeInternal Equipment_globals_;
+EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull Equipment_class_data_;
 #else
-extern const EquipmentGlobalsTypeInternal Equipment_globals_;
+EVENGINE_API_FOUNDATION extern const EquipmentGlobalsTypeInternal Equipment_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class EquipmentSlot;
 struct EquipmentSlotGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern EquipmentSlotGlobalsTypeInternal EquipmentSlot_globals_;
-extern const ::google::protobuf::internal::ClassDataFull EquipmentSlot_class_data_;
+EVENGINE_API_FOUNDATION extern EquipmentSlotGlobalsTypeInternal EquipmentSlot_globals_;
+EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull EquipmentSlot_class_data_;
 #else
-extern const EquipmentSlotGlobalsTypeInternal EquipmentSlot_globals_;
+EVENGINE_API_FOUNDATION extern const EquipmentSlotGlobalsTypeInternal EquipmentSlot_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class InventorySave;
 struct InventorySaveGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern InventorySaveGlobalsTypeInternal InventorySave_globals_;
-extern const ::google::protobuf::internal::ClassDataFull InventorySave_class_data_;
+EVENGINE_API_FOUNDATION extern InventorySaveGlobalsTypeInternal InventorySave_globals_;
+EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull InventorySave_class_data_;
 #else
-extern const InventorySaveGlobalsTypeInternal InventorySave_globals_;
+EVENGINE_API_FOUNDATION extern const InventorySaveGlobalsTypeInternal InventorySave_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class ItemStack;
 struct ItemStackGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern ItemStackGlobalsTypeInternal ItemStack_globals_;
-extern const ::google::protobuf::internal::ClassDataFull ItemStack_class_data_;
+EVENGINE_API_FOUNDATION extern ItemStackGlobalsTypeInternal ItemStack_globals_;
+EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull ItemStack_class_data_;
 #else
-extern const ItemStackGlobalsTypeInternal ItemStack_globals_;
+EVENGINE_API_FOUNDATION extern const ItemStackGlobalsTypeInternal ItemStack_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class ItemStack_PropsEntry_DoNotUse;
 struct ItemStack_PropsEntry_DoNotUseGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern ItemStack_PropsEntry_DoNotUseGlobalsTypeInternal ItemStack_PropsEntry_DoNotUse_globals_;
-extern const ::google::protobuf::internal::ClassDataFull ItemStack_PropsEntry_DoNotUse_class_data_;
+EVENGINE_API_FOUNDATION extern ItemStack_PropsEntry_DoNotUseGlobalsTypeInternal ItemStack_PropsEntry_DoNotUse_globals_;
+EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull ItemStack_PropsEntry_DoNotUse_class_data_;
 #else
-extern const ItemStack_PropsEntry_DoNotUseGlobalsTypeInternal ItemStack_PropsEntry_DoNotUse_globals_;
+EVENGINE_API_FOUNDATION extern const ItemStack_PropsEntry_DoNotUseGlobalsTypeInternal ItemStack_PropsEntry_DoNotUse_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 }  // namespace proto
 }  // namespace inventory
@@ -231,7 +233,7 @@ class PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Bag_ExtraEntry_DoNotUse final
 };
 // -------------------------------------------------------------------
 
-class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ItemStack final : public ::google::protobuf::Message
+class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ItemStack final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.inventory.proto.ItemStack) */ {
  public:
   inline ItemStack() : ItemStack(nullptr) {}
@@ -528,7 +530,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ItemStack final : public ::google::
 };
 // -------------------------------------------------------------------
 
-class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED EquipmentSlot final : public ::google::protobuf::Message
+class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED EquipmentSlot final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.inventory.proto.EquipmentSlot) */ {
  public:
   inline EquipmentSlot() : EquipmentSlot(nullptr) {}
@@ -783,7 +785,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED EquipmentSlot final : public ::goog
 };
 // -------------------------------------------------------------------
 
-class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Bag final : public ::google::protobuf::Message
+class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Bag final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.inventory.proto.Bag) */ {
  public:
   inline Bag() : Bag(nullptr) {}
@@ -1194,7 +1196,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Bag final : public ::google::protob
 };
 // -------------------------------------------------------------------
 
-class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Equipment final : public ::google::protobuf::Message
+class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Equipment final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.inventory.proto.Equipment) */ {
  public:
   inline Equipment() : Equipment(nullptr) {}
@@ -1425,7 +1427,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Equipment final : public ::google::
 };
 // -------------------------------------------------------------------
 
-class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED InventorySave final : public ::google::protobuf::Message
+class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED InventorySave final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.inventory.proto.InventorySave) */ {
  public:
   inline InventorySave() : InventorySave(nullptr) {}

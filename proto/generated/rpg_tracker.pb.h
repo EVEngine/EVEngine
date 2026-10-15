@@ -6,6 +6,8 @@
 #ifndef rpg_5ftracker_2eproto_2epb_2eh
 #define rpg_5ftracker_2eproto_2epb_2eh
 
+#include "common/Export.h"
+
 #include <limits>
 #include <string>
 #include <type_traits>
@@ -35,7 +37,7 @@
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-#define PROTOBUF_INTERNAL_EXPORT_rpg_5ftracker_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_rpg_5ftracker_2eproto EVENGINE_API_PLATFORM
 
 namespace google {
 namespace protobuf {
@@ -47,11 +49,11 @@ template <typename T>
 }  // namespace google
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_rpg_5ftracker_2eproto {
+struct EVENGINE_API_PLATFORM TableStruct_rpg_5ftracker_2eproto {
   static const ::uint32_t offsets[];
 };
 extern "C" {
-extern const ::google::protobuf::internal::DescriptorTable descriptor_table_rpg_5ftracker_2eproto;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::DescriptorTable descriptor_table_rpg_5ftracker_2eproto;
 }  // extern "C"
 namespace eve {
 namespace rpg {
@@ -59,26 +61,26 @@ namespace proto {
 class QuestObjectiveProgress;
 struct QuestObjectiveProgressGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern QuestObjectiveProgressGlobalsTypeInternal QuestObjectiveProgress_globals_;
-extern const ::google::protobuf::internal::ClassDataFull QuestObjectiveProgress_class_data_;
+EVENGINE_API_PLATFORM extern QuestObjectiveProgressGlobalsTypeInternal QuestObjectiveProgress_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull QuestObjectiveProgress_class_data_;
 #else
-extern const QuestObjectiveProgressGlobalsTypeInternal QuestObjectiveProgress_globals_;
+EVENGINE_API_PLATFORM extern const QuestObjectiveProgressGlobalsTypeInternal QuestObjectiveProgress_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class QuestProgress;
 struct QuestProgressGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern QuestProgressGlobalsTypeInternal QuestProgress_globals_;
-extern const ::google::protobuf::internal::ClassDataFull QuestProgress_class_data_;
+EVENGINE_API_PLATFORM extern QuestProgressGlobalsTypeInternal QuestProgress_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull QuestProgress_class_data_;
 #else
-extern const QuestProgressGlobalsTypeInternal QuestProgress_globals_;
+EVENGINE_API_PLATFORM extern const QuestProgressGlobalsTypeInternal QuestProgress_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class TrackerSave;
 struct TrackerSaveGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern TrackerSaveGlobalsTypeInternal TrackerSave_globals_;
-extern const ::google::protobuf::internal::ClassDataFull TrackerSave_class_data_;
+EVENGINE_API_PLATFORM extern TrackerSaveGlobalsTypeInternal TrackerSave_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull TrackerSave_class_data_;
 #else
-extern const TrackerSaveGlobalsTypeInternal TrackerSave_globals_;
+EVENGINE_API_PLATFORM extern const TrackerSaveGlobalsTypeInternal TrackerSave_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 }  // namespace proto
 }  // namespace rpg
@@ -97,7 +99,7 @@ namespace proto {
 
 // -------------------------------------------------------------------
 
-class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED QuestObjectiveProgress final : public ::google::protobuf::Message
+class EVENGINE_API_PLATFORM  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED QuestObjectiveProgress final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.rpg.proto.QuestObjectiveProgress) */ {
  public:
   inline QuestObjectiveProgress() : QuestObjectiveProgress(nullptr) {}
@@ -319,7 +321,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED QuestObjectiveProgress final : publ
 };
 // -------------------------------------------------------------------
 
-class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED QuestProgress final : public ::google::protobuf::Message
+class EVENGINE_API_PLATFORM  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED QuestProgress final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.rpg.proto.QuestProgress) */ {
  public:
   inline QuestProgress() : QuestProgress(nullptr) {}
@@ -569,7 +571,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED QuestProgress final : public ::goog
 };
 // -------------------------------------------------------------------
 
-class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED TrackerSave final : public ::google::protobuf::Message
+class EVENGINE_API_PLATFORM  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED TrackerSave final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.rpg.proto.TrackerSave) */ {
  public:
   inline TrackerSave() : TrackerSave(nullptr) {}

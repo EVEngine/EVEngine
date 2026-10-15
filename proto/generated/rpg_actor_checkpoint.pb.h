@@ -6,6 +6,8 @@
 #ifndef rpg_5factor_5fcheckpoint_2eproto_2epb_2eh
 #define rpg_5factor_5fcheckpoint_2eproto_2epb_2eh
 
+#include "common/Export.h"
+
 #include <limits>
 #include <string>
 #include <type_traits>
@@ -39,7 +41,7 @@
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-#define PROTOBUF_INTERNAL_EXPORT_rpg_5factor_5fcheckpoint_2eproto
+#define PROTOBUF_INTERNAL_EXPORT_rpg_5factor_5fcheckpoint_2eproto EVENGINE_API_PLATFORM
 
 namespace google {
 namespace protobuf {
@@ -51,11 +53,11 @@ template <typename T>
 }  // namespace google
 
 // Internal implementation detail -- do not use these members.
-struct TableStruct_rpg_5factor_5fcheckpoint_2eproto {
+struct EVENGINE_API_PLATFORM TableStruct_rpg_5factor_5fcheckpoint_2eproto {
   static const ::uint32_t offsets[];
 };
 extern "C" {
-extern const ::google::protobuf::internal::DescriptorTable descriptor_table_rpg_5factor_5fcheckpoint_2eproto;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::DescriptorTable descriptor_table_rpg_5factor_5fcheckpoint_2eproto;
 }  // extern "C"
 namespace eve {
 namespace rpg {
@@ -63,50 +65,50 @@ namespace proto {
 class ActorAttributeSave;
 struct ActorAttributeSaveGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern ActorAttributeSaveGlobalsTypeInternal ActorAttributeSave_globals_;
-extern const ::google::protobuf::internal::ClassDataFull ActorAttributeSave_class_data_;
+EVENGINE_API_PLATFORM extern ActorAttributeSaveGlobalsTypeInternal ActorAttributeSave_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull ActorAttributeSave_class_data_;
 #else
-extern const ActorAttributeSaveGlobalsTypeInternal ActorAttributeSave_globals_;
+EVENGINE_API_PLATFORM extern const ActorAttributeSaveGlobalsTypeInternal ActorAttributeSave_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class ActorCheckpointSave;
 struct ActorCheckpointSaveGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern ActorCheckpointSaveGlobalsTypeInternal ActorCheckpointSave_globals_;
-extern const ::google::protobuf::internal::ClassDataFull ActorCheckpointSave_class_data_;
+EVENGINE_API_PLATFORM extern ActorCheckpointSaveGlobalsTypeInternal ActorCheckpointSave_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull ActorCheckpointSave_class_data_;
 #else
-extern const ActorCheckpointSaveGlobalsTypeInternal ActorCheckpointSave_globals_;
+EVENGINE_API_PLATFORM extern const ActorCheckpointSaveGlobalsTypeInternal ActorCheckpointSave_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class ActorCheckpointSave_VitalsEntry_DoNotUse;
 struct ActorCheckpointSave_VitalsEntry_DoNotUseGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern ActorCheckpointSave_VitalsEntry_DoNotUseGlobalsTypeInternal ActorCheckpointSave_VitalsEntry_DoNotUse_globals_;
-extern const ::google::protobuf::internal::ClassDataFull ActorCheckpointSave_VitalsEntry_DoNotUse_class_data_;
+EVENGINE_API_PLATFORM extern ActorCheckpointSave_VitalsEntry_DoNotUseGlobalsTypeInternal ActorCheckpointSave_VitalsEntry_DoNotUse_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull ActorCheckpointSave_VitalsEntry_DoNotUse_class_data_;
 #else
-extern const ActorCheckpointSave_VitalsEntry_DoNotUseGlobalsTypeInternal ActorCheckpointSave_VitalsEntry_DoNotUse_globals_;
+EVENGINE_API_PLATFORM extern const ActorCheckpointSave_VitalsEntry_DoNotUseGlobalsTypeInternal ActorCheckpointSave_VitalsEntry_DoNotUse_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class ActorClassSave;
 struct ActorClassSaveGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern ActorClassSaveGlobalsTypeInternal ActorClassSave_globals_;
-extern const ::google::protobuf::internal::ClassDataFull ActorClassSave_class_data_;
+EVENGINE_API_PLATFORM extern ActorClassSaveGlobalsTypeInternal ActorClassSave_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull ActorClassSave_class_data_;
 #else
-extern const ActorClassSaveGlobalsTypeInternal ActorClassSave_globals_;
+EVENGINE_API_PLATFORM extern const ActorClassSaveGlobalsTypeInternal ActorClassSave_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class ActorProgressionSave;
 struct ActorProgressionSaveGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern ActorProgressionSaveGlobalsTypeInternal ActorProgressionSave_globals_;
-extern const ::google::protobuf::internal::ClassDataFull ActorProgressionSave_class_data_;
+EVENGINE_API_PLATFORM extern ActorProgressionSaveGlobalsTypeInternal ActorProgressionSave_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull ActorProgressionSave_class_data_;
 #else
-extern const ActorProgressionSaveGlobalsTypeInternal ActorProgressionSave_globals_;
+EVENGINE_API_PLATFORM extern const ActorProgressionSaveGlobalsTypeInternal ActorProgressionSave_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class ActorTraitSave;
 struct ActorTraitSaveGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-extern ActorTraitSaveGlobalsTypeInternal ActorTraitSave_globals_;
-extern const ::google::protobuf::internal::ClassDataFull ActorTraitSave_class_data_;
+EVENGINE_API_PLATFORM extern ActorTraitSaveGlobalsTypeInternal ActorTraitSave_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull ActorTraitSave_class_data_;
 #else
-extern const ActorTraitSaveGlobalsTypeInternal ActorTraitSave_globals_;
+EVENGINE_API_PLATFORM extern const ActorTraitSaveGlobalsTypeInternal ActorTraitSave_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 }  // namespace proto
 }  // namespace rpg
@@ -125,7 +127,7 @@ namespace proto {
 
 // -------------------------------------------------------------------
 
-class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ActorTraitSave final : public ::google::protobuf::Message
+class EVENGINE_API_PLATFORM  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ActorTraitSave final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.rpg.proto.ActorTraitSave) */ {
  public:
   inline ActorTraitSave() : ActorTraitSave(nullptr) {}
@@ -352,7 +354,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ActorTraitSave final : public ::goo
 };
 // -------------------------------------------------------------------
 
-class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ActorProgressionSave final : public ::google::protobuf::Message
+class EVENGINE_API_PLATFORM  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ActorProgressionSave final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.rpg.proto.ActorProgressionSave) */ {
  public:
   inline ActorProgressionSave() : ActorProgressionSave(nullptr) {}
@@ -583,7 +585,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ActorProgressionSave final : public
 };
 // -------------------------------------------------------------------
 
-class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ActorClassSave final : public ::google::protobuf::Message
+class EVENGINE_API_PLATFORM  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ActorClassSave final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.rpg.proto.ActorClassSave) */ {
  public:
   inline ActorClassSave() : ActorClassSave(nullptr) {}
@@ -854,7 +856,7 @@ class PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ActorCheckpointSave_VitalsEntry_DoNo
 };
 // -------------------------------------------------------------------
 
-class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ActorAttributeSave final : public ::google::protobuf::Message
+class EVENGINE_API_PLATFORM  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ActorAttributeSave final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.rpg.proto.ActorAttributeSave) */ {
  public:
   inline ActorAttributeSave() : ActorAttributeSave(nullptr) {}
@@ -1076,7 +1078,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ActorAttributeSave final : public :
 };
 // -------------------------------------------------------------------
 
-class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ActorCheckpointSave final : public ::google::protobuf::Message
+class EVENGINE_API_PLATFORM  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ActorCheckpointSave final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.rpg.proto.ActorCheckpointSave) */ {
  public:
   inline ActorCheckpointSave() : ActorCheckpointSave(nullptr) {}
