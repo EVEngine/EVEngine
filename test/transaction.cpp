@@ -125,6 +125,35 @@ TEST_CASE("transaction.snapshot.roundTripsTransactionally") {
     CHECK_EQ(restored.snapshotJson(), snapshot);
 }
 
+TEST_CASE("transaction.protobuf.roundTripsAndRejectsInvalidRestore") {
+    Ledger source;
+    Plan*  plan = createPlan(source, "00000000-0000-4000-8000-000000000001", "campaign", "command");
+    auto   id   = stageOperation(*plan, "00000000-0000-4000-8000-000000000002", "assign", "base",
+                                 "{\"roles\":[\"governor\",\"defender\"],\"enabled\":true,\"exact\":9223372036854775807}");
+    REQUIRE(plan->markValid(id).ok());
+    REQUIRE(plan->validate().ok());
+
+    auto saved = source.snapshotBinary();
+    REQUIRE(saved.ok());
+    Ledger restored;
+    REQUIRE(restored.restoreBinary(saved.value()).ok());
+    auto again = restored.snapshotBinary();
+    REQUIRE(again.ok());
+    CHECK_EQ(again.value(), saved.value());
+    REQUIRE(restored.find(plan->id()) != nullptr);
+    REQUIRE(restored.find(plan->id())->findOperation(id) != nullptr);
+    CHECK_EQ(restored.find(plan->id())->findOperation(id)->payload,
+             std::string("{\"enabled\":true,\"exact\":9223372036854775807,\"roles\":[\"governor\",\"defender\"]}"));
+
+    std::string unknown = saved.value();
+    unknown.append("\xA0\x06\x00", 3);  // Unknown field 100, varint value 0.
+    CHECK(!restored.restoreBinary(unknown).ok());
+    CHECK(!restored.restoreBinary("invalid").ok());
+    auto afterFailure = restored.snapshotBinary();
+    REQUIRE(afterFailure.ok());
+    CHECK_EQ(afterFailure.value(), saved.value());
+}
+
 TEST_CASE("transaction.script.api") {
     ssq::VM    vm(1024, ssq::Libs::ALL);
     ssq::Table eve = vm.addTable("eve");

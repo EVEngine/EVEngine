@@ -693,6 +693,27 @@ if(TARGET EVInventory AND TARGET EVFoundation)
   zeroerr_discover_tests(inventory_save_protobuf_test
     LABEL "inventory_save_protobuf_test" NAME_PREFIX "inventory-protobuf/")
 endif()
+
+# The core domain executable includes consumers of optional modules in a
+# trimmed profile. Keep the transaction persistence contract runnable there.
+if(TARGET EVTransaction AND TARGET EVFoundation)
+  add_executable(transaction_protobuf_test EXCLUDE_FROM_ALL
+    main.cpp transaction.cpp)
+  target_link_libraries(transaction_protobuf_test PRIVATE
+    eve_engine_includes EVFoundation zeroerr)
+  target_compile_options(transaction_protobuf_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(transaction_protobuf_test PRIVATE EVBacktrace)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/transaction_protobuf_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/transaction_protobuf_test_zeroerr_tests.cmake"
+      "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(transaction_protobuf_test
+    LABEL "transaction_protobuf_test" NAME_PREFIX "transaction-protobuf/")
+endif()
 endif()
 include(asset_shader/GraphicsProbe.cmake)
 

@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package eve.transaction.proto;
+
+// Version 2 replaces the fixed ledger and plan JSON shape. Operation payloads
+// remain open-ended by contract and preserve exact Int64 values.
+message DynamicValue {
+  oneof kind {
+    bool null_value = 1;
+    bool bool_value = 2;
+    int64 int_value = 3;
+    double double_value = 4;
+    string string_value = 5;
+    DynamicList list_value = 6;
+    DynamicObject object_value = 7;
+  }
+}
+
+message DynamicList {
+  repeated DynamicValue values = 1;
+}
+
+message DynamicObject {
+  repeated DynamicField fields = 1;
+}
+
+message DynamicField {
+  optional string key = 1;
+  DynamicValue value = 2;
+}
+
+message TransactionLedgerSave {
+  optional string schema = 1;
+  optional uint32 version = 2;
+  optional uint64 next_transaction = 3;
+  repeated TransactionPlan plans = 4;
+}
+
+message TransactionPlan {
+  optional string id = 1;
+  optional string identity = 2;
+  enum State {
+    STATE_UNSPECIFIED = 0;
+    OPEN = 1;
+    VALIDATED = 2;
+    COMMITTED = 3;
+    ROLLED_BACK = 4;
+    FAILED = 5;
+  }
+  optional State state = 3;
+  optional string correlation = 4;
+  optional string causation = 5;
+  optional string error = 6;
+  optional uint64 next_operation = 7;
+  optional uint64 next_event = 8;
+  repeated TransactionOperation operations = 9;
+  repeated TransactionEvent events = 10;
+}
+
+message TransactionOperation {
+  optional string id = 1;
+  optional string identity = 2;
+  optional string kind = 3;
+  optional string target = 4;
+  DynamicValue payload = 5;
+  optional bool checked = 6;
+  optional bool valid = 7;
+  optional string error = 8;
+}
+
+message TransactionEvent {
+  optional uint64 sequence = 1;
+  optional string transaction_id = 2;
+  optional string operation_id = 3;
+  optional string type = 4;
+  optional string detail = 5;
+}

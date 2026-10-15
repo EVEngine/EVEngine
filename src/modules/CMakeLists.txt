@@ -304,6 +304,16 @@ if(TARGET EVPolicyregistry)
   target_link_libraries(EVPolicyregistry PUBLIC protobuf::libprotobuf)
 endif()
 
+if(TARGET EVTransaction)
+  target_sources(EVTransaction PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/transaction_ledger.pb.cc)
+  target_include_directories(EVTransaction SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  if(MSVC)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/transaction_ledger.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+  endif()
+  target_link_libraries(EVTransaction PUBLIC protobuf::libprotobuf)
+endif()
+
 if(TARGET EVDecision)
   target_sources(EVDecision PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/decision_context.pb.cc)
   target_include_directories(EVDecision SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)

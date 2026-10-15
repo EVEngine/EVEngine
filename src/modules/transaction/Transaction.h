@@ -379,6 +379,23 @@ public:
     /** @brief Exports all plans and allocator state as deterministic compact JSON. */
     std::string snapshotJson() const;
     /**
+     * @brief Encodes the typed version-2 ledger schema as Protobuf wire bytes.
+     * @return Complete ledger bytes or a structured serialization failure.
+     * @cost Linear in plans, operations, events and dynamic payload bytes per save operation.
+     * @thread Call on the ledger's owning thread.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] eve::Result<std::string> snapshotBinary() const;
+    /**
+     * @brief Validates and transactionally restores a typed ledger snapshot.
+     * @param bytes Protobuf wire bytes.
+     * @return Success, or a failure leaving all ledger state unchanged.
+     * @cost Linear in encoded bytes and retained ledger records per restore operation.
+     * @thread Call on the ledger's owning thread.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] eve::Result<void> restoreBinary(std::string_view bytes);
+    /**
      * @brief Transactionally restores a raw ledger snapshot.
      * @param json Snapshot produced by snapshotJson().
      * @return Success, or a structured failure that leaves this ledger unchanged.
