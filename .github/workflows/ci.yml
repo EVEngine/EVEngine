@@ -829,24 +829,6 @@ jobs:
           make build/macosx-debug JOBS="$(sysctl -n hw.ncpu)"
           CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
 
-      - name: Diagnose macOS Vulkan dispatcher layout (temporary)
-        env:
-          ALSOFT_DRIVERS: "null"
-        run: |
-          lldb --batch \
-            -o 'run --testcase=^ao\.qualityAndModePresets$' \
-            -k 'thread backtrace' \
-            -k 'frame select 5' \
-            -k 'expr -- sizeof(vk::DispatchLoaderDynamic)' \
-            -k 'expr -- __builtin_offsetof(vk::DispatchLoaderDynamic, vkGetPhysicalDeviceSurfaceSupportKHR)' \
-            -k 'frame variable d' \
-            -k 'frame select 9' \
-            -k 'expr -- sizeof(vk::DispatchLoaderDynamic)' \
-            -k 'expr -- __builtin_offsetof(vk::DispatchLoaderDynamic, vkGetPhysicalDeviceSurfaceSupportKHR)' \
-            -k 'expr -- (void *)vk::defaultDispatchLoaderDynamic.vkGetPhysicalDeviceSurfaceSupportKHR' \
-            -- build/macosx-debug/test/unit_test
-          exit 1
-
       - name: Run macosx unit tests
         timeout-minutes: 60
         env:
