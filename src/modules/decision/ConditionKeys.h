@@ -138,6 +138,13 @@ inline constexpr std::string_view kAuthorityAllowPolicy = "authority.allow";
 }
 
 /**
+ * @brief Extract the `scope` string from an `authority.allow` argument object.
+ * @param arguments PolicyCall arguments.
+ * @return Non-empty scope text, or nullopt when the field is missing/invalid.
+ */
+[[nodiscard]] EVENGINE_API_FOUNDATION std::optional<std::string> authorityAllowScope(const Value& arguments);
+
+/**
  * @brief Resolve the built-in `authority.allow` policy when `name` matches.
  *
  * @param name Policy name from PolicyCall.
@@ -151,23 +158,22 @@ template <class AuthorityQuery>
 [[nodiscard]] std::optional<ConditionResult> resolveAuthorityAllow(std::string_view name, const Value& arguments,
                                                                    AuthorityQuery&& authorityQuery) {
     if (name != kAuthorityAllowPolicy) return std::nullopt;
-    const Value* scopeValue = arguments.find(std::string("scope"));
-    const auto*  scopeText  = scopeValue == nullptr ? nullptr : scopeValue->getIf<std::string>();
-    if (scopeText == nullptr || scopeText->empty()) {
+    auto scope = authorityAllowScope(arguments);
+    if (!scope) {
         return ConditionResult::failed(ConditionReasonCode::InvalidCondition, {},
                                        Value::Object{{"policy", Value(std::string(kAuthorityAllowPolicy))},
                                                      {"error", Value("authority.allow requires string scope")}});
     }
-    auto allowed = authorityQuery(std::string_view(*scopeText));
+    auto allowed = authorityQuery(std::string_view(*scope));
     if (!allowed) {
         return ConditionResult::failed(ConditionReasonCode::AuthorityUnavailable, {},
-                                       Value::Object{{"scope", Value(*scopeText)}});
+                                       Value::Object{{"scope", Value(*scope)}});
     }
     if (*allowed) {
-        return ConditionResult::success(Value(true), Value::Object{{"scope", Value(*scopeText)}});
+        return ConditionResult::success(Value(true), Value::Object{{"scope", Value(*scope)}});
     }
     return ConditionResult::failed(ConditionReasonCode::AuthorityDenied, Value(false),
-                                   Value::Object{{"scope", Value(*scopeText)}});
+                                   Value::Object{{"scope", Value(*scope)}});
 }
 
 }  // namespace eve::decision
