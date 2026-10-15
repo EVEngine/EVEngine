@@ -1,5 +1,6 @@
 #include <limits>
 #include "fluids/OceanSeaTransition.h"
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 using namespace eve::fluids;

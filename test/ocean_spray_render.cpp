@@ -11,6 +11,7 @@
 #endif
 #include "graphics/Graphics.h"
 #include "window/Window.h"
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 TEST_CASE("fluids.ocean.sprayBatchRendersAndRejectsInvalidPublication") {

@@ -11,6 +11,9 @@ set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(USE_MOLD OFF CACHE BOOL "" FORCE)
 add_subdirectory("${EVE_ROOT}/external/zeroerr" zeroerr)
 add_executable(ocean_core_check
+    "${EVE_ROOT}/src/engine/common/Diagnostic.cpp"
+    "${EVE_ROOT}/src/engine/common/Status.cpp"
+    "${EVE_ROOT}/src/engine/common/Result.cpp"
     "${EVE_ROOT}/src/engine/common/Value.cpp"
     "${EVE_ROOT}/src/engine/common/Json.cpp"
     "${EVE_ROOT}/src/modules/fluids/OceanSpectrumCodec.cpp"

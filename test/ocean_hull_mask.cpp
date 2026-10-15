@@ -1,6 +1,7 @@
 #include <array>
 #include <limits>
 #include "fluids/OceanHullMask.h"
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 using namespace eve::fluids;

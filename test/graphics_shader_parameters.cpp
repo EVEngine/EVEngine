@@ -1,6 +1,7 @@
 #include <array>
 #include <limits>
 #include "graphics/Shader.h"
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 TEST_CASE("graphics.shader.floatBlockIsAtomic") {

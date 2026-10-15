@@ -1,5 +1,6 @@
 #include "fluids/OceanInteractionCodec.h"
 #include "fluids/OceanSpectrumCodec.h"
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 #include <limits>

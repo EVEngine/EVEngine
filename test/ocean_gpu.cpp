@@ -3,6 +3,7 @@
 #include "gpgpu/Gpgpu.h"
 #include "graphics/Graphics.h"
 #include "window/Window.h"
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 #include <algorithm>

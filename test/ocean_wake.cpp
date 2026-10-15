@@ -1,5 +1,6 @@
 #include "fluids/OceanBoat.h"
 #include "fluids/OceanWake.h"
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 #include <algorithm>

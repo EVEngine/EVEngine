@@ -9,6 +9,9 @@ using Complex               = std::complex<double>;
 inline constexpr double tau = 2.0 * std::numbers::pi;
 // Unnormalized inverse transform: coefficients represent physical amplitudes,
 // so no N-dependent scale enters either wave height or the authoring parameters.
+/** @brief Transform a validated power-of-two line in place without normalization.
+ * @cost O(N log N) arithmetic, no allocation; internal work per spectral row or column.
+ */
 inline void inverse1D(std::vector<Complex>& a) {
     const auto n = a.size();
     for (std::size_t i = 1, j = 0; i < n; ++i) {
@@ -30,6 +33,9 @@ inline void inverse1D(std::vector<Complex>& a) {
         }
     }
 }
+/** @brief Transform a validated N by N grid in place using row/column scratch.
+ * @cost O(N squared log N) arithmetic and O(N) scratch allocation per spectral field per tick.
+ */
 inline void inverse2D(std::vector<Complex>& a, unsigned n) {
     std::vector<Complex> line(n);
     for (unsigned z = 0; z < n; ++z) {
@@ -45,6 +51,9 @@ inline void inverse2D(std::vector<Complex>& a, unsigned n) {
 }
 
 // Normalized forward transform paired with the physical-amplitude inverse.
+/** @brief Produce normalized Fourier amplitudes from a validated N by N spatial grid.
+ * @cost O(N squared log N) arithmetic and O(N) scratch per local-wave field per tick.
+ */
 inline void forward2D(std::vector<Complex>& a, unsigned n) {
     for (auto& value : a) value = std::conj(value);
     inverse2D(a, n);

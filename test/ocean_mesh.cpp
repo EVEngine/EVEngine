@@ -1,5 +1,6 @@
 #include "fluids/OceanMesh.h"
 #include "fluids/OceanWaterView.h"
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 #include <algorithm>

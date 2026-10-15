@@ -3,6 +3,7 @@
 #include "fluids/OceanBoat.h"
 #include "fluids/OceanSpray.h"
 #include "fluids/OceanSprayRenderer.h"
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 using namespace eve::fluids;
