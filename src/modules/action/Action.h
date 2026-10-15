@@ -87,7 +87,7 @@ struct ActionTiming {
      * @brief Sum of windup + active + recover.
      * @return Owning total duration, or a structured overflow failure.
      */
-    [[nodiscard]] Result<Duration> total() const;
+    [[nodiscard]] EVENGINE_API_PLATFORM Result<Duration> total() const;
 };
 
 /**
