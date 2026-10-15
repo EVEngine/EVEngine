@@ -15,8 +15,8 @@
         "docs/dev/AI与MCP支持.md"
       ],
       "tests": [
-        "test/mcp_input_tools.cpp",
-        "test/mcp_tool_filter.cpp"
+        "test/integration/concurrency/mcp_input_tools.cpp",
+        "test/integration/concurrency/mcp_tool_filter.cpp", "test/unit/devtools/mcp_tool_filter_unit.cpp"
       ],
       "provides": [],
       "requires": [
@@ -64,8 +64,8 @@
         "docs/dev/hex-planet-civilization.md"
       ],
       "tests": [
-        "test/play_host.cpp",
-        "test/play_trace.cpp"
+        "test/integration/runtime-lifecycle/play_host.cpp",
+        "test/unit/devtools/play_trace.cpp"
       ],
       "provides": [],
       "requires": [
@@ -106,7 +106,7 @@
         "docs/dev/AI与MCP支持.md"
       ],
       "tests": [
-        "test/mcp_soft_restart.cpp",
+        "test/integration/script-api/mcp_soft_restart.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [],
@@ -141,8 +141,8 @@
         "docs/usr/SAVE.md"
       ],
       "tests": [
-        "test/common_game_save_session.cpp",
-        "test/game_save_integration.cpp"
+        "test/integration/save-restore/common_game_save_session.cpp",
+        "test/integration/gameplay-composition/game_save_integration.cpp"
       ],
       "provides": [
         {
@@ -184,7 +184,7 @@
         "src/modules/platform_event/sdl/InputInjection.cpp"
       ],
       "tests": [
-        "test/mcp_input_tools.cpp"
+        "test/integration/concurrency/mcp_input_tools.cpp"
       ],
       "provides": [
         {

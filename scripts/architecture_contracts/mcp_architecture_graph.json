@@ -16,8 +16,8 @@
         "docs/dev/架构行为图与任务上下文.md"
       ],
       "tests": [
-        "test/mcp_architecture_graph.cpp",
-        "test/inventory_binding_architecture.cpp",
+        "test/integration/concurrency/mcp_architecture_graph.cpp", "test/unit/devtools/devtools_whitebox_model.cpp",
+        "test/integration/script-api/inventory_binding_architecture.cpp",
         "scripts/tests/test_binding_architecture.py"
       ],
       "provides": [],

@@ -16,9 +16,9 @@
         "src/modules/ui/UIComponentScript.cpp"
       ],
       "tests": [
-        "test/ui_control_semantics.cpp",
+        "test/unit/ui/ui_control_semantics.cpp",
         "scripts/tests/test_architecture_contracts.py",
-        "test/UIComponentScheduling.cpp"
+        "test/integration/ui-workflows/UIComponentScheduling.cpp"
       ],
       "systems": [
         "UISystem"
@@ -47,7 +47,7 @@
         "src/modules/ui/UIComponentScript.cpp"
       ],
       "tests": [
-        "test/UIComponentScheduling.cpp"
+        "test/integration/ui-workflows/UIComponentScheduling.cpp"
       ],
       "provides": [],
       "requires": [],
@@ -118,7 +118,7 @@
         "src/modules/ui/Layout.cpp"
       ],
       "tests": [
-        "test/ui_progress_size.cpp"
+        "test/integration/ui-workflows/ui_progress_size.cpp"
       ],
       "provides": [],
       "requires": [],

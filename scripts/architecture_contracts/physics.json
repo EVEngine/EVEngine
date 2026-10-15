@@ -15,8 +15,8 @@
         "docs/dev/2026-09-29-chaos-destruction-geometry-collection设计.md"
       ],
       "tests": [
-        "test/physics_destruction.cpp",
-        "test/physics_destruction_graphics.cpp",
+        "test/integration/physics-simulation/physics_destruction.cpp", "test/unit/physics_destruction/physics_destruction_fracture_rules.cpp",
+        "test/integration/gameplay-composition/physics_destruction_graphics.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "symbols": [
@@ -44,7 +44,7 @@
         "docs/dev/物理系统分层与后端契约.md"
       ],
       "tests": [
-        "test/physics_artifact_provider.cpp",
+        "test/integration/physics-simulation/physics_artifact_provider.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "symbols": [
@@ -71,7 +71,7 @@
         "docs/usr/modules/physics_trajectory.md"
       ],
       "tests": [
-        "test/physics_trajectory_collision.cpp",
+        "test/integration/physics-simulation/physics_trajectory_collision.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "symbols": [
@@ -117,14 +117,14 @@
         "cmake/patches/jolt-solved-contacts-rolling.patch"
       ],
       "tests": [
-        "test/physics_contact_query.cpp",
-        "test/box3d.cpp",
-        "test/physics_joint_frames.cpp",
-        "test/physics_world_snapshot_topology.cpp",
-        "test/physics_rigid_backend.cpp",
-        "test/physics_jolt.cpp",
-        "test/physics_jolt_cooking.cpp",
-        "test/physics_jolt_contacts.cpp"
+        "test/integration/physics-simulation/physics_contact_query.cpp",
+        "test/integration/physics-simulation/box3d.cpp", "test/unit/physics/box3d_unit.cpp",
+        "test/integration/physics-simulation/physics_joint_frames.cpp",
+        "test/integration/physics-simulation/physics_world_snapshot_topology.cpp",
+        "test/integration/physics-simulation/physics_rigid_backend.cpp", "test/unit/physics/physics_rigid_backend_unit.cpp",
+        "test/unit/physics/physics_jolt.cpp",
+        "test/integration/physics-simulation/physics_jolt_cooking.cpp", "test/unit/physics/physics_jolt_cooking_unit.cpp",
+        "test/unit/physics/physics_jolt_contacts.cpp"
       ],
       "thread_affinity": "Owning physics thread, between simulation steps; no callbacks or persistent borrowed result storage.",
       "provides": [],

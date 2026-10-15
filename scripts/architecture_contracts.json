@@ -34,7 +34,7 @@
         "docs/usr/modules/procgen_physics.md"
       ],
       "tests": [
-        "test/gts_terrain_collider.cpp",
+        "test/integration/physics-simulation/gts_terrain_collider.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "symbols": [
@@ -59,7 +59,7 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/network.cpp",
+        "test/integration/concurrency/network.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "symbols": [
@@ -85,8 +85,8 @@
         "docs/dev/2026-09-29-chaos-destruction-geometry-collection设计.md"
       ],
       "tests": [
-        "test/physics_destruction.cpp",
-        "test/physics_destruction_graphics.cpp",
+        "test/integration/physics-simulation/physics_destruction.cpp", "test/unit/physics_destruction/physics_destruction_fracture_rules.cpp",
+        "test/integration/gameplay-composition/physics_destruction_graphics.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "symbols": [
@@ -114,7 +114,7 @@
         "docs/dev/物理系统分层与后端契约.md"
       ],
       "tests": [
-        "test/physics_artifact_provider.cpp",
+        "test/integration/physics-simulation/physics_artifact_provider.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "symbols": [
@@ -141,7 +141,7 @@
         "docs/usr/modules/physics_trajectory.md"
       ],
       "tests": [
-        "test/physics_trajectory_collision.cpp",
+        "test/integration/physics-simulation/physics_trajectory_collision.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "symbols": [
@@ -168,7 +168,7 @@
         "docs/dev/PixelWorld-Noita技术路线.md"
       ],
       "tests": [
-        "test/pixelworld.cpp",
+        "test/unit/pixelworld/pixelworld.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "symbols": [
@@ -193,7 +193,7 @@
         "docs/dev/领域短根继承与跨域组合架构.md"
       ],
       "tests": [
-        "test/rts_composition.cpp",
+        "test/integration/gameplay-composition/rts_composition.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "symbols": [
@@ -221,7 +221,7 @@
         "docs/dev/模块编排与裁剪架构.md"
       ],
       "tests": [
-        "test/scene.cpp",
+        "test/integration/script-api/scene.cpp", "test/unit/scene/scene_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "symbols": [
@@ -248,9 +248,9 @@
         "docs/dev/战棋系统设计.md"
       ],
       "tests": [
-        "test/tactics_turn.cpp",
-        "test/tactics_replay.cpp",
-        "test/tactics_script.cpp"
+        "test/unit/tactics/tactics_turn_rules.cpp",
+        "test/unit/tactics/tactics_state_formats.cpp",
+        "test/integration/script-api/tactics_script.cpp"
       ],
       "symbols": [
         "Membership",
@@ -276,7 +276,7 @@
         "docs/dev/realtime-fog-system.md"
       ],
       "tests": [
-        "test/graphics_fog.cpp",
+        "test/integration/render-pipeline/graphics_fog.cpp", "test/unit/graphics_fog/graphics_fog_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "state": "FogDensityField and MacFluidGrid own media; FogProfile owns optical constants; BeerLightCache is a derived cache; ContinuousArtParams are presentation-only.",
@@ -299,11 +299,11 @@
         "docs/dev/2026-10-11-scene-regions-validation.md"
       ],
       "tests": [
-        "test/scene_authoring.cpp",
-        "test/graphics_authoring_projection.cpp",
-        "test/scene_authoring_script.cpp",
-        "test/scene_relations.cpp",
-        "test/scene_regions.cpp"
+        "test/integration/gameplay-composition/scene_authoring.cpp",
+        "test/integration/gameplay-composition/graphics_authoring_projection.cpp",
+        "test/integration/script-api/scene_authoring_script.cpp",
+        "test/integration/gameplay-composition/scene_relations.cpp",
+        "test/integration/gameplay-composition/scene_regions.cpp"
       ],
       "state": "Hierarchy/TRS, source recipes, camera/lighting and persisted relation intent.",
       "authoritative_owner": "SceneAuthoringDocumentTarget owns values; SceneEditorSession owns the target and its transaction history. Bound imported SceneHost remains its own live authority.",
@@ -322,7 +322,7 @@
         "src/engine/common/StateAccess.h"
       ],
       "tests": [
-        "test/snapshot_envelope.cpp",
+        "test/integration/gameplay-composition/snapshot_envelope.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "state": "Mutable runtime state, persistent snapshot state and cached projections are named separately.",
@@ -342,7 +342,7 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/building.cpp",
+        "test/unit/building/building.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -370,12 +370,12 @@
         "docs/usr/modules/climbing.md"
       ],
       "tests": [
-        "test/climbing_input.cpp",
-        "test/climbing.cpp",
-        "test/climbing_anchor_execution.cpp",
-        "test/climbing_anchor_graph.cpp",
-        "test/climbing_events.cpp",
-        "test/climbing_snapshot.cpp"
+        "test/integration/physics-simulation/climbing_input.cpp", "test/unit/climbing/climbing_controller_rules.cpp",
+        "test/integration/physics-simulation/climbing.cpp", "test/unit/climbing/climbing_unit.cpp",
+        "test/integration/physics-simulation/climbing_anchor_execution.cpp",
+        "test/integration/physics-simulation/climbing_anchor_graph.cpp", "test/unit/climbing/climbing_controller_rules.cpp",
+        "test/integration/physics-simulation/climbing_events.cpp",
+        "test/integration/physics-simulation/climbing_snapshot.cpp"
       ],
       "systems": [
         "ClimbingInputSystem",
@@ -403,7 +403,7 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/economy.cpp",
+        "test/integration/script-api/economy.cpp", "test/unit/economy/economy_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -431,7 +431,7 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/tensor_gpu_contract.cpp",
+        "test/integration/render-pipeline/tensor_gpu_contract.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -460,7 +460,7 @@
         "docs/dev/realtime-fog-system.md"
       ],
       "tests": [
-        "test/graphics_fog.cpp",
+        "test/integration/render-pipeline/graphics_fog.cpp", "test/unit/graphics_fog/graphics_fog_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -488,7 +488,7 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/graphics_headless.cpp",
+        "test/integration/render-pipeline/graphics_headless.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -517,8 +517,8 @@
         "docs/usr/modules/inventory.md"
       ],
       "tests": [
-        "test/inventory.cpp",
-        "test/rpg_quest_reward.cpp",
+        "test/integration/render-presentation/inventory.cpp", "test/unit/inventory/inventory_unit.cpp",
+        "test/integration/gameplay-composition/rpg_quest_reward.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -546,7 +546,7 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/map.cpp",
+        "test/integration/asset-import/map.cpp", "test/unit/map/map_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -575,7 +575,7 @@
         "docs/usr/modules/npc_ai.md"
       ],
       "tests": [
-        "test/npc_ai_ecs.cpp",
+        "test/unit/npc_ai/npc_ai_ecs.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -603,7 +603,7 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/particles.cpp",
+        "test/integration/asset-import/particles.cpp", "test/unit/particles/particles_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -631,7 +631,7 @@
         "docs/dev/PixelWorld-Noita技术路线.md"
       ],
       "tests": [
-        "test/pixelworld_parallel.cpp",
+        "test/integration/concurrency/pixelworld_parallel.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -660,7 +660,7 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/procgen.cpp",
+        "test/integration/render-presentation/procgen.cpp", "test/unit/procgen/procgen_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -695,13 +695,13 @@
         "src/modules/rpg/LootSystem.h"
       ],
       "tests": [
-        "test/rpg_quest.cpp",
-        "test/rpg_progression.cpp",
-        "test/rpg_trait.cpp",
-        "test/rpg_battle.cpp",
-        "test/rpg_class.cpp",
-        "test/rpg_equipment.cpp",
-        "test/rpg_gamestate.cpp"
+        "test/unit/rpg/rpg_quest.cpp",
+        "test/unit/rpg/rpg_progression.cpp",
+        "test/unit/rpg/rpg_trait.cpp",
+        "test/unit/rpg/rpg_battle.cpp",
+        "test/unit/rpg/rpg_class.cpp",
+        "test/integration/gameplay-composition/rpg_equipment.cpp",
+        "test/unit/rpg/rpg_gamestate.cpp"
       ],
       "systems": [
         "LevelSystem",
@@ -755,13 +755,13 @@
         "src/modules/rts/RTSSnapshotInternal.h"
       ],
       "tests": [
-        "test/rts_composition.cpp",
+        "test/integration/gameplay-composition/rts_composition.cpp",
         "scripts/tests/test_architecture_contracts.py",
-        "test/rts_crowd.cpp",
-        "test/rts_production.cpp",
-        "test/rts_crowd_production.cpp",
-        "test/rts_formation.cpp",
-        "test/rts_groups.cpp"
+        "test/integration/rts-unit-lifecycle/rts_crowd.cpp",
+        "test/integration/rts-unit-lifecycle/rts_production.cpp",
+        "test/integration/rts-unit-lifecycle/rts_crowd_production.cpp",
+        "test/integration/rts-unit-lifecycle/rts_formation.cpp",
+        "test/integration/rts-unit-lifecycle/rts_groups.cpp"
       ],
       "systems": [
         "CommandFanOutSystem",
@@ -795,7 +795,7 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/scene.cpp",
+        "test/integration/script-api/scene.cpp", "test/unit/scene/scene_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -823,11 +823,11 @@
         "docs/dev/战棋系统设计.md"
       ],
       "tests": [
-        "test/tactics_board.cpp",
-        "test/tactics_turn.cpp",
-        "test/tactics_action.cpp",
-        "test/tactics_objective.cpp",
-        "test/tactics_replay.cpp",
+        "test/unit/tactics/tactics_board_geometry.cpp",
+        "test/unit/tactics/tactics_turn_rules.cpp",
+        "test/integration/gameplay-composition/tactics_action.cpp",
+        "test/unit/tactics/tactics_objective_unit.cpp",
+        "test/unit/tactics/tactics_state_formats.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -857,9 +857,9 @@
         "src/modules/ui/UIComponentScript.cpp"
       ],
       "tests": [
-        "test/ui_control_semantics.cpp",
+        "test/unit/ui/ui_control_semantics.cpp",
         "scripts/tests/test_architecture_contracts.py",
-        "test/UIComponentScheduling.cpp"
+        "test/integration/ui-workflows/UIComponentScheduling.cpp"
       ],
       "systems": [
         "UISystem"
@@ -886,7 +886,7 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/weapon.cpp",
+        "test/integration/script-api/weapon.cpp", "test/unit/weapon/weapon_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -920,10 +920,10 @@
         "docs/dev/uds-sky-runtime-contract.md"
       ],
       "tests": [
-        "test/SkyTimeline.cpp",
-        "test/SkySolarOrbit.cpp",
-        "test/SkyRuntime.cpp",
-        "test/SkyScriptBindings.cpp"
+        "test/unit/daynight/SkyTimeline.cpp",
+        "test/unit/daynight/SkySolarOrbit.cpp",
+        "test/integration/render-presentation/SkyRuntime.cpp",
+        "test/integration/render-presentation/SkyScriptBindings.cpp"
       ],
       "time_source": "Caller-supplied eve::Duration; checked accumulated integer nanoseconds.",
       "rng_stream": "No RNG in this deterministic interpolation layer.",
@@ -954,7 +954,7 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/time_contract.cpp",
+        "test/unit/common/time_contract_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "time_source": "SimulationStep/SimulationTick supplied by the scheduler; wall clock is not read by deterministic systems.",
@@ -998,8 +998,8 @@
         "docs/dev/Eve-Schema子集与绑定契约.md"
       ],
       "tests": [
-        "test/snapshot_envelope.cpp",
-        "test/schema_contract.cpp",
+        "test/integration/gameplay-composition/snapshot_envelope.cpp",
+        "test/unit/schema/schema_contract.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "schema": "stable logical schema id and content hash identify the payload.",
@@ -1023,9 +1023,9 @@
         "docs/usr/modules/crowd.md"
       ],
       "tests": [
-        "test/rts_formation.cpp",
-        "test/rts_restore.cpp",
-        "test/rts_groups.cpp"
+        "test/integration/rts-unit-lifecycle/rts_formation.cpp",
+        "test/integration/rts-unit-lifecycle/rts_restore.cpp",
+        "test/integration/rts-unit-lifecycle/rts_groups.cpp"
       ],
       "schema": "EVERTS_COMMANDS positional text schema with explicit version header.",
       "version": "Versions 1 through 5; v4 stores orientation/new layouts, v5 adds MovementGroup operation and groupLeadDistance.",
@@ -1048,8 +1048,8 @@
         "docs/usr/modules/crowd.md"
       ],
       "tests": [
-        "test/rts_groups.cpp",
-        "test/rts_restore.cpp"
+        "test/integration/rts-unit-lifecycle/rts_groups.cpp",
+        "test/integration/rts-unit-lifecycle/rts_restore.cpp"
       ],
       "schema": "RTSStateSnapshot typed in-memory schema; canonicalStateJson is its synchronization projection.",
       "version": "Version 2 adds stable movement-group membership and leadDistance.",
@@ -1075,11 +1075,11 @@
         "docs/dev/2026-10-12-scene-projected-overlap-validation.md"
       ],
       "tests": [
-        "test/scene_authoring.cpp",
-        "test/scene_authoring_script.cpp",
-        "test/scene_relations.cpp",
-        "test/scene_regions.cpp",
-        "test/scene_projected_overlap.cpp"
+        "test/integration/gameplay-composition/scene_authoring.cpp",
+        "test/integration/script-api/scene_authoring_script.cpp",
+        "test/integration/gameplay-composition/scene_relations.cpp",
+        "test/integration/gameplay-composition/scene_regions.cpp",
+        "test/integration/gameplay-composition/scene_projected_overlap.cpp"
       ],
       "schema": "eve.scene.authoring; hierarchy, sources, camera, lighting, relations and schemaId/schemaVersion. No native pointers or simulation state.",
       "version": "Integer 4; hierarchy v1, optional local-region v1.",
@@ -1101,8 +1101,8 @@
         "docs/dev/uds-sky-runtime-contract.md"
       ],
       "tests": [
-        "test/SkyProfile.cpp",
-        "test/SkyRuntime.cpp"
+        "test/integration/file-io/SkyProfile.cpp",
+        "test/integration/render-presentation/SkyRuntime.cpp"
       ],
       "schema": "eve.sky-profile; explicit atmosphere mode with complete clock, weather, sun and optical parameters.",
       "version": "Integer version 6 adds proceduralSeed and null wispsAsset selection; version 5 adds directional fog elevation range; version 4 adds cloudMotion controls (phase, speed, timeScale, windMultiplier). Version 3 adds wisps; version 2 adds background height fog. Not a simulation save.",
@@ -1124,8 +1124,8 @@
         "docs/dev/uds-sky-runtime-contract.md"
       ],
       "tests": [
-        "test/SkyWispsAsset.cpp",
-        "test/SkyWisps.cpp"
+        "test/integration/file-io/SkyWispsAsset.cpp", "test/unit/filesystem/SkyWispsAsset_unit.cpp",
+        "test/integration/render-presentation/SkyWisps.cpp"
       ],
       "schema": "eve.sky-wisps/7 manifest and eve.sky-mesh/1 geometry; explicit texture dimensions and linear or sRGB R8/RGBA8 source encoding; version 5 validates daylight coefficients and both owned star textures; version 6 adds optical tints and bounded explicit RGBA8/RGBA16F mip chains; version 7 adds lunar surface, phase, glow and two owned linear RGBA16F mip chains.",
       "version": "Manifest versions 1 through 7; geometry version 1.",
@@ -1146,7 +1146,7 @@
         "src/modules/procgen/heightmap/TerrainGenerationSession.cpp"
       ],
       "tests": [
-        "test/terrain_smooth_stamp_persistence.cpp"
+        "test/unit/procgen/terrain_smooth_stamp_persistence.cpp"
       ],
       "schema": "eve.procgen.terrain-generation-session",
       "version": "2",
@@ -1167,7 +1167,7 @@
         "src/modules/procgen/heightmap/TerrainSpawnPlanCodec.cpp"
       ],
       "tests": [
-        "test/terrain_smooth_stamp_persistence.cpp"
+        "test/unit/procgen/terrain_smooth_stamp_persistence.cpp"
       ],
       "schema": "eve.procgen.terrain-spawn-plan",
       "version": "4",
@@ -1189,9 +1189,9 @@
         "src/modules/tactics/TacticsReplay.cpp"
       ],
       "tests": [
-        "test/tactics_replay.cpp",
+        "test/unit/tactics/tactics_state_formats.cpp",
         "scripts/tests/test_architecture_contracts.py",
-        "test/tactics_graph.cpp"
+        "test/integration/script-api/tactics_graph.cpp", "test/unit/tactics/tactics_board_geometry.cpp"
       ],
       "schema": "SnapshotEnvelope type tactics.battle with LogicalId schema tactics:battle.",
       "version": "Grid boards emit schema 6; ExplicitGraph boards emit schema 7. Revision and SimulationTick remain distinct.",
@@ -1234,8 +1234,8 @@
         "src/modules/physics/backend/SimulationBackend.h"
       ],
       "tests": [
-        "test/physics_artifact_provider.cpp",
-        "test/procgen_artifact_publish.cpp",
+        "test/integration/physics-simulation/physics_artifact_provider.cpp",
+        "test/integration/gameplay-composition/procgen_artifact_publish.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "contract": "provider implementations expose the same Result/status, ownership, determinism and failure semantics.",
@@ -1259,8 +1259,8 @@
         "docs/dev/uds-sky-runtime-contract.md"
       ],
       "tests": [
-        "test/BloomSettings.cpp",
-        "test/BloomPyramid.cpp"
+        "test/unit/graphics/BloomSettings.cpp",
+        "test/integration/render-presentation/BloomPyramid.cpp"
       ],
       "contract": "Graphics-owned targets and copied settings; render-thread builds preserve the previous canvas. GaussianPyramid adds normalized weighted scales; existing filter defaults remain unchanged.",
       "providers": "Shared C++ orchestration with GLSL/SPIR-V and WGSL shader implementations. Runtime validation is required separately for each enabled provider.",
@@ -1294,8 +1294,8 @@
         "docs/dev/uds-sky-runtime-contract.md"
       ],
       "tests": [
-        "test/SkyAtmospherePass.cpp",
-        "test/SkyScriptBindings.cpp"
+        "test/integration/render-presentation/SkyAtmospherePass.cpp",
+        "test/integration/render-presentation/SkyScriptBindings.cpp"
       ],
       "contract": "Graphics owns one render-thread display mode; None, Aces and Filmic select final presentation only. Aces remains the default; independent cosine-fourth photographic vignette defaults to zero and affects presentation before tone mapping; HDR capture stays linear.",
       "providers": "Vulkan implements all three modes and photographic vignette. Other providers retain their existing mode and zero vignette, returning Unsupported for unavailable changes.",
@@ -1332,12 +1332,12 @@
         "src/modules/graphics/ViewPreparation.cpp"
       ],
       "tests": [
-        "test/SkyAtmospherePass.cpp",
-        "test/SkyAtmosphereLuts.cpp",
-        "test/SkyWisps.cpp",
-        "test/SkyMoon.cpp",
-        "test/SkyWispsAsset.cpp",
-        "test/SkyViewPreparation.cpp"
+        "test/integration/render-presentation/SkyAtmospherePass.cpp",
+        "test/unit/graphics/SkyAtmosphereLuts.cpp",
+        "test/integration/render-presentation/SkyWisps.cpp",
+        "test/integration/render-presentation/SkyMoon.cpp",
+        "test/integration/file-io/SkyWispsAsset.cpp", "test/unit/filesystem/SkyWispsAsset_unit.cpp",
+        "test/integration/render-presentation/SkyViewPreparation.cpp"
       ],
       "contract": "Prepared immutable coefficients and transmission/multiple-scattering lookup tables feed a physically integrated HDR pass. No visual-parity claim until all remaining UDS stages are implemented and compared. Optional authored wisps copy corner attributes and an explicit sampled texture during preparation; atmosphere and wisps draw in fixed order with identical fog composition through the same callback. A checked view-preparation phase generates a 192x104 sky-view texture before opening the destination; identical camera/light blocks reuse it. Main and capture draws consume the same cache sequentially. Solar lighting and normalized authored-wisps phase publish atomically; validation failure leaves both unchanged. Cloud phase never invalidates the atmosphere-only view LUT.",
       "providers": "Vulkan resource program implementation; other backends explicitly Unsupported.",
@@ -1370,8 +1370,8 @@
         "docs/usr/modules/graphics.md"
       ],
       "tests": [
-        "test/SkyTextureResources.cpp",
-        "test/SkyTextureGpu.cpp"
+        "test/unit/graphics/SkyTextureResources.cpp",
+        "test/integration/render-presentation/SkyTextureGpu.cpp"
       ],
       "contract": "Packed volume mips shrink XYZ; linear HDR samples retain source precision. Validation or upload failure preserves the previously published shader resources.",
       "providers": "Vulkan implements 3D and HDR sampled images. The existing base/WebGPU resource-program boundary returns explicit Unsupported without publication.",
@@ -1404,8 +1404,8 @@
         "docs/dev/uds-sky-runtime-contract.md"
       ],
       "tests": [
-        "test/SkyViewPreparation.cpp",
-        "test/SkyAtmospherePass.cpp"
+        "test/integration/render-presentation/SkyViewPreparation.cpp",
+        "test/integration/render-presentation/SkyAtmospherePass.cpp"
       ],
       "contract": "No providers is success. Registered callbacks run synchronously before target opening; first failure cancels the view. Detachment removes future invocations. Recursive dispatch and mutation during dispatch are forbidden.",
       "providers": "Backend-independent phase; the sky provider explicitly requires Vulkan resource programs.",
@@ -1437,7 +1437,7 @@
         "docs/usr/modules/asset-structured-models.md"
       ],
       "tests": [
-        "test/asset_import_structured_models.cpp"
+        "test/integration/asset-pipeline/asset_import_structured_models.cpp"
       ],
       "provides": [],
       "requires": [],
@@ -1469,8 +1469,8 @@
         "docs/usr/modules/asset-unity-import.md"
       ],
       "tests": [
-        "test/asset_import_unity_fbx.cpp",
-        "test/asset_import_gltf_animation.cpp"
+        "test/integration/asset-pipeline/asset_import_unity_fbx.cpp",
+        "test/integration/asset-pipeline/asset_import_gltf_animation.cpp"
       ],
       "provides": [],
       "requires": [],
@@ -1500,8 +1500,8 @@
         "src/modules/attributes/AttributeSet.cpp"
       ],
       "tests": [
-        "test/attributes.cpp",
-        "test/dialogue_state_integration.cpp",
+        "test/unit/attributes/attributes.cpp",
+        "test/integration/gameplay-composition/dialogue_state_integration.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [
@@ -1586,8 +1586,8 @@
         "docs/dev/脚本契约架构映射.md"
       ],
       "tests": [
-        "test/scene_binding_architecture.cpp",
-        "test/mcp_binding_architecture.cpp",
+        "test/integration/script-api/scene_binding_architecture.cpp",
+        "test/integration/concurrency/mcp_binding_architecture.cpp",
         "scripts/tests/test_binding_architecture.py"
       ],
       "provides": [],
@@ -1628,8 +1628,8 @@
         "src/modules/card/CardStageBindings.cpp"
       ],
       "tests": [
-        "test/card_payment_composition.cpp",
-        "test/card_rts_script_composition.cpp"
+        "test/integration/gameplay-composition/card_payment_composition.cpp",
+        "test/integration/card-rts-payment/card_rts_script_composition.cpp"
       ],
       "provides": [],
       "requires": [],
@@ -1669,12 +1669,12 @@
         "cmake/profile_checks.cmake"
       ],
       "tests": [
-        "test/crowd.cpp",
-        "test/crowd_contacts.cpp",
-        "test/crowd_script.cpp",
-        "test/crowd_interaction.cpp",
-        "test/crowd_spawn.cpp",
-        "test/crowd_avoidance.cpp"
+        "test/unit/crowd/crowd.cpp",
+        "test/integration/script-api/crowd_contacts.cpp", "test/unit/crowd/crowd_contacts_unit.cpp",
+        "test/integration/script-api/crowd_script.cpp",
+        "test/unit/crowd/crowd_interaction.cpp",
+        "test/integration/script-api/crowd_spawn.cpp", "test/unit/crowd/crowd_spawn_unit.cpp",
+        "test/unit/crowd/crowd_avoidance.cpp"
       ],
       "provides": [],
       "requires": [],
@@ -1800,8 +1800,8 @@
         "docs/dev/AI与MCP支持.md"
       ],
       "tests": [
-        "test/mcp_input_tools.cpp",
-        "test/mcp_tool_filter.cpp"
+        "test/integration/concurrency/mcp_input_tools.cpp",
+        "test/integration/concurrency/mcp_tool_filter.cpp", "test/unit/devtools/mcp_tool_filter_unit.cpp"
       ],
       "provides": [],
       "requires": [
@@ -1849,8 +1849,8 @@
         "docs/dev/hex-planet-civilization.md"
       ],
       "tests": [
-        "test/play_host.cpp",
-        "test/play_trace.cpp"
+        "test/integration/runtime-lifecycle/play_host.cpp",
+        "test/unit/devtools/play_trace.cpp"
       ],
       "provides": [],
       "requires": [
@@ -1891,7 +1891,7 @@
         "docs/dev/AI与MCP支持.md"
       ],
       "tests": [
-        "test/mcp_soft_restart.cpp",
+        "test/integration/script-api/mcp_soft_restart.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [],
@@ -1928,8 +1928,8 @@
         "src/modules/economy/Economy.cpp"
       ],
       "tests": [
-        "test/card_payment_composition.cpp",
-        "test/card_rts_script_composition.cpp"
+        "test/integration/gameplay-composition/card_payment_composition.cpp",
+        "test/integration/card-rts-payment/card_rts_script_composition.cpp"
       ],
       "provides": [],
       "requires": [],
@@ -1967,8 +1967,8 @@
         "docs/usr/SAVE.md"
       ],
       "tests": [
-        "test/common_game_save_session.cpp",
-        "test/game_save_integration.cpp"
+        "test/integration/save-restore/common_game_save_session.cpp",
+        "test/integration/gameplay-composition/game_save_integration.cpp"
       ],
       "provides": [
         {
@@ -2014,10 +2014,10 @@
         "src/modules/graphics/hair/GroomAsset.cpp"
       ],
       "tests": [
-        "test/resource_lifetime.cpp",
-        "test/graphics_vegetation_translucency.cpp",
-        "test/graphics_resource_reuse.cpp",
-        "test/graphics_authoring_projection.cpp",
+        "test/integration/render-presentation/resource_lifetime.cpp",
+        "test/integration/asset-pipeline/graphics_vegetation_translucency.cpp",
+        "test/integration/render-presentation/graphics_resource_reuse.cpp",
+        "test/integration/gameplay-composition/graphics_authoring_projection.cpp",
         "scripts/scene_authoring_smoke.py"
       ],
       "provides": [
@@ -2130,8 +2130,8 @@
         "cmake/module_manifest/modules/graphics.cmake"
       ],
       "tests": [
-        "test/graphics_raytracing.cpp",
-        "test/graphics_raytracing_alignment.cpp"
+        "test/integration/gameplay-composition/graphics_raytracing.cpp", "test/unit/graphics_raytracing/graphics_raytracing_unit.cpp",
+        "test/integration/render-pipeline/graphics_raytracing_alignment.cpp"
       ],
       "provides": [
         {
@@ -2204,10 +2204,10 @@
         "docs/dev/2026-10-12-scene-projected-overlap-validation.md"
       ],
       "tests": [
-        "test/scene_visibility.cpp",
+        "test/unit/scene/scene_visibility.cpp",
         "scripts/scene_authoring_smoke.py",
-        "test/scene_regions.cpp",
-        "test/scene_projected_overlap.cpp"
+        "test/integration/gameplay-composition/scene_regions.cpp",
+        "test/integration/gameplay-composition/scene_projected_overlap.cpp"
       ],
       "provides": [
         {
@@ -2295,8 +2295,8 @@
         "docs/usr/modules/hexmap.md"
       ],
       "tests": [
-        "test/hexmap_sphere_script.cpp",
-        "test/hexmap_sphere.cpp"
+        "test/integration/script-api/hexmap_sphere_script.cpp",
+        "test/unit/hexmap/hexmap_sphere.cpp"
       ],
       "provides": [],
       "requires": [],
@@ -2423,7 +2423,7 @@
         "docs/usr/modules/math.md"
       ],
       "tests": [
-        "test/math_smooth_max.cpp"
+        "test/unit/math/math_interpolation_steering.cpp"
       ],
       "thread_affinity": "Pure scalar calculation on any thread; no module registration or RNG access.",
       "provides": [],
@@ -2468,8 +2468,8 @@
         "docs/dev/架构行为图与任务上下文.md"
       ],
       "tests": [
-        "test/mcp_architecture_graph.cpp",
-        "test/inventory_binding_architecture.cpp",
+        "test/integration/concurrency/mcp_architecture_graph.cpp", "test/unit/devtools/devtools_whitebox_model.cpp",
+        "test/integration/script-api/inventory_binding_architecture.cpp",
         "scripts/tests/test_binding_architecture.py"
       ],
       "provides": [],
@@ -2512,9 +2512,9 @@
         "docs/dev/ProjectSemanticIndex设计.md"
       ],
       "tests": [
-        "test/mcp_project_index.cpp",
-        "test/rpg_classic_semantic_index.cpp",
-        "test/script_structure.cpp",
+        "test/integration/file-io/mcp_project_index.cpp",
+        "test/integration/script-api/rpg_classic_semantic_index.cpp",
+        "test/unit/common/script_structure_unit.cpp",
         "scripts/tests/test_binding_semantics.py"
       ],
       "provides": [],
@@ -2539,7 +2539,7 @@
       "trim": {
         "claim": "Source projection only; no binary-trim claim",
         "absent_profile": "Project tools require desktop devtools; unavailable bindings remain unknown.",
-        "evidence": "test/mcp_project_index.cpp"
+        "evidence": "test/integration/file-io/mcp_project_index.cpp"
       }
     },
     {
@@ -2556,8 +2556,8 @@
         "docs/usr/modules/model3d.md"
       ],
       "tests": [
-        "test/model3d.cpp",
-        "test/resource_lifetime.cpp"
+        "test/integration/asset-import/model3d.cpp",
+        "test/integration/render-presentation/resource_lifetime.cpp"
       ],
       "provides": [],
       "requires": [
@@ -2654,14 +2654,14 @@
         "cmake/patches/jolt-solved-contacts-rolling.patch"
       ],
       "tests": [
-        "test/physics_contact_query.cpp",
-        "test/box3d.cpp",
-        "test/physics_joint_frames.cpp",
-        "test/physics_world_snapshot_topology.cpp",
-        "test/physics_rigid_backend.cpp",
-        "test/physics_jolt.cpp",
-        "test/physics_jolt_cooking.cpp",
-        "test/physics_jolt_contacts.cpp"
+        "test/integration/physics-simulation/physics_contact_query.cpp",
+        "test/integration/physics-simulation/box3d.cpp", "test/unit/physics/box3d_unit.cpp",
+        "test/integration/physics-simulation/physics_joint_frames.cpp",
+        "test/integration/physics-simulation/physics_world_snapshot_topology.cpp",
+        "test/integration/physics-simulation/physics_rigid_backend.cpp", "test/unit/physics/physics_rigid_backend_unit.cpp",
+        "test/unit/physics/physics_jolt.cpp",
+        "test/integration/physics-simulation/physics_jolt_cooking.cpp", "test/unit/physics/physics_jolt_cooking_unit.cpp",
+        "test/unit/physics/physics_jolt_contacts.cpp"
       ],
       "thread_affinity": "Owning physics thread, between simulation steps; no callbacks or persistent borrowed result storage.",
       "provides": [],
@@ -2720,7 +2720,7 @@
         "src/modules/platform_event/sdl/InputInjection.cpp"
       ],
       "tests": [
-        "test/mcp_input_tools.cpp"
+        "test/integration/concurrency/mcp_input_tools.cpp"
       ],
       "provides": [
         {
@@ -2754,8 +2754,8 @@
         "src/modules/procgen/editor/procgen_editor.cpp"
       ],
       "tests": [
-        "test/editor_procgen_script_editor.cpp",
-        "test/procgen_road_editing.cpp"
+        "test/integration/gameplay-composition/editor_procgen_script_editor.cpp",
+        "test/integration/gameplay-composition/procgen_road_editing.cpp"
       ],
       "provides": [
         {
@@ -2812,7 +2812,7 @@
         "docs/usr/modules/procgen.md"
       ],
       "tests": [
-        "test/procgen_module_assembly.cpp",
+        "test/integration/script-api/procgen_module_assembly.cpp", "test/unit/procgen/procgen_module_assembly_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [],
@@ -2874,8 +2874,8 @@
         "src/modules/procgen/heightmap/TerrainStamp.h"
       ],
       "tests": [
-        "test/terrain_smooth_stamp.cpp",
-        "test/terrain_smooth_stamp_script.cpp"
+        "test/unit/procgen/terrain_smooth_stamp.cpp",
+        "test/integration/script-api/terrain_smooth_stamp_script.cpp"
       ],
       "thread_affinity": "Caller owns output rasters; source mutations serialized; read-only builder bakes may use distinct outputs concurrently.",
       "provides": [],
@@ -2927,8 +2927,8 @@
         "docs/usr/modules/procgen/pointset-pipeline.md"
       ],
       "tests": [
-        "test/procgen_scene_sink.cpp",
-        "test/procgen_scene_sink.cpp",
+        "test/integration/script-api/procgen_scene_sink.cpp", "test/unit/procgen/procgen_scene_sink_unit.cpp",
+        "test/integration/script-api/procgen_scene_sink.cpp", "test/unit/procgen/procgen_scene_sink_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [],
@@ -2977,7 +2977,7 @@
         "src/modules/profiler/ProfilerCapabilities.cpp"
       ],
       "tests": [
-        "test/profiler.cpp",
+        "test/integration/script-api/profiler.cpp", "test/unit/profiler/profiler_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [
@@ -3029,8 +3029,8 @@
         "src/modules/rpg/RPGSaveSession.h"
       ],
       "tests": [
-        "test/rpg_save_prepare.cpp",
-        "test/game_save_integration.cpp"
+        "test/integration/gameplay-composition/rpg_save_prepare.cpp",
+        "test/integration/gameplay-composition/game_save_integration.cpp"
       ],
       "provides": [
         {
@@ -3070,8 +3070,8 @@
         "docs/dev/群体行为与流场模块设计.md"
       ],
       "tests": [
-        "test/rts_groups.cpp",
-        "test/rts_restore.cpp"
+        "test/integration/rts-unit-lifecycle/rts_groups.cpp",
+        "test/integration/rts-unit-lifecycle/rts_restore.cpp"
       ],
       "provides": [],
       "requires": [],
@@ -3121,7 +3121,7 @@
         "docs/usr/GAMEPLAY_PAYMENT_COMPOSITION.md"
       ],
       "tests": [
-        "test/card_rts_script_composition.cpp"
+        "test/integration/card-rts-payment/card_rts_script_composition.cpp"
       ],
       "provides": [],
       "requires": [],
@@ -3173,8 +3173,8 @@
         "src/modules/rts/RTSAbilityAdmission.cpp"
       ],
       "tests": [
-        "test/card_payment_composition.cpp",
-        "test/card_rts_script_composition.cpp"
+        "test/integration/gameplay-composition/card_payment_composition.cpp",
+        "test/integration/card-rts-payment/card_rts_script_composition.cpp"
       ],
       "provides": [],
       "requires": [],
@@ -3209,13 +3209,13 @@
         "docs/dev/2026-10-12-scene-projected-overlap-validation.md"
       ],
       "tests": [
-        "test/scene_authoring.cpp",
-        "test/scene_authoring_script.cpp",
-        "test/graphics_authoring_projection.cpp",
+        "test/integration/gameplay-composition/scene_authoring.cpp",
+        "test/integration/script-api/scene_authoring_script.cpp",
+        "test/integration/gameplay-composition/graphics_authoring_projection.cpp",
         "tools/scene-qc-agent/tests/test_reference.py",
-        "test/scene_relations.cpp",
-        "test/scene_regions.cpp",
-        "test/scene_projected_overlap.cpp"
+        "test/integration/gameplay-composition/scene_relations.cpp",
+        "test/integration/gameplay-composition/scene_regions.cpp",
+        "test/integration/gameplay-composition/scene_projected_overlap.cpp"
       ],
       "provides": [
         "Existing IEditorAutomationTargetFactory adds scene-authoring; target exposes standard hierarchy/transform/snapshot interfaces."
@@ -3269,10 +3269,10 @@
         "src/modules/scene/SceneComponentScript.cpp"
       ],
       "tests": [
-        "test/scene.cpp",
+        "test/integration/script-api/scene.cpp", "test/unit/scene/scene_unit.cpp",
         "scripts/tests/test_architecture_contracts.py",
-        "test/scene_component_scheduling.cpp",
-        "test/scene_object_lifetime.cpp"
+        "test/integration/runtime-lifecycle/scene_component_scheduling.cpp",
+        "test/integration/script-api/scene_object_lifetime.cpp"
       ],
       "provides": [
         {
@@ -3346,8 +3346,8 @@
         "docs/dev/ProjectSemanticIndex设计.md"
       ],
       "tests": [
-        "test/script_structure.cpp",
-        "test/mcp_project_index.cpp",
+        "test/unit/common/script_structure_unit.cpp",
+        "test/integration/file-io/mcp_project_index.cpp",
         "scripts/tests/test_binding_semantics.py"
       ],
       "provides": [],
@@ -3368,7 +3368,7 @@
       "trim": {
         "claim": "Compiler metadata, no binary-trim claim",
         "absent_profile": "Source structure lives in common; native facts only exist for linked contracts.",
-        "evidence": "test/script_structure.cpp"
+        "evidence": "test/unit/common/script_structure_unit.cpp"
       }
     },
     {
@@ -3384,8 +3384,8 @@
         "src/modules/statepatch/StateAccessAdapter.h"
       ],
       "tests": [
-        "test/statepatch.cpp",
-        "test/dialogue_state_integration.cpp",
+        "test/integration/script-api/statepatch.cpp", "test/unit/statepatch/statepatch_unit.cpp",
+        "test/integration/gameplay-composition/dialogue_state_integration.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [
@@ -3434,8 +3434,8 @@
         "src/modules/tactics/TacticsPersistence.h"
       ],
       "tests": [
-        "test/common_game_save_session.cpp",
-        "test/game_save_integration.cpp"
+        "test/integration/save-restore/common_game_save_session.cpp",
+        "test/integration/gameplay-composition/game_save_integration.cpp"
       ],
       "provides": [
         {
@@ -3477,8 +3477,8 @@
         "src/modules/tactics/TacticsTypes.h"
       ],
       "tests": [
-        "test/tactics_graph.cpp",
-        "test/tactics_script.cpp",
+        "test/integration/script-api/tactics_graph.cpp", "test/unit/tactics/tactics_board_geometry.cpp",
+        "test/integration/script-api/tactics_script.cpp",
         "examples/hex-planet/civilization_test.nut"
       ],
       "provides": [
@@ -3549,8 +3549,8 @@
         "src/modules/tags/Tags.cpp"
       ],
       "tests": [
-        "test/tags.cpp",
-        "test/dialogue_state_integration.cpp",
+        "test/integration/script-api/tags.cpp", "test/unit/tags/tags_unit.cpp",
+        "test/integration/gameplay-composition/dialogue_state_integration.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [
@@ -3641,7 +3641,7 @@
         "docs/usr/GAMEPLAY_PAYMENT_COMPOSITION.md"
       ],
       "tests": [
-        "test/card_rts_script_composition.cpp"
+        "test/integration/card-rts-payment/card_rts_script_composition.cpp"
       ],
       "provides": [],
       "requires": [],
@@ -3694,7 +3694,7 @@
         "src/modules/ui/UIComponentScript.cpp"
       ],
       "tests": [
-        "test/UIComponentScheduling.cpp"
+        "test/integration/ui-workflows/UIComponentScheduling.cpp"
       ],
       "provides": [],
       "requires": [],
@@ -3765,7 +3765,7 @@
         "src/modules/ui/Layout.cpp"
       ],
       "tests": [
-        "test/ui_progress_size.cpp"
+        "test/integration/ui-workflows/ui_progress_size.cpp"
       ],
       "provides": [],
       "requires": [],

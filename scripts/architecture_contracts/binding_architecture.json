@@ -17,8 +17,8 @@
         "docs/dev/脚本契约架构映射.md"
       ],
       "tests": [
-        "test/scene_binding_architecture.cpp",
-        "test/mcp_binding_architecture.cpp",
+        "test/integration/script-api/scene_binding_architecture.cpp",
+        "test/integration/concurrency/mcp_binding_architecture.cpp",
         "scripts/tests/test_binding_architecture.py"
       ],
       "provides": [],

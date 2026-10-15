@@ -14,7 +14,7 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/building.cpp",
+        "test/unit/building/building.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [

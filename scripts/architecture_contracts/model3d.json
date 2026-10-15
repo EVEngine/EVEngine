@@ -15,8 +15,8 @@
         "docs/usr/modules/model3d.md"
       ],
       "tests": [
-        "test/model3d.cpp",
-        "test/resource_lifetime.cpp"
+        "test/integration/asset-import/model3d.cpp",
+        "test/integration/render-presentation/resource_lifetime.cpp"
       ],
       "provides": [],
       "requires": [

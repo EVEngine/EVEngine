@@ -16,9 +16,9 @@
         "docs/dev/ProjectSemanticIndex设计.md"
       ],
       "tests": [
-        "test/mcp_project_index.cpp",
-        "test/rpg_classic_semantic_index.cpp",
-        "test/script_structure.cpp",
+        "test/integration/file-io/mcp_project_index.cpp",
+        "test/integration/script-api/rpg_classic_semantic_index.cpp",
+        "test/unit/common/script_structure_unit.cpp",
         "scripts/tests/test_binding_semantics.py"
       ],
       "provides": [],
@@ -43,7 +43,7 @@
       "trim": {
         "claim": "Source projection only; no binary-trim claim",
         "absent_profile": "Project tools require desktop devtools; unavailable bindings remain unknown.",
-        "evidence": "test/mcp_project_index.cpp"
+        "evidence": "test/integration/file-io/mcp_project_index.cpp"
       }
     }
   ]

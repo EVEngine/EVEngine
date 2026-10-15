@@ -254,7 +254,7 @@ def partition(
     tables: dict[str, object], test_dir: Path = TEST_DIR
 ) -> tuple[dict[str, list[Path]], list[str]]:
     """Classify every test_dir/*.cpp; used by the checker (no configure needed)."""
-    return classify_paths(sorted(test_dir.glob("*.cpp")), tables)
+    return classify_paths(sorted(test_dir.glob("*.cpp")) + sorted((test_dir / "unit").rglob("*.cpp")) + sorted((test_dir / "integration").rglob("*.cpp")), tables)
 
 
 def emit_cmake(
@@ -333,7 +333,7 @@ def main(argv: list[str] | None = None) -> int:
             if line.strip()
         ]
     else:
-        paths = sorted(TEST_DIR.glob("*.cpp"))
+        paths = sorted(TEST_DIR.glob("*.cpp")) + sorted((TEST_DIR / "unit").rglob("*.cpp")) + sorted((TEST_DIR / "integration").rglob("*.cpp"))
 
     buckets, errors = classify_paths(paths, tables)
     if errors:

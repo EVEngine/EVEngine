@@ -73,7 +73,7 @@ six-face 目录在 scene shard 更新；无架构例外，无新裁剪等级声�
 
 ## 验证入口与结果
 
-新增 test/scene_relations.cpp 覆盖 schema/migration、删除/撤销、违规/不可测量、指定支撑、
+新增 test/integration/gameplay-composition/scene_relations.cpp 覆盖 schema/migration、删除/撤销、违规/不可测量、指定支撑、
 锁定障碍、无副作用预览、版本冲突与 Y-X-Z 复合旋转。定向 composition target 同时纳入
 既有 scene_physics_placement.cpp，保证旧摆放模式回归覆盖。
 

@@ -19,7 +19,7 @@ createModel(id,name,sx,sy,sz) 创建尺寸确定的模型，检查合法尺寸�
 
 ## 核对证据
 
-实现：[voxel_editor.cpp](../../../src/modules/voxel/editor/voxel_editor.cpp)。流程与边界测试：[editor_voxel_catalog_script.cpp](../../../test/editor_voxel_catalog_script.cpp)。
+实现：[voxel_editor.cpp](../../../src/modules/voxel/editor/voxel_editor.cpp)。流程与边界测试：[editor_voxel_catalog_script.cpp](../../../test/integration/script-api/editor_voxel_catalog_script.cpp)。
 先看测试中的 fixture/资源条件，再移植到游戏；没有脚本方法的 C++ 契约不自动可调用。
 
 补充入口见 [绑定参考](voxel_editor/api-reference.md)；通用工作区与撤销见 [Editor](editor.md)。

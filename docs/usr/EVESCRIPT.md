@@ -1147,6 +1147,6 @@ quit 取消订阅和释放游戏拥有的资源。回调默认在游戏线程执
 - **在 render 内读文件/创建世界**：将昂贵工作移到显式加载阶段，避免每帧重复开销。
 
 本文语义核对入口：语言扩展见 [ScriptCompiler](../../src/engine/common/ScriptCompiler.cpp)
-及 [编译器测试](../../test/script_compiler.cpp)，模块见
-[模块测试](../../test/script_module.cpp)，全局对象、辅助函数与帧循环见
+及 [编译器测试](../../test/integration/script-api/script_compiler.cpp)，模块见
+[模块测试](../../test/integration/script-api/script_module.cpp)，全局对象、辅助函数与帧循环见
 [load.nut](../../src/scripts/load.nut)。接口版本以所使用 SDK 的契约为准。

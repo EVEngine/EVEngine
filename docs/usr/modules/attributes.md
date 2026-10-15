@@ -52,8 +52,8 @@ RPG/Combat 已拥有属性时，用它们的接口取得或同步属性，不再
 验证排序、缺失属性、非法 operation、重复 ID 和按来源移除；浮点计算使用游戏指定容差。
 
 证据：[Attributes.cpp](../../../src/modules/attributes/Attributes.cpp)、
-[attributes.cpp](../../../test/attributes.cpp)、
-[RPG 属性统一测试](../../../test/attributes_rpg_unification.cpp)。
+[attributes.cpp](../../../test/unit/attributes/attributes.cpp)、
+[RPG 属性统一测试](../../../test/integration/gameplay-composition/attributes_rpg_unification.cpp)。
 
 ## 补充绑定参考
 

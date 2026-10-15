@@ -54,7 +54,7 @@ accepted / enter 只在 commit 完成后产生；rejected 只表示本次尝试�
 
 ## 验证入口
 
-`test/container_transfer.cpp` 保留 common、Card、Inventory、Zone 与 staged transfer 的既有覆盖；`test/container_adapters.cpp` 覆盖：
+`test/integration/gameplay-composition/container_transfer.cpp` 保留 common、Card、Inventory、Zone 与 staged transfer 的既有覆盖；`test/integration/physics-simulation/container_adapters.cpp` 覆盖：
 
 - Vehicle Seat 与 Building Garrison 的 descriptor / ordering / capacity parity；
 - Screen / World2D / World3D / Grid 的编译期不可混用；

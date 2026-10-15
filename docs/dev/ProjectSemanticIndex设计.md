@@ -78,7 +78,7 @@ EveScript 前端通过词法与结构表达式分析保留命名类、字段、�
 
 ### 验证入口
 
-`test/mcp_project_index.cpp` 验证完整六类链路、上下文版本、文件复用、内容修改、中文路径重命名、删除、坏清单／来源、歧义、预算及 MCP stdio；`test/rpg_classic_semantic_index.cpp` 真正执行项目的 `quest_scene.nut` 与 `tests/quest_scene_probe.nut`，检查任务领奖前后、事件内容和原生 SceneHost 节点状态。已有真实主脚本编译和双任务存档恢复测试继续作为回归。
+`test/integration/file-io/mcp_project_index.cpp` 验证完整六类链路、上下文版本、文件复用、内容修改、中文路径重命名、删除、坏清单／来源、歧义、预算及 MCP stdio；`test/integration/script-api/rpg_classic_semantic_index.cpp` 真正执行项目的 `quest_scene.nut` 与 `tests/quest_scene_probe.nut`，检查任务领奖前后、事件内容和原生 SceneHost 节点状态。已有真实主脚本编译和双任务存档恢复测试继续作为回归。
 
 ```sh
 ctest --test-dir <engine-build> -R 'projectIndex|semanticQuestEventSceneRuntime' --output-on-failure

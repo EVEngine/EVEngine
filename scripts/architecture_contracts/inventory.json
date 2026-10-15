@@ -15,8 +15,8 @@
         "docs/usr/modules/inventory.md"
       ],
       "tests": [
-        "test/inventory.cpp",
-        "test/rpg_quest_reward.cpp",
+        "test/integration/render-presentation/inventory.cpp", "test/unit/inventory/inventory_unit.cpp",
+        "test/integration/gameplay-composition/rpg_quest_reward.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [

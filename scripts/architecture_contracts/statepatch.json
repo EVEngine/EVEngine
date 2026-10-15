@@ -14,8 +14,8 @@
         "src/modules/statepatch/StateAccessAdapter.h"
       ],
       "tests": [
-        "test/statepatch.cpp",
-        "test/dialogue_state_integration.cpp",
+        "test/integration/script-api/statepatch.cpp", "test/unit/statepatch/statepatch_unit.cpp",
+        "test/integration/gameplay-composition/dialogue_state_integration.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [

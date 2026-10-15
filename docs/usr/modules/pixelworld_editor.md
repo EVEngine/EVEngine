@@ -22,4 +22,4 @@ fingerprint 进入已有的暂停世界事务热重载路径。世界不存在�
 入口；`examples/pixelworld` 默认打开该面板，便于边运行材料仿真边编辑 Catalog draft。
 
 源码：[`src/modules/pixelworld/editor/`](../../../src/modules/pixelworld/editor/)。
-测试：[`test/pixelworld_editor.cpp`](../../../test/pixelworld_editor.cpp)。
+测试：[`test/integration/gameplay-composition/pixelworld_editor.cpp`](../../../test/integration/gameplay-composition/pixelworld_editor.cpp)。

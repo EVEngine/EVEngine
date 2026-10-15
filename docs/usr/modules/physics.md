@@ -1077,7 +1077,7 @@ Body3D 都由调用者持有，函数不保存指针、不调用未知回调；�
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
 
 **源码：** [`src/modules/physics/`](../../../src/modules/physics/)
-**相关测试：** [`test/box2d.cpp`](../../../test/box2d.cpp)、[`test/box3d.cpp`](../../../test/box3d.cpp)、[`test/softbody.cpp`](../../../test/softbody.cpp)
+**相关测试：** [`test/integration/physics-simulation/box2d.cpp`](../../../test/integration/physics-simulation/box2d.cpp)、[`test/integration/physics-simulation/box3d.cpp`](../../../test/integration/physics-simulation/box3d.cpp)、[`test/integration/render-presentation/softbody.cpp`](../../../test/integration/render-presentation/softbody.cpp)
 
 ## 补充绑定参考
 

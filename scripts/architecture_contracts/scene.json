@@ -14,7 +14,7 @@
         "docs/dev/模块编排与裁剪架构.md"
       ],
       "tests": [
-        "test/scene.cpp",
+        "test/integration/script-api/scene.cpp", "test/unit/scene/scene_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "symbols": [
@@ -43,11 +43,11 @@
         "docs/dev/2026-10-11-scene-regions-validation.md"
       ],
       "tests": [
-        "test/scene_authoring.cpp",
-        "test/graphics_authoring_projection.cpp",
-        "test/scene_authoring_script.cpp",
-        "test/scene_relations.cpp",
-        "test/scene_regions.cpp"
+        "test/integration/gameplay-composition/scene_authoring.cpp",
+        "test/integration/gameplay-composition/graphics_authoring_projection.cpp",
+        "test/integration/script-api/scene_authoring_script.cpp",
+        "test/integration/gameplay-composition/scene_relations.cpp",
+        "test/integration/gameplay-composition/scene_regions.cpp"
       ],
       "state": "Hierarchy/TRS, source recipes, camera/lighting and persisted relation intent.",
       "authoritative_owner": "SceneAuthoringDocumentTarget owns values; SceneEditorSession owns the target and its transaction history. Bound imported SceneHost remains its own live authority.",
@@ -66,7 +66,7 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/scene.cpp",
+        "test/integration/script-api/scene.cpp", "test/unit/scene/scene_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -99,11 +99,11 @@
         "docs/dev/2026-10-12-scene-projected-overlap-validation.md"
       ],
       "tests": [
-        "test/scene_authoring.cpp",
-        "test/scene_authoring_script.cpp",
-        "test/scene_relations.cpp",
-        "test/scene_regions.cpp",
-        "test/scene_projected_overlap.cpp"
+        "test/integration/gameplay-composition/scene_authoring.cpp",
+        "test/integration/script-api/scene_authoring_script.cpp",
+        "test/integration/gameplay-composition/scene_relations.cpp",
+        "test/integration/gameplay-composition/scene_regions.cpp",
+        "test/integration/gameplay-composition/scene_projected_overlap.cpp"
       ],
       "schema": "eve.scene.authoring; hierarchy, sources, camera, lighting, relations and schemaId/schemaVersion. No native pointers or simulation state.",
       "version": "Integer 4; hierarchy v1, optional local-region v1.",
@@ -129,13 +129,13 @@
         "docs/dev/2026-10-12-scene-projected-overlap-validation.md"
       ],
       "tests": [
-        "test/scene_authoring.cpp",
-        "test/scene_authoring_script.cpp",
-        "test/graphics_authoring_projection.cpp",
+        "test/integration/gameplay-composition/scene_authoring.cpp",
+        "test/integration/script-api/scene_authoring_script.cpp",
+        "test/integration/gameplay-composition/graphics_authoring_projection.cpp",
         "tools/scene-qc-agent/tests/test_reference.py",
-        "test/scene_relations.cpp",
-        "test/scene_regions.cpp",
-        "test/scene_projected_overlap.cpp"
+        "test/integration/gameplay-composition/scene_relations.cpp",
+        "test/integration/gameplay-composition/scene_regions.cpp",
+        "test/integration/gameplay-composition/scene_projected_overlap.cpp"
       ],
       "provides": [
         "Existing IEditorAutomationTargetFactory adds scene-authoring; target exposes standard hierarchy/transform/snapshot interfaces."
@@ -189,10 +189,10 @@
         "src/modules/scene/SceneComponentScript.cpp"
       ],
       "tests": [
-        "test/scene.cpp",
+        "test/integration/script-api/scene.cpp", "test/unit/scene/scene_unit.cpp",
         "scripts/tests/test_architecture_contracts.py",
-        "test/scene_component_scheduling.cpp",
-        "test/scene_object_lifetime.cpp"
+        "test/integration/runtime-lifecycle/scene_component_scheduling.cpp",
+        "test/integration/script-api/scene_object_lifetime.cpp"
       ],
       "provides": [
         {

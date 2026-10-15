@@ -75,7 +75,7 @@ through the existing migration defaults, refuses graph topology before version 7
 rejects unknown versions/fields, and validates a candidate before committing.
 Graph-facing state is neutral zero. Existing grid saves retain their meaning.
 
-Regression evidence: `test/tactics_graph.cpp` builds an actual HexSphereTopology,
+Regression evidence: `test/integration/script-api/tactics_graph.cpp` builds an actual HexSphereTopology,
 checks pentagons, rejects invented adjacency/reverse edges, exercises the script
 binding and snapshot restore, and checks stale release.
 
@@ -93,7 +93,7 @@ The first real camera consumer failed at `sphereDirection(cell)[0]`: both
 `sphereDirection` and `sphereCornerDirection` returned a boxed C++ Value rather
 than the documented native Squirrel array. The binding now copies xyz into an
 `ssq::Array`. The script contract remains `[x,y,z]`, including the existing north-pole
-direction for invalid cells. `test/hexmap_sphere_script.cpp` checks actual script
+direction for invalid cells. `test/integration/script-api/hexmap_sphere_script.cpp` checks actual script
 indexing, length, unit magnitude and the invalid-cell case without requiring GPU
 initialization. The normal example exercises the same binding in a real frame.
 
@@ -125,7 +125,7 @@ The city panel requested a 12-pixel production bar. Layout measured 12 pixels,
 but the retained renderer called ImGui with its default height and full available
 width, so the visible bar consumed more room than the layout contract promised.
 The renderer now forwards each positive size axis and preserves automatic sizing
-for unspecified axes. `test/ui_progress_size.cpp` checks actual ImGui content
+for unspecified axes. `test/integration/ui-workflows/ui_progress_size.cpp` checks actual ImGui content
 extents for two different explicit sizes, rather than only reading stored props.
 No public API, ECS lifetime or serialization format changes are involved.
 

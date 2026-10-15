@@ -16,12 +16,12 @@
         "cmake/profile_checks.cmake"
       ],
       "tests": [
-        "test/crowd.cpp",
-        "test/crowd_contacts.cpp",
-        "test/crowd_script.cpp",
-        "test/crowd_interaction.cpp",
-        "test/crowd_spawn.cpp",
-        "test/crowd_avoidance.cpp"
+        "test/unit/crowd/crowd.cpp",
+        "test/integration/script-api/crowd_contacts.cpp", "test/unit/crowd/crowd_contacts_unit.cpp",
+        "test/integration/script-api/crowd_script.cpp",
+        "test/unit/crowd/crowd_interaction.cpp",
+        "test/integration/script-api/crowd_spawn.cpp", "test/unit/crowd/crowd_spawn_unit.cpp",
+        "test/unit/crowd/crowd_avoidance.cpp"
       ],
       "provides": [],
       "requires": [],

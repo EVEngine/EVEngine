@@ -99,8 +99,8 @@ WebGPU 对重复输入共用一个存储声明，例如 `sdpa(q, q, q)`，避免
 ### 跑一个真实的 mini LLM（TinyStories-gpt2-3M）
 
 用预训练权重实测整个推理管线：`calum/tinystories-gpt2-3M`（8 层、d=64、16 头、
-GPT-2 BPE 词表 50257，TinyStories 语料训练）。测试 [test/tensor_llm.cpp]
-(../../../test/tensor_llm.cpp) 用 TF 算子逐层搭出完整 GPT-2 图：
+GPT-2 BPE 词表 50257，TinyStories 语料训练）。测试 [test/integration/file-io/tensor_llm.cpp]
+(../../../test/integration/file-io/tensor_llm.cpp) 用 TF 算子逐层搭出完整 GPT-2 图：
 `embedding`（token + 位置）→ 8 × { `layernormWB` → 多头 `sdpaMasked`（因果 mask）
 → 残差 → MLP(`gelu`) → 残差 } → `layernormWB` → `matmul(lm_head)` → `argmax`
 贪婪采样。验证结果：

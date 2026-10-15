@@ -34,7 +34,7 @@
         "src/engine/common/StateAccess.h"
       ],
       "tests": [
-        "test/snapshot_envelope.cpp",
+        "test/integration/gameplay-composition/snapshot_envelope.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "state": "Mutable runtime state, persistent snapshot state and cached projections are named separately.",
@@ -54,7 +54,7 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/time_contract.cpp",
+        "test/unit/common/time_contract_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "time_source": "SimulationStep/SimulationTick supplied by the scheduler; wall clock is not read by deterministic systems.",
@@ -98,8 +98,8 @@
         "docs/dev/Eve-Schema子集与绑定契约.md"
       ],
       "tests": [
-        "test/snapshot_envelope.cpp",
-        "test/schema_contract.cpp",
+        "test/integration/gameplay-composition/snapshot_envelope.cpp",
+        "test/unit/schema/schema_contract.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "schema": "stable logical schema id and content hash identify the payload.",
@@ -143,8 +143,8 @@
         "src/modules/physics/backend/SimulationBackend.h"
       ],
       "tests": [
-        "test/physics_artifact_provider.cpp",
-        "test/procgen_artifact_publish.cpp",
+        "test/integration/physics-simulation/physics_artifact_provider.cpp",
+        "test/integration/gameplay-composition/procgen_artifact_publish.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "contract": "provider implementations expose the same Result/status, ownership, determinism and failure semantics.",

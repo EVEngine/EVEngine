@@ -509,7 +509,9 @@ Or use `make build/win32` / `make build/macosx-debug` etc. to configure and buil
 `BUILD_TESTING` is on by default. After building:
 
 ```sh
-make test/win32-debug    # runs build/win32-debug/test/Debug/unit_test.exe
+make test/win32-debug    # runs the configured C++ test suite
+make test/win32-debug TEST_LEVEL=unit          # local C++ logic; no rendering setup
+make test/win32-debug TEST_LEVEL=integration   # runtime/composition coverage
 make test/win32          # Release tests
 make test/linux-debug
 make test/linux

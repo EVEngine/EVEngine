@@ -87,9 +87,9 @@ checked API，不再以 `lastError` 或 `nullptr` 作为主要失败通道。
 
 ## 验证边界
 
-`test/definition_runtime.cpp` 覆盖四种 policy、generation stale、atomic
+`test/integration/gameplay-composition/definition_runtime.cpp` 覆盖四种 policy、generation stale、atomic
 failure，以及 Card/Effects 两个真实 typed consumer 的解析和投影；
-`test/definition_runtime_skill_vehicle.cpp` 覆盖 Skill/Vehicle adapter 的
+`test/integration/gameplay-composition/definition_runtime_skill_vehicle.cpp` 覆盖 Skill/Vehicle adapter 的
 generation-qualified identity、active reject、typed rebuild、实体投影、
 snapshot hash/restore 与 stale snapshot rejection。
 本切片不修改 physics、procgen、editor、particles、animation；这些模块的

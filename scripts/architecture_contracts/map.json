@@ -14,7 +14,7 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/map.cpp",
+        "test/integration/asset-import/map.cpp", "test/unit/map/map_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [

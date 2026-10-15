@@ -141,6 +141,6 @@ simulation-thread 操作。它只扫描显式的 inclusive 有限区域，保留
 示例：[`examples/pixelworld`](../../../examples/pixelworld/)。
 
 源码：[`src/modules/pixelworld/`](../../../src/modules/pixelworld/)。测试：
-[`test/pixelworld.cpp`](../../../test/pixelworld.cpp) 与
-[`test/pixelworld_control.cpp`](../../../test/pixelworld_control.cpp)、
-[`test/pixelworld_generation.cpp`](../../../test/pixelworld_generation.cpp)。
+[`test/unit/pixelworld/pixelworld.cpp`](../../../test/unit/pixelworld/pixelworld.cpp) 与
+[`test/unit/pixelworld/pixelworld_control.cpp`](../../../test/unit/pixelworld/pixelworld_control.cpp)、
+[`test/unit/pixelworld/pixelworld_generation.cpp`](../../../test/unit/pixelworld/pixelworld_generation.cpp)。

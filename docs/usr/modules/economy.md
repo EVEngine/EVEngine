@@ -26,7 +26,7 @@ assert(wallet.get(1, "tutorial_gold") == 50);
 
 只有扣款成功后才能给物品。正式购买若还包含背包容量、库存等可能失败的参与者，必须用
 业务域的事务入口；“先扣钱，再 try 加物品”不自动原子，见[事务](transaction.md)及
-[商店集成测试](../../../test/rpg_shop_transaction.cpp)。
+[商店集成测试](../../../test/integration/gameplay-composition/rpg_shop_transaction.cpp)。
 
 ## 任务二：处理满仓与采集
 
@@ -46,7 +46,7 @@ for (local i = 0; i < wallet.getEventCount(); ++i)
 检查 `assign(node)` → 固定 tick 调用 `collector.tick(player)` → 读取 cargo、stateName、
 trips 与账本。清理前调用 `clearAssignment`，停止 tick，再按对象接口释放节点和采集者。
 `tick` 不是 `dt` 秒；不能每个渲染帧随意推进。完整行为及满仓案例见
-[economy.cpp](../../../test/economy.cpp)。
+[economy.cpp](../../../test/integration/script-api/economy.cpp)。
 
 ## 与 RTS、Agent 组合
 

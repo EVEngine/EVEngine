@@ -1,7 +1,10 @@
 # Independent Crowd contract tests; CTest can run this directory alone.
 enable_testing()
+include("${CMAKE_SOURCE_DIR}/cmake/TestLevels.cmake")
+eve_configure_test_levels(EVE_TEST_LEVEL_FILE)
+include("${EVE_TEST_LEVEL_FILE}")
 
-add_executable(eve_crowd_check
+eve_add_test_executable(eve_crowd_check
     "${CMAKE_SOURCE_DIR}/test/profile/crowd_main.cpp"
     "${CMAKE_SOURCE_DIR}/test/crowd.cpp"
     "${CMAKE_SOURCE_DIR}/test/crowd_contacts.cpp"
@@ -17,8 +20,10 @@ if(WIN32)
     target_link_libraries(eve_crowd_check PRIVATE EVBacktrace)
 endif()
 # Keep the normal process-isolated test contract, even for this small target.
-foreach(_eve_crowd_source IN ITEMS crowd.cpp crowd_contacts.cpp crowd_interaction.cpp crowd_spawn.cpp crowd_avoidance.cpp)
-    file(STRINGS "${CMAKE_SOURCE_DIR}/test/${_eve_crowd_source}" _eve_crowd_cases
+set(_eve_crowd_sources crowd.cpp crowd_contacts.cpp crowd_interaction.cpp crowd_spawn.cpp crowd_avoidance.cpp)
+eve_resolve_test_sources(_eve_crowd_sources ${_eve_crowd_sources})
+foreach(_eve_crowd_source IN LISTS _eve_crowd_sources)
+    file(STRINGS "${_eve_crowd_source}" _eve_crowd_cases
         REGEX "^TEST_CASE\\(\"")
     foreach(_eve_crowd_case IN LISTS _eve_crowd_cases)
         string(REGEX MATCH "TEST_CASE\\(\"([^\"]+)\"" _eve_crowd_match "${_eve_crowd_case}")
@@ -28,11 +33,12 @@ foreach(_eve_crowd_source IN ITEMS crowd.cpp crowd_contacts.cpp crowd_interactio
         set_tests_properties("profile.${_eve_crowd_name}" PROPERTIES LABELS
             "source:${_eve_crowd_source};crowd"
             FAIL_REGULAR_EXPRESSION "Assertion Failed" TIMEOUT 60)
+        eve_label_test_case("profile.${_eve_crowd_name}" "${_eve_crowd_source}" "${_eve_crowd_name}")
     endforeach()
 endforeach()
 
 if(TARGET EVRts AND TARGET eve)
-    add_executable(eve_rts_crowd_check
+    eve_add_test_executable(eve_rts_crowd_check
         "${CMAKE_SOURCE_DIR}/test/profile/crowd_main.cpp"
         # Asset import registers a command with the real registry; do not bring
         # the unrelated CLI command implementations and their devtools providers.
@@ -52,14 +58,17 @@ if(TARGET EVRts AND TARGET eve)
     if(WIN32)
         target_link_libraries(eve_rts_crowd_check PRIVATE EVBacktrace)
     endif()
-    foreach(_eve_rts_source IN ITEMS rts_orders.cpp rts_crowd.cpp rts_production.cpp rts_crowd_production.cpp rts_formation.cpp rts_groups.cpp rts_restore.cpp)
-        file(STRINGS "${CMAKE_SOURCE_DIR}/test/${_eve_rts_source}" _eve_rts_cases REGEX "^TEST_CASE\\(\"")
+    set(_eve_rts_sources rts_orders.cpp rts_crowd.cpp rts_production.cpp rts_crowd_production.cpp rts_formation.cpp rts_groups.cpp rts_restore.cpp)
+eve_resolve_test_sources(_eve_rts_sources ${_eve_rts_sources})
+foreach(_eve_rts_source IN LISTS _eve_rts_sources)
+        file(STRINGS "${_eve_rts_source}" _eve_rts_cases REGEX "^TEST_CASE\\(\"")
         foreach(_eve_rts_case IN LISTS _eve_rts_cases)
             string(REGEX MATCH "TEST_CASE\\(\"([^\"]+)\"" _eve_rts_match "${_eve_rts_case}")
             set(_eve_rts_name "${CMAKE_MATCH_1}")
             add_test(NAME "profile.${_eve_rts_name}" COMMAND eve_rts_crowd_check "--testcase=^${_eve_rts_name}$")
             set_tests_properties("profile.${_eve_rts_name}" PROPERTIES LABELS "source:${_eve_rts_source};rts-crowd"
                 FAIL_REGULAR_EXPRESSION "Assertion Failed" TIMEOUT 60)
+            eve_label_test_case("profile.${_eve_rts_name}" "${_eve_rts_source}" "${_eve_rts_name}")
         endforeach()
     endforeach()
 endif()

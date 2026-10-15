@@ -118,7 +118,7 @@ auto ranked = pipeline.executePreset(ctx, "sensing.builtin.coneSelect");
 
 **源码：** [`src/modules/sensing/`](../../../src/modules/sensing/)  
 **设计文档：** [`docs/dev/感知与目标选择系统设计.md`](../../dev/感知与目标选择系统设计.md)  
-**相关测试：** [`test/sensing.cpp`](../../../test/sensing.cpp)、[`test/targeting.cpp`](../../../test/targeting.cpp)
+**相关测试：** [`test/integration/script-api/sensing.cpp`](../../../test/integration/script-api/sensing.cpp)、[`test/integration/physics-simulation/targeting.cpp`](../../../test/integration/physics-simulation/targeting.cpp)
 
 ## 消费者迁移（Phase 3）
 

@@ -214,5 +214,5 @@ MCP 工具 eve_play 传 request，例如：
 当前 eve_play 在 .eve 归档路径下不能发现 game.agent.json，正式动作验证先运行目录工程。
 manifest 本身不是测试通过报告；真实移动仍需键盘交互，规则断言不能代替输入验收。
 
-本教程源码与脚本断言见 [script_user_doc_examples.cpp](../../test/script_user_doc_examples.cpp)；
+本教程源码与脚本断言见 [script_user_doc_examples.cpp](../../test/integration/script-api/script_user_doc_examples.cpp)；
 更新教程时同步核对实际文件，完整验证记录在 [Review](REVIEW.md)。

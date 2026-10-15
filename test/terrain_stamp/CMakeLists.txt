@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.21)
 project(EVEngineTerrainStampTests LANGUAGES C CXX)
 get_filename_component(EVE_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
+include("${EVE_ROOT}/cmake/TestLevels.cmake")
+eve_configure_test_levels(EVE_TEST_LEVEL_FILE)
+include("${EVE_TEST_LEVEL_FILE}")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -31,6 +34,9 @@ add_library(terrain_stamp_core STATIC
     "${EVE_ROOT}/src/modules/procgen/Params.cpp"
     "${EVE_ROOT}/src/modules/procgen/Semantic.cpp"
     "${EVE_ROOT}/src/engine/common/Value.cpp"
+    "${EVE_ROOT}/src/engine/common/Diagnostic.cpp"
+    "${EVE_ROOT}/src/engine/common/Status.cpp"
+    "${EVE_ROOT}/src/engine/common/Result.cpp"
     "${EVE_ROOT}/src/engine/common/Json.cpp")
 target_include_directories(terrain_stamp_core PUBLIC "${EVE_ROOT}/src/engine" "${EVE_ROOT}/src/modules")
 target_link_libraries(terrain_stamp_core PUBLIC zeroerr)
@@ -47,7 +53,7 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     target_compile_definitions(terrain_stamp_script PUBLIC _SQ64)
 endif()
 target_link_libraries(terrain_stamp_script PUBLIC terrain_stamp_core)
-add_executable(terrain_stamp_tests "${EVE_ROOT}/test/profile/gltf_animation_main.cpp"
+eve_add_test_executable(terrain_stamp_tests "${EVE_ROOT}/test/profile/gltf_animation_main.cpp"
     "${EVE_ROOT}/test/terrain_stamp.cpp" "${EVE_ROOT}/test/terrain_stamp_script.cpp"
     "${EVE_ROOT}/test/terrain_mask.cpp" "${EVE_ROOT}/test/terrain_effect.cpp" "${EVE_ROOT}/test/terrain_erosion.cpp" "${EVE_ROOT}/test/terrain_water.cpp" "${EVE_ROOT}/test/terrain_sediment.cpp" "${EVE_ROOT}/test/terrain_generation_session.cpp" "${EVE_ROOT}/test/terrain_detail.cpp" "${EVE_ROOT}/test/terrain_tree.cpp" "${EVE_ROOT}/test/terrain_multitile.cpp" "${EVE_ROOT}/test/grass_billboard.cpp"
     "${EVE_ROOT}/src/modules/graphics/GrassBillboards.cpp"
@@ -69,8 +75,10 @@ if(MSVC)
     endforeach()
 endif()
 enable_testing()
-foreach(source terrain_stamp.cpp terrain_stamp_script.cpp terrain_mask.cpp terrain_effect.cpp terrain_erosion.cpp terrain_water.cpp terrain_sediment.cpp terrain_generation_session.cpp terrain_detail.cpp terrain_tree.cpp terrain_multitile.cpp grass_billboard.cpp grass_wind.cpp tree_wind.cpp)
-    file(STRINGS "${EVE_ROOT}/test/${source}" cases REGEX "^TEST_CASE\\(\"")
+set(_stamp_sources terrain_stamp.cpp terrain_stamp_script.cpp terrain_mask.cpp terrain_effect.cpp terrain_erosion.cpp terrain_water.cpp terrain_sediment.cpp terrain_generation_session.cpp terrain_detail.cpp terrain_tree.cpp terrain_multitile.cpp grass_billboard.cpp grass_wind.cpp tree_wind.cpp)
+eve_resolve_test_sources(_stamp_sources ${_stamp_sources})
+foreach(source IN LISTS _stamp_sources)
+    file(STRINGS "${source}" cases REGEX "^TEST_CASE\\(\"")
     foreach(line IN LISTS cases)
         string(REGEX REPLACE "TEST_CASE\\(\"([^\"]+)\".*" "\\1" name "${line}")
         string(REPLACE "." "\\." pattern "${name}")
@@ -79,5 +87,8 @@ foreach(source terrain_stamp.cpp terrain_stamp_script.cpp terrain_mask.cpp terra
         set_tests_properties("${name}" PROPERTIES
             PASS_REGULAR_EXPRESSION "TEST CASE:[ \t]+1[ \t]+0[ \t]+0[ \t]+0"
             FAIL_REGULAR_EXPRESSION "Assertion Failed" LABELS "procgen;cpu;stamp")
+        eve_label_test_case("${name}" "${source}" "${name}")
     endforeach()
 endforeach()
+include("${EVE_ROOT}/cmake/TestImpact.cmake")
+eve_enable_test_impact(TARGETS terrain_stamp_tests)

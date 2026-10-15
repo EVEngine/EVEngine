@@ -1002,7 +1002,7 @@ height scale 和 wall UV。`Hd2dFramePreviewService` 可按时间确定性计算
 
 **源码：** [`src/modules/editor/`](../../../src/modules/editor/)  
 **设计文档：** [`docs/dev/编辑器模块设计.md`](../../dev/编辑器模块设计.md)  
-**相关测试：** [`test/editor.cpp`](../../../test/editor.cpp)
+**相关测试：** [`test/integration/gameplay-composition/editor.cpp`](../../../test/integration/gameplay-composition/editor.cpp)
 
 ### PR #287 新增绑定
 

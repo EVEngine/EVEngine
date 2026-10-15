@@ -184,7 +184,7 @@ function eve_render() {
 
 ## 7. 验证
 
-- `test/spritestack.cpp`：
+- `test/integration/asset-import/spritestack.cpp`：
   - 切片正确性（box 各层覆盖、sphere 中段比边缘覆盖更多、y 轴俯视切片圆形）；
   - 原始数组输入与异常路径；
   - 渲染回读：vertical/horizontal 各出一张 PNG 到 `build/.../test/out/`，

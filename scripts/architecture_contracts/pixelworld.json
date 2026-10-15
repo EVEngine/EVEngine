@@ -14,7 +14,7 @@
         "docs/dev/PixelWorld-Noita技术路线.md"
       ],
       "tests": [
-        "test/pixelworld.cpp",
+        "test/unit/pixelworld/pixelworld.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "symbols": [
@@ -39,7 +39,7 @@
         "docs/dev/PixelWorld-Noita技术路线.md"
       ],
       "tests": [
-        "test/pixelworld_parallel.cpp",
+        "test/integration/concurrency/pixelworld_parallel.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [

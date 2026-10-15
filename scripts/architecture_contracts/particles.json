@@ -14,7 +14,7 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/particles.cpp",
+        "test/integration/asset-import/particles.cpp", "test/unit/particles/particles_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
