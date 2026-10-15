@@ -90,7 +90,7 @@ public:
 
     [[nodiscard]] std::optional<eve::Value>                value(std::string_view key) const override;
     [[nodiscard]] std::optional<condition::ConditionResult> policy(std::string_view  name,
-                                                                  const eve::Value& arguments) const override;
+                                                                   const eve::Value& arguments) const override;
 
     /** @brief Export deterministic compact JSON for runtime snapshots. */
     [[nodiscard]] std::string snapshotJson() const;

@@ -198,7 +198,8 @@ TEST_CASE("dialogueState.usesSharedConditionExplanation") {
 
     const auto result = context.evaluate(specification);
     CHECK(!result.passed());
-    CHECK(static_cast<int>(result.reasonCode()) == static_cast<int>(eve::condition::ConditionReasonCode::ValueMismatch));
+    CHECK(static_cast<int>(result.reasonCode()) ==
+          static_cast<int>(eve::condition::ConditionReasonCode::ValueMismatch));
     CHECK(std::string(eve::condition::conditionReasonCodeName(result.reasonCode())) == "value_mismatch");
     const Value* key = result.details().find("key");
     REQUIRE(key != nullptr);

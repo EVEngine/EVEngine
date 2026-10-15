@@ -259,8 +259,8 @@ void DialogueFlow::configureIntegration(IntegrationConfig config) {
             return eve::dnut::SequenceConditionOutcome{value.asBool(), value.asBool() ? "" : "expression_false", {}};
         }
         eve::condition::ConditionResult result = configuredConditionEvaluator_
-                                                    ? configuredConditionEvaluator_(specification)
-                                                    : stateContext_.evaluate(specification);
+                                                     ? configuredConditionEvaluator_(specification)
+                                                     : stateContext_.evaluate(specification);
         lastConditionResult_                  = result;
         return eve::dnut::SequenceConditionOutcome{
             result.passed(), std::string(eve::condition::conditionReasonCodeName(result.reasonCode())), {}};

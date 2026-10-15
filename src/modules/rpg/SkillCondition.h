@@ -59,7 +59,7 @@ public:
     /** @copydoc condition::EvaluationContext::policy */
     /** @brief Policy. */
     [[nodiscard]] std::optional<condition::ConditionResult> policy(std::string_view  name,
-                                                                  const eve::Value& arguments) const override;
+                                                                   const eve::Value& arguments) const override;
 
 private:
     const RPGActor*        actor_      = nullptr;
@@ -79,8 +79,8 @@ public:
      * @return A stable, UI-ready condition explanation.
      */
     [[nodiscard]] static condition::ConditionResult evaluate(const RPGActor* actor, const SkillDefinition& definition,
-                                                            const condition::Condition& condition,
-                                                            SkillConditionQueries      queries = {});
+                                                             const condition::Condition& condition,
+                                                             SkillConditionQueries       queries = {});
 };
 
 }  // namespace eve::rpg

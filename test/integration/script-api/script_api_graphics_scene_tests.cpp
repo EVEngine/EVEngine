@@ -2811,14 +2811,14 @@ TEST_CASE("property_access.script_validation_matches_shared_contract") {
 }  // namespace test_script_module
 #endif
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_script_ownership)
-#include "PrivateTestScope.h"
 #include <memory>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <string>
+#include "PrivateTestScope.h"
 #include "authority/Authority.h"
 #include "common/SquirrelOwnership.h"
-#include "npc_ai/Decision.h"
 #include "effects/Effects.h"
+#include "npc_ai/Decision.h"
 #include "orders/CommandQueue.h"
 #include "procgen/Procgen.h"
 #include "production/Production.h"

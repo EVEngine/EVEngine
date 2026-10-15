@@ -346,7 +346,7 @@ std::optional<eve::Value> SkillConditionContext::value(std::string_view key) con
 }
 
 std::optional<condition::ConditionResult> SkillConditionContext::policy(std::string_view  name,
-                                                                       const eve::Value& arguments) const {
+                                                                        const eve::Value& arguments) const {
     if (auto authority = condition::resolveAuthorityAllow(name, arguments, [this](std::string_view scope) {
             if (!queries_.authority) return std::optional<bool>{};
             return queries_.authority(scope);
@@ -358,8 +358,8 @@ std::optional<condition::ConditionResult> SkillConditionContext::policy(std::str
 }
 
 condition::ConditionResult SkillConditionAdapter::evaluate(const RPGActor* actor, const SkillDefinition& definition,
-                                                          const condition::Condition& condition,
-                                                          SkillConditionQueries      queries) {
+                                                           const condition::Condition& condition,
+                                                           SkillConditionQueries       queries) {
     SkillConditionContext context(actor, definition, std::move(queries));
     return condition.evaluate(context);
 }

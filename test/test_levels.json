@@ -7368,21 +7368,6 @@
         "model3d_normals.cpp"
       ]
     },
-    "unit/npc_ai/decision_context_tests.cpp": {
-      "role": "tests",
-      "default": "local-logic",
-      "cases": {
-        "local-logic": [
-          "decision.blackboardsAndFsmAreExplicit",
-          "decision.utilityIsDeterministic",
-          "decision.influenceAndSnapshotRoundTrip"
-        ]
-      },
-      "module": "npc_ai",
-      "origins": [
-        "decision_context.cpp"
-      ]
-    },
     "unit/npc_ai/npc_ai_tests.cpp": {
       "role": "tests",
       "default": "local-logic",
@@ -7403,14 +7388,18 @@
           "npc_ai.ecsCompositionPublishesDerivedProjection",
           "npc_ai.ecsLinkDefinesAgentFirstAndEntityFirstCleanup",
           "npc_ai.smartObjectQueryAndLeaseAreDeterministic",
-          "npc_ai.smartObjectDefinesBothDestructionOrders"
+          "npc_ai.smartObjectDefinesBothDestructionOrders",
+          "decision.blackboardsAndFsmAreExplicit",
+          "decision.utilityIsDeterministic",
+          "decision.influenceAndSnapshotRoundTrip"
         ]
       },
       "module": "npc_ai",
       "origins": [
         "npc_ai.cpp",
         "npc_ai_ecs.cpp",
-        "npc_ai_smart_object.cpp"
+        "npc_ai_smart_object.cpp",
+        "decision_context.cpp"
       ]
     },
     "unit/orders/orders_unit.cpp": {

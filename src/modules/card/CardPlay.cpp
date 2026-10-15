@@ -57,7 +57,7 @@ std::optional<eve::Value> CardPlayConditionContext::value(std::string_view key) 
 }
 
 std::optional<condition::ConditionResult> CardPlayConditionContext::policy(std::string_view  name,
-                                                                          const eve::Value& arguments) const {
+                                                                           const eve::Value& arguments) const {
     if (auto authority = condition::resolveAuthorityAllow(name, arguments, [this](std::string_view scope) {
             if (!queries_.authority) return std::optional<bool>{};
             return queries_.authority(scope);
@@ -69,8 +69,8 @@ std::optional<condition::ConditionResult> CardPlayConditionContext::policy(std::
 }
 
 condition::ConditionResult CardPlayConditionAdapter::evaluate(const CardData* card, const CardDefinition& definition,
-                                                             const condition::Condition& condition,
-                                                             CardPlayConditionQueries   queries) {
+                                                              const condition::Condition& condition,
+                                                              CardPlayConditionQueries    queries) {
     CardPlayConditionContext context(card, definition, std::move(queries));
     return condition.evaluate(context);
 }

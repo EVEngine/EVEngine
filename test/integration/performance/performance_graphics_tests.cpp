@@ -141,11 +141,11 @@ namespace {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_emergence_perf)
-#include "PrivateTestScope.h"
 #include <chrono>
 #include <cstdio>
 #include <string>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "common/Capability.h"
 #include "common/Diagnostic.h"
 #include "common/IEconomy.h"

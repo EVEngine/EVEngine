@@ -62,7 +62,7 @@ public:
     /** @copydoc condition::EvaluationContext::policy */
     /** @brief Policy. */
     [[nodiscard]] std::optional<condition::ConditionResult> policy(std::string_view  name,
-                                                                  const eve::Value& arguments) const override;
+                                                                   const eve::Value& arguments) const override;
 
 private:
     const CardData*          card_       = nullptr;
@@ -82,8 +82,8 @@ public:
      * @return A stable explanation suitable for UI rejection text.
      */
     [[nodiscard]] static condition::ConditionResult evaluate(const CardData* card, const CardDefinition& definition,
-                                                            const condition::Condition& condition,
-                                                            CardPlayConditionQueries   queries = {});
+                                                             const condition::Condition& condition,
+                                                             CardPlayConditionQueries    queries = {});
 };
 
 /**

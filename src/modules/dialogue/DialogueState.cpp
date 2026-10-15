@@ -145,7 +145,8 @@ eve::Result<eve::condition::Condition> compileCondition(const eve::Value& specif
         if (!expected) expected = specification.find("value");
         if (!expected)
             return eve::Result<eve::condition::Condition>::success(eve::condition::attributeExists(state->asString()));
-        return eve::Result<eve::condition::Condition>::success(eve::condition::stateEquals(state->asString(), *expected));
+        return eve::Result<eve::condition::Condition>::success(
+            eve::condition::stateEquals(state->asString(), *expected));
     }
 
     const eve::Value* attribute = specification.find("attribute");
@@ -285,7 +286,7 @@ std::optional<eve::Value> StateEvaluationContext::value(std::string_view key) co
 }
 
 std::optional<eve::condition::ConditionResult> StateEvaluationContext::policy(std::string_view  name,
-                                                                             const eve::Value& arguments) const {
+                                                                              const eve::Value& arguments) const {
     if (auto authority = eve::condition::resolveAuthorityAllow(name, arguments, [this](std::string_view scope) {
             return queryProviders<bool>(subject_, provider_,
                                         [&](eve::IStateQuery* provider, const std::string& subject) {
@@ -350,7 +351,8 @@ eve::condition::ConditionResult DialogueStateContext::evaluate(const eve::Value&
         const eve::Diagnostic* diagnostic = compiled.error();
         const std::string      message    = diagnostic ? diagnostic->message() : "invalid dialogue condition";
         return eve::condition::ConditionResult::failed(eve::condition::ConditionReasonCode::InvalidCondition,
-                                                      eve::Value(), eve::Value::Object{{"error", eve::Value(message)}});
+                                                       eve::Value(),
+                                                       eve::Value::Object{{"error", eve::Value(message)}});
     }
     eve::condition::Condition condition = std::move(compiled).takeValue();
     return evaluate(condition);

@@ -207,7 +207,7 @@ public:
      * @return ConditionResult or a structured provider failure.
      */
     [[nodiscard]] virtual Result<condition::ConditionResult> evaluate(const ActionDefinition& definition,
-                                                                     const ActionRequest&    request) const = 0;
+                                                                      const ActionRequest&    request) const = 0;
 };
 
 /**

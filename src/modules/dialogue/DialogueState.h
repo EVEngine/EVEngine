@@ -104,7 +104,7 @@ public:
     /** @copydoc eve::condition::EvaluationContext::policy */
     /** @brief Policy. */
     [[nodiscard]] std::optional<eve::condition::ConditionResult> policy(std::string_view  name,
-                                                                       const eve::Value& arguments) const override;
+                                                                        const eve::Value& arguments) const override;
 
 private:
     std::string       subject_;
