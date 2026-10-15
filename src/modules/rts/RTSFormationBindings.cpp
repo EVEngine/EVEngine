@@ -41,6 +41,7 @@ Result<FormationSpec> parseFormation(const std::string& kind, float spacing, int
 }  // namespace
 
 void exposeFormationBindings(ssq::Class& cls) {
+    exposeRelocationBindings(cls);
     const auto vm = cls.getHandle();
     cls.addFunc("moveGroupUnits",
                 [vm](RTS* self, ssq::Array texts, float x, float y, const std::string& kind, float spacing, int columns,
@@ -54,6 +55,21 @@ void exposeFormationBindings(ssq::Class& cls) {
                     batch.target       = {x, y};
                     batch.formation    = std::move(formation).takeValue();
                     batch.leadDistance = leadDistance;
+                    return script::projectResult(vm, self->submitMovementGroup(batch), fanOutValue);
+                });
+    cls.addFunc("attackMoveGroupUnits",
+                [vm](RTS* self, ssq::Array texts, float x, float y, const std::string& kind, float spacing, int columns,
+                     float rotation, float leadDistance) -> ssq::Table {
+                    auto subjects = readSubjectArray(texts);
+                    if (!subjects) return script::projectStatusResult(vm, subjects.status());
+                    auto formation = parseFormation(kind, spacing, columns, rotation);
+                    if (!formation) return script::projectStatusResult(vm, formation.status());
+                    MovementGroupBatch batch;
+                    batch.units        = std::move(subjects).takeValue();
+                    batch.target       = {x, y};
+                    batch.formation    = std::move(formation).takeValue();
+                    batch.leadDistance = leadDistance;
+                    batch.kind         = OrderKind::AttackMove;
                     return script::projectResult(vm, self->submitMovementGroup(batch), fanOutValue);
                 });
     cls.addFunc("queueScriptGroupMove",

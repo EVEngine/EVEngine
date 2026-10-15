@@ -109,6 +109,17 @@ class ArchitectureContractTests(unittest.TestCase):
                 codes = {finding.code for finding in contracts.lint_api_shapes(lines)}
                 self.assertIn("undocumented-raw-pointer-api", codes)
 
+    def test_forward_system_borrow_does_not_introduce_ecs_definition(self):
+        lines = [
+            contracts.SourceLine("src/modules/test/Adapter.h", 3, "class JobSystem;"),
+            contracts.SourceLine("src/modules/test/Adapter.h", 4, "struct EVENGINE_API_WORLD OtherSystem;"),
+            contracts.SourceLine("src/modules/test/Adapter.h", 5, "class NewSystem {"),
+            contracts.SourceLine("src/modules/test/AdapterInline.h", 6, "class JobSystem; class InlineSystem {};"),
+        ]
+        findings = contracts.lint_contract_coverage(lines, {"entries": []})
+        self.assertEqual(2, len(findings))
+        self.assertEqual([5, 6], [finding.line for finding in findings])
+
     def test_new_link_and_system_need_catalogue_coverage(self):
         metadata = {
             "entries": [

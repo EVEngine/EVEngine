@@ -18,7 +18,7 @@ TEST_CASE("rts.crowd.arrivalPreservesResolvedSeparation") {
         move.target = {0.f, 0.f};
         REQUIRE(unit->orders()->values.enqueue(move).ok());
     }
-    const eve::SimulationStep step{eve::SimulationTick{1}, eve::Duration::fromSeconds(0.01).expect("test dt")};
+    eve::SimulationStep step{eve::SimulationTick{1}, eve::Duration::fromSeconds(0.01).expect("test dt")};
     REQUIRE(eve::rts::CrowdMotionSystem::step(step, crowd).ok());
     CHECK(units[0]->motion()->arrived);
     CHECK(units[1]->motion()->arrived);
@@ -46,7 +46,7 @@ TEST_CASE("rts.crowd.holdOrderResistsPushAndReplacementReleasesIt") {
     CommandSpec hold;
     hold.kind = OrderKind::HoldPosition;
     REQUIRE(held->orders()->values.enqueue(hold).ok());
-    const eve::SimulationStep step{eve::SimulationTick{1}, eve::Duration::fromSeconds(0.1).expect("test dt")};
+    eve::SimulationStep step{eve::SimulationTick{1}, eve::Duration::fromSeconds(0.1).expect("test dt")};
     REQUIRE(eve::rts::CrowdMotionSystem::step(step, crowd).ok());
     CHECK_EQ(held->motion()->x, 0.f);
     CHECK(neighbor->motion()->x >= 1.999f);
@@ -57,6 +57,7 @@ TEST_CASE("rts.crowd.holdOrderResistsPushAndReplacementReleasesIt") {
     move.kind   = OrderKind::Move;
     move.target = {-10.f, 0.f};
     REQUIRE(held->orders()->values.enqueue(move).ok());
+    step.tick = eve::SimulationTick{step.tick.value() + 1};
     REQUIRE(eve::rts::CrowdMotionSystem::step(step, crowd).ok());
     CHECK(held->motion()->x < 0.f);
     auto policy = crowd.getAgentInteraction(crowd.getNamedAgentIndex("held"));
@@ -88,9 +89,8 @@ TEST_CASE("rts.crowd.predictiveCrossingSurvivesEcsProjection") {
         REQUIRE(unit->orders()->values.enqueue(move).ok());
     }
     float minimum = 100.f;
-    for (std::uint64_t tick = 0; tick < 600; ++tick) {
-        const eve::SimulationStep step{eve::SimulationTick{tick},
-                                       eve::Duration::fromSeconds(1.0 / 60.0).expect("test dt")};
+    for (std::uint64_t tick = 1; tick <= 600; ++tick) {
+        eve::SimulationStep step{eve::SimulationTick{tick}, eve::Duration::fromSeconds(1.0 / 60.0).expect("test dt")};
         REQUIRE(eve::rts::CrowdMotionSystem::step(step, crowd).ok());
         minimum = std::min(minimum, std::hypot(units[0]->motion()->x - units[1]->motion()->x,
                                                units[0]->motion()->y - units[1]->motion()->y));
@@ -107,7 +107,7 @@ TEST_CASE("rts.crowd.stepBudgetFailureReturnsResult") {
     eve::crowd::Crowd crowd;
     Unit*             unit = Unit::createUnit();
     unit->crowd()->link    = eve::rts::CrowdLink::bind("budget").takeValue();
-    const eve::SimulationStep step{eve::SimulationTick{1}, eve::Duration::fromSeconds(10000.0).expect("test dt")};
+    eve::SimulationStep       step{eve::SimulationTick{1}, eve::Duration::fromSeconds(10000.0).expect("test dt")};
     auto                      result = eve::rts::CrowdMotionSystem::step(step, crowd);
     CHECK(!result.ok());
     unit->release();
@@ -122,17 +122,19 @@ TEST_CASE("rts.crowd.containmentRemovesFootprintAndDisembarkRebuildsIt") {
     passenger->crowd()->link    = eve::rts::CrowdLink::bind("passenger").takeValue();
     passenger->motion()->x      = 2.f;
     passenger->motion()->y      = 3.f;
-    const eve::SimulationStep step{eve::SimulationTick{1}, eve::Duration::fromSeconds(0.01).expect("test dt")};
+    eve::SimulationStep       step{eve::SimulationTick{1}, eve::Duration::fromSeconds(0.01).expect("test dt")};
     auto                      projected = eve::rts::CrowdMotionSystem::step(step, crowd);
     REQUIRE(projected.ok());
     CHECK(crowd.getNamedAgentIndex("passenger") >= 0);
     passenger->containment()->container = eve::rts::ContainerLink::bind(ecs::handle_of(transport)).takeValue();
+    step.tick                           = eve::SimulationTick{step.tick.value() + 1};
     projected                           = eve::rts::CrowdMotionSystem::step(step, crowd);
     REQUIRE(projected.ok());
     CHECK_EQ(crowd.getNamedAgentIndex("passenger"), -1);
     passenger->containment()->container = {};
     passenger->motion()->x              = 7.f;
     passenger->motion()->y              = 8.f;
+    step.tick                           = eve::SimulationTick{step.tick.value() + 1};
     projected                           = eve::rts::CrowdMotionSystem::step(step, crowd);
     REQUIRE(projected.ok());
     const auto index = crowd.getNamedAgentIndex("passenger");
@@ -160,13 +162,14 @@ TEST_CASE("rts.crowd.convoyWaitDefersArrivalAndResumesExistingOrder") {
     auto ordered = unit->orders()->values.replace(move);
     REQUIRE(ordered.ok());
     const auto                orderId = ordered.value();
-    const eve::SimulationStep step{eve::SimulationTick{1}, eve::Duration::fromSeconds(0.1).expect("test dt")};
+    eve::SimulationStep       step{eve::SimulationTick{1}, eve::Duration::fromSeconds(0.1).expect("test dt")};
     auto                      advanced = eve::rts::CrowdMotionSystem::step(step, crowd);
     REQUIRE(advanced.ok());
     CHECK_EQ(unit->motion()->x, 0.f);
     CHECK(!unit->motion()->arrived);
     unit->supply()->convoyWaiting = false;
     unit->motion()->arrivalRadius = 0.1f;
+    step.tick                     = eve::SimulationTick{step.tick.value() + 1};
     advanced                      = eve::rts::CrowdMotionSystem::step(step, crowd);
     REQUIRE(advanced.ok());
     CHECK(unit->motion()->x > 0.f);

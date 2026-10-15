@@ -9,6 +9,7 @@
 #include "common/Export.h"
 
 #include <cstdint>
+#include <memory>
 #include <ostream>
 #include <string>
 #include <string_view>
@@ -63,7 +64,8 @@ inline std::ostream& operator<<(std::ostream& stream, StatusCode code) { return 
 
 /**
  * @brief Structured status and zero or more diagnostics for an operation.
- * @note A Status returned by value is itself a nodiscard value.
+ * @note A Status returned by value is itself a nodiscard value. Success and copying immutable storage allocate no
+ * workspace.
  */
 class [[nodiscard("Status must be inspected or explicitly passed onward")]] EVENGINE_API_FOUNDATION Status {
 public:
@@ -75,10 +77,17 @@ public:
      * @param code Stable operation outcome.
      * @param diagnostics Structured explanations and context.
      */
-    Status(StatusCode code, std::vector<Diagnostic> diagnostics) : code_(code), diagnostics_(std::move(diagnostics)) {}
+    Status(StatusCode code, std::vector<Diagnostic> diagnostics) : code_(code) {
+        if (!diagnostics.empty())
+            diagnostics_ = std::make_shared<const std::vector<Diagnostic>>(std::move(diagnostics));
+    }
 
     /** @brief Construct a successful status with an explicit non-error outcome. */
-    static Status success(StatusCode code = StatusCode::Ok) { return Status(code, {}); }
+    static Status success(StatusCode code = StatusCode::Ok) {
+        Status result;
+        result.code_ = code;
+        return result;
+    }
 
     /** @brief Construct a failed status with one diagnostic. */
     static Status failure(StatusCode code, Diagnostic diagnostic) {
@@ -118,23 +127,23 @@ public:
     bool isFailure() const noexcept { return !isSuccess(); }
 
     /** @brief True when this status has at least one diagnostic. */
-    bool hasDiagnostics() const noexcept { return !diagnostics_.empty(); }
+    bool hasDiagnostics() const noexcept { return diagnostics_ && !diagnostics_->empty(); }
 
     /** @brief All diagnostics in stable insertion order. */
-    const std::vector<Diagnostic>& diagnostics() const noexcept { return diagnostics_; }
+    const std::vector<Diagnostic>& diagnostics() const noexcept {
+        return diagnostics_ ? *diagnostics_ : emptyDiagnostics();
+    }
 
     /**
      * @brief First diagnostic, or null when no diagnostic was supplied.
      * @return Borrowed pointer into this Status; nullptr when diagnostics() is empty.
-     * @ownership Borrowed; Status owns the diagnostic vector.
+     * @ownership Borrowed; Status retains immutable shared diagnostic storage.
      * @nullable Yes.
      * @lifetime Valid until this Status is destroyed or its diagnostic storage is replaced.
      * @thread Affine to this Status; no synchronization.
      * @reentrancy Does not invoke callbacks.
      */
-    const Diagnostic* primaryDiagnostic() const noexcept {
-        return diagnostics_.empty() ? nullptr : &diagnostics_.front();
-    }
+    const Diagnostic* primaryDiagnostic() const noexcept { return hasDiagnostics() ? &diagnostics_->front() : nullptr; }
 
     /**
      * @brief Render a compact human-readable summary.
@@ -185,7 +194,8 @@ private:
     }
 
     StatusCode              code_ = StatusCode::Ok;
-    std::vector<Diagnostic> diagnostics_;
+    std::shared_ptr<const std::vector<Diagnostic>> diagnostics_;
+    static const std::vector<Diagnostic>&          emptyDiagnostics() noexcept;
 };
 
 }  // namespace eve

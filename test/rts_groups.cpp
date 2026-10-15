@@ -110,11 +110,11 @@ TEST_CASE("rts.groups.movingSlotsAssembleBeforeArrival") {
         REQUIRE(first->navigation()->formationTarget.has_value());
         auto saved = rts.snapshotState().takeValue();
         for (const auto& unit : saved.units) CHECK(!unit.navigation.formationTarget.has_value());
-        REQUIRE(rts.step({eve::SimulationTick{101}, eve::Duration::zero()}, executor).ok());
+        REQUIRE(rts.step({eve::SimulationTick{100}, eve::Duration::zero()}, executor).ok());
         const auto before = *first->navigation()->formationTarget;
         REQUIRE(rts.restoreState(saved).ok());
         CHECK(!first->navigation()->formationTarget.has_value());
-        REQUIRE(rts.step({eve::SimulationTick{101}, eve::Duration::zero()}, executor).ok());
+        REQUIRE(rts.step({eve::SimulationTick{100}, eve::Duration::zero()}, executor).ok());
         REQUIRE(first->navigation()->formationTarget.has_value());
         CHECK(std::isfinite(first->navigation()->formationTarget->x));
         CHECK(std::abs(first->navigation()->formationTarget->x - before.x) < 1e-5f);
@@ -123,20 +123,20 @@ TEST_CASE("rts.groups.movingSlotsAssembleBeforeArrival") {
         pathfinder.setBlocked(50, 19, true);
         pathfinder.setBlocked(50, 21, true);
         rts.setNavigationProvider(&pathfinder);
-        REQUIRE(rts.step({eve::SimulationTick{102}, eve::Duration::zero()}, executor).ok());
+        REQUIRE(rts.step({eve::SimulationTick{100}, eve::Duration::zero()}, executor).ok());
         CHECK(!first->navigation()->formationTarget.has_value());
         CHECK(!second->navigation()->formationTarget.has_value());
         CHECK(!first->navigation()->waypoints.empty());
         pathfinder.setBlocked(50, 19, false);
         pathfinder.setBlocked(50, 21, false);
-        REQUIRE(rts.step({eve::SimulationTick{103}, eve::Duration::zero()}, executor).ok());
+        REQUIRE(rts.step({eve::SimulationTick{100}, eve::Duration::zero()}, executor).ok());
         CHECK(first->navigation()->formationTarget.has_value());
         CHECK(second->navigation()->formationTarget.has_value());
         rts.setNavigationProvider(nullptr);
         CommandSpec replacement;
         replacement.target = {10.f, 40.f};
         REQUIRE(first->orders()->values.replace(replacement).ok());
-        REQUIRE(rts.step({eve::SimulationTick{104}, eve::Duration::zero()}, executor).ok());
+        REQUIRE(rts.step({eve::SimulationTick{100}, eve::Duration::zero()}, executor).ok());
         CHECK(!first->navigation()->formationTarget.has_value());
         CHECK(!second->navigation()->formationTarget.has_value());
     }

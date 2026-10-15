@@ -4,8 +4,13 @@
 #include "common/Json.h"
 #include "common/Value.h"
 
+#include <array>
+#include <bit>
 #include <cmath>
 #include <limits>
+#include <locale>
+#include <random>
+#include <sstream>
 #include <type_traits>
 
 using eve::Value;
@@ -42,6 +47,36 @@ TEST_CASE("value.object_order_and_numeric_kinds_are_deterministic") {
     auto encoded = parsed.value().toJson();
     REQUIRE(encoded.ok());
     CHECK_EQ(encoded.value(), R"({"a":1.0,"negativeZero":-0.0,"z":9223372036854775807})");
+}
+
+TEST_CASE("value.double_json_keeps_existing_canonical_bytes") {
+    const auto matchesLegacy = [&](double number) {
+        std::ostringstream stream;
+        stream.imbue(std::locale::classic());
+        stream.precision(std::numeric_limits<double>::max_digits10);
+        stream << number;
+        std::string expected = stream.str();
+        if (expected.find_first_of(".eE") == std::string::npos) expected += ".0";
+        auto encoded = Value(number).toJson();
+        REQUIRE(encoded.ok());
+        CHECK_EQ(encoded.value(), expected);
+    };
+    constexpr std::array<double, 10> boundaries = {0.0,
+                                                   -0.0,
+                                                   0.1,
+                                                   1.0,
+                                                   -1.0,
+                                                   1e-5,
+                                                   1e20,
+                                                   std::numeric_limits<double>::min(),
+                                                   std::numeric_limits<double>::max(),
+                                                   std::numeric_limits<double>::denorm_min()};
+    for (double number : boundaries) matchesLegacy(number);
+    std::mt19937_64 random(42);
+    for (int index = 0; index < 4096; ++index) {
+        const double number = std::bit_cast<double>(random());
+        if (std::isfinite(number)) matchesLegacy(number);
+    }
 }
 
 TEST_CASE("value_uses_the_common_json_parser_and_serializer") {

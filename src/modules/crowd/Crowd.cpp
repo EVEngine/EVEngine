@@ -41,7 +41,7 @@ const char *actionName(int action) {
 Module_IMPL(Crowd, new Crowd());
 
 Crowd::Crowd() : impl_(std::make_unique<Impl>()) {}
-Crowd::~Crowd() = default;
+Crowd::~Crowd() { lifetime_.reset(); }
 
 // --- 流场 ---
 
@@ -59,9 +59,27 @@ void Crowd::setCellCost(int cx, int cy, float cost) {
 
 float Crowd::getCellCost(int cx, int cy) const { return impl_->field.getCellCost(cx, cy); }
 
+FieldObservation Crowd::getFieldStatus() const noexcept {
+    const auto      &field = impl_->field;
+    FieldObservation observation;
+    observation.owner = impl_->owner;
+    if (!field.navigationCost_.empty()) observation.surface = impl_->surfaceStamp;
+    observation.state         = field.state();
+    observation.revision      = field.revision();
+    observation.builtRevision = field.builtRevision();
+    observation.inputRevision = field.inputRevision();
+    observation.goals         = field.goalCount();
+    return observation;
+}
+
 void Crowd::buildFlowField(int gx, int gy) {
-    impl_->field.setGoal(gx, gy);
-    impl_->field.build();
+    auto prepared = prepareFlowBuild(gx, gy);
+    auto plan     = std::move(prepared).expect("Cannot prepare Crowd flow field");
+    while (plan.state() == FlowBuildState::Pending) {
+        const auto progress = advanceFlowBuild(plan, 1000000).expect("Cannot advance Crowd flow field");
+        (void)progress;
+    }
+    commitFlowBuild(std::move(plan)).expect("Cannot publish Crowd flow field");
 }
 
 void Crowd::addFlowGoal(int gx, int gy) { impl_->field.addGoal(gx, gy); }
@@ -98,7 +116,9 @@ FlowVec Crowd::flowAtCell(int cx, int cy) const {
 
 int Crowd::addAgent(float x, float y, float heading, float radius) {
     auto &d = *impl_;
-    if (int(d.actions.size()) >= d.maxAgents) return -1;
+    if (int(d.actions.size()) >= d.maxAgents || d.nextAnonymousTieKey == std::numeric_limits<std::uint64_t>::max())
+        return -1;
+    d.reserveAgentAppend();
     const int id = int(d.xs.size());
     d.xs.push_back(x);
     d.ys.push_back(y);
@@ -115,20 +135,38 @@ int Crowd::addAgent(float x, float y, float heading, float radius) {
     d.avoidancePriorities.push_back(0);
     d.hasTargets.push_back(0);
     d.interactions.emplace_back();
+    d.movements.emplace_back();
+    d.flows.emplace_back();
     d.targetXs.push_back(0.f);
     d.targetYs.push_back(0.f);
-    d.wanderPhases.push_back(float(id) * 2.399963f);
+    const auto tie = d.nextAnonymousTieKey++;
+    d.wanderPhases.push_back(float(tie % 104729ULL) / 104729.f * 6.28318530717958647692f);
+    d.tieKeys.push_back({true, tie});
     d.stableIds.emplace_back();
+    d.appendAgentIdentity(id);
     return id;
 }
 
 int Crowd::addNamedAgent(const std::string &stableId, float x, float y, float heading, float radius) {
     auto &d = *impl_;
-    if (stableId.empty() || d.namedAgents.count(stableId) != 0) return -1;
+    if (stableId.empty() || d.namedAgents.count(stableId) != 0 || int(d.actions.size()) >= d.maxAgents) return -1;
+    if (d.nextAnonymousTieKey == std::numeric_limits<std::uint64_t>::max()) return -1;
+    const auto tie = namedTieValue(stableId);
+    // A numeric collision is an explicit admission failure, never a slot-based tie.
+    if (d.namedTieKeys.contains(tie)) return -1;
+    std::string name(stableId);
+    d.reserveAgentAppend();
+    d.namedAgents.emplace(name, int(d.xs.size()));
+    try {
+        d.namedTieKeys.emplace(tie, int(d.xs.size()));
+    } catch (...) {
+        d.namedAgents.erase(name);
+        throw;
+    }
     const int index = addAgent(x, y, heading, radius);
-    if (index < 0) return -1;
-    d.stableIds[static_cast<size_t>(index)] = stableId;
-    d.namedAgents[stableId] = index;
+    d.stableIds[static_cast<size_t>(index)]    = std::move(name);
+    d.tieKeys[static_cast<size_t>(index)]      = {false, tie};
+    d.wanderPhases[static_cast<size_t>(index)] = float(tie % 104729ULL) / 104729.f * 6.28318530717958647692f;
     return index;
 }
 
@@ -154,7 +192,9 @@ bool Crowd::removeAgent(int id) {
     auto &d = *impl_;
     if (!d.validId(id)) return false;
     const int last = int(d.xs.size()) - 1;
-    const std::string removedStableId = d.stableIds[static_cast<size_t>(id)];
+    const std::string removedStableId = std::move(d.stableIds[static_cast<size_t>(id)]);
+    if (!d.tieKeys[static_cast<size_t>(id)].anonymous) d.namedTieKeys.erase(d.tieKeys[static_cast<size_t>(id)].value);
+    d.eraseAgentIdentity(id);
     if (id != last) {
         d.xs[size_t(id)] = d.xs[size_t(last)];
         d.ys[size_t(id)] = d.ys[size_t(last)];
@@ -171,10 +211,14 @@ bool Crowd::removeAgent(int id) {
         d.avoidancePriorities[size_t(id)] = d.avoidancePriorities[size_t(last)];
         d.hasTargets[size_t(id)] = d.hasTargets[size_t(last)];
         d.interactions[size_t(id)]        = d.interactions[size_t(last)];
+        d.movements[size_t(id)]           = d.movements[size_t(last)];
+        d.flows[size_t(id)]               = std::move(d.flows[size_t(last)]);
         d.targetXs[size_t(id)] = d.targetXs[size_t(last)];
         d.targetYs[size_t(id)] = d.targetYs[size_t(last)];
         d.wanderPhases[size_t(id)] = d.wanderPhases[size_t(last)];
-        d.stableIds[size_t(id)] = d.stableIds[size_t(last)];
+        d.stableIds[size_t(id)]           = std::move(d.stableIds[size_t(last)]);
+        d.tieKeys[size_t(id)]             = d.tieKeys[size_t(last)];
+        if (!d.tieKeys[size_t(id)].anonymous) d.namedTieKeys.at(d.tieKeys[size_t(id)].value) = id;
         if (!d.stableIds[size_t(id)].empty()) d.namedAgents[d.stableIds[size_t(id)]] = id;
     }
     if (!removedStableId.empty()) d.namedAgents.erase(removedStableId);
@@ -193,15 +237,19 @@ bool Crowd::removeAgent(int id) {
     d.avoidancePriorities.pop_back();
     d.hasTargets.pop_back();
     d.interactions.pop_back();
+    d.movements.pop_back();
+    d.flows.pop_back();
     d.targetXs.pop_back();
     d.targetYs.pop_back();
     d.wanderPhases.pop_back();
     d.stableIds.pop_back();
+    d.tieKeys.pop_back();
     return true;
 }
 
 void Crowd::clearAgents() {
     auto &d = *impl_;
+    d.clearAgentIdentities();
     d.xs.clear();
     d.ys.clear();
     d.headings.clear();
@@ -217,12 +265,16 @@ void Crowd::clearAgents() {
     d.avoidancePriorities.clear();
     d.hasTargets.clear();
     d.interactions.clear();
+    d.movements.clear();
+    d.flows.clear();
     d.targetXs.clear();
     d.targetYs.clear();
     d.wanderPhases.clear();
     d.stableIds.clear();
+    d.tieKeys.clear();
+    d.namedTieKeys.clear();
     d.namedAgents.clear();
-    d.gridW = d.gridH = 0;
+    d.spatialIndex.clear();
 }
 
 int Crowd::getAgentCount() const { return int(impl_->xs.size()); }
@@ -329,6 +381,8 @@ AgentState Crowd::getAgentState(int id) const {
     s.action = impl_->actions[size_t(id)];
     s.data = impl_->datas[size_t(id)];
     s.avoidancePriority = impl_->avoidancePriorities[size_t(id)];
+    s.flowGeneration    = impl_->flows[size_t(id)].generation();
+    s.movement          = impl_->movements[size_t(id)];
     return s;
 }
 

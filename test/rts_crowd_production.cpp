@@ -103,7 +103,7 @@ TEST_CASE("rts.crowd.blockedProductionRetainsPaymentAndIdentityForRetry") {
     const auto heldSubject     = held->identity()->subject;
     auto       checkpoint      = rts.captureScriptCheckpoint("blocked-spawn");
     REQUIRE(checkpoint.ok());
-    held->motion()->x = 20.f;
+    REQUIRE(rts.relocateUnits({{{held->identity()->subject, {20.f, 10.f}}}, 10000}).ok());
     auto stepped      = rts.stepScript(0.1);
     REQUIRE(stepped.ok());
     CHECK(rts.findUnit(born) != nullptr);
@@ -134,7 +134,7 @@ TEST_CASE("rts.crowd.blockedProductionRetainsPaymentAndIdentityForRetry") {
     CHECK_EQ(rts.unitCount(), 1u);
     auto stillReserved = rts.newUnit(born, definition);
     CHECK(!stillReserved.ok());
-    held->motion()->x = 20.f;
+    REQUIRE(rts.relocateUnits({{{held->identity()->subject, {20.f, 10.f}}}, 10000}).ok());
     stepped           = rts.stepScript(0.1);
     REQUIRE(stepped.ok());
     CHECK(rts.findUnit(born) != nullptr);

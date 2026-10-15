@@ -1,7 +1,10 @@
 #include "rts/RTSSystems.h"
+#include <tuple>
+#include "common/Profile.h"
 #include "map/Fov.h"
 #include "map/Path.h"
 #include "map/Pathfinder.h"
+#include "rts/RTSCombatAuraInternal.h"
 #include "rts/RTSSystemMovementInternal.h"
 #include "sensing/Sensing.h"
 #include "weapon/WeaponSystem.h"
@@ -26,6 +29,7 @@ using systems_internal::isFinitePosition;
 using systems_internal::isMovementOrder;
 using systems_internal::isSameHandle;
 using systems_internal::readCurrent;
+using systems_internal::visibleHostileThreatAt;
 
 
 SubjectRef stableSubject(ecs::Entity* entity) {
@@ -104,50 +108,11 @@ bool hostileTo(Unit& source, const FactionLink& targetFaction) {
            !FactionRelationSystem::isAllied(source.faction()->link, targetFaction);
 }
 
-float visibleHostileThreatAt(Faction& viewer, WorldPosition point) {
-    const auto visible = [&](SubjectRef subject) {
-        if (!viewer.intel()->enabled) return true;
-        const auto found = std::find_if(viewer.intel()->contacts.begin(), viewer.intel()->contacts.end(),
-                                        [&](const auto& contact) { return contact.subject == subject; });
-        return found != viewer.intel()->contacts.end() && found->visible && found->detected;
-    };
-    const auto contribution = [&](const weapon::WeaponDefinition& definition, WorldPosition source) {
-        if (definition.range <= 0.0f) return 0.0f;
-        const float distance = std::hypot(source.x - point.x, source.y - point.y);
-        if (distance > definition.range) return 0.0f;
-        return std::max(0.0f, definition.damage) / std::max(0.05f, definition.cooldown) *
-               (0.1f + 1.0f - distance / definition.range);
-    };
-    float threat = 0.0f;
-    auto units = ecs::View<Unit, Unit::Identity, Unit::Motion, Unit::Faction, Unit::Weapon,
-                           Unit::Durability, Unit::Containment>();
-    for (auto it = units.begin(); it != units.end(); ++it) {
-        auto [identity, motion, faction, weaponLink, durability, containment] = *it;
-        if (!durability->alive || containment->container.isBound() ||
-            FactionRelationSystem::isAllied(dynamic_cast<Faction*>(faction->link.resolve()), &viewer) ||
-            !visible(identity->subject))
-            continue;
-        auto* weaponEntity = dynamic_cast<weapon::WeaponEntity*>(weaponLink->link.resolve());
-        const auto* definition = weaponEntity == nullptr ? nullptr : weaponEntity->definition()->def;
-        if (definition != nullptr) threat += contribution(*definition, {motion->x, motion->y});
-    }
-    auto buildings = ecs::View<Building, Building::Identity, Building::Placement, Building::Faction,
-                               Building::Weapon, Building::Integrity, Building::Construction>();
-    for (auto it = buildings.begin(); it != buildings.end(); ++it) {
-        auto [identity, placement, faction, weaponLink, integrity, construction] = *it;
-        if (!integrity->alive || construction->progress < 1.0f ||
-            FactionRelationSystem::isAllied(dynamic_cast<Faction*>(faction->link.resolve()), &viewer) ||
-            !visible(identity->subject))
-            continue;
-        auto* weaponEntity = dynamic_cast<weapon::WeaponEntity*>(weaponLink->link.resolve());
-        const auto* definition = weaponEntity == nullptr ? nullptr : weaponEntity->definition()->def;
-        if (definition != nullptr)
-            threat += contribution(*definition, {placement->worldX, placement->worldY});
-    }
-    return threat;
-}
 
 Result<std::size_t> advanceEffects(RTSEffectComponent& effects, const SimulationStep& step) {
+    // A zero-duration RTS call reconciles projections at the current tick; it
+    // must not consume that tick again in the effect scheduler.
+    if (step.delta.isZero()) return Result<std::size_t>::success(0, Status::success(StatusCode::NoOp));
     auto advanced = effects.advance(step);
     if (!advanced) return Result<std::size_t>::failure(advanced.status());
     const auto result = std::move(advanced).takeValue();
@@ -159,6 +124,12 @@ Result<std::size_t> advanceEffects(RTSEffectComponent& effects, const Simulation
 
 std::span<const SystemContract> systemContracts() noexcept {
     static constexpr SystemContract contracts[] = {
+        {"rts.attack_slots",
+         "ecs::View<Unit, Identity/Navigation/Motion/Orders/Combat/Crowd/Durability/Containment>; live "
+         "generation-checked Unit targets",
+         "Unit identity, order id/target, combat target/range, pose, body radius, alive/containment; canonical map",
+         "Unit::Navigation::combatSlotTarget/combatSlotWaiting; tick-local owning plan", "none", "none",
+         "simulation.before_movement"},
         {"rts.movement_groups", "ecs::View<Unit, Unit::Navigation>; generation-checked owned group members",
          "Unit::Motion/Navigation/Orders/Durability/Containment/Supply/Morale/Tactics/Crowd; RTS membership; map grid",
          "Unit::Navigation::formationSpeedFactor/formationTarget/waypointIndex; RTS movement-group membership",
@@ -190,7 +161,9 @@ std::span<const SystemContract> systemContracts() noexcept {
          "Command, Effects>",
          "Unit::Identity/Motion/Navigation/Orders/Crowd/Combat/Containment/Supply/Morale/Tactics/Command/Effects; "
          "injected Crowd",
-         "Unit::Motion; Unit::Crowd::heading; injected Crowd positions/targets/interaction/velocity", "none",
+         "Unit::Motion; Unit::Crowd::heading/runtimeAgent/runtimeOwner/runtimeBindingKey; injected Crowd "
+         "positions/targets/interaction/velocity",
+         "Crowd agent binding/removal after View collection; no ECS structural changes",
          "none; injected Crowd advances synchronously", "simulation.movement; zero-time pre-production reconciliation"},
         {"rts.worker_assignment", "Unit workers; ResourceNode stock/capacity", "positions; orders; stock; links",
          "Unit::Worker; Unit::Orders; ResourceNode::Harvest", "none", "none", "simulation.assignment"},
@@ -309,6 +282,7 @@ Result<void> BuildInfluenceSystem::validate(Faction& faction, WorldPosition posi
 }
 
 Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, const SimulationStep& step) {
+    EV_PROFILE_MODULE("rts", "TacticsSystem::step");
     if (step.delta.nanoseconds() < 0)
         return Result<std::size_t>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "RTS tactics step delta must be non-negative", "step.delta"));
@@ -579,7 +553,7 @@ Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, con
     for (auto& [groupId, members] : groups) {
         (void)groupId;
         std::sort(members.begin(), members.end(), [](Unit* left, Unit* right) {
-            return left->identity()->subject.format() < right->identity()->subject.format();
+            return left->identity()->subject.persistentId().bytes() < right->identity()->subject.persistentId().bytes();
         });
         std::vector<Unit*> retreating;
         float groupElapsed = 0.0f;
@@ -931,6 +905,7 @@ Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, con
 }
 
 Result<std::size_t> AISystem::step(const SimulationStep& step, const AIProductionRequest& requestProduction) {
+    EV_PROFILE_MODULE("rts", "AISystem::step");
     if (step.delta.nanoseconds() < 0)
         return Result<std::size_t>::failure(
             Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS AI step delta must be non-negative", "step.delta"));
@@ -1041,6 +1016,7 @@ Result<std::size_t> AISystem::step(const SimulationStep& step, const AIProductio
 }
 
 Result<std::size_t> MovementOrderSystem::step() {
+    EV_PROFILE_MODULE("rts", "MovementOrderSystem::step");
     std::size_t completedCount = 0;
     auto view = ecs::View<Unit, Unit::Identity, Unit::Motion, Unit::Navigation, Unit::Orders,
                           Unit::Containment>();
@@ -1071,6 +1047,7 @@ Result<std::size_t> MovementOrderSystem::step() {
 }
 
 Result<std::size_t> CommandStateSystem::step() {
+    EV_PROFILE_MODULE("rts", "CommandStateSystem::step");
     std::size_t processed = 0;
     auto view = ecs::View<Unit, Unit::Identity, Unit::Motion, Unit::Navigation, Unit::Orders,
                           Unit::Combat, Unit::Containment>();
@@ -1109,144 +1086,8 @@ Result<std::size_t> CommandStateSystem::step() {
         Status::success(processed == 0 ? StatusCode::NoOp : StatusCode::Applied));
 }
 
-Result<std::size_t> NavigationSystem::step(map::Pathfinder& pathfinder, const NavigationGrid& grid,
-                                           const NavigationEvent& unreachable) {
-    if (!std::isfinite(grid.cellSize) || grid.cellSize <= 0.0f || !std::isfinite(grid.originX) ||
-        !std::isfinite(grid.originY))
-        return Result<std::size_t>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument,
-                              "RTS navigation grid requires finite origin and positive cell size", "navigation.grid"));
-    const auto worldToCell = [&](float value, float origin) {
-        return static_cast<int>(std::lround((value - origin) / grid.cellSize));
-    };
-    const auto cellToWorld = [&](int value, float origin) {
-        return origin + static_cast<float>(value) * grid.cellSize;
-    };
-    std::size_t processed = 0;
-    auto view = ecs::View<Unit, Unit::Identity, Unit::Motion, Unit::Navigation, Unit::Orders,
-                          Unit::Containment, Unit::Tactics, Unit::Supply, Unit::Faction>();
-    for (auto it = view.begin(); it != view.end(); ++it) {
-        auto [identity, motion, navigation, orders, containment, tactics, supply, faction] = *it;
-        auto* unit = identity == nullptr ? nullptr : dynamic_cast<Unit*>(ecs::try_get(identity->self));
-        if (unit == nullptr || &*unit->identity() != identity) continue;
-        if (containment->container.isBound()) continue;
-        auto current = readCurrent(orders->values);
-        if (!current) return Result<std::size_t>::failure(current.status());
-        auto record = std::move(current).takeValue();
-        if (!record || !isMovementOrder(record->kind)) {
-            navigation->waypoints.clear();
-            navigation->waypointIndex = 0;
-            navigation->plannedOrderId.clear();
-            navigation->unreachable = false;
-            navigation->unreachableReported = false;
-            navigation->trafficWaiting = false;
-            navigation->patrolInitialized = false;
-            navigation->patrolTowardTarget = true;
-            supply->routeThreat = 0.0f;
-            supply->routeAvoidedThreat = false;
-            continue;
-        }
-        WorldPosition goal = record->target;
-        if (record->kind == OrderKind::Attack || record->kind == OrderKind::Resupply ||
-            record->kind == OrderKind::SupplyRelay) {
-            if (auto target = entityPosition(record->targetEntity)) goal = *target;
-            if (record->kind == OrderKind::SupplyRelay && supply->rendezvousActive)
-                goal = supply->rendezvousPoint;
-        } else if (record->kind == OrderKind::Escort && tactics->guardSet) {
-            goal = {tactics->guardX, tactics->guardY};
-        } else if (record->kind == OrderKind::Patrol && navigation->patrolInitialized &&
-                   !navigation->patrolTowardTarget) {
-            goal = navigation->patrolOrigin;
-        }
-        const bool supplyMission = record->kind == OrderKind::Resupply ||
-                                   record->kind == OrderKind::SupplyRelay;
-        auto* viewer = dynamic_cast<Faction*>(faction->link.resolve());
-        float currentRouteThreat = 0.0f;
-        if (supplyMission && viewer != nullptr) {
-            WorldPosition previous{motion->x, motion->y};
-            for (std::size_t index = navigation->waypointIndex; index < navigation->waypoints.size(); ++index) {
-                const WorldPosition point = navigation->waypoints[index];
-                currentRouteThreat += visibleHostileThreatAt(*viewer, point) *
-                                      std::hypot(point.x - previous.x, point.y - previous.y);
-                previous = point;
-            }
-        }
-        const bool threatChanged = supplyMission && navigation->plannedOrderId == record->id &&
-                                   currentRouteThreat > supply->routeThreat + 1e-4f;
-        const bool changed = navigation->plannedOrderId != record->id || threatChanged ||
-                             distanceSquared(goal.x, goal.y, navigation->plannedGoal.x,
-                                             navigation->plannedGoal.y) > grid.cellSize * grid.cellSize * 0.25f;
-        if (changed) {
-            navigation->waypoints.clear();
-            navigation->waypointIndex = 0;
-            navigation->plannedOrderId = record->id;
-            navigation->plannedGoal = goal;
-            navigation->unreachable = false;
-            navigation->unreachableReported = false;
-            const int startX = worldToCell(motion->x, grid.originX);
-            const int startY = worldToCell(motion->y, grid.originY);
-            const int goalX = worldToCell(goal.x, grid.originX);
-            const int goalY = worldToCell(goal.y, grid.originY);
-            std::unique_ptr<map::Path> baseline;
-            std::unique_ptr<map::Path> path;
-            if (supplyMission) {
-                baseline.reset(pathfinder.findPath(startX, startY, goalX, goalY));
-                path.reset(pathfinder.findPath(startX, startY, goalX, goalY,
-                    [&](int x, int y) {
-                        if (viewer == nullptr) return 0.0f;
-                        const WorldPosition point{cellToWorld(x, grid.originX),
-                                                  cellToWorld(y, grid.originY)};
-                        return visibleHostileThreatAt(*viewer, point) * 0.5f;
-                    }));
-                const auto exposure = [&](const map::Path* candidate) {
-                    if (candidate == nullptr || candidate->empty() || viewer == nullptr) return 0.0f;
-                    float total = 0.0f;
-                    WorldPosition previous{motion->x, motion->y};
-                    for (int index = 1; index < candidate->getLength(); ++index) {
-                        const WorldPosition point{cellToWorld(candidate->getX(index), grid.originX),
-                                                  cellToWorld(candidate->getY(index), grid.originY)};
-                        total += visibleHostileThreatAt(*viewer, point) *
-                                 std::hypot(point.x - previous.x, point.y - previous.y);
-                        previous = point;
-                    }
-                    return total;
-                };
-                supply->routeThreat = exposure(path.get());
-                supply->routeAvoidedThreat = baseline != nullptr && !baseline->empty() &&
-                    supply->routeThreat + 1e-4f < exposure(baseline.get());
-            } else {
-                path.reset(pathfinder.findPath(startX, startY, goalX, goalY));
-                supply->routeThreat = 0.0f;
-                supply->routeAvoidedThreat = false;
-            }
-            if (path == nullptr || path->empty()) {
-                navigation->unreachable = true;
-            } else {
-                navigation->waypoints.reserve(static_cast<std::size_t>(path->getLength()));
-                for (int index = 1; index < path->getLength(); ++index)
-                    navigation->waypoints.push_back({cellToWorld(path->getX(index), grid.originX),
-                                                     cellToWorld(path->getY(index), grid.originY)});
-            }
-        } else if (supplyMission) {
-            supply->routeThreat = currentRouteThreat;
-        }
-        while (navigation->waypointIndex < navigation->waypoints.size()) {
-            const auto waypoint = navigation->waypoints[navigation->waypointIndex];
-            const float radius = std::max(motion->arrivalRadius, grid.cellSize * 0.1f);
-            if (distanceSquared(motion->x, motion->y, waypoint.x, waypoint.y) > radius * radius) break;
-            ++navigation->waypointIndex;
-        }
-        if (navigation->unreachable && !navigation->unreachableReported) {
-            navigation->unreachableReported = true;
-            if (unreachable) unreachable(*unit, *record);
-        }
-        ++processed;
-    }
-    return Result<std::size_t>::success(processed,
-                                        Status::success(processed == 0 ? StatusCode::NoOp : StatusCode::Applied));
-}
-
 Result<std::size_t> PatrolSystem::step() {
+    EV_PROFILE_MODULE("rts", "PatrolSystem::step");
     std::size_t processed = 0;
     auto view = ecs::View<Unit, Unit::Identity, Unit::Motion, Unit::Navigation, Unit::Orders,
                           Unit::Containment>();
@@ -1292,207 +1133,8 @@ void FogOfWarSystem::clear(State& state) noexcept {
     state.bindings.clear();
 }
 
-const Faction::Intel::Contact* FogOfWarSystem::contact(const Faction& faction, SubjectRef subject) noexcept {
-    const auto& contacts = const_cast<Faction&>(faction).intel()->contacts;
-    const auto it = std::find_if(contacts.begin(), contacts.end(),
-                                 [&](const auto& value) { return value.subject == subject; });
-    return it != contacts.end() && it->subject == subject ? &*it : nullptr;
-}
-
-Result<std::size_t> FogOfWarSystem::step(const SimulationStep& step, const NavigationGrid& grid, State& state,
-                                         const FogProvider& provider) {
-    if (!provider)
-        return Result<std::size_t>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS fog provider is required", "fog.provider"));
-    if (step.delta.nanoseconds() < 0 || !std::isfinite(grid.cellSize) || grid.cellSize <= 0.0f)
-        return Result<std::size_t>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS fog step/grid is invalid", "fog.grid"));
-    struct Source {
-        ecs::EntityHandle handle{};
-        ecs::EntityHandle faction{};
-        map::Fov* fov = nullptr;
-        WorldPosition position;
-        float sight = 0.0f;
-        float detectionRange = 0.0f;
-        float detectionStrength = 0.0f;
-        float radarRange = 0.0f;
-        float radarResolution = 0.0f;
-        float jammingRange = 0.0f;
-    };
-    std::vector<Source> sources;
-    auto addSource = [&](ecs::EntityHandle handle, const FactionLink& factionLink, WorldPosition position,
-                         float sight, float detectionRange, float detectionStrength, float radarRange,
-                         float radarResolution, float jammingRange, bool enabled) -> Result<void> {
-        if (!enabled || (sight <= 0.0f && radarRange <= 0.0f && jammingRange <= 0.0f))
-            return Result<void>::success(Status::success(StatusCode::NoOp));
-        if (!isFinitePosition(position) || !std::isfinite(sight) || !std::isfinite(detectionRange) ||
-            !std::isfinite(detectionStrength) || !std::isfinite(radarRange) || !std::isfinite(radarResolution) ||
-            !std::isfinite(jammingRange) || sight < 0.0f || detectionRange < 0.0f || detectionStrength < 0.0f ||
-            radarRange < 0.0f || radarResolution < 0.0f || jammingRange < 0.0f)
-            return Result<void>::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "RTS vision values must be finite and non-negative", "vision"));
-        auto* faction = dynamic_cast<Faction*>(factionLink.resolve());
-        if (faction == nullptr) return Result<void>::success(Status::success(StatusCode::NoOp));
-        map::Fov* fov = provider(*faction);
-        if (fov == nullptr) return Result<void>::success(Status::success(StatusCode::NoOp));
-        sources.push_back({handle, ecs::handle_of(faction), fov, position, sight, detectionRange,
-                           detectionStrength, radarRange, radarResolution, jammingRange});
-        return Result<void>::success(Status::success(StatusCode::Applied));
-    };
-    auto units = ecs::View<Unit, Unit::Identity, Unit::Motion, Unit::Faction, Unit::Vision, Unit::Containment>();
-    for (auto it = units.begin(); it != units.end(); ++it) {
-        auto [identity, motion, faction, vision, containment] = *it;
-        if (containment->container.isBound()) continue;
-        auto added = addSource(identity->self, faction->link, {motion->x, motion->y}, vision->sightRange,
-                               vision->detectionRange, vision->detectionStrength, vision->radarRange,
-                               vision->radarResolution, vision->jammingRange, vision->enabled);
-        if (!added) return Result<std::size_t>::failure(added.status());
-    }
-    auto buildings = ecs::View<Building, Building::Identity, Building::Placement, Building::Faction,
-                               Building::Vision, Building::Construction>();
-    for (auto it = buildings.begin(); it != buildings.end(); ++it) {
-        auto [identity, placement, faction, vision, construction] = *it;
-        if (!placement->placed || construction->progress < 1.0f) continue;
-        auto added = addSource(identity->self, faction->link, {placement->worldX, placement->worldY},
-                               vision->sightRange, vision->detectionRange, vision->detectionStrength,
-                               vision->radarRange, vision->radarResolution, vision->jammingRange,
-                               vision->enabled);
-        if (!added) return Result<std::size_t>::failure(added.status());
-    }
-    state.bindings.erase(
-        std::remove_if(state.bindings.begin(), state.bindings.end(),
-                       [&](const auto& binding) {
-                           const bool retained = std::any_of(sources.begin(), sources.end(), [&](const Source& source) {
-                               return source.sight > 0.0f && isSameHandle(source.handle, binding.source) &&
-                                      source.fov == binding.provider;
-                           });
-                           if (!retained && binding.provider != nullptr && binding.revealer >= 0)
-                               binding.provider->removeRevealer(binding.revealer);
-                           return !retained;
-                       }),
-        state.bindings.end());
-    const auto worldToCell = [&](float value, float origin) {
-        return static_cast<int>(std::lround((value - origin) / grid.cellSize));
-    };
-    std::vector<map::Fov*> providers;
-    for (const auto& source : sources) {
-        if (source.sight <= 0.0f) continue;
-        auto      binding = std::find_if(state.bindings.begin(), state.bindings.end(), [&](const auto& value) {
-            return isSameHandle(value.source, source.handle) && value.provider == source.fov;
-        });
-        const int x = worldToCell(source.position.x, grid.originX);
-        const int y = worldToCell(source.position.y, grid.originY);
-        const int radius = std::max(0, static_cast<int>(std::ceil(source.sight / grid.cellSize)));
-        if (binding == state.bindings.end()) {
-            const int revealer = source.fov->addRevealer(x, y, radius);
-            state.bindings.push_back({source.handle, source.faction, source.fov, revealer});
-        } else {
-            source.fov->setRevealerPosition(binding->revealer, x, y);
-            source.fov->setRevealerRadius(binding->revealer, radius);
-            binding->faction = source.faction;
-        }
-        if (std::find(providers.begin(), providers.end(), source.fov) == providers.end())
-            providers.push_back(source.fov);
-    }
-    for (auto* fov : providers) fov->compute();
-
-    auto factions = ecs::View<Faction, Faction::Identity, Faction::Intel>();
-    for (auto fit = factions.begin(); fit != factions.end(); ++fit) {
-        auto [identity, intel] = *fit;
-        auto* viewer = dynamic_cast<Faction*>(ecs::try_get(identity->self));
-        map::Fov* fov = viewer == nullptr ? nullptr : provider(*viewer);
-        intel->enabled = fov != nullptr;
-        for (auto& value : intel->contacts) {
-            value.ageSeconds += step.delta.seconds();
-            value.visible = false;
-            value.detected = false;
-        }
-        if (fov == nullptr) continue;
-        auto observe = [&](SubjectRef subject, std::string_view kind, ecs::EntityHandle targetFaction,
-                           WorldPosition position, bool cloaked, float stealth) {
-            auto* enemyFaction = dynamic_cast<Faction*>(ecs::try_get(targetFaction));
-            if (enemyFaction == nullptr || enemyFaction == viewer || provider(*enemyFaction) == fov) return;
-            const int x = worldToCell(position.x, grid.originX);
-            const int y = worldToCell(position.y, grid.originY);
-            bool detected = !cloaked;
-            if (cloaked && fov->isVisible(x, y)) {
-                for (const auto& source : sources) {
-                    if (source.fov != fov || source.detectionRange <= 0.0f ||
-                        source.detectionStrength < stealth) continue;
-                    if (distanceSquared(source.position.x, source.position.y, position.x, position.y) <=
-                        source.detectionRange * source.detectionRange) {
-                        detected = true;
-                        break;
-                    }
-                }
-            }
-            const bool visible = fov->isVisible(x, y) && detected;
-            auto found = std::lower_bound(intel->contacts.begin(), intel->contacts.end(), subject,
-                                          [](const auto& value, SubjectRef key) {
-                                              return value.subject.format() < key.format();
-                                          });
-            if (!visible) {
-                const bool jammed = std::any_of(sources.begin(), sources.end(), [&](const Source& jammer) {
-                    if (jammer.jammingRange <= 0.0f || jammer.fov == fov) return false;
-                    return distanceSquared(jammer.position.x, jammer.position.y, position.x, position.y) <=
-                           jammer.jammingRange * jammer.jammingRange;
-                });
-                const Source* radar = nullptr;
-                if (!jammed) {
-                    for (const auto& candidate : sources) {
-                        if (candidate.fov != fov || candidate.radarRange <= 0.0f) continue;
-                        if (distanceSquared(candidate.position.x, candidate.position.y, position.x, position.y) <=
-                            candidate.radarRange * candidate.radarRange) {
-                            radar = &candidate;
-                            break;
-                        }
-                    }
-                }
-                if (radar == nullptr) return;
-                const float resolution = radar->radarResolution > 0.0f ? radar->radarResolution : grid.cellSize;
-                const WorldPosition quantized{
-                    grid.originX + (std::floor((position.x - grid.originX) / resolution) + 0.5f) * resolution,
-                    grid.originY + (std::floor((position.y - grid.originY) / resolution) + 0.5f) * resolution};
-                const std::string radarKind = kind == "unit" ? "radar_unit" : "radar_building";
-                if (found == intel->contacts.end() || found->subject != subject)
-                    intel->contacts.insert(found, {subject, radarKind, quantized, 0.0, false, false});
-                else {
-                    found->position = quantized;
-                    found->ageSeconds = 0.0;
-                    found->visible = false;
-                    found->detected = false;
-                    found->kind = radarKind;
-                }
-                return;
-            }
-            if (found == intel->contacts.end() || found->subject != subject)
-                found = intel->contacts.insert(found, {subject, std::string(kind), position, 0.0, true, detected});
-            else {
-                found->position = position;
-                found->ageSeconds = 0.0;
-                found->visible = true;
-                found->detected = detected;
-                found->kind = kind;
-            }
-        };
-        for (auto it = units.begin(); it != units.end(); ++it) {
-            auto [targetIdentity, motion, faction, vision, containment] = *it;
-            if (!containment->container.isBound())
-                observe(targetIdentity->subject, "unit", faction->link.handle(), {motion->x, motion->y},
-                        vision->cloaked, vision->stealth);
-        }
-        for (auto it = buildings.begin(); it != buildings.end(); ++it) {
-            auto [targetIdentity, placement, faction, vision, construction] = *it;
-            if (placement->placed)
-                observe(targetIdentity->subject, "building", faction->link.handle(),
-                        {placement->worldX, placement->worldY}, false, 0.0f);
-        }
-    }
-    return Result<std::size_t>::success(sources.size(),
-        Status::success(sources.empty() ? StatusCode::NoOp : StatusCode::Applied));
-}
-
 Result<std::size_t> WorkerAssignmentSystem::step() {
+    EV_PROFILE_MODULE("rts", "WorkerAssignmentSystem::step");
     struct Candidate {
         ResourceNode* node = nullptr;
         float distance = 0.0f;
@@ -1550,6 +1192,7 @@ Result<std::size_t> WorkerAssignmentSystem::step() {
 }
 
 Result<std::size_t> MiningSystem::step(const SimulationStep& step, const ResourceCredit& credit) {
+    EV_PROFILE_MODULE("rts", "MiningSystem::step");
     if (step.delta.nanoseconds() < 0 || !credit)
         return Result<std::size_t>::failure(
             Diagnostic::error(DiagnosticCode::InvalidArgument,
@@ -1625,6 +1268,7 @@ Result<std::size_t> MiningSystem::step(const SimulationStep& step, const Resourc
 }
 
 Result<std::size_t> ConstructionSystem::step(const SimulationStep& step, const LifecycleEventSink& events) {
+    EV_PROFILE_MODULE("rts", "ConstructionSystem::step");
     if (step.delta.nanoseconds() < 0)
         return Result<std::size_t>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "RTS construction step delta must be non-negative", "step.delta"));
@@ -1684,6 +1328,7 @@ Result<std::size_t> ConstructionSystem::step(const SimulationStep& step, const L
 }
 
 Result<std::size_t> WorkforceAssignmentSystem::step() {
+    EV_PROFILE_MODULE("rts", "WorkforceAssignmentSystem::step");
     struct WorkerCandidate { Unit* unit; };
     struct Target { Building* building; OrderKind kind; std::size_t limit; };
     std::size_t processed = 0;
@@ -1776,6 +1421,7 @@ Result<std::size_t> WorkforceAssignmentSystem::step() {
 
 Result<std::size_t> RepairSystem::step(const SimulationStep& step, combat::DamageRuntime& settlement,
                                        const RepairDebit& debit) {
+    EV_PROFILE_MODULE("rts", "RepairSystem::step");
     if (step.delta.nanoseconds() < 0 || !debit)
         return Result<std::size_t>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "RTS repair requires non-negative time and a debit callback", "repair"));
@@ -1830,6 +1476,7 @@ Result<std::size_t> RepairSystem::step(const SimulationStep& step, combat::Damag
 }
 
 Result<std::size_t> CaptureSystem::step(const SimulationStep& step, const LifecycleEventSink& events) {
+    EV_PROFILE_MODULE("rts", "CaptureSystem::step");
     if (step.delta.nanoseconds() < 0)
         return Result<std::size_t>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "RTS capture step delta must be non-negative", "step.delta"));
@@ -1899,10 +1546,10 @@ Result<std::size_t> CaptureSystem::step(const SimulationStep& step, const Lifecy
         capture->progress = 0.0f;
         capture->capturingFaction = {};
         if (events) {
-            Unit* capturer = *std::min_element(force.units.begin(), force.units.end(),
-                [](Unit* left, Unit* right) {
-                    return left->identity()->subject.format() < right->identity()->subject.format();
-                });
+            Unit* capturer = *std::min_element(force.units.begin(), force.units.end(), [](Unit* left, Unit* right) {
+                return left->identity()->subject.persistentId().bytes() <
+                       right->identity()->subject.persistentId().bytes();
+            });
             events({LifecycleEventKind::BuildingCaptured, identity->subject,
                     capturer->identity()->subject, building->definition()->id.format(), 1.0}, step.tick);
         }
@@ -1922,6 +1569,7 @@ Result<std::size_t> CaptureSystem::step(const SimulationStep& step, const Lifecy
 
 Result<std::size_t> InfrastructureSystem::step(const SimulationStep& step,
                                                const PassiveIncomeCredit& credit) {
+    EV_PROFILE_MODULE("rts", "InfrastructureSystem::step");
     if (step.delta.nanoseconds() < 0)
         return Result<std::size_t>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "RTS infrastructure step delta must be non-negative", "step.delta"));
@@ -1963,7 +1611,7 @@ Result<std::size_t> InfrastructureSystem::step(const SimulationStep& step,
         std::sort(group.buildings.begin(), group.buildings.end(), [](Building* left, Building* right) {
             if (left->infrastructure()->powerPriority != right->infrastructure()->powerPriority)
                 return left->infrastructure()->powerPriority > right->infrastructure()->powerPriority;
-            return left->identity()->subject.format() < right->identity()->subject.format();
+            return left->identity()->subject.persistentId().bytes() < right->identity()->subject.persistentId().bytes();
         });
         for (Building* building : group.buildings) {
             auto infrastructure = building->infrastructure();
@@ -1988,6 +1636,7 @@ Result<std::size_t> InfrastructureSystem::step(const SimulationStep& step,
 }
 
 Result<std::size_t> ContainmentSystem::step() {
+    EV_PROFILE_MODULE("rts", "ContainmentSystem::step");
     std::size_t processed = 0;
     auto retainedBy = [](const ecs::EntityHandle& occupant, const ecs::EntityHandle& container) {
         auto* unit = dynamic_cast<Unit*>(ecs::try_get(occupant));
@@ -2212,6 +1861,7 @@ Result<SupplyRendezvousSelection> SupplyRendezvousSystem::select(
 Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoProductionPurchase& purchase,
                                        map::Pathfinder* pathfinder, const NavigationGrid& grid,
                                        const LifecycleEventSink& events) {
+    EV_PROFILE_MODULE("rts", "SupplySystem::step");
     if (step.delta.nanoseconds() < 0)
         return Result<std::size_t>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "RTS supply step delta must be non-negative", "step.delta"));
@@ -2310,6 +1960,28 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
         return accepted + reserved;
     };
 
+    std::vector<Unit*> suppliers;
+    auto supplierView = ecs::View<Unit, Unit::Identity, Unit::Motion, Unit::Orders, Unit::Faction, Unit::Supply,
+                                  Unit::Containment, Unit::Durability>();
+    for (auto it = supplierView.begin(); it != supplierView.end(); ++it) {
+        auto [identity, motion, orders, faction, supply, containment, durability] = *it;
+        (void)motion;
+        (void)orders;
+        (void)faction;
+        (void)supply;
+        (void)containment;
+        (void)durability;
+        auto* supplier = dynamic_cast<Unit*>(ecs::try_get(identity->self));
+        if (supplier != nullptr) suppliers.push_back(supplier);
+    }
+    if (std::none_of(suppliers.begin(), suppliers.end(), [](Unit* supplier) {
+            const auto supply = supplier->supply();
+            return supplier->durability()->alive && !supplier->containment()->container.isBound() &&
+                   !(supply->range <= 0.f || supply->transferRate <= 0.f);
+        }))
+        return Result<std::size_t>::success(processed,
+                                            Status::success(processed == 0 ? StatusCode::NoOp : StatusCode::Applied));
+
     struct Recipient {
         Unit* unit = nullptr;
         int deficit = 0;
@@ -2334,17 +2006,8 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
         return left.unit->identity()->self.id < right.unit->identity()->self.id;
     });
 
-    std::vector<Unit*> suppliers;
-    auto supplierView = ecs::View<Unit, Unit::Identity, Unit::Motion, Unit::Orders, Unit::Faction, Unit::Supply,
-                                   Unit::Containment, Unit::Durability>();
-    for (auto it = supplierView.begin(); it != supplierView.end(); ++it) {
-        auto [identity, motion, orders, faction, supply, containment, durability] = *it;
-        (void)motion; (void)orders; (void)faction; (void)supply; (void)containment; (void)durability;
-        auto* supplier = dynamic_cast<Unit*>(ecs::try_get(identity->self));
-        if (supplier != nullptr) suppliers.push_back(supplier);
-    }
     std::sort(suppliers.begin(), suppliers.end(), [](Unit* left, Unit* right) {
-        return left->identity()->subject.format() < right->identity()->subject.format();
+        return left->identity()->subject.persistentId().bytes() < right->identity()->subject.persistentId().bytes();
     });
     std::map<std::string, float> recipientReservations;
     for (Unit* supplier : suppliers) {
@@ -2647,6 +2310,7 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
 }
 
 Result<std::size_t> SupplyConvoySystem::step() {
+    EV_PROFILE_MODULE("rts", "SupplyConvoySystem::step");
     struct Member {
         Unit* unit = nullptr;
         WorldPosition destination;
@@ -2713,6 +2377,7 @@ Result<std::size_t> SupplyConvoySystem::step() {
 }
 
 Result<std::size_t> MoraleSystem::step(const SimulationStep& step, const LifecycleEventSink& events) {
+    EV_PROFILE_MODULE("rts", "MoraleSystem::step");
     if (step.delta.nanoseconds() < 0)
         return Result<std::size_t>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "RTS morale step delta must be non-negative", "step.delta"));
@@ -2756,6 +2421,7 @@ Result<std::size_t> MoraleSystem::step(const SimulationStep& step, const Lifecyc
 }
 
 Result<std::size_t> ShieldSystem::step(const SimulationStep& step, const LifecycleEventSink& events) {
+    EV_PROFILE_MODULE("rts", "ShieldSystem::step");
     if (step.delta.nanoseconds() < 0)
         return Result<std::size_t>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "RTS shield step delta must be non-negative", "step.delta"));
@@ -2800,6 +2466,7 @@ Result<std::size_t> ShieldSystem::step(const SimulationStep& step, const Lifecyc
 }
 
 Result<std::size_t> CommandNetworkSystem::step() {
+    EV_PROFILE_MODULE("rts", "CommandNetworkSystem::step");
     struct Jammer { ecs::Entity* faction = nullptr; WorldPosition position; float range = 0.0f; };
     std::vector<Jammer> jammers;
     auto unitJammers = ecs::View<Unit, Unit::Motion, Unit::Faction, Unit::Command, Unit::Durability,
@@ -2897,7 +2564,7 @@ Result<std::size_t> CommandNetworkSystem::step() {
     auto orderUnits = [](Unit* left, Unit* right) {
         if (left->command()->priority != right->command()->priority)
             return left->command()->priority > right->command()->priority;
-        return left->identity()->subject.format() < right->identity()->subject.format();
+        return left->identity()->subject.persistentId().bytes() < right->identity()->subject.persistentId().bytes();
     };
     std::sort(relays.begin(), relays.end(), orderUnits);
     std::sort(recipients.begin(), recipients.end(), orderUnits);
@@ -3145,6 +2812,7 @@ Result<void> AbilitySystem::cast(Unit& caster, const AbilitySpec& spec, ecs::Ent
 Result<std::size_t> AbilitySystem::step(const SimulationStep& step, combat::DamageRuntime& damage,
                                         const DamageEventSink& damageEvents,
                                         const LifecycleEventSink& events) {
+    EV_PROFILE_MODULE("rts", "AbilitySystem::step");
     if (step.delta.nanoseconds() < 0)
         return Result<std::size_t>::failure(
             Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS ability delta must be non-negative", "step.delta"));
@@ -3207,6 +2875,7 @@ Result<std::size_t> AbilitySystem::step(const SimulationStep& step, combat::Dama
 }
 
 Result<std::size_t> ArtillerySystem::step(const SimulationStep& step) {
+    EV_PROFILE_MODULE("rts", "ArtillerySystem::step");
     if (step.delta.nanoseconds() < 0)
         return Result<std::size_t>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "RTS artillery step delta must be non-negative", "step.delta"));
@@ -3484,6 +3153,7 @@ Result<std::size_t> FireSupportSystem::cancel(Unit& requester) {
 }
 
 Result<std::size_t> FireSupportSystem::step(const SimulationStep& step) {
+    EV_PROFILE_MODULE("rts", "FireSupportSystem::step");
     struct Exposure { ecs::EntityHandle handle{}; ecs::Entity* faction = nullptr; WorldPosition position; };
     std::vector<Exposure> exposures;
     auto exposedUnits = ecs::View<Unit, Unit::Identity, Unit::Faction, Unit::Artillery, Unit::Durability>();
@@ -3717,6 +3387,7 @@ Result<void> RTSProjectileSystem::launch(SubjectRef source, ecs::EntityHandle fa
 Result<std::size_t> RTSProjectileSystem::step(const SimulationStep& step, combat::DamageRuntime& damage,
                                               const ProjectileCollisionQuery& collision,
                                               const DamageEventSink& damageEvents) {
+    EV_PROFILE_MODULE("rts", "RTSProjectileSystem::step");
     if (step.delta.nanoseconds() < 0)
         return Result<std::size_t>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "RTS projectile delta must be non-negative", "step.delta"));
@@ -3890,9 +3561,11 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                                            const CombatHeightQuery& heightQuery,
                                            const DamageEventSink& damageEvents,
                                            const CombatFireEventSink& fireEvents) {
+    EV_PROFILE_MODULE("rts", "CombatFireSystem::step");
     if (step.delta.nanoseconds() < 0)
         return Result<std::size_t>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "RTS combat step delta must be non-negative", "step.delta"));
+    std::optional<combat_internal::SuppressionAuraSources> suppressionAuras;
     const auto launchHeights = [&](WorldPosition origin, WorldPosition target,
                                     ecs::EntityHandle source, ecs::EntityHandle targetEntity) {
         return heightQuery ? heightQuery(origin, target, source, targetEntity) : CombatHeightProfile{};
@@ -3954,13 +3627,8 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
         std::string definition;
         bool cloaked = false;
     };
-    std::map<std::string, Target> targets;
-    for (const auto& id : state.mirroredSubjects) {
-        auto removed = sensing.remove(id);
-        if (!removed && removed.code() != StatusCode::NotFound) return Result<std::size_t>::failure(removed.status());
-        if (!removed) removed.ignore("RTS sensing mirror was already absent");
-    }
-    state.mirroredSubjects.clear();
+    std::optional<prof::ZoneScope> mirrorPhase(std::in_place, "CombatFireSystem::mirror", "rts");
+    std::map<std::string, Target>  targets;
     auto mirror = [&](std::string id, Target target, std::string_view tags) -> Result<void> {
         const std::string faction = target.faction == nullptr ? std::string{} : factionKey(*target.faction);
         auto inserted = sensing.upsert(id, target.position.x, target.position.y, faction, tags, "");
@@ -4003,6 +3671,33 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
         }
     }
 
+    // A tick-local index preserves the sensing identity map while avoiding a full scan for each cached target.
+    // Retain stable sensing nodes; prune only subjects absent from the complete current roster.
+    // Both collections are sorted: reconciliation uses a linear merge, without keyed hot-path lookups.
+    auto live = targets.begin();
+    for (auto mirrored = state.mirroredSubjects.begin(); mirrored != state.mirroredSubjects.end();) {
+        while (live != targets.end() && live->first < *mirrored) ++live;
+        if (live != targets.end() && live->first == *mirrored) {
+            ++mirrored;
+            continue;
+        }
+        auto removed = sensing.remove(*mirrored);
+        if (!removed && removed.code() != StatusCode::NotFound) return Result<std::size_t>::failure(removed.status());
+        if (!removed) removed.ignore("RTS sensing mirror was already absent");
+        mirrored = state.mirroredSubjects.erase(mirrored);
+    }
+    using HandleKey      = std::tuple<ecs::Table*, std::type_index, std::uint32_t, std::uint32_t>;
+    const auto handleKey = [](const ecs::EntityHandle& handle) {
+        return HandleKey{handle.table, handle.type, handle.id, handle.generation};
+    };
+    std::map<HandleKey, decltype(targets)::iterator> targetsByHandle;
+    for (auto it = targets.begin(); it != targets.end(); ++it)
+        targetsByHandle.emplace(handleKey(it->second.handle), it);
+    mirrorPhase.reset();
+    const auto findTarget = [&](const ecs::EntityHandle& handle) {
+        const auto found = targetsByHandle.find(handleKey(handle));
+        return found == targetsByHandle.end() ? targets.end() : found->second;
+    };
     std::size_t fired = 0;
     auto observedFireSpotter = [&](ecs::Entity* ownFaction, const Target& target) -> ecs::EntityHandle {
         ecs::EntityHandle best{};
@@ -4235,8 +3930,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
         auto validTarget = [&](const ecs::EntityHandle& handle, bool applyLeash) -> Target* {
             auto* entity = ecs::try_get(handle);
             if (entity == nullptr || isSameHandle(handle, identity->self)) return nullptr;
-            auto found = std::find_if(targets.begin(), targets.end(),
-                                      [&](auto& entry) { return isSameHandle(entry.second.handle, handle); });
+            auto found = findTarget(handle);
             if (found == targets.end() || found->second.alive == nullptr || !*found->second.alive ||
                 found->second.faction == nullptr ||
                 (!definition.friendlyFire && FactionRelationSystem::isAllied(*found->second.faction, faction->link)))
@@ -4283,15 +3977,25 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
             const std::string ownFaction = factionKey(faction->link);
             eve::sensing::QuerySpec acquisition;
             acquisition.shape           = eve::sensing::QueryCircle{motion->x, motion->y, policy->acquisitionRange};
+            if (policy->stance != CombatStance::Aggressive && policy->leashRange > 0.0f && policy->guardSet) {
+                const float containmentGap = policy->leashRange - policy->acquisitionRange;
+                if (containmentGap <= 0.0f || distanceSquared(motion->x, motion->y, policy->guardX, policy->guardY) >
+                                                  containmentGap * containmentGap)
+                    acquisition.shape = eve::sensing::QueryCircle{policy->guardX, policy->guardY, policy->leashRange};
+            }
             acquisition.requiredTags    = {"combat-target"};
             acquisition.excludeFactions = {ownFaction};
             acquisition.maxRange        = policy->acquisitionRange;
             acquisition.maxCount        = static_cast<std::uint32_t>(targets.size());
             acquisition.countPolicy     = eve::sensing::CountPolicy::TruncateToMax;
             acquisition.sortKey         = eve::sensing::SortKey::DistanceAscending;
-            auto queried = sensing.query(eve::sensing::QueryOrigin{motion->x, motion->y, std::nullopt}, acquisition);
+            auto queried                = [&] {
+                EV_PROFILE_MODULE("rts", "CombatFireSystem::unitQuery");
+                return sensing.query(eve::sensing::QueryOrigin{motion->x, motion->y, std::nullopt}, acquisition);
+            }();
             if (!queried) return Result<std::size_t>::failure(queried.status());
             float bestPriority = -1.0f;
+            const bool nearestOnly  = policy->targetPriorities.empty() && definition.preferredTargetTags.empty();
             for (const auto& candidate : queried.value().ranked()) {
                 auto found = targets.find(candidate.id);
                 if (found == targets.end()) continue;
@@ -4303,6 +4007,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                     if (target == nullptr || priority > bestPriority) {
                         target = accepted;
                         bestPriority = priority;
+                        if (nearestOnly) break;
                     }
                 }
             }
@@ -4323,14 +4028,18 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
             artillery->observedFireSpotter = {};
             artillery->usingObservedFire = false;
         }
-        if (!volleyReleased) continue;
+        if (!volleyReleased || unit->navigation()->combatSlotWaiting) continue;
         const float range = std::max(0.0f, definition.range);
         if (distanceSquared(motion->x, motion->y, target->position.x, target->position.y) > range * range) continue;
         if (fireLine && definition.blockedByObstacles && definition.projectile.gravity <= 0.0f) {
-            auto clear = fireLine({motion->x, motion->y}, target->position, identity->self,
-                                  target->handle, definition);
+            auto clear = [&] {
+                EV_PROFILE_MODULE("rts", "CombatFireSystem::unitFireLine");
+                return fireLine({motion->x, motion->y}, target->position, identity->self, target->handle, definition);
+            }();
             if (!clear) return Result<std::size_t>::failure(clear.status());
             if (!clear.value()) {
+                // Cached effective engagement must not stop AttackMove behind an occluder.
+                policy->engagementRange = 0.f;
                 publishBlocked(identity->subject, target->subject, target->position);
                 continue;
             }
@@ -4397,26 +4106,22 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                                    static_cast<double>(std::max(1, definition.projectile.pelletCount));
             request.incomingDamageMultiplier = target->effects->multiplier("incomingDamageMultiplier");
             request.availableShield = target->shield != nullptr ? *target->shield : 0.0;
-            auto outcome = damage.apply(*target->durability, request);
+            auto outcome                     = [&] {
+                EV_PROFILE_MODULE("rts", "CombatFireSystem::unitDamage");
+                return damage.apply(*target->durability, request);
+            }();
             if (!outcome) return Result<std::size_t>::failure(outcome.status());
             if (target->shield != nullptr && outcome.value().absorbedShieldDamage > 0.0) {
                 *target->shield -= static_cast<float>(outcome.value().absorbedShieldDamage);
                 if (target->shieldCooldown != nullptr) *target->shieldCooldown = target->shieldDelay;
             }
-            if (damageEvents) damageEvents(request, outcome.value(), step.tick, DamageChannel::Weapon);
+            if (damageEvents) {
+                EV_PROFILE_MODULE("rts", "CombatFireSystem::unitDamageEvent");
+                damageEvents(request, outcome.value(), step.tick, DamageChannel::Weapon);
+            }
             if (target->morale != nullptr && target->morale->capacity > 0.0f && policy->suppressionPerShot > 0.0f) {
-                float auraFactor = 1.0f;
-                auto allies = ecs::View<Unit, Unit::Motion, Unit::Faction, Unit::Morale, Unit::Containment,
-                                        Unit::Durability>();
-                for (auto allyIt = allies.begin(); allyIt != allies.end(); ++allyIt) {
-                    auto [allyMotion, allyFaction, aura, allyContainment, allyDurability] = *allyIt;
-                    if (!allyDurability->alive || allyContainment->container.isBound() || aura->auraRange <= 0.0f ||
-                        !FactionRelationSystem::isAllied(allyFaction->link, *target->faction))
-                        continue;
-                    if (distanceSquared(target->position.x, target->position.y, allyMotion->x, allyMotion->y) <=
-                        aura->auraRange * aura->auraRange)
-                        auraFactor = std::min(auraFactor, std::clamp(aura->auraSuppressionFactor, 0.0f, 1.0f));
-                }
+                if (!suppressionAuras) suppressionAuras.emplace();
+                const float auraFactor      = suppressionAuras->factor(target->position, *target->faction);
                 target->morale->suppression = std::min(target->morale->capacity,
                     target->morale->suppression + policy->suppressionPerShot * auraFactor * rangeFactor);
                 if (target->morale->suppression >= target->morale->capacity * 0.5f) target->morale->active = true;
@@ -4490,8 +4195,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
         const bool explicitAttack = record && record->kind == OrderKind::Attack;
         if (explicitAttack) policy->target = record->targetEntity;
         auto resolveTarget = [&](const ecs::EntityHandle& handle) -> Target* {
-            auto found = std::find_if(targets.begin(), targets.end(),
-                                      [&](auto& entry) { return isSameHandle(entry.second.handle, handle); });
+            auto found = findTarget(handle);
             if (found == targets.end() || found->second.alive == nullptr || !*found->second.alive ||
                 found->second.faction == nullptr ||
                 (!definition.friendlyFire && FactionRelationSystem::isAllied(*found->second.faction, faction->link)) ||
@@ -4639,6 +4343,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
 }
 
 Result<std::size_t> OrderActionSystem::step(const SimulationStep& step, IRTSActionExecutor& executor) {
+    EV_PROFILE_MODULE("rts", "OrderActionSystem::step");
     if (step.delta.nanoseconds() < 0)
         return Result<std::size_t>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "RTS action step delta must be non-negative", "step.delta"));
@@ -4705,6 +4410,7 @@ Result<ReinforcementRequestReceipt> ReinforcementProductionPolicySystem::request
 
 Result<std::size_t> ReinforcementProductionPolicySystem::step(
     const SimulationStep& step, const ReinforcementCancel& cancel) {
+    EV_PROFILE_MODULE("rts", "ReinforcementProductionPolicySystem::step");
     if (step.delta.nanoseconds() < 0)
         return Result<std::size_t>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "RTS reinforcement policy delta must be non-negative", "step.delta"));
@@ -4823,6 +4529,7 @@ Result<std::size_t> ReinforcementProductionPolicySystem::step(
 
 
 Result<std::size_t> ReinforcementSystem::step() {
+    EV_PROFILE_MODULE("rts", "ReinforcementSystem::step");
     std::size_t processed = 0;
     auto view = ecs::View<Building, Building::Identity, Building::Faction, Building::Rally>();
     for (auto it = view.begin(); it != view.end(); ++it) {
@@ -4873,6 +4580,7 @@ Result<std::size_t> ReinforcementSystem::step() {
 
 Result<std::size_t> EffectSystem::step(const SimulationStep& step, combat::DamageRuntime& settlement,
                                        const LifecycleEventSink& events) {
+    EV_PROFILE_MODULE("rts", "EffectSystem::step");
     if (step.delta.nanoseconds() < 0)
         return Result<std::size_t>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "RTS effects step delta must be non-negative", "step.delta"));

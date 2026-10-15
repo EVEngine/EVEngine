@@ -1,10 +1,13 @@
 #include "rts/RTS.h"
+#include "common/Profile.h"
 #include "common/SquirrelBinding.h"
 #include "crowd/Crowd.h"
 #include "economy/EconomyLedgerResourceAccount.h"
 #include "map/Fov.h"
 #include "map/Pathfinder.h"
 #include "rts/RTSAttributes.h"
+#include "rts/RTSCrowdFlowNavigationInternal.h"
+#include "rts/RTSCrowdSurfaceInternal.h"
 #include "rts/RTSScriptInternal.h"
 #include "sensing/Sensing.h"
 #include "weapon/WeaponDefinitionRuntime.h"
@@ -233,6 +236,7 @@ struct RTS::ScriptRuntime {
     };
 
     struct Checkpoint {
+        crowd::Crowd::Snapshot                                  crowdState;
         RTSStateSnapshot                                        roots;
         std::map<std::string, economy::EconomyLedger::Snapshot> economies;
         std::map<std::string, map::Fov::Snapshot>               fovs;
@@ -328,8 +332,8 @@ Result<void> RTS::configureSettlementRules(const settlement::SettlementRuleSet& 
 }
 
 void RTS::setCrowdProvider(crowd::Crowd* crowd) noexcept {
-    if (crowd_ == crowd) return;
-    if (crowd_ != nullptr) {
+    if (crowd_ == crowd && (crowd == nullptr || crowdLifetime_.isAlive())) return;
+    if (crowd_ != nullptr && crowdLifetime_.isAlive()) {
         for (const auto& handle : units_) {
             auto* unit = tryGetCurrent<Unit>(handle);
             if (unit != nullptr && unit->crowd()->link.isBound()) crowd_->removeNamedAgent(unit->crowd()->link.key());
@@ -337,6 +341,14 @@ void RTS::setCrowdProvider(crowd::Crowd* crowd) noexcept {
     }
 
     crowd_ = crowd;
+    crowdLifetime_ = crowd ? crowd->lifetimeWitness() : LifetimeWitness{};
+    for (const auto& handle : units_) {
+        auto* unit = tryGetCurrent<Unit>(handle);
+        if (!unit) continue;
+        unit->crowd()->runtimeAgent = {};
+        unit->crowd()->runtimeOwner = 0;
+        unit->crowd()->runtimeBindingKey.clear();
+    }
 }
 
 std::string_view RTS::gameplayDomain() const noexcept { return "rts"; }
@@ -1310,6 +1322,8 @@ Value RTS::inspectState() const {
             {"leashRange", unit->combat()->leashRange},
             {"movementPriority", unit->navigation()->movementPriority},
             {"trafficWaiting", unit->navigation()->trafficWaiting},
+            {"combatSlotWaiting", unit->navigation()->combatSlotWaiting},
+            {"combatSlotActive", unit->navigation()->combatSlotTarget.has_value()},
             {"cloaked", unit->vision()->cloaked},
             {"health", unit->durability()->state.health},
             {"maxHealth", unit->durability()->state.maxHealth},
@@ -1672,6 +1686,23 @@ Result<RTSCancelProductionReceipt> RTS::cancelProduction(Building& building, res
 }
 
 Result<std::size_t> RTS::step(const SimulationStep& simulationStep, IRTSActionExecutor& executor) {
+    auto provider = checkCrowdLifetime();
+    if (!provider) return Result<std::size_t>::failure(provider.status());
+    if (crowdFlowNavigation_ && crowdFlowNavigation_->enabled() && !crowd_)
+        return Result<std::size_t>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                              "Shared-flow mode requires a Crowd provider",
+                                                              "crowdFlowNavigation"));
+    if (crowd_) {
+        auto admitted = crowd_->checkAdvanceClock({simulationStep.tick, simulationStep.delta, {}});
+        if (!admitted) return Result<std::size_t>::failure(admitted.status());
+    }
+    auto surface = synchronizeCrowdSurface();
+    if (!surface) return Result<std::size_t>::failure(surface.status());
+    if (crowdFlowNavigation_ && crowdFlowNavigation_->enabled() && crowd_->getFieldStatus().surface.surface.isZero())
+        return Result<std::size_t>::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                              "Shared-flow mode requires an imported movement projection", "crowdFlowNavigation"));
+
     if (!preserveFrameEventsOnNextStep_) {
         frameDamageEvents_.clear();
         frameCombatEvents_.clear();
@@ -1717,7 +1748,9 @@ Result<std::size_t> RTS::step(const SimulationStep& simulationStep, IRTSActionEx
     processed += std::move(patrol).takeValue();
 
     if (pathfinder_ != nullptr) {
-        auto navigation = NavigationSystem::step(*pathfinder_, navigationGrid_, navigationEvent_);
+        auto navigation = crowdFlowNavigation_ && crowdFlowNavigation_->enabled()
+                              ? NavigationSystem::stepSharedFlow(*pathfinder_, navigationGrid_, navigationEvent_)
+                              : NavigationSystem::step(*pathfinder_, navigationGrid_, navigationEvent_);
         if (!navigation) return Result<std::size_t>::failure(navigation.status());
         processed += std::move(navigation).takeValue();
         auto traffic = TrafficReservationSystem::step(*pathfinder_, navigationGrid_);
@@ -1739,12 +1772,19 @@ Result<std::size_t> RTS::step(const SimulationStep& simulationStep, IRTSActionEx
         processed += std::move(fog).takeValue();
     }
 
+    auto attackSlots = stepAttackSlots();
+    if (!attackSlots) return Result<std::size_t>::failure(attackSlots.status());
+    processed += std::move(attackSlots).takeValue();
+
     auto motion = MotionSystem::step(simulationStep);
     if (!motion) return Result<std::size_t>::failure(motion.status());
     processed += std::move(motion).takeValue();
 
     if (crowd_ != nullptr) {
-        auto crowdMotion = CrowdMotionSystem::step(simulationStep, *crowd_);
+        EV_PROFILE_MODULE("rts", "RTS::crowdAdvancePhase");
+        auto alive = checkCrowdLifetime();
+        if (!alive) return Result<std::size_t>::failure(alive.status());
+        auto crowdMotion = advanceCrowdMotion(simulationStep);
         if (!crowdMotion) return Result<std::size_t>::failure(crowdMotion.status());
         processed += std::move(crowdMotion).takeValue();
     }
@@ -1830,9 +1870,12 @@ Result<std::size_t> RTS::step(const SimulationStep& simulationStep, IRTSActionEx
     processed += std::move(reinforcementPolicy).takeValue();
 
     if (crowd_ != nullptr) {
+        EV_PROFILE_MODULE("rts", "RTS::crowdReconcilePhase");
         // Containment/actions can change footprints after the movement phase.
         // Reconcile those projections without advancing simulation time before spawning.
-        auto synchronized = CrowdMotionSystem::step({simulationStep.tick, Duration{}}, *crowd_);
+        auto alive = checkCrowdLifetime();
+        if (!alive) return Result<std::size_t>::failure(alive.status());
+        auto synchronized = advanceCrowdMotion({simulationStep.tick, Duration{}});
         if (!synchronized) return Result<std::size_t>::failure(synchronized.status());
         processed += std::move(synchronized).takeValue();
     }
@@ -1871,6 +1914,14 @@ Result<std::size_t> RTS::step(const SimulationStep& simulationStep, IRTSActionEx
     if (!cleanup) return Result<std::size_t>::failure(cleanup.status());
     processed += std::move(cleanup).takeValue();
     return Result<std::size_t>::success(processed, Status::success(StatusCode::Applied));
+}
+
+Result<void> RTS::configureScriptCrowdExecution(crowd::CrowdExecution                      execution,
+                                                std::shared_ptr<crowd::CrowdWorkScheduler> scheduler) {
+    if (!scriptRuntime_ || !scriptRuntime_->configured)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "RTS script world is not configured", "crowd.scheduler"));
+    return scriptRuntime_->crowd.setWorkScheduler(execution, std::move(scheduler));
 }
 
 Result<std::size_t> RTS::stepScript(double seconds) {
@@ -1921,7 +1972,7 @@ Result<void> RTS::configureScriptWorld(int width, int height, float cellSize, fl
                               "RTS script world requires positive dimensions and finite grid geometry", "grid"));
     if (!scriptRuntime_) scriptRuntime_ = std::make_unique<ScriptRuntime>();
     scriptRuntime_->pathfinder.setSize(width, height);
-    scriptRuntime_->crowd.resizeField(width, height, cellSize, originX, originY);
+    scriptRuntime_->crowd.resizeField(width, height, cellSize, originX - cellSize * 0.5f, originY - cellSize * 0.5f);
     scriptRuntime_->crowd.setClampToField(false);
     // RTS uses navigation-cell world units; legacy flocking defaults use pixel-scale distances.
     // Predictive avoidance and contact resolution supply clearance without long-range repulsion.
@@ -1944,6 +1995,9 @@ Result<void> RTS::configureScriptWorld(int width, int height, float cellSize, fl
     setDefinitionRegistry(&scriptRuntime_->definitions);
     setNavigationProvider(&scriptRuntime_->pathfinder, {cellSize, originX, originY});
     setCrowdProvider(&scriptRuntime_->crowd);
+    // The canonical sensing world owns filtering and ranking; its existing grid only culls candidates.
+    auto sensingIndex = scriptRuntime_->sensing.setSpatialIndexEnabled(true, cellSize * 8.f);
+    if (!sensingIndex) return sensingIndex;
     setCombatProviders(&scriptRuntime_->sensing, &scriptRuntime_->damage);
     const auto firstBlockedPoint = [this](WorldPosition from, WorldPosition to) -> std::optional<WorldPosition> {
         if (!scriptRuntime_ || !scriptRuntime_->configured) return std::nullopt;
@@ -1952,15 +2006,17 @@ Result<void> RTS::configureScriptWorld(int width, int height, float cellSize, fl
         const float distance     = std::hypot(dx, dy);
         const float sampleLength = std::max(scriptRuntime_->cellSize * 0.25f, 0.001f);
         const int   samples      = std::max(1, static_cast<int>(std::ceil(distance / sampleLength)));
-        int previousX = static_cast<int>(std::floor((from.x - scriptRuntime_->originX) / scriptRuntime_->cellSize));
-        int previousY = static_cast<int>(std::floor((from.y - scriptRuntime_->originY) / scriptRuntime_->cellSize));
+        int         previousX =
+            static_cast<int>(std::floor((from.x - scriptRuntime_->originX) / scriptRuntime_->cellSize + 0.5f));
+        int previousY =
+            static_cast<int>(std::floor((from.y - scriptRuntime_->originY) / scriptRuntime_->cellSize + 0.5f));
         for (int sample = 1; sample <= samples; ++sample) {
             const float         t = static_cast<float>(sample) / static_cast<float>(samples);
             const WorldPosition point{from.x + dx * t, from.y + dy * t};
             const int           cellX =
-                static_cast<int>(std::floor((point.x - scriptRuntime_->originX) / scriptRuntime_->cellSize));
+                static_cast<int>(std::floor((point.x - scriptRuntime_->originX) / scriptRuntime_->cellSize + 0.5f));
             const int cellY =
-                static_cast<int>(std::floor((point.y - scriptRuntime_->originY) / scriptRuntime_->cellSize));
+                static_cast<int>(std::floor((point.y - scriptRuntime_->originY) / scriptRuntime_->cellSize + 0.5f));
             if (cellX == previousX && cellY == previousY) continue;
             previousX = cellX;
             previousY = cellY;
@@ -1972,8 +2028,10 @@ Result<void> RTS::configureScriptWorld(int width, int height, float cellSize, fl
     };
     const auto terrainAt = [this](WorldPosition point) {
         if (!scriptRuntime_ || scriptRuntime_->terrainElevations.empty()) return 0.0f;
-        const int x = static_cast<int>(std::floor((point.x - scriptRuntime_->originX) / scriptRuntime_->cellSize));
-        const int y = static_cast<int>(std::floor((point.y - scriptRuntime_->originY) / scriptRuntime_->cellSize));
+        const int x =
+            static_cast<int>(std::floor((point.x - scriptRuntime_->originX) / scriptRuntime_->cellSize + 0.5f));
+        const int y =
+            static_cast<int>(std::floor((point.y - scriptRuntime_->originY) / scriptRuntime_->cellSize + 0.5f));
         if (x < 0 || y < 0 || x >= scriptRuntime_->width || y >= scriptRuntime_->height) return 0.0f;
         return scriptRuntime_->terrainElevations[static_cast<std::size_t>(y * scriptRuntime_->width + x)];
     };
@@ -3209,6 +3267,9 @@ Result<void> RTS::captureScriptCheckpoint(std::string name) {
     if (!roots) return Result<void>::failure(roots.status());
 
     ScriptRuntime::Checkpoint checkpoint;
+    auto                      crowdState = scriptRuntime_->crowd.captureSnapshot();
+    if (!crowdState) return Result<void>::failure(crowdState.status());
+    checkpoint.crowdState                = std::move(crowdState).takeValue();
     checkpoint.roots                     = std::move(roots).takeValue();
     checkpoint.pendingProductionSubjects = scriptRuntime_->pendingProductionSubjects;
     checkpoint.paidProduction            = scriptRuntime_->paidProduction;
@@ -3239,6 +3300,8 @@ Result<void> RTS::restoreScriptCheckpoint(std::string_view name) {
         return Result<void>::failure(
             Diagnostic::error(DiagnosticCode::NotFound, "RTS script checkpoint was not found", "name"));
     const auto& checkpoint    = found->second;
+    auto        crowdRestore  = scriptRuntime_->crowd.prepareRestore(checkpoint.crowdState);
+    if (!crowdRestore) return Result<void>::failure(crowdRestore.status());
     const auto  expectedCells = static_cast<std::size_t>(scriptRuntime_->width * scriptRuntime_->height);
     if (checkpoint.navigationCosts.size() != expectedCells || checkpoint.terrainElevations.size() != expectedCells)
         return Result<void>::failure(
@@ -3358,6 +3421,8 @@ Result<void> RTS::restoreScriptCheckpoint(std::string_view name) {
     scriptRuntime_->paidProduction            = checkpoint.paidProduction;
     scriptRuntime_->paidConstruction          = checkpoint.paidConstruction;
     scriptRuntime_->commandLog                = checkpoint.commandLog;
+    auto crowdCommitted = scriptRuntime_->crowd.commitRestore(std::move(crowdRestore).takeValue());
+    if (!crowdCommitted) return crowdCommitted;
     scriptRuntime_->nextTick                  = checkpoint.nextTick;
     scriptRuntime_->aiProductionSequence      = checkpoint.aiProductionSequence;
     const SimulationTick restoredTick{checkpoint.nextTick == 0 ? 0 : checkpoint.nextTick - 1};
@@ -3437,55 +3502,64 @@ void RTS::removeUnitRoot(Unit& unit, UnitRemovalReason reason) {
         if (passenger != nullptr && passenger != &unit && owns(units_, *passenger)) removeUnitRoot(*passenger);
     }
 
-    if (reason == UnitRemovalReason::Gameplay && crowd_ != nullptr && unit.crowd()->link.isBound())
+    if (reason == UnitRemovalReason::Gameplay && crowd_ != nullptr && crowdLifetime_.isAlive() &&
+        unit.crowd()->link.isBound())
         crowd_->removeNamedAgent(unit.crowd()->link.key());
     const std::string subjectKey = subject.format();
-    if (reason == UnitRemovalReason::Gameplay) {
+    if (reason != UnitRemovalReason::SpawnRollback) {
         if (sensing_ != nullptr) sensing_->remove(subjectKey).ignore("best-effort RTS sensing cleanup");
         combatState_.mirroredSubjects.erase(subjectKey);
         combatState_.blockedSubjects.erase(subjectKey);
     }
 
-    for (const auto& nodeHandle : resourceNodes_) {
-        if (auto* node = dynamic_cast<ResourceNode*>(ecs::try_get(nodeHandle)))
-            std::erase_if(node->harvest()->workers, [&](const auto& value) { return sameHandle(value, handle); });
-    }
-    for (const auto& buildingHandle : buildings_) {
-        auto* building = dynamic_cast<Building*>(ecs::try_get(buildingHandle));
-        if (building == nullptr) continue;
-        std::erase_if(building->construction()->builders, [&](const auto& value) { return sameHandle(value, handle); });
-        std::erase_if(building->garrison()->occupants, [&](const auto& value) { return sameHandle(value, handle); });
-        std::erase_if(building->rally()->reinforcements, [&](const auto& value) { return sameHandle(value, handle); });
-        if (sameHandle(building->rally()->transport, handle)) {
-            building->rally()->transport       = {};
-            building->rally()->transportActive = false;
+    if (reason != UnitRemovalReason::GameplayReferencesPrepared) {
+        for (const auto& nodeHandle : resourceNodes_) {
+            if (auto* node = dynamic_cast<ResourceNode*>(ecs::try_get(nodeHandle)))
+                std::erase_if(node->harvest()->workers, [&](const auto& value) { return sameHandle(value, handle); });
         }
-        building->capture()->blockedByGarrison = !building->garrison()->occupants.empty();
+        for (const auto& buildingHandle : buildings_) {
+            auto* building = dynamic_cast<Building*>(ecs::try_get(buildingHandle));
+            if (building == nullptr) continue;
+            std::erase_if(building->construction()->builders,
+                          [&](const auto& value) { return sameHandle(value, handle); });
+            std::erase_if(building->garrison()->occupants,
+                          [&](const auto& value) { return sameHandle(value, handle); });
+            std::erase_if(building->rally()->reinforcements,
+                          [&](const auto& value) { return sameHandle(value, handle); });
+            if (sameHandle(building->rally()->transport, handle)) {
+                building->rally()->transport       = {};
+                building->rally()->transportActive = false;
+            }
+            building->capture()->blockedByGarrison = !building->garrison()->occupants.empty();
+        }
+        for (const auto& otherHandle : units_) {
+            auto* other = dynamic_cast<Unit*>(ecs::try_get(otherHandle));
+            if (other == nullptr || other == &unit) continue;
+            std::erase_if(other->containment()->occupants,
+                          [&](const auto& value) { return sameHandle(value, handle); });
+            if (other->containment()->container.isBound() &&
+                sameHandle(other->containment()->container.handle(), handle))
+                other->containment()->container = {};
+            if (sameHandle(other->combat()->target, handle)) other->combat()->target = {};
+            if (sameHandle(other->tactics()->escortTarget, handle)) other->tactics()->escortTarget = {};
+            if (sameHandle(other->supply()->assignedTarget, handle)) other->supply()->assignedTarget = {};
+            if (sameHandle(other->supply()->convoyLeader, handle)) other->supply()->convoyLeader = {};
+        }
+        for (const auto& factionHandle : factions_) {
+            if (auto* faction = dynamic_cast<Faction*>(ecs::try_get(factionHandle)))
+                std::erase_if(faction->members()->units, [&](const auto& value) { return sameHandle(value, handle); });
+        }
+        for (const auto& playerHandle : players_) {
+            if (auto* player = dynamic_cast<Player*>(ecs::try_get(playerHandle)))
+                std::erase_if(player->selection()->units, [&](const auto& value) { return sameHandle(value, handle); });
+        }
     }
-    for (const auto& otherHandle : units_) {
-        auto* other = dynamic_cast<Unit*>(ecs::try_get(otherHandle));
-        if (other == nullptr || other == &unit) continue;
-        std::erase_if(other->containment()->occupants, [&](const auto& value) { return sameHandle(value, handle); });
-        if (other->containment()->container.isBound() && sameHandle(other->containment()->container.handle(), handle))
-            other->containment()->container = {};
-        if (sameHandle(other->combat()->target, handle)) other->combat()->target = {};
-        if (sameHandle(other->tactics()->escortTarget, handle)) other->tactics()->escortTarget = {};
-        if (sameHandle(other->supply()->assignedTarget, handle)) other->supply()->assignedTarget = {};
-        if (sameHandle(other->supply()->convoyLeader, handle)) other->supply()->convoyLeader = {};
-    }
-    for (const auto& factionHandle : factions_) {
-        if (auto* faction = dynamic_cast<Faction*>(ecs::try_get(factionHandle)))
-            std::erase_if(faction->members()->units, [&](const auto& value) { return sameHandle(value, handle); });
-    }
-    for (const auto& playerHandle : players_) {
-        if (auto* player = dynamic_cast<Player*>(ecs::try_get(playerHandle)))
-            std::erase_if(player->selection()->units, [&](const auto& value) { return sameHandle(value, handle); });
-    }
-
     const auto weaponHandle = unit.weapon()->link.handle();
     if (auto* weapon = dynamic_cast<weapon::WeaponEntity*>(unit.weapon()->link.resolve())) weapon->release();
-    std::erase_if(weapons_, [&](const auto& value) { return sameHandle(value, weaponHandle); });
-    std::erase_if(units_, [&](const auto& value) { return sameHandle(value, handle); });
+    if (reason != UnitRemovalReason::GameplayReferencesPrepared) {
+        std::erase_if(weapons_, [&](const auto& value) { return sameHandle(value, weaponHandle); });
+        std::erase_if(units_, [&](const auto& value) { return sameHandle(value, handle); });
+    }
     if (scriptRuntime_ && reason != UnitRemovalReason::SpawnRollback)
         std::erase_if(scriptRuntime_->paidProduction,
                       [&](const auto& value) { return value.resultSubject == subject; });
@@ -3586,7 +3660,7 @@ Result<void> RTS::remove(SubjectRef subject) {
 }
 
 Result<std::size_t> RTS::cleanupDestroyed() {
-    const std::size_t              before = unitCount() + buildingCount();
+    EV_PROFILE_MODULE("rts", "RTS::cleanupDestroyed");
     std::vector<ecs::EntityHandle> deadUnits;
     std::vector<ecs::EntityHandle> deadBuildings;
     for (const auto& handle : units_) {
@@ -3599,6 +3673,29 @@ Result<std::size_t> RTS::cleanupDestroyed() {
         if (building != nullptr && (!building->integrity()->alive || building->integrity()->state.health <= 0.0))
             deadBuildings.push_back(handle);
     }
+    if (deadUnits.empty() && deadBuildings.empty())
+        return Result<std::size_t>::success(0, Status::success(StatusCode::NoOp));
+    const bool batchReady = deadBuildings.empty() && std::all_of(deadUnits.begin(), deadUnits.end(), [&](auto handle) {
+                                auto* unit = tryGetCurrent<Unit>(handle);
+                                if (!unit || !unit->containment()->occupants.empty()) return false;
+                                if (crowd_ && crowdLifetime_.isAlive() && unit->crowd()->link.isBound()) {
+                                    const auto settings = unit->crowd();
+                                    if (settings->runtimeBindingKey != settings->link.key() ||
+                                        !crowd_->isAgentAlive({settings->runtimeAgent, settings->runtimeOwner}))
+                                        return false;
+                                }
+                                return true;
+                            });
+    if (batchReady) {
+        auto prepared = prepareUnitRemovalBatch(deadUnits);
+        if (!prepared) return Result<std::size_t>::failure(prepared.status());
+        for (auto handle : deadUnits) {
+            if (auto* unit = tryGetCurrent<Unit>(handle))
+                removeUnitRoot(*unit, UnitRemovalReason::GameplayReferencesPrepared);
+        }
+        return Result<std::size_t>::success(deadUnits.size(), Status::success(StatusCode::Applied));
+    }
+    const auto before = unitCount() + buildingCount();
     for (const auto& handle : deadBuildings) {
         auto* building = tryGetCurrent<Building>(handle);
         if (building == nullptr || !owns(buildings_, *building)) continue;
@@ -4624,6 +4721,7 @@ void RTS::expose(ssq::Class& cls) {
                     return queueEntityOrder(self, tick, subjects, target, OrderKind::BoardTransport);
                 });
     script_internal::exposeFormationBindings(cls);
+    script_internal::exposeCrowdSurfaceBindings(cls);
     cls.addFunc("attackUnits",
                 [vm](RTS* self, const std::vector<std::string>& subjectTexts, const std::string& targetText,
                      bool append) -> ssq::Table {

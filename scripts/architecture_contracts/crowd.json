@@ -2,6 +2,59 @@
   "schema_version": 1,
   "entries": [
     {
+      "id": "crowd-agent-runtime-link",
+      "rule": "link",
+      "scope": "src/modules/crowd/Crowd*",
+      "owner": "crowd-maintainers",
+      "issue": "EVENGINE-ARCH-LINK-CONTRACTS",
+      "reason": "Owner-qualified registry handles survive dense swap-pop without retaining agents or providers.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/crowd/CrowdTypes.h",
+        "src/modules/crowd/CrowdRegistry.cpp",
+        "docs/usr/modules/crowd.md"
+      ],
+      "tests": [
+        "test/crowd_registry.cpp"
+      ],
+      "symbols": [
+        "AgentRef",
+        "AgentHandle"
+      ],
+      "create": "Registry maps generation-qualified identities to dense SOA slots; owner epoch is non-reused.",
+      "ownership": "Crowd owns agents; AgentRef is an unowned identity value and cannot keep the provider alive.",
+      "destroy_order": "Agent removal and clear invalidate generations. Crowd lifetime witness expires on destruction without retaining its owner; RTS checks before dereference, invalidates projections and reports unavailable. RTS destruction first removes owned projections.",
+      "restore": "In-process snapshot restoration allocates fresh owner identity and invalidates prior handles; consumers rebind stable names. Persistent format and migration remain unimplemented.",
+      "stale": "Check owner, occupied registry index and generation before resolving dense index."
+    },
+    {
+      "id": "crowd-flow-field-lease",
+      "rule": "link",
+      "scope": "src/modules/crowd/Crowd*",
+      "owner": "crowd-maintainers",
+      "issue": "EVENGINE-ARCH-LINK-CONTRACTS",
+      "reason": "Opaque leases pin immutable navigation storage, with owner/input/generation checks independent of provider lifetime.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/crowd/CrowdTypes.h",
+        "src/modules/crowd/CrowdFlowCache.cpp",
+        "src/modules/crowd/CrowdInternal.h",
+        "src/modules/crowd/CrowdSnapshot.cpp",
+        "docs/usr/modules/crowd.md"
+      ],
+      "tests": [
+        "test/crowd_flow_cache.cpp"
+      ],
+      "symbols": [
+        "FlowLease"
+      ],
+      "create": "Completed owning plans publish one canonical input/surface/goals/algorithm entry; ready lookup shares its non-reused generation.",
+      "ownership": "Crowd owns cache metadata; leases retain only immutable field storage and an explicit pin, never the provider.",
+      "destroy_order": "Provider first: retained field remains safe but cannot bind another owner. Lease first: pin is released and deterministic byte-budget eviction may remove the unleased entry.",
+      "restore": "In-process checkpoint captures cache/agent lease values. Restore renews owner, retargets agent leases, and invalidates external old-owner leases. No persistent schema or cross-process handles.",
+      "stale": "Owner, navigation input epoch and algorithm version are checked before query/binding/Flow drive; latest physical geometry still owns wall solving."
+    },
+    {
       "id": "crowd-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/crowd/Crowd*",
@@ -13,7 +66,14 @@
         "src/modules/crowd/Crowd.h",
         "src/modules/crowd/CrowdBindings.cpp",
         "docs/dev/群体行为与流场模块设计.md",
-        "cmake/profile_checks.cmake"
+        "cmake/profile_checks.cmake",
+        "src/modules/crowd/CrowdSpatialIndex.h",
+        "src/modules/crowd/CrowdSpatialIndex.cpp",
+        "src/modules/crowd/CrowdContactSolver.cpp",
+        "src/modules/crowd/CrowdWorkScheduler.h",
+        "src/modules/crowd/CrowdScheduler.cpp",
+        "src/modules/crowd/CrowdPreferred.cpp",
+        "src/modules/crowd/CrowdUpdatePlan.cpp"
       ],
       "tests": [
         "test/crowd.cpp",
@@ -21,7 +81,24 @@
         "test/crowd_script.cpp",
         "test/crowd_interaction.cpp",
         "test/crowd_spawn.cpp",
-        "test/crowd_avoidance.cpp"
+        "test/crowd_avoidance.cpp",
+        "test/crowd_budget.cpp",
+        "test/crowd_policy.cpp",
+        "test/crowd_advance.cpp",
+        "test/crowd_snapshot.cpp",
+        "test/crowd_ties.cpp",
+        "test/crowd_registry.cpp",
+        "test/rts_crowd.cpp",
+        "test/rts_crowd_registry.cpp",
+        "test/crowd_revision.cpp",
+        "test/crowd_navigation.cpp",
+        "test/crowd_navigation_script.cpp",
+        "test/crowd_surface.cpp",
+        "test/crowd_flow_cache.cpp",
+        "test/crowd_spatial.cpp",
+        "test/crowd_contact_pairs.cpp",
+        "test/crowd_scheduler.cpp",
+        "test/profile/crowd_update_allocation.cpp"
       ],
       "provides": [],
       "requires": [],
@@ -96,7 +173,29 @@
             "advance",
             "applySpawnBatch",
             "configureAvoidance",
-            "getAvoidanceSettings"
+            "getAvoidanceSettings",
+            "agentRef",
+            "resolveNamedAgent",
+            "isAgentAlive",
+            "readAgent",
+            "createAgents",
+            "updateAgents",
+            "removeAgents",
+            "copyAgentFrame",
+            "copyAgentStates",
+            "relocateAgents",
+            "setInteractionPolicy",
+            "readInteractionPolicy",
+            "advanceTick",
+            "getFieldStatus",
+            "requestFlowBuild",
+            "getFlowRequest",
+            "advanceFlowRequest",
+            "commitFlowRequest",
+            "cancelFlowRequest",
+            "releaseFlowRequest",
+            "acquireFlowRequestLease",
+            "sampleFlowRequestLease"
           ]
         },
         {
@@ -108,13 +207,31 @@
           "methods": []
         }
       ],
-      "protocol": [],
-      "thread_affinity": "Simulation thread; no concurrent access or reentrant mutation.",
+      "protocol": [
+        "Process-local crowd.flowRequest token schema 1: exact integer owner/index/generation, required kind, unknown schema rejected and extra fields ignored. Tokens are transient and invalidated on restore; no persistent migration claim.",
+        "Per-agent MovementBinding selects an exact movement-class identity and revision. Zero/zero explicitly retains compatibility; imported Flow rejects missing/stale classes and radius mismatches observably. Values survive in-process snapshot, not a persistent schema.",
+        "Navigation input epoch is independent of default-field goal/publication revisions. Requests on one immutable input remain valid across other goal publications; geometry/cost/projection changes invalidate them. Both epochs are checkpointed in-process, not persistent schema.",
+        "Native immutable FlowLease cache, max 10000 entries, byte budget on retained vector capacities/resource metadata. Complete goal coordinates, input epoch, surface/class/cost provenance and algorithm version compare exactly. Last acquisition simulation tick and stable full key order evict only unleased entries. No new script lease protocol.",
+        "Existing generation-qualified flowRequest token can own one native lease after completed acquisition. releaseFlowRequest/restore releases that pin; sample checks token and native input epoch. No independent script lease identity yet.",
+        "Script updateAgents accepts flowRequest or explicit useDefaultFlow. Shared raw token resolver never invokes delegates; malformed/stale bindings reject atomically. Request release drops its pin without detaching agent-owned copies.",
+        "Sparse broadphase owns numeric slots, signed-int64 row/cell keys and canonical tie order. maxGridCells caps occupied cells; optional exact-integer maxSpatialVisits caps row/cell enumeration plus binary comparisons. Grid entries/sort comparisons/spatial visits are owning report fields; no skipped contacts on exhaustion, advance rollback invalidates the derived index. No new persistent schema.",
+        "Contact candidates use count/prefix allocation before fill, canonical tie-pair sorting, independently owned pair deltas and per-agent incident CSR gather in pair order. Optional exact integer maxContactPairs bounds live entries per pass (0..10000000, default 1000000); maxPairVisits bounds scratch-init/count/prefix/fill/sort/delta-init/incident-gather work. Capacity/work exhaustion rolls back advance, never truncates contacts. contactPairsPeak/pairVisits are owning diagnostic fields; CSR contains N+1 offsets and exactly 2P indices bounded by pair capacity; rollback/restore invalidates deltas and incidents. Serial and injected parallel execution share 256-item logical partitions and pair/gather mathematics. Joined provider failure rolls back advance without rerun. Snapshot does not retain a scheduler; restore preserves current execution configuration. No persistent schema.",
+        "Crowd::setWorkScheduler is native composition-root configuration, deliberately not script-bindable; Parallel without a shared adapter rejects. One known provider, high-frequency dispatch and mandatory stage join select direct injected interface, never capability lookup on the hot path. Velocity acceleration/predictive scoring/heading and contact delta/gather dispatch through the same fixed partitions. Preferred Boids/seek/wander math also dispatches; owner prepares complete bounded neighbor CSR and owning Flow numeric samples before workers. Prediction neighbors are owned per agent (at most maxNeighbors+1 active entries during bounded selection; storage may retain historical capacity); owner preflights the exact score count before dispatch. No worker writes counters or queries the mutable broadphase.",
+        "Predictive scoring count is derived from the same angle/fraction arrays used by the kernel (currently 45 scores per selected neighbor). Held/zero-speed rows have no predictions. maxPredictionChecks rejects before dispatch; rollback/restore invalidates per-agent prediction scratch. No new persistent schema or clock authority.",
+        "Optional exact-integer maxPreferredNeighbors (default 1000000, allowed 0..10000000) bounds complete force-neighbor entries per substep; maxPreferredVisits charges velocity workspace, count/prefix/init/fill, Flow samples and force entries before dispatch. Underlying query/comparison work remains charged to maxNeighborVisits/maxSpatialVisits. No force truncation on exhaustion. preferredNeighborsPeak/preferredVisits are owning native and both script report fields. Original conservative query radius and float force-boundary semantics are preserved. navigationField raw borrow remains owner-only, never crosses a task; workers consume three owned numeric Flow values. Rollback/restore invalidate CSR/Flow samples. This does not complete all prediction-preparation cost, tile layers or battle performance acceptance.",
+        "Canonical prepareAgentUpdates owns copied values and non-reused owner identity, rejects duplicates/invalid/stale/foreign leases, and retains no caller span, numeric slot or provider pointer. commitAgentUpdates validates all references and optional zero/one selection before mutation, resolves compaction at commit, consumes the move-only token only on success and allocates no success-path workspace. Empty selection applies all; stale unselected references reject the whole plan. Provider-first destruction is safe; restore invalidates old-owner tokens. Native composition API only, not a second script token identity. updateAgents is a documented compatibility-only facade over the same canonical inward path. No persistent schema. OBJECT process allocation probe injects one actual preparation allocation failure and counts zero allocations for selected commit after a motion step."
+      ],
+      "thread_affinity": "Crowd owner dispatches; avoidance workers read frozen positions, interactions and spatial directories, write disjoint per-agent neighbor lists and partition-local work counters, then join before deterministic counter merge. Contact workers read frozen numeric columns and write partition-owned delta/correction slots. No public Crowd access concurrently or callback reentry.",
       "trim": {
         "absent_profile": "minimal",
-        "evidence": "minimal normally excludes crowd; minimal + EVENGINE_MODULE_crowd=ON builds eve_crowd_check, linking EVCrowd/EVCommon without graphics/window/RTS. Absence startup remains unverified."
+        "evidence": "crowd-core-only selects common/crowd and squirrel; Windows Debug SHARED eve_crowd_check passes 60 cases with host off. EVFoundation.dll imports only Windows/C++ runtime DLLs. OBJECT crowd+RTS+font composition passes 128 cases. Provider-absent startup of unrelated client profiles remains unverified."
       },
       "cost_notes": [
+        {
+          "api": "Crowd::captureSnapshot/prepareRestore/commitRestore",
+          "shape": "prepare-token-commit",
+          "why": "Explicit checkpoint copies own runtime storage; restore allocates a one-use targeted plan before allocation-free publication and stale-reference invalidation."
+        },
         {
           "api": "Crowd::advance",
           "shape": "owned-result",
@@ -124,13 +241,108 @@
           "api": "Crowd::applySpawnBatch",
           "shape": "batch-builder",
           "why": "One world snapshot per caller-built batch and explicitly bounded placement/contact work before atomic publication."
+        },
+        {
+          "api": "Crowd::updateAgents/removeAgents/copyAgentStates",
+          "shape": "owned-batch",
+          "why": "Numeric validation and bounded owning frame copies amortize synchronization per phase; no implicit spatial rebuild."
+        },
+        {
+          "api": "Crowd::relocateAgents",
+          "shape": "owned-batch",
+          "why": "Copies positions once and validates bounded exact placement before resetting velocities atomically."
+        },
+        {
+          "api": "Crowd::prepareFlowBuild/advanceFlowBuild/commitFlowBuild",
+          "shape": "prepare-token-commit",
+          "why": "Prepare copies owned workstate. Advancement spends deterministic heap-pop and direction-cell units; stale source revisions cancel before work. Commit publishes only completed state with noexcept move assignment."
+        },
+        {
+          "api": "Crowd::prepareNavigationSurface/commitNavigationSurface",
+          "shape": "prepare-token-commit",
+          "why": "Owning map-adapter snapshot validates typed surface/movement provenance and separates raw physical costs from preinflated navigation costs. Preparation allocates and commit publishes with no allocation."
+        },
+        {
+          "api": "Crowd::acquireFlowField/configureFlowCache",
+          "shape": "opaque-lease-and-prepared-publication",
+          "why": "Ready lookup normalizes bounded goals; publication moves completed work after metadata/budget staging. Field pressure fails atomically without consuming the plan or default-field publication."
+        },
+        {
+          "api": "Crowd::prepareAgentUpdates/commitAgentUpdates",
+          "shape": "prepare-token-commit",
+          "why": "Allocate/copy/sort once before publication; later commit validates numeric identities and selection and applies values without success-path allocation."
         }
       ],
       "hot_path": [
         "src/modules/crowd/CrowdSimulation.cpp",
         "src/modules/crowd/CrowdStep.cpp",
         "src/modules/crowd/CrowdInternal.h",
-        "src/modules/crowd/CrowdAvoidance.cpp"
+        "src/modules/crowd/CrowdAvoidance.cpp",
+        "src/modules/crowd/CrowdBatch.cpp",
+        "src/modules/crowd/CrowdRegistry.cpp",
+        "src/modules/crowd/CrowdFlowCache.cpp",
+        "src/modules/crowd/CrowdSpatialIndex.cpp",
+        "src/modules/crowd/CrowdContactSolver.cpp",
+        "src/modules/crowd/CrowdScheduler.cpp",
+        "src/modules/crowd/CrowdPreferred.cpp",
+        "src/modules/crowd/CrowdUpdatePlan.cpp",
+        "src/modules/crowd/CrowdSpatialIndex.h"
+      ]
+    },
+    {
+      "id": "crowd-thread-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/crowd/thread/*",
+      "owner": "crowd-maintainers",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACES",
+      "reason": "Optional synchronous JobSystem adapter preserves core isolation, provider lifetime and joined failure atomicity.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/crowd/thread/CrowdThread.h",
+        "src/modules/crowd/thread/CrowdThread.cpp",
+        "cmake/module_manifest/core_foundation.cmake",
+        "docs/usr/modules/crowd.md"
+      ],
+      "tests": [
+        "test/crowd/thread/CrowdThread.cpp",
+        "test/crowd_scheduler.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "CrowdWorkScheduler",
+          "impl": "JobScheduler (direct factory injection, not capability registry)",
+          "absent_behavior": "Explicit Parallel selection without a lease rejects; serial remains available."
+        }
+      ],
+      "requires": [
+        {
+          "capability": "thread::JobSystem (direct weak shared owner)",
+          "required": true,
+          "fallback": "Expired or stopped provider returns failure before dispatch; no implicit serial execution."
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [
+        "No ECS/Link rows, events, script bindings or tool protocol. Numeric logical partition ids and borrowed native bodies are transient synchronous work, never persistent handles.",
+        "A genuine shared owner from createJobSystem owns the pool. Adapter stores weak ownership; dispatch locks it through submit and join. Caller must not stop the pool during dispatch. Release during flight is safe; release while idle makes subsequent dispatch fail. No no-op borrowed deleters.",
+        "Each callback exception is captured in a partition-owned slot because JobSystem join does not propagate child failure. All children join before Result failure; no serial retry or partially published Crowd step."
+      ],
+      "thread_affinity": "Composition root creates the lease; Crowd owner dispatches; native callbacks may run on workers or helping waiter without locks.",
+      "trim": {
+        "absent_profile": "crowd-core-only",
+        "evidence": "L1/L2/L3: crowd-core-only host-off SHARED without satellite passes 114 cases; crowd-thread-core-only selects common/thread/crowd/crowd_thread only, builds Foundation/Platform DLLs and passes 117 cases. OBJECT and SHARED Crowd+RTS compositions each pass 216 cases. Logs build/crowd-scheduler-{core,trim,shared}-tests.log and build/crowd-scheduler-tests.log. No graphics/RTS/Map provider needed for trimmed runtime; no full release-performance or renderer claim."
+      },
+      "cost_notes": [
+        {
+          "api": "makeJobSystemCrowdScheduler",
+          "shape": "shared-lease",
+          "why": "One adapter allocation amortized across ticks; each dispatch allocates per-partition error/job storage and joins all work."
+        }
+      ],
+      "hot_path": [
+        "src/modules/crowd/thread/CrowdThread.cpp"
       ]
     }
   ]

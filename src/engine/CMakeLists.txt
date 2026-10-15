@@ -91,23 +91,7 @@ endif()
 # Crash-backtrace support (backward-cpp from EVEngine/third-party, MIT). The
 # host binary installs an unhandled-exception handler (main.cpp) that prints a
 # symbolized stack trace on crash; it is a host-only tool, not a game module.
-if(WIN32)
-    add_library(EVBacktrace INTERFACE)
-    # backward.hpp lives in the third-party install; get its include dirs
-    # through the shared include target instead of global include_directories.
-    target_link_libraries(EVBacktrace INTERFACE eve_engine_includes)
-    if(EVENGINE_THIRD_PARTY_BINARY_DIR)
-        # Prebuilt-install mode: point at the install tree directly.
-        target_include_directories(EVBacktrace INTERFACE ${EVENGINE_THIRD_PARTY_BINARY_DIR}/include)
-        target_link_libraries(EVBacktrace INTERFACE
-            ${EVENGINE_THIRD_PARTY_BINARY_DIR}/lib/backward$<$<CONFIG:Debug>:mdd>$<$<NOT:$<CONFIG:Debug>>:md>.lib)
-    else()
-        # ExternalProject mode (CI): the root CMakeLists already added the
-        # third-party install include/lib dirs to the global search paths.
-        target_link_libraries(EVBacktrace INTERFACE
-            backward$<$<CONFIG:Debug>:mdd>$<$<NOT:$<CONFIG:Debug>>:md>)
-    endif()
-endif()
+include(${CMAKE_SOURCE_DIR}/cmake/host_backtrace.cmake)
 
 # Engine entry-point sources include common/config.h / cmdline/*.h directly;
 # link the shared include set explicitly (also propagates the third-party

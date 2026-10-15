@@ -27,7 +27,7 @@ namespace detail {
  * responsibility after payload movement succeeds; a moved-from Result is
  * disarmed. The two bytes remain present in non-assert builds so Result keeps
  * one ABI when a Release engine library is consumed by an assertion-enabled
- * test or tool; the observation operations themselves compile to no-ops.
+ * test or tool; observation and move flags update consistently; only runtime checks disappear.
  */
 class ResultObservation {
 public:
@@ -54,11 +54,7 @@ public:
 
 protected:
     /** @brief Observe. */
-    void observe() const noexcept {
-#if !defined(ZEROERR_NO_ASSERT)
-        observed_ = true;
-#endif
-    }
+    void observe() const noexcept { observed_ = true; }
 
     /** @brief Assert can be overwritten. */
     void assertCanBeOverwritten() const {
@@ -71,28 +67,18 @@ protected:
 
     /** @brief Adopt observation from. */
     void adoptObservationFrom(ResultObservation& other) noexcept {
-#if !defined(ZEROERR_NO_ASSERT)
         observed_          = other.observed_;
         mustObserve_       = other.mustObserve_;
         other.mustObserve_ = false;
-#else
-        (void)other;
-#endif
     }
 
     /** @brief Drop observation duty; used when a moved-from result is empty. */
-    void disarmObservation() noexcept {
-#if !defined(ZEROERR_NO_ASSERT)
-        mustObserve_ = false;
-#endif
-    }
+    void disarmObservation() noexcept { mustObserve_ = false; }
 
     /** @brief Require a fresh check after replacing the carried outcome. */
     void requireObservation() noexcept {
-#if !defined(ZEROERR_NO_ASSERT)
         observed_    = false;
         mustObserve_ = true;
-#endif
     }
 
 private:
@@ -147,6 +133,9 @@ void moveAssignOptional(std::optional<T>& destination, std::optional<U>&& source
  * const, including `Result<T*>` → `Result<const T*>`. Returning the const form
  * makes `value()` yield a const view even from a non-const Result, so callers
  * cannot mutate through a read-only operation.
+ *
+ * Observation belongs to one owner thread; synchronized handoff is supported,
+ * but concurrent checking of one shared Result is unsupported. No callbacks run.
  *
  * @tparam T Owning value type. References and void use a different form.
  */
@@ -308,7 +297,7 @@ public:
     const T& value() const& {
         /** @brief Observe. */
         observe();
-        const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
+        [[maybe_unused]] const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
         /** @brief Ev assert. */
         EV_ASSERT(hasSuccessfulValue, "Result::value requires a successful Result with a value");
         return value_.value();
@@ -318,7 +307,7 @@ public:
     T& value() & {
         /** @brief Observe. */
         observe();
-        const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
+        [[maybe_unused]] const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
         /** @brief Ev assert. */
         EV_ASSERT(hasSuccessfulValue, "Result::value requires a successful Result with a value");
         return value_.value();
@@ -328,7 +317,7 @@ public:
     T&& value() && {
         /** @brief Observe. */
         observe();
-        const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
+        [[maybe_unused]] const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
         /** @brief Ev assert. */
         EV_ASSERT(hasSuccessfulValue, "Result::value requires a successful Result with a value");
         /** @brief Moves . */
@@ -339,7 +328,7 @@ public:
     T takeValue() && {
         /** @brief Observe. */
         observe();
-        const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
+        [[maybe_unused]] const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
         /** @brief Ev assert. */
         EV_ASSERT(hasSuccessfulValue, "Result::takeValue requires a successful Result with a value");
         T result = std::move(value_.value());

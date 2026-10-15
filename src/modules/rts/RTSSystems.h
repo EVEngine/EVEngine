@@ -42,7 +42,7 @@ struct FormationSpec {
 };
 
 /**
- * @brief Caller-built admission batch for an immediate coordinated Move command.
+ * @brief Caller-built admission batch for an immediate coordinated Move or AttackMove command.
  * @cost Linear in unit count; callers own and pass stable identities once per command admission.
  */
 struct MovementGroupBatch {
@@ -50,6 +50,7 @@ struct MovementGroupBatch {
     WorldPosition           target;
     FormationSpec           formation;
     float leadDistance = 2.f;  ///< Positive world-space allowance before leaders slow for lagging members.
+    OrderKind kind         = OrderKind::Move;  ///< Supported coordinated order; other kinds reject before mutation.
 };
 
 /** @brief Static metadata for one ECS system's access and phase contract. */
@@ -260,17 +261,38 @@ namespace eve::map { class Pathfinder; class Fov; }
 namespace eve::rts {
 
 /** @brief World/grid conversion used when an RTS composition consumes a canonical map Pathfinder. */
+/** @brief Grid spacing and world-space centre of cell (0,0); adapters convert to corner-origin fields. */
 struct NavigationGrid {
     float cellSize = 1.0f;
     float originX = 0.0f;
     float originY = 0.0f;
+};
+/** @brief Explicit world-space placement for one RTS-owned unit identity. */
+struct UnitRelocation {
+    SubjectRef    subject;
+    WorldPosition position;
+};
+/** @brief Caller-built atomic exact-placement request; Crowd-linked units must already be projected. */
+struct UnitRelocationBatch {
+    std::vector<UnitRelocation> units;
+    int                         maxChecks = 1000000;
 };
 
 /** @brief Notification emitted once when a newly planned order has no canonical map route. */
 using NavigationEvent = std::function<void(Unit&, const OrderRecord&)>;
 
 /** @brief Plans unit routes through the canonical map Pathfinder without owning map blockers or costs. */
+class CrowdFlowNavigation;
 class EVENGINE_API_DOMAINS NavigationSystem {
+public:
+    /** @brief Plan native routes while shared-flow eligible Crowd orders use the injected flow service. */
+    [[nodiscard]] static Result<std::size_t> stepSharedFlow(map::Pathfinder& pathfinder, const NavigationGrid& grid,
+                                                            const NavigationEvent& unreachable);
+
+private:
+    [[nodiscard]] static Result<std::size_t> stepInternal(map::Pathfinder& pathfinder, const NavigationGrid& grid,
+                                                          const NavigationEvent& unreachable, bool sharedFlows);
+
 public:
     /** @brief Replan changed movement orders and advance reached waypoints. */
     [[nodiscard]] static Result<std::size_t> step(map::Pathfinder& pathfinder, const NavigationGrid& grid,
@@ -342,6 +364,15 @@ public:
 
 /** @brief Synchronizes linked RTS units through the canonical Crowd simulation. */
 class EVENGINE_API_DOMAINS CrowdMotionSystem {
+public:
+    /** @brief Consume shared static-goal fields through a known owner-thread flow service. */
+    [[nodiscard]] static Result<std::size_t> stepSharedFlow(const SimulationStep& step, crowd::Crowd& crowd,
+                                                            CrowdFlowNavigation& navigation);
+
+private:
+    [[nodiscard]] static Result<std::size_t> stepInternal(const SimulationStep& step, crowd::Crowd& crowd,
+                                                          CrowdFlowNavigation* navigation);
+
 public:
     /** @brief Push ECS targets into Crowd, advance it once, and project positions back to Unit::Motion. */
     [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step, crowd::Crowd& crowd);
@@ -596,7 +627,11 @@ public:
         std::set<std::string> mirroredSubjects;
         std::set<std::string> blockedSubjects;
     };
-    /** @brief Mirror live targets, acquire enemies, advance weapons, fire, and settle direct impacts. */
+    /** @brief Mirror live targets, acquire enemies, advance weapons, fire, and settle direct impacts.
+     * @thread Simulation owner thread; borrows all services and event sinks for this call.
+     * @reentrancy Event sinks may observe or record results, but must not mutate ECS or reenter this system.
+     * @determinism Aura-provider membership is sampled at the first suppression hit; values are read at each hit.
+     */
     [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step, State& state,
                                                   sensing::SensingWorld& sensing, combat::DamageRuntime& damage,
                                                   class RTSProjectileSystem* projectiles = nullptr,

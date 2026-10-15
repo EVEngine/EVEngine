@@ -28,6 +28,71 @@
       "events": "No gameplay events; visible output is the rendered tile batch.",
       "services": "Borrowed Graphics backend and injected dt for animation update.",
       "phase": "Map update/render phase."
+    },
+    {
+      "id": "map-navigation-capture-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/map/Pathfinder*",
+      "owner": "map-maintainers",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACES",
+      "reason": "Map-owned canonical grid captures expose immutable inputs to upper-domain navigation adapters without a Crowd dependency.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/map/Pathfinder.h",
+        "src/modules/map/Pathfinder.cpp",
+        "src/modules/rts/RTSCrowdSurface.cpp"
+      ],
+      "tests": [
+        "test/map_navigation_snapshot.cpp",
+        "test/rts_crowd_surface_adapter.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Pathfinder",
+          "methods": [
+            "setTopology",
+            "getTopology",
+            "setDiagonal",
+            "getDiagonal",
+            "blockGid",
+            "unblockGid",
+            "clearBlockedGids",
+            "setBlockEmpty",
+            "getBlockEmpty",
+            "setBlocked",
+            "isWalkable",
+            "setCellCost",
+            "getCellCost",
+            "syncFromLayer",
+            "findPath",
+            "buildFlowField",
+            "followFlow",
+            "findGroupPath",
+            "invalidateCache"
+          ]
+        }
+      ],
+      "protocol": [
+        "In-process immutable grid capture only; no persistent or cross-process format and no new script binding."
+      ],
+      "thread_affinity": "Map owner thread for capture; source layer is borrowed during the call, capture retains no provider pointers. Immutable data survives provider destruction.",
+      "trim": {
+        "claim": "none",
+        "absent_profile": "crowd-core-only",
+        "evidence": "Crowd core profile has no map provider. Adapter composition is explicitly tested in OBJECT rts+map+crowd; no independent map L2 claim."
+      },
+      "cost_notes": [
+        {
+          "api": "Pathfinder::captureNavigationGrid",
+          "shape": "owned-snapshot",
+          "why": "Stage synchronization and copying before publishing immutable capture. Content-equivalent inputs share data and revision; expensive work is explicit at projection boundaries."
+        }
+      ],
+      "hot_path": []
     }
   ]
 }

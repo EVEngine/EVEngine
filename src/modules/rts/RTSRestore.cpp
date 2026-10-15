@@ -222,6 +222,8 @@ Result<void> RTS::restoreState(const RTSStateSnapshot& snapshot) {
         *unit->navigation()                      = value.navigation;
         unit->navigation()->formationSpeedFactor = 1.f;
         unit->navigation()->formationTarget.reset();
+        unit->navigation()->combatSlotTarget.reset();
+        unit->navigation()->combatSlotWaiting = false;
         unit->navigation()->trafficRecoveryTarget.reset();
         *unit->vision()              = value.vision;
         unit->worker()->resourceType = value.worker.resourceType;

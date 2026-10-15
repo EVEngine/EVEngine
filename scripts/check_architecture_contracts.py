@@ -991,7 +991,9 @@ def lint_contract_coverage(
             )
         if not established and re.search(rf"\b(?:struct|class)\s+{macro}[A-Za-z_]\w*Link\b|\busing\s+\w*Link\b", text):
             triggers.append(("link", "new Link declaration"))
-        if not established and re.search(rf"\b(?:class|struct)\s+{macro}[A-Za-z_]\w*System\b", text):
+        # A borrowed forward declaration does not introduce an ECS System definition.
+        system_surface = re.sub(rf"\b(?:class|struct)\s+{macro}[A-Za-z_]\w*System\b\s*;", "", text)
+        if not established and re.search(rf"\b(?:class|struct)\s+{macro}[A-Za-z_]\w*System\b", system_surface):
             triggers.append(("ecs-system", "new System declaration"))
         if re.search(r"\b(?:SimulationStep|Rng|RNG|seedFor)\b", text):
             triggers.append(("time-rng", "injected time/RNG surface"))

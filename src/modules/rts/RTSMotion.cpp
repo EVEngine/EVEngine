@@ -45,7 +45,7 @@ Result<std::size_t> MotionSystem::step(const SimulationStep& step) {
             continue;
         }
         if (record->kind == OrderKind::AttackMove && combat->engagementRange > 0.0f &&
-            !navigation->trafficRecoveryTarget) {
+            !navigation->trafficRecoveryTarget && !navigation->combatSlotTarget) {
             auto engaged = entityPosition(combat->target);
             if (engaged && distanceSquared(motion->x, motion->y, engaged->x, engaged->y) <=
                                combat->engagementRange * combat->engagementRange) {
@@ -72,6 +72,7 @@ Result<std::size_t> MotionSystem::step(const SimulationStep& step) {
             target = navigation->waypoints[navigation->waypointIndex];
         const bool movingSlot = record->kind == OrderKind::Move && navigation->formationTarget.has_value();
         if (movingSlot) target = *navigation->formationTarget;
+        if (navigation->combatSlotTarget) target = *navigation->combatSlotTarget;
         if (navigation->trafficRecoveryTarget) target = *navigation->trafficRecoveryTarget;
         const float dx       = target.x - motion->x;
         const float dy       = target.y - motion->y;
@@ -80,7 +81,7 @@ Result<std::size_t> MotionSystem::step(const SimulationStep& step) {
             return Result<std::size_t>::failure(Diagnostic::error(
                 DiagnosticCode::InvariantViolation, "RTS motion target distance is non-finite", "order.target"));
         float arrivalRadius = motion->arrivalRadius;
-        if (record->kind == OrderKind::Attack)
+        if (record->kind == OrderKind::Attack && !navigation->combatSlotTarget)
             arrivalRadius = std::max(arrivalRadius, combat->engagementRange);
         else if (record->kind == OrderKind::Resupply || record->kind == OrderKind::SupplyRelay)
             arrivalRadius = std::max(arrivalRadius, supply->range * 0.8f);
@@ -89,7 +90,7 @@ Result<std::size_t> MotionSystem::step(const SimulationStep& step) {
                 motion->x = target.x;
                 motion->y = target.y;
             }
-            motion->arrived = true;
+            motion->arrived = !navigation->combatSlotTarget;
         } else if (deltaSeconds > 0.0 && motion->speed > 0.0f) {
             const float moraleFactor = morale->active ? std::clamp(morale->suppressedSpeedFactor, 0.0f, 1.0f) : 1.0f;
             const float commandFactor =
@@ -116,7 +117,7 @@ Result<std::size_t> MotionSystem::step(const SimulationStep& step) {
         if (movingSlot)
             motion->arrived = distanceSquared(motion->x, motion->y, record->target.x, record->target.y) <=
                               motion->arrivalRadius * motion->arrivalRadius;
-        if (navigation->trafficRecoveryTarget) motion->arrived = false;
+        if (navigation->trafficRecoveryTarget || navigation->combatSlotTarget) motion->arrived = false;
         ++processed;
     }
     return Result<std::size_t>::success(processed, Status::success(StatusCode::Applied));

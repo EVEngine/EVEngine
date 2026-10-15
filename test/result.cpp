@@ -159,3 +159,15 @@ TEST_CASE("common.result.voidStatusAndBoolCheck") {
     REQUIRE(failed.error() != nullptr);
     CHECK(failed.error()->code() == DiagnosticCode::Conflict);
 }
+
+TEST_CASE("common.result.statusCopiesRetainImmutableDiagnosticStorage") {
+    auto original = Status::failure(Diagnostic::error(DiagnosticCode::Failed, "retained diagnostic", "test"));
+    auto copied   = original;
+    original      = Status::success(StatusCode::NoOp);
+    CHECK(original.diagnostics().empty());
+    REQUIRE(copied.primaryDiagnostic() != nullptr);
+    CHECK_EQ(copied.primaryDiagnostic()->message(), "retained diagnostic");
+    auto moved = std::move(copied);
+    CHECK(moved.isFailure());
+    CHECK_EQ(moved.diagnostics().size(), 1u);
+}
