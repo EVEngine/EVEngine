@@ -7,10 +7,10 @@ and task ownership. References are header/API-name evidence, not measured behavi
 coverage. Missing local-rule coverage is reported explicitly; no empty assertion
 or placeholder test is counted as coverage.
 
-Declared modules: **193**. Task groups: **18**.
+Declared modules: **195**. Task groups: **18**.
 
 - api-symbol-in-other-tests: 3
-- local-rules-recorded: 90
+- local-rules-recorded: 92
 - referenced-by-other-tests: 56
 - task-tests-recorded: 44
 
@@ -24,7 +24,7 @@ Declared modules: **193**. Task groups: **18**.
 - `animation_tensor` (`animation/tensor`): task-tests-recorded; 2 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `archspace_editing` (`archspace/editing`): referenced-by-other-tests; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `archspace_editor` (`archspace/editor`): referenced-by-other-tests; 2 direct header references; 5 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `asset_import` (`asset/import`): task-tests-recorded; 22 direct header references; 12 API-name references. A composition/adapter reference does not prove local rules are tested.
+- `asset_import` (`asset/import`): task-tests-recorded; 22 direct header references; 14 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `asset_physics` (`asset/physics`): referenced-by-other-tests; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `asset_procgen` (`asset/procgen`): task-tests-recorded; 13 direct header references; 4 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `asset_scene` (`asset/scene`): task-tests-recorded; 4 direct header references; 4 API-name references. A composition/adapter reference does not prove local rules are tested.
@@ -207,10 +207,10 @@ Source directory: `src/modules/animation/tensor`. Status: **task-tests-recorded*
 
 ### archspace
 
-Source directory: `src/modules/archspace`. Status: **local-rules-recorded**. Local cases: **4**.
+Source directory: `src/modules/archspace`. Status: **local-rules-recorded**. Local cases: **6**.
 
 - Unit: [unit/archspace/archspace_space_query.cpp](unit/archspace/archspace_space_query.cpp)
-- Direct header evidence: [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp), [archspace_space_query.cpp](unit/archspace/archspace_space_query.cpp)
+- Direct header evidence: [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp), [archspace_space_query.cpp](unit/archspace/archspace_space_query.cpp), [archspace_hd2d_projector.cpp](unit/archspace_hd2d/archspace_hd2d_projector.cpp), [archspace_map_projector.cpp](unit/archspace_map/archspace_map_projector.cpp)
 
 ### archspace_editing
 
@@ -223,6 +223,20 @@ Source directory: `src/modules/archspace/editing`. Status: **referenced-by-other
 Source directory: `src/modules/archspace/editor`. Status: **referenced-by-other-tests**. Local cases: **0**.
 
 - Direct header evidence: [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
+
+### archspace_hd2d
+
+Source directory: `src/modules/archspace/hd2d`. Status: **local-rules-recorded**. Local cases: **1**.
+
+- Unit: [unit/archspace_hd2d/archspace_hd2d_projector.cpp](unit/archspace_hd2d/archspace_hd2d_projector.cpp)
+- Direct header evidence: [archspace_hd2d_projector.cpp](unit/archspace_hd2d/archspace_hd2d_projector.cpp)
+
+### archspace_map
+
+Source directory: `src/modules/archspace/map`. Status: **local-rules-recorded**. Local cases: **3**.
+
+- Unit: [unit/archspace_map/archspace_map_projector.cpp](unit/archspace_map/archspace_map_projector.cpp)
+- Direct header evidence: [archspace_map_projector.cpp](unit/archspace_map/archspace_map_projector.cpp)
 
 ### asset
 
@@ -869,7 +883,7 @@ Source directory: `src/modules/map`. Status: **local-rules-recorded**. Local cas
 - Integration task `file-io`: [file_io_graphics_hex_level_data_tests.cpp](integration/file-io/file_io_graphics_hex_level_data_tests.cpp), [file_io_graphics_tensor_llm_tests.cpp](integration/file-io/file_io_graphics_tensor_llm_tests.cpp)
 - Integration task `render-presentation`: [render_presentation_graphics_hex_level_simulation_tests.cpp](integration/render-presentation/render_presentation_graphics_hex_level_simulation_tests.cpp)
 - Integration task `script-api`: [script_api_graphics_scene_tests.cpp](integration/script-api/script_api_graphics_scene_tests.cpp)
-- Direct header evidence: [asset_import_graphics_tests.cpp](integration/asset-import/asset_import_graphics_tests.cpp), [file_io_graphics_hex_level_data_tests.cpp](integration/file-io/file_io_graphics_hex_level_data_tests.cpp), [file_io_graphics_tensor_llm_tests.cpp](integration/file-io/file_io_graphics_tensor_llm_tests.cpp), [gameplay_composition_graphics_buildingfx_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_buildingfx_tests.cpp), [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp), [gameplay_composition_graphics_graphics_vegetation_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp), [gameplay_composition_graphics_procgen_core_boundary_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_procgen_core_boundary_tests.cpp), [gameplay_composition_graphics_procgen_road_editing_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_procgen_road_editing_tests.cpp), [render_presentation_graphics_RenderImageAudit_tests.cpp](integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp), [render_presentation_graphics_hex_level_simulation_tests.cpp](integration/render-presentation/render_presentation_graphics_hex_level_simulation_tests.cpp), [render_presentation_graphics_procgen_tests.cpp](integration/render-presentation/render_presentation_graphics_procgen_tests.cpp), [script_api_graphics_scene_tests.cpp](integration/script-api/script_api_graphics_scene_tests.cpp), [building.cpp](unit/building/building.cpp), [map_tests.cpp](unit/map/map_tests.cpp), [procgen_foundation_tests.cpp](unit/procgen/procgen_foundation_tests.cpp)
+- Direct header evidence: [asset_import_graphics_tests.cpp](integration/asset-import/asset_import_graphics_tests.cpp), [file_io_graphics_hex_level_data_tests.cpp](integration/file-io/file_io_graphics_hex_level_data_tests.cpp), [file_io_graphics_tensor_llm_tests.cpp](integration/file-io/file_io_graphics_tensor_llm_tests.cpp), [gameplay_composition_graphics_buildingfx_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_buildingfx_tests.cpp), [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp), [gameplay_composition_graphics_graphics_vegetation_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp), [gameplay_composition_graphics_procgen_core_boundary_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_procgen_core_boundary_tests.cpp), [gameplay_composition_graphics_procgen_road_editing_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_procgen_road_editing_tests.cpp), [render_presentation_graphics_RenderImageAudit_tests.cpp](integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp), [render_presentation_graphics_hex_level_simulation_tests.cpp](integration/render-presentation/render_presentation_graphics_hex_level_simulation_tests.cpp), [render_presentation_graphics_procgen_tests.cpp](integration/render-presentation/render_presentation_graphics_procgen_tests.cpp), [script_api_graphics_scene_tests.cpp](integration/script-api/script_api_graphics_scene_tests.cpp), [archspace_hd2d_projector.cpp](unit/archspace_hd2d/archspace_hd2d_projector.cpp), [archspace_map_projector.cpp](unit/archspace_map/archspace_map_projector.cpp), [building.cpp](unit/building/building.cpp), [map_tests.cpp](unit/map/map_tests.cpp), [procgen_foundation_tests.cpp](unit/procgen/procgen_foundation_tests.cpp)
 
 ### map_editing
 

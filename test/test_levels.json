@@ -5397,10 +5397,34 @@
           "archspace.query.architectural_region_and_door_portal",
           "archspace.query.dungeon_regions_connected_through_portal",
           "archspace.query.cave_chamber_topology_and_grid_bake",
-          "archspace.projector.mesh_scene_sync_and_clear"
+          "archspace.projector.mesh_scene_sync_and_clear",
+          "archspace.import.cell_grid_splits_regions_at_portal",
+          "archspace.import.rejects_bad_grid_and_missing_level"
         ]
       },
       "module": "archspace"
+    },
+    "unit/archspace_hd2d/archspace_hd2d_projector.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "archspace.hd2d.sync_builds_tile_layer_without_graphics"
+        ]
+      },
+      "module": "archspace_hd2d"
+    },
+    "unit/archspace_map/archspace_map_projector.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "archspace.map.tile_ortho_sync_writes_gids",
+          "archspace.map.tile_iso_orientation_and_reject",
+          "archspace.map.tile_requires_level_id"
+        ]
+      },
+      "module": "archspace_map"
     },
     "unit/avatar/avatar_tests.cpp": {
       "role": "tests",

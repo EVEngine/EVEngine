@@ -1,7 +1,7 @@
 # ArchSpace 多拓扑与多投影
 
 日期：2026-10-15  
-状态：落地中（SpaceQuery + Portal + Grid/Mesh 投影契约）  
+状态：落地中（SpaceQuery + Portal + Grid/Mesh + map/hd2d 投影卫星 + 格子导入）  
 前置：[`2026-09-14-archspace-editor.md`](./2026-09-14-archspace-editor.md)
 
 ## 1. 决策
@@ -49,8 +49,16 @@ Document (权威)
 ```
 
 `IArchSpaceProjector`：`kind()` / `sync(doc, revision)` / `clear()` / 可选 `pickNode`。  
-`archspace` 模块本身只依赖 `data`；真正绑定 `map` / `hd2d` 的适配器后续放 editing 卫星或
-capability provider，避免向上 `#include`。
+`archspace` 模块本身只依赖 `data`；真正绑定 `map` / `hd2d` 的适配器在卫星模块：
+
+| 模块 | `kind()` | 依赖 | 产出 |
+|------|----------|------|------|
+| `archspace` | `scene3d` + `bakeGridProjection` | `data` | MeshBake / GridProjection |
+| `archspace_map` | `tile.ortho` / `tile.iso` | archspace + map | `TileLayer` GIDs + nav |
+| `archspace_hd2d` | `hd2d` | archspace_map + hd2d | TileLayer + 可选 `TileMap3D` bake |
+
+`importCellGrid`（core）把 procgen 风格的 Floor/Wall/Portal 栅格写成 Region + Portal，
+不依赖 `procgen` / `map`。
 
 ## 4. 持久化
 
@@ -59,14 +67,17 @@ capability provider，避免向上 `#include`。
 
 ## 5. 落地切片
 
-1. 本 PR：`TopologyKind`、`NodeKind::Portal`、`SpaceQuery`、`IArchSpaceProjector`、
+1. 已落地：`TopologyKind`、`NodeKind::Portal`、`SpaceQuery`、`IArchSpaceProjector`、
    `MeshSceneProjector`、`bakeGridProjection`、文档/脚本入口、单测。
-2. 后续：`map` ortho/iso projector、`hd2d` projector、`procgen` → ArchSpace import、
-   垂直 portal（楼梯/竖井）。
+2. 本切片：`archspace_map`（ortho/iso → TileLayer）、`archspace_hd2d`（TileLayer +
+   延迟 `TileMap3D` bake）、`importCellGrid`（Floor 洪水填充 + Portal 桥）。
+3. 后续：垂直 portal（楼梯/竖井）、脚本/editor 入口、与 `procgen` 示例对接。
 
 ## 6. 验收
 
 - architectural 房间：`regionAt` 命中 zone；墙上 door 进入 `portalsFrom`。
 - dungeon/cave：两 region + `Portal` 连通；`regionsConnected` 为真。
 - `MeshSceneProjector::sync` 与 `bakeGridProjection` 在空文档与有房间文档上均成功。
+- `TileMapProjector` ortho/iso 写出非零 Floor GID；`Hd2dSpaceProjector::sync` 不依赖 Graphics。
+- `importCellGrid`：Portal 单元格不合并两侧 Floor 区域，且 `regionsConnected` 为真。
 - `make check`；相关 `archspace.*` 单测通过。

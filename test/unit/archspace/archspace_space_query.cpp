@@ -2,6 +2,7 @@
 #include "zeroerr/unittest.h"
 
 #include "archspace/ArchSpaceDocument.h"
+#include "archspace/ArchSpaceImport.h"
 #include "archspace/ArchSpaceProjector.h"
 #include "archspace/ArchSpaceQuery.h"
 
@@ -104,4 +105,51 @@ TEST_CASE("archspace.projector.mesh_scene_sync_and_clear") {
     projector.clear();
     CHECK_EQ(projector.revision(), 0);
     CHECK(projector.mesh().indices.empty());
+}
+
+TEST_CASE("archspace.import.cell_grid_splits_regions_at_portal") {
+    Document document;
+    REQUIRE(document.bootstrap("site", "dungeon", "level0").ok());
+
+    // Two 2x2 floor rooms separated by a portal column (and walls).
+    // Layout (row z=0..2, col x=0..4):
+    //   F F P F F
+    //   F F P F F
+    //   W W W W W
+    CellGridImport grid;
+    grid.width    = 5;
+    grid.height   = 3;
+    grid.cellSize = 1.0;
+    grid.cells.assign(15, ImportCellKind::Empty);
+    auto at = [&](int x, int z) -> ImportCellKind& { return grid.cells[static_cast<std::size_t>(z * grid.width + x)]; };
+    for (int z = 0; z < 2; ++z) {
+        at(0, z) = ImportCellKind::Floor;
+        at(1, z) = ImportCellKind::Floor;
+        at(2, z) = ImportCellKind::Portal;
+        at(3, z) = ImportCellKind::Floor;
+        at(4, z) = ImportCellKind::Floor;
+    }
+    for (int x = 0; x < 5; ++x) at(x, 2) = ImportCellKind::Wall;
+
+    REQUIRE(importCellGrid(document, "level0", grid, "dg").ok());
+    CHECK_EQ(document.topology(), TopologyKind::Dungeon);
+
+    SpaceQuery query(document);
+    CHECK_EQ(query.regions().size(), 2);
+    auto connected = query.regionsConnected("dg.region.0", "dg.region.1");
+    REQUIRE(connected.ok());
+    CHECK(connected.value());
+    CHECK(!query.portalsFrom("dg.region.0").empty());
+}
+
+TEST_CASE("archspace.import.rejects_bad_grid_and_missing_level") {
+    Document document;
+    REQUIRE(document.bootstrap("site", "dungeon", "level0").ok());
+
+    CellGridImport bad;
+    bad.width  = 2;
+    bad.height = 2;
+    bad.cells  = {ImportCellKind::Floor};
+    CHECK(!importCellGrid(document, "level0", bad, "x").ok());
+    CHECK(!importCellGrid(document, "missing", CellGridImport{1, 1, 1.0, 0, 0, {ImportCellKind::Floor}}, "x").ok());
 }

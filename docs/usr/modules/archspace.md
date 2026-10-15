@@ -12,7 +12,10 @@ ArchSpace 是对标 [Pascal Editor](https://github.com/pascalorg/editor) 的**�
 - 文档模型：`site → building → level → wall/slab/zone/item/portal`，墙上还可挂 `opening`；
 - 拓扑方言：`architectural`（默认）/ `dungeon` / `cave`（`setTopology`）；
 - `SpaceQuery`：Region / Portal / Anchor / 连通查询（不依赖 graphics）；
-- 投影：`MeshBake` / `MeshSceneProjector`（3D），`bakeGridProjection`（ortho/iso/HD2D 宿主栅格）；
+- 投影：`MeshBake` / `MeshSceneProjector`（3D），`bakeGridProjection`（中性栅格）；
+  卫星 `archspace_map`（`TileMapProjector` → ortho/iso `TileLayer`）、
+  `archspace_hd2d`（`Hd2dSpaceProjector` → TileLayer + 可选 `TileMap3D`）；
+- 格子导入：`importCellGrid`（Floor/Wall/Portal → Region + Portal，不依赖 procgen）；
 - 可逆 DomainOperation（`archspace.document.replace.v1`）；
 - 高层编辑命令：`archspace.bootstrap.v1`、`archspace.room.create.v1`、
   `archspace.wall.create.v1`、`archspace.opening.create.v1`、`archspace.item.place.v1`、
@@ -22,7 +25,8 @@ ArchSpace 是对标 [Pascal Editor](https://github.com/pascalorg/editor) 的**�
   `IEditAuthority` 提交 DomainOperation，预览不落盘。
 
 **诚实边界：** 洞口是参数化切腔 + reveal，不是 CSG/IFC BREP；家具是内置目录多盒几何，不是外部网格资源；
-栅格投影是语义近似，不是第二真相；还没有完整 CAD 产品级 UI；`map`/`hd2d` 适配器后续接上。
+栅格投影是语义近似，不是第二真相；还没有完整 CAD 产品级 UI；HD2D mesh 上传仍由宿主在
+有 Graphics 时调用 `buildMesh` / `buildRenderable`。
 
 项目自己组合工具栏、视口与 MCP host；不要把 ArchSpace 写进 `building`。设计见
 [`docs/dev/2026-10-15-archspace-multi-topology-projection.md`](../../dev/2026-10-15-archspace-multi-topology-projection.md)。
@@ -63,6 +67,27 @@ print(doc.regionAt(2.0, 2.0, "level0") + "\n");          // hall
 local linked = doc.regionsConnected("hall", "cell");
 if (!linked.ok) throw linked.status.summary;
 print(linked.value + "\n");                              // true
+```
+
+C++ 格子导入与投影（`archspace_map` / `archspace_hd2d`）：
+
+```cpp
+eve::archspace::Document doc;
+doc.bootstrap("site", "dungeon", "level0");
+eve::archspace::CellGridImport grid{/* width,height,cells... */};
+eve::archspace::importCellGrid(doc, "level0", grid, "dg");
+
+eve::archspace_map::TileMapProjector tiles;
+tiles.setLevelId("level0");
+tiles.setCellSize(1.f);
+tiles.setOrientation("isometric");  // or "orthogonal"
+tiles.sync(doc, /*revision*/1);
+
+eve::archspace_hd2d::Hd2dSpaceProjector hd2d;
+hd2d.setLevelId("level0");
+hd2d.setCellSize(1.f);
+hd2d.sync(doc, 1);
+// later, with Graphics*: hd2d.buildMesh(gfx) / hd2d.buildRenderable(gfx);
 ```
 
 完整示例见 `examples/archspace-editor/`。
