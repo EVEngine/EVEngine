@@ -3315,10 +3315,9 @@ TEST_CASE("settlementScript.rejectsUnknownKindAndNormalizesSubjectCase") {
 #include <string>
 #include "PrivateTestScope.h"
 #include "ScriptTest.h"
-// Squirrel internal headers require this dependency order.
+// Class-layout probes need these headers, but SQVM stays opaque in binding tests.
 // clang-format off
 #include "sqpcheader.h"
-#include "sqvm.h"
 #include "sqtable.h"
 #include "sqclass.h"
 // clang-format on
@@ -3558,41 +3557,7 @@ TEST_CASE("SimpleSquirrelTest.DeclaredFieldShadowsTheMetamethods") {
     REQUIRE_EQ(vm.find("calls").toInt(), 0);
 }
 
-TEST_CASE("SimpleSquirrelTest.RemovingAClassFieldFallsThroughToTheMetamethods") {
-    // 结论性的一条：把一个已声明的字段从**类**的成员表里摘掉之后，同名成员的读写是否就落到
-    // 元方法上？若是，引擎就能在登记组件时"取走字段名与默认值、再把槽位摘掉"，从而既让引擎
-    // 持有权威数据，又**不改用户脚本的 `e.pos.x` 写法**。
-    ssq::VM vm(128);
-    vm.run(vm.compileSource(R"(
-        class Probe {
-            x = 0.0
-            log = ""
-            function _get(key) { log = "get:" + key; return 99.0 }
-            function _set(key, value) { log = "set:" + key; return value }
-        }
-        probe <- Probe()
-    )"));
 
-    HSQUIRRELVM v   = vm.getHandle();
-    const auto  top = sq_gettop(v);
-    sq_pushroottable(v);
-    sq_pushstring(v, "probe", -1);
-    REQUIRE(SQ_SUCCEEDED(sq_get(v, -2)));
-    SQObjectPtr instance;
-    sq_getstackobj(v, -1, &instance);
-    REQUIRE(sq_gettype(v, -1) == OT_INSTANCE);
-    _class(instance)->_members->Remove(SQObjectPtr(SQString::Create(_ss(v), "x")));
-    sq_settop(v, top);
-
-    vm.run(vm.compileSource(R"(
-        afterRead <- probe.x
-        probe.x = 5.0
-        afterLog <- probe.log
-    )"));
-
-    REQUIRE_EQ(vm.find("afterRead").toFloat(), 99.0);                  // 读到的是元方法给的值
-    REQUIRE_EQ(vm.find("afterLog").toString(), std::string("set:x"));  // 写入也走了元方法
-}
 }  // namespace test_simplesquirrel
 #endif
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_simplesquirrel_direct_member)

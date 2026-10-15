@@ -4521,7 +4521,8 @@
           "devtools.ai.panelLog",
           "devtools.mcp.engineLineDropsScriptEchoOnly",
           "ModuleManager.RegistryRollbackOwnsCreatedInstance",
-          "ModuleManager.RegistryConflictPreservesCommittedInstance"
+          "ModuleManager.RegistryConflictPreservesCommittedInstance",
+          "SimpleSquirrelTest.RemovingAClassFieldFallsThroughToTheMetamethods"
         ],
         "platform-network": [
           "devtools.mcp.executeObserveCorrelatesEditorTransactionWithLiveRuntime",
@@ -4583,7 +4584,8 @@
         "rpg_classic_semantic_index.cpp",
         "rpg_dnut_script.cpp",
         "rpg_script.cpp",
-        "rpg_world_state_script.cpp"
+        "rpg_world_state_script.cpp",
+        "simplesquirrel.cpp"
       ],
       "generated": [
         "Mouse."
@@ -4597,7 +4599,6 @@
           "runtime.scopeAndNativeStackAreRestored",
           "SimpleSquirrelTest.DeclaredFieldShadowsTheMetamethods",
           "SimpleSquirrelTest.InstanceGetAndSetMetamethodsAreConsulted",
-          "SimpleSquirrelTest.RemovingAClassFieldFallsThroughToTheMetamethods",
           "squirrel_binding.call_argument_c_string_literal_arrives_as_string",
           "squirrel_binding.call_argument_c_string_pointer_arrives_as_string",
           "squirrel_binding.call_argument_std_strings_scalars_and_stack_discipline"

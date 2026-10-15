@@ -110,7 +110,7 @@ layout(location = 1) in vec2 fragUV;
 layout(location = 0) out vec4 outColor;
 layout(binding = 0) uniform sampler2D MainTex;
 layout(push_constant) uniform Externals { float data[32]; } u;
-[[maybe_unused]] void main() {
+void main() {
   outColor = texture(MainTex, fragUV) * fragColor * u.data[0];
 }
 )";
@@ -151,7 +151,7 @@ layout(location = 1) in vec4 inColor;
 layout(location = 2) in vec2 inUV;
 layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec2 fragUV;
-[[maybe_unused]] void main() {
+void main() {
   gl_Position = vec4(inPosition, 0.0, 1.0);
   fragColor = inColor;
   fragUV = vec2(1.0) - inUV;
@@ -161,7 +161,7 @@ layout(location = 1) out vec2 fragUV;
 layout(location = 0) in vec4 fragColor;
 layout(location = 1) in vec2 fragUV;
 layout(location = 0) out vec4 outColor;
-[[maybe_unused]] void main() { outColor = fragColor * vec4(fragUV, 0.0, 1.0); }
+void main() { outColor = fragColor * vec4(fragUV, 0.0, 1.0); }
 )";
     Shader     *sh   = nullptr;
     try {
