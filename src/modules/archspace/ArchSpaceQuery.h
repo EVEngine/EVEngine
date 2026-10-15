@@ -2,6 +2,7 @@
 #include "common/Export.h"
 
 #include "archspace/ArchSpaceTypes.h"
+#include "common/Result.h"
 
 #include <optional>
 #include <string>
@@ -53,9 +54,10 @@ public:
 
     /**
      * @brief Whether two regions share a portal path (undirected, same connected component).
+     * @return Success with true/false; InvalidArgument when either id is empty or unknown.
      * @cost BFS over portal adjacency.
      */
-    [[nodiscard]] bool regionsConnected(const std::string& regionAId, const std::string& regionBId) const;
+    [[nodiscard]] eve::Result<bool> regionsConnected(const std::string& regionAId, const std::string& regionBId) const;
 
     /** @brief Item anchors whose position lies inside the region polygon (same level). */
     [[nodiscard]] std::vector<SpaceAnchor> anchorsIn(const std::string& regionId) const;

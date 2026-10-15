@@ -380,9 +380,9 @@ eve::Result<void> Document::createRegion(const std::string& levelId, const std::
                                          std::string regionName, std::vector<Vec2> polygon) {
     const Node* level = find(levelId);
     if (!level || level->kind != NodeKind::Level)
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::NotFound, "ArchSpace region requires an existing level", "levelId", {},
-            "archspace.document"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                                                 "ArchSpace region requires an existing level",
+                                                                 "levelId", {}, "archspace.document"));
     if (regionId.empty() || !polygonValid(polygon))
         return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                  "ArchSpace region geometry is invalid", "polygon", {},
@@ -401,14 +401,14 @@ eve::Result<void> Document::createPortal(const std::string& levelId, const std::
                                          PassageMask passageMask, Vec3 position) {
     const Node* level = find(levelId);
     if (!level || level->kind != NodeKind::Level)
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::NotFound, "ArchSpace portal requires an existing level", "levelId", {},
-            "archspace.document"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                                                 "ArchSpace portal requires an existing level",
+                                                                 "levelId", {}, "archspace.document"));
     const Node* regionA = find(regionAId);
     if (!regionA || regionA->kind != NodeKind::Zone || regionA->parentId != levelId)
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::NotFound, "ArchSpace portal regionA must be a zone on the level", "regionAId", {},
-            "archspace.document"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                                                 "ArchSpace portal regionA must be a zone on the level",
+                                                                 "regionAId", {}, "archspace.document"));
     if (!regionBId.empty()) {
         const Node* regionB = find(regionBId);
         if (!regionB || regionB->kind != NodeKind::Zone || regionB->parentId != levelId)

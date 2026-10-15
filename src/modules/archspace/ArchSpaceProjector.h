@@ -21,13 +21,13 @@ enum class GridCellKind : std::uint8_t { Empty = 0, Floor, Wall, Portal, Solid }
  * Does not depend on `map` or `hd2d`; hosts map cells onto TileLayer / TileMap3D.
  */
 struct GridProjection {
-    int                      width    = 0;
-    int                      height   = 0;
-    double                   originX  = 0.0;
-    double                   originZ  = 0.0;
-    double                   cellSize = 1.0;
+    int    width    = 0;
+    int    height   = 0;
+    double originX  = 0.0;
+    double originZ  = 0.0;
+    double cellSize = 1.0;
     /** @brief Wire hint: "orthogonal" or "isometric". */
-    std::string              orientation = "orthogonal";
+    std::string               orientation = "orthogonal";
     std::vector<GridCellKind> cells;
     /** @brief Region id per cell (empty when none). Parallel to cells. */
     std::vector<std::string> regionIds;
@@ -72,9 +72,9 @@ public:
      * @return Node id on hit; NotFound when nothing is hit; Unsupported when picking is unavailable.
      */
     [[nodiscard]] virtual eve::Result<std::string> pickNode(Vec3 /*rayOrigin*/, Vec3 /*rayDir*/) const {
-        return eve::Result<std::string>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Unsupported, "ArchSpace projector does not support picking", "pick", {},
-            "archspace.projector"));
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Unsupported,
+                                                                        "ArchSpace projector does not support picking",
+                                                                        "pick", {}, "archspace.projector"));
     }
 };
 
@@ -88,13 +88,22 @@ public:
     /** @brief Mesh scene projector. */
     MeshSceneProjector() = default;
 
+    /**
+     * @brief Stable projector kind wire name.
+     * @ownership Non-owning pointer to a static string literal; do not free.
+     * @lifetime Valid for the process lifetime.
+     */
     [[nodiscard]] const char* kind() const noexcept override { return "scene3d"; }
 
     [[nodiscard]] eve::Result<void> sync(const Document& document, std::uint64_t revision) override;
 
     void clear() override;
 
-    /** @brief Last baked mesh; empty after clear or before the first successful sync. */
+    /**
+     * @brief Last baked mesh; empty after clear or before the first successful sync.
+     * @ownership Borrowed from this projector; do not free.
+     * @lifetime Valid until the next sync/clear or projector destruction.
+     */
     [[nodiscard]] const MeshBake& mesh() const noexcept { return mesh_; }
 
     /** @brief Revision last successfully synced; 0 before the first sync. */

@@ -127,8 +127,8 @@ public:
      * @return Applied on success; Rejected when level/regions are missing or ids collide.
      */
     [[nodiscard]] eve::Result<void> createPortal(const std::string& levelId, const std::string& portalId,
-                                                 std::string portalName, std::string regionAId,
-                                                 std::string regionBId, PassageMask passageMask, Vec3 position);
+                                                 std::string portalName, std::string regionAId, std::string regionBId,
+                                                 PassageMask passageMask, Vec3 position);
 
     /** @brief Collect structural and geometric diagnostics as human-readable lines. */
     [[nodiscard]] std::vector<std::string> diagnostics() const;

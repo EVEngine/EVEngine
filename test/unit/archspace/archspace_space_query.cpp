@@ -11,8 +11,7 @@ TEST_CASE("archspace.query.architectural_region_and_door_portal") {
     Document document;
     REQUIRE(document.bootstrap("site", "building", "level0").ok());
     REQUIRE(document.setTopology(TopologyKind::Architectural).ok());
-    REQUIRE(
-        document.createRoom("level0", "living", "Living", {{0, 0}, {6, 0}, {6, 4}, {0, 4}}, 3.0, 0.2, 0.2).ok());
+    REQUIRE(document.createRoom("level0", "living", "Living", {{0, 0}, {6, 0}, {6, 4}, {0, 4}}, 3.0, 0.2, 0.2).ok());
     REQUIRE(document.createOpening("living.wall.0", "living.door", "Door", OpeningKind::Door, 0.5, 1.0, 2.1, 0.0).ok());
     REQUIRE(document.placeItem("level0", "desk", "Desk", "furniture.desk", Vec3{2, 0, 2}, 0).ok());
 
@@ -40,16 +39,18 @@ TEST_CASE("archspace.query.dungeon_regions_connected_through_portal") {
     REQUIRE(document.setTopology(TopologyKind::Dungeon).ok());
     REQUIRE(document.createRegion("level0", "hall", "Hall", {{0, 0}, {8, 0}, {8, 6}, {0, 6}}).ok());
     REQUIRE(document.createRegion("level0", "cell", "Cell", {{10, 1}, {14, 1}, {14, 5}, {10, 5}}).ok());
-    REQUIRE(document
-                .createPortal("level0", "door", "Door", "hall", "cell", kPassageWalk, Vec3{9, 0, 3})
-                .ok());
+    REQUIRE(document.createPortal("level0", "door", "Door", "hall", "cell", kPassageWalk, Vec3{9, 0, 3}).ok());
 
     SpaceQuery query(document);
     CHECK_EQ(query.topology(), TopologyKind::Dungeon);
     CHECK_EQ(query.regions().size(), 2);
-    CHECK(query.regionsConnected("hall", "cell"));
-    CHECK(query.regionsConnected("cell", "hall"));
-    CHECK(!query.regionsConnected("hall", "missing"));
+    auto connected = query.regionsConnected("hall", "cell");
+    REQUIRE(connected.ok());
+    CHECK(connected.value());
+    connected = query.regionsConnected("cell", "hall");
+    REQUIRE(connected.ok());
+    CHECK(connected.value());
+    CHECK(!query.regionsConnected("hall", "missing").ok());
 
     const auto portals = query.portalsFrom("hall");
     REQUIRE_EQ(portals.size(), 1);
@@ -63,19 +64,20 @@ TEST_CASE("archspace.query.cave_chamber_topology_and_grid_bake") {
     REQUIRE(document.setTopology(TopologyKind::Cave).ok());
     REQUIRE(document.createRegion("level0", "chamber.a", "A", {{0, 0}, {5, 0}, {5, 5}, {0, 5}}).ok());
     REQUIRE(document.createRegion("level0", "chamber.b", "B", {{7, 0}, {12, 0}, {12, 5}, {7, 5}}).ok());
-    REQUIRE(document
-                .createPortal("level0", "tunnel", "Tunnel", "chamber.a", "chamber.b", kPassageWalk, Vec3{6, 0, 2.5})
+    REQUIRE(document.createPortal("level0", "tunnel", "Tunnel", "chamber.a", "chamber.b", kPassageWalk, Vec3{6, 0, 2.5})
                 .ok());
 
     SpaceQuery query(document);
     CHECK_EQ(query.topology(), TopologyKind::Cave);
-    CHECK(query.regionsConnected("chamber.a", "chamber.b"));
+    auto connected = query.regionsConnected("chamber.a", "chamber.b");
+    REQUIRE(connected.ok());
+    CHECK(connected.value());
 
     auto grid = bakeGridProjection(document, "level0", 1.0, "orthogonal");
     REQUIRE(grid.ok());
     CHECK(grid.value().width > 0);
     CHECK(grid.value().height > 0);
-    bool hasFloor = false;
+    bool hasFloor  = false;
     bool hasPortal = false;
     for (const auto kind : grid.value().cells) {
         if (kind == GridCellKind::Floor) hasFloor = true;
@@ -92,8 +94,7 @@ TEST_CASE("archspace.query.cave_chamber_topology_and_grid_bake") {
 TEST_CASE("archspace.projector.mesh_scene_sync_and_clear") {
     Document document;
     REQUIRE(document.bootstrap("site", "building", "level0").ok());
-    REQUIRE(
-        document.createRoom("level0", "room", "Room", {{0, 0}, {4, 0}, {4, 4}, {0, 4}}, 3.0, 0.2, 0.2).ok());
+    REQUIRE(document.createRoom("level0", "room", "Room", {{0, 0}, {4, 0}, {4, 4}, {0, 4}}, 3.0, 0.2, 0.2).ok());
 
     MeshSceneProjector projector;
     CHECK_EQ(std::string(projector.kind()), "scene3d");

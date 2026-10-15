@@ -43,11 +43,8 @@ void ArchSpace::expose(ssq::Table& table) {
     table.addClass(name, ArchSpace::create, false);
 
     auto document =
-        table.addClass<Document>("ArchSpaceDocument",
-                                 std::function<Document*()>([] { return new Document(); }), true);
-    document.addFunc("nodeCount", [](Document* self) {
-        return self ? static_cast<int>(self->nodeCount()) : 0;
-    });
+        table.addClass<Document>("ArchSpaceDocument", std::function<Document*()>([] { return new Document(); }), true);
+    document.addFunc("nodeCount", [](Document* self) { return self ? static_cast<int>(self->nodeCount()) : 0; });
     document.addFunc("rootId", [](Document* self) { return self ? self->rootId() : std::string{}; });
     document.addFunc("topology", [](Document* self) {
         return self ? std::string(topologyKindName(self->topology())) : std::string{"architectural"};
@@ -62,9 +59,8 @@ void ArchSpace::expose(ssq::Table& table) {
         if (!kind.ok()) return eve::script::projectResult(vm, eve::Result<void>::failure(kind.status()));
         return eve::script::projectResult(vm, self->setTopology(kind.value()));
     });
-    document.addFunc("hasNode", [](Document* self, const std::string& id) {
-        return self && self->find(id) != nullptr;
-    });
+    document.addFunc("hasNode",
+                     [](Document* self, const std::string& id) { return self && self->find(id) != nullptr; });
     document.addFunc("bootstrap", [vm](Document* self, const std::string& siteId, const std::string& buildingId,
                                        const std::string& levelId, float levelHeight) {
         if (!self)
@@ -86,9 +82,8 @@ void ArchSpace::expose(ssq::Table& table) {
                                      {originX + sizeX, originZ},
                                      {originX + sizeX, originZ + sizeZ},
                                      {originX, originZ + sizeZ}};
-        return eve::script::projectResult(
-            vm, self->createRoom(levelId, roomId, roomName, std::move(polygon), wallHeight, wallThickness,
-                                 slabThickness));
+        return eve::script::projectResult(vm, self->createRoom(levelId, roomId, roomName, std::move(polygon),
+                                                               wallHeight, wallThickness, slabThickness));
     });
     document.addFunc("createWall", [vm](Document* self, const std::string& levelId, const std::string& wallId,
                                         const std::string& wallName, float x0, float z0, float x1, float z1,
@@ -164,11 +159,18 @@ void ArchSpace::expose(ssq::Table& table) {
         const auto region = query.regionAt(Vec2{x, z}, levelId);
         return region ? region->id : std::string{};
     });
-    document.addFunc("regionsConnected", [](Document* self, const std::string& regionAId,
-                                            const std::string& regionBId) {
-        if (!self) return false;
-        return SpaceQuery(*self).regionsConnected(regionAId, regionBId);
-    });
+    document.addFunc(
+        "regionsConnected", [vm](Document* self, const std::string& regionAId, const std::string& regionBId) {
+            const auto asBool = [](bool value) { return value; };
+            if (!self)
+                return eve::script::projectResult(
+                    vm,
+                    eve::Result<bool>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "ArchSpaceDocument receiver must not be null",
+                                                                      "receiver", {}, "archspace.squirrel")),
+                    asBool);
+            return eve::script::projectResult(vm, SpaceQuery(*self).regionsConnected(regionAId, regionBId), asBool);
+        });
     document.addFunc("bakeMeshArrays", [vm](Document* self) {
         if (!self) return ssq::Table(vm);
         return bakeArraysTable(vm, self->bakeMeshArrays());
@@ -177,8 +179,7 @@ void ArchSpace::expose(ssq::Table& table) {
         if (!self) return std::string{"null"};
         const auto bake = self->bakeMeshArrays();
         return "nodes=" + std::to_string(self->nodeCount()) + " root=" + self->rootId() +
-               " triangles=" + std::to_string(bake.triangleCount()) +
-               " vertices=" + std::to_string(bake.vertexCount());
+               " triangles=" + std::to_string(bake.triangleCount()) + " vertices=" + std::to_string(bake.vertexCount());
     });
 }
 

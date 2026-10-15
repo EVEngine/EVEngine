@@ -17,11 +17,10 @@ bool pointInPolygon(Vec2 p, const std::vector<Vec2>& poly) {
     if (poly.size() < 3) return false;
     bool inside = false;
     for (std::size_t i = 0, j = poly.size() - 1; i < poly.size(); j = i++) {
-        const Vec2& a = poly[i];
-        const Vec2& b = poly[j];
-        const bool  intersect =
-            ((a.z > p.z) != (b.z > p.z)) &&
-            (p.x < (b.x - a.x) * (p.z - a.z) / ((b.z - a.z) + (b.z == a.z ? kEps : 0.0)) + a.x);
+        const Vec2& a         = poly[i];
+        const Vec2& b         = poly[j];
+        const bool  intersect = ((a.z > p.z) != (b.z > p.z)) &&
+                               (p.x < (b.x - a.x) * (p.z - a.z) / ((b.z - a.z) + (b.z == a.z ? kEps : 0.0)) + a.x);
         if (intersect) inside = !inside;
     }
     return inside;
@@ -29,18 +28,17 @@ bool pointInPolygon(Vec2 p, const std::vector<Vec2>& poly) {
 
 SpaceRegion toRegion(const Node& zone) {
     SpaceRegion region;
-    region.id       = zone.id;
-    region.levelId  = zone.parentId;
-    region.name     = zone.name;
-    region.polygon  = zone.polygon;
+    region.id      = zone.id;
+    region.levelId = zone.parentId;
+    region.name    = zone.name;
+    region.polygon = zone.polygon;
     return region;
 }
 
 Vec3 openingWorldPosition(const Document& document, const Node& opening) {
     const Node* wall = document.find(opening.parentId);
     if (!wall) return {};
-    return Vec3{wall->start.x + (wall->end.x - wall->start.x) * opening.t,
-                opening.sill + opening.openingHeight * 0.5,
+    return Vec3{wall->start.x + (wall->end.x - wall->start.x) * opening.t, opening.sill + opening.openingHeight * 0.5,
                 wall->start.z + (wall->end.z - wall->start.z) * opening.t};
 }
 
@@ -82,15 +80,15 @@ SpacePortal toPortalFromOpening(const Document& document, const Node& opening) {
     if (wall) {
         const Vec2 mid{(wall->start.x + wall->end.x) * 0.5, (wall->start.z + wall->end.z) * 0.5};
         // Sample slightly off the wall midline toward both normals to find adjacent rooms.
-        Vec2 dir{wall->end.x - wall->start.x, wall->end.z - wall->start.z};
+        Vec2         dir{wall->end.x - wall->start.x, wall->end.z - wall->start.z};
         const double len = std::sqrt(dir.x * dir.x + dir.z * dir.z);
         if (len > kEps) {
             dir.x /= len;
             dir.z /= len;
-            const Vec2 n{-dir.z, dir.x};
+            const Vec2   n{-dir.z, dir.x};
             const double offset = std::max(wall->thickness, 0.2);
-            const auto   a = nearestRegionId(document, portal.levelId, Vec2{mid.x + n.x * offset, mid.z + n.z * offset});
-            const auto   b = nearestRegionId(document, portal.levelId, Vec2{mid.x - n.x * offset, mid.z - n.z * offset});
+            const auto a = nearestRegionId(document, portal.levelId, Vec2{mid.x + n.x * offset, mid.z + n.z * offset});
+            const auto b = nearestRegionId(document, portal.levelId, Vec2{mid.x - n.x * offset, mid.z - n.z * offset});
             portal.regionAId = a;
             portal.regionBId = (b != a) ? b : std::string{};
         }
@@ -100,14 +98,14 @@ SpacePortal toPortalFromOpening(const Document& document, const Node& opening) {
 
 SpacePortal toPortalFromNode(const Node& node) {
     SpacePortal portal;
-    portal.id            = node.id;
-    portal.levelId       = node.parentId;
-    portal.name          = node.name;
-    portal.regionAId     = node.regionAId;
-    portal.regionBId     = node.regionBId;
-    portal.passageMask   = node.passageMask;
-    portal.position      = node.portalPosition;
-    portal.wallHosted    = false;
+    portal.id          = node.id;
+    portal.levelId     = node.parentId;
+    portal.name        = node.name;
+    portal.regionAId   = node.regionAId;
+    portal.regionBId   = node.regionBId;
+    portal.passageMask = node.passageMask;
+    portal.position    = node.portalPosition;
+    portal.wallHosted  = false;
     return portal;
 }
 
@@ -153,8 +151,10 @@ std::vector<SpacePortal> SpaceQuery::portals() const {
     if (!document_) return out;
     for (const auto& [id, node] : document_->nodes()) {
         (void)id;
-        if (node.kind == NodeKind::Opening) out.push_back(toPortalFromOpening(*document_, node));
-        else if (node.kind == NodeKind::Portal) out.push_back(toPortalFromNode(node));
+        if (node.kind == NodeKind::Opening)
+            out.push_back(toPortalFromOpening(*document_, node));
+        else if (node.kind == NodeKind::Portal)
+            out.push_back(toPortalFromNode(node));
     }
     return out;
 }
@@ -168,9 +168,19 @@ std::vector<SpacePortal> SpaceQuery::portalsFrom(const std::string& regionId) co
     return out;
 }
 
-bool SpaceQuery::regionsConnected(const std::string& regionAId, const std::string& regionBId) const {
-    if (!document_ || regionAId.empty() || regionBId.empty()) return false;
-    if (regionAId == regionBId) return document_->find(regionAId) != nullptr;
+eve::Result<bool> SpaceQuery::regionsConnected(const std::string& regionAId, const std::string& regionBId) const {
+    if (!document_)
+        return eve::Result<bool>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "ArchSpace SpaceQuery has no document", "document", {},
+                                                                 "archspace.query"));
+    if (regionAId.empty() || regionBId.empty())
+        return eve::Result<bool>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "ArchSpace region ids must be non-empty", "regionId",
+                                                                 {}, "archspace.query"));
+    if (!document_->find(regionAId) || !document_->find(regionBId))
+        return eve::Result<bool>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "ArchSpace region id is unknown", "regionId", {}, "archspace.query"));
+    if (regionAId == regionBId) return eve::Result<bool>::success(true);
     std::unordered_map<std::string, std::vector<std::string>> adj;
     for (const auto& portal : portals()) {
         if (portal.regionAId.empty()) continue;
@@ -186,14 +196,14 @@ bool SpaceQuery::regionsConnected(const std::string& regionAId, const std::strin
     while (!q.empty()) {
         const std::string cur = std::move(q.front());
         q.pop();
-        if (cur == regionBId) return true;
+        if (cur == regionBId) return eve::Result<bool>::success(true);
         const auto it = adj.find(cur);
         if (it == adj.end()) continue;
         for (const auto& next : it->second) {
             if (seen.insert(next).second) q.push(next);
         }
     }
-    return false;
+    return eve::Result<bool>::success(false);
 }
 
 std::vector<SpaceAnchor> SpaceQuery::anchorsIn(const std::string& regionId) const {

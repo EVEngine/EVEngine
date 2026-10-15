@@ -116,7 +116,7 @@ struct SpacePortal {
     std::string regionBId;
     PassageMask passageMask = kPassageWalk;
     Vec3        position{};
-    bool        wallHosted  = false;
+    bool        wallHosted = false;
 };
 
 /** @brief Read-only item/anchor view. */
@@ -180,9 +180,9 @@ struct MeshArrays {
         const Vec3& a = bake.positions[i0];
         const Vec3& b = bake.positions[i1];
         const Vec3& c = bake.positions[i2];
-        Vec3        n{(b.y - a.y) * (c.z - a.z) - (b.z - a.z) * (c.y - a.y),
-                      (b.z - a.z) * (c.x - a.x) - (b.x - a.x) * (c.z - a.z),
-                      (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)};
+        Vec3         n{(b.y - a.y) * (c.z - a.z) - (b.z - a.z) * (c.y - a.y),
+               (b.z - a.z) * (c.x - a.x) - (b.x - a.x) * (c.z - a.z),
+               (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)};
         const double len = std::sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
         if (len > 1e-8) {
             n.x /= len;

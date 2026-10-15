@@ -60,7 +60,9 @@ doc.createRegion("level0", "hall", "Hall", 0.0, 0.0, 8.0, 6.0);
 doc.createRegion("level0", "cell", "Cell", 10.0, 1.0, 4.0, 4.0);
 doc.createPortal("level0", "hall.cell.door", "Door", "hall", "cell", 9.0, 0.0, 3.0);
 print(doc.regionAt(2.0, 2.0, "level0") + "\n");          // hall
-print(doc.regionsConnected("hall", "cell") + "\n");      // true
+local linked = doc.regionsConnected("hall", "cell");
+if (!linked.ok) throw linked.status.summary;
+print(linked.value + "\n");                              // true
 ```
 
 完整示例见 `examples/archspace-editor/`。
@@ -104,7 +106,7 @@ auto mesh = target.bakeMesh();  // positions + indices + primitiveIds（含 *.re
 - `createPortal(levelId, portalId, name, regionAId, regionBId, x, y, z)` → Result；
   层内连通（默认 walk）。
 - `regionAt(x, z, levelId)` — 命中的 region id，未命中空串。
-- `regionsConnected(a, b)` — 经 portal 图是否连通。
+- `regionsConnected(a, b)` → Result(bool)；经 portal 图是否连通。
 - `bakeMeshArrays()` — 返回表：`positions`/`normals`/`uvs`/`indices` 以及
   `vertexCount`/`indexCount`/`triangleCount`（洞口切腔后的上传数组）。
 - `summary()` — 人类可读摘要字符串（nodes/root/triangles/vertices）。
