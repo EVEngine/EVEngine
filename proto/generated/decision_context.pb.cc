@@ -35,6 +35,8 @@ PROTOBUF_CONSTINIT ::google::protobuf::internal::ReflectionData
         {&::_pbi::kDescriptorMethods, &::descriptor_table_decision_5fcontext_2eproto, /* tracker*/ nullptr,},
         // ::eve::decision::proto::Blackboard_ScalarJsonEntry_DoNotUse
         {&::_pbi::kDescriptorMethods, &::descriptor_table_decision_5fcontext_2eproto, /* tracker*/ nullptr,},
+        // ::eve::decision::proto::Blackboard_ScalarValuesEntry_DoNotUse
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_decision_5fcontext_2eproto, /* tracker*/ nullptr,},
         // ::eve::decision::proto::Blackboard
         {&::_pbi::kDescriptorMethods, &::descriptor_table_decision_5fcontext_2eproto, /* tracker*/ nullptr,},
         // ::eve::decision::proto::Transition
@@ -172,7 +174,7 @@ constexpr auto Transition::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[4],
+      &file_reflection_data[5],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_decision_5fcontext_2eproto,
@@ -365,7 +367,7 @@ constexpr auto InfluenceGrid::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[5],
+      &file_reflection_data[6],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_decision_5fcontext_2eproto,
@@ -690,6 +692,148 @@ const ::_pbi::ClassData* Blackboard_ScalarJsonEntry_DoNotUse_get_class_data() {
 }
 }  // namespace
 #endif  // PROTOBUF_CUSTOM_VTABLE
+constexpr Blackboard_ScalarValuesEntry_DoNotUse::ParseTableT_ Blackboard_ScalarValuesEntry_DoNotUse::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(Blackboard_ScalarValuesEntry_DoNotUse, _impl_._has_bits_),
+      0, // no _extensions_
+      2, 8,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967292,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      2,  // num_field_entries
+      1,  // num_aux_entries
+      offsetof(ParseTableT_, aux_entries),
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::DiscardEverythingFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::eve::decision::proto::Blackboard_ScalarValuesEntry_DoNotUse>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      // .eve.persistence.proto.DynamicValue value = 2;
+      {::_pbi::TcParser::FastMtS1,
+       {18, 1, 0,
+        PROTOBUF_FIELD_OFFSET(Blackboard_ScalarValuesEntry_DoNotUse, _impl_.value_)}},
+      // string key = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(Blackboard_ScalarValuesEntry_DoNotUse, _impl_.key_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string key = 1;
+      {PROTOBUF_FIELD_OFFSET(Blackboard_ScalarValuesEntry_DoNotUse, _impl_.key_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // .eve.persistence.proto.DynamicValue value = 2;
+      {PROTOBUF_FIELD_OFFSET(Blackboard_ScalarValuesEntry_DoNotUse, _impl_.value_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+    }},
+    {{
+        #ifndef PROTOBUF_MESSAGE_GLOBALS
+        {::_pbi::TcParser::GetTable<::eve::persistence::proto::DynamicValue>()},
+        #else
+        {::_pbi::FieldAuxMessageGlobals(), &::eve::persistence::proto::DynamicValue_globals_},
+        #endif
+    }},
+    {{
+      "\57\3\0\0\0\0\0\0"
+      "eve.decision.proto.Blackboard.ScalarValuesEntry"
+      "key"
+    }},
+  };
+}
+
+template <typename>
+constexpr Blackboard_ScalarValuesEntry_DoNotUse::Blackboard_ScalarValuesEntry_DoNotUse(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : Blackboard_ScalarValuesEntry_DoNotUse::MapEntry(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      ) {
+}
+inline void* PROTOBUF_NONNULL Blackboard_ScalarValuesEntry_DoNotUse::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) Blackboard_ScalarValuesEntry_DoNotUse(arena);
+}
+constexpr auto Blackboard_ScalarValuesEntry_DoNotUse::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(Blackboard_ScalarValuesEntry_DoNotUse), alignof(Blackboard_ScalarValuesEntry_DoNotUse));
+}
+constexpr auto Blackboard_ScalarValuesEntry_DoNotUse::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &Blackboard_ScalarValuesEntry_DoNotUse::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<Blackboard_ScalarValuesEntry_DoNotUse>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &Blackboard_ScalarValuesEntry_DoNotUse::SharedDtor,
+          static_cast<void (::google::protobuf::MessageLite::*)()>(&Blackboard_ScalarValuesEntry_DoNotUse::ClearImpl),
+              ::google::protobuf::Message::ByteSizeLongImpl, ::google::protobuf::Message::_InternalSerializeImpl
+              ,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(Blackboard_ScalarValuesEntry_DoNotUse, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[3],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_decision_5fcontext_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct Blackboard_ScalarValuesEntry_DoNotUseGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr Blackboard_ScalarValuesEntry_DoNotUseGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 Blackboard_ScalarValuesEntry_DoNotUse_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(Blackboard_ScalarValuesEntry_DoNotUse::InternalGenerateClassData_(
+            _default, &Blackboard_ScalarValuesEntry_DoNotUse_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<Blackboard_ScalarValuesEntry_DoNotUse>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~Blackboard_ScalarValuesEntry_DoNotUseGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) Blackboard_ScalarValuesEntry_DoNotUse _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<Blackboard_ScalarValuesEntry_DoNotUse>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(Blackboard_ScalarValuesEntry_DoNotUseGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT EVENGINE_API_FOUNDATION
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST Blackboard_ScalarValuesEntry_DoNotUseGlobalsTypeInternal Blackboard_ScalarValuesEntry_DoNotUse_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* Blackboard_ScalarValuesEntry_DoNotUse_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return Blackboard_ScalarValuesEntry_DoNotUse_globals_.GetClassData();
+#else
+  return Blackboard_ScalarValuesEntry_DoNotUse_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
 class Blackboard::_Internal {
  public:
   using HasBits = decltype(::std::declval<Blackboard>()._impl_._has_bits_);
@@ -702,12 +846,12 @@ constexpr Blackboard::ParseTableT_ Blackboard::InternalGenerateParseTable_(const
     {
       PROTOBUF_FIELD_OFFSET(Blackboard, _impl_._has_bits_),
       0, // no _extensions_
-      2, 0,  // max_field_number, fast_idx_mask
+      3, 0,  // max_field_number, fast_idx_mask
       offsetof(ParseTableT_, field_lookup_table),
-      4294967292,  // skipmap
+      4294967288,  // skipmap
       offsetof(ParseTableT_, field_entries),
-      2,  // num_field_entries
-      1,  // num_aux_entries
+      3,  // num_field_entries
+      3,  // num_aux_entries
       offsetof(ParseTableT_, aux_entries),
       class_data,
       nullptr,  // post_loop_handler
@@ -727,16 +871,26 @@ constexpr Blackboard::ParseTableT_ Blackboard::InternalGenerateParseTable_(const
       {PROTOBUF_FIELD_OFFSET(Blackboard, _impl_.name_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // map<string, string> scalar_json = 2;
       {PROTOBUF_FIELD_OFFSET(Blackboard, _impl_.scalar_json_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcRepeated | ::_fl::kMap)},
+      // map<string, .eve.persistence.proto.DynamicValue> scalar_values = 3;
+      {PROTOBUF_FIELD_OFFSET(Blackboard, _impl_.scalar_values_), _Internal::kHasBitsOffset + 2, 1, (0 | ::_fl::kFcRepeated | ::_fl::kMap)},
     }},
     {{
         {::_pbi::TcParser::GetMapAuxInfo(
             1, 0, 9, 9, 0)},
+        {::_pbi::TcParser::GetMapAuxInfo(
+            1, 0, 9, 11, 0)},
+        #ifndef PROTOBUF_MESSAGE_GLOBALS
+        {::_pbi::TcParser::GetTable<::eve::persistence::proto::DynamicValue>()},
+        #else
+        {::_pbi::FieldAuxMessageGlobals(), &::eve::persistence::proto::DynamicValue_globals_},
+        #endif
     }},
     {{
-      "\35\4\13\0\0\0\0\0"
+      "\35\4\13\15\0\0\0\0"
       "eve.decision.proto.Blackboard"
       "name"
       "scalar_json"
+      "scalar_values"
     }},
   };
 }
@@ -752,6 +906,11 @@ inline constexpr Blackboard::Impl_::Impl_(
         scalar_json_ { visibility, ::_pbi::InternalMetadataOffset::Build<
             ::eve::decision::proto::Blackboard,
             PROTOBUF_FIELD_OFFSET(::eve::decision::proto::Blackboard, _impl_.scalar_json_)>()
+         }
+        ,
+        scalar_values_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::eve::decision::proto::Blackboard,
+            PROTOBUF_FIELD_OFFSET(::eve::decision::proto::Blackboard, _impl_.scalar_values_)>()
          }
      {}
 
@@ -796,7 +955,7 @@ constexpr auto Blackboard::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[3],
+      &file_reflection_data[4],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_decision_5fcontext_2eproto,
@@ -1102,12 +1261,21 @@ const ::uint32_t
         0,
         1,
         0x081, // bitmap
-        PROTOBUF_FIELD_OFFSET(::eve::decision::proto::Blackboard, _impl_._has_bits_),
+        PROTOBUF_FIELD_OFFSET(::eve::decision::proto::Blackboard_ScalarValuesEntry_DoNotUse, _impl_._has_bits_),
         5, // hasbit index offset
-        PROTOBUF_FIELD_OFFSET(::eve::decision::proto::Blackboard, _impl_.name_),
-        PROTOBUF_FIELD_OFFSET(::eve::decision::proto::Blackboard, _impl_.scalar_json_),
+        PROTOBUF_FIELD_OFFSET(::eve::decision::proto::Blackboard_ScalarValuesEntry_DoNotUse, _impl_.key_),
+        PROTOBUF_FIELD_OFFSET(::eve::decision::proto::Blackboard_ScalarValuesEntry_DoNotUse, _impl_.value_),
         0,
         1,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::eve::decision::proto::Blackboard, _impl_._has_bits_),
+        6, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::eve::decision::proto::Blackboard, _impl_.name_),
+        PROTOBUF_FIELD_OFFSET(::eve::decision::proto::Blackboard, _impl_.scalar_json_),
+        PROTOBUF_FIELD_OFFSET(::eve::decision::proto::Blackboard, _impl_.scalar_values_),
+        0,
+        1,
+        2,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::eve::decision::proto::Transition, _impl_._has_bits_),
         7, // hasbit index offset
@@ -1143,15 +1311,17 @@ static const ::_pbi::MigrationSchema
         {0, sizeof(::eve::decision::proto::DecisionContextSave_StatesEntry_DoNotUse)},
         {7, sizeof(::eve::decision::proto::DecisionContextSave)},
         {22, sizeof(::eve::decision::proto::Blackboard_ScalarJsonEntry_DoNotUse)},
-        {29, sizeof(::eve::decision::proto::Blackboard)},
-        {36, sizeof(::eve::decision::proto::Transition)},
-        {47, sizeof(::eve::decision::proto::InfluenceGrid)},
+        {29, sizeof(::eve::decision::proto::Blackboard_ScalarValuesEntry_DoNotUse)},
+        {36, sizeof(::eve::decision::proto::Blackboard)},
+        {45, sizeof(::eve::decision::proto::Transition)},
+        {56, sizeof(::eve::decision::proto::InfluenceGrid)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
         &::eve::decision::proto::DecisionContextSave_StatesEntry_DoNotUse_globals_,
         &::eve::decision::proto::DecisionContextSave_globals_,
         &::eve::decision::proto::Blackboard_ScalarJsonEntry_DoNotUse_globals_,
+        &::eve::decision::proto::Blackboard_ScalarValuesEntry_DoNotUse_globals_,
         &::eve::decision::proto::Blackboard_globals_,
         &::eve::decision::proto::Transition_globals_,
         &::eve::decision::proto::InfluenceGrid_globals_,
@@ -1159,41 +1329,50 @@ static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
 const char descriptor_table_protodef_decision_5fcontext_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
     "\n\026decision_context.proto\022\022eve.decision.p"
-    "roto\"\342\002\n\023DecisionContextSave\022\023\n\006schema\030\001"
-    " \001(\tH\000\210\001\001\022\024\n\007version\030\002 \001(\rH\001\210\001\001\022.\n\006board"
-    "s\030\003 \003(\0132\036.eve.decision.proto.Blackboard\022"
-    "C\n\006states\030\004 \003(\01323.eve.decision.proto.Dec"
-    "isionContextSave.StatesEntry\0223\n\013transiti"
-    "ons\030\005 \003(\0132\036.eve.decision.proto.Transitio"
-    "n\0220\n\005grids\030\006 \003(\0132!.eve.decision.proto.In"
-    "fluenceGrid\032-\n\013StatesEntry\022\013\n\003key\030\001 \001(\t\022"
-    "\r\n\005value\030\002 \001(\t:\0028\001B\t\n\007_schemaB\n\n\010_versio"
-    "n\"\240\001\n\nBlackboard\022\021\n\004name\030\001 \001(\tH\000\210\001\001\022C\n\013s"
-    "calar_json\030\002 \003(\0132..eve.decision.proto.Bl"
-    "ackboard.ScalarJsonEntry\0321\n\017ScalarJsonEn"
-    "try\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001B\007\n\005_"
-    "name\"\204\001\n\nTransition\022\024\n\007machine\030\001 \001(\tH\000\210\001"
-    "\001\022\021\n\004from\030\002 \001(\tH\001\210\001\001\022\024\n\007trigger\030\003 \001(\tH\002\210"
-    "\001\001\022\017\n\002to\030\004 \001(\tH\003\210\001\001B\n\n\010_machineB\007\n\005_from"
-    "B\n\n\010_triggerB\005\n\003_to\"\347\001\n\rInfluenceGrid\022\021\n"
-    "\004name\030\001 \001(\tH\000\210\001\001\022\022\n\005width\030\002 \001(\005H\001\210\001\001\022\023\n\006"
-    "height\030\003 \001(\005H\002\210\001\001\022\026\n\tcell_size\030\004 \001(\002H\003\210\001"
-    "\001\022\025\n\010origin_x\030\005 \001(\002H\004\210\001\001\022\025\n\010origin_y\030\006 \001"
-    "(\002H\005\210\001\001\022\016\n\006values\030\007 \003(\002B\007\n\005_nameB\010\n\006_wid"
-    "thB\t\n\007_heightB\014\n\n_cell_sizeB\013\n\t_origin_x"
-    "B\013\n\t_origin_yb\006proto3"
+    "roto\032\023dynamic_value.proto\"\342\002\n\023DecisionCo"
+    "ntextSave\022\023\n\006schema\030\001 \001(\tH\000\210\001\001\022\024\n\007versio"
+    "n\030\002 \001(\rH\001\210\001\001\022.\n\006boards\030\003 \003(\0132\036.eve.decis"
+    "ion.proto.Blackboard\022C\n\006states\030\004 \003(\01323.e"
+    "ve.decision.proto.DecisionContextSave.St"
+    "atesEntry\0223\n\013transitions\030\005 \003(\0132\036.eve.dec"
+    "ision.proto.Transition\0220\n\005grids\030\006 \003(\0132!."
+    "eve.decision.proto.InfluenceGrid\032-\n\013Stat"
+    "esEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001B"
+    "\t\n\007_schemaB\n\n\010_version\"\303\002\n\nBlackboard\022\021\n"
+    "\004name\030\001 \001(\tH\000\210\001\001\022C\n\013scalar_json\030\002 \003(\0132.."
+    "eve.decision.proto.Blackboard.ScalarJson"
+    "Entry\022G\n\rscalar_values\030\003 \003(\01320.eve.decis"
+    "ion.proto.Blackboard.ScalarValuesEntry\0321"
+    "\n\017ScalarJsonEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030"
+    "\002 \001(\t:\0028\001\032X\n\021ScalarValuesEntry\022\013\n\003key\030\001 "
+    "\001(\t\0222\n\005value\030\002 \001(\0132#.eve.persistence.pro"
+    "to.DynamicValue:\0028\001B\007\n\005_name\"\204\001\n\nTransit"
+    "ion\022\024\n\007machine\030\001 \001(\tH\000\210\001\001\022\021\n\004from\030\002 \001(\tH"
+    "\001\210\001\001\022\024\n\007trigger\030\003 \001(\tH\002\210\001\001\022\017\n\002to\030\004 \001(\tH\003"
+    "\210\001\001B\n\n\010_machineB\007\n\005_fromB\n\n\010_triggerB\005\n\003"
+    "_to\"\347\001\n\rInfluenceGrid\022\021\n\004name\030\001 \001(\tH\000\210\001\001"
+    "\022\022\n\005width\030\002 \001(\005H\001\210\001\001\022\023\n\006height\030\003 \001(\005H\002\210\001"
+    "\001\022\026\n\tcell_size\030\004 \001(\002H\003\210\001\001\022\025\n\010origin_x\030\005 "
+    "\001(\002H\004\210\001\001\022\025\n\010origin_y\030\006 \001(\002H\005\210\001\001\022\016\n\006value"
+    "s\030\007 \003(\002B\007\n\005_nameB\010\n\006_widthB\t\n\007_heightB\014\n"
+    "\n_cell_sizeB\013\n\t_origin_xB\013\n\t_origin_yb\006p"
+    "roto3"
+};
+static const ::_pbi::DescriptorTable* PROTOBUF_NONNULL const
+    descriptor_table_decision_5fcontext_2eproto_deps[1] = {
+        &::descriptor_table_dynamic_5fvalue_2eproto,
 };
 static ::absl::once_flag descriptor_table_decision_5fcontext_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_decision_5fcontext_2eproto = {
     false,
     false,
-    941,
+    1125,
     descriptor_table_protodef_decision_5fcontext_2eproto,
     "decision_context.proto",
     &descriptor_table_decision_5fcontext_2eproto_once,
-    nullptr,
-    0,
-    6,
+    descriptor_table_decision_5fcontext_2eproto_deps,
+    1,
+    7,
     schemas,
     file_message_globals,
     TableStruct_decision_5fcontext_2eproto::offsets,
@@ -1699,6 +1878,49 @@ PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const Blackboard_ScalarJsonEntry_DoNotUse::Par
 #endif  // !PROTOBUF_MESSAGE_GLOBALS
 // ===================================================================
 
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+Blackboard_ScalarValuesEntry_DoNotUse::Blackboard_ScalarValuesEntry_DoNotUse() : SuperType(Blackboard_ScalarValuesEntry_DoNotUse_get_class_data()) {}
+Blackboard_ScalarValuesEntry_DoNotUse::Blackboard_ScalarValuesEntry_DoNotUse(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+    : SuperType(arena, Blackboard_ScalarValuesEntry_DoNotUse_get_class_data()) {}
+#else   // PROTOBUF_CUSTOM_VTABLE
+Blackboard_ScalarValuesEntry_DoNotUse::Blackboard_ScalarValuesEntry_DoNotUse() : SuperType() {}
+Blackboard_ScalarValuesEntry_DoNotUse::Blackboard_ScalarValuesEntry_DoNotUse(::google::protobuf::Arena* PROTOBUF_NULLABLE arena) : SuperType(arena) {}
+#endif  // PROTOBUF_CUSTOM_VTABLE
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull Blackboard_ScalarValuesEntry_DoNotUse_class_data_ =
+        Blackboard_ScalarValuesEntry_DoNotUse::InternalGenerateClassData_(Blackboard_ScalarValuesEntry_DoNotUse_globals_._default);
+
+// including ~ all the vtables and everything they use become part
+// of the same ~ SCC.
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+Blackboard_ScalarValuesEntry_DoNotUse::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&Blackboard_ScalarValuesEntry_DoNotUse_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(Blackboard_ScalarValuesEntry_DoNotUse_class_data_.tc_table);
+  return Blackboard_ScalarValuesEntry_DoNotUse_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+Blackboard_ScalarValuesEntry_DoNotUse::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&Blackboard_ScalarValuesEntry_DoNotUse_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&Blackboard_ScalarValuesEntry_DoNotUse_globals_));
+  return Blackboard_ScalarValuesEntry_DoNotUse_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const Blackboard_ScalarValuesEntry_DoNotUse::ParseTableT_
+    Blackboard_ScalarValuesEntry_DoNotUse::_table_ =
+        Blackboard_ScalarValuesEntry_DoNotUse::InternalGenerateParseTable_(Blackboard_ScalarValuesEntry_DoNotUse_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+// ===================================================================
+
+void Blackboard::clear_scalar_values() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.scalar_values_.Clear();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
 Blackboard::Blackboard(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
     : ::google::protobuf::Message(arena, Blackboard_get_class_data()) {
@@ -1720,6 +1942,13 @@ PROTOBUF_NDEBUG_INLINE Blackboard::Impl_::Impl_(
               ::eve::decision::proto::Blackboard,
               PROTOBUF_FIELD_OFFSET(::eve::decision::proto::Blackboard, _impl_.scalar_json_)>()
           , from.scalar_json_
+        }
+        ,
+        scalar_values_ {
+          visibility, ::_pbi::InternalMetadataOffset::Build<
+              ::eve::decision::proto::Blackboard,
+              PROTOBUF_FIELD_OFFSET(::eve::decision::proto::Blackboard, _impl_.scalar_values_)>()
+          , from.scalar_values_
         }
      {}
 
@@ -1748,6 +1977,11 @@ PROTOBUF_NDEBUG_INLINE Blackboard::Impl_::Impl_(
         scalar_json_ { visibility, ::_pbi::InternalMetadataOffset::Build<
             ::eve::decision::proto::Blackboard,
             PROTOBUF_FIELD_OFFSET(::eve::decision::proto::Blackboard, _impl_.scalar_json_)>()
+         }
+        ,
+        scalar_values_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::eve::decision::proto::Blackboard,
+            PROTOBUF_FIELD_OFFSET(::eve::decision::proto::Blackboard, _impl_.scalar_values_)>()
          }
      {}
 
@@ -1803,12 +2037,15 @@ PROTOBUF_NOINLINE void Blackboard::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       _impl_.name_.ClearNonDefaultToEmpty();
     }
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
       _impl_.scalar_json_.Clear();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _impl_.scalar_values_.Clear();
     }
   }
   _impl_._has_bits_.Clear();
@@ -1877,6 +2114,35 @@ PROTOBUF_NOINLINE void Blackboard::Clear() {
     }
   }
 
+  // map<string, .eve.persistence.proto.DynamicValue> scalar_values = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (!this_._internal_scalar_values().empty()) {
+      using MapType = ::google::protobuf::Map<::std::string, ::eve::persistence::proto::DynamicValue>;
+      using WireHelper = _pbi::MapEntryFuncs<::std::string, ::eve::persistence::proto::DynamicValue,
+                                     _pbi::WireFormatLite::TYPE_STRING,
+                                     _pbi::WireFormatLite::TYPE_MESSAGE>;
+      const auto& field = this_._internal_scalar_values();
+
+      if (stream->IsSerializationDeterministic() && field.size() > 1) {
+        for (const auto& entry : ::google::protobuf::internal::MapSorterPtr<MapType>(field)) {
+          target = WireHelper::InternalSerialize(
+              3, entry.first, entry.second, target, stream);
+          ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+              entry.first.data(), static_cast<int>(entry.first.length()),
+ ::google::protobuf::internal::WireFormatLite::SERIALIZE, "eve.decision.proto.Blackboard.scalar_values");
+        }
+      } else {
+        for (const auto& entry : field) {
+          target = WireHelper::InternalSerialize(
+              3, entry.first, entry.second, target, stream);
+          ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+              entry.first.data(), static_cast<int>(entry.first.length()),
+ ::google::protobuf::internal::WireFormatLite::SERIALIZE, "eve.decision.proto.Blackboard.scalar_values");
+        }
+      }
+    }
+  }
+
   if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
     target =
         ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -1902,7 +2168,7 @@ PROTOBUF_NOINLINE void Blackboard::Clear() {
 
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
     // optional string name = 1;
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
@@ -1916,6 +2182,16 @@ PROTOBUF_NOINLINE void Blackboard::Clear() {
         total_size += _pbi::MapEntryFuncs<::std::string, ::std::string,
                                        _pbi::WireFormatLite::TYPE_STRING,
                                        _pbi::WireFormatLite::TYPE_STRING>::ByteSizeLong(entry.first, entry.second);
+      }
+    }
+    // map<string, .eve.persistence.proto.DynamicValue> scalar_values = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      total_size +=
+          1 * ::google::protobuf::internal::FromIntSize(this_._internal_scalar_values_size());
+      for (const auto& entry : this_._internal_scalar_values()) {
+        total_size += _pbi::MapEntryFuncs<::std::string, ::eve::persistence::proto::DynamicValue,
+                                       _pbi::WireFormatLite::TYPE_STRING,
+                                       _pbi::WireFormatLite::TYPE_MESSAGE>::ByteSizeLong(entry.first, entry.second);
       }
     }
   }
@@ -1936,12 +2212,15 @@ void Blackboard::MergeImpl(::google::protobuf::MessageLite& to_msg,
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       _this->_internal_set_name(from._internal_name());
     }
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
       _this->_impl_.scalar_json_.MergeFrom(from._impl_.scalar_json_);
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _this->_impl_.scalar_values_.MergeFrom(from._impl_.scalar_values_);
     }
   }
   _this->_impl_._has_bits_[0] |= cached_has_bits;
@@ -1965,6 +2244,7 @@ void Blackboard::InternalSwap(Blackboard* PROTOBUF_RESTRICT PROTOBUF_NONNULL oth
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.name_, &other->_impl_.name_, arena);
   _impl_.scalar_json_.InternalSwap(&other->_impl_.scalar_json_);
+  _impl_.scalar_values_.InternalSwap(&other->_impl_.scalar_values_);
 }
 
 ::google::protobuf::Metadata Blackboard::GetMetadata() const {

@@ -134,6 +134,7 @@ TEST_CASE("decision.conditionUnavailableIsDifferentFromFalse") {
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_decision)
 #include <cmath>
 #include "PrivateTestScope.h"
+#include "common/ProtobufDynamicValue.h"
 #include "decision/Decision.h"
 #include "decision_context.pb.h"
 #include "zeroerr/assert.h"
@@ -208,13 +209,20 @@ TEST_CASE("decision.protobufSnapshotRejectsInvalidWithoutMutation") {
 
     eve::decision::proto::DecisionContextSave invalid;
     REQUIRE(invalid.ParseFromString(bytes.value()));
-    invalid.set_version(3);
+    REQUIRE_EQ(invalid.version(), 3u);
+    REQUIRE_EQ(invalid.boards_size(), 1);
+    REQUIRE_EQ(invalid.boards(0).name(), "ai");
+    CHECK(invalid.boards(0).scalar_json().empty());
+    const auto scalar = invalid.boards(0).scalar_values().find("target");
+    REQUIRE(scalar != invalid.boards(0).scalar_values().end());
+    CHECK_EQ(scalar->second.string_value(), "tank");
+    invalid.set_version(4);
     std::string future;
     REQUIRE(invalid.SerializeToString(&future));
     CHECK(!restored.restoreBinary(future).ok());
     CHECK_EQ(restored.state("unit"), std::string("attack"));
 
-    invalid.set_version(2);
+    invalid.set_version(3);
     invalid.mutable_grids(0)->set_width(3);
     std::string malformed;
     REQUIRE(invalid.SerializeToString(&malformed));
@@ -227,6 +235,25 @@ TEST_CASE("decision.protobufSnapshotRejectsInvalidWithoutMutation") {
     REQUIRE(invalid.SerializeToString(&withUnknown));
     CHECK(!restored.restoreBinary(withUnknown).ok());
     CHECK_EQ(restored.sample("threat", 5, 0, -1), 3.f);
+
+    eve::decision::proto::DecisionContextSave legacy;
+    REQUIRE(legacy.ParseFromString(bytes.value()));
+    legacy.set_version(2);
+    for (auto& board : *legacy.mutable_boards()) {
+        for (const auto& [key, scalar] : board.scalar_values()) {
+            auto decoded = eve::proto_support::decodeDynamicValue(scalar);
+            REQUIRE(decoded.ok());
+            auto json = decoded.value().toJson();
+            REQUIRE(json.ok());
+            (*board.mutable_scalar_json())[key] = json.value();
+        }
+        board.mutable_scalar_values()->clear();
+    }
+    std::string legacyBytes;
+    REQUIRE(legacy.SerializeToString(&legacyBytes));
+    DecisionContext migrated;
+    REQUIRE(migrated.restoreBinary(legacyBytes).ok());
+    CHECK_EQ(migrated.get("ai", "target", "null"), std::string("\"tank\""));
 
     REQUIRE(restored.restoreJson(source.snapshotJson()).ok());
     REQUIRE(

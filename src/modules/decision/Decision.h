@@ -5,6 +5,7 @@
 #include "common/Module.h"
 #include "common/Result.h"
 #include "common/SquirrelOwnership.h"
+#include "common/Value.h"
 
 #include <map>
 #include <memory>
@@ -106,7 +107,7 @@ public:
     [[nodiscard]] eve::Result<void> restoreJson(const std::string& json);
 
 private:
-    void                            captureMessage(proto::DecisionContextSave& save) const;
+    [[nodiscard]] eve::Result<void> captureMessage(proto::DecisionContextSave& save) const;
     [[nodiscard]] eve::Result<void> restoreMessage(const proto::DecisionContextSave& save);
     struct Grid {
         int                width    = 0;
@@ -117,7 +118,7 @@ private:
         std::vector<float> values;
     };
 
-    std::map<std::string, std::map<std::string, std::string>>                         boards_;
+    std::map<std::string, std::map<std::string, eve::Value>>                          boards_;
     std::map<std::string, std::string>                                                states_;
     std::map<std::string, std::map<std::pair<std::string, std::string>, std::string>> transitions_;
     std::map<std::string, Grid>                                                       grids_;

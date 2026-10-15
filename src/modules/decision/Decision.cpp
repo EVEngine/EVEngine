@@ -1,6 +1,7 @@
 #include "decision/Decision.h"
 
 #include "common/Json.h"
+#include "common/ProtobufDynamicValue.h"
 #include "common/SquirrelBinding.h"
 #include "decision_context.pb.h"
 
@@ -121,8 +122,6 @@ bool hasUnknownFields(const google::protobuf::Message& message) {
 }  // namespace
 
 eve::Result<void> DecisionContext::set(const std::string& board, const std::string& key, const std::string& valueJson) {
-    std::string parseError;
-    auto        document = eve::json::Document::parse(valueJson, &parseError);
     if (board.empty()) {
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "blackboard name must not be empty", "board", {}, "decision"));
@@ -131,17 +130,15 @@ eve::Result<void> DecisionContext::set(const std::string& board, const std::stri
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "blackboard key must not be empty", "key", {}, "decision"));
     }
-    if (!document.valid()) {
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::ParseError, parseError.empty() ? "invalid blackboard JSON" : parseError, "value", {},
-            "decision"));
-    }
-    if (!isScalar(document.root())) {
+    auto parsed = eve::Value::fromJson(valueJson);
+    if (!parsed) return eve::Result<void>::failure(parsed.status());
+    const auto& value = parsed.value();
+    if (!(value.isNull() || value.isBool() || value.isNumeric() || value.isString())) {
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "blackboard value must be a JSON scalar", "value", {}, "decision"));
     }
 
-    boards_[board][key] = canonicalize(document.root());
+    boards_[board][key] = std::move(parsed).takeValue();
     return decisionApplied();
 }
 
@@ -153,7 +150,9 @@ std::string DecisionContext::get(const std::string& board, const std::string& ke
     }
 
     auto valueIt = boardIt->second.find(key);
-    return valueIt == boardIt->second.end() ? fallbackJson : valueIt->second;
+    if (valueIt == boardIt->second.end()) return fallbackJson;
+    auto encoded = valueIt->second.toJson();
+    return encoded ? std::move(encoded).takeValue() : fallbackJson;
 }
 eve::Result<void> DecisionContext::addTransition(const std::string& m, const std::string& f, const std::string& t,
                                                  const std::string& to) {
@@ -311,13 +310,16 @@ float DecisionContext::sample(const std::string& name, float worldX, float world
 
     return grid.values[size_t(cellY) * grid.width + cellX];
 }
-void DecisionContext::captureMessage(proto::DecisionContextSave& save) const {
+eve::Result<void> DecisionContext::captureMessage(proto::DecisionContextSave& save) const {
     save.set_schema("eve.decision.context");
-    save.set_version(2);
+    save.set_version(3);
     for (const auto& [name, values] : boards_) {
         auto* board = save.add_boards();
         board->set_name(name);
-        for (const auto& [key, scalar] : values) (*board->mutable_scalar_json())[key] = scalar;
+        for (const auto& [key, scalar] : values) {
+            auto encoded = eve::proto_support::encodeDynamicValue(scalar, (*board->mutable_scalar_values())[key]);
+            if (!encoded) return encoded;
+        }
     }
     for (const auto& [machine, state] : states_) (*save.mutable_states())[machine] = state;
     for (const auto& [machine, transitions] : transitions_)
@@ -338,11 +340,13 @@ void DecisionContext::captureMessage(proto::DecisionContextSave& save) const {
         stored->set_origin_y(grid.originY);
         for (float value : grid.values) stored->add_values(value);
     }
+    return eve::Result<void>::success();
 }
 
 eve::Result<std::string> DecisionContext::snapshotBinary() const {
     proto::DecisionContextSave save;
-    captureMessage(save);
+    auto                       captured = captureMessage(save);
+    if (!captured) return eve::Result<std::string>::failure(captured.status());
     std::string bytes;
     bool        encoded = false;
     {
@@ -360,7 +364,8 @@ eve::Result<std::string> DecisionContext::snapshotBinary() const {
 
 std::string DecisionContext::snapshotJson() const {
     proto::DecisionContextSave save;
-    captureMessage(save);
+    auto                       captured = captureMessage(save);
+    if (!captured) return {};
     std::string json;
     if (!google::protobuf::util::MessageToJsonString(save, &json).ok()) return {};
     return json;
@@ -375,16 +380,34 @@ eve::Result<void> DecisionContext::restoreMessage(const proto::DecisionContextSa
         return fail(eve::DiagnosticCode::SerializationError, "unknown decision snapshot fields", "snapshot");
     if (!save.has_schema() || save.schema() != "eve.decision.context")
         return fail(eve::DiagnosticCode::InvalidArgument, "snapshot does not belong to DecisionContext", "schema");
-    if (!save.has_version() || save.version() != 2)
+    if (!save.has_version() || (save.version() != 2 && save.version() != 3))
         return fail(eve::DiagnosticCode::UnknownVersion, "unsupported decision snapshot version", "version");
     DecisionContext       candidate;
     std::set<std::string> boardNames;
     for (const auto& board : save.boards()) {
         if (!board.has_name() || board.name().empty() || !boardNames.insert(board.name()).second)
             return fail(eve::DiagnosticCode::SerializationError, "duplicate or unnamed blackboard", "boards");
-        for (const auto& [key, scalar] : board.scalar_json()) {
-            auto result = candidate.set(board.name(), key, scalar);
-            if (!result.ok()) return eve::Result<void>::failure(result.status());
+        if (save.version() == 2) {
+            if (!board.scalar_values().empty())
+                return fail(eve::DiagnosticCode::SerializationError, "version 2 board contains typed scalars",
+                            "boards");
+            for (const auto& [key, scalar] : board.scalar_json()) {
+                auto result = candidate.set(board.name(), key, scalar);
+                if (!result.ok()) return eve::Result<void>::failure(result.status());
+            }
+        } else {
+            if (!board.scalar_json().empty())
+                return fail(eve::DiagnosticCode::SerializationError, "version 3 board contains JSON scalars", "boards");
+            for (const auto& [key, scalar] : board.scalar_values()) {
+                if (key.empty())
+                    return fail(eve::DiagnosticCode::InvalidArgument, "blackboard key must not be empty", "boards");
+                auto decoded = eve::proto_support::decodeDynamicValue(scalar);
+                if (!decoded) return eve::Result<void>::failure(decoded.status());
+                const auto& value = decoded.value();
+                if (!(value.isNull() || value.isBool() || value.isNumeric() || value.isString()))
+                    return fail(eve::DiagnosticCode::SerializationError, "blackboard value must be scalar", "boards");
+                candidate.boards_[board.name()].emplace(key, std::move(decoded).takeValue());
+            }
         }
         candidate.boards_.try_emplace(board.name());
     }

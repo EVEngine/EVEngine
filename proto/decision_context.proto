@@ -2,8 +2,10 @@ syntax = "proto3";
 
 package eve.decision.proto;
 
-// Version 2 replaces the hand-written JSON snapshot. Scalar blackboard values
-// remain JSON text because their type is selected at runtime by the caller.
+import "dynamic_value.proto";
+
+// Version 3 stores dynamic blackboard scalars as typed values. Version 2 with
+// scalar_json remains readable for migration; version 1 uses legacy JSON.
 message DecisionContextSave {
   optional string schema = 1;
   optional uint32 version = 2;
@@ -15,7 +17,9 @@ message DecisionContextSave {
 
 message Blackboard {
   optional string name = 1;
+  // Version 2 compatibility only.
   map<string, string> scalar_json = 2;
+  map<string, eve.persistence.proto.DynamicValue> scalar_values = 3;
 }
 
 message Transition {

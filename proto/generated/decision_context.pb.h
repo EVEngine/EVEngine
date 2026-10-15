@@ -36,6 +36,7 @@
 #include "google/protobuf/map_entry.h"
 #include "google/protobuf/map_field.h"
 #include "google/protobuf/unknown_field_set.h"
+#include "dynamic_value.pb.h"
 // @@protoc_insertion_point(includes)
 
 // Must be included last.
@@ -77,6 +78,14 @@ EVENGINE_API_FOUNDATION extern Blackboard_ScalarJsonEntry_DoNotUseGlobalsTypeInt
 EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull Blackboard_ScalarJsonEntry_DoNotUse_class_data_;
 #else
 EVENGINE_API_FOUNDATION extern const Blackboard_ScalarJsonEntry_DoNotUseGlobalsTypeInternal Blackboard_ScalarJsonEntry_DoNotUse_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+class Blackboard_ScalarValuesEntry_DoNotUse;
+struct Blackboard_ScalarValuesEntry_DoNotUseGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+EVENGINE_API_FOUNDATION extern Blackboard_ScalarValuesEntry_DoNotUseGlobalsTypeInternal Blackboard_ScalarValuesEntry_DoNotUse_globals_;
+EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull Blackboard_ScalarValuesEntry_DoNotUse_class_data_;
+#else
+EVENGINE_API_FOUNDATION extern const Blackboard_ScalarValuesEntry_DoNotUseGlobalsTypeInternal Blackboard_ScalarValuesEntry_DoNotUse_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class DecisionContextSave;
 struct DecisionContextSaveGlobalsTypeInternal;
@@ -183,7 +192,7 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Transition 
   [[nodiscard]] static const Transition& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<Transition>(&Transition_globals_);
   }
-  static constexpr int kIndexInFileMessages = 4;
+  static constexpr int kIndexInFileMessages = 5;
   friend void swap(Transition& a, Transition& b) { a.Swap(&b); }
   inline void Swap(Transition* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -448,7 +457,7 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED InfluenceGr
   [[nodiscard]] static const InfluenceGrid& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<InfluenceGrid>(&InfluenceGrid_globals_);
   }
-  static constexpr int kIndexInFileMessages = 5;
+  static constexpr int kIndexInFileMessages = 6;
   friend void swap(InfluenceGrid& a, InfluenceGrid& b) { a.Swap(&b); }
   inline void Swap(InfluenceGrid* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -790,6 +799,55 @@ class PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Blackboard_ScalarJsonEntry_DoNotUse 
 };
 // -------------------------------------------------------------------
 
+class PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Blackboard_ScalarValuesEntry_DoNotUse final
+    : public ::google::protobuf::internal::MapEntry<::std::string, ::google::protobuf::Message,
+                             ::google::protobuf::internal::WireFormatLite::TYPE_STRING,
+                             ::google::protobuf::internal::WireFormatLite::TYPE_MESSAGE> {
+ public:
+  using SuperType =
+      ::google::protobuf::internal::MapEntry<::std::string, ::google::protobuf::Message,
+                      ::google::protobuf::internal::WireFormatLite::TYPE_STRING,
+                      ::google::protobuf::internal::WireFormatLite::TYPE_MESSAGE>;
+  Blackboard_ScalarValuesEntry_DoNotUse();
+  template <typename = void>
+  explicit constexpr Blackboard_ScalarValuesEntry_DoNotUse(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+  explicit Blackboard_ScalarValuesEntry_DoNotUse(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr const void* PROTOBUF_NONNULL internal_message_globals() {
+    return &Blackboard_ScalarValuesEntry_DoNotUse_globals_;
+  }
+
+
+  static constexpr auto InternalGenerateClassData_(
+      const ::google::protobuf::MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+ private:
+  friend class ::google::protobuf::MessageLite;
+  friend struct ::TableStruct_decision_5fcontext_2eproto;
+  friend ::google::protobuf::internal::PrivateAccess;
+  friend Blackboard_ScalarValuesEntry_DoNotUseGlobalsTypeInternal;
+
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<1, 2,
+                          1, 59,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+};
+// -------------------------------------------------------------------
+
 class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Blackboard final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.decision.proto.Blackboard) */ {
  public:
@@ -846,7 +904,7 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Blackboard 
   [[nodiscard]] static const Blackboard& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<Blackboard>(&Blackboard_globals_);
   }
-  static constexpr int kIndexInFileMessages = 3;
+  static constexpr int kIndexInFileMessages = 4;
   friend void swap(Blackboard& a, Blackboard& b) { a.Swap(&b); }
   inline void Swap(Blackboard* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -940,6 +998,7 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Blackboard 
   enum : int {
     kNameFieldNumber = 1,
     kScalarJsonFieldNumber = 2,
+    kScalarValuesFieldNumber = 3,
   };
   // optional string name = 1;
   [[nodiscard]] bool has_name()
@@ -974,12 +1033,28 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Blackboard 
   ::google::protobuf::Map<::std::string, ::std::string>* PROTOBUF_NONNULL _internal_mutable_scalar_json();
 
   public:
+  // map<string, .eve.persistence.proto.DynamicValue> scalar_values = 3;
+  [[nodiscard]] int scalar_values_size()
+      const;
+  private:
+  int _internal_scalar_values_size() const;
+
+  public:
+  void clear_scalar_values() ;
+  [[nodiscard]] const ::google::protobuf::Map<::std::string, ::eve::persistence::proto::DynamicValue>& scalar_values() const;
+  [[nodiscard]] ::google::protobuf::Map<::std::string, ::eve::persistence::proto::DynamicValue>* PROTOBUF_NONNULL mutable_scalar_values();
+
+  private:
+  const ::google::protobuf::Map<::std::string, ::eve::persistence::proto::DynamicValue>& _internal_scalar_values() const;
+  ::google::protobuf::Map<::std::string, ::eve::persistence::proto::DynamicValue>* PROTOBUF_NONNULL _internal_mutable_scalar_values();
+
+  public:
   // @@protoc_insertion_point(class_scope:eve.decision.proto.Blackboard)
  private:
   class _Internal;
   using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<0, 2,
-                          1, 53,
+      ::google::protobuf::internal::TcParseTable<0, 3,
+                          3, 66,
                           2>;
   static constexpr ParseTableT_ InternalGenerateParseTable_(
       const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
@@ -1009,6 +1084,7 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Blackboard 
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::google::protobuf::internal::ArenaStringPtr name_;
     ::google::protobuf::internal::MapField<Blackboard_ScalarJsonEntry_DoNotUse, ::std::string, ::std::string> scalar_json_;
+    ::google::protobuf::internal::MapField<Blackboard_ScalarValuesEntry_DoNotUse, ::std::string, ::eve::persistence::proto::DynamicValue> scalar_values_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -1638,6 +1714,8 @@ DecisionContextSave::_internal_mutable_grids() {
 
 // -------------------------------------------------------------------
 
+// -------------------------------------------------------------------
+
 // Blackboard
 
 // optional string name = 1;
@@ -1737,6 +1815,32 @@ inline ::google::protobuf::Map<::std::string, ::std::string>* PROTOBUF_NONNULL B
   SetHasBit(_impl_._has_bits_[0], 0x00000002U);
   // @@protoc_insertion_point(field_mutable_map:eve.decision.proto.Blackboard.scalar_json)
   return _internal_mutable_scalar_json();
+}
+
+// map<string, .eve.persistence.proto.DynamicValue> scalar_values = 3;
+inline int Blackboard::_internal_scalar_values_size() const {
+  return _internal_scalar_values().size();
+}
+inline int Blackboard::scalar_values_size() const {
+  return _internal_scalar_values_size();
+}
+inline const ::google::protobuf::Map<::std::string, ::eve::persistence::proto::DynamicValue>& Blackboard::_internal_scalar_values() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.scalar_values_.GetMap();
+}
+inline const ::google::protobuf::Map<::std::string, ::eve::persistence::proto::DynamicValue>& Blackboard::scalar_values() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_map:eve.decision.proto.Blackboard.scalar_values)
+  return _internal_scalar_values();
+}
+inline ::google::protobuf::Map<::std::string, ::eve::persistence::proto::DynamicValue>* PROTOBUF_NONNULL Blackboard::_internal_mutable_scalar_values() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.scalar_values_.MutableMap();
+}
+inline ::google::protobuf::Map<::std::string, ::eve::persistence::proto::DynamicValue>* PROTOBUF_NONNULL Blackboard::mutable_scalar_values()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  // @@protoc_insertion_point(field_mutable_map:eve.decision.proto.Blackboard.scalar_values)
+  return _internal_mutable_scalar_values();
 }
 
 // -------------------------------------------------------------------
