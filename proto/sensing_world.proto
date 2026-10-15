@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package eve.sensing.proto;
+
+// Version 2 replaces the hand-written version-1 JSON world snapshot.
+message WorldSave {
+  optional string schema = 1;
+  optional uint32 version = 2;
+  repeated Subject subjects = 3;
+}
+
+message Subject {
+  optional string id = 1;
+  optional float x = 2;
+  optional float y = 3;
+  optional string faction = 4;
+  repeated string tags = 5;
+  repeated string visible_to = 6;
+  repeated string zones = 7;
+}

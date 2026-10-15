@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "sensing-world-protobuf-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/sensing/**",
+      "owner": "sensing::SensingWorld",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "Known subject facts are persisted directly as typed Protobuf instead of hand-built JSON.",
+      "expiry": "2027-12-31",
+      "evidence": ["proto/sensing_world.proto", "src/modules/sensing/SensingProtobuf.cpp"],
+      "tests": ["test/unit/sensing/sensing_unit.cpp"],
+      "schema": "eve.sensing.proto.WorldSave contains typed subjects and set entries.",
+      "version": "Binary snapshots write version 2; version-1 JSON is import-only.",
+      "migration": "restoreJson accepts version-1 documents and validates them before publishing subjects.",
+      "unknown_fields": "Binary restore rejects unknown Protobuf fields recursively and duplicate subject or set keys.",
+      "restore_atomicity": "Restore validates into a detached subject map before replacing world facts and rebuilding the optional index."
+    },
+    {
+      "id": "sensing-world-protobuf-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/sensing/**",
+      "owner": "sensing::SensingWorld",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "Binary snapshots are the canonical persistence face; script JSON calls remain compatibility entry points.",
+      "expiry": "2027-12-31",
+      "evidence": ["src/modules/sensing/Sensing.h"],
+      "tests": ["test/unit/sensing/sensing_unit.cpp"],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {"absent_profile": "No L1-L4 trim claim is made for this persistence format change."},
+      "thread_affinity": "Capture and restore run on the owning simulation thread without callbacks during publication.",
+      "cost_notes": ["Snapshot and restore cost linear time in subject and set-entry counts."],
+      "hot_path": []
+    }
+  ]
+}

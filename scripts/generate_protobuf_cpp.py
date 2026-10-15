@@ -32,6 +32,7 @@ PROTO_GROUPS = {
     "rpg_game_state.proto": "PLATFORM",
     "rpg_party_checkpoint.proto": "PLATFORM",
     "rpg_save_session.proto": "PLATFORM",
+    "sensing_world.proto": "PLATFORM",
     "rpg_tracker.proto": "PLATFORM",
     "tactics_battle.proto": "DOMAINS",
 }

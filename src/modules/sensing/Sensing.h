@@ -24,6 +24,10 @@
 
 namespace eve::sensing {
 
+namespace proto {
+class WorldSave;
+}
+
 /** @brief Mirrored gameplay facts used by candidate queries. */
 struct Subject {
     std::string           id;
@@ -219,9 +223,19 @@ public:
      * @remarks Empty ranked list when no query has succeeded yet. Does not assign primary.
      */
     [[nodiscard]] std::string debugLastQueryJson() const;
-    /** @brief Exports deterministic JSON. */
+    /** @brief Serialize a versioned typed Protobuf world snapshot.
+     * @return Deterministic binary bytes, or a structured serialization failure.
+     * @cost Linear in subjects and their set entries per capture.
+     * @thread Owning simulation thread only. */
+    [[nodiscard]] eve::Result<std::string> snapshotBinary() const;
+    /** @brief Atomically restore a typed Protobuf world snapshot.
+     * @return Success, or a diagnostic leaving the world unchanged.
+     * @cost Linear in snapshot bytes and subjects per restore.
+     * @thread Owning simulation thread only. */
+    [[nodiscard]] eve::Result<void> restoreBinary(std::string_view bytes);
+    /** @brief Compatibility-only Protobuf JSON export; use snapshotBinary for persistence. */
     std::string snapshotJson() const;
-    /** @brief Restores a snapshot transactionally. */
+    /** @brief Restore Protobuf JSON or legacy version-1 JSON transactionally. */
     [[nodiscard]] eve::Result<void> restoreJson(const std::string& json);
 
     /** @brief Returns a borrowed view of stored subjects for adapters; valid until mutation. */
@@ -238,6 +252,8 @@ public:
     SensingWorld& operator=(SensingWorld&&) noexcept = default;
 
 private:
+    void                            captureMessage(proto::WorldSave& save) const;
+    [[nodiscard]] eve::Result<void> restoreMessage(const proto::WorldSave& save);
     [[nodiscard]] bool accepts(const Subject& subject, const QuerySpec& spec) const;
     void               publishResults(std::vector<RankedCandidate> ranked);
     void               clearSpatialIndex();

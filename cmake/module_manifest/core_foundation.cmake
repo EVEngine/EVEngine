@@ -143,6 +143,7 @@ eve_declare_module(NAME production LAYER 0 SCRIPT Production SLOT production
 # L1 -- sensing/action protocol
 eve_declare_module(NAME sensing LAYER 1 SCRIPT Sensing SLOT sensing
                    DEPS spatial
+                   THIRDPARTY protobuf
                    GROUP minimal 2d 3d web)
 # Data-oriented NPC AI orchestration. Domain adapters provide navigation,
 # animation, combat and smart-object tasks without making the core depend on

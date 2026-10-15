@@ -1351,7 +1351,7 @@ Source directory: `src/modules/schema`. Status: **local-rules-recorded**. Local 
 
 ### sensing
 
-Source directory: `src/modules/sensing`. Status: **local-rules-recorded**. Local cases: **14**.
+Source directory: `src/modules/sensing`. Status: **local-rules-recorded**. Local cases: **15**.
 
 - Unit: [unit/sensing/sensing_unit.cpp](unit/sensing/sensing_unit.cpp)
 - Integration task `script-api`: [script_api_graphics_scene_tests.cpp](integration/script-api/script_api_graphics_scene_tests.cpp)

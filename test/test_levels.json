@@ -9161,6 +9161,7 @@
           "sensing.filtersAndSortsCandidates",
           "sensing.ordersByDistanceThenIdAndLimits",
           "sensing.snapshotIsTransactional",
+          "sensing.typedProtobufSnapshotAndLegacyImport",
           "sensing.querySpecRanksAndHonorsCountPolicy",
           "sensing.queryConeFiltersByFacing",
           "sensing.executePresetRunsBuiltinConeSelect",
