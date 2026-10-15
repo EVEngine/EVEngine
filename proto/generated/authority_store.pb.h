@@ -69,6 +69,22 @@ EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull
 #else
 EVENGINE_API_FOUNDATION extern const AuthorityRuleGlobalsTypeInternal AuthorityRule_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
+class AuthorityStoreEnvelope;
+struct AuthorityStoreEnvelopeGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+EVENGINE_API_FOUNDATION extern AuthorityStoreEnvelopeGlobalsTypeInternal AuthorityStoreEnvelope_globals_;
+EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull AuthorityStoreEnvelope_class_data_;
+#else
+EVENGINE_API_FOUNDATION extern const AuthorityStoreEnvelopeGlobalsTypeInternal AuthorityStoreEnvelope_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+class AuthorityStoreJsonDocument;
+struct AuthorityStoreJsonDocumentGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+EVENGINE_API_FOUNDATION extern AuthorityStoreJsonDocumentGlobalsTypeInternal AuthorityStoreJsonDocument_globals_;
+EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull AuthorityStoreJsonDocument_class_data_;
+#else
+EVENGINE_API_FOUNDATION extern const AuthorityStoreJsonDocumentGlobalsTypeInternal AuthorityStoreJsonDocument_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
 class AuthorityStoreSave;
 struct AuthorityStoreSaveGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
@@ -140,6 +156,332 @@ using ::google::protobuf::internal::generated_enum::AbslUnparseFlag;
 
 // -------------------------------------------------------------------
 
+class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED AuthorityStoreEnvelope final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:eve.authority.proto.AuthorityStoreEnvelope) */ {
+ public:
+  inline AuthorityStoreEnvelope() : AuthorityStoreEnvelope(nullptr) {}
+  ~AuthorityStoreEnvelope() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(AuthorityStoreEnvelope* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(AuthorityStoreEnvelope));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr AuthorityStoreEnvelope(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline AuthorityStoreEnvelope(const AuthorityStoreEnvelope& from) : AuthorityStoreEnvelope(nullptr, from) {}
+  inline AuthorityStoreEnvelope(AuthorityStoreEnvelope&& from) noexcept : AuthorityStoreEnvelope(nullptr, ::std::move(from)) {}
+  inline AuthorityStoreEnvelope& operator=(const AuthorityStoreEnvelope& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline AuthorityStoreEnvelope& operator=(AuthorityStoreEnvelope&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const AuthorityStoreEnvelope& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<AuthorityStoreEnvelope>(&AuthorityStoreEnvelope_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 1;
+  friend void swap(AuthorityStoreEnvelope& a, AuthorityStoreEnvelope& b) { a.Swap(&b); }
+  inline void Swap(AuthorityStoreEnvelope* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(AuthorityStoreEnvelope* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] AuthorityStoreEnvelope* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<AuthorityStoreEnvelope>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const AuthorityStoreEnvelope& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const AuthorityStoreEnvelope& from) { AuthorityStoreEnvelope::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(AuthorityStoreEnvelope* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "eve.authority.proto.AuthorityStoreEnvelope"; }
+
+  explicit AuthorityStoreEnvelope(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  AuthorityStoreEnvelope(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const AuthorityStoreEnvelope& from);
+  AuthorityStoreEnvelope(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, AuthorityStoreEnvelope&& from) noexcept
+      : AuthorityStoreEnvelope(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kTypeFieldNumber = 1,
+    kSchemaFieldNumber = 2,
+    kInstanceIdFieldNumber = 4,
+    kPayloadWireFieldNumber = 7,
+    kDigestFieldNumber = 8,
+    kRevisionFieldNumber = 5,
+    kTickFieldNumber = 6,
+    kVersionFieldNumber = 3,
+  };
+  // optional string type = 1;
+  [[nodiscard]] bool has_type()
+      const;
+  void clear_type() ;
+  [[nodiscard]] const ::std::string& type() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_type(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_type();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_type();
+  void set_allocated_type(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_type() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_type(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_type();
+
+  public:
+  // optional string schema = 2;
+  [[nodiscard]] bool has_schema()
+      const;
+  void clear_schema() ;
+  [[nodiscard]] const ::std::string& schema() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_schema(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_schema();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_schema();
+  void set_allocated_schema(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_schema() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_schema(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_schema();
+
+  public:
+  // optional string instance_id = 4;
+  [[nodiscard]] bool has_instance_id()
+      const;
+  void clear_instance_id() ;
+  [[nodiscard]] const ::std::string& instance_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_instance_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_instance_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_instance_id();
+  void set_allocated_instance_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_instance_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_instance_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_instance_id();
+
+  public:
+  // optional bytes payload_wire = 7;
+  [[nodiscard]] bool has_payload_wire()
+      const;
+  void clear_payload_wire() ;
+  [[nodiscard]] const ::std::string& payload_wire() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_payload_wire(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_payload_wire();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_payload_wire();
+  void set_allocated_payload_wire(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_payload_wire() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_payload_wire(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_payload_wire();
+
+  public:
+  // optional bytes digest = 8;
+  [[nodiscard]] bool has_digest()
+      const;
+  void clear_digest() ;
+  [[nodiscard]] const ::std::string& digest() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_digest(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_digest();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_digest();
+  void set_allocated_digest(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_digest() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_digest(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_digest();
+
+  public:
+  // optional uint64 revision = 5;
+  [[nodiscard]] bool has_revision()
+      const;
+  void clear_revision() ;
+  [[nodiscard]] ::uint64_t revision() const;
+  void set_revision(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_revision() const;
+  void _internal_set_revision(::uint64_t value);
+
+  public:
+  // optional uint64 tick = 6;
+  [[nodiscard]] bool has_tick()
+      const;
+  void clear_tick() ;
+  [[nodiscard]] ::uint64_t tick() const;
+  void set_tick(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_tick() const;
+  void _internal_set_tick(::uint64_t value);
+
+  public:
+  // optional uint32 version = 3;
+  [[nodiscard]] bool has_version()
+      const;
+  void clear_version() ;
+  [[nodiscard]] ::uint32_t version() const;
+  void set_version(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_version() const;
+  void _internal_set_version(::uint32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:eve.authority.proto.AuthorityStoreEnvelope)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<3, 8,
+                          0, 80,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const AuthorityStoreEnvelope& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr type_;
+    ::google::protobuf::internal::ArenaStringPtr schema_;
+    ::google::protobuf::internal::ArenaStringPtr instance_id_;
+    ::google::protobuf::internal::ArenaStringPtr payload_wire_;
+    ::google::protobuf::internal::ArenaStringPtr digest_;
+    ::uint64_t revision_;
+    ::uint64_t tick_;
+    ::uint32_t version_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_authority_5fstore_2eproto;
+};
+// -------------------------------------------------------------------
+
 class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED AuthorityRule final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.authority.proto.AuthorityRule) */ {
  public:
@@ -196,7 +538,7 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED AuthorityRu
   [[nodiscard]] static const AuthorityRule& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<AuthorityRule>(&AuthorityRule_globals_);
   }
-  static constexpr int kIndexInFileMessages = 1;
+  static constexpr int kIndexInFileMessages = 3;
   friend void swap(AuthorityRule& a, AuthorityRule& b) { a.Swap(&b); }
   inline void Swap(AuthorityRule* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -800,6 +1142,331 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED AuthoritySt
   union { Impl_ _impl_; };
   friend struct ::TableStruct_authority_5fstore_2eproto;
 };
+// -------------------------------------------------------------------
+
+class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED AuthorityStoreJsonDocument final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:eve.authority.proto.AuthorityStoreJsonDocument) */ {
+ public:
+  inline AuthorityStoreJsonDocument() : AuthorityStoreJsonDocument(nullptr) {}
+  ~AuthorityStoreJsonDocument() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(AuthorityStoreJsonDocument* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(AuthorityStoreJsonDocument));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr AuthorityStoreJsonDocument(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline AuthorityStoreJsonDocument(const AuthorityStoreJsonDocument& from) : AuthorityStoreJsonDocument(nullptr, from) {}
+  inline AuthorityStoreJsonDocument(AuthorityStoreJsonDocument&& from) noexcept : AuthorityStoreJsonDocument(nullptr, ::std::move(from)) {}
+  inline AuthorityStoreJsonDocument& operator=(const AuthorityStoreJsonDocument& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline AuthorityStoreJsonDocument& operator=(AuthorityStoreJsonDocument&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const AuthorityStoreJsonDocument& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<AuthorityStoreJsonDocument>(&AuthorityStoreJsonDocument_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 2;
+  friend void swap(AuthorityStoreJsonDocument& a, AuthorityStoreJsonDocument& b) { a.Swap(&b); }
+  inline void Swap(AuthorityStoreJsonDocument* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(AuthorityStoreJsonDocument* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] AuthorityStoreJsonDocument* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<AuthorityStoreJsonDocument>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const AuthorityStoreJsonDocument& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const AuthorityStoreJsonDocument& from) { AuthorityStoreJsonDocument::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(AuthorityStoreJsonDocument* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "eve.authority.proto.AuthorityStoreJsonDocument"; }
+
+  explicit AuthorityStoreJsonDocument(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  AuthorityStoreJsonDocument(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const AuthorityStoreJsonDocument& from);
+  AuthorityStoreJsonDocument(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, AuthorityStoreJsonDocument&& from) noexcept
+      : AuthorityStoreJsonDocument(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kTypeFieldNumber = 1,
+    kSchemaFieldNumber = 2,
+    kInstanceIdFieldNumber = 4,
+    kDigestFieldNumber = 8,
+    kPayloadFieldNumber = 7,
+    kRevisionFieldNumber = 5,
+    kTickFieldNumber = 6,
+    kVersionFieldNumber = 3,
+  };
+  // optional string type = 1;
+  [[nodiscard]] bool has_type()
+      const;
+  void clear_type() ;
+  [[nodiscard]] const ::std::string& type() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_type(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_type();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_type();
+  void set_allocated_type(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_type() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_type(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_type();
+
+  public:
+  // optional string schema = 2;
+  [[nodiscard]] bool has_schema()
+      const;
+  void clear_schema() ;
+  [[nodiscard]] const ::std::string& schema() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_schema(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_schema();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_schema();
+  void set_allocated_schema(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_schema() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_schema(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_schema();
+
+  public:
+  // optional string instance_id = 4;
+  [[nodiscard]] bool has_instance_id()
+      const;
+  void clear_instance_id() ;
+  [[nodiscard]] const ::std::string& instance_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_instance_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_instance_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_instance_id();
+  void set_allocated_instance_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_instance_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_instance_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_instance_id();
+
+  public:
+  // optional bytes digest = 8;
+  [[nodiscard]] bool has_digest()
+      const;
+  void clear_digest() ;
+  [[nodiscard]] const ::std::string& digest() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_digest(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_digest();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_digest();
+  void set_allocated_digest(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_digest() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_digest(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_digest();
+
+  public:
+  // optional .eve.authority.proto.AuthorityStoreSave payload = 7;
+  [[nodiscard]] bool has_payload()
+      const;
+  void clear_payload() ;
+  [[nodiscard]] const ::eve::authority::proto::AuthorityStoreSave& payload() const;
+  [[nodiscard]] ::eve::authority::proto::AuthorityStoreSave* PROTOBUF_NULLABLE release_payload();
+  ::eve::authority::proto::AuthorityStoreSave* PROTOBUF_NONNULL mutable_payload();
+  void set_allocated_payload(::eve::authority::proto::AuthorityStoreSave* PROTOBUF_NULLABLE value);
+  void unsafe_arena_set_allocated_payload(::eve::authority::proto::AuthorityStoreSave* PROTOBUF_NULLABLE value);
+  ::eve::authority::proto::AuthorityStoreSave* PROTOBUF_NULLABLE unsafe_arena_release_payload();
+
+  private:
+  const ::eve::authority::proto::AuthorityStoreSave& _internal_payload() const;
+  ::eve::authority::proto::AuthorityStoreSave* PROTOBUF_NONNULL _internal_mutable_payload();
+
+  public:
+  // optional uint64 revision = 5;
+  [[nodiscard]] bool has_revision()
+      const;
+  void clear_revision() ;
+  [[nodiscard]] ::uint64_t revision() const;
+  void set_revision(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_revision() const;
+  void _internal_set_revision(::uint64_t value);
+
+  public:
+  // optional uint64 tick = 6;
+  [[nodiscard]] bool has_tick()
+      const;
+  void clear_tick() ;
+  [[nodiscard]] ::uint64_t tick() const;
+  void set_tick(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_tick() const;
+  void _internal_set_tick(::uint64_t value);
+
+  public:
+  // optional uint32 version = 3;
+  [[nodiscard]] bool has_version()
+      const;
+  void clear_version() ;
+  [[nodiscard]] ::uint32_t version() const;
+  void set_version(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_version() const;
+  void _internal_set_version(::uint32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:eve.authority.proto.AuthorityStoreJsonDocument)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<3, 8,
+                          1, 84,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const AuthorityStoreJsonDocument& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr type_;
+    ::google::protobuf::internal::ArenaStringPtr schema_;
+    ::google::protobuf::internal::ArenaStringPtr instance_id_;
+    ::google::protobuf::internal::ArenaStringPtr digest_;
+    ::eve::authority::proto::AuthorityStoreSave* PROTOBUF_NULLABLE payload_;
+    ::uint64_t revision_;
+    ::uint64_t tick_;
+    ::uint32_t version_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_authority_5fstore_2eproto;
+};
 
 // ===================================================================
 
@@ -1050,6 +1717,892 @@ inline ::google::protobuf::RepeatedPtrField<::eve::authority::proto::AuthorityRu
 AuthorityStoreSave::_internal_mutable_rules() {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return &_impl_.rules_;
+}
+
+// -------------------------------------------------------------------
+
+// AuthorityStoreEnvelope
+
+// optional string type = 1;
+inline bool AuthorityStoreEnvelope::has_type() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000001U);
+  return value;
+}
+inline void AuthorityStoreEnvelope::clear_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.type_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::std::string& AuthorityStoreEnvelope::type() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.authority.proto.AuthorityStoreEnvelope.type)
+  return _internal_type();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void AuthorityStoreEnvelope::set_type(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.type_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.authority.proto.AuthorityStoreEnvelope.type)
+}
+inline ::std::string* PROTOBUF_NONNULL AuthorityStoreEnvelope::mutable_type()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_type();
+  // @@protoc_insertion_point(field_mutable:eve.authority.proto.AuthorityStoreEnvelope.type)
+  return _s;
+}
+inline const ::std::string& AuthorityStoreEnvelope::_internal_type() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.type_.Get();
+}
+inline void AuthorityStoreEnvelope::_internal_set_type(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.type_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL AuthorityStoreEnvelope::_internal_mutable_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.type_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE AuthorityStoreEnvelope::release_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.authority.proto.AuthorityStoreEnvelope.type)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.type_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.type_.Set("", GetArena());
+  }
+  return released;
+}
+inline void AuthorityStoreEnvelope::set_allocated_type(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.type_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.type_.IsDefault()) {
+    _impl_.type_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.authority.proto.AuthorityStoreEnvelope.type)
+}
+
+// optional string schema = 2;
+inline bool AuthorityStoreEnvelope::has_schema() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000002U);
+  return value;
+}
+inline void AuthorityStoreEnvelope::clear_schema() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.schema_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::std::string& AuthorityStoreEnvelope::schema() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.authority.proto.AuthorityStoreEnvelope.schema)
+  return _internal_schema();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void AuthorityStoreEnvelope::set_schema(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  _impl_.schema_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.authority.proto.AuthorityStoreEnvelope.schema)
+}
+inline ::std::string* PROTOBUF_NONNULL AuthorityStoreEnvelope::mutable_schema()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::std::string* _s = _internal_mutable_schema();
+  // @@protoc_insertion_point(field_mutable:eve.authority.proto.AuthorityStoreEnvelope.schema)
+  return _s;
+}
+inline const ::std::string& AuthorityStoreEnvelope::_internal_schema() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.schema_.Get();
+}
+inline void AuthorityStoreEnvelope::_internal_set_schema(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.schema_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL AuthorityStoreEnvelope::_internal_mutable_schema() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.schema_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE AuthorityStoreEnvelope::release_schema() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.authority.proto.AuthorityStoreEnvelope.schema)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  auto* released = _impl_.schema_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.schema_.Set("", GetArena());
+  }
+  return released;
+}
+inline void AuthorityStoreEnvelope::set_allocated_schema(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  _impl_.schema_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.schema_.IsDefault()) {
+    _impl_.schema_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.authority.proto.AuthorityStoreEnvelope.schema)
+}
+
+// optional uint32 version = 3;
+inline bool AuthorityStoreEnvelope::has_version() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000080U);
+  return value;
+}
+inline void AuthorityStoreEnvelope::clear_version() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.version_ = 0u;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
+}
+inline ::uint32_t AuthorityStoreEnvelope::version() const {
+  // @@protoc_insertion_point(field_get:eve.authority.proto.AuthorityStoreEnvelope.version)
+  return _internal_version();
+}
+inline void AuthorityStoreEnvelope::set_version(::uint32_t value) {
+  _internal_set_version(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
+  // @@protoc_insertion_point(field_set:eve.authority.proto.AuthorityStoreEnvelope.version)
+}
+inline ::uint32_t AuthorityStoreEnvelope::_internal_version() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.version_;
+}
+inline void AuthorityStoreEnvelope::_internal_set_version(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.version_ = value;
+}
+
+// optional string instance_id = 4;
+inline bool AuthorityStoreEnvelope::has_instance_id() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000004U);
+  return value;
+}
+inline void AuthorityStoreEnvelope::clear_instance_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.instance_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline const ::std::string& AuthorityStoreEnvelope::instance_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.authority.proto.AuthorityStoreEnvelope.instance_id)
+  return _internal_instance_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void AuthorityStoreEnvelope::set_instance_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  _impl_.instance_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.authority.proto.AuthorityStoreEnvelope.instance_id)
+}
+inline ::std::string* PROTOBUF_NONNULL AuthorityStoreEnvelope::mutable_instance_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ::std::string* _s = _internal_mutable_instance_id();
+  // @@protoc_insertion_point(field_mutable:eve.authority.proto.AuthorityStoreEnvelope.instance_id)
+  return _s;
+}
+inline const ::std::string& AuthorityStoreEnvelope::_internal_instance_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.instance_id_.Get();
+}
+inline void AuthorityStoreEnvelope::_internal_set_instance_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.instance_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL AuthorityStoreEnvelope::_internal_mutable_instance_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.instance_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE AuthorityStoreEnvelope::release_instance_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.authority.proto.AuthorityStoreEnvelope.instance_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000004U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  auto* released = _impl_.instance_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.instance_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void AuthorityStoreEnvelope::set_allocated_instance_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  }
+  _impl_.instance_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.instance_id_.IsDefault()) {
+    _impl_.instance_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.authority.proto.AuthorityStoreEnvelope.instance_id)
+}
+
+// optional uint64 revision = 5;
+inline bool AuthorityStoreEnvelope::has_revision() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000020U);
+  return value;
+}
+inline void AuthorityStoreEnvelope::clear_revision() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.revision_ = ::uint64_t{0u};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+}
+inline ::uint64_t AuthorityStoreEnvelope::revision() const {
+  // @@protoc_insertion_point(field_get:eve.authority.proto.AuthorityStoreEnvelope.revision)
+  return _internal_revision();
+}
+inline void AuthorityStoreEnvelope::set_revision(::uint64_t value) {
+  _internal_set_revision(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  // @@protoc_insertion_point(field_set:eve.authority.proto.AuthorityStoreEnvelope.revision)
+}
+inline ::uint64_t AuthorityStoreEnvelope::_internal_revision() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.revision_;
+}
+inline void AuthorityStoreEnvelope::_internal_set_revision(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.revision_ = value;
+}
+
+// optional uint64 tick = 6;
+inline bool AuthorityStoreEnvelope::has_tick() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000040U);
+  return value;
+}
+inline void AuthorityStoreEnvelope::clear_tick() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.tick_ = ::uint64_t{0u};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+}
+inline ::uint64_t AuthorityStoreEnvelope::tick() const {
+  // @@protoc_insertion_point(field_get:eve.authority.proto.AuthorityStoreEnvelope.tick)
+  return _internal_tick();
+}
+inline void AuthorityStoreEnvelope::set_tick(::uint64_t value) {
+  _internal_set_tick(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  // @@protoc_insertion_point(field_set:eve.authority.proto.AuthorityStoreEnvelope.tick)
+}
+inline ::uint64_t AuthorityStoreEnvelope::_internal_tick() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.tick_;
+}
+inline void AuthorityStoreEnvelope::_internal_set_tick(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.tick_ = value;
+}
+
+// optional bytes payload_wire = 7;
+inline bool AuthorityStoreEnvelope::has_payload_wire() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000008U);
+  return value;
+}
+inline void AuthorityStoreEnvelope::clear_payload_wire() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.payload_wire_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+}
+inline const ::std::string& AuthorityStoreEnvelope::payload_wire() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.authority.proto.AuthorityStoreEnvelope.payload_wire)
+  return _internal_payload_wire();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void AuthorityStoreEnvelope::set_payload_wire(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  _impl_.payload_wire_.SetBytes(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.authority.proto.AuthorityStoreEnvelope.payload_wire)
+}
+inline ::std::string* PROTOBUF_NONNULL AuthorityStoreEnvelope::mutable_payload_wire()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  ::std::string* _s = _internal_mutable_payload_wire();
+  // @@protoc_insertion_point(field_mutable:eve.authority.proto.AuthorityStoreEnvelope.payload_wire)
+  return _s;
+}
+inline const ::std::string& AuthorityStoreEnvelope::_internal_payload_wire() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.payload_wire_.Get();
+}
+inline void AuthorityStoreEnvelope::_internal_set_payload_wire(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.payload_wire_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL AuthorityStoreEnvelope::_internal_mutable_payload_wire() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.payload_wire_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE AuthorityStoreEnvelope::release_payload_wire() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.authority.proto.AuthorityStoreEnvelope.payload_wire)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000008U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  auto* released = _impl_.payload_wire_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.payload_wire_.Set("", GetArena());
+  }
+  return released;
+}
+inline void AuthorityStoreEnvelope::set_allocated_payload_wire(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  }
+  _impl_.payload_wire_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.payload_wire_.IsDefault()) {
+    _impl_.payload_wire_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.authority.proto.AuthorityStoreEnvelope.payload_wire)
+}
+
+// optional bytes digest = 8;
+inline bool AuthorityStoreEnvelope::has_digest() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000010U);
+  return value;
+}
+inline void AuthorityStoreEnvelope::clear_digest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.digest_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+}
+inline const ::std::string& AuthorityStoreEnvelope::digest() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.authority.proto.AuthorityStoreEnvelope.digest)
+  return _internal_digest();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void AuthorityStoreEnvelope::set_digest(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  _impl_.digest_.SetBytes(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.authority.proto.AuthorityStoreEnvelope.digest)
+}
+inline ::std::string* PROTOBUF_NONNULL AuthorityStoreEnvelope::mutable_digest()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ::std::string* _s = _internal_mutable_digest();
+  // @@protoc_insertion_point(field_mutable:eve.authority.proto.AuthorityStoreEnvelope.digest)
+  return _s;
+}
+inline const ::std::string& AuthorityStoreEnvelope::_internal_digest() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.digest_.Get();
+}
+inline void AuthorityStoreEnvelope::_internal_set_digest(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.digest_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL AuthorityStoreEnvelope::_internal_mutable_digest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.digest_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE AuthorityStoreEnvelope::release_digest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.authority.proto.AuthorityStoreEnvelope.digest)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000010U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  auto* released = _impl_.digest_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.digest_.Set("", GetArena());
+  }
+  return released;
+}
+inline void AuthorityStoreEnvelope::set_allocated_digest(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  }
+  _impl_.digest_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.digest_.IsDefault()) {
+    _impl_.digest_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.authority.proto.AuthorityStoreEnvelope.digest)
+}
+
+// -------------------------------------------------------------------
+
+// AuthorityStoreJsonDocument
+
+// optional string type = 1;
+inline bool AuthorityStoreJsonDocument::has_type() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000001U);
+  return value;
+}
+inline void AuthorityStoreJsonDocument::clear_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.type_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::std::string& AuthorityStoreJsonDocument::type() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.authority.proto.AuthorityStoreJsonDocument.type)
+  return _internal_type();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void AuthorityStoreJsonDocument::set_type(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.type_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.authority.proto.AuthorityStoreJsonDocument.type)
+}
+inline ::std::string* PROTOBUF_NONNULL AuthorityStoreJsonDocument::mutable_type()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_type();
+  // @@protoc_insertion_point(field_mutable:eve.authority.proto.AuthorityStoreJsonDocument.type)
+  return _s;
+}
+inline const ::std::string& AuthorityStoreJsonDocument::_internal_type() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.type_.Get();
+}
+inline void AuthorityStoreJsonDocument::_internal_set_type(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.type_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL AuthorityStoreJsonDocument::_internal_mutable_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.type_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE AuthorityStoreJsonDocument::release_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.authority.proto.AuthorityStoreJsonDocument.type)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.type_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.type_.Set("", GetArena());
+  }
+  return released;
+}
+inline void AuthorityStoreJsonDocument::set_allocated_type(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.type_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.type_.IsDefault()) {
+    _impl_.type_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.authority.proto.AuthorityStoreJsonDocument.type)
+}
+
+// optional string schema = 2;
+inline bool AuthorityStoreJsonDocument::has_schema() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000002U);
+  return value;
+}
+inline void AuthorityStoreJsonDocument::clear_schema() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.schema_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::std::string& AuthorityStoreJsonDocument::schema() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.authority.proto.AuthorityStoreJsonDocument.schema)
+  return _internal_schema();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void AuthorityStoreJsonDocument::set_schema(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  _impl_.schema_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.authority.proto.AuthorityStoreJsonDocument.schema)
+}
+inline ::std::string* PROTOBUF_NONNULL AuthorityStoreJsonDocument::mutable_schema()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::std::string* _s = _internal_mutable_schema();
+  // @@protoc_insertion_point(field_mutable:eve.authority.proto.AuthorityStoreJsonDocument.schema)
+  return _s;
+}
+inline const ::std::string& AuthorityStoreJsonDocument::_internal_schema() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.schema_.Get();
+}
+inline void AuthorityStoreJsonDocument::_internal_set_schema(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.schema_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL AuthorityStoreJsonDocument::_internal_mutable_schema() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.schema_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE AuthorityStoreJsonDocument::release_schema() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.authority.proto.AuthorityStoreJsonDocument.schema)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  auto* released = _impl_.schema_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.schema_.Set("", GetArena());
+  }
+  return released;
+}
+inline void AuthorityStoreJsonDocument::set_allocated_schema(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  _impl_.schema_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.schema_.IsDefault()) {
+    _impl_.schema_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.authority.proto.AuthorityStoreJsonDocument.schema)
+}
+
+// optional uint32 version = 3;
+inline bool AuthorityStoreJsonDocument::has_version() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000080U);
+  return value;
+}
+inline void AuthorityStoreJsonDocument::clear_version() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.version_ = 0u;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
+}
+inline ::uint32_t AuthorityStoreJsonDocument::version() const {
+  // @@protoc_insertion_point(field_get:eve.authority.proto.AuthorityStoreJsonDocument.version)
+  return _internal_version();
+}
+inline void AuthorityStoreJsonDocument::set_version(::uint32_t value) {
+  _internal_set_version(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
+  // @@protoc_insertion_point(field_set:eve.authority.proto.AuthorityStoreJsonDocument.version)
+}
+inline ::uint32_t AuthorityStoreJsonDocument::_internal_version() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.version_;
+}
+inline void AuthorityStoreJsonDocument::_internal_set_version(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.version_ = value;
+}
+
+// optional string instance_id = 4;
+inline bool AuthorityStoreJsonDocument::has_instance_id() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000004U);
+  return value;
+}
+inline void AuthorityStoreJsonDocument::clear_instance_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.instance_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline const ::std::string& AuthorityStoreJsonDocument::instance_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.authority.proto.AuthorityStoreJsonDocument.instance_id)
+  return _internal_instance_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void AuthorityStoreJsonDocument::set_instance_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  _impl_.instance_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.authority.proto.AuthorityStoreJsonDocument.instance_id)
+}
+inline ::std::string* PROTOBUF_NONNULL AuthorityStoreJsonDocument::mutable_instance_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ::std::string* _s = _internal_mutable_instance_id();
+  // @@protoc_insertion_point(field_mutable:eve.authority.proto.AuthorityStoreJsonDocument.instance_id)
+  return _s;
+}
+inline const ::std::string& AuthorityStoreJsonDocument::_internal_instance_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.instance_id_.Get();
+}
+inline void AuthorityStoreJsonDocument::_internal_set_instance_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.instance_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL AuthorityStoreJsonDocument::_internal_mutable_instance_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.instance_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE AuthorityStoreJsonDocument::release_instance_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.authority.proto.AuthorityStoreJsonDocument.instance_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000004U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  auto* released = _impl_.instance_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.instance_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void AuthorityStoreJsonDocument::set_allocated_instance_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  }
+  _impl_.instance_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.instance_id_.IsDefault()) {
+    _impl_.instance_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.authority.proto.AuthorityStoreJsonDocument.instance_id)
+}
+
+// optional uint64 revision = 5;
+inline bool AuthorityStoreJsonDocument::has_revision() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000020U);
+  return value;
+}
+inline void AuthorityStoreJsonDocument::clear_revision() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.revision_ = ::uint64_t{0u};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+}
+inline ::uint64_t AuthorityStoreJsonDocument::revision() const {
+  // @@protoc_insertion_point(field_get:eve.authority.proto.AuthorityStoreJsonDocument.revision)
+  return _internal_revision();
+}
+inline void AuthorityStoreJsonDocument::set_revision(::uint64_t value) {
+  _internal_set_revision(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  // @@protoc_insertion_point(field_set:eve.authority.proto.AuthorityStoreJsonDocument.revision)
+}
+inline ::uint64_t AuthorityStoreJsonDocument::_internal_revision() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.revision_;
+}
+inline void AuthorityStoreJsonDocument::_internal_set_revision(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.revision_ = value;
+}
+
+// optional uint64 tick = 6;
+inline bool AuthorityStoreJsonDocument::has_tick() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000040U);
+  return value;
+}
+inline void AuthorityStoreJsonDocument::clear_tick() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.tick_ = ::uint64_t{0u};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+}
+inline ::uint64_t AuthorityStoreJsonDocument::tick() const {
+  // @@protoc_insertion_point(field_get:eve.authority.proto.AuthorityStoreJsonDocument.tick)
+  return _internal_tick();
+}
+inline void AuthorityStoreJsonDocument::set_tick(::uint64_t value) {
+  _internal_set_tick(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  // @@protoc_insertion_point(field_set:eve.authority.proto.AuthorityStoreJsonDocument.tick)
+}
+inline ::uint64_t AuthorityStoreJsonDocument::_internal_tick() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.tick_;
+}
+inline void AuthorityStoreJsonDocument::_internal_set_tick(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.tick_ = value;
+}
+
+// optional .eve.authority.proto.AuthorityStoreSave payload = 7;
+inline bool AuthorityStoreJsonDocument::has_payload() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000010U);
+  PROTOBUF_ASSUME(!value || _impl_.payload_ != nullptr);
+  return value;
+}
+inline void AuthorityStoreJsonDocument::clear_payload() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.payload_ != nullptr) _impl_.payload_->Clear();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+}
+inline const ::eve::authority::proto::AuthorityStoreSave& AuthorityStoreJsonDocument::_internal_payload() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  const ::eve::authority::proto::AuthorityStoreSave* p = _impl_.payload_;
+  return p != nullptr ? *p : *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<::eve::authority::proto::AuthorityStoreSave>(&::eve::authority::proto::AuthorityStoreSave_globals_);
+}
+inline const ::eve::authority::proto::AuthorityStoreSave& AuthorityStoreJsonDocument::payload() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.authority.proto.AuthorityStoreJsonDocument.payload)
+  return _internal_payload();
+}
+inline void AuthorityStoreJsonDocument::unsafe_arena_set_allocated_payload(
+    ::eve::authority::proto::AuthorityStoreSave* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (GetArena() == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.payload_);
+  }
+  _impl_.payload_ = reinterpret_cast<::eve::authority::proto::AuthorityStoreSave*>(value);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:eve.authority.proto.AuthorityStoreJsonDocument.payload)
+}
+inline ::eve::authority::proto::AuthorityStoreSave* PROTOBUF_NULLABLE AuthorityStoreJsonDocument::release_payload() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ::eve::authority::proto::AuthorityStoreSave* released = _impl_.payload_;
+  _impl_.payload_ = nullptr;
+  if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
+    auto* old = reinterpret_cast<::google::protobuf::MessageLite*>(released);
+    released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    if (GetArena() == nullptr) {
+      delete old;
+    }
+  } else {
+    if (GetArena() != nullptr) {
+      released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    }
+  }
+  return released;
+}
+inline ::eve::authority::proto::AuthorityStoreSave* PROTOBUF_NULLABLE AuthorityStoreJsonDocument::unsafe_arena_release_payload() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.authority.proto.AuthorityStoreJsonDocument.payload)
+
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ::eve::authority::proto::AuthorityStoreSave* temp = _impl_.payload_;
+  _impl_.payload_ = nullptr;
+  return temp;
+}
+inline ::eve::authority::proto::AuthorityStoreSave* PROTOBUF_NONNULL AuthorityStoreJsonDocument::_internal_mutable_payload() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.payload_ == nullptr) {
+    auto* p = ::google::protobuf::Message::DefaultConstruct<::eve::authority::proto::AuthorityStoreSave>(GetArena());
+    _impl_.payload_ = reinterpret_cast<::eve::authority::proto::AuthorityStoreSave*>(p);
+  }
+  return _impl_.payload_;
+}
+inline ::eve::authority::proto::AuthorityStoreSave* PROTOBUF_NONNULL AuthorityStoreJsonDocument::mutable_payload()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ::eve::authority::proto::AuthorityStoreSave* _msg = _internal_mutable_payload();
+  // @@protoc_insertion_point(field_mutable:eve.authority.proto.AuthorityStoreJsonDocument.payload)
+  return _msg;
+}
+inline void AuthorityStoreJsonDocument::set_allocated_payload(::eve::authority::proto::AuthorityStoreSave* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::Arena* message_arena = GetArena();
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (message_arena == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.payload_);
+  }
+
+  if (value != nullptr) {
+    ::google::protobuf::Arena* submessage_arena = value->GetArena();
+    if (message_arena != submessage_arena) {
+      value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
+    }
+    SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  }
+
+  _impl_.payload_ = reinterpret_cast<::eve::authority::proto::AuthorityStoreSave*>(value);
+  // @@protoc_insertion_point(field_set_allocated:eve.authority.proto.AuthorityStoreJsonDocument.payload)
+}
+
+// optional bytes digest = 8;
+inline bool AuthorityStoreJsonDocument::has_digest() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000008U);
+  return value;
+}
+inline void AuthorityStoreJsonDocument::clear_digest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.digest_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+}
+inline const ::std::string& AuthorityStoreJsonDocument::digest() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.authority.proto.AuthorityStoreJsonDocument.digest)
+  return _internal_digest();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void AuthorityStoreJsonDocument::set_digest(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  _impl_.digest_.SetBytes(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.authority.proto.AuthorityStoreJsonDocument.digest)
+}
+inline ::std::string* PROTOBUF_NONNULL AuthorityStoreJsonDocument::mutable_digest()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  ::std::string* _s = _internal_mutable_digest();
+  // @@protoc_insertion_point(field_mutable:eve.authority.proto.AuthorityStoreJsonDocument.digest)
+  return _s;
+}
+inline const ::std::string& AuthorityStoreJsonDocument::_internal_digest() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.digest_.Get();
+}
+inline void AuthorityStoreJsonDocument::_internal_set_digest(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.digest_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL AuthorityStoreJsonDocument::_internal_mutable_digest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.digest_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE AuthorityStoreJsonDocument::release_digest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.authority.proto.AuthorityStoreJsonDocument.digest)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000008U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  auto* released = _impl_.digest_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.digest_.Set("", GetArena());
+  }
+  return released;
+}
+inline void AuthorityStoreJsonDocument::set_allocated_digest(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  }
+  _impl_.digest_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.digest_.IsDefault()) {
+    _impl_.digest_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.authority.proto.AuthorityStoreJsonDocument.digest)
 }
 
 // -------------------------------------------------------------------

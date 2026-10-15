@@ -13,6 +13,31 @@ message AuthorityStoreSave {
   repeated AuthorityRule rules = 6;
 }
 
+// The digest covers the canonical envelope without digest, including its
+// stable header and the exact payload_wire bytes.
+message AuthorityStoreEnvelope {
+  optional string type = 1;
+  optional string schema = 2;
+  optional uint32 version = 3;
+  optional string instance_id = 4;
+  optional uint64 revision = 5;
+  optional uint64 tick = 6;
+  optional bytes payload_wire = 7;
+  optional bytes digest = 8;
+}
+
+// Human-readable projection with the same typed payload and digest contract.
+message AuthorityStoreJsonDocument {
+  optional string type = 1;
+  optional string schema = 2;
+  optional uint32 version = 3;
+  optional string instance_id = 4;
+  optional uint64 revision = 5;
+  optional uint64 tick = 6;
+  optional AuthorityStoreSave payload = 7;
+  optional bytes digest = 8;
+}
+
 message AuthorityRule {
   optional string id = 1;
   optional string actor = 2;

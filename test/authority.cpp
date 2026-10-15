@@ -3,6 +3,7 @@
 
 #include "authority/Authority.h"
 #include "common/Module.h"
+#include "common/SnapshotHash.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -77,7 +78,7 @@ TEST_CASE("authority.snapshot.restoreIsDeterministicAndTransactional") {
     CHECK(!restored.can("a", "s", "write"));
     const auto before = restored.snapshotJson();
     auto       rejected = restored.restoreJson("{\"version\":1}");
-    CHECK(!rejected.ok());
+    REQUIRE(!rejected.ok());
     const auto* diagnostic = rejected.error();
     REQUIRE(diagnostic != nullptr);
     CHECK_EQ(diagnostic->code(), eve::DiagnosticCode::ParseError);
@@ -133,6 +134,62 @@ TEST_CASE("authority.snapshot.legacyJsonIsReadButRewrittenWithProtobufSchema") {
     Store copy;
     REQUIRE(copy.restoreJson(rewritten).ok());
     CHECK(copy.can("actor", "scene", "edit"));
+}
+
+TEST_CASE("authority.snapshot.typedEnvelopeVerifiesDigestAndIdentity") {
+    const auto identity = eve::PersistentId::parse("11111111-2222-4333-8444-555555555555");
+    REQUIRE(identity.has_value());
+    const auto hash = eve::snapshotContentHashProvider();
+    Store      source(*identity);
+    source.grant("actor", "scene", "edit", "role", 3);
+    auto wire = source.snapshotEnvelopeBinary(hash);
+    REQUIRE(wire.ok());
+
+    Store restored(*identity);
+    REQUIRE(restored.restoreSnapshotBinary(wire.value(), hash).ok());
+    CHECK(restored.can("actor", "scene", "edit"));
+    const auto  stable   = restored.snapshotJson();
+    std::string tampered = wire.value();
+    const auto  position = tampered.find("actor");
+    REQUIRE(position != std::string::npos);
+    tampered[position] = 'x';
+    auto rejected      = restored.restoreSnapshotBinary(tampered, hash);
+    REQUIRE(!rejected.ok());
+    CHECK_EQ(rejected.error()->code(), eve::DiagnosticCode::HashMismatch);
+    CHECK_EQ(restored.snapshotJson(), stable);
+
+    auto json = source.snapshotEnvelopeJson(hash);
+    REQUIRE(json.ok());
+    CHECK(json.value().find("\"payload\"") != std::string::npos);
+    Store fromJson(*identity);
+    REQUIRE(fromJson.restoreSnapshotJson(json.value(), hash).ok());
+    CHECK_EQ(fromJson.snapshotJson(), source.snapshotJson());
+
+    auto parsedJson = eve::Value::fromJson(json.value());
+    REQUIRE(parsedJson.ok());
+    auto* fields = parsedJson.value().getIf<eve::Value::Object>();
+    REQUIRE(fields != nullptr);
+    (*fields)["revision"] = eve::Value("900");
+    auto changedHeader    = parsedJson.value().toJson();
+    REQUIRE(changedHeader.ok());
+    auto headerFailure = fromJson.restoreSnapshotJson(changedHeader.value(), hash);
+    REQUIRE(!headerFailure.ok());
+    CHECK_EQ(headerFailure.error()->code(), eve::DiagnosticCode::HashMismatch);
+    CHECK_EQ(fromJson.snapshotJson(), source.snapshotJson());
+
+    auto compatible = source.snapshot(hash);
+    REQUIRE(compatible.ok());
+    auto oldEnvelope = eve::serializeSnapshotEnvelope(compatible.value());
+    REQUIRE(oldEnvelope.ok());
+    Store fromOldEnvelope(*identity);
+    REQUIRE(fromOldEnvelope.restoreSnapshotJson(oldEnvelope.value(), hash).ok());
+    CHECK_EQ(fromOldEnvelope.snapshotJson(), source.snapshotJson());
+
+    const auto foreignId = eve::PersistentId::parse("aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee");
+    REQUIRE(foreignId.has_value());
+    Store foreign(*foreignId);
+    CHECK(!foreign.restoreSnapshotBinary(wire.value(), hash).ok());
+    CHECK(foreign.snapshotJson() != source.snapshotJson());
 }
 
 TEST_CASE("authority.input.invalidFactsDoNotMutate") {
