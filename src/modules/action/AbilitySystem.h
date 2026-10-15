@@ -68,12 +68,33 @@ struct AbilityActivation {
     AbilityActivationGroup group = AbilityActivationGroup::Independent;
 };
 
+/** @brief One activation advanced during AbilityRuntime::step. */
+struct AbilityStepAdvance {
+    AbilityActivationId activationId;
+    ActionExecutionId   executionId;
+    ActionPhase         phase = ActionPhase::Requested;
+    Duration            totalElapsed;
+};
+
+/**
+ * @brief Owning report from one coordinated ability step.
+ *
+ * @remarks ActionRuntime remains the sole owner of phase state; this report is a
+ *          snapshot for callers (script projection, combat adapters, tests).
+ */
+struct AbilityStepReport {
+    std::vector<AbilityStepAdvance> advances;
+    std::size_t                     completedCount = 0;
+    std::size_t                     activeCount    = 0;
+};
+
 /**
  * @brief Owner-thread coordinator for grant and activation state.
  *
- * Definitions, grants, cooldowns and activation links have one owner here;
- * ActionRuntime remains the sole owner of action phase state. The borrowed
- * runtime must outlive this system. No method reads a clock or invokes scripts.
+ * Owns definitions, grants, cooldowns and activation links. Borrows ActionRuntime
+ * for phase submission/advance/cancel; never owns phase timers itself. Script and
+ * combat façades must project into this API rather than re-implementing step or
+ * timeline assembly. No method reads a wall clock or invokes scripts.
  */
 class EVENGINE_API_PLATFORM AbilityRuntime {
 public:
@@ -96,6 +117,8 @@ public:
     [[nodiscard]] Result<void> revoke(AbilityGrantId grantId);
     /** @brief Return an owning grant-state snapshot. */
     [[nodiscard]] Result<AbilityGrantState> findGrant(AbilityGrantId grantId) const;
+    /** @brief Return an owning copy of a registered definition. */
+    [[nodiscard]] Result<AbilityDefinition> findDefinition(const LogicalId& definitionId) const;
 
     /**
      * @brief Submit an activation after cooldown, instancing and group checks.
@@ -105,6 +128,28 @@ public:
      */
     [[nodiscard]] Result<AbilityActivation> activate(AbilityGrantId grantId, ActionRequest request,
                                                      SimulationTick tick);
+    /**
+     * @brief Activate a grant with a request whose action id and tick come from the definition.
+     * @param grantId Granted ability selected by the caller.
+     * @param tick Injected deterministic tick used for exclusive replacement and request time.
+     * @remarks Builds ActionRequest from the registered definition; callers that need targets
+     *          or costs must use the ActionRequest overload instead.
+     */
+    [[nodiscard]] Result<AbilityActivation> activate(AbilityGrantId grantId, SimulationTick tick);
+    /**
+     * @brief Cancel one active activation through ActionRuntime, then synchronize links.
+     * @param activationId Active activation selected by the caller.
+     * @param tick Injected deterministic tick of the cancel.
+     */
+    [[nodiscard]] Result<void> cancel(AbilityActivationId activationId, SimulationTick tick);
+    /**
+     * @brief Advance every active execution, cool downs, and drop terminal links.
+     * @param tick Injected deterministic tick passed to ActionRuntime::advance.
+     * @param delta Injected deterministic duration for phase advance and cooldowns.
+     * @return Owning step report; if any advance fails, still synchronizes then returns that failure.
+     * @cost Relative to active activation count; amortize per simulation step, not per grant.
+     */
+    [[nodiscard]] Result<AbilityStepReport> step(SimulationTick tick, Duration delta);
     /** @brief Return grants whose declared gameplay-event triggers match an event tag. */
     [[nodiscard]] std::vector<AbilityGrantId> matchingGrants(std::string_view ownerId,
                                                              std::string_view gameplayEventTag) const;

@@ -2,11 +2,16 @@
 #include "common/Export.h"
 
 /** @file ScriptActionRuntime.h
- *  @brief Script-owned ActionRuntime + AbilityRuntime façade used by EveScript.
+ *  @brief Script-owned projection over ActionRuntime + AbilityRuntime.
  *
- *  This type is the Squirrel `ActionRuntime` instance created by
- *  `eve.Action().newRuntime()`. C++ gameplay code should use
- *  `eve::action::ActionRuntime` / `AbilityRuntime` directly instead.
+ *  Responsibilities:
+ *  - Unique ownership of one ActionRuntime / AbilityRuntime pair for EveScript
+ *  - Parse script scalars/strings and project domain Result values to eve::Value
+ *
+ *  Not responsible for:
+ *  - Ability step orchestration (AbilityRuntime::step)
+ *  - Timeline → AbilityDefinition assembly (abilityDefinitionFromTimeline)
+ *  - Phase ownership (ActionRuntime)
  */
 
 #include "action/AbilitySystem.h"
@@ -15,14 +20,12 @@
 #include "common/Value.h"
 
 #include <cstdint>
-#include <map>
 #include <string>
 
 namespace eve::action {
 
 /**
- * @brief Owner-thread script façade that uniquely owns one ActionRuntime and a
- *        borrowing AbilityRuntime.
+ * @brief Owner-thread script façade. Domain rules live on ActionRuntime / AbilityRuntime / AbilityAsset.
  *
  * @ownership Unique; transferred into a Squirrel instance by newRuntime().
  * @thread Owner/main thread only; not reentrant from callbacks.
@@ -70,9 +73,8 @@ private:
     [[nodiscard]] static Result<AbilityGrantId> parseGrant(std::int64_t value);
     [[nodiscard]] Result<Value>                 abilityGrantValue(AbilityGrantId grantId) const;
 
-    ActionRuntime                                 actions_;
-    AbilityRuntime                                abilities_{actions_};
-    std::map<std::string, LogicalId, std::less<>> abilityActions_;
+    ActionRuntime  actions_;
+    AbilityRuntime abilities_{actions_};
 };
 
 }  // namespace eve::action

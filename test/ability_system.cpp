@@ -81,7 +81,7 @@ TEST_CASE("abilitySystem.hotReloadPreservesGrantsAndActiveDefinitionSnapshots") 
     eve::action::AbilityRuntime abilities(runtime);
     auto                        original = ability("strike", eve::action::AbilityInstancingPolicy::PerExecution,
                                                    eve::action::AbilityActivationGroup::Independent);
-    original.action.timing.active = eve::Duration::fromNanoseconds(100);
+    original.action.timing.active        = eve::Duration::fromNanoseconds(100);
     REQUIRE(abilities.registerDefinition(original).ok());
     auto grant = abilities.grant("fighter", original.id);
     REQUIRE(grant.ok());
@@ -192,4 +192,58 @@ TEST_CASE("abilitySystem.revokeRejectsActiveGrantAndSucceedsAfterSynchronization
     CHECK(synchronized.value() == 1);
     REQUIRE(abilities.revoke(grant.value()).ok());
     CHECK(!abilities.findGrant(grant.value()).ok());
+}
+
+TEST_CASE("abilitySystem.findDefinitionAndActivateByTickUseRegisteredActionId") {
+    eve::action::ActionRuntime  runtime;
+    eve::action::AbilityRuntime abilities(runtime);
+    auto                        definition = ability("slash", eve::action::AbilityInstancingPolicy::PerOwner,
+                                                     eve::action::AbilityActivationGroup::Independent);
+    definition.action.timing.active        = eve::Duration::fromNanoseconds(100);
+    REQUIRE(abilities.registerDefinition(definition).ok());
+    auto found = abilities.findDefinition(definition.id);
+    REQUIRE(found.ok());
+    CHECK(found.value().action.id == definition.action.id);
+    CHECK(!abilities.findDefinition(logicalId("ability", "missing")).ok());
+
+    auto grant = abilities.grant("fighter", definition.id);
+    REQUIRE(grant.ok());
+    auto activation = abilities.activate(grant.value(), eve::SimulationTick(1));
+    REQUIRE(activation.ok());
+    REQUIRE(runtime.find(activation.value().executionId) != nullptr);
+    CHECK(runtime.find(activation.value().executionId)->definition().id == definition.action.id);
+}
+
+TEST_CASE("abilitySystem.cancelAndStepOwnOrchestrationThroughActionRuntime") {
+    eve::action::ActionRuntime  runtime;
+    eve::action::AbilityRuntime abilities(runtime);
+    auto                        definition = ability("combo", eve::action::AbilityInstancingPolicy::PerExecution,
+                                                     eve::action::AbilityActivationGroup::Independent);
+    definition.action.timing.active        = eve::Duration::fromNanoseconds(200);
+    REQUIRE(abilities.registerDefinition(definition).ok());
+    auto grant = abilities.grant("fighter", definition.id);
+    REQUIRE(grant.ok());
+    auto first = abilities.activate(grant.value(), eve::SimulationTick(1));
+    REQUIRE(first.ok());
+
+    auto half    = eve::Duration::fromNanoseconds(100);
+    auto stepped = abilities.step(eve::SimulationTick(2), half);
+    REQUIRE(stepped.ok());
+    REQUIRE(stepped.value().advances.size() == 1);
+    CHECK(stepped.value().advances[0].activationId == first.value().id);
+    CHECK(stepped.value().activeCount == 1);
+    CHECK(stepped.value().completedCount == 0);
+
+    REQUIRE(abilities.cancel(first.value().id, eve::SimulationTick(3)).ok());
+    CHECK(abilities.activeActivations().empty());
+    CHECK(!abilities.cancel(first.value().id, eve::SimulationTick(4)).ok());
+
+    auto second = abilities.activate(grant.value(), eve::SimulationTick(5));
+    REQUIRE(second.ok());
+    auto finished = abilities.step(eve::SimulationTick(6), eve::Duration::fromNanoseconds(200));
+    REQUIRE(finished.ok());
+    CHECK(finished.value().completedCount == 1);
+    CHECK(finished.value().activeCount == 0);
+    CHECK(abilities.activeActivations().empty());
+    CHECK(!abilities.step(eve::SimulationTick(7), eve::Duration::fromNanoseconds(-1)).ok());
 }

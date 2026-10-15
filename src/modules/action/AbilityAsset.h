@@ -2,10 +2,13 @@
 #include "common/Export.h"
 
 
-/** @file AbilityAsset.h @brief Versioned persistent codec for ability definitions. */
+/** @file AbilityAsset.h @brief Versioned persistent codec and timeline assembly for ability definitions. */
 
 #include "action/AbilitySystem.h"
+#include "action/ActionTimeline.h"
 #include "common/SchemaVersion.h"
+
+#include <string_view>
 
 namespace eve::action {
 
@@ -27,5 +30,33 @@ inline constexpr std::uint64_t    kAbilityAssetSchemaVersion = 2;
  * @remarks Unknown top-level fields and unknown/future versions are rejected. Failure publishes no runtime state.
  */
 [[nodiscard]] EVENGINE_API_PLATFORM Result<AbilityDefinition> decodeAbilityAsset(const Value& value);
+
+/**
+ * @brief Parse a stable instancing policy spelling used by script and tools.
+ * @param text One of `non-instanced`, `per-owner`, `per-execution`.
+ */
+[[nodiscard]] EVENGINE_API_PLATFORM Result<AbilityInstancingPolicy> parseAbilityInstancingPolicy(std::string_view text);
+
+/**
+ * @brief Parse a stable activation-group spelling used by script and tools.
+ * @param text One of `independent`, `exclusive-replaceable`, `exclusive-blocking`.
+ */
+[[nodiscard]] EVENGINE_API_PLATFORM Result<AbilityActivationGroup> parseAbilityActivationGroup(std::string_view text);
+
+/**
+ * @brief Assemble one AbilityDefinition from a timeline asset and policy inputs.
+ * @param definitionId Ability identity.
+ * @param timeline Owning timeline whose duration and splitTimestamps define action timing.
+ * @param cooldown Injected cooldown duration.
+ * @param instancing Instancing policy.
+ * @param activationGroup Concurrency group.
+ * @param triggerTag Optional exact gameplay-event trigger; empty omits triggers.
+ * @return Fully validated owning definition, or a structured assembly/validation failure.
+ * @remarks This is the asset/assembly face; AbilityRuntime remains the grant/activation owner.
+ *          Failure publishes no runtime state.
+ */
+[[nodiscard]] EVENGINE_API_PLATFORM Result<AbilityDefinition> abilityDefinitionFromTimeline(
+    LogicalId definitionId, ActionTimeline timeline, Duration cooldown, AbilityInstancingPolicy instancing,
+    AbilityActivationGroup activationGroup, std::string_view triggerTag = {});
 
 }  // namespace eve::action

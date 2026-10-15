@@ -4,9 +4,6 @@
 #include "action/ActionTimeline.h"
 #include "tags/GameplayTag.h"
 
-#include <algorithm>
-#include <optional>
-#include <string_view>
 #include <utility>
 
 namespace eve::action {
@@ -33,44 +30,26 @@ SimulationTick tickOf(std::int64_t tick) { return SimulationTick(static_cast<std
 
 ActionExecutionId executionOf(std::int64_t id) { return ActionExecutionId(static_cast<std::uint64_t>(id)); }
 
-bool parseInstancing(std::string_view text, AbilityInstancingPolicy& out) {
-    if (text == "non-instanced") return out = AbilityInstancingPolicy::NonInstanced, true;
-    if (text == "per-owner") return out = AbilityInstancingPolicy::PerOwner, true;
-    if (text == "per-execution") return out = AbilityInstancingPolicy::PerExecution, true;
-    return false;
-}
-
-bool parseActivationGroup(std::string_view text, AbilityActivationGroup& out) {
-    if (text == "independent") return out = AbilityActivationGroup::Independent, true;
-    if (text == "exclusive-replaceable") return out = AbilityActivationGroup::ExclusiveReplaceable, true;
-    if (text == "exclusive-blocking") return out = AbilityActivationGroup::ExclusiveBlocking, true;
-    return false;
-}
-
-void applyTimelineSplits(AbilityDefinition& definition, const ActionTimeline& timeline) {
-    const auto& splits = timeline.splitTimestamps;
-    if (splits.empty()) {
-        definition.action.timing.active = timeline.duration;
-    } else if (splits.size() == 1) {
-        definition.action.timing.windup = splits[0];
-        definition.action.timing.active =
-            Duration::fromNanoseconds(timeline.duration.nanoseconds() - splits[0].nanoseconds());
-    } else {
-        definition.action.timing.windup = splits[0];
-        definition.action.timing.active = Duration::fromNanoseconds(splits[1].nanoseconds() - splits[0].nanoseconds());
-        definition.action.timing.recover =
-            Duration::fromNanoseconds(timeline.duration.nanoseconds() - splits[1].nanoseconds());
-    }
-}
-
 Value activationValue(const AbilityActivation& activation) {
-    Value::Object result;
-    result["activationId"] = static_cast<std::int64_t>(activation.id.value());
-    result["grantId"]      = static_cast<std::int64_t>(activation.grantId.value());
-    result["instanceId"]   = static_cast<std::int64_t>(activation.instanceId.value());
-    result["executionId"]  = static_cast<std::int64_t>(activation.executionId.value());
-    result["ownerId"]      = activation.ownerId;
-    return Value(std::move(result));
+    return Value(Value::Object{{"activationId", static_cast<std::int64_t>(activation.id.value())},
+                               {"grantId", static_cast<std::int64_t>(activation.grantId.value())},
+                               {"instanceId", static_cast<std::int64_t>(activation.instanceId.value())},
+                               {"executionId", static_cast<std::int64_t>(activation.executionId.value())},
+                               {"ownerId", activation.ownerId}});
+}
+
+Value stepReportValue(AbilityStepReport report) {
+    Value::Array advances;
+    advances.reserve(report.advances.size());
+    for (const auto& item : report.advances) {
+        advances.emplace_back(Value::Object{{"activationId", static_cast<std::int64_t>(item.activationId.value())},
+                                            {"executionId", static_cast<std::int64_t>(item.executionId.value())},
+                                            {"phase", std::string(actionPhaseName(item.phase))},
+                                            {"elapsedSeconds", item.totalElapsed.seconds()}});
+    }
+    return Value(Value::Object{{"advances", std::move(advances)},
+                               {"completedCount", static_cast<std::int64_t>(report.completedCount)},
+                               {"activeCount", static_cast<std::int64_t>(report.activeCount)}});
 }
 
 }  // namespace
@@ -110,15 +89,45 @@ Result<Value> ScriptActionRuntime::setAbilityJson(const std::string& abilityJson
     auto              changed      = replace ? abilities_.replaceDefinition(std::move(definition).takeValue())
                                              : abilities_.registerDefinition(std::move(definition).takeValue());
     if (!changed) return propagate(changed);
-    abilityActions_[definitionId] = actionId;
     return applied({{"definitionId", definitionId}, {"actionId", actionId.format()}});
+}
+
+Result<Value> ScriptActionRuntime::setTimelineAbility(const std::string& definitionText,
+                                                      const std::string& timelineJson, float cooldownSeconds,
+                                                      const std::string& instancingText, const std::string& groupText,
+                                                      const std::string& triggerTag, bool replace) {
+    auto definitionId = LogicalId::parse(definitionText);
+    if (!definitionId) return fail(DiagnosticCode::InvalidArgument, "ability definition id is invalid", "definitionId");
+    auto decoded = Value::fromJson(timelineJson);
+    if (!decoded) return propagate(decoded);
+    auto timeline = ActionTimeline::fromValue(decoded.value());
+    if (!timeline) return propagate(timeline);
+    auto cooldown = Duration::fromSeconds(cooldownSeconds);
+    if (!cooldown) return propagate(cooldown);
+    auto instancing = parseAbilityInstancingPolicy(instancingText);
+    if (!instancing) return propagate(instancing);
+    auto group = parseAbilityActivationGroup(groupText);
+    if (!group) return propagate(group);
+    auto definition = abilityDefinitionFromTimeline(*definitionId, std::move(timeline).takeValue(), cooldown.value(),
+                                                    instancing.value(), group.value(), triggerTag);
+    if (!definition) return propagate(definition);
+    const LogicalId actionId = definition.value().action.id;
+    const double    duration =
+        definition.value().action.timeline ? definition.value().action.timeline->duration.seconds() : 0.0;
+    const auto sectionCount =
+        definition.value().action.timeline ? definition.value().action.timeline->sectionCount() : 0u;
+    auto changed = replace ? abilities_.replaceDefinition(std::move(definition).takeValue())
+                           : abilities_.registerDefinition(std::move(definition).takeValue());
+    if (!changed) return propagate(changed);
+    return applied({{"definitionId", definitionText},
+                    {"actionId", actionId.format()},
+                    {"durationSeconds", duration},
+                    {"sectionCount", static_cast<std::int64_t>(sectionCount)}});
 }
 
 Result<Value> ScriptActionRuntime::grantAbility(const std::string& ownerId, const std::string& definitionText) {
     auto definitionId = LogicalId::parse(definitionText);
     if (!definitionId) return fail(DiagnosticCode::InvalidArgument, "ability definition id is invalid", "definitionId");
-    if (!abilityActions_.contains(definitionText))
-        return fail(DiagnosticCode::NotFound, "ability definition is not registered", definitionText);
     auto granted = abilities_.grant(ownerId, *definitionId);
     if (!granted) return propagate(granted);
     return abilityGrantValue(granted.value());
@@ -136,15 +145,7 @@ Result<Value> ScriptActionRuntime::activateAbility(std::int64_t grantValue, std:
     auto grant = parseGrant(grantValue);
     if (!grant) return propagate(grant);
     if (tickValue < 0) return fail(DiagnosticCode::InvalidArgument, "ability tick must be non-negative", "tick");
-    auto grantState = abilities_.findGrant(grant.value());
-    if (!grantState) return propagate(grantState);
-    const auto action = abilityActions_.find(grantState.value().definitionId.format());
-    if (action == abilityActions_.end())
-        return fail(DiagnosticCode::NotFound, "ability definition action is unavailable", "definitionId");
-    ActionRequest request;
-    request.actionId      = action->second;
-    request.requestedTick = tickOf(tickValue);
-    auto activated        = abilities_.activate(grant.value(), std::move(request), request.requestedTick);
+    auto activated = abilities_.activate(grant.value(), tickOf(tickValue));
     if (!activated) return propagate(activated);
     return Result<Value>::success(activationValue(activated.value()), Status::success(StatusCode::Applied));
 }
@@ -153,45 +154,18 @@ Result<Value> ScriptActionRuntime::advanceAbilities(std::int64_t tickValue, floa
     if (tickValue < 0) return fail(DiagnosticCode::InvalidArgument, "ability tick must be non-negative", "tick");
     auto delta = Duration::fromSeconds(seconds);
     if (!delta) return propagate(delta);
-    Value::Array          advances;
-    std::optional<Status> firstFailure;
-    for (const auto& activation : abilities_.activeActivations()) {
-        auto advanced = actions_.advance(activation.executionId, tickOf(tickValue), delta.value());
-        if (!advanced) {
-            if (!firstFailure) firstFailure = advanced.status();
-            continue;
-        }
-        advances.emplace_back(Value::Object{{"activationId", static_cast<std::int64_t>(activation.id.value())},
-                                            {"executionId", static_cast<std::int64_t>(activation.executionId.value())},
-                                            {"phase", std::string(actionPhaseName(advanced.value().phase))},
-                                            {"elapsedSeconds", advanced.value().totalElapsed.seconds()}});
-    }
-    auto cooled = abilities_.advanceCooldowns(delta.value());
-    if (!cooled) return propagate(cooled);
-    // Always synchronize so terminal (Failed/Cancelled) activations leave the
-    // active list even when one advance returned an error; otherwise the next
-    // call re-hits the same activation and never advances the rest.
-    auto synchronized = abilities_.synchronize();
-    if (!synchronized) return propagate(synchronized);
-    if (firstFailure) return propagate(*firstFailure);
-    return applied({{"advances", std::move(advances)},
-                    {"completedCount", static_cast<std::int64_t>(synchronized.value())},
-                    {"activeCount", static_cast<std::int64_t>(abilities_.activeActivations().size())}});
+    auto stepped = abilities_.step(tickOf(tickValue), delta.value());
+    if (!stepped) return propagate(stepped);
+    return Result<Value>::success(stepReportValue(std::move(stepped).takeValue()),
+                                  Status::success(StatusCode::Applied));
 }
 
 Result<Value> ScriptActionRuntime::cancelAbility(std::int64_t activationValue, std::int64_t tickValue) {
     if (activationValue <= 0 || tickValue < 0)
         return fail(DiagnosticCode::InvalidArgument, "ability activation or tick is invalid", "activation");
-    const AbilityActivationId activationId(static_cast<std::uint64_t>(activationValue));
-    const auto                active = abilities_.activeActivations();
-    const auto                found =
-        std::find_if(active.begin(), active.end(), [&](const auto& item) { return item.id == activationId; });
-    if (found == active.end())
-        return fail(DiagnosticCode::NotFound, "ability activation was not found", "activationId");
-    auto cancelled = actions_.cancel(found->executionId, tickOf(tickValue));
+    auto cancelled =
+        abilities_.cancel(AbilityActivationId(static_cast<std::uint64_t>(activationValue)), tickOf(tickValue));
     if (!cancelled) return propagate(cancelled);
-    auto synchronized = abilities_.synchronize();
-    if (!synchronized) return propagate(synchronized);
     return applied({{"activationId", activationValue}, {"phase", std::string("cancelled")}});
 }
 
@@ -270,43 +244,6 @@ Result<Value> ScriptActionRuntime::findAction(std::int64_t executionValue) const
 
 std::int64_t ScriptActionRuntime::executionCount() const {
     return static_cast<std::int64_t>(actions_.executionCount());
-}
-
-Result<Value> ScriptActionRuntime::setTimelineAbility(const std::string& definitionText,
-                                                      const std::string& timelineJson, float cooldownSeconds,
-                                                      const std::string& instancingText, const std::string& groupText,
-                                                      const std::string& triggerTag, bool replace) {
-    auto definitionId = LogicalId::parse(definitionText);
-    if (!definitionId) return fail(DiagnosticCode::InvalidArgument, "ability definition id is invalid", "definitionId");
-    auto decoded = Value::fromJson(timelineJson);
-    if (!decoded) return propagate(decoded);
-    auto timeline = ActionTimeline::fromValue(decoded.value());
-    if (!timeline) return propagate(timeline);
-    auto cooldown = Duration::fromSeconds(cooldownSeconds);
-    if (!cooldown) return propagate(cooldown);
-
-    AbilityDefinition definition;
-    definition.id              = *definitionId;
-    definition.action.id       = timeline.value().actionId;
-    definition.action.timeline = timeline.value();
-    definition.cooldown        = cooldown.value();
-    if (!parseInstancing(instancingText, definition.instancing))
-        return fail(DiagnosticCode::InvalidArgument, "ability instancing policy is invalid", "instancing");
-    if (!parseActivationGroup(groupText, definition.activationGroup))
-        return fail(DiagnosticCode::InvalidArgument, "ability activation group is invalid", "activationGroup");
-    if (!triggerTag.empty()) {
-        if (!tags::isValidGameplayTagName(triggerTag))
-            return fail(DiagnosticCode::InvalidArgument, "ability trigger tag is invalid", "triggerTag");
-        definition.triggers.push_back({triggerTag, tags::GameplayTagMatch::Exact});
-    }
-    applyTimelineSplits(definition, timeline.value());
-    auto changed = replace ? abilities_.replaceDefinition(definition) : abilities_.registerDefinition(definition);
-    if (!changed) return propagate(changed);
-    abilityActions_[definitionText] = definition.action.id;
-    return applied({{"definitionId", definitionText},
-                    {"actionId", definition.action.id.format()},
-                    {"durationSeconds", timeline.value().duration.seconds()},
-                    {"sectionCount", static_cast<std::int64_t>(timeline.value().sectionCount())}});
 }
 
 Result<AbilityGrantId> ScriptActionRuntime::parseGrant(std::int64_t value) {

@@ -603,4 +603,55 @@ Result<AbilityDefinition> decodeAbilityAsset(const Value& value) {
     return Result<AbilityDefinition>::success(std::move(result));
 }
 
+Result<AbilityInstancingPolicy> parseAbilityInstancingPolicy(std::string_view text) {
+    if (text == "non-instanced") return Result<AbilityInstancingPolicy>::success(AbilityInstancingPolicy::NonInstanced);
+    if (text == "per-owner") return Result<AbilityInstancingPolicy>::success(AbilityInstancingPolicy::PerOwner);
+    if (text == "per-execution") return Result<AbilityInstancingPolicy>::success(AbilityInstancingPolicy::PerExecution);
+    return invalid<AbilityInstancingPolicy>("ability instancing policy is invalid", "instancing");
+}
+
+Result<AbilityActivationGroup> parseAbilityActivationGroup(std::string_view text) {
+    if (text == "independent") return Result<AbilityActivationGroup>::success(AbilityActivationGroup::Independent);
+    if (text == "exclusive-replaceable")
+        return Result<AbilityActivationGroup>::success(AbilityActivationGroup::ExclusiveReplaceable);
+    if (text == "exclusive-blocking")
+        return Result<AbilityActivationGroup>::success(AbilityActivationGroup::ExclusiveBlocking);
+    return invalid<AbilityActivationGroup>("ability activation group is invalid", "activationGroup");
+}
+
+Result<AbilityDefinition> abilityDefinitionFromTimeline(LogicalId definitionId, ActionTimeline timeline,
+                                                        Duration cooldown, AbilityInstancingPolicy instancing,
+                                                        AbilityActivationGroup activationGroup,
+                                                        std::string_view       triggerTag) {
+    AbilityDefinition definition;
+    definition.id              = std::move(definitionId);
+    definition.action.id       = timeline.actionId;
+    definition.action.timeline = timeline;
+    definition.cooldown        = cooldown;
+    definition.instancing      = instancing;
+    definition.activationGroup = activationGroup;
+    if (!triggerTag.empty()) {
+        if (!tags::isValidGameplayTagName(triggerTag))
+            return invalid<AbilityDefinition>("ability trigger tag is invalid", "triggerTag");
+        definition.triggers.push_back({std::string(triggerTag), tags::GameplayTagMatch::Exact});
+    }
+
+    const auto& splits = timeline.splitTimestamps;
+    if (splits.empty()) {
+        definition.action.timing.active = timeline.duration;
+    } else if (splits.size() == 1) {
+        definition.action.timing.windup = splits[0];
+        definition.action.timing.active =
+            Duration::fromNanoseconds(timeline.duration.nanoseconds() - splits[0].nanoseconds());
+    } else {
+        definition.action.timing.windup = splits[0];
+        definition.action.timing.active = Duration::fromNanoseconds(splits[1].nanoseconds() - splits[0].nanoseconds());
+        definition.action.timing.recover =
+            Duration::fromNanoseconds(timeline.duration.nanoseconds() - splits[1].nanoseconds());
+    }
+    auto valid = definition.validate();
+    if (!valid) return Result<AbilityDefinition>::failure(valid.status());
+    return Result<AbilityDefinition>::success(std::move(definition));
+}
+
 }  // namespace eve::action

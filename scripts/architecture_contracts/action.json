@@ -26,10 +26,10 @@
         "AbilityRuntime"
       ],
       "create": "AbilityRuntime::activate submits into the borrowed ActionRuntime and stores an owning AbilityActivation link with executionId.",
-      "ownership": "AbilityRuntime owns grant/activation records; ActionRuntime uniquely owns phase/execution state; the borrowed ActionRuntime must outlive AbilityRuntime.",
-      "destroy_order": "AbilityRuntime::synchronize removes links whose ActionRuntime execution reached a terminal phase; revoke rejects grants with active activations until synchronized/cancelled; ActionRuntime-first leaves synchronize detecting terminal or missing executions.",
+      "ownership": "AbilityRuntime owns grant/activation records and step/cancel orchestration; ActionRuntime uniquely owns phase/execution state; the borrowed ActionRuntime must outlive AbilityRuntime. Script and combat façades project into AbilityRuntime rather than re-implementing advance-all loops.",
+      "destroy_order": "AbilityRuntime::cancel cancels through ActionRuntime then synchronizes; AbilityRuntime::step advances every active execution, cools down, then synchronizes (including after a partial advance failure); revoke rejects grants with active activations until synchronized/cancelled; ActionRuntime-first leaves synchronize detecting terminal or missing executions.",
       "restore": "Process-local grant/activation identities are not a persistent wire format; restore rebuilds definitions then re-grants; in-flight activations are not reconstituted across process boundaries.",
-      "stale": "activate/findGrant/revoke/synchronize resolve by strong ids; missing grant or terminal/missing execution returns structured NotFound rather than dangling pointers."
+      "stale": "activate/findGrant/findDefinition/cancel/revoke/synchronize resolve by strong ids; missing grant/activation or terminal/missing execution returns structured NotFound rather than dangling pointers."
     },
     {
       "id": "action-ability-asset-persistence",
@@ -37,7 +37,7 @@
       "scope": "src/modules/action/AbilityAsset.*",
       "owner": "action::AbilityDefinition",
       "issue": "EVENGINE-ARCH-PERSISTENCE-CONTRACTS",
-      "reason": "Ability definitions persist action timing, cooldown, instancing, activation group and gameplay-tag triggers in one schema shared by script and C++.",
+      "reason": "Ability definitions persist action timing, cooldown, instancing, activation group and gameplay-tag triggers in one schema shared by script and C++; timeline→definition assembly also lives on this asset face so script/combat do not duplicate split-timestamp timing rules.",
       "expiry": "2027-12-31",
       "evidence": [
         "src/modules/action/AbilityAsset.h",
@@ -48,11 +48,11 @@
         "test/ability_asset.cpp",
         "test/action_ability_script.cpp"
       ],
-      "schema": "eve.action.ability Value document embedding ActionDefinition timing/timeline plus ability policy fields.",
+      "schema": "eve.action.ability Value document embedding ActionDefinition timing/timeline plus ability policy fields; abilityDefinitionFromTimeline assembles the same candidate from an ActionTimeline plus policy spellings.",
       "version": "Current version 2 stores action phases and cooldown in nanoseconds.",
       "migration": "Older ability documents migrate into a validated v2 candidate before publish; invalid identity or timing rejects the whole document.",
       "unknown_fields": "Same-version unknown fields are ignored on read; encoders write the known v2 field set.",
-      "restore_atomicity": "decodeAbilityAsset builds a complete AbilityDefinition candidate and validates before the caller registers/replaces it in AbilityRuntime."
+      "restore_atomicity": "decodeAbilityAsset and abilityDefinitionFromTimeline build a complete AbilityDefinition candidate and validate before the caller registers/replaces it in AbilityRuntime."
     },
     {
       "id": "action-timeline-persistence",
@@ -83,7 +83,7 @@
       "scope": "src/modules/action/*",
       "owner": "action::Action",
       "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
-      "reason": "Action is the L1 gameplay protocol host: ActionRuntime owns phase state, AbilityRuntime owns grants/cooldowns, and EveScript reaches them only through a factory-owned ScriptActionRuntime.",
+      "reason": "Action is the L1 gameplay protocol host: ActionRuntime owns phase state; AbilityRuntime owns grants/cooldowns/step/cancel orchestration; AbilityAsset owns codec and timeline→definition assembly; EveScript and Combat only parse/project through façades.",
       "expiry": "2027-12-31",
       "evidence": [
         "src/modules/action/ActionModule.h",
@@ -91,11 +91,13 @@
         "src/modules/action/ScriptActionRuntime.h",
         "src/modules/action/Action.h",
         "src/modules/action/AbilitySystem.h",
+        "src/modules/action/AbilityAsset.h",
         "docs/dev/战斗系统与动作编辑器.md"
       ],
       "tests": [
         "test/gameplay_action.cpp",
         "test/ability_system.cpp",
+        "test/ability_asset.cpp",
         "test/action_ability_script.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
@@ -135,14 +137,17 @@
         }
       ],
       "protocol": [
-        "Native ActionRuntime/AbilityRuntime are the authoritative C++ faces; ScriptActionRuntime is a script-owned façade that projects Result<Value> tables.",
+        "Native ActionRuntime/AbilityRuntime/AbilityAsset are the authoritative C++ faces; ScriptActionRuntime and ScriptCombatRuntime are façades that parse script scalars and project Result<Value> tables.",
+        "AbilityRuntime::step owns advance-all + cooldown + synchronize; abilityDefinitionFromTimeline owns timeline split→ActionTiming assembly; façades must not duplicate those loops.",
         "Optional presentation/combat sinks (damage, audio, VFX, camera, state windows) are consumed through cap::forEach* inside ActionNotifyRegistry; absence is an observable NotFound path, not a silent success."
       ],
       "trim": {
         "absent_profile": "Profiles without action drop the protocol host, script factory, and every dependent combat/RTS/tactics adapter that requires EVAction."
       },
       "thread_affinity": "Owner/main composition thread for module construction, ScriptActionRuntime methods and ActionRuntime/AbilityRuntime advances; notify handlers run synchronously on the same owner thread and must not re-enter the block runtime.",
-      "cost_notes": [],
+      "cost_notes": [
+        "AbilityRuntime::step is relative to active activation count; amortize per simulation step, not per grant."
+      ],
       "hot_path": []
     }
   ]

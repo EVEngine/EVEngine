@@ -150,3 +150,39 @@ TEST_CASE("abilityAsset.migratesV1MillisecondsAndRejectsFutureUnknownOrMalformed
                                          {"maximum", eve::Value::Array{2, 2, 0}}}}};
     CHECK(!eve::action::decodeAbilityAsset(fractionalGrid).ok());
 }
+
+TEST_CASE("abilityAsset.parsePolicySpellingsAndAssembleDefinitionFromTimeline") {
+    auto instancing = eve::action::parseAbilityInstancingPolicy("per-execution");
+    REQUIRE(instancing.ok());
+    CHECK(instancing.value() == eve::action::AbilityInstancingPolicy::PerExecution);
+    CHECK(!eve::action::parseAbilityInstancingPolicy("per-owner-typo").ok());
+
+    auto group = eve::action::parseAbilityActivationGroup("exclusive-replaceable");
+    REQUIRE(group.ok());
+    CHECK(group.value() == eve::action::AbilityActivationGroup::ExclusiveReplaceable);
+    CHECK(!eve::action::parseAbilityActivationGroup("exclusive").ok());
+
+    eve::action::ActionTimeline timeline;
+    timeline.actionId        = id("action:slash");
+    timeline.duration        = eve::Duration::fromNanoseconds(600);
+    timeline.splitTimestamps = {eve::Duration::fromNanoseconds(100), eve::Duration::fromNanoseconds(350)};
+    auto cooldown            = eve::Duration::fromNanoseconds(1'000);
+    auto definition          = eve::action::abilityDefinitionFromTimeline(
+        id("ability:slash"), timeline, cooldown, eve::action::AbilityInstancingPolicy::PerOwner,
+        eve::action::AbilityActivationGroup::Independent, "Event.Combat.Slash");
+    REQUIRE(definition.ok());
+    CHECK_EQ(definition.value().id, id("ability:slash"));
+    CHECK_EQ(definition.value().action.id, id("action:slash"));
+    CHECK_EQ(definition.value().action.timing.windup.nanoseconds(), 100);
+    CHECK_EQ(definition.value().action.timing.active.nanoseconds(), 250);
+    CHECK_EQ(definition.value().action.timing.recover.nanoseconds(), 250);
+    REQUIRE(definition.value().action.timeline.has_value());
+    CHECK_EQ(definition.value().action.timeline->duration.nanoseconds(), 600);
+    REQUIRE(definition.value().triggers.size() == 1);
+    CHECK_EQ(definition.value().triggers[0].gameplayTag, std::string("Event.Combat.Slash"));
+
+    CHECK(!eve::action::abilityDefinitionFromTimeline(id("ability:bad"), timeline, cooldown,
+                                                      eve::action::AbilityInstancingPolicy::PerOwner,
+                                                      eve::action::AbilityActivationGroup::Independent, "not a tag")
+               .ok());
+}
