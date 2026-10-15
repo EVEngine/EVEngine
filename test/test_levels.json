@@ -5007,6 +5007,25 @@
       "cases": {},
       "module": "common"
     },
+    "procgen_generation_stages.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.stages.scalarFieldIsOwningBoundedAndTransactional",
+          "procgen.stages.scalarFieldProducesReusableParametricGeometry",
+          "procgen.stages.houseDefaultScheduleMatchesCompatibilityAndOwnsKit",
+          "procgen.stages.houseGraphControlsGenerationAndFailuresPreserveStage",
+          "procgen.stages.caveDefaultScheduleMatchesRecipe",
+          "procgen.stages.caveFieldEditsAffectOutputAndFailedExtractionKeepsInput",
+          "procgen.stages.caveSkeletonAndSurfacePoliciesAreEditable"
+        ],
+        "script-binding": [
+          "procgen.stages.scriptOwnsFieldsAndComposesCaveWithoutGraphics"
+        ]
+      },
+      "module": "procgen"
+    },
     "profile/capability_absent.cpp": {
       "role": "compile-contract",
       "default": "module-composition",
@@ -5374,7 +5393,9 @@
         "local-logic": [
           "authority.decision.priorityThenDenyThenCreationOrder",
           "authority.decision.defaultDenyIsExplainable",
+          "authority.decision.wildcardMatchesAndLosesToExactDeny",
           "authority.lifecycle.durationRevokeAndEvents",
+          "authority.lifecycle.revokeByDimensionAndEventCapacity",
           "authority.query.reverseDimensionsAreDeterministic",
           "authority.snapshot.restoreIsDeterministicAndTransactional",
           "authority.input.invalidFactsDoNotMutate",
@@ -9796,6 +9817,20 @@
       "origins": [
         "gpgpu.cpp"
       ]
+    },
+    "virtual_texture_streaming.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "graphics.virtual_texture_streaming.pack_feedback_roundtrip",
+          "graphics.virtual_texture_streaming.feedback_decode_publish_and_abandon",
+          "graphics.virtual_texture_streaming.evicts_lru_and_clears_page_table_first",
+          "graphics.virtual_texture_streaming.writer_invalidates_dirty_pages",
+          "graphics.virtual_texture_streaming.ingest_packed_feedback_collapses_mips"
+        ]
+      },
+      "module": "graphics"
     }
   }
 }
