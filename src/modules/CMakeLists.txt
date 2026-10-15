@@ -284,6 +284,16 @@ if(TARGET EVSchema)
   target_link_libraries(EVSchema PUBLIC protobuf::libprotobuf)
 endif()
 
+if(TARGET EVDecision)
+  target_sources(EVDecision PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/decision_context.pb.cc)
+  target_include_directories(EVDecision SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  if(MSVC)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/decision_context.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+  endif()
+  target_link_libraries(EVDecision PUBLIC protobuf::libprotobuf)
+endif()
+
 if(TARGET EVInventory)
   # Generated with the pinned third-party protoc from proto/inventory_save.proto.
   # Checked in so Android, iOS and WebAssembly only need the target runtime.

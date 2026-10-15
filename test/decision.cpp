@@ -1,4 +1,5 @@
 #include "decision/Decision.h"
+#include "decision_context.pb.h"
 
 #include <cmath>
 
@@ -51,4 +52,53 @@ TEST_CASE("decision.influenceAndSnapshotRoundTrip") {
     CHECK(!rejected.ok());
     CHECK_EQ(rejected.code(), eve::StatusCode::Failed);
     CHECK_EQ(restored.snapshotJson(), beforeInvalidRestore);
+}
+
+TEST_CASE("decision.protobufSnapshotRejectsInvalidWithoutMutation") {
+    DecisionContext source;
+    REQUIRE(source.set("ai", "target", "\"tank\"").ok());
+    REQUIRE(source.setState("unit", "idle").ok());
+    REQUIRE(source.addTransition("unit", "idle", "seen", "attack").ok());
+    REQUIRE(source.newGrid("threat", 2, 1, 4, 0, 0).ok());
+    REQUIRE(source.setCell("threat", 1, 0, 3).ok());
+    auto bytes = source.snapshotBinary();
+    REQUIRE(bytes.ok());
+    auto repeatedBytes = source.snapshotBinary();
+    REQUIRE(repeatedBytes.ok());
+    CHECK_EQ(bytes.value(), repeatedBytes.value());
+
+    DecisionContext restored;
+    REQUIRE(restored.restoreBinary(bytes.value()).ok());
+    CHECK_EQ(restored.snapshotJson(), source.snapshotJson());
+    REQUIRE(restored.trigger("unit", "seen").ok());
+    CHECK_EQ(restored.state("unit"), std::string("attack"));
+
+    eve::decision::proto::DecisionContextSave invalid;
+    REQUIRE(invalid.ParseFromString(bytes.value()));
+    invalid.set_version(3);
+    std::string future;
+    REQUIRE(invalid.SerializeToString(&future));
+    CHECK(!restored.restoreBinary(future).ok());
+    CHECK_EQ(restored.state("unit"), std::string("attack"));
+
+    invalid.set_version(2);
+    invalid.mutable_grids(0)->set_width(3);
+    std::string malformed;
+    REQUIRE(invalid.SerializeToString(&malformed));
+    CHECK(!restored.restoreBinary(malformed).ok());
+    CHECK_EQ(restored.sample("threat", 5, 0, -1), 3.f);
+
+    invalid.mutable_grids(0)->set_width(2);
+    invalid.GetReflection()->MutableUnknownFields(&invalid)->AddVarint(100, 1);
+    std::string withUnknown;
+    REQUIRE(invalid.SerializeToString(&withUnknown));
+    CHECK(!restored.restoreBinary(withUnknown).ok());
+    CHECK_EQ(restored.sample("threat", 5, 0, -1), 3.f);
+
+    REQUIRE(restored.restoreJson(source.snapshotJson()).ok());
+    REQUIRE(
+        restored
+            .restoreJson(R"({"version":1,"boards":{"ai":{"target":"tank"}},"states":{},"transitions":[],"grids":[]})")
+            .ok());
+    CHECK_EQ(restored.get("ai", "target", "null"), std::string("\"tank\""));
 }

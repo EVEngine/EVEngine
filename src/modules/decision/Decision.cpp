@@ -2,14 +2,20 @@
 
 #include "common/Json.h"
 #include "common/SquirrelBinding.h"
+#include "decision_context.pb.h"
+
+#include <google/protobuf/io/coded_stream.h>
+#include <google/protobuf/io/zero_copy_stream_impl_lite.h>
+#include <google/protobuf/util/json_util.h>
 
 #include <algorithm>
 #include <cmath>
 #include <functional>
-#include <iomanip>
 #include <limits>
+#include <set>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <sstream>
+#include <tuple>
 #include <utility>
 
 namespace eve::decision {
@@ -93,6 +99,23 @@ bool parseNumber(const std::string& text, float& value) {
     } catch (...) {
         return false;
     }
+}
+
+bool hasUnknownFields(const google::protobuf::Message& message) {
+    const auto* reflection = message.GetReflection();
+    if (!reflection->GetUnknownFields(message).empty()) return true;
+    std::vector<const google::protobuf::FieldDescriptor*> fields;
+    reflection->ListFields(message, &fields);
+    for (const auto* field : fields) {
+        if (field->cpp_type() != google::protobuf::FieldDescriptor::CPPTYPE_MESSAGE) continue;
+        if (field->is_repeated()) {
+            for (int index = 0; index < reflection->FieldSize(message, field); ++index)
+                if (hasUnknownFields(reflection->GetRepeatedMessage(message, field, index))) return true;
+        } else if (hasUnknownFields(reflection->GetMessage(message, field))) {
+            return true;
+        }
+    }
+    return false;
 }
 
 }  // namespace
@@ -288,53 +311,135 @@ float DecisionContext::sample(const std::string& name, float worldX, float world
 
     return grid.values[size_t(cellY) * grid.width + cellX];
 }
-std::string DecisionContext::snapshotJson() const {
-    std::ostringstream o;
-    o << std::setprecision(9) << "{\"version\":1,\"boards\":{";
-    bool a = true;
-    for (auto& [b, vs] : boards_) {
-        if (!a) o << ',';
-        a = false;
-        o << quote(b) << ":{";
-        bool f = true;
-        for (auto& [k, v] : vs) {
-            if (!f) o << ',';
-            f = false;
-            o << quote(k) << ':' << v;
-        }
-        o << '}';
+void DecisionContext::captureMessage(proto::DecisionContextSave& save) const {
+    save.set_schema("eve.decision.context");
+    save.set_version(2);
+    for (const auto& [name, values] : boards_) {
+        auto* board = save.add_boards();
+        board->set_name(name);
+        for (const auto& [key, scalar] : values) (*board->mutable_scalar_json())[key] = scalar;
     }
-    o << "},\"states\":{";
-    a = true;
-    for (auto& [m, s] : states_) {
-        if (!a) o << ',';
-        a = false;
-        o << quote(m) << ':' << quote(s);
-    }
-    o << "},\"transitions\":[";
-    a = true;
-    for (auto& [m, ts] : transitions_)
-        for (auto& [key, to] : ts) {
-            if (!a) o << ',';
-            a = false;
-            o << "[" << quote(m) << ',' << quote(key.first) << ',' << quote(key.second) << ',' << quote(to) << "]";
+    for (const auto& [machine, state] : states_) (*save.mutable_states())[machine] = state;
+    for (const auto& [machine, transitions] : transitions_)
+        for (const auto& [key, destination] : transitions) {
+            auto* transition = save.add_transitions();
+            transition->set_machine(machine);
+            transition->set_from(key.first);
+            transition->set_trigger(key.second);
+            transition->set_to(destination);
         }
-    o << "],\"grids\":[";
-    a = true;
-    for (auto& [n, g] : grids_) {
-        if (!a) o << ',';
-        a = false;
-        o << "{\"name\":" << quote(n) << ",\"w\":" << g.width << ",\"h\":" << g.height << ",\"cell\":" << g.cellSize
-          << ",\"ox\":" << g.originX << ",\"oy\":" << g.originY << ",\"values\":[";
-        for (size_t i = 0; i < g.values.size(); ++i) {
-            if (i) o << ',';
-            o << g.values[i];
-        }
-        o << "]}";
+    for (const auto& [name, grid] : grids_) {
+        auto* stored = save.add_grids();
+        stored->set_name(name);
+        stored->set_width(grid.width);
+        stored->set_height(grid.height);
+        stored->set_cell_size(grid.cellSize);
+        stored->set_origin_x(grid.originX);
+        stored->set_origin_y(grid.originY);
+        for (float value : grid.values) stored->add_values(value);
     }
-    return o.str() + "]}";
 }
+
+eve::Result<std::string> DecisionContext::snapshotBinary() const {
+    proto::DecisionContextSave save;
+    captureMessage(save);
+    std::string bytes;
+    bool        encoded = false;
+    {
+        google::protobuf::io::StringOutputStream output(&bytes);
+        google::protobuf::io::CodedOutputStream  coded(&output);
+        coded.SetSerializationDeterministic(true);
+        encoded = save.SerializeToCodedStream(&coded) && !coded.HadError();
+    }
+    if (!encoded)
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                                        "decision Protobuf serialization failed",
+                                                                        "snapshot", {}, "decision"));
+    return eve::Result<std::string>::success(std::move(bytes));
+}
+
+std::string DecisionContext::snapshotJson() const {
+    proto::DecisionContextSave save;
+    captureMessage(save);
+    std::string json;
+    if (!google::protobuf::util::MessageToJsonString(save, &json).ok()) return {};
+    return json;
+}
+
+eve::Result<void> DecisionContext::restoreMessage(const proto::DecisionContextSave& save) {
+    auto fail = [](eve::DiagnosticCode code, std::string message, std::string path) {
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "decision"));
+    };
+    if (hasUnknownFields(save))
+        return fail(eve::DiagnosticCode::SerializationError, "unknown decision snapshot fields", "snapshot");
+    if (!save.has_schema() || save.schema() != "eve.decision.context")
+        return fail(eve::DiagnosticCode::InvalidArgument, "snapshot does not belong to DecisionContext", "schema");
+    if (!save.has_version() || save.version() != 2)
+        return fail(eve::DiagnosticCode::UnknownVersion, "unsupported decision snapshot version", "version");
+    DecisionContext       candidate;
+    std::set<std::string> boardNames;
+    for (const auto& board : save.boards()) {
+        if (!board.has_name() || board.name().empty() || !boardNames.insert(board.name()).second)
+            return fail(eve::DiagnosticCode::SerializationError, "duplicate or unnamed blackboard", "boards");
+        for (const auto& [key, scalar] : board.scalar_json()) {
+            auto result = candidate.set(board.name(), key, scalar);
+            if (!result.ok()) return eve::Result<void>::failure(result.status());
+        }
+        candidate.boards_.try_emplace(board.name());
+    }
+    for (const auto& [machine, state] : save.states()) {
+        auto result = candidate.setState(machine, state);
+        if (!result.ok()) return eve::Result<void>::failure(result.status());
+    }
+    std::set<std::tuple<std::string, std::string, std::string>> transitionKeys;
+    for (const auto& transition : save.transitions()) {
+        if (!transition.has_machine() || !transition.has_from() || !transition.has_trigger() || !transition.has_to() ||
+            !transitionKeys.emplace(transition.machine(), transition.from(), transition.trigger()).second)
+            return fail(eve::DiagnosticCode::SerializationError, "malformed or duplicate transition", "transitions");
+        auto result =
+            candidate.addTransition(transition.machine(), transition.from(), transition.trigger(), transition.to());
+        if (!result.ok()) return eve::Result<void>::failure(result.status());
+    }
+    std::set<std::string> gridNames;
+    for (const auto& grid : save.grids()) {
+        if (!grid.has_name() || !grid.has_width() || !grid.has_height() || !grid.has_cell_size() ||
+            !grid.has_origin_x() || !grid.has_origin_y() || !gridNames.insert(grid.name()).second)
+            return fail(eve::DiagnosticCode::SerializationError, "malformed or duplicate grid", "grids");
+        auto created = candidate.newGrid(grid.name(), grid.width(), grid.height(), grid.cell_size(), grid.origin_x(),
+                                         grid.origin_y());
+        if (!created.ok()) return eve::Result<void>::failure(created.status());
+        if (grid.values_size() != grid.width() * grid.height())
+            return fail(eve::DiagnosticCode::SerializationError, "grid cell count is invalid", "grids.values");
+        for (int index = 0; index < grid.values_size(); ++index) {
+            auto result =
+                candidate.setCell(grid.name(), index % grid.width(), index / grid.width(), grid.values(index));
+            if (!result.ok()) return eve::Result<void>::failure(result.status());
+        }
+    }
+    boards_.swap(candidate.boards_);
+    states_.swap(candidate.states_);
+    transitions_.swap(candidate.transitions_);
+    grids_.swap(candidate.grids_);
+    return decisionApplied();
+}
+
+eve::Result<void> DecisionContext::restoreBinary(std::string_view bytes) {
+    if (bytes.size() > static_cast<size_t>(std::numeric_limits<int>::max()))
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "decision snapshot is too large", "snapshot", {}, "decision"));
+    proto::DecisionContextSave save;
+    if (!save.ParseFromArray(bytes.data(), static_cast<int>(bytes.size())))
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "invalid decision Protobuf bytes", "snapshot", {}, "decision"));
+    return restoreMessage(save);
+}
+
 eve::Result<void> DecisionContext::restoreJson(const std::string& j) {
+    proto::DecisionContextSave save;
+    if (google::protobuf::util::JsonStringToMessage(j, &save).ok() && save.has_schema()) return restoreMessage(save);
+
+    // Only the original version-1 JSON shape is decoded by the legacy parser.
     std::string e;
     auto        d = eve::json::Document::parse(j, &e);
     if (!d.valid())
@@ -343,6 +448,9 @@ eve::Result<void> DecisionContext::restoreJson(const std::string& j) {
                                                                  "snapshot", {}, "decision"));
     if (!d.root().isObject()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
                                                              "decision snapshot must be a JSON object", "snapshot", {}, "decision"));
+    if (d.root().has("schema"))
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "invalid decision Protobuf JSON", "snapshot", {}, "decision"));
     const auto version = d.root().get("version");
     if (!version.isIntegerLiteral() || version.asInt() != 1)
         return eve::Result<void>::failure(eve::Diagnostic::error(

@@ -47,6 +47,7 @@ set(EVE_TEST_DOMAINS
     map
     voxel
     particles
+    decision
     rpg
     combat
     tactics_rts
@@ -148,7 +149,7 @@ set(EVE_TEST_MODULE_DOMAIN
     "attributes;rpg"
     "definitions;rpg"
     "authority;rpg"
-    "decision;rpg"
+    "decision;decision"
     "emergence;rpg"
     "production;rpg"
     "orders;rpg"

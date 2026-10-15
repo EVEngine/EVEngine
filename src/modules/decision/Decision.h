@@ -9,9 +9,14 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace eve::decision {
+
+namespace proto {
+class DecisionContextSave;
+}
 
 /** @brief Handle domain for module-owned decision contexts. */
 struct DecisionContextHandleTag {};
@@ -72,17 +77,37 @@ public:
     /** @brief Samples the containing cell, returning fallback outside the grid. */
     float sample(const std::string& name, float worldX, float worldY, float fallback) const;
 
-    /** @brief Exports deterministic JSON. */
+    /**
+     * @brief Serializes a versioned, typed Protobuf snapshot into caller-owned bytes.
+     * @return Serialized bytes or a structured serialization failure.
+     * @cost Linear in stored boards, transitions, and grid cells per capture.
+     * @thread Call while no other thread mutates this context.
+     */
+    [[nodiscard]] eve::Result<std::string> snapshotBinary() const;
+
+    /**
+     * @brief Validates and atomically restores a typed Protobuf snapshot; unknown fields are rejected.
+     * @param bytes Borrowed input, needed only for the duration of this call.
+     * @return Success after publication or a diagnostic that leaves this context unchanged.
+     * @cost Linear in input bytes and stored grid cells per restore.
+     * @thread Caller must have exclusive access to this context.
+     * @reentrancy Does not invoke user callbacks.
+     */
+    [[nodiscard]] eve::Result<void> restoreBinary(std::string_view bytes);
+
+    /** @brief Exports Protobuf JSON for script compatibility; snapshotBinary() is the canonical persistence API. */
     std::string snapshotJson() const;
 
     /**
-     * @brief Restores a version-1 snapshot transactionally.
+     * @brief Restores Protobuf JSON or a legacy version-1 JSON snapshot transactionally.
      * @return Success after the complete snapshot has been validated and
      *         published; malformed input leaves the current context unchanged.
      */
     [[nodiscard]] eve::Result<void> restoreJson(const std::string& json);
 
 private:
+    void                            captureMessage(proto::DecisionContextSave& save) const;
+    [[nodiscard]] eve::Result<void> restoreMessage(const proto::DecisionContextSave& save);
     struct Grid {
         int                width    = 0;
         int                height   = 0;

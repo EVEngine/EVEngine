@@ -110,3 +110,12 @@ registered IDs, numeric ranges, and cross-field relationships remain explicit
 domain checks; descriptor structure alone does not enforce them. Each migration
 must read its old format, reject unsupported future versions, and prove that a
 failed load leaves the authoritative state unchanged.
+
+`DecisionContext` now captures typed version-2 `DecisionContextSave` messages,
+with binary snapshot/restore and Protobuf JSON for its existing script-facing
+JSON entry point. Blackboard scalars remain canonical JSON strings because
+their type is chosen at runtime by callers; boards, state machines, transitions,
+and influence grids are typed fields. Binary restore rejects unknown fields,
+duplicate named records, unsupported versions, and invalid grid data before
+publishing any state. The former version-1 hand-written JSON format remains a
+read-only compatibility input.
