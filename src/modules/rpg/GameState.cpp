@@ -2,8 +2,15 @@
 #include "common/StringMapInstances.h"
 
 #include "common/Value.h"
+#include "rpg_game_state.pb.h"
 
+#include <google/protobuf/util/json_util.h>
+
+#include <algorithm>
 #include <cmath>
+#include <limits>
+#include <utility>
+#include <vector>
 
 namespace {
 
@@ -117,34 +124,134 @@ void GameState::clear() {
     selfStrings_.clear();
 }
 
+eve::Result<void> GameState::captureMessage(proto::GameStateSave &save) const {
+    save.set_schema("eve.rpg.game-state");
+    save.set_version(1);
+    for (const auto &[name, on] : switches_) (*save.mutable_switches())[name] = on;
+    for (const auto &[name, value] : variables_) {
+        if (!std::isfinite(value))
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "game state variable must be finite", name));
+        (*save.mutable_variables())[name] = value;
+    }
+    std::vector<std::string> numericScopes;
+    numericScopes.reserve(selfVariables_.size());
+    for (const auto &entry : selfVariables_) numericScopes.push_back(entry.first);
+    std::sort(numericScopes.begin(), numericScopes.end());
+    for (const auto &scope : numericScopes) {
+        const auto &values = selfVariables_.at(scope);
+        auto       *facts  = save.add_self_variables();
+        facts->set_scope(scope);
+        for (const auto &[name, value] : values) {
+            if (!std::isfinite(value))
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                         "game state scoped variable must be finite",
+                                                                         scope + "." + name));
+            (*facts->mutable_values())[name] = value;
+        }
+    }
+    std::vector<std::string> stringScopes;
+    stringScopes.reserve(selfStrings_.size());
+    for (const auto &entry : selfStrings_) stringScopes.push_back(entry.first);
+    std::sort(stringScopes.begin(), stringScopes.end());
+    for (const auto &scope : stringScopes) {
+        const auto &values = selfStrings_.at(scope);
+        auto       *facts  = save.add_self_strings();
+        facts->set_scope(scope);
+        for (const auto &[name, value] : values) (*facts->mutable_values())[name] = value;
+    }
+    return eve::Result<void>::success();
+}
+
+eve::Result<std::string> GameState::snapshotBinary() const {
+    proto::GameStateSave save;
+    auto                 captured = captureMessage(save);
+    if (!captured.ok()) return eve::Result<std::string>::failure(captured.status());
+    std::string bytes;
+    if (!save.SerializeToString(&bytes))
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                                        "game state Protobuf serialization failed"));
+    return eve::Result<std::string>::success(std::move(bytes));
+}
+
 eve::Result<std::string> GameState::snapshotJson() const {
-    eve::Value::Object switches;
-    for (const auto &[name, on] : switches_) switches.emplace(name, eve::Value(on));
-    eve::Value::Object variables;
-    for (const auto &[name, value] : variables_) variables.emplace(name, eve::Value(value));
-    eve::Value::Object scoped;
-    for (const auto &[scope, values] : selfVariables_) {
-        eve::Value::Object encoded;
-        for (const auto &[name, value] : values) encoded.emplace(name, eve::Value(value));
-        scoped.emplace(scope, eve::Value(std::move(encoded)));
+    proto::GameStateSave save;
+    auto                 captured = captureMessage(save);
+    if (!captured.ok()) return eve::Result<std::string>::failure(captured.status());
+    std::string json;
+    const auto  status = google::protobuf::util::MessageToJsonString(save, &json);
+    if (!status.ok())
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                                        "game state Protobuf JSON conversion failed"));
+    return eve::Result<std::string>::success(std::move(json));
+}
+
+eve::Result<void> GameState::restoreMessage(const proto::GameStateSave &save) {
+    auto fail = [](eve::DiagnosticCode code, std::string message, std::string path) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
+    };
+    if (!save.has_schema() || save.schema() != "eve.rpg.game-state")
+        return fail(eve::DiagnosticCode::InvalidArgument, "snapshot does not belong to RPG GameState", "$.schema");
+    if (!save.has_version() || save.version() != 1)
+        return fail(eve::DiagnosticCode::UnknownVersion, "unsupported RPG GameState snapshot version", "$.version");
+    std::unordered_map<std::string, bool>   candidateSwitches(save.switches().begin(), save.switches().end());
+    std::unordered_map<std::string, double> candidateVariables;
+    for (const auto &[name, value] : save.variables()) {
+        if (!std::isfinite(value))
+            return fail(eve::DiagnosticCode::InvalidArgument, "game state variable must be finite",
+                        "$.variables." + name);
+        candidateVariables.emplace(name, value);
     }
-    eve::Value::Object scopedStrings;
-    for (const auto &[scope, values] : selfStrings_) {
-        eve::Value::Object encoded;
-        for (const auto &[name, value] : values) encoded.emplace(name, eve::Value(value));
-        scopedStrings.emplace(scope, eve::Value(std::move(encoded)));
+    std::unordered_map<std::string, std::unordered_map<std::string, double>> candidateScoped;
+    for (const auto &facts : save.self_variables()) {
+        if (!facts.has_scope() ||
+            !candidateScoped.emplace(facts.scope(), std::unordered_map<std::string, double>{}).second)
+            return fail(eve::DiagnosticCode::Conflict, "game state numeric scope is missing or duplicated",
+                        "$.selfVariables");
+        auto &values = candidateScoped.at(facts.scope());
+        for (const auto &[name, value] : facts.values()) {
+            if (!std::isfinite(value))
+                return fail(eve::DiagnosticCode::InvalidArgument, "game state scoped variable must be finite",
+                            "$.selfVariables." + facts.scope() + "." + name);
+            values.emplace(name, value);
+        }
     }
-    eve::Value::Object root;
-    root.emplace("schema", eve::Value("eve.rpg.game-state"));
-    root.emplace("selfStrings", eve::Value(std::move(scopedStrings)));
-    root.emplace("selfVariables", eve::Value(std::move(scoped)));
-    root.emplace("switches", eve::Value(std::move(switches)));
-    root.emplace("variables", eve::Value(std::move(variables)));
-    root.emplace("version", eve::Value(1));
-    return eve::Value(std::move(root)).toJson();
+    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> candidateStrings;
+    for (const auto &facts : save.self_strings()) {
+        if (!facts.has_scope() ||
+            !candidateStrings.emplace(facts.scope(), std::unordered_map<std::string, std::string>{}).second)
+            return fail(eve::DiagnosticCode::Conflict, "game state string scope is missing or duplicated",
+                        "$.selfStrings");
+        auto &values = candidateStrings.at(facts.scope());
+        for (const auto &[name, value] : facts.values()) values.emplace(name, value);
+    }
+    switches_.swap(candidateSwitches);
+    variables_.swap(candidateVariables);
+    selfVariables_.swap(candidateScoped);
+    selfStrings_.swap(candidateStrings);
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> GameState::restoreSnapshotBinary(std::string_view bytes) {
+    if (bytes.size() > static_cast<std::size_t>(std::numeric_limits<int>::max()))
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "game state snapshot is too large"));
+    proto::GameStateSave save;
+    if (!save.ParseFromArray(bytes.data(), static_cast<int>(bytes.size())))
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid game state Protobuf bytes"));
+    return restoreMessage(save);
 }
 
 eve::Result<void> GameState::restoreSnapshotJson(std::string_view json) {
+    proto::GameStateSave                     typed;
+    google::protobuf::util::JsonParseOptions options;
+    options.ignore_unknown_fields = true;
+    if (google::protobuf::util::JsonStringToMessage(std::string(json), &typed, options).ok())
+        return restoreMessage(typed);
+
+    // Version-1 JSON from before the typed wire format used nested scope maps.
+    // Keep this read-only migration path until existing saves are upgraded.
     auto parsed = eve::Value::fromJson(json);
     if (!parsed.ok()) return eve::Result<void>::failure(parsed.status());
     const eve::Value &root = parsed.value();
@@ -198,10 +305,11 @@ eve::Result<void> GameState::restoreSnapshotJson(std::string_view json) {
         }
     }
 
-    switches_      = std::move(candidateSwitches);
-    variables_     = std::move(candidateVariables).takeValue();
-    selfVariables_ = std::move(candidateScoped);
-    selfStrings_   = std::move(candidateStrings);
+    auto numeric = std::move(candidateVariables).takeValue();
+    switches_.swap(candidateSwitches);
+    variables_.swap(numeric);
+    selfVariables_.swap(candidateScoped);
+    selfStrings_.swap(candidateStrings);
     return eve::Result<void>::success();
 }
 

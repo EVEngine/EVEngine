@@ -6,7 +6,7 @@ authority for its live state; a protobuf message is an owning snapshot, not a
 second mutable runtime model. `Value` remains available for genuinely dynamic
 script and tool data, but is not the serialization step for known records.
 
-## Implemented typed persistence: inventory and quest tracker
+## Implemented typed persistence: inventory and RPG state
 
 `proto/inventory_save.proto` defines the version-1 inventory record. The
 generated C++ sources in `proto/generated/` come from the pinned protobuf
@@ -56,6 +56,25 @@ restoration validates every quest/objective identity and bound in a private
 candidate before publishing it. Runtime event queues are intentionally absent
 from the persistent message. Version 1 retains the previous policy of ignoring
 unknown fields while rejecting unsupported versions.
+
+`GameState` now captures switches, numeric variables and scoped facts into a
+typed `GameStateSave` message. New binary and JSON snapshots share the same
+schema/version and finite-number checks. Restore builds private maps and swaps
+them only after all fields validate. Version-1 JSON written before this change
+used nested scope maps; its parser remains a read-only compatibility migration
+until existing saves have been upgraded. New snapshots do not pass through
+`Value`.
+
+`RPGActor` checkpoints use `ActorCheckpointSave` for binary and Protobuf JSON
+output. Restore checks the destination's class, trait and attribute layout,
+progression bounds, vitals and registered skills before publishing any state.
+The actor's active effects and casts remain excluded and block capture. Existing
+version-1 JSON field names map directly onto the protobuf message.
+
+`Party` checkpoints now embed those actor messages directly in an ordered
+`PartyCheckpointSave`. Binary and JSON restore validate every member ID, actor
+candidate and roster length before changing any actor; the party's ECS links
+remain owned by the live roster.
 
 `Value` remains a supported runtime type for genuinely dynamic script, editor
 and tool data. The migration target is its use as an intermediate format for

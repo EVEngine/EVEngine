@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package eve.rpg.proto;
+
+import "rpg_actor_checkpoint.proto";
+
+message PartyMemberSave {
+  optional string id = 1;
+  ActorCheckpointSave actor = 2;
+}
+
+message PartyCheckpointSave {
+  optional string schema = 1;
+  optional uint32 version = 2;
+  repeated PartyMemberSave members = 3;
+}

@@ -51,6 +51,75 @@
       "phase": "script/game-driven simulation; Battle is turn-based, others are update(dt)-driven"
     },
     {
+      "id": "rpg-actor-protobuf-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/rpg/RPGActorPersistence.cpp",
+      "owner": "rpg::RPGActor",
+      "issue": "EVENGINE-ARCH-RPG-SAVE",
+      "reason": "Known actor checkpoint fields are serialized through a typed Protobuf record instead of Value-mediated JSON.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "proto/rpg_actor_checkpoint.proto",
+        "src/modules/rpg/RPGActor.h",
+        "src/modules/rpg/RPGActorPersistence.cpp"
+      ],
+      "tests": [
+        "test/rpg_actor_protobuf.cpp",
+        "test/rpg_actor_checkpoint.cpp"
+      ],
+      "schema": "eve.rpg.proto.ActorCheckpointSave in proto/rpg_actor_checkpoint.proto",
+      "version": "schema eve.rpg.actor-checkpoint, wire version 1",
+      "migration": "Existing version-1 JSON is accepted through Protobuf JSON mapping; new saves can use binary bytes.",
+      "unknown_fields": "Version 1 ignores unknown binary and JSON fields, preserving prior actor checkpoint behavior.",
+      "restore_atomicity": "Class, traits, attributes, progression, vitals and skills validate in a private candidate before commit."
+    },
+    {
+      "id": "rpg-game-state-protobuf-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/rpg/GameState.*",
+      "owner": "rpg::GameState",
+      "issue": "EVENGINE-ARCH-RPG-SAVE",
+      "reason": "Known RPG game-state facts are serialized through a typed Protobuf message instead of a Value object.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "proto/rpg_game_state.proto",
+        "src/modules/rpg/GameState.h",
+        "src/modules/rpg/GameState.cpp"
+      ],
+      "tests": [
+        "test/rpg_game_state_protobuf.cpp",
+        "test/rpg_gamestate.cpp"
+      ],
+      "schema": "eve.rpg.proto.GameStateSave in proto/rpg_game_state.proto",
+      "version": "schema eve.rpg.game-state, wire version 1",
+      "migration": "Existing nested-map version-1 JSON remains a read-only compatibility migration; new saves use Protobuf binary or its JSON mapping.",
+      "unknown_fields": "Version 1 ignores unknown binary and JSON fields, as the prior game-state loader did.",
+      "restore_atomicity": "All numeric values and duplicate scopes validate in private maps before four no-fail swaps publish the new state."
+    },
+    {
+      "id": "rpg-party-protobuf-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/rpg/Party.*",
+      "owner": "rpg::Party",
+      "issue": "EVENGINE-ARCH-RPG-SAVE",
+      "reason": "Party checkpoints compose typed actor Protobuf messages directly, with no Value/JSON intermediate.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "proto/rpg_party_checkpoint.proto",
+        "src/modules/rpg/Party.h",
+        "src/modules/rpg/Party.cpp"
+      ],
+      "tests": [
+        "test/rpg_party_protobuf.cpp",
+        "test/rpg_party.cpp"
+      ],
+      "schema": "eve.rpg.proto.PartyCheckpointSave in proto/rpg_party_checkpoint.proto",
+      "version": "schema eve.rpg.party, wire version 1",
+      "migration": "Existing version-1 JSON is read through Protobuf JSON mapping; new snapshots can use wire bytes.",
+      "unknown_fields": "Version 1 ignores unknown binary and JSON fields, as prior Party restore did.",
+      "restore_atomicity": "The complete roster and every actor candidate validate before any actor commit."
+    },
+    {
       "id": "rpg-tracker-protobuf-persistence",
       "rule": "persistence",
       "scope": "src/modules/rpg/Tracker.*",
