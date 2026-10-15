@@ -16,4 +16,3 @@ eve_declare_module(NAME spritestack_editing LAYER 5
                    GROUP 2d 3d)
 
 # L7 -- spritestack
-eve_declare_module(NAME spritestack_editor LAYER 7 DEPS editor spritestack_editing GROUP 2d 3d)

@@ -15,4 +15,3 @@ eve_declare_module(NAME decal_editing LAYER 5
                    GROUP 3d web)
 
 # L7 -- decal
-eve_declare_module(NAME decal_editor LAYER 7 DEPS decal_editing editor GROUP 3d web)

@@ -30,8 +30,6 @@ eve_declare_module(NAME graphics_fog DIR graphics/fog LAYER 4
 eve_declare_module(NAME graphics_editor LAYER 7 SCRIPT GraphicsEditorModule SLOT graphicsEditor
                    DEPS editor graphics graphics_editing GROUP 3d web)
 
-eve_declare_module(NAME lighting_editor LAYER 7 DEPS editor lighting_editing GROUP 3d web)
-
 eve_declare_module(NAME material_editor LAYER 7 DEPS editor graphics_editor material_editing
                    SCRIPT MaterialEditorModule SLOT materialEditor GROUP 3d web)
 

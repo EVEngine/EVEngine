@@ -17,7 +17,7 @@ eve_declare_module(NAME heightmap_target DIR procgen/heightmap_target LAYER 7
 eve_declare_module(NAME biome_editor LAYER 7 DEPS biome_editing editor procgen
                    SCRIPT BiomeEditorModule SLOT biomeEditor GROUP 3d)
 
-eve_declare_module(NAME procgen_editor LAYER 7 DEPS domain_gizmo_editor editor procgen procgen_editing
+eve_declare_module(NAME procgen_editor LAYER 7 DEPS domain_gizmo_editing editor procgen procgen_editing
                    SCRIPT ProcgenEditorModule SLOT procgenEditor GROUP 3d)
 
 # L6 -- procgen
