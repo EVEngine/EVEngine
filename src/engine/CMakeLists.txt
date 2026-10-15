@@ -1,4 +1,6 @@
 create_module(EVCommon common)
+# ECS script component reflection uses the pinned VM internal class/instance layouts.
+target_include_directories(EVCommon PRIVATE "${CMAKE_SOURCE_DIR}/third-party/squirrel/squirrel")
 
 eve_configure_file_if_changed(${CMAKE_CURRENT_SOURCE_DIR}/common/config.h.in common/config.h)
 eve_configure_file_if_changed(${CMAKE_CURRENT_SOURCE_DIR}/common/BuildInfo.h.in common/BuildInfo.h)

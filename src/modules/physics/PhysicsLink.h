@@ -11,6 +11,7 @@
  * rebuilt from persistent identity during restore or hot reload.
  */
 
+#include "common/BorrowedRef.h"
 #include "common/Result.h"
 #include "physics/PhysicsHandles.h"
 
@@ -19,6 +20,7 @@ namespace eve::physics {
 class Body;
 class Body3D;
 class Joint3D;
+class Joint2D;
 class Shape3D;
 class World;
 class World3D;
@@ -102,6 +104,12 @@ struct PhysicsJointLink {
     /** @brief Creates a link from a live joint. */
     [[nodiscard("check the joint-link construction outcome")]]
     static eve::Result<PhysicsJointLink> fromJoint(const Joint3D& joint);
+    /** @brief Create a world-qualified link from a live planar joint; no ownership transfer. */
+    [[nodiscard]] static eve::Result<PhysicsJointLink> fromJoint(const Joint2D& joint);
+    /** @brief Borrow a planar joint synchronously on its simulation thread; stale owner/generation rejects.
+     * @return Non-owning reference valid until joint/body/world destruction; no callbacks or reentry.
+     */
+    [[nodiscard]] eve::ResultRef<Joint2D> resolve(World& world) const;
     /** @brief Resolves a live joint or returns StaleHandle. */
     [[nodiscard("check stale joint-link resolution")]]
     eve::Result<Joint3D*> resolve(World3D& world) const;

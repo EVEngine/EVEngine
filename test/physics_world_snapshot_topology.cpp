@@ -97,6 +97,8 @@ TEST_CASE("physics.snapshot_restored_world_keeps_live_step_driver") {
     const auto            hash = topologyHash();
     eve::physics::World3D world(0.f, -9.f, 0.f, false);
     auto*                 original = world.newBody("dynamic", 0.f, 10.f, 0.f);
+    // Give the driver probe a physical mass; an unshaped zero-mass body does not fall.
+    std::unique_ptr<eve::physics::Shape3D> shape(original->newBoxShape(1, 1, 1));
     const int             id       = original->getId();
     auto                  captured = world.snapshot(hash);
     REQUIRE(captured.ok());
@@ -109,7 +111,6 @@ TEST_CASE("physics.snapshot_restored_world_keeps_live_step_driver") {
     CHECK(world.rigidBackendKind() == eve::physics::RigidBackend3D::Box3D);
 }
 
-// physics_world_snapshot_v2.cpp
 namespace {
 
 eve::PersistentId worldId(std::string_view text) {
@@ -149,7 +150,7 @@ TEST_CASE("physics.snapshot_v2_has_stable_identity_and_rejects_foreign_world_ato
     REQUIRE(snapshot.ok());
     CHECK(!snapshot.value().instanceId.isNil());
     CHECK(snapshot.value().instanceId == idA);
-    CHECK_EQ(snapshot.value().schemaVersion.value(), std::uint64_t{2});
+    CHECK_EQ(snapshot.value().schemaVersion.value(), std::uint64_t{3});
     const float beforeGravity = foreign.getGravityY();
     auto        rejected      = foreign.restore(snapshot.value(), hash);
     CHECK(!rejected.ok());
@@ -169,8 +170,10 @@ TEST_CASE("physics.snapshot_v2_explicit_identity_survives_world_recreation") {
     REQUIRE(snapshot.ok());
     REQUIRE(replacement.restore(snapshot.value(), hash).ok());
     CHECK_EQ(replacement.persistentId(), id);
-    CHECK_EQ(replacementBody->getX(), 3.f);
-    CHECK_EQ(replacementBody->getY(), 4.f);
+    CHECK(!replacementBody->isValid());
+    auto roundTrip = replacement.snapshot(hash);
+    REQUIRE(roundTrip.ok());
+    CHECK(roundTrip.value().payload == snapshot.value().payload);
 }
 
 TEST_CASE("physics.snapshot_v2_auto_identity_is_non_nil_and_world_local") {
@@ -200,9 +203,11 @@ TEST_CASE("physics.snapshot_v2_success_invalidates_2d_body_handles") {
     auto restored = world.restore(snapshot.value(), hash);
     REQUIRE(restored.ok(), "{}", restored.status().describe());
     CHECK(world.findBody(oldHandle) == nullptr);
-    CHECK(world.findBody(body->runtimeHandle()) == body);
-    CHECK(body->runtimeHandle() != oldHandle);
-    CHECK_EQ(body->getX(), 3.f);
+    CHECK(!body->isValid());
+    CHECK(world.findBody(body->runtimeHandle()) == nullptr);
+    auto roundTrip = world.snapshot(hash);
+    REQUIRE(roundTrip.ok());
+    CHECK(roundTrip.value().payload == snapshot.value().payload);
 }
 
 TEST_CASE("physics.snapshot_v2_success_invalidates_3d_body_shape_and_joint_handles") {
@@ -223,9 +228,16 @@ TEST_CASE("physics.snapshot_v2_success_invalidates_3d_body_shape_and_joint_handl
     CHECK(world.findBody(oldBody) == nullptr);
     CHECK(world.findShape(oldShape) == nullptr);
     CHECK(world.findJoint(oldJoint) == nullptr);
-    CHECK(world.findBody(bodyA->runtimeHandle()) == bodyA);
-    CHECK(world.findShape(shape->runtimeHandle()) == shape);
-    CHECK(world.findJoint(joint->runtimeHandle()) == joint);
+    CHECK(!bodyA->isValid());
+    CHECK(!bodyB->isValid());
+    CHECK(!shape->isValid());
+    CHECK(!joint->isValid());
+    CHECK(world.findBody(bodyA->runtimeHandle()) == nullptr);
+    CHECK(world.findShape(shape->runtimeHandle()) == nullptr);
+    CHECK(world.findJoint(joint->runtimeHandle()) == nullptr);
+    auto roundTrip = world.snapshot(hash);
+    REQUIRE(roundTrip.ok());
+    CHECK(roundTrip.value().payload == snapshot.value().payload);
 }
 
 TEST_CASE("physics.snapshot_v2_rejects_foreign_3d_world_without_invalidating_handles") {
@@ -246,7 +258,7 @@ TEST_CASE("physics.snapshot_v2_rejects_foreign_3d_world_without_invalidating_han
     CHECK_EQ(foreign.getGravityY(), -20.f);
 }
 
-TEST_CASE("physics.snapshot_v1_migrates_only_against_topology_compatible_live_world") {
+TEST_CASE("physics.snapshot_v1_is_outside_2d_migration_window") {
     const auto          hash = testHashProvider();
     eve::physics::World world(0.f, 10.f, false, 30.f, worldId("41234567-89ab-4cde-8fab-0123456789ab"));
     auto*               body    = world.newBody("dynamic", 1.f, 2.f);
@@ -258,7 +270,25 @@ TEST_CASE("physics.snapshot_v1_migrates_only_against_topology_compatible_live_wo
     REQUIRE(legacy.ok());
     const auto handle   = body->runtimeHandle();
     auto       restored = world.restore(legacy.value(), hash);
-    REQUIRE(restored.ok());
+    REQUIRE(!restored.ok());
+    CHECK(restored.error()->code() == eve::DiagnosticCode::UnknownVersion);
+    CHECK(world.findBody(handle) == body);
+    CHECK(body->isValid());
+}
+
+TEST_CASE("physics.snapshot_v2_roundtrips_closed_chain_geometry") {
+    const auto          hash = topologyHash();
+    eve::physics::World world(0.f, 0.f, false, 32.f);
+    auto*               body = world.newBody("static", 2.f, 3.f);
+    REQUIRE(body->newChainFixture({0.f, 0.f, 64.f, 0.f, 64.f, 64.f, 0.f, 64.f}, true) != nullptr);
+    auto captured = world.snapshot(hash);
+    REQUIRE(captured.ok());
+    const auto handle   = body->runtimeHandle();
+    auto       restored = world.restore(captured.value(), hash);
+    REQUIRE(restored.ok(), "{}", restored.status().describe());
     CHECK(world.findBody(handle) == nullptr);
     CHECK(!body->isValid());
+    auto roundTrip = world.snapshot(hash);
+    REQUIRE(roundTrip.ok());
+    CHECK(roundTrip.value().payload == captured.value().payload);
 }
