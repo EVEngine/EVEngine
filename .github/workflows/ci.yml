@@ -824,6 +824,27 @@ jobs:
           make build/macosx-debug JOBS="$(sysctl -n hw.ncpu)"
           CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
 
+      - name: Diagnose macOS Vulkan headers (temporary)
+        run: |
+          python3 - <<'PY'
+          from collections import Counter
+          from pathlib import Path
+          import re
+
+          counts = Counter()
+          examples = {}
+          for dep in Path('build/macosx-debug').rglob('*.o.d'):
+              content = dep.read_text(encoding='utf-8', errors='replace')
+              for header in set(re.findall(r'\S+/vulkan/(?:vulkan\.hpp|vulkan_core\.h)', content)):
+                  counts[header] += 1
+                  examples.setdefault(header, str(dep))
+          for header, count in counts.most_common():
+              print(f'{count} translation units: {header}; example: {examples[header]}')
+          if not counts:
+              raise SystemExit('No Vulkan dependency files found')
+          PY
+          exit 1
+
       - name: Run macosx unit tests
         timeout-minutes: 60
         env:
