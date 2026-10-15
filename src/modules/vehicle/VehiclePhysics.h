@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /**
  * @brief Optional physics backend for vehicle mobility and body attach.
@@ -29,7 +30,7 @@ enum class VehiclePhysicsStatus : uint8_t {
 };
 
 /** @brief VehiclePhysics public API. */
-class VehiclePhysics {
+class EVENGINE_API_DOMAINS VehiclePhysics {
 public:
     /** @brief Attach a 2D dynamic body when physics is in the build. */
     [[nodiscard]] static VehiclePhysicsStatus attach2D(VehicleEntity* v, eve::physics::World* world);

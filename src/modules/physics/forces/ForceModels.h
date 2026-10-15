@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include <limits>
 #include "common/Result.h"
@@ -132,7 +133,7 @@ struct TireSample {
  * before its fixed solver step. Damping is implicit over dt to avoid velocity reversal.
  * Tire contact uses implicit slip impulses with frozen per-step stiffness and a bounded brake solve.
  */
-class ForceModels {
+class EVENGINE_API_WORLD ForceModels {
 public:
     /** @brief Sample mass-scaled directional force at a world position in meters. */
     [[nodiscard]] static Result<ForceVector> directional(const DirectionalField& model, ForceVector position,
@@ -178,12 +179,12 @@ public:
  * @thread Simulation owner thread, before step, outside callbacks; no reentry or callbacks.
  * @return InvalidArgument for non-planar/invalid values or inactive/non-dynamic body; stale body rejected.
  */
-[[nodiscard]] Result<void> applyForceSI(Body& body, ForceVector force, ForceVector point);
+[[nodiscard]] EVENGINE_API_WORLD Result<void> applyForceSI(Body& body, ForceVector force, ForceVector point);
 /**
  * @brief Apply an SI force to a 3D body at an SI world point.
  * @ownership Body is borrowed synchronously, never retained; world owns its lifetime.
  * @thread Simulation owner thread, before step, outside callbacks; no reentry or callbacks.
  * @return InvalidArgument for invalid values or inactive/non-dynamic body; stale body rejected.
  */
-[[nodiscard]] Result<void> applyForceSI(Body3D& body, ForceVector force, ForceVector point);
+[[nodiscard]] EVENGINE_API_WORLD Result<void> applyForceSI(Body3D& body, ForceVector force, ForceVector point);
 }  // namespace eve::physics

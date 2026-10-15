@@ -18,6 +18,11 @@ set(BOX3D_BENCHMARKS OFF CACHE BOOL "" FORCE)
 set(SQUIRREL_INCLUDE_DIR "${EVE_ROOT}/third-party/squirrel/include")
 set(SQUIRREL_LIBRARIES squirrel_static)
 set(SQSTDLIB_LIBRARIESRARIES sqstdlib_static)
+execute_process(COMMAND ${CMAKE_COMMAND}
+  -DPATCH=${EVE_ROOT}/third-party/cmake/patches/simplesquirrel-stable-type-hash.patch
+  -DPATCH_DIR=${EVE_ROOT}/third-party
+  -P ${EVE_ROOT}/third-party/cmake/apply_patch.cmake
+  COMMAND_ERROR_IS_FATAL ANY)
 add_subdirectory("${EVE_ROOT}/third-party/squirrel" squirrel EXCLUDE_FROM_ALL)
 add_subdirectory("${EVE_ROOT}/third-party/simplesquirrel" simplesquirrel EXCLUDE_FROM_ALL)
 add_subdirectory("${EVE_ROOT}/third-party/box3d" box3d EXCLUDE_FROM_ALL)
@@ -30,14 +35,15 @@ if(EVE_MECHANICS_WITH_JOLT)
   eve_add_jolt()
   add_custom_target(physics_mechanics_jolt_patch
     COMMAND ${CMAKE_COMMAND}
-      -DPATCH=${EVE_ROOT}/cmake/patches/jolt-solved-contacts-rolling.patch
+      -DPATCH=${EVE_ROOT}/third-party/cmake/patches/jolt-solved-contacts-rolling.patch
       -DPATCH_DIR=${EVE_ROOT}/third-party/jolt
-      -P ${EVE_ROOT}/cmake/patch_third_party.cmake)
+      -P ${EVE_ROOT}/third-party/cmake/apply_patch.cmake)
   add_dependencies(Jolt physics_mechanics_jolt_patch)
   set_source_files_properties("${EVE_ROOT}/src/modules/physics/jolt/JoltDistanceConstraint.cpp" PROPERTIES COMPILE_OPTIONS -fno-rtti)
 endif()
 set(src
- test/physics_merge_contract.cpp
+ test/unit/physics/physics_tests.cpp
+ test/integration/physics-simulation/physics_merge_contract.cpp
  src/engine/common/ModuleRegistry.cpp
  src/engine/common/Result.cpp src/engine/common/Status.cpp src/engine/common/Diagnostic.cpp
  src/modules/physics/WorldJoints2D.cpp
@@ -58,30 +64,30 @@ set(src
  src/modules/physics/box3d/Box3DBody.cpp
  src/modules/physics/box3d/Box3DWorldMover.cpp
  src/modules/physics/box3d/Box3DJoint.cpp
- test/physics_vehicle_tires3d.cpp
+ test/integration/physics-simulation/physics_vehicle_tires3d.cpp
  src/modules/vehicle/VehicleTires3D.cpp src/modules/vehicle/VehicleTireRuntime.cpp
  src/modules/vehicle/VehicleSystem.cpp
  src/modules/vehicle/VehicleDefinitionRuntime.cpp
- test/physics_vehicle_tires.cpp
+ test/integration/physics-simulation/physics_vehicle_tires.cpp
  src/modules/vehicle/VehiclePhysics.cpp src/modules/vehicle/VehicleTires2D.cpp
- test/physics_force_receipt.cpp
- test/physics_tire_stability.cpp
- test/physics_wing_assembly.cpp
- test/physics_buoyancy_geometry.cpp
- test/physics_field_set.cpp
- test/physics_snapshot3d_ownership.cpp
- test/physics_coupling3d_script.cpp src/modules/physics/mechanics/Coupling3DBindings.cpp
- test/physics_coupling3d.cpp
- test/physics_world_snapshot_topology.cpp
+ test/integration/physics-simulation/physics_force_receipt.cpp
+
+ test/integration/physics-simulation/physics_wing_assembly.cpp
+ test/integration/physics-simulation/physics_buoyancy_geometry.cpp
+ test/integration/physics-simulation/physics_field_set.cpp
+ test/integration/physics-simulation/physics_snapshot3d_ownership.cpp
+ test/integration/physics-simulation/physics_coupling3d_script.cpp src/modules/physics/mechanics/Coupling3DBindings.cpp
+ test/integration/physics-simulation/physics_coupling3d.cpp
+ test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp
  src/modules/physics/snapshot/JointSnapshotCodec.cpp
  src/modules/physics/snapshot/Joint3DParameters.cpp
  src/modules/physics/snapshot/Coupling3DSnapshot.cpp
  src/modules/physics/snapshot/Shape3DContactSnapshot.cpp
  src/modules/physics/snapshot/PlanarMaterialSnapshot.cpp src/modules/physics/snapshot/WorldSnapshotCodec.cpp src/modules/physics/WorldSnapshot.cpp src/modules/physics/PhysicsLink.cpp
  src/engine/common/Snapshot.cpp src/engine/common/Identity.cpp
- test/physics_joint2d_script.cpp src/modules/physics/mechanics/Joint2DBindings.cpp src/engine/common/SquirrelOwnership.cpp
- test/physics_joint2d_snapshot.cpp test/physics_joint2d.cpp src/modules/physics/mechanics/Joint2D.cpp
- test/physics_force_models.cpp test/physics_force_application.cpp test/physics_force_script.cpp
+ test/integration/physics-simulation/physics_joint2d_script.cpp src/modules/physics/mechanics/Joint2DBindings.cpp src/engine/common/SquirrelOwnership.cpp
+ test/integration/physics-simulation/physics_joint2d_snapshot.cpp test/integration/physics-simulation/physics_joint2d.cpp src/modules/physics/mechanics/Joint2D.cpp
+  test/integration/physics-simulation/physics_force_application.cpp test/integration/physics-simulation/physics_force_script.cpp
  src/modules/physics/forces/ForceFields.cpp src/modules/physics/forces/Aerodynamics.cpp
  src/modules/physics/forces/ForceBatch.cpp
     src/modules/physics/forces/ForceReceipt.cpp
@@ -103,14 +109,18 @@ set(src
  src/engine/common/SquirrelBinding.cpp src/engine/common/Value.cpp src/engine/common/Json.cpp)
 if(EVE_MECHANICS_WITH_JOLT)
   file(GLOB jolt_sources RELATIVE "${EVE_ROOT}" "${EVE_ROOT}/src/modules/physics/jolt/*.cpp")
-  list(APPEND src ${jolt_sources} test/physics_jolt.cpp test/physics_jolt_contacts.cpp test/physics_jolt_cooking.cpp)
+  list(APPEND src ${jolt_sources})
 endif()
 list(TRANSFORM src PREPEND "${EVE_ROOT}/")
 add_executable(force_integration ${src} NoPlatformEvent.cpp)
+target_compile_definitions(force_integration PRIVATE EVE_TEST_FILTER_ORIGINS EVE_TEST_ORIGIN_physics_world_snapshot_topology
+ EVE_TEST_ORIGIN_physics_force_models EVE_TEST_ORIGIN_physics_tire_stability)
+target_include_directories(force_integration PRIVATE "${EVE_ROOT}/test")
 if(EVE_MECHANICS_WITH_JOLT)
   add_dependencies(force_integration physics_mechanics_jolt_patch)
   target_link_libraries(force_integration PRIVATE Jolt)
-  target_compile_definitions(force_integration PRIVATE EVENGINE_HAS_JOLT=1 EVENGINE_TEST_HAS_JOLT=1)
+  target_compile_definitions(force_integration PRIVATE EVENGINE_HAS_JOLT=1 EVENGINE_TEST_HAS_JOLT=1
+    EVE_TEST_ORIGIN_physics_jolt EVE_TEST_ORIGIN_physics_jolt_contacts EVE_TEST_ORIGIN_physics_jolt_cooking)
 endif()
 add_dependencies(force_integration sq_static evescript_modules_test)
 target_include_directories(force_integration PRIVATE "${EVE_ROOT}/src/modules" "${EVE_ROOT}/src/engine"

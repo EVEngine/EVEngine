@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include "common/Export.h"
 #include "common/Result.h"
 
 namespace eve::physics {
@@ -46,7 +47,7 @@ struct Coupling3DState {
  * Revolute coordinates unwrap across turns and require less than pi radians of relative rotation per step.
  * This is a finite-step transmission model; it does not simulate tooth contact or promise bit-exact replay.
  */
-class Coupling3D {
+class EVENGINE_API_WORLD Coupling3D {
 public:
     /** @brief Releases the registration; source bodies and joints remain intact. */
     ~Coupling3D();

@@ -1,18 +1,19 @@
 # Linux 无图形物理机制检查
 
 该夹具链接真实 Box2D/Box3D、引擎 World/Body/Joint 和真实 Squirrel VM，运行同一批
-`test/physics_*.cpp` 用例。无 Vulkan/SDL 宿主；唯一替身是缺席的 PlatformEvent 入口，
+`test/unit/physics/` 与 `test/integration/physics-simulation/` 中的物理用例。
+无 Vulkan/SDL 宿主；唯一替身是缺席的 PlatformEvent 入口，
 意外调用时抛错，不能把这个夹具当成完整事件宿主或 GUI 验证。
 
 ```sh
 cmake -S test/profile/physics_mechanics -B build/physics-mechanics -G Ninja -DCMAKE_BUILD_TYPE=Debug
 cmake --build build/physics-mechanics --target force_integration --parallel 4
-ctest --test-dir build/physics-mechanics --output-on-failure --parallel 4
+ctest --test-dir build/physics-mechanics -LE bundle --output-on-failure --parallel 4
 ```
 
 依赖使用仓库固定的 `external/zeroerr` 与 `third-party` 源码，需先初始化子模块及
 官方构建配置拉取 third-party。每个测试独立进程运行；同时检查 ZeroErr 断言警告，
-避免仅看进程返回码遗漏失败。普通 `unit_test` 仍自动发现这些顶层测试源文件。
+避免仅看进程返回码遗漏失败。普通测试目标从同一测试目录和分类目录发现这些用例。
 
 内存检查使用相同真实实现，不关闭 ASan 全局检查：
 

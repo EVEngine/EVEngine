@@ -1,6 +1,7 @@
 #pragma once
 #include <span>
 #include <vector>
+#include "common/Export.h"
 #include "physics/PhysicsLink.h"
 #include "physics/forces/ForceModels.h"
 #include "physics/forces/ForceReceipt.h"
@@ -22,7 +23,7 @@ struct ForceLoad {
  * All batches pending in a world must name the same step. Direct raw stepping/force clearing is forbidden.
  * Do not mix unbounded raw-backend force accumulation with this API.
  */
-class ForceBatch {
+class EVENGINE_API_WORLD ForceBatch {
 public:
     ForceBatch(const ForceBatch&)            = delete;
     ForceBatch& operator=(const ForceBatch&) = delete;

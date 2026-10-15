@@ -290,11 +290,17 @@ local effectiveOrder = r.getPartSortPriority(0);
 `Texture.setAlphaConvention("straight" | "premultiplied")` 声明，并通过
 `Texture.getAlphaConvention()` 查询。
 
-虚拟纹理材质通过 `setVirtualTexture(albedoAtlas, normalAtlas, pageTable,
-pageCountX, pageCountY, borderFraction)` 显式启用 atlas/page-table 路径；
-`usesVirtualTexture()` 可查询当前模式，`clearVirtualTexture()` 恢复传统材质贴图路径。
-三个纹理对象必须至少存活到材质停止使用它们为止；
-参数校验失败时 `setVirtualTexture()` 会抛出包含诊断信息的脚本异常。
+虚拟纹理由材质拥有并在绑定时自动流式驻留（对齐 UE5 RVT）。脚本只编写图层：
+
+```squirrel
+material.enableVirtualTexture(width, height, tileSize, borderSize, residentCapacity, maxDecodesPerUpdate);
+material.addVirtualTextureLayer(albedo, normal, uvScale, constantWeight, heightContrast);
+// 可选带权重图：addVirtualTextureLayerWeighted(albedo, normal, weight, ...)
+```
+
+`usesVirtualTexture()` 查询是否已进入 atlas/page-table 采样；`clearVirtualTexture()` 关闭。
+页反馈、解码、上传与页表发布不向外暴露，由 `render3D` → `Material.bind` 驱动。
+详见 `examples/virtual-texture-blending` 与 `docs/dev/virtual-texture-material-blending.md`。
 
 ### 高级渲染与屏幕空间效果
 

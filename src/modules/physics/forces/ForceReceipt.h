@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include "common/Export.h"
 #include "common/Time.h"
 
 namespace eve::physics {
@@ -13,7 +14,7 @@ enum class ForceStepStatus { Pending, Applied, Cancelled };
  * Pending survives backend failure. Destroy or successful restore cancels pending receipts.
  * Receipts are transient and are not serialized. Discarding a receipt does not cancel submitted forces.
  */
-class ForceReceipt {
+class EVENGINE_API_WORLD ForceReceipt {
 public:
     /** @brief Current completion status; a moved-from receipt is Cancelled. */
     [[nodiscard]] ForceStepStatus status() const noexcept;

@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <variant>
+#include "common/Export.h"
 #include "physics/forces/ForceBatch.h"
 
 namespace eve::physics {
@@ -27,7 +28,7 @@ struct FieldTarget {
  * Fields evaluate in definition order; duplicate recipient handles reject rather than double-apply.
  * Prepared forces capture current body mass/position; commit promptly before stepping or changing body state.
  */
-class FieldSet {
+class EVENGINE_API_WORLD FieldSet {
 public:
     /** @brief Validate and copy definitions; invalid models reject the entire set, even when filtered out.
      * @return Owned immutable collection or InvalidArgument.

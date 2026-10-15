@@ -40,7 +40,8 @@ struct ScriptJoint2DSettings {
 template <class T>
 T* borrowed(const ssq::Object& value) {
     // SimpleSquirrel's pointer conversion deliberately skips native type-tag validation.
-    if (value.getType() != ssq::Type::INSTANCE || value.getTypeTag() != typeid(T*).hash_code()) return nullptr;
+    if (value.getType() != ssq::Type::INSTANCE || value.getTypeTag() != eve::script::detail::squirrelTypeHash<T*>())
+        return nullptr;
     try {
         return value.to<T*>();
     } catch (const ssq::TypeException&) {
@@ -95,7 +96,7 @@ template <class T>
 T* checkedReceiver(HSQUIRRELVM vm, T* receiver) {
     SQUserPointer tag = nullptr;
     if (sq_gettype(vm, 1) != OT_INSTANCE || SQ_FAILED(sq_gettypetag(vm, 1, &tag)) ||
-        reinterpret_cast<std::size_t>(tag) != typeid(T*).hash_code())
+        reinterpret_cast<std::size_t>(tag) != eve::script::detail::squirrelTypeHash<T*>())
         return nullptr;
     return receiver;
 }

@@ -945,6 +945,12 @@ public:
 
     /** @brief Run RenderSystem3D (begin3DFrame + draw visible Renderable3D). */
     virtual void render3D();
+
+    /**
+     * @brief Monotonic epoch advanced at the start of each render3D() submission.
+     * Materials use this to run virtual-texture streaming at most once per draw wave.
+     */
+    [[nodiscard]] std::uint64_t mesh3dDrawEpoch() const noexcept { return mesh3dDrawEpoch_; }
     /**
      * @brief Preview-quality 3D pass into an offscreen Canvas (editor viewport):
      * renders visible Renderable3D with `camera` into `canvas`, whose texture
@@ -2288,6 +2294,8 @@ protected:
     int pixelHeight = 0;
     Color backgroundColor{0.1f, 0.1f, 0.12f, 1.0f};
     bool frameHad3D = false;
+    /** @brief Advanced once per render3D(); virtual-texture materials tick at most once per value. */
+    std::uint64_t mesh3dDrawEpoch_ = 0;
     /** @brief True while RenderSystem3D is submitting (AO / engine overlays). */
     bool recordingEngine3D_ = false;
     bool screenReadbackEnabled = false;

@@ -11,7 +11,8 @@ namespace eve::physics {
 namespace {
 template <class T>
 T* borrowed(const ssq::Object& object) {
-    if (object.getType() != ssq::Type::INSTANCE || object.getTypeTag() != typeid(T*).hash_code()) return nullptr;
+    if (object.getType() != ssq::Type::INSTANCE || object.getTypeTag() != eve::script::detail::squirrelTypeHash<T*>())
+        return nullptr;
     try {
         return object.to<T*>();
     } catch (const ssq::TypeException&) {
@@ -22,7 +23,7 @@ template <class T>
 T* receiver(HSQUIRRELVM vm, T* value) {
     SQUserPointer tag = nullptr;
     if (sq_gettype(vm, 1) != OT_INSTANCE || SQ_FAILED(sq_gettypetag(vm, 1, &tag)) ||
-        reinterpret_cast<std::size_t>(tag) != typeid(T*).hash_code())
+        reinterpret_cast<std::size_t>(tag) != eve::script::detail::squirrelTypeHash<T*>())
         return nullptr;
     return value;
 }

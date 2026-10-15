@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 #include "physics/forces/ForceBatch.h"
 
 namespace eve::physics {
@@ -19,7 +20,7 @@ struct WingSurface {
  * Values are held for this prepared step; commit before moving bodies or changing controls/wind.
  * This section model does not simulate wake interaction, downwash between surfaces, or CFD.
  */
-class WingAssembly {
+class EVENGINE_API_WORLD WingAssembly {
 public:
     /** @brief Validate and copy local surface descriptions in deterministic input order.
      * @return Owning assembly or InvalidArgument for invalid geometry/polar values.

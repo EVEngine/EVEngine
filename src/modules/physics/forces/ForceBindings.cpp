@@ -124,7 +124,8 @@ struct ScriptTireInput {
 template <class T>
 T* borrowed(const ssq::Object& value) {
     // SimpleSquirrel's pointer conversion deliberately skips native type-tag validation.
-    if (value.getType() != ssq::Type::INSTANCE || value.getTypeTag() != typeid(T*).hash_code()) return nullptr;
+    if (value.getType() != ssq::Type::INSTANCE || value.getTypeTag() != eve::script::detail::squirrelTypeHash<T*>())
+        return nullptr;
     try {
         return value.to<T*>();
     } catch (const ssq::TypeException&) {

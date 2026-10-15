@@ -21,11 +21,11 @@ eve_init = function() {
     local w2 = physics.newWorld(0.0, 0.0, false);
     local w3 = physics.newWorld3D(0.0, 0.0, 0.0, false);
     local orbit = w2.newBody("dynamic", 120.0, 0.0);
-    orbit.newCircleFixture(9.0); orbit.setLinearVelocity(0.0, 60.0);
-    local boat = w2.newBody("dynamic", 600.0, 0.0); boat.newCircleFixture(15.0);
-    local plane = w3.newBody("dynamic", 0.0, 0.0, 0.0); plane.newSphereShape(0.5);
+    orbit.newCircleFixture(9.0, 1.0, 0.2, 0.0); orbit.setLinearVelocity(0.0, 60.0);
+    local boat = w2.newBody("dynamic", 600.0, 0.0); boat.newCircleFixture(15.0, 1.0, 0.2, 0.0);
+    local plane = w3.newBody("dynamic", 0.0, 0.0, 0.0); plane.newSphereShape(0.5, 1.0, 0.2, 0.0);
     plane.setLinearVelocity(10.0, 0.0, 0.0); plane.setLinearDamping(0.0);
-    local car = w3.newBody("dynamic", 0.0, 0.0, 20.0); car.newSphereShape(0.5);
+    local car = w3.newBody("dynamic", 0.0, 0.0, 20.0); car.newSphereShape(0.5, 1.0, 0.2, 0.0);
     car.setLinearDamping(0.0);
     local radial = eve.RadialField(); radial.strength = 16.0; radial.softening = 0.5;
     local region = eve.FieldRegion(); region.radius = 8.0; region.edgeWidth = 1.0; radial.region = region;

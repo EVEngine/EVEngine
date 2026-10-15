@@ -1,4 +1,8 @@
+import { generateHouse, houseSettings } from "./generators/house.nut";
+
 // Visual-regression example for the original HouseGen showcase, backed by canonical procgen graphs.
+local houseConfig = houseSettings();
+
 persist housegen = null
 persist layout = null
 persist camera = null
@@ -18,7 +22,8 @@ function box(x, y, z, sx, sy, sz, r, g, b, roll) {
     if (boxIdx < boxes.len()) { e = boxes[boxIdx]; e.setVisible(true); }
     else { e = eve.Renderable3D(); e.setMesh(cubeMesh); boxes.append(e); }
     boxIdx++;
-    e.setPosition(x, y, z); e.setScale(sx, sy, sz); e.setTint(r, g, b, 1.0);
+    e.setPosition(x * houseConfig.moduleSize, y, z * houseConfig.moduleSize);
+    e.setScale(sx * houseConfig.moduleSize, sy, sz * houseConfig.moduleSize); e.setTint(r, g, b, 1.0);
     e.setRotation(0.0, 0.0, roll);
 }
 
@@ -72,14 +77,11 @@ function addDoor(x, y, floor, rot, fh) {
 }
 
 function buildHouse() {
+    // Complete staging succeeds before replacing the displayed layout.
+    local candidate = generateHouse(housegen, houseConfig);
     boxIdx = 0;
-    layout = housegen.newLayout();
-    local request = housegen.newRequest();
-    request.setSeed(20260815); request.setPlot(8, 7); request.setFloors(2);
-    request.setModuleSize(1.0); request.setFloorHeight(3.0);
-    request.setFootprint("rectangle"); request.setRoof("gable"); request.setEntrance("auto");
-    request.setRequiredRooms("living,kitchen,bedroom");
-    need(housegen.generate(request, layout), "layout generation");
+    retained.clear();
+    layout = candidate;
 
     local footprint = keep(need(procgen.newGrid(1, 1), "footprint grid"));
     local points = keep(need(procgen.newPointSet(), "component points"));
@@ -121,19 +123,34 @@ function buildHouse() {
             box(x.tofloat(), wy + fh * 0.5, y.tofloat(), 0.70, fh, 0.70, 0.90, 0.82, 0.62, 0.0);
     }
 
-    local roofWidth = 8.0, roofDepth = 7.0, halfRun = roofWidth * 0.5 + 0.30;
-    local rise = roofWidth * 0.22, angle = atan2(rise, halfRun);
-    local panelLength = sqrt(halfRun * halfRun + rise * rise), eaveY = 2.0 * fh;
-    box(3.5 - halfRun * 0.5, eaveY + rise * 0.5, 3.0, panelLength, 0.18, roofDepth + 0.65,
+    local roofWidth = houseConfig.width.tofloat(), roofDepth = houseConfig.depth.tofloat();
+    local centerX = (roofWidth - 1.0) * 0.5, centerZ = (roofDepth - 1.0) * 0.5;
+    local halfRun = roofWidth * 0.5 + 0.30;
+    local rise = roofWidth * 0.22, angle = atan2(rise, halfRun * houseConfig.moduleSize);
+    local panelLength = sqrt(halfRun * halfRun + rise * rise / (houseConfig.moduleSize * houseConfig.moduleSize)), eaveY = houseConfig.floors.tofloat() * fh;
+    if (layout.getRoofStyle() == "flat") {
+        box(centerX, eaveY + 0.09, centerZ, roofWidth + 0.65, 0.18, roofDepth + 0.65,
+            0.42, 0.16, 0.13, 0.0);
+    } else if (layout.getRoofStyle() == "shed") {
+        local run = roofWidth + 0.65;
+        local slope = atan2(rise, run * houseConfig.moduleSize);
+        local length = sqrt(run * run + rise * rise / (houseConfig.moduleSize * houseConfig.moduleSize));
+        box(centerX, eaveY + rise * 0.5, centerZ, length, 0.18, roofDepth + 0.65,
+            0.42, 0.16, 0.13, slope);
+    } else {
+    box(centerX - halfRun * 0.5, eaveY + rise * 0.5, centerZ, panelLength, 0.18, roofDepth + 0.65,
         0.42, 0.16, 0.13, angle);
-    box(3.5 + halfRun * 0.5, eaveY + rise * 0.5, 3.0, panelLength, 0.18, roofDepth + 0.65,
+    box(centerX + halfRun * 0.5, eaveY + rise * 0.5, centerZ, panelLength, 0.18, roofDepth + 0.65,
         0.42, 0.16, 0.13, -angle);
-    foreach (z in [-0.5, 6.5])
-        box(3.5, eaveY - 0.02, z, roofWidth, rise * 0.5, 0.12, 0.76, 0.58, 0.38, 0.0);
-    box(3.5, -0.30, 3.0, 12.0, 0.25, 11.0, 0.20, 0.42, 0.18, 0.0);
+    foreach (z in [-0.5, roofDepth - 0.5])
+        box(centerX, eaveY - 0.02, z, roofWidth, rise * 0.5, 0.12, 0.76, 0.58, 0.38, 0.0);
+    }
+    box(centerX, -0.30, centerZ, roofWidth + 4.0, 0.25, roofDepth + 4.0, 0.20, 0.42, 0.18, 0.0);
     for (local i = boxIdx; i < boxes.len(); ++i) boxes[i].setVisible(false);
-    camera.setTarget(3.5, 3.2, 3.0); camera.setEye(14.5, 10.5, -13.0);
-    print("HOUSEGEN_VISUAL_BASELINE seed=20260815 grid=" + footprint.getWidth() + "x" +
+    camera.setTarget(centerX * houseConfig.moduleSize, eaveY * 0.5 + 0.2, centerZ * houseConfig.moduleSize);
+    camera.setEye((centerX + roofWidth + 3.0) * houseConfig.moduleSize, eaveY + 4.5,
+                  (centerZ - roofDepth - 9.0) * houseConfig.moduleSize);
+    print("HOUSEGEN_VISUAL_BASELINE seed=" + houseConfig.seed + " grid=" + footprint.getWidth() + "x" +
           footprint.getHeight() + " occupied=" + occupied.getCount() +
           " components=" + displayed.getCount() + " boxes=" + boxIdx + "\n");
 }
@@ -151,3 +168,5 @@ eve_init = function() {
 };
 
 eve_render = function() { gfx.clear(); gfx.render3D(); };
+
+eve_reload <- function() { buildHouse(); };

@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 #include "physics/forces/ForceModels.h"
 
 namespace eve::physics {
@@ -16,7 +17,7 @@ struct ImmersionSample {
  * Coordinates use SI meters. 2D centers must have z=0 and require explicit positive thickness.
  * @return InvalidArgument for non-finite values, nonpositive sizes, or unrepresentable volume/centroid.
  */
-class BuoyancyGeometry {
+class EVENGINE_API_WORLD BuoyancyGeometry {
 public:
     /** @brief Integrate a circular slice below a horizontal surface, extruded by thickness. */
     [[nodiscard]] static Result<ImmersionSample> circle2D(ForceVector center, double radius, double thickness,
