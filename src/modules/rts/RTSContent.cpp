@@ -176,12 +176,13 @@ Result<ContentImportReceipt> RTSContentLoader::load(definitions::DefinitionRegis
         }
     }
 
-    const std::string rollback = registry.snapshotJson();
+    auto rollback = registry.snapshotBinary();
+    if (!rollback) return Result<ContentImportReceipt>::failure(rollback.status());
     ContentImportReceipt receipt;
     for (const auto& definition : staged) {
         auto encoded = definition.value.toJson();
         if (!encoded) {
-            auto restored = registry.restoreJson(rollback);
+            auto restored = registry.restoreBinary(rollback.value());
             if (!restored) return Result<ContentImportReceipt>::failure(restored.status());
             return Result<ContentImportReceipt>::failure(encoded.status());
         }
@@ -192,7 +193,7 @@ Result<ContentImportReceipt> RTSContentLoader::load(definitions::DefinitionRegis
                                  : registry.insert(definition.type, definition.id, 1, encoded.value());
         if (!published) {
             const Status failure = published.status();
-            auto restored = registry.restoreJson(rollback);
+            auto         restored = registry.restoreBinary(rollback.value());
             if (!restored) return Result<ContentImportReceipt>::failure(restored.status());
             return Result<ContentImportReceipt>::failure(failure);
         }

@@ -2396,6 +2396,19 @@
         "rts_economy_2.cpp"
       ]
     },
+    "integration/gameplay-composition/rts_protobuf_transfer_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "rts.protobufContentImportKeepsRegistryOnRejection",
+          "rts.productionComponentCopyPreservesTypedQueue"
+        ]
+      },
+      "module": "rts",
+      "modules": ["rts"],
+      "task": "gameplay-composition"
+    },
     "integration/gameplay-composition/gameplay_composition_graphics_rts_script_tests.cpp": {
       "role": "tests",
       "default": "script-binding",

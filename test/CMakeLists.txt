@@ -884,6 +884,28 @@ if(TARGET EVOrders AND TARGET EVFoundation)
     LABEL "orders_protobuf_test" NAME_PREFIX "orders-protobuf/")
 endif()
 
+if(TARGET EVRts AND TARGET EVDomains)
+  add_executable(rts_protobuf_transfer_test EXCLUDE_FROM_ALL
+    main.cpp integration/gameplay-composition/rts_protobuf_transfer_tests.cpp)
+  target_include_directories(rts_protobuf_transfer_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+  target_link_libraries(rts_protobuf_transfer_test PRIVATE
+    eve_engine_includes ${ThirdParty} EVFoundation EVDomains zeroerr protobuf::libprotobuf)
+  target_include_directories(rts_protobuf_transfer_test SYSTEM PRIVATE
+    ${CMAKE_SOURCE_DIR}/proto/generated)
+  target_compile_options(rts_protobuf_transfer_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(rts_protobuf_transfer_test PRIVATE EVBacktrace)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/rts_protobuf_transfer_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/rts_protobuf_transfer_test_zeroerr_tests.cmake"
+      "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(rts_protobuf_transfer_test
+    LABEL "rts_protobuf_transfer_test" NAME_PREFIX "rts-protobuf-transfer/")
+endif()
+
 if(TARGET EVStatepatch AND TARGET EVFoundation)
   add_executable(statepatch_protobuf_test EXCLUDE_FROM_ALL
     main.cpp unit/statepatch/statepatch_unit.cpp)

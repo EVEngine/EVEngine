@@ -26,8 +26,8 @@ struct ContentImportReceipt {
  *
  * The loader owns no definition map. Unit, building, weapon, upgrade, effect,
  * ability, and damage-table records remain authoritative in the caller's
- * DefinitionRegistry. Failed imports restore the registry snapshot captured
- * before the first mutation.
+ * DefinitionRegistry. Failed imports restore a typed Protobuf registry snapshot
+ * captured before the first mutation.
  */
 class EVENGINE_API_DOMAINS RTSContentLoader {
 public:

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "rts-internal-protobuf-transfers",
+      "rule": "persistence",
+      "scope": "src/modules/rts/**",
+      "owner": "rts::RTSContentLoader and rts::ProductionComponent",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "Internal rollback and queue copies use the owning modules' typed Protobuf snapshots rather than JSON projections.",
+      "expiry": "2027-12-31",
+      "evidence": ["src/modules/rts/RTSContent.cpp", "src/modules/rts/RTSTypes.cpp"],
+      "tests": ["test/integration/gameplay-composition/gameplay_composition_graphics_rts_combat_tests.cpp"],
+      "schema": "Definitions rollback uses definitions:registry version 2; production copy uses production:queue version 8.",
+      "version": "Both transfers emit the current typed Protobuf version of their authoritative owner.",
+      "migration": "Legacy JSON import remains at the Definitions and Production compatibility boundaries; internal transfers need no JSON migration.",
+      "unknown_fields": "Both owners reject unknown Protobuf fields recursively before replacing state.",
+      "restore_atomicity": "Definitions restores a detached candidate on failed import; production copy constructs a detached queue and publishes it only after restore succeeds."
+    },
+    {
+      "id": "rts-internal-protobuf-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/rts/**",
+      "owner": "rts::RTSContentLoader and rts::ProductionComponent",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "RTS calls the existing Definitions and Production typed persistence interfaces for internal transactions; this change adds no event, script, or tool face.",
+      "expiry": "2027-12-31",
+      "evidence": ["src/modules/rts/RTSContent.h", "src/modules/rts/RTSTypes.h"],
+      "tests": ["test/integration/gameplay-composition/gameplay_composition_graphics_rts_combat_tests.cpp"],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {"absent_profile": "No L1-L4 trim claim is made for this internal change."},
+      "thread_affinity": "Import and component copy run on their owning simulation thread with no callbacks during the binary transfer.",
+      "cost_notes": ["Rollback and copy cost linear time in the retained definitions, tasks, events and dynamic body bytes per operation."],
+      "hot_path": []
+    }
+  ]
+}

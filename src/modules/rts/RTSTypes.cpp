@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cmath>
 #include <map>
+#include <stdexcept>
 #include <utility>
 
 namespace eve::rts {
@@ -524,15 +525,21 @@ orders::CommandQueue* OrderComponent::queueForComposition() noexcept {
 struct ProductionComponent::Impl {
     production::WorkQueue queue;
 
-    Impl() = default;
-    Impl(const Impl& other) {
-        auto snapshot = other.queue.snapshot();
-        if (snapshot) (void)queue.restore(snapshot.value());
+    static production::WorkQueue copyQueue(const production::WorkQueue& source) {
+        auto snapshot = source.snapshotBinary();
+        if (!snapshot) throw std::runtime_error("RTS production queue binary snapshot failed");
+        production::WorkQueue copy;
+        auto                  restored = copy.restoreBinary(snapshot.value());
+        if (!restored) throw std::runtime_error("RTS production queue binary restore failed");
+        return copy;
     }
+
+    Impl() = default;
+    Impl(const Impl& other) : queue(copyQueue(other.queue)) {}
     Impl& operator=(const Impl& other) {
         if (this == &other) return *this;
-        auto snapshot = other.queue.snapshot();
-        if (snapshot) (void)queue.restore(snapshot.value());
+        auto copy = copyQueue(other.queue);
+        queue     = std::move(copy);
         return *this;
     }
 };
