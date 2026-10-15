@@ -57,4 +57,9 @@ TEST_CASE("rpg.gameState.protobufRoundTripAndAtomicRejection") {
                 R"({"schema":"eve.rpg.game-state","version":1,"switches":{},"variables":{"gold":3},"selfVariables":{}})")
             .ok());
     CHECK_EQ(restored.getVariable("gold"), 3.0);
+    CHECK(!restored
+               .restoreSnapshotJson(
+                   R"({"schema":"eve.rpg.game-state","version":1,"switches":{},"variables":{"gold":4},"selfVariables":{"map:1":{"visits":"invalid"}}})")
+               .ok());
+    CHECK_EQ(restored.getVariable("gold"), 3.0);
 }

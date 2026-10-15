@@ -1,9 +1,9 @@
 #include "rpg/GameState.h"
 #include "common/StringMapInstances.h"
 
-#include "common/Value.h"
 #include "rpg_game_state.pb.h"
 
+#include <google/protobuf/struct.pb.h>
 #include <google/protobuf/util/json_util.h>
 
 #include <algorithm>
@@ -14,38 +14,40 @@
 
 namespace {
 
-eve::Result<std::unordered_map<std::string, double>> parseNumbers(const eve::Value *value,
-                                                                  const std::string &path) {
-    if (!value || !value->isObject())
+const google::protobuf::Value *findField(const google::protobuf::Struct &object, std::string_view name) {
+    const auto item = object.fields().find(std::string(name));
+    return item == object.fields().end() ? nullptr : &item->second;
+}
+
+eve::Result<std::unordered_map<std::string, double>> parseNumbers(const google::protobuf::Value *value,
+                                                                  const std::string             &path) {
+    if (!value || value->kind_case() != google::protobuf::Value::kStructValue)
         return eve::Result<std::unordered_map<std::string, double>>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "game state field must be an object", path));
     std::unordered_map<std::string, double> result;
-    for (const auto &key : value->keys()) {
-        const eve::Value *item = value->find(key);
-        if (!item || !item->isNumeric())
+    for (const auto &[key, item] : value->struct_value().fields()) {
+        if (item.kind_case() != google::protobuf::Value::kNumberValue)
             return eve::Result<std::unordered_map<std::string, double>>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::ParseError, "game state variable must be numeric", path + "." + key));
-        const double number = item->isInt64() ? static_cast<double>(item->asInt()) : item->asDouble();
-        if (!std::isfinite(number))
+        if (!std::isfinite(item.number_value()))
             return eve::Result<std::unordered_map<std::string, double>>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::InvalidArgument, "game state variable must be finite", path + "." + key));
-        result.emplace(key, number);
+        result.emplace(key, item.number_value());
     }
     return eve::Result<std::unordered_map<std::string, double>>::success(std::move(result));
 }
 
-eve::Result<std::unordered_map<std::string, std::string>> parseStrings(const eve::Value  *value,
-                                                                       const std::string &path) {
-    if (!value || !value->isObject())
+eve::Result<std::unordered_map<std::string, std::string>> parseStrings(const google::protobuf::Value *value,
+                                                                       const std::string             &path) {
+    if (!value || value->kind_case() != google::protobuf::Value::kStructValue)
         return eve::Result<std::unordered_map<std::string, std::string>>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "game state field must be an object", path));
     std::unordered_map<std::string, std::string> result;
-    for (const auto &key : value->keys()) {
-        const eve::Value *item = value->find(key);
-        if (!item || !item->isString())
+    for (const auto &[key, item] : value->struct_value().fields()) {
+        if (item.kind_case() != google::protobuf::Value::kStringValue)
             return eve::Result<std::unordered_map<std::string, std::string>>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::ParseError, "game state string fact must be a string", path + "." + key));
-        result.emplace(key, item->asString());
+        result.emplace(key, item.string_value());
     }
     return eve::Result<std::unordered_map<std::string, std::string>>::success(std::move(result));
 }
@@ -250,58 +252,55 @@ eve::Result<void> GameState::restoreSnapshotJson(std::string_view json) {
     if (google::protobuf::util::JsonStringToMessage(std::string(json), &typed, options).ok())
         return restoreMessage(typed);
 
-    // Version-1 JSON from before the typed wire format used nested scope maps.
-    // Keep this read-only migration path until existing saves are upgraded.
-    auto parsed = eve::Value::fromJson(json);
-    if (!parsed.ok()) return eve::Result<void>::failure(parsed.status());
-    const eve::Value &root = parsed.value();
-    if (!root.isObject())
+    // Version-1 JSON used nested scope maps; parse it only to upgrade old saves.
+    google::protobuf::Struct legacy;
+    if (!google::protobuf::util::JsonStringToMessage(std::string(json), &legacy).ok())
         return eve::Result<void>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "game state root must be an object", "$."));
-    const eve::Value *schema = root.find("schema");
-    if (!schema || !schema->isString() || schema->asString() != "eve.rpg.game-state")
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "game state JSON is malformed", "$"));
+    const auto *schema = findField(legacy, "schema");
+    if (!schema || schema->kind_case() != google::protobuf::Value::kStringValue ||
+        schema->string_value() != "eve.rpg.game-state")
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "snapshot does not belong to RPG GameState", "$.schema"));
-    const eve::Value *version = root.find("version");
-    if (!version || !version->isInt64() || version->asInt() != 1)
+    const auto *version = findField(legacy, "version");
+    if (!version || version->kind_case() != google::protobuf::Value::kNumberValue || version->number_value() != 1.0)
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::UnknownVersion, "unsupported RPG GameState snapshot version", "$.version"));
 
-    const eve::Value *switches = root.find("switches");
-    if (!switches || !switches->isObject())
+    const auto *switches = findField(legacy, "switches");
+    if (!switches || switches->kind_case() != google::protobuf::Value::kStructValue)
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::ParseError, "game state switches must be an object", "$.switches"));
     std::unordered_map<std::string, bool> candidateSwitches;
-    for (const auto &key : switches->keys()) {
-        const eve::Value *item = switches->find(key);
-        if (!item || !item->isBool())
+    for (const auto &[key, item] : switches->struct_value().fields()) {
+        if (item.kind_case() != google::protobuf::Value::kBoolValue)
             return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::ParseError, "game state switch must be boolean", "$.switches." + key));
-        candidateSwitches.emplace(key, item->asBool());
+        candidateSwitches.emplace(key, item.bool_value());
     }
 
-    auto candidateVariables = parseNumbers(root.find("variables"), "$.variables");
+    auto candidateVariables = parseNumbers(findField(legacy, "variables"), "$.variables");
     if (!candidateVariables.ok()) return eve::Result<void>::failure(candidateVariables.status());
-    const eve::Value *scoped = root.find("selfVariables");
-    if (!scoped || !scoped->isObject())
+    const auto *scoped = findField(legacy, "selfVariables");
+    if (!scoped || scoped->kind_case() != google::protobuf::Value::kStructValue)
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::ParseError, "game state selfVariables must be an object", "$.selfVariables"));
     std::unordered_map<std::string, std::unordered_map<std::string, double>> candidateScoped;
-    for (const auto &scope : scoped->keys()) {
-        auto values = parseNumbers(scoped->find(scope), "$.selfVariables." + scope);
-        if (!values.ok()) return eve::Result<void>::failure(values.status());
-        candidateScoped.emplace(scope, std::move(values).takeValue());
+    for (const auto &[scope, values] : scoped->struct_value().fields()) {
+        auto parsed = parseNumbers(&values, "$.selfVariables." + scope);
+        if (!parsed.ok()) return eve::Result<void>::failure(parsed.status());
+        candidateScoped.emplace(scope, std::move(parsed).takeValue());
     }
 
     std::unordered_map<std::string, std::unordered_map<std::string, std::string>> candidateStrings;
-    if (const eve::Value *scopedStrings = root.find("selfStrings"); scopedStrings != nullptr) {
-        if (!scopedStrings->isObject())
+    if (const auto *scopedStrings = findField(legacy, "selfStrings"); scopedStrings != nullptr) {
+        if (scopedStrings->kind_case() != google::protobuf::Value::kStructValue)
             return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::ParseError, "game state selfStrings must be an object", "$.selfStrings"));
-        for (const auto &scope : scopedStrings->keys()) {
-            auto values = parseStrings(scopedStrings->find(scope), "$.selfStrings." + scope);
-            if (!values.ok()) return eve::Result<void>::failure(values.status());
-            candidateStrings.emplace(scope, std::move(values).takeValue());
+        for (const auto &[scope, values] : scopedStrings->struct_value().fields()) {
+            auto parsed = parseStrings(&values, "$.selfStrings." + scope);
+            if (!parsed.ok()) return eve::Result<void>::failure(parsed.status());
+            candidateStrings.emplace(scope, std::move(parsed).takeValue());
         }
     }
 

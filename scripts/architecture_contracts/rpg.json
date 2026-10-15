@@ -92,7 +92,7 @@
       ],
       "schema": "eve.rpg.proto.GameStateSave in proto/rpg_game_state.proto",
       "version": "schema eve.rpg.game-state, wire version 1",
-      "migration": "Existing nested-map version-1 JSON remains a read-only compatibility migration; new saves use Protobuf binary or its JSON mapping.",
+      "migration": "Existing nested-map version-1 JSON is parsed through Protobuf Struct as a read-only compatibility migration; new saves use Protobuf binary or its JSON mapping.",
       "unknown_fields": "Version 1 ignores unknown binary and JSON fields, as the prior game-state loader did.",
       "restore_atomicity": "All numeric values and duplicate scopes validate in private maps before four no-fail swaps publish the new state."
     },

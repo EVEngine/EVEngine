@@ -62,8 +62,8 @@ typed `GameStateSave` message. New binary and JSON snapshots share the same
 schema/version and finite-number checks. Restore builds private maps and swaps
 them only after all fields validate. Version-1 JSON written before this change
 used nested scope maps; its parser remains a read-only compatibility migration
-until existing saves have been upgraded. New snapshots do not pass through
-`Value`.
+through Protobuf `Struct` until existing saves have been upgraded. Neither new
+snapshots nor this legacy read path pass through `eve::Value`.
 
 `RPGActor` checkpoints use `ActorCheckpointSave` for binary and Protobuf JSON
 output. Restore checks the destination's class, trait and attribute layout,
