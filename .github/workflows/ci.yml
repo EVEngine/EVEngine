@@ -108,7 +108,9 @@ jobs:
   source-quality:
     name: Source quality
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    # The gate step below is the long pole (~15 min measured); the job budget has to stay
+    # above the sum of the steps (checkout + tool install + gate + graph report).
+    timeout-minutes: 35
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -136,7 +138,10 @@ jobs:
       - name: Run source-quality gate
         # Same entry point as local `make check`. Groups inside
         # scripts/check_source_quality.sh show up in the job log.
-        timeout-minutes: 15
+        # Measured ~15 min on ubuntu-24.04: the repository script-test suite alone is
+        # ~8-9 min and runs last, so the old 15-minute budget cut the step off mid-suite
+        # (the job then fails with a timeout rather than a finding). Keep headroom.
+        timeout-minutes: 25
         env:
           PR_BASE: ${{ github.event.pull_request.base.sha }}
           CHECK_REF: ${{ inputs.ref || github.ref }}

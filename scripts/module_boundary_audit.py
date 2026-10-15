@@ -9,8 +9,8 @@ declares, who provides, who consumes each named capability).
 It deliberately overlaps *nothing* with the existing gates:
 
 * ``scripts/module_depgraph.py`` owns the ``#include`` graph and layering.
-* ``scripts/check_architecture_contracts.py`` owns the enforced contract
-  catalogue and the changed-line API shape lint.
+* ``scripts/check_architecture_contracts.py`` owns the changed-line API shape
+  / hot-path / runtime-lookup lint (no JSON catalogue).
 
 Usage::
 
@@ -35,7 +35,6 @@ import utf8_stdio
 
 REPO = Path(__file__).resolve().parent.parent
 MANIFEST_DIR = REPO / "cmake" / "module_manifest"
-CONTRACT_CATALOGUE = REPO / "scripts" / "architecture_contracts"
 SRC = REPO / "src"
 
 DECLARE_OPEN = "eve_declare_module("
@@ -594,9 +593,8 @@ def capability_matrix(mods: list[Module]) -> dict:
 
 
 def load_catalogue() -> list[dict]:
-    """The enforced contract catalogue, used for coverage — never to gate."""
-    data = json.loads(CONTRACT_CATALOGUE.read_text(encoding="utf-8"))
-    return data.get("entries", [])
+    """Retired JSON catalogue — always empty; coverage is report-only."""
+    return []
 
 
 def catalogue_scope_match(mod: Module, entry: dict) -> bool:

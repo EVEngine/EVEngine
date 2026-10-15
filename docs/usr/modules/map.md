@@ -268,6 +268,43 @@ for (local i = 0; i < count; ++i) {
 
 当前自动合并只支持正交层；等距、交错和六角层返回 0，项目应使用多边形适配器，避免把菱形误近似成轴对齐矩形。
 
+#### 用脚本接管碰撞几何
+
+`ITileCollisionSink` 这条插座**可以由脚本提供**——不需要写任何 C++：脚本建层、发布 sink、
+`publishCollision` 派发，几何直接进脚本自己的物理世界。
+
+```squirrel
+local map = eve.Map()
+
+class MyCollision {
+    function replaceTileCollision(payload) {
+        // payload.layer.id / payload.layer.generation ← 与 layer.getEntityId()/getEntityGeneration() 同一对数
+        for (local i = 0; i < payload.rects.len(); ++i) {
+            local r = payload.rects[i]
+            addMyBox(payload.layer.id, r.x, r.y, r.width, r.height)
+        }
+    }
+}
+
+local layer = map.newLayer(32, 32, 16, 16)
+local published = eve.provider.publishFor("ITileCollisionSink", "game.collision", MyCollision())
+if (!published.ok) print("publish failed: " + published.code + "\n")
+
+map.publishCollision(layer)   // 每次重建几何都会调用上面的方法一次，传整批矩形
+eve.provider.unload("game.collision")
+```
+
+- **身份**：`payload.layer` 是稳定身份（ECS 槽位 + 换代号），不是指针。用
+  `layer.getEntityId()` / `layer.getEntityGeneration()` 与它比，就能在一张地图多层发布时认出
+  自己那一层；槽位被复用会换代号，所以旧引用可以被认出来并忽略。
+- **一次一条**：一次派发给的是**整层**的矩形（贪心合并之后），不是逐瓦片回调；`rects` 是
+  `{x, y, width, height}` 的表数组，坐标系是世界坐标，与 `getCollisionRectX()` 那组读取器一致。
+- **失败看得见**：接口是通知（不是事务），所以脚本抛错或没实现该方法时不会静默——会往 `eve.log`
+  写一行 `warn`，原生侧还能用 `eve::map::scriptTileCollisionSinkFailures()` 读到累计次数（诊断与
+  测试用）。地图自己的矩形表始终是权威，sink 失败不改动它。
+- 原生 sink 与脚本 sink 可以同时在位：派发按 listener 优先级依次进行。
+
+
 ## 常见问题
 
 - GID 与图集编号混淆：0 为空，其余值遵循 tileset 映射；默认空瓦片不可走（`setBlockEmpty`）。
@@ -280,6 +317,14 @@ for (local i = 0; i < count; ++i) {
 
 - `findObjectByName(name)`：返回第一个同名对象的临时索引；不存在返回 `-1`。
 - `findObjectAt(x, y, type)`：返回包含该点的第一个对象；空 `type` 接受任意类型，点对象要求坐标精确匹配，不存在返回 `-1`。
+- `getLastVisibleTileCount()`、`getLastCustomVisualCount()`、`getLastAtlasCount()`
+- `publishCollision()`、`getCollisionRectCount()`、`getCollisionRectX()`、`getCollisionRectY()`、`getCollisionRectWidth()`、`getCollisionRectHeight()`
+- `getObjectWidth()`、`getObjectX()`、`getObjectY()`、`getTile()`、`getTileHeight()`、`getTileWidth()`、`getTilesetColumns()`、`getTilesetFirstGid()`
+- `getTilesetTexture()`、`getX()`、`getY()`、`getEntityId()`、`getEntityGeneration()`、`isVisible()`、`loadConfig()`、`loadFromFile()`、`newLayer()`、`newLayerFromFile()`
+- `newPathfinder()`、`newPathfinderSize()`、`newFov()`、`newFovSize()`、`newFovVolume()`
+- `pollConfigs()`、`reloadConfig()`、`render()`、`resize()`、`resolveDualGrid()`、`resolveDualGridFilled()`、`setAutoReload()`、`setCamera()`、`setCanvas()`、`setLayer()`
+- `setOrigin()`、`setTile()`、`setTileSize()`、`setTileset()`、`setTilesetTileSize()`、`setTileVisual()`、`setVisualScale()`、`getVisualScaleX()`、`getVisualScaleY()`、`setTileMetadata()`、`clearTileVisuals()`、`getTileVisualCount()`、`loadTilesetManifest()`、`setTint()`、`setVisible()`、`setReceiveLight()`、`getReceiveLight()`、`tileToWorldX()`
+- `tileToWorldY()`、`update()`、`worldToTileX()`、`worldToTileY()`、`dualGridFrame()`、`dualGridMaskAt()`、`dualGridOffsetX()`、`dualGridOffsetY()`、`lastDualGridError()`
 
 Pathfinder：`setTopology`、`getTopology`、`setDiagonal`、`blockGid`、`unblockGid`、`clearBlockedGids`、`setBlockEmpty`、`setBlocked`、`isWalkable`、`setCellCost`、`getCellCost`、`syncFromLayer`、`findPath`、`buildFlowField`、`followFlow`、`findGroupPath`、`invalidateCache`
 
