@@ -22,6 +22,36 @@
       "pointer_policy": "A public pointer requires Doxygen ownership/lifetime wording or an explicit reviewed adapter contract."
     },
     {
+      "id": "action-ability-activation-link",
+      "rule": "link",
+      "scope": "src/modules/action/AbilitySystem.*",
+      "owner": "action::AbilityRuntime",
+      "issue": "EVENGINE-ARCH-LINK-CONTRACTS",
+      "reason": "Ability activations bind grant identity to ActionExecutionId; either destruction order must clear or stale-detect without retaining raw ActionExecution pointers.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/action/AbilitySystem.h",
+        "src/modules/action/AbilitySystem.cpp",
+        "docs/dev/战斗系统与动作编辑器.md"
+      ],
+      "tests": [
+        "test/ability_system.cpp",
+        "test/action_ability_script.cpp"
+      ],
+      "symbols": [
+        "AbilityActivation",
+        "AbilityGrantId",
+        "AbilityActivationId",
+        "ActionExecutionId",
+        "AbilityRuntime"
+      ],
+      "create": "AbilityRuntime::activate submits into the borrowed ActionRuntime and stores an owning AbilityActivation link with executionId.",
+      "ownership": "AbilityRuntime owns grant/activation records; ActionRuntime uniquely owns phase/execution state; the borrowed ActionRuntime must outlive AbilityRuntime.",
+      "destroy_order": "AbilityRuntime::synchronize removes links whose ActionRuntime execution reached a terminal phase; revoke rejects grants with active activations until synchronized/cancelled; ActionRuntime-first leaves synchronize detecting terminal or missing executions.",
+      "restore": "Process-local grant/activation identities are not a persistent wire format; restore rebuilds definitions then re-grants; in-flight activations are not reconstituted across process boundaries.",
+      "stale": "activate/findGrant/revoke/synchronize resolve by strong ids; missing grant or terminal/missing execution returns structured NotFound rather than dangling pointers."
+    },
+    {
       "id": "gts-terrain-collider-link-contract",
       "rule": "link",
       "scope": "src/modules/procgen/physics/GtsTerrainColliderRuntime.cpp",
@@ -985,6 +1015,52 @@
       "lock_callback_policy": "release internal locks before invoking unknown callbacks or scripts."
     },
     {
+      "id": "action-ability-asset-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/action/AbilityAsset.*",
+      "owner": "action::AbilityDefinition",
+      "issue": "EVENGINE-ARCH-PERSISTENCE-CONTRACTS",
+      "reason": "Ability definitions persist action timing, cooldown, instancing, activation group and gameplay-tag triggers in one schema shared by script and C++.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/action/AbilityAsset.h",
+        "src/modules/action/AbilityAsset.cpp",
+        "docs/dev/战斗系统与动作编辑器.md"
+      ],
+      "tests": [
+        "test/ability_asset.cpp",
+        "test/action_ability_script.cpp"
+      ],
+      "schema": "eve.action.ability Value document embedding ActionDefinition timing/timeline plus ability policy fields.",
+      "version": "Current version 2 stores action phases and cooldown in nanoseconds.",
+      "migration": "Older ability documents migrate into a validated v2 candidate before publish; invalid identity or timing rejects the whole document.",
+      "unknown_fields": "Same-version unknown fields are ignored on read; encoders write the known v2 field set.",
+      "restore_atomicity": "decodeAbilityAsset builds a complete AbilityDefinition candidate and validates before the caller registers/replaces it in AbilityRuntime."
+    },
+    {
+      "id": "action-timeline-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/action/ActionTimeline.*",
+      "owner": "action::ActionTimeline",
+      "issue": "EVENGINE-ARCH-PERSISTENCE-CONTRACTS",
+      "reason": "Runtime and editor share one versioned timeline asset; decode must not publish a partial candidate.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/action/ActionTimeline.h",
+        "src/modules/action/ActionTimeline.cpp",
+        "docs/dev/战斗系统与动作编辑器.md"
+      ],
+      "tests": [
+        "test/action_timeline.cpp",
+        "test/action_montage.cpp"
+      ],
+      "schema": "eve.action.timeline Value document with tracks, Notify, NotifyState, metadata and payload extension slots.",
+      "version": "Current version 4; readers accept v1-v4 candidates and normalize writes to v4.",
+      "migration": "v1-v3 migrate into the v4 candidate (including Notify/NotifyState enabled defaulting to true); unknown higher versions are rejected before publish.",
+      "unknown_fields": "Same-version unknown fields are ignored on read; normalized save writes only known v4 fields.",
+      "restore_atomicity": "Decode constructs and fully validates a candidate ActionTimeline before replacing any published value; failure leaves prior state untouched."
+    },
+    {
       "id": "persistence-contract-policy",
       "rule": "persistence",
       "scope": "src/**",
@@ -1474,6 +1550,74 @@
         "absent_profile": "runtime profiles exclude the editor leaf; no action editing commands, package provider or automation target factory are registered"
       },
       "thread_affinity": "owner/editor composition thread; construction, package advertisement and teardown must not race command execution",
+      "cost_notes": [],
+      "hot_path": []
+    },
+    {
+      "id": "action-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/action/*",
+      "owner": "action::Action",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Action is the L1 gameplay protocol host: ActionRuntime owns phase state, AbilityRuntime owns grants/cooldowns, and EveScript reaches them only through a factory-owned ScriptActionRuntime.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/action/ActionModule.h",
+        "src/modules/action/ActionScriptBindings.cpp",
+        "src/modules/action/ScriptActionRuntime.h",
+        "src/modules/action/Action.h",
+        "src/modules/action/AbilitySystem.h",
+        "docs/dev/战斗系统与动作编辑器.md"
+      ],
+      "tests": [
+        "test/gameplay_action.cpp",
+        "test/ability_system.cpp",
+        "test/action_ability_script.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Action",
+          "methods": [
+            "getName",
+            "newRuntime"
+          ]
+        },
+        {
+          "script_class": "ActionRuntime",
+          "methods": [
+            "ownership",
+            "registerAbilityJson",
+            "replaceAbilityJson",
+            "registerTimelineAbility",
+            "replaceTimelineAbility",
+            "grantAbility",
+            "revokeAbility",
+            "activateAbility",
+            "advanceAbilities",
+            "cancelAbility",
+            "abilityGrant",
+            "matchingAbilities",
+            "submitAction",
+            "advanceAction",
+            "cancelAction",
+            "findAction",
+            "executionCount"
+          ]
+        }
+      ],
+      "protocol": [
+        "Native ActionRuntime/AbilityRuntime are the authoritative C++ faces; ScriptActionRuntime is a script-owned façade that projects Result<Value> tables.",
+        "Optional presentation/combat sinks (damage, audio, VFX, camera, state windows) are consumed through cap::forEach* inside ActionNotifyRegistry; absence is an observable NotFound path, not a silent success."
+      ],
+      "trim": {
+        "absent_profile": "Profiles without action drop the protocol host, script factory, and every dependent combat/RTS/tactics adapter that requires EVAction."
+      },
+      "thread_affinity": "Owner/main composition thread for module construction, ScriptActionRuntime methods and ActionRuntime/AbilityRuntime advances; notify handlers run synchronously on the same owner thread and must not re-enter the block runtime.",
       "cost_notes": [],
       "hot_path": []
     },
