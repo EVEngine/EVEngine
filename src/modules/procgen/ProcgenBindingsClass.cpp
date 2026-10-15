@@ -659,8 +659,39 @@ void Procgen::expose(ssq::Class& cls) {
             [value](ProcgenMeshGraphHandleRef ref) {
                 if (liveProcgen() != value)
                     return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
-                                                                         "Procgen module is no longer loaded",
-                                                                         "meshGraph", {}, "procgen.squirrel"));
+                                                                             "Procgen module is no longer loaded",
+                                                                             "meshGraph", {}, "procgen.squirrel"));
+                return value->release(ref);
+            });
+    });
+    cls.addFunc("newShapeGrammar", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
+        if (!value)
+            return eve::script::projectStatusResult(
+                vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null",
+                                                "procgen")
+                        .status());
+        return makeOwnedNativeProxy<ShapeGrammar>(
+            vm, value->newShapeGrammarHandle(),
+            [value](ProcgenShapeGrammarHandleRef ref) { return value->resolveShapeGrammar(ref); },
+            [value](ProcgenShapeGrammarHandleRef ref) {
+                if (liveProcgen() != value)
+                    return procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                       "Procgen module is no longer loaded", "shapeGrammar");
+                return value->release(ref);
+            });
+    });
+    cls.addFunc("newLSystem", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
+        if (!value)
+            return eve::script::projectStatusResult(
+                vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null",
+                                                "procgen")
+                        .status());
+        return makeOwnedNativeProxy<LSystem>(
+            vm, value->newLSystemHandle(), [value](ProcgenLSystemHandleRef ref) { return value->resolveLSystem(ref); },
+            [value](ProcgenLSystemHandleRef ref) {
+                if (liveProcgen() != value)
+                    return procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                       "Procgen module is no longer loaded", "lsystem");
                 return value->release(ref);
             });
     });
@@ -810,6 +841,31 @@ void Procgen::expose(ssq::Class& cls) {
                         "procgen.squirrel")));
         return makeOwnedPointSetProxy(vm, value->projectToSpatialHandle(*pointsRef, *spatialRef));
     });
+    // Pointset-pipeline.md documents `filterPolygon` / `excludePolygon` for concave XZ
+    // polygons; the C++ side takes an `invert` flag, so both names bind to one
+    // implementation rather than two.
+    cls.addFunc("filterPolygon",
+                [vm = cls.getHandle()](Procgen* value, PointSet* input, PointSet* polygon) -> ssq::Table {
+                    const auto inputRef   = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+                    const auto polygonRef = nativeProxyReference<ProcgenPointSetHandleRef>(polygon);
+                    if (!value || !inputRef || !polygonRef)
+                        return eve::script::projectStatusResult(
+                            vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                                            "filterPolygon requires owned point sets", "points")
+                                    .status());
+                    return makeOwnedPointSetProxy(vm, value->filterPolygonHandle(*inputRef, *polygonRef, false));
+                });
+    cls.addFunc("excludePolygon",
+                [vm = cls.getHandle()](Procgen* value, PointSet* input, PointSet* polygon) -> ssq::Table {
+                    const auto inputRef   = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+                    const auto polygonRef = nativeProxyReference<ProcgenPointSetHandleRef>(polygon);
+                    if (!value || !inputRef || !polygonRef)
+                        return eve::script::projectStatusResult(
+                            vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                                            "excludePolygon requires owned point sets", "points")
+                                    .status());
+                    return makeOwnedPointSetProxy(vm, value->filterPolygonHandle(*inputRef, *polygonRef, true));
+                });
     cls.addFunc("splineData", [vm = cls.getHandle()](Procgen* value, PointSet* points, float radius) -> ssq::Table {
         const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(points);
         if (!value || !reference)
@@ -1000,6 +1056,39 @@ void Procgen::expose(ssq::Class& cls) {
                                                                       "procgen.squirrel")));
         return eve::script::projectResult(vm, value->removeInstances(batchId));
     });
+    // The manual (non-cell) publication path documented in pointset-pipeline.md's
+    // "publish to scene" section, plus the counters that report what it did. The
+    // counters have existed on the C++ side since the batch API landed; a script
+    // could publish a batch and then not observe the result.
+    cls.addFunc(
+        "publishInstances", [vm = cls.getHandle()](Procgen* value, const std::string& batchId, PointSet* points,
+                                                   const std::string& assetAttribute, const std::string& defaultAsset) {
+            const auto pointsRef = nativeProxyReference<ProcgenPointSetHandleRef>(points);
+            if (!value || !pointsRef)
+                return eve::script::projectResult(
+                    vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                                    "publishInstances requires owned points", "publishInstances"));
+            return eve::script::projectResult(
+                vm, value->publishInstances(batchId, *pointsRef, assetAttribute, defaultAsset));
+        });
+    cls.addFunc("getPublishedInstanceCount", &Procgen::getPublishedInstanceCount);
+    cls.addFunc("getPublishedCreatedCount", &Procgen::getPublishedCreatedCount);
+    cls.addFunc("getPublishedReusedCount", &Procgen::getPublishedReusedCount);
+    cls.addFunc("getPublishedRemovedCount", &Procgen::getPublishedRemovedCount);
+    cls.addFunc(
+        "projectToHeightmap",
+        [vm = cls.getHandle()](Procgen* value, PointSet* input, Heightmap* terrain, float originX, float originZ,
+                               float cellSize, float heightScale) -> ssq::Table {
+            const auto inputRef  = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+            const auto heightRef = nativeProxyReference<ProcgenHeightmapHandleRef>(terrain);
+            if (!value || !inputRef || !heightRef)
+                return eve::script::projectStatusResult(
+                    vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                                    "projectToHeightmap requires owned points and heightmap", "points")
+                            .status());
+            return makeOwnedPointSetProxy(
+                vm, value->projectToHeightmapHandle(*inputRef, *heightRef, originX, originZ, cellSize, heightScale));
+        });
     cls.addFunc(
         "generateTexture",
         [vm = cls.getHandle()](Procgen* value, const std::string& recipe, ScriptProcgenParams* params,

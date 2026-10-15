@@ -3,6 +3,4 @@
 extern const char* timer_content;
 UnitSciptTest(TimerTest, timer_content);
 
-TEST_CASE_FIXTURE(TimerTest, "TimerTest.basic") {
-    CHECK(vm.callFunc(vm.findFunc("basic"), vm).toBool());
-}
+TEST_CASE_FIXTURE(TimerTest, "TimerTest.basic") { REQUIRE(callScript("basic")); }

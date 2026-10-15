@@ -236,7 +236,7 @@ eve.SceneEntity <- class extends eve.Entity {
  * eve.Scene / eve.SceneNodeRef wrappers over native primitives. Applied after
  * those classes have been addClass'd (on first use of eve.Scene).
  */
-const char *kSceneEntityScript = R"SQ(
+const char* kSceneEntityScript = R"SQ(
 // ---- eve.Scene: per-node entity API (script wrappers over native primitives) ----
 
 eve.Scene["getNodeRef"] <- function(nodeId, hostName = null) {
@@ -254,7 +254,11 @@ eve.Scene["attachEntity"] <- function(nodeId, cls) {
 
 eve.Scene["attachEntityAt"] <- function(hostName, nodeId, cls) {
     if (typeof cls != "class") return null
-    if (!eve.isSubclass(cls, eve.Entity)) return null
+    // Must be an eve.SceneEntity, not merely an eve.Entity: the body below stores the
+    // host binding in `_scene`, `hostName` and `nodeId`, which only SceneEntity
+    // declares. Accepting a plain Entity subclass used to die mid-call with
+    // "the index '_scene' does not exist" instead of taking this rejection path.
+    if (!eve.isSubclass(cls, eve.SceneEntity)) return null
     local old = getEntityAt(hostName, nodeId, cls)
     if (old != null) detachEntityAt(hostName, nodeId, old)
     local inst = cls.create()
@@ -557,31 +561,11 @@ eve.SceneNodeRef["getBounds"] <- function() {
 )SQ";
 
 void injectSceneEntityBase(ssq::Table &eveTable) {
-    HSQUIRRELVM vm = eveTable.getHandle();
-    const SQInteger top = sq_gettop(vm);
-    if (SQ_FAILED(sq_compilebuffer(vm, kSceneEntityBaseScript,
-                                   static_cast<SQInteger>(std::strlen(kSceneEntityBaseScript)),
-                                   "SceneEntity.nut", SQTrue))) {
-        sq_settop(vm, top);
-        return;
-    }
-    sq_pushroottable(vm);
-    sq_call(vm, 1, SQFalse, SQTrue);
-    sq_settop(vm, top);
+    (void)script::compileAndRunChunk(eveTable.getHandle(), "SceneEntity.nut", kSceneEntityBaseScript);
 }
 
 void injectSceneEntityScript(ssq::Table &eveTable) {
-    HSQUIRRELVM vm = eveTable.getHandle();
-    const SQInteger top = sq_gettop(vm);
-    if (SQ_FAILED(sq_compilebuffer(vm, kSceneEntityScript,
-                                   static_cast<SQInteger>(std::strlen(kSceneEntityScript)),
-                                   "SceneEntity.nut", SQTrue))) {
-        sq_settop(vm, top);
-        return;
-    }
-    sq_pushroottable(vm);
-    sq_call(vm, 1, SQFalse, SQTrue);
-    sq_settop(vm, top);
+    (void)script::compileAndRunChunk(eveTable.getHandle(), "SceneEntity.nut", kSceneEntityScript);
 }
 
 [[maybe_unused]] const bool g_sceneEntityHookRegistered = []() {
@@ -764,6 +748,7 @@ void Scene::beginBuild() {
     openStack_.clear();
     hasBuiltRoot_ = false;
     builtRoot_ = NodeDesc{};
+    buildCursor_  = BuildCursor::None;
 }
 
 void Scene::pushOpen(NodeDesc d) { openStack_.push_back(std::move(d)); }
@@ -773,14 +758,23 @@ NodeDesc &Scene::currentParent() {
     return openStack_.back();
 }
 
+NodeDesc& Scene::buildTarget() {
+    if (openStack_.empty()) throw std::runtime_error("scene: node outside beginNode/beginGroup");
+    if (buildCursor_ == BuildCursor::LastAddedChild && !openStack_.back().children.empty())
+        return openStack_.back().children.back();
+    return openStack_.back();
+}
+
 void Scene::beginNode(const std::string &id, const std::string &name) {
     if (openStack_.empty() && hasBuiltRoot_) beginBuild();
     pushOpen(node(id, {}, name));
+    buildCursor_ = BuildCursor::OpenNode;
 }
 
 void Scene::beginGroup(const std::string &id) {
     if (openStack_.empty() && hasBuiltRoot_) beginBuild();
     pushOpen(group({}, id));
+    buildCursor_ = BuildCursor::OpenNode;
 }
 
 void Scene::end() {
@@ -790,39 +784,43 @@ void Scene::end() {
     if (openStack_.empty()) {
         builtRoot_ = std::move(finished);
         hasBuiltRoot_ = true;
+        buildCursor_  = BuildCursor::None;
     } else {
         openStack_.back().children.push_back(std::move(finished));
+        // The finished node is now the open parent's last child.
+        buildCursor_ = BuildCursor::LastAddedChild;
     }
 }
 
 void Scene::addNode(const std::string &id, const std::string &name) {
     currentParent().children.push_back(node(id, {}, name));
+    buildCursor_ = BuildCursor::LastAddedChild;
 }
 
 void Scene::setBuildPosition(float x, float y, float z) {
-    NodeDesc &d = currentParent();
+    NodeDesc& d = buildTarget();
     d.x = x;
     d.y = y;
     d.z = z;
 }
 
 void Scene::setBuildRotation(float yaw, float pitch, float roll) {
-    NodeDesc &d = currentParent();
+    NodeDesc& d = buildTarget();
     d.yaw = yaw;
     d.pitch = pitch;
     d.roll = roll;
 }
 
 void Scene::setBuildScale(float sx, float sy, float sz) {
-    NodeDesc &d = currentParent();
+    NodeDesc& d = buildTarget();
     d.sx = sx;
     d.sy = sy;
     d.sz = sz;
 }
 
-void Scene::setBuildSpace(const std::string &space) { currentParent().space = space; }
+void Scene::setBuildSpace(const std::string& space) { buildTarget().space = space; }
 
-void Scene::setBuildVisible(bool visible) { currentParent().visible = visible; }
+void Scene::setBuildVisible(bool visible) { buildTarget().visible = visible; }
 
 bool Scene::buildComplete() const { return openStack_.empty() && hasBuiltRoot_; }
 
@@ -942,7 +940,7 @@ bool Scene::unrootEntityAt(const std::string &hostName, const std::string &nodeI
     if (!h) return false;
     SceneNode *n = borrowSceneResult(h->findById(nodeId));
     if (!n) return false;
-    SceneObject *obj = n->objectId ? findSceneObjectById(n->objectId) : nullptr;
+    SceneObject* obj = n->objectId != 0 ? findSceneObjectById(n->objectId) : nullptr;
     if (!obj) return false;
     auto &vec = obj->scriptBindings()->instances;
     if (index < 0 || index >= int(vec.size())) return false;
@@ -963,7 +961,7 @@ int Scene::forEachEntity(const std::string &hostName, const std::string &nodeId,
     if (!h) return 0;
     SceneNode *n = borrowSceneResult(h->findById(nodeId));
     if (!n) return 0;
-    SceneObject *obj = n->objectId ? findSceneObjectById(n->objectId) : nullptr;
+    SceneObject* obj = n->objectId != 0 ? findSceneObjectById(n->objectId) : nullptr;
     if (!obj) return 0;
     // Copy + addref: the callback may attach/detach and mutate the live list.
     auto vec = obj->scriptBindings()->instances;
@@ -975,8 +973,45 @@ int Scene::forEachEntity(const std::string &hostName, const std::string &nodeId,
         if (callCallback(fn, vec[i], int(i))) ++count;
     }
     sq_release(vm_, &fn);
-    for (auto &b : vec) sq_release(vm_, &b);
+    for (auto& b : vec) sq_release(vm_, &b);
     return count;
+}
+
+std::vector<ssq::Object> Scene::scriptEntitiesAt(const std::string& hostName, const std::string& nodeId) const {
+    std::vector<ssq::Object> out;
+    if (!vm_) return out;
+    SceneHost* h = resolveHost(hostName);
+    if (!h) return out;
+    SceneNode* n = borrowSceneResult(h->findById(nodeId));
+    if (!n) return out;
+    SceneObject* obj = n->objectId != 0 ? findSceneObjectById(n->objectId) : nullptr;
+    if (!obj) return out;
+
+    // 与 `forEachEntity` 同样的"拷贝 + addref"：交给调用方的每个 `ssq::Object` 都持有一次引用。
+    // 这里不用防回调改表（原生调用方不重入脚本），但 addref 是必须的——`instances` 里那一份引用
+    // 归场景所有，直接借出去会在 `ssq::Object` 析构时多释放一次（方案文档 §9.64.3 的坑）。
+    for (const auto& bound : obj->scriptBindings()->instances) {
+        HSQOBJECT handle = bound;
+        sq_addref(vm_, &handle);
+        ssq::Object instance(vm_);
+        instance.getRaw() = handle;
+        out.push_back(std::move(instance));
+    }
+    return out;
+}
+
+std::vector<ScriptComponentInstanceState> Scene::scriptComponentStatesAt(const std::string& hostName,
+                                                                        const std::string& nodeId) const {
+    // The VM-side lookup stays here (EVPlatform already links Squirrel): handing `ssq::Object`
+    // values to the editor group would drag the Squirrel C API into EVEditors.dll, which then
+    // collides with the statically linked Squirrel of the domain test executables (LNK2005).
+    std::vector<ScriptComponentInstanceState> out;
+    for (const ssq::Object& instance : scriptEntitiesAt(hostName, nodeId)) {
+        auto states = scriptComponentInstancesOf(instance);
+        if (!states.ok()) continue;
+        for (ScriptComponentInstanceState& state : states.value()) out.push_back(std::move(state));
+    }
+    return out;
 }
 
 void Scene::updateScripts(float dt) {
@@ -1008,7 +1043,13 @@ void Scene::updateScripts(float dt) {
         if (enabled) callMethod(h, "update", dt);
     }
     for (auto &h : snapshot) sq_release(vm_, &h);
+    // Scripts moved nodes during update(dt), so world matrices are stale: recompute
+    // them before returning. updateHost() early-outs on a clean tree, so the cost is
+    // proportional to what the scripts actually touched. Without this, getWorldPosition()
+    // right after update(dt) reported pre-move values.
+    // Delayed detaches run first, so the transform pass sees the post-detach tree.
     flushDelayedDetaches();
+    updateTransformsAll();
 }
 
 eve::Result<void> Scene::scheduleDetachEntityAt(const std::string &hostName,
@@ -1181,14 +1222,15 @@ bool Scene::callMethod(HSQOBJECT inst, const char *name, float dt) {
         sq_settop(vm_, top);
         return false;
     }
-    sq_pushobject(vm_, inst);   // this
-    sq_pushfloat(vm_, SQFloat(dt));
-    if (SQ_FAILED(sq_call(vm_, 2, SQFalse, SQTrue))) {
-        sq_settop(vm_, top);
-        return false;
-    }
+    // Resolve the method, then call it through the helper: the receiver is the instance
+    // (`this`) and the single argument is dt. A script `update()` that throws used to be
+    // indistinguishable from one that returned early, because the failed call was turned
+    // into a bare `false` with no report.
+    HSQOBJECT method;
+    sq_getstackobj(vm_, -1, &method);
+    const SQRESULT result = script::callFunction(vm_, method, inst, dt);
     sq_settop(vm_, top);
-    return true;
+    return SQ_SUCCEEDED(result);
 }
 
 bool Scene::callMethod0(HSQOBJECT inst, const char *name) {
@@ -1205,28 +1247,20 @@ bool Scene::callMethod0(HSQOBJECT inst, const char *name) {
         sq_settop(vm_, top);
         return false;
     }
-    sq_pushobject(vm_, inst);   // this
-    if (SQ_FAILED(sq_call(vm_, 1, SQFalse, SQTrue))) {
-        sq_settop(vm_, top);
-        return false;
-    }
+    // Same as callMethod() with no arguments (onAttach / onDetach).
+    HSQOBJECT method;
+    sq_getstackobj(vm_, -1, &method);
+    const SQRESULT result = script::callFunction(vm_, method, inst);
     sq_settop(vm_, top);
-    return true;
+    return SQ_SUCCEEDED(result);
 }
 
 bool Scene::callCallback(HSQOBJECT fn, HSQOBJECT inst, int index) {
     if (!vm_) return false;
-    const SQInteger top = sq_gettop(vm_);
-    sq_pushobject(vm_, fn);
-    sq_pushroottable(vm_);
-    sq_pushobject(vm_, inst);
-    sq_pushinteger(vm_, SQInteger(index));
-    if (SQ_FAILED(sq_call(vm_, 3, SQFalse, SQTrue))) {
-        sq_settop(vm_, top);
-        return false;
-    }
-    sq_settop(vm_, top);
-    return true;
+    // The callback sees (entity, index) as ordinary parameters with `this` bound to the
+    // entity. Hand-writing sq_call's count here is what previously handed the callback
+    // the index in place of the entity (see script::callFunction: the count is derived).
+    return SQ_SUCCEEDED(script::callFunction(vm_, fn, inst, inst, index));
 }
 
 void Scene::expose(ssq::Table &table) {
@@ -1310,6 +1344,8 @@ void Scene::expose(ssq::Class &cls) {
     cls.addFunc("unlinkNodeAt", &Scene::unlinkNodeAt);
     cls.addFunc("unlinkNodeKindAt", &Scene::unlinkNodeKindAt);
     cls.addFunc("linkCountAt", &Scene::linkCountAt);
+    // The "script" link kind's own face; defined with the kind in ScriptLinks.cpp.
+    exposeScriptLinkBindings(cls);
 
     // Script-API completeness primitives (host-scoped)
     cls.addFunc("getNodePositionAt", &Scene::getNodePositionAt);

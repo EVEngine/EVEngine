@@ -165,6 +165,7 @@ AmmoPoolEntity* AmmoPoolEntity::createPool() {
 
 Weapon::Weapon() {
     WeaponSystem::setEventSink([this](const WeaponEvent& e) { events_.push_back(e); });
+    declareScriptProjectileSeam();
 }
 
 Weapon::~Weapon() {
@@ -173,6 +174,7 @@ Weapon::~Weapon() {
     destroyHandles<WeaponRigEntity>(rigs_);
     destroyHandles<AmmoPoolEntity>(pools_);
     WeaponSystem::setEventSink(nullptr);
+    withdrawScriptProjectileSeam();
 }
 
 // ---------------------------------------------------------------------------

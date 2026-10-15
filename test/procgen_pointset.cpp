@@ -2,6 +2,10 @@
 #include "procgen/Procgen.h"
 #include "procgen/heightmap/Heightmap.h"
 
+#include "common/Module.h"
+
+#include <simplesquirrel/simplesquirrel.hpp>
+
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
@@ -528,4 +532,56 @@ TEST_CASE("procgen.system.previousRevisionSupportsHotReloadDiffs") {
     auto removeResult = proc.removeSystem("diff");
     CHECK(removeResult.ok());
     CHECK_EQ(proc.getPreviousSystemRevision("diff"), uint64_t(0));
+}
+
+TEST_CASE("procgen.script.pointsetPolygonAndBatchApiAreBound") {
+    // The point-set pipeline the user docs describe (pointset-pipeline.md): polygon
+    // filtering and its `invert` twin, heightmap projection, and the manual batch
+    // publication counters. All of them existed in C++ and were simply not exposed, so
+    // the documented calls could not run.
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        procgen <- eve.Procgen();
+        pts <- procgen.poissonDisk(40, 40, 5.0, 7, 200).value;
+        total <- pts.getCount();
+
+        poly <- procgen.newPointSet().value;
+        poly.add(-10.0, 0.0, -10.0);
+        poly.add( 10.0, 0.0, -10.0);
+        poly.add( 10.0, 0.0,  10.0);
+        poly.add(-10.0, 0.0,  10.0);
+
+        inside  <- procgen.filterPolygon(pts, poly);
+        outside <- procgen.excludePolygon(pts, poly);
+        insideOk  <- inside.ok && inside.value.getCount() >= 0;
+        outsideOk <- outside.ok && outside.value.getCount() >= 0;
+        // `filterPolygon` keeps what is inside and `excludePolygon` the complement, so
+        // the two partitions must add up to the input.
+        partitionsSum <- inside.value.getCount() + outside.value.getCount();
+
+        hm <- procgen.newHeightmap(32, 32).value;
+        projected <- procgen.projectToHeightmap(pts, hm, 0.0, 0.0, 2.0, 80.0);
+        projectedOk <- projected.ok && projected.value.getCount() >= 0;
+
+        // No scene sink is provided here, so publication must report a failure instead
+        // of crashing, and the counters stay zero for a batch that never landed.
+        published <- procgen.publishInstances("test/manual", pts, "asset", "oak");
+        publishReported <- !published.ok;
+        count   <- procgen.getPublishedInstanceCount("test/manual");
+        created <- procgen.getPublishedCreatedCount("test/manual");
+        reused  <- procgen.getPublishedReusedCount("test/manual");
+        removed <- procgen.getPublishedRemovedCount("test/manual");
+    )"));
+
+    REQUIRE(vm.find("total").toInt() > 0);
+    REQUIRE(vm.find("insideOk").toBool());
+    REQUIRE(vm.find("outsideOk").toBool());
+    REQUIRE_EQ(vm.find("partitionsSum").toInt(), vm.find("total").toInt());
+    REQUIRE(vm.find("projectedOk").toBool());
+    REQUIRE(vm.find("publishReported").toBool());
+    REQUIRE_EQ(vm.find("count").toInt(), 0);
+    REQUIRE_EQ(vm.find("created").toInt(), 0);
+    REQUIRE_EQ(vm.find("reused").toInt(), 0);
+    REQUIRE_EQ(vm.find("removed").toInt(), 0);
 }

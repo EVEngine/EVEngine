@@ -237,6 +237,9 @@ void Cloth::expose(ssq::Table& table) {
 }
 
 void Cloth::expose(ssq::Class& cls) {
+    // Every other module class exposes getName() (see Physics::expose); without it a
+    // script could not identify the module it got back from eve.Cloth().
+    cls.addFunc("getName", &eve::cloth::Cloth::getName);
     cls.addFunc("newCloth", &eve::cloth::Cloth::newCloth);
     cls.addFunc("newCloth3D", &eve::cloth::Cloth::newCloth3D);
     cls.addFunc("newClothGPU", &eve::cloth::Cloth::newClothGPU);
