@@ -250,17 +250,16 @@ endif()
 # Jolt symbols; its static archive is pulled into EVWorld once in SHARED builds.
 eve_module_enabled(physics _eve_jolt_physics)
 if(EVENGINE_BUILD_JOLT AND (_eve_jolt_physics OR EVENGINE_BUILD_PHYSICS_CORE_CHECK OR EVENGINE_PROFILE STREQUAL "physics-core-only"))
-  # This source-built target must use the same solved-contact ABI as its provider.
-  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
-    ${CMAKE_SOURCE_DIR}/cmake/patches/jolt-solved-contacts-rolling.patch)
-  execute_process(COMMAND ${CMAKE_COMMAND}
-    -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/jolt-solved-contacts-rolling.patch
-    -DPATCH_DIR=${CMAKE_SOURCE_DIR}/third-party/jolt
-    -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake
-    COMMAND_ERROR_IS_FATAL ANY)
-  include(${CMAKE_SOURCE_DIR}/third-party/cmake/Jolt.cmake)
-  eve_add_jolt()
-  set_target_properties(Jolt PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  if(EVENGINE_THIRD_PARTY_BINARY_DIR)
+    find_package(Jolt CONFIG REQUIRED PATHS "${EVENGINE_THIRD_PARTY_BINARY_DIR}"
+      NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
+    # Link groups and tests are assembled in parent/sibling directories.
+    set_property(TARGET Jolt::Jolt PROPERTY IMPORTED_GLOBAL TRUE)
+  else()
+    include(${CMAKE_SOURCE_DIR}/third-party/cmake/Jolt.cmake)
+    eve_add_jolt()
+    set_target_properties(Jolt PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  endif()
   # This private native subclass must match Jolt's default no-RTTI ABI. Keep
   # RTTI enabled for engine-facing provider types in the other translation units.
   if(NOT MSVC AND NOT CPP_RTTI_ENABLED)
@@ -282,8 +281,7 @@ endforeach()
 
 if(TARGET EVPhysics)
   target_compile_definitions(EVPhysics PRIVATE EVENGINE_HAS_JOLT=$<BOOL:${EVENGINE_BUILD_JOLT}>)
-  if(TARGET Jolt)
-    target_include_directories(EVPhysics BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/third-party/jolt)
+  if(TARGET Jolt::Jolt)
     target_link_libraries(EVPhysics PRIVATE Jolt::Jolt)
   endif()
 endif()

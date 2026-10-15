@@ -37,7 +37,8 @@ permissions:
   contents: write
 
 env:
-  CMAKE_EXTRA_ARGS: -DBUILD_TESTING=OFF
+  # Reuse the pinned dependency release; build source only if transfer is unavailable.
+  CMAKE_EXTRA_ARGS: -DBUILD_TESTING=OFF -DEVENGINE_THIRD_PARTY_MODE=AUTO
   # Single source of truth: repository variables (Settings -> Secrets and
   # variables -> Actions -> Variables), falling back to these defaults.
   VULKAN_VERSION: ${{ vars.VULKAN_VERSION || '1.4.304.1' }}
