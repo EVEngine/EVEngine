@@ -2377,7 +2377,6 @@ TEST_CASE("procgen.simulation.lootPropBake") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_resource_account)
-#include "PrivateTestScope.h"
 #include <array>
 #include <cstdint>
 #include <initializer_list>
@@ -2386,6 +2385,7 @@ TEST_CASE("procgen.simulation.lootPropBake") {
 #include <string_view>
 #include <type_traits>
 #include <utility>
+#include "PrivateTestScope.h"
 #include "attributes/AttributeResourceAccount.h"
 #include "attributes/AttributeSetResourceAccount.h"
 #include "card/Card.h"

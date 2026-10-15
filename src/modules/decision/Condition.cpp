@@ -230,8 +230,8 @@ ConditionResult Condition::evaluate(const EvaluationContext& context) const {
             auto actual = context.value(key_);
             if (!actual) return unavailable(ConditionReasonCode::MissingValue, "compare", key_);
             if (compare_ == CompareOperator::Exists) {
-                return ConditionResult::success(*actual, object({{"key", Value(key_)},
-                                                                 {"operator", Value(compareOperatorName(compare_))}}));
+                return ConditionResult::success(
+                    *actual, object({{"key", Value(key_)}, {"operator", Value(compareOperatorName(compare_))}}));
             }
             const bool equal = compareValues(*actual, compare_, expected_);
             return equal ? ConditionResult::success(*actual, object({{"key", Value(key_)},

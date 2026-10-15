@@ -356,20 +356,20 @@ Result<Value> encodeAbilityAsset(const AbilityDefinition& definition) {
         if (!encoded) return Result<Value>::failure(encoded.status());
         timeline = std::move(encoded).takeValue();
     }
-    Value::Object action{{"id", definition.action.id.format()},
-                         {"timing", Value::Object{{"windupNs", definition.action.timing.windup.nanoseconds()},
-                                                  {"activeNs", definition.action.timing.active.nanoseconds()},
-                                                  {"recoverNs", definition.action.timing.recover.nanoseconds()}}},
-                         {"condition", encodeAbilityCondition(definition.action.condition)},
-                         {"targetingMode", std::string(targetingModeName(definition.action.targetingMode))},
-                         {"targetingSpec", definition.action.targetingSpec
-                                               ? encodeTargetingSpec(*definition.action.targetingSpec)
-                                               : Value()},
-                         {"cost", definition.action.cost ? Value(std::move(costs)) : Value()},
-                         {"effectIds", strings(definition.action.effectIds)},
-                         {"activeExecutionRequired", definition.action.activeExecutionRequired},
-                         {"metadata", definition.action.metadata},
-                         {"timeline", std::move(timeline)}};
+    Value::Object action{
+        {"id", definition.action.id.format()},
+        {"timing", Value::Object{{"windupNs", definition.action.timing.windup.nanoseconds()},
+                                 {"activeNs", definition.action.timing.active.nanoseconds()},
+                                 {"recoverNs", definition.action.timing.recover.nanoseconds()}}},
+        {"condition", encodeAbilityCondition(definition.action.condition)},
+        {"targetingMode", std::string(targetingModeName(definition.action.targetingMode))},
+        {"targetingSpec",
+         definition.action.targetingSpec ? encodeTargetingSpec(*definition.action.targetingSpec) : Value()},
+        {"cost", definition.action.cost ? Value(std::move(costs)) : Value()},
+        {"effectIds", strings(definition.action.effectIds)},
+        {"activeExecutionRequired", definition.action.activeExecutionRequired},
+        {"metadata", definition.action.metadata},
+        {"timeline", std::move(timeline)}};
     Value::Object root{{"schema", std::string(kAbilityAssetSchemaId)},
                        {"schemaVersion", static_cast<std::int64_t>(kAbilityAssetSchemaVersion)},
                        {"id", definition.id.format()},

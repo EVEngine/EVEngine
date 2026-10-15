@@ -41,14 +41,15 @@ eve::Result<CompareOperator> parseOperator(const eve::Value& value) {
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "condition operator must be a string",
                                    "operator", {}, "decision.condition_codec"));
     static const std::pair<std::string_view, CompareOperator> names[] = {
-        {"eq", CompareOperator::Equal},     {"ne", CompareOperator::NotEqual}, {"lt", CompareOperator::Less},
-        {"le", CompareOperator::LessEqual}, {"gt", CompareOperator::Greater},  {"ge", CompareOperator::GreaterEqual},
+        {"eq", CompareOperator::Equal},      {"ne", CompareOperator::NotEqual}, {"lt", CompareOperator::Less},
+        {"le", CompareOperator::LessEqual},  {"gt", CompareOperator::Greater},  {"ge", CompareOperator::GreaterEqual},
         {"exists", CompareOperator::Exists},
     };
     for (const auto& [name, op] : names)
         if (*text == name) return eve::Result<CompareOperator>::success(op);
-    return eve::Result<CompareOperator>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::InvalidArgument, "unknown condition operator", "operator", {}, "decision.condition_codec"));
+    return eve::Result<CompareOperator>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                        "unknown condition operator", "operator", {},
+                                                                        "decision.condition_codec"));
 }
 
 eve::Result<DeterminismLevel> parseDeterminism(const eve::Value& value) {
@@ -102,9 +103,9 @@ eve::Result<std::vector<Condition>> decodeChildren(const eve::Value::Object& obj
 eve::Result<Condition> decodeLegacyLeaf(std::string_view kind, const eve::Value::Object& object) {
     if (kind == "has_tag" || kind == "has_attribute" || kind == "has_resource" || kind == "authority_check") {
         if (!exactFields(object, {"kind", "key"}))
-            return eve::Result<Condition>::failure(
-                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "leaf condition contains an unknown field",
-                                       {}, {}, "decision.condition_codec"));
+            return eve::Result<Condition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                          "leaf condition contains an unknown field",
+                                                                          {}, {}, "decision.condition_codec"));
         auto key = requiredString(object, "key");
         if (!key) return eve::Result<Condition>::failure(key.status());
         auto name = std::move(key).takeValue();
@@ -115,16 +116,16 @@ eve::Result<Condition> decodeLegacyLeaf(std::string_view kind, const eve::Value:
     }
     if (kind == "state_equals") {
         if (!exactFields(object, {"kind", "key", "expected"}))
-            return eve::Result<Condition>::failure(
-                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "state_equals contains an unknown field",
-                                       {}, {}, "decision.condition_codec"));
+            return eve::Result<Condition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                          "state_equals contains an unknown field", {},
+                                                                          {}, "decision.condition_codec"));
         auto key = requiredString(object, "key");
         if (!key) return eve::Result<Condition>::failure(key.status());
         const auto* expected = field(object, "expected");
         if (expected == nullptr)
-            return eve::Result<Condition>::failure(
-                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "state_equals requires expected",
-                                       "expected", {}, "decision.condition_codec"));
+            return eve::Result<Condition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                          "state_equals requires expected", "expected",
+                                                                          {}, "decision.condition_codec"));
         return eve::Result<Condition>::success(stateEquals(std::move(key).takeValue(), *expected));
     }
     return eve::Result<Condition>::failure(eve::Diagnostic::error(
@@ -146,16 +147,16 @@ eve::Result<Condition> decodeNode(const eve::Value& value) {
     const std::string& kind = *kindText;
     if (kind == "all" || kind == "any" || kind == "not") {
         if (!exactFields(*object, {"kind", "children"}))
-            return eve::Result<Condition>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument, "logical condition contains an unknown field", {}, {},
-                "decision.condition_codec"));
+            return eve::Result<Condition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                          "logical condition contains an unknown field",
+                                                                          {}, {}, "decision.condition_codec"));
         auto children = decodeChildren(*object);
         if (!children) return eve::Result<Condition>::failure(children.status());
         auto values = std::move(children).takeValue();
         if (kind == "not" && values.size() != 1)
-            return eve::Result<Condition>::failure(
-                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "not condition requires one child",
-                                       "children", {}, "decision.condition_codec"));
+            return eve::Result<Condition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                          "not condition requires one child",
+                                                                          "children", {}, "decision.condition_codec"));
         if (kind == "all") return eve::Result<Condition>::success(Condition::all(std::move(values)));
         if (kind == "any") return eve::Result<Condition>::success(Condition::any(std::move(values)));
         return eve::Result<Condition>::success(Condition::not_(std::move(values.front())));
@@ -163,16 +164,16 @@ eve::Result<Condition> decodeNode(const eve::Value& value) {
     if (kind == "compare") {
         if (!exactFields(*object, {"kind", "key", "operator", "expected"}) &&
             !exactFields(*object, {"kind", "key", "operator"}))
-            return eve::Result<Condition>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::InvalidArgument, "compare condition contains an unknown field", {}, {},
-                "decision.condition_codec"));
+            return eve::Result<Condition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                          "compare condition contains an unknown field",
+                                                                          {}, {}, "decision.condition_codec"));
         auto key = requiredString(*object, "key");
         if (!key) return eve::Result<Condition>::failure(key.status());
         const auto* opValue = field(*object, "operator");
         if (opValue == nullptr)
-            return eve::Result<Condition>::failure(
-                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "compare requires operator", "operator",
-                                       {}, "decision.condition_codec"));
+            return eve::Result<Condition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                          "compare requires operator", "operator", {},
+                                                                          "decision.condition_codec"));
         auto op = parseOperator(*opValue);
         if (!op) return eve::Result<Condition>::failure(op.status());
         eve::Value  expected;
@@ -181,9 +182,9 @@ eve::Result<Condition> decodeNode(const eve::Value& value) {
             if (expectedField != nullptr) expected = *expectedField;
         } else {
             if (expectedField == nullptr)
-                return eve::Result<Condition>::failure(
-                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "compare requires expected",
-                                           "expected", {}, "decision.condition_codec"));
+                return eve::Result<Condition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                              "compare requires expected", "expected",
+                                                                              {}, "decision.condition_codec"));
             expected = *expectedField;
         }
         return eve::Result<Condition>::success(
@@ -191,22 +192,22 @@ eve::Result<Condition> decodeNode(const eve::Value& value) {
     }
     if (kind == "policy_call") {
         if (!exactFields(*object, {"kind", "key", "arguments", "scriptDeclaration", "script"}))
-            return eve::Result<Condition>::failure(
-                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "policy_call contains an unknown field",
-                                       {}, {}, "decision.condition_codec"));
+            return eve::Result<Condition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                          "policy_call contains an unknown field", {},
+                                                                          {}, "decision.condition_codec"));
         auto key = requiredString(*object, "key");
         if (!key) return eve::Result<Condition>::failure(key.status());
         eve::Value arguments = eve::Value::Object{};
         if (const auto* args = field(*object, "arguments")) arguments = *args;
         std::optional<ScriptConditionDeclaration> declaration;
-        const eve::Value* declValue = field(*object, "scriptDeclaration");
+        const eve::Value*                         declValue = field(*object, "scriptDeclaration");
         if (declValue == nullptr) declValue = field(*object, "script");
         if (declValue != nullptr) {
             const auto* declObject = declValue->getIf<eve::Value::Object>();
             if (declObject == nullptr)
-                return eve::Result<Condition>::failure(eve::Diagnostic::error(
-                    eve::DiagnosticCode::InvalidArgument, "scriptDeclaration must be an object", "scriptDeclaration",
-                    {}, "decision.condition_codec"));
+                return eve::Result<Condition>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "scriptDeclaration must be an object",
+                                           "scriptDeclaration", {}, "decision.condition_codec"));
             ScriptConditionDeclaration parsed;
             auto                       name = requiredString(*declObject, "name");
             if (!name) return eve::Result<Condition>::failure(name.status());
@@ -214,9 +215,9 @@ eve::Result<Condition> decodeNode(const eve::Value& value) {
             if (const auto* deps = field(*declObject, "dependencies")) {
                 const auto* array = deps->getIf<eve::Value::Array>();
                 if (array == nullptr)
-                    return eve::Result<Condition>::failure(eve::Diagnostic::error(
-                        eve::DiagnosticCode::InvalidArgument, "dependencies must be an array",
-                        "scriptDeclaration.dependencies", {}, "decision.condition_codec"));
+                    return eve::Result<Condition>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dependencies must be an array",
+                                               "scriptDeclaration.dependencies", {}, "decision.condition_codec"));
                 for (const auto& item : *array) {
                     const auto* text = item.getIf<std::string>();
                     if (text == nullptr || text->empty())
@@ -280,14 +281,16 @@ eve::Result<eve::Value> encodeCondition(const Condition& condition) {
             const auto&       declaration = *condition.scriptDeclaration();
             eve::Value::Array dependencies;
             for (const auto& dependency : declaration.dependencies) dependencies.emplace_back(dependency);
-            object.emplace("scriptDeclaration",
-                           eve::Value(eve::Value::Object{{"name", eve::Value(declaration.name)},
-                                                         {"dependencies", eve::Value(std::move(dependencies))},
-                                                         {"determinism", eve::Value(determinismName(declaration.determinism))}}));
+            object.emplace(
+                "scriptDeclaration",
+                eve::Value(eve::Value::Object{{"name", eve::Value(declaration.name)},
+                                              {"dependencies", eve::Value(std::move(dependencies))},
+                                              {"determinism", eve::Value(determinismName(declaration.determinism))}}));
         }
     } else {
-        return eve::Result<eve::Value>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "unsupported condition kind", "kind", {}, "decision.condition_codec"));
+        return eve::Result<eve::Value>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                       "unsupported condition kind", "kind", {},
+                                                                       "decision.condition_codec"));
     }
     return eve::Result<eve::Value>::success(eve::Value(std::move(object)));
 }

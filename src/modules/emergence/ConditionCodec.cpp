@@ -12,9 +12,7 @@
 
 namespace eve::emergence {
 
-eve::Result<decision::Condition> decodeCondition(const eve::Value& value) {
-    return decision::decodeCondition(value);
-}
+eve::Result<decision::Condition> decodeCondition(const eve::Value& value) { return decision::decodeCondition(value); }
 
 }  // namespace eve::emergence
 

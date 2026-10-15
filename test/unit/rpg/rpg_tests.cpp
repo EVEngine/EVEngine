@@ -3932,12 +3932,12 @@ TEST_CASE("rpg.state.restoreRejectsMalformed") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_skill_condition)
-#include "PrivateTestScope.h"
 #include <optional>
+#include "PrivateTestScope.h"
+#include "decision/ConditionKeys.h"
 #include "rpg/RPGActor.h"
 #include "rpg/Skill.h"
 #include "rpg/SkillCondition.h"
-#include "decision/ConditionKeys.h"
 #include "rpg/SkillSystem.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -4009,7 +4009,8 @@ TEST_CASE("rpg.skillConditionPolicyAndAuthorityAreReadOnlyProviders") {
         return name == "safe" ? std::optional<ConditionResult>(ConditionResult::success()) : std::nullopt;
     };
     const auto result = SkillConditionAdapter::evaluate(
-        actor, definition, Condition::all({eve::decision::authorityAllow("cast"), Condition::policyCall("safe")}), queries);
+        actor, definition, Condition::all({eve::decision::authorityAllow("cast"), Condition::policyCall("safe")}),
+        queries);
     REQUIRE(result.passed());
     CHECK_EQ(authorityCalls, 1);
     CHECK_EQ(policyCalls, 1);

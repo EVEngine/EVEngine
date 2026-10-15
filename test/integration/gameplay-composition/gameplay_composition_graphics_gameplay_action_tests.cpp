@@ -3303,15 +3303,15 @@ TEST_CASE("gameSave.rpgAndTacticsRestoreTogether") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_gameplay_action)
-#include "PrivateTestScope.h"
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
+#include "PrivateTestScope.h"
 #include "action/Action.h"
-#include "decision/ConditionKeys.h"
 #include "common/Identity.h"
+#include "decision/ConditionKeys.h"
 #include "rpg/SkillAction.h"
 #include "weapon/WeaponAction.h"
 #include "zeroerr/assert.h"

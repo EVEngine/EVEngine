@@ -425,8 +425,8 @@ TEST_CASE("card.state.restoreRejectsMalformed") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_card_play_condition)
-#include "PrivateTestScope.h"
 #include <optional>
+#include "PrivateTestScope.h"
 #include "card/Card.h"
 #include "card/CardPlay.h"
 #include "decision/ConditionKeys.h"

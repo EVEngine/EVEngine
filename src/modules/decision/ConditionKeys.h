@@ -133,8 +133,8 @@ inline constexpr std::string_view kAuthorityAllowPolicy = "authority.allow";
     declaration.name         = std::string(kAuthorityAllowPolicy);
     declaration.dependencies = {authorityKey(scope)};
     declaration.determinism  = DeterminismLevel::BitExact;
-    return Condition::policyCall(std::string(kAuthorityAllowPolicy),
-                                 Value::Object{{"scope", Value(scope)}}, std::move(declaration));
+    return Condition::policyCall(std::string(kAuthorityAllowPolicy), Value::Object{{"scope", Value(scope)}},
+                                 std::move(declaration));
 }
 
 /**

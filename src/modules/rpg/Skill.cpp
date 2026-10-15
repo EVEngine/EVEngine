@@ -8,11 +8,11 @@
 #include <utility>
 #include "common/Json.h"
 #include "common/Value.h"
+#include "decision/ConditionCodec.h"
+#include "decision/ConditionKeys.h"
 #include "rpg/AttributeSystem.h"
 #include "rpg/RPGActor.h"
 #include "rpg/SkillAction.h"
-#include "decision/ConditionCodec.h"
-#include "decision/ConditionKeys.h"
 #include "rpg/SkillCondition.h"
 #include "rpg/SkillConditionCodec.h"
 

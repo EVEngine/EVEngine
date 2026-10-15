@@ -1,10 +1,10 @@
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_condition)
-#include "PrivateTestScope.h"
 #include <map>
 #include <optional>
 #include <string>
+#include "PrivateTestScope.h"
 #include "decision/Condition.h"
 #include "decision/ConditionCodec.h"
 #include "decision/ConditionKeys.h"
@@ -23,7 +23,7 @@ public:
         auto it = values.find(std::string(key));
         return it == values.end() ? std::nullopt : std::optional<eve::Value>(it->second);
     }
-    [[nodiscard]] std::optional<eve::decision::ConditionResult> policy(std::string_view name,
+    [[nodiscard]] std::optional<eve::decision::ConditionResult> policy(std::string_view  name,
                                                                        const eve::Value& arguments) const override {
         (void)arguments;
         auto it = policies.find(std::string(name));
@@ -81,8 +81,7 @@ TEST_CASE("decision.condition.compoundsExplainFailureWithoutMutation") {
     context.values.emplace(stateKey("phase"), "ready");
     const auto before = context.values;
 
-    const auto any =
-        Condition::any({Condition::compare("level", CompareOperator::Greater, 9), tagPresent("fire")});
+    const auto any = Condition::any({Condition::compare("level", CompareOperator::Greater, 9), tagPresent("fire")});
     const auto anyResult = any.evaluate(context);
     REQUIRE(!anyResult.passed());
     CHECK_EQ(static_cast<int>(anyResult.reasonCode()), static_cast<int>(ConditionReasonCode::NoChildPassed));
