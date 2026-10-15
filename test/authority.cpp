@@ -92,6 +92,35 @@ TEST_CASE("authority.snapshot.restoreIsDeterministicAndTransactional") {
     CHECK_EQ(restored.snapshotJson(), before);
 }
 
+TEST_CASE("authority.snapshot.protobufRoundTripAndFailedRestoreAreTransactional") {
+    Store source;
+    source.grant("actor", "scene", "edit", "role", 3);
+    source.deny("actor", "scene", "delete", "policy", 5, 2.0);
+    source.update(0.5);
+    auto encoded = source.snapshotBinary();
+    REQUIRE(encoded.ok());
+
+    Store restored;
+    REQUIRE(restored.restoreBinary(encoded.value()).ok());
+    CHECK(restored.can("actor", "scene", "edit"));
+    CHECK(!restored.can("actor", "scene", "delete"));
+    auto repeated = restored.snapshotBinary();
+    REQUIRE(repeated.ok());
+    CHECK_EQ(repeated.value(), encoded.value());
+
+    const auto before = restored.snapshotJson();
+    CHECK(!restored.restoreBinary("\x00\x01\x02").ok());
+    CHECK_EQ(restored.snapshotJson(), before);
+    std::string truncated = encoded.value();
+    truncated.pop_back();
+    CHECK(!restored.restoreBinary(truncated).ok());
+    CHECK_EQ(restored.snapshotJson(), before);
+    std::string futureField = encoded.value();
+    futureField.append("\xA0\x06\x01", 3);  // Unknown field 100, varint 1.
+    CHECK(!restored.restoreBinary(futureField).ok());
+    CHECK_EQ(restored.snapshotJson(), before);
+}
+
 TEST_CASE("authority.input.invalidFactsDoNotMutate") {
     Store store;
     CHECK(store.grant("", "scope", "read", "source").empty());

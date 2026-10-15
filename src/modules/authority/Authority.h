@@ -110,6 +110,21 @@ public:
     /** @brief Exports persistent state as deterministic compact JSON. */
     std::string snapshotJson() const;
     /**
+     * @brief Encodes the typed authority-store schema as Protobuf wire bytes.
+     * @return Versioned bytes or a structured serialization failure.
+     * @thread Call on the store's owning simulation thread.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] eve::Result<std::string> snapshotBinary() const;
+    /**
+     * @brief Validates and transactionally restores a typed Protobuf snapshot.
+     * @param bytes Versioned authority-store wire bytes.
+     * @return Success, or a failure leaving all observable state unchanged.
+     * @thread Call on the store's owning simulation thread.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] eve::Result<void> restoreBinary(std::string_view bytes);
+    /**
      * @brief Transactionally restores a snapshot produced by snapshotJson().
      * @param json Snapshot JSON to parse and validate.
      * @return Success, or a structured parse/invariant diagnostic; failure

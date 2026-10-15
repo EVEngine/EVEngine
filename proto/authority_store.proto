@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package eve.authority.proto;
+
+// Version 2 is the typed binary authority-store snapshot. Unknown fields are
+// rejected by the restore path until an explicit migration is defined.
+message AuthorityStoreSave {
+  optional string schema = 1;
+  optional uint32 version = 2;
+  optional uint64 next_id = 3;
+  optional uint64 next_order = 4;
+  optional uint64 next_sequence = 5;
+  repeated AuthorityRule rules = 6;
+}
+
+message AuthorityRule {
+  optional string id = 1;
+  optional string actor = 2;
+  optional string scope = 3;
+  optional string capability = 4;
+  optional string source = 5;
+  enum Effect {
+    EFFECT_UNSPECIFIED = 0;
+    GRANT = 1;
+    DENY = 2;
+  }
+  optional Effect effect = 6;
+  optional int32 priority = 7;
+  optional double duration = 8;
+  optional double remaining = 9;
+  optional uint64 order = 10;
+}

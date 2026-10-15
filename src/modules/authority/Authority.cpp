@@ -1,5 +1,6 @@
 #include "authority/Authority.h"
 
+#include "authority_store.pb.h"
 #include "common/Json.h"
 #include "common/SquirrelBinding.h"
 
@@ -9,6 +10,7 @@
 #include <cmath>
 #include <functional>
 #include <iomanip>
+#include <limits>
 #include <sstream>
 #include <utility>
 
@@ -263,6 +265,87 @@ void Store::clearEvents() {
         events_.clear();
         advanceRevision(revision_);
     }
+}
+
+eve::Result<std::string> Store::snapshotBinary() const {
+    eve::authority::proto::AuthorityStoreSave save;
+    save.set_schema("authority:store");
+    save.set_version(2);
+    save.set_next_id(nextId_);
+    save.set_next_order(nextOrder_);
+    save.set_next_sequence(nextSequence_);
+    for (const auto& rule : rules_) {
+        auto* item = save.add_rules();
+        item->set_id(rule.id);
+        item->set_actor(rule.actor);
+        item->set_scope(rule.scope);
+        item->set_capability(rule.capability);
+        item->set_source(rule.source);
+        item->set_effect(rule.effect == RuleEffect::Grant ? eve::authority::proto::AuthorityRule::GRANT
+                                                          : eve::authority::proto::AuthorityRule::DENY);
+        item->set_priority(rule.priority);
+        item->set_duration(rule.duration);
+        item->set_remaining(rule.remaining);
+        item->set_order(rule.order);
+    }
+    std::string bytes;
+    if (!save.SerializeToString(&bytes))
+        return eve::Result<std::string>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "authority Protobuf serialization failed"));
+    return eve::Result<std::string>::success(std::move(bytes));
+}
+
+eve::Result<void> Store::restoreBinary(std::string_view bytes) {
+    eve::authority::proto::AuthorityStoreSave save;
+    if (bytes.size() > static_cast<std::size_t>(std::numeric_limits<int>::max()) ||
+        !save.ParseFromArray(bytes.data(), static_cast<int>(bytes.size())) ||
+        !save.GetReflection()->GetUnknownFields(save).empty() || !save.has_schema() ||
+        save.schema() != "authority:store" || !save.has_version() || save.version() != 2 || !save.has_next_id() ||
+        !save.has_next_order() || !save.has_next_sequence() || save.next_id() == 0 || save.next_order() == 0 ||
+        save.next_sequence() == 0)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid authority Protobuf snapshot"));
+
+    std::deque<Rule> restored;
+    for (int i = 0; i < save.rules_size(); ++i) {
+        const auto& item = save.rules(i);
+        Rule        rule;
+        uint64_t    numericId = 0;
+        if (!item.GetReflection()->GetUnknownFields(item).empty() || !item.has_id() || !item.has_actor() ||
+            !item.has_scope() || !item.has_capability() || !item.has_source() || !item.has_effect() ||
+            !item.has_priority() || !item.has_duration() || !item.has_remaining() || !item.has_order() ||
+            item.actor().empty() || item.scope().empty() || item.capability().empty() ||
+            (item.effect() != eve::authority::proto::AuthorityRule::GRANT &&
+             item.effect() != eve::authority::proto::AuthorityRule::DENY) ||
+            !parseRuleId(item.id(), numericId) || numericId >= save.next_id() || item.order() == 0 ||
+            item.order() >= save.next_order() || !std::isfinite(item.duration()) || !std::isfinite(item.remaining()) ||
+            item.duration() < 0.0 || item.remaining() == 0.0 || item.remaining() < -1.0 ||
+            std::any_of(restored.begin(), restored.end(),
+                        [&](const Rule& old) { return old.id == item.id() || old.order == item.order(); }))
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "invalid authority rule at index " + std::to_string(i)));
+        rule.id         = item.id();
+        rule.actor      = item.actor();
+        rule.scope      = item.scope();
+        rule.capability = item.capability();
+        rule.source     = item.source();
+        rule.effect =
+            item.effect() == eve::authority::proto::AuthorityRule::GRANT ? RuleEffect::Grant : RuleEffect::Deny;
+        rule.priority  = item.priority();
+        rule.duration  = item.duration();
+        rule.remaining = item.remaining();
+        rule.order     = item.order();
+        restored.push_back(std::move(rule));
+    }
+    rules_        = std::move(restored);
+    nextId_       = save.next_id();
+    nextOrder_    = save.next_order();
+    nextSequence_ = save.next_sequence();
+    events_.clear();
+    query_.clear();
+    revision_ = eve::Revision(nextSequence_ - 1);
+    tick_     = eve::SimulationTick{};
+    return eve::Result<void>::success();
 }
 
 std::string Store::snapshotJson() const {

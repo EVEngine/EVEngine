@@ -284,6 +284,16 @@ if(TARGET EVSchema)
   target_link_libraries(EVSchema PUBLIC protobuf::libprotobuf)
 endif()
 
+if(TARGET EVAuthority)
+  target_sources(EVAuthority PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/authority_store.pb.cc)
+  target_include_directories(EVAuthority SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  if(MSVC)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/authority_store.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+  endif()
+  target_link_libraries(EVAuthority PUBLIC protobuf::libprotobuf)
+endif()
+
 if(TARGET EVDecision)
   target_sources(EVDecision PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/decision_context.pb.cc)
   target_include_directories(EVDecision SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
