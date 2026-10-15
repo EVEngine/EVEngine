@@ -14,7 +14,7 @@
 namespace test_condition {
 namespace {
 
-class TestContext final : public eve::decision::EvaluationContext {
+class TestContext : public eve::decision::EvaluationContext {
 public:
     std::map<std::string, eve::Value>                     values;
     std::map<std::string, eve::decision::ConditionResult> policies;
@@ -24,7 +24,8 @@ public:
         return it == values.end() ? std::nullopt : std::optional<eve::Value>(it->second);
     }
     [[nodiscard]] std::optional<eve::decision::ConditionResult> policy(std::string_view name,
-                                                                       const eve::Value&) const override {
+                                                                       const eve::Value& arguments) const override {
+        (void)arguments;
         auto it = policies.find(std::string(name));
         return it == policies.end() ? std::nullopt : std::optional<eve::decision::ConditionResult>(it->second);
     }
