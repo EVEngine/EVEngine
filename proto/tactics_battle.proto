@@ -162,3 +162,16 @@ message BattlePayload {
   repeated Objective objectives = 15;
   map<string, RandomStream> random = 16;
 }
+
+// Human-readable Protobuf JSON view of the same version-8 battle payload.
+// Its digest covers deterministic BattlePayload wire bytes, not JSON spelling.
+message BattleJsonDocument {
+  optional string type = 1;
+  optional string schema = 2;
+  optional uint32 version = 3;
+  optional string instance_id = 4;
+  optional uint64 revision = 5;
+  optional uint64 tick = 6;
+  optional BattlePayload payload = 7;
+  bytes digest = 8;
+}

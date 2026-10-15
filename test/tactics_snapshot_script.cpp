@@ -2,6 +2,9 @@
 #include "common/ECS.h"
 #include "common/SnapshotHash.h"
 #include "tactics/Tactics.h"
+#include "tactics_battle.pb.h"
+
+#include <google/protobuf/util/json_util.h>
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -138,10 +141,12 @@ TEST_CASE("tactics.snapshotJsonRoundTripRefusesTamperingAndForeignDocuments") {
     CHECK(restored.value().movePoints > spent);
 
     // A tampered document is refused by the digest, and the battle keeps its current state.
-    std::string tampered = document;
-    const auto position = tampered.find("\"moveCost\":100");
-    REQUIRE(position != std::string::npos);
-    tampered.replace(position, 15, "\"moveCost\":900");
+    eve::tactics::proto::BattleJsonDocument typed;
+    REQUIRE(google::protobuf::util::JsonStringToMessage(document, &typed).ok());
+    REQUIRE(typed.payload().board().cells_size() > 0);
+    typed.mutable_payload()->mutable_board()->mutable_cells(0)->set_move_cost(900);
+    std::string tampered;
+    REQUIRE(google::protobuf::util::MessageToJsonString(typed, &tampered).ok());
     auto refused = fixture.tactics.restoreJson(fixture.battle, tampered);
     CHECK(!refused.ok());
     REQUIRE(refused.status().primaryDiagnostic() != nullptr);
@@ -155,6 +160,17 @@ TEST_CASE("tactics.snapshotJsonRoundTripRefusesTamperingAndForeignDocuments") {
     CHECK(!malformed.ok());
     REQUIRE(malformed.status().primaryDiagnostic() != nullptr);
     CHECK(malformed.status().primaryDiagnostic()->code() == eve::DiagnosticCode::ParseError);
+}
+
+TEST_CASE("tactics.restoreJsonReadsLegacySnapshotsForMigration") {
+    Fixture fixture;
+    fixture.build();
+    auto legacy = fixture.tactics.snapshot(fixture.battle, eve::snapshotContentHashProvider());
+    REQUIRE(legacy.ok());
+    auto json = eve::serializeSnapshotEnvelope(legacy.value());
+    REQUIRE(json.ok());
+    REQUIRE(fixture.tactics.moveUnit(fixture.battle, fixture.unitSubject, {1, 0, 0}).ok());
+    CHECK(fixture.tactics.restoreJson(fixture.battle, json.value()).ok());
 }
 
 TEST_CASE("tactics.commandLogJsonReplaysThroughTheSameCodecAsRestore") {

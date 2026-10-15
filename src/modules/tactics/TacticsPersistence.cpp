@@ -1999,6 +1999,35 @@ Result<std::string> TacticsPersistence::snapshotBinary(Battle& battle, const Sna
     return Result<std::string>::success(std::move(wire));
 }
 
+Result<std::string> TacticsPersistence::snapshotJson(Battle& battle, const SnapshotHashProvider& hashProvider) {
+    if (!hashProvider)
+        return Result<std::string>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "tactics snapshot requires a hash provider"));
+    auto payload = captureBattlePayload(battle);
+    if (!payload.ok()) return Result<std::string>::failure(payload.status());
+    std::string payloadWire;
+    if (!serializeDeterministic(payload.value(), payloadWire))
+        return Result<std::string>::failure(
+            Diagnostic::error(DiagnosticCode::SerializationError, "tactics payload serialization failed"));
+    auto digest = hashProvider(payloadWire);
+    if (!digest.ok()) return Result<std::string>::failure(digest.status());
+    const auto                digestBytes = digest.value().bytes();
+    proto::BattleJsonDocument document;
+    document.set_type(std::string(kType));
+    document.set_schema(schema().format());
+    document.set_version(8);
+    document.set_instance_id(battle.identity()->subject.format());
+    document.set_revision(battle.turn()->revision.value());
+    document.set_tick(battle.turn()->tick.value());
+    *document.mutable_payload() = std::move(payload).takeValue();
+    document.set_digest(std::string(reinterpret_cast<const char*>(digestBytes.data()), digestBytes.size()));
+    std::string json;
+    if (!google::protobuf::util::MessageToJsonString(document, &json).ok())
+        return Result<std::string>::failure(
+            Diagnostic::error(DiagnosticCode::SerializationError, "tactics JSON serialization failed"));
+    return Result<std::string>::success(std::move(json));
+}
+
 Result<TacticsPersistence::PreparedRestore> TacticsPersistence::prepareRestoreBinary(
     Battle& battle, std::string_view wire, const SnapshotHashProvider& hashProvider) {
     if (!hashProvider)
@@ -2044,6 +2073,40 @@ Result<TacticsPersistence::PreparedRestore> TacticsPersistence::prepareRestoreBi
     auto state = std::make_unique<PreparedRestore::Impl>(
         battle, std::move(candidate).takeValue(), Revision(envelope.revision()), SimulationTick(envelope.tick()));
     return Result<PreparedRestore>::success(PreparedRestore(std::move(state)));
+}
+
+Result<TacticsPersistence::PreparedRestore> TacticsPersistence::prepareRestoreJson(
+    Battle& battle, std::string_view json, const SnapshotHashProvider& hashProvider) {
+    proto::BattleJsonDocument document;
+    const auto                parsed = google::protobuf::util::JsonStringToMessage(json, &document);
+    if (parsed.ok() && document.has_type()) {
+        if (hasUnknownProtoFields(document) || !document.has_schema() || !document.has_version() ||
+            !document.has_instance_id() || !document.has_revision() || !document.has_tick() ||
+            !document.has_payload() || document.digest().size() != ContentId::Bytes{}.size())
+            return Result<PreparedRestore>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "incomplete tactics Protobuf JSON document"));
+        std::string payloadWire;
+        if (!serializeDeterministic(document.payload(), payloadWire))
+            return Result<PreparedRestore>::failure(
+                Diagnostic::error(DiagnosticCode::SerializationError, "tactics payload serialization failed"));
+        proto::BattleSaveEnvelope envelope;
+        envelope.set_type(document.type());
+        envelope.set_schema(document.schema());
+        envelope.set_version(document.version());
+        envelope.set_instance_id(document.instance_id());
+        envelope.set_revision(document.revision());
+        envelope.set_tick(document.tick());
+        envelope.set_payload_wire(std::move(payloadWire));
+        envelope.set_digest(document.digest());
+        std::string wire;
+        if (!serializeDeterministic(envelope, wire))
+            return Result<PreparedRestore>::failure(
+                Diagnostic::error(DiagnosticCode::SerializationError, "tactics envelope serialization failed"));
+        return prepareRestoreBinary(battle, wire, hashProvider);
+    }
+    auto legacy = parseSnapshotEnvelope(json, hashProvider);
+    if (!legacy.ok()) return Result<PreparedRestore>::failure(legacy.status());
+    return prepareRestore(battle, legacy.value(), hashProvider);
 }
 
 Result<Value> TacticsPersistence::commandLogValue(Battle& battle, Revision fromRevision) {

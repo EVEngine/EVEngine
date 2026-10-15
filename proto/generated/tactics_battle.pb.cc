@@ -65,6 +65,8 @@ PROTOBUF_CONSTINIT ::google::protobuf::internal::ReflectionData
         {&::_pbi::kDescriptorMethods, &::descriptor_table_tactics_5fbattle_2eproto, /* tracker*/ nullptr,},
         // ::eve::tactics::proto::BattlePayload
         {&::_pbi::kDescriptorMethods, &::descriptor_table_tactics_5fbattle_2eproto, /* tracker*/ nullptr,},
+        // ::eve::tactics::proto::BattleJsonDocument
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_tactics_5fbattle_2eproto, /* tracker*/ nullptr,},
 };
 }  // namespace
 #endif
@@ -3539,6 +3541,215 @@ const ::_pbi::ClassData* BattlePayload_get_class_data() {
 }
 }  // namespace
 #endif  // PROTOBUF_CUSTOM_VTABLE
+class BattleJsonDocument::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<BattleJsonDocument>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(BattleJsonDocument, _impl_._has_bits_);
+};
+
+constexpr BattleJsonDocument::ParseTableT_ BattleJsonDocument::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(BattleJsonDocument, _impl_._has_bits_),
+      0, // no _extensions_
+      8, 56,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967040,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      8,  // num_field_entries
+      1,  // num_aux_entries
+      offsetof(ParseTableT_, aux_entries),
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::eve::tactics::proto::BattleJsonDocument>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      // bytes digest = 8;
+      {::_pbi::TcParser::FastBS1,
+       {66, 3, 0,
+        PROTOBUF_FIELD_OFFSET(BattleJsonDocument, _impl_.digest_)}},
+      // optional string type = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(BattleJsonDocument, _impl_.type_)}},
+      // optional string schema = 2;
+      {::_pbi::TcParser::FastUS1,
+       {18, 1, 0,
+        PROTOBUF_FIELD_OFFSET(BattleJsonDocument, _impl_.schema_)}},
+      // optional uint32 version = 3;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(BattleJsonDocument, _impl_.version_), 7>(),
+       {24, 7, 0,
+        PROTOBUF_FIELD_OFFSET(BattleJsonDocument, _impl_.version_)}},
+      // optional string instance_id = 4;
+      {::_pbi::TcParser::FastUS1,
+       {34, 2, 0,
+        PROTOBUF_FIELD_OFFSET(BattleJsonDocument, _impl_.instance_id_)}},
+      // optional uint64 revision = 5;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(BattleJsonDocument, _impl_.revision_), 5>(),
+       {40, 5, 0,
+        PROTOBUF_FIELD_OFFSET(BattleJsonDocument, _impl_.revision_)}},
+      // optional uint64 tick = 6;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(BattleJsonDocument, _impl_.tick_), 6>(),
+       {48, 6, 0,
+        PROTOBUF_FIELD_OFFSET(BattleJsonDocument, _impl_.tick_)}},
+      // optional .eve.tactics.proto.BattlePayload payload = 7;
+      {::_pbi::TcParser::FastMtS1,
+       {58, 4, 0,
+        PROTOBUF_FIELD_OFFSET(BattleJsonDocument, _impl_.payload_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // optional string type = 1;
+      {PROTOBUF_FIELD_OFFSET(BattleJsonDocument, _impl_.type_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // optional string schema = 2;
+      {PROTOBUF_FIELD_OFFSET(BattleJsonDocument, _impl_.schema_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // optional uint32 version = 3;
+      {PROTOBUF_FIELD_OFFSET(BattleJsonDocument, _impl_.version_), _Internal::kHasBitsOffset + 7, 0, (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+      // optional string instance_id = 4;
+      {PROTOBUF_FIELD_OFFSET(BattleJsonDocument, _impl_.instance_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // optional uint64 revision = 5;
+      {PROTOBUF_FIELD_OFFSET(BattleJsonDocument, _impl_.revision_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kUInt64)},
+      // optional uint64 tick = 6;
+      {PROTOBUF_FIELD_OFFSET(BattleJsonDocument, _impl_.tick_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kUInt64)},
+      // optional .eve.tactics.proto.BattlePayload payload = 7;
+      {PROTOBUF_FIELD_OFFSET(BattleJsonDocument, _impl_.payload_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+      // bytes digest = 8;
+      {PROTOBUF_FIELD_OFFSET(BattleJsonDocument, _impl_.digest_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kBytes | ::_fl::kRepAString)},
+    }},
+    {{
+        #ifndef PROTOBUF_MESSAGE_GLOBALS
+        {::_pbi::TcParser::GetTable<::eve::tactics::proto::BattlePayload>()},
+        #else
+        {::_pbi::FieldAuxMessageGlobals(), &::eve::tactics::proto::BattlePayload_globals_},
+        #endif
+    }},
+    {{
+      "\44\4\6\0\13\0\0\0\0\0\0\0\0\0\0\0"
+      "eve.tactics.proto.BattleJsonDocument"
+      "type"
+      "schema"
+      "instance_id"
+    }},
+  };
+}
+
+
+inline constexpr BattleJsonDocument::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        type_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        schema_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        instance_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        digest_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        payload_{nullptr},
+        revision_{::uint64_t{0u}},
+        tick_{::uint64_t{0u}},
+        version_{0u} {}
+
+template <typename>
+constexpr BattleJsonDocument::BattleJsonDocument(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL BattleJsonDocument::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) BattleJsonDocument(arena);
+}
+constexpr auto BattleJsonDocument::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(BattleJsonDocument), alignof(BattleJsonDocument));
+}
+constexpr auto BattleJsonDocument::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &BattleJsonDocument::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<BattleJsonDocument>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &BattleJsonDocument::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<BattleJsonDocument>(), &BattleJsonDocument::ByteSizeLong,
+              &BattleJsonDocument::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(BattleJsonDocument, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[18],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_tactics_5fbattle_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct BattleJsonDocumentGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr BattleJsonDocumentGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 BattleJsonDocument_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(BattleJsonDocument::InternalGenerateClassData_(
+            _default, &BattleJsonDocument_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<BattleJsonDocument>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~BattleJsonDocumentGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) BattleJsonDocument _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<BattleJsonDocument>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(BattleJsonDocumentGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT EVENGINE_API_DOMAINS
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST BattleJsonDocumentGlobalsTypeInternal BattleJsonDocument_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* BattleJsonDocument_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return BattleJsonDocument_globals_.GetClassData();
+#else
+  return BattleJsonDocument_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
 }  // namespace proto
 }  // namespace tactics
 }  // namespace eve
@@ -3823,6 +4034,25 @@ const ::uint32_t
         9,
         3,
         15,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::eve::tactics::proto::BattleJsonDocument, _impl_._has_bits_),
+        11, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::eve::tactics::proto::BattleJsonDocument, _impl_.type_),
+        PROTOBUF_FIELD_OFFSET(::eve::tactics::proto::BattleJsonDocument, _impl_.schema_),
+        PROTOBUF_FIELD_OFFSET(::eve::tactics::proto::BattleJsonDocument, _impl_.version_),
+        PROTOBUF_FIELD_OFFSET(::eve::tactics::proto::BattleJsonDocument, _impl_.instance_id_),
+        PROTOBUF_FIELD_OFFSET(::eve::tactics::proto::BattleJsonDocument, _impl_.revision_),
+        PROTOBUF_FIELD_OFFSET(::eve::tactics::proto::BattleJsonDocument, _impl_.tick_),
+        PROTOBUF_FIELD_OFFSET(::eve::tactics::proto::BattleJsonDocument, _impl_.payload_),
+        PROTOBUF_FIELD_OFFSET(::eve::tactics::proto::BattleJsonDocument, _impl_.digest_),
+        0,
+        1,
+        7,
+        2,
+        5,
+        6,
+        4,
+        3,
 };
 
 static const ::_pbi::MigrationSchema
@@ -3845,6 +4075,7 @@ static const ::_pbi::MigrationSchema
         {225, sizeof(::eve::tactics::proto::RandomStream)},
         {232, sizeof(::eve::tactics::proto::BattlePayload_RandomEntry_DoNotUse)},
         {239, sizeof(::eve::tactics::proto::BattlePayload)},
+        {274, sizeof(::eve::tactics::proto::BattleJsonDocument)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
@@ -3866,6 +4097,7 @@ static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
         &::eve::tactics::proto::RandomStream_globals_,
         &::eve::tactics::proto::BattlePayload_RandomEntry_DoNotUse_globals_,
         &::eve::tactics::proto::BattlePayload_globals_,
+        &::eve::tactics::proto::BattleJsonDocument_globals_,
 };
 const char descriptor_table_protodef_tactics_5fbattle_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
@@ -3983,20 +4215,27 @@ const char descriptor_table_protodef_tactics_5fbattle_2eproto[] ABSL_ATTRIBUTE_S
     "ctics.proto.RandomStream:\0028\001B\007\n\005_seedB\t\n"
     "\007_statusB\010\n\006_phaseB\t\n\007_policyB\010\n\006_roundB"
     "\t\n\007_cursorB\016\n\014_active_unitB\010\n\006_boardB\t\n\007"
-    "_eventsB\014\n\n_reactionsB\013\n\t_commandsb\006prot"
-    "o3"
+    "_eventsB\014\n\n_reactionsB\013\n\t_commands\"\260\002\n\022B"
+    "attleJsonDocument\022\021\n\004type\030\001 \001(\tH\000\210\001\001\022\023\n\006"
+    "schema\030\002 \001(\tH\001\210\001\001\022\024\n\007version\030\003 \001(\rH\002\210\001\001\022"
+    "\030\n\013instance_id\030\004 \001(\tH\003\210\001\001\022\025\n\010revision\030\005 "
+    "\001(\004H\004\210\001\001\022\021\n\004tick\030\006 \001(\004H\005\210\001\001\0226\n\007payload\030\007"
+    " \001(\0132 .eve.tactics.proto.BattlePayloadH\006"
+    "\210\001\001\022\016\n\006digest\030\010 \001(\014B\007\n\005_typeB\t\n\007_schemaB"
+    "\n\n\010_versionB\016\n\014_instance_idB\013\n\t_revision"
+    "B\007\n\005_tickB\n\n\010_payloadb\006proto3"
 };
 static ::absl::once_flag descriptor_table_tactics_5fbattle_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_tactics_5fbattle_2eproto = {
     false,
     false,
-    4602,
+    4909,
     descriptor_table_protodef_tactics_5fbattle_2eproto,
     "tactics_battle.proto",
     &descriptor_table_tactics_5fbattle_2eproto_once,
     nullptr,
     0,
-    18,
+    19,
     schemas,
     file_message_globals,
     TableStruct_tactics_5fbattle_2eproto::offsets,
@@ -9865,6 +10104,391 @@ void BattlePayload::InternalSwap(BattlePayload* PROTOBUF_RESTRICT PROTOBUF_NONNU
 }
 
 ::google::protobuf::Metadata BattlePayload::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+BattleJsonDocument::BattleJsonDocument(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, BattleJsonDocument_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:eve.tactics.proto.BattleJsonDocument)
+}
+PROTOBUF_NDEBUG_INLINE BattleJsonDocument::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::eve::tactics::proto::BattleJsonDocument& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        type_(arena, from.type_),
+        schema_(arena, from.schema_),
+        instance_id_(arena, from.instance_id_),
+        digest_(arena, from.digest_) {}
+
+BattleJsonDocument::BattleJsonDocument(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const BattleJsonDocument& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, BattleJsonDocument_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  BattleJsonDocument* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::uint32_t cached_has_bits = _impl_._has_bits_[0];
+  _impl_.payload_ = (CheckHasBit(cached_has_bits, 0x00000010U))
+                ? ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.payload_)
+                : nullptr;
+  ::memcpy(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, revision_),
+           reinterpret_cast<const char*>(&from._impl_) +
+               offsetof(Impl_, revision_),
+           offsetof(Impl_, version_) -
+               offsetof(Impl_, revision_) +
+               sizeof(Impl_::version_));
+
+  // @@protoc_insertion_point(copy_constructor:eve.tactics.proto.BattleJsonDocument)
+}
+PROTOBUF_NDEBUG_INLINE BattleJsonDocument::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        type_(arena),
+        schema_(arena),
+        instance_id_(arena),
+        digest_(arena) {}
+
+inline void BattleJsonDocument::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, payload_),
+           0,
+           offsetof(Impl_, version_) -
+               offsetof(Impl_, payload_) +
+               sizeof(Impl_::version_));
+}
+BattleJsonDocument::~BattleJsonDocument() {
+  // @@protoc_insertion_point(destructor:eve.tactics.proto.BattleJsonDocument)
+  SharedDtor(*this);
+}
+inline void BattleJsonDocument::SharedDtor(MessageLite& self) {
+  BattleJsonDocument& this_ = static_cast<BattleJsonDocument&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.type_.Destroy();
+  this_._impl_.schema_.Destroy();
+  this_._impl_.instance_id_.Destroy();
+  this_._impl_.digest_.Destroy();
+  delete this_._impl_.payload_;
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull BattleJsonDocument_class_data_ =
+        BattleJsonDocument::InternalGenerateClassData_(BattleJsonDocument_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+BattleJsonDocument::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&BattleJsonDocument_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(BattleJsonDocument_class_data_.tc_table);
+  return BattleJsonDocument_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+BattleJsonDocument::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&BattleJsonDocument_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&BattleJsonDocument_globals_));
+  return BattleJsonDocument_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const BattleJsonDocument::ParseTableT_
+    BattleJsonDocument::_table_ =
+        BattleJsonDocument::InternalGenerateParseTable_(BattleJsonDocument_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void BattleJsonDocument::Clear() {
+// @@protoc_insertion_point(message_clear_start:eve.tactics.proto.BattleJsonDocument)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.type_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _impl_.schema_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _impl_.instance_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      _impl_.digest_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      ABSL_DCHECK(_impl_.payload_ != nullptr);
+      _impl_.payload_->Clear();
+    }
+  }
+  if (BatchCheckHasBit(cached_has_bits, 0x000000e0U)) {
+    ::memset(&_impl_.revision_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.version_) -
+        reinterpret_cast<char*>(&_impl_.revision_)) + sizeof(_impl_.version_));
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL BattleJsonDocument::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const BattleJsonDocument& this_ = static_cast<const BattleJsonDocument&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL BattleJsonDocument::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const BattleJsonDocument& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:eve.tactics.proto.BattleJsonDocument)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // optional string type = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    const ::std::string& _s = this_._internal_type();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "eve.tactics.proto.BattleJsonDocument.type");
+    target = stream->WriteStringMaybeAliased(1, _s, target);
+  }
+
+  // optional string schema = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    const ::std::string& _s = this_._internal_schema();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "eve.tactics.proto.BattleJsonDocument.schema");
+    target = stream->WriteStringMaybeAliased(2, _s, target);
+  }
+
+  // optional uint32 version = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+        3, this_._internal_version(), target);
+  }
+
+  // optional string instance_id = 4;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    const ::std::string& _s = this_._internal_instance_id();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "eve.tactics.proto.BattleJsonDocument.instance_id");
+    target = stream->WriteStringMaybeAliased(4, _s, target);
+  }
+
+  // optional uint64 revision = 5;
+  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+        5, this_._internal_revision(), target);
+  }
+
+  // optional uint64 tick = 6;
+  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+        6, this_._internal_tick(), target);
+  }
+
+  // optional .eve.tactics.proto.BattlePayload payload = 7;
+  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+        7, *this_._impl_.payload_, this_._impl_.payload_->GetCachedSize(), target,
+        stream);
+  }
+
+  // bytes digest = 8;
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (!this_._internal_digest().empty()) {
+      const ::std::string& _s = this_._internal_digest();
+      target = stream->WriteBytesMaybeAliased(8, _s, target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:eve.tactics.proto.BattleJsonDocument)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t BattleJsonDocument::ByteSizeLong(const MessageLite& base) {
+  const BattleJsonDocument& this_ = static_cast<const BattleJsonDocument&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t BattleJsonDocument::ByteSizeLong() const {
+  const BattleJsonDocument& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:eve.tactics.proto.BattleJsonDocument)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x000000ffU)) {
+    // optional string type = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                      this_._internal_type());
+    }
+    // optional string schema = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                      this_._internal_schema());
+    }
+    // optional string instance_id = 4;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                      this_._internal_instance_id());
+    }
+    // bytes digest = 8;
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (!this_._internal_digest().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::BytesSize(
+                                        this_._internal_digest());
+      }
+    }
+    // optional .eve.tactics.proto.BattlePayload payload = 7;
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      total_size += 1 +
+                    ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.payload_);
+    }
+    // optional uint64 revision = 5;
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+          this_._internal_revision());
+    }
+    // optional uint64 tick = 6;
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+      total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+          this_._internal_tick());
+    }
+    // optional uint32 version = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+      total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+          this_._internal_version());
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void BattleJsonDocument::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<BattleJsonDocument*>(&to_msg);
+  auto& from = static_cast<const BattleJsonDocument&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  ::google::protobuf::Arena* arena = _this->GetArena();
+  // @@protoc_insertion_point(class_specific_merge_from_start:eve.tactics.proto.BattleJsonDocument)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x000000ffU)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _this->_internal_set_type(from._internal_type());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _this->_internal_set_schema(from._internal_schema());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _this->_internal_set_instance_id(from._internal_instance_id());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (!from._internal_digest().empty()) {
+        _this->_internal_set_digest(from._internal_digest());
+      } else {
+        if (_this->_impl_.digest_.IsDefault()) {
+          _this->_internal_set_digest("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      ABSL_DCHECK(from._impl_.payload_ != nullptr);
+      if (_this->_impl_.payload_ == nullptr) {
+        _this->_impl_.payload_ = ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.payload_);
+      } else {
+        _this->_impl_.payload_->MergeFrom(*from._impl_.payload_);
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      _this->_impl_.revision_ = from._impl_.revision_;
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+      _this->_impl_.tick_ = from._impl_.tick_;
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+      _this->_impl_.version_ = from._impl_.version_;
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void BattleJsonDocument::CopyFrom(const BattleJsonDocument& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:eve.tactics.proto.BattleJsonDocument)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void BattleJsonDocument::InternalSwap(BattleJsonDocument* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.type_, &other->_impl_.type_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.schema_, &other->_impl_.schema_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.instance_id_, &other->_impl_.instance_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.digest_, &other->_impl_.digest_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(BattleJsonDocument, _impl_.version_)
+      + sizeof(BattleJsonDocument::_impl_.version_)
+      - PROTOBUF_FIELD_OFFSET(BattleJsonDocument, _impl_.payload_)>(
+          reinterpret_cast<char*>(&_impl_.payload_),
+          reinterpret_cast<char*>(&other->_impl_.payload_));
+}
+
+::google::protobuf::Metadata BattleJsonDocument::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // @@protoc_insertion_point(namespace_scope)

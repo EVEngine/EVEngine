@@ -241,11 +241,11 @@ public:
     /**
      * @brief Seal a snapshot and serialize it as one JSON string.
      *
-     * @return Canonical envelope JSON, or a structured failure. The digest comes from
+     * @return Typed Protobuf JSON document, or a structured failure. The digest comes from
      *         {@link snapshotHashAlgorithm}: a registered hasher when a module provided one,
      *         otherwise the engine's built-in non-cryptographic one.
      * @remarks This is the form that can cross the script, file and network boundaries: the
-     *          envelope is self-describing (schema, version, instance, revision, tick, digest),
+     *          document is self-describing (schema, version, instance, revision, tick, digest),
      *          so a reader does not need out-of-band context to accept or reject it.
      */
     [[nodiscard]] Result<std::string> snapshotJson(ecs::EntityHandle battle);

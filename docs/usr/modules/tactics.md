@@ -462,9 +462,10 @@ eve::cap::provide<eve::tactics::ILineOfSightPolicy>(myPolicy.get());
 
 ## 快照与回放的脚本出口
 
-战局可以整份存档、读回并回放——**跨脚本边界的都是 JSON 文本**。快照信封包含
-schema、版本、实例、revision、tick 和摘要；命令日志是 `tactics:command-log` v1 的
-Protobuf JSON 文档，包含起始 revision 和命令流。旧版命令日志只保留读取迁移：
+战局可以整份存档、读回并回放——**跨脚本边界的都是 JSON 文本**。快照写为版本 8 的
+类型化 Protobuf JSON，包含 schema、版本、实例、revision、tick、摘要和可读的战局数据；
+命令日志是 `tactics:command-log` v1 的 Protobuf JSON 文档，包含起始 revision 和命令流。
+旧版 JSON 快照与命令日志只保留读取迁移：
 
 ```squirrel
 local baselineRev = battle.revision();          // 回放日志必须锚定的 revision

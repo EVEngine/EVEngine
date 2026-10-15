@@ -62,6 +62,14 @@ EVENGINE_API_DOMAINS extern const ::google::protobuf::internal::DescriptorTable 
 namespace eve {
 namespace tactics {
 namespace proto {
+class BattleJsonDocument;
+struct BattleJsonDocumentGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+EVENGINE_API_DOMAINS extern BattleJsonDocumentGlobalsTypeInternal BattleJsonDocument_globals_;
+EVENGINE_API_DOMAINS extern const ::google::protobuf::internal::ClassDataFull BattleJsonDocument_class_data_;
+#else
+EVENGINE_API_DOMAINS extern const BattleJsonDocumentGlobalsTypeInternal BattleJsonDocument_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
 class BattlePayload;
 struct BattlePayloadGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
@@ -5313,6 +5321,329 @@ class EVENGINE_API_DOMAINS  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED BattlePayload 
   union { Impl_ _impl_; };
   friend struct ::TableStruct_tactics_5fbattle_2eproto;
 };
+// -------------------------------------------------------------------
+
+class EVENGINE_API_DOMAINS  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED BattleJsonDocument final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:eve.tactics.proto.BattleJsonDocument) */ {
+ public:
+  inline BattleJsonDocument() : BattleJsonDocument(nullptr) {}
+  ~BattleJsonDocument() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(BattleJsonDocument* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(BattleJsonDocument));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr BattleJsonDocument(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline BattleJsonDocument(const BattleJsonDocument& from) : BattleJsonDocument(nullptr, from) {}
+  inline BattleJsonDocument(BattleJsonDocument&& from) noexcept : BattleJsonDocument(nullptr, ::std::move(from)) {}
+  inline BattleJsonDocument& operator=(const BattleJsonDocument& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline BattleJsonDocument& operator=(BattleJsonDocument&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const BattleJsonDocument& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<BattleJsonDocument>(&BattleJsonDocument_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 18;
+  friend void swap(BattleJsonDocument& a, BattleJsonDocument& b) { a.Swap(&b); }
+  inline void Swap(BattleJsonDocument* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(BattleJsonDocument* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] BattleJsonDocument* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<BattleJsonDocument>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const BattleJsonDocument& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const BattleJsonDocument& from) { BattleJsonDocument::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(BattleJsonDocument* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "eve.tactics.proto.BattleJsonDocument"; }
+
+  explicit BattleJsonDocument(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  BattleJsonDocument(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const BattleJsonDocument& from);
+  BattleJsonDocument(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, BattleJsonDocument&& from) noexcept
+      : BattleJsonDocument(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kTypeFieldNumber = 1,
+    kSchemaFieldNumber = 2,
+    kInstanceIdFieldNumber = 4,
+    kDigestFieldNumber = 8,
+    kPayloadFieldNumber = 7,
+    kRevisionFieldNumber = 5,
+    kTickFieldNumber = 6,
+    kVersionFieldNumber = 3,
+  };
+  // optional string type = 1;
+  [[nodiscard]] bool has_type()
+      const;
+  void clear_type() ;
+  [[nodiscard]] const ::std::string& type() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_type(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_type();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_type();
+  void set_allocated_type(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_type() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_type(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_type();
+
+  public:
+  // optional string schema = 2;
+  [[nodiscard]] bool has_schema()
+      const;
+  void clear_schema() ;
+  [[nodiscard]] const ::std::string& schema() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_schema(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_schema();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_schema();
+  void set_allocated_schema(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_schema() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_schema(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_schema();
+
+  public:
+  // optional string instance_id = 4;
+  [[nodiscard]] bool has_instance_id()
+      const;
+  void clear_instance_id() ;
+  [[nodiscard]] const ::std::string& instance_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_instance_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_instance_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_instance_id();
+  void set_allocated_instance_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_instance_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_instance_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_instance_id();
+
+  public:
+  // bytes digest = 8;
+  void clear_digest() ;
+  [[nodiscard]] const ::std::string& digest() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_digest(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_digest();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_digest();
+  void set_allocated_digest(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_digest() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_digest(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_digest();
+
+  public:
+  // optional .eve.tactics.proto.BattlePayload payload = 7;
+  [[nodiscard]] bool has_payload()
+      const;
+  void clear_payload() ;
+  [[nodiscard]] const ::eve::tactics::proto::BattlePayload& payload() const;
+  [[nodiscard]] ::eve::tactics::proto::BattlePayload* PROTOBUF_NULLABLE release_payload();
+  ::eve::tactics::proto::BattlePayload* PROTOBUF_NONNULL mutable_payload();
+  void set_allocated_payload(::eve::tactics::proto::BattlePayload* PROTOBUF_NULLABLE value);
+  void unsafe_arena_set_allocated_payload(::eve::tactics::proto::BattlePayload* PROTOBUF_NULLABLE value);
+  ::eve::tactics::proto::BattlePayload* PROTOBUF_NULLABLE unsafe_arena_release_payload();
+
+  private:
+  const ::eve::tactics::proto::BattlePayload& _internal_payload() const;
+  ::eve::tactics::proto::BattlePayload* PROTOBUF_NONNULL _internal_mutable_payload();
+
+  public:
+  // optional uint64 revision = 5;
+  [[nodiscard]] bool has_revision()
+      const;
+  void clear_revision() ;
+  [[nodiscard]] ::uint64_t revision() const;
+  void set_revision(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_revision() const;
+  void _internal_set_revision(::uint64_t value);
+
+  public:
+  // optional uint64 tick = 6;
+  [[nodiscard]] bool has_tick()
+      const;
+  void clear_tick() ;
+  [[nodiscard]] ::uint64_t tick() const;
+  void set_tick(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_tick() const;
+  void _internal_set_tick(::uint64_t value);
+
+  public:
+  // optional uint32 version = 3;
+  [[nodiscard]] bool has_version()
+      const;
+  void clear_version() ;
+  [[nodiscard]] ::uint32_t version() const;
+  void set_version(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_version() const;
+  void _internal_set_version(::uint32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:eve.tactics.proto.BattleJsonDocument)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<3, 8,
+                          1, 74,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const BattleJsonDocument& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr type_;
+    ::google::protobuf::internal::ArenaStringPtr schema_;
+    ::google::protobuf::internal::ArenaStringPtr instance_id_;
+    ::google::protobuf::internal::ArenaStringPtr digest_;
+    ::eve::tactics::proto::BattlePayload* PROTOBUF_NULLABLE payload_;
+    ::uint64_t revision_;
+    ::uint64_t tick_;
+    ::uint32_t version_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_tactics_5fbattle_2eproto;
+};
 
 // ===================================================================
 
@@ -10519,6 +10850,460 @@ inline ::google::protobuf::Map<::std::string, ::eve::tactics::proto::RandomStrea
   SetHasBit(_impl_._has_bits_[0], 0x00008000U);
   // @@protoc_insertion_point(field_mutable_map:eve.tactics.proto.BattlePayload.random)
   return _internal_mutable_random();
+}
+
+// -------------------------------------------------------------------
+
+// BattleJsonDocument
+
+// optional string type = 1;
+inline bool BattleJsonDocument::has_type() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000001U);
+  return value;
+}
+inline void BattleJsonDocument::clear_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.type_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::std::string& BattleJsonDocument::type() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.tactics.proto.BattleJsonDocument.type)
+  return _internal_type();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void BattleJsonDocument::set_type(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.type_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.tactics.proto.BattleJsonDocument.type)
+}
+inline ::std::string* PROTOBUF_NONNULL BattleJsonDocument::mutable_type()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_type();
+  // @@protoc_insertion_point(field_mutable:eve.tactics.proto.BattleJsonDocument.type)
+  return _s;
+}
+inline const ::std::string& BattleJsonDocument::_internal_type() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.type_.Get();
+}
+inline void BattleJsonDocument::_internal_set_type(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.type_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL BattleJsonDocument::_internal_mutable_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.type_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE BattleJsonDocument::release_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.tactics.proto.BattleJsonDocument.type)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.type_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.type_.Set("", GetArena());
+  }
+  return released;
+}
+inline void BattleJsonDocument::set_allocated_type(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.type_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.type_.IsDefault()) {
+    _impl_.type_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.tactics.proto.BattleJsonDocument.type)
+}
+
+// optional string schema = 2;
+inline bool BattleJsonDocument::has_schema() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000002U);
+  return value;
+}
+inline void BattleJsonDocument::clear_schema() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.schema_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::std::string& BattleJsonDocument::schema() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.tactics.proto.BattleJsonDocument.schema)
+  return _internal_schema();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void BattleJsonDocument::set_schema(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  _impl_.schema_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.tactics.proto.BattleJsonDocument.schema)
+}
+inline ::std::string* PROTOBUF_NONNULL BattleJsonDocument::mutable_schema()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::std::string* _s = _internal_mutable_schema();
+  // @@protoc_insertion_point(field_mutable:eve.tactics.proto.BattleJsonDocument.schema)
+  return _s;
+}
+inline const ::std::string& BattleJsonDocument::_internal_schema() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.schema_.Get();
+}
+inline void BattleJsonDocument::_internal_set_schema(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.schema_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL BattleJsonDocument::_internal_mutable_schema() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.schema_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE BattleJsonDocument::release_schema() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.tactics.proto.BattleJsonDocument.schema)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  auto* released = _impl_.schema_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.schema_.Set("", GetArena());
+  }
+  return released;
+}
+inline void BattleJsonDocument::set_allocated_schema(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  _impl_.schema_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.schema_.IsDefault()) {
+    _impl_.schema_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.tactics.proto.BattleJsonDocument.schema)
+}
+
+// optional uint32 version = 3;
+inline bool BattleJsonDocument::has_version() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000080U);
+  return value;
+}
+inline void BattleJsonDocument::clear_version() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.version_ = 0u;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
+}
+inline ::uint32_t BattleJsonDocument::version() const {
+  // @@protoc_insertion_point(field_get:eve.tactics.proto.BattleJsonDocument.version)
+  return _internal_version();
+}
+inline void BattleJsonDocument::set_version(::uint32_t value) {
+  _internal_set_version(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
+  // @@protoc_insertion_point(field_set:eve.tactics.proto.BattleJsonDocument.version)
+}
+inline ::uint32_t BattleJsonDocument::_internal_version() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.version_;
+}
+inline void BattleJsonDocument::_internal_set_version(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.version_ = value;
+}
+
+// optional string instance_id = 4;
+inline bool BattleJsonDocument::has_instance_id() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000004U);
+  return value;
+}
+inline void BattleJsonDocument::clear_instance_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.instance_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline const ::std::string& BattleJsonDocument::instance_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.tactics.proto.BattleJsonDocument.instance_id)
+  return _internal_instance_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void BattleJsonDocument::set_instance_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  _impl_.instance_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.tactics.proto.BattleJsonDocument.instance_id)
+}
+inline ::std::string* PROTOBUF_NONNULL BattleJsonDocument::mutable_instance_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ::std::string* _s = _internal_mutable_instance_id();
+  // @@protoc_insertion_point(field_mutable:eve.tactics.proto.BattleJsonDocument.instance_id)
+  return _s;
+}
+inline const ::std::string& BattleJsonDocument::_internal_instance_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.instance_id_.Get();
+}
+inline void BattleJsonDocument::_internal_set_instance_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.instance_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL BattleJsonDocument::_internal_mutable_instance_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.instance_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE BattleJsonDocument::release_instance_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.tactics.proto.BattleJsonDocument.instance_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000004U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  auto* released = _impl_.instance_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.instance_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void BattleJsonDocument::set_allocated_instance_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  }
+  _impl_.instance_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.instance_id_.IsDefault()) {
+    _impl_.instance_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.tactics.proto.BattleJsonDocument.instance_id)
+}
+
+// optional uint64 revision = 5;
+inline bool BattleJsonDocument::has_revision() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000020U);
+  return value;
+}
+inline void BattleJsonDocument::clear_revision() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.revision_ = ::uint64_t{0u};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+}
+inline ::uint64_t BattleJsonDocument::revision() const {
+  // @@protoc_insertion_point(field_get:eve.tactics.proto.BattleJsonDocument.revision)
+  return _internal_revision();
+}
+inline void BattleJsonDocument::set_revision(::uint64_t value) {
+  _internal_set_revision(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  // @@protoc_insertion_point(field_set:eve.tactics.proto.BattleJsonDocument.revision)
+}
+inline ::uint64_t BattleJsonDocument::_internal_revision() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.revision_;
+}
+inline void BattleJsonDocument::_internal_set_revision(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.revision_ = value;
+}
+
+// optional uint64 tick = 6;
+inline bool BattleJsonDocument::has_tick() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000040U);
+  return value;
+}
+inline void BattleJsonDocument::clear_tick() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.tick_ = ::uint64_t{0u};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+}
+inline ::uint64_t BattleJsonDocument::tick() const {
+  // @@protoc_insertion_point(field_get:eve.tactics.proto.BattleJsonDocument.tick)
+  return _internal_tick();
+}
+inline void BattleJsonDocument::set_tick(::uint64_t value) {
+  _internal_set_tick(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  // @@protoc_insertion_point(field_set:eve.tactics.proto.BattleJsonDocument.tick)
+}
+inline ::uint64_t BattleJsonDocument::_internal_tick() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.tick_;
+}
+inline void BattleJsonDocument::_internal_set_tick(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.tick_ = value;
+}
+
+// optional .eve.tactics.proto.BattlePayload payload = 7;
+inline bool BattleJsonDocument::has_payload() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000010U);
+  PROTOBUF_ASSUME(!value || _impl_.payload_ != nullptr);
+  return value;
+}
+inline void BattleJsonDocument::clear_payload() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.payload_ != nullptr) _impl_.payload_->Clear();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+}
+inline const ::eve::tactics::proto::BattlePayload& BattleJsonDocument::_internal_payload() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  const ::eve::tactics::proto::BattlePayload* p = _impl_.payload_;
+  return p != nullptr ? *p : *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<::eve::tactics::proto::BattlePayload>(&::eve::tactics::proto::BattlePayload_globals_);
+}
+inline const ::eve::tactics::proto::BattlePayload& BattleJsonDocument::payload() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.tactics.proto.BattleJsonDocument.payload)
+  return _internal_payload();
+}
+inline void BattleJsonDocument::unsafe_arena_set_allocated_payload(
+    ::eve::tactics::proto::BattlePayload* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (GetArena() == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.payload_);
+  }
+  _impl_.payload_ = reinterpret_cast<::eve::tactics::proto::BattlePayload*>(value);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:eve.tactics.proto.BattleJsonDocument.payload)
+}
+inline ::eve::tactics::proto::BattlePayload* PROTOBUF_NULLABLE BattleJsonDocument::release_payload() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ::eve::tactics::proto::BattlePayload* released = _impl_.payload_;
+  _impl_.payload_ = nullptr;
+  if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
+    auto* old = reinterpret_cast<::google::protobuf::MessageLite*>(released);
+    released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    if (GetArena() == nullptr) {
+      delete old;
+    }
+  } else {
+    if (GetArena() != nullptr) {
+      released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    }
+  }
+  return released;
+}
+inline ::eve::tactics::proto::BattlePayload* PROTOBUF_NULLABLE BattleJsonDocument::unsafe_arena_release_payload() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.tactics.proto.BattleJsonDocument.payload)
+
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ::eve::tactics::proto::BattlePayload* temp = _impl_.payload_;
+  _impl_.payload_ = nullptr;
+  return temp;
+}
+inline ::eve::tactics::proto::BattlePayload* PROTOBUF_NONNULL BattleJsonDocument::_internal_mutable_payload() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.payload_ == nullptr) {
+    auto* p = ::google::protobuf::Message::DefaultConstruct<::eve::tactics::proto::BattlePayload>(GetArena());
+    _impl_.payload_ = reinterpret_cast<::eve::tactics::proto::BattlePayload*>(p);
+  }
+  return _impl_.payload_;
+}
+inline ::eve::tactics::proto::BattlePayload* PROTOBUF_NONNULL BattleJsonDocument::mutable_payload()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ::eve::tactics::proto::BattlePayload* _msg = _internal_mutable_payload();
+  // @@protoc_insertion_point(field_mutable:eve.tactics.proto.BattleJsonDocument.payload)
+  return _msg;
+}
+inline void BattleJsonDocument::set_allocated_payload(::eve::tactics::proto::BattlePayload* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::Arena* message_arena = GetArena();
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (message_arena == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.payload_);
+  }
+
+  if (value != nullptr) {
+    ::google::protobuf::Arena* submessage_arena = value->GetArena();
+    if (message_arena != submessage_arena) {
+      value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
+    }
+    SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  }
+
+  _impl_.payload_ = reinterpret_cast<::eve::tactics::proto::BattlePayload*>(value);
+  // @@protoc_insertion_point(field_set_allocated:eve.tactics.proto.BattleJsonDocument.payload)
+}
+
+// bytes digest = 8;
+inline void BattleJsonDocument::clear_digest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.digest_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+}
+inline const ::std::string& BattleJsonDocument::digest() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.tactics.proto.BattleJsonDocument.digest)
+  return _internal_digest();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void BattleJsonDocument::set_digest(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  _impl_.digest_.SetBytes(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.tactics.proto.BattleJsonDocument.digest)
+}
+inline ::std::string* PROTOBUF_NONNULL BattleJsonDocument::mutable_digest()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  ::std::string* _s = _internal_mutable_digest();
+  // @@protoc_insertion_point(field_mutable:eve.tactics.proto.BattleJsonDocument.digest)
+  return _s;
+}
+inline const ::std::string& BattleJsonDocument::_internal_digest() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.digest_.Get();
+}
+inline void BattleJsonDocument::_internal_set_digest(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.digest_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL BattleJsonDocument::_internal_mutable_digest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.digest_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE BattleJsonDocument::release_digest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.tactics.proto.BattleJsonDocument.digest)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000008U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  auto* released = _impl_.digest_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.digest_.Set("", GetArena());
+  }
+  return released;
+}
+inline void BattleJsonDocument::set_allocated_digest(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  }
+  _impl_.digest_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.digest_.IsDefault()) {
+    _impl_.digest_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.tactics.proto.BattleJsonDocument.digest)
 }
 
 #ifdef __GNUC__

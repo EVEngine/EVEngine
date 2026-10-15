@@ -53,6 +53,16 @@ public:
      */
     [[nodiscard]] static Result<std::string> snapshotBinary(Battle& battle, const SnapshotHashProvider& hashProvider);
     /**
+     * @brief Capture the version-8 battle as readable Protobuf JSON with a typed payload.
+     * @param battle Battle observed on its owning simulation thread.
+     * @param hashProvider Required digest provider for deterministic payload wire bytes.
+     * @return JSON document or a structured capture, hash, or codec failure.
+     * @cost Linear in the full battle state per capture.
+     * @thread Owning simulation thread; no concurrent mutation.
+     * @reentrancy Does not invoke scripts or callbacks; the hash provider is invoked once.
+     */
+    [[nodiscard]] static Result<std::string> snapshotJson(Battle& battle, const SnapshotHashProvider& hashProvider);
+    /**
      * @brief Validate a version-8 Protobuf envelope and resolve a battle candidate without publishing it.
      * @param battle Target battle on its owning simulation thread; keep it stable until commit.
      * @param wire Caller-owned envelope bytes, consumed during this call only.
@@ -64,6 +74,18 @@ public:
      */
     [[nodiscard]] static Result<PreparedRestore> prepareRestoreBinary(Battle& battle, std::string_view wire,
                                                                       const SnapshotHashProvider& hashProvider);
+    /**
+     * @brief Prepare a typed Protobuf JSON battle document or a read-only legacy JSON snapshot.
+     * @param battle Target battle kept stable on its owning simulation thread until commit.
+     * @param json Caller-owned text used only during this call.
+     * @param hashProvider Required provider for verifying payload integrity.
+     * @return Fully validated candidate or a structured refusal; live state is unchanged.
+     * @cost Linear in the full battle state per restore.
+     * @thread Owning simulation thread; no concurrent mutation.
+     * @reentrancy Does not invoke scripts or callbacks; the hash provider is invoked once.
+     */
+    [[nodiscard]] static Result<PreparedRestore> prepareRestoreJson(Battle& battle, std::string_view json,
+                                                                    const SnapshotHashProvider& hashProvider);
     /**
      * @brief Verify and resolve a battle snapshot without changing live state.
      * @thread Owning simulation thread; battle and registries must remain stable until commit.
