@@ -3,6 +3,7 @@
 
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
+#include <google/protobuf/util/json_util.h>
 
 #include <algorithm>
 #include <charconv>
@@ -292,6 +293,24 @@ void encodeReactionCandidate(const ReactionCandidate& candidate, proto::Reaction
     output->set_initiative(candidate.initiative);
 }
 
+void encodeCommand(const BattleCommand& command, proto::Command* saved) {
+    saved->set_sequence(command.sequence);
+    saved->set_kind(static_cast<int>(command.kind));
+    saved->set_expected_revision(command.expectedRevision.value());
+    saved->set_resulting_revision(command.resultingRevision.value());
+    saved->set_tick(command.step.tick.value());
+    saved->set_delta_nanoseconds(command.step.delta.nanoseconds());
+    saved->set_actor(command.actor.isValid() ? command.actor.format() : std::string{});
+    encodeCell(command.cell, saved->mutable_cell());
+    saved->set_target_unit(command.targetUnit.isValid() ? command.targetUnit.format() : std::string{});
+    saved->set_payload(command.payload);
+    saved->set_facing(command.facing);
+    saved->set_policy(command.policyId);
+    saved->set_trigger_sequence(command.triggerSequence);
+    saved->set_action(command.action.isValid() ? command.action.format() : std::string{});
+    for (const auto& candidate : command.candidates) encodeReactionCandidate(candidate, saved->add_candidates());
+}
+
 bool serializeDeterministic(const google::protobuf::MessageLite& message, std::string& bytes) {
     google::protobuf::io::StringOutputStream output(&bytes);
     google::protobuf::io::CodedOutputStream  coded(&output);
@@ -403,24 +422,7 @@ Result<proto::BattlePayload> captureBattlePayload(Battle& battle) {
     }
     auto* commands = payload.mutable_commands();
     commands->set_next_sequence(battle.commands()->nextSequence);
-    for (const auto& command : battle.commands()->values) {
-        auto* saved = commands->add_values();
-        saved->set_sequence(command.sequence);
-        saved->set_kind(static_cast<int>(command.kind));
-        saved->set_expected_revision(command.expectedRevision.value());
-        saved->set_resulting_revision(command.resultingRevision.value());
-        saved->set_tick(command.step.tick.value());
-        saved->set_delta_nanoseconds(command.step.delta.nanoseconds());
-        saved->set_actor(command.actor.isValid() ? command.actor.format() : std::string{});
-        encodeCell(command.cell, saved->mutable_cell());
-        saved->set_target_unit(command.targetUnit.isValid() ? command.targetUnit.format() : std::string{});
-        saved->set_payload(command.payload);
-        saved->set_facing(command.facing);
-        saved->set_policy(command.policyId);
-        saved->set_trigger_sequence(command.triggerSequence);
-        saved->set_action(command.action.isValid() ? command.action.format() : std::string{});
-        for (const auto& candidate : command.candidates) encodeReactionCandidate(candidate, saved->add_candidates());
-    }
+    for (const auto& command : battle.commands()->values) encodeCommand(command, commands->add_values());
     for (const auto& objective : battle.objectives()->values) {
         auto* saved = payload.add_objectives();
         saved->set_id(objective.spec.id.format());
@@ -565,7 +567,10 @@ Result<Battle::Reactions> parseProtoReactions(const proto::Reactions& source, Ba
     return Result<Battle::Reactions>::success(std::move(result));
 }
 
-Result<Battle::Commands> parseProtoCommands(const proto::CommandStream& source, Revision revision) {
+enum class ProtoCommandBoundary { EndsAtRevision, StartsAtRevision };
+
+Result<Battle::Commands> parseProtoCommands(const proto::CommandStream& source, Revision revision,
+                                            ProtoCommandBoundary boundary) {
     if (!source.has_next_sequence() || source.next_sequence() == 0)
         return Result<Battle::Commands>::failure(
             Diagnostic::error(DiagnosticCode::ParseError, "invalid command sequence", "payload.commands"));
@@ -649,9 +654,14 @@ Result<Battle::Commands> parseProtoCommands(const proto::CommandStream& source, 
         previousRevision = command.resultingRevision;
         result.values.push_back(std::move(command));
     }
-    if (!result.values.empty() && result.values.back().resultingRevision != revision)
+    if (boundary == ProtoCommandBoundary::EndsAtRevision && !result.values.empty() &&
+        result.values.back().resultingRevision != revision)
         return Result<Battle::Commands>::failure(Diagnostic::error(
             DiagnosticCode::Conflict, "command log revision differs from snapshot revision", "payload.commands"));
+    if (boundary == ProtoCommandBoundary::StartsAtRevision && !result.values.empty() &&
+        result.values.front().expectedRevision != revision)
+        return Result<Battle::Commands>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "replay log does not start at the target revision", "payload.commands"));
     return Result<Battle::Commands>::success(std::move(result));
 }
 
@@ -1796,7 +1806,7 @@ Result<Candidate> parseProtoCandidate(Battle& battle, const proto::BattlePayload
             Diagnostic::error(DiagnosticCode::InvariantViolation, "turn cursor is outside schedule"));
     auto       events       = parseProtoEvents(source.events());
     auto       reactions    = parseProtoReactions(source.reactions(), result.phase);
-    auto       commands     = parseProtoCommands(source.commands(), revision);
+    auto       commands     = parseProtoCommands(source.commands(), revision, ProtoCommandBoundary::EndsAtRevision);
     auto       objectives   = parseProtoObjectives(battle, result.board, source, revision);
     auto       random       = parseProtoRandom(source);
     const bool eventsOk     = events.ok();
@@ -2048,6 +2058,38 @@ Result<Value> TacticsPersistence::commandLogValue(Battle& battle, Revision fromR
         {"nextSequence", Value(std::to_string(battle.commands()->nextSequence))},
         {"values", Value(std::move(values))},
     }));
+}
+
+Result<std::string> TacticsPersistence::commandLogJson(Battle& battle, Revision fromRevision) {
+    proto::CommandLogDocument document;
+    document.set_schema("tactics:command-log");
+    document.set_version(1);
+    document.set_from_revision(fromRevision.value());
+    auto* commands = document.mutable_commands();
+    commands->set_next_sequence(battle.commands()->nextSequence);
+    for (const auto& command : battle.commands()->values)
+        if (command.resultingRevision > fromRevision) encodeCommand(command, commands->add_values());
+    std::string json;
+    if (!google::protobuf::util::MessageToJsonString(document, &json).ok())
+        return Result<std::string>::failure(
+            Diagnostic::error(DiagnosticCode::SerializationError, "command log JSON serialization failed"));
+    return Result<std::string>::success(std::move(json));
+}
+
+Result<Battle::Commands> TacticsPersistence::parseCommandLogJson(std::string_view json, Revision snapshotRevision) {
+    proto::CommandLogDocument document;
+    auto                      parsed = google::protobuf::util::JsonStringToMessage(json, &document);
+    if (parsed.ok() && document.has_schema()) {
+        if (hasUnknownProtoFields(document) || document.schema() != "tactics:command-log" || !document.has_version() ||
+            document.version() != 1 || !document.has_from_revision() ||
+            document.from_revision() != snapshotRevision.value() || !document.has_commands())
+            return Result<Battle::Commands>::failure(Diagnostic::error(
+                DiagnosticCode::UnknownVersion, "invalid command log schema, version, or replay anchor"));
+        return parseProtoCommands(document.commands(), snapshotRevision, ProtoCommandBoundary::StartsAtRevision);
+    }
+    auto legacy = Value::fromJson(json);
+    if (!legacy.ok()) return Result<Battle::Commands>::failure(legacy.status());
+    return parseCommandLog(legacy.value(), snapshotRevision);
 }
 
 Result<Battle::Commands> TacticsPersistence::parseCommandLog(const Value& value, Revision snapshotRevision) {

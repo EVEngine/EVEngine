@@ -462,8 +462,9 @@ eve::cap::provide<eve::tactics::ILineOfSightPolicy>(myPolicy.get());
 
 ## 快照与回放的脚本出口
 
-战局可以整份存档、读回并回放——**跨脚本边界的都是 JSON 文本**，因为信封与命令日志都是自描述的
-（schema、版本、实例、revision、tick、摘要都在文档里），读的一侧不需要额外的上下文：
+战局可以整份存档、读回并回放——**跨脚本边界的都是 JSON 文本**。快照信封包含
+schema、版本、实例、revision、tick 和摘要；命令日志是 `tactics:command-log` v1 的
+Protobuf JSON 文档，包含起始 revision 和命令流。旧版命令日志只保留读取迁移：
 
 ```squirrel
 local baselineRev = battle.revision();          // 回放日志必须锚定的 revision
@@ -486,7 +487,7 @@ battle.replayJson(log.value);                   // 用 restore 的同一个命�
   是比失败更糟的结果。日志里的 `nextSequence` 也随命令一起保存，回放会校验它。
 - **回放与恢复共用同一个命令编解码器**（命令的记录形状只有一个所有者），
   因此回放不可能与存档格式漂移；`restore` + `replay` 之后的快照与直接打出来的快照**逐字节相同**。
-- `snapshotJson` / `commandLogJson` 的输出是**规范 JSON 文本**，可以直接写文件或过网；
+- `snapshotJson` / `commandLogJson` 的输出是 JSON 文本，可以直接写文件或过网；
   脚本不需要理解信封内部结构。
 
 摘要算法的选择是**可注入、且不伪装**的：

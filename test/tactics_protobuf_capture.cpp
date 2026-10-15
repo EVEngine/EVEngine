@@ -98,4 +98,18 @@ TEST_CASE("tactics.protobufCaptureUsesTypedBattleFields") {
         eve::tactics::TacticsPersistence::prepareRestoreBinary(*state, envelope.SerializeAsString(), hash);
     CHECK(!invalidCandidate.ok());
     CHECK_EQ(state->identity()->seed, 91u);
+
+    auto log = eve::tactics::TacticsPersistence::commandLogJson(*state, state->turn()->revision);
+    REQUIRE(log.ok());
+    CHECK(log.value().find("tactics:command-log") != std::string::npos);
+    auto replay = eve::tactics::TacticsPersistence::parseCommandLogJson(log.value(), state->turn()->revision);
+    REQUIRE(replay.ok());
+    CHECK(replay.value().values.empty());
+    auto oldLog = eve::tactics::TacticsPersistence::commandLogValue(*state, state->turn()->revision);
+    REQUIRE(oldLog.ok());
+    auto oldJson = oldLog.value().toJson();
+    REQUIRE(oldJson.ok());
+    auto migrated = eve::tactics::TacticsPersistence::parseCommandLogJson(oldJson.value(), state->turn()->revision);
+    REQUIRE(migrated.ok());
+    CHECK(migrated.value().values.empty());
 }

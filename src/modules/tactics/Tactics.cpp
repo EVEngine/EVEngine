@@ -1144,20 +1144,17 @@ Result<std::string> Tactics::commandLogJson(ecs::EntityHandle battleHandle, Revi
     if (battle == nullptr)
         return Result<std::string>::failure(Diagnostic::error(
             DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
-    auto log = TacticsPersistence::commandLogValue(*battle, revision);
-    if (!log) return Result<std::string>::failure(log.status());
-    return log.value().toJson();
+    return TacticsPersistence::commandLogJson(*battle, revision);
 }
 
 Result<void> Tactics::replayJson(ecs::EntityHandle battleHandle, std::string_view json) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
-    auto parsedValue = Value::fromJson(json);
-    if (!parsedValue) return Result<void>::failure(parsedValue.status());
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     // The log must describe this battle's current revision: a log captured at a different point
     // holds commands that were accepted against different state.
-    auto parsed = TacticsPersistence::parseCommandLog(parsedValue.value(), battle->turn()->revision);
+    auto parsed = TacticsPersistence::parseCommandLogJson(json, battle->turn()->revision);
     if (!parsed) return Result<void>::failure(parsed.status());
     return BattleReplay::replay(*battle, parsed.value().values);
 }

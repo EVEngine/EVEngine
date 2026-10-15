@@ -126,6 +126,14 @@ EVENGINE_API_DOMAINS extern const ::google::protobuf::internal::ClassDataFull Co
 #else
 EVENGINE_API_DOMAINS extern const CommandGlobalsTypeInternal Command_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
+class CommandLogDocument;
+struct CommandLogDocumentGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+EVENGINE_API_DOMAINS extern CommandLogDocumentGlobalsTypeInternal CommandLogDocument_globals_;
+EVENGINE_API_DOMAINS extern const ::google::protobuf::internal::ClassDataFull CommandLogDocument_class_data_;
+#else
+EVENGINE_API_DOMAINS extern const CommandLogDocumentGlobalsTypeInternal CommandLogDocument_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
 class CommandStream;
 struct CommandStreamGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
@@ -526,7 +534,7 @@ class EVENGINE_API_DOMAINS  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED RandomStream f
   [[nodiscard]] static const RandomStream& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<RandomStream>(&RandomStream_globals_);
   }
-  static constexpr int kIndexInFileMessages = 14;
+  static constexpr int kIndexInFileMessages = 15;
   friend void swap(RandomStream& a, RandomStream& b) { a.Swap(&b); }
   inline void Swap(RandomStream* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -2279,7 +2287,7 @@ class EVENGINE_API_DOMAINS  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Objective fina
   [[nodiscard]] static const Objective& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<Objective>(&Objective_globals_);
   }
-  static constexpr int kIndexInFileMessages = 13;
+  static constexpr int kIndexInFileMessages = 14;
   friend void swap(Objective& a, Objective& b) { a.Swap(&b); }
   inline void Swap(Objective* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -4562,6 +4570,260 @@ class EVENGINE_API_DOMAINS  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Board final : 
 };
 // -------------------------------------------------------------------
 
+class EVENGINE_API_DOMAINS  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CommandLogDocument final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:eve.tactics.proto.CommandLogDocument) */ {
+ public:
+  inline CommandLogDocument() : CommandLogDocument(nullptr) {}
+  ~CommandLogDocument() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(CommandLogDocument* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(CommandLogDocument));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr CommandLogDocument(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline CommandLogDocument(const CommandLogDocument& from) : CommandLogDocument(nullptr, from) {}
+  inline CommandLogDocument(CommandLogDocument&& from) noexcept : CommandLogDocument(nullptr, ::std::move(from)) {}
+  inline CommandLogDocument& operator=(const CommandLogDocument& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CommandLogDocument& operator=(CommandLogDocument&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const CommandLogDocument& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<CommandLogDocument>(&CommandLogDocument_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 13;
+  friend void swap(CommandLogDocument& a, CommandLogDocument& b) { a.Swap(&b); }
+  inline void Swap(CommandLogDocument* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CommandLogDocument* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] CommandLogDocument* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<CommandLogDocument>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const CommandLogDocument& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const CommandLogDocument& from) { CommandLogDocument::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(CommandLogDocument* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "eve.tactics.proto.CommandLogDocument"; }
+
+  explicit CommandLogDocument(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  CommandLogDocument(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const CommandLogDocument& from);
+  CommandLogDocument(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, CommandLogDocument&& from) noexcept
+      : CommandLogDocument(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kSchemaFieldNumber = 1,
+    kCommandsFieldNumber = 4,
+    kFromRevisionFieldNumber = 3,
+    kVersionFieldNumber = 2,
+  };
+  // optional string schema = 1;
+  [[nodiscard]] bool has_schema()
+      const;
+  void clear_schema() ;
+  [[nodiscard]] const ::std::string& schema() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_schema(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_schema();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_schema();
+  void set_allocated_schema(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_schema() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_schema(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_schema();
+
+  public:
+  // optional .eve.tactics.proto.CommandStream commands = 4;
+  [[nodiscard]] bool has_commands()
+      const;
+  void clear_commands() ;
+  [[nodiscard]] const ::eve::tactics::proto::CommandStream& commands() const;
+  [[nodiscard]] ::eve::tactics::proto::CommandStream* PROTOBUF_NULLABLE release_commands();
+  ::eve::tactics::proto::CommandStream* PROTOBUF_NONNULL mutable_commands();
+  void set_allocated_commands(::eve::tactics::proto::CommandStream* PROTOBUF_NULLABLE value);
+  void unsafe_arena_set_allocated_commands(::eve::tactics::proto::CommandStream* PROTOBUF_NULLABLE value);
+  ::eve::tactics::proto::CommandStream* PROTOBUF_NULLABLE unsafe_arena_release_commands();
+
+  private:
+  const ::eve::tactics::proto::CommandStream& _internal_commands() const;
+  ::eve::tactics::proto::CommandStream* PROTOBUF_NONNULL _internal_mutable_commands();
+
+  public:
+  // optional uint64 from_revision = 3;
+  [[nodiscard]] bool has_from_revision()
+      const;
+  void clear_from_revision() ;
+  [[nodiscard]] ::uint64_t from_revision() const;
+  void set_from_revision(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_from_revision() const;
+  void _internal_set_from_revision(::uint64_t value);
+
+  public:
+  // optional uint32 version = 2;
+  [[nodiscard]] bool has_version()
+      const;
+  void clear_version() ;
+  [[nodiscard]] ::uint32_t version() const;
+  void set_version(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_version() const;
+  void _internal_set_version(::uint32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:eve.tactics.proto.CommandLogDocument)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<2, 4,
+                          1, 51,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const CommandLogDocument& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr schema_;
+    ::eve::tactics::proto::CommandStream* PROTOBUF_NULLABLE commands_;
+    ::uint64_t from_revision_;
+    ::uint32_t version_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_tactics_5fbattle_2eproto;
+};
+// -------------------------------------------------------------------
+
 class EVENGINE_API_DOMAINS  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED BattlePayload final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.tactics.proto.BattlePayload) */ {
  public:
@@ -4618,7 +4880,7 @@ class EVENGINE_API_DOMAINS  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED BattlePayload 
   [[nodiscard]] static const BattlePayload& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<BattlePayload>(&BattlePayload_globals_);
   }
-  static constexpr int kIndexInFileMessages = 16;
+  static constexpr int kIndexInFileMessages = 17;
   friend void swap(BattlePayload& a, BattlePayload& b) { a.Swap(&b); }
   inline void Swap(BattlePayload* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -8609,6 +8871,232 @@ inline ::google::protobuf::RepeatedPtrField<::eve::tactics::proto::Command>* PRO
 CommandStream::_internal_mutable_values() {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return &_impl_.values_;
+}
+
+// -------------------------------------------------------------------
+
+// CommandLogDocument
+
+// optional string schema = 1;
+inline bool CommandLogDocument::has_schema() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000001U);
+  return value;
+}
+inline void CommandLogDocument::clear_schema() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.schema_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::std::string& CommandLogDocument::schema() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.tactics.proto.CommandLogDocument.schema)
+  return _internal_schema();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void CommandLogDocument::set_schema(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.schema_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.tactics.proto.CommandLogDocument.schema)
+}
+inline ::std::string* PROTOBUF_NONNULL CommandLogDocument::mutable_schema()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_schema();
+  // @@protoc_insertion_point(field_mutable:eve.tactics.proto.CommandLogDocument.schema)
+  return _s;
+}
+inline const ::std::string& CommandLogDocument::_internal_schema() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.schema_.Get();
+}
+inline void CommandLogDocument::_internal_set_schema(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.schema_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL CommandLogDocument::_internal_mutable_schema() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.schema_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE CommandLogDocument::release_schema() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.tactics.proto.CommandLogDocument.schema)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.schema_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.schema_.Set("", GetArena());
+  }
+  return released;
+}
+inline void CommandLogDocument::set_allocated_schema(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.schema_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.schema_.IsDefault()) {
+    _impl_.schema_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.tactics.proto.CommandLogDocument.schema)
+}
+
+// optional uint32 version = 2;
+inline bool CommandLogDocument::has_version() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000008U);
+  return value;
+}
+inline void CommandLogDocument::clear_version() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.version_ = 0u;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+}
+inline ::uint32_t CommandLogDocument::version() const {
+  // @@protoc_insertion_point(field_get:eve.tactics.proto.CommandLogDocument.version)
+  return _internal_version();
+}
+inline void CommandLogDocument::set_version(::uint32_t value) {
+  _internal_set_version(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  // @@protoc_insertion_point(field_set:eve.tactics.proto.CommandLogDocument.version)
+}
+inline ::uint32_t CommandLogDocument::_internal_version() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.version_;
+}
+inline void CommandLogDocument::_internal_set_version(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.version_ = value;
+}
+
+// optional uint64 from_revision = 3;
+inline bool CommandLogDocument::has_from_revision() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000004U);
+  return value;
+}
+inline void CommandLogDocument::clear_from_revision() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.from_revision_ = ::uint64_t{0u};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline ::uint64_t CommandLogDocument::from_revision() const {
+  // @@protoc_insertion_point(field_get:eve.tactics.proto.CommandLogDocument.from_revision)
+  return _internal_from_revision();
+}
+inline void CommandLogDocument::set_from_revision(::uint64_t value) {
+  _internal_set_from_revision(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  // @@protoc_insertion_point(field_set:eve.tactics.proto.CommandLogDocument.from_revision)
+}
+inline ::uint64_t CommandLogDocument::_internal_from_revision() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.from_revision_;
+}
+inline void CommandLogDocument::_internal_set_from_revision(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.from_revision_ = value;
+}
+
+// optional .eve.tactics.proto.CommandStream commands = 4;
+inline bool CommandLogDocument::has_commands() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000002U);
+  PROTOBUF_ASSUME(!value || _impl_.commands_ != nullptr);
+  return value;
+}
+inline void CommandLogDocument::clear_commands() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.commands_ != nullptr) _impl_.commands_->Clear();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::eve::tactics::proto::CommandStream& CommandLogDocument::_internal_commands() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  const ::eve::tactics::proto::CommandStream* p = _impl_.commands_;
+  return p != nullptr ? *p : *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<::eve::tactics::proto::CommandStream>(&::eve::tactics::proto::CommandStream_globals_);
+}
+inline const ::eve::tactics::proto::CommandStream& CommandLogDocument::commands() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.tactics.proto.CommandLogDocument.commands)
+  return _internal_commands();
+}
+inline void CommandLogDocument::unsafe_arena_set_allocated_commands(
+    ::eve::tactics::proto::CommandStream* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (GetArena() == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.commands_);
+  }
+  _impl_.commands_ = reinterpret_cast<::eve::tactics::proto::CommandStream*>(value);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:eve.tactics.proto.CommandLogDocument.commands)
+}
+inline ::eve::tactics::proto::CommandStream* PROTOBUF_NULLABLE CommandLogDocument::release_commands() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::eve::tactics::proto::CommandStream* released = _impl_.commands_;
+  _impl_.commands_ = nullptr;
+  if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
+    auto* old = reinterpret_cast<::google::protobuf::MessageLite*>(released);
+    released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    if (GetArena() == nullptr) {
+      delete old;
+    }
+  } else {
+    if (GetArena() != nullptr) {
+      released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    }
+  }
+  return released;
+}
+inline ::eve::tactics::proto::CommandStream* PROTOBUF_NULLABLE CommandLogDocument::unsafe_arena_release_commands() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.tactics.proto.CommandLogDocument.commands)
+
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::eve::tactics::proto::CommandStream* temp = _impl_.commands_;
+  _impl_.commands_ = nullptr;
+  return temp;
+}
+inline ::eve::tactics::proto::CommandStream* PROTOBUF_NONNULL CommandLogDocument::_internal_mutable_commands() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.commands_ == nullptr) {
+    auto* p = ::google::protobuf::Message::DefaultConstruct<::eve::tactics::proto::CommandStream>(GetArena());
+    _impl_.commands_ = reinterpret_cast<::eve::tactics::proto::CommandStream*>(p);
+  }
+  return _impl_.commands_;
+}
+inline ::eve::tactics::proto::CommandStream* PROTOBUF_NONNULL CommandLogDocument::mutable_commands()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::eve::tactics::proto::CommandStream* _msg = _internal_mutable_commands();
+  // @@protoc_insertion_point(field_mutable:eve.tactics.proto.CommandLogDocument.commands)
+  return _msg;
+}
+inline void CommandLogDocument::set_allocated_commands(::eve::tactics::proto::CommandStream* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::Arena* message_arena = GetArena();
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (message_arena == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.commands_);
+  }
+
+  if (value != nullptr) {
+    ::google::protobuf::Arena* submessage_arena = value->GetArena();
+    if (message_arena != submessage_arena) {
+      value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
+    }
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+
+  _impl_.commands_ = reinterpret_cast<::eve::tactics::proto::CommandStream*>(value);
+  // @@protoc_insertion_point(field_set_allocated:eve.tactics.proto.CommandLogDocument.commands)
 }
 
 // -------------------------------------------------------------------

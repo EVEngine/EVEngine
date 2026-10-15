@@ -89,6 +89,23 @@ public:
     [[nodiscard]] static Result<Value> commandLogValue(Battle& battle, Revision fromRevision);
 
     /**
+     * @brief Serialize accepted commands after @p fromRevision as a versioned Protobuf JSON document.
+     * @return Canonical Protobuf JSON or a structured codec failure.
+     * @cost Linear in the selected command history per export.
+     * @thread Owning simulation thread; no concurrent mutation.
+     */
+    [[nodiscard]] static Result<std::string> commandLogJson(Battle& battle, Revision fromRevision);
+
+    /**
+     * @brief Parse a versioned Protobuf JSON command log, retaining legacy JSON logs for read-only migration.
+     * @param json Caller-owned document text used only during this call.
+     * @param snapshotRevision Revision at which replay must begin.
+     * @return Validated commands anchored to the target revision, or a structured refusal.
+     * @cost Linear in the full command log per replay.
+     */
+    [[nodiscard]] static Result<Battle::Commands> parseCommandLogJson(std::string_view json, Revision snapshotRevision);
+
+    /**
      * @brief Parse a command log written by @ref commandLogValue.
      * @param value Owning command-log object.
      * @param snapshotRevision Revision the log must end at, so a log replayed onto the wrong
