@@ -32,7 +32,7 @@
       "cases": {},
       "module": "asset_graphics"
     },
-    "procgen_generation_stages.cpp": {
+    "integration/gameplay-composition/gameplay_composition_procgen_generation_stages_tests.cpp": {
       "role": "tests",
       "default": "script-binding",
       "cases": {
@@ -49,9 +49,11 @@
       },
       "module": "procgen",
       "task": "gameplay-composition",
-      "origins": []
+      "origins": [
+        "procgen_generation_stages.cpp"
+      ]
     },
-    "virtual_texture_streaming.cpp": {
+    "unit/graphics/virtual_texture_streaming.cpp": {
       "role": "tests",
       "default": "local-logic",
       "cases": {
@@ -65,7 +67,9 @@
       },
       "module": "graphics",
       "task": "gameplay-composition",
-      "origins": []
+      "origins": [
+        "virtual_texture_streaming.cpp"
+      ]
     },
     "asset_import/UnityFbxUnavailable.cpp": {
       "role": "compile-contract",
