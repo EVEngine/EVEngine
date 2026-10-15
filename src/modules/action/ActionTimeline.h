@@ -90,7 +90,7 @@ struct ActionAnimationSection {
  * @param normalized Input clamped to the inclusive range [0,1].
  * @return Deterministic normalized curve output in [0,1].
  */
-[[nodiscard]] double evaluateActionBlendCurve(ActionBlendCurve curve, double normalized) noexcept;
+[[nodiscard]] EVENGINE_API_PLATFORM double evaluateActionBlendCurve(ActionBlendCurve curve, double normalized) noexcept;
 
 /** @brief Semantic lane kind; hosts choose presentation without changing data. */
 enum class ActionTrackKind : std::uint8_t {
