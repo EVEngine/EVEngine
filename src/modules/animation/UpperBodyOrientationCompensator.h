@@ -3,6 +3,7 @@
 /** @file UpperBodyOrientationCompensator.h @brief Root-relative upper-body orientation correction. */
 
 #include "animation/AnimPose.h"
+#include "common/Export.h"
 #include "common/Result.h"
 
 #include <string>
@@ -26,7 +27,7 @@ struct UpperBodyOrientationProfile {
  * masks, poses, or provider objects. apply() is owner-thread-only, deterministic for identical inputs, and
  * retains no pose references after the synchronous call.
  */
-class UpperBodyOrientationCompensator {
+class EVENGINE_API_WORLD UpperBodyOrientationCompensator {
 public:
     /** @brief Construct over a skeleton that must outlive this object. */
     explicit UpperBodyOrientationCompensator(const AnimSkeleton& skeleton) noexcept;
