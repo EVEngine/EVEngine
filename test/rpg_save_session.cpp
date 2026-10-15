@@ -2,7 +2,6 @@
 #include "zeroerr/unittest.h"
 
 #include <google/protobuf/util/json_util.h>
-#include "../proto/generated/rpg_save_session.pb.h"
 #include "inventory/Bag.h"
 #include "inventory/Equipment.h"
 #include "inventory/InventorySystem.h"
@@ -13,6 +12,7 @@
 #include "rpg/RPGActor.h"
 #include "rpg/RPGSaveSession.h"
 #include "rpg/Tracker.h"
+#include "rpg_save_session.pb.h"
 
 using namespace eve::rpg;
 

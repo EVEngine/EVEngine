@@ -1,9 +1,9 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "../proto/generated/rpg_tracker.pb.h"
 #include "rpg/Quest.h"
 #include "rpg/Tracker.h"
+#include "rpg_tracker.pb.h"
 
 TEST_CASE("rpg.tracker.protobufRoundTripAndAtomicRejection") {
     using namespace eve::rpg;

@@ -1,7 +1,6 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "../proto/generated/rpg_save_session.pb.h"
 #include "inventory/Bag.h"
 #include "inventory/Equipment.h"
 #include "rpg/GameState.h"
@@ -11,6 +10,7 @@
 #include "rpg/RPGSaveSession.h"
 #include "rpg/Skill.h"
 #include "rpg/Tracker.h"
+#include "rpg_save_session.pb.h"
 
 TEST_CASE("rpg.saveSessionProtobuf.binaryIntegrityAndAtomicRestore") {
     eve::rpg::QuestRegistry::clear();
