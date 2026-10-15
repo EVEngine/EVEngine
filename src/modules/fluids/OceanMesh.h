@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Export.h"
+
 #include "common/Result.h"
 
 #include <cstdint>
@@ -40,7 +42,7 @@ public:
      * @cost O(segments * rings) allocation and work; amortize over renderer quality changes.
      * @thread Caller-owned builder; reentrant const reads, no graphics context required.
      */
-    [[nodiscard]] Result<OceanMeshData> build() const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<OceanMeshData> build() const;
 };
 
 /** @brief Owning CPU reference projection, ready for a mesh upload; simulation time and origin identify the frame. */
@@ -73,7 +75,7 @@ public:
      * @cost O(vertices * bands); CPU reference/low-quality path, once per render tick, without inverse queries.
      * @thread Const synchronous operation; no callbacks, backend synchronization or global lookups.
      */
-    [[nodiscard]] Result<OceanMeshFrame> build() const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<OceanMeshFrame> build() const;
 
 private:
     const OceanMeshData&  mesh_;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Export.h"
+
 #include "fluids/OceanSpectrum.h"
 
 namespace eve::fluids {
@@ -12,7 +14,7 @@ class OceanSeaTransitionFrameBuilder;
 class OceanSeaTransition {
 public:
     /** @brief Prepare an owning frame builder, safe after this transition is destroyed. */
-    [[nodiscard]] OceanSeaTransitionFrameBuilder frameBuilder(double time) const;
+    [[nodiscard]] EVENGINE_API_DOMAINS OceanSeaTransitionFrameBuilder frameBuilder(double time) const;
 
 private:
     friend class OceanGpuSpectrumBuilder;
@@ -35,7 +37,7 @@ public:
      * @cost Constant bounded validation of at most four bands; no FFT or GPU work.
      * @thread Reentrant const reads; no callbacks or retained borrowed references.
      */
-    [[nodiscard]] Result<OceanSeaTransition> build() const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<OceanSeaTransition> build() const;
 
 private:
     OceanSpectrum from_, to_;
@@ -50,7 +52,7 @@ public:
      * @cost Up to two sets of inverse FFTs plus linear grid blending per simulation tick.
      * @thread Reentrant const operation, private scratch, no callbacks or GPU synchronization.
      */
-    [[nodiscard]] Result<OceanSpectrumFrame> build() const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<OceanSpectrumFrame> build() const;
 
 private:
     friend class OceanSeaTransition;

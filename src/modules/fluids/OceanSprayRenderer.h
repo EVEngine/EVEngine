@@ -1,5 +1,7 @@
 #pragma once
+
 #include <memory>
+#include "common/Export.h"
 #include "fluids/OceanSpray.h"
 
 namespace eve::graphics {
@@ -26,7 +28,7 @@ public:
      * @return Owning geometry or InvalidArgument; no callbacks, thread-safe const input.
      * @cost O(particles log particles) sorting and linear geometry; once per changed view/frame.
      */
-    [[nodiscard]] Result<OceanSprayMeshFrame> build() const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<OceanSprayMeshFrame> build() const;
 
 private:
     const OceanSprayFrame& source_;
@@ -38,19 +40,19 @@ class OceanSprayRendererBuilder;
  */
 class OceanSprayRenderer {
 public:
-    ~OceanSprayRenderer();
+    EVENGINE_API_DOMAINS ~OceanSprayRenderer();
     OceanSprayRenderer(const OceanSprayRenderer&)            = delete;
     OceanSprayRenderer& operator=(const OceanSprayRenderer&) = delete;
     /** @brief Upload validated geometry to the inactive mesh, then publish it atomically.
      * @return Success or validation/provider/upload diagnostic; failure preserves the displayed batch.
      * @cost Linear vertex upload and backend synchronization; once per prepared render frame.
      */
-    [[nodiscard]] Result<void> publish(const OceanSprayMeshFrame& frame);
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<void> publish(const OceanSprayMeshFrame& frame);
     /** @brief Draw one transparent, depth-tested batch after opaque water and hull geometry.
      * @return Success, Conflict if unpublished, or StaleHandle after provider retirement.
      * Camera must use the same render origin as the published frame. No depth writes.
      */
-    [[nodiscard]] Result<void> draw();
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<void> draw();
 
 private:
     friend class OceanSprayRendererBuilder;
@@ -67,7 +69,7 @@ public:
      * @cost Pipeline creation and small initial GPU allocations; amortize over renderer lifetime.
      * @return Owning renderer or explicit unsupported/provider diagnostic. Render-thread only.
      */
-    [[nodiscard]] Result<std::unique_ptr<OceanSprayRenderer>> build() const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<std::unique_ptr<OceanSprayRenderer>> build() const;
 
 private:
     graphics::Graphics& graphics_;

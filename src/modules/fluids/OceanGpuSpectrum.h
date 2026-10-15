@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Export.h"
+
 #include <array>
 #include "common/GpuResidentBufferView.h"
 #include "fluids/OceanSpectrum.h"
@@ -62,17 +64,18 @@ struct OceanGpuAtlasView {
  */
 class OceanGpuSpectrum {
 public:
-    ~OceanGpuSpectrum();
+    EVENGINE_API_DOMAINS ~OceanGpuSpectrum();
     OceanGpuSpectrum(const OceanGpuSpectrum&)            = delete;
     OceanGpuSpectrum& operator=(const OceanGpuSpectrum&) = delete;
     /** @brief Prepare a cheap call-only builder; owner must outlive submit(). */
-    [[nodiscard]] OceanGpuFrameBuilder frameBuilder(double time);
+    [[nodiscard]] EVENGINE_API_DOMAINS OceanGpuFrameBuilder frameBuilder(double time);
     /** @brief Validate revision and borrow one band for immediate same-device consumption; no allocation. */
-    [[nodiscard]] Result<OceanGpuBandView> band(const OceanGpuFrameToken& token, unsigned index) const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<OceanGpuBandView> band(const OceanGpuFrameToken& token,
+                                                                     unsigned                  index) const;
     /** @brief Validate revision and borrow the complete rendering atlas for immediate same-device copying. */
-    [[nodiscard]] Result<OceanGpuAtlasView> atlas(const OceanGpuFrameToken& token) const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<OceanGpuAtlasView> atlas(const OceanGpuFrameToken& token) const;
     /** @brief Prepare explicit diagnostic readback; no readback occurs in normal GPU rendering. */
-    [[nodiscard]] OceanGpuReadbackBuilder readbackBuilder(const OceanGpuFrameToken& token) const;
+    [[nodiscard]] EVENGINE_API_DOMAINS OceanGpuReadbackBuilder readbackBuilder(const OceanGpuFrameToken& token) const;
 
 private:
     friend class OceanGpuSpectrumBuilder;
@@ -87,14 +90,16 @@ private:
 class OceanGpuSpectrumBuilder {
 public:
     /** @brief Graphics must be the active same-device provider used by the injected Gpgpu service. */
-    OceanGpuSpectrumBuilder(const OceanSpectrum& spectrum, graphics::Graphics& graphics, gpgpu::Gpgpu& compute);
+    EVENGINE_API_DOMAINS OceanGpuSpectrumBuilder(const OceanSpectrum& spectrum, graphics::Graphics& graphics,
+                                                 gpgpu::Gpgpu& compute);
     /** @brief Own both immutable transition endpoints; providers borrowed through build(). */
-    OceanGpuSpectrumBuilder(const OceanSeaTransition& transition, graphics::Graphics& graphics, gpgpu::Gpgpu& compute);
+    EVENGINE_API_DOMAINS OceanGpuSpectrumBuilder(const OceanSeaTransition& transition, graphics::Graphics& graphics,
+                                                 gpgpu::Gpgpu& compute);
     /** @brief Allocate compiled pipelines and band buffers; Unsupported explicitly selects a caller-chosen CPU path.
      * @cost Pipeline creation plus O(sum N*N) allocation; amortize over sea-state lifetime.
      * @return Owning projection or diagnostic; render-thread-only, no partial publication or retained provider owners.
      */
-    [[nodiscard]] Result<std::unique_ptr<OceanGpuSpectrum>> build() const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<std::unique_ptr<OceanGpuSpectrum>> build() const;
 
 private:
     std::shared_ptr<const OceanSpectrumData> data_, target_;
@@ -111,7 +116,7 @@ public:
      * @return Completed revision or diagnostic; old revisions are invalidated before GPU work starts.
      * @thread Render-thread only; no concurrent provider retirement or callbacks.
      */
-    [[nodiscard]] Result<OceanGpuFrameToken> submit() const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<OceanGpuFrameToken> submit() const;
 
 private:
     friend class OceanGpuSpectrum;
@@ -127,7 +132,7 @@ public:
      * @cost O(sum N*N) synchronous GPU readback and allocation; diagnostic operation, avoid in the render loop.
      * @return Independent frame or StaleHandle/backend diagnostic; render-thread only, no callbacks.
      */
-    [[nodiscard]] Result<OceanSpectrumFrame> build() const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<OceanSpectrumFrame> build() const;
 
 private:
     friend class OceanGpuSpectrum;

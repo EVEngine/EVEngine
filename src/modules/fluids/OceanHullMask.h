@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Export.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <span>
@@ -37,7 +39,7 @@ public:
     /** @brief Reference fragment classification; nonfinite points are outside, boundary is inside.
      * @cost At most 512 halfspace tests, no allocation; diagnostics/tests rather than buoyancy queries.
      */
-    bool contains(glm::dvec3 worldPoint) const;
+    EVENGINE_API_DOMAINS bool contains(glm::dvec3 worldPoint) const;
 
 private:
     friend class OceanHullMaskBuilder;
@@ -55,7 +57,7 @@ public:
      * @cost O(volumes * planes) allocation and transform, amortized per changed vessel pose.
      * @thread Caller-owned builder; input reads must not race mutation.
      */
-    [[nodiscard]] Result<OceanHullMaskFrame> build() const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<OceanHullMaskFrame> build() const;
 
 private:
     std::span<const OceanHullVolume> volumes_;

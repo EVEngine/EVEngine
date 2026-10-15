@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Export.h"
+
 #include "fluids/OceanWaterView.h"
 
 #include <memory>
@@ -46,7 +48,8 @@ struct OceanBoatReceipt {
  * @cost O(wake cells * wet contacts); invoke once per boat per fixed step.
  * @thread Wake owner thread only, no callbacks. Bounded game-water coupling, not conservative CFD.
  */
-[[nodiscard]] Result<void> injectOceanBoatWake(OceanWake& wake, const OceanBoatReceipt& receipt, double dt);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<void> injectOceanBoatWake(OceanWake& wake, const OceanBoatReceipt& receipt,
+                                                                    double dt);
 /**
  * @brief Water-force adapter over a World3D-owned rigid body, storing generation-qualified links only.
  * All operations are physics-owner-thread-only and invoke no callbacks. Destroying this adapter never
@@ -61,9 +64,9 @@ public:
      * @param settings At most 64 cells, with finite positive radii and displacement volumes.
      * @return Owned adapter or structured input/stale failure; does not mutate the body.
      */
-    [[nodiscard]] static Result<std::unique_ptr<OceanBoat>> create(physics::Body3D&         body,
-                                                                   const OceanHullSettings& settings);
-    ~OceanBoat();
+    [[nodiscard]] static EVENGINE_API_DOMAINS Result<std::unique_ptr<OceanBoat>> create(
+        physics::Body3D& body, const OceanHullSettings& settings);
+    EVENGINE_API_DOMAINS ~OceanBoat();
     OceanBoat(const OceanBoat&)            = delete;
     OceanBoat& operator=(const OceanBoat&) = delete;
     /**
@@ -76,8 +79,8 @@ public:
      * before any force is submitted. Each timestamp can be submitted only once to this adapter.
      * @thread Physics owner only; no callbacks. Rejected calls preserve adapter and body state.
      */
-    [[nodiscard]] Result<OceanBoatReceipt> apply(const OceanWaterView& frame, double dt, double throttle,
-                                                 double rudder);
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<OceanBoatReceipt> apply(const OceanWaterView& frame, double dt,
+                                                                      double throttle, double rudder);
 
 private:
     struct Impl;

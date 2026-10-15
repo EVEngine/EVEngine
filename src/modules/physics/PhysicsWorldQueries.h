@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Export.h"
+
 namespace eve {
 class ICameraObstructionQuery;
 class IProcgenWorldQuery;
@@ -8,9 +10,9 @@ namespace eve::physics {
 class TargetingLineOfSightAdapter;
 
 /** @brief Borrow the process-owned camera query on the simulation thread; lifetime is process-wide. */
-eve::ICameraObstructionQuery& cameraObstructionQuery();
+EVENGINE_API_WORLD eve::ICameraObstructionQuery& cameraObstructionQuery();
 /** @brief Borrow the process-owned LOS adapter on the simulation thread; worlds are weakly observed. */
-TargetingLineOfSightAdapter& targetingLineOfSightAdapter();
+EVENGINE_API_WORLD TargetingLineOfSightAdapter& targetingLineOfSightAdapter();
 /** @brief Borrow the process-owned terrain projection query; no world ownership is transferred. */
-eve::IProcgenWorldQuery& procgenWorldQuery();
+EVENGINE_API_WORLD eve::IProcgenWorldQuery& procgenWorldQuery();
 }  // namespace eve::physics

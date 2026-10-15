@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Export.h"
+
 #include "common/Result.h"
 
 #include <glm/glm.hpp>
@@ -51,8 +53,9 @@ struct OceanWakeGridView {
 class OceanWake {
 public:
     /** @brief Construct a checked field via explicit settings; copies settings and retains no input. */
-    [[nodiscard]] static Result<std::unique_ptr<OceanWake>> create(const OceanWakeSettings& settings);
-    ~OceanWake();
+    [[nodiscard]] static EVENGINE_API_DOMAINS Result<std::unique_ptr<OceanWake>> create(
+        const OceanWakeSettings& settings);
+    EVENGINE_API_DOMAINS ~OceanWake();
     OceanWake(const OceanWake&)            = delete;
     OceanWake& operator=(const OceanWake&) = delete;
     /**
@@ -61,7 +64,7 @@ public:
      * @return Success or InvalidArgument. Entire batch validates before mutation.
      * @cost O(cells * sources); batch hull contacts once per fixed step.
      */
-    [[nodiscard]] Result<void> inject(std::span<const OceanWakeImpulse> impulses);
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<void> inject(std::span<const OceanWakeImpulse> impulses);
     /**
      * @brief Prepare an owning candidate for one fixed step with exact per-mode dispersion omega² = g*k*tanh(k*depth).
      * @param dt Seconds in (0,1/30]; endTime must equal time()+dt within 1e-8 seconds.
@@ -75,8 +78,8 @@ public:
      * @cost O(N² log N) plus two surface queries per foam-grid cell; execute once
      * per interaction region per fixed step. Empty foam skips transport queries.
      */
-    [[nodiscard]] Result<std::unique_ptr<OceanWakeStep>> prepareStep(double dt, double endTime,
-                                                                     const OceanSpectrumFrame& water) const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<std::unique_ptr<OceanWakeStep>> prepareStep(
+        double dt, double endTime, const OceanSpectrumFrame& water) const;
     /**
      * @brief Publish a prepared candidate by constant-time state swap without allocation.
      * @param step Borrowed only for this call; successful commit consumes its publication right.
@@ -84,22 +87,22 @@ public:
      * Rejection changes neither owner nor candidate. Old arrays remain in the consumed candidate
      * until its destruction. Owner-thread only, no callbacks or retained references.
      */
-    [[nodiscard]] Result<void> commitStep(OceanWakeStep& step);
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<void> commitStep(OceanWakeStep& step);
     /**
      * @brief Move the window by whole cells, retaining overlapping world-space history.
      * @param center Requested finite center; quantized to the nearest cell relative to current center.
      * @return Success or InvalidArgument; new exposed cells start at rest.
      * @cost O(N²) copy; amortize by moving only when interaction approaches the boundary.
      */
-    [[nodiscard]] Result<void> recenter(glm::dvec2 center);
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<void> recenter(glm::dvec2 center);
     /** @brief Query a world point; returns zero outside the tile, InvalidArgument for nonfinite inputs. */
-    [[nodiscard]] Result<OceanWakeSample> sample(glm::dvec2 worldXZ) const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<OceanWakeSample> sample(glm::dvec2 worldXZ) const;
     /** @brief Current externally advanced simulation time, initially zero. */
-    double time() const;
+    EVENGINE_API_DOMAINS double time() const;
     /** @brief Owning configuration including current window center. */
-    OceanWakeSettings settings() const;
+    EVENGINE_API_DOMAINS OceanWakeSettings settings() const;
     /** @brief Borrow raw height/foam for immediate GPU upload; never retain across mutation or destruction. */
-    [[nodiscard]] OceanWakeGridView gridView() const;
+    [[nodiscard]] EVENGINE_API_DOMAINS OceanWakeGridView gridView() const;
 
 private:
     friend class OceanWakeStep;
@@ -115,7 +118,7 @@ private:
  */
 class OceanWakeStep {
 public:
-    ~OceanWakeStep();
+    EVENGINE_API_DOMAINS ~OceanWakeStep();
     OceanWakeStep(const OceanWakeStep&)            = delete;
     OceanWakeStep& operator=(const OceanWakeStep&) = delete;
 

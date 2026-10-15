@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Export.h"
+
 #include <cstdint>
 #include <glm/glm.hpp>
 #include <span>
@@ -43,7 +45,7 @@ class OceanSprayStepBuilder;
 class OceanSprayFrame {
 public:
     /** @brief Validate settings and create an empty state at time zero. */
-    [[nodiscard]] static Result<OceanSprayFrame> create(const OceanSpraySettings& settings);
+    [[nodiscard]] static EVENGINE_API_DOMAINS Result<OceanSprayFrame> create(const OceanSpraySettings& settings);
     /** @brief Borrow particles until this frame is destroyed or moved; never retain across replacement. */
     std::span<const OceanSprayParticle> particles() const { return particles_; }
     /** @brief Simulation seconds represented by this frame. */
@@ -86,7 +88,7 @@ public:
      * integrated ballistically; re-entry uses the supplied step-start water, a dt-bounded
      * visual approximation. Droplets do not feed momentum back into the fluid or rigid body.
      */
-    [[nodiscard]] Result<OceanSprayFrame> build() const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<OceanSprayFrame> build() const;
 
 private:
     const OceanSprayFrame&            previous_;

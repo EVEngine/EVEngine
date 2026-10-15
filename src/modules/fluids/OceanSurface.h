@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Export.h"
+
 #include "common/Result.h"
 
 #include <glm/glm.hpp>
@@ -50,7 +52,7 @@ public:
      * @param settings Borrowed only during this call; at most 64 finite components.
      * @return Owned immutable surface or InvalidArgument; no external state changes.
      */
-    [[nodiscard]] static Result<OceanSurface> create(const OceanSurfaceSettings& settings);
+    [[nodiscard]] static EVENGINE_API_DOMAINS Result<OceanSurface> create(const OceanSurfaceSettings& settings);
 
     /**
      * @brief Invert horizontal displacement and sample the actual world-space surface.
@@ -59,14 +61,14 @@ public:
      * @return Height, normal and approximate particle velocity, or InvalidArgument.
      * @thread Const, reentrant; no callbacks and no retained input references.
      */
-    [[nodiscard]] Result<OceanSurfaceSample> sample(glm::dvec2 worldXZ, double time) const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<OceanSurfaceSample> sample(glm::dvec2 worldXZ, double time) const;
 
     /**
      * @brief Displace a material-space mesh point using the same wave function as queries.
      * @return World position or InvalidArgument for invalid coordinates/time.
      * @thread Const and reentrant; no retained inputs or callbacks.
      */
-    [[nodiscard]] Result<glm::dvec3> position(glm::dvec2 parameterXZ, double time) const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<glm::dvec3> position(glm::dvec2 parameterXZ, double time) const;
 
 private:
     explicit OceanSurface(OceanSurfaceSettings settings) : settings_(std::move(settings)) {}
@@ -98,8 +100,8 @@ struct OceanCellForce {
  * @return Owning force or InvalidArgument; neither input nor a physics body is mutated.
  * @thread Pure synchronous operation; no callbacks or retained references.
  */
-[[nodiscard]] Result<OceanCellForce> evaluateOceanCellForce(const OceanBuoyancyCell&  cell,
-                                                            const OceanSurfaceSample& water, double density,
-                                                            double gravity);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<OceanCellForce> evaluateOceanCellForce(const OceanBuoyancyCell&  cell,
+                                                                                 const OceanSurfaceSample& water,
+                                                                                 double density, double gravity);
 
 }  // namespace eve::fluids

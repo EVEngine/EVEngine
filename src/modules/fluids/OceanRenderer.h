@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Export.h"
+
 #include "fluids/OceanGpuSpectrum.h"
 #include "fluids/OceanMesh.h"
 
@@ -24,26 +26,26 @@ enum class OceanRenderBackend { CpuReference, GpuResident };
  */
 class OceanRenderer {
 public:
-    ~OceanRenderer();
+    EVENGINE_API_DOMAINS ~OceanRenderer();
     OceanRenderer(const OceanRenderer&)            = delete;
     OceanRenderer& operator=(const OceanRenderer&) = delete;
     /** @brief Prepare a cheap borrowed CPU projection builder; set center/origin before building. */
-    [[nodiscard]] OceanMeshFrameBuilder frameBuilder(const OceanWaterView& water) const;
+    [[nodiscard]] EVENGINE_API_DOMAINS OceanMeshFrameBuilder frameBuilder(const OceanWaterView& water) const;
     /** @brief Prepare a borrowed GPU publication; owners must remain alive and unchanged through publish(). */
-    [[nodiscard]] OceanGpuRenderFrameBuilder gpuFrameBuilder(const OceanGpuSpectrum&   spectrum,
-                                                             const OceanGpuFrameToken& token);
+    [[nodiscard]] EVENGINE_API_DOMAINS OceanGpuRenderFrameBuilder gpuFrameBuilder(const OceanGpuSpectrum&   spectrum,
+                                                                                  const OceanGpuFrameToken& token);
     /**
      * @brief Publish a prepared owning vertex frame; input is borrowed only for this call.
      * @return Success, StaleHandle, or validation/upload diagnostic; invalid input preserves the old frame.
      * @cost Linear vertex upload with backend synchronization; once per render frame on the CPU reference path.
      */
-    [[nodiscard]] Result<void> publish(const OceanMeshFrame& frame);
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<void> publish(const OceanMeshFrame& frame);
     /** @brief Borrow a mask frame for synchronous upload; keep frame and renderer alive until publish returns. */
-    [[nodiscard]] OceanHullMaskPublication hullMaskBuilder(const OceanHullMaskFrame& frame);
+    [[nodiscard]] EVENGINE_API_DOMAINS OceanHullMaskPublication hullMaskBuilder(const OceanHullMaskFrame& frame);
     /** @brief Draw the published frame in the current 3D pass; camera/scene must use its render origin.
      * @return Success, StaleHandle, or Conflict when no frame has been published.
      */
-    [[nodiscard]] Result<void> draw();
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<void> draw();
 
 private:
     friend class OceanHullMaskPublication;
@@ -65,7 +67,7 @@ public:
      * @return Owning renderer or diagnostic; no callbacks. GPU resources follow Graphics lifetime.
      * @cost Shader/pipeline creation plus O(segments * rings) upload; amortize across renderer lifetime.
      */
-    [[nodiscard]] Result<std::unique_ptr<OceanRenderer>> build() const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<std::unique_ptr<OceanRenderer>> build() const;
 
 private:
     graphics::Graphics& graphics_;
@@ -84,7 +86,7 @@ public:
      * @return Success or validation/backend diagnostic; failure preserves the previous visible frame.
      * @thread Render-thread-only, non-reentrant, no callbacks; copy completes before the source is released.
      */
-    [[nodiscard]] Result<void> publish() const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<void> publish() const;
 
 private:
     friend class OceanRenderer;
@@ -103,7 +105,7 @@ public:
      * @cost Bounded 4 by 545 RGBA8 upload with backend synchronization, once per changed vessel pose.
      * @thread Render-thread-only, non-reentrant; no callbacks. Draw requires matching mask/ocean origins.
      */
-    [[nodiscard]] Result<void> publish() const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<void> publish() const;
 
 private:
     friend class OceanRenderer;

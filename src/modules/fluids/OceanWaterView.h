@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Export.h"
+
 #include "fluids/OceanSpectrum.h"
 
 #include <functional>
@@ -21,13 +23,13 @@ public:
     /** @brief Shared injected simulation timestamp. */
     double time() const { return spectrum_.get().time(); }
     /** @brief Query combined water in world coordinates; errors propagate without changing either owner. */
-    [[nodiscard]] Result<OceanSurfaceSample> sample(glm::dvec2 worldXZ) const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<OceanSurfaceSample> sample(glm::dvec2 worldXZ) const;
     /** @brief Displace a mesh parameter point and add wake height at the resulting world XZ. */
-    [[nodiscard]] Result<glm::dvec3> position(glm::dvec2 parameterXZ) const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<glm::dvec3> position(glm::dvec2 parameterXZ) const;
     /** @brief Evaluate combined position and tangents directly; wake gradients follow displaced world XZ.
      * @return Owning geometry or query/time diagnostic; synchronous const operation without retained input.
      */
-    [[nodiscard]] Result<OceanSurfaceGeometry> geometry(glm::dvec2 parameterXZ) const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<OceanSurfaceGeometry> geometry(glm::dvec2 parameterXZ) const;
 
 private:
     std::reference_wrapper<const OceanSpectrumFrame>       spectrum_;

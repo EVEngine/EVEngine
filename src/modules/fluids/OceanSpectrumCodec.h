@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Export.h"
+
 #include "common/Value.h"
 #include "fluids/OceanSpectrum.h"
 
@@ -9,7 +11,7 @@ namespace eve::fluids {
  * The uint64 seed is canonical decimal text, preserving all bits through a script VM.
  * @thread Const/reentrant, call-only input, no callbacks or retained references.
  */
-[[nodiscard]] Value encodeOceanSpectrumSettings(const OceanSpectrumSettings& settings);
+[[nodiscard]] EVENGINE_API_DOMAINS Value encodeOceanSpectrumSettings(const OceanSpectrumSettings& settings);
 /**
  * @brief Decode a complete version-1 definition; reject unknown/missing fields and unsupported versions.
  * No earlier format exists: migration is explicitly unsupported. Structural decoding is bounded to
@@ -17,5 +19,5 @@ namespace eve::fluids {
  * @return Owning settings or InvalidArgument; never changes an existing ocean.
  * @thread Const/reentrant, call-only input, no callbacks or retained references.
  */
-[[nodiscard]] Result<OceanSpectrumSettings> decodeOceanSpectrumSettings(const Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<OceanSpectrumSettings> decodeOceanSpectrumSettings(const Value& value);
 }  // namespace eve::fluids

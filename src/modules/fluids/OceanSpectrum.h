@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Export.h"
+
 #include "fluids/OceanSurface.h"
 
 #include <cstdint>
@@ -67,17 +69,17 @@ public:
      * @return Owning world position or InvalidArgument for nonfinite/out-of-range inputs.
      * @thread Const/reentrant; synchronous, no callbacks or retained references.
      */
-    [[nodiscard]] Result<glm::dvec3> position(glm::dvec2 parameterXZ) const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<glm::dvec3> position(glm::dvec2 parameterXZ) const;
     /** @brief Evaluate position and exact interpolation derivatives without world-space inversion.
      * @return Owning geometry or InvalidArgument; const/reentrant, no callbacks or retained input.
      */
-    [[nodiscard]] Result<OceanSurfaceGeometry> geometry(glm::dvec2 parameterXZ) const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<OceanSurfaceGeometry> geometry(glm::dvec2 parameterXZ) const;
     /**
      * @brief Invert horizontal displacement at world XZ and return the matching water sample.
      * @return Owning sample, InvalidArgument, or Unsupported if the wave surface cannot be inverted.
      * @thread Const/reentrant; no callbacks or retained input. Bounded iteration, no allocation.
      */
-    [[nodiscard]] Result<OceanSurfaceSample> sample(glm::dvec2 worldXZ) const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<OceanSurfaceSample> sample(glm::dvec2 worldXZ) const;
 
 private:
     friend class OceanSeaTransitionFrameBuilder;
@@ -94,9 +96,9 @@ private:
 class OceanSpectrum {
 public:
     /** @brief Prepare a cheap owning builder; time validation and FFT work occur at build(). */
-    [[nodiscard]] OceanSpectrumFrameBuilder frameBuilder(double time) const;
+    [[nodiscard]] EVENGINE_API_DOMAINS OceanSpectrumFrameBuilder frameBuilder(double time) const;
     /** @brief Expected ensemble surface variance, normalized to significantWaveHeight squared / 16. */
-    double variance() const;
+    EVENGINE_API_DOMAINS double variance() const;
 
 private:
     friend class OceanSeaTransitionBuilder;
@@ -116,7 +118,7 @@ public:
      * @cost Quadratic in each band resolution; amortize over the sea state's lifetime.
      * @thread Caller-owned builder, no callbacks; settings may change after build returns.
      */
-    [[nodiscard]] Result<OceanSpectrum> build() const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<OceanSpectrum> build() const;
 };
 
 /** @brief Owns a shared immutable spectrum lease and timestamp; safe after the original spectrum is destroyed. */
@@ -128,7 +130,7 @@ public:
      * @cost O(sum N*N*log(N)) compute and O(sum N*N) storage; reuse one frame across all consumers per tick.
      * @thread Reentrant const operation with private scratch; no callbacks or GPU synchronization.
      */
-    [[nodiscard]] Result<OceanSpectrumFrame> build() const;
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<OceanSpectrumFrame> build() const;
 
 private:
     friend class OceanSpectrum;
