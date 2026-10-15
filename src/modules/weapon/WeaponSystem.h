@@ -62,4 +62,32 @@ public:
     static bool updateAim(WeaponEntity& w, float dt);
 };
 
+/**
+ * @brief 声明 `IProjectileService` 的脚本绑定接缝。
+ *
+ * 接口由 weapon 模块拥有（它是提问方：谁问"这一发打出去以后怎么办"，就由谁负责编组，
+ * `R-COHESION-6`），因此编组也由本模块做——把 `WeaponEntity` 的标识与 `AttackRequest`
+ * 的字段**摊平成位置标量**，脚本只收稳定标识、方向与标量，收不到引擎内部借用指针。
+ * 这正是 `ScriptProvider.h` 写明的立场（"marshalling is the caller's … not a
+ * general-purpose reflection bridge"）；代价是脚本方法的实参个数等于摊平后的字段数。
+ *
+ * @remarks 幂等：`declareCapability` 替换上一对回调。脚本提供方占用的是 `cap::provide`
+ *          的**单实现槽位**（消费方 `ProjectileLogic::fire` 用 `cap::query`），因此发布
+ *          脚本提供方会顶掉已有的原生提供方，且卸载时**不会**把它装回来；顶掉这件事会
+ *          记一条日志，避免"原生实现悄悄失效"。
+ * @cost 组合期一次 map 插入；每次开火一次脚本调用，成本见 `ScriptProjectileService`。
+ */
+EVENGINE_API_WORLD void declareScriptProjectileSeam();
+
+/**
+ * @brief 撤回本模块声明的脚本接缝，并卸载全部脚本提供方。
+ *
+ * 由 `Weapon` 的析构调用。适配器对象**保留而不销毁**：脚本可能在自己的回调里卸载自己，
+ * 而正在进行的那次开火仍持有它的指针（此后查询会拿到 `StaleHandle` 而不是被再次调用）。
+ *
+ * @remarks 接缝状态是进程级的（能力表就是进程级的），所以第二个存活的 `Weapon` 实例
+ *          （测试场景；生产侧经 `ModuleManager::requireInstance`）与它共享同一份状态。
+ */
+EVENGINE_API_WORLD void withdrawScriptProjectileSeam();
+
 }  // namespace eve::weapon

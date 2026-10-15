@@ -1,20 +1,21 @@
 #include "cmdline.h"
-#include "scripts.h"
+#include "common/BootWarmup.h"
 #include "common/Capability.h"
+#include "common/CrashLog.h"
+#include "common/ECS.h"
 #include "common/EditorHost.h"
 #include "common/Module.h"
 #include "common/Runtime.h"
 #include "common/ScriptCompiler.h"
 #include "common/ScriptModule.h"
-#include "common/config.h"
-#include "common/ECS.h"
-#include "common/BootWarmup.h"
-#include "common/CrashLog.h"
+#include "common/SquirrelBinding.h"
 #include "common/StartupTiming.h"
+#include "common/config.h"
 #include "filesystem/Filesystem.h"
 #include "filesystem/physfs/FileApi.h"
 #include "graphics/Light.h"
 #include "graphics/RenderSystem3D.h"
+#include "scripts.h"
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
 #include "devtools/DevTool.hpp"
 #include "devtools/McpServer.hpp"
@@ -111,11 +112,11 @@ void playgroundApply(const char* source) {
     sq_pushstring(vm, _SC("handle_change"), -1);
     if (SQ_SUCCEEDED(sq_get(vm, -2))) {          // [root, fn]
         sq_remove(vm, -2);                       // [fn]
-        sq_pushroottable(vm);                    // [fn, root] (env/this param)
-        sq_pushstring(vm, _SC("main.nut"), -1);
-        // UI.cpp callScriptHandler convention: the roottable is the first
-        // parameter, so 2 params = [root, "main.nut"].
-        sq_call(vm, 2, SQFalse, SQTrue);
+        HSQOBJECT handleChange;
+        sq_getstackobj(vm, -1, &handleChange);  // borrowed: still rooted by `top`
+        // The roottable is the receiver ("this"), "main.nut" the single argument. The
+        // result used to be dropped, so a failing reload left the page with no trace.
+        eve::script::callFunction(vm, handleChange, eve::script::rootTable, "main.nut");
     }
     sq_settop(vm, top);
 }

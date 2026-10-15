@@ -16,7 +16,7 @@
 #include "graphics/material/editor/EditorMaterialOffscreen.h"
 #include "hd2d/editing/Hd2dTarget.h"
 #include "image/ImageData.h"
-#include "particles/editor/EditorParticleOffscreen.h"
+#include "particles/graphics_editing/ParticleOffscreen.h"
 #include "ui/editor/EditorUiOffscreen.h"
 #include "weather/Weather.h"
 #include "zeroerr/assert.h"
@@ -299,6 +299,8 @@ TEST_CASE("editor.decal.publishing_target_preserves_author_and_runtime_on_reject
 // editor_domain_offscreen.cpp
 using namespace eve::editor;
 using namespace eve::editing;
+using namespace eve::graphics_editing;
+using namespace eve::particles_graphics_editing;
 
 namespace {
 class Canvas final : public eve::graphics::Canvas {

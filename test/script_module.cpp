@@ -197,6 +197,29 @@ TEST_CASE("scriptModule.reloadAffectedRollsBackWholeGenerationGroup") {
     CHECK_EQ(runtime.vm().get<int64_t>("after_failure"), int64_t(3));
 }
 
+TEST_CASE("scriptModule.instantiationFailureCarriesTheScriptError") {
+    Runtime runtime(512, ssq::Libs::ALL);
+    auto    provider                     = std::make_shared<MemoryModuleProvider>();
+    provider->sources["mem:/broken.nut"] = "export const VALUE = 1\nthrow \"module body exploded\"\n";
+    runtime.scriptModules().registerProvider(provider, 100);
+
+    std::string message;
+    try {
+        runtime.runSource("import { VALUE } from \"mem:/broken.nut\"\n", "game:/main.nut");
+    } catch (const std::exception& error) {
+        message = error.what();
+    }
+
+    // The module body executes from native code, and its failure used to be thrown away:
+    // the caller got "failed to instantiate script module: mem:/broken.nut" and nothing
+    // about the throw. The reported text now travels with the exception. Both assertions
+    // are REQUIRE: as CHECK they were warning-level and this test passed with the report
+    // removed.
+    REQUIRE(!message.empty());
+    REQUIRE(message.find("failed to instantiate script module") != std::string::npos);
+    REQUIRE(message.find("module body exploded") != std::string::npos);
+}
+
 TEST_CASE("scriptModule.dofileInstantiatesImports") {
     cap::detail::clearAllRaw();
     VirtualFileSystem filesystem;

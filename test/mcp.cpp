@@ -376,12 +376,14 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     bool foundPixelCatalog    = false;
     bool foundPixelValidate   = false;
     bool foundPixelApply      = false;
+    bool foundScriptComponents = false;
     bool foundApiSearch       = false;
     bool foundApiGet          = false;
     for (size_t i = 0; i < tools->size(); ++i) {
         auto              t    = tools->getObject(static_cast<unsigned>(i));
         const std::string name = t->getValue<std::string>("name");
         if (name == "eve_status") foundStatus = true;
+        if (name == "eve_script_components") foundScriptComponents = true;
         if (name == "eve_gameplay") foundGameplay = true;
         if (name == "eve_eval") foundEval = true;
         if (name == "eve_scene_status") foundScene = true;
@@ -468,6 +470,17 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     CHECK(foundPixelCatalog);
     CHECK(foundPixelValidate);
     CHECK(foundPixelApply);
+    CHECK(foundScriptComponents);
+
+    // 脚本组件数据的工具视图：没有脚本 VM/没有登记组件时也必须是合法 JSON（空列表），不是错误。
+    client.sendRequest(4, "tools/call", "{\"name\":\"eve_script_components\",\"arguments\":{}}");
+    auto scriptComponentsMsg = client.expectResult(4);
+    REQUIRE(scriptComponentsMsg);
+    auto scriptComponentsContent = scriptComponentsMsg->getObject("result")->getArray("content");
+    REQUIRE(scriptComponentsContent);
+    REQUIRE(scriptComponentsContent->size() >= 1);
+    const std::string scriptComponentsText = scriptComponentsContent->getObject(0)->getValue<std::string>("text");
+    CHECK(scriptComponentsText.find("\"entities\"") != std::string::npos);
     CHECK(foundApiSearch);
     CHECK(foundApiGet);
 

@@ -19,12 +19,23 @@ namespace eve::dev {
  * explicitly persistent roots (`markRoot`) or a compatibility heuristic that
  * skips engine module bindings. Roots marked transient are excluded. Native
  * providers choose Preserve or Reset through IStateProvider::reloadPolicy().
- * Closures / native userdata are skipped.
+ * Closures / native userdata are **skipped, not fatal**: the reloaded script recreates
+ * them, so a value the capture cannot represent is left out and named in the `skipped`
+ * array inside the captured state. Failing the whole capture instead meant that moving an
+ * entity from a global into a container — the entity list the script ECS encourages —
+ * turned a working reload into a refused one.
+ *
+ * Which omissions are named: everything unserializable **inside** a captured root (that
+ * root was accepted as state, so e.g. `gameState.tick = function(){}` or
+ * `gameState.leader = Hero()` is a real loss), and live objects at the root
+ * (`hero <- Hero()`). Function and class *definitions* at the root are ordinary script
+ * bindings, so they stay silently skipped rather than flooding the list.
  *
  * Format (v2): JSON object
  * `{ "version":2, "roots": { name: value, ... },
- *    "native": { "<stateKind>": <captured>, ... } }`
- * v1 files (roots only) are still readable.
+ *    "native": { "<stateKind>": <captured>, ... },
+ *    "skipped": ["squad[0] (class instance)", ...] }` (the last key only when non-empty;
+ * readers ignore it). v1 files (roots only) are still readable.
  */
 class EVENGINE_API_FOUNDATION Snapshot {
 public:
@@ -63,8 +74,12 @@ public:
 
     /**
      * @brief Capture script roots plus every Preserve IStateProvider.
-     * @param out Receives `{ "version":2, "roots": {...}, "native": {...} }`.
-     * @return false when the VM is null; provider failures are skipped.
+     * @param out Receives `{ "version":2, "roots": {...}, "native": {...} }`, plus
+     *            `"skipped"` (array of `path (type)` strings) when values had to be left
+     *            out. Keeping the omissions inside the captured state means no extra
+     *            out-parameter and one channel for whoever reads the snapshot.
+     * @return false only when the VM is null or capture itself fails; provider failures
+     *         and unserializable values are skipped.
      */
     bool captureState(HSQUIRRELVM vm, StateValue& out, std::string* error = nullptr) const;
 

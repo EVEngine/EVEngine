@@ -1,6 +1,7 @@
 #include "dialogue/Dialogue.h"
 #include "common/StringMapInstances.h"
 #include "dialogue/DnutParser.h"
+#include "dialogue/StateAccessScriptSeam.h"
 
 #include "avatar/AvatarInstance.h"
 #include "common/Capability.h"
@@ -164,9 +165,15 @@ struct Register {
 
 }  // namespace
 
-Dialogue::Dialogue() { liveDialogues().push_back(this); }
+Dialogue::Dialogue() {
+    liveDialogues().push_back(this);
+    declareScriptStateQuerySeam();
+    declareScriptStateMutationSeam();
+}
 
 Dialogue::~Dialogue() {
+    withdrawScriptStateQuerySeam();
+    withdrawScriptStateMutationSeam();
     liveDialogues().erase(std::remove(liveDialogues().begin(), liveDialogues().end(), this), liveDialogues().end());
     if (vm_) {
         for (auto &kv : predicates_) sq_release(vm_, &kv.second);
@@ -469,12 +476,18 @@ bool Dialogue::evalScriptPredicate(const std::string &name,
     if (it == predicates_.end()) return false;
 
     const SQInteger top = sq_gettop(vm_);
-    sq_pushobject(vm_, it->second);  // closure first; sq_call expects fn below its args
-    sq_newtable(vm_);  // ctx
+    // The closure is pushed as fn + this + ctx. `ctx` is built in place on the VM stack,
+    // so script::callFunction's value-argument form does not fit here; the count is
+    // derived from the stack instead of written by hand, which is the same rule. Writing
+    // 1 here previously bound ctx as `this`, leaving the callback zero arguments and
+    // failing the arity check, so every registered condition silently evaluated false.
+    sq_pushobject(vm_, it->second);  // fn
+    sq_pushroottable(vm_);           // this
+    sq_newtable(vm_);                // ctx
 
     sq_pushstring(vm_, "vars", -1);
     pushVarTable(vm_, merged);
-    sq_newslot(vm_, -3, SQFalse);  // fn at -4, key at -2, var table at -1 -> slot into ctx(-3)
+    sq_newslot(vm_, -3, SQFalse);  // ctx at -3, key at -2, var table at -1
 
     sq_pushstring(vm_, "params", -1);
     pushVarTable(vm_, params);
@@ -484,7 +497,8 @@ bool Dialogue::evalScriptPredicate(const std::string &name,
     sq_pushstring(vm_, lineId.c_str(), lineId.size());
     sq_newslot(vm_, -3, SQFalse);
 
-    if (SQ_FAILED(sq_call(vm_, 1, SQTrue, SQTrue))) {
+    const SQInteger paramCount = sq_gettop(vm_) - top - 1;  // receiver + ctx, excluding fn
+    if (SQ_FAILED(sq_call(vm_, paramCount, SQTrue, SQTrue))) {
         sq_settop(vm_, top);
         return false;
     }
@@ -1407,6 +1421,11 @@ void Dialogue::expose(ssq::Class &cls) {
     cls.addFunc("unregisterCondition", &Dialogue::unregisterCondition);
     cls.addFunc("evalCondition", &Dialogue::evalCondition);
 
+    // `loadPoolsFromTable` is the documented script entry point for pool registration
+    // (`docs/dev/对话与Avatar模块设计.md` §池注册) and the table-taking counterpart of
+    // `loadPoolsFromData`. The dnut refactor dropped the binding while keeping the method,
+    // so `DialogueProcScriptTest.basicPools` called a name no VM could resolve.
+    cls.addFunc("loadPoolsFromTable", &Dialogue::loadPoolsFromTable);
     cls.addFunc("clearPools", &Dialogue::clearPools);
     cls.addFunc("getPoolCount", &Dialogue::getPoolCount);
     cls.addFunc("getPoolId", &Dialogue::getPoolId);
