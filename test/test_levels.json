@@ -5007,6 +5007,28 @@
       "cases": {},
       "module": "common"
     },
+    "procgen_generation_stages.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.stages.scalarFieldIsOwningBoundedAndTransactional",
+          "procgen.stages.scalarFieldProducesReusableParametricGeometry",
+          "procgen.stages.houseDefaultScheduleMatchesCompatibilityAndOwnsKit",
+          "procgen.stages.houseGraphControlsGenerationAndFailuresPreserveStage",
+          "procgen.stages.caveDefaultScheduleMatchesRecipe",
+          "procgen.stages.caveFieldEditsAffectOutputAndFailedExtractionKeepsInput",
+          "procgen.stages.caveSkeletonAndSurfacePoliciesAreEditable"
+        ],
+        "script-binding": [
+          "procgen.stages.scriptOwnsFieldsAndComposesCaveWithoutGraphics"
+        ]
+      },
+      "module": "procgen",
+      "origins": [
+        "procgen_generation_stages.cpp"
+      ]
+    },
     "profile/capability_absent.cpp": {
       "role": "compile-contract",
       "default": "module-composition",
@@ -6006,6 +6028,7 @@
           "decision.condition.compoundsExplainFailureWithoutMutation",
           "decision.condition.scriptDeclarationIsExplicit",
           "decision.conditionUnavailableIsDifferentFromFalse",
+          "decision.condition.legacyCodecExpandsDomainLeaves",
           "decision.blackboardsAndFsmAreExplicit",
           "decision.utilityIsDeterministic",
           "decision.influenceAndSnapshotRoundTrip"
@@ -6228,6 +6251,20 @@
       "module": "economy",
       "origins": [
         "economy.cpp"
+      ]
+    },
+    "unit/editing/editing_tests.cpp": {
+      "role": "tests",
+      "default": "local-format",
+      "cases": {
+        "local-format": [
+          "editing.property_schema_json.projects_empty_object_and_fields",
+          "editing.property_schema_json.rejects_empty_schema_id"
+        ]
+      },
+      "module": "editing",
+      "origins": [
+        "editing_property_schema_json.cpp"
       ]
     },
     "unit/editor/editor_tests.cpp": {
@@ -6627,6 +6664,19 @@
       "origins": [
         "event_envelope.cpp",
         "eventstream.cpp"
+      ]
+    },
+    "unit/gpgpu/gpgpu_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "gpgpu.buffer.readFloat32sCopyClipsToCapacity"
+        ]
+      },
+      "module": "gpgpu",
+      "origins": [
+        "gpgpu.cpp"
       ]
     },
     "unit/graphics/graphics_pipeline_state_tests.cpp": {
@@ -9764,38 +9814,28 @@
         "weather.cpp"
       ]
     },
+    "virtual_texture_streaming.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "graphics.virtual_texture_streaming.pack_feedback_roundtrip",
+          "graphics.virtual_texture_streaming.feedback_decode_publish_and_abandon",
+          "graphics.virtual_texture_streaming.evicts_lru_and_clears_page_table_first",
+          "graphics.virtual_texture_streaming.writer_invalidates_dirty_pages",
+          "graphics.virtual_texture_streaming.ingest_packed_feedback_collapses_mips"
+        ]
+      },
+      "module": "graphics",
+      "origins": [
+        "virtual_texture_streaming.cpp"
+      ]
+    },
     "water_scene_fixture.cpp": {
       "role": "helper",
       "default": "local-logic",
       "cases": {},
       "module": "graphics"
-    },
-    "unit/editing/editing_tests.cpp": {
-      "role": "tests",
-      "default": "local-format",
-      "cases": {
-        "local-format": [
-          "editing.property_schema_json.projects_empty_object_and_fields",
-          "editing.property_schema_json.rejects_empty_schema_id"
-        ]
-      },
-      "module": "editing",
-      "origins": [
-        "editing_property_schema_json.cpp"
-      ]
-    },
-    "unit/gpgpu/gpgpu_tests.cpp": {
-      "role": "tests",
-      "default": "local-logic",
-      "cases": {
-        "local-logic": [
-          "gpgpu.buffer.readFloat32sCopyClipsToCapacity"
-        ]
-      },
-      "module": "gpgpu",
-      "origins": [
-        "gpgpu.cpp"
-      ]
     }
   }
 }
