@@ -29,9 +29,6 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-#if defined(EVENGINE_MACOSX)
-#include <dlfcn.h>
-#endif
 #if !defined(_WIN32)
 #include <unistd.h>
 #endif
@@ -480,74 +477,7 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
 
     {
         StartupStage stage("  vulkan: physical device + device");
-#if defined(EVENGINE_MACOSX)
-        if (std::getenv("EVENGINE_VULKAN_DISPATCH_PROBE")) {
-            const auto raw = static_cast<VkInstance>(inst.instance);
-            const auto gpa = VULKAN_HPP_DEFAULT_DISPATCHER.vkGetInstanceProcAddr;
-            Dl_info    owner{};
-            dladdr(&VULKAN_HPP_DEFAULT_DISPATCHER, &owner);
-            const auto enumerate =
-                reinterpret_cast<PFN_vkEnumeratePhysicalDevices>(gpa(raw, "vkEnumeratePhysicalDevices"));
-            const auto properties =
-                reinterpret_cast<PFN_vkGetPhysicalDeviceProperties>(gpa(raw, "vkGetPhysicalDeviceProperties"));
-            uint32_t       count        = 0;
-            const VkResult directResult = enumerate(raw, &count, nullptr);
-            std::fprintf(
-                stderr, "[vkdiag] owner=%s sdl-gpa=%d linked-gpa=%d enumerate=%d properties=%d direct=%d count=%u\n",
-                owner.dli_fname ? owner.dli_fname : "unknown",
-                gpa == reinterpret_cast<PFN_vkGetInstanceProcAddr>(SDL_Vulkan_GetVkGetInstanceProcAddr()),
-                gpa == &vkGetInstanceProcAddr, enumerate == VULKAN_HPP_DEFAULT_DISPATCHER.vkEnumeratePhysicalDevices,
-                properties == VULKAN_HPP_DEFAULT_DISPATCHER.vkGetPhysicalDeviceProperties,
-                static_cast<int>(directResult), count);
-            std::fflush(stderr);
-            std::fprintf(stderr, "[vkdiag] hpp enumerate begin\n");
-            std::fflush(stderr);
-            const auto hppDevices = inst.instance.enumeratePhysicalDevices();
-            std::fprintf(stderr, "[vkdiag] hpp enumerate count=%zu\n", hppDevices.size());
-            std::fflush(stderr);
-            if (!hppDevices.empty()) {
-                const auto queues = hppDevices.front().getQueueFamilyProperties();
-                std::fprintf(stderr, "[vkdiag] hpp queues=%zu\n", queues.size());
-                std::fflush(stderr);
-                const auto props = hppDevices.front().getProperties();
-                std::fprintf(stderr, "[vkdiag] hpp properties vendor=%u\n", props.vendorID);
-                std::fflush(stderr);
-                const auto features =
-                    reinterpret_cast<PFN_vkGetPhysicalDeviceFeatures>(gpa(raw, "vkGetPhysicalDeviceFeatures"));
-                const auto memory = reinterpret_cast<PFN_vkGetPhysicalDeviceMemoryProperties>(
-                    gpa(raw, "vkGetPhysicalDeviceMemoryProperties"));
-                std::fprintf(stderr, "[vkdiag] features pointer=%d memory pointer=%d\n",
-                             features == VULKAN_HPP_DEFAULT_DISPATCHER.vkGetPhysicalDeviceFeatures,
-                             memory == VULKAN_HPP_DEFAULT_DISPATCHER.vkGetPhysicalDeviceMemoryProperties);
-                std::fflush(stderr);
-                const auto hppFeatures = hppDevices.front().getFeatures();
-                std::fprintf(stderr, "[vkdiag] hpp features anisotropy=%u\n", hppFeatures.samplerAnisotropy);
-                std::fflush(stderr);
-                const auto hppMemory = hppDevices.front().getMemoryProperties();
-                std::fprintf(stderr, "[vkdiag] hpp memory types=%u\n", hppMemory.memoryTypeCount);
-                std::fflush(stderr);
-                VkBool32 presentSupport = VK_FALSE;
-                if (surface) {
-                    const auto support = hppDevices.front().getSurfaceSupportKHR(0, surface, &presentSupport);
-                    std::fprintf(stderr, "[vkdiag] hpp surface support result=%d value=%u\n", static_cast<int>(support),
-                                 presentSupport);
-                    std::fflush(stderr);
-                }
-                const auto extensions = hppDevices.front().enumerateDeviceExtensionProperties();
-                std::fprintf(stderr, "[vkdiag] hpp extensions=%zu\n", extensions.size());
-                std::fflush(stderr);
-                if (surface) {
-                    const auto formats = hppDevices.front().getSurfaceFormatsKHR(surface);
-                    std::fprintf(stderr, "[vkdiag] hpp surface formats=%zu\n", formats.size());
-                    std::fflush(stderr);
-                    const auto modes = hppDevices.front().getSurfacePresentModesKHR(surface);
-                    std::fprintf(stderr, "[vkdiag] hpp present modes=%zu\n", modes.size());
-                    std::fflush(stderr);
-                }
-            }
-        }
-#endif
-        auto selector = inst.selectPhysicalDevice();
+        auto         selector = inst.selectPhysicalDevice();
         selector.set_minimum_version(1, 0);
         if (surface) {
             selector.set_surface(surface);
@@ -571,9 +501,6 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
         selector.add_desired_extension(VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME);
         selector.add_desired_extension(VK_KHR_RAY_QUERY_EXTENSION_NAME);
         auto phys = selector.select();
-#if defined(EVENGINE_MACOSX)
-        if (std::getenv("EVENGINE_VULKAN_DISPATCH_PROBE")) std::fprintf(stderr, "[vkdiag] selected device\n");
-#endif
         {
             // Record the GPU identity into the crash/error log before any Vulkan
             // work, so a device/driver crash can be tied to the exact GPU+driver.
@@ -726,9 +653,6 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
         }
 
         vkb::DeviceBuilder deviceBuilder = phys.createDevice();
-#if defined(EVENGINE_MACOSX)
-        if (std::getenv("EVENGINE_VULKAN_DISPATCH_PROBE")) std::fprintf(stderr, "[vkdiag] device builder created\n");
-#endif
         // Vulkan 1.2 feature: vkCmdDrawIndirectCount (VG cluster draws) and BDA for RT.
         vk::PhysicalDeviceVulkan12Features vk12Enable{};
         vk12Enable.sType = vk::StructureType::ePhysicalDeviceVulkan12Features;
@@ -743,19 +667,10 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
         }
         if (gpuDrivenCaps_.api12) deviceBuilder.add_pNext(&vk12Enable);
         device = deviceBuilder.build();
-#if defined(EVENGINE_MACOSX)
-        if (std::getenv("EVENGINE_VULKAN_DISPATCH_PROBE")) std::fprintf(stderr, "[vkdiag] logical device built\n");
-#endif
         // Load device-level extension entry points (needed for KHR RT).
         VULKAN_HPP_DEFAULT_DISPATCHER.init(device.instance);
-#if defined(EVENGINE_MACOSX)
-        if (std::getenv("EVENGINE_VULKAN_DISPATCH_PROBE")) std::fprintf(stderr, "[vkdiag] dispatcher initialized\n");
-#endif
 #if defined(VKB_ENABLE_VMA)
         vmaAllocatorOwner_.create(inst, phys, device);
-#if defined(EVENGINE_MACOSX)
-        if (std::getenv("EVENGINE_VULKAN_DISPATCH_PROBE")) std::fprintf(stderr, "[vkdiag] allocator created\n");
-#endif
 #endif
         maxSamplerAnisotropy = device.caps.maxSamplerAnisotropy;
         eve::recordLogEvent("info",

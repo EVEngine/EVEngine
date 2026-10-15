@@ -235,8 +235,15 @@ function(set_include)
         message(STATUS "Vulkan (iOS MoltenVK ${_eve_moltenvk_link_mode}): ${EVENGINE_MOLTENVK_XCFRAMEWORK}")
     elseif(Vulkan_FOUND AND Vulkan_INCLUDE_DIRS AND Vulkan_LIBRARIES)
         message(STATUS "Vulkan found: ${Vulkan_LIBRARY}")
-        target_include_directories(eve_engine_includes INTERFACE ${Vulkan_INCLUDE_DIRS})
-        set(EVENGINE_VULKAN_LIB Vulkan::Vulkan CACHE INTERNAL "Vulkan link target")
+        if(APPLE AND EVENGINE_THIRD_PARTY_BINARY_DIR)
+            # The prebuilt install owns the pinned Vulkan-Hpp headers. Linking the
+            # imported target also adds SDK headers, which can give inline
+            # dispatch helpers a different layout from the engine's dispatcher.
+            set(EVENGINE_VULKAN_LIB "${Vulkan_LIBRARY}" CACHE INTERNAL "Vulkan link target")
+        else()
+            target_include_directories(eve_engine_includes INTERFACE ${Vulkan_INCLUDE_DIRS})
+            set(EVENGINE_VULKAN_LIB Vulkan::Vulkan CACHE INTERNAL "Vulkan link target")
+        endif()
     elseif(APPLE)
         message(FATAL_ERROR
             "Vulkan SDK with MoltenVK is required on macOS.\n"

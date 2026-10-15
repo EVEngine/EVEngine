@@ -824,16 +824,6 @@ jobs:
           make build/macosx-debug JOBS="$(sysctl -n hw.ncpu)"
           CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
 
-      - name: Probe macosx unit test
-        env:
-          ALSOFT_DRIVERS: "null"
-          EVENGINE_VULKAN_DISPATCH_PROBE: "1"
-        run: |
-          if ! ctest --test-dir build/macosx-debug --output-on-failure -R '^ao\.qualityAndModePresets$'; then
-            lldb --batch -o 'run --testcase=^ao\.qualityAndModePresets$' -k 'thread backtrace all' -- build/macosx-debug/test/unit_test
-            exit 1
-          fi
-
       - name: Run macosx unit tests
         timeout-minutes: 60
         env:
