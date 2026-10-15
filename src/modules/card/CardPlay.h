@@ -8,8 +8,8 @@
  */
 
 #include "card/CardTypes.h"
+#include "common/Condition.h"
 #include "common/Container.h"
-#include "condition/Condition.h"
 #include "transaction/AtomicResourcePayment.h"
 
 #include <functional>

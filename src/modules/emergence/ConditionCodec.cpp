@@ -1,8 +1,8 @@
 #include "emergence/ConditionCodec.h"
 
+#include "common/ConditionCodec.h"
+#include "common/ConditionKeys.h"
 #include "common/Diagnostic.h"
-#include "condition/ConditionCodec.h"
-#include "condition/ConditionKeys.h"
 #include "emergence/ConditionWatch.h"
 #include "emergence/FactStore.h"
 

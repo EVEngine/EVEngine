@@ -2391,7 +2391,7 @@ TEST_CASE("procgen.simulation.lootPropBake") {
 #include "card/Card.h"
 #include "card/CardContainers.h"
 #include "card/CardPlay.h"
-#include "condition/ConditionKeys.h"
+#include "common/ConditionKeys.h"
 #include "economy/EconomyLedger.h"
 #include "economy/EconomyLedgerResourceAccount.h"
 #include "economy/ResourceType.h"

@@ -7,9 +7,9 @@
  * @brief Dialogue's state boundary, condition adapter, and command request protocol.
  */
 
+#include "common/Condition.h"
 #include "common/StateAccess.h"
 #include "common/StateValue.h"
-#include "condition/Condition.h"
 #include "dialogue/DialoguePayment.h"
 
 #include <cstdint>

@@ -1,6 +1,6 @@
 #include "action/AbilityAsset.h"
 
-#include "condition/ConditionCodec.h"
+#include "common/ConditionCodec.h"
 
 #include <algorithm>
 #include <array>

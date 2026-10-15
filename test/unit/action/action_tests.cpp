@@ -6,8 +6,8 @@
 #include "action/AbilityAsset.h"
 #include "action/AbilityController.h"
 #include "action/AbilitySystem.h"
+#include "common/ConditionKeys.h"
 #include "common/Diagnostic.h"
-#include "condition/ConditionKeys.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // Responsibility: action_abilities

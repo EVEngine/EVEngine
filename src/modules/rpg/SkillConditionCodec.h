@@ -5,9 +5,9 @@
  * @brief RPG-owned Value codec for the shared decision condition tree.
  */
 
+#include "common/Condition.h"
 #include "common/Result.h"
 #include "common/Value.h"
-#include "condition/Condition.h"
 
 namespace eve::rpg {
 

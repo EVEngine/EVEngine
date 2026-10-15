@@ -6,9 +6,9 @@
  * @brief Authoritative, rule-visible world facts implementing EvaluationContext.
  */
 
+#include "common/Condition.h"
 #include "common/Result.h"
 #include "common/Value.h"
-#include "condition/Condition.h"
 
 #include <cstdint>
 #include <optional>

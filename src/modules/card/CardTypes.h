@@ -9,9 +9,9 @@
 
 #include "attributes/AttributeProjection.h"
 #include "card/CardEffects.h"
+#include "common/Condition.h"
 #include "common/ECS.h"
 #include "common/definitions/DefinitionRuntime.h"
-#include "condition/Condition.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>

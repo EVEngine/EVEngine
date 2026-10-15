@@ -429,7 +429,7 @@ TEST_CASE("card.state.restoreRejectsMalformed") {
 #include "PrivateTestScope.h"
 #include "card/Card.h"
 #include "card/CardPlay.h"
-#include "condition/ConditionKeys.h"
+#include "common/ConditionKeys.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // card_play_condition.cpp

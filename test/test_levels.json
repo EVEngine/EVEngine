@@ -5815,7 +5815,12 @@
           "Capability.ownedRejectsNullProvider",
           "Capability.ownedRepublishAfterUnloadAdvancesGeneration",
           "Capability.providerRefBindsCallerOwnedProvider",
-          "Capability.providerRefIsBindOnceAndMoveOnly"
+          "Capability.providerRefIsBindOnceAndMoveOnly",
+          "decision.condition.supportsAllLeafNodes",
+          "decision.condition.compoundsExplainFailureWithoutMutation",
+          "decision.condition.scriptDeclarationIsExplicit",
+          "decision.conditionUnavailableIsDifferentFromFalse",
+          "decision.condition.legacyCodecExpandsDomainLeaves"
         ],
         "test-framework": [
           "common.zeroerr.preservesExpressionAndSource",
@@ -5859,23 +5864,7 @@
         "time_contract.cpp",
         "versioned_registry.cpp",
         "xml.cpp",
-        "capability_owned.cpp"
-      ]
-    },
-    "unit/condition/condition_tests.cpp": {
-      "role": "tests",
-      "default": "local-logic",
-      "cases": {
-        "local-logic": [
-          "decision.condition.supportsAllLeafNodes",
-          "decision.condition.compoundsExplainFailureWithoutMutation",
-          "decision.condition.scriptDeclarationIsExplicit",
-          "decision.conditionUnavailableIsDifferentFromFalse",
-          "decision.condition.legacyCodecExpandsDomainLeaves"
-        ]
-      },
-      "module": "condition",
-      "origins": [
+        "capability_owned.cpp",
         "condition.cpp"
       ]
     },

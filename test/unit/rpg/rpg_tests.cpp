@@ -3934,7 +3934,7 @@ TEST_CASE("rpg.state.restoreRejectsMalformed") {
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_skill_condition)
 #include <optional>
 #include "PrivateTestScope.h"
-#include "condition/ConditionKeys.h"
+#include "common/ConditionKeys.h"
 #include "rpg/RPGActor.h"
 #include "rpg/Skill.h"
 #include "rpg/SkillCondition.h"

@@ -146,7 +146,6 @@ set(EVE_TEST_MODULE_DOMAIN
     "attributes;rpg"
     "definitions;rpg"
     "authority;rpg"
-    "condition;rpg"
     "emergence;rpg"
     "production;rpg"
     "orders;rpg"

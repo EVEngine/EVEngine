@@ -5,12 +5,12 @@
 #include <string>
 #include <vector>
 #include "common/Capability.h"
+#include "common/Condition.h"
+#include "common/ConditionKeys.h"
 #include "common/Diagnostic.h"
 #include "common/IEconomy.h"
 #include "common/IEmergenceActionHandler.h"
 #include "common/Value.h"
-#include "condition/Condition.h"
-#include "condition/ConditionKeys.h"
 #include "emergence/RuleEngine.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

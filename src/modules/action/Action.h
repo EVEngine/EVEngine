@@ -16,6 +16,7 @@
  */
 
 #include "action/ActionTimeline.h"
+#include "common/Condition.h"
 #include "common/ECS.h"
 #include "common/Identity.h"
 #include "common/ResourceAccount.h"
@@ -23,7 +24,6 @@
 #include "common/StrongUint64.h"
 #include "common/Time.h"
 #include "common/Value.h"
-#include "condition/Condition.h"
 #include "sensing/Targeting.h"
 #include "transaction/Transaction.h"
 

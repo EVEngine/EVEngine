@@ -5,7 +5,7 @@
 模块 handle pool，脚本代理不保留临时裸指针。本 API 不自动读取输入、模拟时间或玩家坐标，
 由游戏提供事实。
 
-共享条件树已迁至独立的 [`condition`](condition.md) 模块（`eve::condition::Condition`）。
+共享条件树见 [条件树](condition.md)（`eve::condition::Condition`，位于 `common`，非独立模块）。
 
 ## 任务一：巡逻状态机
 

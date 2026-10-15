@@ -6,10 +6,10 @@
 #include <string>
 #include <unordered_map>
 #include <utility>
+#include "common/ConditionCodec.h"
+#include "common/ConditionKeys.h"
 #include "common/Json.h"
 #include "common/Value.h"
-#include "condition/ConditionCodec.h"
-#include "condition/ConditionKeys.h"
 #include "rpg/AttributeSystem.h"
 #include "rpg/RPGActor.h"
 #include "rpg/SkillAction.h"

@@ -6,8 +6,8 @@
  * @brief Derive inverted-index watch keys from a condition::Condition AST.
  */
 
+#include "common/Condition.h"
 #include "common/Result.h"
-#include "condition/Condition.h"
 
 #include <string>
 #include <vector>

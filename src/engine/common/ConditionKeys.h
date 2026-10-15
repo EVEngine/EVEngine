@@ -9,7 +9,7 @@
  * over Compare keys and PolicyCall names, not ConditionKind variants.
  */
 
-#include "condition/Condition.h"
+#include "common/Condition.h"
 
 #include <optional>
 #include <string>

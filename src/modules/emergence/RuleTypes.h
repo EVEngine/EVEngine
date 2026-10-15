@@ -6,8 +6,8 @@
  * @brief Immutable emergence rule definitions and deferred activations.
  */
 
+#include "common/Condition.h"
 #include "common/Value.h"
-#include "condition/Condition.h"
 
 #include <cstdint>
 #include <string>

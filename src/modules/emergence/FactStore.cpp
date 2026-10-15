@@ -1,7 +1,7 @@
 #include "emergence/FactStore.h"
 
+#include "common/ConditionKeys.h"
 #include "common/Diagnostic.h"
-#include "condition/ConditionKeys.h"
 
 #include <set>
 #include <utility>

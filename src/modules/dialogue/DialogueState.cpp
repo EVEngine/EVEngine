@@ -1,7 +1,7 @@
 #include "dialogue/DialogueState.h"
 
 #include "common/Capability.h"
-#include "condition/ConditionKeys.h"
+#include "common/ConditionKeys.h"
 
 #include <algorithm>
 #include <string>

@@ -14,8 +14,8 @@
 //  - 消耗使用 common/resource 的 CostSpec，可以是内建的 "mana"，也可以是
 //    任何自定义资源；RPG 不再维护一份私有 Cost 类型。
 
+#include "common/Condition.h"
 #include "common/ResourceAccount.h"
-#include "condition/Condition.h"
 #include "definitions/Definitions.h"
 
 #include <optional>

@@ -3310,8 +3310,8 @@ TEST_CASE("gameSave.rpgAndTacticsRestoreTogether") {
 #include <utility>
 #include "PrivateTestScope.h"
 #include "action/Action.h"
+#include "common/ConditionKeys.h"
 #include "common/Identity.h"
-#include "condition/ConditionKeys.h"
 #include "rpg/SkillAction.h"
 #include "weapon/WeaponAction.h"
 #include "zeroerr/assert.h"

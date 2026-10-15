@@ -10,9 +10,9 @@
  * `authority_check`) and expands them into Compare / PolicyCall conventions.
  */
 
+#include "common/Condition.h"
 #include "common/Result.h"
 #include "common/Value.h"
-#include "condition/Condition.h"
 
 namespace eve::condition {
 

@@ -1,7 +1,7 @@
-#include "condition/ConditionCodec.h"
+#include "common/ConditionCodec.h"
 
+#include "common/ConditionKeys.h"
 #include "common/Diagnostic.h"
-#include "condition/ConditionKeys.h"
 
 #include <set>
 #include <string>

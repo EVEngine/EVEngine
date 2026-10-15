@@ -7,7 +7,7 @@
  * @brief RPG Skill adapter for the renderer-independent decision protocol.
  */
 
-#include "condition/Condition.h"
+#include "common/Condition.h"
 
 #include <functional>
 #include <optional>

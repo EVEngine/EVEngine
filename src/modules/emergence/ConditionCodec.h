@@ -6,9 +6,9 @@
  * @brief Value/JSON codec for condition::Condition trees owned by emergence rules.
  */
 
+#include "common/Condition.h"
 #include "common/Result.h"
 #include "common/Value.h"
-#include "condition/Condition.h"
 
 namespace eve::emergence {
 

@@ -76,7 +76,6 @@ CORE_SEEDS = {
         "timer",
         "network",
         "authority",
-        "condition",
         "definitions",
         "effects",
         "game_event",
