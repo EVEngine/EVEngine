@@ -27,8 +27,8 @@ struct ArchSpaceTilePalette {
  * Builds GridProjection via bakeGridProjection, then writes GIDs and navigation
  * metadata. Orientation is applied through TileLayer::applyConfig.
  *
- * @ownership Optionally owns a TileLayer created on first sync; borrowed layers
- *            set via setLayer are never deleted.
+ * @ownership Optionally owns a TileLayer created on first sync (released via
+ *            Entity::release); borrowed layers set via setLayer are never released.
  * @thread Owner thread only.
  */
 class EVENGINE_API_DOMAINS TileMapProjector final : public archspace::IArchSpaceProjector {

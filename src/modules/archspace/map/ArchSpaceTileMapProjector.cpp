@@ -44,7 +44,10 @@ eve::Result<void> TileMapProjector::setOrientation(std::string orientation) {
 void TileMapProjector::setPalette(ArchSpaceTilePalette palette) { palette_ = palette; }
 
 void TileMapProjector::setLayer(map::TileLayer* layer) {
-    if (ownsLayer_ && layer_ && layer_ != layer) delete layer_;
+    if (ownsLayer_ && layer_ && layer_ != layer) {
+        layer_->release();
+        layer_ = nullptr;
+    }
     layer_     = layer;
     ownsLayer_ = false;
 }
@@ -115,9 +118,11 @@ eve::Result<void> TileMapProjector::sync(const archspace::Document& document, st
 
 void TileMapProjector::clear() {
     if (ownsLayer_ && layer_) {
-        delete layer_;
+        layer_->release();
         layer_     = nullptr;
         ownsLayer_ = false;
+    } else {
+        layer_ = nullptr;
     }
     grid_     = {};
     revision_ = 0;
