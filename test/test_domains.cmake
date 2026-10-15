@@ -241,6 +241,7 @@ set(EVE_TEST_PREFIX_DOMAIN
     "module_lazy_bind;core"
     "module_manager_registry;core"
     "profiler_script;core"
+    "protobuf_snapshot;core"
     "resource;core"
     "result;core"
     "runtime_handle;core"

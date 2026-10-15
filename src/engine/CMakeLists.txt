@@ -1,13 +1,16 @@
 create_module(EVCommon common)
 target_sources(EVCommon PRIVATE
     ${CMAKE_SOURCE_DIR}/proto/generated/dynamic_value.pb.cc
-    ${CMAKE_SOURCE_DIR}/proto/generated/game_save_session.pb.cc)
+    ${CMAKE_SOURCE_DIR}/proto/generated/game_save_session.pb.cc
+    ${CMAKE_SOURCE_DIR}/proto/generated/snapshot_envelope.pb.cc)
 target_include_directories(EVCommon SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
 target_link_libraries(EVCommon PUBLIC protobuf::libprotobuf)
 if(MSVC)
     set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/dynamic_value.pb.cc
       PROPERTIES COMPILE_OPTIONS /wd4267)
     set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/game_save_session.pb.cc
+        PROPERTIES COMPILE_OPTIONS /wd4267)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/snapshot_envelope.pb.cc
         PROPERTIES COMPILE_OPTIONS /wd4267)
 endif()
 

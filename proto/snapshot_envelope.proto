@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package eve.persistence.proto;
+
+// Stable outer binary envelope shared by typed domain payloads. Digest input
+// is the deterministic serialization of this message with digest absent.
+message BinarySnapshotEnvelope {
+  optional string type = 1;
+  optional string schema = 2;
+  optional uint32 version = 3;
+  optional string instance_id = 4;
+  optional uint64 revision = 5;
+  optional uint64 tick = 6;
+  optional bytes payload_wire = 7;
+  optional bytes digest = 8;
+}

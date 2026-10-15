@@ -67,7 +67,7 @@ public:
 
     /**
      * @brief Digest one canonical snapshot input.
-     * @param canonicalInput Canonical JSON assembled by `common/Snapshot.*`.
+     * @param canonicalInput Canonical legacy JSON or deterministic typed Protobuf envelope bytes.
      * @return A 128-bit content id, or a structured failure.
      */
     [[nodiscard]] virtual Result<ContentId> hash(std::string_view canonicalInput) const = 0;

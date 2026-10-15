@@ -16,7 +16,7 @@
       "tests": [
         "test/transaction.cpp"
       ],
-      "schema": "transaction:ledger version 2 stores fixed ledger fields in TransactionLedgerSave and dynamic operation payloads in shared eve.persistence.proto.DynamicValue with distinct Int64 and Double variants.",
+      "schema": "transaction:ledger version 2 stores fixed ledger fields in TransactionLedgerSave and dynamic operation payloads in shared eve.persistence.proto.DynamicValue with distinct Int64 and Double variants; binary envelopes use shared eve.persistence.proto.BinarySnapshotEnvelope.",
       "version": "Binary and JSON writers emit version 2; legacy version 1 JSON remains readable through the existing restore API.",
       "migration": "Legacy version 1 JSON and common Value envelopes are read into a detached ledger image; new writes use typed version 2 Protobuf binary, JSON and envelopes.",
       "unknown_fields": "Binary restore rejects unknown Protobuf fields recursively; Protobuf JSON rejects unknown names, including nested operation payload messages.",

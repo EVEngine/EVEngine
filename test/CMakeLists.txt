@@ -738,6 +738,27 @@ if(TARGET EVCommon AND TARGET EVFoundation)
     LABEL "dynamic_value_protobuf_test" NAME_PREFIX "dynamic-value-protobuf/")
 endif()
 
+if(TARGET EVCommon AND TARGET EVFoundation)
+  add_executable(protobuf_snapshot_test EXCLUDE_FROM_ALL
+    main.cpp protobuf_snapshot.cpp)
+  target_link_libraries(protobuf_snapshot_test PRIVATE
+    eve_engine_includes EVFoundation zeroerr protobuf::libprotobuf)
+  target_include_directories(protobuf_snapshot_test SYSTEM PRIVATE
+    ${CMAKE_SOURCE_DIR}/proto/generated)
+  target_compile_options(protobuf_snapshot_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(protobuf_snapshot_test PRIVATE EVBacktrace)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/protobuf_snapshot_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/protobuf_snapshot_test_zeroerr_tests.cmake"
+      "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(protobuf_snapshot_test
+    LABEL "protobuf_snapshot_test" NAME_PREFIX "protobuf-snapshot/")
+endif()
+
 if(TARGET EVStatepatch AND TARGET EVFoundation)
   add_executable(statepatch_protobuf_test EXCLUDE_FROM_ALL
     main.cpp statepatch.cpp statepatch_protobuf.cpp)

@@ -28,7 +28,8 @@ namespace eve {
 
 /**
  * @brief Injected content-digest implementation used by snapshots.
- * @param canonicalInput Canonical JSON containing stable header fields and payload.
+ * @param canonicalInput Canonical envelope bytes: JSON for legacy Value envelopes, deterministic Protobuf for typed
+ * binary envelopes.
  * @return A ContentId, or a structured failure when the provider is unavailable.
  * @remarks No default hash or security claim is made.  Providers must document
  *          their digest algorithm and collision/security properties.

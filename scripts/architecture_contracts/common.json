@@ -52,6 +52,60 @@
         "Encoding and decoding cost linear time in recursively owned value size per persistence operation."
       ],
       "hot_path": []
+    },
+    {
+      "id": "common-typed-protobuf-envelope",
+      "rule": "persistence",
+      "scope": "src/engine/common/ProtobufSnapshot.*",
+      "owner": "eve::proto_support",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "Typed domain payloads share one deterministic binary envelope and digest contract instead of defining a second header in every domain.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "proto/snapshot_envelope.proto",
+        "src/engine/common/ProtobufSnapshot.cpp"
+      ],
+      "tests": [
+        "test/protobuf_snapshot.cpp",
+        "test/transaction.cpp"
+      ],
+      "schema": "eve.persistence.proto.BinarySnapshotEnvelope owns typed header fields, opaque domain payload wire bytes and a digest.",
+      "version": "The envelope carries the owning domain schema id and version; no independent envelope version is introduced.",
+      "migration": "The shared binary wire field numbers match the former transaction-specific envelope; legacy Value envelopes remain readable through domain compatibility readers.",
+      "unknown_fields": "The parser rejects unknown envelope fields and requires every stable header, nonempty payload bytes and a fixed-size digest.",
+      "restore_atomicity": "The parser verifies the complete digest before returning owned payload bytes; domain restore validates in a detached candidate before publication."
+    },
+    {
+      "id": "common-typed-protobuf-envelope-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/common/ProtobufSnapshot.*",
+      "owner": "eve::proto_support",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "Foundation persistence modules can seal and verify typed Protobuf payload bytes with one binary interface.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/ProtobufSnapshot.h",
+        "src/engine/common/ProtobufSnapshot.cpp",
+        "proto/snapshot_envelope.proto"
+      ],
+      "tests": [
+        "test/protobuf_snapshot.cpp",
+        "test/transaction.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "No L1-L4 trim claim is made for the common envelope."
+      },
+      "thread_affinity": "The caller owns the payload; the injected hash provider controls callback behavior and must be safe for the caller thread.",
+      "cost_notes": [
+        "Seal and verify cost linear time in payload bytes and two deterministic envelope serializations per operation."
+      ],
+      "hot_path": []
     }
   ]
 }
