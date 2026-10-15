@@ -13,7 +13,10 @@ namespace eve::animation {
 /** @brief Deterministic built-in curve used by cross-fade pose interpolation. */
 enum class AnimBlendCurve : std::uint8_t {
     Linear,
+    EaseIn,
+    EaseOut,
     EaseInOut,
+    SmoothStep,
 };
 
 class AnimClip;

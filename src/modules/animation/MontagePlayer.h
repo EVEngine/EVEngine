@@ -20,6 +20,7 @@ class AnimClip;
 class AnimPlayer;
 class AnimPose;
 class AnimSkeleton;
+class PreparedMontage;
 
 /** @brief Owning clip supplied while transactionally preparing a montage. */
 struct MontageClipAsset {
@@ -144,6 +145,14 @@ public:
      */
     [[nodiscard]] Result<MontageAdvance> present(const action::ActionAdvance& advance, SimulationTick tick);
     /**
+     * @brief Present an authoritative advance while transferring its owning timeline projections.
+     * @param advance Consumed owning observation; timelineEvents and activeBlocks are moved into the result.
+     * @param tick Strictly increasing simulation tick associated with the observation.
+     * @return Owning presentation result, without copying the transferred event and active-block vectors.
+     * @remarks Owner-thread-only. The moved-from advance remains valid with unspecified projection contents.
+     */
+    [[nodiscard]] Result<MontageAdvance> present(action::ActionAdvance&& advance, SimulationTick tick);
+    /**
      * @brief Atomically realign presentation and active state blocks to an externally authoritative timestamp.
      * @remarks This does not advance ActionRuntime; the caller must align its gameplay authority separately.
      */
@@ -203,19 +212,27 @@ public:
     [[nodiscard]] bool footIkEnabled() const noexcept { return timeline_ && timeline_->montage.footIk; }
 
 private:
-    /** @brief Resolve an owned clip. @return Borrowed clip or null. @lifetime Until presentation replacement. */
-    [[nodiscard]] AnimClip* clipFor(std::string_view uri) const noexcept;
+    /** @brief Resolve a prepared section index in logarithmic time. */
+    [[nodiscard]] std::optional<std::size_t> sectionIndexAt(Duration time) const noexcept;
+    /** @brief Resolve the first authored section boundary after a gap. */
+    [[nodiscard]] std::optional<Duration> nextSectionStartAfter(Duration time) const noexcept;
     /** @brief Resolve a section. @return Borrowed section or null. @lifetime Until prepare or destruction. */
     [[nodiscard]] const action::ActionAnimationSection* sectionAt(Duration time) const noexcept;
+    /** @brief Evaluate the active section envelope; contiguous neighbors preserve full slot weight. */
+    [[nodiscard]] double sectionEnvelopeAt(Duration time) const noexcept;
     void activate(const action::ActionAnimationSection& section, Duration localTime);
     void accumulateRootMotion(TransformTRS& total) const;
     [[nodiscard]] std::vector<action::ActionTimelineEvent> realignStateEvents(Duration target) const;
     [[nodiscard]] Result<std::vector<MontageActiveBlock>>  activeBlocksAt(Duration target) const;
+    [[nodiscard]] Result<MontageAdvance>
+    presentImpl(const action::ActionAdvance& advance, std::vector<action::ActionTimelineEvent> events,
+                std::vector<MontageActiveBlock> activeBlocks, SimulationTick tick);
 
     AnimSkeleton&                         skeleton_;
     std::unique_ptr<AnimPlayer>           player_;
     std::optional<action::ActionTimeline> timeline_;
     std::vector<MontageClipAsset>         clips_;
+    std::unique_ptr<PreparedMontage>       prepared_;
     const action::ActionAnimationSection* activeSection_ = nullptr;
     IMontageRootMotionReceiver*           receiver_      = nullptr;
     MontageRootMotionMask                 rootMotionMask_;

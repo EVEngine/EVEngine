@@ -83,9 +83,11 @@ Value encodeAnimationSection(const ActionAnimationSection& section) {
     object["startNs"]       = section.start.nanoseconds();
     object["endNs"]         = section.end.nanoseconds();
     object["blendInNs"]     = section.blendIn.nanoseconds();
+    object["blendOutNs"]    = section.blendOut.nanoseconds();
     object["sourceStartNs"] = section.sourceStart.nanoseconds();
     object["sourceEndNs"]   = section.sourceEnd.nanoseconds();
-    object["blendCurve"]    = std::string(actionBlendCurveName(section.blendCurve));
+    object["blendInCurve"]  = std::string(actionBlendCurveName(section.blendInCurve));
+    object["blendOutCurve"] = std::string(actionBlendCurveName(section.blendOutCurve));
     return Value(std::move(object));
 }
 
@@ -110,13 +112,34 @@ Result<ActionAnimationSection> decodeAnimationSection(const Value& value, const 
         if (!sourceStart) return Result<ActionAnimationSection>::failure(sourceStart.status());
         auto sourceEnd = intField(value, "sourceEndNs", path + ".sourceEndNs");
         if (!sourceEnd) return Result<ActionAnimationSection>::failure(sourceEnd.status());
-        auto blendCurve = stringField(value, "blendCurve", path + ".blendCurve");
-        if (!blendCurve) return Result<ActionAnimationSection>::failure(blendCurve.status());
-        auto parsedCurve = actionBlendCurveFromName(blendCurve.value());
-        if (!parsedCurve) return invalid<ActionAnimationSection>("unknown animation blend curve", path + ".blendCurve");
         section.sourceStart = Duration::fromNanoseconds(sourceStart.value());
         section.sourceEnd   = Duration::fromNanoseconds(sourceEnd.value());
-        section.blendCurve  = *parsedCurve;
+        if (schemaVersion < 5) {
+            auto blendCurve = stringField(value, "blendCurve", path + ".blendCurve");
+            if (!blendCurve) return Result<ActionAnimationSection>::failure(blendCurve.status());
+            auto parsedCurve = actionBlendCurveFromName(blendCurve.value());
+            if (!parsedCurve)
+                return invalid<ActionAnimationSection>("unknown animation blend curve", path + ".blendCurve");
+            section.blendInCurve  = *parsedCurve;
+            section.blendOut      = Duration::zero();
+            section.blendOutCurve = ActionBlendCurve::EaseInOut;
+        } else {
+            auto blendOut = intField(value, "blendOutNs", path + ".blendOutNs");
+            auto blendInCurve = stringField(value, "blendInCurve", path + ".blendInCurve");
+            auto blendOutCurve = stringField(value, "blendOutCurve", path + ".blendOutCurve");
+            if (!blendOut) return Result<ActionAnimationSection>::failure(blendOut.status());
+            if (!blendInCurve) return Result<ActionAnimationSection>::failure(blendInCurve.status());
+            if (!blendOutCurve) return Result<ActionAnimationSection>::failure(blendOutCurve.status());
+            auto parsedIn = actionBlendCurveFromName(blendInCurve.value());
+            auto parsedOut = actionBlendCurveFromName(blendOutCurve.value());
+            if (!parsedIn)
+                return invalid<ActionAnimationSection>("unknown animation blend-in curve", path + ".blendInCurve");
+            if (!parsedOut)
+                return invalid<ActionAnimationSection>("unknown animation blend-out curve", path + ".blendOutCurve");
+            section.blendOut      = Duration::fromNanoseconds(blendOut.value());
+            section.blendInCurve  = *parsedIn;
+            section.blendOutCurve = *parsedOut;
+        }
     }
     return Result<ActionAnimationSection>::success(std::move(section));
 }
@@ -174,15 +197,33 @@ bool inWindow(Duration value, Duration previous, Duration current, bool includeP
 std::string_view actionBlendCurveName(ActionBlendCurve curve) noexcept {
     switch (curve) {
         case ActionBlendCurve::Linear: return "linear";
+        case ActionBlendCurve::EaseIn: return "ease-in";
+        case ActionBlendCurve::EaseOut: return "ease-out";
         case ActionBlendCurve::EaseInOut: return "ease-in-out";
+        case ActionBlendCurve::SmoothStep: return "smooth-step";
     }
     return "ease-in-out";
 }
 
 std::optional<ActionBlendCurve> actionBlendCurveFromName(std::string_view name) noexcept {
     if (name == "linear") return ActionBlendCurve::Linear;
+    if (name == "ease-in") return ActionBlendCurve::EaseIn;
+    if (name == "ease-out") return ActionBlendCurve::EaseOut;
     if (name == "ease-in-out") return ActionBlendCurve::EaseInOut;
+    if (name == "smooth-step") return ActionBlendCurve::SmoothStep;
     return std::nullopt;
+}
+
+double evaluateActionBlendCurve(ActionBlendCurve curve, double normalized) noexcept {
+    const double t = std::clamp(normalized, 0.0, 1.0);
+    switch (curve) {
+        case ActionBlendCurve::Linear: return t;
+        case ActionBlendCurve::EaseIn: return t * t;
+        case ActionBlendCurve::EaseOut: return 1.0 - (1.0 - t) * (1.0 - t);
+        case ActionBlendCurve::EaseInOut: return t * t * (3.0 - 2.0 * t);
+        case ActionBlendCurve::SmoothStep: return t * t * (3.0 - 2.0 * t);
+    }
+    return t;
 }
 
 std::string_view actionTrackKindName(ActionTrackKind kind) noexcept {
@@ -233,9 +274,11 @@ Result<void> ActionTimeline::validate() const {
         if (section.animationUri.empty()) return invalid("animation section requires a URI", path + ".animationUri");
         if (section.start < Duration::zero() || section.end <= section.start || section.end > duration)
             return invalid("animation section range is invalid", path);
-        if (section.blendIn < Duration::zero() ||
-            section.blendIn.nanoseconds() > section.end.nanoseconds() - section.start.nanoseconds())
+        const auto sectionDuration = section.end.nanoseconds() - section.start.nanoseconds();
+        if (section.blendIn < Duration::zero() || section.blendIn.nanoseconds() > sectionDuration)
             return invalid("animation section blend-in is outside its range", path + ".blendInNs");
+        if (section.blendOut < Duration::zero() || section.blendOut.nanoseconds() > sectionDuration)
+            return invalid("animation section blend-out is outside its range", path + ".blendOutNs");
         if (section.sourceStart < Duration::zero() || section.sourceEnd < Duration::zero() ||
             (!section.sourceEnd.isZero() && section.sourceEnd <= section.sourceStart))
             return invalid("animation section source trim is invalid", path + ".sourceStartNs");
@@ -474,6 +517,10 @@ Result<ActionTimeline> ActionTimeline::fromValue(const Value& value) {
             candidate.montage.rootMotionHorizontal = rootHorizontal.value();
             candidate.montage.rootMotionVertical   = rootVertical.value();
             candidate.montage.rootMotionRotation   = rootRotation.value();
+            if (version.value() == 4) {
+                for (auto& section : candidate.animationSections)
+                    section.blendOut = candidate.montage.defaultBlendOut;
+            }
         }
     }
     const auto& tracks = *tracksValue->getIf<Value::Array>();

@@ -95,7 +95,7 @@ public:
 
 }  // namespace
 
-TEST_CASE("actionMontage.schemaV4RoundTripAndLegacyMigration") {
+TEST_CASE("actionMontage.schemaV5RoundTripAndLegacyMigration") {
     auto timeline                       = montageTimeline();
     timeline.montage.basePlayRate       = 1.25;
     timeline.montage.looping            = true;
@@ -108,6 +108,7 @@ TEST_CASE("actionMontage.schemaV4RoundTripAndLegacyMigration") {
     REQUIRE(decoded.ok());
     REQUIRE_EQ(decoded.value().animationSections.size(), 2U);
     CHECK_EQ(decoded.value().animationSections[1].blendIn, eve::Duration::fromSeconds(0.2).takeValue());
+    CHECK_EQ(decoded.value().animationSections[1].blendOut, eve::Duration::zero());
     CHECK_EQ(decoded.value().sectionCount(), 3U);
     CHECK_EQ(decoded.value().montage.basePlayRate, 1.25);
     CHECK(decoded.value().montage.looping);
@@ -132,6 +133,9 @@ TEST_CASE("actionMontage.schemaV4RoundTripAndLegacyMigration") {
         object->erase("sourceStartNs");
         object->erase("sourceEndNs");
         object->erase("blendCurve");
+        object->erase("blendOutNs");
+        object->erase("blendInCurve");
+        object->erase("blendOutCurve");
     }
     auto* tracks = (*versionTwoObject)["tracks"].getIf<eve::Value::Array>();
     REQUIRE(tracks != nullptr);
@@ -151,7 +155,7 @@ TEST_CASE("actionMontage.schemaV4RoundTripAndLegacyMigration") {
     auto migratedV2 = eve::action::ActionTimeline::fromValue(versionTwo);
     REQUIRE(migratedV2.ok());
     CHECK(migratedV2.value().splitTimestamps.empty());
-    CHECK_EQ(migratedV2.value().animationSections[0].blendCurve, eve::action::ActionBlendCurve::EaseInOut);
+    CHECK_EQ(migratedV2.value().animationSections[0].blendInCurve, eve::action::ActionBlendCurve::EaseInOut);
     CHECK(migratedV2.value().tracks[0].states[0].enabled);
 
     auto  legacy       = encoded.value();
@@ -164,6 +168,29 @@ TEST_CASE("actionMontage.schemaV4RoundTripAndLegacyMigration") {
     REQUIRE(migrated.ok());
     REQUIRE_EQ(migrated.value().animationSections.size(), 1U);
     CHECK_EQ(migrated.value().animationSections[0].animationUri, "memory://clips/legacy");
+
+    auto  versionFour       = encoded.value();
+    auto* versionFourObject = versionFour.getIf<eve::Value::Object>();
+    REQUIRE(versionFourObject != nullptr);
+    (*versionFourObject)["schemaVersion"] = static_cast<std::int64_t>(4);
+    auto* versionFourSections = (*versionFourObject)["animationSections"].getIf<eve::Value::Array>();
+    REQUIRE(versionFourSections != nullptr);
+    for (auto& section : *versionFourSections) {
+        auto* object = section.getIf<eve::Value::Object>();
+        REQUIRE(object != nullptr);
+        (*object)["blendCurve"] = (*object)["blendInCurve"];
+        object->erase("blendOutNs");
+        object->erase("blendInCurve");
+        object->erase("blendOutCurve");
+    }
+    auto migratedV4 = eve::action::ActionTimeline::fromValue(versionFour);
+    REQUIRE(migratedV4.ok());
+    CHECK_EQ(migratedV4.value().animationSections[0].blendOut,
+             migratedV4.value().montage.defaultBlendOut);
+    CHECK_EQ(migratedV4.value().animationSections[0].blendInCurve,
+             eve::action::ActionBlendCurve::EaseInOut);
+    CHECK_EQ(migratedV4.value().animationSections[0].blendOutCurve,
+             eve::action::ActionBlendCurve::EaseInOut);
 }
 
 TEST_CASE("actionMontage.settingsUpdateIsValidatedAndPreservesPreparedPlayback") {
@@ -216,7 +243,7 @@ TEST_CASE("actionMontage.clipTrimAndBlendCurveUseAuthoredSectionDuration") {
     auto timeline                             = montageTimeline();
     timeline.animationSections[0].sourceStart = eve::Duration::fromSeconds(0.25).takeValue();
     timeline.animationSections[0].sourceEnd   = eve::Duration::fromSeconds(0.75).takeValue();
-    timeline.animationSections[0].blendCurve  = eve::action::ActionBlendCurve::Linear;
+    timeline.animationSections[0].blendInCurve = eve::action::ActionBlendCurve::Linear;
     eve::animation::MontagePlayer                 player(skeleton);
     std::vector<eve::animation::MontageClipAsset> clips;
     clips.push_back({"memory://clips/anticipation", rootClip("anticipation", 1.0f)});
@@ -230,6 +257,48 @@ TEST_CASE("actionMontage.clipTrimAndBlendCurveUseAuthoredSectionDuration") {
     auto presented       = player.present(advance, eve::SimulationTick(1));
     REQUIRE(presented.ok());
     CHECK(std::fabs(player.pose().local(0).px - 0.5f) < 1e-4f);
+}
+
+TEST_CASE("actionMontage.sectionEnvelopesFadeAcrossGapsWithoutDippingAtContiguousBoundaries") {
+    eve::animation::AnimSkeleton skeleton;
+    skeleton.addBone("root");
+    auto timeline = montageTimeline();
+    timeline.animationSections[0].blendOut = eve::Duration::fromSeconds(0.4).takeValue();
+    timeline.animationSections[0].blendOutCurve = eve::action::ActionBlendCurve::Linear;
+    timeline.animationSections[1].blendIn = eve::Duration::fromSeconds(0.4).takeValue();
+    timeline.animationSections[1].blendInCurve = eve::action::ActionBlendCurve::Linear;
+
+    eve::animation::MontagePlayer contiguous(skeleton);
+    REQUIRE(contiguous.prepare(timeline, montageClips()).ok());
+    REQUIRE(contiguous.play(eve::action::ActionExecutionId(90)).ok());
+    eve::action::ActionAdvance advance;
+    advance.id = eve::action::ActionExecutionId(90);
+    advance.phase = eve::action::ActionPhase::Active;
+    advance.totalElapsed = eve::Duration::fromSeconds(0.9).takeValue();
+    auto atBoundary = contiguous.present(advance, eve::SimulationTick(1));
+    REQUIRE(atBoundary.ok());
+    CHECK(std::fabs(atBoundary.value().weight - 1.0) < 1e-6);
+
+    timeline.animationSections[1].start = eve::Duration::fromSeconds(1.2).takeValue();
+    eve::animation::MontagePlayer gapped(skeleton);
+    REQUIRE(gapped.prepare(timeline, montageClips()).ok());
+    REQUIRE(gapped.play(eve::action::ActionExecutionId(91)).ok());
+    advance.id = eve::action::ActionExecutionId(91);
+    advance.totalElapsed = eve::Duration::fromSeconds(0.8).takeValue();
+    auto beforeGap = gapped.present(advance, eve::SimulationTick(1));
+    REQUIRE(beforeGap.ok());
+    CHECK(std::fabs(beforeGap.value().weight - 0.5) < 1e-6);
+}
+
+TEST_CASE("actionMontage.blendCurvesAreStableAndClamped") {
+    using eve::action::ActionBlendCurve;
+    using eve::action::evaluateActionBlendCurve;
+    CHECK_EQ(evaluateActionBlendCurve(ActionBlendCurve::Linear, -1.0), 0.0);
+    CHECK_EQ(evaluateActionBlendCurve(ActionBlendCurve::Linear, 2.0), 1.0);
+    CHECK(std::fabs(evaluateActionBlendCurve(ActionBlendCurve::EaseIn, 0.5) - 0.25) < 1e-9);
+    CHECK(std::fabs(evaluateActionBlendCurve(ActionBlendCurve::EaseOut, 0.5) - 0.75) < 1e-9);
+    CHECK(std::fabs(evaluateActionBlendCurve(ActionBlendCurve::EaseInOut, 0.5) - 0.5) < 1e-9);
+    CHECK(std::fabs(evaluateActionBlendCurve(ActionBlendCurve::SmoothStep, 0.5) - 0.5) < 1e-9);
 }
 
 TEST_CASE("actionMontage.lowFrameRateSweepCrossesEveryBoundaryAndSection") {

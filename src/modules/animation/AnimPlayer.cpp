@@ -214,7 +214,13 @@ void AnimPlayer::updateUnchecked(float dt) {
             // Advance previous clip time during fade for continuity.
             prevTime_ += dt * speed_;
             prevClip_->sample(prevTime_, &prevPose_, skeleton_);
-            if (blendCurve_ == AnimBlendCurve::EaseInOut) t = t * t * (3.0f - 2.0f * t);
+            switch (blendCurve_) {
+                case AnimBlendCurve::Linear: break;
+                case AnimBlendCurve::EaseIn: t *= t; break;
+                case AnimBlendCurve::EaseOut: t = 1.0f - (1.0f - t) * (1.0f - t); break;
+                case AnimBlendCurve::EaseInOut: t = t * t * (3.0f - 2.0f * t); break;
+                case AnimBlendCurve::SmoothStep: t = t * t * (3.0f - 2.0f * t); break;
+            }
             pose_.blendFrom(&prevPose_, &sampledPose_, t);
         }
     } else {

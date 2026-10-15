@@ -22,12 +22,15 @@ namespace eve::action {
 /** @brief Canonical schema identifier for persisted action timelines. */
 inline constexpr std::string_view kActionTimelineSchemaId = "eve.action.timeline";
 /** @brief Current action timeline schema version. */
-inline constexpr std::uint64_t kActionTimelineSchemaVersion = 4;
+inline constexpr std::uint64_t kActionTimelineSchemaVersion = 5;
 
 /** @brief Built-in deterministic cross-fade curve evaluated without asset callbacks. */
 enum class ActionBlendCurve : std::uint8_t {
     Linear,
+    EaseIn,
+    EaseOut,
     EaseInOut,
+    SmoothStep,
 };
 
 /** @brief Montage-wide presentation settings persisted with the action timeline. */
@@ -58,12 +61,16 @@ struct ActionAnimationSection {
     Duration    start   = Duration::zero();
     Duration    end     = Duration::zero();
     Duration    blendIn = Duration::zero();
+    /** @brief Duration of the outgoing envelope before a following gap. */
+    Duration blendOut = Duration::zero();
     /** @brief Clip-local trim-in timestamp. */
     Duration sourceStart = Duration::zero();
     /** @brief Clip-local trim-out timestamp; zero means the physical clip end. */
     Duration sourceEnd = Duration::zero();
     /** @brief Curve used for the incoming cross-fade. */
-    ActionBlendCurve blendCurve = ActionBlendCurve::EaseInOut;
+    ActionBlendCurve blendInCurve = ActionBlendCurve::EaseInOut;
+    /** @brief Curve used for the outgoing envelope before a following gap. */
+    ActionBlendCurve blendOutCurve = ActionBlendCurve::EaseInOut;
 
     auto operator<=>(const ActionAnimationSection&) const = default;
 };
@@ -72,6 +79,13 @@ struct ActionAnimationSection {
 [[nodiscard]] std::string_view actionBlendCurveName(ActionBlendCurve curve) noexcept;
 /** @brief Parse a persisted montage cross-fade curve name. */
 [[nodiscard]] std::optional<ActionBlendCurve> actionBlendCurveFromName(std::string_view name) noexcept;
+/**
+ * @brief Evaluate a deterministic built-in blend curve for a normalized input.
+ * @param curve Curve algorithm selected by persisted enum value.
+ * @param normalized Input clamped to the inclusive range [0,1].
+ * @return Deterministic normalized curve output in [0,1].
+ */
+[[nodiscard]] double evaluateActionBlendCurve(ActionBlendCurve curve, double normalized) noexcept;
 
 /** @brief Semantic lane kind; hosts choose presentation without changing data. */
 enum class ActionTrackKind : std::uint8_t {

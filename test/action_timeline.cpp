@@ -5,6 +5,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <cmath>
 #include <string_view>
 
 namespace {
@@ -128,6 +129,86 @@ TEST_CASE("gameplayAction.advanceProjectsAuthoredTimelineBoundaries") {
     REQUIRE_EQ(crossed.value().activeBlocks.size(), 1u);
     CHECK_EQ(crossed.value().activeBlocks[0].itemId, id("combat-state:buffer"));
     CHECK_EQ(crossed.value().activeBlocks[0].localTime, eve::Duration::fromNanoseconds(10));
+}
+
+TEST_CASE("gameplayAction.sectionTimingOverrideKeepsLifecycleEventsAndPresentationOnOneCursor") {
+    auto timeline = timelineFixture();
+    timeline.splitTimestamps.push_back(eve::Duration::fromNanoseconds(50));
+
+    eve::action::ActionDefinition definition;
+    definition.id             = timeline.actionId;
+    definition.timing.windup  = eve::Duration::fromNanoseconds(50);
+    definition.timing.active  = eve::Duration::fromNanoseconds(25);
+    definition.timing.recover = eve::Duration::fromNanoseconds(25);
+    definition.timeline       = timeline;
+
+    eve::action::ActionRequest request;
+    request.actionId = definition.id;
+    eve::action::ActionRuntime runtime;
+    auto submitted = runtime.submit(definition, request);
+    REQUIRE(submitted.ok());
+    const auto execution = submitted.value();
+
+    auto overridden = runtime.setSectionTimingOverride(execution, 0, eve::Duration::fromNanoseconds(100));
+    REQUIRE(overridden.ok());
+    CHECK_EQ(static_cast<int>(overridden.status().code()), static_cast<int>(eve::StatusCode::Applied));
+    REQUIRE(runtime.find(execution) != nullptr);
+    REQUIRE(runtime.find(execution)->sectionTimingOverride(0).has_value());
+
+    auto firstHalf = runtime.advance(execution, eve::SimulationTick{1}, eve::Duration::fromNanoseconds(50));
+    REQUIRE(firstHalf.ok());
+    CHECK_EQ(firstHalf.value().totalElapsed, eve::Duration::fromNanoseconds(25));
+    CHECK_EQ(firstHalf.value().inputConsumed, eve::Duration::fromNanoseconds(50));
+    CHECK_EQ(firstHalf.value().phase, eve::action::ActionPhase::Windup);
+    REQUIRE_EQ(firstHalf.value().timelineEvents.size(), 3U);
+    CHECK_EQ(firstHalf.value().timelineEvents[2].itemId, id("combat-notify:hit"));
+    auto progress = runtime.sectionProgress(execution, 0);
+    REQUIRE(progress.ok());
+    CHECK(std::abs(progress.value() - 0.5) < 0.000001);
+
+    auto crossesSection = runtime.advance(execution, eve::SimulationTick{2}, eve::Duration::fromNanoseconds(75));
+    REQUIRE(crossesSection.ok());
+    CHECK_EQ(crossesSection.value().totalElapsed, eve::Duration::fromNanoseconds(75));
+    CHECK_EQ(crossesSection.value().inputConsumed, eve::Duration::fromNanoseconds(75));
+    CHECK_EQ(crossesSection.value().phase, eve::action::ActionPhase::Recover);
+    CHECK_EQ(runtime.sectionProgress(execution, 0).value(), 1.0);
+    CHECK_EQ(runtime.sectionProgress(execution, 1).value(), 0.5);
+}
+
+TEST_CASE("gameplayAction.sectionTimingOverrideChangesMidSectionWithoutCursorDiscontinuity") {
+    auto timeline = timelineFixture();
+    timeline.splitTimestamps.push_back(eve::Duration::fromNanoseconds(50));
+
+    eve::action::ActionDefinition definition;
+    definition.id            = timeline.actionId;
+    definition.timing.windup = timeline.duration;
+    definition.timeline      = timeline;
+    eve::action::ActionRequest request;
+    request.actionId = definition.id;
+
+    eve::action::ActionRuntime runtime;
+    auto submitted = runtime.submit(definition, request);
+    REQUIRE(submitted.ok());
+    const auto execution = submitted.value();
+    REQUIRE(runtime.advance(execution, eve::SimulationTick{1}, eve::Duration::fromNanoseconds(20)).ok());
+    REQUIRE(runtime.setSectionTimingOverride(execution, 0, eve::Duration::fromNanoseconds(100)).ok());
+    auto slowed = runtime.advance(execution, eve::SimulationTick{2}, eve::Duration::fromNanoseconds(10));
+    REQUIRE(slowed.ok());
+    CHECK_EQ(slowed.value().totalElapsed, eve::Duration::fromNanoseconds(25));
+
+    auto sameOverride = runtime.setSectionTimingOverride(execution, 0, eve::Duration::fromNanoseconds(100));
+    REQUIRE(sameOverride.ok());
+    CHECK_EQ(static_cast<int>(sameOverride.status().code()), static_cast<int>(eve::StatusCode::NoOp));
+    REQUIRE(runtime.clearSectionTimingOverride(execution, 0).ok());
+    auto normal = runtime.advance(execution, eve::SimulationTick{3}, eve::Duration::fromNanoseconds(10));
+    REQUIRE(normal.ok());
+    CHECK_EQ(normal.value().totalElapsed, eve::Duration::fromNanoseconds(35));
+
+    auto alreadyCleared = runtime.clearSectionTimingOverride(execution, 0);
+    REQUIRE(alreadyCleared.ok());
+    CHECK_EQ(static_cast<int>(alreadyCleared.status().code()), static_cast<int>(eve::StatusCode::NoOp));
+    CHECK(!runtime.setSectionTimingOverride(execution, 2, eve::Duration::fromNanoseconds(10)).ok());
+    CHECK(!runtime.setSectionTimingOverride(execution, 0, eve::Duration::zero()).ok());
 }
 
 TEST_CASE("actionTimelineEditor.editsPreviewAndUndoThroughCanonicalTarget") {

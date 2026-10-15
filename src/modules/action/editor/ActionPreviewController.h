@@ -3,6 +3,7 @@
 /** @file ActionPreviewController.h @brief Atomic action-preview transport and presentation orchestration. */
 
 #include "action/ActionPreview.h"
+#include "action/editor/ActionPreviewProfile.h"
 #include "action/editor/ActionTimelineEditor.h"
 #include "editor/EditorPresentation.h"
 
@@ -24,6 +25,10 @@ public:
 
     /** @brief Configure root-motion trajectory density in the inclusive range 2..1024. */
     [[nodiscard]] EditorResult<void> setRootMotionSampleCount(std::uint32_t sampleCount);
+    /** @brief Validate and atomically install one asset-specific editor preview profile. */
+    [[nodiscard]] EditorResult<void> configureProfile(ActionPreviewProfile profile);
+    /** @brief Clear asset-specific settings and return host preview defaults. */
+    void clearProfile() noexcept;
     /** @brief Re-present the current cursor without changing transport state. */
     [[nodiscard]] EditorResult<void> refresh();
     /** @brief Atomically prepare presentation and seek the authoritative preview transport. */
@@ -52,6 +57,7 @@ private:
     const action::IActionRootMotionSource*    rootMotion_            = nullptr;
     std::uint32_t                             rootMotionSampleCount_ = 64;
     std::optional<action::ActionPreviewFrame> lastFrame_;
+    std::optional<ActionPreviewProfile>       profile_;
 };
 
 }  // namespace eve::editor
