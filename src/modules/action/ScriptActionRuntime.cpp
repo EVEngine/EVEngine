@@ -79,6 +79,14 @@ Result<Value> ScriptActionRuntime::replaceTimelineAbility(const std::string& def
                               true);
 }
 
+Result<void> ScriptActionRuntime::registerAbilityDefinition(AbilityDefinition definition) {
+    return abilities_.registerDefinition(std::move(definition));
+}
+
+Result<void> ScriptActionRuntime::replaceAbilityDefinition(AbilityDefinition definition) {
+    return abilities_.replaceDefinition(std::move(definition));
+}
+
 Result<Value> ScriptActionRuntime::setAbilityJson(const std::string& abilityJson, bool replace) {
     auto decoded = Value::fromJson(abilityJson);
     if (!decoded) return propagate(decoded);

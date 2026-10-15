@@ -1,15 +1,12 @@
 #include "combat/Combat.h"
 
-#include "action/AbilityAsset.h"
-#include "action/AbilitySystem.h"
 #include "action/ActionDamageBlock.h"
-#include "action/ActionTimeline.h"
+#include "action/ScriptActionRuntime.h"
 #include "combat/CombatLocomotion.h"
 #include "combat/Damage.h"
 #include "combat/StandardAbilities.h"
 #include "common/SquirrelBinding.h"
 #include "common/SquirrelOwnership.h"
-#include "tags/GameplayTag.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -59,7 +56,7 @@ public:
         auto definitions = standardCombatAbilities();
         if (!definitions) return Result<void>::failure(definitions.status());
         for (auto& definition : definitions.value()) {
-            auto registered = abilities_.registerDefinition(std::move(definition));
+            auto registered = actions_.registerAbilityDefinition(std::move(definition));
             if (!registered) return registered;
         }
         return Result<void>::success(Status::success(StatusCode::Applied));
@@ -177,132 +174,39 @@ public:
     }
 
     Result<Value> grantAbility(const std::string& ownerId, const std::string& definitionText) {
-        auto definitionId = LogicalId::parse(definitionText);
-        if (!definitionId)
-            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                            "ability definition id is invalid", "definitionId", {},
-                                                            "combat.squirrel"));
-        auto granted = abilities_.grant(ownerId, *definitionId);
-        if (!granted) return Result<Value>::failure(granted.status());
-        return abilityGrantValue(granted.value());
+        return actions_.grantAbility(ownerId, definitionText);
     }
 
     Result<Value> registerTimelineAbility(const std::string& definitionText, const std::string& timelineJson,
                                           double cooldownSeconds, const std::string& instancingText,
                                           const std::string& groupText, const std::string& triggerTag) {
-        return setTimelineAbility(definitionText, timelineJson, cooldownSeconds, instancingText, groupText, triggerTag,
-                                  false);
+        return actions_.registerTimelineAbility(definitionText, timelineJson, static_cast<float>(cooldownSeconds),
+                                                instancingText, groupText, triggerTag);
     }
 
     Result<Value> replaceTimelineAbility(const std::string& definitionText, const std::string& timelineJson,
                                          double cooldownSeconds, const std::string& instancingText,
                                          const std::string& groupText, const std::string& triggerTag) {
-        return setTimelineAbility(definitionText, timelineJson, cooldownSeconds, instancingText, groupText, triggerTag,
-                                  true);
-    }
-
-    Result<Value> setTimelineAbility(const std::string& definitionText, const std::string& timelineJson,
-                                     double cooldownSeconds, const std::string& instancingText,
-                                     const std::string& groupText, const std::string& triggerTag, bool replace) {
-        auto definitionId = LogicalId::parse(definitionText);
-        if (!definitionId)
-            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                            "ability definition id is invalid", "definitionId", {},
-                                                            "combat.squirrel"));
-        auto decoded = Value::fromJson(timelineJson);
-        if (!decoded) return Result<Value>::failure(decoded.status());
-        auto timeline = action::ActionTimeline::fromValue(decoded.value());
-        if (!timeline) return Result<Value>::failure(timeline.status());
-        auto cooldown = Duration::fromSeconds(cooldownSeconds);
-        if (!cooldown) return Result<Value>::failure(cooldown.status());
-        auto instancing = action::parseAbilityInstancingPolicy(instancingText);
-        if (!instancing) return Result<Value>::failure(instancing.status());
-        auto group = action::parseAbilityActivationGroup(groupText);
-        if (!group) return Result<Value>::failure(group.status());
-        auto definition =
-            action::abilityDefinitionFromTimeline(*definitionId, std::move(timeline).takeValue(), cooldown.value(),
-                                                  instancing.value(), group.value(), triggerTag);
-        if (!definition) return Result<Value>::failure(definition.status());
-        const LogicalId actionId = definition.value().action.id;
-        const double    duration =
-            definition.value().action.timeline ? definition.value().action.timeline->duration.seconds() : 0.0;
-        const auto sectionCount =
-            definition.value().action.timeline ? definition.value().action.timeline->sectionCount() : 0u;
-        auto changed = replace ? abilities_.replaceDefinition(std::move(definition).takeValue())
-                               : abilities_.registerDefinition(std::move(definition).takeValue());
-        if (!changed) return Result<Value>::failure(changed.status());
-        Value::Object result;
-        result["definitionId"]    = definitionText;
-        result["actionId"]        = actionId.format();
-        result["durationSeconds"] = duration;
-        result["sectionCount"]    = static_cast<std::int64_t>(sectionCount);
-        return Result<Value>::success(Value(std::move(result)), Status::success(StatusCode::Applied));
+        return actions_.replaceTimelineAbility(definitionText, timelineJson, static_cast<float>(cooldownSeconds),
+                                               instancingText, groupText, triggerTag);
     }
 
     Result<Value> activateAbility(std::int64_t grantValue, std::int64_t tickValue) {
-        auto grant = parseGrant(grantValue);
-        if (!grant) return Result<Value>::failure(grant.status());
-        if (tickValue < 0)
-            return Result<Value>::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "ability tick must be non-negative", "tick", {}, "combat.squirrel"));
-        auto activated = abilities_.activate(grant.value(), SimulationTick(static_cast<std::uint64_t>(tickValue)));
-        if (!activated) return Result<Value>::failure(activated.status());
-        return Result<Value>::success(abilityActivationValue(activated.value()), Status::success(StatusCode::Applied));
+        return actions_.activateAbility(grantValue, tickValue);
     }
 
     Result<Value> advanceAbilities(std::int64_t tickValue, double seconds) {
-        if (tickValue < 0)
-            return Result<Value>::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "ability tick must be non-negative", "tick", {}, "combat.squirrel"));
-        auto delta = Duration::fromSeconds(seconds);
-        if (!delta) return Result<Value>::failure(delta.status());
-        auto stepped = abilities_.step(SimulationTick(static_cast<std::uint64_t>(tickValue)), delta.value());
-        if (!stepped) return Result<Value>::failure(stepped.status());
-        Value::Array advances;
-        advances.reserve(stepped.value().advances.size());
-        for (const auto& item : stepped.value().advances) {
-            Value::Object value;
-            value["activationId"]   = static_cast<std::int64_t>(item.activationId.value());
-            value["executionId"]    = static_cast<std::int64_t>(item.executionId.value());
-            value["phase"]          = std::string(action::actionPhaseName(item.phase));
-            value["elapsedSeconds"] = item.totalElapsed.seconds();
-            advances.emplace_back(std::move(value));
-        }
-        Value::Object result;
-        result["advances"]       = std::move(advances);
-        result["completedCount"] = static_cast<std::int64_t>(stepped.value().completedCount);
-        result["activeCount"]    = static_cast<std::int64_t>(stepped.value().activeCount);
-        return Result<Value>::success(Value(std::move(result)), Status::success(StatusCode::Applied));
+        return actions_.advanceAbilities(tickValue, static_cast<float>(seconds));
     }
 
     Result<Value> cancelAbility(std::int64_t activationValue, std::int64_t tickValue) {
-        if (activationValue <= 0 || tickValue < 0)
-            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                            "ability activation or tick is invalid", "activation", {},
-                                                            "combat.squirrel"));
-        auto cancelled = abilities_.cancel(action::AbilityActivationId(static_cast<std::uint64_t>(activationValue)),
-                                           SimulationTick(static_cast<std::uint64_t>(tickValue)));
-        if (!cancelled) return Result<Value>::failure(cancelled.status());
-        Value::Object result;
-        result["activationId"] = activationValue;
-        result["phase"]        = std::string("cancelled");
-        return Result<Value>::success(Value(std::move(result)), Status::success(StatusCode::Applied));
+        return actions_.cancelAbility(activationValue, tickValue);
     }
 
-    Result<Value> abilityGrant(std::int64_t grantValue) const {
-        auto grant = parseGrant(grantValue);
-        if (!grant) return Result<Value>::failure(grant.status());
-        return abilityGrantValue(grant.value());
-    }
+    Result<Value> abilityGrant(std::int64_t grantValue) const { return actions_.abilityGrant(grantValue); }
 
     Result<Value> matchingAbilities(const std::string& ownerId, const std::string& eventTag) const {
-        if (!tags::isValidGameplayTagName(eventTag))
-            return Result<Value>::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "ability event tag is invalid", "eventTag", {}, "combat.squirrel"));
-        Value::Array result;
-        for (const auto grant : abilities_.matchingGrants(ownerId, eventTag))
-            result.emplace_back(static_cast<std::int64_t>(grant.value()));
-        return Result<Value>::success(Value(std::move(result)));
+        return actions_.matchingAbilities(ownerId, eventTag);
     }
 
     Result<Value> state(const std::string& subjectText) const {
@@ -329,41 +233,12 @@ public:
     }
 
 private:
-    static Result<action::AbilityGrantId> parseGrant(std::int64_t value) {
-        if (value <= 0)
-            return Result<action::AbilityGrantId>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                                             "ability grant id must be positive",
-                                                                             "grantId", {}, "combat.squirrel"));
-        return Result<action::AbilityGrantId>::success(action::AbilityGrantId(static_cast<std::uint64_t>(value)));
-    }
-
-    Result<Value> abilityGrantValue(action::AbilityGrantId grantId) const {
-        auto state = abilities_.findGrant(grantId);
-        if (!state) return Result<Value>::failure(state.status());
-        Value::Object result;
-        result["grantId"]         = static_cast<std::int64_t>(state.value().grantId.value());
-        result["ownerId"]         = state.value().ownerId;
-        result["definitionId"]    = state.value().definitionId.format();
-        result["cooldownSeconds"] = state.value().cooldownRemaining.seconds();
-        return Result<Value>::success(Value(std::move(result)));
-    }
-
-    static Value abilityActivationValue(const action::AbilityActivation& activation) {
-        Value::Object result;
-        result["activationId"] = static_cast<std::int64_t>(activation.id.value());
-        result["grantId"]      = static_cast<std::int64_t>(activation.grantId.value());
-        result["instanceId"]   = static_cast<std::int64_t>(activation.instanceId.value());
-        result["executionId"]  = static_cast<std::int64_t>(activation.executionId.value());
-        result["ownerId"]      = activation.ownerId;
-        return Value(std::move(result));
-    }
-
     DirectCombatNavigationProvider                  navigation_;
     CombatLocomotionRuntime                         locomotion_;
     DamageRuntime                                   damage_;
     std::map<std::string, CombatState, std::less<>> states_;
-    action::ActionRuntime                           actions_;
-    action::AbilityRuntime                          abilities_{actions_};
+    /** @brief Shared action/ability script projection; Combat does not reimplement ability rules. */
+    action::ScriptActionRuntime                     actions_;
 };
 
 ssq::Table project(HSQUIRRELVM vm, Result<Value>&& result) {

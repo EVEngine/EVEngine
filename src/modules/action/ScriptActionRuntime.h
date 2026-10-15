@@ -7,11 +7,13 @@
  *  Responsibilities:
  *  - Unique ownership of one ActionRuntime / AbilityRuntime pair for EveScript
  *  - Parse script scalars/strings and project domain Result values to eve::Value
+ *  - Shared ability projection surface reused by Combat (compose, do not reimplement)
  *
  *  Not responsible for:
  *  - Ability step orchestration (AbilityRuntime::step)
  *  - Timeline → AbilityDefinition assembly (abilityDefinitionFromTimeline)
  *  - Phase ownership (ActionRuntime)
+ *  - Notify Enter/Update/Exit playback (hosts compose ActionNotifyPlayback)
  */
 
 #include "action/AbilitySystem.h"
@@ -42,6 +44,13 @@ public:
 
     [[nodiscard]] Result<Value> registerAbilityJson(const std::string& abilityJson);
     [[nodiscard]] Result<Value> replaceAbilityJson(const std::string& abilityJson);
+    /**
+     * @brief Register one owning AbilityDefinition built by C++ (e.g. standard combat catalogue).
+     * @remarks Script hosts normally use registerAbilityJson / registerTimelineAbility instead.
+     */
+    [[nodiscard]] Result<void> registerAbilityDefinition(AbilityDefinition definition);
+    /** @brief Replace one registered definition for future activations. */
+    [[nodiscard]] Result<void> replaceAbilityDefinition(AbilityDefinition definition);
     [[nodiscard]] Result<Value> registerTimelineAbility(const std::string& definitionText,
                                                         const std::string& timelineJson, float cooldownSeconds,
                                                         const std::string& instancingText, const std::string& groupText,
