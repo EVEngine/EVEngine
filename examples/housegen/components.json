@@ -1,0 +1,13 @@
+{
+  "components": [
+    {"id":"foundation","model":"../../test/assets/housegen/kenney-modular-buildings/building-block.glb","category":"foundation"},
+    {"id":"floor","model":"../../test/assets/housegen/kenney-modular-buildings/building-block.glb","category":"floor"},
+    {"id":"wall","model":"../../test/assets/housegen/kenney-modular-buildings/building-window.glb","category":"wall","weight":4},
+    {"id":"wall.block","model":"../../test/assets/housegen/kenney-modular-buildings/building-block.glb","category":"wall","weight":2},
+    {"id":"door","model":"../../test/assets/housegen/kenney-modular-buildings/building-door.glb","category":"door"},
+    {"id":"roof","model":"../../test/assets/housegen/kenney-modular-buildings/roof-gable.glb","category":"roof"},
+    {"id":"stairs","model":"../../test/assets/housegen/kenney-modular-buildings/building-block.glb","category":"stairs"},
+    {"id":"iwall","model":"../../test/assets/housegen/kenney-modular-buildings/building-block.glb","category":"interior_wall"},
+    {"id":"idoor","model":"../../test/assets/housegen/kenney-modular-buildings/building-door.glb","category":"interior_door"}
+  ]
+}

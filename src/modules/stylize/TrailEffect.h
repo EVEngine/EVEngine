@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -50,7 +52,7 @@ struct TrailMeshSnapshot {
  * The emitter owns all samples and returned snapshots own their data. It is
  * main-thread affine, performs no rendering, and invokes no callbacks.
  */
-class TrailEmitter {
+class EVENGINE_API_WORLD TrailEmitter {
 public:
     /** @brief Construct an empty emitter with validated settings. */
     explicit TrailEmitter(TrailSettings settings = {});

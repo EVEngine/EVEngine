@@ -37,7 +37,6 @@ function eve_render() {
 local count = stack.getLayerCount();
 local texture = stack.getLayerTexture(0);
 stack.setLayerTexture(texture, 0);
-stack.setLayerUV(0, 0.0, 0.0, 1.0, 1.0);
 local spacing = stack.getThickness();
 
 local batch = spritestack.newBatch(gfx);
@@ -49,6 +48,10 @@ batch.clear();
 ```
 
 批对象提交多个 `SpriteStack2D`；实际纹理由 Graphics 的 2D texture batch 合并。切片从底层到顶层绘制，因此透明边缘和层间遮挡仍遵循 2D painter order。
+
+> **逐层 UV 只能整张图集一起切**：没有 `setLayerUV(层, u0, v0, u1, v1)` 这种单层 UV 矩形接口——
+> 想让每层取自同一张图集的不同格子，用 `stack.setLayersFromAtlas(gfx, atlas, layerCount)`
+> （内部按层数等分图集，见 `SpriteStack.h:64`）；单层贴图则直接用 `setLayerTexture`/`setLayerImage`/`setLayerFile`。
 
 ## 模型切片
 
@@ -69,14 +72,21 @@ local layers = spritestack.sliceModel(model, 24, 128, 128, "y", 0.0);
 - 两者都返回 `ImageData` 数组（RGBA8），可直接传给 `gfx.newTexture` 或
   `stack.setLayerImage`。
 
+## 绑定与行为说明
+
+- 工厂：`newStack(gfx)`、`newBatch(gfx)`、`slicePrimitive(...)`、`sliceModel(...)`
+- `SpriteStack2D`：`setLayerCount()`、`setLayerImage()`、`setLayerFile()`、`setLayersFromAtlas()`、`setLayerTexture()`、`getLayerTexture()`、`setLayerUV()`、`getLayerCount()`、`setPosition()`、`setSize()`、`getWidth()`、`getHeight()`、`setThickness()`、`getThickness()`、`setRotation()`、`setTint()`、`setVisible()`、`setShadowEnabled()`、`setShadowOpacity()`、`setShadowOffset()`、`setOutline()`、`render()`、`renderWithCamera()`
+- `SpriteStackBatch`：`add()`、`remove()`、`clear()`、`render()`、`renderWithCamera()`
+
 ## 使用要点
 
 - 切片的 `ImageData` 归脚本持有：传入 `setLayerImage` 后叠片内部已转为 GPU
   纹理，可释放原图。
 - 叠片使用 alpha 混合 + 深度测试（不写深度）的管线，同堆切片每帧按相机距离
   由远到近排序；跨叠片的重叠由绘制顺序决定。
-- Vulkan 与原生 WebGPU 均可用；WebGPU 使用专用 WGSL 卡片 shader。当前 Web/WASM
-  精简模块组仍不包含 SpriteStack。
+- Vulkan 与 WebGPU（含浏览器 `web` 档）均可用；WebGPU 使用专用 WGSL 卡片
+  shader。`slicePrimitive` / 图集叠片不依赖 Assimp；`sliceModel` 仅在链接了
+  `model3d` 时编入（桌面 `2d`/`3d`/`full`），WASM 上用预制图层即可。
 - 不要每帧重新切片或重新上传纹理；只在物体形状变化时重建。
 - `updateMeshVertices`（合批内部使用）与 GPU 同步，重建频率越高开销越大。
 
@@ -85,3 +95,7 @@ local layers = spritestack.sliceModel(model, 24, 128, 128, "y", 0.0);
 **相关测试：** [`test/spritestack.cpp`](../../../test/spritestack.cpp)
 
 这里的模型只用于生成 RGBA 切片；运行时仍走 2D 管线。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](spritestack/api-reference.md)，使用前先确认本章的前置条件与生命周期。

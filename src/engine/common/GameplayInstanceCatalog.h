@@ -32,6 +32,7 @@ namespace eve {
 class IGameplayInstanceCatalog {
 public:
     static constexpr const char* capabilityName = "IGameplayInstanceCatalog";
+    /** @brief Releases IGameplayInstanceCatalog resources. */
     virtual ~IGameplayInstanceCatalog()         = default;
 
     /** @brief Provider domain these instances belong to; matches the provider's domain. */

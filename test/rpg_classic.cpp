@@ -2,7 +2,9 @@
 #include "zeroerr/unittest.h"
 
 #include "common/Runtime.h"
-#include "dialogue/ConversationCompiler.h"
+#include "dialogue/DialogueSequence.h"
+#include "dnut_interpreter/DnutCompiler.h"
+#include "dnut_interpreter/SequenceRuntime.h"
 #include "i18n/I18n.h"
 #include "map/Map.h"
 #include "map/MapObject.h"
@@ -11,8 +13,8 @@
 #include "map/TileConfig.h"
 #include "rpg/EncounterCatalogue.h"
 #include "rpg/Quest.h"
+#include "rpg/RpgDialect.h"
 #include "rpg/Skill.h"
-#include "rpg/StoryEvent.h"
 #include "rpg/Tracker.h"
 
 #include <filesystem>
@@ -45,7 +47,7 @@ TEST_CASE("rpg.classic.mainScriptCompilesThroughEveScriptFrontend") {
     CHECK(script.find("function confirmDeleteSaveSlot()") != std::string::npos);
     CHECK(script.find("function confirmReturnToTitle()") != std::string::npos);
     CHECK(script.find("saveFs.writeTextAtomic(SETTINGS_PATH") != std::string::npos);
-    CHECK(script.find("const SAVE_CONTENT_VERSION = \"rpg-classic.content.v9\"") != std::string::npos);
+    CHECK(script.find("const SAVE_CONTENT_VERSION = \"rpg-classic.content.v10\"") != std::string::npos);
     CHECK(script.find("function loadWorldMap(mapId, x, y, fx, fy)") != std::string::npos);
     CHECK(script.find("function transitionThroughPortal(index)") != std::string::npos);
     CHECK(script.find("function beginQuestNpcDialogue(index)") != std::string::npos);
@@ -65,10 +67,12 @@ TEST_CASE("rpg.classic.mainScriptCompilesThroughEveScriptFrontend") {
     CHECK(script.find(
               "function restoreNarrativeContent(previousQuest, previousDialogue, previousShop, previousEncounter,") !=
           std::string::npos);
-    CHECK(script.find("rpg.replaceStoryEventsFromJson(storyEventJson)") != std::string::npos);
+    CHECK(script.find("rpg.replaceStoriesFromDnut(storyDnut, \"data/stories.dnut\")") != std::string::npos);
     CHECK(script.find("text.replaceBundleFromJson(source)") != std::string::npos);
     CHECK(script.find("dialogueFlow.validateLocalization(text, \"zh-CN\")") != std::string::npos);
     CHECK(script.find("function resumePendingStoryEvent()") != std::string::npos);
+    CHECK(script.find("rpg.newStorySession()") != std::string::npos);
+    CHECK(script.find("function presentStoryStep()") != std::string::npos);
     CHECK(script.find("accepted content restored") != std::string::npos);
     CHECK(script.find("publishNarrativeContentPackage(true)") != std::string::npos);
     CHECK(script.find("loadFromFileWithObjectContract(path, worldObjectContract)") != std::string::npos);
@@ -245,14 +249,14 @@ TEST_CASE("rpg.classic.elderDialogueHasOfferReminderTurnInAndCompletionRoutes") 
     std::ostringstream source;
     source << input.rdbuf();
 
-    std::vector<eve::dialogue::ConversationDiagnostic> diagnostics;
-    auto compiled = eve::dialogue::compileDnutConversations(source.str(), dialoguePath.string(), diagnostics);
-    REQUIRE(compiled.ok());
-    auto assets = std::move(compiled).takeValue();
+    eve::dnut::StepKindRegistry dialogueRegistry;
+    eve::dialogue::registerDialogueSequenceSteps(dialogueRegistry).expect("dialogue sequence vocabulary");
+    auto compiled = eve::dnut::compileDnutConversations(source.str(), dialoguePath.string(), dialogueRegistry);
+    REQUIRE(!compiled.hasErrors());
+    auto assets = std::move(compiled.assets);
     CHECK_EQ(assets.size(), std::size_t(9));
-    CHECK(diagnostics.empty());
 
-    const auto findAsset = [&](const std::string& id) -> const eve::dialogue::ConversationAsset* {
+    const auto findAsset = [&](const std::string& id) -> const eve::dnut::SequenceAsset* {
         for (const auto& asset : assets)
             if (asset.id == id) return &asset;
         return nullptr;
@@ -271,22 +275,22 @@ TEST_CASE("rpg.classic.elderDialogueHasOfferReminderTurnInAndCompletionRoutes") 
     REQUIRE(turnInChoice != nullptr);
     REQUIRE_EQ(offerChoice->routes.size(), std::size_t(2));
     REQUIRE_EQ(turnInChoice->routes.size(), std::size_t(2));
-    CHECK_EQ(offerChoice->routes[0].first, std::string("accept"));
-    CHECK_EQ(offerChoice->routes[1].first, std::string("later"));
-    CHECK_EQ(turnInChoice->routes[0].first, std::string("claim"));
-    CHECK_EQ(turnInChoice->routes[1].first, std::string("later"));
+    CHECK_EQ(offerChoice->routes[0].label, std::string("accept"));
+    CHECK_EQ(offerChoice->routes[1].label, std::string("later"));
+    CHECK_EQ(turnInChoice->routes[0].label, std::string("claim"));
+    CHECK_EQ(turnInChoice->routes[1].label, std::string("later"));
     REQUIRE(rangerOffer->findNode("decision") != nullptr);
     REQUIRE(rangerTurnIn->findNode("decision") != nullptr);
 
-    eve::dialogue::ConversationRunner runner;
-    std::string                       error;
-    CHECK(runner.startChecked(offer, eve::StateValue::object()).ok());
+    eve::dnut::SequenceRuntime runner;
+    runner.setStepRegistry(&dialogueRegistry);
+    CHECK(runner.start(offer).ok());
     CHECK_EQ(runner.currentNodeId(), std::string("intro"));
-    CHECK(runner.advanceChecked().ok());
+    CHECK(runner.advance().ok());
     CHECK_EQ(runner.currentNodeId(), std::string("decision"));
-    CHECK(runner.selectChecked("accept").ok());
+    CHECK(runner.select("accept").ok());
     CHECK_EQ(runner.currentNodeId(), std::string("accepted"));
-    CHECK(runner.advanceChecked().ok());
+    CHECK(runner.advance().ok());
     CHECK(!runner.isActive());
 }
 
@@ -339,15 +343,16 @@ TEST_CASE("rpg.classic.mapsQuestsAndDialogueComposeWithoutDanglingReferences") {
     REQUIRE(quests.ok());
     auto encounters = eve::rpg::EncounterCatalogue::replaceFromJsonStrict(readFile(root / "encounters.json"));
     REQUIRE(encounters.ok());
-    auto storyEvents = eve::rpg::StoryEventCatalogue::replaceFromJsonStrict(readFile(root / "story-events.json"));
-    REQUIRE(storyEvents.ok());
+    auto stories = eve::rpg::RpgStoryCatalogue::replaceFromDnutStrict(readFile(root / "stories.dnut"), "stories.dnut");
+    REQUIRE(stories.ok());
+    CHECK(eve::rpg::RpgStoryCatalogue::contains("forest.arrival"));
 
-    std::vector<eve::dialogue::ConversationDiagnostic> diagnostics;
-    auto compiled = eve::dialogue::compileDnutConversations(
-        readFile(root / "village-dialogue.dnut"), "village-dialogue.dnut", diagnostics);
-    REQUIRE(compiled.ok());
-    auto assets = std::move(compiled).takeValue();
-    REQUIRE(diagnostics.empty());
+    eve::dnut::StepKindRegistry dialogueRegistry;
+    eve::dialogue::registerDialogueSequenceSteps(dialogueRegistry).expect("dialogue sequence vocabulary");
+    auto compiled = eve::dnut::compileDnutConversations(readFile(root / "village-dialogue.dnut"),
+                                                        "village-dialogue.dnut", dialogueRegistry);
+    REQUIRE(!compiled.hasErrors());
+    auto  assets       = std::move(compiled.assets);
     auto* localization = eve::i18n::I18n::create();
     REQUIRE(localization != nullptr);
     localization->clear();
@@ -394,18 +399,16 @@ TEST_CASE("rpg.classic.mapsQuestsAndDialogueComposeWithoutDanglingReferences") {
     for (const auto& asset : assets) {
         conversationIds.insert(asset.id);
         for (const auto& node : asset.nodes) {
-            if (node.i18nKey.empty()) continue;
-            CHECK(localization->hasInLanguage("zh-CN", node.i18nKey));
-            CHECK(localization->hasInLanguage("en", node.i18nKey));
+            const eve::Value* key = node.payload.find("i18n");
+            if (!key || !key->isString() || key->asString().empty()) continue;
+            CHECK(localization->hasInLanguage("zh-CN", key->asString()));
+            CHECK(localization->hasInLanguage("en", key->asString()));
         }
     }
-    const auto* arrival = eve::rpg::StoryEventCatalogue::find("forest.arrival");
-    REQUIRE(arrival != nullptr);
-    for (const auto& step : arrival->steps) {
-        if (step.kind == eve::rpg::StoryEventStepKind::Dialogue) CHECK(conversationIds.count(step.reference) == 1);
-        if (step.kind == eve::rpg::StoryEventStepKind::Message)
-            CHECK(localization->validateKeyCoverage(step.reference).ok());
-    }
+    CHECK(conversationIds.count("story.forest.arrival") == 1);
+    CHECK(localization->validateKeyCoverage("gameplayLog.story.recorded").ok());
+
+    eve::rpg::RpgStoryCatalogue::clear();
 
     const std::vector<std::string> states{"offer", "active", "turnin", "completed"};
     for (const auto& mapName : {"village.json", "forest.json"}) {
@@ -437,6 +440,5 @@ TEST_CASE("rpg.classic.mapsQuestsAndDialogueComposeWithoutDanglingReferences") {
     eve::rpg::QuestRegistry::clear();
     eve::rpg::EncounterCatalogue::clear();
     eve::rpg::SkillRegistry::clear();
-    eve::rpg::StoryEventCatalogue::clear();
     localization->clear();
 }

@@ -6,6 +6,7 @@
 
 namespace eve {
 namespace detail {
+/** @brief RevisionTag public API. */
 struct RevisionTag {};
 }  // namespace detail
 /** @brief Monotonic content/state revision used for optimistic-concurrency checks. */

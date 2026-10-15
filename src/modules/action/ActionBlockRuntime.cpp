@@ -5,15 +5,11 @@
 namespace eve::action {
 namespace {
 
-Result<void> invalidContext() {
-    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                   "Action block context does not match advance", "executionId"));
-}
-
 }  // namespace
 
 Result<void> ActionBlockRuntime::apply(const ActionAdvance& advance, ActionNotifyContext context) {
-    if (context.executionId != advance.id) return invalidContext();
+    if (context.executionId != advance.id) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                   "Action block context does not match advance", "executionId"));
     context.time = advance.totalElapsed;
     for (const auto& event : advance.timelineEvents) {
         auto dispatched = registry_.dispatch(event, context);

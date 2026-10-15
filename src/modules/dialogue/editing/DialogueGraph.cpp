@@ -73,7 +73,7 @@ GraphConnectionDecision DialogueGraphDomain::canConnect(const GraphPinRecord& fr
     return decision;
 }
 
-EditorResult<GraphNodeRecord> DialogueGraphDomain::makeNode(const GraphNodeId& id,
+Result<GraphNodeRecord> DialogueGraphDomain::makeNode(const GraphNodeId& id,
                                                             const std::string& kind) const {
     if (id.empty() || !isDialogueKind(kind))
         return eve::editing::failed<GraphNodeRecord>(EditorStatus::Rejected, RuleId("editor.dialogue.invalid-node"),
@@ -89,7 +89,7 @@ EditorResult<GraphNodeRecord> DialogueGraphDomain::makeNode(const GraphNodeId& i
     return eve::editing::applied<GraphNodeRecord>(std::move(node));
 }
 
-EditorResult<GraphNodeRecord> DialogueGraphDomain::makeRouteNode(const GraphNodeId& id,
+Result<GraphNodeRecord> DialogueGraphDomain::makeRouteNode(const GraphNodeId& id,
                                                                  const std::string& label) const {
     if (id.empty())
         return eve::editing::failed<GraphNodeRecord>(EditorStatus::Rejected, RuleId("editor.dialogue.invalid-route"),

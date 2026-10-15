@@ -71,6 +71,17 @@ double VitalsSystem::heal(RPGActor *actor, const std::string &resource, double a
     return applied;
 }
 
+void VitalsSystem::publishSettledChange(RPGActor *actor, const std::string &resource,
+                                        const std::string &action, double amount,
+                                        const std::string &source) {
+    if (!actor || amount <= 0.0 || (action != "damage" && action != "heal")) return;
+    const double current = getCurrent(actor, resource);
+    const double maximum = getMax(actor, resource);
+    emit(actor, resource, action, amount, source, current, maximum);
+    if (action == "damage" && current <= 0.0)
+        emit(actor, resource, "death", amount, source, current, maximum);
+}
+
 void VitalsSystem::revive(RPGActor *actor, const std::string &resource, double amount) {
     if (!actor) return;
     auto &current = actor->vitals()->current;

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 
@@ -10,8 +12,7 @@ namespace data
 /**
  * @brief Base class for backends for different compression formats.
  **/
-class Compressor
-{
+class EVENGINE_API_FOUNDATION Compressor {
 public:
 
 	/**
@@ -25,6 +26,7 @@ public:
 	 **/
 	static Compressor *getCompressor(std::string format);
 
+	/** @brief Compressor. */
 	virtual ~Compressor() {}
 
 	/**
@@ -63,9 +65,10 @@ public:
 
 protected:
 
+	/** @brief Compressor. */
 	Compressor() {}
 
-}; // Compressor
+};  // Compressor
 
 } // data
 } // eve

@@ -26,7 +26,7 @@ Result<SubjectRef> parseSubject(const std::string& text, std::string path) {
     const auto parsed = PersistentId::parse(text);
     if (!parsed)
         return Result<SubjectRef>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "combat subject must be a UUID", std::move(path), {}, "combat.squirrel"));
+            DiagnosticCode::InvalidArgument, "combat subject must be a UUID", path, {}, "combat.squirrel"));
     return Result<SubjectRef>::success(SubjectRef::fromPersistentId(*parsed));
 }
 

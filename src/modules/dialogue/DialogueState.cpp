@@ -31,7 +31,7 @@ std::optional<T> queryProviders(const std::string& subject, eve::IStateQuery* ex
 
 eve::Result<eve::decision::Condition> conditionError(std::string message, std::string path = {}) {
     return eve::Result<eve::decision::Condition>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message, path));
 }
 
 bool readString(const eve::Value& object, std::string_view key, std::string& out) {

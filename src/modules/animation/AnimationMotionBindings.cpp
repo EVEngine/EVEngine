@@ -1,16 +1,36 @@
+#include <array>
+#include <cstdint>
 #include <functional>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <stdexcept>
+#include <string>
+#include <vector>
+
 #include "animation/AnimationBindings.h"
 #include "animation/MotionDatabase.h"
-#include "animation/MotionMatcher.h"
 #include "animation/MotionFeatureLayout.h"
+#include "animation/MotionMatcher.h"
+#include "common/SquirrelBindContext.h"
+#include "common/SquirrelBinding.h"
+#include "common/SquirrelOwnership.h"
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
 
 namespace eve::animation {
+namespace {
+
+constexpr const char* kSource = "animation.bindings";
+
+
+}  // namespace
+
+// A provider read hands over a freshly allocated FileData that this call owns.
+using eve::script::Owned;
+
 void exposeMotionMatcherBindings(ssq::Table& table) {
+    const script::BindContext bind{table.getHandle(), kSource};
     exposeAnimInertializerBindings(table);
+    exposeOrientationWarpingBindings(table);
     auto db = table.addClass<MotionDatabase>(
         "MotionDatabase", std::function<MotionDatabase*()>([]() -> MotionDatabase* { return nullptr; }), true);
     db.addFunc("addFeatureBone", &MotionDatabase::addFeatureBone);
@@ -28,18 +48,12 @@ void exposeMotionMatcherBindings(ssq::Table& table) {
     db.addFunc("getFrameClipIndex", &MotionDatabase::getFrameClipIndex);
     db.addFunc("getFeatureBoneCount", &MotionDatabase::getFeatureBoneCount);
     db.addFunc("getFeatureBone", &MotionDatabase::getFeatureBone);
-    db.addFunc("setLocomotionFeatures",
-               [vm = table.getHandle()](MotionDatabase* self, int left, int right, int pelvis) {
-                   auto       configured = self->setLocomotionFeatures(left, right, pelvis);
-                   ssq::Table result(vm);
-                   result.set("ok", configured.ok());
-                   result.set("message", configured.status().describe());
-                   return result;
-               });
+    db.addFunc("setLocomotionFeatures", [bind](MotionDatabase* self, int left, int right, int pelvis) {
+        return script::projectResult(bind.vm(), self->setLocomotionFeatures(left, right, pelvis));
+    });
     db.addFunc("hasLocomotionFeatures", &MotionDatabase::hasLocomotionFeatures);
     db.addFunc("hasFeatureLayout", &MotionDatabase::hasFeatureLayout);
-    db.addFunc("loadFeatureCurves", [vm = table.getHandle()](MotionDatabase* self, std::string path, ssq::Array sources) {
-        ssq::Table result(vm);
+    db.addFunc("loadFeatureCurves", [bind](MotionDatabase* self, std::string path, ssq::Array sources) {
         try {
             if (sources.size() != static_cast<std::size_t>(self->getClipCount()))
                 throw std::runtime_error("one curve source per database clip is required");
@@ -49,50 +63,70 @@ void exposeMotionMatcherBindings(ssq::Table& table) {
             if (!fs) throw std::runtime_error("filesystem unavailable");
             auto* raw = fs->read(path);
             if (!raw) throw std::runtime_error("feature curve file unavailable");
-            eve::ref<eve::filesystem::FileData> data(raw);
-            auto loaded = self->setFeatureCurves({static_cast<const std::byte*>(data->getData()), data->getSize()}, names);
-            result.set("ok", loaded.ok()); result.set("message", loaded.status().describe());
-        } catch (const std::exception& e) { result.set("ok", false); result.set("message", std::string(e.what())); }
-        return result;
+            Owned<eve::filesystem::FileData> data(raw);
+            return script::projectResult(
+                bind.vm(),
+                self->setFeatureCurves({static_cast<const std::byte*>(data->getData()), data->getSize()}, names));
+        } catch (const std::exception& error) {
+            return bind.failInvalid(error.what());
+        }
     });
-    db.addFunc("setFeatureLayout", [vm = table.getHandle()](MotionDatabase* self, int rate, ssq::Array entries, float lengthScale) {
-        ssq::Table result(vm);
+    db.addFunc("setFeatureLayout", [bind](MotionDatabase* self, int rate, ssq::Array entries, float lengthScale) {
         try {
-            if (entries.size() == 0 || entries.size() > 256) throw std::runtime_error("feature layout requires 1..256 channels");
-            MotionFeatureLayout layout; layout.sampleRate = rate;layout.normalizationLengthScale = lengthScale;
+            if (entries.size() == 0 || entries.size() > 256)
+                throw std::runtime_error("feature layout requires 1..256 channels");
+            MotionFeatureLayout layout;
+            layout.sampleRate               = rate;
+            layout.normalizationLengthScale = lengthScale;
             for (std::size_t i = 0; i < entries.size(); ++i) {
                 auto item = entries.get<ssq::Array>(i);
-                if (item.size() != 12 && item.size() != 13) throw std::runtime_error("feature channel requires twelve fields plus an optional curve name");
+                if (item.size() != 12 && item.size() != 13)
+                    throw std::runtime_error("feature channel requires twelve fields plus an optional curve name");
                 MotionFeatureChannel c;
-                const auto kind = item.get<std::string>(0), source = item.get<std::string>(1), query = item.get<std::string>(2);
-                if (kind == "position") c.kind = MotionFeatureKind::Position;
-                else if (kind == "velocity") c.kind = MotionFeatureKind::Velocity;
-                else if (kind == "heading") c.kind = MotionFeatureKind::Heading;
-                else if (kind == "curve") c.kind = MotionFeatureKind::Curve;
-                else throw std::runtime_error("unsupported feature operation");
-                if (source == "pose") c.source = MotionFeatureSource::Pose;
-                else if (source == "trajectory") c.source = MotionFeatureSource::Trajectory;
-                else throw std::runtime_error("unsupported feature source");
-                if (query == "USE_CHARACTER_POSE") c.query = MotionFeatureQuery::Character;
-                else if (query == "USE_CONTINUING_POSE") c.query = MotionFeatureQuery::Continuing;
-                else throw std::runtime_error("unsupported feature query policy");
-                c.bone = item.get<int>(3); c.origin = item.get<int>(4);
+                const auto           kind = item.get<std::string>(0), source = item.get<std::string>(1),
+                           query = item.get<std::string>(2);
+                if (kind == "position")
+                    c.kind = MotionFeatureKind::Position;
+                else if (kind == "velocity")
+                    c.kind = MotionFeatureKind::Velocity;
+                else if (kind == "heading")
+                    c.kind = MotionFeatureKind::Heading;
+                else if (kind == "curve")
+                    c.kind = MotionFeatureKind::Curve;
+                else
+                    throw std::runtime_error("unsupported feature operation");
+                if (source == "pose")
+                    c.source = MotionFeatureSource::Pose;
+                else if (source == "trajectory")
+                    c.source = MotionFeatureSource::Trajectory;
+                else
+                    throw std::runtime_error("unsupported feature source");
+                if (query == "USE_CHARACTER_POSE")
+                    c.query = MotionFeatureQuery::Character;
+                else if (query == "USE_CONTINUING_POSE")
+                    c.query = MotionFeatureQuery::Continuing;
+                else
+                    throw std::runtime_error("unsupported feature query policy");
+                c.bone         = item.get<int>(3);
+                c.origin       = item.get<int>(4);
                 const int axes = item.get<int>(5);
                 if (axes < 1 || axes > 7) throw std::runtime_error("feature axes must be a nonempty XYZ mask");
-                c.axes = static_cast<std::uint8_t>(axes); c.headingAxis = item.get<int>(6);
-                c.sampleTime = item.get<float>(7); c.weight = item.get<float>(8);
-                c.characterSpaceVelocity = item.get<bool>(9); c.normalizeVelocity = item.get<bool>(10);
-                c.normalizationGroup = item.get<std::string>(11);
+                c.axes                   = static_cast<std::uint8_t>(axes);
+                c.headingAxis            = item.get<int>(6);
+                c.sampleTime             = item.get<float>(7);
+                c.weight                 = item.get<float>(8);
+                c.characterSpaceVelocity = item.get<bool>(9);
+                c.normalizeVelocity      = item.get<bool>(10);
+                c.normalizationGroup     = item.get<std::string>(11);
                 if (item.size() == 13) c.curve = item.get<std::string>(12);
                 layout.channels.push_back(std::move(c));
             }
-            auto configured = self->setFeatureLayout(layout);
-            result.set("ok", configured.ok()); result.set("message", configured.status().describe());
-        } catch (const std::exception& e) { result.set("ok", false); result.set("message", std::string(e.what())); }
-        return result;
+            return script::projectResult(bind.vm(), self->setFeatureLayout(layout));
+        } catch (const std::exception& error) {
+            return bind.failInvalid(error.what());
+        }
     });
-    db.addFunc("setFeatureNormalizationRanges", [vm = table.getHandle()](MotionDatabase* self, ssq::Array entries) {
-        ssq::Table result(vm);
+    db.addFunc("setFeatureNormalizationRanges", [bind](MotionDatabase* self, ssq::Array entries) {
         try {
             if (entries.size() > 100000) throw std::runtime_error("too many normalization ranges");
             std::vector<MotionNormalizationRange> ranges;
@@ -101,14 +135,11 @@ void exposeMotionMatcherBindings(ssq::Table& table) {
                 if (item.size() != 3) throw std::runtime_error("normalization range requires clip,start,end");
                 ranges.push_back({item.get<int>(0), item.get<float>(1), item.get<float>(2)});
             }
-            auto configured = self->setFeatureNormalizationRanges(ranges);
-            result.set("ok", configured.ok());
-            result.set("message", configured.status().describe());
-            result.set("count", configured.ok() ? configured.value() : 0);
-        } catch (const std::exception& e) {
-            result.set("ok", false); result.set("message", std::string(e.what())); result.set("count", 0);
+            return script::projectResult(bind.vm(), self->setFeatureNormalizationRanges(ranges),
+                                         [](int count) { return Value(count); });
+        } catch (const std::exception& error) {
+            return bind.failInvalid(error.what());
         }
-        return result;
     });
     auto mm = table.addClass<MotionMatcher>(
         "MotionMatcher", std::function<MotionMatcher*()>([]() -> MotionMatcher* { return nullptr; }), true);
@@ -121,9 +152,8 @@ void exposeMotionMatcherBindings(ssq::Table& table) {
     mm.addFunc("getSearchInterval", &MotionMatcher::getSearchInterval);
     mm.addFunc("setBlendTime", &MotionMatcher::setBlendTime);
     mm.addFunc("getBlendTime", &MotionMatcher::getBlendTime);
-    mm.addFunc("setPlayRateRange", [vm = table.getHandle()](MotionMatcher* self, float minimum, float maximum) {
-        auto configured = self->setPlayRateRange(minimum, maximum);
-        ssq::Table result(vm); result.set("ok", configured.ok()); result.set("message", configured.status().describe()); return result;
+    mm.addFunc("setPlayRateRange", [bind](MotionMatcher* self, float minimum, float maximum) {
+        return script::projectResult(bind.vm(), self->setPlayRateRange(minimum, maximum));
     });
     mm.addFunc("getPlayRateMinimum", &MotionMatcher::getPlayRateMinimum);
     mm.addFunc("getPlayRateMaximum", &MotionMatcher::getPlayRateMaximum);
@@ -136,9 +166,8 @@ void exposeMotionMatcherBindings(ssq::Table& table) {
     mm.addFunc("getVelocityWeight", &MotionMatcher::getVelocityWeight);
     mm.addFunc("setIgnoreRadius", &MotionMatcher::setIgnoreRadius);
     mm.addFunc("getIgnoreRadius", &MotionMatcher::getIgnoreRadius);
-    mm.addFunc("setPoseReselectHistory", [vm = table.getHandle()](MotionMatcher* self, float seconds) {
-        auto configured = self->setPoseReselectHistory(seconds);
-        ssq::Table result(vm); result.set("ok", configured.ok()); result.set("message", configured.status().describe()); return result;
+    mm.addFunc("setPoseReselectHistory", [bind](MotionMatcher* self, float seconds) {
+        return script::projectResult(bind.vm(), self->setPoseReselectHistory(seconds));
     });
     mm.addFunc("getPoseReselectHistory", &MotionMatcher::getPoseReselectHistory);
     mm.addFunc("getMatchedFrame", &MotionMatcher::getMatchedFrame);
@@ -148,17 +177,17 @@ void exposeMotionMatcherBindings(ssq::Table& table) {
     mm.addFunc("getPose", &MotionMatcher::getPose);
     mm.addFunc("search", &MotionMatcher::search);
     mm.addFunc("update", &MotionMatcher::update);
-    mm.addFunc("setFeatureQuery", [vm = table.getHandle()](MotionMatcher* self, AnimPose* current,
-                                                          AnimPose* previous, float dt, ssq::Array entries, ssq::Array curveEntries) {
-        ssq::Table result(vm);
+    mm.addFunc("setFeatureQuery", [bind](MotionMatcher* self, AnimPose* current, AnimPose* previous, float dt,
+                                         ssq::Array entries, ssq::Array curveEntries) {
         try {
-            if (!current || !previous || entries.size() > 256) throw std::runtime_error("feature query requires two poses and bounded trajectory samples");
+            if (!current || !previous || entries.size() > 256)
+                throw std::runtime_error("feature query requires two poses and bounded trajectory samples");
             std::vector<MotionFeatureTrajectorySample> samples;
             for (std::size_t i = 0; i < entries.size(); ++i) {
                 auto item = entries.get<ssq::Array>(i);
                 if (item.size() != 8) throw std::runtime_error("feature sample requires time,x,y,z,vx,vy,vz,yaw");
-                samples.push_back({item.get<float>(0),item.get<float>(1),item.get<float>(2),item.get<float>(3),
-                    item.get<float>(4),item.get<float>(5),item.get<float>(6),item.get<float>(7)});
+                samples.push_back({item.get<float>(0), item.get<float>(1), item.get<float>(2), item.get<float>(3),
+                                   item.get<float>(4), item.get<float>(5), item.get<float>(6), item.get<float>(7)});
             }
             if (curveEntries.size() > 256) throw std::runtime_error("curve query requires bounded samples");
             std::vector<MotionFeatureCurveSample> curves;
@@ -167,14 +196,13 @@ void exposeMotionMatcherBindings(ssq::Table& table) {
                 if (item.size() != 3) throw std::runtime_error("curve sample requires name,time,value");
                 curves.push_back({item.get<std::string>(0), item.get<float>(1), item.get<float>(2)});
             }
-            auto configured = self->setFeatureQuery(*current, *previous, dt, samples, curves);
-            result.set("ok", configured.ok()); result.set("message", configured.status().describe());
-        } catch (const std::exception& e) { result.set("ok", false); result.set("message", std::string(e.what())); }
-        return result;
+            return script::projectResult(bind.vm(), self->setFeatureQuery(*current, *previous, dt, samples, curves));
+        } catch (const std::exception& error) {
+            return bind.failInvalid(error.what());
+        }
     });
-    mm.addFunc("setLocomotionQuery", [vm = table.getHandle()](MotionMatcher* self, AnimPose* current,
-                                                              AnimPose* previous, float dt, ssq::Array entries) {
-        ssq::Table result(vm);
+    mm.addFunc("setLocomotionQuery", [bind](MotionMatcher* self, AnimPose* current, AnimPose* previous, float dt,
+                                            ssq::Array entries) {
         try {
             if (!current || !previous || entries.size() != 5)
                 throw std::runtime_error("locomotion query requires two poses and five trajectory samples");
@@ -185,26 +213,25 @@ void exposeMotionMatcherBindings(ssq::Table& table) {
                 samples[i] = {item.get<float>(0), item.get<float>(1), item.get<float>(2), item.get<float>(3),
                               item.get<float>(4), item.get<float>(5), item.get<float>(6)};
             }
-            auto configured = self->setLocomotionQuery(*current, *previous, dt, samples);
-            result.set("ok", configured.ok());
-            result.set("message", configured.status().describe());
-        } catch (const std::exception& e) {
-            result.set("ok", false);
-            result.set("message", std::string(e.what()));
+            return script::projectResult(bind.vm(), self->setLocomotionQuery(*current, *previous, dt, samples));
+        } catch (const std::exception& error) {
+            return bind.failInvalid(error.what());
         }
-        return result;
     });
-    mm.addFunc("setCandidateRanges", [vm = table.getHandle()](MotionMatcher* self, ssq::Array entries) {
-        ssq::Table result(vm);
+    mm.addFunc("setCandidateRanges", [bind](MotionMatcher* self, ssq::Array entries) {
         try {
             if (entries.size() > 100000) throw std::runtime_error("too many candidate ranges");
             std::vector<MotionSearchRange> ranges;
             for (std::size_t i = 0; i < entries.size(); ++i) {
                 auto item = entries.get<ssq::Array>(i);
-                if (item.size() != 9) throw std::runtime_error("candidate range requires clip,start,end,bias,disableReselection,transitionBlocks,continuingBias,costOverrides,continuingCostOverrides");
-                MotionSearchRange range{item.get<int>(0), item.get<float>(1), item.get<float>(2),
-                                        item.get<float>(3), item.get<bool>(4)};
-                auto blocks = item.get<ssq::Array>(5);
+                if (item.size() != 9)
+                    throw std::runtime_error(
+                        "candidate range requires "
+                        "clip,start,end,bias,disableReselection,transitionBlocks,continuingBias,costOverrides,"
+                        "continuingCostOverrides");
+                MotionSearchRange range{item.get<int>(0), item.get<float>(1), item.get<float>(2), item.get<float>(3),
+                                        item.get<bool>(4)};
+                auto              blocks = item.get<ssq::Array>(5);
                 if (blocks.size() > 100000) throw std::runtime_error("too many transition blocks");
                 for (std::size_t j = 0; j < blocks.size(); ++j) {
                     auto block = blocks.get<ssq::Array>(j);
@@ -224,24 +251,18 @@ void exposeMotionMatcherBindings(ssq::Table& table) {
                 }
                 ranges.push_back(std::move(range));
             }
-            auto selected = self->setCandidateRanges(ranges);
-            result.set("ok", selected.ok());
-            result.set("message", selected.status().describe());
-            result.set("count", selected.ok() ? selected.value() : 0);
-        } catch (const std::exception& e) {
-            result.set("ok", false);
-            result.set("message", std::string(e.what()));
-            result.set("count", 0);
+            return script::projectResult(bind.vm(), self->setCandidateRanges(ranges),
+                                         [](int count) { return Value(count); });
+        } catch (const std::exception& error) {
+            return bind.failInvalid(error.what());
         }
-        return result;
     });
     mm.addFunc("setQueryPose", [](MotionMatcher* self, AnimPose* pose) {
         if (!pose) throw std::runtime_error("query pose is required");
         auto configured = self->setQueryPose(*pose);
         if (!configured) throw std::runtime_error(configured.status().describe());
     });
-    mm.addFunc("setTrajectory", [vm = table.getHandle()](MotionMatcher* self, ssq::Array entries) {
-        ssq::Table result(vm);
+    mm.addFunc("setTrajectory", [bind](MotionMatcher* self, ssq::Array entries) {
         try {
             if (entries.size() != 3) throw std::runtime_error("trajectory requires three samples");
             std::array<MotionTrajectorySample, 3> samples;
@@ -250,14 +271,10 @@ void exposeMotionMatcherBindings(ssq::Table& table) {
                 if (item.size() != 3) throw std::runtime_error("trajectory sample requires x,z,yaw");
                 samples[i] = {item.get<float>(0), item.get<float>(1), item.get<float>(2)};
             }
-            auto configured = self->setTrajectory(samples);
-            result.set("ok", configured.ok());
-            result.set("message", configured.status().describe());
-        } catch (const std::exception& e) {
-            result.set("ok", false);
-            result.set("message", std::string(e.what()));
+            return script::projectResult(bind.vm(), self->setTrajectory(samples));
+        } catch (const std::exception& error) {
+            return bind.failInvalid(error.what());
         }
-        return result;
     });
 }
 }  // namespace eve::animation

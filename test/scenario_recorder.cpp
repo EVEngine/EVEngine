@@ -7,6 +7,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <filesystem>
 #include <string>
 
 using namespace eve;
@@ -68,7 +69,7 @@ TEST_CASE("devtools.scenario.recordPersistLoadRoundTrip") {
     ev->pollOwned();
 
     const std::string path = "scenario_roundtrip_test.json";
-    CHECK(rec.end(path));
+    REQUIRE(rec.end(path));
     CHECK(!rec.recording());
 
     // Reload the persisted scenario independently of the recorder's memory.
@@ -110,26 +111,31 @@ TEST_CASE("devtools.scenario.replayReproducesStateDrivenError") {
     ev->pollOwned();
 
     const std::string path = "scenario_repro_test.json";
-    CHECK(rec.end(path));
+    REQUIRE(rec.end(path));
     dev::DevTool::instance().detach();
 
     // --- Replay on a fresh VM: restore baseline, re-stage the recorded taps ---
     Runtime rt2(256, ssq::Libs::ALL);
     rt2.runSource(kTapScript, "taps.nut");
-    CHECK(rec.beginReplay(rt2.handle(), path));
+    REQUIRE(rec.beginReplay(rt2.handle(), path));
 
     // Baseline restored: hits is back to 0 before any staged input.
     const int64_t before = rt2.vm().find("hits").toInt();
-    CHECK_EQ(before, 0);
+    REQUIRE_EQ(before, 0);
 
     bool reproduced = false;
     while (rec.framesRemaining() > 0) {
-        CHECK(rec.stageFrame());
-        CHECK(drainTaps(rt2.vm(), reproduced));
+        REQUIRE(rec.stageFrame());
+        REQUIRE(drainTaps(rt2.vm(), reproduced));
     }
     // All 3 taps replayed from the clean baseline -> hits reaches 3 -> throws.
-    CHECK(reproduced);
+    REQUIRE(reproduced);
 
     dev::ScenarioRecorder::instance().cancel();
     dev::DevTool::instance().detach();
+    // The repro file is written next to the test process on purpose (a developer can open
+    // it), but the case must not leave it in the checkout: it used to show up in
+    // `git status` after any local test run.
+    std::error_code removed;
+    std::filesystem::remove(path, removed);
 }

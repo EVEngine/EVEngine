@@ -1,29 +1,31 @@
 #include "ui/UI.h"
 #include "ui/DatabasePanel.h"
-#include "ui/ObjectRegistry.h"
+#include "ui/EditorHostCapabilities.h"
 #include "ui/EditorShell.h"
+#include "ui/EventSinkOwner.h"
+#include "ui/ObjectRegistry.h"
 #include "ui/PcgColorPreviewSync.h"
 #include "ui/PcgControllerSelection.h"
 #include "ui/PcgDraggableWindow.h"
-#include "ui/PcgPhotoModeApplyPlan.h"
-#include "ui/PcgPhotoModePanels.h"
-#include "ui/PcgPhotoModeRuntimeUI.h"
-#include "ui/PcgPhotoModeValues.h"
-#include "ui/PcgPhotoModeSession.h"
-#include "ui/PcgPhotoModeRanges.h"
-#include "ui/PcgPhotoModeColorPicker.h"
-#include "ui/PcgScreenshotSavedNotice.h"
 #include "ui/PcgLoadingScreen.h"
+#include "ui/PcgPhotoModeApplyPlan.h"
+#include "ui/PcgPhotoModeApplySeam.h"
+#include "ui/PcgPhotoModeColorPicker.h"
+#include "ui/PcgPhotoModePanels.h"
+#include "ui/PcgPhotoModeRanges.h"
+#include "ui/PcgPhotoModeRuntimeUI.h"
+#include "ui/PcgPhotoModeSession.h"
+#include "ui/PcgPhotoModeValues.h"
+#include "ui/PcgScreenshotSavedNotice.h"
 #include "ui/PcgTooltip.h"
-#include "ui/EditorHostCapabilities.h"
 #include "ui/UIAutomationCapabilities.h"
 
 #include "ui/Inspector.h"
+#include "ui/ParentScaler.h"
 #include "ui/ScenePanel.h"
 #include "ui/Theme.h"
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
-#include "ui/ParentScaler.h"
 
 #include "common/Capability.h"
 #include "common/Module.h"
@@ -35,11 +37,13 @@
 #include "graphics/Graphics.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
+#include "property_access/squirrel/ReflectedPropertyModel.h"
 #include "window/Window.h"
 #include "window/sdl/Window.h"
 
-#include <simplesquirrel/simplesquirrel.hpp>
 #include <SDL2/SDL_events.h>
+#include <squirrel.h>
+#include <simplesquirrel/simplesquirrel.hpp>
 
 #if !(defined(EVENGINE_WEBGPU) && defined(__EMSCRIPTEN__))
 #include <Poco/JSON/Array.h>
@@ -49,7 +53,6 @@
 #endif
 
 #include <algorithm>
-#include <chrono>
 #include <cstdio>
 #include <cstring>
 #include <iterator>
@@ -57,7 +60,134 @@
 #include <stdexcept>
 
 namespace eve::ui {
+namespace detail {
+// Internal module binding entry point; no cross-module callers.
+void injectUIComponentClass(ssq::Table &eveTable);
+}  // namespace detail
 namespace {
+
+UI *uiFromStack(HSQUIRRELVM vm) {
+    UI *self = nullptr;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, reinterpret_cast<SQUserPointer *>(&self), nullptr)) || !self) return nullptr;
+    return self;
+}
+
+std::string optionalEase(HSQUIRRELVM vm, SQInteger idx, SQInteger n) {
+    if (n < idx) return "smoothstep";
+    const SQChar *ease = nullptr;
+    if (SQ_FAILED(sq_getstring(vm, idx, &ease)) || !ease) return "smoothstep";
+    return ease;
+}
+
+float optionalDelay(HSQUIRRELVM vm, SQInteger idx, SQInteger n) {
+    if (n < idx) return 0.f;
+    SQFloat delay = 0.f;
+    if (SQ_FAILED(sq_getfloat(vm, idx, &delay))) return 0.f;
+    return float(delay);
+}
+
+/** Script: animateHostPos(x, y, durationMs [, ease [, delayMs]]). */
+SQInteger sqAnimateHostPos(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 4 || n > 6) return sq_throwerror(vm, "UI.animateHostPos expects (x, y, durationMs [, ease [, delayMs]])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    SQFloat x = 0.f, y = 0.f, durationMs = 0.f;
+    if (SQ_FAILED(sq_getfloat(vm, 2, &x)) || SQ_FAILED(sq_getfloat(vm, 3, &y)) ||
+        SQ_FAILED(sq_getfloat(vm, 4, &durationMs)))
+        return sq_throwerror(vm, "UI.animateHostPos expects float x/y/durationMs");
+    self->animateHostPos(float(x), float(y), float(durationMs), optionalEase(vm, 5, n), optionalDelay(vm, 6, n));
+    return 0;
+}
+
+/** Script: animateHostSize(w, h, durationMs [, ease [, delayMs]]). */
+SQInteger sqAnimateHostSize(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 4 || n > 6) return sq_throwerror(vm, "UI.animateHostSize expects (w, h, durationMs [, ease [, delayMs]])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    SQFloat w = 0.f, h = 0.f, durationMs = 0.f;
+    if (SQ_FAILED(sq_getfloat(vm, 2, &w)) || SQ_FAILED(sq_getfloat(vm, 3, &h)) ||
+        SQ_FAILED(sq_getfloat(vm, 4, &durationMs)))
+        return sq_throwerror(vm, "UI.animateHostSize expects float w/h/durationMs");
+    self->animateHostSize(float(w), float(h), float(durationMs), optionalEase(vm, 5, n), optionalDelay(vm, 6, n));
+    return 0;
+}
+
+/** Script: animateHostOverlayAlpha(alpha, durationMs [, ease [, delayMs]]). */
+SQInteger sqAnimateHostOverlayAlpha(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 3 || n > 5)
+        return sq_throwerror(vm, "UI.animateHostOverlayAlpha expects (alpha, durationMs [, ease [, delayMs]])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    SQFloat alpha = 0.f, durationMs = 0.f;
+    if (SQ_FAILED(sq_getfloat(vm, 2, &alpha)) || SQ_FAILED(sq_getfloat(vm, 3, &durationMs)))
+        return sq_throwerror(vm, "UI.animateHostOverlayAlpha expects float alpha/durationMs");
+    self->animateHostOverlayAlpha(float(alpha), float(durationMs), optionalEase(vm, 4, n), optionalDelay(vm, 5, n));
+    return 0;
+}
+
+/** Script: animateItemOpacity(id, opacity, durationMs [, ease [, delayMs]]). */
+SQInteger sqAnimateItemOpacity(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 4 || n > 6)
+        return sq_throwerror(vm, "UI.animateItemOpacity expects (id, opacity, durationMs [, ease [, delayMs]])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    const SQChar *id      = nullptr;
+    SQFloat       opacity = 0.f, durationMs = 0.f;
+    if (SQ_FAILED(sq_getstring(vm, 2, &id)) || SQ_FAILED(sq_getfloat(vm, 3, &opacity)) ||
+        SQ_FAILED(sq_getfloat(vm, 4, &durationMs)))
+        return sq_throwerror(vm, "UI.animateItemOpacity expects (string id, float opacity, float durationMs)");
+    self->animateItemOpacity(id ? id : "", float(opacity), float(durationMs), optionalEase(vm, 5, n),
+                             optionalDelay(vm, 6, n));
+    return 0;
+}
+
+/** Script: animateItemPos(id, x, y, durationMs [, ease [, delayMs]]). */
+SQInteger sqAnimateItemPos(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 5 || n > 7)
+        return sq_throwerror(vm, "UI.animateItemPos expects (id, x, y, durationMs [, ease [, delayMs]])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    const SQChar *id = nullptr;
+    SQFloat       x = 0.f, y = 0.f, durationMs = 0.f;
+    if (SQ_FAILED(sq_getstring(vm, 2, &id)) || SQ_FAILED(sq_getfloat(vm, 3, &x)) || SQ_FAILED(sq_getfloat(vm, 4, &y)) ||
+        SQ_FAILED(sq_getfloat(vm, 5, &durationMs)))
+        return sq_throwerror(vm, "UI.animateItemPos expects (string id, float x/y/durationMs)");
+    self->animateItemPos(id ? id : "", float(x), float(y), float(durationMs), optionalEase(vm, 6, n),
+                         optionalDelay(vm, 7, n));
+    return 0;
+}
+
+/** Script: cancelItemTweens([id]). */
+SQInteger sqCancelItemTweens(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 1 || n > 2) return sq_throwerror(vm, "UI.cancelItemTweens expects ([id])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    if (n < 2) {
+        self->cancelItemTweens("");
+        return 0;
+    }
+    const SQChar *id = nullptr;
+    if (SQ_FAILED(sq_getstring(vm, 2, &id))) return sq_throwerror(vm, "UI.cancelItemTweens id must be a string");
+    self->cancelItemTweens(id ? id : "");
+    return 0;
+}
+
+void addOptionalTweenFunc(ssq::Class &cls, const char *name, SQFUNCTION func, SQInteger minParams,
+                          const SQChar *typemask) {
+    HSQUIRRELVM vm = cls.getHandle();
+    sq_pushobject(vm, cls.getRaw());
+    sq_pushstring(vm, name, -1);
+    sq_newclosure(vm, func, 0);
+    sq_setparamscheck(vm, -minParams, typemask);
+    sq_newslot(vm, -3, SQFalse);
+    sq_poptop(vm);
+}
 
 std::string jsonQuoted(const std::string &value) {
     std::string out = "\"";
@@ -84,20 +214,19 @@ void callScriptHandler(ssq::Function &fn, const std::string &kind, const UIEvent
     const SQInteger top = sq_gettop(vm);
     sq_pushobject(vm, fn.getRaw());
     sq_pushroottable(vm);  // env
-    if (kind == "click") {
-        if (SQ_FAILED(sq_call(vm, 1, SQFalse, SQTrue))) {
-            sq_settop(vm, top);
-            return;
-        }
-    } else {
+    if (kind != "click") {
         sq_pushstring(vm, kind.c_str(), -1);
         if (kind == "toggle") sq_pushbool(vm, ev.toggleValue ? SQTrue : SQFalse);
         else if (kind == "value") sq_pushfloat(vm, ev.floatValue);
         else sq_pushstring(vm, ev.textValue.c_str(), -1);
-        if (SQ_FAILED(sq_call(vm, 3, SQFalse, SQTrue))) {
-            sq_settop(vm, top);
-            return;
-        }
+    }
+    // The payload is a runtime variant (bool / float / string), so the shared helper's
+    // typed-argument form does not fit; the count is derived instead, which is the same
+    // rule (R-FACE-7). A handler that throws used to be dropped without a word -- the
+    // two branches below each turned the failure into a bare `return`.
+    const SQInteger params = sq_gettop(vm) - top - 1;  // receiver + arguments
+    if (SQ_FAILED(sq_call(vm, params, SQFalse, SQTrue))) {
+        script::reportScriptCallFailure(vm, "ui.handler");
     }
     sq_settop(vm, top);
 }
@@ -108,282 +237,6 @@ void nodeToJson(const UIHost::Tree &tree, const UINode &n, Poco::JSON::Object &o
 WidgetDesc descFromJson(const Poco::JSON::Object &o);
 #endif
 
-/** Script base: `class X extends eve.UIComponent { function build() { ... } }`. */
-const char *kUIComponentScript = R"SQ(
-if (!("_uiComponents" in eve)) eve._uiComponents <- []
-if (!("_nextUIComponentOwner" in eve)) eve._nextUIComponentOwner <- 0
-
-eve._scheduleUIComponent <- function(component) {
-    if (component == null || component._scheduled) return
-    component._scheduled = true
-    eve._uiComponents.append(component)
-}
-
-eve._flushUIComponents <- function() {
-    local pending = eve._uiComponents
-    eve._uiComponents = []
-    foreach (component in pending) {
-        component._scheduled = false
-        if (component._mounted && component._parent == null && component.dirty)
-            component.updateIfDirty()
-    }
-}
-
-::eve_ui_flush_components <- function() {
-    eve._flushUIComponents()
-}
-
-eve.UIComponent <- class {
-    hostName = ""
-    dirty = true
-    forceFull = false
-    props = null
-    state = null
-    _ui = null
-    _parent = null
-    _mounted = false
-    _scheduled = false
-    _children = null
-    _nextChildren = null
-    _keyedChildren = null
-    _eventBindings = null
-    _eventOwner = 0
-
-    constructor(uiInstance = null, initialProps = null) {
-        _ui = uiInstance
-        hostName = ""
-        dirty = true
-        forceFull = false
-        props = initialProps != null ? initialProps : {}
-        state = {}
-        _parent = null
-        _mounted = false
-        _scheduled = false
-        _children = []
-        _nextChildren = []
-        _keyedChildren = {}
-        _eventBindings = []
-        eve._nextUIComponentOwner += 1
-        _eventOwner = eve._nextUIComponentOwner
-    }
-
-    function setUI(uiInstance) { _ui = uiInstance; return this }
-
-    function _applyProps(nextProps, replace, notify) {
-        if (nextProps == null) return this
-        if (replace) props = {}
-        foreach (key, value in nextProps) props.rawset(key, value)
-        if (notify) markDirty()
-        return this
-    }
-
-    function setProps(nextProps, replace = false) {
-        return _applyProps(nextProps, replace, true)
-    }
-
-    function mountAs(name) {
-        hostName = name
-        dirty = true
-        forceFull = true
-        updateIfDirty()
-        return this
-    }
-
-    function setState(patch = null) {
-        if (patch != null) {
-            foreach (key, value in patch) state.rawset(key, value)
-        }
-        markDirty()
-        return this
-    }
-    function markDirty() {
-        dirty = true
-        if (_parent != null && _parent != this) _parent.markDirty()
-        else if (_mounted) eve._scheduleUIComponent(this)
-        return this
-    }
-
-    // Compose a persistent child instance inside this component's active build pass.
-    function renderChild(component, nextProps = null, replaceProps = false) {
-        if (component == null) return null
-        component._parent = this
-        component.setUI(ui())
-        component._applyProps(nextProps, replaceProps, false)
-        _nextChildren.append(component)
-        local firstMount = !component._mounted
-        component._nextChildren = []
-        component.build()
-        component._finishChildPass()
-        component.dirty = false
-        component._mounted = true
-        if (firstMount) component.onMount()
-        else component.onUpdated()
-        return component
-    }
-
-    // Reuse a child component by a stable key. factory is called only for a new key.
-    function renderKeyed(key, factory, nextProps = null, replaceProps = false) {
-        if (key == null) throw "UIComponent renderKeyed requires a key"
-        local component = null
-        if (key in _keyedChildren) component = _keyedChildren[key]
-        else {
-            component = factory()
-            if (component == null) throw "UIComponent renderKeyed factory returned null"
-            _keyedChildren.rawset(key, component)
-        }
-        return renderChild(component, nextProps, replaceProps)
-    }
-
-    function _bindEvent(kind, id, fn) {
-        if (id == null || id == "" || fn == null) return this
-        foreach (binding in _eventBindings) {
-            if (binding.kind == kind && binding.id == id) {
-                binding.fn = fn
-                if (_mounted) _syncEventHandlers()
-                return this
-            }
-        }
-        _eventBindings.append({ kind = kind, id = id, fn = fn })
-        if (_mounted) _syncEventHandlers()
-        return this
-    }
-
-    function bindClick(id, fn) { return _bindEvent("click", id, fn) }
-    function bindChange(id, fn) { return _bindEvent("change", id, fn) }
-
-    function clearEventBindings() {
-        _eventBindings = []
-        ui().componentClearHandlers(_eventOwner)
-        return this
-    }
-
-    function _rootComponent() {
-        local root = this
-        while (root._parent != null && root._parent != root) root = root._parent
-        return root
-    }
-
-    function _syncEventHandlers() {
-        local u = ui()
-        u.componentClearHandlers(_eventOwner)
-        local root = _rootComponent()
-        if (root.hostName == "" || !u.select(root.hostName)) return
-        foreach (binding in _eventBindings) {
-            if (binding.kind == "click") u.componentOnClick(_eventOwner, binding.id, binding.fn)
-            else u.componentOnChange(_eventOwner, binding.id, binding.fn)
-        }
-    }
-
-    function _syncEventTree() {
-        _syncEventHandlers()
-        foreach (child in _children) child._syncEventTree()
-    }
-
-    function _containsChild(items, child) {
-        foreach (candidate in items) {
-            if (candidate == child) return true
-        }
-        return false
-    }
-
-    function _finishChildPass() {
-        foreach (child in _children) {
-            if (!_containsChild(_nextChildren, child)) child._unmountTree()
-        }
-        local staleKeys = []
-        foreach (key, child in _keyedChildren) {
-            if (!_containsChild(_nextChildren, child)) staleKeys.append(key)
-        }
-        foreach (key in staleKeys) delete _keyedChildren[key]
-        _children = _nextChildren
-        _nextChildren = []
-    }
-
-    function _unmountTree() {
-        if (!_mounted) return false
-        foreach (child in _children) child._unmountTree()
-        _children = []
-        _nextChildren = []
-        _mounted = false
-        _scheduled = false
-        dirty = false
-        ui().componentClearHandlers(_eventOwner)
-        onUnmount()
-        _parent = null
-        return true
-    }
-
-    function unmount() {
-        if (!_unmountTree()) return false
-        local u = ui()
-        if (hostName != "" && u.select(hostName)) u.setHostVisible(false)
-        return true
-    }
-
-    // Override in subclass: call this.ui().beginWindow / text / button / end ...
-    function build() {}
-    function onMount() {}
-    function onUpdated() {}
-    function onUnmount() {}
-
-    function ui() {
-        if (_ui != null) return _ui
-        try {
-            if (::ui != null) return ::ui
-        } catch (e) {}
-        _ui = ::eve.UI()
-        return _ui
-    }
-
-    function updateIfDirty() {
-        if (!dirty) return false
-        local firstMount = !_mounted
-        local u = ui()
-        _scheduled = false
-        dirty = false
-        _nextChildren = []
-        u.beginBuild()
-        build()
-        _finishChildPass()
-        local name = hostName
-        if (name == null || name == "") name = "default"
-        hostName = name
-        if (forceFull) {
-            if (!u.mountBuildAs(name)) throw "UIComponent mount failed: " + name
-            forceFull = false
-        } else {
-            if (!u.remountBuildAs(name)) throw "UIComponent remount failed: " + name
-        }
-        _mounted = true
-        u.setHostVisible(true)
-        if (firstMount) onMount()
-        else onUpdated()
-        _syncEventTree()
-        return true
-    }
-
-    function rebuild(force = false) {
-        dirty = true
-        forceFull = force
-        return updateIfDirty()
-    }
-}
-// Note: eve.Component is reserved for script ECS (see exposeECS). Use eve.UIComponent.
-)SQ";
-
-void injectUIComponentClass(ssq::Table &eveTable) {
-    HSQUIRRELVM vm = eveTable.getHandle();
-    const SQInteger top = sq_gettop(vm);
-    if (SQ_FAILED(sq_compilebuffer(vm, kUIComponentScript,
-                                   static_cast<SQInteger>(std::strlen(kUIComponentScript)),
-                                   "UIComponent.nut", SQTrue))) {
-        sq_settop(vm, top);
-        return;
-    }
-    sq_pushroottable(vm);
-    sq_call(vm, 1, SQFalse, SQTrue);
-    sq_settop(vm, top);
-}
 
 class UiRootReleaser final : public eve::script::ISquirrelRootReleaser {
 public:
@@ -406,8 +259,14 @@ Module_IMPL(UI, new UI());
 UI::UI() : backend_(createImGuiBackend()) {
     registerEditorHostCapabilities();
     registerUIAutomationCapabilities();
+    bindUIEventSinkOwner(this);
+    declareScriptPhotoModeApplySeam();
 }
-UI::~UI() { shutdownBackend(); }
+UI::~UI() {
+    withdrawScriptPhotoModeApplySeam();
+    bindUIEventSinkOwner(nullptr);
+    shutdownBackend();
+}
 
 void UI::releaseSquirrelRoots() noexcept {
     databasePanel_.reset();
@@ -453,62 +312,18 @@ void UI::beginFrameAndRender() {
     if (!isBackendReady()) {
         if (!initBackend()) return;
     }
-    updateHostTweens();
+    tickTweens(uiTweenWallClockMs());
     if (inspector_ && inspector_->isOpen()) inspector_->sync();
     if (databasePanel_ && databasePanel_->isOpen()) databasePanel_->sync();
     backend_->newFrame();
     UISystem::render();
 }
 
-void UI::updateHostTweens() {
-    if (hostTweens_.empty() && itemTweens_.empty()) return;
-    const double now =
-        std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now().time_since_epoch())
-            .count();
-    for (auto &t : hostTweens_) {
-        auto host = UIHost::resolve(t.host);
-        if (!host) continue;
-        auto         m       = host->get().meta();
-        const double elapsed = now - t.startMs;
-        if (t.durationMs <= 0.0 || elapsed >= t.durationMs) {
-            m->hasPos = true;
-            m->posX = t.toX;
-            m->posY = t.toY;
-            t.host    = {};  // done; removed below
-            continue;
-        }
-        const float k = float(elapsed / t.durationMs);
-        const float ease = k * k * (3.f - 2.f * k);  // smoothstep
-        m->hasPos = true;
-        m->posX = t.fromX + (t.toX - t.fromX) * ease;
-        m->posY = t.fromY + (t.toY - t.fromY) * ease;
-    }
-    hostTweens_.erase(std::remove_if(hostTweens_.begin(), hostTweens_.end(),
-                                     [](const HostTween &t) { return !UIHost::resolve(t.host).has_value(); }),
-                      hostTweens_.end());
-    for (auto &t : itemTweens_) {
-        auto host = UIHost::resolve(t.host);
-        if (!host) continue;
-        auto node = host->get().findById(t.nodeId);
-        if (!node) {
-            t.host = {};
-            continue;
-        }
-        const double elapsed = now - t.startMs;
-        if (t.durationMs <= 0.0 || elapsed >= t.durationMs) {
-            node->get().opacity = t.to;
-            t.host = {};
-            continue;
-        }
-        const float k = float(elapsed / t.durationMs);
-        const float ease = k * k * (3.f - 2.f * k);
-        node->get().opacity = t.from + (t.to - t.from) * ease;
-    }
-    itemTweens_.erase(
-        std::remove_if(itemTweens_.begin(), itemTweens_.end(),
-                       [](const ItemTween &t) { return !UIHost::resolve(t.host).has_value(); }),
-        itemTweens_.end());
-}
+void UI::tickTweens(double nowMs) { tweens_.tick(nowMs); }
+
+std::size_t UI::getHostTweenCount() const { return tweens_.hostTweenCount(); }
+
+std::size_t UI::getItemTweenCount() const { return tweens_.itemTweenCount(); }
 
 void UI::dispatchEvents() {
     // Copy before dispatch: UISystem::dispatchEvents() consumes the pending list.
@@ -718,6 +533,39 @@ void UI::beginSidebar(const std::string &id, float width) {
 }
 
 void UI::beginStatusBar(const std::string &id) { pushOpen(statusBar({}, id)); }
+
+void UI::beginTabBar(const std::string &id) { pushOpen(tabBar({}, id)); }
+
+void UI::beginTabContainer(const std::string &activePageId, const std::string &id) {
+    WidgetDesc d;
+    d.type          = NodeType::TabContainer;
+    d.id            = id;
+    d.key           = id;
+    d.valueText     = activePageId;
+    d.flexDirection = FlexDirection::Column;
+    d.flexGrow      = 1.f;
+    pushOpen(std::move(d));
+}
+
+void UI::beginPanelFrame(const std::string &title, const std::string &id) { pushOpen(panelFrame(title, {}, id)); }
+
+void UI::beginDockArea(const std::string &region, const std::string &id) { pushOpen(dockArea(region, {}, id)); }
+
+void UI::beginAppFrame(const std::string &id) {
+    WidgetDesc d;
+    d.type          = NodeType::AppFrame;
+    d.id            = id;
+    d.key           = id;
+    d.flexDirection = FlexDirection::Column;
+    d.flexGrow      = 1.f;
+    d.percentW      = 1.f;
+    d.percentH      = 1.f;
+    pushOpen(std::move(d));
+}
+
+void UI::addTab(const std::string &label, const std::string &pageId, bool selected, const std::string &id) {
+    currentParent().children.push_back(tab(label, pageId, selected, id));
+}
 
 void UI::beginScrollList(const std::string &id, float height, float itemHeight) {
     pushOpen(scrollList(id, {}, height, itemHeight));
@@ -1413,7 +1261,16 @@ UI::NinePatchResource *UI::loadNinePatch(const std::string &path) {
     auto *graphics = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
     if (!images || !graphics) return nullptr;
     try {
-        eve::ref<eve::image::ImageData> source(images->newImageDataFromFile(path));
+        // The provider hands back a cache-owned ImageData; the pin keeps it alive
+        // while the nine-patch border is measured and stripped.
+        eve::image::ImageData *source = images->newImageDataFromFile(path);
+        if (source == nullptr) return nullptr;
+        auto sourcePin = eve::ResourceManager::getInstance().pin(source);
+        if (!sourcePin.ok()) return nullptr;
+        eve::ResourcePin keepAlive = std::move(sourcePin).takeValue();
+        // The pin is the authority from here on; the borrowed pointer may have gone stale
+        // before the pin was taken.
+        source = static_cast<eve::image::ImageData *>(keepAlive.get());
         NinePatchResource resource;
         std::string error;
         if (!parseNinePatch(*source, resource.info, &error)) {
@@ -1594,22 +1451,19 @@ void UI::setHostPercent(float w, float h) {
     m->percentH = h;
 }
 
-void UI::animateHostPos(float x, float y, float durationMs) {
-    auto host = resolveSelected();
-    if (!host) return;
-    auto      m = host->get().meta();
-    HostTween t;
-    t.host = selected_;
-    t.fromX = m->hasPos ? m->posX : 0.f;
-    t.fromY = m->hasPos ? m->posY : 0.f;
-    t.toX = x;
-    t.toY = y;
-    t.startMs =
-        std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now().time_since_epoch())
-            .count();
-    t.durationMs = std::max(0.0, double(durationMs));
-    m->hasPos = true;
-    hostTweens_.push_back(t);
+void UI::animateHostPos(float x, float y, float durationMs, const std::string &ease, float delayMs) {
+    if (!resolveSelected()) return;
+    tweens_.animateHostPos(selected_, x, y, durationMs, ease, delayMs, uiTweenWallClockMs());
+}
+
+void UI::animateHostSize(float w, float h, float durationMs, const std::string &ease, float delayMs) {
+    if (!resolveSelected()) return;
+    tweens_.animateHostSize(selected_, w, h, durationMs, ease, delayMs, uiTweenWallClockMs());
+}
+
+void UI::animateHostOverlayAlpha(float alpha, float durationMs, const std::string &ease, float delayMs) {
+    if (!resolveSelected()) return;
+    tweens_.animateHostOverlayAlpha(selected_, alpha, durationMs, ease, delayMs, uiTweenWallClockMs());
 }
 
 std::string UI::consumeClick() { return UISystem::consumeClick(); }
@@ -1656,31 +1510,34 @@ std::string UI::defineStyleClass(const std::string &name, const std::string &par
     return styleClassStatusName(eve::ui::defineStyleClass(name, parent));
 }
 
-void UI::animateItemOpacity(const std::string &id, float opacity, float durationMs) {
-    auto host = resolveSelected();
-    if (!host) return;
-    auto node = host->get().findById(id);
-    if (!node) return;
-    itemTweens_.erase(std::remove_if(itemTweens_.begin(), itemTweens_.end(),
-                                    [&](const ItemTween &t) {
-                                        return t.host.table == selected_.table &&
-                                               t.host.type == selected_.type &&
-                                               t.host.id == selected_.id &&
-                                               t.host.generation == selected_.generation &&
-                                               t.nodeId == id;
-                                    }),
-                      itemTweens_.end());
-    ItemTween tween;
-    tween.host = selected_;
-    tween.nodeId = id;
-    tween.from = node->get().opacity;
-    tween.to = std::clamp(opacity, 0.f, 1.f);
-    tween.startMs =
-        std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now().time_since_epoch())
-            .count();
-    tween.durationMs = std::max(0.0, double(durationMs));
-    if (tween.durationMs <= 0.0) node->get().opacity = tween.to;
-    else itemTweens_.push_back(std::move(tween));
+void UI::animateItemOpacity(const std::string &id, float opacity, float durationMs, const std::string &ease,
+                            float delayMs) {
+    if (!resolveSelected()) return;
+    // Script-facing facade: missing hosts/nodes are no-ops (same as other UI setters).
+    tweens_.animateItemOpacity(selected_, id, opacity, durationMs, ease, delayMs, uiTweenWallClockMs())
+        .ignore("UI.animateItemOpacity: host/node unavailable");
+}
+
+void UI::animateItemPos(const std::string &id, float x, float y, float durationMs, const std::string &ease,
+                        float delayMs) {
+    if (!resolveSelected()) return;
+    tweens_.animateItemPos(selected_, id, x, y, durationMs, ease, delayMs, uiTweenWallClockMs())
+        .ignore("UI.animateItemPos: host/node unavailable");
+}
+
+void UI::cancelHostTweens() {
+    if (!resolveSelected()) return;
+    tweens_.cancelHost(selected_);
+}
+
+void UI::cancelItemTweens(const std::string &id) {
+    if (!resolveSelected()) return;
+    tweens_.cancelItem(selected_, id);
+}
+
+void UI::cancelAllTweens() {
+    if (!resolveSelected()) return;
+    tweens_.cancelAll(selected_);
 }
 
 std::string UI::setStyleClassColor(const std::string &name, const std::string &property, float r,
@@ -2026,6 +1883,12 @@ const char *nodeTypeName(NodeType t) {
     case NodeType::Sidebar: return "sidebar";
     case NodeType::StatusBar: return "statusBar";
     case NodeType::SplitPane: return "splitPane";
+    case NodeType::Tab: return "tab";
+    case NodeType::TabBar: return "tabBar";
+    case NodeType::TabContainer: return "tabContainer";
+    case NodeType::PanelFrame: return "panelFrame";
+    case NodeType::DockArea: return "dockArea";
+    case NodeType::AppFrame: return "appFrame";
     }
     return "text";
 }
@@ -2065,6 +1928,12 @@ NodeType nodeTypeFromName(const std::string &s) {
     if (s == "sidebar") return NodeType::Sidebar;
     if (s == "statusBar") return NodeType::StatusBar;
     if (s == "splitPane") return NodeType::SplitPane;
+    if (s == "tab") return NodeType::Tab;
+    if (s == "tabBar") return NodeType::TabBar;
+    if (s == "tabContainer") return NodeType::TabContainer;
+    if (s == "panelFrame") return NodeType::PanelFrame;
+    if (s == "dockArea") return NodeType::DockArea;
+    if (s == "appFrame") return NodeType::AppFrame;
     return NodeType::Text;
 }
 
@@ -2412,8 +2281,11 @@ ssq::Object UI::callPickHandler() {
         sq_settop(squirrel, top);
         return {};
     }
-    sq_pushroottable(squirrel);  // environment
-    if (SQ_FAILED(sq_call(squirrel, 1, SQTrue, SQTrue))) {
+    // The handler is the value we just looked up; call it with the root table as receiver
+    // and keep its return value on top for the instance check below.
+    HSQOBJECT handler;
+    sq_getstackobj(squirrel, -1, &handler);
+    if (SQ_FAILED(script::callFunctionResult(squirrel, handler, script::rootTable))) {
         sq_settop(squirrel, top);
         return {};
     }
@@ -2439,6 +2311,66 @@ bool UI::inspectPickScene() {
 
 bool UI::inspectAddInstance() {
     return inspector_ && inspector_->addInstance();
+}
+
+namespace {
+
+const char *propertyKindName(property_access::PropertyKind kind) {
+    using property_access::PropertyKind;
+    switch (kind) {
+        case PropertyKind::Auto: return "auto";
+        case PropertyKind::Bool: return "bool";
+        case PropertyKind::Integer: return "integer";
+        case PropertyKind::Number: return "number";
+        case PropertyKind::String: return "string";
+        case PropertyKind::Enum: return "enum";
+        case PropertyKind::Color: return "color";
+        case PropertyKind::Vec2: return "vec2";
+        case PropertyKind::Vec3: return "vec3";
+        case PropertyKind::Vec4: return "vec4";
+        case PropertyKind::AssetRef: return "assetRef";
+        case PropertyKind::ObjectRef: return "objectRef";
+        case PropertyKind::Struct: return "struct";
+        case PropertyKind::Array: return "array";
+        case PropertyKind::Map: return "map";
+        case PropertyKind::Action: return "action";
+        case PropertyKind::ReadOnlyText: return "readOnlyText";
+    }
+    return "auto";
+}
+
+}  // namespace
+
+ssq::Object UI::propertySchema(ssq::Object instance) {
+    Runtime *runtime = ModuleManager::runtime();
+    if (!runtime) return ssq::Object();
+    if (instance.getType() != ssq::Type::INSTANCE) return ssq::Object(runtime->handle());
+    property_access::ReflectedPropertyModel model(*runtime, instance);
+    ssq::VM &vm = runtime->vm();
+    ssq::Table out = vm.newTable();
+    out.set("typeId", model.schema().typeId);
+    out.set("version", static_cast<int>(model.schema().version));
+    ssq::Array properties = vm.newArray();
+    for (const property_access::PropertyDescriptor &property : model.schema().properties) {
+        ssq::Table entry = vm.newTable();
+        entry.set("path", property.path);
+        entry.set("kind", std::string(propertyKindName(property.kind)));
+        entry.set("displayName", property.displayName);
+        entry.set("description", property.description);
+        entry.set("category", property.category);
+        entry.set("readOnly", property_access::hasFlag(property.flags, property_access::PropertyFlag::ReadOnly));
+        entry.set("presenterHint", property.presenterHint);
+        entry.set("units", property.numeric.units);
+        if (property.numeric.minimum) entry.set("min", *property.numeric.minimum);
+        if (property.numeric.maximum) entry.set("max", *property.numeric.maximum);
+        if (property.numeric.step) entry.set("step", *property.numeric.step);
+        ssq::Array choices = vm.newArray();
+        for (const std::string &choice : property.choices) choices.push(choice);
+        entry.set("choices", choices);
+        properties.push(entry);
+    }
+    out.set("properties", properties);
+    return out;
 }
 
 bool UI::dbOpen() {
@@ -2569,16 +2501,19 @@ void UI::callScenePickHandler(const std::string &nodeId) {
         sq_settop(squirrel, top);
         return;
     }
-    sq_pushroottable(squirrel);                    // environment
-    sq_pushstring(squirrel, nodeId.c_str(), -1);   // node id argument
-    sq_call(squirrel, 2, SQFalse, SQTrue);
+    // Same shape as the inspector handler above: the looked-up closure, called with the
+    // root table as receiver and the node id as its argument. A failed call used to be
+    // discarded here too.
+    HSQOBJECT handler;
+    sq_getstackobj(squirrel, -1, &handler);
+    (void)script::callFunction(squirrel, handler, script::rootTable, nodeId);
     sq_settop(squirrel, top);
 }
 
 void UI::expose(ssq::Table &table) {
     auto cls = table.addClass(name, UI::create, false);
     expose(cls);
-    injectUIComponentClass(table);
+    detail::injectUIComponentClass(table);
     exposeParentScalerBindings(table);
     exposePcgColorPreviewSyncBindings(table);
     exposePcgControllerSelectionBindings(table);
@@ -2624,6 +2559,12 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("beginSidebar", &UI::beginSidebar);
     cls.addFunc("beginStatusBar", &UI::beginStatusBar);
     cls.addFunc("beginSplitPane", &UI::beginSplitPane);
+    cls.addFunc("beginTabBar", &UI::beginTabBar);
+    cls.addFunc("beginTabContainer", &UI::beginTabContainer);
+    cls.addFunc("beginPanelFrame", &UI::beginPanelFrame);
+    cls.addFunc("beginDockArea", &UI::beginDockArea);
+    cls.addFunc("beginAppFrame", &UI::beginAppFrame);
+    cls.addFunc("addTab", &UI::addTab);
     cls.addFunc("beginScrollList", &UI::beginScrollList);
     cls.addFunc("beginFlex", &UI::beginFlex);
     cls.addFunc("beginRow", &UI::beginRow);
@@ -2734,8 +2675,19 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("setHostAnchor", &UI::setHostAnchor);
     cls.addFunc("setHostSize", &UI::setHostSize);
     cls.addFunc("setHostPercent", &UI::setHostPercent);
-    cls.addFunc("animateHostPos", &UI::animateHostPos);
-    cls.addFunc("animateItemOpacity", &UI::animateItemOpacity);
+    // Trailing ease/delay (and cancelItemTweens id) are optional in script; C++
+    // defaults do not reach Squirrel through member-function pointers.
+    addOptionalTweenFunc(cls, "animateHostPos", sqAnimateHostPos, 4, _SC("xfffsf"));
+    addOptionalTweenFunc(cls, "animateHostSize", sqAnimateHostSize, 4, _SC("xfffsf"));
+    addOptionalTweenFunc(cls, "animateHostOverlayAlpha", sqAnimateHostOverlayAlpha, 3, _SC("xffsf"));
+    addOptionalTweenFunc(cls, "animateItemOpacity", sqAnimateItemOpacity, 4, _SC("xsffsf"));
+    addOptionalTweenFunc(cls, "animateItemPos", sqAnimateItemPos, 5, _SC("xsfffsf"));
+    cls.addFunc("cancelHostTweens", &UI::cancelHostTweens);
+    addOptionalTweenFunc(cls, "cancelItemTweens", sqCancelItemTweens, 1, _SC("xs"));
+    cls.addFunc("cancelAllTweens", &UI::cancelAllTweens);
+    cls.addFunc("tickTweens", &UI::tickTweens);
+    cls.addFunc("getHostTweenCount", &UI::getHostTweenCount);
+    cls.addFunc("getItemTweenCount", &UI::getItemTweenCount);
     cls.addFunc("consumeClick", &UI::consumeClick);
     cls.addFunc("consumeChange", &UI::consumeChange);
     cls.addFunc("dragDropSupport", &UI::dragDropSupport);
@@ -2786,6 +2738,7 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("inspectSetPickHandler", &UI::inspectSetPickHandler);
     cls.addFunc("inspectPickScene", &UI::inspectPickScene);
     cls.addFunc("inspectAddInstance", &UI::inspectAddInstance);
+    cls.addFunc("propertySchema", &UI::propertySchema);
 
     cls.addFunc("dbOpen", &UI::dbOpen);
     cls.addFunc("dbClose", &UI::dbClose);

@@ -19,7 +19,7 @@ using namespace eve::editing;
 
 namespace {
 
-void apply(ArchSpaceDocumentTarget& target, EditorResult<DomainOperation> operation) {
+void apply(ArchSpaceDocumentTarget& target, Result<DomainOperation> operation) {
     REQUIRE(operation.ok());
     REQUIRE(target.applyDomainOperation(operation.value()).ok());
 }

@@ -1,5 +1,6 @@
 #include "voxel/editing/VoxelEditingCommands.h"
 
+#include "editing/PropertySchemaJson.h"
 #include "voxel/editing/VoxelCatalog.h"
 
 #include <cstdint>
@@ -43,15 +44,43 @@ bool readBool(const editing::Value& value, const char* key, bool& output, bool r
     return true;
 }
 
-editing::Result<void> addCommand(editing::IEditingCommandRegistry& registry, const char* id, const char* displayName,
-                                 editing::EditingCommandPlanner planner) {
+editing::PropertyDescriptor stringProp(const char* path, const char* title) {
+    editing::PropertyDescriptor descriptor;
+    descriptor.path           = editing::PropertyPath(path);
+    descriptor.displayNameKey = title;
+    descriptor.type           = editing::PropertyType::String;
+    return descriptor;
+}
+
+editing::PropertyDescriptor intProp(const char* path, const char* title) {
+    editing::PropertyDescriptor descriptor;
+    descriptor.path           = editing::PropertyPath(path);
+    descriptor.displayNameKey = title;
+    descriptor.type           = editing::PropertyType::Int;
+    return descriptor;
+}
+
+editing::PropertyDescriptor boolProp(const char* path, const char* title) {
+    editing::PropertyDescriptor descriptor;
+    descriptor.path           = editing::PropertyPath(path);
+    descriptor.displayNameKey = title;
+    descriptor.type           = editing::PropertyType::Bool;
+    return descriptor;
+}
+
+editing::EditingCommandDescriptor makeDescriptor(const char* id, const char* displayName,
+                                                 editing::PropertySchema schema) {
     editing::EditingCommandDescriptor descriptor;
     descriptor.id                = editing::CommandId(id);
     descriptor.ownerModule       = "voxel_editing";
     descriptor.displayName       = displayName;
     descriptor.category          = "Voxel";
     descriptor.automationAllowed = true;
-    return registry.registerPlannedCommand(std::move(descriptor), std::move(planner));
+    descriptor.targetKinds       = {"voxel-catalog", "voxel-model"};
+    descriptor.payloadSchema     = std::move(schema);
+    descriptor.panelCapability   = "voxel.sculpt";
+    descriptor.panelContext      = "inspector";
+    return descriptor;
 }
 
 VoxelCatalogTarget* asCatalog(editing::IEditableTarget& target) {
@@ -84,10 +113,51 @@ editing::Result<editing::CommandPlan> planFrom(editing::Result<editing::DomainOp
 
 }  // namespace
 
+std::vector<editing::EditingCommandDescriptor> voxelEditingCommandDescriptors() {
+    std::vector<editing::EditingCommandDescriptor> descriptors;
+    {
+        editing::PropertySchema schema;
+        schema.typeId = "voxel.model.create.v1";
+        schema.properties.push_back(stringProp("id", "Id"));
+        schema.properties.push_back(stringProp("name", "Name"));
+        schema.properties.push_back(intProp("sizeX", "Size X"));
+        schema.properties.push_back(intProp("sizeY", "Size Y"));
+        schema.properties.push_back(intProp("sizeZ", "Size Z"));
+        descriptors.push_back(makeDescriptor("voxel.model.create.v1", "Create voxel model", std::move(schema)));
+    }
+    {
+        editing::PropertySchema schema;
+        schema.typeId = "voxel.model.delete.v1";
+        schema.properties.push_back(stringProp("id", "Id"));
+        descriptors.push_back(makeDescriptor("voxel.model.delete.v1", "Delete voxel model", std::move(schema)));
+    }
+    {
+        editing::PropertySchema schema;
+        schema.typeId = "voxel.model.voxel.set.v1";
+        schema.properties.push_back(stringProp("item", "Item"));
+        schema.properties.push_back(intProp("x", "X"));
+        schema.properties.push_back(intProp("y", "Y"));
+        schema.properties.push_back(intProp("z", "Z"));
+        schema.properties.push_back(boolProp("occupied", "Occupied"));
+        descriptors.push_back(makeDescriptor("voxel.model.voxel.set.v1", "Set voxel occupancy", std::move(schema)));
+    }
+    {
+        editing::PropertySchema schema;
+        schema.typeId = "voxel.property.set.v1";
+        schema.properties.push_back(stringProp("item", "Item"));
+        schema.properties.push_back(stringProp("path", "Path"));
+        editing::PropertyDescriptor value = stringProp("value", "Value");
+        value.type                        = editing::PropertyType::Struct;
+        schema.properties.push_back(std::move(value));
+        descriptors.push_back(makeDescriptor("voxel.property.set.v1", "Set voxel catalog property", std::move(schema)));
+    }
+    return descriptors;
+}
+
 editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& registry) {
-    auto registered = addCommand(
-        registry, "voxel.model.create.v1", "Create voxel model",
-        [](editing::IEditableTarget& target, const editing::CommandRequest& request) {
+    auto descriptors = voxelEditingCommandDescriptors();
+    auto registered  = registry.registerPlannedCommand(
+        descriptors[0], [](editing::IEditableTarget& target, const editing::CommandRequest& request) {
             auto* catalog = asCatalog(target);
             const std::string* id = stringField(request.payload, "id");
             if (!catalog || !id || id->empty())
@@ -108,9 +178,8 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
         });
     if (!registered.ok()) return registered;
 
-    registered = addCommand(
-        registry, "voxel.model.delete.v1", "Delete voxel model",
-        [](editing::IEditableTarget& target, const editing::CommandRequest& request) {
+    registered = registry.registerPlannedCommand(
+        descriptors[1], [](editing::IEditableTarget& target, const editing::CommandRequest& request) {
             auto* catalog = asCatalog(target);
             const std::string* id = stringField(request.payload, "id");
             if (!catalog || !id || id->empty())
@@ -121,9 +190,8 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
         });
     if (!registered.ok()) return registered;
 
-    registered = addCommand(
-        registry, "voxel.model.voxel.set.v1", "Set voxel occupancy",
-        [](editing::IEditableTarget& target, const editing::CommandRequest& request) {
+    registered = registry.registerPlannedCommand(
+        descriptors[2], [](editing::IEditableTarget& target, const editing::CommandRequest& request) {
             auto* catalog = asCatalog(target);
             const std::string* item = stringField(request.payload, "item");
             int x = 0, y = 0, z = 0;
@@ -139,9 +207,8 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
         });
     if (!registered.ok()) return registered;
 
-    return addCommand(
-        registry, "voxel.property.set.v1", "Set voxel catalog property",
-        [](editing::IEditableTarget& target, const editing::CommandRequest& request) {
+    return registry.registerPlannedCommand(
+        descriptors[3], [](editing::IEditableTarget& target, const editing::CommandRequest& request) {
             auto* catalog = asCatalog(target);
             auto* properties = static_cast<editing::IPropertyProvider*>(
                 target.queryCapability(VoxelCatalogTarget::propertyCapabilityId()));

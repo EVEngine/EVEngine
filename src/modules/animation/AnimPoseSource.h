@@ -19,6 +19,7 @@ class AnimSkeleton;
  */
 class IAnimPoseSource {
 public:
+    /** @brief Releases IAnimPoseSource resources. */
     virtual ~IAnimPoseSource() = default;
 
     /**

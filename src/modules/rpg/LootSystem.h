@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file LootSystem.h
@@ -38,12 +40,17 @@ struct LootTableDefinition {
  * @brief 掉落系统：进程级掉落表 + 随机 roll 入包。
  * @thread roll 使用调用方提供的 rng（命名随机流），可在任意线程执行。
  */
-class LootSystem {
+class EVENGINE_API_PLATFORM LootSystem {
 public:
+    /** @brief Registers table. */
     static void registerTable(const LootTableDefinition &def);
+    /** @brief Registers tables from json. */
     static int registerTablesFromJson(const std::string &json);
+    /** @brief Finds . */
     static const LootTableDefinition *find(const std::string &id);
+    /** @brief Clears . */
     static void clear();
+    /** @brief Returns the number of . */
     static int count();
 
     /**

@@ -1,13 +1,14 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "physics/Physics.h"
-#include "physics/World3D.h"
 #include "physics/Body3D.h"
-#include "physics/Shape3D.h"
 #include "physics/DistanceField3D.h"
 #include "physics/Joint3D.h"
+#include "physics/Physics.h"
+#include "physics/Shape3D.h"
 #include "physics/TerrainLoadGravity.h"
+#include "physics/World3D.h"
+#include "physics/box3d/Box3DBody.h"
 
 #include <box3d/box3d.h>
 
@@ -414,7 +415,7 @@ TEST_CASE("box3d.joint.sphericalMotorRespectsConeAndKeepsSharedAnchor") {
     CHECK_GT(ball->getSphericalConeAngle(), 0.25f);
     CHECK_LT(ball->getSphericalConeAngle(), 0.45f);
     CHECK_LT(std::fabs(ball->getSphericalTwistAngle()), 0.35f);
-    const b3Pos anchor = b3Body_GetWorldPoint(limb->raw(), b3Vec3{0.f, 1.f, 0.f});
+    const b3Pos anchor = b3Body_GetWorldPoint(eve::physics::box3d::Access::bodyId(*limb), b3Vec3{0.f, 1.f, 0.f});
     CHECK(std::fabs(anchor.x) < 0.03f);
     CHECK(std::fabs(anchor.y) < 0.03f);
     CHECK(std::fabs(anchor.z) < 0.03f);
@@ -770,16 +771,16 @@ TEST_CASE("box3d.oneway.configurationAndSensorRecreation") {
 
     shape->setOneWay(0.f, 2.f, 0.f, 0.25f, 0.05f, 0.2f);
     CHECK(shape->isOneWay());
-    CHECK(b3Shape_ArePreSolveEventsEnabled(shape->raw()));
+    CHECK(b3Shape_ArePreSolveEventsEnabled(eve::physics::box3d::Access::shapeId(*shape)));
     shape->setSensor(true);
     CHECK(shape->isOneWay());
-    CHECK(!b3Shape_ArePreSolveEventsEnabled(shape->raw()));
+    CHECK(!b3Shape_ArePreSolveEventsEnabled(eve::physics::box3d::Access::shapeId(*shape)));
     shape->setSensor(false);
     CHECK(shape->isOneWay());
-    CHECK(b3Shape_ArePreSolveEventsEnabled(shape->raw()));
+    CHECK(b3Shape_ArePreSolveEventsEnabled(eve::physics::box3d::Access::shapeId(*shape)));
     shape->disableOneWay();
     CHECK(!shape->isOneWay());
-    CHECK(!b3Shape_ArePreSolveEventsEnabled(shape->raw()));
+    CHECK(!b3Shape_ArePreSolveEventsEnabled(eve::physics::box3d::Access::shapeId(*shape)));
 }
 
 TEST_CASE("box3d.oneway.platformPassesFromBelowAndBlocksFromAbove") {
@@ -905,7 +906,7 @@ TEST_CASE("box3d.shape.runtimePrimitiveResizePreservesIdentityAndUpdatesMass") {
     box->setHitEventsEnabled(true);
     box->setLocalPosition(1.f, 0.f, 0.f);
     const int stableId = box->getId();
-    const float initialMass = b3Body_GetMass(body->raw());
+    const float initialMass = body->getMass();
 
     CHECK_EQ(box->getKind(), std::string("box"));
     box->setBoxSize(2.f, 2.f, 2.f);
@@ -922,7 +923,7 @@ TEST_CASE("box3d.shape.runtimePrimitiveResizePreservesIdentityAndUpdatesMass") {
     CHECK(std::fabs(box->getBoxHeight() - 2.f) < 1e-5f);
     CHECK(std::fabs(box->getBoxDepth() - 2.f) < 1e-5f);
     CHECK(box->testPoint(1.f, 0.9f, 0.f));
-    CHECK_GT(b3Body_GetMass(body->raw()), initialMass * 7.5f);
+    CHECK_GT(body->getMass(), initialMass * 7.5f);
     CHECK_THROWS((box->setSphereRadius(1.f), false));
     CHECK_THROWS((box->setBoxSize(0.f, 1.f, 1.f), false));
     CHECK(std::fabs(box->getBoxWidth() - 2.f) < 1e-5f);
@@ -1410,7 +1411,7 @@ TEST_CASE("box3d.events.hitPreferenceSurvivesSensorToggle") {
     CHECK(shape->areHitEventsEnabled());
     shape->setSensor(false);
     CHECK(shape->areHitEventsEnabled());
-    CHECK(b3Shape_AreHitEventsEnabled(shape->raw()));
+    CHECK(b3Shape_AreHitEventsEnabled(eve::physics::box3d::Access::shapeId(*shape)));
 }
 
 TEST_CASE("box3d.contacts.bodyManifoldIsPersistentAndBodyRelative") {

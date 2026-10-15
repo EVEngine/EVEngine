@@ -61,6 +61,10 @@ Result<MontageHandle> MontageCoordinator::play(std::size_t layer, action::Action
 
     auto           candidate = std::make_unique<MontagePlayer>(skeleton_);
     if (entry.rootMotionReceiver) candidate->setRootMotionReceiver(*entry.rootMotionReceiver);
+    if (entry.rootMotionPolicy) {
+        auto applied = candidate->setRootMotionPolicy(*entry.rootMotionPolicy);
+        if (!applied) return Result<MontageHandle>::failure(applied.status());
+    }
     const Duration blendOut  = timeline.montage.defaultBlendIn;
     auto           prepared  = candidate->prepare(std::move(timeline), std::move(clips));
     if (!prepared) return Result<MontageHandle>::failure(prepared.status());
@@ -239,6 +243,33 @@ Result<void> MontageCoordinator::clearLayerRootMotionReceiver(std::size_t layer)
     for (Slot& slot : entry.slots)
         if (slot.player) slot.player->clearRootMotionReceiver();
     entry.rootMotionReceiver = nullptr;
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<void> MontageCoordinator::setLayerRootMotionPolicy(std::size_t layer, const RootMotionPolicy& policy) {
+    if (layer > static_cast<std::size_t>(std::numeric_limits<MontageHandle::index_type>::max() / 2U))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage layer is too large", "layer"));
+    auto validated = validateRootMotionPolicy(policy);
+    if (!validated) return validated;
+    ensureLayer(layer);
+    Layer& entry = layers_[layer];
+    for (Slot& slot : entry.slots) {
+        if (!slot.player) continue;
+        auto applied = slot.player->setRootMotionPolicy(policy);
+        if (!applied) return applied;
+    }
+    entry.rootMotionPolicy = policy;
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<void> MontageCoordinator::clearLayerRootMotionPolicy(std::size_t layer) {
+    if (layer >= layers_.size())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "montage layer does not exist", "layer"));
+    Layer& entry = layers_[layer];
+    if (!entry.rootMotionPolicy) return Result<void>::success(Status::success(StatusCode::NoOp));
+    entry.rootMotionPolicy.reset();
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 

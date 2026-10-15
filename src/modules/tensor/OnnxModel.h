@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "tensor/OnnxStorage.h"
@@ -58,7 +60,7 @@ struct OnnxModelInfo {
  *       Loading is transactional. Unknown protobuf metadata is ignored, unknown operators
  *       are reported; unsupported semantic features fail explicitly, never become identity.
  */
-class OnnxModel {
+class EVENGINE_API_DOMAINS OnnxModel {
 public:
     /** @brief Destroy model-owned graph and packed initializers; outputs remain valid. */
     ~OnnxModel();

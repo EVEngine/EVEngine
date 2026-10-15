@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# test-sdk.sh <sdk-root> <platform> [expected-version]
+# test-sdk.sh <sdk-root> <platform> [expected-version] [android-abi]
 #
 # Verify a freshly-built target-platform SDK is usable by consumers, before it is
 # zipped and published to a GitHub Release. Runs on the same host as the SDK:
@@ -34,6 +34,7 @@ case "$SDK" in
 esac
 PLAT="${2:?usage: test-sdk.sh <sdk-root> <platform> [expected-version]}"
 EXPECTED="${3:-}"
+ANDROID_PACKAGE_ABI="${4:-arm64-v8a}"
 
 case "$PLAT" in
   win32)           RUNTIME="eve.exe" ;;
@@ -74,13 +75,15 @@ if [ "$PLAT" = "android" ]; then
     fail "android template launcher must be EVEngineActivity (EVTestActivity has MAIN)"
   fi
 
-  JNI="$TEMPLATE/app/src/main/jniLibs/arm64-v8a"
+  JNI="$TEMPLATE/app/src/main/jniLibs/$ANDROID_PACKAGE_ABI"
   mkdir -p "$JNI"
   [ -f "$SDK/lib/libmain.so" ] || fail "missing lib/libmain.so"
   cp "$SDK/lib/libmain.so" "$JNI/"
-  for lib in libSDL2.so libhidapi.so libc++_shared.so; do
-    [ -f "$SDK/lib/$lib" ] && cp "$SDK/lib/$lib" "$JNI/"
+  for lib in libSDL2.so libc++_shared.so; do
+    [ -f "$SDK/lib/$lib" ] || fail "missing lib/$lib"
+    cp "$SDK/lib/$lib" "$JNI/"
   done
+  [ ! -f "$SDK/lib/libhidapi.so" ] || cp "$SDK/lib/libhidapi.so" "$JNI/"
 
   GAME="$TEMPLATE/app/src/main/assets/game"
   mkdir -p "$GAME"
@@ -94,10 +97,9 @@ EOF
   printf 'sdk.dir=%s\n' "$ANDROID_SDK" > "$TEMPLATE/local.properties"
 
   echo "== [test-sdk] assembling APK from $TEMPLATE =="
-  ( cd "$TEMPLATE" && sh gradlew :app:assembleDebug --no-daemon --console=plain ) \
-    >"$WORK/apk-build.log" 2>&1
-  rc=$?
-  if [ $rc -ne 0 ]; then
+  if ! ( cd "$TEMPLATE" && bash gradlew :app:assembleDebug \
+      -PevengineAbi="$ANDROID_PACKAGE_ABI" --no-daemon --console=plain ) \
+      >"$WORK/apk-build.log" 2>&1; then
     tail -n 40 "$WORK/apk-build.log"
     fail "gradle assembleDebug failed"
   fi

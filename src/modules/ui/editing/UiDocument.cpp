@@ -32,7 +32,7 @@ void* UiDocumentTarget::queryCapability(const CapabilityId& capability) {
     return nullptr;
 }
 
-EditorResult<void> UiDocumentTarget::applyDomainOperation(const DomainOperation& operation) {
+Result<void> UiDocumentTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui.target-mismatch"),
                                           "UI operation targets another document");
@@ -107,7 +107,7 @@ std::unique_ptr<IDomainOperationTarget> UiDocumentTarget::cloneDomainState() con
     return std::make_unique<UiDocumentTarget>(*this);
 }
 
-EditorResult<void> UiDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
+Result<void> UiDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* document = dynamic_cast<UiDocumentTarget*>(candidate.get());
     if (!document || document->id_ != id_)
         return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.ui.candidate-mismatch"),
@@ -116,7 +116,7 @@ EditorResult<void> UiDocumentTarget::commitDomainState(std::unique_ptr<IDomainOp
     return eve::editing::applied<void>();
 }
 
-EditorResult<UiWidgetSnapshot> UiDocumentTarget::widget(const ObjectId& id) const {
+Result<UiWidgetSnapshot> UiDocumentTarget::widget(const ObjectId& id) const {
     const auto found = widgets_.find(id);
     if (found == widgets_.end())
         return eve::editing::failed<UiWidgetSnapshot>(EditorStatus::NotFound, RuleId("editor.ui.widget-not-found"),
@@ -131,7 +131,7 @@ std::vector<ObjectId> UiDocumentTarget::children(const ObjectId& parent) const {
     return result;
 }
 
-EditorResult<DomainOperation> UiDocumentTarget::makeCreate(const CreateUiWidgetRequest& request) const {
+Result<DomainOperation> UiDocumentTarget::makeCreate(const CreateUiWidgetRequest& request) const {
     if (request.id.empty() || request.type.empty() || request.name.empty())
         return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.ui.invalid-widget"),
                                                      "UI widget id, type and name are required");
@@ -154,7 +154,7 @@ EditorResult<DomainOperation> UiDocumentTarget::makeCreate(const CreateUiWidgetR
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<DomainOperation> UiDocumentTarget::makeDelete(const ObjectId& id) const {
+Result<DomainOperation> UiDocumentTarget::makeDelete(const ObjectId& id) const {
     auto current = widget(id);
     if (!current.ok())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui.widget-not-found"),
@@ -173,7 +173,7 @@ EditorResult<DomainOperation> UiDocumentTarget::makeDelete(const ObjectId& id) c
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<DomainOperation> UiDocumentTarget::makeRename(const ObjectId& id, const std::string& name) const {
+Result<DomainOperation> UiDocumentTarget::makeRename(const ObjectId& id, const std::string& name) const {
     auto current = widget(id);
     if (!current.ok())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui.widget-not-found"),
@@ -186,7 +186,7 @@ EditorResult<DomainOperation> UiDocumentTarget::makeRename(const ObjectId& id, c
     return makeReplace(current.value(), std::move(changed), "widget.name");
 }
 
-EditorResult<DomainOperation> UiDocumentTarget::makeReparent(const ObjectId& id, const ObjectId& parent) const {
+Result<DomainOperation> UiDocumentTarget::makeReparent(const ObjectId& id, const ObjectId& parent) const {
     auto current = widget(id);
     if (!current.ok())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui.widget-not-found"),
@@ -202,7 +202,7 @@ EditorResult<DomainOperation> UiDocumentTarget::makeReparent(const ObjectId& id,
     return makeReplace(current.value(), std::move(changed), "widget.parent");
 }
 
-EditorResult<DomainOperation> UiDocumentTarget::makeSetLayout(const ObjectId& id, const UiLayoutValue& layout) const {
+Result<DomainOperation> UiDocumentTarget::makeSetLayout(const ObjectId& id, const UiLayoutValue& layout) const {
     auto current = widget(id);
     if (!current.ok())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui.widget-not-found"),
@@ -218,7 +218,7 @@ EditorResult<DomainOperation> UiDocumentTarget::makeSetLayout(const ObjectId& id
     return makeReplace(current.value(), std::move(changed), "layout");
 }
 
-EditorResult<DomainOperation> UiDocumentTarget::makeSetStyle(const ObjectId& id, const UiStyleValue& style) const {
+Result<DomainOperation> UiDocumentTarget::makeSetStyle(const ObjectId& id, const UiStyleValue& style) const {
     auto current = widget(id);
     if (!current.ok())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui.widget-not-found"),
@@ -247,7 +247,7 @@ EditorResult<DomainOperation> UiDocumentTarget::makeSetStyle(const ObjectId& id,
     return makeReplace(current.value(), std::move(changed), "style");
 }
 
-EditorResult<DomainOperation> UiDocumentTarget::makeSetContent(const ObjectId&       id,
+Result<DomainOperation> UiDocumentTarget::makeSetContent(const ObjectId&       id,
                                                                const UiContentValue& content) const {
     auto current = widget(id);
     if (!current.ok())
@@ -294,7 +294,7 @@ std::vector<EditorDiagnostic> UiDocumentTarget::validate() const {
     return diagnostics;
 }
 
-EditorResult<DomainOperation> UiDocumentTarget::makeReplace(const UiWidgetSnapshot& before, UiWidgetSnapshot after,
+Result<DomainOperation> UiDocumentTarget::makeReplace(const UiWidgetSnapshot& before, UiWidgetSnapshot after,
                                                             std::string property) const {
     DomainOperation operation;
     operation.type       = "ui.widget.replace.v1";

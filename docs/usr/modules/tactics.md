@@ -165,6 +165,21 @@ local declared = battle.edge(0, 0, 0, 1, 0, 0);
 - 快照 schema 因此升到 **v2**；v1 快照仍可恢复（按"所有方向均未声明"迁移），
   未知版本仍被拒绝。
 
+### 球面与显式图拓扑
+
+`battle.setTopology("graph")` 在 setup 阶段、添加边之前选择显式图。
+此时 `addCell(id, 0, 0, moveCost)` 中的坐标只是身份，只有 `addEdge` 声明的
+出向边才是邻接；反向通行必须另加反向边。允许球面五边形、跨层连接，拒绝自环。
+规则网格的边仍只修饰原有网格邻接，省略反向边不会阻断反向通行。
+
+`reachable`、`previewMove`、`move` 继续使用同一权威棋盘、占用和移动点。
+`face`、坐标 `cellsInRange`、默认网格视线与掩体在图模式返回 Unsupported，
+不能把图节点编号解释成平面距离；空间视线须提供专用策略。
+图棋盘快照使用 schema 7，网格棋盘保持 schema 6。恢复支持原有版本 1–6
+及版本 7；旧 schema 中出现图拓扑、未知新版本或非法图朝向都会在发布前被拒绝。
+
+完整接入例见 [hex-planet](../../../examples/hex-planet/README.md)。
+
 ### 回合策略（可插拔）
 
 回合顺序不再写死在核心里：战局只存一个**稳定字符串 id**，行为由 `TurnPolicyRegistry` 解析。

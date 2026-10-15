@@ -48,7 +48,7 @@ eve::Result<std::vector<std::uint8_t>> unhex(const eve::Value& value, std::size_
     if (!text || text->size() % 2 != 0 || text->size() / 2 > maximumBytes)
         return eve::Result<std::vector<std::uint8_t>>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid or oversized hexadecimal payload",
-                                   std::move(path), {}, "pixelworld.chunk-archive"));
+                                   path, {}, "pixelworld.chunk-archive"));
     const auto nibble = [](char value) -> int {
         if (value >= '0' && value <= '9') return value - '0';
         if (value >= 'a' && value <= 'f') return value - 'a' + 10;
@@ -60,7 +60,7 @@ eve::Result<std::vector<std::uint8_t>> unhex(const eve::Value& value, std::size_
         const int low = nibble((*text)[index * 2 + 1]);
         if (high < 0 || low < 0)
             return eve::Result<std::vector<std::uint8_t>>::failure(
-                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid hexadecimal digit", std::move(path),
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid hexadecimal digit", path,
                                        {}, "pixelworld.chunk-archive"));
         result[index] = std::uint8_t((high << 4) | low);
     }
@@ -105,12 +105,12 @@ eve::Result<const eve::Value::Object*> object(const eve::Value& value, std::stri
     if (!result || result->size() != fields.size())
         return eve::Result<const eve::Value::Object*>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "archive object has unknown or missing fields",
-                                   std::move(path), {}, "pixelworld.chunk-archive"));
+                                   path, {}, "pixelworld.chunk-archive"));
     for (const auto field : fields)
         if (!result->contains(std::string(field)))
             return eve::Result<const eve::Value::Object*>::failure(
                 eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "archive object has unknown or missing fields",
-                                       std::move(path), {}, "pixelworld.chunk-archive"));
+                                       path, {}, "pixelworld.chunk-archive"));
     return eve::Result<const eve::Value::Object*>::success(result);
 }
 
@@ -123,7 +123,7 @@ eve::Result<std::uint64_t> decimal(const eve::Value& value, std::string path) {
     const auto [end, error] = std::from_chars(text->data(), text->data() + text->size(), result);
     if (error != std::errc{} || end != text->data() + text->size())
         return eve::Result<std::uint64_t>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
-                                                                          "invalid decimal string", std::move(path), {},
+                                                                          "invalid decimal string", path, {},
                                                                           "pixelworld.chunk-archive"));
     return eve::Result<std::uint64_t>::success(result);
 }
@@ -132,7 +132,7 @@ eve::Result<int> integer(const eve::Value& value, std::string path) {
     const auto* number = value.getIf<std::int64_t>();
     if (!number || *number < std::numeric_limits<int>::min() || *number > std::numeric_limits<int>::max())
         return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
-                                                                "expected in-range integer", std::move(path), {},
+                                                                "expected in-range integer", path, {},
                                                                 "pixelworld.chunk-archive"));
     return eve::Result<int>::success(int(*number));
 }

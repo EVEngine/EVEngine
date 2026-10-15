@@ -1,15 +1,20 @@
 #include "editor/EditorAutomationProvider.h"
 
-#include "editor/EditorTargetCoordinator.h"
-#include "editor/EditorCommandService.h"
-#include "editor/EditorValueJson.h"
 #include "common/Capability.h"
+#include "editing/EditorPackage.h"
+#include "editing/PropertySchemaJson.h"
+#include "editor/EditorCommandService.h"
+#include "editor/EditorHost.h"
+#include "editor/EditorMcpProjector.h"
+#include "editor/EditorTargetCoordinator.h"
+#include "editor/EditorValueJson.h"
 #include "rx/Rx.h"
 
 #include <algorithm>
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -68,7 +73,7 @@ EditorValue resultValue(EditorStatus status, const std::vector<EditorDiagnostic>
     return EditorValue(std::move(result));
 }
 
-EditorValue receiptValue(const EditorResult<TransactionReceipt>& result) {
+EditorValue receiptValue(const Result<TransactionReceipt>& result) {
     EditorValue response = resultValue(result.code(), result.diagnostics());
     if (result.ok()) {
         auto* object                = response.getIf<EditorValue::Object>();
@@ -134,12 +139,20 @@ void EditorAutomationProvider::targetUnregistered(const TargetId& target) {
 
 std::string EditorAutomationProvider::invoke(const std::string& operation, const std::string& requestJson) {
     refreshProfile();
-    EditorResult<EditorValue> parsed = editorValueFromJson(requestJson.empty() ? "{}" : requestJson);
+    Result<EditorValue> parsed = editorValueFromJson(requestJson.empty() ? "{}" : requestJson);
     if (!parsed.ok() || parsed.value().type() != EditorValue::Type::Object)
         return errorJson(EditorStatus::Rejected, "editor.automation.invalid-json", "Request must be a JSON object");
     const auto& request = *parsed.value().getIf<EditorValue::Object>();
     if (operation == "commands") return commandsJson();
     if (operation == "target-list") return targetList();
+    if (operation == "package-audit") {
+        auto audit       = editorMcpProjector().auditCompleteness();
+        lastDiagnostics_ = audit.diagnostics();
+        if (!audit.ok()) return editorValueToJson(resultValue(audit.code(), audit.diagnostics()));
+        EditorValue response                              = resultValue(EditorStatus::Applied, {});
+        (*response.getIf<EditorValue::Object>())["audit"] = std::move(audit).takeValue();
+        return editorValueToJson(response);
+    }
     if (operation == "target-create") return createTarget(request);
     if (operation == "target-close") return closeTarget(request);
     if (operation == "observe-start") return startObservation(request);
@@ -176,11 +189,11 @@ std::string EditorAutomationProvider::invoke(const std::string& operation, const
     }
     if (operation == "execute") {
         const CommandId command(stringField(request, "command"));
-        std::optional<EditorResult<TransactionReceipt>> result;
+        std::optional<Result<TransactionReceipt>> result;
         if (commands_->supportsPlanning(command)) {
             auto planned = session_.planCommand(command, valueField(request, "payload"), CommandSource::Automation);
             if (!planned.ok()) {
-                result.emplace(EditorResult<TransactionReceipt>::failure(planned.status()));
+                result.emplace(Result<TransactionReceipt>::failure(planned.status()));
             } else {
                 result.emplace(session_.executePlan(planned.value(), valueField(request, "payload"),
                                                     CommandSource::Automation));
@@ -273,7 +286,7 @@ std::string EditorAutomationProvider::pollObservation(const EditorValue::Object&
         return errorJson(EditorStatus::NotFound, "editor.automation.observe-session", "Observation session not found");
     EditorValue::Array events;
     for (const std::string& encoded : found->second->pending) {
-        EditorResult<EditorValue> parsed = editorValueFromJson(encoded);
+        Result<EditorValue> parsed = editorValueFromJson(encoded);
         if (parsed.ok()) events.push_back(std::move(parsed).takeValue());
     }
     found->second->pending.clear();
@@ -317,17 +330,38 @@ std::string EditorAutomationProvider::targetList() const {
     if (!bound.empty()) (*value)["boundTarget"] = bound.value();
 
     // Type discovery: the accepted names come from the loaded factories, so the
-    // advertised list cannot drift from what create actually accepts.
+    // advertised list cannot drift from what create actually accepts. createSchema
+    // is projected from IEditorPackageProvider when the domain advertises one.
+    std::unordered_map<std::string, editing::PropertySchema> createSchemas;
+    eve::cap::forEach<editing::IEditorPackageProvider>([&](editing::IEditorPackageProvider* provider) {
+        if (!provider) return;
+        for (const editing::EditorTargetTypeSpec& target : provider->package().targetTypes)
+            createSchemas.emplace(target.type, target.createSchema);
+    });
+
+    const auto               allowed = editorMcpProjector().mountedTargetTypes();
+    const bool               filter  = editorMcpProjector().isAttached();
     std::vector<std::string> types;
     eve::cap::forEach<IEditorAutomationTargetFactory>([&](IEditorAutomationTargetFactory* factory) {
         if (!factory) return;
-        for (const std::string_view type : factory->types()) types.emplace_back(type);
+        for (const std::string_view type : factory->types()) {
+            if (filter && !allowed.contains(std::string(type))) continue;
+            types.emplace_back(type);
+        }
     });
     std::sort(types.begin(), types.end());
     types.erase(std::unique(types.begin(), types.end()), types.end());
     EditorValue::Array advertised;
     advertised.reserve(types.size());
-    for (auto& type : types) advertised.emplace_back(std::move(type));
+    for (const std::string& type : types) {
+        EditorValue::Object item;
+        item["type"] = type;
+        if (const auto found = createSchemas.find(type); found != createSchemas.end()) {
+            auto schema = editing::propertySchemaToJsonSchema(found->second, type);
+            if (schema.ok()) item["createSchema"] = std::move(schema).takeValue();
+        }
+        advertised.emplace_back(std::move(item));
+    }
     (*value)["supportedTypes"] = std::move(advertised);
 
     return editorValueToJson(response);
@@ -340,8 +374,11 @@ std::string EditorAutomationProvider::createTarget(const EditorValue::Object& re
         return errorJson(EditorStatus::Rejected, "editor.automation.target-id", "Target id must not be empty");
     if (ownedTargets_.contains(target))
         return errorJson(EditorStatus::Conflict, "editor.automation.target-exists", "Target already exists");
+    if (editorMcpProjector().isAttached() && !editorMcpProjector().mountedTargetTypes().contains(type))
+        return errorJson(EditorStatus::Unsupported, "editor.automation.target-type-unmounted",
+                         "Attached EditorHost does not mount target type: " + type);
 
-    std::optional<EditorResult<AutomationOwnedTarget>> created;
+    std::optional<Result<AutomationOwnedTarget>> created;
     const bool handled = eve::cap::forEachUntil<IEditorAutomationTargetFactory>(
         [&](IEditorAutomationTargetFactory* factory) {
             if (!factory->supports(type)) return false;
@@ -382,24 +419,46 @@ std::string EditorAutomationProvider::closeTarget(const EditorValue::Object& req
     return editorValueToJson(resultValue(EditorStatus::Applied, {}));
 }
 
+Result<void> EditorAutomationProvider::attachHost(EditorHost* host) {
+    return editorMcpProjector().attach(host, EditorMcpExportMode::Commands);
+}
+
+void EditorAutomationProvider::detachHost() { editorMcpProjector().detach(); }
+
 void EditorAutomationProvider::refreshProfile() {
     HostProfile profile = HostProfile::automation();
+    const auto  owners  = editorMcpProjector().mountedOwners();
+    const bool  filter  = editorMcpProjector().isAttached();
     if (commands_)
-        for (const CommandDescriptor& command : commands_->commands(HostProfile::developer()))
-            if (command.automationAllowed && profile.hasFeatures(command.requiredFeatures))
-                profile.allowCommand(command.id);
+        for (const CommandDescriptor& command : commands_->commands(HostProfile::developer())) {
+            if (!command.automationAllowed || !profile.hasFeatures(command.requiredFeatures)) continue;
+            if (filter && !owners.contains(command.ownerModule)) continue;
+            profile.allowCommand(command.id);
+        }
     session_.setHostProfile(std::move(profile));
 }
 
 std::string EditorAutomationProvider::commandsJson() {
     EditorValue::Array descriptors;
+    const auto         owners = editorMcpProjector().mountedOwners();
+    const bool         filter = editorMcpProjector().isAttached();
     for (const CommandDescriptor& command : session_.availableCommands()) {
+        if (filter && !owners.contains(command.ownerModule)) continue;
         EditorValue::Object descriptor;
         descriptor["id"]          = command.id.value();
         descriptor["displayName"] = command.displayName;
         descriptor["category"]    = command.category;
         descriptor["owner"]       = command.ownerModule;
         descriptor["planned"]     = commands_->supportsPlanning(command.id);
+        if (!command.panelCapability.empty()) descriptor["panelCapability"] = command.panelCapability;
+        if (!command.panelContext.empty()) descriptor["panelContext"] = command.panelContext;
+        if (!command.targetKinds.empty()) {
+            EditorValue::Array kinds;
+            for (const std::string& kind : command.targetKinds) kinds.emplace_back(kind);
+            descriptor["targetKinds"] = std::move(kinds);
+        }
+        auto schema = editing::propertySchemaToJsonSchema(command.payloadSchema, command.id.value());
+        if (schema.ok()) descriptor["inputSchema"] = std::move(schema).takeValue();
         descriptors.emplace_back(std::move(descriptor));
     }
     EditorValue response = resultValue(EditorStatus::Applied, {});
@@ -407,7 +466,7 @@ std::string EditorAutomationProvider::commandsJson() {
     return editorValueToJson(response);
 }
 
-EditorResult<void> EditorAutomationProvider::bindRequestedTarget(const EditorValue::Object& request) {
+Result<void> EditorAutomationProvider::bindRequestedTarget(const EditorValue::Object& request) {
     const std::string target = stringField(request, "target");
     if (target.empty()) return eve::editing::applied<void>();
     return targets_->bind(session_, TargetId(target));

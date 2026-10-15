@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "audio/editing/AudioTarget.h"
 #include "editing/EditingExtension.h"
@@ -11,6 +13,7 @@ namespace eve::audio_editing {
 /** @brief Open capability for constructing audio authoring targets without editor type switches. */
 class IAudioEditingFactory {
 public:
+    /** @brief Releases IAudioEditingFactory resources. */
     virtual ~IAudioEditingFactory() = default;
     /**
      * @brief Create an independently owned publishing target.
@@ -31,7 +34,7 @@ public:
  * @return Generation-qualified provider handle or a structured registration failure.
  * @thread Main-thread registration path; acquired leases follow the descriptor affinity.
  */
-[[nodiscard]] editing::Result<editing::ProviderHandle> registerEditingProvider(
+[[nodiscard]] EVENGINE_API_BACKENDS editing::Result<editing::ProviderHandle> registerEditingProvider(
     editing::ExtensionProviderRegistry& registry);
 
 }  // namespace eve::audio_editing

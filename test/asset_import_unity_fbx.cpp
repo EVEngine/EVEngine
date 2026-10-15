@@ -1,5 +1,8 @@
 #include <assimp/scene.h>
 #include <assimp/Exporter.hpp>
+#include <fstream>
+#include <iterator>
+#include "PathBesideSource.h"
 #include "asset/AssetCooker.h"
 #include "asset/CanonicalMesh.h"
 #include "asset/EvpackResourceReader.h"
@@ -212,6 +215,41 @@ TEST_CASE("asset.import.unityFbxHashesNodeNameAndProducesCanonicalMesh") {
     auto repeated = prepareUnityFbx(request, source);
     REQUIRE(repeated.ok());
     REQUIRE(prepared.value().sourceMappings.front().asset == repeated.value().sourceMappings.front().asset);
+}
+
+TEST_CASE("asset.import.unityFbxCharacterProducesSkinAndAnimation") {
+    const auto    path = eve_test_path::pathBesideTestDir(__FILE__, "assets/mixamo/Idle.fbx");
+    std::ifstream input(path, std::ios::binary);
+    REQUIRE(input.good());
+    UnityProjectImportRequest request;
+    request.package = {*PersistentId::parse("018f6f22-2490-7ad2-bf58-4f1dbca31040"), "fbx.character", "1.0.0", {}};
+    request.files["Assets/Idle.fbx"] = {std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
+    const std::string meta =
+        "guid: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nModelImporter:\n  meshes:\n"
+        "    globalScale: 100\n    fileIdsGeneration: 2\n    useFileScale: 1\n"
+        "    swapUVChannels: 0\n  tangentSpace:\n    normalImportMode: 0\n";
+    request.files["Assets/Idle.fbx.meta"] = {meta.begin(), meta.end()};
+    UnitySourceAsset source{
+        "Assets/Idle.fbx", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", UnitySourceKind::Model, "ModelImporter", {}};
+    auto prepared = prepareUnityFbx(request, source);
+    if (!prepared) throw std::runtime_error(prepared.status().diagnostics().front().message());
+    REQUIRE(prepared.ok());
+    const auto hasType = [&](const char* type) {
+        return std::any_of(prepared.value().manifest.assets.begin(), prepared.value().manifest.assets.end(),
+                           [&](const auto& asset) { return asset.type == type; });
+    };
+    CHECK(hasType("eve.mesh"));
+    CHECK(hasType("eve.skeleton"));
+    CHECK(hasType("eve.skin"));
+    CHECK(hasType("eve.animation-clip"));
+    auto encoded = asset::buildEvaArchive(prepared.value().manifest, prepared.value().entries);
+    REQUIRE(encoded.ok());
+    auto archive = asset::parseEvaArchive(encoded.value());
+    REQUIRE(archive.ok());
+    asset::AssetCookProfile profile{
+        {"win32", "x86_64", "vulkan", {"rgba8"}, "spirv-1.6", "high", {}}, asset::CookPublication::LocalInspection, 16};
+    auto cooked = asset::cookEvaToEvpack(archive.value(), profile);
+    REQUIRE(cooked.ok());
 }
 
 TEST_CASE("asset.import.unityFbxRejectsCorruptionAndRecoversReferencedLegacyIdentity") {

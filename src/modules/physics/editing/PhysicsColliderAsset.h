@@ -26,6 +26,7 @@ struct PhysicsColliderAssetGeometry {
 /** @brief Storage-neutral resolver for immutable collider geometry artifacts. */
 class IPhysicsColliderAssetResolver {
 public:
+    /** @brief Releases IPhysicsColliderAssetResolver resources. */
     virtual ~IPhysicsColliderAssetResolver() = default;
 
     /**

@@ -5,8 +5,10 @@
 #include "common/GameplayControlJson.h"
 #include "common/RenderCapture.h"
 #include "common/ScriptError.h"
+#include "common/SquirrelBinding.h"
 #include "devtools/AgentDevelopmentSession.hpp"
 #include "devtools/Debugger.hpp"
+#include "devtools/GameWorldContext.hpp"
 #include "devtools/McpServer.hpp"
 #include "devtools/PlayTrace.h"
 #include "devtools/Snapshot.hpp"
@@ -33,7 +35,7 @@ Result<const Value::Object*> asObject(const Value& value, std::string path) {
     const auto* object = value.getIf<Value::Object>();
     if (!object)
         return Result<const Value::Object*>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "play value must be an object", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "play value must be an object", path));
     return Result<const Value::Object*>::success(object);
 }
 
@@ -96,37 +98,6 @@ std::vector<std::string> splitPath(std::string_view dotted) {
     return parts;
 }
 
-Result<Value> walkPath(const Value& root, std::string_view dotted, std::string path) {
-    const Value* current = &root;
-    auto         parts   = splitPath(dotted);
-    if (parts.empty())
-        return Result<Value>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "observation field path must not be empty", std::move(path)));
-    for (std::size_t index = 0; index < parts.size(); ++index) {
-        const auto* object = current->getIf<Value::Object>();
-        if (!object)
-            return Result<Value>::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "observation path is not an object", path + "." + std::string(dotted)));
-        const auto found = object->find(parts[index]);
-        if (found == object->end())
-            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::NotFound, "observation field was not found",
-                                                            path + "." + std::string(dotted)));
-        current = &found->second;
-    }
-    return Result<Value>::success(*current);
-}
-
-Result<Value> projectFields(const Value& root, const std::vector<std::string>& fields) {
-    if (fields.empty()) return Result<Value>::success(root);
-    Value::Object projected;
-    for (const auto& field : fields) {
-        auto walked = walkPath(root, field, "observation.fields");
-        if (!walked) return Result<Value>::failure(walked.status());
-        projected.emplace(field, std::move(walked).takeValue());
-    }
-    return Result<Value>::success(Value(std::move(projected)));
-}
-
 Value playResponse(std::string op, Value::Object extra) {
     extra.emplace("op", Value(std::move(op)));
     extra.emplace("schemaId", Value(std::string(kPlayResponseId)));
@@ -161,7 +132,7 @@ Result<std::vector<std::string>> stringArray(const Value& value, std::string pat
     const auto* array = value.getIf<Value::Array>();
     if (!array)
         return Result<std::vector<std::string>>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "play array must contain strings", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "play array must contain strings", path));
     std::vector<std::string> out;
     for (std::size_t index = 0; index < array->size(); ++index) {
         if (!(*array)[index].isString())
@@ -373,14 +344,30 @@ Result<Value> opStatus(IPlayHostRuntime& runtime) {
     Value::Object extra{{"paused", Value(runtime.paused())},
                         {"hostFrame", Value(static_cast<std::int64_t>(runtime.hostFrame()))},
                         {"domains", encodeDomains(runtime.gameplayDomains())}};
+    GameWorldSnapshotInput worldInput;
+    worldInput.domains  = runtime.gameplayDomains();
+    worldInput.gameRoot = McpServer::instance().gameRoot();
+    const HSQUIRRELVM      vm = Debugger::instance().vm();
+    worldInput.configTitle       = readConfigTitle(vm);
+    worldInput.configuredModules = readConfiguredModules(vm);
+    worldInput.liveModules       = readLiveModules(vm);
+
     auto loaded = runtime.loadContract();
     if (loaded) {
         auto parsed = parseContract(loaded.value());
         if (!parsed) return Result<Value>::failure(parsed.status());
         extra.emplace("contractId", Value(parsed.value().id));
         extra.emplace("contractLoaded", Value(true));
+        worldInput.contractId     = parsed.value().id;
+        worldInput.contractLoaded = true;
+        auto snapshot = buildGameWorldSnapshot(worldInput);
+        if (!snapshot) return Result<Value>::failure(snapshot.status());
+        extra.emplace("gameWorld", std::move(snapshot).takeValue());
     } else if (loaded.code() == StatusCode::NotFound) {
         extra.emplace("contractLoaded", Value(false));
+        auto snapshot = buildGameWorldSnapshot(worldInput);
+        if (!snapshot) return Result<Value>::failure(snapshot.status());
+        extra.emplace("gameWorld", std::move(snapshot).takeValue());
     } else {
         return Result<Value>::failure(loaded.status());
     }
@@ -710,31 +697,53 @@ Result<Value> dispatchOne(const Value& request, IPlayHostRuntime& runtime, bool 
     return executed;
 }
 
-Result<Value> snapshotRoot(HSQUIRRELVM vm, std::string_view rootName) {
+Result<Value> snapshotRoot(HSQUIRRELVM vm, std::string_view rootName, const std::vector<std::string>& fields) {
     if (!vm)
         return Result<Value>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
                                                         "play observe requires an attached script VM", "observation"));
-    std::string error;
-    std::string json = Snapshot::instance().capture(vm, &error);
-    if (json.empty())
-        return Result<Value>::failure(
-            Diagnostic::error(DiagnosticCode::Failed,
-                              error.empty() ? "script snapshot capture failed" : std::move(error), "observation"));
-    auto parsed = Value::fromJson(json);
-    if (!parsed) return Result<Value>::failure(parsed.status());
-    auto object = asObject(parsed.value(), "snapshot");
-    if (!object) return Result<Value>::failure(object.status());
-    const auto roots = object.value()->find("roots");
-    if (roots == object.value()->end())
-        return Result<Value>::failure(
-            Diagnostic::error(DiagnosticCode::NotFound, "snapshot does not contain roots", "observation"));
-    auto rootsObject = asObject(roots->second, "snapshot.roots");
-    if (!rootsObject) return Result<Value>::failure(rootsObject.status());
-    const auto found = rootsObject.value()->find(std::string(rootName));
-    if (found == rootsObject.value()->end())
+    const auto roots = Snapshot::instance().rootsFor(vm);
+    if (std::find(roots.begin(), roots.end(), rootName) == roots.end())
         return Result<Value>::failure(Diagnostic::error(
-            DiagnosticCode::NotFound, "marked script root was not in the snapshot", "observation.path"));
-    return Result<Value>::success(found->second);
+            DiagnosticCode::NotFound, "script root is excluded by snapshot policy", "observation.path"));
+    struct StackGuard {
+        HSQUIRRELVM vm;
+        SQInteger   top;
+        ~StackGuard() { sq_settop(vm, top); }
+    } guard{vm, sq_gettop(vm)};
+    sq_pushroottable(vm);
+    const std::string name(rootName);
+    sq_pushstring(vm, name.c_str(), -1);
+    if (SQ_FAILED(sq_rawget(vm, -2)))
+        return Result<Value>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "script root was not found", "observation.path"));
+    const SQInteger              rootIndex = sq_gettop(vm);
+    script::SquirrelValueOptions options;
+    options.source = "observation." + name;
+    if (fields.empty()) return script::valueFromSquirrel(vm, rootIndex, options);
+    Value::Object projected;
+    for (const auto& field : fields) {
+        sq_settop(vm, rootIndex);
+        sq_push(vm, rootIndex);
+        const auto parts = splitPath(field);
+        if (parts.empty() || field.front() == '.' || field.back() == '.' || field.find("..") != std::string::npos)
+            return Result<Value>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "invalid observation field path", "observation.fields"));
+        for (const auto& part : parts) {
+            // Raw table access never invokes a script delegate or getter.
+            if (sq_gettype(vm, -1) != OT_TABLE)
+                return Result<Value>::failure(Diagnostic::error(
+                    DiagnosticCode::NotFound, "observation path is not a table", "observation.fields." + field));
+            sq_pushstring(vm, part.c_str(), -1);
+            if (SQ_FAILED(sq_rawget(vm, -2)))
+                return Result<Value>::failure(Diagnostic::error(
+                    DiagnosticCode::NotFound, "observation field was not found", "observation.fields." + field));
+            sq_remove(vm, -2);
+        }
+        auto value = script::valueFromSquirrel(vm, -1, options);
+        if (!value) return Result<Value>::failure(value.status());
+        projected.emplace(field, std::move(value).takeValue());
+    }
+    return Result<Value>::success(Value(std::move(projected)));
 }
 
 class EnginePlayHostRuntime final : public IPlayHostRuntime {
@@ -775,9 +784,7 @@ public:
 
     Result<Value> observeScriptRoot(std::string_view root,
                                     const std::vector<std::string>& fields) const override {
-        auto value = snapshotRoot(Debugger::instance().vm(), root);
-        if (!value) return Result<Value>::failure(value.status());
-        return projectFields(value.value(), fields);
+        return snapshotRoot(Debugger::instance().vm(), root, fields);
     }
 
     Result<Value> capturePng(std::string path) override {
@@ -785,14 +792,12 @@ public:
         if (!capture)
             return Result<Value>::failure(
                 Diagnostic::error(DiagnosticCode::Unsupported, "IRenderCapture is not available", "capture"));
-        int         width = 0, height = 0;
-        std::string error;
-        if (!capture->savePng(path, &width, &height, &error))
-            return Result<Value>::failure(Diagnostic::error(
-                DiagnosticCode::Failed, error.empty() ? "engine screenshot failed" : std::move(error), "capture"));
-        return Result<Value>::success(Value(Value::Object{{"height", Value(static_cast<std::int64_t>(height))},
+        auto captured = capture->savePng(path);
+        if (!captured) return Result<Value>::failure(captured.status());
+        const CaptureImageInfo info = std::move(captured).value();
+        return Result<Value>::success(Value(Value::Object{{"height", Value(static_cast<std::int64_t>(info.height))},
                                                           {"path", Value(std::move(path))},
-                                                          {"width", Value(static_cast<std::int64_t>(width))}}));
+                                                          {"width", Value(static_cast<std::int64_t>(info.width))}}));
     }
 
     Result<std::string> captureCheckpoint() override {
@@ -804,7 +809,7 @@ public:
         std::string json = Snapshot::instance().capture(vm, &error);
         if (json.empty())
             return Result<std::string>::failure(Diagnostic::error(
-                DiagnosticCode::Failed, error.empty() ? "checkpoint capture failed" : std::move(error), "checkpoint"));
+                DiagnosticCode::Failed, error.empty() ? "checkpoint capture failed" : error, "checkpoint"));
         return Result<std::string>::success(std::move(json));
     }
 
@@ -816,7 +821,7 @@ public:
         std::string error;
         if (!Snapshot::instance().restore(vm, std::string(json), &error))
             return Result<void>::failure(Diagnostic::error(
-                DiagnosticCode::Failed, error.empty() ? "checkpoint restore failed" : std::move(error), "checkpoint"));
+                DiagnosticCode::Failed, error.empty() ? "checkpoint restore failed" : error, "checkpoint"));
         return Result<void>::success();
     }
 

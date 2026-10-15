@@ -143,6 +143,67 @@ TEST_CASE("ECS.deferredCreateDestroyDuringView") {
     CHECK_EQ(countNodes(), 1);
 }
 
+TEST_CASE("ECS.stagingHandleSurvivesCommit") {
+    ecs::Table world;
+    ecs::ScopedTable guard(world);
+
+    Node* live = Node::create();
+    live->position()->x = 1.f;
+    const ecs::EntityHandle liveHandle = ecs::handle_of(live);
+
+    ecs::EntityHandle stagedHandle;
+    {
+        ecs::ScopedDefer defer;
+        Node* staged = Node::create();
+        staged->position()->x = 11.f;
+        stagedHandle = ecs::handle_of(staged);
+        CHECK(stagedHandle.id != liveHandle.id);
+        CHECK(ecs::try_get(stagedHandle) == staged);
+        CHECK(ecs::try_get(liveHandle) == live);
+    }
+
+    ecs::Entity* published = ecs::try_get(stagedHandle);
+    CHECK(published != nullptr);
+    CHECK(published != live);
+    CHECK(ecs::try_get(liveHandle) == live);
+    CHECK(std::abs(static_cast<Node*>(published)->position()->x - 11.f) < 1e-5f);
+    CHECK_EQ(countNodes(), 2);
+}
+
+TEST_CASE("ECS.viewEntityAndRow") {
+    ecs::Table world;
+    ecs::ScopedTable guard(world);
+
+    Node* a = Node::create();
+    Movable* b = Movable::create();
+    a->position()->x = 3.f;
+    b->position()->x = 5.f;
+
+    int n = 0;
+    float sum = 0.f;
+    auto view = ecs::View<Node, Node::Position>();
+    for (auto it = view.begin(); it != view.end(); ++it) {
+        Node* e = it.entity();
+        CHECK(e != nullptr);
+        auto [rowE, pos] = it.row();
+        CHECK(rowE == e);
+        CHECK(pos != nullptr);
+        sum += pos->x;
+        ++n;
+    }
+    CHECK_EQ(n, 2);
+    CHECK(std::abs(sum - 8.f) < 1e-5f);
+
+    {
+        auto kill = ecs::View<Node, Node::Position>();
+        for (auto it = kill.begin(); it != kill.end(); ++it) {
+            if (it.entity()->position()->x == 3.f)
+                ecs::DestroyEntity(it.entity());
+        }
+    }
+    CHECK_EQ(countNodes(), 1);
+}
+
 // ---------------------------------------------------------------------------
 // Script side: extend C++ entity classes from Squirrel, drive them with a
 // script System, and have eve.view() return the C++ entities.
@@ -316,7 +377,7 @@ protected:
 TEST_CASE_FIXTURE(ScriptEcsBridgeFixture, "ECS.script.inheritCppEntityAndAccess") {
     ecs::Table world;
     ecs::ScopedTable guard(world);
-    CHECK(vm.callFunc(vm.findFunc("testInheritCppEntityAndAccess"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testInheritCppEntityAndAccess"), vm).toBool());
 
     int found = 0;
     auto view = ecs::View<Node, Node::Position>();
@@ -331,7 +392,7 @@ TEST_CASE_FIXTURE(ScriptEcsBridgeFixture, "ECS.script.inheritCppEntityAndAccess"
 TEST_CASE_FIXTURE(ScriptEcsBridgeFixture, "ECS.script.systemOverCppEntities") {
     ecs::Table world;
     ecs::ScopedTable guard(world);
-    CHECK(vm.callFunc(vm.findFunc("testSystemOverCppEntities"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSystemOverCppEntities"), vm).toBool());
 
     int atTwo = 0, atFourteen = 0;
     auto view = ecs::View<Movable, Node::Position>();
@@ -354,7 +415,7 @@ TEST_CASE_FIXTURE(ScriptEcsBridgeFixture, "ECS.script.cppCreatedEntitiesVisible"
     Node* n2 = Node::create();
     n1->position()->x = 42.f;
 
-    CHECK(vm.callFunc(vm.findFunc("testCppCreatedEntitiesVisible"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testCppCreatedEntitiesVisible"), vm).toBool());
 
     // Script view() wrapped the C++ entities and mutated their components.
     CHECK(std::abs(n1->position()->x - 43.f) < 1e-5f);
@@ -364,7 +425,7 @@ TEST_CASE_FIXTURE(ScriptEcsBridgeFixture, "ECS.script.cppCreatedEntitiesVisible"
 TEST_CASE_FIXTURE(ScriptEcsBridgeFixture, "ECS.script.destroyFromScript") {
     ecs::Table world;
     ecs::ScopedTable guard(world);
-    CHECK(vm.callFunc(vm.findFunc("testDestroyFromScript"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testDestroyFromScript"), vm).toBool());
 
     int live = 0;
     auto view = ecs::View<Node, Node::Position>();

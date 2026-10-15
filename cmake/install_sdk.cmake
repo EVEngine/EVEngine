@@ -87,6 +87,7 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/engine/common/"
     FILES_MATCHING
         PATTERN "*.h"
         PATTERN "*.hpp"
+        PATTERN "ModuleRegistryState.h" EXCLUDE
 )
 install(FILES "${CMAKE_BINARY_DIR}/src/engine/common/config.h"
     DESTINATION include/eve/common
@@ -135,6 +136,14 @@ foreach(_eve_mod IN LISTS EVE_ENABLED_MODULES)
     foreach(_eve_nested IN LISTS _eve_nested_heads)
         list(APPEND _eve_install_excludes PATTERN "${_eve_nested}" EXCLUDE)
     endforeach()
+    # UiMotionSinks.h includes animation/MotionTypes.h and its .cpp is omitted when
+    # animation is trimmed; do not install a header the UI-only SDK cannot satisfy.
+    if(_eve_mod STREQUAL "ui")
+        list(FIND EVE_ENABLED_MODULES animation _eve_sdk_anim_idx)
+        if(_eve_sdk_anim_idx EQUAL -1)
+            list(APPEND _eve_install_excludes PATTERN "UiMotionSinks.h" EXCLUDE)
+        endif()
+    endif()
     install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod_dir}/"
         DESTINATION include/eve/${_eve_mod_dir}
         FILES_MATCHING
@@ -249,16 +258,39 @@ if(BUILD_PLATFORM STREQUAL "android")
     if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR AND CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(_eve_tp_lib "${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug")
     endif()
-    if(EXISTS "${_eve_tp_lib}/lib/libSDL2.so")
-        install(FILES "${_eve_tp_lib}/lib/libSDL2.so" DESTINATION lib)
-    endif()
-    if(EXISTS "${_eve_tp_lib}/lib/libhidapi.so")
-        install(FILES "${_eve_tp_lib}/lib/libhidapi.so" DESTINATION lib)
-    endif()
-    # libc++_shared.so from NDK (best-effort; packaging docs note NDK fallback)
+    # `deps` is built after the first configure on clean CI runners, so these
+    # files do not exist while install rules are being generated. Resolve them
+    # at install time and fail instead of publishing an unusable Android SDK.
+    install(CODE "
+        set(_eve_android_tp_lib \"${_eve_tp_lib}/lib\")
+        foreach(_eve_required_lib IN ITEMS libSDL2.so)
+            if(NOT EXISTS \"\${_eve_android_tp_lib}/\${_eve_required_lib}\")
+                message(FATAL_ERROR
+                    \"Android SDK runtime library missing: \${_eve_android_tp_lib}/\${_eve_required_lib}\")
+            endif()
+            file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/lib\" TYPE FILE
+                FILES \"\${_eve_android_tp_lib}/\${_eve_required_lib}\")
+        endforeach()
+        if(EXISTS \"\${_eve_android_tp_lib}/libhidapi.so\")
+            file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/lib\" TYPE FILE
+                FILES \"\${_eve_android_tp_lib}/libhidapi.so\")
+        endif()
+    ")
+    # libc++_shared.so from the NDK must match the SDK's configured ABI.
     if(DEFINED ANDROID_NDK AND EXISTS "${ANDROID_NDK}")
+        if(ANDROID_ABI STREQUAL "arm64-v8a")
+            set(_eve_android_ndk_triple "aarch64-linux-android")
+        elseif(ANDROID_ABI STREQUAL "armeabi-v7a")
+            set(_eve_android_ndk_triple "arm-linux-androideabi")
+        elseif(ANDROID_ABI STREQUAL "x86_64")
+            set(_eve_android_ndk_triple "x86_64-linux-android")
+        elseif(ANDROID_ABI STREQUAL "x86")
+            set(_eve_android_ndk_triple "i686-linux-android")
+        else()
+            message(FATAL_ERROR "Unsupported Android ABI for libc++_shared.so: ${ANDROID_ABI}")
+        endif()
         file(GLOB _eve_cxx_shared
-            "${ANDROID_NDK}/toolchains/llvm/prebuilt/*/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so")
+            "${ANDROID_NDK}/toolchains/llvm/prebuilt/*/sysroot/usr/lib/${_eve_android_ndk_triple}/libc++_shared.so")
         if(_eve_cxx_shared)
             list(GET _eve_cxx_shared 0 _eve_cxx_one)
             install(FILES "${_eve_cxx_one}" DESTINATION lib)
@@ -298,6 +330,11 @@ install(CODE "
         endforeach()
     endif()
 ")
+
+# Plugins use the same member and stateless binding templates as the engine.
+install(DIRECTORY "${CMAKE_BINARY_DIR}/generated/simplesquirrel/simplesquirrel"
+    DESTINATION include)
+install(FILES "${CMAKE_BINARY_DIR}/generated/ecs/ECS.hpp" DESTINATION include OPTIONAL)
 
 # ---- Marker files ----
 install(CODE "

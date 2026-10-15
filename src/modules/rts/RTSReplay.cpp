@@ -13,8 +13,8 @@ namespace eve::rts {
 namespace {
 
 Result<void> replayFailure(std::string message, std::string path) {
-    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message),
-                                                    std::move(path)));
+    return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
 }
 
 SubjectRef parseSubject(const std::string& text) {
@@ -36,21 +36,31 @@ bool normalizedLess(SubjectRef left, SubjectRef right) { return left.format() < 
 Result<void> RTSCommandLog::queue(RTSReplayCommand command, SimulationTick currentTick) {
     if (command.tick.value() < currentTick.value())
         return replayFailure("RTS replay command cannot target a past tick", "command.tick");
-    if (static_cast<unsigned>(command.operation) > static_cast<unsigned>(RTSReplayOperation::Escort))
+    if (static_cast<unsigned>(command.operation) > static_cast<unsigned>(RTSReplayOperation::MovementGroup))
         return replayFailure("RTS replay operation is invalid", "command.operation");
     if (!std::isfinite(command.point.x) || !std::isfinite(command.point.y))
         return replayFailure("RTS replay point must be finite", "command.point");
-    if (command.operation == RTSReplayOperation::UnitCommand) {
+    auto validFormation = command.formation.validate();
+    if (!validFormation) return validFormation;
+    if (!std::isfinite(command.groupLeadDistance) || command.groupLeadDistance <= 0.f)
+        return replayFailure("Movement-group lead distance must be finite and positive", "command.groupLeadDistance");
+    if (command.operation == RTSReplayOperation::UnitCommand ||
+        command.operation == RTSReplayOperation::MovementGroup) {
         auto validCommand = command.command.validate();
         if (!validCommand) return validCommand;
-        auto validFormation = command.formation.validate();
-        if (!validFormation) return validFormation;
         if (command.units.empty()) return replayFailure("RTS replay command requires units", "command.units");
         if (ecs::try_get(command.command.targetEntity) != nullptr && !command.targetEntity.isValid())
             return replayFailure("RTS replay entity targets require a stable SubjectRef", "command.targetEntity");
         command.command.targetEntity = {};
         std::sort(command.units.begin(), command.units.end(), normalizedLess);
         command.units.erase(std::unique(command.units.begin(), command.units.end()), command.units.end());
+        if (command.operation == RTSReplayOperation::MovementGroup &&
+            (command.units.size() < 2 || command.command.kind != OrderKind::Move || command.command.append ||
+             command.command.priority != 0 || command.command.timeoutSeconds != 0.0 ||
+             !command.command.definitionId.empty() || command.targetEntity.isValid() || command.command.radius != 0.f ||
+             command.command.secondaryTarget.x != 0.f || command.command.secondaryTarget.y != 0.f))
+            return replayFailure("Movement-group replay requires two units, immediate Move and positive lead distance",
+                                 "command.group");
     } else if (command.operation == RTSReplayOperation::Construction) {
         if (command.units.size() != 1 || !command.faction.isValid() || !command.resultSubject.isValid() ||
             !command.definition.isValid())
@@ -74,7 +84,8 @@ Result<void> RTSCommandLog::queue(RTSReplayCommand command, SimulationTick curre
     } else if (command.operation == RTSReplayOperation::CancelAbility && command.units.empty()) {
         return replayFailure("RTS ability cancellation requires units", "command.cancelAbility");
     } else if ((command.operation == RTSReplayOperation::CancelConstruction ||
-                command.operation == RTSReplayOperation::SellBuilding) && !command.producer.isValid()) {
+                command.operation == RTSReplayOperation::SellBuilding) &&
+               !command.producer.isValid()) {
         return replayFailure("RTS building lifecycle command requires a building", "command.producer");
     } else if (command.operation == RTSReplayOperation::RequestFireSupport &&
                (!command.producer.isValid() || !std::isfinite(command.command.radius) ||
@@ -84,19 +95,18 @@ Result<void> RTSCommandLog::queue(RTSReplayCommand command, SimulationTick curre
     } else if (command.operation == RTSReplayOperation::CancelFireSupport && !command.producer.isValid()) {
         return replayFailure("RTS fire-support cancellation requires a requester", "command.fireSupport");
     } else if (command.operation == RTSReplayOperation::SuppressArea &&
-               (command.units.empty() || command.priority < 0 ||
-                !std::isfinite(command.command.target.x) || !std::isfinite(command.command.target.y) ||
-                !std::isfinite(command.command.secondaryTarget.x) ||
-                !std::isfinite(command.command.secondaryTarget.y) ||
-                !std::isfinite(command.command.radius) || command.command.radius <= 0.0f ||
+               (command.units.empty() || command.priority < 0 || !std::isfinite(command.command.target.x) ||
+                !std::isfinite(command.command.target.y) || !std::isfinite(command.command.secondaryTarget.x) ||
+                !std::isfinite(command.command.secondaryTarget.y) || !std::isfinite(command.command.radius) ||
+                command.command.radius <= 0.0f ||
                 std::hypot(command.command.secondaryTarget.x - command.command.target.x,
                            command.command.secondaryTarget.y - command.command.target.y) <= 1e-3f)) {
         return replayFailure("RTS suppression requires units, corridor, width, and non-negative shots",
                              "command.suppression");
     } else if (command.operation == RTSReplayOperation::Escort &&
-               (command.units.empty() || !command.targetEntity.isValid() ||
-                !std::isfinite(command.command.radius) || command.command.radius <= 0.0f ||
-                !std::isfinite(command.formation.spacing) || command.formation.spacing <= 0.0f)) {
+               (command.units.empty() || !command.targetEntity.isValid() || !std::isfinite(command.command.radius) ||
+                command.command.radius <= 0.0f || !std::isfinite(command.formation.spacing) ||
+                command.formation.spacing <= 0.0f)) {
         return replayFailure("RTS escort requires units, target, guard radius, and spacing", "command.escort");
     }
     if (command.operation == RTSReplayOperation::CancelAbility ||
@@ -226,6 +236,17 @@ Result<std::size_t> RTSCommandLog::apply(SimulationTick tick, RTS& world) {
             applied += result.value().accepted;
             continue;
         }
+        if (replay.operation == RTSReplayOperation::MovementGroup) {
+            MovementGroupBatch batch;
+            batch.units        = replay.units;
+            batch.target       = replay.command.target;
+            batch.formation    = replay.formation;
+            batch.leadDistance = replay.groupLeadDistance;
+            auto receipt       = world.submitMovementGroup(batch);
+            if (!receipt) return Result<std::size_t>::failure(receipt.status());
+            applied += receipt.value().accepted;
+            continue;
+        }
         std::vector<ecs::EntityHandle> handles;
         handles.reserve(replay.units.size());
         for (SubjectRef subject : replay.units) {
@@ -254,14 +275,21 @@ Result<std::size_t> RTSCommandLog::apply(SimulationTick tick, RTS& world) {
 std::string RTSCommandLog::exportText() const {
     std::ostringstream out;
     out.imbue(std::locale::classic());
-    const bool extended = std::any_of(history_.begin(), history_.end(), [](const auto& value) {
-        return value.operation != RTSReplayOperation::UnitCommand;
+    const bool grouped = std::any_of(history_.begin(), history_.end(), [](const auto& value) {
+        return value.operation == RTSReplayOperation::MovementGroup || value.groupLeadDistance != 2.f;
     });
+    const bool oriented =
+        grouped || std::any_of(history_.begin(), history_.end(), [](const auto& value) {
+            return value.formation.rotationRadians != 0.f || value.formation.kind > FormationKind::Wedge;
+        });
+    const bool     extended    = oriented || std::any_of(history_.begin(), history_.end(), [](const auto& value) {
+                              return value.operation != RTSReplayOperation::UnitCommand;
+                          });
     const bool fireSupport = std::any_of(history_.begin(), history_.end(), [](const auto& value) {
         return value.operation == RTSReplayOperation::RequestFireSupport ||
                value.operation == RTSReplayOperation::CancelFireSupport;
     });
-    const unsigned version = fireSupport ? 3u : (extended ? 2u : 1u);
+    const unsigned version     = grouped ? 5u : (oriented ? 4u : (fireSupport ? 3u : (extended ? 2u : 1u)));
     out << "EVERTS_COMMANDS " << version << '\n'
         << std::setprecision(std::numeric_limits<double>::max_digits10);
     for (const auto& value : history_) {
@@ -278,11 +306,12 @@ std::string RTSCommandLog::exportText() const {
         out << value.tick.value() << ' ' << static_cast<unsigned>(value.command.kind) << ' '
             << std::quoted(value.command.definitionId) << ' ' << value.command.priority << ' '
             << value.command.timeoutSeconds << ' ' << value.command.target.x << ' ' << value.command.target.y << ' '
-            << value.command.secondaryTarget.x << ' ' << value.command.secondaryTarget.y << ' '
-            << value.command.radius << ' ' << value.command.append << ' '
-            << static_cast<unsigned>(value.formation.kind) << ' ' << value.formation.spacing << ' '
-            << value.formation.columns << ' '
-            << std::quoted(value.targetEntity.isValid() ? value.targetEntity.format() : std::string{}) << ' '
+            << value.command.secondaryTarget.x << ' ' << value.command.secondaryTarget.y << ' ' << value.command.radius
+            << ' ' << value.command.append << ' ' << static_cast<unsigned>(value.formation.kind) << ' '
+            << value.formation.spacing << ' ' << value.formation.columns << ' ';
+        if (version >= 4) out << value.formation.rotationRadians << ' ';
+        if (version >= 5) out << value.groupLeadDistance << ' ';
+        out << std::quoted(value.targetEntity.isValid() ? value.targetEntity.format() : std::string{}) << ' '
             << value.units.size();
         for (SubjectRef subject : value.units) out << ' ' << std::quoted(subject.format());
         out << '\n';
@@ -295,8 +324,7 @@ Result<void> RTSCommandLog::importText(std::string_view text, SimulationTick cur
     in.imbue(std::locale::classic());
     std::string magic;
     unsigned version = 0;
-    if (!(in >> magic >> version) || magic != "EVERTS_COMMANDS" ||
-        (version != 1 && version != 2 && version != 3))
+    if (!(in >> magic >> version) || magic != "EVERTS_COMMANDS" || (version < 1 || version > 5))
         return replayFailure("invalid RTS command log header", "commandLog.header");
     std::vector<RTSReplayCommand> parsed;
     while (in >> std::ws && !in.eof()) {
@@ -307,7 +335,8 @@ Result<void> RTSCommandLog::importText(std::string_view text, SimulationTick cur
             std::string producer, faction, result, definition;
             if (!(in >> tick >> operation >> std::quoted(producer) >> std::quoted(faction) >> std::quoted(result) >>
                   std::quoted(definition) >> std::quoted(value.value) >> value.priority) ||
-                operation > static_cast<unsigned>(RTSReplayOperation::Escort))
+                operation > static_cast<unsigned>(version >= 5 ? RTSReplayOperation::MovementGroup
+                                                               : RTSReplayOperation::Escort))
                 return replayFailure("malformed extended RTS command log entry", "commandLog.entry");
             if (version >= 3 && !(in >> value.limit))
                 return replayFailure("malformed RTS command limit", "commandLog.entry");
@@ -334,9 +363,15 @@ Result<void> RTSCommandLog::importText(std::string_view text, SimulationTick cur
         if (!(in >> commandTick >> kind >> std::quoted(value.command.definitionId) >> value.command.priority >>
               value.command.timeoutSeconds >> value.command.target.x >> value.command.target.y >>
               value.command.secondaryTarget.x >> value.command.secondaryTarget.y >> value.command.radius >>
-              value.command.append >> formation >> value.formation.spacing >> value.formation.columns >>
-              std::quoted(target) >> unitCount) || kind > static_cast<unsigned>(OrderKind::SupplyRelay) ||
-            formation > static_cast<unsigned>(FormationKind::Wedge) || unitCount > 100000)
+              value.command.append >> formation >> value.formation.spacing >> value.formation.columns))
+            return replayFailure("malformed RTS formation", "commandLog.entry");
+        if (version >= 4 && !(in >> value.formation.rotationRadians))
+            return replayFailure("malformed RTS formation rotation", "commandLog.entry");
+        if (version >= 5 && !(in >> value.groupLeadDistance))
+            return replayFailure("malformed RTS movement-group lead distance", "commandLog.entry");
+        if (!(in >> std::quoted(target) >> unitCount) || kind > static_cast<unsigned>(OrderKind::SupplyRelay) ||
+            formation > static_cast<unsigned>(version >= 4 ? FormationKind::Dispersed : FormationKind::Wedge) ||
+            unitCount > 100000)
             return replayFailure("malformed RTS command log entry", "commandLog.entry");
         if (version >= 2 && commandTick != tick)
             return replayFailure("extended RTS command tick mismatch", "commandLog.tick");
@@ -380,8 +415,7 @@ RTSLockstep::RTSLockstep() {
 }
 
 Result<void> RTSLockstep::setFixedStep(Duration value) {
-    if (value.nanoseconds() <= 0)
-        return replayFailure("RTS lockstep interval must be strictly positive", "fixedStep");
+    if (value.nanoseconds() <= 0) return replayFailure("RTS lockstep interval must be strictly positive", "fixedStep");
     fixedStep_ = value;
     return Result<void>::success(Status::success(StatusCode::Applied));
 }

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/RuntimeHandle.h"
 #include "stylize/StyleInstance.h"
@@ -35,7 +37,7 @@ struct MeshEffectPlayback {
  * only through update(), making playback deterministic for an identical dt
  * sequence. The object is main-thread affine and invokes no callbacks.
  */
-class MeshEffectInstance {
+class EVENGINE_API_WORLD MeshEffectInstance {
 public:
     /** @brief Construct an unbound effect from a registered mesh style. */
     explicit MeshEffectInstance(std::string style);

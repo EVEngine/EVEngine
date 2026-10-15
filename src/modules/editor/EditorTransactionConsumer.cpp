@@ -1,7 +1,5 @@
 #include "editor/EditorTransactionConsumer.h"
 
-#include "editor/EditorResultProjection.h"
-
 #include <charconv>
 #include <exception>
 #include <limits>
@@ -29,7 +27,7 @@ eve::DiagnosticCode commonDiagnostic(EditorStatus status) noexcept {
 }
 
 template <class Output, class Input>
-eve::Result<Output> convertEditorFailure(const EditorResult<Input>& source, std::string_view context) {
+eve::Result<Output> convertEditorFailure(const Result<Input>& source, std::string_view context) {
     if (!source.diagnostics().empty()) return eve::Result<Output>::failure(source.status());
     return eve::Result<Output>::failure(
         eve::Status::failure(source.code(), eve::Diagnostic::error(commonDiagnostic(source.code()),
@@ -627,7 +625,7 @@ eve::Result<EditorTransactionRecord> EditorTransactionConsumer::commitAttempt(
     };
     auto reject = [&](eve::DiagnosticCode code, std::string message, std::string path) {
         auto result = eve::Result<EditorTransactionRecord>::failure(
-            eve::Diagnostic::error(code, std::move(message), std::move(path)));
+            eve::Diagnostic::error(code, message, path));
         const bool preserveRetryBlock = impl_->state == EditorCommitState::FailedRetryable;
         impl_->state                  = EditorCommitState::FailedRetryable;
         if (!preserveRetryBlock) {

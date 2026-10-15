@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 
@@ -32,7 +34,7 @@ struct SoftBodyModelCluster {
  * may be moved between worker and simulation threads before publication; after
  * publication callers should treat it as immutable.
  */
-struct SoftBodyModel {
+struct EVENGINE_API_BACKENDS SoftBodyModel {
     static constexpr std::uint32_t FormatVersion = 1;
 
     std::string                              sourceMesh;

@@ -6,7 +6,7 @@
 
 namespace eve::fluids_editing {
 
-EditorResult<void> SurfaceFluidRuntimeApplier::apply(const SurfaceFluidTarget&         target,
+Result<void> SurfaceFluidRuntimeApplier::apply(const SurfaceFluidTarget&         target,
                                                      fluids::SurfaceDropletSimulation* simulation,
                                                      fluids::SurfaceFluidRenderParams* render,
                                                      fluids::SurfaceWetnessParams*     wetness) const {

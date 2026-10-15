@@ -44,17 +44,17 @@ void* SceneTargetBase::queryCapability(const CapabilityId& capability) {
     return nullptr;
 }
 
-EditorResult<void> SceneTargetBase::applyDomainOperation(const DomainOperation& operation) {
+Result<void> SceneTargetBase::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.scene.target-mismatch"),
                                           "Scene operation targets another backend");
     if (operation.type == "scene.snapshot.restore.v1") {
         auto parsed = parseSnapshot(operation.payload);
-        if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
+        if (!parsed.ok()) return Result<void>::failure(parsed.status());
         objects_ = std::move(parsed.value());
     } else if (operation.type == "scene.object.create.v1") {
-        EditorResult<SceneObjectSnapshot> parsed = parseObject(operation.payload);
-        if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
+        Result<SceneObjectSnapshot> parsed = parseObject(operation.payload);
+        if (!parsed.ok()) return Result<void>::failure(parsed.status());
         const SceneObjectSnapshot& object = parsed.value();
         if (object.id.empty() || objects_.contains(object.id))
             return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.scene.object-exists"),
@@ -64,8 +64,8 @@ EditorResult<void> SceneTargetBase::applyDomainOperation(const DomainOperation& 
                                               "Scene object parent does not exist");
         objects_.emplace(object.id, object);
     } else if (operation.type == "scene.object.delete.v1") {
-        EditorResult<SceneObjectSnapshot> parsed = parseObject(operation.payload);
-        if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
+        Result<SceneObjectSnapshot> parsed = parseObject(operation.payload);
+        if (!parsed.ok()) return Result<void>::failure(parsed.status());
         const ObjectId& id = parsed.value().id;
         if (!objects_.contains(id))
             return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.scene.object-not-found"),
@@ -88,8 +88,8 @@ EditorResult<void> SceneTargetBase::applyDomainOperation(const DomainOperation& 
         if (object == objects_.end())
             return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.scene.object-not-found"),
                                               "Scene object does not exist");
-        EditorResult<SceneTransformValue> parsed = parseTransform(*transform);
-        if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
+        Result<SceneTransformValue> parsed = parseTransform(*transform);
+        if (!parsed.ok()) return Result<void>::failure(parsed.status());
         object->second.transform = parsed.value();
     } else if (operation.type == "scene.transform.multi.set.v1") {
         const auto* entries = operation.payload.getIf<EditorValue::Array>();
@@ -163,7 +163,7 @@ std::unique_ptr<IDomainOperationTarget> SceneTargetBase::cloneDomainState() cons
     return std::make_unique<SceneTargetBase>(*this);
 }
 
-EditorResult<void> SceneTargetBase::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
+Result<void> SceneTargetBase::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* staged = dynamic_cast<SceneTargetBase*>(candidate.get());
     if (!staged || staged->id_ != id_ || staged->type_ != type_)
         return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.scene.candidate-mismatch"),
@@ -174,7 +174,7 @@ EditorResult<void> SceneTargetBase::commitDomainState(std::unique_ptr<IDomainOpe
     return eve::editing::applied<void>();
 }
 
-EditorResult<SceneObjectSnapshot> SceneTargetBase::sceneObject(const ObjectId& id) const {
+Result<SceneObjectSnapshot> SceneTargetBase::sceneObject(const ObjectId& id) const {
     auto object = objects_.find(id);
     if (object == objects_.end())
         return eve::editing::failed<SceneObjectSnapshot>(EditorStatus::NotFound,
@@ -190,9 +190,9 @@ std::vector<ObjectId> SceneTargetBase::sceneChildren(const ObjectId& parent) con
     return children;
 }
 
-EditorResult<DomainOperation> SceneTargetBase::makeCreate(const CreateSceneObjectRequest& request) const {
+Result<DomainOperation> SceneTargetBase::makeCreate(const CreateSceneObjectRequest& request) const {
     auto validTransform = parseTransform(transformValue(request.transform));
-    if (!validTransform.ok()) return EditorResult<DomainOperation>::failure(validTransform.status());
+    if (!validTransform.ok()) return Result<DomainOperation>::failure(validTransform.status());
     if (request.id.empty())
         return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.scene.missing-object-id"),
                                                      "Scene object id is required");
@@ -217,7 +217,7 @@ EditorResult<DomainOperation> SceneTargetBase::makeCreate(const CreateSceneObjec
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<DomainOperation> SceneTargetBase::makeDelete(const ObjectId& id) const {
+Result<DomainOperation> SceneTargetBase::makeDelete(const ObjectId& id) const {
     auto object = objects_.find(id);
     if (object == objects_.end())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.scene.object-not-found"),
@@ -236,7 +236,7 @@ EditorResult<DomainOperation> SceneTargetBase::makeDelete(const ObjectId& id) co
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<DomainOperation> SceneTargetBase::makeRename(const ObjectId& id, const std::string& name) const {
+Result<DomainOperation> SceneTargetBase::makeRename(const ObjectId& id, const std::string& name) const {
     auto object = objects_.find(id);
     if (object == objects_.end())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.scene.object-not-found"),
@@ -262,7 +262,7 @@ EditorResult<DomainOperation> SceneTargetBase::makeRename(const ObjectId& id, co
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<DomainOperation> SceneTargetBase::makeReparent(const ObjectId& id, const ObjectId& parent) const {
+Result<DomainOperation> SceneTargetBase::makeReparent(const ObjectId& id, const ObjectId& parent) const {
     auto object = objects_.find(id);
     if (object == objects_.end())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.scene.object-not-found"),
@@ -296,16 +296,16 @@ EditorResult<DomainOperation> SceneTargetBase::makeReparent(const ObjectId& id, 
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<SceneTransformValue> SceneTargetBase::readTransform(const ObjectId& id) const {
+Result<SceneTransformValue> SceneTargetBase::readTransform(const ObjectId& id) const {
     auto object = sceneObject(id);
-    if (!object.ok()) return EditorResult<SceneTransformValue>::failure(object.status());
+    if (!object.ok()) return Result<SceneTransformValue>::failure(object.status());
     return eve::editing::applied<SceneTransformValue>(object.value().transform);
 }
 
-EditorResult<DomainOperation> SceneTargetBase::makeSetTransform(const ObjectId&            id,
+Result<DomainOperation> SceneTargetBase::makeSetTransform(const ObjectId&            id,
                                                                 const SceneTransformValue& transform) const {
     auto validTransform = parseTransform(transformValue(transform));
-    if (!validTransform.ok()) return EditorResult<DomainOperation>::failure(validTransform.status());
+    if (!validTransform.ok()) return Result<DomainOperation>::failure(validTransform.status());
     auto object = objects_.find(id);
     if (object == objects_.end())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.scene.object-not-found"),
@@ -356,7 +356,7 @@ EditorValue SceneTargetBase::transformValue(const SceneTransformValue& transform
     return EditorValue(std::move(value));
 }
 
-EditorResult<SceneTransformValue> SceneTargetBase::parseTransform(const EditorValue& value) {
+Result<SceneTransformValue> SceneTargetBase::parseTransform(const EditorValue& value) {
     const auto* fields = value.getIf<EditorValue::Object>();
     if (!fields)
         return eve::editing::failed<SceneTransformValue>(EditorStatus::Rejected, RuleId("editor.scene.transform-value"),
@@ -397,7 +397,7 @@ EditorResult<SceneTransformValue> SceneTargetBase::parseTransform(const EditorVa
     return eve::editing::applied<SceneTransformValue>(result);
 }
 
-EditorResult<SceneObjectSnapshot> SceneTargetBase::parseObject(const EditorValue& value) {
+Result<SceneObjectSnapshot> SceneTargetBase::parseObject(const EditorValue& value) {
     const EditorValue* idValue     = field(value, "id");
     const EditorValue* parentValue = field(value, "parent");
     const EditorValue* nameValue   = field(value, "name");
@@ -408,8 +408,8 @@ EditorResult<SceneObjectSnapshot> SceneTargetBase::parseObject(const EditorValue
     if (!id || !parent || !name || !transform)
         return eve::editing::failed<SceneObjectSnapshot>(EditorStatus::Rejected, RuleId("editor.scene.object-value"),
                                                          "Scene object payload is incomplete");
-    EditorResult<SceneTransformValue> parsedTransform = parseTransform(*transform);
-    if (!parsedTransform.ok()) return EditorResult<SceneObjectSnapshot>::failure(parsedTransform.status());
+    Result<SceneTransformValue> parsedTransform = parseTransform(*transform);
+    if (!parsedTransform.ok()) return Result<SceneObjectSnapshot>::failure(parsedTransform.status());
     return eve::editing::applied<SceneObjectSnapshot>(
         {ObjectId(*id), ObjectId(*parent), *name, parsedTransform.value()});
 }
@@ -423,7 +423,7 @@ EditorValue SceneTargetBase::objectValue(const SceneObjectSnapshot& object) {
     return EditorValue(std::move(value));
 }
 
-EditorResult<DomainOperation> ScenePlacementToolLogic::plan(IEditableTarget&              target,
+Result<DomainOperation> ScenePlacementToolLogic::plan(IEditableTarget&              target,
                                                             const CreateSceneObjectRequest& request) const {
     auto* hierarchy = static_cast<ISceneHierarchyEditTarget*>(
         target.queryCapability(ISceneHierarchyEditTarget::editorCapabilityId()));
@@ -434,7 +434,7 @@ EditorResult<DomainOperation> ScenePlacementToolLogic::plan(IEditableTarget&    
     return hierarchy->makeCreate(request);
 }
 
-EditorResult<DomainOperation> SceneTransformToolLogic::plan(IEditableTarget& target, const ObjectId& object,
+Result<DomainOperation> SceneTransformToolLogic::plan(IEditableTarget& target, const ObjectId& object,
                                                             const SceneTransformValue& transform) const {
     auto* transforms =
         static_cast<ITransformEditTarget*>(target.queryCapability(ITransformEditTarget::editingCapabilityId()));
@@ -445,7 +445,7 @@ EditorResult<DomainOperation> SceneTransformToolLogic::plan(IEditableTarget& tar
     return transforms->makeSetTransform(object, transform);
 }
 
-EditorResult<DomainOperation> SceneHierarchyToolLogic::planDelete(IEditableTarget& target,
+Result<DomainOperation> SceneHierarchyToolLogic::planDelete(IEditableTarget& target,
                                                                   const ObjectId& object) const {
     auto* hierarchy = static_cast<ISceneHierarchyEditTarget*>(
         target.queryCapability(ISceneHierarchyEditTarget::editorCapabilityId()));
@@ -456,7 +456,7 @@ EditorResult<DomainOperation> SceneHierarchyToolLogic::planDelete(IEditableTarge
     return hierarchy->makeDelete(object);
 }
 
-EditorResult<DomainOperation> SceneHierarchyToolLogic::planRename(IEditableTarget& target,
+Result<DomainOperation> SceneHierarchyToolLogic::planRename(IEditableTarget& target,
                                                                   const ObjectId& object,
                                                                   const std::string& name) const {
     auto* hierarchy = static_cast<ISceneHierarchyEditTarget*>(
@@ -468,7 +468,7 @@ EditorResult<DomainOperation> SceneHierarchyToolLogic::planRename(IEditableTarge
     return hierarchy->makeRename(object, name);
 }
 
-EditorResult<DomainOperation> SceneHierarchyToolLogic::planReparent(IEditableTarget& target,
+Result<DomainOperation> SceneHierarchyToolLogic::planReparent(IEditableTarget& target,
                                                                     const ObjectId& object,
                                                                     const ObjectId& parent) const {
     auto* hierarchy = static_cast<ISceneHierarchyEditTarget*>(
@@ -532,7 +532,7 @@ PropertyReadResult ScenePropertyProvider::read(const SelectionSnapshot& selectio
     return common ? PropertyReadResult{PropertyReadState::Value, *common, {}} : PropertyReadResult{};
 }
 
-EditorResult<DomainOperation> ScenePropertyProvider::makeSet(const SelectionSnapshot& selection,
+Result<DomainOperation> ScenePropertyProvider::makeSet(const SelectionSnapshot& selection,
                                                               const PropertyPath& path,
                                                               const EditorValue& value,
                                                               PropertySetMode mode) const {
@@ -592,7 +592,7 @@ EditorResult<DomainOperation> ScenePropertyProvider::makeSet(const SelectionSnap
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<DomainOperation> ScenePropertyProvider::makeReset(const SelectionSnapshot& selection,
+Result<DomainOperation> ScenePropertyProvider::makeReset(const SelectionSnapshot& selection,
                                                                 const PropertyPath& path) const {
     if (path == PropertyPath("transform.scale"))
         return makeSet(selection, path, EditorValue::Array{1.0, 1.0, 1.0}, PropertySetMode::Absolute);

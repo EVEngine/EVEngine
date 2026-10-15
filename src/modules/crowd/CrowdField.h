@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 // 连续流场：Dijkstra 积分场 + 梯度方向场 + 双线性采样。
 // 与 map/FlowField 的区别：map 的流场是格级 next 指针，本类是连续方向向量，
@@ -17,11 +19,12 @@ namespace eve::crowd {
  * （沿代价下降方向）。flowAtWorld() 用双线性插值给出任意世界坐标的方向，
  * 供单位逐帧采样跟随。
  */
-class CrowdField {
+class EVENGINE_API_FOUNDATION CrowdField {
 public:
     /** @brief 不可达/阻挡的积分代价。 */
     static constexpr float kUnreachable = 3.4e38f;
 
+    /** @brief Crowd field. */
     CrowdField() = default;
 
     /**
@@ -29,7 +32,7 @@ public:
      * @param width 列数（>0）
      * @param height 行数（>0）
      * @param cellSize 每格世界尺寸（>0）
-     * @param originX 世界原点 X（格 (0,0) 中心）
+     * @param originX 世界原点 X（格 (0,0) 左下角）
      * @param originY 世界原点 Y
      */
     void resize(int width, int height, float cellSize, float originX, float originY);
@@ -42,9 +45,13 @@ public:
 
     /** @brief 网格尺寸访问器。 */
     int getWidth() const { return width_; }
+    /** @brief Returns the height. */
     int getHeight() const { return height_; }
+    /** @brief Returns the cell size. */
     float getCellSize() const { return cellSize_; }
+    /** @brief Returns the origin x. */
     float getOriginX() const { return originX_; }
+    /** @brief Returns the origin y. */
     float getOriginY() const { return originY_; }
 
     /**

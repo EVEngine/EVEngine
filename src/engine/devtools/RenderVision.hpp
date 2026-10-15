@@ -33,7 +33,7 @@ namespace eve::dev {
  * touches the Graphics readback. Breakpoint / error sites only record a pending
  * flag here; the actual dump happens later from McpServer::poll.
  */
-class EVENGINE_API RenderVision {
+class EVENGINE_API_FOUNDATION RenderVision {
 public:
     static RenderVision& instance();
 

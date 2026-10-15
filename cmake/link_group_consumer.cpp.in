@@ -1,0 +1,12 @@
+// Generated from the link-group manifest, not an independent module boot list.
+#if defined(_WIN32)
+#define EVE_LINK_GROUP_IMPORT __declspec(dllimport)
+#else
+#define EVE_LINK_GROUP_IMPORT
+#endif
+extern "C" EVE_LINK_GROUP_IMPORT void eve_link_group_anchor_@_eve_group@();
+namespace {
+struct KeepLinkGroup {
+    KeepLinkGroup() { eve_link_group_anchor_@_eve_group@(); }
+} keepLinkGroup;
+}

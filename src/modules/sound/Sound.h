@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Data.h"
@@ -13,11 +15,13 @@ class SoundData;
  * @brief Sound module: decodes compressed audio and produces SoundData buffers.
  * Script: `sound <- eve.Sound();`
  */
-class Sound : public Module {
+class EVENGINE_API_PLATFORM Sound : public Module {
 public:
     Module_REG(Sound);
 
+    /** @brief Sound. */
     Sound();
+    /** @brief Sound. */
     ~Sound() override;
 
     /** @brief Creates a streaming decoder over raw encoded data. */

@@ -21,6 +21,7 @@ class WeaponEntity;
 /** @brief 武器逻辑接口：注册到 WeaponSystem 的可插拔行为。 */
 class IWeaponLogic {
 public:
+    /** @brief Releases IWeaponLogic resources. */
     virtual ~IWeaponLogic() = default;
 
     /**
@@ -60,6 +61,7 @@ class IProjectileService {
 public:
     static constexpr const char* capabilityName = "IProjectileService";
 
+    /** @brief Releases IProjectileService resources. */
     virtual ~IProjectileService() = default;
 
     /** @brief 按武器模板的 projectile 参数生成一枚投射物。 */

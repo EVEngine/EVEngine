@@ -632,6 +632,13 @@ TEST_CASE("graphics.backendParity.pbrNormalParallaxAndCellBomb") {
     const uint8_t *nearestRed = pixel(*baseline, 32, 32);
     REQUIRE(nearestBlue[2] > nearestBlue[0] + 50);
     REQUIRE(nearestRed[0] > nearestRed[2] + 50);
+    // A cached material binding must follow sampler edits between offscreen frames.
+    gfx->setTextureSampler(albedo, TextureSampler::linear());
+    auto linearSampled = render(flat, height, 0.f, 0.f, "pbr_material_linear_sampler");
+    REQUIRE(imageRgbDifference(*baseline, *linearSampled) > 0u);
+    gfx->setTextureSampler(albedo, TextureSampler::nearest());
+    auto nearestAgain = render(flat, height, 0.f, 0.f, "pbr_material_nearest_sampler_restored");
+    REQUIRE(imageRgbDifference(*baseline, *nearestAgain) == 0u);
     REQUIRE(imageRgbDifference(*baseline, *normalMapped) > 100000u);
     REQUIRE(imageRgbDifference(*baseline, *parallaxMapped) > 50000u);
     REQUIRE(imageRgbDifference(*baseline, *cellBombed) > 50000u);
@@ -773,9 +780,10 @@ TEST_CASE("graphics.backendParity.maskedMaterialTechniques") {
     for (const char *technique : {"dither", "coverage"}) {
         auto dithered = render(0.5f, technique, technique);
         const int visible = visiblePixels(*dithered);
-        // Alpha hashing is backend-specific at fragment-coordinate precision. Validate the
-        // material contract (partial coverage) relative to the rendered quad instead of a
-        // Vulkan-tuned absolute pixel count.
+        // Alpha hashing is backend-specific. Validate partial coverage relative to the
+        // rendered quad instead of a Vulkan-tuned absolute pixel count. Near-full coverage
+        // (visible ~= fullyCovered) means the hash path did not discard — historically seen
+        // on Dawn Metal when the hash depended only on a degenerate fragment position.
         REQUIRE(visible * 5 > fullyCovered);
         REQUIRE(visible * 20 < fullyCovered * 17);
     }

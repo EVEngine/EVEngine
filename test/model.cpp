@@ -1,6 +1,8 @@
-#include "common/Model.h"
-#include "ScriptTest.h"
 #include <cassert>
+#include <map>
+#include <string>
+#include <vector>
+#include "ScriptTest.h"
 #include "squirrel.h"
 
 #include "sqobject.h"
@@ -87,7 +89,5 @@ protected:
 // Release is fine). Pre-existing white-box test issue. Coverage still runs in
 // Debug on every platform and in Release on Linux.
 #if !defined(NDEBUG)
-TEST_CASE_FIXTURE(ModelScriptTest, "ModelScriptTest.basic") {
-    CHECK(vm.callFunc(vm.findFunc("basic"), vm).toBool());
-}
+TEST_CASE_FIXTURE(ModelScriptTest, "ModelScriptTest.basic") { REQUIRE(vm.callFunc(vm.findFunc("basic"), vm).toBool()); }
 #endif

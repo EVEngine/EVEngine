@@ -24,7 +24,7 @@ EditorValue passValue(const StylizePassValue& p) {
                                {"priority", int64_t{p.priority}},
                                {"overrides", std::move(overrides)}};
 }
-EditorResult<StylizePassValue> parsePass(const EditorValue& v) {
+Result<StylizePassValue> parsePass(const EditorValue& v) {
     const auto *idv = field(v, "id"), *stylev = field(v, "style"), *enabledv = field(v, "enabled"),
                *priorityv = field(v, "priority"), *overridesv = field(v, "overrides");
     const auto* id        = idv ? idv->getIf<std::string>() : nullptr;
@@ -137,7 +137,7 @@ EditorValue StylizeRecipeTarget::contentValue() const {
     for (const auto& id : order_) array.push_back(passValue(passes_.at(id)));
     return EditorValue::Object{{"passes", std::move(array)}};
 }
-EditorResult<DomainOperation> StylizeRecipeTarget::replacement(EditorValue payload,
+Result<DomainOperation> StylizeRecipeTarget::replacement(EditorValue payload,
                                                                 std::string propertyName) const {
     DomainOperation op;
     op.type        = "stylize.recipe.replace.v1";
@@ -150,7 +150,7 @@ EditorResult<DomainOperation> StylizeRecipeTarget::replacement(EditorValue paylo
     op.mergeKey = "stylize:" + id_ + ":" + (propertyName.empty() ? "structure" : propertyName);
     return eve::editing::applied<DomainOperation>(std::move(op));
 }
-EditorResult<DomainOperation> StylizeRecipeTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& path,
+Result<DomainOperation> StylizeRecipeTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& path,
                                                            const EditorValue& value, PropertySetMode mode) const {
     if (mode == PropertySetMode::Reset) return makeReset(s, path);
     auto d = schema(s).find(path);
@@ -176,7 +176,7 @@ EditorResult<DomainOperation> StylizeRecipeTarget::makeSet(const SelectionSnapsh
                                                      "Stylize edit produces an invalid recipe");
     return replacement(candidate.contentValue(), path.value());
 }
-EditorResult<DomainOperation> StylizeRecipeTarget::makeReset(const SelectionSnapshot& s,
+Result<DomainOperation> StylizeRecipeTarget::makeReset(const SelectionSnapshot& s,
                                                              const PropertyPath&      path) const {
     auto d = schema(s).find(path);
     if (!d)
@@ -190,7 +190,7 @@ EditorResult<DomainOperation> StylizeRecipeTarget::makeReset(const SelectionSnap
     }
     return makeSet(s, path, d->defaultValue, PropertySetMode::Absolute);
 }
-EditorResult<DomainOperation> StylizeRecipeTarget::makeCreate(const ObjectId& id, const std::string& style) const {
+Result<DomainOperation> StylizeRecipeTarget::makeCreate(const ObjectId& id, const std::string& style) const {
     if (id.empty() || passes_.contains(id) || !stylize::isKnownStyle(style))
         return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.stylize.create"),
                                                      "Stylize pass ID or style is invalid");
@@ -202,7 +202,7 @@ EditorResult<DomainOperation> StylizeRecipeTarget::makeCreate(const ObjectId& id
                                                      "Stylize recipe cannot mix post and mesh stages");
     return replacement(candidate.contentValue());
 }
-EditorResult<DomainOperation> StylizeRecipeTarget::makeDelete(const ObjectId& id) const {
+Result<DomainOperation> StylizeRecipeTarget::makeDelete(const ObjectId& id) const {
     if (!passes_.contains(id))
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.stylize.pass"),
                                                      "Stylize pass does not exist");
@@ -211,7 +211,7 @@ EditorResult<DomainOperation> StylizeRecipeTarget::makeDelete(const ObjectId& id
     std::erase(candidate.order_, id);
     return replacement(candidate.contentValue());
 }
-EditorResult<DomainOperation> StylizeRecipeTarget::makeMove(const ObjectId& id, std::size_t index) const {
+Result<DomainOperation> StylizeRecipeTarget::makeMove(const ObjectId& id, std::size_t index) const {
     if (!passes_.contains(id) || index >= order_.size())
         return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.stylize.move"),
                                                      "Stylize move target or index is invalid");
@@ -222,7 +222,7 @@ EditorResult<DomainOperation> StylizeRecipeTarget::makeMove(const ObjectId& id, 
         candidate.passes_[candidate.order_[i]].priority = static_cast<int>(i);
     return replacement(candidate.contentValue());
 }
-EditorResult<void> StylizeRecipeTarget::applyDomainOperation(const DomainOperation& op) {
+Result<void> StylizeRecipeTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "stylize.recipe.replace.v1")
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.stylize.operation"),
                                           "Stylize operation mismatch");
@@ -252,7 +252,7 @@ EditorResult<void> StylizeRecipeTarget::applyDomainOperation(const DomainOperati
 std::unique_ptr<IDomainOperationTarget> StylizeRecipeTarget::cloneDomainState() const {
     return std::make_unique<StylizeRecipeTarget>(*this);
 }
-EditorResult<void> StylizeRecipeTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
+Result<void> StylizeRecipeTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* t = dynamic_cast<StylizeRecipeTarget*>(candidate.get());
     if (!t || t->id_ != id_)
         return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.stylize.candidate"),
@@ -297,7 +297,7 @@ std::vector<EditorDiagnostic> StylizeRecipeTarget::validate() const {
 EditorValue StylizeRecipeTarget::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"content", contentValue()}};
 }
-EditorResult<void> StylizeRecipeTarget::loadSnapshot(const EditorValue& s) {
+Result<void> StylizeRecipeTarget::loadSnapshot(const EditorValue& s) {
     const auto *v = field(s, "schemaVersion"), *content = field(s, "content");
     const auto* version = v ? v->getIf<int64_t>() : nullptr;
     if (!version || *version != 1 || !content)

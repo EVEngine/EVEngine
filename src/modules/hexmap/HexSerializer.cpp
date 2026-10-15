@@ -67,7 +67,7 @@ constexpr std::uint32_t kKnownFlagMask = 0x3fu | (0x3fu << 6) | (0x3fu << 12) | 
 
 /** @brief Diagnostic for a payload that cannot be decoded. */
 [[nodiscard]] Diagnostic invalidArgument(std::string message) {
-    return Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), "hexmap.save");
+    return Diagnostic::error(DiagnosticCode::InvalidArgument, message, "hexmap.save");
 }
 
 /** @brief Appends a little-endian 32-bit word. */

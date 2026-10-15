@@ -13,14 +13,14 @@ public:
     std::map<std::string, UiTextureMetadata> textures;
     std::map<std::string, bool> fonts;
 
-    EditorResult<UiTextureMetadata> texture(const std::string& asset) const override {
+    Result<UiTextureMetadata> texture(const std::string& asset) const override {
         auto found = textures.find(asset);
         if (found == textures.end())
             return eve::editing::failed<UiTextureMetadata>(EditorStatus::NotFound,
                 RuleId("test.ui.texture"), "missing texture");
         return eve::editing::applied<UiTextureMetadata>(found->second);
     }
-    EditorResult<void> font(const std::string& asset) const override {
+    Result<void> font(const std::string& asset) const override {
         if (!fonts.contains(asset))
             return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("test.ui.font"),
                                              "missing font");

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file DialoguePayment.h
@@ -31,7 +33,7 @@ namespace eve::dialogue {
  * not a balance mirror: the actual values are read and changed only through
  * the account adapters supplied to DialoguePaymentAdapter.
  */
-struct PaymentSpec {
+struct EVENGINE_API_ORCHESTRATION PaymentSpec {
     /** @brief Optional money amount, in the configured money resource. */
     std::optional<std::int64_t> money;
     /** @brief Optional reputation amount, in the configured reputation resource. */
@@ -89,17 +91,22 @@ public:
     DialogueStateMutationParticipant& operator=(const DialogueStateMutationParticipant&) = delete;
     DialogueStateMutationParticipant(DialogueStateMutationParticipant&&)                 = delete;
     DialogueStateMutationParticipant& operator=(DialogueStateMutationParticipant&&)      = delete;
+    /** @brief Releases DialogueStateMutationParticipant resources. */
     ~DialogueStateMutationParticipant() override                                         = default;
 
     /** @brief Stable diagnostic name. */
     [[nodiscard]] std::string_view name() const noexcept override { return "dialogue.state-mutation"; }
     /** @copydoc eve::transaction::ITransactionParticipant::prepare */
+    /** @brief Prepare. */
     [[nodiscard]] eve::Result<void> prepare(const eve::transaction::TransactionContext& context) override;
     /** @copydoc eve::transaction::ITransactionParticipant::commit */
+    /** @brief Commits . */
     [[nodiscard]] eve::Result<void> commit(const eve::transaction::TransactionContext& context) override;
     /** @copydoc eve::transaction::ITransactionParticipant::rollback */
+    /** @brief Rollback. */
     [[nodiscard]] eve::Result<void> rollback(const eve::transaction::TransactionContext& context) override;
     /** @copydoc eve::transaction::ITransactionParticipant::compensate */
+    /** @brief Compensate. */
     [[nodiscard]] eve::Result<void> compensate(const eve::transaction::TransactionContext& context) override;
 
 private:
@@ -120,7 +127,7 @@ private:
  * already committed debits are compensated.  The call is synchronous and
  * non-reentrant on the owner thread.
  */
-class DialoguePaymentAdapter final {
+class EVENGINE_API_ORCHESTRATION DialoguePaymentAdapter final {
 public:
     /** @brief Construct an adapter with borrowed account bindings. */
     explicit DialoguePaymentAdapter(DialogueAccountBindings bindings = {});

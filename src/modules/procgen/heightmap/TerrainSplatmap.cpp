@@ -14,9 +14,6 @@
 
 namespace eve::procgen {
 namespace {
-template <class T> Result<T> invalid(const char* message) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message));
-}
 
 float fade(float value) { return value * value * value * (value * (value * 6.f - 15.f) + 10.f); }
 float seamHash(int x, int y) {
@@ -52,12 +49,12 @@ GtsHeightBlendSet& GtsHeightBlendSet::operator=(GtsHeightBlendSet&&) noexcept = 
 Result<int> GtsHeightBlendSet::addLayer(const Heightmap& height, float contrast, float brightness, float increase) {
     using namespace raster_detail;
     if (!validRaster(height) || !std::isfinite(contrast) || contrast < 0 || !std::isfinite(brightness) ||
-        !std::isfinite(increase)) return invalid<int>("terrain.gtsHeightBlend: finite layer transform required");
+        !std::isfinite(increase)) return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.gtsHeightBlend: finite layer transform required"));
     if (!impl_) impl_ = std::make_unique<Impl>();
-    if (impl_->layers.size() >= 8) return invalid<int>("terrain.gtsHeightBlend: at most eight layers supported");
+    if (impl_->layers.size() >= 8) return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.gtsHeightBlend: at most eight layers supported"));
     if (!impl_->layers.empty() && (height.getWidth() != impl_->layers[0].height.getWidth() ||
                                    height.getHeight() != impl_->layers[0].height.getHeight()))
-        return invalid<int>("terrain.gtsHeightBlend: all height rasters must match");
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.gtsHeightBlend: all height rasters must match"));
     impl_->layers.push_back({height, contrast, brightness, increase});
     return Result<int>::success(static_cast<int>(impl_->layers.size()));
 }
@@ -77,11 +74,11 @@ TerrainSplatmap& TerrainSplatmap::operator=(const TerrainSplatmap& other) {
 }
 Result<int> TerrainSplatmap::initialize(int width, int height, int layers, int defaultLayer) {
     if (width <= 0 || height <= 0 || layers <= 0 || defaultLayer < 0 || defaultLayer >= layers)
-        return invalid<int>("terrain.splatmap: positive topology and valid default layer required");
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.splatmap: positive topology and valid default layer required"));
     const auto texels = std::uint64_t(width) * std::uint64_t(height);
     if (texels > std::numeric_limits<std::size_t>::max() / std::uint64_t(layers) ||
         texels * std::uint64_t(layers) > std::numeric_limits<int>::max())
-        return invalid<int>("terrain.splatmap: topology exceeds supported size");
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.splatmap: topology exceeds supported size"));
     if (!impl_) impl_ = std::make_unique<Impl>();
     Impl next;
     next.width = width; next.height = height; next.layers = layers;
@@ -92,16 +89,16 @@ Result<int> TerrainSplatmap::initialize(int width, int height, int layers, int d
     return Result<int>::success(static_cast<int>(texels));
 }
 Result<float> TerrainSplatmap::sample(int layer, int x, int y) const {
-    if (!impl_ || impl_->layers <= 0) return invalid<float>("terrain.splatmap: initialize before sampling");
+    if (!impl_ || impl_->layers <= 0) return Result<float>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.splatmap: initialize before sampling"));
     if (layer < 0 || layer >= impl_->layers || x < 0 || x >= impl_->width || y < 0 || y >= impl_->height)
-        return invalid<float>("terrain.splatmap: sample index out of range");
+        return Result<float>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.splatmap: sample index out of range"));
     return Result<float>::success(impl_->weights[impl_->index(layer, x, y)]);
 }
 
 Result<int> TerrainSplatmap::copyLayer(int layer, Heightmap& output) const {
     if (!impl_ || impl_->width <= 0 || layer < 0 || layer >= impl_->layers || output.getWidth() != impl_->width ||
         output.getHeight() != impl_->height)
-        return invalid<int>("terrain.splat.copyLayer: initialized source, valid layer and matching output required");
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.splat.copyLayer: initialized source, valid layer and matching output required"));
     std::vector<float> candidate(size_t(impl_->width) * impl_->height);
     for (int y = 0; y < impl_->height; ++y)
         for (int x = 0; x < impl_->width; ++x)
@@ -130,7 +127,7 @@ Result<int> alignTerrainSplatTextures(TerrainSplatmap& terrainA, TerrainSplatmap
         settings.terrainAWidth <= 0 || settings.terrainADepth <= 0 || settings.terrainBWidth <= 0 ||
         settings.terrainBDepth <= 0 || settings.blendStrength < 0 || settings.blendStrength > 1 ||
         settings.blendWidth <= 0 || settings.adjacencyTolerance <= 0)
-        return invalid<int>("terrain.textureAlign: distinct initialized square maps and valid finite settings required");
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.textureAlign: distinct initialized square maps and valid finite settings required"));
 
     enum class Edge { None, Left, Right, Top, Bottom };
     Edge edgeA = Edge::None, edgeB = Edge::None;
@@ -150,7 +147,7 @@ Result<int> alignTerrainSplatTextures(TerrainSplatmap& terrainA, TerrainSplatmap
         else if (zOverlaps && near(aMinX, bMaxX)) edgeA = Edge::Bottom, edgeB = Edge::Top;
     }
     if (edgeA == Edge::None)
-        return invalid<int>("terrain.textureAlign: terrain bounds are not adjacent");
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.textureAlign: terrain bounds are not adjacent"));
 
     auto nextA = *terrainA.impl_, nextB = *terrainB.impl_;
     const int resolution = std::min(nextA.width, nextB.width);
@@ -212,7 +209,7 @@ Result<int> paintTerrainSplatLayer(TerrainSplatmap& target, const Heightmap& pai
             return std::isfinite(value) && value >= 0 && value <= 1;
         }) || (target.impl_->layers == 1 && std::any_of(paint.data().begin(), paint.data().end(),
                                                        [](float value) { return value != 1; })))
-        return invalid<int>("terrain.paintSplat: initialized matching topology, layer and normalized paint required");
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.paintSplat: initialized matching topology, layer and normalized paint required"));
     auto next = *target.impl_;
     int changed = 0;
     for (int y = 0; y < next.height; ++y) {
@@ -244,10 +241,10 @@ Result<int> applyGtsHeightBlend(TerrainSplatmap& output, const TerrainSplatmap& 
     if (!input.impl_ || input.impl_->layers <= 0 || !heights.impl_ ||
         heights.impl_->layers.size() != static_cast<std::size_t>(input.impl_->layers) ||
         !std::isfinite(blendFactor) || blendFactor < 0 || blendFactor > 1)
-        return invalid<int>("terrain.gtsHeightBlend: initialized splat, matching heights and normalized factor required");
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.gtsHeightBlend: initialized splat, matching heights and normalized factor required"));
     for (const auto& layer : heights.impl_->layers)
         if (layer.height.getWidth() != input.impl_->width || layer.height.getHeight() != input.impl_->height)
-            return invalid<int>("terrain.gtsHeightBlend: topology mismatch");
+            return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.gtsHeightBlend: topology mismatch"));
     auto next = *input.impl_;
     int changed = 0;
     std::vector<float> weighted(static_cast<std::size_t>(next.layers));
@@ -292,15 +289,14 @@ Result<TerrainMultiTileReport> paintTerrainSplatLayerMultiTile(
         !std::all_of(operationPaint.data().begin(), operationPaint.data().end(), [](float value) {
             return std::isfinite(value) && value >= 0 && value <= 1;
         }))
-        return invalid<TerrainMultiTileReport>("terrain.paintSplat.multitile: tiles and normalized paint required");
+        return Result<TerrainMultiTileReport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.paintSplat.multitile: tiles and normalized paint required"));
     std::vector<TerrainOperationTile> descriptors;
     std::unordered_set<TerrainSplatmap*> owners;
     descriptors.reserve(tiles.size());
     for (const auto& tile : tiles) {
         if (!tile.splatmap || !tile.splatmap->impl_ || tile.splatmap->impl_->layers <= 0 ||
             !owners.insert(tile.splatmap).second || targetLayer < 0 || targetLayer >= tile.splatmap->impl_->layers)
-            return invalid<TerrainMultiTileReport>(
-                "terrain.paintSplat.multitile: distinct initialized owners and common target layer required");
+            return Result<TerrainMultiTileReport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.paintSplat.multitile: distinct initialized owners and common target layer required"));
         descriptors.push_back({tile.name, tile.originX, tile.originZ, tile.width, tile.depth,
                                tile.splatmap->impl_->width, tile.splatmap->impl_->height, tile.worldMap});
     }
@@ -309,8 +305,7 @@ Result<TerrainMultiTileReport> paintTerrainSplatLayerMultiTile(
     if (!mapped.ok()) return mapped;
     auto report = std::move(mapped.value());
     if (operationPaint.getWidth() != report.operationWidth || operationPaint.getHeight() != report.operationHeight)
-        return invalid<TerrainMultiTileReport>(
-            "terrain.paintSplat.multitile: paint dimensions must match the shared operation window");
+        return Result<TerrainMultiTileReport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.paintSplat.multitile: paint dimensions must match the shared operation window"));
     struct Candidate { TerrainSplatmap* target; TerrainSplatmap::Impl value; };
     std::vector<Candidate> candidates;
     candidates.reserve(report.mappings.size());
@@ -324,8 +319,7 @@ Result<TerrainMultiTileReport> paintTerrainSplatLayerMultiTile(
             for (int y = 0; y < mapping.height; ++y)
                 for (int x = 0; x < mapping.width; ++x)
                     if (operationPaint.height(mapping.operationX + x, mapping.operationY + y) != 1)
-                        return invalid<TerrainMultiTileReport>(
-                            "terrain.paintSplat.multitile: a selected single-layer splatmap must remain one");
+                        return Result<TerrainMultiTileReport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.paintSplat.multitile: a selected single-layer splatmap must remain one"));
         }
         auto next = *tile->splatmap->impl_;
         int changed = 0;
@@ -352,7 +346,7 @@ Result<TerrainMultiTileReport> paintTerrainSplatLayerMultiTile(
         }
         next.lastChanged = changed;
         if (report.changedSamples > std::numeric_limits<int>::max() - changed)
-            return invalid<TerrainMultiTileReport>("terrain.paintSplat.multitile: changed texel count exceeds range");
+            return Result<TerrainMultiTileReport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.paintSplat.multitile: changed texel count exceeds range"));
         report.changedSamples += changed;
         candidates.push_back({tile->splatmap, std::move(next)});
     }
@@ -397,11 +391,11 @@ Result<int> TerrainMultiSplatWorkspace::addTile(const std::string& name, const T
                                                  double originX, double originZ, double width, double depth,
                                                  bool worldMap) {
     if (!impl_ || name.empty() || splatmap.getWidth() <= 0 || splatmap.getHeight() <= 0)
-        return invalid<int>("terrain.splat.workspace: initialized named tile required");
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.splat.workspace: initialized named tile required"));
     if (std::any_of(impl_->tiles.begin(), impl_->tiles.end(), [&](const auto& tile) { return tile.name == name; }))
-        return invalid<int>("terrain.splat.workspace: duplicate tile name");
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.splat.workspace: duplicate tile name"));
     if (impl_->history.size() > 1)
-        return invalid<int>("terrain.splat.workspace: topology is fixed after painting");
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.splat.workspace: topology is fixed after painting"));
     auto candidate = std::make_unique<Impl>(*impl_);
     candidate->tiles.push_back({name, splatmap, originX, originZ, width, depth, worldMap});
     std::vector<TerrainOperationTile> descriptors;
@@ -425,7 +419,7 @@ Result<int> TerrainMultiSplatWorkspace::addTile(const std::string& name, const T
 Result<int> TerrainMultiSplatWorkspace::paint(const Heightmap& operationPaint, int targetLayer,
                                                const TerrainStampSettings& operationSettings,
                                                bool worldMapOperation) {
-    if (!impl_) return invalid<int>("terrain.splat.workspace: moved-from workspace");
+    if (!impl_) return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.splat.workspace: moved-from workspace"));
     auto candidate = std::make_unique<Impl>(*impl_);
     std::vector<TerrainSplatTile> descriptors;
     for (auto& tile : candidate->tiles)
@@ -444,23 +438,23 @@ Result<int> TerrainMultiSplatWorkspace::paint(const Heightmap& operationPaint, i
 }
 
 Result<int> TerrainMultiSplatWorkspace::copyTile(const std::string& name, TerrainSplatmap& output) const {
-    if (!impl_) return invalid<int>("terrain.splat.workspace: moved-from workspace");
+    if (!impl_) return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.splat.workspace: moved-from workspace"));
     const auto found = std::find_if(impl_->tiles.begin(), impl_->tiles.end(),
                                     [&](const auto& tile) { return tile.name == name; });
-    if (found == impl_->tiles.end()) return invalid<int>("terrain.splat.workspace: tile not found");
+    if (found == impl_->tiles.end()) return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.splat.workspace: tile not found"));
     TerrainSplatmap copy = found->splatmap;
     output = std::move(copy);
     return Result<int>::success(output.getWidth() * output.getHeight());
 }
 Result<int> TerrainMultiSplatWorkspace::undo() {
-    if (!impl_ || impl_->cursor <= 0) return invalid<int>("terrain.splat.workspace: no undo snapshot");
+    if (!impl_ || impl_->cursor <= 0) return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.splat.workspace: no undo snapshot"));
     --impl_->cursor;
     impl_->restore(impl_->history[static_cast<std::size_t>(impl_->cursor)]);
     return Result<int>::success(impl_->cursor);
 }
 Result<int> TerrainMultiSplatWorkspace::redo() {
     if (!impl_ || impl_->cursor + 1 >= static_cast<int>(impl_->history.size()))
-        return invalid<int>("terrain.splat.workspace: no redo snapshot");
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.splat.workspace: no redo snapshot"));
     ++impl_->cursor;
     impl_->restore(impl_->history[static_cast<std::size_t>(impl_->cursor)]);
     return Result<int>::success(impl_->cursor);

@@ -257,7 +257,7 @@ void TileRenderSystem::collect(std::vector<graphics::DrawItem2D> &out, int viewW
                         item.camX         = cam.x;
                         item.camY         = cam.y;
                         item.camZoom      = cam.zoom;
-                        item.receiveLight = false;
+                        item.receiveLight = draw->receiveLight;
                         item.litPath      = false;
                         applyTiledTransform(item, raw);
 
@@ -289,6 +289,7 @@ void TileRenderSystem::collect(std::vector<graphics::DrawItem2D> &out, int viewW
                                 quarter.u1      = u1;
                                 quarter.v1      = v1;
                                 quarter.color   = tint;
+                                quarter.litPath = quarter.receiveLight && quarter.texture != nullptr;
                                 out.push_back(quarter);
                                 ++gLastCustomVisualCount;
                             }
@@ -322,6 +323,7 @@ void TileRenderSystem::collect(std::vector<graphics::DrawItem2D> &out, int viewW
                             item.texture = nullptr;
                             item.color   = solidForGid(gid, tint);
                         }
+                        item.litPath = item.receiveLight && item.texture != nullptr;
                         out.push_back(item);
                         ++gLastVisibleTileCount;
                         if (item.texture) atlases.insert(item.texture);

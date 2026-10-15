@@ -1,8 +1,9 @@
 #include "graphics/material/editing/MaterialBatchTarget.h"
-
+#include "graphics/material/editor/EditorMaterialPreview.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+// editor_material_batch_target.cpp
 using namespace eve::editing;
 using namespace eve::material_editing;
 
@@ -16,7 +17,7 @@ SelectionSnapshot select(const MaterialBatchTarget& target, std::initializer_lis
 
 class BatchSink final : public IMaterialBatchRuntimeSink {
 public:
-    EditorResult<void> publish(std::span<const MaterialDocumentTarget> candidates) override {
+    Result<void> publish(std::span<const MaterialDocumentTarget> candidates) override {
         ++calls;
         observed = candidates.size();
         if (reject)
@@ -73,4 +74,86 @@ TEST_CASE("editor.material.batch_sink_failure_preserves_every_document") {
     CHECK(!batch.applyDomainOperation(operation.value()).ok());
     CHECK_EQ(batch.revision(), revision);
     CHECK(batch.snapshotValue() == before);
+}
+
+// editor_material_preview.cpp
+using namespace eve::editor;
+
+namespace {
+
+class RecordingPreviewRenderer final : public IMaterialPreviewRenderer {
+public:
+    MaterialPreviewRenderResult render(const MaterialPreviewRenderRequest& request) override {
+        ++calls;
+        last = request;
+        return {status, artifact, {}};
+    }
+
+    int                          calls    = 0;
+    EditorStatus                 status   = EditorStatus::Applied;
+    std::string                  artifact = "artifact://material-preview/one";
+    MaterialPreviewRenderRequest last;
+};
+
+SelectionSnapshot selection(const MaterialDocumentTarget& material) {
+    SelectionSnapshot result;
+    result.items.push_back(
+        {SelectionDomain::Asset, TargetId(material.targetId()), StableId("material"), "graphics.material"});
+    return result;
+}
+
+}  // namespace
+
+TEST_CASE("editor.material.preview_uses_immutable_isolated_revisioned_request") {
+    MaterialDocumentTarget   material("preview-material");
+    RecordingPreviewRenderer renderer;
+    MaterialPreviewService   previews;
+    MaterialPreviewSettings  settings;
+    settings.geometry               = "custom";
+    settings.customMeshAsset        = "asset://meshes/helmet.evm";
+    const Revision renderedRevision = material.revision();
+    auto           task             = previews.render(DocumentId("material-doc"), material, settings, renderer);
+    REQUIRE(task.ok());
+    CHECK_EQ(renderer.calls, 1);
+    CHECK(!renderer.last.sceneId.empty());
+    CHECK_EQ(renderer.last.documentRevision, renderedRevision);
+    CHECK_EQ(renderer.last.settings.customMeshAsset, "asset://meshes/helmet.evm");
+    REQUIRE(renderer.last.material.getIf<EditorValue::Object>());
+    REQUIRE(previews.publish(DocumentId("material-doc"), material.revision(), task.value()).ok());
+    CHECK_EQ(previews.publishedArtifact(DocumentId("material-doc")), renderer.artifact);
+}
+
+TEST_CASE("editor.material.preview_rejects_stale_or_failed_publication") {
+    MaterialDocumentTarget   material("preview-stale");
+    RecordingPreviewRenderer renderer;
+    MaterialPreviewService   previews;
+    auto                     task = previews.render(DocumentId("doc"), material, {}, renderer);
+    REQUIRE(task.ok());
+    auto roughness =
+        material.makeSet(selection(material), PropertyPath("shading.roughness"), 0.8, PropertySetMode::Absolute);
+    REQUIRE(roughness.ok());
+    REQUIRE(material.applyDomainOperation(roughness.value()).ok());
+    CHECK_EQ(static_cast<int>(previews.publish(DocumentId("doc"), material.revision(), task.value()).code()),
+             static_cast<int>(EditorStatus::Conflict));
+    CHECK(previews.publishedArtifact(DocumentId("doc")).empty());
+
+    renderer.status = EditorStatus::Failed;
+    renderer.artifact.clear();
+    auto failed = previews.render(DocumentId("doc"), material, {}, renderer);
+    REQUIRE(failed.ok());
+    CHECK_EQ(static_cast<int>(previews.publish(DocumentId("doc"), material.revision(), failed.value()).code()),
+             static_cast<int>(EditorStatus::Failed));
+}
+
+TEST_CASE("editor.material.preview_validates_scene_settings_before_renderer_call") {
+    MaterialDocumentTarget   material("preview-invalid");
+    RecordingPreviewRenderer renderer;
+    MaterialPreviewService   previews;
+    MaterialPreviewSettings  settings;
+    settings.geometry  = "custom";
+    settings.width     = 4;
+    const auto invalid = previews.render(DocumentId("doc"), material, settings, renderer);
+    CHECK_EQ(static_cast<int>(invalid.code()), static_cast<int>(EditorStatus::Rejected));
+    CHECK_EQ(renderer.calls, 0);
+    CHECK(invalid.diagnostics().size() >= size_t{2});
 }

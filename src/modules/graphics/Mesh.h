@@ -1,8 +1,11 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "graphics/Drawable.h"
 
+#include <array>
 #include <cstdint>
 #include <map>
 #include <span>
@@ -20,7 +23,7 @@ namespace eve::graphics {
  * Morph pipeline: initMorphBase / addMorphTarget* → setMorphWeight →
  * Graphics::bakeMeshMorph (uploads blended positions to the host-visible VBO).
  */
-class Mesh : public Drawable {
+class EVENGINE_API_BACKENDS Mesh : public Drawable {
 public:
     int   indexCount = 0;
     void *gpuHandle  = nullptr;  // vulkan::GpuMesh*
@@ -62,9 +65,26 @@ public:
     /** @brief True when a valid bounding sphere is available for culling. */
     bool hasBounds() const { return boundsRadius > 0.f; }
 
+    /** @brief Copy CPU-uploaded mesh-local minimum XYZ and maximum XYZ.
+     * @return Owning bounds or NotFound when no finite vertex bounds are available.
+     * @thread Render thread only; no callbacks or retained references.
+     * @remarks CPU morph baking updates bounds; GPU skinning is excluded. Static placement uses bind geometry.
+     */
+    [[nodiscard]] Result<std::array<float, 6>> localBounds() const;
+
     /** @brief Compute the bounding sphere (centroid + max radius) from positions. */
     void computeBounds(const float *posXYZ, int vertexCount);
 
+    /** @brief Native upload generation; changes on each position upload, owner thread only. */
+    uint64_t geometryGeneration() const { return geometryGeneration_; }
+
+private:
+    uint64_t             geometryGeneration_ = 0;
+    std::array<float, 6> localBounds_{};
+    bool                 hasLocalBounds_ = false;
+
+public:
+    /** @brief Draws . */
     void draw(Graphics * /*gfx*/, const glm::mat4 & /*matrix*/) const override {}
     /**
      * @brief Screen-space black proxy for volumetric occlusion.
@@ -74,29 +94,42 @@ public:
     void drawOcclusion(Graphics *gfx, const glm::mat4 &matrix) const override;
 
     // ---- morph targets (CPU) ----
+    /** @brief Clears morph data. */
     void clearMorphData();
     /** @brief Capture base pose (xyz packed). Optional normals/uvs (same vertex count). */
     void initMorphBase(int vertexCount, const float *posXYZ, const float *nrmXYZ = nullptr,
                        const float *uvST = nullptr);
     /** Delta morph: target = base + delta * weight. */
+    /** @brief Adds morph target. */
     bool addMorphTarget(const std::string &name, const float *deltaPosXYZ);
     /** @brief Absolute morph (Assimp aiAnimMesh style): stored as delta from base. */
     bool addMorphTargetAbsolute(const std::string &name, const float *absPosXYZ);
 
+    /** @brief Returns the vertex count. */
     int getVertexCount() const;
+    /** @brief Returns the morph count. */
     int getMorphCount() const;
+    /** @brief Returns the morph name. */
     std::string getMorphName(int index) const;
+    /** @brief True when morph. */
     bool hasMorph(const std::string &name) const;
+    /** @brief Sets the morph weight. */
     bool setMorphWeight(const std::string &name, float weight);
+    /** @brief Returns the morph weight. */
     float getMorphWeight(const std::string &name) const;
+    /** @brief Clears morph weights. */
     void clearMorphWeights();
+    /** @brief True when morph dirty. */
     bool isMorphDirty() const { return morphDirty_; }
+    /** @brief Mark morph clean. */
     void markMorphClean() { morphDirty_ = false; }
+    /** @brief True when morph data. */
     bool hasMorphData() const { return !basePos_.empty(); }
 
     /** @brief Bake current weights into outPos / outNrm (xyz packed). */
     void computeMorphedPositions(std::vector<float> &outPos, std::vector<float> &outNrm) const;
 
+    /** @brief Base uv. */
     const std::vector<float> &baseUv() const { return baseUv_; }
 
     /** @brief Retain imported UV/color/tangent streams for custom pipelines and baking. */
@@ -193,11 +226,17 @@ public:
     /** @brief Borrow TVE rest-deformation data until mesh mutation or destruction. */
     [[nodiscard]] std::span<const float> vegetationDeformationFactors() const { return vegetationDeformationFactors_; }
     int getUvChannelCount() const { return static_cast<int>(importedUvs_.size()); }
+    /** @brief Returns the color channel count. */
     int getColorChannelCount() const { return static_cast<int>(importedColors_.size()); }
+    /** @brief True when imported tangents. */
     bool hasImportedTangents() const { return !importedTangents_.empty(); }
+    /** @brief Imported uv. */
     const std::vector<float> &importedUv(int channel) const;
+    /** @brief Imported color. */
     const std::vector<float> &importedColor(int channel) const;
+    /** @brief Imported tangents. */
     const std::vector<float> &importedTangents() const { return importedTangents_; }
+    /** @brief Imported bitangents. */
     const std::vector<float> &importedBitangents() const { return importedBitangents_; }
 
 private:

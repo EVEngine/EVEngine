@@ -43,7 +43,7 @@ enum class ContentDigestKind : std::uint8_t {
 };
 
 /** @brief Stable protocol spelling of a digest kind. */
-[[nodiscard]] std::string_view contentDigestKindName(ContentDigestKind kind) noexcept;
+[[nodiscard]] EVENGINE_API_FOUNDATION std::string_view contentDigestKindName(ContentDigestKind kind) noexcept;
 
 /**
  * @brief One content-digest implementation usable for snapshot sealing and verification.
@@ -56,6 +56,7 @@ public:
     /** @brief Capability name a provider registers under. */
     static constexpr const char* capabilityName = "eve.ISnapshotContentHasher";
 
+    /** @brief Releases ISnapshotContentHasher resources. */
     virtual ~ISnapshotContentHasher() = default;
 
     /** @brief Stable algorithm id, persisted or logged next to the data it hashed. */

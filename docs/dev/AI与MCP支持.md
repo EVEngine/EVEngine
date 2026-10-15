@@ -1,5 +1,8 @@
 # AI 生成 / 辅助开发与 MCP 支持
 
+[English practical setup](../en/usr/AI-MCP.md)
+
+
 > 状态：首版落地（嵌入式 MCP + DevTools AI 面板 + Cursor stdio 桥）。
 > 代码：[`src/engine/devtools/McpServer.*`](../../src/engine/devtools/McpServer.hpp)、
 > [`AiPanel.*`](../../src/engine/devtools/AiPanel.hpp)、[`DevTool.*`](../../src/engine/devtools/DevTool.hpp)；
@@ -62,6 +65,8 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | 名称 | 用途 |
 |------|------|
 | `eve_status` | 附着 / 暂停 / 端口 / callgraph 摘要 |
+| `eve_script_components` | 引擎侧**脚本组件数据**的 JSON 视图：每个实体的已登记组件及其当前字段值（权威存储，不是脚本槽位）。未登记组件不出现；没有数据时是空列表 |
+| `eve_game_world` | Discover：当前运行时是什么世界（`config.title` / `config.modules` + 已实例化模块 + gameplay domains；可选 `eve.dev.publishWorldContext` 补 summary 等叙述字段）；等价资源 `eve://game-world`，也出现在 `eve_play` `op=status.gameWorld`。静态长文直接读仓库文件，不经契约转发 |
 | `eve_api_search` / `eve_api_get` | 查询本构建的 EveScript Binding Contracts（先查再写脚本；见 [AI 知识补偿](AI知识补偿.md)） |
 | `eve_ui_tree` / `eve_ui_get` / `eve_ui_click` | 普通游戏 retained UI 的语义树查询、控件状态读取和按 ID 点击；与 `eve_host_*` 编辑器宿主互补 |
 | `eve_eval` | 求值表达式 |
@@ -72,9 +77,10 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | `eve_snapshot_*` | 脚本状态快照（AI 测试可复位） |
 | `eve_error_slice` | 最近错误后向切片 |
 | `eve_run_script` | 在活 VM 上跑短片段 |
+| `eve_restart` | **软重启**：不杀掉进程、不卸载 `ResourceManager` 缓存，重新跑 `eve_init`（可选 `args` → `eve.restartArgs`）；AI 调试时优先用它而不是反复 `eve run` |
 | `eve_ai_note` / `eve_ai_log` | 写入 / 读取 DevTools AI 日志 |
 | `eve_scene_status` / `eve_scene_nodes` / `eve_scene_node_get` / `eve_scene_node_set` | 运行时场景 / 实体查询与变换 |
-| `eve_scene_director_install` / `eve_scene_director_status` / `eve_scene_reset` / `eve_scene_modify` / `eve_scene_info` / `eve_camera_generate` | AI 场景导演：搭台 kit 安装 / 状态 / 清场 / 摆物调光摄像机 / 场景真值 / 生成机位（见 [AI 场景导演](AI场景导演.md)） |
+| `eve_scene_director_install` / `eve_scene_director_status` / `eve_scene_reset` / `eve_scene_modify` / `eve_scene_batch` / `eve_scene_info` / `eve_camera_generate` / `eve_whitebox_playtest` | AI 场景导演：搭台 kit / 单步与批量摆物 / 快速白盒游玩测试（见 [AI 场景导演](AI场景导演.md)、[`tools/whitebox-playtest`](../../tools/whitebox-playtest/)） |
 | `eve_procgen_recipes` / `eve_procgen_map` / `eve_procgen_mesh` | 程序化生成：算法/配方枚举、生成地图网格、构建网格 |
 | `eve_physics_new_world` / `eve_physics_list_worlds` / `eve_physics_raycast` / `eve_physics_remove_world` | 2D 物理世界与射线检测 |
 | `eve_render_status` / `eve_screenshot` | 渲染状态、当前帧截图（PNG）；相对路径按项目根解析并返回绝对路径与字节数 |
@@ -92,6 +98,7 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | `eve_profiler_frame` / `eve_profiler_report` | CPU profiler 采样：当前帧 zone 树与聚合报告（总时长/自耗时/热点） |
 | `eve_sensing_last_query` | 感知模块最近一次查询结果（谁看见了什么，便于排查 AI/视线问题） |
 | `eve_gameplay` | 共享玩法协议：`domains` / `instances` 发现 + `observe` / `actions` / `submit` / `advance` / `events` 驱动玩家的背包、经济账本、对话与手牌（见「玩法域」） |
+| `eve_input_status` / `eve_input_batch` / `eve_input_poll` | Playtest 输入闭环：经 `IInputInjection` 注入键鼠/滚轮/文本，经 `IUIAutomation` 语义点击；`wait`/`waitFrames`/`capture` 跨 `poll` 完成，不阻塞主线程（对齐 Godot MCP runtime） |
 
 ### Resources
 
@@ -152,6 +159,32 @@ eve_console_read { "sinceSeq": 0, "limit": 200, "level": "error" }
 等一帧后重试即可——这是可重试状态而不是失败，无人值守循环应继续轮询。`eve_screenshot`
 的相对路径按项目根解析，响应返回绝对路径、字节数、像素尺寸；`eve_screenshot_image` 直接
 返回 MCP image content（`maxBytes` 默认 2 MiB，超出时返回 `image-too-large` 而不截断图片）。
+
+### 软重启（AI 调试不要反复杀进程）
+
+反复 `eve run` 会重新解码贴图/模型等资源，冷启动很慢。`eve_restart` 在**同一进程**里把游戏
+状态复位并重新进入 `eve_init`，**不**调用 `ResourceManager::clear()`，也不关掉 MCP / Vulkan：
+
+```text
+eve_restart { "args": { "seed": 7, "scene": "boss" }, "reloadScripts": true }
+→ {"ok":true,"keptResources":true,"resourceCountBefore":42,"resourceCountAfter":42,
+   "scriptsReloaded":true,"initCalled":true,"args":{"seed":7,"scene":"boss"}}
+```
+
+| 字段 | 含义 |
+|------|------|
+| `args` | 可选 JSON 对象，安装为 `eve.restartArgs`，供 `eve_init` / `eve_before_restart` / `eve_after_restart` / `eve_restart` 读取 |
+| `reloadScripts` | 默认 `true`：清掉已登记的 persist/state roots、重置全部 `IStateProvider`、重新 dofile 已跟踪脚本再调 `eve_init`。`false` 时只重置原生 provider，并优先调用脚本 `eve_restart(args)`（没有则 `eve_init()`），适合只改参数的快速重试 |
+
+与热重载的区别：`soft_reload_scripts`（文件保存触发）是 **保留状态** 换定义；`eve_restart` 是
+**丢掉状态** 重新开局，但资源缓存仍在。脚本侧也可调用 `eve.dev.softRestart(requestJson, reloadScripts)` /
+`eve.dev.resetNativeState()` / `eve.dev.resourceCacheCount()`。
+
+游戏作者约定：
+
+- 在 `eve_init` 里读 `eve.restartArgs`（缺省当空表）；
+- 需要拆场景 / 卸 UI 时实现 `eve_before_restart(args)`；
+- `reloadScripts=false` 路径下若要用参数重开，实现 `eve_restart(args)` 自行复位 persist 根。
 
 ### 崩溃取证（重启后的第一手证据）
 
@@ -530,13 +563,44 @@ level 为 `engine`、detach 后关闭捕获）、`devtools.mcp.engineLineDropsSc
 （会话/崩溃计数、`previousSessionCrashed` 与 `previousSessionEnded`、`eve_status.crashLog`）、
 `devtools.mcp.scriptToolExportRoundTrip`（脚本注册→tools/list→tools/call 参数与返回值、
 抛异常报错、remove 后从发现中消失、反遮蔽不变量、detach 不遗留 handler）、
-`devtools.mcp.scriptToolNameRules`（命名规则与非法注册拒绝）。
+`devtools.mcp.scriptToolNameRules`（命名规则与非法注册拒绝）、
+`devtools.mcp.inputBatchInjectsThroughCapability` /
+`devtools.mcp.inputBatchWaitCompletesAcrossPoll` /
+`devtools.mcp.inputBatchReportsMissingProvider`、
+`devtools.mcp.toolTagsClassifyFamilies` /
+`devtools.mcp.toolsetFilterHidesAndRejects`。
 
 ## 测试
 
 ```bash
 ./build/<platform>-debug/test/unit_test --testcase='^devtools\.(mcp|ai)\..*$'
 ```
+
+## 工具面裁剪（Toolset / read-only / exclude）
+
+Agent 上下文塞满 130+ schema 会伤命中率。引擎在 `tools/list` 与 `tools/call` 共用同一过滤：
+
+| 环境变量 | 含义 |
+|----------|------|
+| `EVE_MCP_TOOLSET` | 逗号分隔标签，默认 `all`；可选 `core,debug,play,editor,host,scene,input,domain,agent` |
+| `EVE_MCP_READONLY` | `1` 时隐藏/拒绝会改状态的工具 |
+| `EVE_MCP_EXCLUDE` | 逗号分隔的精确工具名黑名单 |
+
+被过滤的 `tools/call` 返回 `{ok:false, filtered:true, hint, nextTools, tags, mutates}`。
+
+## `tools/eve-mcp` 生命周期
+
+`tools/eve-mcp/server.js` 仍是 stdio↔TCP 转发器；另支持：
+
+- `EVE_MCP_AUTO_START=1`：端口未开时自动 `spawn(EVE_MCP_EVE_BIN run --debug --mcp-port=… EVE_MCP_GAME)`
+- 断开 / SIGTERM 时结束子进程
+
+详见 [`tools/eve-mcp/README.md`](../../tools/eve-mcp/README.md)。
+
+## 错误可自愈字段
+
+结构化失败尽量带 `hint` / `retryable` / `nextTools`（见 `mcpFailureObject`），方便 Agent
+在截图未就绪、输入 provider 缺失、toolset 过滤等情况下自己改调用路径。
 
 ## 后续可扩展
 
@@ -556,3 +620,5 @@ level 为 `engine`、detach 后关闭捕获）、`devtools.mcp.engineLineDropsSc
   `conflict: multiple gameplay providers publish the same domain`。路由器**不会**靠"逐个调用
   看谁成功"来猜，那等于为了回答路由问题去执行未知副作用。全部 10 个 provider 都已实现
   `IGameplayInstanceCatalog`，`domains` 也已对重复域去重
+- MCP 协议 `2026-07-28` stateless / tools/list cache hints
+- 危险工具 elicitation / strict 模式（远程暴露时再谈 token）

@@ -1,9 +1,11 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "physics/PhysicsHandles.h"
 
-#include <box3d/id.h>
-#include <box3d/types.h>
+#include <memory>
+#include "physics/backend/ShapeBackend3D.h"
 
 #include <string>
 #include <vector>
@@ -11,7 +13,16 @@
 #include <cstdint>
 
 namespace eve::physics {
+namespace jolt {
+class WorldBackend;
+}
+namespace box3d {
+class WorldBackend;
+}
 
+namespace box3d {
+struct Access;
+}
 class Body3D;
 class World3D;
 struct WorldSnapshotAccess;
@@ -20,19 +31,14 @@ struct WorldSnapshotAccess;
  * @brief 3D shape (box/sphere/capsule) attached to a Body3D with material
  * settings. Created via Body3D::new*Shape; owned by the world.
  */
-class Shape3D {
+class EVENGINE_API_WORLD Shape3D {
 public:
     /** @brief Shape geometry kind. */
-    enum class Kind { Box, Sphere, Capsule, ConvexHull, TriangleMesh, HeightField };
+    using Kind = ShapeKind3D;
 
-    /** @brief Internal: wraps a Box3D shape (use Body3D::new*Shape). */
-    Shape3D(World3D *world, Body3D *body, b3ShapeId shapeId, PhysicsShapeHandle runtimeHandle, Kind kind, float a,
-            float b, float c, std::vector<float> hullVertices = {}, int hullMaxVertices = 64,
-            std::vector<float> meshVertices = {}, std::vector<int32_t> meshIndices = {}, b3MeshData *meshData = nullptr,
-            bool meshWeldVertices = true, float meshWeldTolerance = 0.001f, bool meshIdentifyEdges = true,
-            bool meshUseMedianSplit = false, std::vector<float> heightValues = {}, int heightCountX = 0,
-            int heightCountZ = 0, float heightCellSizeX = 1.f, float heightCellSizeZ = 1.f, float heightGlobalMin = 0.f,
-            float heightGlobalMax = 0.f, bool heightClockwise = false, b3HeightFieldData *heightData = nullptr);
+    /** @brief Internal owning constructor used by Body3D shape creation; backend and geometry are consumed. */
+    Shape3D(World3D *world, Body3D *body, std::unique_ptr<IShapeBackend3D> backend, PhysicsShapeHandle runtimeHandle,
+            ShapeGeometry3D geometry);
     ~Shape3D();
 
     Shape3D(const Shape3D &)            = delete;
@@ -74,12 +80,10 @@ public:
     void setConvexHullVertices(const std::vector<float> &vertices, int maxVertices = 64);
     /** @brief Source point count for a convex hull, or zero for another kind. */
     int getConvexHullPointCount() const {
-        return kind_ == Kind::ConvexHull ? static_cast<int>(hullVertices_.size() / 3) : 0;
+        return geometry_.kind == Kind::ConvexHull ? static_cast<int>(geometry_.hullVertices.size() / 3) : 0;
     }
     /** @brief Current convex-hull simplification budget, or zero for another kind. */
-    int getConvexHullMaxVertices() const {
-        return kind_ == Kind::ConvexHull ? hullMaxVertices_ : 0;
-    }
+    int getConvexHullMaxVertices() const { return geometry_.kind == Kind::ConvexHull ? geometry_.hullMaxVertices : 0; }
     /**
      * @brief Atomically replaces static triangle-mesh source data and rebuilds its BVH.
      * @throws eve::Exception on another kind, invalid data, or non-static Body.
@@ -90,11 +94,11 @@ public:
                              bool useMedianSplit = false);
     /** @brief Source vertex count for a triangle mesh, or zero. */
     int getTriangleMeshVertexCount() const {
-        return kind_ == Kind::TriangleMesh ? static_cast<int>(meshVertices_.size() / 3) : 0;
+        return geometry_.kind == Kind::TriangleMesh ? static_cast<int>(geometry_.meshVertices.size() / 3) : 0;
     }
     /** @brief Source triangle count for a triangle mesh, or zero. */
     int getTriangleMeshTriangleCount() const {
-        return kind_ == Kind::TriangleMesh ? static_cast<int>(meshIndices_.size() / 3) : 0;
+        return geometry_.kind == Kind::TriangleMesh ? static_cast<int>(geometry_.meshIndices.size() / 3) : 0;
     }
     /** @brief Atomically assigns one material-slot index per source mesh triangle. */
     void setTriangleMeshMaterialIndices(const std::vector<int32_t> &materialIndices);
@@ -136,37 +140,37 @@ public:
     /** @brief Source height at a grid sample. */
     float getHeightFieldHeight(int x, int z) const;
     /** @brief Height-field sample count along local X, or zero. */
-    int getHeightFieldCountX() const { return kind_ == Kind::HeightField ? heightCountX_ : 0; }
+    int getHeightFieldCountX() const { return geometry_.kind == Kind::HeightField ? geometry_.heightCountX : 0; }
     /** @brief Height-field sample count along local Z, or zero. */
-    int getHeightFieldCountZ() const { return kind_ == Kind::HeightField ? heightCountZ_ : 0; }
+    int getHeightFieldCountZ() const { return geometry_.kind == Kind::HeightField ? geometry_.heightCountZ : 0; }
     /** @brief Height-field cell spacing along local X, or zero. */
     float getHeightFieldCellSizeX() const {
-        return kind_ == Kind::HeightField ? heightCellSizeX_ : 0.f;
+        return geometry_.kind == Kind::HeightField ? geometry_.heightCellSizeX : 0.f;
     }
     /** @brief Height-field cell spacing along local Z, or zero. */
     float getHeightFieldCellSizeZ() const {
-        return kind_ == Kind::HeightField ? heightCellSizeZ_ : 0.f;
+        return geometry_.kind == Kind::HeightField ? geometry_.heightCellSizeZ : 0.f;
     }
     /** @brief Height-field shared quantization minimum, or zero. */
     float getHeightFieldGlobalMin() const {
-        return kind_ == Kind::HeightField ? heightGlobalMin_ : 0.f;
+        return geometry_.kind == Kind::HeightField ? geometry_.heightGlobalMin : 0.f;
     }
     /** @brief Height-field shared quantization maximum, or zero. */
     float getHeightFieldGlobalMax() const {
-        return kind_ == Kind::HeightField ? heightGlobalMax_ : 0.f;
+        return geometry_.kind == Kind::HeightField ? geometry_.heightGlobalMax : 0.f;
     }
     /** @brief Full box width, or zero for another geometry kind. */
-    float getBoxWidth() const { return kind_ == Kind::Box ? 2.f * a_ : 0.f; }
+    float getBoxWidth() const { return geometry_.kind == Kind::Box ? 2.f * geometry_.a : 0.f; }
     /** @brief Full box height, or zero for another geometry kind. */
-    float getBoxHeight() const { return kind_ == Kind::Box ? 2.f * b_ : 0.f; }
+    float getBoxHeight() const { return geometry_.kind == Kind::Box ? 2.f * geometry_.b : 0.f; }
     /** @brief Full box depth, or zero for another geometry kind. */
-    float getBoxDepth() const { return kind_ == Kind::Box ? 2.f * c_ : 0.f; }
+    float getBoxDepth() const { return geometry_.kind == Kind::Box ? 2.f * geometry_.c : 0.f; }
     /** @brief Sphere/capsule radius, or zero for a box. */
     float getRadius() const {
-        return kind_ == Kind::Sphere ? a_ : (kind_ == Kind::Capsule ? b_ : 0.f);
+        return geometry_.kind == Kind::Sphere ? geometry_.a : (geometry_.kind == Kind::Capsule ? geometry_.b : 0.f);
     }
     /** @brief Capsule hemisphere-center distance, or zero for another kind. */
-    float getCapsuleHeight() const { return kind_ == Kind::Capsule ? 2.f * a_ : 0.f; }
+    float getCapsuleHeight() const { return geometry_.kind == Kind::Capsule ? 2.f * geometry_.a : 0.f; }
 
     /**
      * @brief Enables a one-way collision plane in shape-local space.
@@ -200,19 +204,19 @@ public:
     /** @brief Sets local rotation while preserving local translation. */
     void setLocalRotation(float qx, float qy, float qz, float qw);
     /** @brief Local translation X in meters. */
-    float getLocalX() const { return localX_; }
+    float getLocalX() const { return geometry_.localX; }
     /** @brief Local translation Y in meters. */
-    float getLocalY() const { return localY_; }
+    float getLocalY() const { return geometry_.localY; }
     /** @brief Local translation Z in meters. */
-    float getLocalZ() const { return localZ_; }
+    float getLocalZ() const { return geometry_.localZ; }
     /** @brief Normalized local quaternion X. */
-    float getLocalRotX() const { return localQx_; }
+    float getLocalRotX() const { return geometry_.localQx; }
     /** @brief Normalized local quaternion Y. */
-    float getLocalRotY() const { return localQy_; }
+    float getLocalRotY() const { return geometry_.localQy; }
     /** @brief Normalized local quaternion Z. */
-    float getLocalRotZ() const { return localQz_; }
+    float getLocalRotZ() const { return geometry_.localQz; }
     /** @brief Normalized local quaternion scalar component. */
-    float getLocalRotW() const { return localQw_; }
+    float getLocalRotW() const { return geometry_.localQw; }
 
     /** @brief Sensor shapes report contacts but never collide. */
     void setSensor(bool sensor);
@@ -296,19 +300,23 @@ public:
     /** @brief Destroys the shape inside its world. */
     void destroy();
 
-    /** @brief Raw Box3D shape id / liveness. */
-    b3ShapeId raw() const { return shapeId_; }
+    /** @brief Native shape liveness through the selected backend. */
     bool      isValid() const;
 
     /** @brief Internal: marks the wrapper invalid after destruction. */
     void invalidate();
 
 private:
+    friend class box3d::WorldBackend;
+    friend class jolt::WorldBackend;
+    friend struct box3d::Access;
     friend class World3D;
     friend class Body3D;
     friend struct WorldSnapshotAccess;
 
     void recreate(bool sensor);
+    void rebuildGeometry(const ShapeGeometry3D &geometry, bool sensor);
+    void applyGeometry(ShapeGeometry3D geometry, bool sensor);
     void enableContactOverrideFiltering();
     void refreshOneWayWorldData();
     bool allowsOneWayContact(double pointX, double pointY, double pointZ, float normalX,
@@ -316,37 +324,16 @@ private:
 
     World3D  *world_ = nullptr;
     Body3D   *body_  = nullptr;
-    b3ShapeId shapeId_{};
+    std::unique_ptr<IShapeBackend3D> backend_;
     PhysicsShapeHandle             runtimeHandle_ = PhysicsShapeHandle::invalid();
-    Kind      kind_ = Kind::Box;
-    float     a_ = 0.f;  // box hx | sphere r | capsule half-height
-    float     b_ = 0.f;  // box hy | unused   | capsule radius
-    float     c_ = 0.f;  // box hz
-    std::vector<float> hullVertices_;
-    int       hullMaxVertices_ = 64;
-    std::vector<float> meshVertices_;
-    std::vector<int32_t> meshIndices_;
-    b3MeshData *meshData_ = nullptr;
-    bool meshWeldVertices_ = true;
-    float meshWeldTolerance_ = 0.001f;
-    bool meshIdentifyEdges_ = true;
-    bool meshUseMedianSplit_ = false;
-    std::vector<uint8_t> meshMaterialIndices_;
-    std::vector<b3SurfaceMaterial> meshMaterials_;
+    ShapeGeometry3D                  geometry_;
+    std::vector<SurfaceMaterial3D>   meshMaterials_;
     bool meshMaterialsDirty_ = false;
     bool contactOverrideFiltering_ = false;
-    float explosionScale_ = 1.f;
-    std::vector<float> heightValues_;
-    int heightCountX_ = 0, heightCountZ_ = 0;
-    float heightCellSizeX_ = 1.f, heightCellSizeZ_ = 1.f;
-    float heightGlobalMin_ = 0.f, heightGlobalMax_ = 0.f;
-    bool heightClockwise_ = false;
-    b3HeightFieldData *heightData_ = nullptr;
+    float                            explosionScale_           = 1.f;
     int       id_ = 0;
     int       tag_ = 0;
-    bool      hitEventsEnabled_ = false;
-    float     localX_ = 0.f, localY_ = 0.f, localZ_ = 0.f;
-    float     localQx_ = 0.f, localQy_ = 0.f, localQz_ = 0.f, localQw_ = 1.f;
+    bool                             hitEventsEnabled_         = false;
     bool      oneWayEnabled_ = false;
     float     oneWayLocalNormalX_ = 0.f, oneWayLocalNormalY_ = 1.f,
               oneWayLocalNormalZ_ = 0.f;

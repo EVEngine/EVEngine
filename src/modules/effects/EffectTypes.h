@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file EffectTypes.h
@@ -58,7 +60,7 @@ struct EffectPolicy {
 };
 
 /** @brief Deterministic JSON-compatible payload carried by a definition or instance. */
-class EffectPayload {
+class EVENGINE_API_FOUNDATION EffectPayload {
 public:
     /** @brief Sets a JSON string field. */
     void setString(const std::string& key, const std::string& value);
@@ -95,7 +97,7 @@ private:
  * reloaded after the call.  The payload is descriptive data only; applying a
  * definition does not mutate gameplay attributes.
  */
-struct EffectDefinition {
+struct EVENGINE_API_FOUNDATION EffectDefinition {
     std::string id;
     std::string stackKey;
     int         priority = 0;
@@ -122,7 +124,7 @@ struct EffectDefinition {
  * This object has lifecycle state only.  It does not know how magnitude is
  * settled, how tags affect an actor, or how a period causes damage/healing.
  */
-struct EffectInstance {
+struct EVENGINE_API_FOUNDATION EffectInstance {
     std::string id;
     std::string subject;
     std::string type;
@@ -221,7 +223,7 @@ std::string policyName(StackPolicy policy);
 /** @brief Parses a lowercase legacy stack policy name. */
 bool parsePolicy(const std::string& name, StackPolicy& policy);
 /** @brief Returns the stable lowercase name of an event kind. */
-std::string eventKindName(EffectEventKind kind);
+EVENGINE_API_FOUNDATION std::string eventKindName(EffectEventKind kind);
 
 /** @brief Writes the stable lifecycle-event spelling to a stream. */
 inline std::ostream& operator<<(std::ostream& stream, EffectEventKind kind) { return stream << eventKindName(kind); }

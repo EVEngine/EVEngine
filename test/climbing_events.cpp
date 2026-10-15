@@ -2,12 +2,16 @@
 #include "zeroerr/unittest.h"
 
 #include "climbing/Climbing.h"
+#include "climbing/ClimbingEventValue.h"
 #include "physics/Body3D.h"
 #include "physics/Physics.h"
 #include "physics/Shape3D.h"
 #include "physics/World3D.h"
 
+#include <algorithm>
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace {
 
@@ -122,4 +126,45 @@ TEST_CASE("climbing.events.capacityBackpressureIsAtomic") {
     REQUIRE(drained.ok());
     CHECK_EQ(drained.value().size(), eve::climbing::ClimbingRuntime::PendingEventCapacity);
     REQUIRE(runtime.tryBegin(*fixture.world, pose(), eve::SimulationTick(tick)).ok());
+}
+
+/**
+ * 事件种类名是**一处**映射（`ClimbingEventValue.cpp` 的表），绑定、快照编解码、脚本 sink
+ * 都走它。这里遍历整个取值域做双向验证：新增一个 `ClimbingEventKind` 而忘了更新表（或忘了改
+ * `kClimbingEventKindCount`）会在这里红，而不是让脚本绑定与存档各写一个名字。
+ */
+TEST_CASE("climbing.events.eventKindNamesRoundTripThroughTheSingleTable") {
+    std::vector<std::string> seen;
+    for (std::uint8_t raw = 0; raw < eve::climbing::kClimbingEventKindCount; ++raw) {
+        const auto             kind = static_cast<eve::climbing::ClimbingEventKind>(raw);
+        const std::string_view name = eve::climbing::climbingEventKindName(kind);
+        REQUIRE(!name.empty());
+        eve::climbing::ClimbingEventKind parsed = eve::climbing::ClimbingEventKind::Failed;
+        REQUIRE(eve::climbing::parseClimbingEventKind(name, parsed) == eve::climbing::EventKindParse::Parsed);
+        CHECK_EQ(static_cast<int>(parsed), static_cast<int>(raw));
+        seen.emplace_back(name);
+    }
+    std::sort(seen.begin(), seen.end());
+    CHECK(std::adjacent_find(seen.begin(), seen.end()) == seen.end());
+
+    eve::climbing::ClimbingEventKind unknown = eve::climbing::ClimbingEventKind::Started;
+    CHECK(eve::climbing::parseClimbingEventKind("not_a_kind", unknown) == eve::climbing::EventKindParse::Unknown);
+    CHECK_EQ(static_cast<int>(unknown), static_cast<int>(eve::climbing::ClimbingEventKind::Started));
+
+    // 事件 → Value 的形状（绑定与快照共用同一份；`tick`/`executionId` 是十进制字符串）
+    eve::climbing::ClimbingEvent event;
+    event.kind             = eve::climbing::ClimbingEventKind::AnchorReached;
+    event.actionId         = "climb:event_mantle";
+    event.tick             = eve::SimulationTick(42);
+    event.executionId      = eve::climbing::ClimbingExecutionId(7);
+    event.metadata         = {"event:parkour", "surface:stone"};
+    const eve::Value value = eve::climbing::climbingEventValue(event);
+    REQUIRE(value.isObject());
+    CHECK_EQ(value.find("kind")->asString(), std::string("anchor_reached"));
+    CHECK_EQ(value.find("actionId")->asString(), std::string("climb:event_mantle"));
+    CHECK_EQ(value.find("tick")->asString(), std::string("42"));
+    CHECK_EQ(value.find("executionId")->asString(), std::string("7"));
+    REQUIRE(value.find("metadata")->isArray());
+    CHECK_EQ(value.find("metadata")->arraySize(), std::size_t{2});
+    CHECK_EQ(value.find("metadata")->at(1).asString(), std::string("surface:stone"));
 }

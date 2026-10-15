@@ -13,6 +13,7 @@ namespace eve {
  */
 class IAnimationEventSource {
 public:
+    /** @brief Releases IAnimationEventSource resources. */
     virtual ~IAnimationEventSource() = default;
     /** @brief Number of events emitted by the latest update. */
     [[nodiscard]] virtual std::size_t animationEventCount() const noexcept = 0;

@@ -26,8 +26,10 @@ namespace eve::asset_procgen {
  */
 class TerrainDetailGpuResolver final : public ITerrainVegetationGpuResolver {
 public:
+    /** @brief Constructs a TerrainDetailGpuResolver. */
     TerrainDetailGpuResolver(const asset::EvpackResourceReader& reader,
                              const asset::EvpackCapabilities& capabilities, graphics::Graphics& graphics);
+    /** @brief Releases TerrainDetailGpuResolver resources. */
     ~TerrainDetailGpuResolver() override;
     TerrainDetailGpuResolver(const TerrainDetailGpuResolver&)            = delete;
     TerrainDetailGpuResolver& operator=(const TerrainDetailGpuResolver&) = delete;
@@ -72,6 +74,7 @@ public:
         const asset::EvpackResourceReader& reader, const asset::EvpackCapabilities& capabilities,
         graphics::Graphics& graphics, const AssetRef& asset, const TerrainVegetationLimits& limits = {});
 
+    /** @brief Releases TerrainDetailRuntime resources. */
     ~TerrainDetailRuntime();
     TerrainDetailRuntime(const TerrainDetailRuntime&)            = delete;
     TerrainDetailRuntime& operator=(const TerrainDetailRuntime&) = delete;

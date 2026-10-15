@@ -28,13 +28,13 @@ class AnimationEditorModule::TargetFactory final : public editor::IEditorAutomat
 public:
     std::vector<std::string_view> types() const override { return {"animation-clip", "animation-clip-document"}; }
 
-    editor::EditorResult<editor::AutomationOwnedTarget> create(
+    editor::Result<editor::AutomationOwnedTarget> create(
         const editor::TargetId& target, std::string_view, const editor::EditorValue::Object& request) override {
         auto clip = std::make_unique<animation_editing::AnimationClipDocumentTarget>(target.value());
         if (const editor::EditorValue* snapshot = field(request, "snapshot")) {
             auto loaded = clip->loadSnapshot(*snapshot);
             if (!loaded.ok())
-                return editor::EditorResult<editor::AutomationOwnedTarget>::failure(loaded.status());
+                return editor::Result<editor::AutomationOwnedTarget>::failure(loaded.status());
         }
         editor::AutomationOwnedTarget owned;
         owned.target = std::move(clip);

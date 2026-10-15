@@ -30,18 +30,22 @@ struct PhotoModeAssignment { std::string field; PhotoModeDomain domain=PhotoMode
  */
 /** @brief Named ownership response from a photo-mode field provider. */
 enum class PhotoModeFieldAcceptance { Rejected=0, Accepted=1 };
+/** @brief IPhotoModeFieldSink public API. */
 class IPhotoModeFieldSink {
 public:
  static constexpr const char* capabilityName="eve.photo-mode.field";
+ /** @brief Releases IPhotoModeFieldSink resources. */
  virtual ~IPhotoModeFieldSink()=default;
  /** @brief Return true only for fields owned by this provider. */
  virtual PhotoModeFieldAcceptance acceptsPhotoModeField(const PhotoModeAssignment& assignment) const noexcept=0;
  /** @brief Apply one accepted assignment atomically on the game thread. */
  [[nodiscard]] virtual Result<void> applyPhotoModeField(const PhotoModeAssignment& assignment)=0;
 };
+/** @brief IPhotoModeApplySink public API. */
 class IPhotoModeApplySink {
 public:
  static constexpr const char* capabilityName="eve.photo-mode.apply";
+ /** @brief Releases IPhotoModeApplySink resources. */
  virtual ~IPhotoModeApplySink()=default;
  /** @brief Apply one atomic assignment to its authoritative domain. */
  [[nodiscard]] virtual Result<void> applyPhotoModeAssignment(const PhotoModeAssignment& assignment)=0;

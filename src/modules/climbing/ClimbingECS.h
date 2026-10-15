@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file ClimbingECS.h
@@ -61,7 +63,7 @@ struct ClimbingLinks {
 };
 
 /** @brief Fixed-capacity owning candidate projection written once per PrePhysics probe phase. */
-class ClimbingCandidateBuffer {
+class EVENGINE_API_DOMAINS ClimbingCandidateBuffer {
 public:
     static constexpr std::size_t Capacity = ClimbingCandidateSet::Capacity;
 
@@ -91,7 +93,7 @@ private:
  * The gameplay entity is the source-side owner and must call `releaseRuntime()` before destruction. Copies made
  * by ECS deferred publication only copy the generation handle; release invalidates every copy safely.
  */
-struct ClimbingState {
+struct EVENGINE_API_DOMAINS ClimbingState {
     ClimbingRuntimeHandleRef runtime;
     ClimbingAdvance          lastAdvance;
     eve::SimulationTick      lastAdvanceTick = eve::SimulationTick::zero();
@@ -116,7 +118,7 @@ struct ClimbingPoseProjection {
 };
 
 /** @brief Bounded owning post-simulation event batch safe to dispatch after the ECS View closes. */
-class ClimbingEventBatch {
+class EVENGINE_API_DOMAINS ClimbingEventBatch {
 public:
     static constexpr std::size_t Capacity = ClimbingRuntime::PendingEventCapacity;
 
@@ -149,10 +151,11 @@ struct ClimbingSystemContract {
 };
 
 /** @brief Return immutable process-lifetime contracts for the four climbing ECS phases. */
-[[nodiscard]] std::span<const ClimbingSystemContract> climbingSystemContracts() noexcept;
+[[nodiscard]] EVENGINE_API_DOMAINS std::span<const ClimbingSystemContract> climbingSystemContracts() noexcept;
 
 namespace detail {
 
+/** @brief Active climbing phase. */
 inline bool activeClimbingPhase(ClimbingPhase phase) noexcept {
     return phase != ClimbingPhase::Idle && phase != ClimbingPhase::Completed &&
            phase != ClimbingPhase::Cancelled && phase != ClimbingPhase::Failed;
@@ -172,6 +175,7 @@ public:
      * @reentrancy Does not invoke scripts or callbacks.
      */
     template <class EntityRoot>
+    /** @brief Step. */
     [[nodiscard]] static eve::Result<std::size_t> step(physics::World3D& world,
                                                         eve::SimulationTick tick) {
         std::size_t processed = 0;
@@ -182,11 +186,13 @@ public:
             (void)intent;
             auto runtime = Climbing::resolve(state->runtime);
             if (!runtime.isBound())
+                /** @brief Failure. */
                 return eve::Result<std::size_t>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
                                                                                 "climbing runtime link is stale",
                                                                                 "state.runtime", {}, "climbing.ecs"));
             auto linkedBody = links->physicsBody.resolve(world);
             if (!linkedBody)
+                /** @brief Failure. */
                 return eve::Result<std::size_t>::failure(linkedBody.status());
             const bool hasEligibleIntent = std::any_of(intent->commands.begin(), intent->commands.end(),
                                                        [&](const BufferedClimbingCommand& command) {
@@ -199,6 +205,7 @@ public:
                 continue;
             }
             const ClimbingPose pose{body->feet, body->forward,
+                                    /** @brief Sqrt. */
                                     std::sqrt(body->velocity.x * body->velocity.x +
                                               body->velocity.z * body->velocity.z),
                                     linkedBody.value()->getId(), body->velocity.y, body->grounded,
@@ -207,6 +214,7 @@ public:
             if (!probed) return eve::Result<std::size_t>::failure(probed.status());
             ++processed;
         }
+        /** @brief Success. */
         return eve::Result<std::size_t>::success(processed);
     }
 };
@@ -219,6 +227,7 @@ public:
      * @remarks Runtime and intent remain unchanged when selection fails for that entity. No callbacks are invoked.
      */
     template <class EntityRoot>
+    /** @brief Step. */
     [[nodiscard]] static eve::Result<std::size_t> step(physics::World3D& world,
                                                         ClimbingCommand command,
                                                         eve::SimulationTick tick) {
@@ -229,12 +238,14 @@ public:
             if (!ClimbingInputSystem::peek(*intent, command, tick)) continue;
             auto runtime = Climbing::resolve(state->runtime);
             if (!runtime.isBound())
+                /** @brief Failure. */
                 return eve::Result<std::size_t>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
                                                                                 "climbing runtime link is stale",
                                                                                 "state.runtime", {}, "climbing.ecs"));
             auto linkedBody = links->physicsBody.resolve(world);
             if (!linkedBody) return eve::Result<std::size_t>::failure(linkedBody.status());
             const ClimbingPose pose{body->feet, body->forward,
+                                    /** @brief Sqrt. */
                                     std::sqrt(body->velocity.x * body->velocity.x +
                                               body->velocity.z * body->velocity.z),
                                     linkedBody.value()->getId(), body->velocity.y, body->grounded,
@@ -244,6 +255,7 @@ public:
             if (!selected) return eve::Result<std::size_t>::failure(selected.status());
             ++started;
         }
+        /** @brief Success. */
         return eve::Result<std::size_t>::success(started);
     }
 };
@@ -256,10 +268,12 @@ public:
      * @param motion Owning per-step animation delta shared by this homogeneous batch; never retained.
      */
     template <class EntityRoot>
+    /** @brief Step. */
     [[nodiscard]] static eve::Result<std::size_t> step(physics::World3D& world,
                                                         const eve::SimulationStep& step,
                                                         const ClimbingMotionInput& motion = {}) {
         if (step.delta.nanoseconds() <= 0)
+            /** @brief Failure. */
             return eve::Result<std::size_t>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                             "climbing motion delta must be positive",
                                                                             "step.delta", {}, "climbing.ecs"));
@@ -269,6 +283,7 @@ public:
             auto [body, intent, state, links] = *it;
             auto runtime = Climbing::resolve(state->runtime);
             if (!runtime.isBound())
+                /** @brief Failure. */
                 return eve::Result<std::size_t>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
                                                                                 "climbing runtime link is stale",
                                                                                 "state.runtime", {}, "climbing.ecs"));
@@ -281,6 +296,7 @@ public:
                     body->groundSnap < 0.f || body->stepHeight < 0.f ||
                     !std::isfinite(body->maxSlopeRadians) || body->maxSlopeRadians < 0.f ||
                     body->maxSlopeRadians >= 1.57079633f)
+                    /** @brief Failure. */
                     return eve::Result<std::size_t>::failure(eve::Diagnostic::error(
                         eve::DiagnosticCode::InvalidArgument, "ordinary locomotion capsule is invalid", "body.capsule",
                         {}, "climbing.ecs"));
@@ -312,6 +328,7 @@ public:
                                                 jump->pressedTick != body->lastOrdinaryJumpPressedTick);
                 if (freshJump &&
                     (body->grounded ||
+                     /** @brief Coyote window state. */
                      ClimbingInputSystem::coyoteWindowState(step.tick, body->lastGroundedTick,
                                                             policy.coyoteTicks) == ClimbingCoyoteState::Eligible)) {
                     body->velocity.y = policy.jumpSpeed;
@@ -441,6 +458,7 @@ public:
                                              body->feet.z);
             ++processed;
         }
+        /** @brief Success. */
         return eve::Result<std::size_t>::success(processed);
     }
 };
@@ -453,6 +471,7 @@ public:
      * @return Number of entities whose derived projection was refreshed.
      */
     template <class EntityRoot>
+    /** @brief Step. */
     [[nodiscard]] static eve::Result<std::size_t> step(eve::SimulationTick tick) {
         std::size_t processed = 0;
         auto view = ecs::View<EntityRoot, ClimbingState, ClimbingPoseProjection, ClimbingEventBatch>();
@@ -460,6 +479,7 @@ public:
             auto [state, pose, events] = *it;
             auto runtime = Climbing::resolve(state->runtime);
             if (!runtime.isBound())
+                /** @brief Failure. */
                 return eve::Result<std::size_t>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
                                                                                 "climbing runtime link is stale",
                                                                                 "state.runtime", {}, "climbing.ecs"));
@@ -478,6 +498,7 @@ public:
             if (!replaced) return eve::Result<std::size_t>::failure(replaced.status());
             ++processed;
         }
+        /** @brief Success. */
         return eve::Result<std::size_t>::success(processed);
     }
 };

@@ -21,13 +21,12 @@ public:
         const auto found = values_.find(path);
         return found == values_.end() ? std::nullopt : std::optional<eve::Value>(found->second);
     }
-    eve::property_access::WriteResult write(const std::string& path, const eve::Value& value) override {
+    [[nodiscard]] eve::Result<void> write(const std::string& path, const eve::Value& value) override {
         auto property = schema_.find(path);
         if (!property)
-            return eve::property_access::WriteResult::reject("property_access.property.missing",
-                                                             "Property is not in the schema");
-        auto result = eve::property_access::validatePropertyValue(property->get(), value);
-        if (!result.accepted) return result;
+            return eve::property_access::rejected("property_access.property.missing", "Property is not in the schema");
+        eve::Result<void> result = eve::property_access::validatePropertyValue(property->get(), value);
+        if (!result.ok()) return result;
         const auto found = values_.find(path);
         if (found != values_.end() && found->second == value) return result;
         values_[path] = value;

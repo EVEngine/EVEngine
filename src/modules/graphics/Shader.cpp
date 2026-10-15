@@ -28,6 +28,11 @@ Result<void> Shader::sendFloatBlock(std::span<const float> values) {
     return Result<void>::success();
 }
 
+void Shader::setPushConstantBlock(const std::array<float, kMaxFloats> &values) noexcept {
+    floats_     = values;
+    usedFloats_ = kMaxFloats;
+}
+
 int Shader::declareUniform(const std::string &name, int floatCount) {
     if (name.empty()) throw Exception("Shader::declare: empty uniform name");
     if (floatCount <= 0) throw Exception("Shader::declare: invalid float count");

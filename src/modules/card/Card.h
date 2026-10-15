@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief 卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。
@@ -27,6 +29,10 @@ namespace eve::resource {
 class IResourceAccount;
 }
 
+namespace eve::transaction {
+class AtomicBatch;
+}
+
 namespace eve::card {
 
 class CardControl;
@@ -50,7 +56,7 @@ struct CardPresentationSnapshot {
 };
 
 /** @brief Maps a logical card canvas to a 3D parallelogram without depending on graphics. */
-class CardPlaneMapper {
+class EVENGINE_API_WORLD CardPlaneMapper {
 public:
     /** @brief Configure the logical rectangle represented by the world plane. */
     void setLogicalRect(float x, float y, float width, float height);
@@ -86,12 +92,27 @@ private:
 };
 
 /** @brief 卡牌模块入口（eve.Card）：定义注册、对象工厂与每帧 update/render。 */
-class Card : public Module {
+class EVENGINE_API_WORLD Card : public Module {
 public:
     Module_REG(Card);
     /** @brief Declared out of line so the incomplete `CardControl` member needs no deleter here. */
     Card();
+    /** @brief Card. */
     ~Card() override;
+
+    // The two `vector<unique_ptr<...>>` members make the implicit copy operations
+    // ill-formed (C2280) the moment a class-level dllexport instantiates them;
+    // spell the four out so the export surface stays defined. Semantics unchanged:
+    // a module instance was never copyable or assignable in practice.
+    Card(const Card &)            = delete;
+    Card &operator=(const Card &) = delete;
+    // Out of line for the same reason as the constructor and destructor above: a
+    // defaulted move in the class body instantiates the move of every member,
+    // including the deleter of the incomplete `CardControl`.
+    /** @brief Card. */
+    Card(Card &&) noexcept;
+    /** @brief Operator =. */
+    Card &operator=(Card &&) noexcept;
 
     /** @brief 从 JSON 注册卡牌类型；返回成功注册数量。 */
     int registerCardsFromJson(const std::string &json);
@@ -133,17 +154,26 @@ public:
      */
     [[nodiscard]] eve::Result<void> setCardPlayCondition(const std::string &id, decision::Condition condition);
     std::string getCardDefinitionName(const std::string &id);
+    /** @brief Returns the card definition kind. */
     std::string getCardDefinitionKind(const std::string &id);
+    /** @brief Returns the card definition cost. */
     int getCardDefinitionCost(const std::string &id);
+    /** @brief Returns the card definition attack. */
     int getCardDefinitionAttack(const std::string &id);
+    /** @brief Returns the card definition health. */
     int getCardDefinitionHealth(const std::string &id);
+    /** @brief Returns the card definition tint r. */
     float getCardDefinitionTintR(const std::string &id);
+    /** @brief Returns the card definition tint g. */
     float getCardDefinitionTintG(const std::string &id);
+    /** @brief Returns the card definition tint b. */
     float getCardDefinitionTintB(const std::string &id);
 
     /** @brief 工厂：对象由 ECS 表持有，脚本持有的是非拥有句柄。 */
     LayoutConfig *newConfig();
+    /** @brief Creates a card. @ownership Caller deletes unless documented otherwise. */
     CardData *newCard(const std::string &defId);
+    /** @brief Creates a deck. @ownership Caller deletes unless documented otherwise. */
     Deck *newDeck();
     /** @brief 创建一个落牌区。 */
     Zone *newZone(const std::string &id, const std::string &label, float x, float y, float w, float h);
@@ -154,12 +184,19 @@ public:
 
     /** @brief 游戏状态：当前布局、手牌、落牌区、牌库。 */
     void setConfig(LayoutConfig *cfg);
+    /** @brief Returns the config. */
     LayoutConfig *getConfig() const;
+    /** @brief Hand count. */
     int handCount() const;
+    /** @brief Returns the hand. */
     Hand *getHand(int index) const;
+    /** @brief Finds hand. */
     Hand *findHand(const std::string &owner) const;
+    /** @brief Zone count. */
     int zoneCount() const;
+    /** @brief Returns the zone. */
     Zone *getZone(int index) const;
+    /** @brief Returns the deck. */
     Deck *getDeck() const;
     /** @brief 从牌库抽一张牌加入指定手牌；无牌时返回 nullptr。 */
     CardData *drawCard(const std::string &handOwner);
@@ -172,6 +209,27 @@ public:
      */
     [[nodiscard]] decision::ConditionResult evaluatePlay(const CardData          *card,
                                                          CardPlayConditionQueries queries = {}) const;
+    /**
+     * @brief Resolve one owned card's canonical definition payment for composition.
+     * @return Owning Mana cost, no cost for a free card, or a stale/definition error.
+     * @remarks Synchronous owner-thread query; does not reserve resources or mutate the card.
+     */
+    [[nodiscard]] Result<std::optional<resource::CostSpec>> playCost(CardData &card) const;
+    /**
+     * @brief Stage removal from the unique owning hand for an outer gameplay transaction.
+     * @cost Linear in hand membership; copies only the affected hand per play.
+     * @return Owning compensatable participant, or absent/ambiguous membership error.
+     * @remarks Consume synchronously on the owner thread while Card and Hand live;
+     * no participant may advance/destroy this hand during the transaction. The
+     * participant owns no card. CardPlayParticipant remains the phase authority.
+     */
+    /** @brief Stage card rules, phase, hand consumption and cost in any atomic batch.
+     * @cost Linear in hand size; clones only the affected hand during prepare.
+     * @remarks Card owns its facts; no other gameplay domain is required.
+     * Native callers retain this facade through batch execution. */
+    [[nodiscard]] Result<void> stagePlay(transaction::AtomicBatch &batch, CardData &card) const;
+    [[nodiscard]] Result<std::unique_ptr<transaction::ITransactionParticipant>> prepareHandConsumption(
+        CardData &card) const;
 
     /**
      * @brief Read one canonical combat attribute through the Card facade.
@@ -231,6 +289,7 @@ public:
     void update(float dt, float mx, float my, bool down);
     /** @brief 绘制手牌/落牌区（与牌库）。 */
     void render(graphics::Graphics *gfx);
+    /** @brief Renders deck. */
     void renderDeck(graphics::Graphics *gfx);
 
     /** @brief Enable or disable the built-in card visuals while retaining layout and interaction. */

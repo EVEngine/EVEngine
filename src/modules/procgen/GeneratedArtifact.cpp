@@ -1,4 +1,5 @@
 #include "procgen/GeneratedArtifact.h"
+#include "common/StringMapInstances.h"
 
 #include "procgen/algorithms/CastleMesh.h"
 #include "procgen/algorithms/HexTerrain.h"
@@ -22,12 +23,12 @@ namespace {
 
 eve::Result<GeneratedArtifact> rejectedArtifact(eve::DiagnosticCode code, std::string message) {
     return eve::Result<GeneratedArtifact>::failure(
-        eve::Diagnostic::error(code, std::move(message), "generatedArtifact"));
+        eve::Diagnostic::error(code, message, "generatedArtifact"));
 }
 
 eve::Result<ArtifactPart> rejectedPart(eve::DiagnosticCode code, std::string message) {
     return eve::Result<ArtifactPart>::failure(
-        eve::Diagnostic::error(code, std::move(message), "generatedArtifact.part"));
+        eve::Diagnostic::error(code, message, "generatedArtifact.part"));
 }
 
 std::uint64_t fnv1a(std::string_view text) noexcept {
@@ -1593,6 +1594,7 @@ eve::Result<GeneratedArtifact> generateCastleArtifact(const Params &params, Arti
 eve::Result<GeneratedArtifact> generateMeshArtifact(std::string_view recipeId, const Params &params, ArtifactId id) {
     if (recipeId == "mesh.hexterrain") return generateHexTerrainArtifact(params, id);
     if (recipeId == "mesh.castle") return generateCastleArtifact(params, id);
+    if (recipeId == "mesh.roadNetwork") return generateRoadNetworkArtifact(params, id);
     if (id.isNil())
         return rejectedArtifact(eve::DiagnosticCode::InvalidArgument, "top-level artifact identity must not be nil");
     const auto key = BuildKey::forRecipe(recipeId, params);

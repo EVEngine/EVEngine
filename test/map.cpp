@@ -47,12 +47,11 @@ using namespace eve::map;
 namespace {
 class CollisionSinkMock final : public ITileCollisionSink {
 public:
-    void replaceTileCollision(const void *source, const TileCollisionRect *rects,
-                              size_t count) override {
-        layer = source;
+    void replaceTileCollision(TileLayerRef layer, const TileCollisionRect* rects, size_t count) override {
+        source = layer;
         values.assign(rects, rects + count);
     }
-    const void *layer = nullptr;
+    TileLayerRef                   source;
     std::vector<TileCollisionRect> values;
 };
 }  // namespace
@@ -169,6 +168,30 @@ TEST_CASE("map.render.sparseChunksBoundCollectionWork") {
     CHECK_EQ(int(items.size()), 2);
     CHECK_EQ(TileRenderSystem::lastVisitedChunkCount(), 2);
     CHECK_EQ(TileRenderSystem::lastVisitedCellCount(), 2 * 32 * 32);
+    layer->setVisible(false);
+}
+
+TEST_CASE("map.tileLayer.receiveLightDefaultsOffAndPropagates") {
+    hideAllTileLayers();
+    auto *mod = Map::create();
+    TileLayer *layer = mod->newLayer(2, 2, 16.f, 16.f);
+    CHECK(!layer->getReceiveLight());
+    layer->setTile(0, 0, 1);
+    layer->setTile(1, 0, 2);
+    std::vector<eve::graphics::DrawItem2D> items;
+    TileRenderSystem::collect(items);
+    REQUIRE(items.size() >= 2);
+    CHECK(!items[0].receiveLight);
+    CHECK(!items[0].litPath);
+
+    layer->setReceiveLight(true);
+    CHECK(layer->getReceiveLight());
+    items.clear();
+    TileRenderSystem::collect(items);
+    REQUIRE(items.size() >= 2);
+    // No tileset texture → solid color path; still marks receiveLight for modulateUnlit.
+    CHECK(items[0].receiveLight);
+    CHECK(!items[0].litPath);
     layer->setVisible(false);
 }
 
@@ -326,7 +349,8 @@ TEST_CASE("map.collision.greedyMergeAndCapabilityPublish") {
     CHECK(map.getCollisionRectY(0) == 8.f);
     CHECK(map.getCollisionRectWidth(0) == 48.f);
     CHECK(map.getCollisionRectHeight(0) == 16.f);
-    CHECK(sink.layer == layer);
+    CHECK_EQ(sink.source.slot, layer->layerRef().slot);
+    CHECK_EQ(sink.source.generation, layer->layerRef().generation);
     REQUIRE(sink.values.size() == 1);
     CHECK(sink.values[0].width == 48.f);
     eve::cap::removeListener<ITileCollisionSink>(&sink);

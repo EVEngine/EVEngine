@@ -11,7 +11,7 @@ SelectionSnapshot select(const TextureRecipeTarget& target) {
                                StableId(target.targetId().value()), "texture-recipe"});
     return selection;
 }
-void apply(TextureRecipeTarget& target, EditorResult<DomainOperation> operation) {
+void apply(TextureRecipeTarget& target, Result<DomainOperation> operation) {
     REQUIRE(operation.ok());
     REQUIRE(target.applyDomainOperation(operation.value()).ok());
 }

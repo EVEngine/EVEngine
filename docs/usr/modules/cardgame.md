@@ -1,5 +1,8 @@
 # 卡牌游戏工具模块
 
+原生游戏可通过 [玩法支付组合](../GAMEPLAY_PAYMENT_COMPOSITION.md)
+替换 mana 费用、组合多个效果，并让卡牌消耗与 RTS 生产共用一次原子支付。
+
 **脚本入口：** `eve.Card()`
 
 面向卡牌游戏（炉石 / MTGA / 杀戮尖塔风格）的通用 UI 工具集：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、敌方手牌背面与偷看、费用不足置灰，以及 UiCard 同款的可实时调节布局参数。参考 [ycarowr/UiCard](https://github.com/ycarowr/UiCard) 的功能面实现，以 C++ 模块提供（布局/交互/渲染均在本模块内完成）。
@@ -41,6 +44,21 @@ card.drawCard("player");     // 从牌库抽一张到手牌
 card.update(dt, mouse.getX(), mouse.getY(), mouse.isDown(1) && !ui.wantCaptureMouse());
 card.render(gfx);            // 画落牌区 + 所有手牌
 card.renderDeck(gfx);        // 画牌库堆 + 剩余张数
+```
+
+单张 `CardData` 可安装与 RPG、RTS 相同 schema 的通用结算规则。替换是原子的，解析或校验失败时旧规则继续生效：
+
+```squirrel
+local unit = card.newCard("flame");
+local configured = unit.configureSettlementRulesJson(@"{
+  ""schema"":""settlement.rules"",""version"":1,
+  ""rules"":[{
+    ""id"":""card_barrier"",""source"":""card:barrier"",
+    ""stage"":""armor_shield"",""operation"":""absorb_flat"",
+    ""value"":5.0,""kinds"":[""damage""]
+  }]
+}");
+if (!configured.ok) throw configured.status.summary;
 ```
 
 ## 对象关系与调用时机
@@ -87,7 +105,7 @@ Inspector。编辑器和游戏由此直接消费同一份 Card 运行时数据�
 - `Zone.acceptKinds` 通过 `addAcceptKind` 设置后会参与实际 Drop 判定，不匹配的卡牌不会产生 drop 事件。
 - `newCard(defId)` 返回的实例 id 形如 `defId#N`（保证唯一）；卡牌定义用 `getCardDefinition*` 系列读取。
 
-## API 快查
+## 绑定与行为说明
 
 - `eve.Card()`：`registerCardsFromJson`、`clearCardDefinitions`、`getCardDefinitionCount`、`getCardDefinitionId`、`hasCardDefinition`、`setCardDefinition`、`removeCardDefinition`、`getCardDefinitionName/Kind/Cost/Attack/Health/TintR/TintG/TintB`
 - `eve.Card()` 工厂：`newConfig()`、`newCard(defId)`、`newDeck()`、`newZone(id, label, x, y, w, h)`、`newHand(cfg)`
@@ -99,7 +117,7 @@ Inspector。编辑器和游戏由此直接消费同一份 Card 运行时数据�
 - `eve.Card()` 事件：`clearEvents`、`getEventCount`、`getEventType`、`getEventHand`、`getEventZone`、`getEventCardId`、`getEventReason`
 - `eve.Card()` 目标选择：`beginTargeting`、`updateTargeting`、`cancelTargeting`、`renderTargeting`、`isTargeting`、`isTargetValid`、`getTargetSource`、`getTargetId`
 - `LayoutConfig`：`get/setCardW`、`get/setCardH`、`get/setSpacing`、`get/setHandX`、`get/setHandY`、`get/setArcHeight`、`get/setRotationAngle`、`get/setHoverRotation`、`get/setHoverScale`、`get/setHoverLift`、`get/setHoverSpeed`、`get/setMotionSpeed`、`get/setDisabledAlpha`、`get/setShowZones`、`get/setDeckX`、`get/setDeckY`、`get/setDragThreshold`
-- `CardData`：`getId/setId`（兼容接口）、`getInstanceId/getDefinitionId`、`getName/setName`、`getKind/setKind`、`getCost/setCost`、`getAttack/setAttack`、`getHealth/setHealth`、`isFaceUp/setFaceUp`、`isDisabled/setDisabled`、`getState/setState`、`getTintR/G/B`、`setTint(r, g, b)`、`setArt/getArt`、`getX/getY/getW/getH/getAngle/getScale/getAlpha`、`isHovered/isDragging`、`hit(px, py)`、`describe()`
+- `CardData`：`configureSettlementRulesJson(json)`、`getId/setId`（兼容接口）、`getInstanceId/getDefinitionId`、`getName/setName`、`getKind/setKind`、`getCost/setCost`、`getAttack/setAttack`、`getHealth/setHealth`、`isFaceUp/setFaceUp`、`isDisabled/setDisabled`、`getState/setState`、`getTintR/G/B`、`setTint(r, g, b)`、`setArt/getArt`、`getX/getY/getW/getH/getAngle/getScale/getAlpha`、`isHovered/isDragging`、`hit(px, py)`、`describe()`
 - `CardPresentationSnapshot`：`getInstanceId/getDefinitionId/getState`、`getX/getY/getW/getH/getAngle/getScale/getAlpha`、`isHovered/isDragging/isDisabled/isFaceUp`
 - `Deck`：`push`、`draw`、`peek`、`count`、`isEmpty`、`clear`、`shuffle`、`getCard`
 - `Zone`：`getId/setId`、`getLabel/setLabel`、`getX/getY/getW/getH`、`setRect`、`getColorR/G/B`、`setColor(r, g, b)`、`getAlpha/setAlpha`、`isEnabled/setEnabled`、`addAcceptKind`、`clearAcceptKinds`、`accepts`、`contains`、`render`
@@ -114,3 +132,13 @@ Inspector。编辑器和游戏由此直接消费同一份 Card 运行时数据�
 **源码：** [`src/modules/card/`](../../../src/modules/card/)  
 **示例：** [`examples/cardgame/`](../../../examples/cardgame/)  
 **运行：** `make run/<platform>-debug GAME=examples/cardgame`
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](cardgame/api-reference.md)，使用前先确认本章的前置条件与生命周期。
+
+## 脚本事务组合
+
+`cards.stagePlay(batch, card)` 提交本域出牌规则、手牌消费、状态和费用，不依赖 RTS。
+
+生命周期、费用合并与完整示例见 [玩法事务组合](../GAMEPLAY_PAYMENT_COMPOSITION.md#script-composition)。

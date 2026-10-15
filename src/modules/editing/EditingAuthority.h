@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingProtocol.h"
 #include "editing/EditingTargetOperations.h"
@@ -13,6 +15,7 @@ namespace eve::editing {
 /** @brief Final validation and commit boundary for editor mutations. */
 class IEditAuthority {
 public:
+    /** @brief Releases IEditAuthority resources. */
     virtual ~IEditAuthority() = default;
 
     /** @brief Validate a transaction without mutating its target. */
@@ -30,14 +33,17 @@ public:
  * The target is non-owning and must outlive the authority. Operations are
  * rolled back in reverse order if a later operation fails.
  */
-class LocalWorldAuthority final : public IEditAuthority {
+class EVENGINE_API_PLATFORM LocalWorldAuthority final : public IEditAuthority {
 public:
     /** @brief Bind a non-owning operation target. */
     explicit LocalWorldAuthority(IDomainOperationTarget* target) : target_(target) {}
 
+    /** @brief Preflight. */
     Result<AuthorityPlan>      preflight(const TransactionSpec&           transaction,
                                                std::span<const DomainOperation> operations) override;
+    /** @brief Commits commit. */
     Result<TransactionReceipt> commit(const AuthorityPlan& plan) override;
+    /** @brief Compensate. */
     Result<TransactionReceipt> compensate(const TransactionReceipt& receipt) override;
 
 private:
@@ -56,11 +62,14 @@ private:
 };
 
 /** @brief Authority that permits discovery and dry-run but rejects commits. */
-class ReadOnlyAuthority final : public IEditAuthority {
+class EVENGINE_API_PLATFORM ReadOnlyAuthority final : public IEditAuthority {
 public:
+    /** @brief Preflight. */
     Result<AuthorityPlan>      preflight(const TransactionSpec&           transaction,
                                                std::span<const DomainOperation> operations) override;
+    /** @brief Commits commit. */
     Result<TransactionReceipt> commit(const AuthorityPlan& plan) override;
+    /** @brief Compensate. */
     Result<TransactionReceipt> compensate(const TransactionReceipt& receipt) override;
 };
 

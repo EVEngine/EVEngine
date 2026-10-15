@@ -10,7 +10,7 @@ const EditorValue* field(const EditorValue& value, const char* key) {
     const auto* object = value.getIf<EditorValue::Object>(); if (!object) return nullptr;
     const auto found = object->find(key); return found == object->end() ? nullptr : &found->second;
 }
-EditorResult<PhysicsColliderAssetGeometry> error(EditorStatus status, const char* rule, std::string message) {
+Result<PhysicsColliderAssetGeometry> error(EditorStatus status, const char* rule, std::string message) {
     return eve::editing::failed<PhysicsColliderAssetGeometry>(status, RuleId(rule), std::move(message));
 }
 bool floats(const EditorValue* value, std::vector<float>& output) {
@@ -56,7 +56,7 @@ bool convexPolygon(const std::vector<float>& vertices) {
 }
 }
 
-EditorResult<PhysicsColliderAssetGeometry> AssetDatabasePhysicsColliderResolver::resolve(
+Result<PhysicsColliderAssetGeometry> AssetDatabasePhysicsColliderResolver::resolve(
     const std::string& reference, const std::string& expectedKind) const {
     if (!database_ || reference.empty()) return error(EditorStatus::Rejected,
         "editor.physics.invalid-asset-reference", "Collider resolver requires AssetDB and asset reference");

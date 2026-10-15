@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file RTSSystems.h
@@ -24,6 +26,8 @@ enum class FormationKind : std::uint8_t {
     Line,
     Grid,
     Wedge,
+    Column,
+    Dispersed,
 };
 
 /** @brief Input to the pure formation planner. */
@@ -31,9 +35,21 @@ struct FormationSpec {
     FormationKind kind    = FormationKind::Line;
     float         spacing = 32.0f;
     int           columns = 0;
+    float rotationRadians = 0.f;  ///< Counterclockwise rotation around the anchor; zero preserves legacy layouts.
 
-    /** @brief Validate spacing and grid column constraints. */
-    [[nodiscard]] Result<void> validate() const;
+    /** @brief Validate layout kind, spacing, grid columns and finite rotation. */
+    [[nodiscard]] EVENGINE_API_DOMAINS Result<void> validate() const;
+};
+
+/**
+ * @brief Caller-built admission batch for an immediate coordinated Move command.
+ * @cost Linear in unit count; callers own and pass stable identities once per command admission.
+ */
+struct MovementGroupBatch {
+    std::vector<SubjectRef> units;  ///< Owned stable identities; no entity pointers are retained.
+    WorldPosition           target;
+    FormationSpec           formation;
+    float leadDistance = 2.f;  ///< Positive world-space allowance before leaders slow for lagging members.
 };
 
 /** @brief Static metadata for one ECS system's access and phase contract. */
@@ -123,7 +139,7 @@ public:
 };
 
 /** @brief Resolves same-faction and match-team alliances without duplicating diplomacy state. */
-class FactionRelationSystem {
+class EVENGINE_API_DOMAINS FactionRelationSystem {
 public:
     /** @brief Return true when both live factions are identical or share a team in a common Match. */
     [[nodiscard]] static bool isAllied(Faction* left, Faction* right) noexcept;
@@ -132,7 +148,7 @@ public:
 };
 
 /** @brief Reads authoritative faction contact projections for command authorization. */
-class FactionIntelSystem {
+class EVENGINE_API_DOMAINS FactionIntelSystem {
 public:
     /**
      * @brief Return whether a stable subject is currently visible and detected.
@@ -150,7 +166,7 @@ public:
  * Positions are generated in input order. No wall clock or random stream is
  * read, so replay and lockstep callers receive the same layout.
  */
-class FormationPlanner {
+class EVENGINE_API_DOMAINS FormationPlanner {
 public:
     /**
      * @brief Plan positions around an anchor for a fixed unit count.
@@ -167,7 +183,7 @@ public:
 using PlacementValidation = std::function<Result<void>(WorldPosition, LogicalId)>;
 
 /** @brief Composes RTS powered build influence with the canonical building placement authority. */
-class BuildInfluenceSystem {
+class EVENGINE_API_DOMAINS BuildInfluenceSystem {
 public:
     /**
      * @brief Validate one proposed building position without mutating either domain.
@@ -196,7 +212,7 @@ struct FanOutReceipt {
  * the selected units' generic OrderComponent and performs no structural ECS
  * mutation while its validation View is alive.
  */
-class CommandFanOutSystem {
+class EVENGINE_API_DOMAINS CommandFanOutSystem {
 public:
     /**
      * @brief Submit one command to every selected live Unit.
@@ -211,7 +227,7 @@ public:
 };
 
 /** @brief Moves units toward their active generic order targets. */
-class MotionSystem {
+class EVENGINE_API_DOMAINS MotionSystem {
 public:
     /**
      * @brief Advance all Units with Motion and Orders components.
@@ -222,14 +238,14 @@ public:
 };
 
 /** @brief Settles arrived finite movement orders so the canonical queue can advance. */
-class MovementOrderSystem {
+class EVENGINE_API_DOMAINS MovementOrderSystem {
 public:
     /** @brief Complete arrived Move and AttackMove orders after their final path waypoint. */
     [[nodiscard]] static Result<std::size_t> step();
 };
 
 /** @brief Applies immediate Stop and persistent Hold/AttackMove command state. */
-class CommandStateSystem {
+class EVENGINE_API_DOMAINS CommandStateSystem {
 public:
     /** @brief Synchronize combat guard flags and settle Stop orders immediately. */
     [[nodiscard]] static Result<std::size_t> step();
@@ -254,7 +270,7 @@ struct NavigationGrid {
 using NavigationEvent = std::function<void(Unit&, const OrderRecord&)>;
 
 /** @brief Plans unit routes through the canonical map Pathfinder without owning map blockers or costs. */
-class NavigationSystem {
+class EVENGINE_API_DOMAINS NavigationSystem {
 public:
     /** @brief Replan changed movement orders and advance reached waypoints. */
     [[nodiscard]] static Result<std::size_t> step(map::Pathfinder& pathfinder, const NavigationGrid& grid,
@@ -262,20 +278,29 @@ public:
 };
 
 /** @brief Maintains persistent two-point patrol state without owning pathfinding. */
-class PatrolSystem {
+class EVENGINE_API_DOMAINS PatrolSystem {
 public:
     /** @brief Initialize patrol origins and reverse direction at reached endpoints. */
     [[nodiscard]] static Result<std::size_t> step();
 };
 
-/** @brief Arbitrates deterministic entry into narrow canonical-map cells. */
-class TrafficReservationSystem {
+/** @brief Arbitrates deterministic directional entry into connected narrow map corridors. */
+class EVENGINE_API_DOMAINS TrafficReservationSystem {
 public:
     /**
-     * @brief Reserve each moving unit's next narrow cell by priority and stable subject identity.
+     * @brief Reserve corridor direction, then next narrow cells, by occupancy, priority and stable identity.
+     *
      * @param pathfinder Canonical provider of cell walkability.
      * @param grid World/grid conversion shared with route planning.
-     * @return Number of moving units inspected, or a structured failure.
+     * @return Number of moving units inspected, or a structured failure (including corridors exceeding 1024 cells).
+
+     * @remarks Looks ahead at most three route waypoints. Existing corridor occupants precede external entrants.
+     *
+     Opposing occupants may receive a radius-checked evacuation target toward an exit-side bay.
+     * Ending evacuation
+     invalidates the cached route and defers motion until replanning.
+
+     * @thread Simulation owner thread only; no callbacks or retained component pointers.
      */
     [[nodiscard]] static Result<std::size_t> step(const map::Pathfinder& pathfinder,
                                                    const NavigationGrid& grid);
@@ -285,10 +310,11 @@ public:
 using FogProvider = std::function<map::Fov*(Faction&)>;
 
 /** @brief Projects RTS vision into canonical map FOV and maintains faction last-known contacts. */
-class FogOfWarSystem {
+class EVENGINE_API_DOMAINS FogOfWarSystem {
 public:
     /** @brief Runtime-only revealer bindings; authoritative explored cells remain owned by map::Fov. */
     struct State {
+        /** @brief Binding public API. */
         struct Binding {
             ecs::EntityHandle source{};
             ecs::EntityHandle faction{};
@@ -315,14 +341,14 @@ public:
 };
 
 /** @brief Synchronizes linked RTS units through the canonical Crowd simulation. */
-class CrowdMotionSystem {
+class EVENGINE_API_DOMAINS CrowdMotionSystem {
 public:
     /** @brief Push ECS targets into Crowd, advance it once, and project positions back to Unit::Motion. */
     [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step, crowd::Crowd& crowd);
 };
 
 /** @brief Deterministically assigns idle auto-workers to compatible resource nodes. */
-class WorkerAssignmentSystem {
+class EVENGINE_API_DOMAINS WorkerAssignmentSystem {
 public:
     /** @brief Assign nearest available nodes and enqueue Gather orders. */
     [[nodiscard]] static Result<std::size_t> step();
@@ -332,14 +358,14 @@ public:
 using ResourceCredit = std::function<Result<resource::Receipt>(Unit&, const resource::CostSpec&)>;
 
 /** @brief Advances Gather/ReturnCargo orders without owning an economy balance. */
-class MiningSystem {
+class EVENGINE_API_DOMAINS MiningSystem {
 public:
     /** @brief Gather stock or deliver integral cargo through the injected canonical credit boundary. */
     [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step, const ResourceCredit& credit);
 };
 
 /** @brief Advances construction using valid builders that reached their assigned site. */
-class ConstructionSystem {
+class EVENGINE_API_DOMAINS ConstructionSystem {
 public:
     /** @brief Advance incomplete buildings and settle completed Build orders. */
     [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step,
@@ -347,7 +373,7 @@ public:
 };
 
 /** @brief Assigns idle faction workers to incomplete or damaged buildings by deterministic distance. */
-class WorkforceAssignmentSystem {
+class EVENGINE_API_DOMAINS WorkforceAssignmentSystem {
 public:
     /** @brief Apply enabled faction construction/repair policies without owning worker orders. */
     [[nodiscard]] static Result<std::size_t> step();
@@ -357,14 +383,15 @@ public:
 using RepairDebit = std::function<Result<resource::Receipt>(Unit&, Building&, const resource::CostSpec&)>;
 
 /** @brief Repairs friendly completed buildings without owning an economy balance. */
-class RepairSystem {
+class EVENGINE_API_DOMAINS RepairSystem {
 public:
     /** @brief Advance arrived Repair orders through the injected canonical debit boundary. */
-    [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step, const RepairDebit& debit);
+    [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step, combat::DamageRuntime& settlement,
+                                                  const RepairDebit& debit);
 };
 
 /** @brief Resolves deterministic single-faction and contested building capture. */
-class CaptureSystem {
+class EVENGINE_API_DOMAINS CaptureSystem {
 public:
     /** @brief Advance capture forces, decay abandoned progress, and transfer faction ownership. */
     [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step,
@@ -375,7 +402,7 @@ public:
 using PassiveIncomeCredit = std::function<Result<resource::Receipt>(Building&, const resource::CostSpec&)>;
 
 /** @brief Allocates faction power deterministically and settles powered passive income. */
-class InfrastructureSystem {
+class EVENGINE_API_DOMAINS InfrastructureSystem {
 public:
     /** @brief Recompute power from live completed buildings, then credit integral accrued income. */
     [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step,
@@ -383,7 +410,7 @@ public:
 };
 
 /** @brief Resolves transport boarding, building garrisoning, and contained-unit synchronization. */
-class ContainmentSystem {
+class EVENGINE_API_DOMAINS ContainmentSystem {
 public:
     /** @brief Board arrived friendly units and keep occupants attached to their live container. */
     [[nodiscard]] static Result<std::size_t> step();
@@ -397,7 +424,8 @@ public:
 using AmmoProductionPurchase = std::function<Result<std::size_t>(
     Building&, std::string_view, std::int64_t, std::size_t)>;
 
-class SupplySystem {
+/** @brief EVENGINE_API_DOMAINS public API. */
+class EVENGINE_API_DOMAINS SupplySystem {
 public:
     /**
      * @brief Produce stock through the economy port, dispatch suppliers, and transfer integral rounds.
@@ -422,7 +450,7 @@ struct SupplyRendezvousSelection {
 };
 
 /** @brief Selects a low-threat supply rendezvous while delegating reachability to the canonical map. */
-class SupplyRendezvousSystem {
+class EVENGINE_API_DOMAINS SupplyRendezvousSystem {
 public:
     /** @brief Rank the predicted intercept and deterministic lateral/rear alternatives. */
     [[nodiscard]] static Result<SupplyRendezvousSelection> select(
@@ -431,14 +459,14 @@ public:
 };
 
 /** @brief Derives stable multi-vehicle supply convoys and paces their leader. */
-class SupplyConvoySystem {
+class EVENGINE_API_DOMAINS SupplyConvoySystem {
 public:
     /** @brief Group active supply missions by target and hold leaders whose followers exceed convoy spacing. */
     [[nodiscard]] static Result<std::size_t> step();
 };
 
 /** @brief Recovers suppression and applies nearby friendly morale auras. */
-class MoraleSystem {
+class EVENGINE_API_DOMAINS MoraleSystem {
 public:
     /** @brief Advance deterministic suppression recovery and state transitions. */
     [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step,
@@ -446,7 +474,7 @@ public:
 };
 
 /** @brief Regenerates unit and building shield projections after their configured damage delay. */
-class ShieldSystem {
+class EVENGINE_API_DOMAINS ShieldSystem {
 public:
     /** @brief Advance cooldowns and clamp deterministic regeneration to capacity. */
     [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step,
@@ -454,7 +482,7 @@ public:
 };
 
 /** @brief Builds deterministic faction command networks with relay capacity and hostile jamming. */
-class CommandNetworkSystem {
+class EVENGINE_API_DOMAINS CommandNetworkSystem {
 public:
     /** @brief Recompute all source loads, relay uplinks and recipient command state. */
     [[nodiscard]] static Result<std::size_t> step();
@@ -464,8 +492,18 @@ public:
 using AbilityResourceDebit = std::function<Result<resource::Receipt>(Unit&, const resource::CostSpec&)>;
 
 /** @brief Validates, schedules and settles active RTS abilities through canonical damage/effect owners. */
-class AbilitySystem {
+class EVENGINE_API_DOMAINS AbilitySystem {
 public:
+    /**
+     * @brief Pure admission check for caster life, target, range and cooldown.
+     * @param caster Borrowed live RTS caster on its owner thread.
+     * @param spec Owning ability policy borrowed during this call.
+     * @param target Generation-checked target; ignored for self/point policies.
+     * @param point Finite world point.
+     * @return Accepted or a structured rejection without resource/state mutation.
+     */
+    [[nodiscard]] static Result<void> validateCast(Unit& caster, const AbilitySpec& spec, ecs::EntityHandle target,
+                                                   WorldPosition point);
     /** @brief Begin an immediate, cast-time, or periodic channel ability atomically. */
     [[nodiscard]] static Result<void> cast(Unit& caster, const AbilitySpec& spec,
                                            ecs::EntityHandle target, WorldPosition point,
@@ -499,7 +537,7 @@ struct ArtilleryRelocationSelection {
 };
 
 /** @brief Selects reachable shoot-and-scoot positions without taking ownership of map navigation. */
-class ArtilleryRelocationSystem {
+class EVENGINE_API_DOMAINS ArtilleryRelocationSystem {
 public:
     /**
      * @brief Rank reachable candidate positions by hostile coverage, weapon range, friendly conflicts and revisit.
@@ -516,7 +554,7 @@ public:
 };
 
 /** @brief Assigns indirect-fire responders and automatic counter-battery ground attacks. */
-class FireSupportSystem {
+class EVENGINE_API_DOMAINS FireSupportSystem {
 public:
     /** @brief Assign nearest eligible friendly artillery to a deterministic suppression corridor. */
     [[nodiscard]] static Result<std::size_t> request(Unit& requester, WorldPosition center, float radius,
@@ -528,7 +566,7 @@ public:
 };
 
 /** @brief Updates escort guards and deterministic combat-group target commitments. */
-class TacticsSystem {
+class EVENGINE_API_DOMAINS TacticsSystem {
 public:
     /**
      * @brief Follow protected entities, intercept local threats, and distribute group fire.
@@ -543,7 +581,7 @@ public:
 using AIProductionRequest = std::function<Result<void>(Faction&, Building&, const LogicalId&)>;
 
 /** @brief Runs deterministic faction production and attack policy. */
-class AISystem {
+class EVENGINE_API_DOMAINS AISystem {
 public:
     /** @brief Think for enabled factions and submit production/attack decisions. */
     [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step,
@@ -560,7 +598,8 @@ struct CombatHeightProfile { float source = 0.0f; float target = 0.0f; };
 using CombatHeightQuery = std::function<CombatHeightProfile(
     WorldPosition origin, WorldPosition target, ecs::EntityHandle source, ecs::EntityHandle targetEntity)>;
 
-class CombatFireSystem {
+/** @brief EVENGINE_API_DOMAINS public API. */
+class EVENGINE_API_DOMAINS CombatFireSystem {
 public:
     /** @brief Adapter-owned keys previously mirrored into a shared sensing world. */
     struct State {
@@ -621,7 +660,7 @@ struct RTSProjectileSystemSnapshot {
 using ProjectileSubjectResolver = std::function<ecs::Entity*(SubjectRef)>;
 
 /** @brief RTS impact adapter over the canonical pooled weapon projectile trajectory runtime. */
-class RTSProjectileSystem final : public weapon::IProjectileTargetProvider {
+class EVENGINE_API_DOMAINS RTSProjectileSystem final : public weapon::IProjectileTargetProvider {
 public:
     /** @brief Launch one already-authorized weapon shot into the canonical trajectory pool. */
     [[nodiscard]] Result<void> launch(SubjectRef source, ecs::EntityHandle faction, WorldPosition origin,
@@ -668,7 +707,7 @@ private:
 };
 
 /** @brief Sends active generic orders to one shared action executor. */
-class OrderActionSystem {
+class EVENGINE_API_DOMAINS OrderActionSystem {
 public:
     /**
      * @brief Execute/advance active Unit orders and complete them when done.
@@ -679,13 +718,31 @@ public:
     [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step, IRTSActionExecutor& executor);
 };
 
-/** @brief Advances Building production queues without duplicating task state. */
-using ProductionSpawn = std::function<Result<Unit*>(Building&, const production::ProductionTask&)>;
+/** @brief Whether a completed production task published a unit or is waiting for space. */
+enum class ProductionSpawnState { Created, Blocked };
+
+/** @brief Factory outcome; blocked tasks retain their payment and reserved identity. */
+struct ProductionSpawnOutcome {
+    ProductionSpawnState state = ProductionSpawnState::Blocked;
+    /** @brief Borrowed game-owned unit; non-null only for Created, valid until ECS destruction. */
+    Unit* unit = nullptr;
+};
+
+/**
+ * @brief Game-owned factory receiving the requested production exit position.
+ * The factory owns final placement (including collision resolution); settlement
+ * preserves that position. Return Created with a borrowed game-owned unit, Blocked without publishing
+ * anything when space is unavailable, or failure for an invalid request. Called synchronously on the simulation thread;
+ * the producer must remain alive and the callback must not reenter settlement.
+ */
+using ProductionSpawn =
+    std::function<Result<ProductionSpawnOutcome>(Building&, const production::ProductionTask&, WorldPosition)>;
 /** @brief Game/map-owned deterministic exit probe; empty means every valid exit is currently occupied. */
 using ProductionSpawnPosition =
     std::function<Result<std::optional<WorldPosition>>(Building&, const production::ProductionTask&)>;
 
-class BuildingProductionSystem {
+/** @brief EVENGINE_API_DOMAINS public API. */
+class EVENGINE_API_DOMAINS BuildingProductionSystem {
 public:
     /** @brief Advance all buildings and settle newly completed unit tasks through the game-owned factory. */
     [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step, const ProductionSpawn& spawn = {},
@@ -705,7 +762,8 @@ struct ReinforcementRequestReceipt {
     std::string taskId;
 };
 
-class ReinforcementProductionPolicySystem {
+/** @brief EVENGINE_API_DOMAINS public API. */
+class EVENGINE_API_DOMAINS ReinforcementProductionPolicySystem {
 public:
     /** @brief Reconcile total/type caps and cross-factory type priorities before production advances. */
     [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step = {},
@@ -716,7 +774,7 @@ public:
 };
 
 /** @brief Dispatches and unloads production reinforcements assigned to canonical unit containers. */
-class ReinforcementSystem {
+class EVENGINE_API_DOMAINS ReinforcementSystem {
 public:
     /** @brief Advance transport dispatch and arrival settlement. */
     [[nodiscard]] static Result<std::size_t> step();
@@ -726,7 +784,7 @@ public:
 class EffectSystem {
 public:
     /** @brief Advance all attached effects by the injected simulation delta. */
-    [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step,
+    [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step, combat::DamageRuntime& settlement,
                                                   const LifecycleEventSink& events = {});
 };
 

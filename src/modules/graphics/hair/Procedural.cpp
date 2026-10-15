@@ -1,25 +1,22 @@
 #include "graphics/hair/Procedural.h"
-
-#include "common/Diagnostic.h"
-
 #include <algorithm>
 #include <cmath>
-#include <vector>
-
 #include <glm/glm.hpp>
+#include <vector>
+#include "common/Diagnostic.h"
+#include "graphics/hair/RibbonBuilder.h"
 
+// Procedural.cpp
 namespace eve::graphics::hair {
 namespace {
 
 struct Triangle {
-    uint32_t i0 = 0, i1 = 0, i2 = 0;
-    float area = 0.f;
+    uint32_t  i0 = 0, i1 = 0, i2 = 0;
+    float     area = 0.f;
     glm::vec3 n{0.f, 1.f, 0.f};
 };
 
-glm::vec3 readPos(const float *pos, int i) {
-    return glm::vec3(pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]);
-}
+glm::vec3 readPos(const float *pos, int i) { return glm::vec3(pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]); }
 
 glm::vec3 readNrm(const float *nrm, int i) {
     if (!nrm) return glm::vec3(0.f, 1.f, 0.f);
@@ -41,9 +38,8 @@ float hash01(uint32_t s) {
     return float(s >> 8) * (1.f / 16777215.f);
 }
 
-bool buildTriangles(const float *posXYZ, const float *nrmXYZ, int vertexCount, const uint32_t *indices,
-                    int indexCount, float minSlopeDot, std::vector<Triangle> &tris,
-                    std::vector<float> &cdf) {
+bool buildTriangles(const float *posXYZ, const float *nrmXYZ, int vertexCount, const uint32_t *indices, int indexCount,
+                    float minSlopeDot, std::vector<Triangle> &tris, std::vector<float> &cdf) {
     tris.clear();
     cdf.clear();
     if (!posXYZ || !indices || vertexCount < 3 || indexCount < 3 || (indexCount % 3) != 0) return false;
@@ -54,25 +50,24 @@ bool buildTriangles(const float *posXYZ, const float *nrmXYZ, int vertexCount, c
         const uint32_t i1 = indices[t + 1];
         const uint32_t i2 = indices[t + 2];
         if (int(i0) >= vertexCount || int(i1) >= vertexCount || int(i2) >= vertexCount) continue;
-        const glm::vec3 a = readPos(posXYZ, int(i0));
-        const glm::vec3 b = readPos(posXYZ, int(i1));
-        const glm::vec3 c = readPos(posXYZ, int(i2));
-        glm::vec3 n = glm::cross(b - a, c - a);
-        const float twice = glm::length(n);
+        const glm::vec3 a     = readPos(posXYZ, int(i0));
+        const glm::vec3 b     = readPos(posXYZ, int(i1));
+        const glm::vec3 c     = readPos(posXYZ, int(i2));
+        glm::vec3       n     = glm::cross(b - a, c - a);
+        const float     twice = glm::length(n);
         if (twice < 1e-10f) continue;
         n /= twice;
         if (nrmXYZ) {
-            glm::vec3 ns =
-                readNrm(nrmXYZ, int(i0)) + readNrm(nrmXYZ, int(i1)) + readNrm(nrmXYZ, int(i2));
+            glm::vec3 ns = readNrm(nrmXYZ, int(i0)) + readNrm(nrmXYZ, int(i1)) + readNrm(nrmXYZ, int(i2));
             if (glm::dot(ns, ns) > 1e-8f) n = glm::normalize(ns);
         }
         if (n.y < minSlopeDot) continue;
         Triangle tri;
-        tri.i0 = i0;
-        tri.i1 = i1;
-        tri.i2 = i2;
+        tri.i0   = i0;
+        tri.i1   = i1;
+        tri.i2   = i2;
         tri.area = 0.5f * twice;
-        tri.n = n;
+        tri.n    = n;
         total += tri.area;
         tris.push_back(tri);
         cdf.push_back(total);
@@ -82,8 +77,8 @@ bool buildTriangles(const float *posXYZ, const float *nrmXYZ, int vertexCount, c
 
 int pickTriangle(const std::vector<float> &cdf, float u) {
     const float target = u * cdf.back();
-    auto it = std::lower_bound(cdf.begin(), cdf.end(), target);
-    int idx = int(it - cdf.begin());
+    auto        it     = std::lower_bound(cdf.begin(), cdf.end(), target);
+    int         idx    = int(it - cdf.begin());
     if (idx >= int(cdf.size())) idx = int(cdf.size()) - 1;
     return idx;
 }
@@ -101,45 +96,40 @@ glm::vec3 sampleOnTriangle(const float *posXYZ, const Triangle &tri, float u, fl
 
 }  // namespace
 
-Result<StrandsDatas> generateOnMesh(const float *posXYZ, const float *nrmXYZ, int vertexCount,
-                                    const uint32_t *indices, int indexCount,
-                                    const ProceduralParams &params) {
+Result<StrandsDatas> generateOnMesh(const float *posXYZ, const float *nrmXYZ, int vertexCount, const uint32_t *indices,
+                                    int indexCount, const ProceduralParams &params) {
     if (!posXYZ || !indices) {
-        return Result<StrandsDatas>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "generateOnMesh: null mesh buffers", "hair.procedural"));
+        return Result<StrandsDatas>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "generateOnMesh: null mesh buffers", "hair.procedural"));
     }
     if (params.strandCount <= 0 || params.pointsPerStrand < 2) {
         return Result<StrandsDatas>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "generateOnMesh: strandCount/pointsPerStrand invalid",
-            "hair.procedural"));
+            DiagnosticCode::InvalidArgument, "generateOnMesh: strandCount/pointsPerStrand invalid", "hair.procedural"));
     }
     if (!(params.length > 0.f) || !(params.rootRadius >= 0.f) || !(params.tipRadius >= 0.f)) {
         return Result<StrandsDatas>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "generateOnMesh: non-positive length/radius",
-            "hair.procedural"));
+            DiagnosticCode::InvalidArgument, "generateOnMesh: non-positive length/radius", "hair.procedural"));
     }
 
     std::vector<Triangle> tris;
-    std::vector<float> cdf;
-    if (!buildTriangles(posXYZ, nrmXYZ, vertexCount, indices, indexCount, params.minSlopeDot, tris,
-                        cdf)) {
+    std::vector<float>    cdf;
+    if (!buildTriangles(posXYZ, nrmXYZ, vertexCount, indices, indexCount, params.minSlopeDot, tris, cdf)) {
         return Result<StrandsDatas>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "generateOnMesh: no usable triangles",
-            "hair.procedural.mesh"));
+            DiagnosticCode::InvalidArgument, "generateOnMesh: no usable triangles", "hair.procedural.mesh"));
     }
 
-    StrandsDatas out;
+    StrandsDatas             out;
     std::vector<StrandPoint> points;
     std::vector<StrandCurve> curves;
     points.reserve(size_t(params.strandCount) * size_t(params.pointsPerStrand));
     curves.reserve(size_t(params.strandCount));
 
     for (int s = 0; s < params.strandCount; ++s) {
-        const uint32_t seed = mixSeed(params.seed, uint32_t(s));
-        const float uPick = hash01(seed);
-        const float uBary = hash01(mixSeed(seed, 1u));
-        const float vBary = hash01(mixSeed(seed, 2u));
-        const Triangle &tri = tris[size_t(pickTriangle(cdf, uPick))];
+        const uint32_t  seed  = mixSeed(params.seed, uint32_t(s));
+        const float     uPick = hash01(seed);
+        const float     uBary = hash01(mixSeed(seed, 1u));
+        const float     vBary = hash01(mixSeed(seed, 2u));
+        const Triangle &tri   = tris[size_t(pickTriangle(cdf, uPick))];
 
         float bu = uBary;
         float bv = vBary;
@@ -147,7 +137,7 @@ Result<StrandsDatas> generateOnMesh(const float *posXYZ, const float *nrmXYZ, in
             bu = 1.f - bu;
             bv = 1.f - bv;
         }
-        const float bw = 1.f - bu - bv;
+        const float     bw   = 1.f - bu - bv;
         const glm::vec3 root = sampleOnTriangle(posXYZ, tri, bu, bv);
 
         glm::vec3 n = tri.n;
@@ -162,32 +152,30 @@ Result<StrandsDatas> generateOnMesh(const float *posXYZ, const float *nrmXYZ, in
 
         glm::vec3 tangent = glm::cross(n, glm::vec3(0.f, 0.f, 1.f));
         if (glm::dot(tangent, tangent) < 1e-8f) tangent = glm::cross(n, glm::vec3(1.f, 0.f, 0.f));
-        tangent = glm::normalize(tangent);
+        tangent                   = glm::normalize(tangent);
         const glm::vec3 bitangent = glm::normalize(glm::cross(n, tangent));
 
-        const float len =
-            params.length + (hash01(mixSeed(seed, 3u)) * 2.f - 1.f) * params.lengthJitter;
-        const float safeLen = std::max(len, params.length * 0.25f);
+        const float len       = params.length + (hash01(mixSeed(seed, 3u)) * 2.f - 1.f) * params.lengthJitter;
+        const float safeLen   = std::max(len, params.length * 0.25f);
         const float curlPhase = hash01(mixSeed(seed, 4u)) * 6.2831853f;
-        const float curlAmp = params.curlStrength * (0.5f + hash01(mixSeed(seed, 5u)));
+        const float curlAmp   = params.curlStrength * (0.5f + hash01(mixSeed(seed, 5u)));
 
         StrandCurve curve;
         curve.pointOffset = uint32_t(points.size());
-        curve.pointCount = uint32_t(params.pointsPerStrand);
-        float accum = 0.f;
-        glm::vec3 prev = root;
+        curve.pointCount  = uint32_t(params.pointsPerStrand);
+        float     accum   = 0.f;
+        glm::vec3 prev    = root;
         for (int p = 0; p < params.pointsPerStrand; ++p) {
-            const float t = float(p) / float(params.pointsPerStrand - 1);
-            const float along = t * safeLen;
-            const float curl = curlAmp * std::sin(curlPhase + t * 6.2831853f * 1.5f);
-            const glm::vec3 pos =
-                root + n * along + tangent * (curl * t) + bitangent * (curl * 0.35f * t);
+            const float     t     = float(p) / float(params.pointsPerStrand - 1);
+            const float     along = t * safeLen;
+            const float     curl  = curlAmp * std::sin(curlPhase + t * 6.2831853f * 1.5f);
+            const glm::vec3 pos   = root + n * along + tangent * (curl * t) + bitangent * (curl * 0.35f * t);
             if (p > 0) accum += glm::length(pos - prev);
             prev = pos;
             StrandPoint sp;
             sp.position = pos;
-            sp.u = t;
-            sp.radius = params.rootRadius * (1.f - t) + params.tipRadius * t;
+            sp.u        = t;
+            sp.radius   = params.rootRadius * (1.f - t) + params.tipRadius * t;
             points.push_back(sp);
         }
         curve.length = accum;
@@ -204,15 +192,116 @@ Result<StrandsDatas> generateOnMesh(const float *posXYZ, const float *nrmXYZ, in
 Result<StrandsDatas> generateOnPlane(float sizeX, float sizeZ, const ProceduralParams &params) {
     if (!(sizeX > 0.f) || !(sizeZ > 0.f)) {
         return Result<StrandsDatas>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "generateOnPlane: non-positive size",
-            "hair.procedural.plane"));
+            DiagnosticCode::InvalidArgument, "generateOnPlane: non-positive size", "hair.procedural.plane"));
     }
-    const float hx = sizeX * 0.5f;
-    const float hz = sizeZ * 0.5f;
-    const float pos[12] = {-hx, 0.f, -hz, hx, 0.f, -hz, hx, 0.f, hz, -hx, 0.f, hz};
-    const float nrm[12] = {0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0};
-    const uint32_t idx[6] = {0, 1, 2, 0, 2, 3};
+    const float    hx      = sizeX * 0.5f;
+    const float    hz      = sizeZ * 0.5f;
+    const float    pos[12] = {-hx, 0.f, -hz, hx, 0.f, -hz, hx, 0.f, hz, -hx, 0.f, hz};
+    const float    nrm[12] = {0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0};
+    const uint32_t idx[6]  = {0, 1, 2, 0, 2, 3};
     return generateOnMesh(pos, nrm, 4, idx, 6, params);
+}
+
+}  // namespace eve::graphics::hair
+
+// RibbonBuilder.cpp
+namespace eve::graphics::hair {
+namespace {
+
+glm::vec3 safeNormalize(const glm::vec3 &v, const glm::vec3 &fallback) {
+    const float len2 = glm::dot(v, v);
+    if (len2 < 1e-12f) return fallback;
+    return v * (1.f / std::sqrt(len2));
+}
+
+}  // namespace
+
+Result<RibbonMesh> buildRibbons(const StrandsDatas &strands, const RibbonParams &params) {
+    auto validated = strands.validate();
+    if (!validated.ok()) return Result<RibbonMesh>::failure(validated.status());
+
+    if (params.widthScale <= 0.f || !std::isfinite(params.widthScale)) {
+        return Result<RibbonMesh>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "buildRibbons: widthScale must be positive", "hair.ribbon.widthScale"));
+    }
+
+    const glm::vec3 sideHint = safeNormalize(params.sideHint, glm::vec3(1.f, 0.f, 0.f));
+
+    RibbonMesh   mesh;
+    const size_t curveN = strands.curveCount();
+    mesh.posXYZ.reserve(curveN * 8u * 3u);
+    mesh.nrmXYZ.reserve(curveN * 8u * 3u);
+    mesh.uvST.reserve(curveN * 8u * 2u);
+    mesh.indices.reserve(curveN * 7u * 6u);
+
+    for (size_t ci = 0; ci < curveN; ++ci) {
+        const auto pts = strands.curvePoints(ci);
+        if (pts.size() < 2) continue;
+
+        const uint32_t baseVert = uint32_t(mesh.posXYZ.size() / 3u);
+        for (size_t pi = 0; pi < pts.size(); ++pi) {
+            const StrandPoint &p = pts[pi];
+            glm::vec3          tangent(0.f, 1.f, 0.f);
+            if (pi + 1 < pts.size()) {
+                tangent = pts[pi + 1].position - p.position;
+            } else {
+                tangent = p.position - pts[pi - 1].position;
+            }
+            tangent = safeNormalize(tangent, glm::vec3(0.f, 1.f, 0.f));
+
+            glm::vec3 side = glm::cross(tangent, sideHint);
+            if (glm::dot(side, side) < 1e-10f) {
+                side = glm::cross(tangent, glm::vec3(0.f, 0.f, 1.f));
+            }
+            side = safeNormalize(side, glm::vec3(1.f, 0.f, 0.f));
+
+            const float     halfW = std::max(p.radius * params.widthScale, params.minWidth);
+            const glm::vec3 left  = p.position - side * halfW;
+            const glm::vec3 right = p.position + side * halfW;
+
+            auto pushVert = [&](const glm::vec3 &pos, float vSide) {
+                mesh.posXYZ.push_back(pos.x);
+                mesh.posXYZ.push_back(pos.y);
+                mesh.posXYZ.push_back(pos.z);
+                mesh.nrmXYZ.push_back(tangent.x);
+                mesh.nrmXYZ.push_back(tangent.y);
+                mesh.nrmXYZ.push_back(tangent.z);
+                mesh.uvST.push_back(vSide);
+                mesh.uvST.push_back(p.u);
+            };
+            pushVert(left, 0.f);
+            pushVert(right, 1.f);
+        }
+
+        const uint32_t segs = uint32_t(pts.size() - 1u);
+        for (uint32_t s = 0; s < segs; ++s) {
+            const uint32_t i0 = baseVert + s * 2u;
+            const uint32_t i1 = i0 + 1u;
+            const uint32_t i2 = i0 + 2u;
+            const uint32_t i3 = i0 + 3u;
+            mesh.indices.push_back(i0);
+            mesh.indices.push_back(i2);
+            mesh.indices.push_back(i1);
+            mesh.indices.push_back(i1);
+            mesh.indices.push_back(i2);
+            mesh.indices.push_back(i3);
+        }
+    }
+
+    if (mesh.indices.empty()) {
+        return Result<RibbonMesh>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, "buildRibbons: produced empty mesh", "hair.ribbon"));
+    }
+    return Result<RibbonMesh>::success(std::move(mesh));
+}
+
+void appendRibbonMesh(RibbonMesh &dst, const RibbonMesh &src) {
+    const uint32_t base = uint32_t(dst.vertexCount());
+    dst.posXYZ.insert(dst.posXYZ.end(), src.posXYZ.begin(), src.posXYZ.end());
+    dst.nrmXYZ.insert(dst.nrmXYZ.end(), src.nrmXYZ.begin(), src.nrmXYZ.end());
+    dst.uvST.insert(dst.uvST.end(), src.uvST.begin(), src.uvST.end());
+    dst.indices.reserve(dst.indices.size() + src.indices.size());
+    for (uint32_t idx : src.indices) dst.indices.push_back(base + idx);
 }
 
 }  // namespace eve::graphics::hair

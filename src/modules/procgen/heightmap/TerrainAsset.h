@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/heightmap/TerrainPipeline.h"
 #include "common/Result.h"
@@ -15,6 +17,7 @@ namespace eve::procgen {
 /** @brief Immutable random-access byte source for an EVTR archive. */
 class ITerrainArchiveSource {
 public:
+    /** @brief Releases ITerrainArchiveSource resources. */
     virtual ~ITerrainArchiveSource() = default;
     /** @brief Total stable byte length of the archive. @thread Safe for concurrent reads. */
     [[nodiscard]] virtual std::uint64_t size() const noexcept = 0;
@@ -32,8 +35,11 @@ class MemoryTerrainArchiveSource final : public ITerrainArchiveSource {
 public:
     /** @brief Copy immutable archive bytes into this source. */
     explicit MemoryTerrainArchiveSource(std::span<const std::uint8_t> bytes)
+        /** @brief Bytes. */
         : bytes_(bytes.begin(), bytes.end()) {}
+    /** @brief Returns the size of . */
     [[nodiscard]] std::uint64_t size() const noexcept override { return bytes_.size(); }
+    /** @brief Reads . */
     [[nodiscard]] Result<std::vector<std::uint8_t>> read(
         std::uint64_t offset, std::size_t length) const override;
 
@@ -72,7 +78,7 @@ struct TerrainChunkEntry {
  * direction, river and biome layers remain exact bytes. A corrupt chunk cannot
  * silently enter the world.
  */
-class TerrainAsset {
+class EVENGINE_API_DOMAINS TerrainAsset {
 public:
     /** @brief Compatibility operation that bakes all terrain layers into EVTR. */
     static bool bake(const Heightmap &heightmap, const HydrologyMap &hydrology,
@@ -92,11 +98,17 @@ public:
     bool loadChunk(int chunkX, int chunkY, TerrainChunkData &out,
                    std::string *error = nullptr) const;
 
+    /** @brief Returns the width. */
     int getWidth() const { return width_; }
+    /** @brief Returns the height. */
     int getHeight() const { return height_; }
+    /** @brief Returns the chunk size. */
     int getChunkSize() const { return chunkSize_; }
+    /** @brief Returns the min height. */
     float getMinHeight() const { return minHeight_; }
+    /** @brief Returns the max height. */
     float getMaxHeight() const { return maxHeight_; }
+    /** @brief Chunks. */
     const std::vector<TerrainChunkEntry> &chunks() const { return chunks_; }
     /** @brief Find one chunk directory entry without scanning the full directory. */
     [[nodiscard]] const TerrainChunkEntry* findChunk(int chunkX, int chunkY) const noexcept;

@@ -1,6 +1,7 @@
 #include "weapon/Weapon.h"
 
 #include "common/Value.h"
+#include "weapon/CombatCarrierScript.h"
 #include "weapon/WeaponAttributes.h"
 #include "weapon/WeaponDefinitionRuntime.h"
 #include "weapon/WeaponSystem.h"
@@ -164,6 +165,7 @@ AmmoPoolEntity* AmmoPoolEntity::createPool() {
 
 Weapon::Weapon() {
     WeaponSystem::setEventSink([this](const WeaponEvent& e) { events_.push_back(e); });
+    declareScriptProjectileSeam();
 }
 
 Weapon::~Weapon() {
@@ -172,6 +174,7 @@ Weapon::~Weapon() {
     destroyHandles<WeaponRigEntity>(rigs_);
     destroyHandles<AmmoPoolEntity>(pools_);
     WeaponSystem::setEventSink(nullptr);
+    withdrawScriptProjectileSeam();
 }
 
 // ---------------------------------------------------------------------------
@@ -627,6 +630,7 @@ float Weapon::getResourceValue(WeaponEntity* w) const { return w != nullptr ? w-
 void Weapon::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Weapon::create, false);
     expose(cls);
+    exposeCombatCarrierBindings(table);
 
     auto wCls = table.addClass<WeaponEntity>(
         "WeaponEntity", std::function<WeaponEntity*()>([]() -> WeaponEntity* { return nullptr; }), false);
@@ -861,6 +865,7 @@ void Weapon::expose(ssq::Class& cls) {
     cls.addFunc("getEventElement", &Weapon::getEventElement);
     cls.addFunc("getStage", &Weapon::getStage);
     cls.addFunc("getResourceValue", &Weapon::getResourceValue);
+    exposeCombatCarrierModuleMethods(cls);
 }
 
 }  // namespace eve::weapon

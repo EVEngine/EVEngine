@@ -12,6 +12,8 @@ namespace eve::inventory {
 
 Module_IMPL(Inventory, new Inventory());
 
+Inventory::Inventory() = default;
+
 int Inventory::registerItemsFromJson(const std::string &json) {
     InventorySystem::ensureBuiltins();
     return ItemRegistry::loadFromJson(json, nullptr);

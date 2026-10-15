@@ -1,4 +1,8 @@
-# Canonical mesh v3, vertex colors, and multiple UV sets
+# Canonical mesh JSON v2 (historical layout notes)
+
+> Current attribute / binary contract: [canonical-mesh-v3.md](canonical-mesh-v3.md).
+> This page documents the `eve.mesh/2` JSON shape and EVMESH binary v2 layout that
+> remain migration inputs.
 
 `eve.mesh/2` preserves source UV set identifiers and all supported coordinate
 streams. There is no fixed UV0/UV1/UV2 array size. Channel descriptors and numeric

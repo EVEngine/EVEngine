@@ -1,13 +1,17 @@
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-
+#include "vehicle/Vehicle.h"
+#include <utility>
 #include "ScriptTest.h"
 #include "common/Capability.h"
 #include "common/ECS.h"
+#include "common/ScriptProvider.h"
 #include "vehicle/Vehicle.h"
 #include "vehicle/VehicleMobility.h"
+#include "vehicle/VehicleOrderQueueAdapter.h"
 #include "weapon/Weapon.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
 
+// vehicle.cpp
 using namespace eve::vehicle;
 
 namespace {
@@ -298,7 +302,7 @@ static const char* kViewScript = R"SQ(
 function testVehicleCppView() {
     local vehicle = eve.Vehicle()
     vehicle.registerVehiclesFromJson("[{\"id\":\"jeep\"}]")
-    local v = vehicle.newVehicle("jeep", 5.0, 6.0)
+    local v = vehicle.newVehicle("jeep", 5.0, 6.0, 0.0, "")
     if (v == null) return false
     local all = eve.view(eve.VehicleEntity)
     foreach (e in all) {
@@ -311,7 +315,124 @@ function testVehicleCppView() {
 UnitSciptTest(VehicleViewScriptTest, kViewScript);
 
 TEST_CASE_FIXTURE(VehicleViewScriptTest, "vehicle.script.viewSeesNewVehicle") {
-    CHECK(vm.callFunc(vm.findFunc("testVehicleCppView"), vm).toBool());
+    REQUIRE(callScript("testVehicleCppView"));
+}
+
+/**
+ * 脚本伤害规则。`note` 是自由函数，因此 `seen = text` 写的是根表槽位，测试据此断言
+ * 参数编组；`modifyDamage` 只接收稳定标识与标量，收不到引擎内部借用指针。
+ */
+static const char* kScriptDamageRule = R"SQ(
+seen <- ""
+function note(text) { seen = text }
+class HalfDamage {
+    function modifyDamage(vehicleId, defId, amount, zone, sourceId) {
+        note(vehicleId + "|" + defId + "|" + amount.tointeger() + "|" + zone + "|" + sourceId)
+        return amount * 0.5
+    }
+}
+class BrokenRule {
+    function modifyDamage(vehicleId, defId, amount, zone, sourceId) { throw "rule is broken" }
+}
+modifier <- HalfDamage()
+broken <- BrokenRule()
+)SQ";
+
+/**
+ * Script rule shared by the two probes for judgement criterion J-4. The fixture
+ * only defines the class; the test body runs the `eve.provider` calls, because the
+ * binding seam is declared by `Vehicle`'s constructor and fixture members are
+ * constructed after the script has already run.
+ */
+class VehicleScriptDamageTest : public ScriptTest {
+public:
+    VehicleScriptDamageTest() : ScriptTest(kScriptDamageRule) { eve::ScriptProviderRegistry::instance().clearAll(); }
+    ~VehicleScriptDamageTest() { eve::ScriptProviderRegistry::instance().clearAll(); }
+};
+
+TEST_CASE_FIXTURE(VehicleScriptDamageTest, "vehicle.script.damageRule.present") {
+    // Provider-present probe: script answers the native damage socket.
+    Vehicle module;
+    module.registerVehiclesFromJson(kFpsDefs);
+    VehicleEntity* v = module.newVehicle("tank.fps", 0.f, 0.f);
+    REQUIRE(v != nullptr);
+
+    REQUIRE(eve::ScriptProviderRegistry::instance().hasCapabilitySeam("IVehicleDamageModifier"));
+    REQUIRE_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{0});
+
+    // The publish happens in script, through the same API a game would use.
+    vm.run(
+        vm.compileSource("published <- eve.provider.publishFor(\"IVehicleDamageModifier\","
+                         " \"vehicle.half\", modifier)"));
+    ssq::Object published = vm.find("published");
+    REQUIRE_EQ(published.getType(), ssq::Type::TABLE);
+    REQUIRE(published.find("ok").toBool());
+    REQUIRE_EQ(published.find("value").find("name").toString(), std::string("vehicle.half"));
+    REQUIRE_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{1});
+    REQUIRE_EQ(vm.find("seen").toString(), std::string(""));
+
+    // 100 * 0.5 * front(1.0) == 50, and the rule saw the marshalled arguments.
+    module.applyDamage(v, 100.f, "front", 7);
+    REQUIRE_EQ(module.getHealth(v), 550.f);
+    const std::string firstSeen = v->identity()->id + "|tank.fps|100|front|7";
+    REQUIRE_EQ(vm.find("seen").toString(), firstSeen);
+
+    // The script rule is retired by name, and dispatch stops with it.
+    vm.run(vm.compileSource("unloaded <- eve.provider.unload(\"vehicle.half\")"));
+    ssq::Object unloaded = vm.find("unloaded");
+    REQUIRE_EQ(unloaded.getType(), ssq::Type::TABLE);
+    REQUIRE(unloaded.find("ok").toBool());
+    REQUIRE_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{0});
+
+    module.applyDamage(v, 40.f, "front", 7);
+    REQUIRE_EQ(module.getHealth(v), 510.f);
+    // `seen` still holds the first call's text, so the retired rule was not invoked.
+    REQUIRE_EQ(vm.find("seen").toString(), firstSeen);
+}
+
+TEST_CASE_FIXTURE(VehicleScriptDamageTest, "vehicle.script.damageRule.absent") {
+    // Provider-absent probe. No `Vehicle` instance exists, so the module never
+    // declared the seam: the pipeline keeps its old behaviour and a publish attempt
+    // is refused with `NotFound` instead of silently binding nothing.
+    REQUIRE(!eve::ScriptProviderRegistry::instance().hasCapabilitySeam("IVehicleDamageModifier"));
+
+    vm.run(
+        vm.compileSource("refused <- eve.provider.publishFor(\"IVehicleDamageModifier\","
+                         " \"vehicle.half\", modifier)"));
+    ssq::Object refused = vm.find("refused");
+    REQUIRE_EQ(refused.getType(), ssq::Type::TABLE);
+    REQUIRE(!refused.find("ok").toBool());
+    REQUIRE_EQ(refused.find("code").toString(), std::string("not_found"));
+    REQUIRE_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{0});
+
+    // The same absence through the plain publish path: published, but nothing is
+    // dispatched, which is what "absent provider" has to mean.
+    vm.run(vm.compileSource("plain <- eve.provider.publish(\"vehicle.orphan\", modifier)"));
+    REQUIRE(vm.find("plain").find("ok").toBool());
+    REQUIRE_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{0});
+}
+
+TEST_CASE_FIXTURE(VehicleScriptDamageTest, "vehicle.script.damageRule.failureKeepsAmount") {
+    // A rule that raises must not drop the hit. The alternative -- swallowing the
+    // damage because a game rule has a typo -- is the failure mode this asserts
+    // against, and the fallback is reported through the engine log.
+    Vehicle module;
+    module.registerVehiclesFromJson(kFpsDefs);
+    VehicleEntity* v = module.newVehicle("tank.fps", 0.f, 0.f);
+    REQUIRE(v != nullptr);
+
+    vm.run(
+        vm.compileSource("brokenPublish <- eve.provider.publishFor(\"IVehicleDamageModifier\","
+                         " \"vehicle.broken\", broken)"));
+    REQUIRE(vm.find("brokenPublish").find("ok").toBool());
+    REQUIRE_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{1});
+
+    module.applyDamage(v, 100.f, "front", 7);
+    REQUIRE_EQ(module.getHealth(v), 500.f);
+
+    // The provider survives its own failure: the raising call restored the VM stack.
+    module.applyDamage(v, 100.f, "front", 7);
+    REQUIRE_EQ(module.getHealth(v), 400.f);
 }
 
 static const char* kRtsFlowScript = R"SQ(
@@ -320,7 +441,7 @@ function testVehicleRtsFlow() {
     weapon.registerWeaponsFromJson("[{\"id\":\"cannon\",\"logic\":\"hitscan\",\"cooldown\":1.0,\"ammo\":{\"mag\":5,\"reserve\":20,\"reload\":2.0}}]")
     local vehicle = eve.Vehicle()
     vehicle.registerVehiclesFromJson("[{\"id\":\"tank\",\"mobility\":\"kinematic\",\"maxSpeed\":100,\"accel\":80,\"turnRate\":90,\"maxHealth\":300,\"mounts\":[{\"name\":\"turret\",\"weapon\":\"cannon\",\"type\":\"turret\",\"rotSpeed\":90,\"aimMode\":\"auto\"}]}]")
-    local v = vehicle.newVehicle("tank", 0.0, 0.0)
+    local v = vehicle.newVehicle("tank", 0.0, 0.0, 0.0, "")
     if (v == null) return false
 
     vehicle.moveTo(v, 100.0, 0.0)
@@ -342,6 +463,160 @@ function testVehicleRtsFlow() {
 
 UnitSciptTest(VehicleRtsFlowTest, kRtsFlowScript);
 
-TEST_CASE_FIXTURE(VehicleRtsFlowTest, "vehicle.script.rtsFlow") {
-    CHECK(vm.callFunc(vm.findFunc("testVehicleRtsFlow"), vm).toBool());
+TEST_CASE_FIXTURE(VehicleRtsFlowTest, "vehicle.script.rtsFlow") { REQUIRE(callScript("testVehicleRtsFlow")); }
+
+// vehicle_orders_adapter.cpp
+using eve::vehicle::VehicleOrder;
+using eve::vehicle::VehicleOrderQueueAdapter;
+using eve::vehicle::VehicleOrderType;
+
+namespace {
+
+VehicleOrder moveOrder() {
+    VehicleOrder order;
+    order.type = VehicleOrderType::Move;
+    order.x    = 10.f;
+    order.y    = 20.f;
+    return order;
+}
+
+VehicleOrder attackOrder() {
+    VehicleOrder order;
+    order.type     = VehicleOrderType::Attack;
+    order.x        = 30.f;
+    order.y        = 40.f;
+    order.targetId = 7;
+    return order;
+}
+
+std::string takeId(eve::Result<std::string> result) {
+    REQUIRE(result.hasValue());
+    return std::move(result).takeValue();
+}
+
+}  // namespace
+
+TEST_CASE("vehicle.orders.adapterUsesGenericPriorityAndLifecycle") {
+    VehicleOrderQueueAdapter adapter;
+    const std::string        moveId   = takeId(adapter.append(moveOrder(), 1));
+    const std::string        attackId = takeId(adapter.append(attackOrder(), 5));
+
+    REQUIRE(!moveId.empty());
+    REQUIRE(!attackId.empty());
+    REQUIRE(adapter.current() != nullptr);
+    CHECK_EQ(adapter.current()->type, VehicleOrderType::Move);
+    CHECK_EQ(adapter.activeOrQueuedCount(), 2);
+
+    CHECK(adapter.completeCurrent().ok());
+    REQUIRE(adapter.current() != nullptr);
+    CHECK_EQ(adapter.current()->type, VehicleOrderType::Attack);
+    CHECK_EQ(adapter.activeOrQueuedCount(), 1);
+}
+
+TEST_CASE("vehicle.orders.adapterTimeoutActivatesNextDomainOrder") {
+    VehicleOrderQueueAdapter adapter;
+    const std::string        timedId = takeId(adapter.append(moveOrder(), 0, 0.25));
+    const std::string        nextId  = takeId(adapter.append(attackOrder()));
+
+    REQUIRE(!timedId.empty());
+    REQUIRE(!nextId.empty());
+    adapter.update(0.25);
+    REQUIRE(adapter.current() != nullptr);
+    CHECK_EQ(adapter.current()->type, VehicleOrderType::Attack);
+    CHECK_EQ(adapter.activeOrQueuedCount(), 1);
+    CHECK(adapter.cancel(nextId, "test_cleanup").ok());
+    CHECK(adapter.current() == nullptr);
+    CHECK_EQ(adapter.activeOrQueuedCount(), 0);
+}
+
+TEST_CASE("vehicle.orders.adapterInterruptHonoursGenericPriority") {
+    VehicleOrderQueueAdapter adapter;
+    const std::string        activeId = takeId(adapter.append(moveOrder(), 20));
+    REQUIRE(!activeId.empty());
+
+    CHECK(!adapter.interrupt(attackOrder(), 19).hasValue());
+    REQUIRE(adapter.current() != nullptr);
+    CHECK_EQ(adapter.current()->type, VehicleOrderType::Move);
+
+    const std::string urgentId = takeId(adapter.interrupt(attackOrder(), 20));
+    REQUIRE(!urgentId.empty());
+    REQUIRE(adapter.current() != nullptr);
+    CHECK_EQ(adapter.current()->type, VehicleOrderType::Attack);
+    CHECK_EQ(adapter.activeOrQueuedCount(), 1);
+}
+
+TEST_CASE("vehicle.orders.adapterReplaceRefreshesCompatibilityProjection") {
+    eve::vehicle::VehicleEntity::Orders legacy;
+    VehicleOrderQueueAdapter            adapter;
+
+    const std::string moveId        = takeId(adapter.append(moveOrder()));
+    const std::string firstAttackId = takeId(adapter.append(attackOrder()));
+    REQUIRE(!moveId.empty());
+    REQUIRE(!firstAttackId.empty());
+    adapter.syncCompatibility(legacy);
+    REQUIRE(legacy.current == 0);
+    CHECK_EQ(legacy.queue.size(), size_t{2});
+
+    const std::string replacementId = takeId(adapter.replace(attackOrder()));
+    REQUIRE(!replacementId.empty());
+    adapter.syncCompatibility(legacy);
+    REQUIRE(legacy.current == 0);
+    CHECK_EQ(legacy.queue.size(), size_t{1});
+    CHECK_EQ(legacy.queue.front().type, VehicleOrderType::Attack);
+}
+
+TEST_CASE("vehicle.orders.adapterCopyKeepsLifecycleAndPayloadIndependent") {
+    VehicleOrderQueueAdapter original;
+    const std::string        moveId   = takeId(original.append(moveOrder(), 3));
+    const std::string        attackId = takeId(original.append(attackOrder(), 1));
+    REQUIRE(!moveId.empty());
+    REQUIRE(!attackId.empty());
+
+    VehicleOrderQueueAdapter copy(original);
+    REQUIRE(copy.current() != nullptr);
+    CHECK_EQ(copy.current()->type, VehicleOrderType::Move);
+    CHECK_EQ(copy.current()->x, 10.f);
+    CHECK_EQ(copy.activeOrQueuedCount(), 2);
+
+    CHECK(original.cancel(moveId, "original_only").ok());
+    REQUIRE(original.current() != nullptr);
+    CHECK_EQ(original.current()->type, VehicleOrderType::Attack);
+    REQUIRE(copy.current() != nullptr);
+    CHECK_EQ(copy.current()->type, VehicleOrderType::Move);
+
+    CHECK(copy.completeCurrent().ok());
+    REQUIRE(copy.current() != nullptr);
+    CHECK_EQ(copy.current()->type, VehicleOrderType::Attack);
+    CHECK(copy.cancel(attackId, "copy_only").ok());
+    CHECK(copy.current() == nullptr);
+    REQUIRE(original.current() != nullptr);
+    CHECK_EQ(original.current()->type, VehicleOrderType::Attack);
+
+    const std::string originalNext = takeId(original.append(moveOrder()));
+    const std::string copyNext     = takeId(copy.append(moveOrder()));
+    CHECK_EQ(originalNext, copyNext);
+}
+
+TEST_CASE("vehicle.orders.componentCopyClonesAdapterNotLegacyProjection") {
+    eve::vehicle::VehicleEntity::Orders source;
+    const std::string                   sourceId = takeId(source.adapter->append(attackOrder(), 4, 2.0));
+    REQUIRE(!sourceId.empty());
+    source.adapter->syncCompatibility(source);
+
+    eve::vehicle::VehicleEntity::Orders copy(source);
+    REQUIRE(copy.adapter->current() != nullptr);
+    CHECK_EQ(copy.adapter->current()->targetId, 7);
+    CHECK_EQ(copy.adapter->activeOrQueuedCount(), 1);
+
+    CHECK(source.adapter->cancel(sourceId, "source_only").ok());
+    CHECK(source.adapter->current() == nullptr);
+    REQUIRE(copy.adapter->current() != nullptr);
+    CHECK_EQ(copy.adapter->current()->targetId, 7);
+
+    eve::vehicle::VehicleEntity::Orders assigned;
+    assigned = copy;
+    REQUIRE(assigned.adapter->current() != nullptr);
+    CHECK_EQ(assigned.adapter->current()->targetId, 7);
+    CHECK(assigned.adapter->cancel(sourceId, "assigned_only").ok());
+    CHECK(copy.adapter->current() != nullptr);
 }

@@ -6,6 +6,7 @@
 // the types are complete and lets scene stay unaware of what it is driving.
 
 #include "common/ECS.h"
+#include "common/TransformEuler.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
 #include "scene/SceneHost.h"
@@ -25,6 +26,8 @@ void pushRenderable3D(const SceneNode &n, void *target) {
     auto *r = static_cast<Renderable3D *>(target);
     auto t = r->transform();
     const glm::mat4 &w = n.world;
+    t->linkedWorld     = w;
+    t->hasLinkedWorld  = true;
     t->x = w[3][0];
     t->y = w[3][1];
     t->z = w[3][2];
@@ -40,11 +43,8 @@ void pushRenderable3D(const SceneNode &n, void *target) {
     if (t->sz > 1e-8f) c2 /= t->sz;
 
     glm::mat3 rot(c0, c1, c2);
-    glm::quat q = glm::quat_cast(rot);
-    glm::vec3 euler = glm::eulerAngles(q);  // pitch(x), yaw(y), roll(z)
-    t->pitch = euler.x;
-    t->yaw = euler.y;
-    t->roll = euler.z;
+    // Must invert the order modelFromTransform() recomposes (see TransformEuler.h).
+    eve::eulerYxzFromMatrix(glm::mat4(rot), t->yaw, t->pitch, t->roll);
 
     r->meshRenderer()->visible = n.visible;
 }

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file InventoryResourceAccount.h
@@ -25,7 +27,7 @@ namespace eve::inventory {
  * the Bag owner thread. Failed multi-item mutations restore slots, generated
  * instance ids and queued inventory events before returning.
  */
-class InventoryResourceAccount final : public eve::resource::IResourceAccount {
+class EVENGINE_API_FOUNDATION InventoryResourceAccount final : public eve::resource::IResourceAccount {
 public:
     /** @brief Bind the adapter to one caller-owned inventory bag. */
     explicit InventoryResourceAccount(Bag& bag);
@@ -34,20 +36,27 @@ public:
     InventoryResourceAccount& operator=(const InventoryResourceAccount&) = delete;
     InventoryResourceAccount(InventoryResourceAccount&&)                 = delete;
     InventoryResourceAccount& operator=(InventoryResourceAccount&&)      = delete;
+    /** @brief Inventory resource account. */
     ~InventoryResourceAccount() override                                 = default;
 
     /** @copydoc eve::resource::IResourceAccount::canAfford */
+    /** @brief Can afford. */
     [[nodiscard]] eve::Result<eve::resource::Affordability> canAfford(
         const eve::resource::CostSpec& cost) const override;
     /** @copydoc eve::resource::IResourceAccount::reserve */
+    /** @brief Reserve. */
     [[nodiscard]] eve::Result<eve::resource::Reservation> reserve(const eve::resource::CostSpec& cost) override;
     /** @copydoc eve::resource::IResourceAccount::debit */
+    /** @brief Debit. */
     [[nodiscard]] eve::Result<eve::resource::Receipt> debit(const eve::resource::CostSpec& cost) override;
     /** @copydoc eve::resource::IResourceAccount::credit */
+    /** @brief Credit. */
     [[nodiscard]] eve::Result<eve::resource::Receipt> credit(const eve::resource::CostSpec& cost) override;
     /** @copydoc eve::resource::IResourceAccount::commit */
+    /** @brief Commits commit. */
     [[nodiscard]] eve::Result<eve::resource::Receipt> commit(const eve::resource::Reservation& reservation) override;
     /** @copydoc eve::resource::IResourceAccount::rollback */
+    /** @brief Rollback. */
     [[nodiscard]] eve::Result<void> rollback(const eve::resource::Reservation& reservation) override;
 
 private:
@@ -76,7 +85,7 @@ private:
  * resolves them against the authoritative ItemDefinition/Bag path; no
  * parallel price or ammunition table is introduced here.
  */
-class ItemCostAdapter final {
+class EVENGINE_API_FOUNDATION ItemCostAdapter final {
 public:
     /**
      * @brief Build a positive cost for an inventory item.

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <string_view>
@@ -37,10 +39,12 @@
 
 namespace eve::filesystem {
 
-class Filesystem : public Module, public eve::service::IFileSystem {
+/** @brief EVENGINE_API_FOUNDATION public API. */
+class EVENGINE_API_FOUNDATION Filesystem : public Module, public eve::service::IFileSystem {
 public:
     Module_REG(Filesystem);
 
+    /** @brief Info public API. */
     struct Info {
         // Numbers will be -1 if they cannot be determined.
         int64_t     size;

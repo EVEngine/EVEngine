@@ -77,7 +77,7 @@ namespace {
 eve::Result<void> cardLifecycleConflict(std::string message) {
     return eve::Result<void>::failure(
         eve::Status::failure(eve::StatusCode::Conflict,
-                             eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move(message), "card.play")));
+                             eve::Diagnostic::error(eve::DiagnosticCode::Conflict, message, "card.play")));
 }
 
 class CardTransferParticipant final : public eve::transaction::ITransactionParticipant {
@@ -260,12 +260,14 @@ private:
 
 }  // namespace
 
-CardPlayParticipant::CardPlayParticipant(CardData& card) : card_(card) {}
+CardPlayParticipant::CardPlayParticipant(CardData& card) : card_(ecs::handle_of(&card)) {}
 
 eve::Result<void> CardPlayParticipant::prepare(const eve::transaction::TransactionContext& context) {
     (void)context;
     if (prepared_ || committed_) return cardLifecycleConflict("card play participant is already in flight or terminal");
-    auto state = card_.state();
+    auto* card = resolve();
+    if (!card) return cardLifecycleConflict("card handle is stale");
+    auto state = card->state();
     if (state->phase == CardState::Played || state->phase == CardState::Discarded ||
         state->phase == CardState::Disabled)
         return cardLifecycleConflict("card is not playable in its current state");
@@ -277,7 +279,9 @@ eve::Result<void> CardPlayParticipant::prepare(const eve::transaction::Transacti
 eve::Result<void> CardPlayParticipant::commit(const eve::transaction::TransactionContext& context) {
     (void)context;
     if (!prepared_ || committed_) return cardLifecycleConflict("card play participant has no uncommitted stage");
-    auto state = card_.state();
+    auto* card = resolve();
+    if (!card) return cardLifecycleConflict("card handle is stale");
+    auto state = card->state();
     // A preceding container-transfer participant deliberately projects the
     // card's destination phase during the same synchronous transaction. The
     // play participant is the final authority and publishes Played once all
@@ -298,11 +302,17 @@ eve::Result<void> CardPlayParticipant::rollback(const eve::transaction::Transact
 eve::Result<void> CardPlayParticipant::compensate(const eve::transaction::TransactionContext& context) {
     (void)context;
     if (!committed_) return cardLifecycleConflict("card play participant has no committed effect to compensate");
-    auto state   = card_.state();
+    auto* card = resolve();
+    if (!card) return cardLifecycleConflict("card handle is stale");
+    auto state   = card->state();
     state->phase = previousState_;
     committed_   = false;
     prepared_    = false;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+CardData* CardPlayParticipant::resolve() const {
+    return card_.table == ecs::current() ? dynamic_cast<CardData*>(ecs::try_get(card_)) : nullptr;
 }
 
 eve::Result<std::optional<eve::resource::CostSpec>> CardPlayPaymentAdapter::manaCost(const CardDefinition& definition) {
@@ -347,15 +357,17 @@ eve::Result<eve::transaction::TransactionReceipt> CardPlayPaymentAdapter::play(C
         details.emplace_back("reason", decision::conditionReasonCodeName(condition.reasonCode()));
         return eve::Result<eve::transaction::TransactionReceipt>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "card play condition was rejected",
-                                   "condition", std::move(details)));
+                                   "condition", details));
     }
 
     auto cost = manaCost(definition);
     if (!cost) return eve::Result<eve::transaction::TransactionReceipt>::failure(cost.status());
+    if (request.composition.paymentCost)
+        cost = eve::Result<std::optional<eve::resource::CostSpec>>::success(request.composition.paymentCost);
     if (cost.value() && request.playerAccount == nullptr)
         return eve::Result<eve::transaction::TransactionReceipt>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                   "a mana-bearing card play requires a player account", "playerAccount"));
+                                   "a resource-bearing card play requires a player account", "playerAccount"));
     if (request.transactionId.empty()) request.transactionId = "card.play." + definition.id;
 
     CardPlayParticipant                                     state(card);
@@ -370,6 +382,8 @@ eve::Result<eve::transaction::TransactionReceipt> CardPlayPaymentAdapter::play(C
     }
     participants.push_back(&state);
     if (request.composition.effect != nullptr) participants.push_back(request.composition.effect);
+    participants.insert(participants.end(), request.composition.additionalEffects.begin(),
+                        request.composition.additionalEffects.end());
 
     eve::transaction::TransactionContext context(std::move(request.transactionId));
     if (cost.value())

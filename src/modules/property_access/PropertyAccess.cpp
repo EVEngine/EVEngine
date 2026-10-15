@@ -13,9 +13,32 @@ eve::OptionalRef<const PropertyDescriptor> PropertySchema::find(const std::strin
                                      : eve::OptionalRef<const PropertyDescriptor>{std::cref(*found)};
 }
 
-WriteResult validatePropertyValue(const PropertyDescriptor &property, const Value &value) {
+Result<void> validateNumericComponent(const PropertyDescriptor &property, double number) {
+    if (!std::isfinite(number)) return rejected("property_access.property.finite", "Numeric values must be finite");
+    if (property.numeric.minimum && number < *property.numeric.minimum)
+        return rejected("property_access.property.minimum", "Value is below the minimum");
+    if (property.numeric.maximum && number > *property.numeric.maximum)
+        return rejected("property_access.property.maximum", "Value is above the maximum");
+    return accepted();
+}
+
+Result<void> validateArrayArity(PropertyKind kind, const Value::Array &items) {
+    std::size_t expected = 0;
+    switch (kind) {
+        case PropertyKind::Vec2: expected = 2; break;
+        case PropertyKind::Vec3: expected = 3; break;
+        case PropertyKind::Vec4:
+        case PropertyKind::Color: expected = 4; break;
+        default: return accepted();
+    }
+    if (items.size() != expected)
+        return rejected("property_access.property.arity", "Composite property has the wrong component count");
+    return accepted();
+}
+
+Result<void> validatePropertyValue(const PropertyDescriptor &property, const Value &value) {
     if (hasFlag(property.flags, PropertyFlag::ReadOnly))
-        return WriteResult::reject("property_access.property.read-only", "Property is read-only");
+        return rejected("property_access.property.read-only", "Property is read-only");
 
     const Value::Type type       = value.type();
     bool              compatible = false;
@@ -38,14 +61,34 @@ WriteResult validatePropertyValue(const PropertyDescriptor &property, const Valu
         case PropertyKind::Map: compatible = type == Value::Type::Object; break;
         case PropertyKind::Action: compatible = true; break;
     }
-    if (!compatible)
-        return WriteResult::reject("property_access.property.type", "Property value type does not match schema");
+    if (!compatible) return rejected("property_access.property.type", "Property value type does not match schema");
 
     if (property.kind == PropertyKind::Enum) {
         const auto *selected = value.getIf<std::string>();
         if (!selected ||
             std::find(property.choices.begin(), property.choices.end(), *selected) == property.choices.end())
-            return WriteResult::reject("property_access.property.choice", "Value is not an allowed choice");
+            return rejected("property_access.property.choice", "Value is not an allowed choice");
+    }
+
+    if (const auto *items = value.getIf<Value::Array>()) {
+        Result<void> arity = validateArrayArity(property.kind, *items);
+        if (!arity.ok()) return arity;
+        if (property.kind == PropertyKind::Color || property.kind == PropertyKind::Vec2 ||
+            property.kind == PropertyKind::Vec3 || property.kind == PropertyKind::Vec4) {
+            for (const Value &component : *items) {
+                double number = 0.0;
+                if (const auto *integer = component.getIf<std::int64_t>()) {
+                    number = static_cast<double>(*integer);
+                } else if (const auto *floating = component.getIf<double>()) {
+                    number = *floating;
+                } else {
+                    return rejected("property_access.property.type", "Composite components must be numeric");
+                }
+                Result<void> componentResult = validateNumericComponent(property, number);
+                if (!componentResult.ok()) return componentResult;
+            }
+            return accepted();
+        }
     }
 
     double number    = 0.0;
@@ -54,16 +97,11 @@ WriteResult validatePropertyValue(const PropertyDescriptor &property, const Valu
         number    = static_cast<double>(*integer);
         hasNumber = true;
     } else if (const auto *floating = value.getIf<double>()) {
-        number = *floating;
-        if (!std::isfinite(number))
-            return WriteResult::reject("property_access.property.finite", "Numeric values must be finite");
+        number    = *floating;
         hasNumber = true;
     }
-    if (hasNumber && property.numeric.minimum && number < *property.numeric.minimum)
-        return WriteResult::reject("property_access.property.minimum", "Value is below the minimum");
-    if (hasNumber && property.numeric.maximum && number > *property.numeric.maximum)
-        return WriteResult::reject("property_access.property.maximum", "Value is above the maximum");
-    return WriteResult::success();
+    if (hasNumber) return validateNumericComponent(property, number);
+    return accepted();
 }
 
 }  // namespace eve::property_access

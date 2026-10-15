@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file DialogueState.h
@@ -49,6 +51,7 @@ struct CommandRequest {
 
 /** @brief Structured response to a request emitted by a command node. */
 struct CommandResponse {
+    /** @brief Status public API. */
     enum class Status : std::uint8_t { Completed, Blocked, Failed };
 
     Status      status = Status::Completed;
@@ -64,14 +67,14 @@ using CommandRequestHandler = std::function<CommandResponse(const CommandRequest
  * @param value Owned StateValue tree; it is not retained.
  * @return An owning common Value with identical JSON-compatible contents.
  */
-[[nodiscard]] eve::Value toCanonicalValue(const eve::StateValue& value);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION eve::Value toCanonicalValue(const eve::StateValue& value);
 
 /**
  * @brief Convert a canonical value to the legacy reload representation.
  * @param value Owned common value; it is not retained.
  * @return An owning StateValue used by the existing persistence facade.
  */
-[[nodiscard]] eve::StateValue toDialogueStateValue(const eve::Value& value);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION eve::StateValue toDialogueStateValue(const eve::Value& value);
 
 /**
  * @brief Decision EvaluationContext backed by one dialogue subject.
@@ -80,7 +83,7 @@ using CommandRequestHandler = std::function<CommandResponse(const CommandRequest
  * query, the context checks the registered `IStateQuery` capability/listeners.
  * A known false result is never confused with an unavailable provider.
  */
-class StateEvaluationContext final : public eve::decision::EvaluationContext {
+class EVENGINE_API_ORCHESTRATION StateEvaluationContext final : public eve::decision::EvaluationContext {
 public:
     /** @brief Construct a context for a stable subject id and optional provider. */
     explicit StateEvaluationContext(std::string subject = {}, eve::IStateQuery* provider = nullptr);
@@ -96,18 +99,25 @@ public:
     }
 
     /** @copydoc eve::decision::EvaluationContext::value */
+    /** @brief Value. */
     [[nodiscard]] std::optional<eve::Value> value(std::string_view key) const override;
     /** @copydoc eve::decision::EvaluationContext::hasTag */
+    /** @brief True when tag. */
     [[nodiscard]] std::optional<bool> hasTag(std::string_view tag) const override;
     /** @copydoc eve::decision::EvaluationContext::attribute */
+    /** @brief Attribute. */
     [[nodiscard]] std::optional<eve::Value> attribute(std::string_view key) const override;
     /** @copydoc eve::decision::EvaluationContext::resource */
+    /** @brief Resource. */
     [[nodiscard]] std::optional<eve::Value> resource(std::string_view key) const override;
     /** @copydoc eve::decision::EvaluationContext::state */
+    /** @brief State. */
     [[nodiscard]] std::optional<eve::Value> state(std::string_view key) const override;
     /** @copydoc eve::decision::EvaluationContext::authority */
+    /** @brief Authority. */
     [[nodiscard]] std::optional<bool> authority(std::string_view scope) const override;
     /** @copydoc eve::decision::EvaluationContext::policy */
+    /** @brief Policy. */
     [[nodiscard]] std::optional<eve::decision::ConditionResult> policy(std::string_view  name,
                                                                        const eve::Value& arguments) const override;
 
@@ -122,11 +132,11 @@ private:
  *
  * Dialogue owns only this borrowed boundary and never mirrors world flags,
  * attributes, reputation, or persistent values. Local conversation variables
- * remain in `ConversationRunner` frames. Mutation providers must implement the
+ * remain in `dnut::SequenceRuntime` frames. Mutation providers must implement the
  * all-or-nothing contract; persistent providers are expected to use
  * StatePatch's transaction participant internally.
  */
-class DialogueStateContext {
+class EVENGINE_API_ORCHESTRATION DialogueStateContext {
 public:
     /** @brief Construct a context for one stable world subject. */
     explicit DialogueStateContext(std::string subject = {});

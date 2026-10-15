@@ -1,26 +1,30 @@
 #pragma once
+#include "common/Export.h"
 
+
+#include <cstdint>
+#include <string>
+#include <vector>
 #include "common/ECS.h"
 #include "graphics/DrawItem2D.h"
 #include "graphics/Quad.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
-#include "zeroerr/assert.h"
-#include <cstdint>
-#include <string>
-#include <vector>
 
 namespace eve::graphics {
 
 class Canvas;
 
 /** @brief Declarative 2D camera (viewport center + zoom). */
-class Camera2D : public ecs::Entity {
+class EVENGINE_API_BACKENDS Camera2D : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Camera2D, ecs::Entity)
 
+    /** @brief Release. */
     void release() override {}
 
+    /** @brief Data public API. */
     struct Data {
         float x = 0.f;
         float y = 0.f;
@@ -34,14 +38,15 @@ public:
 
     COMPONENT(Data, data)
 
-    static Camera2D *createCamera() {
-        Camera2D *c = Camera2D::create();
-        ASSERT(c != nullptr);
-        c->data()->entity = c;
-        c->data()->active = true;
-        ASSERT(c->data()->entity == c);
-        return c;
-    }
+    /**
+     * @brief Create an active camera in the current ECS table.
+     * @param table ECS table owning the result; defaults to the calling thread's current table.
+     * @return ECS-owned camera with its self reference initialized.
+     * @ownership ECS owns the result. @lifetime Valid until ECS destroys the entity.
+     * @note Call on the current ECS table owner thread; no external callbacks are invoked.
+     * @cost Allocates entity/component storage per camera creation.
+     */
+    static Camera2D *createCamera(ecs::Table &table = *ecs::current());
 
     void setAmbient(float r, float g, float b);
 
@@ -63,12 +68,15 @@ public:
 };
 
 /** @brief Default renderable entity for declarative 2D sprites / solid quads. */
-class Renderable2D : public ecs::Entity {
+class EVENGINE_API_BACKENDS Renderable2D : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Renderable2D, ecs::Entity)
 
+    /** @brief Release. */
     void release() override;
 
+    /** @brief Transform2D public API. */
     struct Transform2D {
         float x = 0;
         float y = 0;
@@ -126,6 +134,22 @@ public:
     void setTexture(Texture *texture);
     /** @brief Return the assigned texture. */
     Texture *getTexture();
+    /**
+     * @brief Assign an optional tangent-space normal map for the GPU lit2d path.
+     * @param texture Borrowed normal map, or nullptr to clear. Non-null with
+     *        receiveLight and an albedo texture (and no custom shader) selects
+     *        lit2d; otherwise lighting falls back to CPU modulation.
+     * @ownership `texture` remains owned by the caller (typically Graphics); this
+     *            sprite only borrows it and never deletes it.
+     * @lifetime Must remain valid while assigned, or until cleared / the sprite is destroyed.
+     */
+    void setNormalTexture(Texture *texture);
+    /**
+     * @brief Return the assigned normal map, or nullptr when unlit/flat.
+     * @ownership Returns a borrowed Texture*; the caller must not delete it.
+     * @lifetime Valid until `setNormalTexture` replaces or clears it, or the sprite is destroyed.
+     */
+    Texture *getNormalTexture();
     /** @brief Assign the borrowed UV quad. */
     void setQuad(Quad *quad);
     /** @brief Return the assigned UV quad. */
@@ -171,7 +195,7 @@ public:
 class Graphics;
 
 /** @brief Walks ECS Renderable2D views and draws via Graphics batch path. */
-class RenderSystem {
+class EVENGINE_API_BACKENDS RenderSystem {
 public:
     /** @brief Full sprite pass + present (existing tests / sprite-only scenes). */
     static void render(Graphics &gfx);

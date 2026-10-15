@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /** @file EvpackInstanceSetLoader.h @brief Runtime decoding of canonical static instances. */
 
@@ -57,7 +58,7 @@ struct LoadedInstanceSet {
 };
 
 /** @brief Capability-aware `eve.instance-set/5` EVINST decoder with v1-v4 compatibility. */
-class EvpackInstanceSetLoader {
+class EVENGINE_API_ORCHESTRATION EvpackInstanceSetLoader {
 public:
     /** @brief Bind a borrowed immutable reader that must outlive this loader. */
     explicit EvpackInstanceSetLoader(const asset::EvpackResourceReader& reader) noexcept : reader_(reader) {}

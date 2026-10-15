@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file RTSReplay.h
@@ -30,6 +32,7 @@ enum class RTSReplayOperation : std::uint8_t {
     CancelFireSupport,
     SuppressArea,
     Escort,
+    MovementGroup,
 };
 
 /** @brief One process-independent command using stable subjects instead of ECS handles. */
@@ -48,6 +51,7 @@ struct RTSReplayCommand {
     int priority = 0;
     std::size_t limit = 0;
     WorldPosition point;
+    float                   groupLeadDistance = 2.f;
 };
 
 /**
@@ -56,7 +60,7 @@ struct RTSReplayCommand {
  * This class owns only input history. Simulation state and order execution
  * remain authoritative in RTS and the generic orders module.
  */
-class RTSCommandLog {
+class EVENGINE_API_DOMAINS RTSCommandLog {
 public:
     /** @brief Validate, normalize, queue, and retain one future command. */
     [[nodiscard]] Result<void> queue(RTSReplayCommand command, SimulationTick currentTick = {});
@@ -78,7 +82,7 @@ private:
 };
 
 /** @brief Fixed-step coordinator that applies lockstep inputs before the existing RTS system pipeline. */
-class RTSLockstep {
+class EVENGINE_API_DOMAINS RTSLockstep {
 public:
     /** @brief Construct with a 60 Hz fixed simulation interval. */
     RTSLockstep();

@@ -35,7 +35,7 @@ enum class RunMode : uint8_t {
     StepOut,     // next script line at < start depth — DAP stepOut
 };
 
-struct EVENGINE_API Breakpoint {
+struct EVENGINE_API_FOUNDATION_INLINE Breakpoint {
     std::string source;  // normalized path or basename
     int         line    = 0;
     bool        enabled = true;
@@ -44,19 +44,19 @@ struct EVENGINE_API Breakpoint {
     int         id      = 0;
 };
 
-struct EVENGINE_API WatchEntry {
+struct EVENGINE_API_FOUNDATION_INLINE WatchEntry {
     std::string expression;
     std::string value;  // last evaluated (display)
     bool        ok = false;
 };
 
-struct EVENGINE_API StackFrameInfo {
+struct EVENGINE_API_FOUNDATION_INLINE StackFrameInfo {
     int         id = 0;
     SourceLoc   loc;
     std::string name;
 };
 
-struct EVENGINE_API VariableInfo {
+struct EVENGINE_API_FOUNDATION_INLINE VariableInfo {
     std::string name;
     std::string value;
     std::string type;
@@ -83,7 +83,7 @@ enum class VarKind : uint8_t {
  *  - stepOver  — stop on the next line at the same / outer stack depth
  *  - stepOut   — stop after returning to the caller
  */
-class EVENGINE_API Debugger {
+class EVENGINE_API_FOUNDATION Debugger {
 public:
     static Debugger& instance();
 

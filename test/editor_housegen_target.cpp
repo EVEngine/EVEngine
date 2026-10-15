@@ -1,6 +1,6 @@
-#include "housegen/editing/HouseGenTarget.h"
+#include "procgen/editing/HouseGenTarget.h"
 
-#include "housegen/HouseLayout.h"
+#include "procgen/house/HouseLayout.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
@@ -8,7 +8,7 @@ using namespace eve::housegen_editing;
 using namespace eve::editing;
 
 namespace {
-void apply(HouseGenDocumentTarget& target, EditorResult<DomainOperation> operation) {
+void apply(HouseGenDocumentTarget& target, Result<DomainOperation> operation) {
     REQUIRE(operation.ok()); REQUIRE(target.applyDomainOperation(operation.value()).ok());
 }
 HouseKitComponentValue component(const char* id, const char* category) {

@@ -22,6 +22,7 @@ enum class SoftBodyContactState { None, Hit };
  */
 class ISoftBodyCollisionWorld {
 public:
+    /** @brief Releases ISoftBodyCollisionWorld resources. */
     virtual ~ISoftBodyCollisionWorld() = default;
     /** @brief Whether the provider can currently answer contacts. */
     [[nodiscard]] virtual bool softBodyCollisionAvailable() const noexcept = 0;

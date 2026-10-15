@@ -2,11 +2,13 @@
 
 #include "common/Capability.h"
 #include "editing/EditingCommandRegistry.h"
+#include "editing/EditorPackage.h"
 #include "editor/EditorAutomationTargetFactory.h"
 #include "voxel/editing/VoxelCatalog.h"
 #include "voxel/editing/VoxelEditingCommands.h"
 #include "voxel/editor/EditorVoxelPaletteTarget.h"
 #include "voxel/editor/VoxelCatalogEditorScriptBindings.h"
+#include "voxel/editor/VoxelEditorPackage.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -30,13 +32,13 @@ class VoxelEditorModule::TargetFactory final : public editor::IEditorAutomationT
 public:
     std::vector<std::string_view> types() const override { return {"voxel-catalog", "voxel-model"}; }
 
-    editor::EditorResult<editor::AutomationOwnedTarget> create(
+    editor::Result<editor::AutomationOwnedTarget> create(
         const editor::TargetId& target, std::string_view, const editor::EditorValue::Object& request) override {
         auto catalog = std::make_unique<voxel_editing::VoxelCatalogTarget>(target.value());
         if (const editor::EditorValue* snapshot = field(request, "snapshot")) {
             auto loaded = catalog->loadSnapshot(*snapshot);
             if (!loaded.ok())
-                return editor::EditorResult<editor::AutomationOwnedTarget>::failure(loaded.status());
+                return editor::Result<editor::AutomationOwnedTarget>::failure(loaded.status());
         }
         editor::AutomationOwnedTarget owned;
         owned.target = std::move(catalog);
@@ -46,14 +48,17 @@ public:
 
 Module_IMPL(VoxelEditorModule, new VoxelEditorModule());
 
-VoxelEditorModule::VoxelEditorModule() : factory_(std::make_unique<TargetFactory>()) {
+VoxelEditorModule::VoxelEditorModule()
+    : factory_(std::make_unique<TargetFactory>()), packageProvider_(std::make_unique<VoxelEditorPackageProvider>()) {
     auto* registry = eve::cap::query<editing::IEditingCommandRegistry>();
     if (!registry || !voxel_editing::registerEditingCommands(*registry).ok())
         throw std::runtime_error("Failed to register voxel editing commands");
     eve::cap::addListener<editor::IEditorAutomationTargetFactory>(factory_.get());
+    eve::cap::addListener<editing::IEditorPackageProvider>(packageProvider_.get());
 }
 
 VoxelEditorModule::~VoxelEditorModule() {
+    eve::cap::removeListener<editing::IEditorPackageProvider>(packageProvider_.get());
     eve::cap::removeListener<editor::IEditorAutomationTargetFactory>(factory_.get());
     if (auto* registry = eve::cap::query<editing::IEditingCommandRegistry>())
         registry->unregisterOwner("voxel_editing").ignore("voxel editor adapter shutdown");

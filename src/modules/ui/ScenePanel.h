@@ -24,9 +24,11 @@ class UIHost;
  * that hands the selected node id to a script-side handler (which maps it to a
  * live script instance for the Inspector).
  */
-class EVENGINE_API ScenePanel {
+class EVENGINE_API_WORLD ScenePanel {
 public:
+    /** @brief Scene panel. */
     ScenePanel() = default;
+    /** @brief Scene panel. */
     ~ScenePanel();
     ScenePanel(const ScenePanel&) = delete;
     ScenePanel& operator=(const ScenePanel&) = delete;

@@ -25,6 +25,29 @@ add_custom_command(
             --json-output "${_eve_binding_contract_json}"
             --dts-output "${_eve_binding_contract_dts}"
     DEPENDS "${CMAKE_SOURCE_DIR}/scripts/generate_binding_contracts.py"
+            "${CMAKE_SOURCE_DIR}/scripts/binding_architecture.py"
+            "${CMAKE_SOURCE_DIR}/scripts/binding_semantics.py"
+            "${CMAKE_SOURCE_DIR}/src/engine/common/ScriptStructure.hpp"
+            "${CMAKE_SOURCE_DIR}/src/engine/common/ScriptStructure.cpp"
+            "${CMAKE_SOURCE_DIR}/src/engine/devtools/ProjectIndexAutomatic.cpp"
+            "${CMAKE_SOURCE_DIR}/src/engine/devtools/ProjectIndexGraph.cpp"
+            "${CMAKE_SOURCE_DIR}/src/engine/devtools/ProjectIndexScan.cpp"
+            "${CMAKE_SOURCE_DIR}/src/engine/devtools/McpProjectIndexTools.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/binding_semantics.json"
+            "${CMAKE_SOURCE_DIR}/src/modules/game_event/binding_semantics.json"
+            "${CMAKE_SOURCE_DIR}/src/modules/rpg/binding_semantics.json"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/binding_architecture.json"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/Scene.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneCameraQueries.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneNodeRef.h"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneHost.h"
+            "${CMAKE_SOURCE_DIR}/test/scene.cpp"
+            "${CMAKE_SOURCE_DIR}/test/scene_binding_architecture.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/inventory/binding_architecture.json"
+            "${CMAKE_SOURCE_DIR}/src/modules/inventory/Inventory.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/inventory/Bag.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/inventory/Bag.h"
+            "${CMAKE_SOURCE_DIR}/test/inventory_binding_architecture.cpp"
     COMMENT "Generating strict EveScript Binding Contracts"
     VERBATIM)
 target_sources(EVCommon PRIVATE "${_eve_binding_contract_cpp}")
@@ -122,7 +145,9 @@ message(STATUS "Third-party groups: ${EVE_THIRDPARTY_GROUPS}")
 
 # Module link list, derived from the module manifest; EVCommon, EVCmdLine and
 # EVDevTools are declared there too, so only the embedded scripts are added here.
-set(EVELIBS EVScripts ${EVE_MODULE_LIBS})
+# EVE_LINK_TARGETS is the module libraries in OBJECT mode and the link-group
+# shared libraries in SHARED mode (see cmake/link_groups.cmake).
+set(EVELIBS EVScripts ${EVE_LINK_TARGETS})
 if(_has_devtools)
     # DevTools ImGui host panels (AI + console) compile into the host binary --
     # not EVDevTools, which avoids imgui.h to protect MSVC export limits.

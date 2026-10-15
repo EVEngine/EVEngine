@@ -15,12 +15,14 @@ namespace eve::editor {
 
 class EditorTargetCoordinator;
 class EditorCommandService;
+class EditorHost;
 
 /** @brief MCP/DevTools adapter over command discovery and target coordination. */
 class EditorAutomationProvider final : public eve::IEditorAutomation {
 public:
     /** @brief Bind borrowed services that outlive this provider. */
     EditorAutomationProvider(EditorCommandService& commands, EditorTargetCoordinator& targets);
+    /** @brief Releases EditorAutomationProvider resources. */
     ~EditorAutomationProvider() override;
 
     /** @brief Invoke discovery, inspect, execute, plan, commit, undo or redo. */
@@ -29,13 +31,22 @@ public:
     /** @brief Clear automation state that still borrows an unregistered target. */
     void targetUnregistered(const TargetId& target);
 
+    /**
+     * @brief Attach a borrowed EditorHost as the MCP projection scope (Mode A).
+     * @ownership Borrowed; host must outlive the attachment or call detachHost.
+     */
+    [[nodiscard]] Result<void> attachHost(EditorHost* host);
+
+    /** @brief Clear the Host-scoped MCP projection filter. */
+    void detachHost();
+
 private:
     struct ObservationSession;
 
     void refreshProfile();
     std::string commandsJson();
     std::string        targetList() const;
-    EditorResult<void> bindRequestedTarget(const EditorValue::Object& request);
+    Result<void> bindRequestedTarget(const EditorValue::Object& request);
     std::string createTarget(const EditorValue::Object& request);
     std::string closeTarget(const EditorValue::Object& request);
     std::string startObservation(const EditorValue::Object& request);

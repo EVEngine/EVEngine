@@ -24,7 +24,7 @@ EditorValue PhysicsColliderTarget::snapshotValue() const {
     return EditorValue(std::move(root));
 }
 
-EditorResult<void> PhysicsColliderTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> PhysicsColliderTarget::loadSnapshot(const EditorValue& snapshot) {
     const EditorValue* versionValue    = field(snapshot, "schemaVersion");
     const EditorValue* dimensionsValue = field(snapshot, "dimensions");
     const EditorValue* propertiesValue = field(snapshot, "properties");
