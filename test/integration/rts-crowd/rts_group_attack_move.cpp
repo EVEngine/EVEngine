@@ -1,3 +1,4 @@
+#include "zeroerr/assert.h"
 #include "RtsCompositionFixtures.h"
 
 TEST_CASE("rts.groups.attackMoveAdmissionAndRestorePreserveOrders") {

@@ -1,3 +1,4 @@
+#include "zeroerr/assert.h"
 #include "crowd/thread/CrowdThread.h"
 #include <atomic>
 #include <chrono>

@@ -28,14 +28,6 @@
       "default": "module-composition",
       "cases": {
         "module-composition": [
-          "crowd.avoidance.headOnPassesWithoutContactRepair",
-          "crowd.avoidance.perpendicularCrossingArrives",
-          "crowd.avoidance.routesAroundHeldUnit",
-          "crowd.avoidance.insertionOrderAndAccelerationContract",
-          "crowd.avoidance.budgetAndConfigurationAreObservable",
-          "crowd.avoidance.eightWayCrossingArrivesWithoutContactRepair",
-          "crowd.avoidance.fasterUnitOvertakes",
-          "crowd.avoidance.ignoredLayersDoNotSteer",
           "crowd.avoidance.finalArrivalAllowsPushableSettledUnitToYield",
           "crowd.avoidance.finalArrivalDoesNotPushHeldUnit",
           "crowd.navigation.radiusAwareFlowPassesSingleCellPortal",
@@ -471,21 +463,6 @@
       ],
       "task": "rts-crowd"
     },
-    "integration/rts-crowd/rts_crowd_production.cpp": {
-      "role": "tests",
-      "default": "module-composition",
-      "cases": {
-        "module-composition": [
-          "rts.crowd.productionPushPublishesPeerMotion",
-          "rts.crowd.blockedProductionRetainsPaymentAndIdentityForRetry"
-        ],
-        "script-binding": [
-          "rts.crowd.scriptProfileCrossingReachesBothDestinations"
-        ]
-      },
-      "module": "rts",
-      "task": "rts-crowd"
-    },
     "integration/rts-crowd/rts_crowd_registry.cpp": {
       "role": "tests",
       "default": "module-composition",
@@ -541,36 +518,12 @@
       ],
       "task": "rts-crowd"
     },
-    "integration/rts-crowd/rts_crowd.cpp": {
-      "role": "tests",
-      "default": "module-composition",
-      "cases": {
-        "module-composition": [
-          "rts.crowd.arrivalPreservesResolvedSeparation",
-          "rts.crowd.holdOrderResistsPushAndReplacementReleasesIt",
-          "rts.crowd.predictiveCrossingSurvivesEcsProjection",
-          "rts.crowd.stepBudgetFailureReturnsResult",
-          "rts.crowd.containmentRemovesFootprintAndDisembarkRebuildsIt",
-          "rts.crowd.convoyWaitDefersArrivalAndResumesExistingOrder"
-        ]
-      },
-      "module": "rts",
-      "task": "rts-crowd"
-    },
     "integration/rts-crowd/rts_formation.cpp": {
       "role": "tests",
       "default": "module-composition",
       "cases": {
         "module-composition": [
-          "rts.formation.mixedRadiiFitAndSelectionOrderIsStable",
-          "rts.formation.invalidSelectionLeavesCommandsUntouched",
-          "rts.formation.rotationAndColumnPreserveAnchorAndSpacing",
-          "rts.formation.replayVersionFourRoundTripsAndRejectsMalformedAtomically",
-          "rts.formation.slotRelaxationAvoidsStealingNearbyDestination",
           "rts.formation.largeTranslatedGridDoesNotReverseMarchingRows"
-        ],
-        "script-binding": [
-          "rts.formation.scriptCommandsReachCanonicalOrdersAndReplay"
         ]
       },
       "module": "rts",
@@ -591,30 +544,6 @@
       "origins": [
         "rts_group_attack_move.cpp"
       ],
-      "task": "rts-crowd"
-    },
-    "integration/rts-crowd/rts_groups.cpp": {
-      "role": "tests",
-      "default": "module-composition",
-      "cases": {
-        "module-composition": [
-          "rts.groups.pacingWorksWithAndWithoutCrowd",
-          "rts.groups.movingSlotsAssembleBeforeArrival",
-          "rts.groups.passageReleasesAndRestoresFormation",
-          "rts.groups.mixedSpeedSquadClearsSingleCellPassage",
-          "rts.groups.opposingSquadsReserveWholeCorridor",
-          "rts.groups.trappedOpponentsEvacuateAndResumeOrders",
-          "rts.groups.navigationProviderClearsTemporaryEvacuation",
-          "rts.groups.oversizedCorridorReportsBudgetFailure",
-          "rts.groups.clearanceAccountsForRadiusAndGridOrigin",
-          "rts.groups.restoreValidatesMembershipAndReplacementDetaches",
-          "rts.groups.rebuildAndLegacySnapshotMigration"
-        ],
-        "script-binding": [
-          "rts.groups.scriptAndReplayUseCanonicalAdmission"
-        ]
-      },
-      "module": "rts",
       "task": "rts-crowd"
     },
     "integration/rts-crowd/rts_performance_semantics.cpp": {

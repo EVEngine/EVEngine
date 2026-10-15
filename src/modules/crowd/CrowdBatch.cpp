@@ -1,4 +1,5 @@
 #include "crowd/CrowdInternal.h"
+#include "common/Assert.h"
 
 #include <new>
 

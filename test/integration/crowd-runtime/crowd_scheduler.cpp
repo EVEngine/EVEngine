@@ -1,3 +1,4 @@
+#include "zeroerr/assert.h"
 #include <simplesquirrel/simplesquirrel.hpp>
 #include "crowd/Crowd.h"
 #include "crowd/CrowdWorkScheduler.h"

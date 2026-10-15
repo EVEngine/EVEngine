@@ -1,3 +1,4 @@
+#include "zeroerr/assert.h"
 #include <array>
 #include <set>
 #include "RtsCompositionFixtures.h"

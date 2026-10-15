@@ -1,3 +1,4 @@
+#include "zeroerr/assert.h"
 #include <stdexcept>
 #include "../../RtsCompositionFixtures.h"
 #include "crowd/CrowdWorkScheduler.h"

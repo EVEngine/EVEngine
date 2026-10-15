@@ -101,13 +101,16 @@ if(TARGET EVRts AND TARGET eve)
         "${CMAKE_SOURCE_DIR}/test/map_navigation_snapshot.cpp"
         "${CMAKE_SOURCE_DIR}/test/rts_crowd_surface_adapter.cpp"
         "${CMAKE_SOURCE_DIR}/test/rts_crowd_flow_navigation.cpp")
-    target_sources(eve_rts_crowd_check PRIVATE "${CMAKE_SOURCE_DIR}/test/rts_crowd_flow_groups.cpp" "${CMAKE_SOURCE_DIR}/test/rts_group_attack_move.cpp" "${CMAKE_SOURCE_DIR}/test/rts_attack_slots.cpp")
+    target_sources(eve_rts_crowd_check PRIVATE
+        "${CMAKE_SOURCE_DIR}/test/integration/rts-crowd/rts_crowd_flow_groups.cpp"
+        "${CMAKE_SOURCE_DIR}/test/integration/rts-crowd/rts_group_attack_move.cpp"
+        "${CMAKE_SOURCE_DIR}/test/integration/rts-crowd/rts_attack_slots.cpp")
     if(NOT EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
         # OBJECT selects only the registry required by asset-import registration.
         # SHARED imports that same registry from its owning Foundation DLL.
         target_sources(eve_rts_crowd_check PRIVATE "${CMAKE_SOURCE_DIR}/src/engine/cmdline/cmdline.cpp")
     endif()
-    target_sources(eve_rts_crowd_check PRIVATE "${CMAKE_SOURCE_DIR}/test/rts_performance_semantics.cpp")
+    target_sources(eve_rts_crowd_check PRIVATE "${CMAKE_SOURCE_DIR}/test/integration/rts-crowd/rts_performance_semantics.cpp")
     target_compile_features(eve_rts_crowd_check PRIVATE cxx_std_20)
     set_target_properties(eve_rts_crowd_check PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
     get_target_property(_eve_rts_host_libraries eve LINK_LIBRARIES)

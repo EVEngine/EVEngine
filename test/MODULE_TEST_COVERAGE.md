@@ -1291,9 +1291,9 @@ Source directory: `src/modules/rts`. Status: **local-rules-recorded**. Local cas
 
 - Unit: [unit/rts/gameplay_control_rts.cpp](unit/rts/gameplay_control_rts.cpp)
 - Integration task `gameplay-composition`: [gameplay_composition_graphics_rts_combat_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_rts_combat_tests.cpp), [gameplay_composition_graphics_rts_script_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_rts_script_tests.cpp)
-- Integration task `rts-crowd`: [rts_attack_slots.cpp](integration/rts-crowd/rts_attack_slots.cpp), [rts_combat_suppression_aura.cpp](integration/rts-crowd/rts_combat_suppression_aura.cpp), [rts_crowd_flow_groups.cpp](integration/rts-crowd/rts_crowd_flow_groups.cpp), [rts_crowd_flow_navigation.cpp](integration/rts-crowd/rts_crowd_flow_navigation.cpp), [rts_crowd_production.cpp](integration/rts-crowd/rts_crowd_production.cpp), [rts_crowd_registry.cpp](integration/rts-crowd/rts_crowd_registry.cpp), [rts_crowd_surface_adapter.cpp](integration/rts-crowd/rts_crowd_surface_adapter.cpp), [rts_crowd_zero_delta.cpp](integration/rts-crowd/rts_crowd_zero_delta.cpp), [rts_crowd.cpp](integration/rts-crowd/rts_crowd.cpp), [rts_formation.cpp](integration/rts-crowd/rts_formation.cpp), [rts_group_attack_move.cpp](integration/rts-crowd/rts_group_attack_move.cpp), [rts_groups.cpp](integration/rts-crowd/rts_groups.cpp), [rts_performance_semantics.cpp](integration/rts-crowd/rts_performance_semantics.cpp), [CrowdMotion.cpp](integration/rts-crowd/CrowdMotion.cpp)
+- Integration task `rts-crowd`: [rts_attack_slots.cpp](integration/rts-crowd/rts_attack_slots.cpp), [rts_combat_suppression_aura.cpp](integration/rts-crowd/rts_combat_suppression_aura.cpp), [rts_crowd_flow_groups.cpp](integration/rts-crowd/rts_crowd_flow_groups.cpp), [rts_crowd_flow_navigation.cpp](integration/rts-crowd/rts_crowd_flow_navigation.cpp), [rts_crowd_registry.cpp](integration/rts-crowd/rts_crowd_registry.cpp), [rts_crowd_surface_adapter.cpp](integration/rts-crowd/rts_crowd_surface_adapter.cpp), [rts_crowd_zero_delta.cpp](integration/rts-crowd/rts_crowd_zero_delta.cpp), [rts_formation.cpp](integration/rts-crowd/rts_formation.cpp), [rts_group_attack_move.cpp](integration/rts-crowd/rts_group_attack_move.cpp), [rts_performance_semantics.cpp](integration/rts-crowd/rts_performance_semantics.cpp), [CrowdMotion.cpp](integration/rts-crowd/CrowdMotion.cpp)
 - Integration task `rts-unit-lifecycle`: [rts_unit_lifecycle_tactics_rts_tests.cpp](integration/rts-unit-lifecycle/rts_unit_lifecycle_tactics_rts_tests.cpp)
-- Direct header evidence: [card_rts_payment_card_tests.cpp](integration/card-rts-payment/card_rts_payment_card_tests.cpp), [gameplay_composition_graphics_animation_inertializer_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_animation_inertializer_tests.cpp), [gameplay_composition_graphics_buildingfx_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_buildingfx_tests.cpp), [gameplay_composition_graphics_gameplay_action_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_gameplay_action_tests.cpp), [gameplay_composition_graphics_procgen_road_editing_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_procgen_road_editing_tests.cpp), [gameplay_composition_graphics_rts_script_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_rts_script_tests.cpp), [CrowdMotion.cpp](integration/rts-crowd/CrowdMotion.cpp), [rts_crowd_flow_groups.cpp](integration/rts-crowd/rts_crowd_flow_groups.cpp), [rts_crowd_flow_navigation.cpp](integration/rts-crowd/rts_crowd_flow_navigation.cpp), [rts_crowd_surface_adapter.cpp](integration/rts-crowd/rts_crowd_surface_adapter.cpp), [rts_formation.cpp](integration/rts-crowd/rts_formation.cpp), [rts_groups.cpp](integration/rts-crowd/rts_groups.cpp), [rts_performance_semantics.cpp](integration/rts-crowd/rts_performance_semantics.cpp), [rts_unit_lifecycle_tactics_rts_tests.cpp](integration/rts-unit-lifecycle/rts_unit_lifecycle_tactics_rts_tests.cpp), [rts_battle_benchmark.cpp](profile/rts_battle_benchmark.cpp), [gameplay_control_rts.cpp](unit/rts/gameplay_control_rts.cpp)
+- Direct header evidence: [card_rts_payment_card_tests.cpp](integration/card-rts-payment/card_rts_payment_card_tests.cpp), [gameplay_composition_graphics_animation_inertializer_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_animation_inertializer_tests.cpp), [gameplay_composition_graphics_buildingfx_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_buildingfx_tests.cpp), [gameplay_composition_graphics_gameplay_action_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_gameplay_action_tests.cpp), [gameplay_composition_graphics_procgen_road_editing_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_procgen_road_editing_tests.cpp), [gameplay_composition_graphics_rts_script_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_rts_script_tests.cpp), [CrowdMotion.cpp](integration/rts-crowd/CrowdMotion.cpp), [rts_crowd_flow_groups.cpp](integration/rts-crowd/rts_crowd_flow_groups.cpp), [rts_crowd_flow_navigation.cpp](integration/rts-crowd/rts_crowd_flow_navigation.cpp), [rts_crowd_surface_adapter.cpp](integration/rts-crowd/rts_crowd_surface_adapter.cpp), [rts_formation.cpp](integration/rts-crowd/rts_formation.cpp), [rts_performance_semantics.cpp](integration/rts-crowd/rts_performance_semantics.cpp), [rts_unit_lifecycle_tactics_rts_tests.cpp](integration/rts-unit-lifecycle/rts_unit_lifecycle_tactics_rts_tests.cpp), [rts_battle_benchmark.cpp](profile/rts_battle_benchmark.cpp), [gameplay_control_rts.cpp](unit/rts/gameplay_control_rts.cpp)
 
 ### rx
 
@@ -1655,7 +1655,7 @@ Cases: 111. Referenced/owning modules: `animation`, `asset`, `avatar`, `card`, `
 
 ### crowd-runtime
 
-Cases: 95. Referenced/owning modules: `common`, `crowd`, `crowd_thread`, `devtools`, `economy`, `map`, `rts`, `thread`.
+Cases: 87. Referenced/owning modules: `common`, `crowd`, `crowd_thread`, `devtools`, `economy`, `map`, `rts`, `thread`.
 
 - [CrowdThread.cpp](integration/crowd-runtime/CrowdThread.cpp)
 - [crowd_advance.cpp](integration/crowd-runtime/crowd_advance.cpp)
@@ -1757,21 +1757,18 @@ Cases: 472. Referenced/owning modules: `action_editor`, `agent`, `animation`, `a
 
 ### rts-crowd
 
-Cases: 86. Referenced/owning modules: `agent`, `animation`, `card`, `combat`, `common`, `crowd`, `crowd_thread`, `data`, `decision`, `dialogue`, `economy`, `editing`, `gpuagents`, `graphics`, `hexmap`, `map`, `npc_ai`, `procgen`, `production`, `rts`, `sensing`, `spatial`, `tensor`, `thread`, `transaction`, `weapon`.
+Cases: 59. Referenced/owning modules: `agent`, `animation`, `card`, `combat`, `common`, `crowd`, `crowd_thread`, `data`, `decision`, `dialogue`, `economy`, `gpuagents`, `hexmap`, `map`, `npc_ai`, `procgen`, `rts`, `sensing`, `spatial`, `tensor`, `thread`, `transaction`, `weapon`.
 
 - [CrowdMotion.cpp](integration/rts-crowd/CrowdMotion.cpp)
 - [rts_attack_slots.cpp](integration/rts-crowd/rts_attack_slots.cpp)
 - [rts_combat_suppression_aura.cpp](integration/rts-crowd/rts_combat_suppression_aura.cpp)
-- [rts_crowd.cpp](integration/rts-crowd/rts_crowd.cpp)
 - [rts_crowd_flow_groups.cpp](integration/rts-crowd/rts_crowd_flow_groups.cpp)
 - [rts_crowd_flow_navigation.cpp](integration/rts-crowd/rts_crowd_flow_navigation.cpp)
-- [rts_crowd_production.cpp](integration/rts-crowd/rts_crowd_production.cpp)
 - [rts_crowd_registry.cpp](integration/rts-crowd/rts_crowd_registry.cpp)
 - [rts_crowd_surface_adapter.cpp](integration/rts-crowd/rts_crowd_surface_adapter.cpp)
 - [rts_crowd_zero_delta.cpp](integration/rts-crowd/rts_crowd_zero_delta.cpp)
 - [rts_formation.cpp](integration/rts-crowd/rts_formation.cpp)
 - [rts_group_attack_move.cpp](integration/rts-crowd/rts_group_attack_move.cpp)
-- [rts_groups.cpp](integration/rts-crowd/rts_groups.cpp)
 - [rts_performance_semantics.cpp](integration/rts-crowd/rts_performance_semantics.cpp)
 
 ### rts-unit-lifecycle

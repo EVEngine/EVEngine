@@ -1,3 +1,4 @@
+#include "zeroerr/assert.h"
 #include <algorithm>
 #include <cmath>
 #include "crowd/Crowd.h"

@@ -1,3 +1,4 @@
+#include "zeroerr/assert.h"
 #include "crowd/Crowd.h"
 #include "zeroerr/unittest.h"
 using namespace eve::crowd;

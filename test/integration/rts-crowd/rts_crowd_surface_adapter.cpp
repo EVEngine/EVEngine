@@ -1,3 +1,4 @@
+#include "zeroerr/assert.h"
 #include "RtsCompositionFixtures.h"
 #include "rts/RTSCrowdSurfaceInternal.h"
 TEST_CASE("rts.crowd.mapAdapterPreservesAdjacencyAndDestinationEntryCosts") {

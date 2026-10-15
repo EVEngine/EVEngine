@@ -1,3 +1,4 @@
+#include "zeroerr/assert.h"
 #include <limits>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <stdexcept>
