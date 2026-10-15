@@ -1154,11 +1154,11 @@ TEST_CASE("procgen.terrainStitcher.workspaceUndoAndScriptBinding") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_terrain_probe)
-#include "PrivateTestScope.h"
 #include <algorithm>
 #include <cmath>
 #include <limits>
 #include <simplesquirrel/simplesquirrel.hpp>
+#include "PrivateTestScope.h"
 #include "common/Capability.h"
 #include "common/ProcgenProbeSink.h"
 #include "common/Value.h"
@@ -1922,7 +1922,6 @@ TEST_CASE("procgen.terrainHeightAdjuster.setsWorldUnitsAtomicallyAndBinds") {
 }
 }  // namespace test_terrain_probe
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_terrain_sediment)
 #include "PrivateTestScope.h"
 #include <cmath>
@@ -2671,10 +2670,9 @@ using namespace eve;
 
 UnitSciptTest(TimerTest, timer_content);
 
-TEST_CASE_FIXTURE(TimerTest, "TimerTest.basic") { CHECK(vm.callFunc(vm.findFunc("basic"), vm).toBool()); }
+TEST_CASE_FIXTURE(TimerTest, "TimerTest.basic") { REQUIRE(callScript("basic")); }
 }  // namespace test_timer
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_transaction)
 #include "PrivateTestScope.h"
 #include <array>
@@ -2884,11 +2882,12 @@ TEST_CASE("UI.tween.scriptOptionalEaseAndDelay") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_vehicle)
-#include "PrivateTestScope.h"
 #include <utility>
+#include "PrivateTestScope.h"
 #include "ScriptTest.h"
 #include "common/Capability.h"
 #include "common/ECS.h"
+#include "common/ScriptProvider.h"
 #include "vehicle/Vehicle.h"
 #include "vehicle/VehicleMobility.h"
 #include "vehicle/VehicleOrderQueueAdapter.h"
@@ -2955,7 +2954,7 @@ static const char* kViewScript = R"SQ(
 [[maybe_unused]] function testVehicleCppView() {
     local vehicle = eve.Vehicle()
     vehicle.registerVehiclesFromJson("[{\"id\":\"jeep\"}]")
-    local v = vehicle.newVehicle("jeep", 5.0, 6.0)
+    local v = vehicle.newVehicle("jeep", 5.0, 6.0, 0.0, "")
     if (v == null) return false
     local all = eve.view(eve.VehicleEntity)
     foreach (e in all) {
@@ -2968,7 +2967,124 @@ static const char* kViewScript = R"SQ(
 UnitSciptTest(VehicleViewScriptTest, kViewScript);
 
 TEST_CASE_FIXTURE(VehicleViewScriptTest, "vehicle.script.viewSeesNewVehicle") {
-    CHECK(vm.callFunc(vm.findFunc("testVehicleCppView"), vm).toBool());
+    REQUIRE(callScript("testVehicleCppView"));
+}
+
+/**
+ * 脚本伤害规则。`note` 是自由函数，因此 `seen = text` 写的是根表槽位，测试据此断言
+ * 参数编组；`modifyDamage` 只接收稳定标识与标量，收不到引擎内部借用指针。
+ */
+static const char* kScriptDamageRule = R"SQ(
+seen <- ""
+function note(text) { seen = text }
+class HalfDamage {
+    function modifyDamage(vehicleId, defId, amount, zone, sourceId) {
+        note(vehicleId + "|" + defId + "|" + amount.tointeger() + "|" + zone + "|" + sourceId)
+        return amount * 0.5
+    }
+}
+class BrokenRule {
+    function modifyDamage(vehicleId, defId, amount, zone, sourceId) { throw "rule is broken" }
+}
+modifier <- HalfDamage()
+broken <- BrokenRule()
+)SQ";
+
+/**
+ * Script rule shared by the two probes for judgement criterion J-4. The fixture
+ * only defines the class; the test body runs the `eve.provider` calls, because the
+ * binding seam is declared by `Vehicle`'s constructor and fixture members are
+ * constructed after the script has already run.
+ */
+class VehicleScriptDamageTest : public ScriptTest {
+public:
+    VehicleScriptDamageTest() : ScriptTest(kScriptDamageRule) { eve::ScriptProviderRegistry::instance().clearAll(); }
+    ~VehicleScriptDamageTest() { eve::ScriptProviderRegistry::instance().clearAll(); }
+};
+
+TEST_CASE_FIXTURE(VehicleScriptDamageTest, "vehicle.script.damageRule.present") {
+    // Provider-present probe: script answers the native damage socket.
+    Vehicle module;
+    module.registerVehiclesFromJson(kFpsDefs);
+    VehicleEntity* v = module.newVehicle("tank.fps", 0.f, 0.f);
+    REQUIRE(v != nullptr);
+
+    REQUIRE(eve::ScriptProviderRegistry::instance().hasCapabilitySeam("IVehicleDamageModifier"));
+    REQUIRE_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{0});
+
+    // The publish happens in script, through the same API a game would use.
+    vm.run(
+        vm.compileSource("published <- eve.provider.publishFor(\"IVehicleDamageModifier\","
+                         " \"vehicle.half\", modifier)"));
+    ssq::Object published = vm.find("published");
+    REQUIRE_EQ(published.getType(), ssq::Type::TABLE);
+    REQUIRE(published.find("ok").toBool());
+    REQUIRE_EQ(published.find("value").find("name").toString(), std::string("vehicle.half"));
+    REQUIRE_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{1});
+    REQUIRE_EQ(vm.find("seen").toString(), std::string(""));
+
+    // 100 * 0.5 * front(1.0) == 50, and the rule saw the marshalled arguments.
+    module.applyDamage(v, 100.f, "front", 7);
+    REQUIRE_EQ(module.getHealth(v), 550.f);
+    const std::string firstSeen = v->identity()->id + "|tank.fps|100|front|7";
+    REQUIRE_EQ(vm.find("seen").toString(), firstSeen);
+
+    // The script rule is retired by name, and dispatch stops with it.
+    vm.run(vm.compileSource("unloaded <- eve.provider.unload(\"vehicle.half\")"));
+    ssq::Object unloaded = vm.find("unloaded");
+    REQUIRE_EQ(unloaded.getType(), ssq::Type::TABLE);
+    REQUIRE(unloaded.find("ok").toBool());
+    REQUIRE_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{0});
+
+    module.applyDamage(v, 40.f, "front", 7);
+    REQUIRE_EQ(module.getHealth(v), 510.f);
+    // `seen` still holds the first call's text, so the retired rule was not invoked.
+    REQUIRE_EQ(vm.find("seen").toString(), firstSeen);
+}
+
+TEST_CASE_FIXTURE(VehicleScriptDamageTest, "vehicle.script.damageRule.absent") {
+    // Provider-absent probe. No `Vehicle` instance exists, so the module never
+    // declared the seam: the pipeline keeps its old behaviour and a publish attempt
+    // is refused with `NotFound` instead of silently binding nothing.
+    REQUIRE(!eve::ScriptProviderRegistry::instance().hasCapabilitySeam("IVehicleDamageModifier"));
+
+    vm.run(
+        vm.compileSource("refused <- eve.provider.publishFor(\"IVehicleDamageModifier\","
+                         " \"vehicle.half\", modifier)"));
+    ssq::Object refused = vm.find("refused");
+    REQUIRE_EQ(refused.getType(), ssq::Type::TABLE);
+    REQUIRE(!refused.find("ok").toBool());
+    REQUIRE_EQ(refused.find("code").toString(), std::string("not_found"));
+    REQUIRE_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{0});
+
+    // The same absence through the plain publish path: published, but nothing is
+    // dispatched, which is what "absent provider" has to mean.
+    vm.run(vm.compileSource("plain <- eve.provider.publish(\"vehicle.orphan\", modifier)"));
+    REQUIRE(vm.find("plain").find("ok").toBool());
+    REQUIRE_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{0});
+}
+
+TEST_CASE_FIXTURE(VehicleScriptDamageTest, "vehicle.script.damageRule.failureKeepsAmount") {
+    // A rule that raises must not drop the hit. The alternative -- swallowing the
+    // damage because a game rule has a typo -- is the failure mode this asserts
+    // against, and the fallback is reported through the engine log.
+    Vehicle module;
+    module.registerVehiclesFromJson(kFpsDefs);
+    VehicleEntity* v = module.newVehicle("tank.fps", 0.f, 0.f);
+    REQUIRE(v != nullptr);
+
+    vm.run(
+        vm.compileSource("brokenPublish <- eve.provider.publishFor(\"IVehicleDamageModifier\","
+                         " \"vehicle.broken\", broken)"));
+    REQUIRE(vm.find("brokenPublish").find("ok").toBool());
+    REQUIRE_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{1});
+
+    module.applyDamage(v, 100.f, "front", 7);
+    REQUIRE_EQ(module.getHealth(v), 500.f);
+
+    // The provider survives its own failure: the raising call restored the VM stack.
+    module.applyDamage(v, 100.f, "front", 7);
+    REQUIRE_EQ(module.getHealth(v), 400.f);
 }
 
 static const char* kRtsFlowScript = R"SQ(
@@ -2977,7 +3093,7 @@ static const char* kRtsFlowScript = R"SQ(
     weapon.registerWeaponsFromJson("[{\"id\":\"cannon\",\"logic\":\"hitscan\",\"cooldown\":1.0,\"ammo\":{\"mag\":5,\"reserve\":20,\"reload\":2.0}}]")
     local vehicle = eve.Vehicle()
     vehicle.registerVehiclesFromJson("[{\"id\":\"tank\",\"mobility\":\"kinematic\",\"maxSpeed\":100,\"accel\":80,\"turnRate\":90,\"maxHealth\":300,\"mounts\":[{\"name\":\"turret\",\"weapon\":\"cannon\",\"type\":\"turret\",\"rotSpeed\":90,\"aimMode\":\"auto\"}]}]")
-    local v = vehicle.newVehicle("tank", 0.0, 0.0)
+    local v = vehicle.newVehicle("tank", 0.0, 0.0, 0.0, "")
     if (v == null) return false
 
     vehicle.moveTo(v, 100.0, 0.0)
@@ -2999,9 +3115,7 @@ static const char* kRtsFlowScript = R"SQ(
 
 UnitSciptTest(VehicleRtsFlowTest, kRtsFlowScript);
 
-TEST_CASE_FIXTURE(VehicleRtsFlowTest, "vehicle.script.rtsFlow") {
-    CHECK(vm.callFunc(vm.findFunc("testVehicleRtsFlow"), vm).toBool());
-}
+TEST_CASE_FIXTURE(VehicleRtsFlowTest, "vehicle.script.rtsFlow") { REQUIRE(callScript("testVehicleRtsFlow")); }
 
 // vehicle_orders_adapter.cpp
 using eve::vehicle::VehicleOrder;
@@ -3035,14 +3149,15 @@ namespace {
 }  // namespace
 }  // namespace test_vehicle
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_weapon)
 #include "PrivateTestScope.h"
 #include "ScriptTest.h"
 #include "common/Capability.h"
 #include "common/ECS.h"
+#include "common/ScriptProvider.h"
 #include "weapon/Weapon.h"
 #include "weapon/WeaponLogic.h"
+#include "weapon/WeaponSystem.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // weapon.cpp
@@ -3156,12 +3271,202 @@ static const char* kViewScript = R"SQ(
     }
     return false
 }
+
+// 统计某个原生实体类视图里出现指定 id 的次数。
+// weapon 模块为四个实体类各登记了一个原生→脚本视图收集器：登记到错误的类上
+// 只会得到空视图，四个类共用同一个收集器则会把别的类也数进来——两种错误都必须
+// 能被这里发现，所以同时检查"本类恰好一次"和"他类一次都没有"。
+function countVisible(cls, id) {
+    local n = 0
+    foreach (e in eve.view(cls)) {
+        if (e.getId() == id) n++
+    }
+    return n
+}
+
+function testEveryWeaponEntityClassIsVisible() {
+    local weapon = eve.Weapon()
+    weapon.registerWeaponsFromJson("[{\"id\":\"probe\",\"kind\":\"melee\",\"logic\":\"melee\"}]")
+    local w = weapon.newWeapon("probe")
+    local mount = weapon.newMount("probe-mount", "turret")
+    local rig = weapon.newRig("probe-rig", "right_hand")
+    local pool = weapon.newAmmoPool("probe-pool", "probe-ammo", -1)
+    if (w == null || mount == null || rig == null || pool == null) return false
+
+    if (countVisible(eve.WeaponEntity, w.getId()) != 1) return false
+    if (countVisible(eve.WeaponMountEntity, mount.getId()) != 1) return false
+    if (countVisible(eve.WeaponRigEntity, rig.getId()) != 1) return false
+    if (countVisible(eve.AmmoPoolEntity, pool.getId()) != 1) return false
+
+    if (countVisible(eve.WeaponMountEntity, w.getId()) != 0) return false
+    if (countVisible(eve.WeaponEntity, mount.getId()) != 0) return false
+    if (countVisible(eve.AmmoPoolEntity, rig.getId()) != 0) return false
+    return true
+}
 )SQ";
 
 UnitSciptTest(WeaponViewScriptTest, kViewScript);
 
-TEST_CASE_FIXTURE(WeaponViewScriptTest, "weapon.script.viewSeesNewWeapon") {
-    CHECK(vm.callFunc(vm.findFunc("testWeaponCppView"), vm).toBool());
+TEST_CASE_FIXTURE(WeaponViewScriptTest, "weapon.script.viewSeesNewWeapon") { REQUIRE(callScript("testWeaponCppView")); }
+
+TEST_CASE_FIXTURE(WeaponViewScriptTest, "weapon.script.viewSeesEveryNativeEntityClass") {
+    REQUIRE(callScript("testEveryWeaponEntityClassIsVisible"));
+}
+
+// ---------------------------------------------------------------------------
+// 阶段 4 的第二个插座：IProjectileService 的脚本接缝。
+// 形状与标量 sink 不同——两个结构体进、无返回——用来检验接缝不是为标量定制的。
+// ---------------------------------------------------------------------------
+
+/**
+ * 脚本投射物提供方。`seen` 是根表槽位，测试据此断言 16 个位置参数的编组（浮点都取整，
+ * 所以文本比较是精确的）；`visits` 区分"真的被调用过"和"根本没被调用"。
+ */
+static const char* kScriptProjectileProvider = R"SQ(
+seen <- ""
+visits <- 0
+function note(text) { seen = text }
+class ScriptProjectiles {
+    function spawnProjectile(weaponId, defId, ownerId, yaw, pitch, shooterId, hasTarget,
+                             targetX, targetY, targetZ, muzzleX, muzzleY, muzzleZ,
+                             spread, pelletIndex, pelletCount) {
+        visits += 1
+        note(weaponId + "|" + defId + "|" + ownerId
+             + "|" + yaw.tointeger() + "|" + pitch.tointeger() + "|" + shooterId
+             + "|" + (hasTarget ? 1 : 0)
+             + "|" + targetX.tointeger() + "|" + targetY.tointeger() + "|" + targetZ.tointeger()
+             + "|" + muzzleX.tointeger() + "|" + muzzleY.tointeger() + "|" + muzzleZ.tointeger()
+             + "|" + spread.tointeger() + "|" + pelletIndex + "|" + pelletCount)
+    }
+}
+class BrokenProjectiles {
+    function spawnProjectile(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) {
+        visits += 1
+        throw "provider is broken"
+    }
+}
+projectiles <- ScriptProjectiles()
+broken <- BrokenProjectiles()
+)SQ";
+
+/**
+ * J-4 双探针的夹具。接缝由 `Weapon` 的构造函数声明，而夹具成员是在脚本跑完之后才构造的，
+ * 所以发布/卸载的 `eve.provider` 调用必须写在测试体里。
+ */
+class WeaponProjectileProviderTest : public ScriptTest {
+public:
+    WeaponProjectileProviderTest() : ScriptTest(kScriptProjectileProvider) {
+        eve::ScriptProviderRegistry::instance().clearAll();
+    }
+    ~WeaponProjectileProviderTest() { eve::ScriptProviderRegistry::instance().clearAll(); }
+};
+
+TEST_CASE_FIXTURE(WeaponProjectileProviderTest, "weapon.script.projectileProviderPresent") {
+    Weapon mod;
+    mod.registerWeaponsFromJson(kDefs);
+    WeaponEntity* cannon = mod.newWeapon("cannon");
+    REQUIRE(cannon != nullptr);
+    cannon->identity()->ownerId = 42;
+
+    vm.run(vm.compileSource(
+        "published <- eve.provider.publishFor(\"IProjectileService\", \"weapon.script\", projectiles)"));
+    ssq::Object published = vm.find("published");
+    REQUIRE_EQ(published.getType(), ssq::Type::TABLE);
+    REQUIRE(published.find("ok").toBool());
+    // 脚本提供方占的是单实现槽位，消费者用的正是 `cap::query`。
+    REQUIRE(eve::cap::query<IProjectileService>() != nullptr);
+
+    // 用 `WeaponSystem::tryFire` 带一个自己写的请求，而不是 `fireAt`：这样每个被编组的字段
+    // 都由测试决定。注意 `tryFireRanged` 会**改写**其中几个（`WeaponSystem.cpp:182-194`）：
+    // `yaw`/`pitch` 取自武器的 aim，`spread` 取自 bloom 后的 `currentSpread`，`pelletIndex`/
+    // `pelletCount` 由 `spawnPellets` 按模板弹丸数逐粒给出。所以下面设的是**引擎真正交给
+    // 提供方的那些值**，而不是我塞进请求里的值——这正是"断言现实而不是断言假设"。
+    AttackRequest req;
+    req.shooterId                  = 7;
+    req.hasTarget                  = true;
+    req.targetX                    = 1.f;
+    req.targetY                    = 2.f;
+    req.targetZ                    = 3.f;
+    req.muzzleX                    = 4.f;
+    req.muzzleY                    = 5.f;
+    req.muzzleZ                    = 6.f;
+    cannon->aim()->yaw             = 45.f;
+    cannon->aim()->pitch           = 10.f;
+    cannon->state()->currentSpread = 2.f;
+    mod.clearEvents();
+    REQUIRE(WeaponSystem::tryFire(*cannon, req));
+
+    REQUIRE_EQ(vm.find("visits").toInt(), 1);
+    const std::string expected = cannon->identity()->id + "|cannon|42|45|10|7|1|1|2|3|4|5|6|2|0|1";
+    REQUIRE_EQ(vm.find("seen").toString(), expected);
+    // 开火事件仍然由武器系统产生（提供方只负责"投射物怎么来"）。
+    REQUIRE(mod.getEventCount() >= 1);
+    REQUIRE_EQ(mod.getEventType(0), std::string("fire"));
+
+    // 卸载后适配器从单实现槽位摘掉：再查询必须为空（开火路径本身由 absent 用例覆盖）。
+    vm.run(vm.compileSource("unloaded <- eve.provider.unload(\"weapon.script\")"));
+    REQUIRE(vm.find("unloaded").find("ok").toBool());
+    REQUIRE(eve::cap::query<IProjectileService>() == nullptr);
+}
+
+TEST_CASE_FIXTURE(WeaponProjectileProviderTest, "weapon.script.projectileProviderAbsent") {
+    // 提供方缺席：接缝已由 `Weapon` 声明，但没人发布。缺席不是错误——投射物由游戏侧
+    // 决定，开火本身必须照常成功，而且不能有任何人被调用。
+    Weapon mod;
+    mod.registerWeaponsFromJson(kDefs);
+    WeaponEntity* cannon = mod.newWeapon("cannon");
+    REQUIRE(cannon != nullptr);
+
+    REQUIRE(eve::ScriptProviderRegistry::instance().hasCapabilitySeam(IProjectileService::capabilityName));
+    REQUIRE(eve::cap::query<IProjectileService>() == nullptr);
+
+    mod.clearEvents();
+    REQUIRE(mod.fireAt(cannon, 0.f, 0.f, 0.f));
+    REQUIRE_EQ(vm.find("visits").toInt(), 0);
+    REQUIRE(mod.getEventCount() >= 1);  // 事件仍然产生：无提供方的语义没被改变
+    REQUIRE_EQ(mod.getEventType(0), std::string("fire"));
+}
+
+TEST_CASE_FIXTURE(WeaponProjectileProviderTest, "weapon.script.projectileProviderSeesEveryPellet") {
+    // 多弹丸模板：`spawnPellets` 逐粒调用提供方，粒序号/总粒数是脚本真正需要的量
+    // （一枚霰弹要生成 3 个可见投射物），所以这条断言覆盖的是"每粒一次的编组"。
+    Weapon mod;
+    mod.registerWeaponsFromJson(
+        "[{\"id\":\"scatter\",\"logic\":\"projectile\",\"cooldown\":1.0,"
+        "\"ammo\":{\"mag\":2,\"reserve\":4},"
+        "\"projectile\":{\"type\":\"pellet\",\"speed\":900,\"pelletCount\":3}}]");
+    WeaponEntity* scatter = mod.newWeapon("scatter");
+    REQUIRE(scatter != nullptr);
+
+    vm.run(vm.compileSource(
+        "published <- eve.provider.publishFor(\"IProjectileService\", \"weapon.script\", projectiles)"));
+    REQUIRE(vm.find("published").find("ok").toBool());
+
+    REQUIRE(mod.fireAt(scatter, 0.f, 0.f, 0.f));
+    // 三次调用，最后一次留在 `seen` 里（同一次开火的三粒）。
+    REQUIRE_EQ(vm.find("visits").toInt(), 3);
+    const std::string expected = scatter->identity()->id + "|scatter|0|0|0|0|1|0|0|0|0|0|0|0|2|3";
+    REQUIRE_EQ(vm.find("seen").toString(), expected);
+}
+
+TEST_CASE_FIXTURE(WeaponProjectileProviderTest, "weapon.script.projectileProviderFailureIsVisible") {
+    // 提供方抛错：一次开火不能因为游戏规则写错而被吞掉，所以 `tryFire` 仍为真、事件仍产生；
+    // 而 `visits == 1` 证明"确实是跑过并抛出"，不是"回调根本没跑"。
+    Weapon mod;
+    mod.registerWeaponsFromJson(kDefs);
+    WeaponEntity* cannon = mod.newWeapon("cannon");
+    REQUIRE(cannon != nullptr);
+
+    vm.run(vm.compileSource(
+        "brokenPublish <- eve.provider.publishFor(\"IProjectileService\", \"weapon.broken\", broken)"));
+    REQUIRE(vm.find("brokenPublish").find("ok").toBool());
+    REQUIRE(eve::cap::query<IProjectileService>() != nullptr);
+
+    mod.clearEvents();
+    REQUIRE(mod.fireAt(cannon, 0.f, 0.f, 0.f));
+    REQUIRE_EQ(vm.find("visits").toInt(), 1);
+    REQUIRE(mod.getEventCount() >= 1);
+    REQUIRE_EQ(mod.getEventType(0), std::string("fire"));
 }
 }  // namespace test_weapon
 #endif

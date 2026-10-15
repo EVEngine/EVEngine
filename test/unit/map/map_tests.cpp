@@ -1361,12 +1361,12 @@ TEST_CASE("resourceFormats.map.tiledFlipBitsSurviveAllWritePaths") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_map)
-#include "PrivateTestScope.h"
 #include <SDL2/SDL.h>
 #include <algorithm>
 #include <cmath>
 #include <string>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "common/Capability.h"
 #include "data/DataModule.h"
 #include "graphics/AmbientOcclusion.h"
@@ -1410,11 +1410,11 @@ using namespace eve::map;
 namespace {
 class CollisionSinkMock final : public ITileCollisionSink {
 public:
-    void replaceTileCollision(const void *source, const TileCollisionRect *rects, size_t count) override {
-        layer = source;
+    void replaceTileCollision(TileLayerRef layer, const TileCollisionRect *rects, size_t count) override {
+        source = layer;
         values.assign(rects, rects + count);
     }
-    const void                    *layer = nullptr;
+    TileLayerRef                   source;
     std::vector<TileCollisionRect> values;
 };
 }  // namespace
@@ -1712,7 +1712,8 @@ TEST_CASE("map.collision.greedyMergeAndCapabilityPublish") {
     CHECK(map.getCollisionRectY(0) == 8.f);
     CHECK(map.getCollisionRectWidth(0) == 48.f);
     CHECK(map.getCollisionRectHeight(0) == 16.f);
-    CHECK(sink.layer == layer);
+    CHECK_EQ(sink.source.slot, layer->layerRef().slot);
+    CHECK_EQ(sink.source.generation, layer->layerRef().generation);
     REQUIRE(sink.values.size() == 1);
     CHECK(sink.values[0].width == 48.f);
     eve::cap::removeListener<ITileCollisionSink>(&sink);

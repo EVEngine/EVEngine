@@ -3719,7 +3719,6 @@ TEST_CASE("procgen.terrainWorld.routesHeightDetailAndTreeDomains") {
 }
 }  // namespace test_terrain_probe_unit
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_terrain_sediment)
 #include <cmath>
 #include <limits>

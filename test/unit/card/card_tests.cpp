@@ -508,8 +508,8 @@ TEST_CASE("card.playConditionIsStoredOnDefinitionAndEvaluatedByCardFacade") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_card)
-#include "PrivateTestScope.h"
 #include <cmath>
+#include "PrivateTestScope.h"
 #include "ScriptTest.h"
 #include "card/Card.h"
 #include "common/ECS.h"

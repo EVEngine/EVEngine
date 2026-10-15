@@ -982,3 +982,50 @@ TEST_CASE("climbing.profile.rejectsInvalidCapsuleAndActionDefinitions") {
 }
 }  // namespace test_climbing_unit
 #endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_events)
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+#include <algorithm>
+#include <string>
+#include <vector>
+#include "climbing/ClimbingEventValue.h"
+// climbing_events.cpp
+namespace test_climbing_local_boundary {
+TEST_CASE("climbing.events.eventKindNamesRoundTripThroughTheSingleTable") {
+    std::vector<std::string> seen;
+    for (std::uint8_t raw = 0; raw < eve::climbing::kClimbingEventKindCount; ++raw) {
+        const auto             kind = static_cast<eve::climbing::ClimbingEventKind>(raw);
+        const std::string_view name = eve::climbing::climbingEventKindName(kind);
+        REQUIRE(!name.empty());
+        eve::climbing::ClimbingEventKind parsed = eve::climbing::ClimbingEventKind::Failed;
+        REQUIRE(eve::climbing::parseClimbingEventKind(name, parsed) == eve::climbing::EventKindParse::Parsed);
+        CHECK_EQ(static_cast<int>(parsed), static_cast<int>(raw));
+        seen.emplace_back(name);
+    }
+    std::sort(seen.begin(), seen.end());
+    CHECK(std::adjacent_find(seen.begin(), seen.end()) == seen.end());
+
+    eve::climbing::ClimbingEventKind unknown = eve::climbing::ClimbingEventKind::Started;
+    CHECK(eve::climbing::parseClimbingEventKind("not_a_kind", unknown) == eve::climbing::EventKindParse::Unknown);
+    CHECK_EQ(static_cast<int>(unknown), static_cast<int>(eve::climbing::ClimbingEventKind::Started));
+
+    // 事件 → Value 的形状（绑定与快照共用同一份；`tick`/`executionId` 是十进制字符串）
+    eve::climbing::ClimbingEvent event;
+    event.kind             = eve::climbing::ClimbingEventKind::AnchorReached;
+    event.actionId         = "climb:event_mantle";
+    event.tick             = eve::SimulationTick(42);
+    event.executionId      = eve::climbing::ClimbingExecutionId(7);
+    event.metadata         = {"event:parkour", "surface:stone"};
+    const eve::Value value = eve::climbing::climbingEventValue(event);
+    REQUIRE(value.isObject());
+    CHECK_EQ(value.find("kind")->asString(), std::string("anchor_reached"));
+    CHECK_EQ(value.find("actionId")->asString(), std::string("climb:event_mantle"));
+    CHECK_EQ(value.find("tick")->asString(), std::string("42"));
+    CHECK_EQ(value.find("executionId")->asString(), std::string("7"));
+    REQUIRE(value.find("metadata")->isArray());
+    CHECK_EQ(value.find("metadata")->arraySize(), std::size_t{2});
+    CHECK_EQ(value.find("metadata")->at(1).asString(), std::string("surface:stone"));
+}
+}  // namespace test_climbing_local_boundary
+#endif

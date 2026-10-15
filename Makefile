@@ -147,6 +147,7 @@ GAME ?=
 	check/quality-metadata check/profile-matrix check/architecture-contracts check/quality \
 	check/examples check \
 	check/format check/depgraph check/binding-gaps check/versions check/scripts check/scripts-test \
+	check/test-case-lines check/sq-call-sites check/test-assert-level check/test-case-names \
 	profile profile/configure profile/build profile/smoke profile/dry-run \
 	ensure-built/win32 ensure-built/win32-debug ensure-built/linux ensure-built/linux-debug \
 	ensure-built/macosx ensure-built/macosx-debug \
@@ -203,6 +204,33 @@ check/bindings:
 check/quality-metadata:
 	python3 scripts/check_quality_metadata.py
 
+# Verify no source line declares two test cases. zeroerr registers cases into a
+# std::set ordered only by (file, line), so the second case on a line is dropped
+# silently and never runs (see scripts/check_test_case_lines.py).
+check/test-case-lines:
+	python3 scripts/check_test_case_lines.py
+
+# Keep hand-written sq_call sites at their reviewed baseline. sq_call's parameter
+# count includes the receiver slot; counting it by hand caused five silent defects.
+# New call sites go through eve::script::callFunction, which derives the count.
+check/sq-call-sites:
+	python3 scripts/check_sq_call_sites.py
+
+# A test case whose assertions are all CHECK reports "PASSED / WARNING" and exits 0, so it
+# can never fail (zeroerr maps CHECK* to ZEROERR_WARN). Two cases asserting opposite
+# behaviour of the same code both reported green this way. Existing offenders are frozen in
+# scripts/test_assert_level_baseline.json; new ones must state the decisive assertion with
+# REQUIRE (or use an in-file helper that does).
+check/test-assert-level:
+	python3 scripts/check_test_assert_level.py
+
+# CTest is keyed by test name, so two cases sharing a name turn every name-based filter
+# ("ctest -R ...", unit_test --testcase=X) into one ambiguous entry and make a "N/N passed"
+# count stop meaning what it looks like. zeroerr registers by (file, line) and does not
+# object, so only a check catches it. No baseline: a duplicate is always an error.
+check/test-case-names:
+	python3 scripts/check_test_case_names.py
+
 # Compile-fail diagnostics for critical Result/ID/Subscription returns. This
 # is a source-only check and does not configure or build the engine.
 check/nodiscard:
@@ -243,7 +271,8 @@ check/profile-matrix:
 
 # Fast local quality gate for the profile and debt contracts.
 check/quality: check/quality-metadata check/profile-matrix check/nodiscard \
-	check/adhoc-result-tables check/architecture-contracts
+	check/adhoc-result-tables check/architecture-contracts check/test-case-lines \
+	check/sq-call-sites check/test-assert-level check/test-case-names
 
 # Individual source-quality pieces that CI also runs (see scripts/check_source_quality.sh).
 check/format:
@@ -368,7 +397,7 @@ MSVC_COMPILER_WRAPPER   := $(abspath cmake/msvc-cl.cmd)
 # reconfigure-if-args-changed, so switching it reconfigures).
 WIN32_CMAKE_ARGS        = -G Ninja -DCMAKE_BUILD_TYPE=Release -DEVENGINE_MODULE_LINKAGE=OBJECT -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(CMAKE_EXTRA_ARGS) -B build/win32 -S .
 WIN32_DEBUG_CMAKE_ARGS  = -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_ARGS) -B build/win32-debug -S .
-LINUX_CMAKE_ARGS        = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=linux $(CMAKE_EXTRA_ARGS) -B build/linux -S .
+LINUX_CMAKE_ARGS        = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=linux -DEVENGINE_MODULE_LINKAGE=OBJECT $(CMAKE_EXTRA_ARGS) -B build/linux -S .
 LINUX_DEBUG_CMAKE_ARGS  = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_ARGS) -B build/linux-debug -S .
 MACOSX_CMAKE_ARGS       = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=macosx $(CMAKE_EXTRA_ARGS) -B build/macosx -S .
 MACOSX_DEBUG_CMAKE_ARGS = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=macosx $(CMAKE_EXTRA_ARGS) -B build/macosx-debug -S .
@@ -822,7 +851,7 @@ reinstall/third-party/ios-debug:
 # In Android test-app mode the runner lives in test/libmain.so (zeroerr suite);
 # otherwise it is the engine's src/engine/libmain.so.
 sync/android-libs:
-	cmake -DBUILD_DIR="$(BUILD_DIR)" -DJNI_LIBS="$(JNI_LIBS)" -DANDROID_NDK="$(ANDROID_NDK)" -DANDROID_ABI="$(ANDROID_ABI)" -P cmake/sync_android_libs.cmake
+	cmake -DBUILD_DIR="$(BUILD_DIR)" -DJNI_LIBS="$(JNI_LIBS)" -DANDROID_ABI="$(ANDROID_ABI)" -DANDROID_NDK="$(ANDROID_NDK)" -P cmake/sync_android_libs.cmake
 
 # Populate APK assets/game from a source tree (do not hand-edit assets/game).
 #   make sync/android-assets                 # default: demo shell

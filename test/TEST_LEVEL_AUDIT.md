@@ -9,20 +9,24 @@ provenance. `MODULE_TEST_COVERAGE.md` is generated evidence for every module.
 The 773-source baseline had 6411 literal case identities and 150 mixed sources.
 All desktop case-owning sources use the canonical layout. The 150 mixed files
 were split without changing literal names or assertions, then consolidated by
-module and integration task. The current inventory has **165** `.cpp` sources:
-**95** organized unit sources, **44** task integration sources and **26** dedicated
-helper/runner/probe/contract/fuzz sources. That is 728 fewer files than the first
-893-source reorganization, and 608 fewer than the original 773-source baseline.
+module and integration task. After merging the latest `dev` tests, the current
+inventory has **167** `.cpp` sources: **97** organized unit sources, **44** task
+integration sources and **26** dedicated helper/runner/probe/contract/fuzz sources.
+That is 726 fewer files than the first 893-source reorganization, and 606 fewer
+than the original 773-source baseline.
 
-Of the 87 modules owning local cases, 84 have exactly one unit file. Fluids,
+Of the 89 modules owning local cases, 86 have exactly one unit file. Fluids,
 graphics and procgen exceed 5000 total lines and have named responsibility
 files; no unit file exceeds 5000 lines. The module audit rejects small-module
 fragmentation and oversized unit files. Integration files consolidate the 18 task
 goals; large tasks retain bounded responsibility files. Private helper namespaces
 preserve helper identities, and embedded shader data keeps its original scope.
 
-There are 6413 literal identities: 3290 unit and 3123 integration,
-plus six bounded generator-prefix policies. The two added cases exercise real
+There are 6563 literal identities: 3311 unit and 3252 integration,
+plus five bounded generator-prefix policies. The latest `dev` additions retain
+their assertions and errors in the canonical module/task files; its seven image
+script cases now use explicit declarations instead of a generator. The two
+preview-admission cases added during reorganization exercise real
 heightmap/stylize preview admission without a provider and verify structured
 failure plus unchanged input state. No desktop source mixes both levels.
 The synthetic image-audit unit now contains only CPU helpers and assertions;
@@ -43,7 +47,7 @@ migration. Test-root asset addressing is independent of source nesting.
 ## Ownership and coverage limits
 
 All 212 modules are inventoried, across 18 task groups. Evidence is deliberately
-separated: 87 modules own local-rule cases, 46 own task cases, 72 are referenced
+separated: 89 modules own local-rule cases, 44 own task cases, 72 are referenced
 by other test sources, four have API-name evidence through script/shared
 interfaces, and three contain only type forwarding plus a link anchor. The
 report names all modules without independently owned local-rule cases.

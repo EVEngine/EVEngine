@@ -1198,13 +1198,13 @@ TEST_CASE("devtools.dap.errorSliceReturnsLastReportAndLocations") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_debugger)
-#include "PrivateTestScope.h"
 #include <squirrel.h>
 #include <cstdio>
 #include <cstring>
 #include <fstream>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <string>
+#include "PrivateTestScope.h"
 #include "common/Capability.h"
 #include "common/IStateProvider.h"
 #include "common/Module.h"
@@ -1587,7 +1587,19 @@ TEST_CASE("devtools.snapshot.v1Compat") {
     sq_settop(v, top);
 }
 
-TEST_CASE("devtools.snapshot.rejectsFunctionInRoot") {
+namespace {
+
+/** @brief The `skipped` list a capture recorded inside the state, if any. */
+std::vector<std::string> skippedEntries(const eve::StateValue& state) {
+    std::vector<std::string> entries;
+    const eve::StateValue*   list = state.find("skipped");
+    if (!list || !list->isArray()) return entries;
+    for (std::size_t i = 0; i < list->arraySize(); ++i) entries.push_back(list->at(i).asString());
+    return entries;
+}
+
+}  // namespace
+TEST_CASE("devtools.snapshot.skipsFunctionInsideRootAndNamesIt") {
     ssq::VM     vm(1024, ssq::Libs::ALL);
     HSQUIRRELVM v = vm.getHandle();
     ssq::Script s = vm.compileSource("gameState <- { level = 3 }; gameState.tick <- function() { return 1; };");
@@ -1597,26 +1609,72 @@ TEST_CASE("devtools.snapshot.rejectsFunctionInRoot") {
     snap.clearRoots();
     eve::StateValue out;
     std::string     err;
-    CHECK(!snap.captureState(v, out, &err));
-    CHECK(err.find("non-serializable") != std::string::npos);
-    CHECK(err.find("gameState") != std::string::npos);
+    // A closure is not state (the reloaded script recreates it), so it is left out and
+    // named -- the header always said "skipped", but the capture used to fail instead.
+    // This case and the next one used to contradict each other while both "passed": every
+    // assertion here was CHECK, which is warning-level.
+    REQUIRE(snap.captureState(v, out, &err));
+    REQUIRE(err.empty());
+
+    const eve::StateValue* roots = out.find("roots");
+    REQUIRE(roots != nullptr);
+    const eve::StateValue* state = roots->find("gameState");
+    REQUIRE(state != nullptr);
+    REQUIRE(state->find("level") != nullptr);
+    REQUIRE(state->find("tick") == nullptr);
+
+    const std::vector<std::string> skipped = skippedEntries(out);
+    REQUIRE(skipped.size() == 1);
+    REQUIRE(skipped[0].find("gameState.tick") != std::string::npos);
+    REQUIRE(skipped[0].find("function") != std::string::npos);
+
+    // The same list travels with the captured state so a tool (or the persisted
+    // eve_snapshot.json) can show what was not preserved.
+    const eve::StateValue* reported = out.find("skipped");
+    REQUIRE(reported != nullptr);
+    REQUIRE(reported->isArray());
 }
 
-TEST_CASE("devtools.snapshot.rejectsInstanceRoot") {
+TEST_CASE("devtools.snapshot.skipsInstanceInsideContainerAndNamesIt") {
     ssq::VM     vm(1024, ssq::Libs::ALL);
     HSQUIRRELVM v = vm.getHandle();
-    ssq::Script s = vm.compileSource("class Hero { level = 1; } gameState <- Hero();");
+    // No `gameState` / `state` / `eve_state` root, so the full root scan runs -- the prefix
+    // heuristic would otherwise capture that one conventional root and ignore the rest.
+    ssq::Script s = vm.compileSource(
+        "class Hero { level = 1; } squad <- [Hero(), Hero()]; progress <- { level = 3, leader = Hero() };");
     vm.run(s);
 
     Snapshot& snap = Snapshot::instance();
     snap.clearRoots();
     eve::StateValue out;
     std::string     err;
-    CHECK(!snap.captureState(v, out, &err));
-    CHECK(err.find("class instance") != std::string::npos);
+    // The motivating case: keeping entity instances in a container is what the script ECS
+    // encourages, and it used to refuse the entire capture (so: refuse the hot reload).
+    REQUIRE(snap.captureState(v, out, &err));
+    REQUIRE(err.empty());
+
+    const eve::StateValue* roots = out.find("roots");
+    REQUIRE(roots != nullptr);
+    const eve::StateValue* state = roots->find("progress");
+    REQUIRE(state != nullptr);
+    REQUIRE(state->find("level") != nullptr);
+    REQUIRE(state->find("leader") == nullptr);
+    REQUIRE(roots->find("squad") != nullptr);  // the array itself is captured, its items are not
+
+    // Both the table member and the array elements are reported, with their paths.
+    const std::vector<std::string> skipped = skippedEntries(out);
+    REQUIRE(skipped.size() == 3);
+    const bool namedLeader        = std::any_of(skipped.begin(), skipped.end(), [](const std::string& entry) {
+        return entry.find("progress.leader") != std::string::npos && entry.find("class instance") != std::string::npos;
+    });
+    const bool namedArrayElements = std::any_of(skipped.begin(), skipped.end(), [](const std::string& entry) {
+        return entry.find("squad[0]") != std::string::npos || entry.find("squad[1]") != std::string::npos;
+    });
+    REQUIRE(namedLeader);
+    REQUIRE(namedArrayElements);
 }
 
-TEST_CASE("devtools.snapshot.skipsInstanceRootInAutoScan") {
+TEST_CASE("devtools.snapshot.skipsMarkedInstanceRootAndNamesIt") {
     ssq::VM     vm(1024, ssq::Libs::ALL);
     HSQUIRRELVM v = vm.getHandle();
     ssq::Script s = vm.compileSource("class Hero { level = 1; } hero <- Hero(); gameState <- { level = 3 };");
@@ -1624,16 +1682,74 @@ TEST_CASE("devtools.snapshot.skipsInstanceRootInAutoScan") {
 
     Snapshot& snap = Snapshot::instance();
     snap.clearRoots();
+    snap.markRoot("hero");
+    snap.markRoot("gameState");
+
     eve::StateValue out;
     std::string     err;
-    // Class instances at the root (module singletons, ECS worlds, ...) must not
-    // abort the automatic state scan; plain-data roots are still captured.
-    CHECK(snap.captureState(v, out, &err));
-    CHECK(err.empty());
+    // An explicitly marked root of an unserializable type is treated like a member: left
+    // out, named, capture continues. It used to fail the whole capture.
+    REQUIRE(snap.captureState(v, out, &err));
+    REQUIRE(err.empty());
     const eve::StateValue* roots = out.find("roots");
     REQUIRE(roots != nullptr);
-    CHECK(roots->find("gameState") != nullptr);
-    CHECK(roots->find("hero") == nullptr);
+    REQUIRE(roots->find("gameState") != nullptr);
+    REQUIRE(roots->find("hero") == nullptr);
+    const std::vector<std::string> skipped = skippedEntries(out);
+    REQUIRE(skipped.size() == 1);
+    REQUIRE(skipped[0].find("hero") != std::string::npos);
+    snap.clearRoots();
+}
+
+TEST_CASE("devtools.snapshot.skipsInstanceRootInAutoScan") {
+    ssq::VM     vm(1024, ssq::Libs::ALL);
+    HSQUIRRELVM v = vm.getHandle();
+    // Same reason as above: no conventional state root, so every root is examined.
+    ssq::Script s = vm.compileSource("class Hero { level = 1; } hero <- Hero(); level <- 3;");
+    vm.run(s);
+
+    Snapshot& snap = Snapshot::instance();
+    snap.clearRoots();
+    eve::StateValue out;
+    std::string     err;
+    // Class instances at the root (module singletons, ECS worlds, ...) must not abort the
+    // automatic state scan; plain-data roots are still captured -- and the skip is named.
+    REQUIRE(snap.captureState(v, out, &err));
+    REQUIRE(err.empty());
+    const eve::StateValue* roots = out.find("roots");
+    REQUIRE(roots != nullptr);
+    REQUIRE(roots->find("level") != nullptr);
+    REQUIRE(roots->find("hero") == nullptr);
+    // `Hero` (the class definition) is a root too and is deliberately *not* named: every
+    // script class and function is a root, so naming those would drown the list.
+    const std::vector<std::string> skipped = skippedEntries(out);
+    REQUIRE(skipped.size() == 1);
+    REQUIRE(skipped[0].find("hero") != std::string::npos);
+}
+
+TEST_CASE("devtools.snapshot.conventionalRootCapturesOnlyItself") {
+    ssq::VM     vm(1024, ssq::Libs::ALL);
+    HSQUIRRELVM v = vm.getHandle();
+    ssq::Script s = vm.compileSource("gameState <- { level = 3 }; squad <- [1, 2];");
+    vm.run(s);
+
+    Snapshot& snap = Snapshot::instance();
+    snap.clearRoots();
+    eve::StateValue out;
+    std::string     err;
+    REQUIRE(snap.captureState(v, out, &err));
+
+    // Pinning the compatibility heuristic as it is: when a conventional state root exists,
+    // only that root is captured and the other globals are not part of the snapshot at
+    // all. This is why the two cases above must avoid the conventional names -- and it is
+    // the other half of "a global can silently miss the snapshot" that 2.5 complained
+    // about. Changing it (capture every data root) is a policy decision, not a bug fix.
+    const eve::StateValue* roots = out.find("roots");
+    REQUIRE(roots != nullptr);
+    REQUIRE(roots->find("gameState") != nullptr);
+    REQUIRE(roots->find("squad") == nullptr);
+    const std::vector<std::string> skipped = skippedEntries(out);
+    REQUIRE(skipped.empty());
 }
 
 
@@ -1960,7 +2076,6 @@ TEST_CASE("devtools.debugger.scriptApiSetBreakpointCondition") {
 }
 }  // namespace test_debugger
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_debugger_audit)
 #include "PrivateTestScope.h"
 #include <squirrel.h>
@@ -2375,10 +2490,9 @@ using namespace eve;
 
 UnitSciptTest(DecalScriptTest, decal_content);
 
-TEST_CASE_FIXTURE(DecalScriptTest, "DecalScriptTest.basic") { CHECK(vm.callFunc(vm.findFunc("basic"), vm).toBool()); }
+TEST_CASE_FIXTURE(DecalScriptTest, "DecalScriptTest.basic") { REQUIRE(callScript("basic")); }
 }  // namespace test_decal_script
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_definitions)
 #include "PrivateTestScope.h"
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -2721,12 +2835,9 @@ using namespace eve;
 
 UnitSciptTest(DialogueProcScriptTest, dialogue_proc_script_content);
 
-TEST_CASE_FIXTURE(DialogueProcScriptTest, "DialogueProcScriptTest.basicPools") {
-    CHECK(vm.callFunc(vm.findFunc("basicPools"), vm).toBool());
-}
+TEST_CASE_FIXTURE(DialogueProcScriptTest, "DialogueProcScriptTest.basicPools") { REQUIRE(callScript("basicPools")); }
 }  // namespace test_dialogue_proc_script
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_economy)
 #include "PrivateTestScope.h"
 #include <cstdint>
@@ -3209,7 +3320,7 @@ using namespace eve;
 UnitSciptTest(FilesystemTest, filesystem_content);
 
 #define TestScript(func) \
-    TEST_CASE_FIXTURE(FilesystemTest, "FilesystemTest." #func) { CHECK(vm.callFunc(vm.findFunc(#func), vm).toBool()); }
+    TEST_CASE_FIXTURE(FilesystemTest, "FilesystemTest." #func) { REQUIRE(callScript(#func)); }
 
 // clang-format off
 TestScript(basic)
@@ -3223,7 +3334,6 @@ TestScript(atomicTextRoundTrip)
 }  // namespace test_filesystem
 #undef TestScript
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_shader_spv_script)
 #include "PrivateTestScope.h"
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -3420,7 +3530,7 @@ using namespace eve;
 UnitSciptTest(I18nScriptTest, i18n_content);
 
 #define TestScript(func) \
-    TEST_CASE_FIXTURE(I18nScriptTest, "I18nScriptTest." #func) { CHECK(vm.callFunc(vm.findFunc(#func), vm).toBool()); }
+    TEST_CASE_FIXTURE(I18nScriptTest, "I18nScriptTest." #func) { REQUIRE(callScript(#func)); }
 
 // clang-format off
 TestScript(basic)
@@ -3428,7 +3538,6 @@ TestScript(basic)
 }  // namespace test_i18n_script
 #undef TestScript
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_image_script)
 #include "PrivateTestScope.h"
 #include "ScriptTest.h"
@@ -3440,24 +3549,30 @@ using namespace eve;
 
 UnitSciptTest(ImageScript, image_content);
 
-#define TestScript(func) \
-    TEST_CASE_FIXTURE(ImageScript, "ImageScript." #func) { CHECK(vm.callFunc(vm.findFunc(#func), vm).toBool()); }
+// One case per line, deliberately, and spelled out rather than via a wrapper macro:
+// zeroerr registers each case with getTestSet(type).insert(tc) into a std::set whose
+// ordering key is only (file, line) -- TestCase::operator< compares nothing else (see
+// external/zeroerr/src/unittest.cpp). Two TEST_CASE* invocations on one source line
+// therefore compare equivalent and the second is dropped silently: no error, no
+// warning, the case simply never runs. A bare `Wrapper(x)` invocation has no trailing
+// semicolon, so clang-format packs several of them onto one line and silently
+// re-drops the cases; full definitions keep their own line.
+// scripts/check_test_case_lines.py guards this.
+TEST_CASE_FIXTURE(ImageScript, "ImageScript.basic") { REQUIRE(callScript("basic")); }
 
-// clang-format off
-TestScript(basic)
-TestScript(imageDataClass)
-TestScript(newImageData)
-TestScript(pixelRoundTrip)
-// clang-format on
-// clang-format off
-TestScript(cloneAndRotate)
-TestScript(paste)
-TestScript(pcgScale)
-// clang-format on
+TEST_CASE_FIXTURE(ImageScript, "ImageScript.imageDataClass") { REQUIRE(callScript("imageDataClass")); }
+
+TEST_CASE_FIXTURE(ImageScript, "ImageScript.newImageData") { REQUIRE(callScript("newImageData")); }
+
+TEST_CASE_FIXTURE(ImageScript, "ImageScript.pixelRoundTrip") { REQUIRE(callScript("pixelRoundTrip")); }
+
+TEST_CASE_FIXTURE(ImageScript, "ImageScript.cloneAndRotate") { REQUIRE(callScript("cloneAndRotate")); }
+
+TEST_CASE_FIXTURE(ImageScript, "ImageScript.paste") { REQUIRE(callScript("paste")); }
+
+TEST_CASE_FIXTURE(ImageScript, "ImageScript.pcgScale") { REQUIRE(callScript("pcgScale")); }
 }  // namespace test_image_script
-#undef TestScript
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_inventory_binding_architecture)
 #include "PrivateTestScope.h"
 #include <simplesquirrel/vm.hpp>
@@ -3748,7 +3863,7 @@ using namespace eve;
 UnitSciptTest(JoystickScript, joystick_content);
 
 #define TestScript(func) \
-    TEST_CASE_FIXTURE(JoystickScript, "JoystickScript." #func) { CHECK(vm.callFunc(vm.findFunc(#func), vm).toBool()); }
+    TEST_CASE_FIXTURE(JoystickScript, "JoystickScript." #func) { REQUIRE(callScript(#func)); }
 
 // clang-format off
 TestScript(basic)

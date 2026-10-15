@@ -1145,7 +1145,6 @@ TEST_CASE("procgen.runtimeGeneration.persistsAttributedCellCachesAtomically") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_scene_sink)
-#include "PrivateTestScope.h"
 #include <cmath>
 #include <future>
 #include <limits>
@@ -1156,6 +1155,7 @@ TEST_CASE("procgen.runtimeGeneration.persistsAttributedCellCachesAtomically") {
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "common/Capability.h"
 #include "common/Module.h"
 #include "common/ProcgenSceneSink.h"
@@ -2378,7 +2378,6 @@ TEST_CASE("procgen.worker.rejectsForeignAndReplayedJobs") {
 }
 }  // namespace test_procgen_scene_sink_unit
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_prototype_kit)
 #include "PrivateTestScope.h"
 #include <algorithm>

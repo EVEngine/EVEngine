@@ -253,6 +253,43 @@ node end end
 Runner 在 line、choice、wait 和异步 command 边界暂停；C++ API 的
 `captureStateChecked/restoreStateChecked` 保存资产版本、node ID、bindings、locals 和子对话调用栈。
 
+### 用脚本提供世界状态（条件与写入，都不用写 C++）
+
+对话的条件求值与状态写入都走"由消费者拥有的"两个契约，它们**都可以由脚本对象回答**：
+
+```squirrel
+class WorldState {
+    // 六个问询方法名与接口一致；只需要实现你真正负责的那几类。
+    function state(subject, key) {
+        if (key == "gold") return goldOf(subject)
+        return null            // null = "这一问不归我"，调用方会继续问下一个 provider
+    }
+    function hasTag(subject, tag) { return tag == "wanted" }   // 布尔；null 表示不拥有
+}
+
+class WorldWrites {
+    // 返回值 = 实际改了几条（0 条 → NoOp）；要么整批生效，要么在改动前抛错。
+    function applyStateMutations(payload) {
+        // payload.transactionId / correlationId / causationId
+        // payload.mutations[i] = { subject, key, value, kind = "set"|"remove"|"addTag"|"removeTag"|"addNumber", persistent }
+        local changed = 0
+        foreach (m in payload.mutations) { if (applyOne(m)) changed += 1 }
+        return changed
+    }
+}
+
+eve.provider.publishFor("eve.state.IStateQuery", "game.world-state", WorldState())
+eve.provider.publishFor("eve.state.IStateMutation", "game.world-writes", WorldWrites())
+```
+
+- **查询 provider 不会顶掉别人**：条件求值先问单实现、再按优先级问 listener，第一个给出非空答案的赢。
+  所以脚本补的是"原生 provider 不拥有的那些键"，`null` 与"已知 false"是两件事。
+- **写入 provider 是单实现槽位**：发布它会顶掉当前实现，并在 `eve.log` 里留一行 `warn`。
+- 失败不静默：查询接口本身没有失败通道（`null` 的语义是"不拥有"），所以脚本抛错或答案形状不对时
+  按"不拥有"返回**并计数 + 上报**（C++ 侧 `eve::dialogue::scriptStateQueryFailures()`）；写入的失败
+  直接以结构化 `Result` 传出（抛错 = `Failed`，返回值不是"改了几条" = `Rejected`），消费方靠它判断
+  写入成没成功。
+
 ### `ConversationDocument`（可组合编辑数据）
 
 引擎不内置固定的对话编辑器。`dialogueFlow.newDocument(id)` 创建 UI 无关的可变图文档，

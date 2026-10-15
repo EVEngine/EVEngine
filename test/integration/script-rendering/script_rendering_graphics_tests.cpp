@@ -12,7 +12,7 @@ using namespace eve;
 UnitSciptTest(GraphicTest, graphic_content);
 
 #define TestScript(func) \
-    TEST_CASE_FIXTURE(GraphicTest, "GraphicTest." #func) { CHECK(vm.callFunc(vm.findFunc(#func), vm).toBool()); }
+    TEST_CASE_FIXTURE(GraphicTest, "GraphicTest." #func) { REQUIRE(callScript(#func)); }
 
 // clang-format off
 TestScript(basic)
@@ -21,7 +21,6 @@ TestScript(hasDrawText)
 }  // namespace test_graphic
 #undef TestScript
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_window)
 #include "PrivateTestScope.h"
 #include "ScriptTest.h"
@@ -33,10 +32,8 @@ using namespace eve;
 
 UnitSciptTest(WindowTest, window_content);
 
-TEST_CASE_FIXTURE(WindowTest, "WindowTest.basicWindow") { CHECK(vm.callFunc(vm.findFunc("basicWindow"), vm).toBool()); }
+TEST_CASE_FIXTURE(WindowTest, "WindowTest.basicWindow") { REQUIRE(callScript("basicWindow")); }
 
-TEST_CASE_FIXTURE(WindowTest, "WindowTest.settingsFields") {
-    CHECK(vm.callFunc(vm.findFunc("settingsFields"), vm).toBool());
-}
+TEST_CASE_FIXTURE(WindowTest, "WindowTest.settingsFields") { REQUIRE(callScript("settingsFields")); }
 }  // namespace test_window
 #endif

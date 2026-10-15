@@ -47,12 +47,12 @@ void syncWindowPixelSize() {
 }
 
 /** Pause presenting while minimized/hidden; resume when shown again. */
-void pausePresenting(IWindowSurfaceHost* surfaceHost) {
+void pausePresenting(IWindowSurfaceHost *surfaceHost) {
     if (surfaceHost) surfaceHost->setActive(false);
 }
 
 /** Resume presenting after restore/foreground; optionally rebuild the surface. */
-void resumePresenting(IWindowSurfaceHost* surfaceHost, bool recreateSurface) {
+void resumePresenting(IWindowSurfaceHost *surfaceHost, bool recreateSurface) {
     if (!surfaceHost) return;
     // SHOWN can race with MINIMIZED on some WMs; stay paused while iconified.
     if (g_owner && g_owner->isMinimized()) return;

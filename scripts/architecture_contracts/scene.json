@@ -14,7 +14,8 @@
         "docs/dev/模块编排与裁剪架构.md"
       ],
       "tests": [
-        "test/integration/script-api/script_api_graphics_scene_tests.cpp", "test/unit/scene/scene_tests.cpp",
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp",
+        "test/unit/scene/scene_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "symbols": [
@@ -66,7 +67,8 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/integration/script-api/script_api_graphics_scene_tests.cpp", "test/unit/scene/scene_tests.cpp",
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp",
+        "test/unit/scene/scene_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -189,7 +191,8 @@
         "src/modules/scene/SceneComponentScript.cpp"
       ],
       "tests": [
-        "test/integration/script-api/script_api_graphics_scene_tests.cpp", "test/unit/scene/scene_tests.cpp",
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp",
+        "test/unit/scene/scene_tests.cpp",
         "scripts/tests/test_architecture_contracts.py",
         "test/integration/runtime-lifecycle/runtime_lifecycle_graphics_tests.cpp",
         "test/integration/script-api/script_api_graphics_scene_tests.cpp"
@@ -251,6 +254,40 @@
           "why": "One weak registration per dirty component; flush before TransformSystem traversal, preserving edits raised by build and cancelling destroyed owners."
         }
       ]
+    },
+    {
+      "id": "scene-script-link-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/scene/ScriptLinks.cpp",
+      "owner": "scene",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "The scene module gains a link kind whose target is a user script object, plus the script binding that attaches it. The scope is the one file, not the directory: src/modules/scene/** also holds the separately built scene.loader, scene.editor and scene.physics modules, whose capabilities must not be attributed to this entry.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/scene/ScriptLinks.cpp",
+        "src/modules/scene/Scene.h",
+        "src/modules/scene/SceneLink.h"
+      ],
+      "tests": [
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.Scene.linkScriptAt(hostName, nodeId, providerName, mode) -> {ok, code, status, diagnostics}; the link kind itself is the registered name 'script', driven through eve.provider.publish/unload"
+      ],
+      "protocol": [],
+      "thread_affinity": "Scene owner thread; linkScriptAt resolves the provider at call time and stores a generation-qualified handle rather than a raw script object",
+      "trim": {
+        "absent_profile": "Profiles without scene drop the script link kind; a registry entry that outlives the scene reports StaleHandle instead of aliasing a recycled implementation",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "linkScriptAt performs one provider resolution and takes one Squirrel reference per link; unlinking releases exactly that generation."
+      ],
+      "hot_path": []
     }
   ]
 }

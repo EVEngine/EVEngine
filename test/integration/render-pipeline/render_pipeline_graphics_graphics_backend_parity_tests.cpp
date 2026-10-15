@@ -1433,7 +1433,6 @@ using namespace eve::fluids;
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_gpgpu)
-#include "PrivateTestScope.h"
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -1442,9 +1441,11 @@ using namespace eve::fluids;
 #include <iostream>
 #include <string>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "ScriptTest.h"
 #include "common/ECS.h"
 #include "common/Exception.h"
+#include "common/ScriptComponentStore.h"
 #include "gpgpu/ComputeShader.h"
 #include "gpgpu/EcsGpu.h"
 #include "gpgpu/EcsScriptPack.h"
@@ -2286,6 +2287,50 @@ float readArrayFloat(ssq::VM &vm, ssq::Object arr, int idx) {
 
 }  // namespace
 
+// ---------------------------------------------------------------------------
+// 脚本面的批量回读（方案 §10.21 决定：给脚本面加"返回数组"的绑定）。
+//
+// 不用 GPU：把一个 CPU-only 的 `TestBuffer` 当 `GpuBuffer*` 交给脚本，走的就是绑定生成的
+// 那条路（`readFloat32s(count, startIndex) -> array`），而裁剪/越界边界可以逐个钉死。
+// ---------------------------------------------------------------------------
+
+
+
+UnitSciptTest(GpuBufferBulkReadFixture, R"SQ(
+// 模块绑定是**惰性**的：不碰 `eve.Gpgpu` 就不会注册 `GpuBuffer` 类，而原生指针要交给脚本
+// 就必须先有这个类（否则 simplesquirrel 退化成裸 userpointer，脚本侧一调方法就报错）。
+// 这一行就是"先让 exposer 跑一遍"，不需要真的设备。
+gpgpuBindingPoked <- (eve.Gpgpu != null)
+
+values <- null
+count <- -1
+function readRange(buf, count_, startIndex) {
+    values = buf.readFloat32s(count_, startIndex)
+    count = values.len()
+    return true
+}
+)SQ");
+
+TEST_CASE_FIXTURE(GpuBufferBulkReadFixture, "gpgpu.buffer.readFloat32sReturnsAnArrayToScript") {
+    TestBuffer buffer(4 * int(sizeof(float)));
+    for (int i = 0; i < 4; ++i) buffer.writeFloat32(i, float(i + 1));
+
+    // 脚本拿到的是一个真数组：能 .len()，也能按下标取值。
+    REQUIRE(vm.callFunc(vm.findFunc("readRange"), vm, static_cast<eve::gpgpu::GpuBuffer *>(&buffer), 4, 0).toBool());
+    REQUIRE_EQ(vm.find("count").toInt(), 4);
+    CHECK(std::fabs(readArrayFloat(vm, vm.find("values"), 0) - 1.f) < 1e-5f);
+    CHECK(std::fabs(readArrayFloat(vm, vm.find("values"), 3) - 4.f) < 1e-5f);
+
+    // 多要 -> 裁剪（脚本侧看得见拿到几个，而不是抛错）。
+    REQUIRE(vm.callFunc(vm.findFunc("readRange"), vm, static_cast<eve::gpgpu::GpuBuffer *>(&buffer), 100, 2).toBool());
+    REQUIRE_EQ(vm.find("count").toInt(), 2);
+    CHECK(std::fabs(readArrayFloat(vm, vm.find("values"), 0) - 3.f) < 1e-5f);
+
+    // 起点在容量之后 -> 空数组。
+    REQUIRE(vm.callFunc(vm.findFunc("readRange"), vm, static_cast<eve::gpgpu::GpuBuffer *>(&buffer), 4, 9).toBool());
+    REQUIRE_EQ(vm.find("count").toInt(), 0);
+}
+
 UnitSciptTest(EcsPackFixture, R"SQ(
 class Vec { x = null; y = null }
 class Entity { Vec = null }
@@ -2371,9 +2416,119 @@ TEST_CASE_FIXTURE(EcsPackFixture, "gpgpu.ecsPack.errors") {
     ssq::Object scalar = vm.callFunc(vm.findFunc("getScalar"), vm);
     CHECK_EQ(packScriptEntityFloats(scalar, "Vec", fields, &buf), 0);
 }
+
+// ---------------------------------------------------------------------------
+// Script ECS components (eve.Entity / eve.Component), not plain Squirrel classes.
+// ---------------------------------------------------------------------------
+//
+// `EcsPackFixture` above declares `class Vec` / `class Entity` by hand, so it never touched
+// the script ECS the engine actually ships: the case below goes through
+// `eve.Entity.create()`, whose component instance lives in `_comps[name]` *and* in the
+// declared field slot (`e.pos`). That field slot is what `packScriptEntityFloats` reads, so
+// this pins the third interop bridge from plan doc 2.1 -- script component numbers entering
+// a GPU buffer -- for the real component objects.
+
+UnitSciptTest(EcsPackScriptEcsFixture, R"SQ(
+class Pos extends eve.Component { x = 1.0; y = 2.0 }
+class Node extends eve.Entity { pos = Pos }
+function makeNodes() {
+    local a = Node.create(); a.pos.x = 1.0; a.pos.y = 2.0
+    local b = Node.create(); b.pos.x = 3.0; b.pos.y = 4.0
+    return [a, b]
+}
+function getNodes() { return makeNodes() }
+function getView() { return eve.view(Node) }
+function getFields() { return ["x", "y"] }
+function readBack(ents) { return [ents[0].pos.x, ents[0].pos.y, ents[1].pos.x, ents[1].pos.y] }
+)SQ");
+
+TEST_CASE_FIXTURE(EcsPackScriptEcsFixture, "gpgpu.ecsPack.scriptEcsComponentsRoundTrip") {
+    ssq::Object ents   = vm.callFunc(vm.findFunc("getNodes"), vm);
+    ssq::Object view   = vm.callFunc(vm.findFunc("getView"), vm);
+    ssq::Object fields = vm.callFunc(vm.findFunc("getFields"), vm);
+    TestBuffer  buf(4 * int(sizeof(float)));
+
+    REQUIRE_EQ(packScriptEntityFloats(ents, "pos", fields, &buf), 2);
+    REQUIRE(std::fabs(buf.floats[0] - 1.f) < 1e-5f);
+    REQUIRE(std::fabs(buf.floats[1] - 2.f) < 1e-5f);
+    REQUIRE(std::fabs(buf.floats[2] - 3.f) < 1e-5f);
+    REQUIRE(std::fabs(buf.floats[3] - 4.f) < 1e-5f);
+
+    // The same components packed through eve.view() -- the array the GPU system actually
+    // packs -- and in entity-id order, which is what makes the row indices deterministic.
+    REQUIRE_EQ(packScriptEntityFloats(view, "pos", fields, &buf), 2);
+    REQUIRE(std::fabs(buf.floats[0] - 1.f) < 1e-5f);
+    REQUIRE(std::fabs(buf.floats[2] - 3.f) < 1e-5f);
+
+    // Read back into the component instances through the entity field slot.
+    buf.floats = {10.f, 20.f, 30.f, 40.f};
+    REQUIRE_EQ(unpackScriptEntityFloats(ents, "pos", fields, &buf, 2), 2);
+    ssq::Object back = vm.callFunc(vm.findFunc("readBack"), vm, ents);
+    REQUIRE(std::fabs(readArrayFloat(vm, back, 0) - 10.f) < 1e-5f);
+    REQUIRE(std::fabs(readArrayFloat(vm, back, 1) - 20.f) < 1e-5f);
+    REQUIRE(std::fabs(readArrayFloat(vm, back, 2) - 30.f) < 1e-5f);
+    REQUIRE(std::fabs(readArrayFloat(vm, back, 3) - 40.f) < 1e-5f);
+}
+
+// ---------------------------------------------------------------------------
+// 登记过的脚本组件：字段槽位在登记时就被摘掉、数据搬进引擎侧存储（方案文档 §9.64），
+// 所以打包这条路必须走 ECS 的归属查询，而不是自己去 `sq_get` 实例槽位——后者对这些组件
+// 会一律失败（`sq_get` 用 DONT_FALL_BACK，连 `_get` 都不会兜底）。
+// ---------------------------------------------------------------------------
+
+UnitSciptTest(EcsPackRegisteredScriptEcsFixture, R"SQ(
+class RPos extends eve.Component { x = 1.0; y = 2.0 }
+class RNode extends eve.Entity { rpos = RPos }
+function makeRegistered() {
+    registeredOk <- eve.component("RPos", 1, RPos).ok
+    local a = RNode.create(); a.rpos.x = 5.0; a.rpos.y = 6.0
+    local b = RNode.create(); b.rpos.x = 7.0; b.rpos.y = 8.0
+    idA <- a.getId()
+    idB <- b.getId()
+    return [a, b]
+}
+function getRegisteredFields() { return ["x", "y"] }
+function readBackRegistered(ents) { return [ents[0].rpos.x, ents[0].rpos.y, ents[1].rpos.x, ents[1].rpos.y] }
+)SQ");
+
+TEST_CASE_FIXTURE(EcsPackRegisteredScriptEcsFixture, "gpgpu.ecsPack.registeredScriptEcsComponentsRoundTrip") {
+    ssq::Object ents = vm.callFunc(vm.findFunc("makeRegistered"), vm);
+    REQUIRE(vm.find("registeredOk").toBool());
+
+    // 登记过的组件：脚本写 `a.rpos.x = 5.0` 落进的是**引擎侧存储**（不是实例槽位），
+    // 打包读的也是同一份数据——这条路就是 `readScriptComponentField` 的意义所在。
+    const auto                         idA = static_cast<std::uint64_t>(vm.find("idA").toInt());
+    const eve::ScriptComponentStoreKey keyA{idA, "RPos", eve::SchemaVersion(1)};
+    const eve::Value                  *stored = eve::findScriptComponentValues(keyA);
+    REQUIRE(stored != nullptr);
+    REQUIRE_EQ(stored->find("x")->asDouble(), 5.0);
+
+    ssq::Object fields = vm.callFunc(vm.findFunc("getRegisteredFields"), vm);
+    TestBuffer  buf(4 * int(sizeof(float)));
+
+    REQUIRE_EQ(packScriptEntityFloats(ents, "rpos", fields, &buf), 2);
+    REQUIRE(std::fabs(buf.floats[0] - 5.f) < 1e-5f);
+    REQUIRE(std::fabs(buf.floats[1] - 6.f) < 1e-5f);
+    REQUIRE(std::fabs(buf.floats[2] - 7.f) < 1e-5f);
+    REQUIRE(std::fabs(buf.floats[3] - 8.f) < 1e-5f);
+
+    // 解包写回引擎侧存储，脚本侧从 `_get` 读到的就是新值。
+    buf.floats = {50.f, 60.f, 70.f, 80.f};
+    REQUIRE_EQ(unpackScriptEntityFloats(ents, "rpos", fields, &buf, 2), 2);
+    ssq::Object back = vm.callFunc(vm.findFunc("readBackRegistered"), vm, ents);
+    REQUIRE(std::fabs(readArrayFloat(vm, back, 0) - 50.f) < 1e-5f);
+    REQUIRE(std::fabs(readArrayFloat(vm, back, 1) - 60.f) < 1e-5f);
+    REQUIRE(std::fabs(readArrayFloat(vm, back, 2) - 70.f) < 1e-5f);
+    REQUIRE(std::fabs(readArrayFloat(vm, back, 3) - 80.f) < 1e-5f);
+
+    // 解包的结果确实落在引擎侧存储里（原生侧直接读得到，不必问脚本）。
+    const eve::Value *afterUnpack = eve::findScriptComponentValues(keyA);
+    REQUIRE(afterUnpack != nullptr);
+    REQUIRE_EQ(afterUnpack->find("x")->asDouble(), 50.0);
+    REQUIRE_EQ(afterUnpack->find("y")->asDouble(), 60.0);
+}
 }  // namespace test_gpgpu
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_backend_parity)
 #include "PrivateTestScope.h"
 #include <cstddef>

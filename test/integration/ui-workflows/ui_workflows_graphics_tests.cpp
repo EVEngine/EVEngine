@@ -256,10 +256,10 @@ TEST_CASE("UI.editorKit.desktopCompositionRenders") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_UIPhaseAdv)
-#include "PrivateTestScope.h"
 #include <imgui.h>
 #include <cmath>
 #include <string>
+#include "PrivateTestScope.h"
 #include "ScriptTest.h"
 #include "ui/Layout.h"
 #include "ui/Theme.h"
@@ -303,7 +303,12 @@ static const char *kScriptComponentContent = R"SQ(
         unmounted = false
         function onUnmount() { unmounted = true }
         function build() {
-            ui().text(props.prefix + state.amount, "gold")
+            // This label doubles as the keyed child, whose factory creates it with an empty
+            // state on the first pass; only the composed child gets `setState({amount})`.
+            // Read it defensively so the case keeps testing keyed reuse and dirty coalescing
+            // instead of throwing here.
+            local amount = ("amount" in state) ? state.amount : 0
+            ui().text(props.prefix + amount, "gold")
         }
     }
     class ShopPanel extends eve.UIComponent {
@@ -373,9 +378,7 @@ static const char *kScriptComponentContent = R"SQ(
 
 UnitSciptTest(UIScriptComponentTest, kScriptComponentContent);
 
-TEST_CASE_FIXTURE(UIScriptComponentTest, "UI.adv.scriptUIComponent") {
-    CHECK(vm.callFunc(vm.findFunc("testScriptComponent"), vm).toBool());
-}
+TEST_CASE_FIXTURE(UIScriptComponentTest, "UI.adv.scriptUIComponent") { REQUIRE(callScript("testScriptComponent")); }
 
 
 TEST_CASE("UI.layout.measureNestedFlexAndWindowContent") {
@@ -453,7 +456,7 @@ static const char *kScriptCallbackContent = R"SQ(
 UnitSciptTest(UIScriptCallbackTest, kScriptCallbackContent);
 
 TEST_CASE_FIXTURE(UIScriptCallbackTest, "UI.p0.scriptEventCallbacks") {
-    CHECK(vm.callFunc(vm.findFunc("testScriptCallbacks"), vm).toBool());
+    REQUIRE(callScript("testScriptCallbacks"));
     ui::UIHost *host = resolveHost(ui::UISystem::findHost("cb"));
     REQUIRE(host != nullptr);
     ui::UINode *go = findNode(host, "go");
@@ -478,7 +481,7 @@ TEST_CASE_FIXTURE(UIScriptCallbackTest, "UI.p0.scriptEventCallbacks") {
     change.floatValue   = 0.75f;
     ui::UISystem::pendingEvents().push_back(change);
 
-    CHECK(vm.callFunc(vm.findFunc("fireTestEvents"), vm).toBool());
+    REQUIRE(callScript("fireTestEvents"));
     CHECK(std::abs(vm.find("clicks").toFloat() - 1.f) < 1e-5f);
     CHECK(vm.find("changeKind").toString() == "value");
     CHECK(std::abs(vm.find("changeValue").toFloat() - 0.75f) < 1e-5f);
@@ -567,7 +570,6 @@ TEST_CASE("UI.p1.scrollListHeadlessRenderLarge") {
 }
 }  // namespace test_UIPhaseAdv
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_UIPhaseB)
 #include "PrivateTestScope.h"
 #include <imgui.h>

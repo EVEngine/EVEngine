@@ -15,7 +15,8 @@
         "docs/dev/realtime-fog-system.md"
       ],
       "tests": [
-        "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp", "test/unit/graphics_fog/graphics_fog_unit.cpp",
+        "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+        "test/unit/graphics_fog/graphics_fog_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "state": "FogDensityField and MacFluidGrid own media; FogProfile owns optical constants; BeerLightCache is a derived cache; ContinuousArtParams are presentation-only.",
@@ -36,7 +37,8 @@
         "docs/dev/realtime-fog-system.md"
       ],
       "tests": [
-        "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp", "test/unit/graphics_fog/graphics_fog_unit.cpp",
+        "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+        "test/unit/graphics_fog/graphics_fog_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -93,7 +95,8 @@
         "docs/dev/uds-sky-runtime-contract.md"
       ],
       "tests": [
-        "test/integration/file-io/file_io_graphics_hex_level_data_tests.cpp", "test/unit/filesystem/filesystem_tests.cpp",
+        "test/integration/file-io/file_io_graphics_hex_level_data_tests.cpp",
+        "test/unit/filesystem/filesystem_tests.cpp",
         "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp"
       ],
       "schema": "eve.sky-wisps/7 manifest and eve.sky-mesh/1 geometry; explicit texture dimensions and linear or sRGB R8/RGBA8 source encoding; version 5 validates daylight coefficients and both owned star textures; version 6 adds optical tints and bounded explicit RGBA8/RGBA16F mip chains; version 7 adds lunar surface, phase, glow and two owned linear RGBA16F mip chains.",
@@ -195,7 +198,8 @@
         "test/unit/graphics/graphics_pipeline_state_tests.cpp",
         "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
         "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
-        "test/integration/file-io/file_io_graphics_hex_level_data_tests.cpp", "test/unit/filesystem/filesystem_tests.cpp",
+        "test/integration/file-io/file_io_graphics_hex_level_data_tests.cpp",
+        "test/unit/filesystem/filesystem_tests.cpp",
         "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp"
       ],
       "contract": "Prepared immutable coefficients and transmission/multiple-scattering lookup tables feed a physically integrated HDR pass. No visual-parity claim until all remaining UDS stages are implemented and compared. Optional authored wisps copy corner attributes and an explicit sampled texture during preparation; atmosphere and wisps draw in fixed order with identical fog composition through the same callback. A checked view-preparation phase generates a 192x104 sky-view texture before opening the destination; identical camera/light blocks reuse it. Main and capture draws consume the same cache sequentially. Solar lighting and normalized authored-wisps phase publish atomically; validation failure leaves both unchanged. Cloud phase never invalidates the atmosphere-only view LUT.",
@@ -415,7 +419,8 @@
         "cmake/module_manifest/modules/graphics.cmake"
       ],
       "tests": [
-        "test/integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp", "test/unit/graphics_raytracing/graphics_raytracing_unit.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp",
+        "test/unit/graphics_raytracing/graphics_raytracing_unit.cpp",
         "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp"
       ],
       "provides": [

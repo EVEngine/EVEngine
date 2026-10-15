@@ -289,6 +289,7 @@ set(EVE_TEST_PREFIX_DOMAIN
     "debugger;devtools"
     "language_;devtools"
     "mcp;devtools"
+    "game_world;devtools"
     "play_;devtools"
     "protocol_dispatch;devtools"
     "reload_script;devtools"

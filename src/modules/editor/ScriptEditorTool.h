@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/Export.h"
 #include "editor/EditorTool.h"
 
 #include <memory>
@@ -14,7 +15,7 @@ namespace eve::editor {
  * Pointer/key callbacks return bit flags: 1 handled, 2 capture pointer, 4 release
  * pointer. Missing callbacks behave like the default IEditorTool implementation.
  */
-class ScriptEditorTool final : public IEditorTool {
+class EVENGINE_API_ORCHESTRATION ScriptEditorTool final : public IEditorTool {
 public:
     /** @brief Constructs a ScriptEditorTool. */
     ScriptEditorTool(std::string id, std::string label);

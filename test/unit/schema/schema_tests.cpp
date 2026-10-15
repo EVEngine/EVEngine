@@ -235,8 +235,8 @@ TEST_CASE("schema.validation.detectsSchemaReferenceCycle") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_schema)
-#include "PrivateTestScope.h"
 #include <simplesquirrel/simplesquirrel.hpp>
+#include "PrivateTestScope.h"
 #include "schema/Schema.h"
 #include "schema/SchemaRegistry.h"
 #include "zeroerr/assert.h"

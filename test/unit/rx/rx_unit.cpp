@@ -4,6 +4,7 @@
 #include "zeroerr/unittest.h"
 
 #include "common/Module.h"
+#include "common/SquirrelBinding.h"
 #include "platform_event/PlatformEvent.h"
 #include "rx/Rx.h"
 

@@ -2,6 +2,7 @@
 #include <chrono>
 #include <cstring>
 #include <simplesquirrel/simplesquirrel.hpp>
+#include "common/SquirrelBinding.h"
 #include "data/ByteData.h"
 #include "network/NetRpc.h"
 #include "network/NetStream.h"
@@ -137,15 +138,9 @@ void callScriptFn(const ssq::Object& fn, const std::string& arg) {
     if (fn.isEmpty()) return;
     ssq::Function f = fn.toFunction();
     if (f.isEmpty()) return;
-    HSQUIRRELVM raw = f.getHandle();
-    SQInteger   top = sq_gettop(raw);
-    sq_pushobject(raw, f.getRaw());
-    sq_pushroottable(raw);
-    ssq::detail::pushValue(raw, arg);
-    if (SQ_SUCCEEDED(sq_call(raw, 2, SQFalse, SQTrue))) {
-        // discard result
-    }
-    sq_settop(raw, top);
+    // The failure used to be checked only to be ignored (an "if succeeded, discard"
+    // body); the helper derives sq_call's count and reports the script error.
+    (void)script::callFunction(f.getHandle(), f.getRaw(), script::rootTable, arg);
 }
 
 }  // namespace

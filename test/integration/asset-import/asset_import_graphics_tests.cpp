@@ -1,10 +1,11 @@
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ModelPrefetch)
-#include "PrivateTestScope.h"
+#include <filesystem>
 #include <future>
 #include <thread>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "common/AsyncWork.h"
 #include "common/Capability.h"
 #include "common/Resource.h"
@@ -54,6 +55,13 @@ TEST_CASE("model3d.prefetch rejects missing executor and empty paths") {
 TEST_CASE("model3d.prefetch decodes on worker and joins the canonical cache") {
     auto *fs = eve::filesystem::Filesystem::create();
     REQUIRE(fs->setIdentity("eve_model_prefetch_contract", true));
+    // Other isolated tests create the shared application-data parent concurrently.
+    // Prepare this fixture with an idempotent OS operation before mounting it.
+    const std::string           saveDirectory = fs->getSaveDirectory();
+    const std::filesystem::path savePath(std::u8string(saveDirectory.begin(), saveDirectory.end()));
+    std::error_code             directoryError;
+    std::filesystem::create_directories(savePath, directoryError);
+    REQUIRE(!directoryError);
     REQUIRE(fs->setupWriteDirectory());
     const std::string obj = "v 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 3\n";
     fs->write("prefetch.obj", obj.data(), obj.size());
@@ -93,7 +101,6 @@ TEST_CASE("model3d.prefetch decodes on worker and joins the canonical cache") {
 }
 }  // namespace test_ModelPrefetch
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_PreparedFile)
 #include "PrivateTestScope.h"
 #include <atomic>
@@ -950,12 +957,12 @@ TEST_CASE("font.newFontData.invalidSize") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_map)
-#include "PrivateTestScope.h"
 #include <SDL2/SDL.h>
 #include <algorithm>
 #include <cmath>
 #include <string>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "common/Capability.h"
 #include "data/DataModule.h"
 #include "graphics/AmbientOcclusion.h"
@@ -999,11 +1006,11 @@ using namespace eve::map;
 namespace {
 class CollisionSinkMock final : public ITileCollisionSink {
 public:
-    void replaceTileCollision(const void *source, const TileCollisionRect *rects, size_t count) override {
-        layer = source;
+    void replaceTileCollision(TileLayerRef layer, const TileCollisionRect *rects, size_t count) override {
+        source = layer;
         values.assign(rects, rects + count);
     }
-    const void                    *layer = nullptr;
+    TileLayerRef                   source;
     std::vector<TileCollisionRect> values;
 };
 }  // namespace
@@ -1136,7 +1143,6 @@ TEST_CASE("map.render.orthoAndIsoPreview") {
 }
 }  // namespace test_map
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_model3d)
 #include "PrivateTestScope.h"
 #include <SDL2/SDL.h>

@@ -272,12 +272,16 @@ TEST_CASE("climbing.reload.jsonProfileAndRuntimeRoundTrip") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_services)
-#include "PrivateTestScope.h"
+#include <algorithm>
 #include <cmath>
 #include <memory>
+#include <string>
 #include <vector>
+#include "PrivateTestScope.h"
+#include "ScriptTest.h"
 #include "climbing/ClimbingServices.h"
 #include "common/Capability.h"
+#include "common/ScriptProvider.h"
 #include "physics/Body3D.h"
 #include "physics/Physics.h"
 #include "physics/World3D.h"
@@ -508,9 +512,147 @@ TEST_CASE("climbing.services.conditionTagsRequireAuthorityAndGateCommit") {
     CHECK_EQ(conditions.seenCount, std::size_t{2});
     CHECK(conditions.seenSubject == eve::climbing::ClimbingServiceSubject(31));
 }
+
+// ---------------------------------------------------------------------------
+// 决定③第二个落地的插座：`IClimbingEventSink` 可以由脚本提供。
+//
+// 与上面那条原生 sink 用例配对：同一条派发路径（`dispatchClimbingEvents`）在"没有 sink"时
+// 报 `ProviderAbsent`、在脚本在位时变成 `Applied`，而脚本看到的事件记录与它在
+// `eve.ClimbingRuntime` 上看到的形状完全一致（同一份 `climbingEventValue`）。
+// ---------------------------------------------------------------------------
+
+namespace {
+
+const char* kScriptClimbingSinkContent = R"SQ(
+// 观察用的根表槽位：先声明再在方法里赋值。
+lastSubject <- 0
+lastCount <- 0
+lastKind <- ""
+lastActionId <- ""
+lastMetadataCount <- 0
+
+class EventSink {
+    function publishClimbingEvents(payload) {
+        lastSubject = payload.subject
+        lastCount = payload.events.len()
+        if (lastCount > 0) {
+            lastKind = payload.events[0].kind
+            lastActionId = payload.events[0].actionId
+            lastMetadataCount = payload.events[0].metadata.len()
+        }
+    }
+}
+
+class FailingEventSink {
+    function publishClimbingEvents(payload) { throw "script refused the climbing event batch" }
+}
+
+eventSink <- EventSink()
+failingEventSink <- FailingEventSink()
+)SQ";
+
+}  // namespace
+
+/** 脚本提供方要一个真 VM；接缝由用例显式声明，所以不依赖 Climbing 模块是否被构造。 */
+class ScriptClimbingSinkTest : public ScriptTest {
+public:
+    ScriptClimbingSinkTest() : ScriptTest(kScriptClimbingSinkContent) {
+        auto& registry = eve::ScriptProviderRegistry::instance();
+        registry.clearAll();
+        declaredBefore_ = registry.capabilities();
+        eve::cap::detail::clearAllRaw();
+    }
+
+    ~ScriptClimbingSinkTest() {
+        eve::climbing::withdrawScriptClimbingEventSeam();
+        eve::cap::detail::clearAllRaw();
+        auto& registry = eve::ScriptProviderRegistry::instance();
+        registry.clearAll();
+        for (const std::string& capability : registry.capabilities()) {
+            if (std::find(declaredBefore_.begin(), declaredBefore_.end(), capability) != declaredBefore_.end())
+                continue;
+            registry.removeCapability(capability).ignore("fixture teardown withdraws only this case's seams");
+        }
+    }
+
+    static std::vector<eve::climbing::ClimbingEvent> batch() {
+        std::vector<eve::climbing::ClimbingEvent> events(2);
+        events[0].kind        = eve::climbing::ClimbingEventKind::Started;
+        events[0].actionId    = "climb:event_mantle";
+        events[0].tick        = eve::SimulationTick(11);
+        events[0].executionId = eve::climbing::ClimbingExecutionId(3);
+        events[0].metadata    = {"event:parkour", "surface:stone"};
+        events[1].kind        = eve::climbing::ClimbingEventKind::Landed;
+        events[1].actionId    = "climb:event_mantle";
+        events[1].tick        = eve::SimulationTick(12);
+        events[1].executionId = eve::climbing::ClimbingExecutionId(3);
+        return events;
+    }
+
+private:
+    std::vector<std::string> declaredBefore_;
+};
+
+TEST_CASE_FIXTURE(ScriptClimbingSinkTest, "climbing.services.scriptProviderAnswersTheEventSinkThroughTheSeam") {
+    using namespace eve;
+    const climbing::ClimbingServiceSubject subject(21);
+    const auto                             events = batch();
+
+    // ① 缺席：接缝没声明时发布直接被拒，派发报 ProviderAbsent（不是"绑着但不响"）。
+    auto refused = ScriptProviderRegistry::instance().publishForCapability(
+        climbing::IClimbingEventSink::capabilityName, "test.climbing-events", vm.find("eventSink"));
+    REQUIRE(!refused.ok());
+    auto absent = climbing::dispatchClimbingEvents(subject, events);
+    REQUIRE(absent.ok());
+    CHECK_EQ(static_cast<int>(absent.value()),
+             static_cast<int>(climbing::ClimbingOptionalServiceState::ProviderAbsent));
+
+    // ② 声明 + 发布：适配器进能力槽位，派发变成 Applied。
+    climbing::declareScriptClimbingEventSeam();
+    auto published = ScriptProviderRegistry::instance().publishForCapability(
+        climbing::IClimbingEventSink::capabilityName, "test.climbing-events", vm.find("eventSink"));
+    REQUIRE(published.ok());
+    REQUIRE(cap::query<climbing::IClimbingEventSink>() != nullptr);
+
+    auto applied = climbing::dispatchClimbingEvents(subject, events);
+    REQUIRE(applied.ok());
+    CHECK_EQ(static_cast<int>(applied.value()), static_cast<int>(climbing::ClimbingOptionalServiceState::Applied));
+    REQUIRE_EQ(vm.find("lastSubject").toInt(), 21);
+    REQUIRE_EQ(vm.find("lastCount").toInt(), 2);
+    REQUIRE_EQ(vm.find("lastKind").toString(), std::string("started"));
+    REQUIRE_EQ(vm.find("lastActionId").toString(), std::string("climb:event_mantle"));
+    REQUIRE_EQ(vm.find("lastMetadataCount").toInt(), 2);
+
+    // ③ 撤回后能力槽位重新为空，派发回到 ProviderAbsent。
+    REQUIRE(ScriptProviderRegistry::instance().unload(published.value()).ok());
+    REQUIRE(cap::query<climbing::IClimbingEventSink>() == nullptr);
+    auto afterWithdrawal = climbing::dispatchClimbingEvents(subject, events);
+    REQUIRE(afterWithdrawal.ok());
+    CHECK_EQ(static_cast<int>(afterWithdrawal.value()),
+             static_cast<int>(climbing::ClimbingOptionalServiceState::ProviderAbsent));
+}
+
+TEST_CASE_FIXTURE(ScriptClimbingSinkTest, "climbing.services.scriptEventSinkFailureIsReportedNotSwallowed") {
+    using namespace eve;
+    climbing::declareScriptClimbingEventSeam();
+    auto published = ScriptProviderRegistry::instance().publishForCapability(
+        climbing::IClimbingEventSink::capabilityName, "test.climbing-events", vm.find("failingEventSink"));
+    REQUIRE(published.ok());
+
+    // 脚本抛错 → 派发失败（消费方靠返回值判断，吞掉会让上层以为事件已经送达）。
+    auto failed = climbing::dispatchClimbingEvents(climbing::ClimbingServiceSubject(21), batch());
+    CHECK(!failed.ok());
+    CHECK_EQ(static_cast<int>(failed.error()->code()), static_cast<int>(DiagnosticCode::Failed));
+
+    // 提供方还能用：换回不抛错的那个脚本对象，派发恢复。
+    REQUIRE(ScriptProviderRegistry::instance().unload(published.value()).ok());
+    auto recovered = ScriptProviderRegistry::instance().publishForCapability(
+        climbing::IClimbingEventSink::capabilityName, "test.climbing-events", vm.find("eventSink"));
+    REQUIRE(recovered.ok());
+    CHECK(climbing::dispatchClimbingEvents(climbing::ClimbingServiceSubject(21), batch()).ok());
+}
 }  // namespace test_climbing_services
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_snapshot)
 #include "PrivateTestScope.h"
 #include <memory>

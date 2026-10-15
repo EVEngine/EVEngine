@@ -79,9 +79,8 @@ const char* nodeTypeName(NodeType type) {
 
 bool isClickable(const UINode& node) {
     if (!node.enabled || node.mouseFilter == MouseFilter::Ignore) return false;
-    return node.type == NodeType::Button || node.type == NodeType::ImageButton ||
-           node.type == NodeType::Switch || node.type == NodeType::MenuItem ||
-           node.type == NodeType::Tab || node.handlerClick != 0;
+    return node.type == NodeType::Button || node.type == NodeType::ImageButton || node.type == NodeType::Switch ||
+           node.type == NodeType::MenuItem || node.type == NodeType::Tab || node.handlerClick != 0;
 }
 
 const char* focusModeName(FocusMode mode) {

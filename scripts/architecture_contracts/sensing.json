@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "sensing-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/sensing/SensingScriptCandidateSeam.cpp",
+      "owner": "sensing",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "TargetingResolver consumes ISensingCandidateProvider through cap::query and the new script seam answers it through cap::provide, so the same capability appears on both faces; recording them makes the next provider declare itself instead of silently displacing the single-provider slot. The scope is this one file, not src/modules/sensing/**: the fact mirror, the ranking pipeline and the script world bindings expose different faces.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/sensing/SensingScriptCandidateSeam.cpp",
+        "src/modules/sensing/Targeting.h"
+      ],
+      "tests": [
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp",
+        "test/unit/physics/physics_tests.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "ISensingCandidateProvider"
+      ],
+      "requires": [
+        "ISensingCandidateProvider"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.provider.publishFor('eve.sensing.ISensingCandidateProvider', name, instance) -> queryCandidates({ origin, space, originLocation, domain, minRange, maxRange, requiredTags, excludedTags, zone, area }) returning an array of { subject, location = { space, x, y, z }, domain, tags, zones }"
+      ],
+      "protocol": [],
+      "thread_affinity": "Sensing owner thread; queryCandidates answers one synchronous script call and returns an owning array, retaining no VM value",
+      "trim": {
+        "absent_profile": "Profiles without sensing leave ISensingCandidateProvider unbound; targeting falls back to the in-tree provider set and the script seam simply is not registered",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "queryCandidates marshals one candidate array per query and the ranking pipeline calls it once per resolver pass, so the cost is proportional to the returned candidate count."
+      ],
+      "hot_path": []
+    },
+    {
+      "id": "sensing-query-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/sensing/Sensing.cpp",
+      "owner": "sensing",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "The sensing module instance publishes ISensingQuery for its fact mirror, the same capability the targeting resolver consumes, so a second provider or consumer must declare itself instead of silently displacing the single-provider slot.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/sensing/Sensing.cpp",
+        "src/engine/common/SensingQuery.h"
+      ],
+      "tests": [
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "ISensingQuery"
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "thread_affinity": "Sensing owner thread; queries read the fact mirror synchronously and retain no callback or script value.",
+      "trim": {
+        "absent_profile": "Profiles without sensing leave ISensingQuery unbound; consumers that queried it fall back to their documented absent behavior.",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [],
+      "hot_path": []
+    }
+  ]
+}

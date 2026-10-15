@@ -4015,9 +4015,13 @@ TEST_CASE("climbing.ecs.stepHeightUsesBoundedOwningMoverQueries") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_events)
-#include "PrivateTestScope.h"
+#include <algorithm>
 #include <memory>
+#include "PrivateTestScope.h"
+#include <string>
+#include <vector>
 #include "climbing/Climbing.h"
+#include "climbing/ClimbingEventValue.h"
 #include "physics/Body3D.h"
 #include "physics/Physics.h"
 #include "physics/Shape3D.h"
@@ -4140,9 +4144,15 @@ TEST_CASE("climbing.events.capacityBackpressureIsAtomic") {
     CHECK_EQ(drained.value().size(), eve::climbing::ClimbingRuntime::PendingEventCapacity);
     REQUIRE(runtime.tryBegin(*fixture.world, pose(), eve::SimulationTick(tick)).ok());
 }
+
+/**
+ * 事件种类名是**一处**映射（`ClimbingEventValue.cpp` 的表），绑定、快照编解码、脚本 sink
+ * 都走它。这里遍历整个取值域做双向验证：新增一个 `ClimbingEventKind` 而忘了更新表（或忘了改
+ * `kClimbingEventKindCount`）会在这里红，而不是让脚本绑定与存档各写一个名字。
+ */
+
 }  // namespace test_climbing_events
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_input)
 #include "PrivateTestScope.h"
 #include <limits>

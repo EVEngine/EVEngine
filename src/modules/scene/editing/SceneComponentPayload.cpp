@@ -271,9 +271,9 @@ Result<SelectionSnapshot> makeSceneComponentSelection(std::string               
 }  // namespace eve::scene_editing
 
 // SceneEditingCommands.cpp
-#include "scene/editing/SceneEditingCommands.h"
 #include "scene/editing/SceneAuthoring.h"
 #include "scene/editing/SceneAuthoringDocument.h"
+#include "scene/editing/SceneEditingCommands.h"
 #include "scene/editing/SceneTarget.h"
 
 #include <cstdint>

@@ -39,7 +39,8 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp", "test/unit/procgen/procgen_foundation_tests.cpp",
+        "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+        "test/unit/procgen/procgen_foundation_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -167,7 +168,8 @@
         "docs/usr/modules/procgen.md"
       ],
       "tests": [
-        "test/integration/script-api/script_api_graphics_mcp_tests.cpp", "test/unit/procgen/procgen_composition_tests.cpp",
+        "test/integration/script-api/script_api_graphics_mcp_tests.cpp",
+        "test/unit/procgen/procgen_composition_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [],
@@ -282,8 +284,10 @@
         "docs/usr/modules/procgen/pointset-pipeline.md"
       ],
       "tests": [
-        "test/integration/script-api/script_api_graphics_mcp_tests.cpp", "test/unit/procgen/procgen_composition_tests.cpp",
-        "test/integration/script-api/script_api_graphics_mcp_tests.cpp", "test/unit/procgen/procgen_composition_tests.cpp",
+        "test/integration/script-api/script_api_graphics_mcp_tests.cpp",
+        "test/unit/procgen/procgen_composition_tests.cpp",
+        "test/integration/script-api/script_api_graphics_mcp_tests.cpp",
+        "test/unit/procgen/procgen_composition_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [],

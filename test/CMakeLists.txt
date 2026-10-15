@@ -420,7 +420,15 @@ elseif(EVENGINE_IOS_TEST_APP)
     EVENGINE_IOS_TEST_APP=1)
 else()
   foreach(_eve_test_target IN LISTS EVE_TEST_TARGETS)
-    target_link_libraries(${_eve_test_target} ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+    # Third-party first, deliberately. The static Squirrel/SimpleSquirrel archives are
+    # compiled with `__declspec(dllexport)` (cmake/patches/third-party-squirrel-ssq-export.patch)
+    # so that the host binary can export that API to plugins. The group DLLs link the same
+    # archives, so they export the API too. A test executable links both, and the static
+    # definition must be the one the linker sees first: with `${EVELIBS}` first, MSVC selects
+    # the import-library thunk from a group DLL and then collides with the archive definition
+    # (LNK2005, 40 symbols). Ordering the third-party closure first keeps the static definition
+    # authoritative, which is also the order the OBJECT route effectively has.
+    target_link_libraries(${_eve_test_target} ${ThirdParty} ${EVELIBS} zeroerr ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
   endforeach()
   if(TARGET EVTensor AND NOT EVENGINE_WEBGPU)
     eve_add_test_executable(onnx_engine_probe EXCLUDE_FROM_ALL "${CMAKE_SOURCE_DIR}/examples/tensor/onnx/main.cpp")

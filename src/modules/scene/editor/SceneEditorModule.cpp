@@ -1,16 +1,20 @@
 #include "scene/editor/SceneEditorModule.h"
 #include "scene/editor/SceneAuthoringBindings.h"
 #include "scene/editor/SceneEditorScriptBindings.h"
+#include "scene/editor/ScriptComponentPayloadProvider.h"
 
 #include "common/Capability.h"
 #include "editing/EditingCommandRegistry.h"
 #include "editor/EditorAutomationTargetFactory.h"
 #include "scene/Scene.h"
 #include "scene/editing/SceneAuthoringDocument.h"
+#include "scene/editing/SceneComponentPayload.h"
 #include "scene/editing/SceneEditingCommands.h"
 #include "scene/editing/SceneTarget.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
+
+#include <map>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -41,6 +45,9 @@ std::string stringField(const editor::EditorValue::Object& request, const char* 
 
 class SceneEditorModule::TargetFactory final : public editor::IEditorAutomationTargetFactory {
 public:
+    TargetFactory(scene_editing::SceneComponentPayloadRegistry* payloads, std::map<std::string, std::string>* hosts)
+        : payloads_(payloads), hosts_(hosts) {}
+
     std::vector<std::string_view> types() const override { return {"scene", "scene-host", "scene-authoring"}; }
 
     editor::Result<editor::AutomationOwnedTarget> create(const editor::TargetId& target, std::string_view type,
@@ -52,6 +59,7 @@ public:
         }
         if (type == "scene") {
             auto              sceneTarget = std::make_unique<scene_editing::SceneDocumentTarget>(target.value());
+            sceneTarget->bindComponentPayloads(payloads_);
             const std::string object      = stringField(request, "object");
             if (!object.empty()) {
                 scene_editing::CreateSceneObjectRequest create;
@@ -81,21 +89,40 @@ public:
             return eve::editing::failed<editor::AutomationOwnedTarget>(
                 editor::EditorStatus::NotFound, editor::RuleId("editor.automation.scene-host-not-found"),
                 "Live SceneHost does not exist: " + host);
-        owned.target = std::make_unique<scene_editing::SceneHostEditorTarget>(target.value(), hostResult.value());
+        auto liveTarget = std::make_unique<scene_editing::SceneHostEditorTarget>(target.value(), hostResult.value());
+        liveTarget->bindComponentPayloads(payloads_);
+        // 目标 id 是调用方选的，宿主名只有这里知道：记下来给组件 payload 提供方做映射
+        // （`ScriptComponentPayloadProvider::HostResolver`）。目标关闭时留着这一条也无害——
+        // 同名目标再创建会覆盖它，而查询一个不存在的宿主只会得到空组件表。
+        (*hosts_)[target.value()] = host;
+        owned.target              = std::move(liveTarget);
         return eve::editing::applied<editor::AutomationOwnedTarget>(std::move(owned));
     }
+
+private:
+    scene_editing::SceneComponentPayloadRegistry* payloads_ = nullptr;
+    std::map<std::string, std::string>*           hosts_    = nullptr;
 };
 
 Module_IMPL(SceneEditorModule, new SceneEditorModule());
 
-SceneEditorModule::SceneEditorModule() : factory_(std::make_unique<TargetFactory>()) {
+SceneEditorModule::SceneEditorModule()
+    : payloads_(std::make_unique<scene_editing::SceneComponentPayloadRegistry>()),
+      scriptComponents_(std::make_unique<ScriptComponentPayloadProvider>([this](const scene_editing::TargetId& t) {
+          const auto found = targetHosts_.find(t.value());
+          return found == targetHosts_.end() ? std::string{} : found->second;
+      })),
+      factory_(std::make_unique<TargetFactory>(payloads_.get(), &targetHosts_)) {
     auto* registry = eve::cap::query<editing::IEditingCommandRegistry>();
     if (!registry || !scene_editing::registerEditingCommands(*registry).ok())
         throw std::runtime_error("Failed to register scene editing commands");
+    payloads_->registerProvider(scriptComponents_.get())
+        .ignore("this module owns both the registry and the provider; a duplicate can only come from a bug here");
     eve::cap::addListener<editor::IEditorAutomationTargetFactory>(factory_.get());
 }
 
 SceneEditorModule::~SceneEditorModule() {
+    payloads_->unregisterProvider(scriptComponents_.get());
     eve::cap::removeListener<editor::IEditorAutomationTargetFactory>(factory_.get());
     if (auto* registry = eve::cap::query<editing::IEditingCommandRegistry>())
         registry->unregisterOwner("scene_editing").ignore("scene editor adapter shutdown");
@@ -111,12 +138,12 @@ void SceneEditorModule::expose(ssq::Class&) {}
 }  // namespace eve::scene_editor
 
 // SceneEditorScriptBindings.cpp
-#include "scene/editor/SceneEditorScriptBindings.h"
 #include "common/SquirrelBinding.h"
 #include "common/SquirrelOwnership.h"
 #include "scene/Scene.h"
 #include "scene/editing/SceneTarget.h"
 #include "scene/editor/SceneEditorModule.h"
+#include "scene/editor/SceneEditorScriptBindings.h"
 #include "scene/editor/SceneEditorSession.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>

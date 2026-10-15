@@ -16,7 +16,8 @@
         "docs/dev/架构行为图与任务上下文.md"
       ],
       "tests": [
-        "test/integration/concurrency/concurrency_graphics_tests.cpp", "test/unit/devtools/devtools_tests.cpp",
+        "test/integration/concurrency/concurrency_graphics_tests.cpp",
+        "test/unit/devtools/devtools_tests.cpp",
         "test/integration/script-api/script_api_graphics_dap_tests.cpp",
         "scripts/tests/test_binding_architecture.py"
       ],

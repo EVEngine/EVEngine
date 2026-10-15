@@ -85,7 +85,8 @@
         "docs/dev/2026-09-29-chaos-destruction-geometry-collection设计.md"
       ],
       "tests": [
-        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp", "test/unit/physics_destruction/physics_destruction_fracture_rules.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp",
+        "test/unit/physics_destruction/physics_destruction_fracture_rules.cpp",
         "test/integration/gameplay-composition/gameplay_composition_graphics_procgen_core_boundary_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
@@ -221,7 +222,8 @@
         "docs/dev/模块编排与裁剪架构.md"
       ],
       "tests": [
-        "test/integration/script-api/script_api_graphics_scene_tests.cpp", "test/unit/scene/scene_tests.cpp",
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp",
+        "test/unit/scene/scene_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "symbols": [
@@ -276,7 +278,8 @@
         "docs/dev/realtime-fog-system.md"
       ],
       "tests": [
-        "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp", "test/unit/graphics_fog/graphics_fog_unit.cpp",
+        "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+        "test/unit/graphics_fog/graphics_fog_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "state": "FogDensityField and MacFluidGrid own media; FogProfile owns optical constants; BeerLightCache is a derived cache; ContinuousArtParams are presentation-only.",
@@ -370,10 +373,13 @@
         "docs/usr/modules/climbing.md"
       ],
       "tests": [
-        "test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp", "test/unit/climbing/climbing_tests.cpp",
-        "test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp", "test/unit/climbing/climbing_tests.cpp",
         "test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp",
-        "test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp", "test/unit/climbing/climbing_tests.cpp",
+        "test/unit/climbing/climbing_tests.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp",
+        "test/unit/climbing/climbing_tests.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp",
+        "test/unit/climbing/climbing_tests.cpp",
         "test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp",
         "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp"
       ],
@@ -403,7 +409,8 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/integration/script-api/script_api_graphics_dap_tests.cpp", "test/unit/economy/economy_unit.cpp",
+        "test/integration/script-api/script_api_graphics_dap_tests.cpp",
+        "test/unit/economy/economy_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -460,7 +467,8 @@
         "docs/dev/realtime-fog-system.md"
       ],
       "tests": [
-        "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp", "test/unit/graphics_fog/graphics_fog_unit.cpp",
+        "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+        "test/unit/graphics_fog/graphics_fog_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -517,7 +525,8 @@
         "docs/usr/modules/inventory.md"
       ],
       "tests": [
-        "test/integration/render-presentation/render_presentation_graphics_hex_level_simulation_tests.cpp", "test/unit/inventory/inventory_tests.cpp",
+        "test/integration/render-presentation/render_presentation_graphics_hex_level_simulation_tests.cpp",
+        "test/unit/inventory/inventory_tests.cpp",
         "test/integration/gameplay-composition/gameplay_composition_graphics_procgen_road_editing_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
@@ -546,7 +555,8 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/integration/asset-import/asset_import_graphics_tests.cpp", "test/unit/map/map_tests.cpp",
+        "test/integration/asset-import/asset_import_graphics_tests.cpp",
+        "test/unit/map/map_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -603,7 +613,8 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/integration/asset-import/asset_import_graphics_tests.cpp", "test/unit/particles/particles_tests.cpp",
+        "test/integration/asset-import/asset_import_graphics_tests.cpp",
+        "test/unit/particles/particles_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -660,7 +671,8 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp", "test/unit/procgen/procgen_foundation_tests.cpp",
+        "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+        "test/unit/procgen/procgen_foundation_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -795,7 +807,8 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/integration/script-api/script_api_graphics_scene_tests.cpp", "test/unit/scene/scene_tests.cpp",
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp",
+        "test/unit/scene/scene_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -886,7 +899,8 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/integration/script-api/script_api_graphics_terrain_probe_tests.cpp", "test/unit/weapon/weapon_tests.cpp",
+        "test/integration/script-api/script_api_graphics_terrain_probe_tests.cpp",
+        "test/unit/weapon/weapon_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -1124,7 +1138,8 @@
         "docs/dev/uds-sky-runtime-contract.md"
       ],
       "tests": [
-        "test/integration/file-io/file_io_graphics_hex_level_data_tests.cpp", "test/unit/filesystem/filesystem_tests.cpp",
+        "test/integration/file-io/file_io_graphics_hex_level_data_tests.cpp",
+        "test/unit/filesystem/filesystem_tests.cpp",
         "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp"
       ],
       "schema": "eve.sky-wisps/7 manifest and eve.sky-mesh/1 geometry; explicit texture dimensions and linear or sRGB R8/RGBA8 source encoding; version 5 validates daylight coefficients and both owned star textures; version 6 adds optical tints and bounded explicit RGBA8/RGBA16F mip chains; version 7 adds lunar surface, phase, glow and two owned linear RGBA16F mip chains.",
@@ -1191,7 +1206,8 @@
       "tests": [
         "test/unit/tactics/tactics_tests.cpp",
         "scripts/tests/test_architecture_contracts.py",
-        "test/integration/script-api/script_api_graphics_scene_tests.cpp", "test/unit/tactics/tactics_tests.cpp"
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp",
+        "test/unit/tactics/tactics_tests.cpp"
       ],
       "schema": "SnapshotEnvelope type tactics.battle with LogicalId schema tactics:battle.",
       "version": "Grid boards emit schema 6; ExplicitGraph boards emit schema 7. Revision and SimulationTick remain distinct.",
@@ -1336,7 +1352,8 @@
         "test/unit/graphics/graphics_pipeline_state_tests.cpp",
         "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
         "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
-        "test/integration/file-io/file_io_graphics_hex_level_data_tests.cpp", "test/unit/filesystem/filesystem_tests.cpp",
+        "test/integration/file-io/file_io_graphics_hex_level_data_tests.cpp",
+        "test/unit/filesystem/filesystem_tests.cpp",
         "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp"
       ],
       "contract": "Prepared immutable coefficients and transmission/multiple-scattering lookup tables feed a physically integrated HDR pass. No visual-parity claim until all remaining UDS stages are implemented and compared. Optional authored wisps copy corner attributes and an explicit sampled texture during preparation; atmosphere and wisps draw in fixed order with identical fog composition through the same callback. A checked view-preparation phase generates a 192x104 sky-view texture before opening the destination; identical camera/light blocks reuse it. Main and capture draws consume the same cache sequentially. Solar lighting and normalized authored-wisps phase publish atomically; validation failure leaves both unchanged. Cloud phase never invalidates the atmosphere-only view LUT.",
@@ -1422,6 +1439,60 @@
         "connection": "One-to-many graphics-thread synchronous phase; known registrants, ordered resource readiness, no per-frame string lookup.",
         "trim_claim": "No new L2/L3/L4 trim claim."
       }
+    },
+    {
+      "id": "action-editor-package-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/action/editor/**",
+      "owner": "action_editor::ActionEditorModule",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Action editor advertises an EditorPackage for Host autoMount and keeps automation target/command registration on the shared editing host.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/action/editor/ActionEditorModule.cpp",
+        "src/modules/action/editor/ActionEditorPackage.cpp",
+        "docs/dev/2026-10-13-editor-host-package-automount-mcp.md"
+      ],
+      "tests": [
+        "test/integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_animation_inertializer_tests.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IEditorAutomationTargetFactory",
+          "impl": "ActionEditorModule::TargetFactory",
+          "absent_behavior": "action/action-timeline automation targets are unavailable when the action editor satellite is trimmed"
+        },
+        {
+          "capability": "IEditorPackageProvider",
+          "impl": "ActionEditorPackageProvider",
+          "absent_behavior": "EditorHost cannot autoMount the action package; panels and createSchema are absent from discovery"
+        }
+      ],
+      "requires": [
+        {
+          "capability": "IEditingCommandRegistry",
+          "required": true,
+          "fallback": "module construction fails explicitly when the editor command registry is absent or rejects action command registration"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.ActionEditorModule",
+          "methods": [
+            "create"
+          ]
+        }
+      ],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "runtime profiles exclude the editor leaf; no action editing commands, package provider or automation target factory are registered"
+      },
+      "thread_affinity": "owner/editor composition thread; construction, package advertisement and teardown must not race command execution",
+      "cost_notes": [],
+      "hot_path": []
     },
     {
       "id": "asset-import-structured-models-interface",
@@ -1655,6 +1726,46 @@
       "hot_path": []
     },
     {
+      "id": "climbing-event-sink-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/climbing/ClimbingServices.cpp",
+      "owner": "climbing",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "dispatchClimbingEvents consumes IClimbingEventSink through cap::query and the new script seam answers it through cap::provide, so the same capability appears on both faces; recording them makes the next provider or consumer declare itself instead of silently displacing the single-provider slot. The scope is this one file: the rest of src/modules/climbing/** holds the runtime, anchor graph, codec and bindings, whose faces are recorded separately when touched.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/climbing/ClimbingServices.cpp",
+        "src/modules/climbing/ClimbingEventValue.cpp"
+      ],
+      "tests": [
+        "test/unit/climbing/climbing_tests.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IClimbingEventSink"
+      ],
+      "requires": [
+        "IClimbingEventSink"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.provider.publishFor('eve.climbing.event-sink.v1', name, instance) -> publishClimbingEvents({ subject, events })"
+      ],
+      "protocol": [],
+      "thread_affinity": "Climbing owner thread; the sink is invoked synchronously from the movement step and retains no script value between calls",
+      "trim": {
+        "absent_profile": "Profiles without climbing drop the module and with it the IClimbingEventSink listeners; the script publish path stays linked and reports the absent provider as a structured Result",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "publishClimbingEvents marshals one event table per call and forwards it to the multi-listener sink in registration order; the cost is proportional to the event count."
+      ],
+      "hot_path": []
+    },
+    {
       "id": "crowd-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/crowd/Crowd*",
@@ -1670,10 +1781,12 @@
       ],
       "tests": [
         "test/unit/crowd/crowd_tests.cpp",
-        "test/integration/script-api/script_api_graphics_ScriptECS_tests.cpp", "test/unit/crowd/crowd_tests.cpp",
         "test/integration/script-api/script_api_graphics_ScriptECS_tests.cpp",
         "test/unit/crowd/crowd_tests.cpp",
-        "test/integration/script-api/script_api_graphics_ScriptECS_tests.cpp", "test/unit/crowd/crowd_tests.cpp",
+        "test/integration/script-api/script_api_graphics_ScriptECS_tests.cpp",
+        "test/unit/crowd/crowd_tests.cpp",
+        "test/integration/script-api/script_api_graphics_ScriptECS_tests.cpp",
+        "test/unit/crowd/crowd_tests.cpp",
         "test/unit/crowd/crowd_tests.cpp"
       ],
       "provides": [],
@@ -1787,6 +1900,51 @@
       ]
     },
     {
+      "id": "devtools-game-world-context-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/devtools/GameWorldContext*",
+      "owner": "devtools maintainers",
+      "issue": "EVENGINE-MCP-GAME-WORLD",
+      "reason": "AI Discover must learn the live game world from MCP without eve_eval: config.title/modules + live slots + gameplay domains; publishWorldContext only for optional narrative fields (not a passthrough of on-disk prose).",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/devtools/GameWorldContext.hpp",
+        "src/engine/devtools/GameWorldContext.cpp",
+        "docs/dev/AI与MCP支持.md",
+        "docs/dev/2026-09-05-play-verify-evolve.md"
+      ],
+      "tests": [
+        "test/unit/devtools/devtools_tests.cpp",
+        "test/integration/runtime-lifecycle/runtime_lifecycle_graphics_tests.cpp"
+      ],
+      "provides": [],
+      "requires": [
+        {
+          "capability": "IGameplayControlProvider",
+          "required": false,
+          "fallback": "domains array stays empty when no gameplay control providers are registered"
+        }
+      ],
+      "emits": [],
+      "observes": [
+        "config.title; config.modules / optionalModules; instantiated eve.moduleList slots; optional eve.dev.publishWorldContext overlay."
+      ],
+      "binds": [],
+      "protocol": [
+        "eve_game_world tool, eve://game-world resource, eve_play op=status.gameWorld; schema evengine.game-world v1. source is config|runtime|none. Soft restart with reloadScripts clears the runtime overlay. game.agent.json is not world authority."
+      ],
+      "thread_affinity": "Game-loop / MCP poll thread only; snapshot is an owning Value with no retained VM pointers.",
+      "trim": {
+        "claim": "none",
+        "evidence": "Desktop EVDevTools only; trimmed builds without DevTools omit MCP entirely.",
+        "absent_profile": "No DevTools profile: tools and resources are absent with the rest of MCP."
+      },
+      "cost_notes": [
+        "Module enumeration walks eve.moduleList once per snapshot; bounded Squirrel conversion (depth 8 / 4096 elements)."
+      ],
+      "hot_path": []
+    },
+    {
       "id": "devtools-mcp-input-tools-interface",
       "rule": "module-interface",
       "scope": "src/engine/devtools/McpInputTools*",
@@ -1801,7 +1959,8 @@
       ],
       "tests": [
         "test/integration/concurrency/concurrency_graphics_tests.cpp",
-        "test/integration/concurrency/concurrency_graphics_tests.cpp", "test/unit/devtools/devtools_tests.cpp"
+        "test/integration/concurrency/concurrency_graphics_tests.cpp",
+        "test/unit/devtools/devtools_tests.cpp"
       ],
       "provides": [],
       "requires": [
@@ -1864,7 +2023,7 @@
       ],
       "binds": [],
       "protocol": [
-        "eve_play: evengine.play-request v1 / evengine.play-response v1; game.agent.json v1 unchanged. Unknown request fields remain rejected."
+        "eve_play: evengine.play-request v1 / evengine.play-response v1; game.agent.json v1 has no world field. status returns runtime gameWorld snapshot. Unknown request/contract fields remain rejected."
       ],
       "thread_affinity": "Owner simulation thread; synchronous owning Value projection. Raw table path lookup invokes no getters or callbacks and retains no VM pointers.",
       "trim": {
@@ -1914,6 +2073,47 @@
       "cost_notes": []
     },
     {
+      "id": "dialogue-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/dialogue/StateAccessScriptSeam.cpp",
+      "owner": "dialogue",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Dialogue is the consumer that owns these two contracts: DialogueState::queryProviders walks cap::query and then cap::forEach for IStateQuery, and DialogueStateContext::apply takes IStateMutation through cap::query. The new script seams answer the first as a listener and the second in the single-provider slot, so both faces appear here and the next provider must declare itself instead of silently displacing the slot. The scope is this one file, not src/modules/dialogue/**: the runner, parser and bindings expose different faces.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/dialogue/StateAccessScriptSeam.cpp",
+        "src/modules/dialogue/DialogueState.cpp",
+        "src/engine/common/StateAccess.h"
+      ],
+      "tests": [
+        "test/integration/script-api/script_api_graphics_ScriptECS_tests.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IStateQuery",
+        "IStateMutation"
+      ],
+      "requires": [
+        "IStateQuery",
+        "IStateMutation"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.provider.publishFor('eve.state.IStateQuery', name, instance) -> value/hasTag/attribute/resource/state/authority(subject, key|tag|scope), null meaning 'not mine'; eve.provider.publishFor('eve.state.IStateMutation', name, instance) -> applyStateMutations({ transactionId, correlationId, causationId, mutations = [{ subject, key, value, kind, persistent }] }) returning the number of changed entries"
+      ],
+      "protocol": [],
+      "thread_affinity": "Squirrel owning thread; the seam answers IStateQuery and IStateMutation synchronously while a dialogue expression is evaluated and retains no VM value between calls",
+      "trim": {
+        "absent_profile": "Profiles without dialogue drop the seams; other IStateQuery/IStateMutation providers keep answering through the same forEach walk, so dialogue state resolution degrades to the remaining providers",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "Each value/hasTag/attribute/resource/state/authority call is one script call that returns null for 'not mine', so the walk continues; applyStateMutations marshals one mutation table per batch."
+      ],
+      "hot_path": []
+    },
+    {
       "id": "economy-payment-composition-interface",
       "rule": "module-interface",
       "scope": "src/modules/economy/*",
@@ -1951,6 +2151,124 @@
       "trim": {
         "absent_profile": "No new optional provider or trim claim; free Card plays remain account-free."
       },
+      "cost_notes": [],
+      "hot_path": []
+    },
+    {
+      "id": "editor-host-package-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/editor/**",
+      "owner": "editor::EditorHost",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "EditorHost discovers EditorPackage providers, installs panels, routes selection/undo, and scopes Mode A MCP projection when attached.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/editor/EditorHost.cpp",
+        "src/modules/editor/EditorMcpProjector.cpp",
+        "src/modules/editor/EditorSelectionRouter.cpp",
+        "src/modules/editor/EditorUndoCoordinator.cpp",
+        "src/modules/editor/EditorAutomationProvider.cpp",
+        "src/modules/editing/EditorPackage.h",
+        "src/engine/common/EditorMcpAttach.h",
+        "docs/dev/2026-10-13-editor-host-package-automount-mcp.md"
+      ],
+      "tests": [
+        "test/integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp",
+        "test/unit/editing/editing_tests.cpp",
+        "test/integration/concurrency/concurrency_graphics_tests.cpp"
+      ],
+      "provides": [],
+      "requires": [
+        {
+          "capability": "IEditorPackageProvider",
+          "required": false,
+          "fallback": "autoMount succeeds with an empty report when no packages are loaded; target-list omits createSchema"
+        },
+        {
+          "capability": "IEditorAutomationTargetFactory",
+          "required": false,
+          "fallback": "exportTargetCatalog and target-list advertise an empty supportedTypes array when no factories are loaded"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Editor",
+          "methods": [
+            "newHost",
+            "registerAutomatedScriptCommand"
+          ]
+        },
+        {
+          "script_class": "eve.EditorHost",
+          "methods": [
+            "autoMount",
+            "mount",
+            "unmount",
+            "isMounted",
+            "exportMcp",
+            "focusUndoOwner"
+          ]
+        },
+        {
+          "script_class": "eve.mcp",
+          "methods": [
+            "attachEditor",
+            "detachEditor"
+          ]
+        }
+      ],
+      "protocol": [
+        "eve_editor_commands includes inputSchema projected from CommandDescriptor.payloadSchema",
+        "eve_editor_target_list supportedTypes entries are objects with type and optional createSchema",
+        "Attached Host filters commands/target types to mounted packages; package-audit lists incomplete packages and orphan factory types"
+      ],
+      "trim": {
+        "absent_profile": "runtime-3d excludes editing/editor; Host and MCP editor tools are unavailable"
+      },
+      "thread_affinity": "owner/editor composition thread and MCP poll thread; Host does not retain package provider pointers across frames",
+      "cost_notes": [
+        "autoMount walks every IEditorPackageProvider once and installs panel descriptors; schema projection is O(properties) per command/type"
+      ],
+      "hot_path": []
+    },
+    {
+      "id": "fluids-editor-incomplete-package-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/fluids/editor/**",
+      "owner": "fluids_editor::FluidsEditorModule",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Fluids advertise an incomplete EditorPackage so Host completeness gates skip half-registered factory-only adapters.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/fluids/editor/FluidsEditorPackage.cpp",
+        "src/modules/fluids/editor/FluidsEditorModule.cpp"
+      ],
+      "tests": [
+        "test/integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IEditorAutomationTargetFactory",
+          "impl": "FluidsAutomationTargetFactory",
+          "absent_behavior": "fluid automation targets unavailable when trimmed"
+        },
+        {
+          "capability": "IEditorPackageProvider",
+          "impl": "FluidsEditorPackageProvider",
+          "absent_behavior": "package-audit no longer reports fluids_editor as incomplete"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "runtime profiles exclude the editor leaf"
+      },
+      "thread_affinity": "owner/editor composition thread",
       "cost_notes": [],
       "hot_path": []
     },
@@ -1996,6 +2314,45 @@
       "cost_notes": [
         "Capture and restore scale with the complete serialized game state and run only at explicit save/load boundaries."
       ]
+    },
+    {
+      "id": "gpuagents-editor-incomplete-package-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/gpuagents/editor/**",
+      "owner": "gpuagents_editor::GpuAgentsEditorModule",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "GPU Agents advertise an incomplete EditorPackage so Host completeness gates skip half-registered factory-only adapters.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/gpuagents/editor/GpuAgentsEditorPackage.cpp",
+        "src/modules/gpuagents/editor/GpuAgentsEditorModule.cpp"
+      ],
+      "tests": [
+        "test/integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IEditorAutomationTargetFactory",
+          "impl": "GpuAgentsAutomationTargetFactory",
+          "absent_behavior": "gpuagents automation targets unavailable when trimmed"
+        },
+        {
+          "capability": "IEditorPackageProvider",
+          "impl": "GpuAgentsEditorPackageProvider",
+          "absent_behavior": "package-audit no longer reports gpuagents_editor as incomplete"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "runtime profiles exclude the editor leaf"
+      },
+      "thread_affinity": "owner/editor composition thread",
+      "cost_notes": [],
+      "hot_path": []
     },
     {
       "id": "graphics-import-surface",
@@ -2130,7 +2487,8 @@
         "cmake/module_manifest/modules/graphics.cmake"
       ],
       "tests": [
-        "test/integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp", "test/unit/graphics_raytracing/graphics_raytracing_unit.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp",
+        "test/unit/graphics_raytracing/graphics_raytracing_unit.cpp",
         "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp"
       ],
       "provides": [
@@ -2410,6 +2768,47 @@
       ]
     },
     {
+      "id": "map-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/map/TileCollisionScriptSink.cpp",
+      "owner": "map",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Map::publishCollision consumes the multi-listener ITileCollisionSink socket through cap::forEach and the new script seam answers it through cap::addListener, so the same capability appears on both faces; recording them makes the next provider or consumer declare itself. The scope is this one file, not src/modules/map/**: the editing and level satellites are separately built modules whose faces must not be attributed to this entry.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/map/TileCollisionScriptSink.cpp",
+        "src/modules/map/TileCollision.h",
+        "src/modules/map/Map.cpp"
+      ],
+      "tests": [
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp",
+        "test/unit/map/map_tests.cpp",
+        "test/integration/asset-import/asset_import_graphics_tests.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "ITileCollisionSink"
+      ],
+      "requires": [
+        "ITileCollisionSink"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.provider.publishFor('ITileCollisionSink', name, instance) -> replaceTileCollision({ layer = { id, generation }, rects = [{ x, y, width, height }] }); eve.TileLayer.getEntityId()/getEntityGeneration()"
+      ],
+      "protocol": [],
+      "thread_affinity": "Map owner thread (the Squirrel owning thread for the instance); the sink is called synchronously from publishCollision and no script value is retained across calls",
+      "trim": {
+        "absent_profile": "Profiles without map drop the module and its sink listeners; a script that published a collision sink sees the provider go away with the module and the map keeps its own collisionRects_ authority",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "replaceTileCollision marshals one rect array per layer publication; map keeps collisionRects_ as the authority and a sink failure stays observable through scriptTileCollisionSinkFailures()."
+      ],
+      "hot_path": []
+    },
+    {
       "id": "math-smooth-max-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/math/*Smooth*",
@@ -2468,7 +2867,8 @@
         "docs/dev/架构行为图与任务上下文.md"
       ],
       "tests": [
-        "test/integration/concurrency/concurrency_graphics_tests.cpp", "test/unit/devtools/devtools_tests.cpp",
+        "test/integration/concurrency/concurrency_graphics_tests.cpp",
+        "test/unit/devtools/devtools_tests.cpp",
         "test/integration/script-api/script_api_graphics_dap_tests.cpp",
         "scripts/tests/test_binding_architecture.py"
       ],
@@ -2623,6 +3023,47 @@
       "cost_notes": []
     },
     {
+      "id": "particles-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/particles/**",
+      "owner": "particles",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Particle emitters publish query, VFX-duration, action-notify and asset-reload capabilities, while the per-frame emitter cull and simulation path must not re-resolve a module by string key.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/particles/ParticleSystem.cpp",
+        "src/modules/particles/ParticlesCapabilities.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IActionNotifyProvider",
+        "IActionPreviewSinkProvider",
+        "IActionVfxDurationProvider",
+        "IAssetReloader",
+        "IParticlesQuery"
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.Particles (plus ParticleEmitter, PcgMaterialSelector, ParticleEffect)"
+      ],
+      "protocol": [],
+      "thread_affinity": "Particles owner thread; the per-frame emitter cull and simulation read a pointer resolved once at the composition boundary and never re-resolve a module by string key",
+      "trim": {
+        "absent_profile": "minimal and other profiles without particles drop every capability listed here; remaining modules that queried them fall back to their documented absent behavior",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "The emitter cull and simulation run per frame, so their dependencies are resolved once at the composition boundary instead of per frame."
+      ],
+      "hot_path": [
+        "src/modules/particles/ParticleSystem.cpp"
+      ]
+    },
+    {
       "id": "physics-owned-contacts-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/physics/*3D*",
@@ -2655,12 +3096,15 @@
       ],
       "tests": [
         "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp",
-        "test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp", "test/unit/physics/physics_tests.cpp",
-        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp",
-        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp",
-        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp", "test/unit/physics/physics_tests.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp",
         "test/unit/physics/physics_tests.cpp",
-        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp", "test/unit/physics/physics_tests.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp",
+        "test/unit/physics/physics_tests.cpp",
+        "test/unit/physics/physics_tests.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp",
+        "test/unit/physics/physics_tests.cpp",
         "test/unit/physics/physics_tests.cpp"
       ],
       "thread_affinity": "Owning physics thread, between simulation steps; no callbacks or persistent borrowed result storage.",
@@ -2742,6 +3186,44 @@
       "cost_notes": []
     },
     {
+      "id": "platform-event-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/platform_event/**",
+      "owner": "platform_event",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Event pumping and main-thread posting expose one capability, dispatch one listener interface and bind one script class; the boundary is recorded so the next provider or consumer must declare itself.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/platform_event/PlatformEvent.h",
+        "src/modules/platform_event/PlatformEventSink.h",
+        "src/modules/platform_event/MainThreadPost.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IMainThreadPost"
+      ],
+      "requires": [
+        "IPlatformEventSink"
+      ],
+      "emits": [
+        "poll notifications delivered through PlatformEvent::subscribePoll; subscribers run on the pump thread and outside the message lock."
+      ],
+      "observes": [],
+      "binds": [
+        "eve.PlatformEvent (getName, pump, poll, pollData, getLastData, pushData)"
+      ],
+      "protocol": [],
+      "thread_affinity": "Platform pump thread for pumping, main thread for IMainThreadPost delivery; sinks run on the pump thread affinity",
+      "trim": {
+        "absent_profile": "Headless profiles that omit platform_event keep IMainThreadPost unbound; postings then run inline or are rejected as Unsupported instead of being queued",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [],
+      "hot_path": []
+    },
+    {
       "id": "procgen-editor-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/procgen/editor/**",
@@ -2812,7 +3294,8 @@
         "docs/usr/modules/procgen.md"
       ],
       "tests": [
-        "test/integration/script-api/script_api_graphics_mcp_tests.cpp", "test/unit/procgen/procgen_composition_tests.cpp",
+        "test/integration/script-api/script_api_graphics_mcp_tests.cpp",
+        "test/unit/procgen/procgen_composition_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [],
@@ -2927,8 +3410,10 @@
         "docs/usr/modules/procgen/pointset-pipeline.md"
       ],
       "tests": [
-        "test/integration/script-api/script_api_graphics_mcp_tests.cpp", "test/unit/procgen/procgen_composition_tests.cpp",
-        "test/integration/script-api/script_api_graphics_mcp_tests.cpp", "test/unit/procgen/procgen_composition_tests.cpp",
+        "test/integration/script-api/script_api_graphics_mcp_tests.cpp",
+        "test/unit/procgen/procgen_composition_tests.cpp",
+        "test/integration/script-api/script_api_graphics_mcp_tests.cpp",
+        "test/unit/procgen/procgen_composition_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [],
@@ -2977,7 +3462,8 @@
         "src/modules/profiler/ProfilerCapabilities.cpp"
       ],
       "tests": [
-        "test/integration/script-api/script_api_graphics_mcp_tests.cpp", "test/unit/profiler/profiler_unit.cpp",
+        "test/integration/script-api/script_api_graphics_mcp_tests.cpp",
+        "test/unit/profiler/profiler_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [
@@ -3269,7 +3755,8 @@
         "src/modules/scene/SceneComponentScript.cpp"
       ],
       "tests": [
-        "test/integration/script-api/script_api_graphics_scene_tests.cpp", "test/unit/scene/scene_tests.cpp",
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp",
+        "test/unit/scene/scene_tests.cpp",
         "scripts/tests/test_architecture_contracts.py",
         "test/integration/runtime-lifecycle/runtime_lifecycle_graphics_tests.cpp",
         "test/integration/script-api/script_api_graphics_scene_tests.cpp"
@@ -3333,6 +3820,40 @@
       ]
     },
     {
+      "id": "scene-script-link-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/scene/ScriptLinks.cpp",
+      "owner": "scene",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "The scene module gains a link kind whose target is a user script object, plus the script binding that attaches it. The scope is the one file, not the directory: src/modules/scene/** also holds the separately built scene.loader, scene.editor and scene.physics modules, whose capabilities must not be attributed to this entry.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/scene/ScriptLinks.cpp",
+        "src/modules/scene/Scene.h",
+        "src/modules/scene/SceneLink.h"
+      ],
+      "tests": [
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.Scene.linkScriptAt(hostName, nodeId, providerName, mode) -> {ok, code, status, diagnostics}; the link kind itself is the registered name 'script', driven through eve.provider.publish/unload"
+      ],
+      "protocol": [],
+      "thread_affinity": "Scene owner thread; linkScriptAt resolves the provider at call time and stores a generation-qualified handle rather than a raw script object",
+      "trim": {
+        "absent_profile": "Profiles without scene drop the script link kind; a registry entry that outlives the scene reports StaleHandle instead of aliasing a recycled implementation",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "linkScriptAt performs one provider resolution and takes one Squirrel reference per link; unlinking releases exactly that generation."
+      ],
+      "hot_path": []
+    },
+    {
       "id": "script-structure-reflection-interface",
       "rule": "module-interface",
       "scope": "src/engine/common/ScriptStructure*",
@@ -3372,6 +3893,131 @@
       }
     },
     {
+      "id": "sensing-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/sensing/SensingScriptCandidateSeam.cpp",
+      "owner": "sensing",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "TargetingResolver consumes ISensingCandidateProvider through cap::query and the new script seam answers it through cap::provide, so the same capability appears on both faces; recording them makes the next provider declare itself instead of silently displacing the single-provider slot. The scope is this one file, not src/modules/sensing/**: the fact mirror, the ranking pipeline and the script world bindings expose different faces.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/sensing/SensingScriptCandidateSeam.cpp",
+        "src/modules/sensing/Targeting.h"
+      ],
+      "tests": [
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp",
+        "test/unit/physics/physics_tests.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "ISensingCandidateProvider"
+      ],
+      "requires": [
+        "ISensingCandidateProvider"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.provider.publishFor('eve.sensing.ISensingCandidateProvider', name, instance) -> queryCandidates({ origin, space, originLocation, domain, minRange, maxRange, requiredTags, excludedTags, zone, area }) returning an array of { subject, location = { space, x, y, z }, domain, tags, zones }"
+      ],
+      "protocol": [],
+      "thread_affinity": "Sensing owner thread; queryCandidates answers one synchronous script call and returns an owning array, retaining no VM value",
+      "trim": {
+        "absent_profile": "Profiles without sensing leave ISensingCandidateProvider unbound; targeting falls back to the in-tree provider set and the script seam simply is not registered",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "queryCandidates marshals one candidate array per query and the ranking pipeline calls it once per resolver pass, so the cost is proportional to the returned candidate count."
+      ],
+      "hot_path": []
+    },
+    {
+      "id": "sensing-query-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/sensing/Sensing.cpp",
+      "owner": "sensing",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "The sensing module instance publishes ISensingQuery for its fact mirror, the same capability the targeting resolver consumes, so a second provider or consumer must declare itself instead of silently displacing the single-provider slot.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/sensing/Sensing.cpp",
+        "src/engine/common/SensingQuery.h"
+      ],
+      "tests": [
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "ISensingQuery"
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "thread_affinity": "Sensing owner thread; queries read the fact mirror synchronously and retain no callback or script value.",
+      "trim": {
+        "absent_profile": "Profiles without sensing leave ISensingQuery unbound; consumers that queried it fall back to their documented absent behavior.",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [],
+      "hot_path": []
+    },
+    {
+      "id": "spritestack-editing-runtime-dependency",
+      "rule": "module-interface",
+      "scope": "src/modules/spritestack/editing/**",
+      "owner": "spritestack-maintainers",
+      "issue": "https://github.com/EVEngine/EVEngine/actions/runs/38156485292",
+      "reason": "The editing target includes and calls SpriteStack runtime types; its manifest must pull in that runtime in the 3d authoring profile.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "cmake/module_manifest/modules/spritestack.cmake",
+        "src/modules/spritestack/editing/SpriteStackTarget.h",
+        "src/modules/spritestack/editing/SpriteStackTarget.cpp",
+        "src/modules/spritestack/editing/SpriteStackRuntime.cpp"
+      ],
+      "tests": [
+        "test/integration/gameplay-composition/gameplay_composition_graphics_editor_material_target_tests.cpp",
+        "test/integration/asset-import/asset_import_graphics_tests.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "eve.editor.target.spritestack-properties",
+          "impl": "SpriteStackDocumentTarget::queryCapability",
+          "absent_behavior": "Unknown target capability identifiers return nullptr; the editing host owns the target lifetime."
+        }
+      ],
+      "requires": [
+        {
+          "capability": "editing::IEditableTarget",
+          "required": true,
+          "fallback": "No editing target without the editing host."
+        },
+        {
+          "capability": "spritestack::SpriteStack2D",
+          "required": true,
+          "fallback": "The manifest enables the runtime through dependency closure; explicitly disabling it rejects the dependent editor configuration."
+        },
+        {
+          "capability": "model3d::ModelData",
+          "required": false,
+          "fallback": "SpriteStackRuntime.cpp is excluded when model3d is absent; the document editing target remains available."
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "thread_affinity": "Editor owning thread; document state is owned by SpriteStackDocumentTarget and runtime resources follow the existing resource ownership contract.",
+      "trim": {
+        "absent_profile": "runtime-3d excludes authoring directories. No new L2/L3/L4 trim claim; this repair restores manifest dependency closure."
+      },
+      "cost_notes": [],
+      "hot_path": []
+    },
+    {
       "id": "statepatch-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/statepatch/**",
@@ -3384,7 +4030,8 @@
         "src/modules/statepatch/StateAccessAdapter.h"
       ],
       "tests": [
-        "test/integration/script-api/script_api_graphics_scene_tests.cpp", "test/unit/statepatch/statepatch_unit.cpp",
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp",
+        "test/unit/statepatch/statepatch_unit.cpp",
         "test/integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
@@ -3477,7 +4124,8 @@
         "src/modules/tactics/TacticsTypes.h"
       ],
       "tests": [
-        "test/integration/script-api/script_api_graphics_scene_tests.cpp", "test/unit/tactics/tactics_tests.cpp",
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp",
+        "test/unit/tactics/tactics_tests.cpp",
         "test/integration/script-api/script_api_graphics_scene_tests.cpp",
         "examples/hex-planet/civilization_test.nut"
       ],
@@ -3549,7 +4197,8 @@
         "src/modules/tags/Tags.cpp"
       ],
       "tests": [
-        "test/integration/script-api/script_api_graphics_scene_tests.cpp", "test/unit/tags/tags_tests.cpp",
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp",
+        "test/unit/tags/tags_tests.cpp",
         "test/integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
@@ -3753,6 +4402,44 @@
       ]
     },
     {
+      "id": "ui-photo-mode-apply-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/ui/PcgPhotoModeApplySeam.cpp",
+      "owner": "ui",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "The photo-mode apply plan consumes IPhotoModeApplySink through cap::query and the new script seam answers it through cap::provide, so the same capability appears on both faces; recording them makes the next provider or consumer declare itself instead of silently displacing the single-provider slot. The scope is this one file, not src/modules/ui/**: the panel, session and value files expose different faces.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/ui/PcgPhotoModeApplyPlan.cpp",
+        "src/modules/ui/PcgPhotoModeApplySeam.cpp"
+      ],
+      "tests": [
+        "test/integration/gameplay-composition/gameplay_composition_graphics_procgen_core_boundary_tests.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IPhotoModeApplySink"
+      ],
+      "requires": [
+        "IPhotoModeApplySink"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.provider.publishFor('eve.photo-mode.apply', name, instance) -> applyPhotoModeAssignment({ field, domain, value })"
+      ],
+      "protocol": [],
+      "thread_affinity": "UI owner thread; applyPhotoModeAssignment runs synchronously from the apply plan and retains no script value between steps",
+      "trim": {
+        "absent_profile": "Profiles without ui drop the photo-mode apply seam with the module; the plan keeps the session state and applies only the assignments its remaining sinks accept",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "applyPhotoModeAssignment marshals one assignment table per plan step; the plan owns the session state and a sink rejection stays a structured Result."
+      ],
+      "hot_path": []
+    },
+    {
       "id": "ui-progress-render-interface",
       "rule": "module-interface",
       "scope": "src/modules/ui/UISystem.cpp",
@@ -3791,6 +4478,131 @@
       "hot_path": [
         "src/modules/ui/UISystem.cpp"
       ]
+    },
+    {
+      "id": "vehicle-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/vehicle/**",
+      "owner": "vehicle",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "The damage pipeline consumes the multi-listener IVehicleDamageModifier socket, which is now answerable from script through eve.provider.publishFor; recording the face makes the provider and any further consumer declare themselves.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/vehicle/VehicleTypes.h",
+        "src/modules/vehicle/Vehicle.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IVehicleDamageModifier"
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.Vehicle (unchanged); eve.provider.publishFor('IVehicleDamageModifier', name, instance)"
+      ],
+      "protocol": [],
+      "thread_affinity": "Vehicle simulation owner thread; the damage modifier is called synchronously inside the damage pipeline and retains no script value between hits",
+      "trim": {
+        "absent_profile": "Profiles without vehicle drop the module and its IVehicleDamageModifier listeners; the remaining modifiers keep running in registration order",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "The modifier runs once per damage application and returns an owning modified value; nothing is retained between hit resolutions."
+      ],
+      "hot_path": []
+    },
+    {
+      "id": "voxel-editor-package-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/voxel/editor/**",
+      "owner": "voxel_editor::VoxelEditorModule",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Voxel editor advertises a complete EditorPackage (panels, schema-bearing commands, target types) for Host autoMount.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/voxel/editor/VoxelEditorPackage.cpp",
+        "src/modules/voxel/editor/voxel_editor.cpp",
+        "src/modules/voxel/editing/VoxelEditingCommands.cpp"
+      ],
+      "tests": [
+        "test/integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IEditorAutomationTargetFactory",
+          "impl": "VoxelEditorModule::TargetFactory",
+          "absent_behavior": "voxel-catalog/voxel-model automation targets unavailable when trimmed"
+        },
+        {
+          "capability": "IEditorPackageProvider",
+          "impl": "VoxelEditorPackageProvider",
+          "absent_behavior": "EditorHost cannot autoMount the voxel package"
+        }
+      ],
+      "requires": [
+        {
+          "capability": "IEditingCommandRegistry",
+          "required": true,
+          "fallback": "module construction fails when the editing command registry is absent"
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.VoxelEditorModule",
+          "methods": [
+            "create"
+          ]
+        }
+      ],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "runtime profiles exclude the editor leaf"
+      },
+      "thread_affinity": "owner/editor composition thread",
+      "cost_notes": [],
+      "hot_path": []
+    },
+    {
+      "id": "weapon-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/weapon/**",
+      "owner": "weapon",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "The projectile logic consumes IProjectileService through cap::query and the script seam answers it through cap::provide, so the same capability appears on both faces; recording them makes the next provider or consumer declare itself instead of silently displacing the single-provider slot.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/weapon/WeaponLogic.h",
+        "src/modules/weapon/WeaponSystem.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IProjectileService"
+      ],
+      "requires": [
+        "IProjectileService"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.Weapon, eve.WeaponEntity, eve.WeaponMountEntity, eve.WeaponRigEntity, eve.AmmoPoolEntity; eve.provider.publishFor('IProjectileService', name, instance)"
+      ],
+      "protocol": [],
+      "thread_affinity": "Weapon owner thread; the projectile service answers each spawn/step query synchronously with an owning value and retains nothing across frames",
+      "trim": {
+        "absent_profile": "Profiles without weapon drop the module and its projectile service; a script that published one keeps the handle but every later call reports the provider as gone",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "The projectile service is consulted once per projectile spawn/step; the seam marshals one table per call and retains no VM value."
+      ],
+      "hot_path": []
     },
     {
       "id": "window-module-interface",

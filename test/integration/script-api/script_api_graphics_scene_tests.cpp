@@ -242,12 +242,13 @@ boom();
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rx)
-#include "PrivateTestScope.h"
 #include <memory>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <string>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "common/Module.h"
+#include "common/SquirrelBinding.h"
 #include "platform_event/PlatformEvent.h"
 #include "rx/Rx.h"
 #include "zeroerr/assert.h"
@@ -388,12 +389,25 @@ TEST_CASE("rx.script.fromEvent.pump") {
     )");
     CHECK_EQ(out, std::string("AB"));
 }
+
+TEST_CASE("rx.script.throwingSubscriberIsReported") {
+    eve::script::resetReportedScriptCallFailures();
+    runRxSnippet(R"(
+        local s = rx.newSubject();
+        s.subscribe(function(v) { throw "subscriber exploded"; });
+        s.onNext(1);
+    )");
+    // The subscriber runs from native code. Before rx routed it through the shared
+    // reporter, a subscriber that threw was indistinguishable from one that returned
+    // nothing: the stream just stopped producing, with nothing on stderr.
+    REQUIRE(eve::script::reportedScriptCallFailures() >= 1);
+}
 }  // namespace test_rx
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scenario_recorder)
-#include "PrivateTestScope.h"
+#include <filesystem>
 #include <string>
+#include "PrivateTestScope.h"
 #include "common/Module.h"
 #include "common/Runtime.h"
 #include "devtools/DevTool.hpp"
@@ -462,7 +476,7 @@ TEST_CASE("devtools.scenario.recordPersistLoadRoundTrip") {
     ev->pollOwned();
 
     const std::string path = "scenario_roundtrip_test.json";
-    CHECK(rec.end(path));
+    REQUIRE(rec.end(path));
     CHECK(!rec.recording());
 
     // Reload the persisted scenario independently of the recorder's memory.
@@ -504,45 +518,52 @@ TEST_CASE("devtools.scenario.replayReproducesStateDrivenError") {
     ev->pollOwned();
 
     const std::string path = "scenario_repro_test.json";
-    CHECK(rec.end(path));
+    REQUIRE(rec.end(path));
     dev::DevTool::instance().detach();
 
     // --- Replay on a fresh VM: restore baseline, re-stage the recorded taps ---
     Runtime rt2(256, ssq::Libs::ALL);
     rt2.runSource(kTapScript, "taps.nut");
-    CHECK(rec.beginReplay(rt2.handle(), path));
+    REQUIRE(rec.beginReplay(rt2.handle(), path));
 
     // Baseline restored: hits is back to 0 before any staged input.
     const int64_t before = rt2.vm().find("hits").toInt();
-    CHECK_EQ(before, 0);
+    REQUIRE_EQ(before, 0);
 
     bool reproduced = false;
     while (rec.framesRemaining() > 0) {
-        CHECK(rec.stageFrame());
-        CHECK(drainTaps(rt2.vm(), reproduced));
+        REQUIRE(rec.stageFrame());
+        REQUIRE(drainTaps(rt2.vm(), reproduced));
     }
     // All 3 taps replayed from the clean baseline -> hits reaches 3 -> throws.
-    CHECK(reproduced);
+    REQUIRE(reproduced);
 
     dev::ScenarioRecorder::instance().cancel();
     dev::DevTool::instance().detach();
+    // The repro file is written next to the test process on purpose (a developer can open
+    // it), but the case must not leave it in the checkout: it used to show up in
+    // `git status` after any local test run.
+    std::error_code removed;
+    std::filesystem::remove(path, removed);
 }
 }  // namespace test_scenario_recorder
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene)
-#include "PrivateTestScope.h"
 #include <SDL2/SDL.h>
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <string>
 #include <utility>
+#include "PrivateTestScope.h"
 #include "common/Capability.h"
 #include "common/ECS.h"
 #include "common/EntitySpatialResolver.h"
 #include "common/Module.h"
 #include "common/ProcgenSceneSink.h"
+#include "common/ScriptComponentSnapshot.h"
+#include "common/SquirrelBinding.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/Canvas.h"
@@ -627,6 +648,36 @@ public:
 };
 
 }  // namespace
+
+
+TEST_CASE("Scene.link.syncRenderable3DWorldRotation") {
+    // The node sync has to decompose the world matrix with the inverse of the order
+    // the renderer recomposes it (RenderSystem3D's modelFromTransform is
+    // T*Ry(yaw)*Rx(pitch)*Rz(roll)*S). Extracting with glm::eulerAngles() instead
+    // returns a different Euler family, so a multi-axis node rendered at a wrong
+    // orientation. A single-axis rotation happens to survive either way, hence the
+    // three-axis angles here.
+    SceneHost *h = sceneValue(SceneHost::createHost("link3d"));
+    h->setTree(
+        node("root",
+             {node("mesh").withPosition(1.f, 2.f, 3.f).withRotation(0.5f, 0.25f, 0.1f).withScaleXYZ(2.f, 3.f, 4.f)}));
+
+    auto *r = eve::graphics::Renderable3D::create();
+    REQUIRE(r != nullptr);
+    CHECK(h->linkRenderable3D("mesh", r));
+    TransformSystem::updateHost(h);
+
+    const auto t = r->transform();
+    REQUIRE(approxEq(t->x, 1.f));
+    REQUIRE(approxEq(t->y, 2.f));
+    REQUIRE(approxEq(t->z, 3.f));
+    REQUIRE(approxEq(t->sx, 2.f));
+    REQUIRE(approxEq(t->sy, 3.f));
+    REQUIRE(approxEq(t->sz, 4.f));
+    REQUIRE(approxEq(t->yaw, 0.5f));
+    REQUIRE(approxEq(t->pitch, 0.25f));
+    REQUIRE(approxEq(t->roll, 0.1f));
+}
 
 
 TEST_CASE("Scene.render.parentChildOrbitPreview") {
@@ -817,6 +868,36 @@ TEST_CASE("Scene.link.physics2D") {
     w.destroy();
 }
 
+TEST_CASE("Scene.link.body3DPullRoundTripsEuler") {
+    // pushBody3D composes Ry(yaw)*Rx(pitch)*Rz(roll) onto the body, so pullBody3D has
+    // to invert exactly that order. glm::eulerAngles() returns a different Euler
+    // family, which handed a body-authoritative node the wrong angles for any
+    // multi-axis rotation; localMatrix() then rebuilt a different orientation than
+    // the body actually has. Single-axis values agree either way, hence three axes.
+    SceneHost *h = sceneValue(SceneHost::createHost("link3drot"));
+    h->setTree(node("root", {node("rig")}));
+
+    eve::physics::World3D w(0.f, -9.8f, 0.f, true);
+    eve::physics::Body3D *b = w.newBody("kinematic", 0.f, 0.f, 0.f);
+    REQUIRE(b != nullptr);
+
+    const float     yaw = 0.5f, pitch = 0.25f, roll = 0.1f;
+    const glm::quat q = glm::angleAxis(yaw, glm::vec3(0.f, 1.f, 0.f)) *
+                        glm::angleAxis(pitch, glm::vec3(1.f, 0.f, 0.f)) *
+                        glm::angleAxis(roll, glm::vec3(0.f, 0.f, 1.f));
+    b->setRotation(q.x, q.y, q.z, q.w);
+
+    CHECK(h->linkPhysics3D("rig", b, 1));  // body-authoritative: pull into the node
+    TransformSystem::updateHost(h);
+
+    SceneNode *n = sceneValue(h->findById("rig"));
+    REQUIRE(n != nullptr);
+    REQUIRE(approxEq(n->yaw, yaw));
+    REQUIRE(approxEq(n->pitch, pitch));
+    REQUIRE(approxEq(n->roll, roll));
+    w.destroy();
+}
+
 
 // The camera projection the picking entry points need is an optional
 // capability: without a provider they must fail explicitly instead of silently
@@ -845,8 +926,8 @@ static const char* kSceneEcsScriptContent = R"SQ(
 
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("enemy")
+    scene.beginNode("root", "")
+    scene.addNode("enemy", "")
     scene.end()
     scene.mountBuildAs("battle")
 
@@ -877,8 +958,8 @@ static const char* kSceneEcsScriptContent = R"SQ(
 
     // reconcile keeps the binding alive (same node id)
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("enemy")
+    scene.beginNode("root", "")
+    scene.addNode("enemy", "")
     scene.end()
     scene.remountBuildAs("battle")
     if (!scene.hasEntity("enemy", EnemyAI)) return false
@@ -887,7 +968,7 @@ static const char* kSceneEcsScriptContent = R"SQ(
 
     // full rebuild removing the node tears the binding down
     scene.beginBuild()
-    scene.beginNode("root")
+    scene.beginNode("root", "")
     scene.end()
     scene.mountBuildAs("battle")
     if (scene.hasEntity("enemy", EnemyAI)) return false
@@ -903,9 +984,9 @@ static const char* kSceneEcsScriptContent = R"SQ(
 
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("a")
-    scene.addNode("b")
+    scene.beginNode("root", "")
+    scene.addNode("a", "")
+    scene.addNode("b", "")
     scene.end()
     scene.mountBuildAs("units")
 
@@ -974,8 +1055,8 @@ static const char* kSceneEcsScriptContent = R"SQ(
 [[maybe_unused]] function testSceneLinkPhysics2D() {
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("ball")
+    scene.beginNode("root", "")
+    scene.addNode("ball", "")
     scene.setBuildPosition(50.0, 60.0, 0.0)
     scene.end()
     scene.mountBuildAs("links")
@@ -1008,10 +1089,10 @@ static const char* kSceneEcsScriptContent = R"SQ(
 [[maybe_unused]] function testSceneApiCompleteness() {
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("pivot")
+    scene.beginNode("root", "")
+    scene.addNode("pivot", "")
     scene.setBuildPosition(10.0, 0.0, 0.0)
-    scene.addNode("ball")
+    scene.addNode("ball", "")
     scene.setBuildPosition(1.0, 2.0, 3.0)
     scene.end()
     scene.mountBuildAs("api")
@@ -1025,18 +1106,33 @@ static const char* kSceneEcsScriptContent = R"SQ(
     scene.setNodeVisible("ball", false)
     if (scene.getNodeVisible("ball")) return false
 
-    // world + space conversion
+    // world + space conversion. addNode() adds a *sibling* of the open node (the
+    // documented order used by examples/scene-ecs/main.nut), so ball hangs off root,
+    // not off pivot: its world position is its own local position here.
     scene.updateTransforms()
+    local wpi = scene.getNodeWorldPosition("pivot")
+    if (wpi[0] != 10.0 || wpi[1] != 0.0 || wpi[2] != 0.0) return false
     local wp = scene.getNodeWorldPosition("ball")
-    if (wp[0] != 11.0 || wp[1] != 2.0 || wp[2] != 3.0) return false
+    if (wp[0] != 1.0 || wp[1] != 2.0 || wp[2] != 3.0) return false
     local lw = scene.localToWorld("ball", 0.0, 0.0, 0.0)
-    if (lw[0] != 11.0) return false
-    local wl = scene.worldToLocal("ball", 11.0, 2.0, 3.0)
+    if (lw[0] != 1.0) return false
+    local wl = scene.worldToLocal("ball", 1.0, 2.0, 3.0)
     if (wl[0] != 0.0 || wl[1] != 0.0) return false
 
     // hierarchy ops
     if (!scene.setNodeParent("ball", "pivot")) return false
     if (scene.getParentId("ball") != "pivot") return false
+
+    // Reparenting keeps the local transform (SceneHost::setParent only relinks), so
+    // the parent's offset now shows up: pivot(10) + ball local(1) == 11.
+    scene.updateTransforms()
+    local wp2 = scene.getNodeWorldPosition("ball")
+    if (wp2[0] != 11.0 || wp2[1] != 2.0 || wp2[2] != 3.0) return false
+    local lw2 = scene.localToWorld("ball", 0.0, 0.0, 0.0)
+    if (lw2[0] != 11.0) return false
+    local wl2 = scene.worldToLocal("ball", 11.0, 2.0, 3.0)
+    if (wl2[0] != 0.0 || wl2[1] != 0.0) return false
+
     if (!scene.removeNode("ball")) return false
     if (scene.getParentId("ball") != "") return false
     if (!scene.addNodeChild("root", "ball")) return false
@@ -1071,8 +1167,8 @@ static const char* kSceneEcsScriptContent = R"SQ(
 [[maybe_unused]] function testSceneNodeEvents() {
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("a")
+    scene.beginNode("root", "")
+    scene.addNode("a", "")
     scene.end()
     scene.mountBuildAs("evt")
 
@@ -1085,8 +1181,8 @@ static const char* kSceneEcsScriptContent = R"SQ(
     // reconcile patch fires node_changed per affected node
     events.clear()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("a")
+    scene.beginNode("root", "")
+    scene.addNode("a", "")
     scene.setBuildPosition(3.0, 0.0, 0.0)
     scene.end()
     scene.remountBuildAs("evt")
@@ -1096,16 +1192,16 @@ static const char* kSceneEcsScriptContent = R"SQ(
     // full rebuild removing a node fires node_removed
     events.clear()
     scene.beginBuild()
-    scene.beginNode("root")
+    scene.beginNode("root", "")
     scene.end()
     scene.mountBuildAs("evt")
     if (events.len() < 1 || events[0] != "node_removed:a") return false
 
     // reparent fires node_moved
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("x")
-    scene.addNode("y")
+    scene.beginNode("root", "")
+    scene.addNode("x", "")
+    scene.addNode("y", "")
     scene.end()
     scene.mountBuildAs("evt")
     events.clear()
@@ -1120,9 +1216,13 @@ static const char* kSceneEcsScriptContent = R"SQ(
     class MyComp extends eve.SceneComponent {
         function onMount() { mounted += 1 }
         function build() {
-            scene.beginBuild()
-            scene.beginNode("root")
-            scene.end()
+            // `scene` bare would resolve to the inherited SceneComponent.scene()
+            // accessor method, so the documented pattern is to call the accessor
+            // (see examples/basic/ui_component.nut: `local u = ui()`). updateIfDirty()
+            // has already called beginBuild() for this pass.
+            local s = scene()
+            s.beginNode("root", "")
+            s.end()
         }
     }
     local c = MyComp()
@@ -1137,8 +1237,8 @@ static const char* kSceneEcsScriptContent = R"SQ(
 [[maybe_unused]] function testSceneErrorSemantics() {
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("a")
+    scene.beginNode("root", "")
+    scene.addNode("a", "")
     scene.end()
     scene.mountBuildAs("err")
     local threw = false
@@ -1154,8 +1254,8 @@ static const char* kSceneEcsScriptContent = R"SQ(
 [[maybe_unused]] function testSceneSerializeAndPick() {
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("target")
+    scene.beginNode("root", "")
+    scene.addNode("target", "")
     scene.end()
     scene.mountBuildAs("spk")
     scene.setNodeBounds("target", -1.0, -1.0, -1.0, 1.0, 1.0, 1.0)
@@ -1169,6 +1269,122 @@ static const char* kSceneEcsScriptContent = R"SQ(
     if (scene.pickRay(0.0, 0.0, 5.0, 0.0, 0.0, -1.0) != "target") return false
     return true
 }
+function testAttachRejectsPlainEntity() {
+    // This used to have to touch eve.Component first, because eve.SceneEntity is
+    // installed by a post-ECS hook and a script whose first ECS name was SceneEntity
+    // did not find it. The lazy resolver now injects the script ECS base itself, so
+    // the ordering no longer matters (see testSceneEntityIsTheFirstEcsName).
+    class Marker extends eve.Component { v = 0 }
+    class PlainEntity extends eve.Entity { mark = Marker }
+
+    local scene = eve.Scene()
+    scene.beginBuild()
+    scene.beginNode("root", "")
+    scene.addNode("n", "")
+    scene.end()
+    scene.mountBuildAs("guard")
+
+    // A plain Entity is not a script scene entity. This used to die mid-call with
+    // "the index '_scene' does not exist" because the body stores the host binding in
+    // members only eve.SceneEntity declares.
+    if (scene.attachEntity("n", PlainEntity) != null) return false
+    return scene.entitiesOf("n").len() == 0
+}
+
+function testSceneEntityIsTheFirstEcsName() {
+    // `class MyThing extends eve.SceneEntity` is the natural opening line of a user
+    // script, so SceneEntity being the *first* eve.* name touched has to work.
+    class OnlyEntity extends eve.SceneEntity { }
+
+    local scene = eve.Scene()
+    scene.beginBuild()
+    scene.beginNode("root", "")
+    scene.addNode("n", "")
+    scene.end()
+    scene.mountBuildAs("first")
+
+    local e = scene.attachEntity("n", OnlyEntity)
+    if (e == null) return false
+    if (!e.isAlive()) return false
+    if (!scene.hasEntity("n", OnlyEntity)) return false
+    if (!eve.isSubclass(OnlyEntity, eve.SceneEntity)) return false
+    return eve.view(OnlyEntity).len() == 1
+}
+
+function testCallbackFailureIsReported() {
+    class Marker extends eve.Component { v = 1 }
+    class Unit extends eve.SceneEntity { mark = Marker }
+
+    local scene = eve.Scene()
+    scene.beginBuild()
+    scene.beginNode("root", "")
+    scene.addNode("a", "")
+    scene.end()
+    scene.mountBuildAs("failreport")
+    if (scene.attachEntity("a", Unit) == null) return false
+
+    // The callback runs and throws. `visited == 1` is what makes this a *throw* rather
+    // than a callback that never ran, so the failure the engine has to report is real.
+    local visited = 0
+    scene.forEachEntity("failreport", "a", function(entity, index) {
+        visited += 1
+        throw "callback exploded"
+    })
+    return visited == 1
+}
+
+function testUpdateFailureIsReported() {
+    class Boom extends eve.SceneEntity {
+        function update(dt) { throw "update exploded" }
+    }
+
+    local scene = eve.Scene()
+    scene.beginBuild()
+    scene.beginNode("root", "")
+    scene.addNode("n", "")
+    scene.end()
+    scene.mountBuildAs("updfail")
+    if (scene.attachEntity("n", Boom) == null) return false
+
+    // scene.update(dt) drives every rooted instance's update(dt); this one throws. The
+    // engine has to report that rather than treat it like an instance that returned early.
+    scene.update(0.016)
+    return true
+}
+
+// 原生工具（编辑器 inspector / MCP / 诊断）要怎么读到"这个节点上的脚本组件状态"：
+// `Scene::scriptEntitiesAt` 给实例，`scriptComponentInstancesOf` 给已登记组件的字段。
+function buildSceneWithRegisteredComponent() {
+    class ToolProbe extends eve.Component { x = 1.5; y = 2.5 }
+    class ToolEntity extends eve.SceneEntity { probe = ToolProbe }
+
+    local registered = eve.component("ToolProbe", 1, ToolProbe).ok
+    local scene = eve.Scene()
+    scene.beginBuild()
+    scene.beginNode("root", "")
+    scene.addNode("probe", "")
+    scene.end()
+    scene.mountBuildAs("tools")
+    local e = scene.attachEntity("probe", ToolEntity)
+    if (e == null) return false
+    e.probe.x = 42.0
+    return registered
+}
+
+// 未登记组件（纯槽位语义）的对照片：引擎工具**不该**看到它——它没有名字与版本，无从寻址。
+function buildSceneWithUnregisteredComponent() {
+    class LooseProbe extends eve.Component { v = 7.0 }
+    class LooseEntity extends eve.SceneEntity { loose = LooseProbe }
+
+    local scene = eve.Scene()
+    scene.beginBuild()
+    scene.beginNode("root", "")
+    scene.addNode("loose", "")
+    scene.end()
+    scene.mountBuildAs("loosehost")
+    return scene.attachEntity("loose", LooseEntity) != null
+}
+
 )SQ";
 
 class SceneEcsBridgeFixture {
@@ -1183,11 +1399,55 @@ public:
 };
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityLifecycle") {
-    CHECK(vm.callFunc(vm.findFunc("testSceneEntityLifecycle"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneEntityLifecycle"), vm).toBool());
+}
+
+// J-3 的"引擎工具读到脚本组件"读侧：节点 → 脚本实体（原生访问）→ 已登记组件 → 字段值。
+// 这是编辑器 inspector / MCP 那一格的地基，所以在这里钉住它（不依赖编辑器 UI）。
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.nativeAccessReadsRegisteredComponentState") {
+    REQUIRE(vm.callFunc(vm.findFunc("buildSceneWithRegisteredComponent"), vm).toBool());
+
+    auto *scene = eve::scene::Scene::create();
+    REQUIRE(scene != nullptr);
+
+    const auto entities = scene->scriptEntitiesAt("tools", "probe");
+    REQUIRE_EQ(entities.size(), std::size_t{1});
+
+    auto states = eve::scriptComponentInstancesOf(entities.front());
+    REQUIRE(states.ok());
+    REQUIRE_EQ(states.value().size(), std::size_t{1});
+    CHECK_EQ(states.value().front().name, std::string("ToolProbe"));
+    CHECK_EQ(states.value().front().version.value(), std::uint64_t{1});
+    CHECK(states.value().front().generation.value() >= 1);
+    // 字段按声明顺序收集，值来自引擎侧那一个权威存储（脚本写 42.0 的那次也是写它）。
+    const auto &fields = states.value().front().fields;
+    const auto  x      = fields.find("x");
+    const auto  y      = fields.find("y");
+    REQUIRE(x != fields.end());
+    REQUIRE(y != fields.end());
+    CHECK_EQ(x->second.asDouble(), 42.0);
+    CHECK_EQ(y->second.asDouble(), 2.5);
+
+    // 负例：没有挂脚本的节点、未知宿主/节点都返回空数组（不是错误），调用方据此报"这里没有脚本"。
+    CHECK(scene->scriptEntitiesAt("tools", "root").empty());
+    CHECK(scene->scriptEntitiesAt("nope", "probe").empty());
+}
+
+// 未登记的组件（纯槽位语义）**不该**出现在原生工具里：它没有名字与版本，引擎无从寻址。
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.nativeAccessSkipsUnregisteredComponents") {
+    REQUIRE(vm.callFunc(vm.findFunc("buildSceneWithUnregisteredComponent"), vm).toBool());
+
+    auto      *scene    = eve::scene::Scene::create();
+    const auto entities = scene->scriptEntitiesAt("loosehost", "loose");
+    REQUIRE_EQ(entities.size(), std::size_t{1});
+
+    auto states = eve::scriptComponentInstancesOf(entities.front());
+    REQUIRE(states.ok());
+    CHECK(states.value().empty());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityViewCacheAfterDetach") {
-    CHECK(vm.callFunc(vm.findFunc("testSceneEntityViewCacheAfterDetach"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneEntityViewCacheAfterDetach"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityEnableAndDelayedDetach") {
@@ -1195,31 +1455,55 @@ TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityEnableAndDelayedDet
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.linkPhysics2D") {
-    CHECK(vm.callFunc(vm.findFunc("testSceneLinkPhysics2D"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneLinkPhysics2D"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.apiCompleteness") {
-    CHECK(vm.callFunc(vm.findFunc("testSceneApiCompleteness"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneApiCompleteness"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.nodeEvents") {
-    CHECK(vm.callFunc(vm.findFunc("testSceneNodeEvents"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneNodeEvents"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.componentOnMount") {
-    CHECK(vm.callFunc(vm.findFunc("testSceneComponentOnMount"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneComponentOnMount"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.errorSemantics") {
-    CHECK(vm.callFunc(vm.findFunc("testSceneErrorSemantics"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneErrorSemantics"), vm).toBool());
+}
+
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.attachRejectsPlainEntity") {
+    REQUIRE(vm.callFunc(vm.findFunc("testAttachRejectsPlainEntity"), vm).toBool());
+}
+
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityIsTheFirstEcsName") {
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneEntityIsTheFirstEcsName"), vm).toBool());
+}
+
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.callbackFailureIsNotSilent") {
+    // A callback that throws used to look exactly like an empty node: the failed sq_call
+    // was turned into a false return and the script error was dropped, so a broken
+    // handler produced no signal at all (plan doc 10.8).
+    eve::script::resetReportedScriptCallFailures();
+    REQUIRE(vm.callFunc(vm.findFunc("testCallbackFailureIsReported"), vm).toBool());
+    REQUIRE(eve::script::reportedScriptCallFailures() >= 1);
+}
+
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.updateFailureIsNotSilent") {
+    // The per-instance update(dt) path (Scene::callMethod) had the same gap as the
+    // forEachEntity callback: a throwing update() returned false and said nothing.
+    eve::script::resetReportedScriptCallFailures();
+    REQUIRE(vm.callFunc(vm.findFunc("testUpdateFailureIsReported"), vm).toBool());
+    REQUIRE(eve::script::reportedScriptCallFailures() >= 1);
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.serializeAndPick") {
-    CHECK(vm.callFunc(vm.findFunc("testSceneSerializeAndPick"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneSerializeAndPick"), vm).toBool());
 }
 }  // namespace test_scene
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_authoring_script)
 #include "PrivateTestScope.h"
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -1490,8 +1774,8 @@ TEST_CASE("Scene.script.firstObjectLookupAndDelayedDetach") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_schema)
-#include "PrivateTestScope.h"
 #include <simplesquirrel/simplesquirrel.hpp>
+#include "PrivateTestScope.h"
 #include "schema/Schema.h"
 #include "schema/SchemaRegistry.h"
 #include "zeroerr/assert.h"
@@ -1547,7 +1831,7 @@ TEST_CASE("schema.module.scriptBinding") {
         }
     )");
     vm.run(script);
-    CHECK(vm.callFunc(vm.findFunc("schemaBindingTest"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("schemaBindingTest"), vm).toBool());
 }
 
 TEST_CASE("schema.module.reflectFromClass") {
@@ -1578,24 +1862,62 @@ TEST_CASE("schema.module.reflectFromClass") {
             if (s.getSchemaTitle("card.definition") != "Card Definition") return "title";
             if (s.getSchemaAdditionalProperties("card.definition")) return "additionalProperties";
             if (s.getFieldCount("card.definition") != 6) return "count";
-            if (s.getFieldType("card.definition", 3) != "integer") return "type";
-            if (!s.getFieldRequired("card.definition", 0)) return "required";
-            if (s.getFieldEnumCount("card.definition", 2) != 2) return "enum";
-            if (!s.getFieldHasMinimum("card.definition", 3)) return "min";
-            if (s.getFieldMaximum("card.definition", 3) != 20) return "max";
+            // Resolve by name, not by position. registerFromClass walks the class's
+            // SQTable of members, so the enumeration order is the table's order, not the
+            // declaration order (measured: attack, health, name, id, kind, cost). The API
+            // promises getFieldName is stable, not that index 3 is `cost`, so index-based
+            // expectations were the unfounded part. Looking names up also asserts that all
+            // six declared fields are reflected at all.
+            local function indexOf(field) {
+                for (local i = 0; i < s.getFieldCount("card.definition"); ++i)
+                    if (s.getFieldName("card.definition", i) == field) return i;
+                return -1;
+            }
+            local idIdx = indexOf("id");
+            local kindIdx = indexOf("kind");
+            local costIdx = indexOf("cost");
+            if (idIdx < 0 || kindIdx < 0 || costIdx < 0) return "names";
+            if (s.getFieldType("card.definition", costIdx) != "integer") return "type";
+            if (s.getFieldType("card.definition", idIdx) != "string") return "stringType";
+            if (!s.getFieldRequired("card.definition", idIdx)) return "required";
+            if (s.getFieldEnumCount("card.definition", kindIdx) != 2) return "enum";
+            if (!s.getFieldHasMinimum("card.definition", costIdx)) return "min";
+            if (s.getFieldMaximum("card.definition", costIdx) != 20) return "max";
             local ok = @"{""id"":""card.scout"",""name"":""Scout"",""kind"":""creature"",""cost"":2,""attack"":3,""health"":2}";
-            if (!s.validateJson("card.definition", ok)) return "valid";
+            // validateJson returns the projected Result table {ok, code, status, ...}, not a
+            // bool -- the Result convention forbids collapsing a Result to bool. Testing the
+            // table itself for truthiness always said "accepted", because a Squirrel table is
+            // truthy; that is what made this case look like a validation bug.
+            local okResult = s.validateJson("card.definition", ok);
+            if (!okResult.ok) return "valid";
             local bad = @"{""id"":""x"",""name"":""y"",""kind"":""air"",""cost"":25}";
-            if (s.validateJson("card.definition", bad)) return "invalid";
-            return s.getValidationErrorCode(0) == "enum";
+            local badResult = s.validateJson("card.definition", bad);
+            if (badResult.ok) return "invalid";
+            // Assert the constraint classes that must reject, not the first error code:
+            // field iteration order is the class table's order, so "error 0" is not stable.
+            local sawEnum = false;
+            local sawMaximum = false;
+            for (local i = 0; i < s.getValidationErrorCount(); ++i) {
+                local code = s.getValidationErrorCode(i);
+                if (code == "enum") sawEnum = true;
+                if (code == "maximum") sawMaximum = true;
+            }
+            if (!sawEnum) return "enumCode";
+            return sawMaximum;
         }
     )");
     vm.run(script);
-    CHECK(vm.callFunc(vm.findFunc("schemaReflectTest"), vm).toBool());
+    // The script returns `true` on success and a reason string on failure, so a plain
+    // .toBool() would throw a cast error and hide the reason.
+    const ssq::Object reflected = vm.callFunc(vm.findFunc("schemaReflectTest"), vm);
+    if (reflected.getType() == ssq::Type::STRING) {
+        std::cerr << "[script] schemaReflectTest failed: " << reflected.toString() << std::endl;
+    }
+    REQUIRE(reflected.getType() == ssq::Type::BOOL);
+    REQUIRE(reflected.toBool());
 }
 }  // namespace test_schema
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_script_compiler)
 #include "PrivateTestScope.h"
 #include <chrono>
@@ -2035,7 +2357,6 @@ TEST_CASE("scriptConfig.ensureModuleLoadsOmittedSlot") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_script_module)
-#include "PrivateTestScope.h"
 #include <chrono>
 #include <cmath>
 #include <filesystem>
@@ -2045,6 +2366,7 @@ TEST_CASE("scriptConfig.ensureModuleLoadsOmittedSlot") {
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "common/Capability.h"
 #include "common/Runtime.h"
 #include "common/ScriptCompiler.h"
@@ -2234,6 +2556,29 @@ TEST_CASE("scriptModule.reloadAffectedRollsBackWholeGenerationGroup") {
     REQUIRE(failed);
     runtime.runSource("import { answer } from \"mem:/user.nut\"\nafter_failure <- answer()\n", "game:/after.nut");
     CHECK_EQ(runtime.vm().get<int64_t>("after_failure"), int64_t(3));
+}
+
+TEST_CASE("scriptModule.instantiationFailureCarriesTheScriptError") {
+    Runtime runtime(512, ssq::Libs::ALL);
+    auto    provider                     = std::make_shared<MemoryModuleProvider>();
+    provider->sources["mem:/broken.nut"] = "export const VALUE = 1\nthrow \"module body exploded\"\n";
+    runtime.scriptModules().registerProvider(provider, 100);
+
+    std::string message;
+    try {
+        runtime.runSource("import { VALUE } from \"mem:/broken.nut\"\n", "game:/main.nut");
+    } catch (const std::exception &error) {
+        message = error.what();
+    }
+
+    // The module body executes from native code, and its failure used to be thrown away:
+    // the caller got "failed to instantiate script module: mem:/broken.nut" and nothing
+    // about the throw. The reported text now travels with the exception. Both assertions
+    // are REQUIRE: as CHECK they were warning-level and this test passed with the report
+    // removed.
+    REQUIRE(!message.empty());
+    REQUIRE(message.find("failed to instantiate script module") != std::string::npos);
+    REQUIRE(message.find("module body exploded") != std::string::npos);
 }
 
 TEST_CASE("scriptModule.dofileInstantiatesImports") {
@@ -2465,7 +2810,6 @@ TEST_CASE("property_access.script_validation_matches_shared_contract") {
 }
 }  // namespace test_script_module
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_script_ownership)
 #include "PrivateTestScope.h"
 #include <memory>
@@ -2965,11 +3309,11 @@ TEST_CASE("settlementScript.rejectsUnknownKindAndNormalizesSubjectCase") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_simplesquirrel)
-#include "PrivateTestScope.h"
 #include <cassert>
 #include <iostream>
 #include <map>
 #include <string>
+#include "PrivateTestScope.h"
 #include "ScriptTest.h"
 // Squirrel internal headers require this dependency order.
 // clang-format off
@@ -2986,9 +3330,7 @@ using namespace eve;
 
 UnitSciptTest(SimpleSquirrelTest, simplesquirrel_content);
 
-TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.ExportClass") {
-    CHECK(vm.callFunc(vm.findFunc("exportClass"), vm).toBool());
-}
+TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.ExportClass") { REQUIRE(callScript("exportClass")); }
 
 class A {
 public:
@@ -3044,7 +3386,7 @@ void B::expose(ssq::Class& cls) {
 TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.RefTest") {
     A::expose(vm);
     B::expose(vm);
-    CHECK(vm.callFunc(vm.findFunc("refTest"), vm).toBool());
+    REQUIRE(callScript("refTest"));
 }
 
 #if !(defined(__APPLE__) && defined(NDEBUG))
@@ -3086,7 +3428,7 @@ TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.TestDefClass") {
     ssq::Object obj  = cls.find("attr1");
     ssq::Class  attr = obj.toClass();
 
-    CHECK(vm.callFunc(vm.findFunc("testDefClass"), vm).toBool());
+    REQUIRE(callScript("testDefClass"));
 }
 #endif
 
@@ -3125,9 +3467,7 @@ TEST_CASE("SimpleSquirrelTest.PerformInteration") {
 }
 
 
-TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.GetterTest") {
-    CHECK(vm.callFunc(vm.findFunc("getterTest"), vm).toBool());
-}
+TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.GetterTest") { REQUIRE(callScript("getterTest")); }
 
 
 TEST_CASE("SimpleSquirrelTest.GetAttr") {
@@ -3168,9 +3508,93 @@ TEST_CASE("SimpleSquirrelTest.GetAttr") {
     sq_pop(v, 2);
     REQUIRE(sq_gettop(v) == initialTop);
 }
+
+// ---------------------------------------------------------------------------
+// Instance `_get` / `_set` metamethods.
+//
+// The plan's step 2 makes the engine the authoritative store for script component
+// fields. Whether that forces every script to switch to setters depends on these
+// three VM behaviours, so they are pinned here rather than assumed.
+// ---------------------------------------------------------------------------
+
+TEST_CASE("SimpleSquirrelTest.InstanceGetAndSetMetamethodsAreConsulted") {
+    ssq::VM vm(128);
+    vm.run(vm.compileSource(R"(
+        class Probe {
+            log = ""
+            function _get(key) { log = "get:" + key; return 42 }
+            function _set(key, value) { log = "set:" + key + ":" + value; return value }
+        }
+        probe <- Probe()
+        readMissing <- probe.missing
+        probe.other = 7
+        writeLog <- probe.log
+    )"));
+
+    // 未声明的成员读写都落到元方法上。
+    REQUIRE_EQ(vm.find("readMissing").toInt(), 42);
+    REQUIRE_EQ(vm.find("writeLog").toString(), std::string("set:other:7"));
+}
+
+TEST_CASE("SimpleSquirrelTest.DeclaredFieldShadowsTheMetamethods") {
+    ssq::VM vm(128);
+    vm.run(vm.compileSource(R"(
+        class Probe {
+            x = 0.0
+            calls = 0
+            function _get(key) { calls = calls + 1; return 99.0 }
+            function _set(key, value) { calls = calls + 1 }
+        }
+        probe <- Probe()
+        declaredRead <- probe.x
+        probe.x = 5.0
+        declaredReread <- probe.x
+        calls <- probe.calls
+    )"));
+
+    // 声明过的字段走实例槽位，元方法完全不会被调用：这正是"字段留在类里"就没法让引擎当权威的原因。
+    REQUIRE_EQ(vm.find("declaredRead").toFloat(), 0.0);
+    REQUIRE_EQ(vm.find("declaredReread").toFloat(), 5.0);
+    REQUIRE_EQ(vm.find("calls").toInt(), 0);
+}
+
+TEST_CASE("SimpleSquirrelTest.RemovingAClassFieldFallsThroughToTheMetamethods") {
+    // 结论性的一条：把一个已声明的字段从**类**的成员表里摘掉之后，同名成员的读写是否就落到
+    // 元方法上？若是，引擎就能在登记组件时"取走字段名与默认值、再把槽位摘掉"，从而既让引擎
+    // 持有权威数据，又**不改用户脚本的 `e.pos.x` 写法**。
+    ssq::VM vm(128);
+    vm.run(vm.compileSource(R"(
+        class Probe {
+            x = 0.0
+            log = ""
+            function _get(key) { log = "get:" + key; return 99.0 }
+            function _set(key, value) { log = "set:" + key; return value }
+        }
+        probe <- Probe()
+    )"));
+
+    HSQUIRRELVM v   = vm.getHandle();
+    const auto  top = sq_gettop(v);
+    sq_pushroottable(v);
+    sq_pushstring(v, "probe", -1);
+    REQUIRE(SQ_SUCCEEDED(sq_get(v, -2)));
+    SQObjectPtr instance;
+    sq_getstackobj(v, -1, &instance);
+    REQUIRE(sq_gettype(v, -1) == OT_INSTANCE);
+    _class(instance)->_members->Remove(SQObjectPtr(SQString::Create(_ss(v), "x")));
+    sq_settop(v, top);
+
+    vm.run(vm.compileSource(R"(
+        afterRead <- probe.x
+        probe.x = 5.0
+        afterLog <- probe.log
+    )"));
+
+    REQUIRE_EQ(vm.find("afterRead").toFloat(), 99.0);                  // 读到的是元方法给的值
+    REQUIRE_EQ(vm.find("afterLog").toString(), std::string("set:x"));  // 写入也走了元方法
+}
 }  // namespace test_simplesquirrel
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_simplesquirrel_direct_member)
 #include "PrivateTestScope.h"
 #include <zeroerr/assert.h>
@@ -3305,19 +3729,17 @@ static const char* kSocialScript = R"SQ(
 
 UnitSciptTest(SocialScriptTest, kSocialScript);
 
-TEST_CASE_FIXTURE(SocialScriptTest, "social.script.bindings") {
-    CHECK(vm.callFunc(vm.findFunc("testSocialBindings"), vm).toBool());
-}
+TEST_CASE_FIXTURE(SocialScriptTest, "social.script.bindings") { REQUIRE(callScript("testSocialBindings")); }
 }  // namespace test_social
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_squirrel_binding)
-#include "PrivateTestScope.h"
 #include <cmath>
 #include <limits>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <string>
 #include <utility>
+#include "PrivateTestScope.h"
+#include "common/ScriptError.h"
 #include "common/SquirrelBinding.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -3406,9 +3828,90 @@ TEST_CASE("squirrel_binding.result_projection_and_explicit_ignore_are_uniform") 
     CHECK(projected.find("ignoreReason").toString() == "optional feature");
     CHECK(eve::script::ignoreResult(projected, "second explicit observation"));
 }
+
+// ---------------------------------------------------------------------------
+// Argument marshalling of the engine -> script call helpers (R-FACE-7)
+// ---------------------------------------------------------------------------
+//
+// `callFunction` / `callFunctionResult` are the mandated way to call script from native
+// code, so what they do with an argument is part of the contract. Two marshalling
+// mistakes were live here: a string literal did not compile at all (simplesquirrel's
+// pushByCopy cannot take `const char[N]`), and a `const char*` arrived in script as
+// *userdata*, because ssq has no `const char*` pushValue overload.
+
+namespace {
+
+const char* kCallArgumentScript = R"SQ(
+function argKind(v) { return typeof v }
+function argText(v) { return "" + v }
+function twoArgs(a, b) { return "" + a + "|" + b }
+function boom() { throw "boom" }
+)SQ";
+
+void runCallArgumentScript(ssq::VM& vm) {
+    eve::script::installScriptErrorHook(vm.getHandle());
+    vm.run(vm.compileSource(kCallArgumentScript, "call-argument-test.nut"));
+}
+
+std::string topString(HSQUIRRELVM vm) {
+    const SQChar* out = nullptr;
+    if (sq_gettype(vm, -1) != OT_STRING) return {};
+    if (SQ_FAILED(sq_getstring(vm, -1, &out))) return {};
+    return out ? std::string(out) : std::string();
+}
+
+}  // namespace
+
+TEST_CASE("squirrel_binding.call_argument_c_string_literal_arrives_as_string") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    runCallArgumentScript(vm);
+    const SQInteger top = sq_gettop(vm.getHandle());
+    ssq::Object     fn  = vm.findFunc("argText");
+
+    REQUIRE(
+        SQ_SUCCEEDED(eve::script::callFunctionResult(vm.getHandle(), fn.getRaw(), eve::script::rootTable, "literal")));
+    REQUIRE(topString(vm.getHandle()) == "literal");
+    sq_settop(vm.getHandle(), top);
+}
+
+TEST_CASE("squirrel_binding.call_argument_c_string_pointer_arrives_as_string") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    runCallArgumentScript(vm);
+    const SQInteger top  = sq_gettop(vm.getHandle());
+    ssq::Object     fn   = vm.findFunc("argKind");
+    const char*     text = "dynamic";
+
+    // Measured before the fix: `typeof v` was "userdata".
+    REQUIRE(SQ_SUCCEEDED(eve::script::callFunctionResult(vm.getHandle(), fn.getRaw(), eve::script::rootTable, text)));
+    REQUIRE(topString(vm.getHandle()) == "string");
+    sq_settop(vm.getHandle(), top);
+}
+
+TEST_CASE("squirrel_binding.call_argument_std_strings_scalars_and_stack_discipline") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    runCallArgumentScript(vm);
+    const SQInteger top = sq_gettop(vm.getHandle());
+
+    ssq::Object       fn    = vm.findFunc("twoArgs");
+    const std::string owned = "owned";
+    REQUIRE(
+        SQ_SUCCEEDED(eve::script::callFunctionResult(vm.getHandle(), fn.getRaw(), eve::script::rootTable, owned, 7)));
+    REQUIRE(topString(vm.getHandle()) == "owned|7");
+    sq_settop(vm.getHandle(), top);
+
+    // callFunction() restores the stack it was given, on success and on a throwing callee.
+    fn = vm.findFunc("argKind");
+    REQUIRE(SQ_SUCCEEDED(eve::script::callFunction(vm.getHandle(), fn.getRaw(), eve::script::rootTable, "x")));
+    REQUIRE(sq_gettop(vm.getHandle()) == top);
+
+    fn               = vm.findFunc("boom");
+    const int before = eve::script::reportedScriptCallFailures();
+    REQUIRE(SQ_FAILED(eve::script::callFunction(vm.getHandle(), fn.getRaw(), eve::script::rootTable)));
+    REQUIRE(sq_gettop(vm.getHandle()) == top);
+    CHECK(eve::script::reportedScriptCallFailures() == before + 1);
+}
 }  // namespace test_squirrel_binding
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_statepatch)
 #include "PrivateTestScope.h"
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -4256,8 +4759,1242 @@ static const char* kTagsScript = R"SQ(
 
 UnitSciptTest(TagsScriptTest, kTagsScript);
 
-TEST_CASE_FIXTURE(TagsScriptTest, "tags.script.bindings") {
-    CHECK(vm.callFunc(vm.findFunc("testTagsBindings"), vm).toBool());
-}
+TEST_CASE_FIXTURE(TagsScriptTest, "tags.script.bindings") { REQUIRE(callScript("testTagsBindings")); }
 }  // namespace test_tags
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_map_tile_collision_sink)
+#include <algorithm>
+#include <cstdint>
+#include <string>
+#include <vector>
+#include "PrivateTestScope.h"
+#include "ScriptTest.h"
+#include "common/Capability.h"
+#include "common/ScriptProvider.h"
+#include "map/Map.h"
+#include "map/TileCollision.h"
+#include "map/TileCollisionScriptSink.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+// map_tile_collision_sink.cpp
+namespace test_map_tile_collision_sink {
+// ---------------------------------------------------------------------------
+// 决定③ 的第三个落地插座：`ITileCollisionSink` 可以由脚本提供。
+//
+// 这一片的前置是**接口改**（§9.71.1）：参数从 `const void* layer` 换成稳定身份 `TileLayerRef`
+// （ECS 槽位 + 换代号）。脚本因此既能认出"这批矩形是哪一层的"，也看得懂过期引用。派发走的是既有
+// 的 listener 面（`Map::publishCollision` 用 `cap::forEach`），所以原生 sink 与脚本 sink 可以同时
+// 在位、按优先级依次收到同一批几何。
+// ---------------------------------------------------------------------------
+
+namespace {
+
+using namespace eve;
+using namespace eve::map;
+
+/** 脚本侧记录的层身份形状：`"<槽位>:<换代号>,"`。 */
+std::string formatLayer(TileLayerRef layer) {
+    return std::to_string(layer.slot) + ":" + std::to_string(layer.generation) + ",";
+}
+
+const char* kScriptTileCollisionSink = R"SQ(
+calls <- 0
+seenLayerId <- -1
+seenLayerGeneration <- -1
+seenCount <- -1
+seenX <- -1.0
+seenY <- -1.0
+seenWidth <- -1.0
+seenHeight <- -1.0
+recordedLayers <- ""
+recordedSlots <- ""
+selfLayerId <- -1
+selfLayerGeneration <- -1
+selfRects <- -1
+
+class CollisionSink {
+    function replaceTileCollision(payload) {
+        calls = calls + 1
+        seenLayerId = payload.layer.id
+        seenLayerGeneration = payload.layer.generation
+        seenCount = payload.rects.len()
+        if (seenCount > 0) {
+            seenX = payload.rects[0].x
+            seenY = payload.rects[0].y
+            seenWidth = payload.rects[0].width
+            seenHeight = payload.rects[0].height
+        }
+    }
+}
+
+// 记录每一次发布的层身份：用来看"脚本认得出这是哪一层"。
+class RecordingSink {
+    function replaceTileCollision(payload) {
+        recordedLayers = recordedLayers + format("%d:%d,", payload.layer.id, payload.layer.generation)
+        recordedSlots = recordedSlots + format("%d,", payload.rects.len())
+    }
+}
+
+class BrokenSink {
+    function replaceTileCollision(payload) { throw "sink refused the geometry" }
+}
+
+class SelfSink {
+    function replaceTileCollision(payload) {
+        selfLayerId = payload.layer.id
+        selfLayerGeneration = payload.layer.generation
+        selfRects = payload.rects.len()
+    }
+}
+
+sink <- CollisionSink()
+recorder <- RecordingSink()
+broken <- BrokenSink()
+selfSink <- SelfSink()
+
+// 整条回路都在脚本里：建层、发布 sink、派发、按 `getEntityId()` 认自己那一层、退订。
+// 这就是这一片的验收点——**不需要任何 C++ 代码**。
+function runCollisionLoopFromScript() {
+    local map = eve.Map()
+    local layer = map.newLayer(2, 2, 16.0, 16.0)
+    if (layer == null) return false
+    // 绑定要求传满每个实参（R-FACE-6）：`cost` 在 C++ 侧有默认值，脚本侧必须显式给。
+    layer.setTileMetadata(9, 1, 1, false, 1.0)
+    layer.fillRect(0, 0, 2, 1, 9)
+    local published = eve.provider.publishFor("ITileCollisionSink", "test.collision.self", selfSink)
+    if (!published.ok) return false
+    local rects = map.publishCollision(layer)
+    if (rects != 1) return false
+    if (selfLayerId != layer.getEntityId()) return false
+    if (selfLayerGeneration != layer.getEntityGeneration()) return false
+    if (selfRects != 1) return false
+    local unloaded = eve.provider.unload("test.collision.self")
+    return unloaded.ok
+}
+)SQ";
+
+}  // namespace
+
+/** 接缝由 `Map` 模块构造时声明，所以夹具只准备 VM 与隔离。 */
+class MapTileCollisionSinkTest : public ScriptTest {
+public:
+    MapTileCollisionSinkTest() : ScriptTest(kScriptTileCollisionSink) {
+        auto& registry = eve::ScriptProviderRegistry::instance();
+        registry.clearAll();
+        declaredBefore_ = registry.capabilities();
+        eve::cap::detail::clearAllRaw();
+        eve::map::resetScriptTileCollisionSinkFailures();
+    }
+
+    ~MapTileCollisionSinkTest() {
+        eve::map::withdrawScriptTileCollisionSinkSeam();
+        eve::cap::detail::clearAllRaw();
+        auto& registry = eve::ScriptProviderRegistry::instance();
+        registry.clearAll();
+        for (const std::string& capability : registry.capabilities()) {
+            if (std::find(declaredBefore_.begin(), declaredBefore_.end(), capability) != declaredBefore_.end())
+                continue;
+            registry.removeCapability(capability).ignore("fixture teardown withdraws only this case's seams");
+        }
+    }
+
+    /** 发布一个脚本提供方；返回结果表，测试据此断言接线成没成。 */
+    ssq::Object publish(const char* name, const char* instance) {
+        const std::string source = std::string("published <- eve.provider.publishFor(\"ITileCollisionSink\", \"") +
+                                   name + "\", " + instance + ")";
+        vm.run(vm.compileSource(source.c_str()));
+        return vm.find("published");
+    }
+
+private:
+    std::vector<std::string> declaredBefore_;
+};
+
+TEST_CASE_FIXTURE(MapTileCollisionSinkTest, "map.collision.scriptSinkReceivesLayerIdentityAndGeometry") {
+    Map        map;
+    TileLayer* layer = map.newLayer(5, 4, 16.f, 8.f);
+    REQUIRE(layer != nullptr);
+    layer->setTileMetadata(9, 1, 1, false);
+    layer->fillRect(1, 1, 3, 2, 9);
+
+    REQUIRE(eve::ScriptProviderRegistry::instance().hasCapabilitySeam("ITileCollisionSink"));
+    REQUIRE_EQ(eve::cap::listenerCount<ITileCollisionSink>(), std::size_t{0});
+
+    ssq::Object published = publish("test.collision", "sink");
+    REQUIRE_EQ(published.getType(), ssq::Type::TABLE);
+    REQUIRE(published.find("ok").toBool());
+    REQUIRE_EQ(eve::cap::listenerCount<ITileCollisionSink>(), std::size_t{1});
+
+    // 合并出来的那一个矩形：原点 (16, 8)、尺寸 48x16。
+    // 带副作用的调用先落到局部变量：`REQUIRE_EQ` 会把实参各求值两次（§9.76.3），
+    // 直接把 `publishCollision` 写进断言会派发两次。
+    const int publishedRects = map.publishCollision(layer);
+    REQUIRE_EQ(publishedRects, 1);
+    REQUIRE_EQ(vm.find("calls").toInt(), 1);
+    REQUIRE_EQ(vm.find("seenLayerId").toInt(), int(layer->layerRef().slot));
+    REQUIRE_EQ(vm.find("seenLayerGeneration").toInt(), int(layer->layerRef().generation));
+    REQUIRE_EQ(vm.find("seenCount").toInt(), 1);
+    REQUIRE_EQ(vm.find("seenX").toFloat(), 16.0);
+    REQUIRE_EQ(vm.find("seenY").toFloat(), 8.0);
+    REQUIRE_EQ(vm.find("seenWidth").toFloat(), 48.0);
+    REQUIRE_EQ(vm.find("seenHeight").toFloat(), 16.0);
+
+    // 脚本 sink 不会替换 map 自己的权威矩形表：`collisionRects_` 仍然是唯一权威。
+    REQUIRE_EQ(map.getCollisionRectCount(), 1);
+    REQUIRE_EQ(map.getCollisionRectWidth(0), 48.f);
+
+    // 退订之后派发停止，而 map 侧的行为完全不变。
+    vm.run(vm.compileSource("unloaded <- eve.provider.unload(\"test.collision\")"));
+    REQUIRE(vm.find("unloaded").find("ok").toBool());
+    REQUIRE_EQ(eve::cap::listenerCount<ITileCollisionSink>(), std::size_t{0});
+    const int rectsAfterUnload = map.publishCollision(layer);
+    REQUIRE_EQ(rectsAfterUnload, 1);
+    REQUIRE_EQ(vm.find("calls").toInt(), 1);
+}
+
+TEST_CASE_FIXTURE(MapTileCollisionSinkTest, "map.collision.scriptSinkCanTellLayersApart") {
+    Map        map;
+    TileLayer* first  = map.newLayer(3, 3, 16.f, 16.f);
+    TileLayer* second = map.newLayer(3, 3, 16.f, 16.f);
+    REQUIRE(first != nullptr);
+    REQUIRE(second != nullptr);
+    REQUIRE(first->layerRef().slot != second->layerRef().slot);
+
+    first->setTileMetadata(9, 1, 1, false);
+    first->setTile(0, 0, 9);
+    second->setTileMetadata(9, 1, 1, false);
+    second->setTile(0, 0, 9);
+    second->setTile(2, 0, 9);  // 与 (0,0) 不相邻，所以合并后是两个矩形
+
+    ssq::Object published = publish("test.collision.recording", "recorder");
+    REQUIRE(published.find("ok").toBool());
+
+    const int firstRects  = map.publishCollision(first);
+    const int secondRects = map.publishCollision(second);
+    REQUIRE_EQ(firstRects, 1);
+    REQUIRE_EQ(secondRects, 2);
+
+    // 层身份进得来，所以脚本分得清两次发布属于哪一层（这正是换掉 `const void*` 的收益）。
+    const std::string expectedLayers = formatLayer(first->layerRef()) + formatLayer(second->layerRef());
+    REQUIRE_EQ(vm.find("recordedLayers").toString(), expectedLayers);
+    REQUIRE_EQ(vm.find("recordedSlots").toString(), std::string("1,2,"));
+}
+
+TEST_CASE_FIXTURE(MapTileCollisionSinkTest, "map.collision.scriptSinkFailureIsCountedNotSwallowed") {
+    Map        map;
+    TileLayer* layer = map.newLayer(5, 4, 16.f, 8.f);
+    REQUIRE(layer != nullptr);
+    layer->setTileMetadata(9, 1, 1, false);
+    layer->fillRect(1, 1, 3, 2, 9);
+
+    ssq::Object published = publish("test.collision.broken", "broken");
+    REQUIRE(published.find("ok").toBool());
+    REQUIRE_EQ(eve::map::scriptTileCollisionSinkFailures(), std::uint64_t{0});
+
+    // 接口是 `void`（通知不是事务），所以"脚本拒绝了"必须从计数上看出来——否则"没接上"和
+    // "接上了但每次都失败"从外部完全一样。
+    const int rejectedRects = map.publishCollision(layer);
+    REQUIRE_EQ(rejectedRects, 1);
+    REQUIRE_EQ(eve::map::scriptTileCollisionSinkFailures(), std::uint64_t{1});
+    REQUIRE_EQ(map.getCollisionRectCount(), 1);
+
+    // 提供方在失败后还活着：同一代继续派发，计数继续涨。
+    const int rejectedAgain = map.publishCollision(layer);
+    REQUIRE_EQ(rejectedAgain, 1);
+    REQUIRE_EQ(eve::map::scriptTileCollisionSinkFailures(), std::uint64_t{2});
+
+    // 换一个能用的脚本 sink：派发恢复，计数不再变。
+    REQUIRE(
+        eve::ScriptProviderRegistry::instance()
+            .unload(eve::ScriptProviderHandle{
+                "test.collision.broken", eve::ScriptProviderRegistry::instance().generationOf("test.collision.broken")})
+            .ok());
+    REQUIRE(publish("test.collision.good", "sink").find("ok").toBool());
+    const int recoveredRects = map.publishCollision(layer);
+    REQUIRE_EQ(recoveredRects, 1);
+    REQUIRE_EQ(eve::map::scriptTileCollisionSinkFailures(), std::uint64_t{2});
+    REQUIRE_EQ(vm.find("calls").toInt(), 1);
+}
+
+TEST_CASE_FIXTURE(MapTileCollisionSinkTest, "map.collision.scriptOwnsTheWholeCollisionLoop") {
+    // 建层、发布、派发、按身份认层、退订全在脚本里：这就是"用户只写脚本"的验收形态。
+    // 身份对不对由脚本自己比（`selfLayerId != layer.getEntityId()` 就返回 false）；这里只确认
+    // 脚本确实收到了那次派发——槽位从 0 开始，所以断言用**收到过**而不是"大于 0"。
+    REQUIRE(callScript("runCollisionLoopFromScript"));
+    REQUIRE_EQ(vm.find("selfRects").toInt(), 1);
+    REQUIRE(vm.find("selfLayerGeneration").toInt() >= 1);
+    REQUIRE_EQ(eve::cap::listenerCount<ITileCollisionSink>(), std::size_t{0});
+}
+
+TEST_CASE_FIXTURE(MapTileCollisionSinkTest, "map.collision.scriptSinkSeamIsAbsentWithoutTheModule") {
+    // 没有 `Map` 实例 = 模块从没声明过接缝：发布被明确拒绝（`not_found`），而不是"绑了但不响"。
+    REQUIRE(!eve::ScriptProviderRegistry::instance().hasCapabilitySeam("ITileCollisionSink"));
+    ssq::Object refused = publish("test.collision.orphan", "sink");
+    REQUIRE_EQ(refused.getType(), ssq::Type::TABLE);
+    REQUIRE(!refused.find("ok").toBool());
+    REQUIRE_EQ(refused.find("code").toString(), std::string("not_found"));
+    REQUIRE_EQ(eve::cap::listenerCount<ITileCollisionSink>(), std::size_t{0});
+}
+}  // namespace test_map_tile_collision_sink
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_motion_script_sink)
+#include <cmath>
+#include <string>
+#include <vector>
+#include "PrivateTestScope.h"
+#include "ScriptTest.h"
+#include "animation/Animation.h"
+#include "animation/MotionRuntime.h"
+#include "animation/MotionScriptBindings.h"
+#include "common/ScriptProvider.h"
+#include "common/Time.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+// motion_script_sink.cpp
+namespace test_motion_script_sink {
+// ---------------------------------------------------------------------------
+// 阶段 5 的最后一个插座：动画侧的 `IMotionFloatSink` 可以由脚本对象扮演。
+//
+// 这一条的形态和其它插座不同：`MotionRuntime` 的槽位**直接持有** sink 指针（每个 motion 一个 sink，
+// 不是全局能力槽），所以接法不是 `cap::provide`，而是**让 builder 接受一个脚本 sink 对象**
+// （§9.71.1 给的正是这一条路）。适配器实现 `IMotionFloatSink`，脚本对象实现 `write(value)`，而
+// `write` 的失败会原样回到 runtime —— `cancelOnError` 因此对脚本 sink 同样有效。
+//
+// 类型全部写全限定名：这一 TU 里 `animation` 是命名空间，用 `using namespace eve::animation` 会与
+// 局部变量名打架。
+// ---------------------------------------------------------------------------
+
+namespace {
+
+using namespace eve;
+
+const char* kScriptMotionSink = R"SQ(
+received <- []
+writeCount <- 0
+lastValue <- -1.0
+
+class RecordingSink {
+    function write(value) {
+        received.append(value)
+        writeCount = writeCount + 1
+        lastValue = value
+    }
+}
+
+class BrokenSink {
+    function write(value) { throw "motion sink refused the value" }
+}
+
+// 初始化值（from = 0）收下，之后任何一个值都拒绝：用来看"运行中失败"这条路。
+class LateBrokenSink {
+    function write(value) { if (value > 0.0) throw "motion sink refused a later value" }
+}
+
+sink <- RecordingSink()
+broken <- BrokenSink()
+lateBroken <- LateBrokenSink()
+bindError <- ""
+
+function startMotionWithSink() {
+    local anim = eve.Animation()
+    // `bind(sink)` = 绑上脚本 sink 并开跑（对应 C++ 的 MotionBuilder::bind）；
+    // 要放进 sequence 就先 `to(sink)` 再 append，那条路不启动。
+    local motion = anim.newMotion(0.0, 10.0, 1.0).bind(sink)
+    return motion != null && motion.isActive()
+}
+
+// spawn 会先推一次初始化值，所以"一上来就拒绝"的 sink 会让 bind 自己失败。
+function startMotionWithImmediateBrokenSink() {
+    local anim = eve.Animation()
+    try {
+        local motion = anim.newMotion(0.0, 10.0, 1.0).bind(broken)
+        return motion != null
+    } catch (e) {
+        bindError = e
+        return false
+    }
+}
+
+function startMotionWithLateBrokenSink() {
+    local anim = eve.Animation()
+    local motion = anim.newMotion(0.0, 10.0, 1.0).bind(lateBroken)
+    return motion != null && motion.isActive()
+}
+
+function startMotionWithoutSink() {
+    local anim = eve.Animation()
+    local motion = anim.newMotion(0.0, 10.0, 1.0).run()
+    return motion != null
+}
+
+// ---- 非 float 形状：vec2 / vec3 / color / quat 的脚本 builder + 脚本 sink ----
+
+vec2Sum <- -1.0
+vec3Sum <- -1.0
+colorSum <- -1.0
+colorLastA <- -1.0
+quatSum <- -1.0
+
+class Vec2Sink { function write(x, y) { vec2Sum = x + y } }
+class Vec3Sink { function write(x, y, z) { vec3Sum = x + y + z } }
+class ColorSink { function write(r, g, b, a) { colorSum = r + g + b; colorLastA = a } }
+class QuatSink { function write(x, y, z, w) { quatSum = x + y + z + w } }
+
+vec2Sink <- Vec2Sink()
+vec3Sink <- Vec3Sink()
+colorSink <- ColorSink()
+quatSink <- QuatSink()
+
+// 四种形状各起一条，全部绑脚本 sink：这就是"最后四个 IMotion*Sink 也接上了"。
+function startNonFloatMotions() {
+    local anim = eve.Animation()
+    local two = anim.newMotionVec2({ x = 0.0, y = 0.0 }, { x = 2.0, y = 4.0 }, 1.0).bind(vec2Sink)
+    local three = anim.newMotionVec3({ x = 0.0, y = 0.0, z = 0.0 },
+                                     { x = 1.0, y = 2.0, z = 3.0 }, 1.0).bind(vec3Sink)
+    local color = anim.newMotionColor({ r = 0.0, g = 0.0, b = 0.0, a = 0.5 },
+                                      { r = 1.0, g = 2.0, b = 3.0, a = 1.0 }, 1.0).bind(colorSink)
+    // 四元数走 slerp：端点必须是**单位**四元数，否则它插到的位置不是你以为的那个（见用例断言）。
+    local quat = anim.newMotionQuat({ x = 0.0, y = 0.0, z = 0.0, w = 1.0 },
+                                    { x = 0.0, y = 0.0, z = 0.70710678, w = 0.70710678 }, 1.0).bind(quatSink)
+    return two != null && three != null && color != null && quat != null
+}
+
+// 形状不对的表：要抛，而不是悄悄按全零跑一条动画。
+function startMotionWithBadTable() {
+    local anim = eve.Animation()
+    try {
+        local m = anim.newMotionVec3({ x = 0.0, y = 0.0 }, { x = 1.0, y = 1.0, z = 1.0 }, 1.0)
+        return m != null
+    } catch (e) {
+        tableError = e
+        return false
+    }
+}
+tableError <- ""
+)SQ";
+
+class MotionScriptSinkTest : public ScriptTest {
+public:
+    // NOTE: the bundle entry (`ctest -L bundle`, opt-in) sees motions left active by an
+    // earlier case, because the Animation module is process-level and MotionRuntime has no
+    // public reset: case 3 starts with activeCount()==5 instead of 4. Per-case runs -- the
+    // CI shape -- are clean. A `MotionRuntime::clear()` test hook or per-case cancellation
+    // in this file is the fix; it is not part of the merge.
+    MotionScriptSinkTest() : ScriptTest(kScriptMotionSink) { ScriptProviderRegistry::instance().clearAll(); }
+
+    ~MotionScriptSinkTest() {
+        eve::animation::clearScriptMotionSinkAdapters();
+        ScriptProviderRegistry::instance().clearAll();
+    }
+
+    /** 推进一次动画：`Animation::advance` 是唯一的求值入口。 */
+    void advanceAnimation(eve::animation::Animation& target, double seconds, std::uint64_t tick) {
+        const eve::SimulationStep step{eve::SimulationTick{tick}, eve::Duration::fromSeconds(seconds).expect("dt")};
+        auto                      result = target.advance(step);
+        REQUIRE(result.ok());
+    }
+};
+
+}  // namespace
+
+TEST_CASE_FIXTURE(MotionScriptSinkTest, "animation.motion.scriptSinkReceivesEveryEvaluatedValue") {
+    REQUIRE(callScript("startMotionWithSink"));
+    eve::animation::Animation* module = eve::animation::Animation::create();
+    REQUIRE(module != nullptr);
+    REQUIRE_EQ(module->motions().activeCount(), 1);
+
+    advanceAnimation(*module, 0.25, 1);
+    advanceAnimation(*module, 0.25, 2);
+    advanceAnimation(*module, 0.25, 3);
+
+    // 每次 advance 都推一个值，而且单调上升（0→10 的线性 tween）。
+    REQUIRE(vm.find("writeCount").toInt() >= 3);
+    REQUIRE_EQ(vm.find("received").getType(), ssq::Type::ARRAY);
+    const double last = vm.find("lastValue").toFloat();
+    REQUIRE(last > 0.0);
+    REQUIRE(last <= 10.0);
+
+    // 跑完 1 秒的 tween：motion 结束，不再活跃。
+    advanceAnimation(*module, 0.5, 4);
+    REQUIRE_EQ(module->motions().activeCount(), 0);
+    REQUIRE(std::fabs(vm.find("lastValue").toFloat() - 10.0) < 1e-3);
+
+    // 撤回适配器与 provider 登记（模块析构走同一条路）。
+    eve::animation::clearScriptMotionSinkAdapters();
+    REQUIRE(!ScriptProviderRegistry::instance().contains("animation.motion-sink.1"));
+}
+
+TEST_CASE_FIXTURE(MotionScriptSinkTest, "animation.motion.sinkIsOptionalAndOnlyBindsWhenAsked") {
+    // 不调用 `to()`：motion 照跑，脚本一次都不会被调（sink 是可选的，不是隐式默认）。
+    REQUIRE(callScript("startMotionWithoutSink"));
+    eve::animation::Animation* module = eve::animation::Animation::create();
+    REQUIRE(module != nullptr);
+    REQUIRE_EQ(module->motions().activeCount(), 1);
+    advanceAnimation(*module, 0.5, 1);
+    REQUIRE_EQ(vm.find("writeCount").toInt(), 0);
+    REQUIRE_EQ(ScriptProviderRegistry::instance().size(), std::size_t{0});
+}
+
+TEST_CASE_FIXTURE(MotionScriptSinkTest, "animation.motion.nonFloatShapesReachScriptSinksToo") {
+    REQUIRE(callScript("startNonFloatMotions"));
+    eve::animation::Animation* module = eve::animation::Animation::create();
+    REQUIRE(module != nullptr);
+    REQUIRE_EQ(module->motions().activeCount(), 4);
+
+    // 四条一起跑：每次 advance 每个 sink 都收到自己那几维的值（位置参数编组）。
+    advanceAnimation(*module, 0.25, 1);
+    REQUIRE(vm.find("vec2Sum").toFloat() > 0.0);
+    REQUIRE(vm.find("vec3Sum").toFloat() > 0.0);
+    REQUIRE(vm.find("colorSum").toFloat() > 0.0);
+    REQUIRE(vm.find("colorLastA").toFloat() > 0.0);
+    REQUIRE(vm.find("quatSum").toFloat() > 0.0);
+
+    // 跑到 1 秒结束：终点值就是 to 那一端（vec2 6、vec3 6、color 6/1、单位四元数 z+w≈1.414）。
+    advanceAnimation(*module, 1.0, 2);
+    REQUIRE_EQ(module->motions().activeCount(), 0);
+    REQUIRE(std::fabs(vm.find("vec2Sum").toFloat() - 6.0) < 1e-3);
+    REQUIRE(std::fabs(vm.find("vec3Sum").toFloat() - 6.0) < 1e-3);
+    REQUIRE(std::fabs(vm.find("colorSum").toFloat() - 6.0) < 1e-3);
+    REQUIRE(std::fabs(vm.find("colorLastA").toFloat() - 1.0) < 1e-3);
+    REQUIRE(std::fabs(vm.find("quatSum").toFloat() - 1.41421356) < 1e-3);
+}
+
+TEST_CASE_FIXTURE(MotionScriptSinkTest, "animation.motion.badValueTablesAreRejectedNotZeroFilled") {
+    // 缺字段的表要明确抛错：静默按 0 跑一条动画会让"我传错了"变成"动画看起来没生效"。
+    REQUIRE(!callScript("startMotionWithBadTable"));
+    REQUIRE(!vm.find("tableError").toString().empty());
+    eve::animation::Animation* module = eve::animation::Animation::create();
+    REQUIRE(module != nullptr);
+    REQUIRE_EQ(module->motions().activeCount(), 0);
+}
+
+TEST_CASE_FIXTURE(MotionScriptSinkTest, "animation.motion.scriptSinkFailureCancelsInsteadOfBeingSwallowed") {
+    eve::animation::Animation* module = eve::animation::Animation::create();
+    REQUIRE(module != nullptr);
+
+    // ① sink 连初始化值都拒绝：`bind` 自己失败（脚本看得见），没有 motion 留在运行中。
+    REQUIRE(!callScript("startMotionWithImmediateBrokenSink"));
+    REQUIRE(!vm.find("bindError").toString().empty());
+    REQUIRE_EQ(module->motions().activeCount(), 0);
+
+    // ② sink 在后续采样上失败：`advance` 返回失败，并且 motion 被取消（不是继续跑在一个已经
+    //    不再接收值的目标上——吞掉失败就会变成那样）。
+    REQUIRE(callScript("startMotionWithLateBrokenSink"));
+    REQUIRE_EQ(module->motions().activeCount(), 1);
+    const eve::SimulationStep step{eve::SimulationTick{1}, eve::Duration::fromSeconds(0.25).expect("dt")};
+    const auto                advanced = module->advance(step);
+    REQUIRE(!advanced.ok());
+    REQUIRE_EQ(module->motions().activeCount(), 0);
+}
+}  // namespace test_motion_script_sink
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_script_link)
+#include <cmath>
+#include <string>
+#include "PrivateTestScope.h"
+#include "ScriptTest.h"
+#include "common/Diagnostic.h"
+#include "common/ScriptProvider.h"
+#include "common/Status.h"
+#include "scene/NodeDesc.h"
+#include "scene/Scene.h"
+#include "scene/SceneHost.h"
+#include "scene/TransformSystem.h"
+// scene_script_link.cpp
+namespace test_scene_script_link {
+// Script-backed scene links (judgement criterion J-2).
+//
+// A user attaches their own object to the scene transform pipeline without a C++
+// build: publish the instance through `eve.provider`, then link it with
+// `scene.linkScriptAt`. These cases drive both sync directions through the real
+// `TransformSystem` dispatch and pin the absent cases (no host, no node, nothing
+// published, retired provider, broken target).
+
+
+using namespace eve;
+using namespace eve::scene;
+
+namespace {
+
+const char* kScriptLinkContent = R"SQ(
+class Follower {
+    pushes = 0
+    lastId = ""
+    lastX = 0.0
+    lastY = 0.0
+    lastZ = 0.0
+    lastYaw = 0.0
+    lastScale = 0.0
+
+    function onNodeTransform(nodeId, worldX, worldY, worldZ, yaw, pitch, roll, sx, sy, sz) {
+        pushes += 1
+        lastId = nodeId
+        lastX = worldX
+        lastY = worldY
+        lastZ = worldZ
+        lastYaw = yaw
+        lastScale = sx
+    }
+}
+
+// Drives the node it is linked to: the local transform the node must take.
+class Driver {
+    x = 0.0
+    y = 0.0
+    z = 0.0
+    yaw = 0.0
+
+    function nodeTransform() { return [x, y, z, yaw, 0.0, 0.0] }
+}
+
+// Deliberately incomplete: two numbers where the contract wants six.
+class ShortDriver {
+    function nodeTransform() { return [1.0, 2.0] }
+}
+
+// Deliberately broken: raising in the push direction must not stall its siblings.
+class RaisingFollower {
+    function onNodeTransform(nodeId, worldX, worldY, worldZ, yaw, pitch, roll, sx, sy, sz) {
+        throw "follower is broken"
+    }
+}
+
+follower <- Follower()
+driver <- Driver()
+shortDriver <- ShortDriver()
+raisingFollower <- RaisingFollower()
+)SQ";
+
+bool approxEq(float actual, float expected, float tolerance = 1e-4f) {
+    return std::fabs(actual - expected) <= tolerance;
+}
+
+eve::DiagnosticCode firstDiagnosticCode(const eve::Status& status) {
+    return status.diagnostics().empty() ? eve::DiagnosticCode::None : status.diagnostics().front().code();
+}
+
+/** Reads one numeric member of a live script instance whatever numeric kind it is. */
+double memberNumber(const ssq::Object& instance, const char* name) {
+    HSQUIRRELVM     vm  = instance.getHandle();
+    const SQInteger top = sq_gettop(vm);
+    sq_pushobject(vm, instance.getRaw());
+    sq_pushstring(vm, name, -1);
+    double out = 0.0;
+    if (SQ_SUCCEEDED(sq_get(vm, -2))) {
+        if (sq_gettype(vm, -1) == OT_INTEGER) {
+            SQInteger value = 0;
+            if (SQ_SUCCEEDED(sq_getinteger(vm, -1, &value))) out = double(value);
+        } else {
+            SQFloat value = 0.f;
+            if (SQ_SUCCEEDED(sq_getfloat(vm, -1, &value))) out = double(value);
+        }
+    }
+    sq_settop(vm, top);
+    return out;
+}
+
+/** Reads one string member of a live script instance; "" when it is missing. */
+std::string memberString(const ssq::Object& instance, const char* name) {
+    HSQUIRRELVM     vm  = instance.getHandle();
+    const SQInteger top = sq_gettop(vm);
+    sq_pushobject(vm, instance.getRaw());
+    sq_pushstring(vm, name, -1);
+    std::string out;
+    if (SQ_SUCCEEDED(sq_get(vm, -2))) {
+        const SQChar* value = nullptr;
+        if (SQ_SUCCEEDED(sq_getstring(vm, -1, &value)) && value != nullptr) out = value;
+    }
+    sq_settop(vm, top);
+    return out;
+}
+
+/** Writes one numeric member of a live script instance. */
+bool setMemberNumber(const ssq::Object& instance, const char* name, float value) {
+    HSQUIRRELVM     vm  = instance.getHandle();
+    const SQInteger top = sq_gettop(vm);
+    sq_pushobject(vm, instance.getRaw());
+    sq_pushstring(vm, name, -1);
+    sq_pushfloat(vm, SQFloat(value));
+    const bool ok = SQ_SUCCEEDED(sq_newslot(vm, -3, SQFalse));
+    sq_settop(vm, top);
+    return ok;
+}
+
+/**
+ * One script VM, one `eve.Scene` module, and the provider registry reset around it.
+ * Each case mounts its own host name, so the cases stay independent in one process.
+ */
+class ScriptLinkTest : public ScriptTest {
+public:
+    ScriptLinkTest() : ScriptTest(kScriptLinkContent) {
+        eve::ScriptProviderRegistry::instance().clearAll();
+        module = Scene::create();
+    }
+
+    ~ScriptLinkTest() { eve::ScriptProviderRegistry::instance().clearAll(); }
+
+protected:
+    /** Mounts `root` under `name` and returns the host. */
+    SceneHost* mount(const std::string& name, NodeDesc root) {
+        auto mounted = module->mountAs(name, std::move(root));
+        REQUIRE(mounted.ok());
+        if (!mounted.ok()) return nullptr;
+        return mounted.value();
+    }
+
+    /** Publishes a script instance under `name`; the instance must be in the VM. */
+    eve::ScriptProviderHandle publish(const std::string& name, const char* instanceName) {
+        auto published = eve::ScriptProviderRegistry::instance().publish(name, vm.find(instanceName));
+        REQUIRE(published.ok());
+        return published.value();
+    }
+
+    SceneNode* nodeOf(SceneHost* host, const std::string& id) {
+        auto found = host->findById(id);
+        REQUIRE(found.ok());
+        return found.ok() ? found.value() : nullptr;
+    }
+
+    /** Moves a node locally and marks it dirty, the way a game system would. */
+    void moveLocal(SceneHost* host, const std::string& id, float x, float y, float z) {
+        SceneNode* node = nodeOf(host, id);
+        REQUIRE(node != nullptr);
+        if (node == nullptr) return;
+        node->x          = x;
+        node->y          = y;
+        node->z          = z;
+        node->localDirty = true;
+        eve::scene::TransformSystem::updateHost(host);
+    }
+
+    /**
+     * Marks every node dirty and runs one transform update.
+     *
+     * The pipeline only syncs dirty nodes, so a case that asserts "the follower was
+     * called" has to say *when* the node moved instead of depending on the tree still
+     * being dirty from mounting it.
+     */
+    void syncAll(SceneHost* host) {
+        for (SceneNode& node : host->tree()->nodes) node.localDirty = true;
+        eve::scene::TransformSystem::updateHost(host);
+    }
+
+    Scene* module = nullptr;
+};
+
+}  // namespace
+
+TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.pushDrivesFollower") {
+    // Provider-present probe for the node -> script direction: the follower is
+    // called with the node's *world* transform, not its local one.
+    SceneHost* host = mount("scriptlink_push",
+                            node("root", {node("child").withPosition(1.f, 2.f, 3.f)}).withPosition(10.f, 0.f, 0.f));
+
+    REQUIRE(module->linkScriptAt("scriptlink_push", "child", publish("link.follower", "follower").name, "node").ok());
+    CHECK_EQ(host->linkCount("child"), 1);
+
+    syncAll(host);
+    const ssq::Object follower = vm.find("follower");
+    CHECK(memberNumber(follower, "pushes") >= 1.0);
+    CHECK_EQ(memberString(follower, "lastId"), std::string("child"));
+    CHECK_EQ(memberNumber(follower, "lastX"), 11.0);
+    CHECK_EQ(memberNumber(follower, "lastY"), 2.0);
+    CHECK_EQ(memberNumber(follower, "lastZ"), 3.0);
+    CHECK_EQ(memberNumber(follower, "lastScale"), 1.0);
+
+    const double pushes = memberNumber(follower, "pushes");
+
+    // Moving the node re-syncs it; the reported position is still world-space.
+    moveLocal(host, "child", 5.f, 6.f, 7.f);
+    CHECK(memberNumber(follower, "pushes") > pushes);
+    CHECK_EQ(memberNumber(follower, "lastX"), 15.0);
+    CHECK_EQ(memberNumber(follower, "lastY"), 6.0);
+    CHECK_EQ(memberNumber(follower, "lastZ"), 7.0);
+}
+
+TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.pullDrivesNode") {
+    // Script -> node direction: "body" mode asks the provider for a local transform
+    // and moves the node to it, which is what physics does natively.
+    SceneHost* host = mount("scriptlink_pull", node("root", {node("child").withPosition(1.f, 2.f, 3.f)}));
+
+    const ssq::Object driver = vm.find("driver");
+    REQUIRE(setMemberNumber(driver, "x", 4.f));
+    REQUIRE(setMemberNumber(driver, "y", 5.f));
+    REQUIRE(setMemberNumber(driver, "z", 6.f));
+    REQUIRE(setMemberNumber(driver, "yaw", 0.25f));
+
+    REQUIRE(module->linkScriptAt("scriptlink_pull", "child", publish("link.driver", "driver").name, "body").ok());
+
+    // Linking already ran a transform update, so the node is at the driver's pose.
+    const SceneNode* node = nodeOf(host, "child");
+    REQUIRE(node != nullptr);
+    CHECK(approxEq(node->x, 4.f));
+    CHECK(approxEq(node->y, 5.f));
+    CHECK(approxEq(node->z, 6.f));
+    CHECK(approxEq(node->yaw, 0.25f));
+
+    // And it keeps following: the node is not merely set once.
+    REQUIRE(setMemberNumber(driver, "x", -1.5f));
+    eve::scene::TransformSystem::updateHost(host);
+    CHECK(approxEq(nodeOf(host, "child")->x, -1.5f));
+}
+
+TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.absentInputsAreReported") {
+    // J-4 absent probes: every way of not having a target is a structured failure,
+    // and none of them silently creates a link.
+    SceneHost* host = mount("scriptlink_absent", node("root", {node("child")}));
+
+    auto unknownHost = module->linkScriptAt("scriptlink_nope", "child", "link.follower", "node");
+    CHECK(!unknownHost.ok());
+    CHECK_EQ(firstDiagnosticCode(unknownHost.status()), eve::DiagnosticCode::NotFound);
+
+    auto unknownNode = module->linkScriptAt("scriptlink_absent", "nope", "link.follower", "node");
+    CHECK(!unknownNode.ok());
+    CHECK_EQ(firstDiagnosticCode(unknownNode.status()), eve::DiagnosticCode::NotFound);
+
+    // Nothing published under that name: the socket is empty, and that is not a link.
+    auto unpublished = module->linkScriptAt("scriptlink_absent", "child", "link.missing", "node");
+    CHECK(!unpublished.ok());
+    CHECK_EQ(firstDiagnosticCode(unpublished.status()), eve::DiagnosticCode::NotFound);
+
+    CHECK_EQ(host->linkCount("child"), 0);
+
+    // With the provider published but never linked, the pipeline has nothing to do.
+    publish("link.follower", "follower");
+    eve::scene::TransformSystem::updateHost(host);
+    CHECK_EQ(memberNumber(vm.find("follower"), "pushes"), 0.0);
+    CHECK_EQ(host->linkCount("child"), 0);
+}
+
+TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.retiredProviderIsDropped") {
+    // A retired generation must stop being driven *and* stop being linked: the
+    // record stays answerable so the scene can purge it instead of following a
+    // script object that no longer exists.
+    SceneHost* host = mount("scriptlink_retire", node("root", {node("child").withPosition(1.f, 1.f, 1.f)}));
+
+    const eve::ScriptProviderHandle handle = publish("link.follower", "follower");
+    REQUIRE(module->linkScriptAt("scriptlink_retire", "child", handle.name, "node").ok());
+    CHECK_EQ(host->linkCount("child"), 1);
+
+    syncAll(host);
+    const ssq::Object follower = vm.find("follower");
+    const double      pushes   = memberNumber(follower, "pushes");
+    REQUIRE(pushes >= 1.0);
+
+    REQUIRE(eve::ScriptProviderRegistry::instance().unload(handle).ok());
+
+    // The next sync drops the link instead of calling a retired generation.
+    syncAll(host);
+    CHECK_EQ(host->linkCount("child"), 0);
+    CHECK_EQ(memberNumber(follower, "pushes"), pushes);
+}
+
+TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.rejectedPullKeepsNodeIntact") {
+    // A provider that returns too few numbers is rejected as a whole: the node must
+    // not end up half-moved, and the link stays because the provider is alive.
+    SceneHost* host = mount("scriptlink_short", node("root", {node("child").withPosition(1.f, 2.f, 3.f)}));
+
+    REQUIRE(module->linkScriptAt("scriptlink_short", "child", publish("link.short", "shortDriver").name, "body").ok());
+
+    const SceneNode* node = nodeOf(host, "child");
+    REQUIRE(node != nullptr);
+    CHECK(approxEq(node->x, 1.f));
+    CHECK(approxEq(node->y, 2.f));
+    CHECK(approxEq(node->z, 3.f));
+    CHECK_EQ(host->linkCount("child"), 1);
+}
+
+TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.brokenTargetDoesNotStallSiblings") {
+    // A raising follower is reported once and skipped; the next node still syncs.
+    // The broken one is linked first on purpose, so a stall would be visible.
+    SceneHost* host =
+        mount("scriptlink_broken",
+              node("root", {node("bad").withPosition(1.f, 1.f, 1.f), node("good").withPosition(2.f, 2.f, 2.f)}));
+
+    REQUIRE(
+        module->linkScriptAt("scriptlink_broken", "bad", publish("link.raising", "raisingFollower").name, "node").ok());
+    REQUIRE(module->linkScriptAt("scriptlink_broken", "good", publish("link.follower", "follower").name, "node").ok());
+
+    const ssq::Object follower = vm.find("follower");
+    const double      pushes   = memberNumber(follower, "pushes");
+
+    syncAll(host);
+    CHECK(memberNumber(follower, "pushes") > pushes);
+    CHECK_EQ(memberNumber(follower, "lastX"), 2.0);
+    CHECK_EQ(host->linkCount("bad"), 1);  // its target is alive, so the link survives
+}
+
+TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.scriptBindingReportsResult") {
+    // The script face of the same call: a script links its own provider and reads the
+    // result table, so `eve.Scene().linkScriptAt` is exercised, not just the C++ method.
+    SceneHost* host = mount("scriptlink_api", node("root", {node("child").withPosition(3.f, 0.f, 0.f)}));
+    publish("link.follower", "follower");
+
+    vm.run(
+        vm.compileSource("local scene = eve.Scene()\n"
+                         "linked <- scene.linkScriptAt(\"scriptlink_api\", \"child\", \"link.follower\", \"node\")\n"
+                         "missing <- scene.linkScriptAt(\"scriptlink_api\", \"child\", \"nope\", \"node\")\n"
+                         "orphanHost <- scene.linkScriptAt(\"nowhere\", \"child\", \"link.follower\", \"node\")\n"));
+
+    ssq::Object linked = vm.find("linked");
+    CHECK_EQ(linked.getType(), ssq::Type::TABLE);
+    CHECK(linked.find("ok").toBool());
+    CHECK_EQ(host->linkCount("child"), 1);
+
+    ssq::Object missing = vm.find("missing");
+    CHECK_EQ(missing.getType(), ssq::Type::TABLE);
+    CHECK(!missing.find("ok").toBool());
+    CHECK_EQ(missing.find("code").toString(), std::string("not_found"));
+
+    ssq::Object orphanHost = vm.find("orphanHost");
+    CHECK(!orphanHost.find("ok").toBool());
+    CHECK_EQ(orphanHost.find("code").toString(), std::string("not_found"));
+
+    // The script-linked follower is the one the pipeline drives.
+    syncAll(host);
+    CHECK(memberNumber(vm.find("follower"), "lastX") >= 3.0);
+}
+}  // namespace test_scene_script_link
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_sensing_script_provider)
+#include <algorithm>
+#include <cmath>
+#include <string>
+#include <utility>
+#include <vector>
+#include "PrivateTestScope.h"
+#include "ScriptTest.h"
+#include "common/Capability.h"
+#include "common/ScriptProvider.h"
+#include "sensing/Sensing.h"
+#include "sensing/SensingScriptCandidateSeam.h"
+#include "sensing/Targeting.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+// sensing_script_provider.cpp
+namespace test_sensing_script_provider {
+// ---------------------------------------------------------------------------
+// 决定③ 的第四个落地插座：`ISensingCandidateProvider` 可以由脚本提供。
+//
+// 与地块碰撞那一类不同，这条插座的载荷是**带坐标空间与区域几何的记录**：下行是一张查询表，上行是
+// 一串候选表。编组的两条纪律在用例里钉住：①位置一律自带 `space`；②候选的空间必须与查询空间一致
+// （不一致返回 `Unsupported`，不静默换算）。可见性与数量策略不下发——那是 resolver 的活。
+// ---------------------------------------------------------------------------
+
+namespace {
+
+using namespace eve;
+using namespace eve::sensing;
+
+const char* kScriptSensingProvider = R"SQ(
+lastOrigin <- ""
+lastSpace <- ""
+lastDomain <- ""
+lastMaxRange <- -1.0
+lastMinRange <- -1.0
+lastRequiredTagCount <- -1
+lastExcludedTagCount <- -1
+lastZone <- ""
+lastAreaShape <- ""
+lastAreaRadius <- -1.0
+lastOriginX <- -1.0
+
+class CandidateProvider {
+    function queryCandidates(query) {
+        lastOrigin = query.origin
+        lastSpace = query.space
+        lastDomain = query.domain
+        lastMaxRange = query.maxRange == null ? -1.0 : query.maxRange
+        lastMinRange = query.minRange
+        lastRequiredTagCount = query.requiredTags.len()
+        lastExcludedTagCount = query.excludedTags.len()
+        lastZone = query.zone == null ? "" : query.zone
+        lastAreaShape = query.area == null ? "none" : query.area.shape
+        lastAreaRadius = query.area == null ? -1.0 : query.area.radius
+        lastOriginX = query.originLocation.x
+        return [
+            { subject = "00000000-0000-7000-8000-000000000002",
+              location = { space = "world2d", x = 3.0, y = 4.0 },
+              domain = "enemy", tags = ["unit", "visible"], zones = ["arena:central"] },
+            { subject = "00000000-0000-7000-8000-000000000004",
+              location = { space = "world2d", x = 2.0, y = 0.0 } },
+        ]
+    }
+}
+
+class GridCandidateProvider {
+    function queryCandidates(query) {
+        // 查询是 world2d，却回了 grid2d：适配器必须拒绝，而不是当成同一套单位算距离。
+        return [{ subject = "00000000-0000-7000-8000-000000000002",
+                  location = { space = "grid2d", x = 3, y = 4 } }]
+    }
+}
+
+class NotAnArrayProvider {
+    function queryCandidates(query) { return { subject = "not-an-array" } }
+}
+
+class BadSubjectProvider {
+    function queryCandidates(query) {
+        return [{ subject = "not-a-uuid", location = { space = "world2d", x = 1.0, y = 1.0 } }]
+    }
+}
+
+class FractionalGridProvider {
+    function queryCandidates(query) {
+        return [{ subject = "00000000-0000-7000-8000-000000000002",
+                  location = { space = "grid2d", x = 1.5, y = 2.0 } }]
+    }
+}
+
+// 格子查询配格子候选是合法的：适配器不是"只认世界坐标"。
+class GridOkProvider {
+    function queryCandidates(query) {
+        return [{ subject = "00000000-0000-7000-8000-000000000002",
+                  location = { space = "grid2d", x = 3, y = 4 }, domain = "enemy", tags = ["unit"] }]
+    }
+}
+
+class BrokenProvider {
+    function queryCandidates(query) { throw "sensing provider is broken" }
+}
+
+candidateProvider <- CandidateProvider()
+gridCandidateProvider <- GridCandidateProvider()
+notAnArrayProvider <- NotAnArrayProvider()
+badSubjectProvider <- BadSubjectProvider()
+fractionalGridProvider <- FractionalGridProvider()
+gridOkProvider <- GridOkProvider()
+brokenProvider <- BrokenProvider()
+)SQ";
+
+constexpr const char* kOriginId = "00000000-0000-7000-8000-000000000001";
+constexpr const char* kEnemyId  = "00000000-0000-7000-8000-000000000002";
+constexpr const char* kAllyId   = "00000000-0000-7000-8000-000000000004";
+
+SubjectRef subject(const char* text) {
+    const auto id = PersistentId::parse(text);
+    REQUIRE(id.has_value());
+    return SubjectRef::fromPersistentId(*id);
+}
+
+WorldPoint world3D(float x, float y, float z) {
+    auto point = WorldPoint::world3D(x, y, z);
+    return std::move(point).expect("test World3D point must be valid");
+}
+
+WorldPoint world2D(float x, float y) {
+    auto point = WorldPoint::world2D(x, y);
+    return std::move(point).expect("test World2D point must be valid");
+}
+
+/** 一个带齐各类约束的 World2D 查询：用来检查下行编组有没有把字段丢掉。 */
+TargetingQuery worldQuery() {
+    TargetingSpec spec;
+    spec.space        = CoordinateSpace::World2D;
+    spec.domain       = TargetDomain::Enemy;
+    spec.minRange     = 1.5f;
+    spec.maxRange     = 10.f;
+    spec.requiredTags = {"unit"};
+    spec.excludedTags = {"hidden"};
+    const auto zoneId = LogicalId::parse("arena:central");
+    REQUIRE(zoneId.has_value());
+    auto zone = ZoneRef::fromLogicalId(*zoneId);
+    REQUIRE(zone.has_value());
+    spec.zone      = *zone;
+    spec.worldArea = std::move(WorldArea::circle2D(world2D(0.f, 0.f), 10.f)).expect("circle area");
+    return TargetingQuery{subject(kOriginId), world2D(1.f, 2.f), spec};
+}
+
+/** 只给空间与原点的最小查询：坐标空间用例用它，避免被其它约束掩盖。 */
+TargetingQuery minimalWorldQuery() {
+    TargetingSpec spec;
+    spec.space = CoordinateSpace::World2D;
+    return TargetingQuery{subject(kOriginId), world2D(0.f, 0.f), spec};
+}
+
+class ScriptSensingProviderTest : public ScriptTest {
+public:
+    ScriptSensingProviderTest() : ScriptTest(kScriptSensingProvider) {
+        auto& registry = ScriptProviderRegistry::instance();
+        registry.clearAll();
+        declaredBefore_ = registry.capabilities();
+        cap::detail::clearAllRaw();
+    }
+
+    ~ScriptSensingProviderTest() {
+        withdrawScriptSensingCandidateSeam();
+        cap::detail::clearAllRaw();
+        auto& registry = ScriptProviderRegistry::instance();
+        registry.clearAll();
+        for (const std::string& capability : registry.capabilities()) {
+            if (std::find(declaredBefore_.begin(), declaredBefore_.end(), capability) != declaredBefore_.end())
+                continue;
+            registry.removeCapability(capability).ignore("fixture teardown withdraws only this case's seams");
+        }
+    }
+
+    /** 发布一个脚本候选提供方；返回结果表，测试据此断言接线成没成。 */
+    ssq::Object publish(const char* name, const char* instance) {
+        const std::string source = std::string("published <- eve.provider.publishFor(\"") +
+                                   ISensingCandidateProvider::capabilityName + "\", \"" + name + "\", " + instance +
+                                   ")";
+        vm.run(vm.compileSource(source.c_str()));
+        return vm.find("published");
+    }
+
+    /** 按名字退订（脚本侧 `publishFor` 拿不到 C++ 句柄，这里用名字 + 当前代际还原一个）。 */
+    void unload(const char* name) {
+        auto& registry = ScriptProviderRegistry::instance();
+        REQUIRE(registry.unload(ScriptProviderHandle{name, registry.generationOf(name)}).ok());
+    }
+
+private:
+    std::vector<std::string> declaredBefore_;
+};
+
+}  // namespace
+
+TEST_CASE_FIXTURE(ScriptSensingProviderTest, "sensing.script.candidateProviderAnswersTheResolver") {
+    declareScriptSensingCandidateSeam();
+    ssq::Object published = publish("test.sensing.candidates", "candidateProvider");
+    REQUIRE_EQ(published.getType(), ssq::Type::TABLE);
+    REQUIRE(published.find("ok").toBool());
+    REQUIRE(cap::query<ISensingCandidateProvider>() != nullptr);
+
+    auto resolved = TargetingResolver{}.resolve(worldQuery());
+    REQUIRE(resolved.ok());
+    // 脚本回了两条：一条 enemy（被 domain 约束保留），一条缺省 neutral（被挡掉）。
+    REQUIRE_EQ(resolved.value().subjects().size(), std::size_t{1});
+    REQUIRE_EQ(resolved.value().subjects().front(), subject(kEnemyId));
+
+    // 下行编组：脚本看到的字段与查询里的约束逐个对上（包括区域与无界/有界距离）。
+    REQUIRE_EQ(vm.find("lastOrigin").toString(), std::string(kOriginId));
+    REQUIRE_EQ(vm.find("lastSpace").toString(), std::string("world2d"));
+    REQUIRE_EQ(vm.find("lastDomain").toString(), std::string("enemy"));
+    REQUIRE_EQ(vm.find("lastMinRange").toFloat(), 1.5);
+    REQUIRE_EQ(vm.find("lastMaxRange").toFloat(), 10.0);
+    REQUIRE_EQ(vm.find("lastRequiredTagCount").toInt(), 1);
+    REQUIRE_EQ(vm.find("lastExcludedTagCount").toInt(), 1);
+    REQUIRE_EQ(vm.find("lastZone").toString(), std::string("arena:central"));
+    REQUIRE_EQ(vm.find("lastAreaShape").toString(), std::string("circle2d"));
+    REQUIRE_EQ(vm.find("lastAreaRadius").toFloat(), 10.0);
+    REQUIRE_EQ(vm.find("lastOriginX").toFloat(), 1.0);
+
+    // 退订之后能力槽位重新为空，resolver 回到"没有提供方"。
+    unload("test.sensing.candidates");
+    REQUIRE(cap::query<ISensingCandidateProvider>() == nullptr);
+    const auto absent = TargetingResolver{}.resolve(minimalWorldQuery());
+    REQUIRE(!absent.ok());
+    REQUIRE_EQ(static_cast<int>(absent.code()), static_cast<int>(StatusCode::Unsupported));
+}
+
+TEST_CASE_FIXTURE(ScriptSensingProviderTest, "sensing.script.candidateProviderSeamIsAbsentWithoutTheModule") {
+    // 没有声明接缝时，发布被明确拒绝；resolver 报 Unsupported，而不是"绑了但不响"。
+    REQUIRE(!ScriptProviderRegistry::instance().hasCapabilitySeam(ISensingCandidateProvider::capabilityName));
+    ssq::Object refused = publish("test.sensing.orphan", "candidateProvider");
+    REQUIRE(!refused.find("ok").toBool());
+    REQUIRE_EQ(refused.find("code").toString(), std::string("not_found"));
+    const auto absent = TargetingResolver{}.resolve(minimalWorldQuery());
+    REQUIRE(!absent.ok());
+    REQUIRE_EQ(static_cast<int>(absent.code()), static_cast<int>(StatusCode::Unsupported));
+
+    // `Sensing` 模块自己构造时会声明接缝：这就是生产通路。
+    Sensing sensing;
+    REQUIRE(ScriptProviderRegistry::instance().hasCapabilitySeam(ISensingCandidateProvider::capabilityName));
+}
+
+TEST_CASE_FIXTURE(ScriptSensingProviderTest, "sensing.script.candidateAnswerMustStayInTheQuerySpace") {
+    declareScriptSensingCandidateSeam();
+    REQUIRE(publish("test.sensing.grid", "gridCandidateProvider").find("ok").toBool());
+
+    // 查询是 world2d、候选自称 grid2d：明确拒绝（`Unsupported`），而不是把格子当世界单位算距离。
+    const auto resolved = TargetingResolver{}.resolve(minimalWorldQuery());
+    REQUIRE(!resolved.ok());
+    REQUIRE_EQ(static_cast<int>(resolved.code()), static_cast<int>(StatusCode::Unsupported));
+    REQUIRE(resolved.error() != nullptr);
+    REQUIRE(resolved.error()->message().find("does not match the query space") != std::string::npos);
+}
+
+TEST_CASE_FIXTURE(ScriptSensingProviderTest, "sensing.script.malformedCandidateAnswersAreRejected") {
+    declareScriptSensingCandidateSeam();
+
+    // 返回的不是数组：拒绝（`Rejected`），而不是"当成零个候选"。
+    REQUIRE(publish("test.sensing.not-array", "notAnArrayProvider").find("ok").toBool());
+    auto notArray = TargetingResolver{}.resolve(minimalWorldQuery());
+    REQUIRE(!notArray.ok());
+    REQUIRE_EQ(static_cast<int>(notArray.code()), static_cast<int>(StatusCode::Rejected));
+    unload("test.sensing.not-array");
+
+    // 主体不是规范 UUID：拒绝。
+    REQUIRE(publish("test.sensing.bad-subject", "badSubjectProvider").find("ok").toBool());
+    auto badSubject = TargetingResolver{}.resolve(minimalWorldQuery());
+    REQUIRE(!badSubject.ok());
+    REQUIRE_EQ(static_cast<int>(badSubject.code()), static_cast<int>(StatusCode::Rejected));
+    unload("test.sensing.bad-subject");
+
+    // 格子坐标不是整数：拒绝，而不是截断成整数后继续。
+    REQUIRE(publish("test.sensing.fractional", "fractionalGridProvider").find("ok").toBool());
+    TargetingSpec gridSpec;
+    gridSpec.space = CoordinateSpace::Grid2D;
+    TargetingQuery gridQuery{subject(kOriginId), TargetLocation(GridPoint::grid2D(0, 0)), gridSpec};
+    auto           fractional = TargetingResolver{}.resolve(gridQuery);
+    REQUIRE(!fractional.ok());
+    REQUIRE_EQ(static_cast<int>(fractional.code()), static_cast<int>(StatusCode::Rejected));
+    unload("test.sensing.fractional");
+
+    // 同一个空间换成整数的格子候选就是合法答案：适配器不是"只认世界坐标"。
+    REQUIRE(publish("test.sensing.grid-ok", "gridOkProvider").find("ok").toBool());
+    auto gridAnswer = TargetingResolver{}.resolve(gridQuery);
+    REQUIRE(gridAnswer.ok());
+    REQUIRE_EQ(gridAnswer.value().subjects().size(), std::size_t{1});
+    REQUIRE_EQ(gridAnswer.value().subjects().front(), subject(kEnemyId));
+}
+
+TEST_CASE_FIXTURE(ScriptSensingProviderTest, "sensing.script.candidateProviderFailureIsReportedNotSwallowed") {
+    declareScriptSensingCandidateSeam();
+    REQUIRE(publish("test.sensing.broken", "brokenProvider").find("ok").toBool());
+
+    // 脚本抛错 → 解析失败（`Failed`），不吞：吞掉会让上层把"没候选"当成"真的没有敌人"。
+    const auto failed = TargetingResolver{}.resolve(minimalWorldQuery());
+    REQUIRE(!failed.ok());
+    REQUIRE_EQ(static_cast<int>(failed.code()), static_cast<int>(StatusCode::Failed));
+
+    // 提供方在失败后还活着：换回能用的脚本对象，同一条通路恢复。
+    unload("test.sensing.broken");
+    REQUIRE(publish("test.sensing.good", "candidateProvider").find("ok").toBool());
+    REQUIRE(TargetingResolver{}.resolve(minimalWorldQuery()).ok());
+}
+
+TEST_CASE("sensing.script.coordinateSpaceSpellingMatchesTheModuleName") {
+    // 脚本词表只有一份，但它必须与模块既有的 `coordinateSpaceName` 拼写一致；这条用例把两者钉在
+    // 一起：任何一边改名字，这里就红。
+    const SubjectRef origin   = subject(kOriginId);
+    const auto       queryFor = [&origin](CoordinateSpace space) {
+        TargetingSpec spec;
+        spec.space = space;
+        TargetLocation location;
+        switch (space) {
+            case CoordinateSpace::World2D: location = TargetLocation(world2D(0.f, 0.f)); break;
+            case CoordinateSpace::World3D: location = TargetLocation(world3D(0.f, 0.f, 0.f)); break;
+            case CoordinateSpace::Grid2D: location = TargetLocation(GridPoint::grid2D(0, 0)); break;
+            case CoordinateSpace::Grid3D: location = TargetLocation(GridPoint::grid3D(0, 0, 0)); break;
+        }
+        return TargetingQuery{origin, location, spec};
+    };
+    CHECK_EQ(coordinateSpaceName(CoordinateSpace::World2D), std::string_view("world2d"));
+    CHECK_EQ(coordinateSpaceName(CoordinateSpace::World3D), std::string_view("world3d"));
+    CHECK_EQ(coordinateSpaceName(CoordinateSpace::Grid2D), std::string_view("grid2d"));
+    CHECK_EQ(coordinateSpaceName(CoordinateSpace::Grid3D), std::string_view("grid3d"));
+    // 四个空间都能构造出通过校验的查询：词表与校验规则对齐。
+    for (const CoordinateSpace space :
+         {CoordinateSpace::World2D, CoordinateSpace::World3D, CoordinateSpace::Grid2D, CoordinateSpace::Grid3D}) {
+        REQUIRE(queryFor(space).validate().ok());
+    }
+}
+}  // namespace test_sensing_script_provider
 #endif

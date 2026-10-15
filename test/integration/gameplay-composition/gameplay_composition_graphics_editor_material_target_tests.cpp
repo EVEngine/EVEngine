@@ -2305,13 +2305,13 @@ TEST_CASE("editor.procgen.script_editor_rejects_out_of_range_and_over_budget") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_property_model)
-#include "PrivateTestScope.h"
 #include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "editor/EditorAuthority.h"
 #include "editor/EditorCommandService.h"
 #include "editor/EditorPropertyModel.h"
@@ -2960,16 +2960,17 @@ TEST_CASE("editor.v2.legacy_property_provider_fails_closed_without_implicit_zero
 }
 }  // namespace test_editor_property_model
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_runtime_manifest_v2)
-#include "PrivateTestScope.h"
 #include <filesystem>
 #include <fstream>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <sstream>
 #include <string>
 #include "PathBesideSource.h"
+#include "PrivateTestScope.h"
 #include "common/Module.h"
+#include "common/ScriptError.h"
+#include "common/SquirrelBinding.h"
 #include "editor/EditCommand.h"
 #include "editor/Editor.h"
 #include "editor/EditorDiskDocumentStore.h"
@@ -2979,6 +2980,7 @@ TEST_CASE("editor.v2.legacy_property_provider_fails_closed_without_implicit_zero
 #include "editor/EditorSession.h"
 #include "editor/EditorSimulationPreview.h"
 #include "editor/EditorValue.h"
+#include "editor/ScriptEditorTool.h"
 #include "graphics/lighting/editing/SnowFieldTarget.h"
 #include "map/level/editing/FieldTargets.h"
 #include "weather/SnowField.h"
@@ -3427,9 +3429,69 @@ TEST_CASE("editor.snow.live_scalar_target_supports_bilinear_preview_and_reversib
     CHECK_EQ(field.height(0, 0), 1.0F);
     CHECK_EQ(field.height(1, 0), 1.0F);
 }
+
+TEST_CASE("editor.v2.script_command_failure_is_not_silent") {
+    eve::script::resetReportedScriptCallFailures();
+    Editor*         editor = Editor::create();
+    const CommandId commandId("test.script.exploding");
+    editor->commandService().unregisterCommand(commandId);
+
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        editor <- eve.Editor();
+        registered <- editor.registerScriptCommand(
+            "test.script.exploding", "Explode", "Build",
+            function(payload) { throw "command exploded"; });
+        session <- editor.newSession();
+        planned <- session.planCommand("test.script.exploding", {});
+        executed <- session.executePlan(planned.planId, {});
+    )"));
+
+    REQUIRE(vm.find("registered").toBool());
+    ssq::Table planned(vm.find("planned"));
+    ssq::Table executed(vm.find("executed"));
+    CHECK(planned.get<bool>("accepted"));
+    REQUIRE(!executed.get<bool>("accepted"));
+    // A callback that threw used to reach the author as "Script command callback rejected
+    // the planned payload", which reads as a deliberate `return false`. The failure now
+    // goes through the shared reporter as well.
+    REQUIRE(eve::script::reportedScriptCallFailures() >= 1);
+
+    CHECK(editor->commandService().unregisterCommand(commandId, "script:test.script.exploding"));
+}
+TEST_CASE("editor.v2.script_tool_failure_is_not_silent") {
+    eve::script::resetReportedScriptCallFailures();
+    Editor* editor = Editor::create();
+
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    // This case makes script throw, so the VM needs the engine's error hook: a bare
+    // ssq::VM keeps simplesquirrel's defaultRuntimeErrorFunc, which dereferences the
+    // callback stack without checking it and crashes (see test/ScriptTest.h).
+    eve::script::installScriptErrorHook(vm.getHandle());
+    vm.run(vm.compileSource(R"(
+        exploder <- function(payload) { throw "tool callback exploded"; };
+    )"));
+
+    std::unique_ptr<ScriptEditorTool> tool = editor->newScriptTool("test.tool.exploding", "Explode");
+    tool->setActivateCallback(vm.find("exploder"));
+    tool->setUpdateCallback(vm.find("exploder"));
+    tool->setPointerCallback(vm.find("exploder"));
+
+    eve::editor::EditorContext context;
+    tool->activate(context);
+    tool->update(context, 0.016f);
+    const ToolResponse pointer = tool->pointerEvent(context, eve::editor::EditorPointerEvent{});
+
+    // Both templates dropped the information: `invoke()` discarded the call result and
+    // `invokeFlags()` read a throw as "the callback returned 0", so a broken tool callback
+    // looked exactly like a tool that handled nothing.
+    REQUIRE(eve::script::reportedScriptCallFailures() >= 3);
+    REQUIRE(!pointer.handled);
+}
 }  // namespace test_editor_runtime_manifest_v2
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_scene_component_payload)
 #include "PrivateTestScope.h"
 #include <memory>

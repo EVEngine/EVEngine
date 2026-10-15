@@ -35,6 +35,7 @@ class PaintIntVolumeOperation;
 class VolumeBrushTool;
 class EditorAutomationProvider;
 class EditorTargetCoordinator;
+class EditorHost;
 
 /**
  * @brief Editor building blocks — not a shipped 3D/map editor app.
@@ -76,6 +77,13 @@ public:
      */
     [[nodiscard]] Result<std::unique_ptr<EditorWorkspace>> newWorkspace(const std::string& id,
                                                                               const std::string& title);
+    /**
+     * @brief Create a package-discovering EditorHost bound to this module.
+     * @param id Stable host/workspace identity; empty values are rejected.
+     * @param title User-facing title; empty title uses id.
+     * @ownership Success transfers unique ownership to the caller.
+     */
+    [[nodiscard]] Result<std::unique_ptr<EditorHost>> newHost(const std::string& id, const std::string& title);
     /** @brief Return the UI- and script-neutral command registry owned by this editor module. */
     EditorCommandService& commandService() { return commandService_; }
     /** @brief Return the immutable command registry owned by this editor module. */

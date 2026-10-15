@@ -53,6 +53,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [inspector-demo](inspector-demo/README.md) | DevTools 属性检视器：自动扫描脚本类及其属性并渲染为可编辑面板（MVVM） |
 | [editor-ui-gallery](editor-ui-gallery/README.md) | 可复用编辑器 UI 套件展示：图标字体、菜单栏、工具栏、搜索侧栏、分屏、卡片、表单控件与游戏内 HUD 共存 |
 | [editor-workspace-shell](editor-workspace-shell/README.md) | 固定 IDE 布局壳：AppFrame / DockArea / PanelFrame / TabContainer + WorkspaceLayoutShell，替代可任意拖动的多 Panel |
+| [editor-host-world](editor-host-world/README.md) | EditorHost 金样例：Action+Voxel Package autoMount + Mode A MCP attach（&lt;30 行胶水） |
 
 ## 入门与基础
 
@@ -203,6 +204,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 
 | 示例 | 演示能力 |
 |---|---|
+| [script-rule-provider](script-rule-provider/README.md) | 只写脚本接管原生扩展点：`eve.provider.publishFor` 回答 `IVehicleDamageModifier`，启动自检打印 `SCRIPT_RULE_PASS`（判据 J-1） |
 | [composable-editor](composable-editor/README.md) | 可组合编辑器 SDK：C++ Workspace、动态面板、MVVM、ECS，以及游戏/编辑器共享运行时 |
 | [scene-editor](scene-editor/README.md) | 可组合场景编辑：场景树、选择与属性联动 |
 | [scene-builder-game](scene-builder-game/README.md) | 游戏内嵌场景建造：运行时可组合的场景编辑会话 |

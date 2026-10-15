@@ -2,6 +2,7 @@
 
 #include "common/EditorAutomation.h"
 #include "common/GameplayControlJson.h"
+#include "common/ScriptComponentSnapshot.h"
 #include "common/ScriptError.h"
 #include "devtools/Immortal.hpp"
 
@@ -16,6 +17,7 @@
 #include "devtools/McpDomainTools.hpp"
 #include "devtools/McpInputTools.hpp"
 #include "devtools/McpJson.hpp"
+#include "devtools/GameWorldContext.hpp"
 #include "devtools/McpProjectIndexTools.hpp"
 #include "devtools/McpRuntimeTools.hpp"
 #include "devtools/McpSceneDirector.hpp"
@@ -507,6 +509,12 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
                contract->toJson() + "}";
     }
 
+    // 引擎侧脚本组件数据的工具视图（J-3 的"引擎工具读得到"）。没有脚本 VM 时是空列表，不是错误。
+    if (name == "eve_script_components") {
+        auto payload = eve::scriptComponentStatesJson();
+        return payload ? std::move(payload).takeValue() : std::string("error: ") + payload.status().describe();
+    }
+
     if (name == "eve_gameplay") {
         if (!args || !args->has("request")) return "error: missing request";
         std::string request;
@@ -975,11 +983,11 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
             // an unattended loop keeps polling instead of giving up.
             const bool              retryable = !status.readbackEnabled;
             const auto*             diag      = captured.status().primaryDiagnostic();
-            Poco::JSON::Object::Ptr o         = mcpFailureObject(
-                retryable ? "no-presented-frame" : "capture-failed",
-                retryable ? "Wait one rendered frame and call eve_screenshot again"
-                          : "Check eve_render_status / graphics readiness, then retry",
-                retryable, {"eve_render_status", "eve_screenshot"});
+            Poco::JSON::Object::Ptr o =
+                mcpFailureObject(retryable ? "no-presented-frame" : "capture-failed",
+                                 retryable ? "Wait one rendered frame and call eve_screenshot again"
+                                           : "Check eve_render_status / graphics readiness, then retry",
+                                 retryable, {"eve_render_status", "eve_screenshot"});
             o->set("reason", retryable ? "no-presented-frame" : "capture-failed");
             o->set("readbackEnabled", status.readbackEnabled);
             o->set("message", diag ? diag->message() : captured.status().describe());
@@ -1568,7 +1576,7 @@ std::string handleInitialize(McpServer& mcp, const std::string& idJson, Poco::JS
     const std::string resultJson =
         std::string("{\"protocolVersion\":\"") + mcpJsonEscape(protocol) +
         "\",\"capabilities\":{\"tools\":{},\"resources\":{},\"prompts\":{}},"
-        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.5.2\"},"
+        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.6.0\"},"
         "\"instructions\":\"EVEngine MCP for AI-assisted game development. Call eve_api_search/eve_api_get to look up "
         "this build's EveScript bindings before writing .nut (do not invent Unity C# names); prefer eve_play and "
         "editor commands over eve_eval for gameplay. Diagnose through the game's own channels: "
@@ -1603,13 +1611,18 @@ std::string handleToolsList(const std::string& idJson) {
         "or unique method name. Prefer this after eve_api_search.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{"
         "\"key\":{\"type\":\"string\"},\"class\":{\"type\":\"string\"},\"method\":{\"type\":\"string\"}}}},"
+        "{\"name\":\"eve_script_components\","
+        "\"description\":\"Engine-side script component data: every entity's registered components and their "
+        "current field values (the authoritative store, not script slots).\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
         "{\"name\":\"eve_gameplay\",\"description\":\"Observe, discover, submit or advance player-equivalent gameplay "
         "through the versioned shared control protocol.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"request\":{\"type\":\"object\"}},\"required\":["
         "\"request\"]}},"
         "{\"name\":\"eve_play\",\"description\":\"Unified Play Host: pause/play, step host frames, observe "
-        "game.agent.json script roots, run mapped act, capture engine screenshots, checkpoint restore, and "
-        "record/replay play traces without eve_eval.\","
+        "game.agent.json script roots, run mapped act, capture engine screenshots, checkpoint restore, "
+        "record/replay play traces, and report gameWorld (runtime systems + script publishWorldContext) on "
+        "op=status without eve_eval.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"request\":{\"type\":\"object\"}},\"required\":["
         "\"request\"]}},"
         "{\"name\":\"eve_pixelworld_worlds\",\"description\":\"List live PixelWorld simulations and status.\","
@@ -2017,7 +2030,7 @@ std::string handleToolsList(const std::string& idJson) {
 
     // Project-exported tools come last and are re-read every call: a script may
     // register or drop one at any time (hot reload of mcp.nut).
-    std::string body = kToolsBody;
+    std::string       body     = kToolsBody;
     const std::string scripted = scriptToolSchemas();
     if (!scripted.empty()) {
         body += ',';
@@ -2025,7 +2038,7 @@ std::string handleToolsList(const std::string& idJson) {
     }
     // Toolset / read-only / exclude filters apply to both built-ins and script tools
     // so tools/list and tools/call stay consistent.
-    body = filterMcpToolsBody(body);
+    body              = filterMcpToolsBody(body);
     std::string tools = "{\"tools\":[";
     tools += body;
     tools += "]}";
@@ -2134,6 +2147,9 @@ std::string handleResourcesList(const std::string& idJson) {
                       "{\"resources\":["
                       "{\"uri\":\"eve://status\",\"name\":\"status\",\"description\":\"Debugger / MCP / DAP "
                       "status\",\"mimeType\":\"application/json\"},"
+                      "{\"uri\":\"eve://game-world\",\"name\":\"game-world\",\"description\":\"What kind of game "
+                      "world is running at runtime: script publishWorldContext, live domains, and configured "
+                      "/ instantiated modules\",\"mimeType\":\"application/json\"},"
                       "{\"uri\":\"eve://error-report\",\"name\":\"error-report\",\"description\":\"Last DevTools error "
                       "slice report\",\"mimeType\":\"text/plain\"},"
                       "{\"uri\":\"eve://ai-session\",\"name\":\"ai-session\",\"description\":\"AI / MCP session "
@@ -2157,6 +2173,22 @@ std::string handleResourcesRead(const std::string& idJson, Poco::JSON::Object::P
     std::string mime = "text/plain";
     if (uri == "eve://status") {
         text = engineStatusJson(McpServer::instance());
+        mime = "application/json";
+    } else if (uri == "eve://game-world") {
+        auto snapshot = liveGameWorldSnapshot();
+        if (!snapshot) {
+            const auto* diag = snapshot.status().primaryDiagnostic();
+            return makeError(idJson, -32002,
+                             diag && !diag->message().empty() ? diag->message()
+                                                              : std::string("game world snapshot failed"));
+        }
+        auto json = snapshot.value().toJson();
+        if (!json) {
+            const auto* diag = json.status().primaryDiagnostic();
+            return makeError(idJson, -32002,
+                             diag && !diag->message().empty() ? diag->message() : "game world JSON failed");
+        }
+        text = json.value();
         mime = "application/json";
     } else if (uri == "eve://error-report") {
         text = mcpLastReport();
@@ -2242,15 +2274,16 @@ std::string handlePromptsGet(const std::string& idJson, Poco::JSON::Object::Ptr 
     } else if (name == "test_scenario") {
         text =
             "Design a short automated test against the live EVEngine session:\n"
-            "1) Read game.agent.json via eve_play op=status, then observe declared script roots.\n"
-            "2) Pause, step host frames, capture an engine screenshot, and checkpoint restore with eve_play.\n"
-            "3) Use eve_gameplay for player-equivalent domain commands when the contract declares a gameplay-domain.\n"
-            "4) Do not use eve_eval as the official observation path.";
+            "1) Call eve_game_world (or read eve://game-world) to learn genre/systems, then eve_play op=status.\n"
+            "2) Observe declared script roots from game.agent.json; do not invent observation paths.\n"
+            "3) Pause, step host frames, capture an engine screenshot, and checkpoint restore with eve_play.\n"
+            "4) Use eve_gameplay for player-equivalent domain commands when the contract declares a gameplay-domain.\n"
+            "5) Do not use eve_eval as the official observation path.";
     } else if (name == "ai_game_review") {
         text =
             "Review this AI-generated or AI-assisted game build:\n"
-            "1) eve_status + eve_ai_log for recent agent actions.\n"
-            "2) Spot-check critical roots with eve_eval.\n"
+            "1) eve_game_world + eve_status + eve_ai_log to learn the world and recent agent actions.\n"
+            "2) Spot-check critical roots with eve_play observe (or eve_eval only as a debug escape hatch).\n"
             "3) If unstable, pause and capture a snapshot.\n"
             "4) Summarize risks and suggested script fixes.";
     } else {

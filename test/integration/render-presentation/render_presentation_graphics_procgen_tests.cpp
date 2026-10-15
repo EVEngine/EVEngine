@@ -3633,10 +3633,13 @@ TEST_CASE("procgen.mesh.foliageCluster.stages") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_lsystem)
-#include "PrivateTestScope.h"
 #include <memory>
 #include <set>
+#include "PrivateTestScope.h"
+#include <simplesquirrel/simplesquirrel.hpp>
+#include <string>
 #include "RenderImageAudit.h"
+#include "common/Module.h"
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
 #include "graphics/RenderSystem.h"
@@ -3724,9 +3727,42 @@ TEST_CASE("procgen.lsystem.renderDump") {
     REQUIRE(Procgen::release(paramsHandle).ok());
     win->close();
 }
+
+
+TEST_CASE("procgen.script.newLSystemIsTheDocumentedEntryPoint") {
+    // docs/usr/modules/procgen.md's L-system section starts from
+    // `procgen.newLSystem()`. Like newShapeGrammar, the script class and the
+    // handle/resolve/release trio all existed with no factory bound, so the documented
+    // sample could not run. This drives the documented path instead of the C++ one.
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        procgen <- eve.Procgen();
+        lsCreated <- procgen.newLSystem();
+        ls <- lsCreated.ok ? lsCreated.value : null;
+        lsIsProxy <- ls != null && ls instanceof eve.ProcgenLSystem;
+        if (ls != null) {
+            ls.setAxiom("F");
+            ls.addRule('F', "F[+F]F[-F]F");
+            ls.setIterations(3);
+            ls.setAngle(26.0);
+            ls.setSeed(42);
+        }
+        derived <- ls == null ? "" : ls.derive();
+        roadCreated <- procgen.newPointSet();
+        road <- roadCreated.ok ? roadCreated.value : null;
+        if (ls != null && road != null) ls.trace(road);
+        points <- road == null ? -1 : road.getCount();
+    )"));
+
+    REQUIRE(vm.find("lsCreated").find("ok").toBool());
+    REQUIRE(vm.find("lsIsProxy").toBool());
+    REQUIRE(vm.find("derived").toString().size() > 0);
+    REQUIRE(vm.find("roadCreated").find("ok").toBool());
+    REQUIRE(vm.find("points").toInt() > 0);
+}
 }  // namespace test_procgen_lsystem
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_preview)
 #include "PrivateTestScope.h"
 #include <SDL2/SDL.h>
@@ -4679,4 +4715,187 @@ TEST_CASE("rpg.simulation.villageDefenseSystems") {
     cam->data()->active = false;
 }
 }  // namespace test_rpg_simulation
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_pointset)
+#include <simplesquirrel/simplesquirrel.hpp>
+#include "PrivateTestScope.h"
+#include "common/Module.h"
+#include "procgen/PointSet.h"
+#include "procgen/Procgen.h"
+#include "procgen/heightmap/Heightmap.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+// procgen_pointset.cpp
+namespace test_procgen_pointset {
+using namespace eve::procgen;
+
+namespace {
+
+using PointSetHandle = ProcgenPointSetHandleRef;
+using ContextHandle  = ProcgenContextHandleRef;
+
+/** @brief Owns one module point-set handle for the duration of a test. */
+struct PointSetLease {
+    Procgen*       owner = nullptr;
+    PointSetHandle handle{};
+
+    PointSetLease() = default;
+    PointSetLease(Procgen& proc, PointSetHandle value) : owner(&proc), handle(value) {}
+    PointSetLease(const PointSetLease&)            = delete;
+    PointSetLease& operator=(const PointSetLease&) = delete;
+    PointSetLease(PointSetLease&& other) noexcept : owner(other.owner), handle(other.handle) {
+        other.owner  = nullptr;
+        other.handle = {};
+    }
+    PointSetLease& operator=(PointSetLease&& other) noexcept {
+        if (this == &other) return *this;
+        reset();
+        owner        = other.owner;
+        handle       = other.handle;
+        other.owner  = nullptr;
+        other.handle = {};
+        return *this;
+    }
+    ~PointSetLease() { reset(); }
+
+    void reset() noexcept {
+        if (!owner || !handle.isValid()) return;
+        auto result = owner->releasePointSet(handle);
+        result.ignore("test point-set lease cleanup");
+        owner  = nullptr;
+        handle = {};
+    }
+
+    [[nodiscard]] eve::script::Borrowed<PointSet> view() const noexcept {
+        return owner ? owner->resolvePointSet(handle) : eve::script::Borrowed<PointSet>();
+    }
+};
+
+/** @brief Converts a successful point-set allocation into an owned test lease. */
+PointSetLease requirePointSet(Procgen& proc, eve::Result<PointSetHandle>&& result) {
+    const bool ok = result.ok();
+    if (!ok) {
+        const eve::Diagnostic* diagnostic = result.error();
+        REQUIRE(diagnostic != nullptr);
+        if (diagnostic) CHECK(diagnostic->isError());
+    }
+    REQUIRE(ok);
+    return PointSetLease(proc, std::move(result).takeValue());
+}
+
+/** @brief Converts a successful rebuild-context allocation into a test lease. */
+struct ContextLease {
+    Procgen*      owner = nullptr;
+    ContextHandle handle{};
+
+    ContextLease() = default;
+    ContextLease(Procgen& proc, ContextHandle value) : owner(&proc), handle(value) {}
+    ContextLease(const ContextLease&)            = delete;
+    ContextLease& operator=(const ContextLease&) = delete;
+    ContextLease(ContextLease&& other) noexcept : owner(other.owner), handle(other.handle) {
+        other.owner  = nullptr;
+        other.handle = {};
+    }
+    ContextLease& operator=(ContextLease&& other) noexcept {
+        if (this == &other) return *this;
+        reset();
+        owner        = other.owner;
+        handle       = other.handle;
+        other.owner  = nullptr;
+        other.handle = {};
+        return *this;
+    }
+    ~ContextLease() { reset(); }
+
+    void reset() noexcept {
+        if (!owner || !handle.isValid()) return;
+        auto result = Procgen::release(handle);
+        result.ignore("test context lease cleanup");
+        owner  = nullptr;
+        handle = {};
+    }
+
+    [[nodiscard]] eve::script::Borrowed<ProcgenContext> view() const noexcept {
+        return owner ? Procgen::resolve(handle) : eve::script::Borrowed<ProcgenContext>();
+    }
+};
+
+ContextLease requireContext(Procgen& proc, eve::Result<ContextHandle>&& result) {
+    const bool ok = result.ok();
+    if (!ok) {
+        const eve::Diagnostic* diagnostic = result.error();
+        REQUIRE(diagnostic != nullptr);
+        if (diagnostic) CHECK(diagnostic->isError());
+    }
+    REQUIRE(ok);
+    return ContextLease(proc, std::move(result).takeValue());
+}
+
+template <typename T>
+void checkResult(const eve::Result<T>& result, eve::DiagnosticCode expected = eve::DiagnosticCode::None) {
+    const bool ok = result.ok();
+    CHECK(ok);
+    if (!ok) {
+        const eve::Diagnostic* diagnostic = result.error();
+        REQUIRE(diagnostic != nullptr);
+        if (diagnostic && expected != eve::DiagnosticCode::None) CHECK_EQ(diagnostic->code(), expected);
+    }
+}
+
+}  // namespace
+
+
+TEST_CASE("procgen.script.pointsetPolygonAndBatchApiAreBound") {
+    // The point-set pipeline the user docs describe (pointset-pipeline.md): polygon
+    // filtering and its `invert` twin, heightmap projection, and the manual batch
+    // publication counters. All of them existed in C++ and were simply not exposed, so
+    // the documented calls could not run.
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        procgen <- eve.Procgen();
+        pts <- procgen.poissonDisk(40, 40, 5.0, 7, 200).value;
+        total <- pts.getCount();
+
+        poly <- procgen.newPointSet().value;
+        poly.add(-10.0, 0.0, -10.0);
+        poly.add( 10.0, 0.0, -10.0);
+        poly.add( 10.0, 0.0,  10.0);
+        poly.add(-10.0, 0.0,  10.0);
+
+        inside  <- procgen.filterPolygon(pts, poly);
+        outside <- procgen.excludePolygon(pts, poly);
+        insideOk  <- inside.ok && inside.value.getCount() >= 0;
+        outsideOk <- outside.ok && outside.value.getCount() >= 0;
+        // `filterPolygon` keeps what is inside and `excludePolygon` the complement, so
+        // the two partitions must add up to the input.
+        partitionsSum <- inside.value.getCount() + outside.value.getCount();
+
+        hm <- procgen.newHeightmap(32, 32).value;
+        projected <- procgen.projectToHeightmap(pts, hm, 0.0, 0.0, 2.0, 80.0);
+        projectedOk <- projected.ok && projected.value.getCount() >= 0;
+
+        // No scene sink is provided here, so publication must report a failure instead
+        // of crashing, and the counters stay zero for a batch that never landed.
+        published <- procgen.publishInstances("test/manual", pts, "asset", "oak");
+        publishReported <- !published.ok;
+        count   <- procgen.getPublishedInstanceCount("test/manual");
+        created <- procgen.getPublishedCreatedCount("test/manual");
+        reused  <- procgen.getPublishedReusedCount("test/manual");
+        removed <- procgen.getPublishedRemovedCount("test/manual");
+    )"));
+
+    REQUIRE(vm.find("total").toInt() > 0);
+    REQUIRE(vm.find("insideOk").toBool());
+    REQUIRE(vm.find("outsideOk").toBool());
+    REQUIRE_EQ(vm.find("partitionsSum").toInt(), vm.find("total").toInt());
+    REQUIRE(vm.find("projectedOk").toBool());
+    REQUIRE(vm.find("publishReported").toBool());
+    REQUIRE_EQ(vm.find("count").toInt(), 0);
+    REQUIRE_EQ(vm.find("created").toInt(), 0);
+    REQUIRE_EQ(vm.find("reused").toInt(), 0);
+    REQUIRE_EQ(vm.find("removed").toInt(), 0);
+}
+}  // namespace test_procgen_pointset
 #endif

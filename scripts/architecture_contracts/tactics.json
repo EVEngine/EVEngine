@@ -77,7 +77,8 @@
       "tests": [
         "test/unit/tactics/tactics_tests.cpp",
         "scripts/tests/test_architecture_contracts.py",
-        "test/integration/script-api/script_api_graphics_scene_tests.cpp", "test/unit/tactics/tactics_tests.cpp"
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp",
+        "test/unit/tactics/tactics_tests.cpp"
       ],
       "schema": "SnapshotEnvelope type tactics.battle with LogicalId schema tactics:battle.",
       "version": "Grid boards emit schema 6; ExplicitGraph boards emit schema 7. Revision and SimulationTick remain distinct.",
@@ -141,7 +142,8 @@
         "src/modules/tactics/TacticsTypes.h"
       ],
       "tests": [
-        "test/integration/script-api/script_api_graphics_scene_tests.cpp", "test/unit/tactics/tactics_tests.cpp",
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp",
+        "test/unit/tactics/tactics_tests.cpp",
         "test/integration/script-api/script_api_graphics_scene_tests.cpp",
         "examples/hex-planet/civilization_test.nut"
       ],

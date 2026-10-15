@@ -15,7 +15,8 @@
         "docs/dev/2026-09-29-chaos-destruction-geometry-collection设计.md"
       ],
       "tests": [
-        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp", "test/unit/physics_destruction/physics_destruction_fracture_rules.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp",
+        "test/unit/physics_destruction/physics_destruction_fracture_rules.cpp",
         "test/integration/gameplay-composition/gameplay_composition_graphics_procgen_core_boundary_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
@@ -118,12 +119,15 @@
       ],
       "tests": [
         "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp",
-        "test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp", "test/unit/physics/physics_tests.cpp",
-        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp",
-        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp",
-        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp", "test/unit/physics/physics_tests.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp",
         "test/unit/physics/physics_tests.cpp",
-        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp", "test/unit/physics/physics_tests.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp",
+        "test/unit/physics/physics_tests.cpp",
+        "test/unit/physics/physics_tests.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp",
+        "test/unit/physics/physics_tests.cpp",
         "test/unit/physics/physics_tests.cpp"
       ],
       "thread_affinity": "Owning physics thread, between simulation steps; no callbacks or persistent borrowed result storage.",

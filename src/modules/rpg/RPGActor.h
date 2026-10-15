@@ -112,7 +112,7 @@ public:
     COMPONENT(ClassInfo, classInfo)
 
     /**
-     * @brief 创建一个空白 actor（三张表均为空，按需惰性写入），并纳入 liveActors() 跟踪。
+     * @brief 创建一个空白 actor（三张表均为空，按需惰性写入）。
      * @return Borrowed nullable pointer to the ECS-owned actor; null means creation failed.
      * @ownership The ECS world owns the actor; callers must release it through ECS and never delete it.
      * @lifetime Valid until actor/world destruction; retain the generation-qualified EntityHandle across frames.
@@ -284,14 +284,13 @@ public:
     [[nodiscard]] eve::Result<void> restoreCheckpointJson(std::string_view json);
 
     /**
-     * @brief 返回所有通过 createActor() 创建、且当前仍存活的 actor。
+     * @brief 返回当前 Table 中所有存活的 RPGActor（含派生类）。
      * StatusSystem::update / SkillSystem::update 用它遍历所有 actor 逐帧推进。
-     * 直接调用继承自 ENTITY 宏的 RPGActor::create() 不会被跟踪——推荐总是用 createActor()。
      *
-     * 实现细节：内部按 ecs::EntityHandle（而非裸指针）跟踪，每次调用通过
-     * ecs::try_get 按 (id, generation) 校验是否仍是同一个存活实体——
-     * 这样当一个 actor 被销毁、其 id 槽位被新 actor 复用时，不会把新实体
-     * 误判为旧的已销毁实体（裸指针 + is_entity_visible 无法区分这种复用）。
+     * 实现细节：由 `ecs::View<RPGActor, Attributes>` + `ViewIterator::entity()`
+     * 收集，不再维护第二份 handle 注册表。跨帧持有身份仍应使用 EntityHandle。
+     * @lifetime 返回的 vector 在下一次 `liveActors()` 调用前保持稳定；其中的指针
+     * 仅在当前帧/当前 View 语义下借用，销毁后勿跨帧保留裸指针。
      */
     static const std::vector<RPGActor *> &liveActors();
 

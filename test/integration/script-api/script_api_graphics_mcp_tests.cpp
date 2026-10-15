@@ -1,7 +1,6 @@
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp)
-#include "PrivateTestScope.h"
 #include <Poco/Dynamic/Var.h>
 #include <Poco/Exception.h>
 #include <Poco/JSON/Array.h>
@@ -18,6 +17,7 @@
 #include <sstream>
 #include <string>
 #include <thread>
+#include "PrivateTestScope.h"
 #include "common/Capability.h"
 #include "common/EditorAutomation.h"
 #include "common/ProcgenQuery.h"
@@ -332,54 +332,56 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     REQUIRE(toolsMsg);
     auto tools = toolsMsg->getObject("result")->getArray("tools");
     REQUIRE(tools);
-    bool foundStatus          = false;
-    bool foundGameplay        = false;
-    bool foundEval            = false;
-    bool foundScene           = false;
-    bool foundProc            = false;
-    bool foundPhys            = false;
-    bool foundShot            = false;
-    bool foundParticles       = false;
-    bool foundAudio           = false;
-    bool foundVision          = false;
-    bool foundVcfg            = false;
-    bool foundSdMod           = false;
-    bool foundSdBatch         = false;
-    bool foundSdInfo          = false;
-    bool foundCamGen          = false;
-    bool foundReset           = false;
-    bool foundSdStat          = false;
-    bool foundSdInst          = false;
-    bool foundWhitebox        = false;
-    bool foundUiTree          = false;
-    bool foundUiGet           = false;
-    bool foundUiClick         = false;
-    bool foundHostReload      = false;
-    bool foundHotReloadStatus = false;
-    bool foundEditorCommands  = false;
-    bool foundEditorPlan      = false;
-    bool foundEditorCreate    = false;
-    bool foundEditorInspect   = false;
-    bool foundEditorObserve   = false;
-    bool foundObserveStart    = false;
-    bool foundObservePoll     = false;
-    bool foundObserveClose    = false;
-    bool foundRenderableGet   = false;
-    bool foundSkeletonInspect = false;
-    bool foundAgentStart      = false;
-    bool foundAgentEvidence   = false;
-    bool foundAgentComplete   = false;
-    bool foundPixelWorlds     = false;
-    bool foundPixelSamples    = false;
-    bool foundPixelCatalog    = false;
-    bool foundPixelValidate   = false;
-    bool foundPixelApply      = false;
-    bool foundApiSearch       = false;
-    bool foundApiGet          = false;
+    bool foundStatus           = false;
+    bool foundGameplay         = false;
+    bool foundEval             = false;
+    bool foundScene            = false;
+    bool foundProc             = false;
+    bool foundPhys             = false;
+    bool foundShot             = false;
+    bool foundParticles        = false;
+    bool foundAudio            = false;
+    bool foundVision           = false;
+    bool foundVcfg             = false;
+    bool foundSdMod            = false;
+    bool foundSdBatch          = false;
+    bool foundSdInfo           = false;
+    bool foundCamGen           = false;
+    bool foundReset            = false;
+    bool foundSdStat           = false;
+    bool foundSdInst           = false;
+    bool foundWhitebox         = false;
+    bool foundUiTree           = false;
+    bool foundUiGet            = false;
+    bool foundUiClick          = false;
+    bool foundHostReload       = false;
+    bool foundHotReloadStatus  = false;
+    bool foundEditorCommands   = false;
+    bool foundEditorPlan       = false;
+    bool foundEditorCreate     = false;
+    bool foundEditorInspect    = false;
+    bool foundEditorObserve    = false;
+    bool foundObserveStart     = false;
+    bool foundObservePoll      = false;
+    bool foundObserveClose     = false;
+    bool foundRenderableGet    = false;
+    bool foundSkeletonInspect  = false;
+    bool foundAgentStart       = false;
+    bool foundAgentEvidence    = false;
+    bool foundAgentComplete    = false;
+    bool foundPixelWorlds      = false;
+    bool foundPixelSamples     = false;
+    bool foundPixelCatalog     = false;
+    bool foundPixelValidate    = false;
+    bool foundPixelApply       = false;
+    bool foundScriptComponents = false;
+    bool foundApiSearch        = false;
+    bool foundApiGet           = false;
     for (size_t i = 0; i < tools->size(); ++i) {
         auto              t    = tools->getObject(static_cast<unsigned>(i));
         const std::string name = t->getValue<std::string>("name");
         if (name == "eve_status") foundStatus = true;
+        if (name == "eve_script_components") foundScriptComponents = true;
         if (name == "eve_gameplay") foundGameplay = true;
         if (name == "eve_eval") foundEval = true;
         if (name == "eve_scene_status") foundScene = true;
@@ -466,6 +468,17 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     CHECK(foundPixelCatalog);
     CHECK(foundPixelValidate);
     CHECK(foundPixelApply);
+    CHECK(foundScriptComponents);
+
+    // 脚本组件数据的工具视图：没有脚本 VM/没有登记组件时也必须是合法 JSON（空列表），不是错误。
+    client.sendRequest(4, "tools/call", "{\"name\":\"eve_script_components\",\"arguments\":{}}");
+    auto scriptComponentsMsg = client.expectResult(4);
+    REQUIRE(scriptComponentsMsg);
+    auto scriptComponentsContent = scriptComponentsMsg->getObject("result")->getArray("content");
+    REQUIRE(scriptComponentsContent);
+    REQUIRE(scriptComponentsContent->size() >= 1);
+    const std::string scriptComponentsText = scriptComponentsContent->getObject(0)->getValue<std::string>("text");
+    CHECK(scriptComponentsText.find("\"entities\"") != std::string::npos);
     CHECK(foundApiSearch);
     CHECK(foundApiGet);
 
@@ -1100,7 +1113,6 @@ TEST_CASE("devtools.mcp.setBreakpointWithCondition") {
 }
 }  // namespace test_mcp
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_agent_export)
 #include "PrivateTestScope.h"
 #include <Poco/Dynamic/Var.h>
@@ -1502,7 +1514,6 @@ TEST_CASE("devtools.mcp.scriptToolNameRules") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_hot_reload)
-#include "PrivateTestScope.h"
 #include <Poco/JSON/Object.h>
 #include <Poco/JSON/Parser.h>
 #include <chrono>
@@ -1512,10 +1523,13 @@ TEST_CASE("devtools.mcp.scriptToolNameRules") {
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "common/Capability.h"
 #include "common/Module.h"
 #include "common/Runtime.h"
+#include "common/ScriptError.h"
 #include "common/ServiceInterfaces.h"
+#include "common/SquirrelBinding.h"
 #include "ui/EditorHost.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -1610,6 +1624,115 @@ TEST_CASE("devtools.mcp.hostResourceHotReload") {
     std::filesystem::remove_all(root);
 }
 
+TEST_CASE("devtools.mcp.hostScriptFailureCarriesTheReason") {
+    auto& host = eve::ui::EditorHost::instance();
+    host.stop();
+
+    const auto root =
+        std::filesystem::temp_directory_path() /
+        ("eve_mcp_host_text_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    const auto vmPath = root / "editors" / "terrain.vm.nut";
+    std::filesystem::create_directories(root / "editors");
+
+    writeText(vmPath, R"(::TerrainVM <- { version = 1 };)");
+    writeText(
+        root / "editors" / "terrain.editor.json",
+        R"({"id":"terrain","title":"Terrain","vm":"TerrainVM","children":[{"type":"slider","id":"brushSize","value":5,"bind":"vm.brushSize"}]})");
+
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::script::installScriptErrorHook(vm.getHandle());
+    host.start(vm, root.string(), /*allowWindow=*/false);
+    REQUIRE(host.listEditors().find("terrain") != std::string::npos);
+
+    // ViewModel 的编译失败必须带上出处与位置，而不是只回一个通用词。dev 之后把来源名从
+    // 缺省的 "host_vm.nut" 换成真实资源路径（`game:/editors/<id>.vm.nut`），所以断言的是
+    // 文件名的后半段而不是旧名字。实测字符串形如
+    // "error: compile failed:  error at game:/editors/terrain.vm.nut:1 (<anonymous>): expression expected"。
+    writeText(vmPath, "::TerrainVM <- { broken = ; };");
+    const std::string compileError = host.reloadResource("editors/terrain.vm.nut");
+    REQUIRE(compileError.rfind("error:", 0) == 0);
+    REQUIRE(compileError.find("compile failed") != std::string::npos);
+    REQUIRE(compileError.find("terrain.vm.nut") != std::string::npos);
+
+    // 运行期抛出必须带上脚本错误原文与行号：
+    // "error: runtime failed: game:/editors/terrain.vm.nut:2 (main): vm chunk exploded"。
+    writeText(vmPath, "::TerrainVM <- { version = 2 };\nthrow \"vm chunk exploded\";\n");
+    const std::string runtimeError = host.reloadResource("editors/terrain.vm.nut");
+    REQUIRE(runtimeError.rfind("error:", 0) == 0);
+    REQUIRE(runtimeError.find("runtime failed") != std::string::npos);
+    REQUIRE(runtimeError.find("terrain.vm.nut:2") != std::string::npos);
+    REQUIRE(runtimeError.find("vm chunk exploded") != std::string::npos);
+
+    // 片段路径（mcp.nut）走的是同一个 runSquirrel。
+    writeText(root / "mcp.nut", "throw \"snippet exploded\";\n");
+    const std::string snippetError = host.reloadResource("mcp.nut");
+    REQUIRE(snippetError.find("runtime failed") != std::string::npos);
+    REQUIRE(snippetError.find("snippet exploded") != std::string::npos);
+
+    host.stop();
+    std::filesystem::remove_all(root);
+
+    // onChange 抛出：`setEditorValue` 仍然回 "ok"（绑定值已经写进 ViewModel），但失败必须
+    // 被计数上报——`callTableFunc` 过去把原因压成 "runtime failed: <name>" 并只在 stderr
+    // 打一行。用新的项目目录，避免上面那个会抛的 terrain VM 干扰计数。
+    const auto root2 =
+        std::filesystem::temp_directory_path() /
+        ("eve_mcp_onchange_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    std::filesystem::create_directories(root2 / "editors");
+    writeText(
+        root2 / "editors" / "err.editor.json",
+        R"({"id":"err","title":"Err","vm":"ErrVM","children":[{"type":"slider","id":"v","value":1,"bind":"vm.v","onChange":"vm.onChange"}]})");
+    writeText(root2 / "editors" / "err.vm.nut",
+              R"(::ErrVM <- { v = 1, onChange = function(widget, value) { throw "onChange exploded"; } };)");
+
+    ssq::VM vm2(1024, ssq::Libs::ALL);
+    eve::script::installScriptErrorHook(vm2.getHandle());
+    eve::script::resetReportedScriptCallFailures();
+    host.start(vm2, root2.string(), /*allowWindow=*/false);
+    REQUIRE(eve::script::reportedScriptCallFailures() == 0);
+
+    REQUIRE(host.setEditorValue("err", "v", "7") == "ok");
+    REQUIRE(eve::script::reportedScriptCallFailures() == 1);
+    REQUIRE(vm2.find("ErrVM").toTable().find("v").toFloat() == 7.0);
+
+    host.stop();
+    std::filesystem::remove_all(root2);
+}
+
+TEST_CASE("devtools.mcp.startupViewModelFailureIsVisible") {
+    auto& host = eve::ui::EditorHost::instance();
+    host.stop();
+
+    const auto root =
+        std::filesystem::temp_directory_path() /
+        ("eve_mcp_startup_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    std::filesystem::create_directories(root / "editors");
+    writeText(
+        root / "editors" / "broken.editor.json",
+        R"({"id":"broken","title":"Broken","vm":"BrokenVM","children":[{"type":"slider","id":"v","value":1,"bind":"vm.v"}]})");
+    // The manifest is fine; the ViewModel throws while it is loaded at startup.
+    writeText(root / "editors" / "broken.vm.nut", "::BrokenVM <- { v = 1 };\nthrow \"startup vm exploded\";\n");
+
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::script::installScriptErrorHook(vm.getHandle());
+    eve::script::resetReportedScriptCallFailures();
+    host.start(vm, root.string(), /*allowWindow=*/false);
+
+    // The editor itself still loads -- only its script failed -- and that failure must be
+    // visible through the status an MCP client reads. Before this, the result was
+    // discarded and hotReloadStatus() reported a healthy host.
+    REQUIRE(host.listEditors().find("broken") != std::string::npos);
+    const auto status = parseObject(host.hotReloadStatus());
+    REQUIRE(status);
+    REQUIRE(status->getValue<int>("failureCount") >= 1);
+    const std::string lastResult = status->getValue<std::string>("lastResult");
+    REQUIRE(lastResult.rfind("error:", 0) == 0);
+    REQUIRE(lastResult.find("startup vm exploded") != std::string::npos);
+
+    host.stop();
+    std::filesystem::remove_all(root);
+}
+
 namespace {
 
 class MemoryFileSystem final : public eve::service::IFileSystem {
@@ -1661,7 +1784,6 @@ TEST_CASE("devtools.mcp.hostScriptImport") {
 }
 }  // namespace test_mcp_hot_reload
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_scene_literal)
 #include "PrivateTestScope.h"
 #include <Poco/JSON/Parser.h>
@@ -1944,11 +2066,11 @@ TEST_CASE("devtools.mcp.eveRestartTool") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_model)
-#include "PrivateTestScope.h"
 #include <cassert>
 #include <map>
 #include <string>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "ScriptTest.h"
 // Squirrel internal headers require this dependency order.
 // clang-format off
@@ -2049,17 +2171,16 @@ protected:
 // Release is fine). Pre-existing white-box test issue. Coverage still runs in
 // Debug on every platform and in Release on Linux.
 #if !defined(NDEBUG)
-TEST_CASE_FIXTURE(ModelScriptTest, "ModelScriptTest.basic") { CHECK(vm.callFunc(vm.findFunc("basic"), vm).toBool()); }
+TEST_CASE_FIXTURE(ModelScriptTest, "ModelScriptTest.basic") { REQUIRE(vm.callFunc(vm.findFunc("basic"), vm).toBool()); }
 #endif
 }  // namespace test_model
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_module_lazy_bind)
-#include "PrivateTestScope.h"
 #include <squirrel.h>
 #include <zeroerr/assert.h>
 #include <zeroerr/unittest.h>
 #include "Fixtures.h"
+#include "PrivateTestScope.h"
 #include "common/Module.h"
 #include "common/Runtime.h"
 #include "zeroerr/assert.h"
@@ -2091,17 +2212,17 @@ TEST_CASE("moduleExpose.defersNativeClassUntilFirstGet") {
     Runtime runtime(1024, ssq::Libs::ALL);
     ModuleManager::expose(runtime);
     HSQUIRRELVM vm = runtime.handle();
-    CHECK(!eveRawHas(vm, "Graphics"));
-    CHECK(!eveRawHas(vm, "Window"));
-    CHECK(!eveRawHas(vm, "WindowSettings"));
+    REQUIRE(!eveRawHas(vm, "Graphics"));
+    REQUIRE(!eveRawHas(vm, "Window"));
+    REQUIRE(!eveRawHas(vm, "WindowSettings"));
 
     runtime.runSource("g <- eve.Graphics\n", "lazy-graphics.nut");
-    CHECK(eveRawHas(vm, "Graphics"));
-    CHECK(!eveRawHas(vm, "Window"));
+    REQUIRE(eveRawHas(vm, "Graphics"));
+    REQUIRE(!eveRawHas(vm, "Window"));
 
     runtime.runSource("s <- eve.WindowSettings()\n", "lazy-window-settings.nut");
-    CHECK(eveRawHas(vm, "Window"));
-    CHECK(eveRawHas(vm, "WindowSettings"));
+    REQUIRE(eveRawHas(vm, "Window"));
+    REQUIRE(eveRawHas(vm, "WindowSettings"));
 }
 
 TEST_CASE("moduleExpose.eagerCompatibilityKeepsCanonicalSpriteBinding") {
@@ -2110,8 +2231,8 @@ TEST_CASE("moduleExpose.eagerCompatibilityKeepsCanonicalSpriteBinding") {
 
     runtime.runSource("if (eve._bindAllNativeClasses() < 0) throw \"native binding failed\"\n",
                       "eager-native-binding-setup.nut");
-    CHECK(eveRawHas(runtime.handle(), "_ecsSlotsCache"));
-    CHECK(eveRawHas(runtime.handle(), "_ecsTypes"));
+    REQUIRE(eveRawHas(runtime.handle(), "_ecsSlotsCache"));
+    REQUIRE(eveRawHas(runtime.handle(), "_ecsTypes"));
 
     runtime.runSource(
         "sprite <- eve.Sprite2D()\n"
@@ -2340,7 +2461,6 @@ TEST_CASE("ModuleManager.RegistryConflictPreservesCommittedInstance") {
 }
 }  // namespace test_module_lazy_bind
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mouse)
 #include "PrivateTestScope.h"
 #include "ScriptTest.h"
@@ -2353,7 +2473,7 @@ using namespace eve;
 UnitSciptTest(Mouse, mouse_content);
 
 #define TestScript(func) \
-    TEST_CASE_FIXTURE(Mouse, "Mouse." #func) { CHECK(vm.callFunc(vm.findFunc(#func), vm).toBool()); }
+    TEST_CASE_FIXTURE(Mouse, "Mouse." #func) { REQUIRE(callScript(#func)); }
 
 // clang-format off
 TestScript(basic)
@@ -2363,7 +2483,6 @@ TestScript(visibility)
 }  // namespace test_mouse
 #undef TestScript
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_npc_ai_script)
 #include "PrivateTestScope.h"
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -2786,9 +2905,9 @@ TEST_CASE("procgen.pcgTreeManager.bindsRealVm") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_cloth)
-#include "PrivateTestScope.h"
 #include <array>
 #include <cmath>
+#include "PrivateTestScope.h"
 #include "ScriptTest.h"
 #include "physics/cloth/Cloth3D.h"
 #include "physics/cloth/ClothModel.h"
@@ -2800,12 +2919,9 @@ using namespace eve;
 
 UnitSciptTest(PhysicsClothScriptTest, physics_cloth_content);
 
-TEST_CASE_FIXTURE(PhysicsClothScriptTest, "PhysicsCloth.scriptBindings") {
-    CHECK(vm.callFunc(vm.findFunc("basic"), vm).toBool());
-}
+TEST_CASE_FIXTURE(PhysicsClothScriptTest, "PhysicsCloth.scriptBindings") { REQUIRE(callScript("basic")); }
 }  // namespace test_physics_cloth
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_policyregistry)
 #include "PrivateTestScope.h"
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -3070,7 +3186,6 @@ TEST_CASE("procgen.runtimeGeneration.squirrelAdvancesBudgetedRefresh") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_scene_sink)
-#include "PrivateTestScope.h"
 #include <cmath>
 #include <future>
 #include <limits>
@@ -3081,6 +3196,7 @@ TEST_CASE("procgen.runtimeGeneration.squirrelAdvancesBudgetedRefresh") {
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "common/Capability.h"
 #include "common/Module.h"
 #include "common/ProcgenSceneSink.h"
@@ -3582,9 +3698,36 @@ TEST_CASE("procgen.runtimeGeneration.rejectsWorkerThreadSchedulerMutation") {
     auto committed = runtime.completeGenerationJob(ProcgenGenerationCompletion(job, std::move(output)));
     REQUIRE(committed.ok());
 }
+
+TEST_CASE("procgen.script.newShapeGrammarIsTheDocumentedEntryPoint") {
+    // docs/usr/modules/procgen/pointset-pipeline.md tells users to start from
+    // `procgen.newShapeGrammar()`. The class and all of its methods were exposed but
+    // nothing created an instance, so that documented sample could not run at all --
+    // the binding check's reverse direction reported it as "documented but not bound".
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        procgen <- eve.Procgen();
+        created <- procgen.newShapeGrammar();
+        grammar <- created.ok ? created.value : null;
+        isProxy <- grammar != null && grammar instanceof eve.ProcgenShapeGrammar;
+        added <- grammar == null ? false : grammar.addModule("Wall", "stone-wall-a", 4.0, 3.0);
+        count <- grammar == null ? -1 : grammar.getModuleCount();
+        symbol <- grammar == null ? "" : grammar.getModuleSymbol(0);
+        valid <- grammar != null && grammar.validate("Wall,Wall");
+        report <- grammar == null ? "" : grammar.debugReport();
+    )"));
+
+    REQUIRE(vm.find("created").find("ok").toBool());
+    REQUIRE(vm.find("isProxy").toBool());
+    REQUIRE(vm.find("added").toBool());
+    REQUIRE_EQ(vm.find("count").toInt(), 1);
+    REQUIRE_EQ(vm.find("symbol").toString(), std::string("Wall"));
+    REQUIRE(vm.find("valid").toBool());
+    REQUIRE(vm.find("report").toString().find("symbols=") != std::string::npos);
+}
 }  // namespace test_procgen_scene_sink
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_production)
 #include "PrivateTestScope.h"
 #include <cstdint>
@@ -3626,8 +3769,8 @@ TEST_CASE("production.script.queueLifecycle") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_profiler)
-#include "PrivateTestScope.h"
 #include <string>
+#include "PrivateTestScope.h"
 #include "ScriptTest.h"
 #include "common/Profile.h"
 #include "profiler/Profiler.h"
@@ -3675,15 +3818,13 @@ TEST_CASE("profiler.core.aggregatesSelfAndTotal") {
 
 UnitSciptTest(ProfilerScriptTest, profiler_content);
 
-TEST_CASE_FIXTURE(ProfilerScriptTest, "ProfilerScriptTest.capture") {
-    CHECK(vm.callFunc(vm.findFunc("captureWorks"), vm).toBool());
-}
+TEST_CASE_FIXTURE(ProfilerScriptTest, "ProfilerScriptTest.capture") { REQUIRE(callScript("captureWorks")); }
 }  // namespace test_profiler
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_reload_script)
-#include "PrivateTestScope.h"
+#include <iostream>
 #include <simplesquirrel/simplesquirrel.hpp>
+#include "PrivateTestScope.h"
 #include "common/Capability.h"
 #include "common/IStateProvider.h"
 #include "common/Module.h"
@@ -3697,41 +3838,30 @@ TEST_CASE_FIXTURE(ProfilerScriptTest, "ProfilerScriptTest.capture") {
 namespace test_reload_script {
 namespace {
 
+/**
+ * @brief The production state-migration helpers, taken verbatim from the bootstrap.
+ *
+ * These used to be a hand-written mirror in this file, which meant the test could keep
+ * passing while `load.nut`'s real helper diverged -- and it did: the production version
+ * silently copied nothing for a while because `n[k] <- v` throws for a dynamic key on a
+ * class instance (plan doc 9.21.1). Slicing the two functions out of `eve::load_content`
+ * makes the test execute the same source scripts run, and a rename or a rewrite in
+ * load.nut fails the reload cases instead of drifting unnoticed.
+ *
+ * The whole bootstrap cannot simply be run here: its top level reads config.nut,
+ * instantiates modules, opens a window and drives frames.
+ */
+std::string migrationHelpersSource() {
+    const std::string source(eve::load_content);
+    const size_t      begin = source.find("function migrate_instance(");
+    const size_t      remap = source.find("function remap_instances(");
+    if (begin == std::string::npos || remap == std::string::npos || remap < begin) return {};
+    const size_t end = source.find("\n}\n", remap);
+    if (end == std::string::npos) return {};
+    return source.substr(begin, end - begin + 3);
+}
+
 const char* kReloadScript = R"(
-// Mirror of the load.nut migrate_instance helper (tables fully; class
-// instances via their declared members).
-function migrate_inst(old, NewClass) {
-    local n = NewClass();
-    if (old == null) return n;
-    if (typeof old == "table") {
-        foreach (k, v in old) {
-            try { n[k] <- v; } catch (e) {}
-        }
-        return n;
-    }
-    if (typeof old != "instance") return n;
-    foreach (k, v in getclass(old)) {
-        if (typeof v == "function") continue;
-        try { n[k] <- old[k]; } catch (e) {}
-    }
-    return n;
-}
-
-function remap_inst(container, NewClass) {
-    if (typeof container == "array") {
-        for (local i = 0; i < container.len(); ++i) {
-            container[i] = migrate_inst(container[i], NewClass);
-        }
-    } else if (typeof container == "table") {
-        local keys = [];
-        foreach (k, v in container) keys.append(k);
-        foreach (k in keys) {
-            container[k] = migrate_inst(container[k], NewClass);
-        }
-    }
-    return container;
-}
-
 function reloadProtocolKeepsOldValuesAndNewFields() {
     eve.dev.clearStateRoots();
     getroottable().gameState <- { level = 3, hero = "alice" };
@@ -3784,7 +3914,7 @@ function migrateInstanceCopiesFieldsAndKeepsDefaults() {
     local old = HeroV1();
     old.level = 5;
     old.name = "alice";
-    local n = migrate_inst(old, HeroV2);
+    local n = migrate_instance(old, HeroV2);
     return n.level == 5 && n.name == "alice" && n.title == "novice";
 }
 
@@ -3795,7 +3925,7 @@ function migrateInstanceFromTable() {
         title = "novice";
     }
     local t = { level = 9, name = "bob" };
-    local n = migrate_inst(t, HeroV2);
+    local n = migrate_instance(t, HeroV2);
     return n.level == 9 && n.name == "bob" && n.title == "novice";
 }
 
@@ -3810,7 +3940,7 @@ function remapInstancesContainer() {
     local arr = [ItemV1(), ItemV1()];
     arr[0].id = "a";
     arr[1].id = "b";
-    remap_inst(arr, ItemV2);
+    remap_instances(arr, ItemV2);
     return arr[0].id == "a" && arr[0].tag == "new" && arr[1].id == "b" &&
            arr[1].tag == "new";
 }
@@ -3885,6 +4015,10 @@ public:
         eve::ModuleManager::expose(vm);
         eve::dev::DevTool::instance().attach(vm);
         eve::dev::DevTool::instance().exposeScriptApi(vm);
+        // The production migration helpers first, then the cases that call them.
+        const std::string helpersSource = migrationHelpersSource();
+        ssq::Script       helpers       = vm.compileSource(helpersSource.c_str());
+        vm.run(helpers);
         ssq::Script s = vm.compileSource(script);
         vm.run(s);
     }
@@ -3903,43 +4037,54 @@ public:
 UnitReloadScriptTest(ReloadScriptTestFixture, kReloadScript);
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.protocolKeepsOldValuesAndNewFields") {
-    CHECK(vm.callFunc(vm.findFunc("reloadProtocolKeepsOldValuesAndNewFields"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("reloadProtocolKeepsOldValuesAndNewFields"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.protocolRestoresMissingRoot") {
-    CHECK(vm.callFunc(vm.findFunc("reloadProtocolRestoresMissingRoot"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("reloadProtocolRestoresMissingRoot"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.abortRollsBack") {
-    CHECK(vm.callFunc(vm.findFunc("reloadAbortRollsBack"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("reloadAbortRollsBack"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.migrateInstanceCopiesFieldsAndKeepsDefaults") {
-    CHECK(vm.callFunc(vm.findFunc("migrateInstanceCopiesFieldsAndKeepsDefaults"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("migrateInstanceCopiesFieldsAndKeepsDefaults"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.migrateInstanceFromTable") {
-    CHECK(vm.callFunc(vm.findFunc("migrateInstanceFromTable"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("migrateInstanceFromTable"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.remapInstancesContainer") {
-    CHECK(vm.callFunc(vm.findFunc("remapInstancesContainer"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("remapInstancesContainer"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.stateRootsReportsMarkedAndHeuristic") {
-    CHECK(vm.callFunc(vm.findFunc("stateRootsReportsMarkedAndHeuristic"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("stateRootsReportsMarkedAndHeuristic"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.transientRootsAreExcludedFromCapture") {
-    CHECK(vm.callFunc(vm.findFunc("transientRootsAreExcludedFromCapture"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("transientRootsAreExcludedFromCapture"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.abortRestoresStateRootPolicies") {
-    CHECK(vm.callFunc(vm.findFunc("abortRestoresStateRootPolicies"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("abortRestoresStateRootPolicies"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.commitKeepsNewStateRootPolicies") {
-    CHECK(vm.callFunc(vm.findFunc("commitKeepsNewStateRootPolicies"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("commitKeepsNewStateRootPolicies"), vm).toBool());
+}
+
+TEST_CASE("reloadScript.migrationHelpersComeFromTheBootstrap") {
+    // The migration cases above must exercise load.nut's helpers, not a copy of them:
+    // a mirror let them pass while the real helper silently copied nothing (plan doc
+    // 9.21.1). This pins the wiring, and a rename in load.nut fails here instead of
+    // quietly turning the three migration cases into no-ops.
+    const std::string source = migrationHelpersSource();
+    REQUIRE(!source.empty());
+    REQUIRE(source.rfind("function migrate_instance(", 0) == 0);
+    REQUIRE(source.find("function remap_instances(") != std::string::npos);
 }
 
 TEST_CASE("reloadScript.embeddedLoadScriptCompiles") {
@@ -3948,9 +4093,12 @@ TEST_CASE("reloadScript.embeddedLoadScriptCompiles") {
     try {
         vm.compileSource(eve::load_content);
         compiled = true;
-    } catch (...) {
+    } catch (const std::exception& error) {
+        // A broken bootstrap has to say what broke; swallowing the text would leave a
+        // bare "compiled == false" with no way to tell which line failed.
+        std::cerr << "[reloadScript] embedded load_content does not compile: " << error.what() << std::endl;
     }
-    CHECK(compiled);
+    REQUIRE(compiled);
 }
 
 namespace {
@@ -4012,13 +4160,13 @@ TEST_CASE("reloadScript.failedCommitCanStillAbort") {
     auto&       session = eve::dev::ReloadSession::instance();
     std::string err;
     REQUIRE(session.begin(vm.getHandle(), &err));
-    CHECK(!session.commit(vm.getHandle(), &err));
-    CHECK_EQ(provider.restoreCount, 1);
+    REQUIRE(!session.commit(vm.getHandle(), &err));
+    REQUIRE_EQ(provider.restoreCount, 1);
 
     err.clear();
-    CHECK(session.abort(vm.getHandle(), &err));
-    CHECK(err.empty());
-    CHECK_EQ(provider.restoreCount, 2);
+    REQUIRE(session.abort(vm.getHandle(), &err));
+    REQUIRE(err.empty());
+    REQUIRE_EQ(provider.restoreCount, 2);
 
     eve::cap::removeListener<eve::caps::IStateProvider>(&provider);
 }
@@ -4033,10 +4181,10 @@ TEST_CASE("reloadScript.nativeResetPolicySkipsCaptureAndResets") {
     auto&       session = eve::dev::ReloadSession::instance();
     std::string err;
     REQUIRE(session.begin(vm.getHandle(), &err));
-    CHECK(session.commit(vm.getHandle(), &err));
-    CHECK_EQ(provider.captureCount, 0);
-    CHECK_EQ(provider.restoreCount, 0);
-    CHECK_EQ(provider.resetCount, 1);
+    REQUIRE(session.commit(vm.getHandle(), &err));
+    REQUIRE_EQ(provider.captureCount, 0);
+    REQUIRE_EQ(provider.restoreCount, 0);
+    REQUIRE_EQ(provider.resetCount, 1);
 
     eve::cap::removeListener<eve::caps::IStateProvider>(&provider);
 }
@@ -4045,7 +4193,6 @@ TEST_CASE("reloadScript.nativeResetPolicySkipsCaptureAndResets") {
 }  // namespace test_reload_script
 #undef UnitReloadScriptTest
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_classic_semantic_index)
 #include "PrivateTestScope.h"
 #include <filesystem>

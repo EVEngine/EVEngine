@@ -1545,7 +1545,9 @@
           "editor.procgen.script_editor_script_loads_schema_and_keeps_failed_preview",
           "editor.v2.script_discovers_plans_and_executes_registered_command",
           "editor.v2.script_game_injects_command_into_the_same_session_protocol",
-          "editor.v2.runtime_builder_quick_add_click_executes_command"
+          "editor.v2.runtime_builder_quick_add_click_executes_command",
+          "editor.v2.script_command_failure_is_not_silent",
+          "editor.v2.script_tool_failure_is_not_silent"
         ],
         "physics-backend": [
           "editor.physics.live_shape_publication_swaps_after_build_and_undoes",
@@ -1682,7 +1684,19 @@
           "editor.avatar.automation_owns_headless_targets_for_agent_lifecycle",
           "editor.avatar.layers_and_parameters_have_dynamic_reversible_inspectors",
           "editor.avatar.expressions_protect_referenced_channels_and_snapshot_is_atomic",
-          "editor.avatar.runtime_publishes_metadata_and_preserves_generation_on_asset_failure"
+          "editor.avatar.runtime_publishes_metadata_and_preserves_generation_on_asset_failure",
+          "editor.host.attach_filters_commands_and_skips_incomplete",
+          "editor.host.mounts_action_package_panels_and_exports_schemas",
+          "editor.host.mounts_voxel_and_routes_selection",
+          "editor.host.reject_incomplete_package",
+          "editor.script.automated_command_requires_panel_binding",
+          "editor.scene.script_component_payload_is_wired_by_the_editor_module",
+          "editor.scene.script_component_payload_reads_declared_fields",
+          "editor.scene.script_component_planner_refuses_invalid_edits",
+          "editor.scene.script_component_reset_restores_the_declared_default",
+          "editor.scene.script_component_write_is_refused_when_the_data_is_gone",
+          "editor.scene.script_component_write_is_undoable_and_visible_to_script",
+          "editor.scene.script_component_write_refuses_stale_and_missing_targets"
         ],
         "script-binding": [
           "editor.script_tool.implements_the_same_session_protocol",
@@ -1701,7 +1715,8 @@
       "modules": [
         "dialogue",
         "editing",
-        "editor"
+        "editor",
+        "scene_editor"
       ],
       "task": "gameplay-composition",
       "origins": [
@@ -1720,7 +1735,9 @@
         "editor_automation_v2.cpp",
         "editor_avatar_document_editor.cpp",
         "editor_avatar_editor.cpp",
-        "editor_avatar_target.cpp"
+        "editor_avatar_target.cpp",
+        "editor_host_package.cpp",
+        "editor_script_component_payload.cpp"
       ]
     },
     "integration/gameplay-composition/gameplay_composition_graphics_gameplay_action_tests.cpp": {
@@ -2157,7 +2174,9 @@
           "graphics.pcgMeshLod.speedTreeFadeUsesComplementaryOpaqueCoverage"
         ],
         "script-binding": [
-          "procgen.pcgMeshLod.realVmBuildsAndCopiesLevel"
+          "procgen.pcgMeshLod.realVmBuildsAndCopiesLevel",
+          "ui.pcgPhotoModeApply.scriptProviderAnswersTheSinkThroughTheSeam",
+          "ui.pcgPhotoModeApply.scriptRefusalDrivesThePlanRollback"
         ],
         "render-window": [
           "physics_destruction_graphics.drawsActiveAndBatchesSleepingBones"
@@ -2924,6 +2943,10 @@
           "container.adaptersFailureInjectionLeavesMembershipUnchanged",
           "pixelworld_physics.terrain_contours_are_simplified_and_suppress_chunk_seams",
           "pixelworld_physics.character_probe_and_sweep_query_authoritative_material"
+        ],
+        "script-binding": [
+          "climbing.services.scriptEventSinkFailureIsReportedNotSwallowed",
+          "climbing.services.scriptProviderAnswersTheEventSinkThroughTheSeam"
         ]
       },
       "module": "climbing",
@@ -3039,6 +3062,12 @@
           "gpgpu.ecsPack.roundTrip",
           "gpgpu.ecsPack.contiguousRange",
           "gpgpu.ecsPack.errors"
+        ],
+        "render-window": [],
+        "script-binding": [
+          "gpgpu.buffer.readFloat32sReturnsAnArrayToScript",
+          "gpgpu.ecsPack.registeredScriptEcsComponentsRoundTrip",
+          "gpgpu.ecsPack.scriptEcsComponentsRoundTrip"
         ]
       },
       "module": "action",
@@ -3663,6 +3692,10 @@
         "render-offscreen": [
           "procgen.terrain.materialShaderRendersPortableSixteenLayerContract",
           "procgen.terrain.waterShaderShipsEmbeddedSpirv"
+        ],
+        "script-binding": [
+          "procgen.script.newLSystemIsTheDocumentedEntryPoint",
+          "procgen.script.pointsetPolygonAndBatchApiAreBound"
         ]
       },
       "module": "particles",
@@ -3684,7 +3717,8 @@
         "procgen_lsystem.cpp",
         "procgen_preview.cpp",
         "resource_lifetime.cpp",
-        "rpg_simulation.cpp"
+        "rpg_simulation.cpp",
+        "procgen_pointset.cpp"
       ]
     },
     "integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp": {
@@ -4038,7 +4072,8 @@
           "timer.step.deltaNonNegative",
           "timer.simulationClockUsesInjectedFixedSteps",
           "touch.getTouchesEmpty",
-          "touch.getTouchInvalidThrows"
+          "touch.getTouchInvalidThrows",
+          "devtools.renderflow.passScopeForwardsTheCallersName"
         ],
         "concurrency": [
           "event.workerPushWakesWait",
@@ -4190,7 +4225,52 @@
           "crowd.contacts.scriptAdvanceUsesCanonicalResult",
           "CrowdScriptTest.basic",
           "CrowdScriptTest.invalidIds",
-          "crowd.spawn.scriptTransactionAndMalformedInput"
+          "crowd.spawn.scriptTransactionAndMalformedInput",
+          "ScriptECS.componentDefiningItsOwnFieldSeamIsRefused",
+          "ScriptECS.componentReRegistrationAdvancesTheGeneration",
+          "ScriptECS.componentRegistrationCrossesVmsSafely",
+          "ScriptECS.componentRegistrationIsReadableFromCpp",
+          "ScriptECS.componentRegistrationReportsBadArguments",
+          "ScriptECS.componentRegistryIsPerVm",
+          "ScriptECS.componentRetiredGenerationKeepsItsOwnFields",
+          "ScriptECS.componentSchemaKeepsDeclarationOrder",
+          "ScriptECS.componentVersionSeparatesIdentities",
+          "ScriptECS.destroyClearsComponentState",
+          "ScriptECS.destroyDropsEngineSideComponentValues",
+          "ScriptECS.fieldSlotIsTheSameComponentInstance",
+          "ScriptECS.gpgpuSurfaceWithoutAGraphicsDevice",
+          "ScriptECS.hotReloadMigrationHandsTheNewClassTheOldEntities",
+          "ScriptECS.reRegistrationMigratesStoredValuesToTheNewSchema",
+          "ScriptECS.registeredComponentFieldsRoundTripBothWays",
+          "ScriptECS.registeredComponentKeepsInstanceDelegateMethods",
+          "ScriptECS.registeredComponentResolvesTypeMarkers",
+          "ScriptECS.registeredComponentValuesLiveInTheEngineStore",
+          "ScriptECS.registryOnlySlotHasNoField",
+          "ScriptECS.snapshotRejectsUnknownComponentsFieldsAndTamperedPayloads",
+          "ScriptECS.snapshotRoundTripsEngineSideComponentValues",
+          "ScriptECS.toolJsonReportsEngineSideComponentData",
+          "ScriptECS.unknownComponentFieldIsRejectedByTheSeam",
+          "ScriptECS.unregisteredComponentsKeepSlotSyntax",
+          "ScriptECS.viewOrderIsEntityIdOrder",
+          "ScriptECS.viewOrderSpansSubclassesByCreation",
+          "dialogue.state.partialAndFailingScriptProvidersDeclineWithoutBreakingTheChain",
+          "dialogue.state.scriptMutationAppliesTheWholeBatchAndReportsAReceipt",
+          "dialogue.state.scriptMutationFailuresAreStructuredAndVisible",
+          "dialogue.state.scriptQueryAnswersConditionsThroughTheListenerFace",
+          "dialogue.state.scriptQueryDoesNotDisplaceANativeProvider",
+          "ScriptProvider.callSetupErrorsStayReported",
+          "ScriptProvider.callsCarryScalarArguments",
+          "ScriptProvider.callsCarryTableArguments",
+          "ScriptProvider.capabilitySeamBindsAndUnbinds",
+          "ScriptProvider.capabilitySeamRequiresDeclaration",
+          "ScriptProvider.clearAllRunsUnbinders",
+          "ScriptProvider.failedBindIsRolledBack",
+          "ScriptProvider.publishAndCallNumber",
+          "ScriptProvider.rejectsBadPublishArguments",
+          "ScriptProvider.retirementIsNeverAliased",
+          "ScriptProvider.scriptErrorsAreReportedNotRaised",
+          "ScriptProvider.structuredReturnsComeBackAsValues",
+          "ScriptProvider.voidCallAndMethodFailures"
         ]
       },
       "module": "ui",
@@ -4208,6 +4288,7 @@
         "common",
         "crowd",
         "devtools",
+        "dialogue",
         "platform_event",
         "ui"
       ],
@@ -4237,7 +4318,9 @@
         "console.cpp",
         "crowd_contacts.cpp",
         "crowd_script.cpp",
-        "crowd_spawn.cpp"
+        "crowd_spawn.cpp",
+        "dialogue_state_script_provider.cpp",
+        "script_provider.cpp"
       ]
     },
     "integration/script-api/script_api_graphics_dap_tests.cpp": {
@@ -4259,8 +4342,6 @@
           "devtools.snapshot.roundTripRoots",
           "devtools.snapshot.v2NativeSection",
           "devtools.snapshot.v1Compat",
-          "devtools.snapshot.rejectsFunctionInRoot",
-          "devtools.snapshot.rejectsInstanceRoot",
           "devtools.snapshot.skipsInstanceRootInAutoScan",
           "devtools.debugger.conditionalBreakpoint",
           "devtools.debugger.expressionEvaluateAndVariableTree",
@@ -4292,7 +4373,18 @@
           "graphics.GrassWind.scriptCheckedAdvanceApplyAndRollback",
           "hexmap.sphereScriptDirectionsAreNativeArrays",
           "inventory.script.architectureExtraState",
-          "gameplay.control.inventoryScriptPublishesAndUnpublishesItsInstance"
+          "gameplay.control.inventoryScriptPublishesAndUnpublishesItsInstance",
+          "devtools.snapshot.conventionalRootCapturesOnlyItself",
+          "devtools.snapshot.skipsFunctionInsideRootAndNamesIt",
+          "devtools.snapshot.skipsInstanceInsideContainerAndNamesIt",
+          "devtools.snapshot.skipsMarkedInstanceRootAndNamesIt",
+          "ImageScript.basic",
+          "ImageScript.cloneAndRotate",
+          "ImageScript.imageDataClass",
+          "ImageScript.newImageData",
+          "ImageScript.paste",
+          "ImageScript.pcgScale",
+          "ImageScript.pixelRoundTrip"
         ],
         "platform-network": [
           "devtools.dap.stopOnEntry",
@@ -4346,7 +4438,6 @@
       "generated": [
         "FilesystemTest.",
         "I18nScriptTest.",
-        "ImageScript.",
         "JoystickScript."
       ]
     },
@@ -4417,7 +4508,11 @@
           "rpg.dnut.scriptResolvesActorsThroughARealParty",
           "rpg.dnut.scriptOwnsAnimationAndVerifiesTheEffect",
           "rpg.script.beginCastSkillAcceptsNullAndOmittedTarget",
-          "rpg.script.worldStateAcceptsStringIdentifiers"
+          "rpg.script.worldStateAcceptsStringIdentifiers",
+          "devtools.mcp.hostScriptFailureCarriesTheReason",
+          "devtools.mcp.startupViewModelFailureIsVisible",
+          "procgen.script.newShapeGrammarIsTheDocumentedEntryPoint",
+          "reloadScript.migrationHelpersComeFromTheBootstrap"
         ],
         "runtime-lifecycle": [
           "devtools.procgenQuery.generateMapReportsStructuredFailure",
@@ -4499,7 +4594,13 @@
       "default": "runtime-lifecycle",
       "cases": {
         "runtime-lifecycle": [
-          "runtime.scopeAndNativeStackAreRestored"
+          "runtime.scopeAndNativeStackAreRestored",
+          "SimpleSquirrelTest.DeclaredFieldShadowsTheMetamethods",
+          "SimpleSquirrelTest.InstanceGetAndSetMetamethodsAreConsulted",
+          "SimpleSquirrelTest.RemovingAClassFieldFallsThroughToTheMetamethods",
+          "squirrel_binding.call_argument_c_string_literal_arrives_as_string",
+          "squirrel_binding.call_argument_c_string_pointer_arrives_as_string",
+          "squirrel_binding.call_argument_std_strings_scalars_and_stack_discipline"
         ],
         "script-binding": [
           "runtime.reflectsAndUnloadsScriptClasses",
@@ -4609,21 +4710,58 @@
           "tactics.scriptAbilityDeclarationIsCostedAndLogged",
           "tactics.scriptCommandLogIsReadableAndRevisionScoped",
           "tactics.snapshotScriptSurfaceRoundTripsThroughSquirrel",
-          "tags.script.bindings"
+          "tags.script.bindings",
+          "rx.script.throwingSubscriberIsReported",
+          "Scene.script.attachRejectsPlainEntity",
+          "Scene.script.callbackFailureIsNotSilent",
+          "Scene.script.entityIsTheFirstEcsName",
+          "Scene.script.nativeAccessReadsRegisteredComponentState",
+          "Scene.script.nativeAccessSkipsUnregisteredComponents",
+          "Scene.script.updateFailureIsNotSilent",
+          "scriptModule.instantiationFailureCarriesTheScriptError",
+          "map.collision.scriptOwnsTheWholeCollisionLoop",
+          "map.collision.scriptSinkCanTellLayersApart",
+          "map.collision.scriptSinkFailureIsCountedNotSwallowed",
+          "map.collision.scriptSinkReceivesLayerIdentityAndGeometry",
+          "map.collision.scriptSinkSeamIsAbsentWithoutTheModule",
+          "animation.motion.badValueTablesAreRejectedNotZeroFilled",
+          "animation.motion.nonFloatShapesReachScriptSinksToo",
+          "animation.motion.scriptSinkFailureCancelsInsteadOfBeingSwallowed",
+          "animation.motion.scriptSinkReceivesEveryEvaluatedValue",
+          "animation.motion.sinkIsOptionalAndOnlyBindsWhenAsked",
+          "scene.scriptLink.absentInputsAreReported",
+          "scene.scriptLink.brokenTargetDoesNotStallSiblings",
+          "scene.scriptLink.pullDrivesNode",
+          "scene.scriptLink.pushDrivesFollower",
+          "scene.scriptLink.rejectedPullKeepsNodeIntact",
+          "scene.scriptLink.retiredProviderIsDropped",
+          "scene.scriptLink.scriptBindingReportsResult",
+          "sensing.script.candidateAnswerMustStayInTheQuerySpace",
+          "sensing.script.candidateProviderAnswersTheResolver",
+          "sensing.script.candidateProviderFailureIsReportedNotSwallowed",
+          "sensing.script.candidateProviderSeamIsAbsentWithoutTheModule",
+          "sensing.script.coordinateSpaceSpellingMatchesTheModuleName",
+          "sensing.script.malformedCandidateAnswersAreRejected"
         ],
         "render-window": [
           "Scene.render.parentChildOrbitPreview"
         ],
         "physics-backend": [
           "Scene.link.genericMultiLinkAndSync",
-          "Scene.link.physics2D"
+          "Scene.link.physics2D",
+          "Scene.link.body3DPullRoundTripsEuler"
+        ],
+        "module-composition": [
+          "Scene.link.syncRenderable3DWorldRotation"
         ]
       },
       "module": "common",
       "modules": [
+        "animation",
         "authority",
         "common",
         "devtools",
+        "map",
         "property_access",
         "rx",
         "scene",
@@ -4664,7 +4802,11 @@
         "tactics_presentation_script.cpp",
         "tactics_script.cpp",
         "tactics_snapshot_script.cpp",
-        "tags.cpp"
+        "tags.cpp",
+        "map_tile_collision_sink.cpp",
+        "motion_script_sink.cpp",
+        "scene_script_link.cpp",
+        "sensing_script_provider.cpp"
       ]
     },
     "integration/script-api/script_api_graphics_terrain_probe_tests.cpp": {
@@ -4750,7 +4892,15 @@
           "UI.tween.scriptOptionalEaseAndDelay",
           "vehicle.script.viewSeesNewVehicle",
           "vehicle.script.rtsFlow",
-          "weapon.script.viewSeesNewWeapon"
+          "weapon.script.viewSeesNewWeapon",
+          "vehicle.script.damageRule.absent",
+          "vehicle.script.damageRule.failureKeepsAmount",
+          "vehicle.script.damageRule.present",
+          "weapon.script.projectileProviderAbsent",
+          "weapon.script.projectileProviderFailureIsVisible",
+          "weapon.script.projectileProviderPresent",
+          "weapon.script.projectileProviderSeesEveryPellet",
+          "weapon.script.viewSeesEveryNativeEntityClass"
         ],
         "performance": [
           "procgen.terrain.performance.real1kRoundTripAnd1k4k8kRandomAccess"
@@ -5433,7 +5583,8 @@
           "climbing.input.coyoteWindowUsesOnlyTicks",
           "climbing.parkour.highSpeedKindsRoundTripThroughActionCodec",
           "climbing.services.eventAndPoseAdaptersReportAbsentAndPresent",
-          "climbing.profile.rejectsInvalidCapsuleAndActionDefinitions"
+          "climbing.profile.rejectsInvalidCapsuleAndActionDefinitions",
+          "climbing.events.eventKindNamesRoundTripThroughTheSingleTable"
         ]
       },
       "module": "climbing",
@@ -5445,7 +5596,8 @@
         "climbing_input.cpp",
         "climbing_parkour.cpp",
         "climbing_services.cpp",
-        "climbing.cpp"
+        "climbing.cpp",
+        "climbing_events.cpp"
       ]
     },
     "unit/cmdline/cmdline_unit.cpp": {
@@ -5633,7 +5785,19 @@
           "versionedRegistry.restoreProjectorFailureIsTransactional",
           "xml.parseAttributesAndChildren",
           "xml.selfClosingAndEntities",
-          "xml.invalidReturnsEmpty"
+          "xml.invalidReturnsEmpty",
+          "ECS.stagingHandleSurvivesCommit",
+          "ECS.viewEntityAndRow",
+          "Capability.leaseMovedFromIsEmpty",
+          "Capability.ownedAbsentIsUnsupported",
+          "Capability.ownedDuplicatePublishIsRejected",
+          "Capability.ownedLeaseOutlivesRetirement",
+          "Capability.ownedPublishAcquireAndUnload",
+          "Capability.ownedPublishMirrorsTheBorrowedSlot",
+          "Capability.ownedRejectsNullProvider",
+          "Capability.ownedRepublishAfterUnloadAdvancesGeneration",
+          "Capability.providerRefBindsCallerOwnedProvider",
+          "Capability.providerRefIsBindOnceAndMoveOnly"
         ],
         "test-framework": [
           "common.zeroerr.preservesExpressionAndSource",
@@ -5676,7 +5840,8 @@
         "string_instances.cpp",
         "time_contract.cpp",
         "versioned_registry.cpp",
-        "xml.cpp"
+        "xml.cpp",
+        "capability_owned.cpp"
       ]
     },
     "unit/crowd/crowd_tests.cpp": {
@@ -5935,7 +6100,11 @@
           "devtools.mcp.toolTagsClassifyFamilies",
           "devtools.playTrace.rejectsUnknownFieldsAndReplaysStableDigest",
           "devtools.playHost.actMatchesGameplayControlSubmit",
-          "devtools.playHost.sessionAutoRecordsEvidenceWithoutEval"
+          "devtools.playHost.sessionAutoRecordsEvidenceWithoutEval",
+          "devtools.gameWorld.configTitleAndModulesWithoutPublish",
+          "devtools.gameWorld.parseRejectsUnknownAndEmptyWorld",
+          "devtools.gameWorld.publishRuntimeBriefAndClear",
+          "devtools.playHost.statusIncludesRuntimeGameWorld"
         ]
       },
       "module": "devtools",
@@ -5951,7 +6120,8 @@
         "language_text.cpp",
         "mcp_console.cpp",
         "mcp_tool_filter.cpp",
-        "play_trace.cpp"
+        "play_trace.cpp",
+        "game_world_context.cpp"
       ]
     },
     "unit/dialogue/dialogue_tests.cpp": {
@@ -8715,7 +8885,8 @@
           "graphics.visibility.request_rejects_unknown_nonfinite_and_pixel_budget",
           "graphics.visibility.request_rejects_degenerate_camera_and_duplicate_handles",
           "graphics.visibility.backend_absence_and_stale_query_fail_without_mutation",
-          "graphics.visibility.regions_require_v2_and_strict_distinct_local_definitions"
+          "graphics.visibility.regions_require_v2_and_strict_distinct_local_definitions",
+          "Scene.objectId.zeroMarkerIsUnreachableForDenseEntityIds"
         ]
       },
       "module": "scene",
@@ -9597,6 +9768,33 @@
       "default": "local-logic",
       "cases": {},
       "module": "graphics"
+    },
+    "unit/editing/editing_tests.cpp": {
+      "role": "tests",
+      "default": "local-format",
+      "cases": {
+        "local-format": [
+          "editing.property_schema_json.projects_empty_object_and_fields",
+          "editing.property_schema_json.rejects_empty_schema_id"
+        ]
+      },
+      "module": "editing",
+      "origins": [
+        "editing_property_schema_json.cpp"
+      ]
+    },
+    "unit/gpgpu/gpgpu_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "gpgpu.buffer.readFloat32sCopyClipsToCapacity"
+        ]
+      },
+      "module": "gpgpu",
+      "origins": [
+        "gpgpu.cpp"
+      ]
     }
   }
 }

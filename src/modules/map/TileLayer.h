@@ -4,6 +4,7 @@
 
 #include "common/ECS.h"
 #include "common/RenderTypes.h"
+#include "map/TileLayerRef.h"
 #include "map/TileOrientation.h"
 
 #include <cstdint>
@@ -36,6 +37,14 @@ public:
 
     /** @brief Release. */
     void release() override {}
+
+    /**
+     * @brief 这一层的稳定身份：ECS 槽位 + 换代号。
+     *
+     * 地块碰撞这类"按层发布数据"的通路用它代替裸指针：脚本也能拿到同一个数
+     * （`eve.TileLayer.getEntityId()`），所以脚本实现既认得出自己那一层，也看得懂过期引用。
+     */
+    [[nodiscard]] TileLayerRef layerRef() const noexcept { return TileLayerRef{id, generation}; }
 
     /** @brief Config public API. */
     struct Config {

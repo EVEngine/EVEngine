@@ -135,3 +135,43 @@ auto ranked = pipeline.executePreset(ctx, "sensing.builtin.coneSelect");
 ## Zone 成员
 
 `setZones(id, "ns:name,...")` 写入主体的逻辑 Zone 成员（`LogicalId` 文本）。`SensingWorldCandidateProvider` 将其投影为 `TargetCandidate.zones`，并支持 `TargetingSpec.zone` 过滤。几何 Zone 文档仍由 crowd/editor 等模块拥有；sensing 只镜像成员关系。
+
+## 用脚本提供候选（不用写 C++）
+
+`ISensingCandidateProvider` 这条插座可以由脚本实现：脚本发布一个对象、实现 `queryCandidates(query)`，
+`eve.sensing.TargetingResolver` 式的消费者就会用它来粗筛候选。
+
+```squirrel
+class MyCandidates {
+    function queryCandidates(query) {
+        // query.space         → "world2d" | "world3d" | "grid2d" | "grid3d"
+        // query.origin        → 发起查询的主体 uuid
+        // query.originLocation→ { space, x, y, z }
+        // query.domain        → "any" | "self" | "ally" | "enemy" | "neutral"
+        // query.minRange / query.maxRange（null = 无界）
+        // query.requiredTags / query.excludedTags / query.zone / query.area
+        local out = []
+        foreach (id in myEnemyIds()) {
+            out.append({ subject = id,
+                         location = { space = query.space, x = 3.0, y = 4.0 },
+                         domain = "enemy", tags = ["unit"], zones = ["arena:central"] })
+        }
+        return out
+    }
+}
+
+eve.provider.publishFor("eve.sensing.ISensingCandidateProvider", "game.candidates", MyCandidates())
+```
+
+要点：
+
+- **位置一律自带 `space`，且必须与 `query.space` 一致**。格子与世界单位不可互换，不一致时本次查询
+  返回 `Unsupported`（提示显式换算），而不是猜一个单位。格子坐标必须是整数。
+- `domain` 缺省 `neutral`，`tags`/`zones` 缺省为空；`zones` 用 `LogicalId` 文本（如 `arena:central`）。
+- **可见性与数量策略不由提供方负责**：`lineOfSight` / `minCount` / `maxCount` / `countPolicy` 是
+  消费者的策略，不会下发；脚本只返回粗筛候选，过滤与排序由消费者完成。
+- `query.area` 是可选的空间约束，形状有 `circle2d` / `box2d` / `sphere3d` / `box3d` / `cone2d` /
+  `gridBox2d` / `gridBox3d`；字段见 `SensingScriptCandidateSeam.h`。
+- 失败不静默：脚本没实现该方法 → `Unsupported`；脚本抛错 → 查询失败（`Failed`）；答案形状不对
+  （不是数组、主体不是规范 uuid、坐标不是数）→ `Rejected`。发布脚本 sink 会顶掉原生提供方，并在
+  `eve.log` 里留一行 `warn`。
