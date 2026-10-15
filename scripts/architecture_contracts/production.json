@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "production-queue-protobuf-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/production/Production*",
+      "owner": "production::WorkQueue",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "Production task, dependency, scheduler, capacity and event state uses one typed Protobuf binary schema while domain-owned context and receipts use the shared dynamic message.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "proto/production_queue.proto",
+        "src/modules/production/ProductionProtobuf.cpp"
+      ],
+      "tests": [
+        "test/production_protobuf.cpp",
+        "test/production.cpp"
+      ],
+      "schema": "production:queue version 8 is ProductionQueueSave with typed records and shared DynamicValue fields only for open-ended domain context and receipts.",
+      "version": "Binary writers emit version 8; versions 1-7 remain readable through the legacy JSON importer.",
+      "migration": "Legacy JSON restores into a detached WorkQueue before recapture as version 8 binary; the binary envelope uses the shared digest and typed header.",
+      "unknown_fields": "Binary restore rejects unknown Protobuf fields recursively, invalid enum values, duplicate identities and malformed dependency graphs.",
+      "restore_atomicity": "Validation and reconstruction occur in a detached WorkQueue; the live queue is replaced only after the complete image and digest pass."
+    },
+    {
+      "id": "production-queue-protobuf-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/production/**",
+      "owner": "production::WorkQueue",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "The production module exposes typed binary persistence alongside its existing script and compatibility JSON boundary.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/production/Production.h",
+        "src/modules/production/ProductionProtobuf.cpp",
+        "proto/production_queue.proto"
+      ],
+      "tests": [
+        "test/production_protobuf.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        { "script_class": "Production", "methods": ["newWorkQueue"] },
+        { "script_class": "WorkQueue", "methods": ["enqueue", "advance", "snapshot", "restore"] },
+        { "script_class": "WorkTask", "methods": ["getState", "getReason"] },
+        { "script_class": "WorkEvent", "methods": ["getKind", "getTaskId"] }
+      ],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "No L1-L4 trim claim is made for this change."
+      },
+      "thread_affinity": "Snapshot and restore run on the WorkQueue owner thread and invoke no callbacks except the supplied digest provider.",
+      "cost_notes": [
+        "Binary save and restore cost linear time in retained tasks, events and dynamic payload bytes per snapshot."
+      ],
+      "hot_path": []
+    }
+  ]
+}

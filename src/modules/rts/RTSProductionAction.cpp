@@ -115,11 +115,11 @@ public:
     [[nodiscard]] eve::Result<void> prepare(const transaction::TransactionContext&) override {
         if (prepared_ || committed_)
             return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "RTS production participant is already in flight", "production"));
-        auto before = queue_.snapshot();
+        auto before = queue_.snapshotBinary();
         if (!before) return eve::Result<void>::failure(before.status());
-        beforeJson_   = std::move(before).takeValue();
+        beforeBinary_ = std::move(before).takeValue();
         staged_       = std::make_unique<production::WorkQueue>();
-        auto restored = staged_->restore(beforeJson_);
+        auto restored = staged_->restoreBinary(beforeBinary_);
         if (!restored) return restored;
         production::ProductionRequest request;
         request.owner = owner_;
@@ -134,9 +134,9 @@ public:
         auto task = staged_->enqueue(std::move(request));
         if (!task) return eve::Result<void>::failure(task.status());
         taskId_    = std::move(task).takeValue();
-        auto after = staged_->snapshot();
+        auto after = staged_->snapshotBinary();
         if (!after) return eve::Result<void>::failure(after.status());
-        afterJson_ = std::move(after).takeValue();
+        afterBinary_ = std::move(after).takeValue();
         prepared_  = true;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
@@ -144,11 +144,11 @@ public:
     [[nodiscard]] eve::Result<void> commit(const transaction::TransactionContext&) override {
         if (!prepared_ || committed_)
             return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "RTS production participant has no prepared stage", "production"));
-        auto current = queue_.snapshot();
+        auto current = queue_.snapshotBinary();
         if (!current) return eve::Result<void>::failure(current.status());
-        if (current.value() != beforeJson_)
+        if (current.value() != beforeBinary_)
             return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "RTS production queue changed while transaction was staged", "production"));
-        auto restored = queue_.restore(afterJson_);
+        auto restored = queue_.restoreBinary(afterBinary_);
         if (!restored) return restored;
         committed_ = true;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -165,15 +165,15 @@ public:
     [[nodiscard]] eve::Result<void> compensate(const transaction::TransactionContext&) override {
         if (!committed_)
             return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "production queue has no committed task to compensate", "production"));
-        auto current = queue_.snapshot();
+        auto current = queue_.snapshotBinary();
         if (!current) return eve::Result<void>::failure(current.status());
-        if (current.value() != afterJson_)
+        if (current.value() != afterBinary_)
             return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "RTS production queue changed before compensation", "production"));
-        auto restored = queue_.restore(beforeJson_);
+        auto restored = queue_.restoreBinary(beforeBinary_);
         if (!restored) return restored;
         staged_.reset();
-        beforeJson_.clear();
-        afterJson_.clear();
+        beforeBinary_.clear();
+        afterBinary_.clear();
         prepared_  = false;
         committed_ = false;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -193,8 +193,8 @@ private:
     int                                    priority_ = 0;
     bool                                   settlementRequired_ = false;
     std::unique_ptr<production::WorkQueue> staged_;
-    std::string                            beforeJson_;
-    std::string                            afterJson_;
+    std::string                            beforeBinary_;
+    std::string                            afterBinary_;
     std::string                            taskId_;
     bool                                   prepared_  = false;
     bool                                   committed_ = false;
@@ -464,11 +464,11 @@ eve::Result<RTSCancelProductionReceipt> RTSProductionActionAdapter::cancel(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                    "RTS production cancellation requires task, order, refund and reason", "request"));
 
-    auto productionBefore = request.production->snapshot();
+    auto productionBefore = request.production->snapshotBinary();
     if (!productionBefore)
         return eve::Result<RTSCancelProductionReceipt>::failure(productionBefore.status());
     production::WorkQueue stagedProduction;
-    auto stagedRestore = stagedProduction.restore(productionBefore.value());
+    auto                  stagedRestore = stagedProduction.restoreBinary(productionBefore.value());
     if (!stagedRestore)
         return eve::Result<RTSCancelProductionReceipt>::failure(stagedRestore.status());
     auto cancelledTask = stagedProduction.cancel(request.productionTaskId, request.reason);
@@ -488,17 +488,17 @@ eve::Result<RTSCancelProductionReceipt> RTSProductionActionAdapter::cancel(
     auto cancelledOrder = stagedOrders.cancel(request.orderId, request.reason);
     if (!cancelledOrder)
         return eve::Result<RTSCancelProductionReceipt>::failure(cancelledOrder.status());
-    auto productionAfter = stagedProduction.snapshot();
+    auto productionAfter = stagedProduction.snapshotBinary();
     if (!productionAfter)
         return eve::Result<RTSCancelProductionReceipt>::failure(productionAfter.status());
 
-    auto publishedProduction = request.production->restore(productionAfter.value());
+    auto publishedProduction = request.production->restoreBinary(productionAfter.value());
     if (!publishedProduction)
         return eve::Result<RTSCancelProductionReceipt>::failure(publishedProduction.status());
     try {
         *request.orders = stagedOrders;
     } catch (const std::exception& exception) {
-        auto restored = request.production->restore(productionBefore.value());
+        auto restored = request.production->restoreBinary(productionBefore.value());
         restored.ignore("best-effort production cancellation rollback");
         return eve::Result<RTSCancelProductionReceipt>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Failed, std::string("failed to publish RTS cancellation orders: ") + exception.what(),

@@ -1,0 +1,168 @@
+syntax = "proto3";
+
+package eve.production.proto;
+
+import "dynamic_value.proto";
+
+// Version 8 is the typed production queue persistence format. Versions 1-7
+// remain readable through the legacy JSON importer only.
+message ProductionQueueSave {
+  optional string schema = 1;
+  optional uint32 version = 2;
+  optional uint64 revision = 3;
+  optional uint64 tick = 4;
+  optional uint64 next_task_id = 5;
+  optional uint64 next_enqueue_sequence = 6;
+  optional uint64 next_event_sequence = 7;
+  repeated ProductionSlot slots = 8;
+  repeated ProductionCapacity resources = 9;
+  repeated ProductionAvailableDefinition available_definitions = 10;
+  repeated ProductionAvailableTag available_tags = 11;
+  repeated ProductionScheduler schedulers = 12;
+  repeated ProductionTask tasks = 13;
+  repeated ProductionEvent events = 14;
+}
+
+message ProductionSlot {
+  optional string owner = 1;
+  optional int32 count = 2;
+}
+
+message ProductionCapacity {
+  optional string owner = 1;
+  optional string resource = 2;
+  optional int32 capacity = 3;
+}
+
+message ProductionAvailableDefinition {
+  optional string owner = 1;
+  optional string definition = 2;
+  optional uint64 generation = 3;
+}
+
+message ProductionAvailableTag {
+  optional string owner = 1;
+  optional string tag = 2;
+}
+
+enum SchedulerStrategy {
+  PRIORITY = 0;
+  FIFO = 1;
+  SHORTEST_REMAINING = 2;
+}
+
+message ProductionScheduler {
+  optional string owner = 1;
+  optional SchedulerStrategy strategy = 2;
+}
+
+enum TaskState {
+  QUEUED = 0;
+  RUNNING = 1;
+  PAUSED = 2;
+  READY_TO_SETTLE = 3;
+  SETTLEMENT_FAILED = 4;
+  COMPLETED = 5;
+  CANCELLED = 6;
+  FAILED = 7;
+}
+
+enum TaskDependencyMode {
+  ALL_OF = 0;
+  ANY_OF = 1;
+}
+
+enum RefundPolicy {
+  NONE = 0;
+  FULL = 1;
+  PROPORTIONAL = 2;
+}
+
+enum ReservationState {
+  NO_RESERVATION = 0;
+  RESERVED = 1;
+  STARTED = 2;
+  CONSUMED = 3;
+  RELEASED = 4;
+}
+
+message ProductionDefinitionHandle {
+  optional string definition = 1;
+  optional uint64 generation = 2;
+}
+
+message ProductionRequirement {
+  optional string resource = 1;
+  optional int32 units = 2;
+}
+
+message ProductionTask {
+  optional string id = 1;
+  optional string owner = 2;
+  optional string kind = 3;
+  optional string product = 4;
+  eve.persistence.proto.DynamicValue context = 5;
+  optional int64 duration_ns = 6;
+  optional int64 progress_ns = 7;
+  optional TaskState state = 8;
+  optional uint64 enqueue_sequence = 9;
+  optional int32 priority = 10;
+  optional string reason = 11;
+  optional string definition = 12;
+  optional uint64 definition_generation = 13;
+  eve.persistence.proto.DynamicValue reservation = 14;
+  optional ReservationState reservation_state = 15;
+  optional string reservation_release_id = 16;
+  eve.persistence.proto.DynamicValue reservation_release_payload = 17;
+  optional uint32 reservation_release_refund_permille = 18;
+  optional string settlement_id = 19;
+  eve.persistence.proto.DynamicValue settlement_payload = 20;
+  optional string last_settlement_id = 21;
+  optional TaskDependencyMode dependency_mode = 22;
+  repeated string prerequisites = 23;
+  repeated string blocks = 24;
+  repeated ProductionDefinitionHandle required_definitions = 25;
+  repeated string required_tags = 26;
+  repeated ProductionRequirement requirements = 27;
+  optional RefundPolicy refund_cancellation = 28;
+  optional RefundPolicy refund_failure = 29;
+  optional string random_stream = 30;
+  optional uint64 random_seed = 31;
+  optional uint64 random_draw_start = 32;
+  optional uint32 random_draw_count = 33;
+  optional uint32 total_cycles = 34;
+  optional bool continuous = 35;
+  optional int32 maintain_stock_target = 36;
+  optional int32 observed_stock = 37;
+  optional string correlation_id = 38;
+  optional uint32 completed_cycles = 39;
+  optional uint32 batch_size = 40;
+  optional uint32 efficiency_permille = 41;
+  optional uint32 work_remainder_permille = 42;
+  optional uint32 refund_permille = 43;
+  optional bool settlement_required = 44;
+}
+
+enum ProductionEventKind {
+  ENQUEUED = 0;
+  EVENT_STARTED = 1;
+  EVENT_PAUSED = 2;
+  RESUMED = 3;
+  EVENT_READY_TO_SETTLE = 4;
+  EVENT_SETTLEMENT_FAILED = 5;
+  EVENT_COMPLETED = 6;
+  EVENT_CANCELLED = 7;
+  EVENT_FAILED = 8;
+}
+
+message ProductionEvent {
+  optional uint64 sequence = 1;
+  optional uint64 tick = 2;
+  optional ProductionEventKind kind = 3;
+  optional string task_id = 4;
+  optional string owner = 5;
+  optional string task_kind = 6;
+  optional string product = 7;
+  optional string correlation_id = 8;
+  optional string reason = 9;
+}

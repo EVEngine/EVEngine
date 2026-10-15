@@ -780,6 +780,27 @@ if(TARGET EVGame_event AND TARGET EVFoundation)
     LABEL "game_event_protobuf_test" NAME_PREFIX "game-event-protobuf/")
 endif()
 
+if(TARGET EVProduction AND TARGET EVFoundation)
+  add_executable(production_protobuf_test EXCLUDE_FROM_ALL
+    main.cpp production_protobuf.cpp)
+  target_link_libraries(production_protobuf_test PRIVATE
+    eve_engine_includes EVFoundation zeroerr protobuf::libprotobuf)
+  target_include_directories(production_protobuf_test SYSTEM PRIVATE
+    ${CMAKE_SOURCE_DIR}/proto/generated)
+  target_compile_options(production_protobuf_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(production_protobuf_test PRIVATE EVBacktrace)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/production_protobuf_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/production_protobuf_test_zeroerr_tests.cmake"
+      "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(production_protobuf_test
+    LABEL "production_protobuf_test" NAME_PREFIX "production-protobuf/")
+endif()
+
 if(TARGET EVStatepatch AND TARGET EVFoundation)
   add_executable(statepatch_protobuf_test EXCLUDE_FROM_ALL
     main.cpp statepatch.cpp statepatch_protobuf.cpp)

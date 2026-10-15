@@ -327,14 +327,47 @@ public:
     [[nodiscard]] eve::OptionalRef<const ProductionEvent> eventAt(int index) const;
     /** @brief Clears retained events without resetting sequence numbering. */
     void clearEvents();
-    /** @brief Serializes the complete queue as deterministic JSON. */
+    /** @brief Compatibility-only deterministic JSON export; use snapshotBinary for persistence. */
     [[nodiscard]] eve::Result<std::string> snapshot() const;
-    /** @brief Transactionally restores a snapshot; failure preserves current state. */
+    /** @brief Imports legacy JSON queue snapshots transactionally. */
     [[nodiscard]] eve::Result<void> restore(std::string_view json);
+    /**
+     * @brief Serializes the complete queue with the versioned typed Protobuf schema.
+     * @return Binary queue snapshot or a structured dynamic-payload encoding failure.
+     * @cost Linear in the task, event and dynamic payload sizes per snapshot.
+     * @thread WorkQueue owner thread; no callbacks are invoked.
+     */
+    [[nodiscard]] eve::Result<std::string> snapshotBinary() const;
+    /**
+     * @brief Validates and atomically restores a typed Protobuf queue snapshot.
+     * @param bytes Versioned binary snapshot bytes.
+     * @return Success, or a failure preserving all observable queue state.
+     * @cost Linear in the task, event and dynamic payload sizes per restore.
+     * @thread WorkQueue owner thread; no callbacks are invoked.
+     */
+    [[nodiscard]] eve::Result<void> restoreBinary(std::string_view bytes);
+    /**
+     * @brief Captures the typed queue in a hashed binary snapshot envelope.
+     * @param hashProvider Injected deterministic digest provider.
+     * @return Complete version 8 binary envelope.
+     * @cost Linear in the queue snapshot size plus one digest.
+     * @thread WorkQueue owner thread; invokes only the supplied hash provider.
+     */
+    [[nodiscard]] eve::Result<std::string> snapshotEnvelopeBinary(const eve::SnapshotHashProvider& hashProvider) const;
+    /**
+     * @brief Verifies and atomically restores a typed binary queue envelope.
+     * @param bytes Complete binary envelope bytes.
+     * @param hashProvider Digest provider used to verify the envelope.
+     * @return Success or a failure preserving the current queue.
+     * @cost Linear in the envelope and payload sizes plus one digest.
+     * @thread WorkQueue owner thread; invokes only the supplied hash provider.
+     */
+    [[nodiscard]] eve::Result<void> restoreSnapshotBinary(std::string_view                 bytes,
+                                                          const eve::SnapshotHashProvider& hashProvider);
     /** @brief Clears tasks, owner settings, events, and stable counters. */
     void clear();
 
-    /** @brief Captures the production payload in the common snapshot envelope. */
+    /** @brief Compatibility-only Value envelope; use snapshotEnvelopeBinary for persistence. */
     [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(const eve::SnapshotHashProvider& hashProvider) const;
     /**
      * @brief Restores a verified or migrated production envelope atomically.
@@ -344,7 +377,7 @@ public:
      */
     [[nodiscard]] eve::Result<void> restoreSnapshot(const eve::SnapshotEnvelope&     snapshot,
                                                     const eve::SnapshotHashProvider& hashProvider);
-    /** @brief Serializes the common production snapshot envelope. */
+    /** @brief Compatibility-only JSON envelope; use snapshotEnvelopeBinary for persistence. */
     [[nodiscard]] eve::Result<std::string> snapshotEnvelopeJson(const eve::SnapshotHashProvider& hashProvider) const;
     /** @brief Parses and transactionally restores a common production envelope. */
     [[nodiscard]] eve::Result<void> restoreSnapshotJson(std::string_view                 json,
