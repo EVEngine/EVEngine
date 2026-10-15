@@ -166,6 +166,10 @@ if (CMAKE_BUILD_TYPE STREQUAL "")
 endif()
 
 include(CTest)
+if(EVENGINE_BUILD_PROFILE_CHECKS)
+    # Hostless checks remain runnable when BUILD_TESTING disables the full host suite.
+    enable_testing()
+endif()
 
 set(_vkbuilder_header "${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include/vkbuilder.hpp")
 set(EVENGINE_VKBUILDER_INCLUDE_DIR "${CMAKE_BINARY_DIR}/generated/vkbuilder")

@@ -279,3 +279,31 @@ TEST_CASE("devtools.debugger.stepFramesReArmsUntilCountConsumed") {
     CHECK(debugger.isPaused());
     debugger.resume();
 }
+
+TEST_CASE("devtools.playHost.malformedRequestsObserveEveryResult") {
+    FakePlayHostRuntime runtime;
+    runtime.contract = parse(kContract);
+    for (const auto* input :
+         {R"({"op":"observe","observation":"combat-alive"})", R"({"schemaId":42,"schemaVersion":1,"op":"status"})",
+          R"({"schemaId":"evengine.play-request","op":"status"})"}) {
+        auto result = executePlayRequest(parse(input), runtime);
+        CHECK(!result.ok());
+        CHECK_EQ(result.status().diagnostics().front().code(), DiagnosticCode::ParseError);
+    }
+    const auto observe =
+        parse(R"({"schemaId":"evengine.play-request","schemaVersion":1,"op":"observe","observation":"combat-alive"})");
+    for (const auto* field : {"schemaId", "schemaVersion", "id", "entry"}) {
+        runtime.contract = parse(kContract);
+        runtime.contract.getIf<Value::Object>()->erase(field);
+        auto result = executePlayRequest(observe, runtime);
+        CHECK(!result.ok());
+        CHECK_EQ(result.status().diagnostics().front().code(), DiagnosticCode::ParseError);
+    }
+    for (const auto* field : {"id", "kind", "path"}) {
+        runtime.contract = parse(kContract);
+        runtime.contract.find("observations")->at(0).getIf<Value::Object>()->erase(field);
+        auto result = executePlayRequest(observe, runtime);
+        CHECK(!result.ok());
+        CHECK_EQ(result.status().diagnostics().front().code(), DiagnosticCode::ParseError);
+    }
+}

@@ -243,7 +243,7 @@ function(eve_resolve_modules)
             "Core boundary selected by the active profile" FORCE)
     elseif(EVENGINE_PROFILE STREQUAL "physics-core-only")
         set(_hostless_profile TRUE)
-        set(_profile_seed common event)
+        set(_profile_seed common platform_event)
         set(EVENGINE_PROFILE_CORE_KIND physics CACHE INTERNAL
             "Core boundary selected by the active profile" FORCE)
     elseif(EVENGINE_PROFILE STREQUAL "asset-core-only")

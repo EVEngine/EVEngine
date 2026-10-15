@@ -22,6 +22,31 @@
       "pointer_policy": "A public pointer requires Doxygen ownership/lifetime wording or an explicit reviewed adapter contract."
     },
     {
+      "id": "fluids-ocean-boat-link",
+      "rule": "link",
+      "scope": "src/modules/fluids/OceanBoat.cpp",
+      "owner": "physics::World3D owns body; fluids::OceanBoat owns hull settings and force submission guard",
+      "issue": "EVENGINE-OCEAN-SYSTEM",
+      "reason": "Boat adapter resolves generation-qualified physics ownership before any access and validates all forces before publishing.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/fluids/OceanBoat.h",
+        "docs/dev/海洋系统实施与验收.md",
+        "cmake/profile_checks.cmake"
+      ],
+      "tests": [
+        "test/ocean_boat.cpp"
+      ],
+      "symbols": [
+        "OceanBoat"
+      ],
+      "create": "create validates hull, dynamic body and PhysicsLink::fromBody; no world mutation.",
+      "ownership": "World3D solely owns Body3D; adapter stores PhysicsLink and hull values, never body or world pointers.",
+      "destroy_order": "Adapter-first leaves body alive. Body-first rejects stale body; world-first uses World3D::findWorld and returns StaleHandle before dereference.",
+      "restore": "Process-local links are never serialized. Recreate adapter from restored world/body after hot reload or snapshot restore.",
+      "stale": "Resolve world identity and body generation on each apply; no cached pointer survives the call."
+    },
+    {
       "id": "gts-terrain-collider-link-contract",
       "rule": "link",
       "scope": "src/modules/procgen/physics/GtsTerrainColliderRuntime.cpp",
@@ -179,6 +204,27 @@
       "destroy_order": "Units release before sides and battles; either proxy-first or module-first destruction observes generations before release.",
       "restore": "Snapshot restore resolves persisted SubjectRef identities against live target entities and never serializes ECS/runtime handles.",
       "stale": "Every ECS use calls ecs::try_get and every script call resolves RuntimeHandleRef generation plus module owner epoch."
+    },
+    {
+      "id": "fluids-ocean-wake-state",
+      "rule": "state-owner",
+      "scope": "src/modules/fluids/OceanWake.*",
+      "owner": "fluids::OceanWake",
+      "issue": "EVENGINE-OCEAN-SYSTEM",
+      "reason": "Local wave solver owns history and exposes read-only samples; render/physics composition shares the same injected simulation time.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/fluids/OceanWake.h",
+        "src/modules/fluids/OceanWaterView.h",
+        "docs/dev/海洋系统实施与验收.md"
+      ],
+      "tests": [
+        "test/ocean_wake.cpp",
+        "test/ocean_boat.cpp"
+      ],
+      "state": "Perturbation height, vertical velocity, foam, quantized world center, injected timestamp, immutable owner identity and mutation revision.",
+      "authoritative_owner": "OceanWake exclusively mutates its owned arrays after complete validation. Foam transport borrows the start-of-step spectral frame; prepareStep copies owned state and finishes all midpoint queries and FFT work without mutation. commitStep checks owner identity and mutation revision, swaps state without allocation and consumes the owning candidate; injection/recenter/commit invalidate earlier candidates.",
+      "projections": "OceanWaterView provides synchronous non-owning reads; OceanBoatReceipt owns contacts and time but never aliases solver/body state."
     },
     {
       "id": "state-owner-policy",
@@ -441,6 +487,30 @@
       "phase": "owner simulation thread after setup/command ingestion and before presentation"
     },
     {
+      "id": "fluids-ocean-spectrum-time",
+      "rule": "time-rng",
+      "scope": "src/modules/fluids/OceanSpectrum*.cpp",
+      "owner": "fluids::OceanSpectrum",
+      "issue": "EVENGINE-OCEAN-SYSTEM",
+      "reason": "Spectral geometry and physics projections use the same injected time and phase seed.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/fluids/OceanSpectrum.h",
+        "docs/dev/海洋系统实施与验收.md",
+        "src/modules/fluids/OceanGpuSpectrum.cpp",
+        "src/modules/fluids/OceanBindingInternal.h"
+      ],
+      "tests": [
+        "test/ocean_spectrum.cpp",
+        "test/ocean_gpu.cpp",
+        "test/ocean_script.cpp"
+      ],
+      "time_source": "Frame builder receives simulation seconds; no wall clock or accumulated render delta. Scripts inject integer tick and frequency; conversion to seconds occurs once in native double, never by accumulated VM floats.",
+      "rng_stream": "Ocean phase stream is seed-local SplitMix64 with explicit Gaussian polar conversion; no shared global RNG.",
+      "determinism": "Same-backend seeded repeatability. Cross-backend results use numerical tolerances, never bitwise replay claims.",
+      "tolerance": "8x8 FFT versus independent DFT height tolerance 1e-10; world inversion height tolerance 1e-5 m; finite difference particle velocity tolerance 1e-6 m/s."
+    },
+    {
       "id": "time-rng-policy",
       "rule": "time-rng",
       "scope": "src/**",
@@ -460,6 +530,161 @@
       "rng_stream": "named seed/stream is supplied by the owning simulation context and is not global mutable state.",
       "determinism": "same inputs, tick and named streams produce replay/lockstep-identical results where declared deterministic.",
       "tolerance": "backend or floating-point paths declare an explicit tolerance rather than silently claiming bit identity."
+    },
+    {
+      "id": "fluids-ocean-module-interface",
+      "rule": "api-lifetime",
+      "scope": "src/modules/fluids/Ocean*.h",
+      "owner": "fluids::OceanSurface",
+      "issue": "EVENGINE-OCEAN-SYSTEM",
+      "reason": "One spectral surface supplies geometry and boat queries; script objects own the same native types and never introduce another simulation clock.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/fluids/OceanSurface.h",
+        "docs/dev/海洋系统实施与验收.md",
+        "test/ocean_core/CMakeLists.txt",
+        "src/modules/fluids/OceanSpectrum.h",
+        "src/modules/fluids/OceanBoat.h",
+        "src/modules/fluids/OceanWake.h",
+        "src/modules/fluids/OceanWaterView.h",
+        "src/modules/fluids/OceanMesh.h",
+        "src/modules/fluids/OceanRenderer.h",
+        "src/modules/fluids/OceanGpuSpectrum.h",
+        "src/modules/fluids/OceanGpuRenderFrame.cpp",
+        "src/modules/fluids/OceanSpectrumCodec.h",
+        "src/modules/fluids/OceanBindings.cpp",
+        "docs/usr/ocean.md",
+        "src/modules/fluids/OceanInteractionCodec.h",
+        "src/modules/fluids/OceanInteractionBindings.cpp",
+        "src/modules/fluids/OceanRenderBindings.cpp",
+        "examples/ocean-voyage/main.nut",
+        "examples/ocean-voyage/game.agent.json",
+        "src/modules/fluids/OceanSpray.h",
+        "src/modules/fluids/OceanSprayRenderer.h",
+        "src/modules/fluids/OceanSprayBindings.cpp",
+        "src/modules/fluids/OceanHullMask.h",
+        "src/modules/fluids/OceanHullMaskPublication.cpp",
+        "src/modules/fluids/OceanSeaTransition.h"
+      ],
+      "tests": [
+        "test/ocean_surface.cpp",
+        "test/ocean_spectrum.cpp",
+        "test/ocean_boat.cpp",
+        "test/ocean_wake.cpp",
+        "test/ocean_mesh.cpp",
+        "test/ocean_render.cpp",
+        "test/ocean_gpu.cpp",
+        "test/ocean_codec.cpp",
+        "test/ocean_script.cpp",
+        "test/ocean_spray.cpp",
+        "test/ocean_spray_render.cpp",
+        "test/ocean_hull_mask.cpp",
+        "test/ocean_transition.cpp"
+      ],
+      "thread_affinity": "Spectrum and frame const queries are concurrent-safe; OceanBoat attachment and force application are physics-owner-thread-only. OceanRenderer construction, upload, draw and destruction are graphics-owner-thread-only. GPU FFT build, submit, borrowing and readback are render-thread-only.",
+      "reentrancy": "Pure queries; no callbacks or shared mutable scratch.",
+      "ownership_contract": "OceanSurface owns normalized analytic waves; OceanSpectrum owns immutable coefficients shared with frame builders; spatial frames and force receipts own their arrays. OceanWake exclusively owns perturbation height/rate/foam. OceanWaterView borrows only for synchronous calls; must not survive either owner mutation. Mesh topology and published vertex frames own arrays; OceanMeshFrameBuilder borrows mesh/water synchronously until build returns and cannot survive their mutation. OceanRenderer retains graphics-owned resources guarded by the provider weak lifetime; renderer-first releases them and provider-first invalidates draws without dereference. OceanGpuSpectrum owns buffers and pipelines; a retirement subscription clears them before Graphics device destruction. Revision tokens never extend ownership and are rejected after later submission. GPU atlas views are borrowed only for synchronous copies. Renderer owns the published double-buffered textures; future producer reuse/destruction cannot mutate a displayed frame. Script GPU and renderer wrappers share native projection ownership with prepared builders. Publication roots acyclic frame/wake inputs; native borrowed builders and OceanWaterView exist only inside publish. Graphics retirement still invalidates retained projections. Hull masks copy authoritative vessel poses into immutable render-only halfspaces. Publication borrows the owning frame synchronously, uploads inactive texture storage, and preserves the previous visible mask on upload failure. Draw rejects mismatched water/mask origins. Empty publication clears masking; no buoyancy query is suppressed. OceanSeaTransition owns immutable endpoint spectrum leases; its frame builders own those leases and injected interval/time. It has no mutable clock. Output is the existing owning OceanSpectrumFrame, including blend-rate velocity and sea-level-rate correction. GPU transition preparation owns both endpoint leases and interval values. Resident evolution mixes six spectral fields and blend derivatives before one IFFT set. Published atlas sea level changes only after successful submission; existing revision and provider-retirement rules apply.",
+      "lifetime": "No borrowed references escape; consumers inject time and apply owning force receipts synchronously.",
+      "lock_callback_policy": "No locks, callbacks, scripts or global registry access.",
+      "module_interface": {
+        "capability_in": [],
+        "capability_out": [],
+        "ecs_links": [
+          "OceanBoat retains PhysicsLink; no new ECS System."
+        ],
+        "events": [],
+        "script_bindings": [
+          "OceanSpectrumBuilder settings/configure/build; OceanSpectrum variance/frameBuilder; OceanSpectrumFrameBuilder build; OceanSpectrumFrame time/sample. All owning GC wrappers with shared Result projection.",
+          "OceanWakeBuilder/OceanBoatBuilder settings/configure/build; OceanWake advance/recenter/sample/sampleSurface/injectReceipt; OceanBoat apply; OceanBoatReceipt summary. Arguments are call-only and owning receipt/wake wrappers use GC release hooks. Integer tick/rate drives spectral and wake time.",
+          "OceanGpuSpectrumBuilder build; OceanGpuSpectrum frameBuilder; OceanGpuFrameBuilder submit; OceanGpuFrameToken time; OceanRendererBuilder settings/configure/build; OceanRenderer frameBuilder/gpuFrameBuilder/draw; OceanRenderFrameBuilder publish. Publication owns projection leases and rooted immutable-frame/mutable-wake inputs; time/token validity is checked on publish."
+        ],
+        "tool_protocol": [
+          "Example game-agent-contract version 1 exposes ocean-ready observation and driver-input-only commands through existing eve_play; engine screenshot uses existing MCP readback. No new engine MCP tool."
+        ],
+        "hard_dependencies": [
+          "common Result",
+          "physics Body3D/World3D/PhysicsLink in OceanBoat implementation",
+          "graphics Graphics/Mesh/Shader in OceanRenderer implementation only",
+          "gpgpu ComputeShader/GpuBuffer/Sequence in OceanGpuSpectrum implementation only"
+        ],
+        "hot_paths": [
+          "src/modules/fluids/OceanSurface.cpp",
+          "src/modules/fluids/OceanSpectrumFrame.cpp",
+          "src/modules/fluids/OceanBoat.cpp",
+          "src/modules/fluids/OceanWake.cpp",
+          "src/modules/fluids/OceanWaterView.cpp",
+          "src/modules/fluids/OceanBoatWake.cpp",
+          "src/modules/fluids/OceanMeshFrame.cpp",
+          "src/modules/fluids/OceanRenderer.cpp",
+          "src/modules/fluids/OceanGpuSpectrum.cpp",
+          "src/modules/fluids/OceanGpuRenderFrame.cpp"
+        ],
+        "trim_evidence": "Independent test/ocean_core target links zeroerr, common Value/Json and ocean numerical/definition sources, with no graphics, physics, gpgpu or fluids facade. No whole fluids module trim claim."
+      }
+    },
+    {
+      "id": "graphics-shader-float-block",
+      "rule": "api-lifetime",
+      "scope": "src/modules/graphics/Shader.h",
+      "owner": "graphics::Shader",
+      "issue": "EVENGINE-OCEAN-SYSTEM",
+      "reason": "Update a checked predeclared parameter block without per-frame string-keyed lookup.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/graphics/Shader.cpp",
+        "docs/dev/海洋系统实施与验收.md"
+      ],
+      "tests": [
+        "test/graphics_shader_parameters.cpp",
+        "test/ocean_render.cpp"
+      ],
+      "thread_affinity": "Graphics owner thread only.",
+      "reentrancy": "No callbacks; non-reentrant mutation.",
+      "ownership_contract": "Shader remains the sole owner of the existing uniform storage; the span is copied atomically after whole-input validation.",
+      "lifetime": "Input is call-only; no pointer or span is retained.",
+      "lock_callback_policy": "No locks or external callbacks."
+    },
+    {
+      "id": "physics-world-query-module-interface",
+      "rule": "api-lifetime",
+      "scope": "src/modules/physics/PhysicsWorldQueries.*",
+      "owner": "physics world query adapters",
+      "issue": "EVENGINE-OCEAN-SYSTEM",
+      "reason": "Separate world query registration from interactive Physics facade so the real rigid-body ocean composition links in physics-core-only.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/physics/PhysicsWorldQueries.h",
+        "cmake/profile_checks.cmake",
+        "docs/dev/海洋系统实施与验收.md"
+      ],
+      "tests": [
+        "test/ocean_boat.cpp"
+      ],
+      "thread_affinity": "Simulation owner thread, as before the pure move.",
+      "reentrancy": "Synchronous queries; no new callbacks or locks introduced.",
+      "ownership_contract": "Process-owned query adapters observe World3D through weak lifetime tokens; never own worlds.",
+      "lifetime": "Accessor references last for process lifetime; expired world tokens are checked before dereferencing.",
+      "lock_callback_policy": "No external callbacks while holding locks.",
+      "module_interface": {
+        "capability_in": [],
+        "capability_out": [
+          "Existing ICameraObstructionQuery and IProcgenWorldQuery; public registration remains in PhysicsCapabilities.cpp."
+        ],
+        "ecs_links": [
+          "Weak world lifetime tokens; no new ECS state."
+        ],
+        "events": [],
+        "script_bindings": [],
+        "tool_protocol": [],
+        "hard_dependencies": [
+          "World3D numerical queries",
+          "TargetingLineOfSightAdapter"
+        ],
+        "hot_paths": [
+          "src/modules/physics/PhysicsWorldQueries.cpp"
+        ],
+        "trim_evidence": "physics-core-only eve_ocean_boat_check links actual query implementations without graphics/gpgpu/facade; test/ocean_boat.cpp validates queries before and after world destruction."
+      }
     },
     {
       "id": "public-api-lifetime-policy",
@@ -482,6 +707,29 @@
       "ownership_contract": "owned, borrowed, observer and transferred values are explicit.",
       "lifetime": "borrowed values are bounded by the documented call/frame/task lifetime; handles are stale-safe.",
       "lock_callback_policy": "release internal locks before invoking unknown callbacks or scripts."
+    },
+    {
+      "id": "fluids-ocean-spectrum-definition",
+      "rule": "persistence",
+      "scope": "src/modules/fluids/OceanSpectrumCodec.*",
+      "owner": "fluids::OceanSpectrumBuilder",
+      "issue": "EVENGINE-OCEAN-SYSTEM",
+      "reason": "Script and persistent sea definitions share one strict versioned codec; decimal seed text prevents VM precision loss.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/fluids/OceanSpectrumCodec.h",
+        "src/modules/fluids/OceanSpectrumCodec.cpp",
+        "docs/usr/ocean.md"
+      ],
+      "tests": [
+        "test/ocean_codec.cpp",
+        "test/ocean_script.cpp"
+      ],
+      "schema": "eve.ocean.spectrum definition; not a dynamic wake or boat checkpoint.",
+      "version": "Exact integer version 1.",
+      "migration": "No released earlier format; unknown versions fail until an explicit migration exists.",
+      "unknown_fields": "Reject unknown and missing root and band fields, nonfinite values, noncanonical uint64 seed text and oversized arrays.",
+      "restore_atomicity": "Decode an owning local definition before configure swaps builder settings; spectral domain validation and allocation complete before an owning spectrum is published."
     },
     {
       "id": "persistence-contract-policy",

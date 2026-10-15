@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <map>
+#include <span>
 #include <string>
 #include <vector>
 #include "common/Result.h"
@@ -101,6 +102,12 @@ public:
 
     const float *pushConstantData() const { return floats_.data(); }
     uint32_t pushConstantSize() const { return uint32_t(usedFloats_ * sizeof(float)); }
+    /** @brief Replace all declared float slots atomically without name lookup.
+     * @param values Finite values matching usedFloats(); borrowed only until return.
+     * @return Success or InvalidArgument, preserving old values on failure.
+     * @thread Graphics-owner thread only, non-reentrant, no callbacks or retained input.
+     */
+    [[nodiscard]] Result<void> sendFloatBlock(std::span<const float> values);
     int usedFloats() const { return usedFloats_; }
 
     /**

@@ -182,12 +182,12 @@ Result<ParsedContract> parseContract(const Value& contract) {
                     "contract");
     if (!known) return Result<ParsedContract>::failure(known.status());
     auto schemaId = stringMember(*root.value(), "schemaId", "contract");
-    auto version  = intMember(*root.value(), "schemaVersion", "contract");
-    auto id       = stringMember(*root.value(), "id", "contract");
-    auto entry    = stringMember(*root.value(), "entry", "contract");
     if (!schemaId) return Result<ParsedContract>::failure(schemaId.status());
+    auto version = intMember(*root.value(), "schemaVersion", "contract");
     if (!version) return Result<ParsedContract>::failure(version.status());
+    auto id = stringMember(*root.value(), "id", "contract");
     if (!id) return Result<ParsedContract>::failure(id.status());
+    auto entry = stringMember(*root.value(), "entry", "contract");
     if (!entry) return Result<ParsedContract>::failure(entry.status());
     if (schemaId.value() != kContractSchemaId || version.value() != kSchemaVersion)
         return Result<ParsedContract>::failure(Diagnostic::error(
@@ -228,10 +228,10 @@ Result<ParsedContract> parseContract(const Value& contract) {
         if (!itemKnown) return Result<ParsedContract>::failure(itemKnown.status());
         ObservationSpec spec;
         auto            specId = stringMember(*object.value(), "id", itemPath);
-        auto            kind   = stringMember(*object.value(), "kind", itemPath);
-        auto            path   = stringMember(*object.value(), "path", itemPath);
         if (!specId) return Result<ParsedContract>::failure(specId.status());
+        auto kind = stringMember(*object.value(), "kind", itemPath);
         if (!kind) return Result<ParsedContract>::failure(kind.status());
+        auto path = stringMember(*object.value(), "path", itemPath);
         if (!path) return Result<ParsedContract>::failure(path.status());
         spec.id   = specId.value();
         spec.kind = kind.value();
@@ -672,8 +672,8 @@ Result<Value> dispatchOne(const Value& request, IPlayHostRuntime& runtime, bool 
     auto known = knownFields(*root.value(), allowed, "request");
     if (!known) return Result<Value>::failure(known.status());
     auto schemaId = stringMember(*root.value(), "schemaId", "request");
-    auto version  = intMember(*root.value(), "schemaVersion", "request");
     if (!schemaId) return Result<Value>::failure(schemaId.status());
+    auto version = intMember(*root.value(), "schemaVersion", "request");
     if (!version) return Result<Value>::failure(version.status());
     if (schemaId.value() != kPlaySchemaId || version.value() != kSchemaVersion)
         return Result<Value>::failure(
