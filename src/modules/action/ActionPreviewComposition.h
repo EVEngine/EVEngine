@@ -20,6 +20,14 @@ namespace eve::action {
  */
 class EVENGINE_API_PLATFORM ComposedActionPreviewSink final : public IActionPreviewSink {
 public:
+    ComposedActionPreviewSink() = default;
+    ~ComposedActionPreviewSink() override = default;
+
+    ComposedActionPreviewSink(const ComposedActionPreviewSink&)            = delete;
+    ComposedActionPreviewSink& operator=(const ComposedActionPreviewSink&) = delete;
+    ComposedActionPreviewSink(ComposedActionPreviewSink&&)                 = default;
+    ComposedActionPreviewSink& operator=(ComposedActionPreviewSink&&)      = default;
+
     /** @brief Append one owning child sink. */
     void add(std::unique_ptr<IActionPreviewSink> sink);
     /** @brief True when no children were installed. */
