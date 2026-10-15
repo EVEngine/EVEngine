@@ -23,7 +23,7 @@ class EVENGINE_API_PLATFORM Action final : public Module {
 public:
     Module_REG(Action);
     /** @brief Construct the process-local Action module instance. */
-    Action()           = default;
+    Action() = default;
     /** @brief Releases Action module resources. */
     ~Action() override = default;
 };
