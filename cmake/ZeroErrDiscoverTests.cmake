@@ -1,4 +1,9 @@
 function(zeroerr_discover_tests TARGET)
+  # Standalone codec projects also use this function without test/CMakeLists.
+  if(NOT DEFINED EVE_TEST_LEVEL_FILE)
+    include("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/TestLevels.cmake")
+    eve_configure_test_levels(EVE_TEST_LEVEL_FILE)
+  endif()
   # LABEL tags every generated CTest entry, so a run can be restricted to one
   # link unit: the suite builds as one executable per domain and each passes its
   # own target name (ctest -L '^unit_test_<domain>$').
@@ -8,6 +13,11 @@ function(zeroerr_discover_tests TARGET)
   set(_one_value LABEL NAME_PREFIX)
   cmake_parse_arguments(_eve_zeroerr "${_options}" "${_one_value}" "" ${ARGN})
   set(ctest_file "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}_zeroerr_tests.cmake")
+  # Changing classification must refresh discovery even without C++ edits.
+  set_property(TARGET ${TARGET} APPEND PROPERTY LINK_DEPENDS
+    "${EVE_TEST_LEVEL_FILE}"
+    "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/TestLevels.cmake"
+    "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/ZeroErrDiscoverTestsImpl.cmake")
   # SHARED module-linkage builds write the link-group libraries to
   # CMAKE_BINARY_DIR (see cmake/link_groups.cmake), while every test executable
   # lives in <binary dir>/test and CTest runs it with WORKING_DIRECTORY = the
@@ -48,6 +58,7 @@ function(zeroerr_discover_tests TARGET)
       -DZEROERR_LABEL=${_eve_zeroerr_LABEL}
       "-DZEROERR_NAME_PREFIX=${_eve_zeroerr_NAME_PREFIX}"
       "-DZEROERR_DLL_DIR=${_eve_zeroerr_dll_dirs}"
+      "-DZEROERR_LEVEL_FILE=${EVE_TEST_LEVEL_FILE}"
       -P ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/ZeroErrDiscoverTestsImpl.cmake
     BYPRODUCTS ${ctest_file}
     COMMENT "Discovering zeroerr tests for ${TARGET}"

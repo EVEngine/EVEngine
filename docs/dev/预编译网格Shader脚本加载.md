@@ -46,5 +46,5 @@ SPIR-V 使用 Khronos 既有格式；不另外定义二进制协议。
 RGBA8 render pass 的 LOAD 修正属于同一 backend 内的行为修正。清空由 pending clear
 在下一次实际提交时执行，首次提交默认 clear。HDR 未更改其原有加载行为。
 持久性、alpha 累积、局部修改、显式清空和独立快照由
-`test/graphics_canvas_persistence.cpp` 验证；真实 GPU/CPU 对比见 `verify_gpu.nut`。
+`test/integration/save-restore/save_restore_graphics_tests.cpp` 验证；真实 GPU/CPU 对比见 `verify_gpu.nut`。
 未新增 ECS、模块边界或跨域 Link，未采用架构规则例外。

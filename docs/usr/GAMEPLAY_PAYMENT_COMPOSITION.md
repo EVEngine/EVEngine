@@ -118,4 +118,4 @@ or provider registry. Provider-free cards with cost zero still use the shared
 transaction route. No independent link-trimming claim is made.
 
 Executable composition and failure examples live in
-test/card_payment_composition.cpp.
+test/integration/gameplay-composition/gameplay_composition_graphics_buildingfx_tests.cpp.

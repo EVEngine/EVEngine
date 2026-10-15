@@ -74,4 +74,4 @@ API 的参数与所有权契约见 Doxygen，当前没有通用 Asset 脚本加�
 CPU 解析与编码对相同输入确定；OpenSCAD 编译结果取决于编译器版本和源依赖，
 不要把跨版本二进制一致性当作保证。源包报告 `reports/import.json` 记录转换与限制。
 
-契约与组合测试：[asset_import_structured_models.cpp](../../../test/asset_import_structured_models.cpp)。
+契约与组合测试：[asset_import_structured_models.cpp](../../../test/integration/asset-pipeline/asset_pipeline_graphics_asset_image_mips_tests.cpp)。
