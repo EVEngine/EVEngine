@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "platform-event-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/platform_event/**",
+      "owner": "platform_event",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Event pumping and main-thread posting expose one capability, dispatch one listener interface and bind one script class; the boundary is recorded so the next provider or consumer must declare itself.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/platform_event/PlatformEvent.h",
+        "src/modules/platform_event/PlatformEventSink.h",
+        "src/modules/platform_event/MainThreadPost.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IMainThreadPost"
+      ],
+      "requires": [
+        "IPlatformEventSink"
+      ],
+      "emits": [
+        "poll notifications delivered through PlatformEvent::subscribePoll; subscribers run on the pump thread and outside the message lock."
+      ],
+      "observes": [],
+      "binds": [
+        "eve.PlatformEvent (getName, pump, poll, pollData, getLastData, pushData)"
+      ],
+      "protocol": [],
+      "thread_affinity": "Platform pump thread for pumping, main thread for IMainThreadPost delivery; sinks run on the pump thread affinity",
+      "trim": {
+        "absent_profile": "Headless profiles that omit platform_event keep IMainThreadPost unbound; postings then run inline or are rejected as Unsupported instead of being queued",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [],
+      "hot_path": []
+    }
+  ]
+}

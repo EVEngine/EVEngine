@@ -1870,6 +1870,45 @@
       "hot_path": []
     },
     {
+      "id": "climbing-event-sink-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/climbing/ClimbingServices.cpp",
+      "owner": "climbing",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "dispatchClimbingEvents consumes IClimbingEventSink through cap::query and the new script seam answers it through cap::provide, so the same capability appears on both faces; recording them makes the next provider or consumer declare itself instead of silently displacing the single-provider slot. The scope is this one file: the rest of src/modules/climbing/** holds the runtime, anchor graph, codec and bindings, whose faces are recorded separately when touched.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/climbing/ClimbingServices.cpp",
+        "src/modules/climbing/ClimbingEventValue.cpp"
+      ],
+      "tests": [
+        "test/climbing_services.cpp",
+        "test/climbing_events.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IClimbingEventSink"
+      ],
+      "requires": [
+        "IClimbingEventSink"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.provider.publishFor('eve.climbing.event-sink.v1', name, instance) -> publishClimbingEvents({ subject, events })"
+      ],
+      "protocol": [],
+      "thread_affinity": "Climbing owner thread; the sink is invoked synchronously from the movement step and retains no script value between calls",
+      "trim": {
+        "absent_profile": "Profiles without climbing drop the module and with it the IClimbingEventSink listeners; the script publish path stays linked and reports the absent provider as a structured Result",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "publishClimbingEvents marshals one event table per call and forwards it to the multi-listener sink in registration order; the cost is proportional to the event count."
+      ],
+      "hot_path": []
+    },
+    {
       "id": "crowd-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/crowd/Crowd*",
@@ -2172,6 +2211,47 @@
       "hot_path": [],
       "protocol": [],
       "cost_notes": []
+    },
+    {
+      "id": "dialogue-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/dialogue/StateAccessScriptSeam.cpp",
+      "owner": "dialogue",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Dialogue is the consumer that owns these two contracts: DialogueState::queryProviders walks cap::query and then cap::forEach for IStateQuery, and DialogueStateContext::apply takes IStateMutation through cap::query. The new script seams answer the first as a listener and the second in the single-provider slot, so both faces appear here and the next provider must declare itself instead of silently displacing the slot. The scope is this one file, not src/modules/dialogue/**: the runner, parser and bindings expose different faces.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/dialogue/StateAccessScriptSeam.cpp",
+        "src/modules/dialogue/DialogueState.cpp",
+        "src/engine/common/StateAccess.h"
+      ],
+      "tests": [
+        "test/dialogue_state_script_provider.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IStateQuery",
+        "IStateMutation"
+      ],
+      "requires": [
+        "IStateQuery",
+        "IStateMutation"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.provider.publishFor('eve.state.IStateQuery', name, instance) -> value/hasTag/attribute/resource/state/authority(subject, key|tag|scope), null meaning 'not mine'; eve.provider.publishFor('eve.state.IStateMutation', name, instance) -> applyStateMutations({ transactionId, correlationId, causationId, mutations = [{ subject, key, value, kind, persistent }] }) returning the number of changed entries"
+      ],
+      "protocol": [],
+      "thread_affinity": "Squirrel owning thread; the seam answers IStateQuery and IStateMutation synchronously while a dialogue expression is evaluated and retains no VM value between calls",
+      "trim": {
+        "absent_profile": "Profiles without dialogue drop the seams; other IStateQuery/IStateMutation providers keep answering through the same forEach walk, so dialogue state resolution degrades to the remaining providers",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "Each value/hasTag/attribute/resource/state/authority call is one script call that returns null for 'not mine', so the walk continues; applyStateMutations marshals one mutation table per batch."
+      ],
+      "hot_path": []
     },
     {
       "id": "economy-payment-composition-interface",
@@ -2868,6 +2948,46 @@
       ]
     },
     {
+      "id": "map-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/map/TileCollisionScriptSink.cpp",
+      "owner": "map",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Map::publishCollision consumes the multi-listener ITileCollisionSink socket through cap::forEach and the new script seam answers it through cap::addListener, so the same capability appears on both faces; recording them makes the next provider or consumer declare itself. The scope is this one file, not src/modules/map/**: the editing and level satellites are separately built modules whose faces must not be attributed to this entry.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/map/TileCollisionScriptSink.cpp",
+        "src/modules/map/TileCollision.h",
+        "src/modules/map/Map.cpp"
+      ],
+      "tests": [
+        "test/map_tile_collision_sink.cpp",
+        "test/map.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "ITileCollisionSink"
+      ],
+      "requires": [
+        "ITileCollisionSink"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.provider.publishFor('ITileCollisionSink', name, instance) -> replaceTileCollision({ layer = { id, generation }, rects = [{ x, y, width, height }] }); eve.TileLayer.getEntityId()/getEntityGeneration()"
+      ],
+      "protocol": [],
+      "thread_affinity": "Map owner thread (the Squirrel owning thread for the instance); the sink is called synchronously from publishCollision and no script value is retained across calls",
+      "trim": {
+        "absent_profile": "Profiles without map drop the module and its sink listeners; a script that published a collision sink sees the provider go away with the module and the map keeps its own collisionRects_ authority",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "replaceTileCollision marshals one rect array per layer publication; map keeps collisionRects_ as the authority and a sink failure stays observable through scriptTileCollisionSinkFailures()."
+      ],
+      "hot_path": []
+    },
+    {
       "id": "math-smooth-max-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/math/*Smooth*",
@@ -3081,6 +3201,47 @@
       "cost_notes": []
     },
     {
+      "id": "particles-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/particles/**",
+      "owner": "particles",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Particle emitters publish query, VFX-duration, action-notify and asset-reload capabilities, while the per-frame emitter cull and simulation path must not re-resolve a module by string key.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/particles/ParticleSystem.cpp",
+        "src/modules/particles/ParticlesCapabilities.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IActionNotifyProvider",
+        "IActionPreviewSinkProvider",
+        "IActionVfxDurationProvider",
+        "IAssetReloader",
+        "IParticlesQuery"
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.Particles (plus ParticleEmitter, PcgMaterialSelector, ParticleEffect)"
+      ],
+      "protocol": [],
+      "thread_affinity": "Particles owner thread; the per-frame emitter cull and simulation read a pointer resolved once at the composition boundary and never re-resolve a module by string key",
+      "trim": {
+        "absent_profile": "minimal and other profiles without particles drop every capability listed here; remaining modules that queried them fall back to their documented absent behavior",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "The emitter cull and simulation run per frame, so their dependencies are resolved once at the composition boundary instead of per frame."
+      ],
+      "hot_path": [
+        "src/modules/particles/ParticleSystem.cpp"
+      ]
+    },
+    {
       "id": "physics-owned-contacts-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/physics/*3D*",
@@ -3198,6 +3359,44 @@
       "hot_path": [],
       "protocol": [],
       "cost_notes": []
+    },
+    {
+      "id": "platform-event-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/platform_event/**",
+      "owner": "platform_event",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Event pumping and main-thread posting expose one capability, dispatch one listener interface and bind one script class; the boundary is recorded so the next provider or consumer must declare itself.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/platform_event/PlatformEvent.h",
+        "src/modules/platform_event/PlatformEventSink.h",
+        "src/modules/platform_event/MainThreadPost.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IMainThreadPost"
+      ],
+      "requires": [
+        "IPlatformEventSink"
+      ],
+      "emits": [
+        "poll notifications delivered through PlatformEvent::subscribePoll; subscribers run on the pump thread and outside the message lock."
+      ],
+      "observes": [],
+      "binds": [
+        "eve.PlatformEvent (getName, pump, poll, pollData, getLastData, pushData)"
+      ],
+      "protocol": [],
+      "thread_affinity": "Platform pump thread for pumping, main thread for IMainThreadPost delivery; sinks run on the pump thread affinity",
+      "trim": {
+        "absent_profile": "Headless profiles that omit platform_event keep IMainThreadPost unbound; postings then run inline or are rejected as Unsupported instead of being queued",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [],
+      "hot_path": []
     },
     {
       "id": "procgen-editor-module-interface",
@@ -3791,6 +3990,40 @@
       ]
     },
     {
+      "id": "scene-script-link-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/scene/ScriptLinks.cpp",
+      "owner": "scene",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "The scene module gains a link kind whose target is a user script object, plus the script binding that attaches it. The scope is the one file, not the directory: src/modules/scene/** also holds the separately built scene.loader, scene.editor and scene.physics modules, whose capabilities must not be attributed to this entry.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/scene/ScriptLinks.cpp",
+        "src/modules/scene/Scene.h",
+        "src/modules/scene/SceneLink.h"
+      ],
+      "tests": [
+        "test/scene_script_link.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.Scene.linkScriptAt(hostName, nodeId, providerName, mode) -> {ok, code, status, diagnostics}; the link kind itself is the registered name 'script', driven through eve.provider.publish/unload"
+      ],
+      "protocol": [],
+      "thread_affinity": "Scene owner thread; linkScriptAt resolves the provider at call time and stores a generation-qualified handle rather than a raw script object",
+      "trim": {
+        "absent_profile": "Profiles without scene drop the script link kind; a registry entry that outlives the scene reports StaleHandle instead of aliasing a recycled implementation",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "linkScriptAt performs one provider resolution and takes one Squirrel reference per link; unlinking releases exactly that generation."
+      ],
+      "hot_path": []
+    },
+    {
       "id": "schema-protobuf-dynamic-interface",
       "rule": "module-interface",
       "scope": "src/modules/schema/**",
@@ -3859,6 +4092,77 @@
         "absent_profile": "Source structure lives in common; native facts only exist for linked contracts.",
         "evidence": "test/script_structure.cpp"
       }
+    },
+    {
+      "id": "sensing-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/sensing/SensingScriptCandidateSeam.cpp",
+      "owner": "sensing",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "TargetingResolver consumes ISensingCandidateProvider through cap::query and the new script seam answers it through cap::provide, so the same capability appears on both faces; recording them makes the next provider declare itself instead of silently displacing the single-provider slot. The scope is this one file, not src/modules/sensing/**: the fact mirror, the ranking pipeline and the script world bindings expose different faces.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/sensing/SensingScriptCandidateSeam.cpp",
+        "src/modules/sensing/Targeting.h"
+      ],
+      "tests": [
+        "test/sensing_script_provider.cpp",
+        "test/targeting.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "ISensingCandidateProvider"
+      ],
+      "requires": [
+        "ISensingCandidateProvider"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.provider.publishFor('eve.sensing.ISensingCandidateProvider', name, instance) -> queryCandidates({ origin, space, originLocation, domain, minRange, maxRange, requiredTags, excludedTags, zone, area }) returning an array of { subject, location = { space, x, y, z }, domain, tags, zones }"
+      ],
+      "protocol": [],
+      "thread_affinity": "Sensing owner thread; queryCandidates answers one synchronous script call and returns an owning array, retaining no VM value",
+      "trim": {
+        "absent_profile": "Profiles without sensing leave ISensingCandidateProvider unbound; targeting falls back to the in-tree provider set and the script seam simply is not registered",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "queryCandidates marshals one candidate array per query and the ranking pipeline calls it once per resolver pass, so the cost is proportional to the returned candidate count."
+      ],
+      "hot_path": []
+    },
+    {
+      "id": "sensing-query-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/sensing/Sensing.cpp",
+      "owner": "sensing",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "The sensing module instance publishes ISensingQuery for its fact mirror, the same capability the targeting resolver consumes, so a second provider or consumer must declare itself instead of silently displacing the single-provider slot.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/sensing/Sensing.cpp",
+        "src/engine/common/SensingQuery.h"
+      ],
+      "tests": [
+        "test/sensing_script_provider.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "ISensingQuery"
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "thread_affinity": "Sensing owner thread; queries read the fact mirror synchronously and retain no callback or script value.",
+      "trim": {
+        "absent_profile": "Profiles without sensing leave ISensingQuery unbound; consumers that queried it fall back to their documented absent behavior.",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [],
+      "hot_path": []
     },
     {
       "id": "spritestack-editing-runtime-dependency",
@@ -4295,6 +4599,44 @@
       ]
     },
     {
+      "id": "ui-photo-mode-apply-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/ui/PcgPhotoModeApplySeam.cpp",
+      "owner": "ui",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "The photo-mode apply plan consumes IPhotoModeApplySink through cap::query and the new script seam answers it through cap::provide, so the same capability appears on both faces; recording them makes the next provider or consumer declare itself instead of silently displacing the single-provider slot. The scope is this one file, not src/modules/ui/**: the panel, session and value files expose different faces.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/ui/PcgPhotoModeApplyPlan.cpp",
+        "src/modules/ui/PcgPhotoModeApplySeam.cpp"
+      ],
+      "tests": [
+        "test/pcg_photo_mode_apply.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IPhotoModeApplySink"
+      ],
+      "requires": [
+        "IPhotoModeApplySink"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.provider.publishFor('eve.photo-mode.apply', name, instance) -> applyPhotoModeAssignment({ field, domain, value })"
+      ],
+      "protocol": [],
+      "thread_affinity": "UI owner thread; applyPhotoModeAssignment runs synchronously from the apply plan and retains no script value between steps",
+      "trim": {
+        "absent_profile": "Profiles without ui drop the photo-mode apply seam with the module; the plan keeps the session state and applies only the assignments its remaining sinks accept",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "applyPhotoModeAssignment marshals one assignment table per plan step; the plan owns the session state and a sink rejection stays a structured Result."
+      ],
+      "hot_path": []
+    },
+    {
       "id": "ui-progress-render-interface",
       "rule": "module-interface",
       "scope": "src/modules/ui/UISystem.cpp",
@@ -4333,6 +4675,41 @@
       "hot_path": [
         "src/modules/ui/UISystem.cpp"
       ]
+    },
+    {
+      "id": "vehicle-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/vehicle/**",
+      "owner": "vehicle",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "The damage pipeline consumes the multi-listener IVehicleDamageModifier socket, which is now answerable from script through eve.provider.publishFor; recording the face makes the provider and any further consumer declare themselves.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/vehicle/VehicleTypes.h",
+        "src/modules/vehicle/Vehicle.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IVehicleDamageModifier"
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.Vehicle (unchanged); eve.provider.publishFor('IVehicleDamageModifier', name, instance)"
+      ],
+      "protocol": [],
+      "thread_affinity": "Vehicle simulation owner thread; the damage modifier is called synchronously inside the damage pipeline and retains no script value between hits",
+      "trim": {
+        "absent_profile": "Profiles without vehicle drop the module and its IVehicleDamageModifier listeners; the remaining modifiers keep running in registration order",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "The modifier runs once per damage application and returns an owning modified value; nothing is retained between hit resolutions."
+      ],
+      "hot_path": []
     },
     {
       "id": "voxel-editor-package-module-interface",
@@ -4385,6 +4762,43 @@
       },
       "thread_affinity": "owner/editor composition thread",
       "cost_notes": [],
+      "hot_path": []
+    },
+    {
+      "id": "weapon-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/weapon/**",
+      "owner": "weapon",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "The projectile logic consumes IProjectileService through cap::query and the script seam answers it through cap::provide, so the same capability appears on both faces; recording them makes the next provider or consumer declare itself instead of silently displacing the single-provider slot.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/weapon/WeaponLogic.h",
+        "src/modules/weapon/WeaponSystem.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IProjectileService"
+      ],
+      "requires": [
+        "IProjectileService"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.Weapon, eve.WeaponEntity, eve.WeaponMountEntity, eve.WeaponRigEntity, eve.AmmoPoolEntity; eve.provider.publishFor('IProjectileService', name, instance)"
+      ],
+      "protocol": [],
+      "thread_affinity": "Weapon owner thread; the projectile service answers each spawn/step query synchronously with an owning value and retains nothing across frames",
+      "trim": {
+        "absent_profile": "Profiles without weapon drop the module and its projectile service; a script that published one keeps the handle but every later call reports the provider as gone",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "The projectile service is consulted once per projectile spawn/step; the seam marshals one table per call and retains no VM value."
+      ],
       "hot_path": []
     },
     {
