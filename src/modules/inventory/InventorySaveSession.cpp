@@ -176,6 +176,47 @@ eve::Result<std::string> InventorySaveSession::snapshotBinary() const {
     return eve::Result<std::string>::success(std::move(bytes));
 }
 
+eve::Result<std::string> InventorySaveSession::rewriteSnapshotBinaryId(std::string_view bytes, InventorySaveIdKind kind,
+                                                                       std::string_view oldId, std::string_view newId) {
+    if (oldId.empty() || newId.empty() || oldId == newId)
+        return fail<std::string>(eve::DiagnosticCode::InvalidArgument,
+                                 "inventory migration requires distinct non-empty identities", "identity");
+    if (bytes.size() > static_cast<std::size_t>(std::numeric_limits<int>::max()))
+        return fail<std::string>(eve::DiagnosticCode::InvalidArgument, "inventory snapshot is too large", "snapshot");
+    proto::InventorySave snapshot;
+    if (!snapshot.ParseFromArray(bytes.data(), static_cast<int>(bytes.size())) || hasUnknownFields(snapshot))
+        return fail<std::string>(eve::DiagnosticCode::ParseError, "inventory snapshot is malformed", "snapshot");
+    if (!snapshot.has_schema() || snapshot.schema() != kInventorySchema)
+        return fail<std::string>(eve::DiagnosticCode::InvalidArgument,
+                                 "snapshot does not belong to InventorySaveSession", "schema");
+    if (!snapshot.has_version() || snapshot.version() != kInventoryVersion)
+        return fail<std::string>(eve::DiagnosticCode::UnknownVersion, "unsupported inventory snapshot version",
+                                 "version");
+    if (!snapshot.has_bag() || !snapshot.has_equipment())
+        return fail<std::string>(eve::DiagnosticCode::ParseError, "inventory snapshot requires bag and equipment",
+                                 "snapshot");
+    if (kind != InventorySaveIdKind::Item && kind != InventorySaveIdKind::EquipmentSlot)
+        return fail<std::string>(eve::DiagnosticCode::InvalidArgument, "unsupported inventory identity kind", "kind");
+    if (kind == InventorySaveIdKind::Item) {
+        for (auto &slot : *snapshot.mutable_bag()->mutable_slots()) {
+            if (slot.item_id() == oldId) slot.set_item_id(std::string(newId));
+        }
+        for (auto &slot : *snapshot.mutable_equipment()->mutable_slots()) {
+            if (slot.has_stack() && slot.stack().item_id() == oldId)
+                slot.mutable_stack()->set_item_id(std::string(newId));
+        }
+    } else {
+        for (auto &slot : *snapshot.mutable_equipment()->mutable_slots()) {
+            if (slot.name() == oldId) slot.set_name(std::string(newId));
+        }
+    }
+    std::string rewritten;
+    if (!snapshot.SerializeToString(&rewritten))
+        return fail<std::string>(eve::DiagnosticCode::SerializationError, "inventory migration serialization failed",
+                                 "snapshot");
+    return eve::Result<std::string>::success(std::move(rewritten));
+}
+
 eve::Result<std::string> InventorySaveSession::snapshotJson() const {
     auto binary = snapshotBinary();
     if (!binary.ok()) return binary;

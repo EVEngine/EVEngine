@@ -34,7 +34,10 @@ protoc --proto_path=proto --cpp_out=proto/generated proto/inventory_save.proto
 ```
 
 Use the `protoc` version pinned in `third-party/protobuf` and verify the
-generated diff before committing. Runtime descriptor pools and dynamic messages
+generated diff before committing. For `rpg_save_session.proto`, also pass
+`--proto_path=third-party/protobuf/src` so `google/protobuf/any.proto` resolves;
+strip protoc's trailing spaces in its generated oneof accessors before staging.
+Runtime descriptor pools and dynamic messages
 can consume `FileDescriptorSet` produced from dynamically authored `.proto`
 files:
 
@@ -76,18 +79,24 @@ version-1 JSON field names map directly onto the protobuf message.
 candidate and roster length before changing any actor; the party's ECS links
 remain owned by the live roster.
 
+`RPGSaveSession` now writes a version-3 Protobuf envelope. Its payload contains
+typed RPG messages and an inventory `Any` carrying the inventory module's own
+wire record. The envelope hashes the exact stored payload bytes so integrity
+verification does not depend on re-serializing a parsed Protobuf message.
+Content-version migrations rewrite private typed messages before participant
+preparation. Version-1/2 common JSON envelopes remain read-only compatibility
+inputs and still use the old envelope parser; new binary and JSON writes do
+not use `Value`.
+
 `Value` remains a supported runtime type for genuinely dynamic script, editor
 and tool data. The migration target is its use as an intermediate format for
 known persistence records, not the `Value` type itself.
 
-`GameSaveSession` and its RPG/Tactics participants still exchange `Value`
-payloads and JSON. Their next contract should be typed participant messages
-inside a versioned game-save envelope, with an explicit participant type name
-and version. The current canonical JSON hash cannot simply become a hash of
-re-serialized protobuf bytes: protobuf does not promise canonical wire output.
-Hash either the original immutable wire bytes or a separately specified
-canonical digest representation, and retain verification before any participant
-commit.
+The generic `GameSaveSession` and its RPG/Tactics adapters still exchange
+`Value` payloads and JSON. Their next contract should use typed participant
+messages in a versioned envelope, with an explicit participant type and version.
+The RPG envelope above demonstrates the original-wire-byte integrity policy;
+the generic layer needs the same policy before every participant commit.
 
 Other domain snapshots, authored assets, event logs, and network records need
 their own `.proto` definitions, fixture migrations, and domain validation. The

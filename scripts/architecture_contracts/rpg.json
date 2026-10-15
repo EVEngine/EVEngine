@@ -120,6 +120,31 @@
       "restore_atomicity": "The complete roster and every actor candidate validate before any actor commit."
     },
     {
+      "id": "rpg-save-session-protobuf-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/rpg/RPGSaveSession.*",
+      "owner": "rpg::RPGSaveSession",
+      "issue": "EVENGINE-ARCH-RPG-SAVE",
+      "reason": "The canonical RPG save envelope stores typed participant messages as integrity-sealed Protobuf wire bytes and applies content migrations before preparation.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "proto/rpg_save_session.proto",
+        "src/modules/rpg/RPGSaveSession.h",
+        "src/modules/rpg/RPGSaveSession.cpp"
+      ],
+      "tests": [
+        "test/rpg_save_session_protobuf.cpp",
+        "test/rpg_save_session.cpp",
+        "test/rpg_save_legacy_envelope.cpp",
+        "test/rpg_save_prepare.cpp"
+      ],
+      "schema": "eve.rpg.proto.RPGSaveEnvelope and RPGSavePayload in proto/rpg_save_session.proto",
+      "version": "schema rpg:save-session, Protobuf envelope version 3; actor and party use oneof roster",
+      "migration": "Version-1/2 common JSON envelopes remain read-only compatibility inputs; content-version ID, quest-addition and actor-to-party routes operate on private Protobuf payloads for version 3.",
+      "unknown_fields": "The version-3 envelope and payload reject unknown top-level fields; participant messages enforce their own unknown-field policies.",
+      "restore_atomicity": "The exact stored payload bytes are hashed before parsing, and every domain prepares a candidate before one no-fail commit."
+    },
+    {
       "id": "rpg-tracker-protobuf-persistence",
       "rule": "persistence",
       "scope": "src/modules/rpg/Tracker.*",

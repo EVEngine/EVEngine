@@ -1,7 +1,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "common/Value.h"
+#include <google/protobuf/util/json_util.h>
+#include "../proto/generated/rpg_save_session.pb.h"
 #include "inventory/Bag.h"
 #include "inventory/Equipment.h"
 #include "inventory/InventorySystem.h"
@@ -9,8 +10,8 @@
 #include "rpg/GameState.h"
 #include "rpg/Party.h"
 #include "rpg/Quest.h"
-#include "rpg/RPGSaveSession.h"
 #include "rpg/RPGActor.h"
+#include "rpg/RPGSaveSession.h"
 #include "rpg/Tracker.h"
 
 using namespace eve::rpg;
@@ -177,34 +178,24 @@ TEST_CASE("rpg.saveSession.roundTripAndCrossParticipantRollback") {
     CHECK_EQ(restoredActor->getCurrent("hp"), 65.0);
     CHECK_EQ(restoredBag.countItem("potion"), 3);
 
-    auto parsed = eve::Value::fromJson(encoded.value());
-    REQUIRE(parsed.ok());
-    eve::Value corrupted = std::move(parsed).takeValue();
-    eve::Value *payload = corrupted.find("payload");
-    REQUIRE(payload != nullptr);
-    eve::Value *gameState = payload->find("gameState");
-    eve::Value *questTracker = payload->find("questTracker");
-    eve::Value *inventory = payload->find("inventory");
-    REQUIRE(gameState != nullptr);
-    REQUIRE(questTracker != nullptr);
-    REQUIRE(inventory != nullptr);
-    eve::Value *variables = gameState->find("variables");
-    eve::Value *entries = questTracker->find("entries");
-    REQUIRE(variables != nullptr);
-    REQUIRE(entries != nullptr);
-    variables->set("gold", eve::Value(5.0));
-    entries->at(0).set("state", eve::Value("completed"));
-    inventory->find("bag")->find("slots")->at(0).set("itemId", eve::Value("missing.item"));
-    auto corruptedJson = corrupted.toJson();
-    REQUIRE(corruptedJson.ok());
-    auto invalidPreview = restored.validateSnapshotJson(corruptedJson.value());
+    auto encodedBinary = source.snapshotBinary();
+    REQUIRE(encodedBinary.ok());
+    eve::rpg::proto::RPGSaveEnvelope corrupted;
+    REQUIRE(corrupted.ParseFromString(encodedBinary.value()));
+    std::string damagedPayload = corrupted.payload_wire();
+    REQUIRE(!damagedPayload.empty());
+    damagedPayload[0] = static_cast<char>(damagedPayload[0] ^ 1);
+    corrupted.set_payload_wire(std::move(damagedPayload));
+    std::string corruptedJson;
+    REQUIRE(google::protobuf::util::MessageToJsonString(corrupted, &corruptedJson).ok());
+    auto invalidPreview = restored.validateSnapshotJson(corruptedJson);
     CHECK(!invalidPreview.ok());
     REQUIRE(invalidPreview.error() != nullptr);
     CHECK_EQ(static_cast<int>(invalidPreview.error()->code()),
              static_cast<int>(eve::DiagnosticCode::HashMismatch));
     CHECK_EQ(restoredState.getVariable("gold"), 40.0);
     CHECK_EQ(restoredBag.countItem("potion"), 3);
-    auto rejected = restored.restoreSnapshotJson(corruptedJson.value());
+    auto rejected = restored.restoreSnapshotJson(corruptedJson);
     CHECK(!rejected.ok());
     REQUIRE(rejected.error() != nullptr);
     CHECK_EQ(static_cast<int>(rejected.error()->code()), static_cast<int>(eve::DiagnosticCode::HashMismatch));
@@ -380,13 +371,13 @@ TEST_CASE("rpg.saveSession.explicitIdMigrationRewritesOwningPayloadBeforeValidat
 
     auto rewritten = migrated.snapshotJson();
     REQUIRE(rewritten.ok());
-    auto rewrittenEnvelope = eve::Value::fromJson(rewritten.value());
-    REQUIRE(rewrittenEnvelope.ok());
-    const eve::Value *payload = rewrittenEnvelope.value().find("payload");
-    REQUIRE(payload != nullptr);
-    const eve::Value *contentVersion = payload->find("contentVersion");
-    REQUIRE(contentVersion != nullptr);
-    CHECK_EQ(contentVersion->asString(), "content.v2");
+    auto rewrittenBytes = migrated.snapshotBinary();
+    REQUIRE(rewrittenBytes.ok());
+    eve::rpg::proto::RPGSaveEnvelope rewrittenEnvelope;
+    REQUIRE(rewrittenEnvelope.ParseFromString(rewrittenBytes.value()));
+    eve::rpg::proto::RPGSavePayload payload;
+    REQUIRE(payload.ParseFromString(rewrittenEnvelope.payload_wire()));
+    CHECK_EQ(payload.content_version(), "content.v2");
 
     sourceActor->release();
     targetActor->release();

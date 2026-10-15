@@ -159,13 +159,20 @@ public:
         std::string_view fromContentVersion);
 
     /**
-     * @brief Capture every bound participant into one deterministic versioned JSON document.
-     * @return Integrity-sealed `rpg:save-session` JSON: schema v1 for bind(), v2 for bindParty().
+     * @brief Capture every bound participant as Protobuf JSON mapping of the version-3 envelope.
+     * @return Integrity-sealed `rpg:save-session` JSON, or a structured failure.
      * @remarks The returned value owns all bytes and remains valid independently of the participants.
      * @thread Call on the owning simulation thread.
      * @reentrancy No callbacks are invoked.
+     * @cost Linear in all bound participants; use only at save points.
      */
     [[nodiscard]] eve::Result<std::string> snapshotJson() const;
+
+    /** @brief Capture a versioned RPG save as integrity-sealed Protobuf wire bytes.
+     * @return Owning binary snapshot or a structured participant failure.
+     * @cost Linear in every bound participant; use only at save points.
+     */
+    [[nodiscard]] eve::Result<std::string> snapshotBinary() const;
 
     /**
      * @brief Parse, migrate and validate every RPG participant without publishing live state.
@@ -175,6 +182,13 @@ public:
      * @cost Comparable to a full save restore; once per load, not per frame.
      */
     [[nodiscard]] eve::Result<PreparedRestore> prepareRestoreSnapshotJson(std::string_view json);
+
+    /** @brief Verify, migrate and prepare a Protobuf RPG save without live mutation.
+     * @param bytes Wire bytes from snapshotBinary().
+     * @return Owning prepared state or a structured failure.
+     * @cost Linear in the save and current definitions; use at load boundaries.
+     */
+    [[nodiscard]] eve::Result<PreparedRestore> prepareRestoreSnapshotBinary(std::string_view bytes);
 
     /**
      * @brief Publish previously prepared RPG, quest, actor and inventory state together.
@@ -200,13 +214,21 @@ public:
      * @brief Validate all participants and atomically publish a save-session snapshot.
      * @param json UTF-8 JSON produced by snapshotJson().
      * @return Applied state, or a structured failure without modifying either participant.
-     * @remarks The strict common envelope rejects unknown fields and verifies its schema-owned,
-     * non-cryptographic corruption digest before participant parsing. This detects damaged saves but
-     * is not an authentication or anti-cheat boundary.
+     * @remarks The Protobuf version-3 envelope verifies its non-cryptographic digest over the exact
+     * stored payload bytes before participant parsing. Legacy JSON envelopes remain read-only inputs.
+     * The digest detects damage but is not an authentication or anti-cheat boundary.
      * @thread Call on the owning simulation thread.
      * @reentrancy No callbacks are invoked.
+     * @cost Linear in the save and current definitions; use at load boundaries.
      */
     [[nodiscard]] eve::Result<void> restoreSnapshotJson(std::string_view json);
+
+    /** @brief Atomically publish a validated Protobuf RPG save.
+     * @param bytes Wire bytes from snapshotBinary().
+     * @return Applied or a structured failure without mutation.
+     * @cost Linear in the save and current definitions; use at load boundaries.
+     */
+    [[nodiscard]] eve::Result<void> restoreSnapshotBinary(std::string_view bytes);
 
 private:
     struct MigrationKey {

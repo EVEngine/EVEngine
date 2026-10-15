@@ -50,7 +50,7 @@
       ],
       "schema": "eve.inventory.proto.InventorySave in proto/inventory_save.proto; legacy JSON is a protobuf JSON projection",
       "version": "schema eve.inventory.save-session, wire version 1",
-      "migration": "Existing version-1 JSON is read through protobuf JSON mapping. Unsupported versions fail before mutation; future changes require explicit migration.",
+      "migration": "Existing version-1 JSON is read through protobuf JSON mapping. The pure ID-rewrite API supports explicit cross-content save migrations; unsupported wire versions fail before mutation.",
       "unknown_fields": "Reject unknown protobuf fields recursively and reject unknown JSON fields during protobuf JSON parsing.",
       "restore_atomicity": "Parse and validate into private Bag and EquipmentSet candidates, then publish both via no-fail swaps."
     },

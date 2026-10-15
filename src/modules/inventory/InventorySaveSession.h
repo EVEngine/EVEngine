@@ -18,6 +18,9 @@ namespace eve::inventory {
 class Bag;
 class EquipmentSet;
 
+/** @brief Identity namespace rewritten during a content-version save migration. */
+enum class InventorySaveIdKind { Item, EquipmentSlot };
+
 /** @brief Coordinates persistent inventory owners without duplicating their live state. */
 class EVENGINE_API_FOUNDATION InventorySaveSession {
 public:
@@ -91,6 +94,19 @@ public:
      * @cost O(total inventory state), once per load.
      */
     [[nodiscard]] eve::Result<void> restoreSnapshotBinary(std::string_view bytes);
+
+    /** @brief Rewrite one known content identity in an owning Protobuf save without live mutation.
+     * @param bytes Source InventorySave wire bytes.
+     * @param kind Item definition ID or equipment slot name.
+     * @param oldId Identity in the older content version.
+     * @param newId Identity in the current content version.
+     * @return Rewritten wire bytes or a structured validation failure.
+     * @cost Linear in the inventory snapshot; batch migration calls at load boundaries.
+     */
+    [[nodiscard]] static eve::Result<std::string> rewriteSnapshotBinaryId(std::string_view    bytes,
+                                                                          InventorySaveIdKind kind,
+                                                                          std::string_view    oldId,
+                                                                          std::string_view    newId);
 
     /**
      * @brief Parse and validate a snapshot without mutating either participant.

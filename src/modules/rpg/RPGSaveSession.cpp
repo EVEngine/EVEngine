@@ -9,10 +9,14 @@
 #include "rpg/Quest.h"
 #include "rpg/RPGActor.h"
 #include "rpg/Tracker.h"
+#include "rpg_save_session.pb.h"
+
+#include <google/protobuf/util/json_util.h>
 
 #include <algorithm>
-#include <optional>
 #include <cstdint>
+#include <limits>
+#include <optional>
 #include <unordered_map>
 
 namespace eve::rpg {
@@ -31,23 +35,27 @@ eve::LogicalId saveSchema() {
     return schema ? *schema : eve::LogicalId{};
 }
 
-/** Deterministic non-cryptographic corruption detector owned by schema version 1. */
+/** Deterministic non-cryptographic corruption detector; input framing is caller-owned. */
+eve::ContentId saveDigest(std::string_view input) {
+    std::uint64_t left  = 14695981039346656037ull;
+    std::uint64_t right = 1099511628211ull;
+    for (const unsigned char byte : input) {
+        left ^= byte;
+        left *= 1099511628211ull;
+        right ^= static_cast<std::uint64_t>(byte) + 0x9e3779b97f4a7c15ull;
+        right *= 14029467366897019727ull;
+    }
+    eve::ContentId::Bytes bytes{};
+    for (int index = 0; index < 8; ++index) {
+        bytes[static_cast<std::size_t>(index)]     = static_cast<std::uint8_t>(left >> (56 - index * 8));
+        bytes[static_cast<std::size_t>(index + 8)] = static_cast<std::uint8_t>(right >> (56 - index * 8));
+    }
+    return eve::ContentId(bytes);
+}
+
 eve::SnapshotHashProvider saveIntegrityProvider() {
-    return [](std::string_view input) -> eve::Result<eve::ContentId> {
-        std::uint64_t left = 14695981039346656037ull;
-        std::uint64_t right = 1099511628211ull;
-        for (const unsigned char byte : input) {
-            left ^= byte;
-            left *= 1099511628211ull;
-            right ^= static_cast<std::uint64_t>(byte) + 0x9e3779b97f4a7c15ull;
-            right *= 14029467366897019727ull;
-        }
-        eve::ContentId::Bytes bytes{};
-        for (int index = 0; index < 8; ++index) {
-            bytes[static_cast<std::size_t>(index)] = static_cast<std::uint8_t>(left >> (56 - index * 8));
-            bytes[static_cast<std::size_t>(index + 8)] = static_cast<std::uint8_t>(right >> (56 - index * 8));
-        }
-        return eve::Result<eve::ContentId>::success(eve::ContentId(bytes));
+    return [](std::string_view canonicalJson) -> eve::Result<eve::ContentId> {
+        return eve::Result<eve::ContentId>::success(saveDigest(canonicalJson));
     };
 }
 
@@ -193,6 +201,107 @@ eve::Result<void> applyQuestAdditions(eve::Value &payload, const std::set<std::s
             "questTracker.entries"));
     entries->operator=(eve::Value(std::move(rebuilt)));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> applyIdRename(proto::RPGSavePayload &payload, RPGSaveIdDomain domain, std::string_view oldId,
+                                std::string_view newId) {
+    if (domain == RPGSaveIdDomain::Item || domain == RPGSaveIdDomain::EquipmentSlot) {
+        const auto kind = domain == RPGSaveIdDomain::Item ? inventory::InventorySaveIdKind::Item
+                                                          : inventory::InventorySaveIdKind::EquipmentSlot;
+        auto       rewritten =
+            inventory::InventorySaveSession::rewriteSnapshotBinaryId(payload.inventory().value(), kind, oldId, newId);
+        if (!rewritten.ok()) return eve::Result<void>::failure(rewritten.status());
+        payload.mutable_inventory()->set_value(std::move(rewritten).takeValue());
+        return eve::Result<void>::success();
+    }
+    if (domain == RPGSaveIdDomain::Quest || domain == RPGSaveIdDomain::QuestObjective) {
+        for (auto &entry : *payload.mutable_quest_tracker()->mutable_entries()) {
+            if (domain == RPGSaveIdDomain::Quest && entry.id() == oldId) entry.set_id(std::string(newId));
+            if (domain == RPGSaveIdDomain::QuestObjective) {
+                for (auto &objective : *entry.mutable_objectives()) {
+                    if (objective.id() == oldId) objective.set_id(std::string(newId));
+                }
+            }
+        }
+        return eve::Result<void>::success();
+    }
+    std::vector<proto::ActorCheckpointSave *> actors;
+    if (payload.has_actor()) actors.push_back(payload.mutable_actor());
+    if (payload.has_party()) {
+        for (auto &member : *payload.mutable_party()->mutable_members()) actors.push_back(member.mutable_actor());
+    }
+    for (auto *actor : actors) {
+        switch (domain) {
+            case RPGSaveIdDomain::Skill:
+                for (int index = 0; index < actor->learned_skills_size(); ++index) {
+                    if (actor->learned_skills(index) == oldId) actor->set_learned_skills(index, std::string(newId));
+                }
+                break;
+            case RPGSaveIdDomain::Class:
+                if (actor->class_info().id() == oldId) actor->mutable_class_info()->set_id(std::string(newId));
+                break;
+            case RPGSaveIdDomain::Trait:
+            case RPGSaveIdDomain::TraitSource:
+                for (auto &trait : *actor->mutable_traits()) {
+                    if (domain == RPGSaveIdDomain::Trait && trait.trait_id() == oldId)
+                        trait.set_trait_id(std::string(newId));
+                    if (domain == RPGSaveIdDomain::TraitSource && trait.source() == oldId)
+                        trait.set_source(std::string(newId));
+                }
+                break;
+            default: break;
+        }
+    }
+    return eve::Result<void>::success();
+}
+
+eve::Result<void> applyQuestAdditions(proto::RPGSavePayload &payload, const std::set<std::string> &questIds) {
+    Tracker baseline;
+    auto    baselineBytes = baseline.snapshotBinary();
+    if (!baselineBytes.ok()) return eve::Result<void>::failure(baselineBytes.status());
+    proto::TrackerSave current;
+    if (!current.ParseFromString(baselineBytes.value()))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                                                 "current tracker produced invalid Protobuf bytes"));
+    std::unordered_map<std::string, proto::QuestProgress> oldEntries;
+    for (const auto &entry : payload.quest_tracker().entries()) {
+        if (!entry.has_id() || !oldEntries.emplace(entry.id(), entry).second)
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "quest-addition migration found a duplicate old quest id",
+                "payload.questTracker.entries"));
+    }
+    for (const auto &id : questIds) {
+        if (oldEntries.contains(id))
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "quest-addition target already exists in the old tracker",
+                "payload.questTracker.entries." + id));
+    }
+    auto *entries = payload.mutable_quest_tracker()->mutable_entries();
+    entries->Clear();
+    std::set<std::string> appliedAdditions;
+    for (const auto &initial : current.entries()) {
+        auto old = oldEntries.find(initial.id());
+        if (old != oldEntries.end()) {
+            entries->Add()->CopyFrom(old->second);
+            oldEntries.erase(old);
+        } else if (questIds.contains(initial.id())) {
+            entries->Add()->CopyFrom(initial);
+            appliedAdditions.emplace(initial.id());
+        } else {
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "old tracker is missing a quest without an additive migration",
+                "payload.questTracker.entries." + initial.id()));
+        }
+    }
+    if (!oldEntries.empty())
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "old tracker contains a quest absent from the current registry",
+            "payload.questTracker.entries." + oldEntries.begin()->first));
+    if (appliedAdditions != questIds)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "quest-addition target is absent from the current registry",
+            "payload.questTracker.entries"));
+    return eve::Result<void>::success();
 }
 
 }  // namespace
@@ -360,42 +469,67 @@ eve::Result<void> RPGSaveSession::allowSingleActorPartyMigration(
 }
 
 eve::Result<std::string> RPGSaveSession::snapshotJson() const {
+    auto binary = snapshotBinary();
+    if (!binary.ok()) return eve::Result<std::string>::failure(binary.status());
+    proto::RPGSaveEnvelope envelope;
+    if (!envelope.ParseFromString(binary.value()))
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                                                        "RPG save produced invalid Protobuf envelope"));
+    std::string json;
+    if (!google::protobuf::util::MessageToJsonString(envelope, &json).ok())
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                                        "RPG save Protobuf JSON conversion failed"));
+    return eve::Result<std::string>::success(std::move(json));
+}
+
+eve::Result<std::string> RPGSaveSession::snapshotBinary() const {
     if (!gameState_ || !tracker_ || (!actor_ && !party_) || !bag_ || !equipment_)
         return eve::Result<std::string>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::PreconditionViolation, "RPG save session requires bound participants", {}));
     if (contentVersion_.empty())
         return eve::Result<std::string>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::PreconditionViolation, "RPG save session requires a content version", {}));
-    auto gameStateJson = gameState_->snapshotJson();
-    if (!gameStateJson.ok()) return eve::Result<std::string>::failure(gameStateJson.status());
-    auto trackerJson = tracker_->snapshotJson();
-    if (!trackerJson.ok()) return eve::Result<std::string>::failure(trackerJson.status());
-    auto actorJson = actor_ ? actor_->checkpointJson() : party_->checkpointJson();
-    if (!actorJson.ok()) return eve::Result<std::string>::failure(actorJson.status());
+
+    proto::RPGSavePayload payload;
+    payload.set_content_version(contentVersion_);
+    auto state = gameState_->captureMessage(*payload.mutable_game_state());
+    if (!state.ok()) return eve::Result<std::string>::failure(state.status());
+    auto trackerBytes = tracker_->snapshotBinary();
+    if (!trackerBytes.ok()) return eve::Result<std::string>::failure(trackerBytes.status());
+    if (!payload.mutable_quest_tracker()->ParseFromString(trackerBytes.value()))
+        return eve::Result<std::string>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "tracker produced invalid protobuf bytes"));
     inventory::InventorySaveSession inventorySession;
     inventorySession.bind(*bag_, *equipment_);
-    auto inventoryJson = inventorySession.snapshotJson();
-    if (!inventoryJson.ok()) return eve::Result<std::string>::failure(inventoryJson.status());
-    auto gameStateValue = eve::Value::fromJson(gameStateJson.value());
-    if (!gameStateValue.ok()) return eve::Result<std::string>::failure(gameStateValue.status());
-    auto trackerValue = eve::Value::fromJson(trackerJson.value());
-    if (!trackerValue.ok()) return eve::Result<std::string>::failure(trackerValue.status());
-    auto actorValue = eve::Value::fromJson(actorJson.value());
-    if (!actorValue.ok()) return eve::Result<std::string>::failure(actorValue.status());
-    auto inventoryValue = eve::Value::fromJson(inventoryJson.value());
-    if (!inventoryValue.ok()) return eve::Result<std::string>::failure(inventoryValue.status());
-    eve::Value::Object payload;
-    payload.emplace(actor_ ? "actor" : "party", std::move(actorValue).takeValue());
-    payload.emplace("contentVersion", eve::Value(contentVersion_));
-    payload.emplace("gameState", std::move(gameStateValue).takeValue());
-    payload.emplace("inventory", std::move(inventoryValue).takeValue());
-    payload.emplace("questTracker", std::move(trackerValue).takeValue());
-    const eve::SchemaVersion schemaVersion(actor_ ? 1 : 2);
-    auto envelope = eve::makeSnapshotEnvelope("rpg.save-session", saveSchema(), schemaVersion,
-                                              eve::PersistentId::nil(), eve::Revision(0), eve::SimulationTick(0),
-                                              eve::Value(std::move(payload)), saveIntegrityProvider());
-    if (!envelope.ok()) return eve::Result<std::string>::failure(envelope.status());
-    return eve::serializeSnapshotEnvelope(envelope.value());
+    auto inventoryBytes = inventorySession.snapshotBinary();
+    if (!inventoryBytes.ok()) return eve::Result<std::string>::failure(inventoryBytes.status());
+    payload.mutable_inventory()->set_type_url("type.googleapis.com/eve.inventory.proto.InventorySave");
+    payload.mutable_inventory()->set_value(std::move(inventoryBytes).takeValue());
+    if (actor_) {
+        auto captured = actor_->captureCheckpointMessage();
+        if (!captured.ok()) return eve::Result<std::string>::failure(captured.status());
+        payload.mutable_actor()->CopyFrom(captured.value());
+    } else {
+        auto captured = party_->captureCheckpointMessage();
+        if (!captured.ok()) return eve::Result<std::string>::failure(captured.status());
+        payload.mutable_party()->CopyFrom(captured.value());
+    }
+    std::string payloadBytes;
+    if (!payload.SerializeToString(&payloadBytes))
+        return eve::Result<std::string>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, "RPG save payload serialization failed"));
+    const auto             digestBytes = saveDigest(payloadBytes).bytes();
+    proto::RPGSaveEnvelope envelope;
+    envelope.set_type("rpg.save-session");
+    envelope.set_schema("rpg:save-session");
+    envelope.set_version(3);
+    envelope.set_payload_wire(std::move(payloadBytes));
+    envelope.set_digest(std::string(reinterpret_cast<const char *>(digestBytes.data()), digestBytes.size()));
+    std::string bytes;
+    if (!envelope.SerializeToString(&bytes))
+        return eve::Result<std::string>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, "RPG save envelope serialization failed"));
+    return eve::Result<std::string>::success(std::move(bytes));
 }
 
 eve::Result<void> RPGSaveSession::validateSnapshotJson(std::string_view json) {
@@ -418,6 +552,14 @@ eve::Result<RPGSaveSession::PreparedRestore> RPGSaveSession::prepareRestoreSnaps
     if (contentVersion_.empty())
         return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::PreconditionViolation, "RPG save session requires a content version", {}));
+    proto::RPGSaveEnvelope typedEnvelope;
+    if (google::protobuf::util::JsonStringToMessage(std::string(json), &typedEnvelope).ok()) {
+        std::string bytes;
+        if (!typedEnvelope.SerializeToString(&bytes))
+            return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::SerializationError, "RPG save Protobuf JSON conversion failed"));
+        return prepareRestoreSnapshotBinary(bytes);
+    }
     auto parsed = eve::parseSnapshotEnvelope(json, saveIntegrityProvider());
     if (!parsed.ok()) return eve::Result<PreparedRestore>::failure(parsed.status());
     const eve::SnapshotEnvelope &envelope = parsed.value();
@@ -526,6 +668,124 @@ eve::Result<RPGSaveSession::PreparedRestore> RPGSaveSession::prepareRestoreSnaps
         this, std::move(candidateGameState), std::move(candidateTracker), std::move(inventoryCandidate).takeValue(),
         std::move(actorCandidate), std::move(partyCandidate));
     return eve::Result<PreparedRestore>::success(PreparedRestore(std::move(state)));
+}
+
+eve::Result<RPGSaveSession::PreparedRestore> RPGSaveSession::prepareRestoreSnapshotBinary(std::string_view bytes) {
+    if (!gameState_ || !tracker_ || (!actor_ && !party_) || !bag_ || !equipment_)
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "RPG save session requires bound participants", {}));
+    if (contentVersion_.empty())
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "RPG save session requires a content version", {}));
+    if (bytes.size() > static_cast<std::size_t>(std::numeric_limits<int>::max()))
+        return eve::Result<PreparedRestore>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "RPG save snapshot is too large"));
+    proto::RPGSaveEnvelope envelope;
+    if (!envelope.ParseFromArray(bytes.data(), static_cast<int>(bytes.size())))
+        return eve::Result<PreparedRestore>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "RPG save Protobuf envelope is malformed"));
+    if (!envelope.GetReflection()->GetUnknownFields(envelope).empty())
+        return eve::Result<PreparedRestore>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "RPG save envelope has unknown fields"));
+    if (!envelope.has_type() || envelope.type() != "rpg.save-session" || !envelope.has_schema() ||
+        envelope.schema() != "rpg:save-session")
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "snapshot does not belong to RPGSaveSession", "schema"));
+    if (!envelope.has_version() || envelope.version() != 3)
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::UnknownVersion, "unsupported RPG save-session snapshot version", "version"));
+    if (envelope.digest().size() != 16)
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "RPG save digest is missing or malformed", "digest"));
+    const auto digestBytes = saveDigest(envelope.payload_wire()).bytes();
+    if (envelope.digest() != std::string(reinterpret_cast<const char *>(digestBytes.data()), digestBytes.size()))
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::HashMismatch, "RPG save payload hash does not match", "digest"));
+    proto::RPGSavePayload payload;
+    if (!payload.ParseFromString(envelope.payload_wire()) ||
+        !payload.GetReflection()->GetUnknownFields(payload).empty())
+        return eve::Result<PreparedRestore>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "RPG save payload is malformed", "payload"));
+    if (!payload.has_content_version() || !validContentVersion(payload.content_version()) ||
+        !payload.has_game_state() || !payload.has_quest_tracker() || !payload.has_inventory() ||
+        !payload.inventory().GetReflection()->GetUnknownFields(payload.inventory()).empty() ||
+        payload.inventory().type_url() != "type.googleapis.com/eve.inventory.proto.InventorySave")
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "RPG save participants are missing or invalid", "payload"));
+    const std::string sourceContentVersion = payload.content_version();
+    const bool        migrateSingleActor =
+        party_ && payload.has_actor() && singleActorPartyMigrations_.contains(sourceContentVersion);
+    if (migrateSingleActor) {
+        const proto::ActorCheckpointSave oldActor = payload.actor();
+        auto                             baseline = party_->captureCheckpointMessage();
+        if (!baseline.ok()) return eve::Result<PreparedRestore>::failure(baseline.status());
+        if (baseline.value().members_size() == 0)
+            return eve::Result<PreparedRestore>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                       "single-actor migration requires a non-empty live party", "party"));
+        payload.mutable_party()->CopyFrom(baseline.value());
+        payload.mutable_party()->mutable_members(0)->mutable_actor()->CopyFrom(oldActor);
+    }
+    if (sourceContentVersion != contentVersion_ && !compatibleContentVersions_.contains(sourceContentVersion)) {
+        bool hasMigration = migrateSingleActor;
+        for (const auto &[key, destination] : idRenameMigrations_) {
+            if (key.fromContentVersion != sourceContentVersion) continue;
+            hasMigration = true;
+            auto renamed = applyIdRename(payload, key.domain, key.oldId, destination);
+            if (!renamed.ok()) return eve::Result<PreparedRestore>::failure(renamed.status());
+        }
+        const auto additions = questAdditionMigrations_.find(sourceContentVersion);
+        if (additions != questAdditionMigrations_.end()) {
+            hasMigration = true;
+            auto added   = applyQuestAdditions(payload, additions->second);
+            if (!added.ok()) return eve::Result<PreparedRestore>::failure(added.status());
+        }
+        if (!hasMigration)
+            return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "RPG save content version has no compatible or migration route",
+                "payload.contentVersion"));
+        payload.set_content_version(contentVersion_);
+    }
+    if (actor_ ? !payload.has_actor() : !payload.has_party())
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "RPG save roster mode does not match the destination", "payload"));
+
+    GameState candidateGameState = *gameState_;
+    Tracker   candidateTracker   = *tracker_;
+    auto      restoredState      = candidateGameState.restoreMessage(payload.game_state());
+    if (!restoredState.ok()) return eve::Result<PreparedRestore>::failure(restoredState.status());
+    std::string trackerBytes;
+    if (!payload.quest_tracker().SerializeToString(&trackerBytes))
+        return eve::Result<PreparedRestore>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "RPG save quest tracker is invalid"));
+    auto restoredTracker = candidateTracker.restoreSnapshotBinary(trackerBytes);
+    if (!restoredTracker.ok()) return eve::Result<PreparedRestore>::failure(restoredTracker.status());
+    inventory::InventorySaveSession inventorySession;
+    inventorySession.bind(*bag_, *equipment_);
+    auto inventoryCandidate = inventorySession.prepareRestoreSnapshotBinary(payload.inventory().value());
+    if (!inventoryCandidate.ok()) return eve::Result<PreparedRestore>::failure(inventoryCandidate.status());
+    std::optional<RPGActor::CheckpointCandidate> actorCandidate;
+    std::optional<Party::CheckpointCandidate>    partyCandidate;
+    if (actor_) {
+        auto prepared = actor_->prepareCheckpointMessage(payload.actor());
+        if (!prepared.ok()) return eve::Result<PreparedRestore>::failure(prepared.status());
+        actorCandidate.emplace(std::move(prepared).takeValue());
+    } else {
+        auto prepared = party_->prepareCheckpointMessage(payload.party());
+        if (!prepared.ok()) return eve::Result<PreparedRestore>::failure(prepared.status());
+        partyCandidate.emplace(std::move(prepared).takeValue());
+    }
+    auto state = std::make_unique<PreparedRestore::Impl>(
+        this, std::move(candidateGameState), std::move(candidateTracker), std::move(inventoryCandidate).takeValue(),
+        std::move(actorCandidate), std::move(partyCandidate));
+    return eve::Result<PreparedRestore>::success(PreparedRestore(std::move(state)));
+}
+
+eve::Result<void> RPGSaveSession::restoreSnapshotBinary(std::string_view bytes) {
+    auto prepared = prepareRestoreSnapshotBinary(bytes);
+    if (!prepared.ok()) return eve::Result<void>::failure(prepared.status());
+    commitPrepared(std::move(prepared).takeValue());
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 void RPGSaveSession::commitPrepared(PreparedRestore prepared) noexcept {

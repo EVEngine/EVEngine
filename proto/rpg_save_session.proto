@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package eve.rpg.proto;
+
+import "google/protobuf/any.proto";
+import "rpg_actor_checkpoint.proto";
+import "rpg_game_state.proto";
+import "rpg_party_checkpoint.proto";
+import "rpg_tracker.proto";
+
+message RPGSavePayload {
+  optional string content_version = 1;
+  GameStateSave game_state = 2;
+  TrackerSave quest_tracker = 3;
+  google.protobuf.Any inventory = 4;
+  oneof roster {
+    ActorCheckpointSave actor = 5;
+    PartyCheckpointSave party = 6;
+  }
+}
+
+// The digest covers the exact immutable payload_wire bytes, not a
+// reserialization of the parsed message (which is not canonical Protobuf).
+message RPGSaveEnvelope {
+  optional string type = 1;
+  optional string schema = 2;
+  optional uint32 version = 3;
+  bytes payload_wire = 4;
+  bytes digest = 5;
+}

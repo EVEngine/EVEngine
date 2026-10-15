@@ -298,7 +298,8 @@ if(TARGET EVRPG)
     ${CMAKE_SOURCE_DIR}/proto/generated/rpg_tracker.pb.cc
     ${CMAKE_SOURCE_DIR}/proto/generated/rpg_game_state.pb.cc
     ${CMAKE_SOURCE_DIR}/proto/generated/rpg_actor_checkpoint.pb.cc
-    ${CMAKE_SOURCE_DIR}/proto/generated/rpg_party_checkpoint.pb.cc)
+    ${CMAKE_SOURCE_DIR}/proto/generated/rpg_party_checkpoint.pb.cc
+    ${CMAKE_SOURCE_DIR}/proto/generated/rpg_save_session.pb.cc)
   target_include_directories(EVRPG SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
   if(MSVC)
     set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/rpg_tracker.pb.cc
@@ -308,6 +309,8 @@ if(TARGET EVRPG)
     set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/rpg_actor_checkpoint.pb.cc
       PROPERTIES COMPILE_OPTIONS /wd4267)
     set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/rpg_party_checkpoint.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/rpg_save_session.pb.cc
       PROPERTIES COMPILE_OPTIONS /wd4267)
   endif()
   target_link_libraries(EVRPG PUBLIC protobuf::libprotobuf)
