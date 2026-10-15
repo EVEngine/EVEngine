@@ -46,3 +46,5 @@ Start with [AI and MCP setup](../docs/en/usr/AI-MCP.md), then choose:
 - [AI Editor](ai-editor/README.en.md): create a live editor, change its model, observe events and verify rendering.
 
 Both include Python drivers that exercise the protocol without an LLM. Graphical verification still needs a working desktop graphics environment. For startup problems and version mismatches, see the [FAQ](../docs/en/usr/FAQ.md).
+
+- [SCAD warm modern living room](scad-living-room/README.md): original procedural interior, warm lights, PBR, shadows, volumetrics, AO/SSGI/SSR/TAA and automatic hardware RT reflections.
