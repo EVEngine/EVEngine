@@ -176,6 +176,11 @@ function(eve_thirdparty_libs out_var)
                 list(APPEND _libs Box2D)
             endif()
 
+        elseif(g STREQUAL "jolt")
+            if(EVENGINE_BUILD_JOLT)
+                list(APPEND _libs Jolt::Jolt)
+            endif()
+
         elseif(g STREQUAL "box3d")
             # Same reasoning as box2d: box3d keeps its world registry in file
             # scope, so the dynamic route needs the shared twin.

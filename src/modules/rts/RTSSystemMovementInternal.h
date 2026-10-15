@@ -1,6 +1,7 @@
 #pragma once
 
 // Private shared movement helpers; no independent state or provider lookup.
+#include <algorithm>
 #include <cmath>
 #include <optional>
 #include "rts/RTSSystems.h"
@@ -48,6 +49,7 @@ inline bool isMovementOrder(OrderKind kind) {
         case OrderKind::Move:
         case OrderKind::Attack:
         case OrderKind::AttackMove:
+        case OrderKind::Build:
         case OrderKind::Gather:
         case OrderKind::ReturnCargo:
         case OrderKind::Patrol:
@@ -60,6 +62,28 @@ inline bool isMovementOrder(OrderKind kind) {
         case OrderKind::SupplyRelay: return true;
         default: return false;
     }
+}
+
+inline bool isInteractionOrder(OrderKind kind) {
+    return kind == OrderKind::Gather || kind == OrderKind::ReturnCargo || kind == OrderKind::Build ||
+           kind == OrderKind::Repair;
+}
+
+// Service contact is based on occupied geometry, not exact overlap of agent centers.
+// The radius is derived from canonical node membership/building footprint and is
+// recomputed synchronously; no second range state or persistent format is created.
+inline float interactionArrivalRadius(Unit& unit, const OrderRecord& order) {
+    float radius = unit.motion()->arrivalRadius;
+    if (order.kind == OrderKind::Gather) {
+        if (auto* node = dynamic_cast<ResourceNode*>(ecs::try_get(order.targetEntity))) {
+            const float workers = static_cast<float>(std::max<std::size_t>(1, node->harvest()->workers.size()));
+            radius              = std::max(radius, unit.crowd()->radius * 2.0f * std::sqrt(workers));
+        }
+    } else if (isInteractionOrder(order.kind)) {
+        if (auto* building = dynamic_cast<Building*>(ecs::try_get(order.targetEntity)))
+            radius = std::max(radius, building->dropoff()->radius + unit.crowd()->radius);
+    }
+    return radius;
 }
 
 inline std::optional<WorldPosition> entityPosition(const ecs::EntityHandle& handle) {

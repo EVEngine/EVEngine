@@ -45,7 +45,7 @@ metadata 的只读基准保持不变，没有新增白名单。扫描不是全�
 
 ## 直接执行文档代码
 
-[script_user_doc_examples.cpp](../../test/script_user_doc_examples.cpp) 读取 Markdown 的
+[script_user_doc_examples.cpp](../../test/integration/script-api/script_api_graphics_scene_tests.cpp) 读取 Markdown 的
 squirrel 代码块，使用当前源码 Runtime 执行，覆盖经济余额/满仓、属性修饰、AI 决策与
 恢复、定义版本/失效 handle、标签、事件多消费者、策略、事务及整帧性能捕获。
 另执行 Rope 示例、ECS 创建/移动/延迟销毁，并加载教程实际 rules.nut

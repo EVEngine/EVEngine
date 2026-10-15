@@ -37,7 +37,7 @@ FRAGS = [
 # Dedicated vertex sources owned by the stylize module. Materials that reuse
 # graphics/mesh3d_toon.vert (ink, ported effect shaders, ...) are not listed.
 VERTS = [
-    "ysa_mesh.vert",
+    "stylize_mesh.vert",
 ]
 
 

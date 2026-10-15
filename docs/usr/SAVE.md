@@ -8,7 +8,7 @@
 ## 原则
 
 1. **每个可变事实只有一个权威所有者**（`GameState`、`Tracker`、`Bag`、战局等），存档只序列化权威状态。
-2. **先校验完整候选，再一次发布**；任一 participant 失败则全部保持不变。
+2. **跨域恢复使用 `GameSaveSession` 先校验完整候选，再一次发布**；任一 participant 准备失败则全部保持不变。独立脚本调用各自只保证本域恢复。
 3. **内容定义（物品/任务/技能表）不进玩家存档**；读档前必须先加载同一 `contentVersion` 的定义。
 4. **磁盘写入用 `fs.writeTextAtomic` 并检查返回值**；`fs` 是启动脚本注入的 Filesystem 实例。读档可先 `validate` 再 `restore`，主档坏了再试备份。
 
@@ -84,14 +84,29 @@ if (!replayed.ok) throw "battle replay failed";
 
 战棋的恢复方法名是 `restoreJson`，不是 RPG 的 `restoreSnapshotJson`。
 快照与日志必须来自同一基线、同一内容定义；日志并不是可重复追加的增量补丁。
-快照恢复与日志回放是两个独立调用，整个组合不因此自动成为一个跨域事务。
+快照恢复与日志回放是两个独立调用；要让 RPG 与战棋权威状态一起恢复，使用下面的 C++ 协调器。
 接口及 Result 投影见 [Tactics.cpp](../../src/modules/tactics/Tactics.cpp)，失败、校验和
-回放用例见 [tactics_snapshot_script.cpp](../../test/tactics_snapshot_script.cpp)。
+回放用例见 [tactics_snapshot_script.cpp](../../test/integration/script-api/script_api_graphics_scene_tests.cpp)。
 
-HP / 技能冷却若在脚本 ECS 或 RPG 侧，**不要**指望 tactics 快照自动带上——应另存一份
-（例如再挂 `RPGSaveSession`，或自有 JSON），在 `restore` 之后按同一顺序恢复。组合「棋盘 + RPG」
-的单事务编排是 [0.7 路线图 Theme A/E](../dev/2026-10-08-release-roadmap-0.6-0.7.md) 的目标，
-0.6 要求调用方显式编排。
+HP / 技能冷却若在脚本 ECS 或 RPG 侧，**不要**指望 tactics 快照自动带上。
+
+## C++：RPG + 战棋一次恢复
+
+`eve::GameSaveSession` 按稳定 key 注册权威域。将已绑定的 `RPGSaveSession` 包装为
+`RPGGameSaveParticipant`，将已创建的 `Battle` 包装为 `TacticsGameSaveParticipant`，
+再注册到同一个 `GameSaveSession(contentVersion)`。两个适配器和它们借用的游戏状态
+都必须比协调器活得久，保存和恢复在暂停的仿真线程上执行。完整的可编译接线见
+[组合测试](../../test/integration/gameplay-composition/gameplay_composition_graphics_gameplay_action_tests.cpp)。
+
+调用 `snapshotJson(hashProvider)` 得到单份封存的 JSON，然后用已检查结果的
+`fs.writeTextAtomic` 写槽位。读档先加载同版本的内容定义，随后对主档或备份调用
+`restoreJson(json, hashProvider)`。协调器先核对完整性、schema、内容版本及精确的
+参与者集合，再让每个域准备候选；任何一步失败，两个权威域都不变。内容版本升级要
+显式注册 `addContentMigration`，该迁移只操作未发布的 JSON 候选。摘要实现由游戏
+注入，保存与读取必须使用同一算法；摘要检测损坏，不提供防篡改认证。
+
+目前脚本侧仍是 `RPGSaveSession` 与 `battle.restoreJson` 各自调用；需要这个跨域
+事务保证的游戏应从 C++ 接线协调器，不能把两次脚本调用称作原子恢复。
 
 ## 落盘与槽位
 

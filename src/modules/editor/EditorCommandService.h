@@ -4,6 +4,7 @@
 
 #include "editor/EditorCommandTypes.h"
 #include "editor/EditorHostProfile.h"
+#include "editor/EditorProperty.h"
 #include "editor/EditorProtocol.h"
 #include "editor/EditorResult.h"
 #include "editor/EditorValue.h"
@@ -34,6 +35,14 @@ struct CommandDescriptor {
     HostFeature requiredFeatures   = HostFeature::None;
     bool        createsTransaction = true;
     bool        automationAllowed  = true;
+    /** @brief Target type names this command may bind. */
+    std::vector<std::string> targetKinds;
+    /** @brief Payload schema projected to MCP inputSchema / Inspector. */
+    PropertySchema payloadSchema;
+    /** @brief Bound workspace panel capability (panel-before-automation). */
+    std::string panelCapability;
+    /** @brief Bound workspace panel context. */
+    std::string panelContext;
 };
 
 using EditorCommandHandler = std::function<Result<EditorValue>(const CommandContext&, const EditorValue&)>;

@@ -246,6 +246,30 @@ if(NOT _has_audio_editor_bridge)
   list(APPEND EVENGINE_EXCLUDED_MODULE_FILES LocalizationRuntime.cpp)
 endif()
 
+# The pinned package owns the native ABI/compiler policy. Only physics TUs reference
+# Jolt symbols; its static archive is pulled into EVWorld once in SHARED builds.
+eve_module_enabled(physics _eve_jolt_physics)
+if(EVENGINE_BUILD_JOLT AND (_eve_jolt_physics OR EVENGINE_BUILD_PHYSICS_CORE_CHECK OR EVENGINE_PROFILE STREQUAL "physics-core-only"))
+  if(EVENGINE_THIRD_PARTY_BINARY_DIR)
+    find_package(Jolt CONFIG REQUIRED PATHS "${EVENGINE_THIRD_PARTY_BINARY_DIR}"
+      NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
+    # Link groups and tests are assembled in parent/sibling directories.
+    set_property(TARGET Jolt::Jolt PROPERTY IMPORTED_GLOBAL TRUE)
+  else()
+    include(${CMAKE_SOURCE_DIR}/third-party/cmake/Jolt.cmake)
+    eve_add_jolt()
+    set_target_properties(Jolt PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  endif()
+  # This private native subclass must match Jolt's default no-RTTI ABI. Keep
+  # RTTI enabled for engine-facing provider types in the other translation units.
+  if(NOT MSVC AND NOT CPP_RTTI_ENABLED)
+    set_property(SOURCE physics/jolt/JoltDistanceConstraint.cpp APPEND PROPERTY
+      COMPILE_OPTIONS -fno-rtti)
+  endif()
+else()
+  list(APPEND EVENGINE_EXCLUDED_BACKEND_SUBDIRS jolt)
+endif()
+
 # --- create every enabled module -------------------------------------------
 
 foreach(_mod IN LISTS EVE_ENABLED_MODULES)
@@ -254,6 +278,13 @@ foreach(_mod IN LISTS EVE_ENABLED_MODULES)
   endif()
   create_module(${EVE_MODULE_${_mod}_LIB} ${_mod})
 endforeach()
+
+if(TARGET EVPhysics)
+  target_compile_definitions(EVPhysics PRIVATE EVENGINE_HAS_JOLT=$<BOOL:${EVENGINE_BUILD_JOLT}>)
+  if(TARGET Jolt::Jolt)
+    target_link_libraries(EVPhysics PRIVATE Jolt::Jolt)
+  endif()
+endif()
 
 if(TARGET EVAnimation_editor AND _has_animation_editor_bridge)
   # Runtime clip/skeleton import is an optional bridge. Web authoring profiles
@@ -470,13 +501,31 @@ if(_has_physics OR _eve_physics_core_profile OR EVENGINE_BUILD_PHYSICS_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/Body3D.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/Fixture.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/Joint3D.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DJoint.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DBody.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DShape.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DShapeCook.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DWorld.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DWorldJoints.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DWorldQueries.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DWorldMover.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DWorldContacts.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsHandles.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsLink.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/Shape3D.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/SimulationBackend.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3D.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/WorldSnapshot.cpp)
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3DJoints.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3DQueries.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3DMover.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3DContacts.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/WorldSnapshot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/WorldSnapshotParsing.cpp)
+  if(TARGET Jolt)
+    file(GLOB _eve_jolt_core_sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/physics/jolt/*.cpp")
+    list(APPEND _eve_physics_core_sources ${_eve_jolt_core_sources})
+  endif()
   set(_eve_physics_core_boundary_files ${_eve_physics_core_sources}
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/Body.h
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/Body3D.h
@@ -487,7 +536,22 @@ if(_has_physics OR _eve_physics_core_profile OR EVENGINE_BUILD_PHYSICS_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/Shape3D.h
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/SimulationBackend.h
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3D.h)
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3D.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/WorldSnapshotParsing.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3DInternal.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/RigidTypes3D.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/BodyBackend3D.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/ShapeBackend3D.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/JointBackend3D.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/rigid/WorldBackend3D.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/rigid/World3DTypes.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DBody.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DJoint.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DShape.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DShapeCook.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DWorld.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DWorldFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DWorldInternal.h)
   foreach(_eve_physics_core_file IN LISTS _eve_physics_core_boundary_files)
     if(NOT EXISTS "${_eve_physics_core_file}")
       message(FATAL_ERROR "Physics core source is missing: ${_eve_physics_core_file}")
@@ -501,6 +565,18 @@ if(_has_physics OR _eve_physics_core_profile OR EVENGINE_BUILD_PHYSICS_CORE_CHEC
   if(EVENGINE_BUILD_PHYSICS_CORE_CHECK OR _eve_physics_core_profile)
     add_library(EVPhysicsCoreCheck OBJECT ${_eve_physics_core_sources})
     target_link_libraries(EVPhysicsCoreCheck PRIVATE eve_engine_includes)
+    target_compile_definitions(EVPhysicsCoreCheck PRIVATE EVENGINE_HAS_JOLT=$<BOOL:${EVENGINE_BUILD_JOLT}>)
+    if(TARGET Jolt)
+      target_include_directories(EVPhysicsCoreCheck BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/third-party/jolt)
+      target_link_libraries(EVPhysicsCoreCheck PRIVATE Jolt::Jolt)
+    endif()
+    # This compile-only target defines World and Backends implementations; it
+    # is not a DLL consumer. Match their defining-side annotations in SHARED
+    # builds so MSVC does not diagnose definitions of dllimport declarations.
+    if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+      target_compile_definitions(EVPhysicsCoreCheck PRIVATE
+        EVENGINE_ENGINE_EXPORTS EVENGINE_EXPORTS_WORLD EVENGINE_EXPORTS_BACKENDS)
+    endif()
     target_include_directories(EVPhysicsCoreCheck PRIVATE
       ${CMAKE_SOURCE_DIR}/src/modules
       ${CMAKE_SOURCE_DIR}/third-party
@@ -578,9 +654,7 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainStamp.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainMeshStamp.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainDetailLayer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainDetailPlacement.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainTreePlacement.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainObjectPlacement.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSpawnPlan.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSpawnPlanCodec.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainBiomePreset.cpp
@@ -588,7 +662,6 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainCollisionMask.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainPolygonMask.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainProbePlacement.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainBakedMaskCache.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainNoiseMask.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSplatmap.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainWorldWorkspace.cpp
@@ -602,6 +675,7 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainLegacyThermal.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSediment.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainWaterField.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSurface.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratorRegistry.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratedArtifact.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Grid2D.cpp
@@ -649,6 +723,10 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
   if(EVENGINE_BUILD_PROCGEN_CORE_CHECK OR _eve_procgen_core_profile)
     add_library(EVProcgenCoreCheck OBJECT ${_eve_procgen_core_sources})
     target_link_libraries(EVProcgenCoreCheck PRIVATE eve_engine_includes)
+    if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+      # This check compiles implementations, rather than consuming the domain DLL.
+      target_compile_definitions(EVProcgenCoreCheck PRIVATE EVENGINE_EXPORTS_DOMAINS)
+    endif()
     target_include_directories(EVProcgenCoreCheck PRIVATE
       ${CMAKE_SOURCE_DIR}/src/modules)
     set_target_properties(EVProcgenCoreCheck PROPERTIES POSITION_INDEPENDENT_CODE ON)

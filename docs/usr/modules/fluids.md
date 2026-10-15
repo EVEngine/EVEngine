@@ -26,6 +26,23 @@ result.ok，再取 value；以 admitted 数量和求解器状态确认真的注�
 [fluids](../../../src/modules/fluids/)，性能接线证据见
 [fluids_volume_profiler.cpp](../../../test/fluids_volume_profiler.cpp)。
 
+## 任务三：浅水方程交互水面
+
+`eve.Fluids().newShallowWater(resX, resZ, cellSize)` 创建 GPU 优先的 Saint-Venant
+高度场求解器（无加速器时回退 CPU）。权威状态是格子上的水深 `h` 与水平动量
+`(hu, hv)`；`buildSurfaceMesh` / 场纹理 / 着色只消费输出，不能回写求解器。
+
+`copyFieldToImage(image, velocityScale, depthContrast=0)` 把格子打成 RGBA8 **数据**场纹理
+（宽=`resX`，高=`resZ`）：**R**=水深（`depthContrast<=0` 时为 `h/maxDepth`，否则 crest heat），
+**G/B**=水平速度（0.5 静止），**A**=速率掩码。成品水面应把仿真网格接到透明
+`gfx.newWater()` 着色器（折射 / 深浅 / foam），场纹理只作 debug/图例，不要当湖面 albedo。
+`copyShadedAlbedoToImage` / `copyNormalToImage` 另写可视化反照率与斜率法线。
+`buildSurfaceMesh` 可选顶点色使用同一套 R/G/B/A 通道语义。
+
+角色腿部用 `setColliderCapsule(label, x, y, z, halfHeight, radius, vx, vy, vz, …)`
+每帧采样，再 `step(dt)`。左键/脚本冲击用 `addImpulse`。可运行示例见
+[interactive-shallow-water](../../../examples/interactive-shallow-water/)。
+
 ## 补充绑定参考
 
 参数与接收者见 [源码生成参考](fluids/api-reference.md)，使用前先确认本章的前置条件与生命周期。

@@ -147,6 +147,7 @@ GAME ?=
 	check/quality-metadata check/profile-matrix check/architecture-contracts check/quality \
 	check/examples check \
 	check/format check/depgraph check/binding-gaps check/versions check/scripts check/scripts-test \
+	check/test-case-lines check/sq-call-sites check/test-assert-level check/test-case-names \
 	profile profile/configure profile/build profile/smoke profile/dry-run \
 	ensure-built/win32 ensure-built/win32-debug ensure-built/linux ensure-built/linux-debug \
 	ensure-built/macosx ensure-built/macosx-debug \
@@ -203,6 +204,33 @@ check/bindings:
 check/quality-metadata:
 	python3 scripts/check_quality_metadata.py
 
+# Verify no source line declares two test cases. zeroerr registers cases into a
+# std::set ordered only by (file, line), so the second case on a line is dropped
+# silently and never runs (see scripts/check_test_case_lines.py).
+check/test-case-lines:
+	python3 scripts/check_test_case_lines.py
+
+# Keep hand-written sq_call sites at their reviewed baseline. sq_call's parameter
+# count includes the receiver slot; counting it by hand caused five silent defects.
+# New call sites go through eve::script::callFunction, which derives the count.
+check/sq-call-sites:
+	python3 scripts/check_sq_call_sites.py
+
+# A test case whose assertions are all CHECK reports "PASSED / WARNING" and exits 0, so it
+# can never fail (zeroerr maps CHECK* to ZEROERR_WARN). Two cases asserting opposite
+# behaviour of the same code both reported green this way. Existing offenders are frozen in
+# scripts/test_assert_level_baseline.json; new ones must state the decisive assertion with
+# REQUIRE (or use an in-file helper that does).
+check/test-assert-level:
+	python3 scripts/check_test_assert_level.py
+
+# CTest is keyed by test name, so two cases sharing a name turn every name-based filter
+# ("ctest -R ...", unit_test --testcase=X) into one ambiguous entry and make a "N/N passed"
+# count stop meaning what it looks like. zeroerr registers by (file, line) and does not
+# object, so only a check catches it. No baseline: a duplicate is always an error.
+check/test-case-names:
+	python3 scripts/check_test_case_names.py
+
 # Compile-fail diagnostics for critical Result/ID/Subscription returns. This
 # is a source-only check and does not configure or build the engine.
 check/nodiscard:
@@ -243,7 +271,8 @@ check/profile-matrix:
 
 # Fast local quality gate for the profile and debt contracts.
 check/quality: check/quality-metadata check/profile-matrix check/nodiscard \
-	check/adhoc-result-tables check/architecture-contracts
+	check/adhoc-result-tables check/architecture-contracts check/test-case-lines \
+	check/sq-call-sites check/test-assert-level check/test-case-names
 
 # Individual source-quality pieces that CI also runs (see scripts/check_source_quality.sh).
 check/format:
@@ -368,7 +397,7 @@ MSVC_COMPILER_WRAPPER   := $(abspath cmake/msvc-cl.cmd)
 # reconfigure-if-args-changed, so switching it reconfigures).
 WIN32_CMAKE_ARGS        = -G Ninja -DCMAKE_BUILD_TYPE=Release -DEVENGINE_MODULE_LINKAGE=OBJECT -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(CMAKE_EXTRA_ARGS) -B build/win32 -S .
 WIN32_DEBUG_CMAKE_ARGS  = -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_ARGS) -B build/win32-debug -S .
-LINUX_CMAKE_ARGS        = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=linux $(CMAKE_EXTRA_ARGS) -B build/linux -S .
+LINUX_CMAKE_ARGS        = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=linux -DEVENGINE_MODULE_LINKAGE=OBJECT $(CMAKE_EXTRA_ARGS) -B build/linux -S .
 LINUX_DEBUG_CMAKE_ARGS  = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_ARGS) -B build/linux-debug -S .
 MACOSX_CMAKE_ARGS       = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=macosx $(CMAKE_EXTRA_ARGS) -B build/macosx -S .
 MACOSX_DEBUG_CMAKE_ARGS = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=macosx $(CMAKE_EXTRA_ARGS) -B build/macosx-debug -S .
@@ -418,7 +447,7 @@ ensure-built/win32:
 	if [ ! -f build/win32/test/test_src.txt ]; then stale=1; \
 	else \
 	  n_disk=0; \
-	  for cpp in test/*.cpp; do \
+	  for cpp in test/*.cpp $$(find test/unit test/integration -name '*.cpp' -type f); do \
 	    [ -f "$$cpp" ] || continue; \
 	    n_disk=$$((n_disk+1)); \
 	    if [ "$$cpp" -nt build/win32/test/test_src.txt ]; then stale=1; break; fi; \
@@ -504,7 +533,7 @@ ensure-built/win32-debug:
 	if [ ! -f build/win32-debug/test/test_src.txt ]; then stale=1; \
 	else \
 	  n_disk=0; \
-	  for cpp in test/*.cpp; do \
+	  for cpp in test/*.cpp $$(find test/unit test/integration -name '*.cpp' -type f); do \
 	    [ -f "$$cpp" ] || continue; \
 	    n_disk=$$((n_disk+1)); \
 	    if [ "$$cpp" -nt build/win32-debug/test/test_src.txt ]; then stale=1; break; fi; \
@@ -822,7 +851,7 @@ reinstall/third-party/ios-debug:
 # In Android test-app mode the runner lives in test/libmain.so (zeroerr suite);
 # otherwise it is the engine's src/engine/libmain.so.
 sync/android-libs:
-	cmake -DBUILD_DIR="$(BUILD_DIR)" -DJNI_LIBS="$(JNI_LIBS)" -DANDROID_NDK="$(ANDROID_NDK)" -DANDROID_ABI="$(ANDROID_ABI)" -P cmake/sync_android_libs.cmake
+	cmake -DBUILD_DIR="$(BUILD_DIR)" -DJNI_LIBS="$(JNI_LIBS)" -DANDROID_ABI="$(ANDROID_ABI)" -DANDROID_NDK="$(ANDROID_NDK)" -P cmake/sync_android_libs.cmake
 
 # Populate APK assets/game from a source tree (do not hand-edit assets/game).
 #   make sync/android-assets                 # default: demo shell
@@ -992,7 +1021,7 @@ run/ios-test-all-debug: install/ios-test-debug
 	DEV=$$(xcrun devicectl list devices 2>/dev/null | sed -nE '/connected|available/s/.*([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}).*/\1/p' | head -1); \
 	test -n "$$DEV" || (echo "No connected/available iOS device found (devicectl)."; exit 1); \
 	ran=0; \
-	for f in test/*.cpp; do \
+	for f in test/*.cpp $$(find test/unit test/integration -name '*.cpp' -type f); do \
 	  b=$$(basename "$$f"); \
 	  [ "$$b" = "main.cpp" ] && continue; \
 	  ran=$$((ran+1)); \
@@ -1080,7 +1109,25 @@ docs:
 #  FILTER=bundle/ClassicScenes.cpp).
 CTEST_FILTER = $(if $(FILTER),-R '^$(subst .,\.,$(FILTER))')
 LABEL_FILTER ?=
-CTEST_LABEL_FILTER = $(if $(LABEL_FILTER),-L '$(LABEL_FILTER)')
+# Level is independent of DOMAIN and name filters. Empty selections are errors.
+TEST_LEVEL ?= all
+TEST_BASE ?= origin/dev
+
+# Build-derived source -> CTest index. The normal host build refreshes the index
+# after case discovery; explicit selection refreshes dependency facts again.
+test-impact/%: ensure-built/%
+	python3 -X utf8 scripts/test_impact.py select --build-dir build/$* --base "$(TEST_BASE)" --level "$(TEST_LEVEL)" $(if $(filter win32,$*),--config Release,) $(if $(DOMAIN),--domain "$(DOMAIN)",)
+
+test-affected/%: ensure-built/%
+	$(CTEST_ENV) python3 -X utf8 scripts/test_impact.py run --build-dir build/$* --base "$(TEST_BASE)" --level "$(TEST_LEVEL)" --jobs $(CTEST_JOBS) $(if $(filter win32,$*),--config Release,) $(if $(DOMAIN),--domain "$(DOMAIN)",)
+ifneq ($(words $(TEST_LEVEL)),1)
+$(error TEST_LEVEL must be all, unit, or integration)
+endif
+ifeq ($(filter $(TEST_LEVEL),all unit integration),)
+$(error TEST_LEVEL must be all, unit, or integration)
+endif
+CTEST_LEVEL_SEL = $(if $(filter all,$(TEST_LEVEL)),,-L '^$(TEST_LEVEL)$$' --no-tests=error)
+CTEST_LABEL_FILTER = $(if $(LABEL_FILTER),-L '$(LABEL_FILTER)') $(CTEST_LEVEL_SEL)
 
 # Restrict a run to one test link unit (see test/test_domains.cmake):
 #   make test/win32-debug DOMAIN=physics
@@ -1149,7 +1196,7 @@ test/macosx-debug: ensure-built/macosx-debug
 # Host-debug shortcut by test-name prefix, e.g. `make test/graphics.print`
 # (explicit test/<platform> rules above take precedence over this pattern).
 test/%: ensure-built/$(PLATFORM)-debug
-	$(CTEST_ENV) ctest --test-dir build/$(PLATFORM)-debug --output-on-failure -j $(CTEST_JOBS) -R '^$(subst .,\.,$*)' $(CTEST_REPEAT)
+	$(CTEST_ENV) ctest --test-dir build/$(PLATFORM)-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_LABEL_FILTER) -R '^$(subst .,\.,$*)' $(CTEST_REPEAT)
 
 # Build only one domain link unit. With EVENGINE_TEST_DOMAIN_SPLIT (on by
 # default for the SHARED route; the archive route builds one monolithic unit_test

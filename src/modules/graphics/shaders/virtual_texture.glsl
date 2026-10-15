@@ -1,6 +1,16 @@
 #ifndef EVE_VIRTUAL_TEXTURE_GLSL
 #define EVE_VIRTUAL_TEXTURE_GLSL
 
+// UE-style packed feedback id: pageX (12) | pageY (12) | mip (8).
+uint packVirtualTextureFeedback(vec2 sourceUv, vec4 virtualInfo, float mipLevel) {
+    vec2 pageCounts = max(virtualInfo.yz, vec2(1.0));
+    vec2 virtualCoord = fract(sourceUv) * pageCounts;
+    ivec2 page = clamp(ivec2(floor(virtualCoord)), ivec2(0),
+                       ivec2(pageCounts) - ivec2(1));
+    uint mip = uint(clamp(mipLevel, 0.0, 255.0));
+    return uint(page.x) | (uint(page.y) << 12u) | (mip << 24u);
+}
+
 vec4 sampleVirtualTexture(sampler2D atlas, sampler2D pageTable, vec2 sourceUv,
                           vec4 virtualInfo, vec4 atlasInfo) {
     vec2 uv = fract(sourceUv);

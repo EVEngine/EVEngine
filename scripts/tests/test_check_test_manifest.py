@@ -26,6 +26,7 @@ from check_test_manifest import (  # noqa: E402
 
 VALID_CMAKE = """
 file(GLOB all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+file(GLOB_RECURSE organized_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/unit/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/integration/*.cpp")
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/test_src.txt" "")
 list(REMOVE_ITEM all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/demo.cpp")
 if(EVENGINE_BUILD_DEMO)
@@ -201,7 +202,8 @@ class CheckTestManifestTest(unittest.TestCase):
         # Every top-level test/*.cpp is a domain member, the shared runner, or a
         # shared helper compiled into its consumer domains.
         covered = sum(len(members) for members in buckets.values()) + 1 + len(SHARED_SOURCES)
-        self.assertEqual(covered, len(list(TEST_DIR.glob("*.cpp"))))
+        organized = list((TEST_DIR / "unit").rglob("*.cpp")) + list((TEST_DIR / "integration").rglob("*.cpp"))
+        self.assertEqual(covered, len(list(TEST_DIR.glob("*.cpp"))) + len(organized))
 
 
 if __name__ == "__main__":

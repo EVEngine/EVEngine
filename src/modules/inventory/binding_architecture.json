@@ -1,0 +1,31 @@
+{
+  "schema": "eve.binding-architecture-metadata",
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "symbol": "Bag::setExtra",
+      "module": "inventory",
+      "implementationFile": "src/modules/inventory/Bag.cpp",
+      "owner": "eve::inventory::Bag",
+      "ownerFile": "src/modules/inventory/Bag.h",
+      "ownerAnchor": "class EVENGINE_API_FOUNDATION Bag",
+      "stateAnchor": "std::unordered_map<std::string, std::string> extra_;",
+      "writes": ["eve::inventory::Bag.extra_"],
+      "tests": [{"file": "test/integration/script-api/script_api_graphics_dap_tests.cpp", "name": "inventory.script.architectureExtraState"}],
+      "limitations": "Reviewed field-level access; dynamic extra keys are not tracked. Does not infer InventorySystem operations or runtime causal effects."
+    },
+    {
+      "symbol": "Bag::getExtra",
+      "module": "inventory",
+      "implementationFile": "src/modules/inventory/Bag.cpp",
+      "owner": "eve::inventory::Bag",
+      "ownerFile": "src/modules/inventory/Bag.h",
+      "ownerAnchor": "class EVENGINE_API_FOUNDATION Bag",
+      "stateAnchor": "std::unordered_map<std::string, std::string> extra_;",
+      "writes": [],
+      "reads": ["eve::inventory::Bag.extra_"],
+      "tests": [{"file": "test/integration/script-api/script_api_graphics_dap_tests.cpp", "name": "inventory.script.architectureExtraState"}],
+      "limitations": "Reviewed field-level access; dynamic extra keys are not tracked. Does not infer InventorySystem operations or runtime causal effects."
+    }
+  ]
+}

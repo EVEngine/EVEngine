@@ -42,7 +42,13 @@ void main(){
     gl_Position=ubo.mvp*vec4(localPos,1);
     vWorldPos=world.xyz;
     vViewPos=(ubo.view*world).xyz;
-    vNormal=normalize(transpose(inverse(mat3(ubo.model)))*normalize(vec3(-dx,1,-dz)));
+    // Prefer authored/sim mesh normals when procedural waveAmp is small so
+    // dynamic heightfields (shallow-water, etc.) still shade as ripples.
+    vec3 meshN=length(inNormal)>1e-5?normalize(inNormal):vec3(0,1,0);
+    vec3 waveN=normalize(vec3(-dx,1,-dz));
+    float waveW=clamp(u.data[2]/0.08,0.0,1.0);
+    vec3 localN=normalize(mix(meshN,waveN,waveW));
+    vNormal=normalize(transpose(inverse(mat3(ubo.model)))*localN);
     vUV=inUV;
     vTint=ubo.tint;
     vCameraPos=ubo.cameraPos.xyz;

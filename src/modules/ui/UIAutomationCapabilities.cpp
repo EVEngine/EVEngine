@@ -67,15 +67,20 @@ const char* nodeTypeName(NodeType type) {
         case NodeType::Sidebar: return "sidebar";
         case NodeType::StatusBar: return "statusBar";
         case NodeType::SplitPane: return "splitPane";
+        case NodeType::Tab: return "tab";
+        case NodeType::TabBar: return "tabBar";
+        case NodeType::TabContainer: return "tabContainer";
+        case NodeType::PanelFrame: return "panelFrame";
+        case NodeType::DockArea: return "dockArea";
+        case NodeType::AppFrame: return "appFrame";
     }
     return "unknown";
 }
 
 bool isClickable(const UINode& node) {
     if (!node.enabled || node.mouseFilter == MouseFilter::Ignore) return false;
-    return node.type == NodeType::Button || node.type == NodeType::ImageButton ||
-           node.type == NodeType::Switch || node.type == NodeType::MenuItem ||
-           node.handlerClick != 0;
+    return node.type == NodeType::Button || node.type == NodeType::ImageButton || node.type == NodeType::Switch ||
+           node.type == NodeType::MenuItem || node.type == NodeType::Tab || node.handlerClick != 0;
 }
 
 const char* focusModeName(FocusMode mode) {

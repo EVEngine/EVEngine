@@ -13,6 +13,7 @@
 
 #include <cstdint>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 namespace ssq {
@@ -115,6 +116,24 @@ public:
      */
     ssq::Object capture();
 
+    /**
+     * @brief Intern a script-supplied zone name so it can be handed to the collector.
+     *
+     * `eve::prof::ZoneRecord::name` is a `const char*` documented as pointing at
+     * static storage: the collector reads it at `frameMark()`, i.e. the whole frame
+     * after `zoneBegin()`. A script string is a temporary, so passing its `c_str()`
+     * straight through left a dangling pointer and the captured sample lost its name.
+     * Interned strings live for the module's lifetime, which satisfies the contract.
+     *
+     * @param name Zone name as written in script.
+     * @return Pointer valid until the module is destroyed.
+     * @ownership Borrowed from this module's name pool; never freed while it lives.
+     * @lifetime Until module shutdown.
+     * @thread Main thread only (the script-facing path).
+     * @reentrancy Not reentrant; the pool is unsynchronised on purpose.
+     */
+    [[nodiscard]] const char* internScopeName(const std::string& name);
+
     // IRenderTracer: route render passes into the core as "graphics" zones and
     // drive automatic per-frame aggregation from the render frame boundary.
     /** @brief Frame begin. */
@@ -132,10 +151,12 @@ private:
     /** @brief Resolve IGpuTimer once (retries while absent); never re-query once bound. */
     void ensureGpuTimer() const;
 
-    int64_t frameBeginNs_ = 0;
-    float   frameMs_      = 0.f;
-    uint64_t captureSequence_ = 0;
-    HSQUIRRELVM vm_       = nullptr;
+    int64_t     frameBeginNs_    = 0;
+    float       frameMs_         = 0.f;
+    uint64_t    captureSequence_ = 0;
+    HSQUIRRELVM vm_              = nullptr;
+    /** @brief Distinct script zone names; node addresses stay valid across rehash. */
+    std::unordered_set<std::string>                        scopeNames_;
     mutable eve::cap::ProviderRef<eve::service::IGpuTimer> gpuTimer_;
 };
 
@@ -145,6 +166,6 @@ private:
  * Called by the module constructor so devtools/MCP can read the last completed
  * frame's zone tree without linking this module.
  */
-void registerProfilerCapabilities();
+EVENGINE_API_FOUNDATION void registerProfilerCapabilities();
 
 }  // namespace eve::profiler

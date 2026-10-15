@@ -2,6 +2,7 @@
 
 #include "devtools/ConsolePanel.hpp"
 #include "devtools/Debugger.hpp"
+#include "devtools/GameWorldContext.hpp"
 #include "devtools/McpArgs.hpp"
 #include "devtools/McpJson.hpp"
 #include "devtools/SoftRestart.hpp"
@@ -290,11 +291,11 @@ std::string screenshotImage(Poco::JSON::Object::Ptr args) {
         // Enabling readback and reading it back cannot happen inside one
         // presented frame: the swapchain copy is recorded by the next present.
         // This is a retryable state, not a failed call, so isError stays false.
-        Poco::JSON::Object::Ptr out = mcpFailureObject(
-            "no-presented-frame",
-            "Wait for one rendered frame and call eve_screenshot_image again "
-            "(eve_render_status.readbackEnabled flips to true after enable)",
-            true, {"eve_render_status", "eve_screenshot_image"});
+        Poco::JSON::Object::Ptr out =
+            mcpFailureObject("no-presented-frame",
+                             "Wait for one rendered frame and call eve_screenshot_image again "
+                             "(eve_render_status.readbackEnabled flips to true after enable)",
+                             true, {"eve_render_status", "eve_screenshot_image"});
         out->set("reason", "no-presented-frame");
         out->set("readbackEnabled", capture->status().readbackEnabled);
         out->set("message",
@@ -362,9 +363,25 @@ std::string softRestart(Poco::JSON::Object::Ptr args) {
 
 }  // namespace
 
+std::string gameWorld() {
+    auto snapshot = liveGameWorldSnapshot();
+    if (!snapshot) {
+        const auto* diag = snapshot.status().primaryDiagnostic();
+        return errorPayload(diag && !diag->message().empty() ? diag->message()
+                                                             : std::string(statusCodeName(snapshot.code())));
+    }
+    auto json = snapshot.value().toJson();
+    if (!json) {
+        const auto* diag = json.status().primaryDiagnostic();
+        return errorPayload(diag && !diag->message().empty() ? diag->message() : "game world JSON failed");
+    }
+    return textContentResult(json.value(), false);
+}
+
 bool isMcpRuntimeTool(std::string_view name) {
     return name == "eve_console_read" || name == "eve_console_write" || name == "eve_console_clear" ||
-           name == "eve_screenshot_image" || name == "eve_crash_report" || name == "eve_restart";
+           name == "eve_screenshot_image" || name == "eve_crash_report" || name == "eve_restart" ||
+           name == "eve_game_world";
 }
 
 std::string callMcpRuntimeTool(std::string_view name, Poco::JSON::Object::Ptr args) {
@@ -374,6 +391,7 @@ std::string callMcpRuntimeTool(std::string_view name, Poco::JSON::Object::Ptr ar
     if (name == "eve_screenshot_image") return screenshotImage(args);
     if (name == "eve_crash_report") return crashReport(args);
     if (name == "eve_restart") return softRestart(args);
+    if (name == "eve_game_world") return gameWorld();
     return errorPayload("unknown runtime tool '" + std::string(name) + "'");
 }
 
@@ -396,7 +414,7 @@ Poco::JSON::Object::Ptr crashLogSummary() {
 }
 
 std::string_view mcpRuntimeToolSchemas() {
-    return R"json({"name":"eve_console_read","description":"Read retained runtime console lines: Squirrel print/error, engine stderr (level engine), eve.dev.console.* and agent markers. Lines carry a monotonic seq; pass the returned cursor back as sinceSeq for an incremental read (sinceSeq=0 reads the newest lines). truncated=true means lines were dropped before sinceSeq.","inputSchema":{"type":"object","properties":{"limit":{"type":"integer","minimum":1,"maximum":1000},"sinceSeq":{"type":"integer","minimum":0},"level":{"type":"string","enum":["debug","info","warn","error","print","cmd","result","engine"]}}}},{"name":"eve_console_write","description":"Append one agent marker line to the runtime console so it shares the game's ordered diagnosis stream.","inputSchema":{"type":"object","properties":{"text":{"type":"string"},"level":{"type":"string","enum":["debug","info","warn","error"]}},"required":["text"]}},{"name":"eve_console_clear","description":"Drop retained console lines. The sequence cursor keeps advancing, so an existing sinceSeq never re-reads or stalls.","inputSchema":{"type":"object","properties":{}}},{"name":"eve_screenshot_image","description":"Capture the presented frame and return it as an MCP image content item, so a client without filesystem access can look at the game. After readback is enabled the first call reports ok=false with retryable=true; wait one rendered frame and call again.","inputSchema":{"type":"object","properties":{"maxBytes":{"type":"integer","minimum":1024,"maximum":33554432,"description":"base64 payload budget (default 2097152)"}}}},{"name":"eve_crash_report","description":"Explain why a previous run ended: reads the persistent eve.log written by common/CrashLog.h and returns session/crash counts (window-scoped), the last crash timestamp, whether the session before the current one ended cleanly or crashed, and a bounded tail. Use it after reconnecting to a restarted game, since the MCP server dies with the process it served.","inputSchema":{"type":"object","properties":{"lines":{"type":"integer","minimum":1,"maximum":2000,"description":"tail lines to return (default 200)"}}}},{"name":"eve_restart","description":"Soft-restart the running game without unloading cached resources or killing the process (keeps Vulkan/MCP/ResourceManager). Optional args become eve.restartArgs for eve_init / eve_before_restart / eve_after_restart. Prefer this over relaunching eve when iterating on gameplay.","inputSchema":{"type":"object","properties":{"args":{"type":"object","description":"Game restart parameters (seed, scene, level, ...)"},"reloadScripts":{"type":"boolean","description":"Re-dofile tracked scripts and clear persist roots before eve_init (default true). When false, only reset native providers and call eve_restart(args) if present else eve_init()."}}}})json";
+    return R"json({"name":"eve_console_read","description":"Read retained runtime console lines: Squirrel print/error, engine stderr (level engine), eve.dev.console.* and agent markers. Lines carry a monotonic seq; pass the returned cursor back as sinceSeq for an incremental read (sinceSeq=0 reads the newest lines). truncated=true means lines were dropped before sinceSeq.","inputSchema":{"type":"object","properties":{"limit":{"type":"integer","minimum":1,"maximum":1000},"sinceSeq":{"type":"integer","minimum":0},"level":{"type":"string","enum":["debug","info","warn","error","print","cmd","result","engine"]}}}},{"name":"eve_console_write","description":"Append one agent marker line to the runtime console so it shares the game's ordered diagnosis stream.","inputSchema":{"type":"object","properties":{"text":{"type":"string"},"level":{"type":"string","enum":["debug","info","warn","error"]}},"required":["text"]}},{"name":"eve_console_clear","description":"Drop retained console lines. The sequence cursor keeps advancing, so an existing sinceSeq never re-reads or stalls.","inputSchema":{"type":"object","properties":{}}},{"name":"eve_screenshot_image","description":"Capture the presented frame and return it as an MCP image content item, so a client without filesystem access can look at the game. After readback is enabled the first call reports ok=false with retryable=true; wait one rendered frame and call again.","inputSchema":{"type":"object","properties":{"maxBytes":{"type":"integer","minimum":1024,"maximum":33554432,"description":"base64 payload budget (default 2097152)"}}}},{"name":"eve_crash_report","description":"Explain why a previous run ended: reads the persistent eve.log written by common/CrashLog.h and returns session/crash counts (window-scoped), the last crash timestamp, whether the session before the current one ended cleanly or crashed, and a bounded tail. Use it after reconnecting to a restarted game, since the MCP server dies with the process it served.","inputSchema":{"type":"object","properties":{"lines":{"type":"integer","minimum":1,"maximum":2000,"description":"tail lines to return (default 200)"}}}},{"name":"eve_restart","description":"Soft-restart the running game without unloading cached resources or killing the process (keeps Vulkan/MCP/ResourceManager). Optional args become eve.restartArgs for eve_init / eve_before_restart / eve_after_restart. Prefer this over relaunching eve when iterating on gameplay.","inputSchema":{"type":"object","properties":{"args":{"type":"object","description":"Game restart parameters (seed, scene, level, ...)"},"reloadScripts":{"type":"boolean","description":"Re-dofile tracked scripts and clear persist roots before eve_init (default true). When false, only reset native providers and call eve_restart(args) if present else eve_init()."}}}},{"name":"eve_game_world","description":"Discover what kind of game world is running at runtime: eve.dev.publishWorldContext, live gameplay domains, and dynamically configured / instantiated modules. Prefer this (or eve://game-world / eve_play op=status.gameWorld) over guessing from screenshots or eve_eval; do not treat on-disk prose as world authority.","inputSchema":{"type":"object","properties":{}}})json";
 }
 
 }  // namespace eve::dev

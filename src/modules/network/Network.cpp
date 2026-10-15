@@ -1,4 +1,5 @@
 #include "network/Network.h"
+#include "common/SquirrelBinding.h"
 #include "data/ByteData.h"
 #include "network/Channel.h"
 #include "network/HttpRequest.h"
@@ -33,29 +34,17 @@ void callScript2(const ssq::Object& obj, int64_t a, const std::string& s) {
     if (obj.isEmpty()) return;
     ssq::Function f = obj.toFunction();
     if (f.isEmpty()) return;
-    HSQUIRRELVM raw = f.getHandle();
-    SQInteger top = sq_gettop(raw);
-    sq_pushobject(raw, f.getRaw());
-    sq_pushroottable(raw);
-    ssq::detail::pushValue(raw, a);
-    ssq::detail::pushValue(raw, s);
-    sq_call(raw, 3, SQFalse, SQTrue);
-    sq_settop(raw, top);
+    // Receiver is the root table; the count is derived and a failing callback is
+    // reported. This call used to discard sq_call's result outright, so a broken
+    // network callback was invisible.
+    (void)script::callFunction(f.getHandle(), f.getRaw(), script::rootTable, a, s);
 }
 
 void callScript3(const ssq::Object& obj, int64_t a, int64_t b, const std::string& s) {
     if (obj.isEmpty()) return;
     ssq::Function f = obj.toFunction();
     if (f.isEmpty()) return;
-    HSQUIRRELVM raw = f.getHandle();
-    SQInteger top = sq_gettop(raw);
-    sq_pushobject(raw, f.getRaw());
-    sq_pushroottable(raw);
-    ssq::detail::pushValue(raw, a);
-    ssq::detail::pushValue(raw, b);
-    ssq::detail::pushValue(raw, s);
-    sq_call(raw, 4, SQFalse, SQTrue);
-    sq_settop(raw, top);
+    (void)script::callFunction(f.getHandle(), f.getRaw(), script::rootTable, a, b, s);
 }
 
 }  // namespace

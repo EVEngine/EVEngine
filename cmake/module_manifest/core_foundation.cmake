@@ -108,6 +108,7 @@ eve_declare_module(NAME rpg LIB EVRPG LAYER 1 SCRIPT RPG
 eve_declare_module(NAME inventory LAYER 0 SCRIPT Inventory
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME economy LAYER 0 SCRIPT Economy SLOT economy
+                   DEPS transaction
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME attributes LAYER 0 SCRIPT Attributes SLOT attributes
                    GROUP minimal 2d 3d web)

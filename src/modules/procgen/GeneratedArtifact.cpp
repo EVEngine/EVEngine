@@ -1,4 +1,5 @@
 #include "procgen/GeneratedArtifact.h"
+#include "common/StringMapInstances.h"
 
 #include "procgen/algorithms/CastleMesh.h"
 #include "procgen/algorithms/HexTerrain.h"

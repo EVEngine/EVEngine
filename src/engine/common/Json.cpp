@@ -1,4 +1,5 @@
 #include "common/Json.h"
+#include "common/StringMapInstances.h"
 
 #include "common/Value.h"
 

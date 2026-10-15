@@ -1,5 +1,8 @@
 # RTS：世界、阵营、命令与固定步进
 
+原生游戏的卡牌消耗、生产队列与经济联动见
+[玩法支付组合](../GAMEPLAY_PAYMENT_COMPOSITION.md)。这些组合入口使用共享事务协议。
+
 **入口：** `eve.RTS()`，槽位 `rts`。RTS facade 组合领域服务并拥有 RTS ECS roots；
 经济、群体运动、动作、战斗与生产仍各自拥有事实。渲染与 HUD 消费 inspectState，
 不能另写一套位置或资源来绕过 RTS 命令。
@@ -54,8 +57,8 @@ RTS 的持久主体 ID 是 UUID；例子的值用于独立演示，项目要给�
 
 不要直接在 inspectState 返回表上改单位位置来发命令，它是观察结果。生产队列扣款、
 完成、取消与失败按 RTS/Production 域接口处理；不能又手动从 Economy 扣同一笔资源。
-测试 [rts_script.cpp](../../../test/rts_script.cpp) 覆盖支付后产出和帧回调身份，
-[rts_crowd_production.cpp](../../../test/rts_crowd_production.cpp) 验证组合。
+测试 [rts_script.cpp](../../../test/integration/gameplay-composition/gameplay_composition_graphics_rts_script_tests.cpp) 覆盖支付后产出和帧回调身份，
+[rts_crowd_production.cpp](../../../test/integration/rts-unit-lifecycle/rts_unit_lifecycle_tactics_rts_tests.cpp) 验证组合。
 
 已绑定 Crowd 的单位位置由 Crowd 拥有，ECS Motion 是观察投影。需要瞬移、移开生产出口的
 坚守单位或进行其他显式放置时，使用 `relocateUnits([{subject=uuid,x=20.0,y=10.0}], maxChecks)`，

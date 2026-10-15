@@ -55,7 +55,7 @@ explicitly supplied named streams.
 - This is not an ECS System: there are no views, component writes, structural
   changes or ECS events.
 
-`test/SkyTimeline.cpp` exercises transition interruption, immediate transitions,
+`test/unit/daynight/daynight_tests.cpp` exercises transition interruption, immediate transitions,
 clock wrapping/pause, state independence, invalid-command atomicity and a frame
 crossing the transition endpoint versus 150 smaller frames. These tests prove
 simulation behavior only; they do not prove a complete sky renderer.
@@ -65,7 +65,7 @@ from an explicit hour and immutable pitch/yaw. It owns no second clock: callers
 pass `SkyTimeline::frame().hour`. The result points towards the sun, with Unreal
 Z-up coordinates mapped to EVEngine Y-up. Thirteen measured UDS 5.8 samples from
 UE 5.8.2 cover eight daily times, pitch 0/30/60, yaw 0/90 and a pre-dawn sample;
-`test/SkySolarOrbit.cpp` compares directions within 1e-6 and unit length within
+`test/unit/daynight/daynight_tests.cpp` compares directions within 1e-6 and unit length within
 1e-12. This establishes the manual orbit only. Vertical offset, astronomical
 sun/moon simulation and twilight intensity curves remain separate work; notably
 the reference still emits almost full solar intensity at 05:30, so horizon
@@ -91,7 +91,7 @@ lighting are not selected implicitly. Optical tables remain prepared once.
 `SkyRuntimeSettings` is a runtime value, not a persistent schema. Weather
 commands feed the sole timeline, but currently do not change optical coefficients
 or produce clouds/precipitation. The runtime does not own or modify a scene
-directional light yet. `test/SkyRuntime.cpp` composes the real Vulkan atmospheric
+directional light yet. `test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp` composes the real Vulkan atmospheric
 capture with simulation, checks the measured 05:30 intensity, noon-to-midnight
 progression, repeated captures without clock advancement, unregistering, and
 provider-first failure atomicity. These are composition tests, not final UDS
@@ -168,7 +168,7 @@ CPU facades. There are no locks, callbacks into scripts or new registries.
 The pass is graphics-thread-affine and may not be attached, detached or destroyed
 from contributor dispatch.
 
-`test/SkyAtmospherePass.cpp` exercises the actual reflection-capture draw,
+`test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp` exercises the actual reflection-capture draw,
 irradiance scaling, invalid-command atomicity, pass removal and provider-first
 retirement. The `uds-sky` example additionally verifies the main-window path;
 full six-face filtered reflection probes still need visual checks. Vulkan is implemented; other resource-program

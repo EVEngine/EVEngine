@@ -525,6 +525,16 @@ using AbilityResourceDebit = std::function<Result<resource::Receipt>(Unit&, cons
 /** @brief Validates, schedules and settles active RTS abilities through canonical damage/effect owners. */
 class EVENGINE_API_DOMAINS AbilitySystem {
 public:
+    /**
+     * @brief Pure admission check for caster life, target, range and cooldown.
+     * @param caster Borrowed live RTS caster on its owner thread.
+     * @param spec Owning ability policy borrowed during this call.
+     * @param target Generation-checked target; ignored for self/point policies.
+     * @param point Finite world point.
+     * @return Accepted or a structured rejection without resource/state mutation.
+     */
+    [[nodiscard]] static Result<void> validateCast(Unit& caster, const AbilitySpec& spec, ecs::EntityHandle target,
+                                                   WorldPosition point);
     /** @brief Begin an immediate, cast-time, or periodic channel ability atomically. */
     [[nodiscard]] static Result<void> cast(Unit& caster, const AbilitySpec& spec,
                                            ecs::EntityHandle target, WorldPosition point,

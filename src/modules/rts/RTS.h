@@ -60,6 +60,17 @@ struct CrowdFlowNavigationObservation {
     std::uint64_t prepared = 0, cacheHits = 0;
     bool          cachePressure = false;
 };
+/** @brief Owning synchronous ability stage; consume through the shared transaction coordinator. */
+struct RTSPreparedAbility {
+    std::optional<resource::CostSpec>                     cost;
+    std::unique_ptr<transaction::ITransactionParticipant> effect;
+};
+
+/** @brief Owning unit-production stage; canonical queues are borrowed through commit. */
+struct RTSPreparedProduction {
+    resource::CostSpec cost;
+    RTSBuildStage      stage;
+};
 /** @brief Owning transient projection of one canonical damage transaction completed this RTS frame. */
 struct RTSFrameDamageEvent {
     std::uint64_t sequence = 0;
@@ -313,8 +324,9 @@ public:
                                                 resource::IResourceAccount& account, resource::CostSpec cost,
                                                 std::string product, Duration duration,
                                                 std::string productionKind = "unit", int priority = 0,
-                                                std::string transactionId = {},
-                                                definition::DefinitionHandle definition = {});
+                                                std::string                                      transactionId = {},
+                                                definition::DefinitionHandle                     definition    = {},
+                                                std::span<transaction::ITransactionParticipant*> effects       = {});
 
     /** @brief Configure or clear a faction-wide production resource floor shared by all factories. */
     [[nodiscard]] Result<void> setProductionResourceReserve(
@@ -467,6 +479,26 @@ public:
     /** @brief Read one faction balance from the script-profile canonical economy ledger. */
     [[nodiscard]] Result<std::int64_t> scriptResource(Faction& faction, std::string_view resource) const;
     /**
+     * @brief Borrow the script faction's authoritative account for synchronous composition.
+     * @return Account reference or a stale/unconfigured error.
+     * @remarks Owner-thread only; valid only within this call's composition scope.
+     * Do not retain across world reconfiguration, restore, faction or RTS destruction.
+     */
+    [[nodiscard]] ResultRef<resource::IResourceAccount> scriptAccount(Faction& faction);
+    /** @brief Capture owning, sorted balance/income/expense/waste projections; owner-thread query. */
+    [[nodiscard]] Result<Value> inspectScriptEconomy(Faction& faction);
+    /**
+     * @brief Stage ability admission for an outer card/resource transaction.
+     * @cost Linear in caster cooldown count; stages one component per play, not a world snapshot.
+     * @return Owning participant and canonical cost, without publishing state.
+     * @remarks Consume synchronously on the owner thread while RTS lives. The
+     * committed channel settles at the next fixed step (including zero cast time).
+     * Interruption/target loss after admission follows normal ability semantics;
+     * it does not refund an already committed play. No callbacks may reenter RTS.
+     */
+    [[nodiscard]] Result<RTSPreparedAbility> prepareScriptAbility(Unit& caster, std::string ability, SubjectRef target,
+                                                                  WorldPosition point);
+    /**
      * @brief Configure a faction's deterministic worker replenishment, army production, and attack policy.
      * @param faction Owned faction whose strategy is changed.
      * @param workerDefinition Unit definition used until the worker target is met.
@@ -484,9 +516,22 @@ public:
         bool enabled = true);
     /** @brief Atomically load a content pack into the script profile's canonical definition registry. */
     [[nodiscard]] Result<ContentImportReceipt> loadScriptContent(std::string_view json);
-    /** @brief Queue one data-defined unit through canonical production, action, and economy providers. */
-    [[nodiscard]] Result<RTSBuildReceipt> queueScriptUnit(Building& producer, SubjectRef unitSubject,
-                                                           LogicalId unitDefinition, int priority = 0);
+    /**
+     * @brief Queue one data-defined unit through canonical production, action and economy providers.
+     * @cost Linear in queue sizes and resource count; stages once per admission.
+     * @param effects Borrowed unique synchronous participants; consume before returning.
+     * @param additionalCost Optional owning activation cost added to the unit cost.
+     * @remarks Cancelling refunds the unit cost only. Activation effects/costs are
+     * already committed. RTS and all participants must live through this owner-thread call.
+     */
+    /** @brief Stage defined unit production for a generic transaction batch.
+     * @cost Linear in queue size at prepare; payment/settlement remain canonical. */
+    [[nodiscard]] Result<RTSPreparedProduction> prepareScriptUnit(Building& producer, SubjectRef unitSubject,
+                                                                  LogicalId unitDefinition, int priority = 0);
+    [[nodiscard]] Result<RTSBuildReceipt>       queueScriptUnit(Building& producer, SubjectRef unitSubject,
+                                                                LogicalId unitDefinition, int priority = 0,
+                                                                std::span<transaction::ITransactionParticipant*> effects = {},
+                                                                std::optional<resource::CostSpec> additionalCost = {});
     /** @brief Queue a preferred reinforcement, deterministically trying its configured substitution chain. */
     [[nodiscard]] Result<ReinforcementRequestReceipt> queueScriptReinforcement(
         Building& producer, SubjectRef unitSubject, LogicalId preferredDefinition, int priority = 0);
@@ -633,6 +678,7 @@ private:
     void recordLifecycleEvent(const LifecycleEvent& event, SimulationTick tick);
     void clearOwnedRoots() noexcept;
     [[nodiscard]] Result<void> rebindScriptRootProviders();
+    [[nodiscard]] Result<AbilitySpec> resolveScriptAbility(Unit& caster, const std::string& ability);
     [[nodiscard]] Result<void> materialize(Unit& unit);
     [[nodiscard]] Result<void> materialize(Building& building);
     enum class UnitRemovalReason { Gameplay, SpawnRollback, GameplayReferencesPrepared };

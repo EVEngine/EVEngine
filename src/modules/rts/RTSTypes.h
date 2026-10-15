@@ -485,6 +485,7 @@ public:
 
 private:
     friend class RTSProductionActionAdapter;
+    friend class RTS;
     [[nodiscard]] production::WorkQueue* queueForComposition() noexcept;
 
     struct Impl;

@@ -5,16 +5,16 @@
     {
       "symbol": "SceneNodeRef::setVisible",
       "module": "scene",
-      "implementationFile": "src/modules/scene/SceneNodeRef.cpp",
+      "implementationFile": "src/modules/scene/SceneCameraQueries.cpp",
       "owner": "eve::scene::SceneHost",
       "ownerFile": "src/modules/scene/SceneHost.h",
       "ownerAnchor": "class EVENGINE_API_PLATFORM SceneHost",
       "writes": ["eve::scene::SceneNode.visible"],
       "stateAnchor": "bool visible = true;",
       "tests": [
-        {"file": "test/scene.cpp", "name": "Scene.nodeRef.transformsAndStructure"},
-        {"file": "test/scene.cpp", "name": "Scene.nodeRef.invalidRefs"},
-        {"file": "test/scene_binding_architecture.cpp", "name": "Scene.script.visibilityArchitectureMapping"}
+        {"file": "test/unit/scene/scene_tests.cpp", "name": "Scene.nodeRef.transformsAndStructure"},
+        {"file": "test/unit/scene/scene_tests.cpp", "name": "Scene.nodeRef.invalidRefs"},
+        {"file": "test/integration/script-api/script_api_graphics_scene_tests.cpp", "name": "Scene.script.visibilityArchitectureMapping"}
       ],
       "limitations": "Owner and writes are reviewed declarations, not inferred effects. Visibility does not prove rendering or navigation updates. The existing bool return is unchanged."
     }

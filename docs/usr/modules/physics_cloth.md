@@ -15,6 +15,7 @@ local clothGpu = clothModule.newClothGPU(40, 30, 8.0, 40.0, 30.0);
 
 ## 公共 API
 
+- 模块识别：`getName()` 返回模块名（每个 `eve.*` 模块类都有它），便于脚本确认 `eve.Cloth()` 交回来的是哪个模块。
 - 生命周期与运行：`update()` 推进一步模拟，`reset()` 恢复初始状态，`draw()` 绘制当前网格，`destroy()` 释放实例。
 - 网格与粒子查询：`getCols()`、`getRows()`、`getSpacing()`、`getOriginX()`、`getOriginY()`、`getOriginZ()`、`getParticleCount()`、`getParticleX()`、`getParticleY()`、`getParticleZ()`、`getTriangleCount()`、`getDistanceConstraintCount()`、`getTetherConstraintCount()`、`getSkinConstraintCount()`、`getAttachmentCount()`。
 - 基础求解参数：`setGravity()` 配合 `getGravityX()`、`getGravityY()`、`getGravityZ()`；`setStiffness()`/`getStiffness()`、`setIterations()`/`getIterations()`、`setDamping()`/`getDamping()`、`setParticleSize()`/`getParticleSize()`、`setParticleMass()`/`getParticleMass()`。

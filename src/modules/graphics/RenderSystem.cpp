@@ -1,11 +1,11 @@
 #include "graphics/RenderSystem.h"
-#include "graphics/Graphics.h"
-#include "graphics/Canvas.h"
-#include "graphics/Light.h"
-#include "graphics/Quad.h"
+#include "common/Assert.h"
 #include "common/Exception.h"
 #include "common/RenderTrace.h"
-#include "zeroerr/assert.h"
+#include "graphics/Canvas.h"
+#include "graphics/Graphics.h"
+#include "graphics/Light.h"
+#include "graphics/Quad.h"
 
 #include <algorithm>
 #include <cmath>

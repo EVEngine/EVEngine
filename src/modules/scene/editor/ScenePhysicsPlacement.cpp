@@ -1,8 +1,8 @@
 #include "scene/editor/ScenePhysicsPlacement.h"
 
-#include <box3d/box3d.h>
 #include "common/Exception.h"
 #include "common/Time.h"
+#include "common/TransformEuler.h"
 #include "physics/Body3D.h"
 #include "physics/Shape3D.h"
 #include "physics/World3D.h"
@@ -574,11 +574,11 @@ editing::Result<PhysicsPlacementFrame> ScenePhysicsPlacementBackend::placementFr
         captured.transform.z            = object.body->getZ();
         const glm::quat rotation(object.body->getRotW(), object.body->getRotX(), object.body->getRotY(),
                                  object.body->getRotZ());
-        glm::vec3       euler{};
-        glm::extractEulerAngleYXZ(glm::mat4_cast(rotation), euler.y, euler.x, euler.z);
-        captured.transform.rotationX = euler.x;
-        captured.transform.rotationY = euler.y;
-        captured.transform.rotationZ = euler.z;
+        float           yaw = 0.f, pitch = 0.f, roll = 0.f;
+        eve::eulerYxzFromQuat(rotation, yaw, pitch, roll);
+        captured.transform.rotationX = pitch;
+        captured.transform.rotationY = yaw;
+        captured.transform.rotationZ = roll;
         captured.transform.scaleX    = object.appliedScale.x;
         captured.transform.scaleY    = object.appliedScale.y;
         captured.transform.scaleZ    = object.appliedScale.z;
@@ -607,20 +607,18 @@ editing::Result<PhysicsPlacementFrame> ScenePhysicsPlacementBackend::relationFra
     std::map<int, editing::ObjectId> ids;
     for (const auto& object : impl_->objects) ids.emplace(object.body->getId(), object.admitted.object);
     for (const auto& object : impl_->objects) {
-        if (b3Body_GetContactCapacity(object.body->raw()) > 4096) frame.contactsComplete = false;
-        const int count = impl_->world.queryBodyContacts(object.body->getId(), 4096);
-        if (count == 4096) frame.contactsComplete = false;
-        for (int i = 0; i < count; ++i) {
-            const auto other = ids.find(impl_->world.getContactPointOtherBodyId(i));
+        auto contacts = impl_->world.queryBodyContactsOwned(object.body->runtimeHandle(), 4096);
+        if (!contacts) return editing::Result<PhysicsPlacementFrame>::failure(contacts.status());
+        const auto& snapshot = contacts.value();
+        if (snapshot.coverage != physics::ContactQueryCoverage3D::Complete) frame.contactsComplete = false;
+        for (const auto& point : snapshot.points) {
+            const auto other = ids.find(point.otherBodyId);
             if (other == ids.end()) {
                 frame.contactsComplete = false;
                 continue;
             }
-            frame.contacts.push_back({object.admitted.object, other->second, impl_->world.getContactPointX(i),
-                                      impl_->world.getContactPointY(i), impl_->world.getContactPointZ(i),
-                                      impl_->world.getContactPointNormalX(i), impl_->world.getContactPointNormalY(i),
-                                      impl_->world.getContactPointNormalZ(i),
-                                      impl_->world.getContactPointSeparation(i)});
+            frame.contacts.push_back({object.admitted.object, other->second, point.x, point.y, point.z, point.normalX,
+                                      point.normalY, point.normalZ, point.separation});
         }
     }
     return captured;

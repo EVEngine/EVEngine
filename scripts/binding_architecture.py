@@ -24,7 +24,8 @@ def attach_architecture(contracts, sources: dict[Path, str], root: Path,
             raise ValueError(f"Unsupported architecture metadata: {metadata_path}")
         for entry in payload["entries"]:
             symbol = entry["symbol"]
-            if symbol in entries:
+            identity = (entry["module"], symbol)
+            if identity in entries:
                 raise ValueError(f"Duplicate architecture symbol: {symbol}")
             evidence = {metadata_path: metadata_path.read_text(encoding="utf-8")}
 
@@ -60,7 +61,7 @@ def attach_architecture(contracts, sources: dict[Path, str], root: Path,
                 digest.update(b"\0")
                 digest.update(text.replace("\r\n", "\n").encode())
                 digest.update(b"\0")
-            entries[symbol] = {
+            entries[identity] = {
                 "status": "mapped",
                 "schemaVersion": 1,
                 "cppSymbol": symbol,
@@ -68,19 +69,21 @@ def attach_architecture(contracts, sources: dict[Path, str], root: Path,
                 "stateOwner": entry["owner"],
                 "ownerSource": f"{entry['ownerFile']}:{owner.count(chr(10), 0, owner.index(entry['ownerAnchor'])) + 1}",
                 "writes": entry["writes"],
+                "reads": entry.get("reads", []),
                 "tests": tests,
                 "inputHash": digest.hexdigest(),
                 "evidence": "static-binding+reviewed-owner+test-reference",
                 "limitations": entry["limitations"],
             }
             if enabled_modules is None or entry["module"] in enabled_modules:
-                if not any(contract.cpp_symbol == symbol for contract in contracts):
+                if not any(contract.module == entry["module"] and contract.cpp_symbol == symbol for contract in contracts):
                     raise ValueError(f"No enabled direct binding for architecture symbol: {symbol}")
     for contract in contracts:
-        if contract.cpp_symbol in entries:
+        identity = (contract.module, contract.cpp_symbol)
+        if identity in entries:
             # Include the real binding site in the version fingerprint. Aliases
             # retain distinct binding sources but share the implementation.
-            mapping = dict(entries[contract.cpp_symbol])
+            mapping = dict(entries[identity])
             binding_path = root / contract.source.rsplit(":", 1)[0]
             binding_text = sources[binding_path].replace("\r\n", "\n")
             mapping["inputHash"] = hashlib.sha256(

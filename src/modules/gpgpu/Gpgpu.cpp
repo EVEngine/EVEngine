@@ -427,6 +427,9 @@ void Gpgpu::expose(ssq::Table &table) {
     buf.addFunc("readData", &GpuBuffer::readData);
     buf.addFunc("writeFloat32", &GpuBuffer::writeFloat32);
     buf.addFunc("readFloat32", &GpuBuffer::readFloat32);
+    // 脚本面的批量回读：`readFloat32s(count, startIndex)` 直接返回数组（决定见方案 §9.78）。
+    // 绑定是**精确**的：C++ 侧 `startIndex` 有默认值，脚本侧必须传满两个实参（R-FACE-6）。
+    buf.addFunc("readFloat32s", &GpuBuffer::readFloat32sCopy);
     buf.addFunc("fillFloat32", &GpuBuffer::fillFloat32);
 
     auto seq = table.addClass<Sequence>(

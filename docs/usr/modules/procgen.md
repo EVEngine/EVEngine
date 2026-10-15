@@ -436,12 +436,12 @@ ID、在队列外执行任务，再调用 `resolveReady(finished)`。未完成�
 通用随机括号 L-system 引擎(`procgen.newLSystem()`)。给定 axiom 与产生式(可带权重随机),迭代若干次后用 3D 海龟解释:绘制 `/` 折返、`[ ]` 入/弹栈产生分支,枝条粗细随深度衰减。固定 seed 结果完全可复现。除 `mesh.lsystem` 网格配方外,`trace()` 可把枝段作为样条控制点输出(道路、二维布局)。
 
 ```squirrel
-local ls = procgen.newLSystem();
+local ls = procgen.newLSystem().value;
 ls.setAxiom("F");
 ls.addRule('F', "F[+F]F[-F]F");          // 确定性产生式
 // ls.addRules('A', ["F[+A]A", "FA"], [2.0, 1.0]);  // 加权随机产生式
 ls.setIterations(4); ls.setAngle(26.0); ls.setSeed(42);
-local road = procgen.newPointSet(); ls.trace(road);   // 枝段 → 控制点
+local road = procgen.newPointSet().value; ls.trace(road);   // 枝段 → 控制点
 ```
 
 `mesh.lsystem` 配方内置 `tree` / `fern` / `plant` / `weed` 预置,输出锥形枝干与叶片卡。
@@ -589,3 +589,5 @@ v1 无前驱迁移，不恢复 placement；调用成本随 JSON/连接器大小�
 先验证现有资产可加载，再换成自己的资源。测试失败、取消、资源缺失和旧 revision，
 不能只以脚本没有语法错误作为渲染或玩法正确的证据。
 详细流程：[专题](procgen/guides.md)。
+
+房屋与三维洞穴的脚本分阶段生成见[可编辑生成流程](procgen/generation-stages.md)。

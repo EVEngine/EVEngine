@@ -192,6 +192,7 @@ Module_IMPL(Graphics, new vulkan::Graphics());
 #endif
 
 void Graphics::render3D() {
+    ++mesh3dDrawEpoch_;
     pushValidationScope();
     recordingEngine3D_ = true;
     eve::debug::rtFrameBegin();
@@ -585,12 +586,47 @@ void Graphics::expose(ssq::Table& table) {
     material.addFunc("getNormalTexture", &Material::getNormalTexture);
     material.addFunc("setHeightTexture", &Material::setHeightTexture);
     material.addFunc("getHeightTexture", &Material::getHeightTexture);
-    material.addFunc("setVirtualTexture",
-                     [](Material* self, Texture* albedoAtlas, Texture* normalAtlas, Texture* pageTable, int pageCountX,
-                        int pageCountY, int atlasSlotsX, int atlasSlotsY, float borderFraction) {
-                         auto result = self->setVirtualTexture(albedoAtlas, normalAtlas, pageTable, pageCountX,
-                                                               pageCountY, atlasSlotsX, atlasSlotsY, borderFraction);
+    material.addFunc("enableVirtualTexture",
+                     [](Material* self, int width, int height, int tileSize, int borderSize, int residentCapacity,
+                        int maxDecodesPerUpdate) {
+                         if (!self) throw eve::Exception("Material.enableVirtualTexture: null self");
+                         VirtualTextureStreamingConfig config{};
+                         config.blend.width                = width;
+                         config.blend.height               = height;
+                         config.blend.tileSize             = tileSize;
+                         config.blend.borderSize           = borderSize;
+                         config.blend.residentPageCapacity = std::size_t(std::max(1, residentCapacity));
+                         config.maxDecodesPerUpdate        = std::size_t(std::max(1, maxDecodesPerUpdate));
+                         auto result                       = self->enableVirtualTexture(config);
                          if (!result.ok()) throw eve::Exception("%s", result.status().describe().c_str());
+                     });
+    auto addMaterialVtLayer = [](Material* self, image::ImageData* albedo, image::ImageData* normal,
+                                 image::ImageData* weight, float uvScale, float constantWeight, float heightContrast) {
+        if (!self) throw eve::Exception("Material.addVirtualTextureLayer: null self");
+        if (!albedo) throw eve::Exception("Material.addVirtualTextureLayer: albedo is required");
+        VirtualTextureBlendLayer layer{};
+        layer.albedo = std::shared_ptr<image::ImageData>(albedo, [](image::ImageData*) {});
+        if (normal) layer.normal = std::shared_ptr<image::ImageData>(normal, [](image::ImageData*) {});
+        if (weight) layer.weight = std::shared_ptr<image::ImageData>(weight, [](image::ImageData*) {});
+        layer.uvScale        = uvScale;
+        layer.constantWeight = constantWeight;
+        layer.heightContrast = heightContrast;
+        auto result          = self->addVirtualTextureLayer(layer);
+        if (!result.ok()) throw eve::Exception("%s", result.status().describe().c_str());
+        return int(result.value());
+    };
+    material.addFunc("addVirtualTextureLayer",
+                     [addMaterialVtLayer](Material* self, image::ImageData* albedo, image::ImageData* normal,
+                                          float uvScale, float constantWeight, float heightContrast) {
+                         return addMaterialVtLayer(self, albedo, normal, nullptr, uvScale, constantWeight,
+                                                   heightContrast);
+                     });
+    material.addFunc("addVirtualTextureLayerWeighted",
+                     [addMaterialVtLayer](Material* self, image::ImageData* albedo, image::ImageData* normal,
+                                          image::ImageData* weight, float uvScale, float constantWeight,
+                                          float heightContrast) {
+                         return addMaterialVtLayer(self, albedo, normal, weight, uvScale, constantWeight,
+                                                   heightContrast);
                      });
     material.addFunc("clearVirtualTexture", &Material::clearVirtualTexture);
     material.addFunc("usesVirtualTexture", [](Material* self) {

@@ -372,14 +372,39 @@ function track_script(path) {
 
 // Copy the enumerable fields of an old instance/table into a fresh instance
 // of NewClass; fields missing on the new class keep their defaults.
+//
+// Two Squirrel facts this depends on (probed; see
+// docs/dev/2026-09-19-脚本定义组件与引擎扩展性方案.md 9.21):
+//   * `n[k] <- v` throws "class instances do not support the new slot operator"
+//     whenever the key is dynamic. The catch below therefore swallowed *every*
+//     field and migration silently copied nothing -- old state was replaced by
+//     the new class's defaults. `n[k] = v` assigns a member the new class
+//     declares and throws for one it does not, which is the case the catch is
+//     meant to handle.
+//   * Instances are not enumerable: `foreach (k, v in instance)` raises
+//     "_nexti failed". `getclass()` is an instance method (there is no global
+//     getclass) and a class object *is* enumerable, so enumerate that.
 function migrate_instance(old, NewClass) {
     local n = NewClass();
     if (old == null) return n;
-    foreach (k, v in old) {
+    local kind = typeof old;
+    if (kind == "table") {
+        foreach (k, v in old) {
+            try {
+                n[k] = v;
+            } catch (e) {
+                // Not declared on the new class; keep the default.
+            }
+        }
+        return n;
+    }
+    if (kind != "instance") return n;
+    foreach (k, v in old.getclass()) {
+        if (typeof v == "function") continue;  // methods stay as the new class defines them
         try {
-            n[k] <- v;
+            n[k] = old[k];
         } catch (e) {
-            // Not assignable on the new class; keep the default.
+            // Not declared on the new class; keep the default.
         }
     }
     return n;
@@ -490,6 +515,7 @@ function soft_restart_game(reload_scripts = true) {
                 if (name in root) delete root[name];
             }
             eve.dev.clearStateRoots();
+            if ("clearWorldContext" in eve.dev) eve.dev.clearWorldContext();
             eve.dev.resetNativeState();
         }
 
@@ -613,6 +639,25 @@ function soft_reload_scripts() {
         }
     }
     // Stage ⑤: post-commit hooks rebuild instances derived from restored data.
+    //
+    // ⑤a 先跑脚本 ECS 的迁移：重定义同名类不许把已存在的实体变成孤儿（方案文档决定①）。
+    // 判据是"同一个全局名字前后都是类"，也就是上面那份 `oldBindings` 快照——重载前抓的类对象
+    // 与重载后的同名绑定指向同一个定义的两代。迁移不了时把条数报出来，不静默吞掉。
+    if ("_ecsMigrateAfterReload" in eve) {
+        try {
+            local migration = eve._ecsMigrateAfterReload(oldBindings, getroottable());
+            if (migration.components > 0)
+                print("hot-reload ECS migration: " + migration.entities + " entities, "
+                      + migration.components + " component instance(s)\n");
+            if (migration.unresolved > 0)
+                report_reload_failure(
+                    "hot-reload ECS migration left " + migration.unresolved
+                    + " component slot(s) on a replaced class; the entity class declaring them was not "
+                    + "redefined in this reload (rename or drop those entities explicitly)");
+        } catch (e) {
+            report_reload_failure("hot-reload ECS migration failed: " + format_script_error(e));
+        }
+    }
     if ("eve_after_reload" in getroottable()) {
         try {
             eve_after_reload();

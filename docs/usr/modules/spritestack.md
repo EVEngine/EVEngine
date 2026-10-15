@@ -37,7 +37,6 @@ function eve_render() {
 local count = stack.getLayerCount();
 local texture = stack.getLayerTexture(0);
 stack.setLayerTexture(texture, 0);
-stack.setLayerUV(0, 0.0, 0.0, 1.0, 1.0);
 local spacing = stack.getThickness();
 
 local batch = spritestack.newBatch(gfx);
@@ -49,6 +48,10 @@ batch.clear();
 ```
 
 批对象提交多个 `SpriteStack2D`；实际纹理由 Graphics 的 2D texture batch 合并。切片从底层到顶层绘制，因此透明边缘和层间遮挡仍遵循 2D painter order。
+
+> **逐层 UV 只能整张图集一起切**：没有 `setLayerUV(层, u0, v0, u1, v1)` 这种单层 UV 矩形接口——
+> 想让每层取自同一张图集的不同格子，用 `stack.setLayersFromAtlas(gfx, atlas, layerCount)`
+> （内部按层数等分图集，见 `SpriteStack.h:64`）；单层贴图则直接用 `setLayerTexture`/`setLayerImage`/`setLayerFile`。
 
 ## 模型切片
 
@@ -89,7 +92,7 @@ local layers = spritestack.sliceModel(model, 24, 128, 128, "y", 0.0);
 
 **源码：** [`src/modules/spritestack/`](../../../src/modules/spritestack/)
 **示例：** [`examples/sprite-stack/`](../../../examples/sprite-stack/)
-**相关测试：** [`test/spritestack.cpp`](../../../test/spritestack.cpp)
+**相关测试：** [`test/integration/asset-import/asset_import_graphics_tests.cpp`](../../../test/integration/asset-import/asset_import_graphics_tests.cpp)
 
 这里的模型只用于生成 RGBA 切片；运行时仍走 2D 管线。
 

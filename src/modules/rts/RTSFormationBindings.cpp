@@ -16,6 +16,14 @@ Result<std::vector<SubjectRef>> readSubjectArray(ssq::Array array) {
             Diagnostic::error(DiagnosticCode::InvalidArgument, error.what(), "subjects"));
     }
 }
+Result<CombatStance> parseCombatStance(std::string_view text) {
+    if (text == "passive") return Result<CombatStance>::success(CombatStance::Passive);
+    if (text == "defensive") return Result<CombatStance>::success(CombatStance::Defensive);
+    if (text == "aggressive") return Result<CombatStance>::success(CombatStance::Aggressive);
+    return Result<CombatStance>::failure(Diagnostic::error(
+        DiagnosticCode::InvalidArgument, "RTS combat stance must be passive, defensive, or aggressive", "stance"));
+}
+
 Result<FormationSpec> parseFormation(const std::string& kind, float spacing, int columns, float rotation) {
     FormationSpec spec;
     if (kind == "line")
@@ -43,6 +51,17 @@ Result<FormationSpec> parseFormation(const std::string& kind, float spacing, int
 void exposeFormationBindings(ssq::Class& cls) {
     exposeRelocationBindings(cls);
     const auto vm = cls.getHandle();
+    cls.addFunc(
+        "setUnitStance",
+        [vm](RTS* self, ssq::Array subjectTexts, const std::string& stanceText, float leashRange) -> ssq::Table {
+            auto subjects = readSubjectArray(subjectTexts);
+            if (!subjects) return script::projectStatusResult(vm, subjects.status());
+            auto stance = parseCombatStance(stanceText);
+            if (!stance) return script::projectStatusResult(vm, stance.status());
+            return script::projectResult(
+                vm, self->setUnitStance(std::move(subjects).takeValue(), stance.value(), leashRange));
+        });
+
     cls.addFunc("moveGroupUnits",
                 [vm](RTS* self, ssq::Array texts, float x, float y, const std::string& kind, float spacing, int columns,
                      float rotation, float leadDistance) -> ssq::Table {

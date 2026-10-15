@@ -70,38 +70,33 @@ inline std::ostream& operator<<(std::ostream& stream, StatusCode code) { return 
 class [[nodiscard("Status must be inspected or explicitly passed onward")]] EVENGINE_API_FOUNDATION Status {
 public:
     /** @brief Construct a successful `Ok` status with no diagnostics. */
-    Status() = default;
+    Status() noexcept;
+    /** @brief Release the owned diagnostic list. */
+    ~Status() noexcept;
+    /** @brief Deep-copy the diagnostic list. */
+    Status(const Status& other);
+    /** @brief Replace the status by deep-copying its diagnostic list. */
+    Status& operator=(const Status& other);
+    /** @brief Transfer diagnostic ownership without throwing. */
+    Status(Status&& other) noexcept;
+    /** @brief Replace the status by transferring diagnostic ownership. */
+    Status& operator=(Status&& other) noexcept;
 
     /**
      * @brief Construct a status from a code and diagnostics.
      * @param code Stable operation outcome.
      * @param diagnostics Structured explanations and context.
      */
-    Status(StatusCode code, std::vector<Diagnostic> diagnostics) : code_(code) {
-        if (!diagnostics.empty())
-            diagnostics_ = std::make_shared<const std::vector<Diagnostic>>(std::move(diagnostics));
-    }
+    Status(StatusCode code, std::vector<Diagnostic> diagnostics);
 
     /** @brief Construct a successful status with an explicit non-error outcome. */
-    static Status success(StatusCode code = StatusCode::Ok) {
-        Status result;
-        result.code_ = code;
-        return result;
-    }
+    static Status success(StatusCode code = StatusCode::Ok);
 
     /** @brief Construct a failed status with one diagnostic. */
-    static Status failure(StatusCode code, Diagnostic diagnostic) {
-        std::vector<Diagnostic> diagnostics;
-        diagnostics.emplace_back(std::move(diagnostic));
-        /** @brief Status. */
-        return Status(code, std::move(diagnostics));
-    }
+    static Status failure(StatusCode code, Diagnostic diagnostic);
 
     /** @brief Construct the matching failure category from a diagnostic code. */
-    static Status failure(Diagnostic diagnostic) {
-        /** @brief Failure. */
-        return failure(statusCodeFor(diagnostic.code()), std::move(diagnostic));
-    }
+    static Status failure(Diagnostic diagnostic);
 
     /** @brief Stable operation outcome. */
     StatusCode code() const noexcept { return code_; }
@@ -149,20 +144,7 @@ public:
      * @brief Render a compact human-readable summary.
      * @return Status code followed by the first diagnostic message, if any.
      */
-    std::string describe() const {
-        /** @brief Result. */
-        std::string result(statusCodeName(code_));
-        if (const Diagnostic* diagnostic = primaryDiagnostic()) {
-            result += ": ";
-            result += diagnostic->message();
-            if (!diagnostic->path().empty()) {
-                result += " [";
-                result += diagnostic->path();
-                result += ']';
-            }
-        }
-        return result;
-    }
+    std::string describe() const;
 
 private:
     static StatusCode statusCodeFor(DiagnosticCode code) noexcept {

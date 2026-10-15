@@ -10,9 +10,6 @@ eve_declare_module(NAME hd2d LIB EVHd2D LAYER 5 SCRIPT Hd2D SLOT hd2d
                    DEPS graphics map
                    GROUP 3d)
 
-# L7 -- hd2d
-eve_declare_module(NAME hd2d_editor LAYER 7 DEPS editor hd2d_editing GROUP 3d)
-
 # L6 -- hd2d
 eve_declare_module(NAME hd2d_editing LAYER 6
                    DEPS editing

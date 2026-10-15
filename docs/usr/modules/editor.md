@@ -379,7 +379,7 @@ Clip 解码和 Source 创建仍由 audio/sound host 负责；Editor 文档不保
 
 ## Particle Graph（C++）
 
-规范 API 位于 `particles_editing/ParticleGraph.h`；`particles_editor/EditorParticleGraph.h` 仅作为旧 include/namespace
+规范 API 位于 `particles_editing/ParticleGraph.h`（空壳 `particles_editor` 转发层已删除；直接 include editing / graphics_editing）
 兼容入口。通用图文档契约位于 `editing/EditingGraph.h`。
 
 `ParticleGraphDomain` 在通用 `GraphDocument` 上定义 `particles.emitter` 领域。模块链从唯一的
@@ -590,6 +590,17 @@ ws.select("world", "scene", "level-1", "tree-42", "vegetation.tree", false);
 完整组合示例见 [`examples/composable-editor`](../../../examples/composable-editor)：项目脚本用
 五个面板 builder 组合地形、材质、反射 MVVM、ECS 与游戏命令；C++ 不认识这些具体面板。
 
+需要固定 IDE 壳（而不是每个面板一个可拖动 Window）时，用 `ui` 的 `AppFrame` /
+`DockArea` / `PanelFrame` / `TabContainer`，或直接：
+
+```squirrel
+local uiEditor = eve.UiEditorModule();
+uiEditor.mountWorkspaceShell(ui, ws, "workspace-shell");
+```
+
+这会把 Workspace 描述符映射到锁定的单 Host 布局（见
+[`examples/editor-workspace-shell`](../../../examples/editor-workspace-shell)）。
+
 ### 动作时间轴编辑器
 
 `eve.ActionEditorModule().create(targetId, timelineTable)` 把版本化的 `eve.action.timeline`
@@ -794,7 +805,7 @@ insp.addFloat3("pos", "Position", 0, 0, 0);
 
 Scene 和 Map 的规范 C++ authoring API 分别位于 `scene_editing/SceneTarget.h`、
 `scene_editing/SceneComponentPayload.h` 与 `map_editing/MapDocument.h`。对应的
-`editor/EditorScene*.h`、`map_editor/EditorMapDocument.h` 只用于源代码兼容。
+`editor/EditorScene*.h` 只用于源代码兼容。空壳 `map_editor`（及同类仅 `using` 转发的 `*_editor`）已删除；请直接 include `map/editing/MapDocument.h` 等 editing 头。
 
 Animation clip 的规范 authoring API 位于 `animation_editing/AnimationClip.h`；
 `animation_editor/EditorAnimationClip.h` 是兼容入口。启用 `animation_editor` 时，
@@ -991,7 +1002,7 @@ height scale 和 wall UV。`Hd2dFramePreviewService` 可按时间确定性计算
 
 **源码：** [`src/modules/editor/`](../../../src/modules/editor/)  
 **设计文档：** [`docs/dev/编辑器模块设计.md`](../../dev/编辑器模块设计.md)  
-**相关测试：** [`test/editor.cpp`](../../../test/editor.cpp)
+**相关测试：** [`test/integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp`](../../../test/integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
 
 ### PR #287 新增绑定
 
