@@ -36,6 +36,30 @@ message TransactionLedgerSave {
   repeated TransactionPlan plans = 4;
 }
 
+// Digest input is this deterministic message without digest, including the
+// stable header and exact payload_wire bytes.
+message TransactionLedgerEnvelope {
+  optional string type = 1;
+  optional string schema = 2;
+  optional uint32 version = 3;
+  optional string instance_id = 4;
+  optional uint64 revision = 5;
+  optional uint64 tick = 6;
+  optional bytes payload_wire = 7;
+  optional bytes digest = 8;
+}
+
+message TransactionLedgerJsonDocument {
+  optional string type = 1;
+  optional string schema = 2;
+  optional uint32 version = 3;
+  optional string instance_id = 4;
+  optional uint64 revision = 5;
+  optional uint64 tick = 6;
+  optional TransactionLedgerSave payload = 7;
+  optional bytes digest = 8;
+}
+
 message TransactionPlan {
   optional string id = 1;
   optional string identity = 2;

@@ -101,6 +101,22 @@ EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull
 #else
 EVENGINE_API_FOUNDATION extern const TransactionEventGlobalsTypeInternal TransactionEvent_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
+class TransactionLedgerEnvelope;
+struct TransactionLedgerEnvelopeGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+EVENGINE_API_FOUNDATION extern TransactionLedgerEnvelopeGlobalsTypeInternal TransactionLedgerEnvelope_globals_;
+EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull TransactionLedgerEnvelope_class_data_;
+#else
+EVENGINE_API_FOUNDATION extern const TransactionLedgerEnvelopeGlobalsTypeInternal TransactionLedgerEnvelope_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+class TransactionLedgerJsonDocument;
+struct TransactionLedgerJsonDocumentGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+EVENGINE_API_FOUNDATION extern TransactionLedgerJsonDocumentGlobalsTypeInternal TransactionLedgerJsonDocument_globals_;
+EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull TransactionLedgerJsonDocument_class_data_;
+#else
+EVENGINE_API_FOUNDATION extern const TransactionLedgerJsonDocumentGlobalsTypeInternal TransactionLedgerJsonDocument_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
 class TransactionLedgerSave;
 struct TransactionLedgerSaveGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
@@ -191,6 +207,332 @@ using ::google::protobuf::internal::generated_enum::AbslUnparseFlag;
 
 // -------------------------------------------------------------------
 
+class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED TransactionLedgerEnvelope final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:eve.transaction.proto.TransactionLedgerEnvelope) */ {
+ public:
+  inline TransactionLedgerEnvelope() : TransactionLedgerEnvelope(nullptr) {}
+  ~TransactionLedgerEnvelope() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(TransactionLedgerEnvelope* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(TransactionLedgerEnvelope));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr TransactionLedgerEnvelope(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline TransactionLedgerEnvelope(const TransactionLedgerEnvelope& from) : TransactionLedgerEnvelope(nullptr, from) {}
+  inline TransactionLedgerEnvelope(TransactionLedgerEnvelope&& from) noexcept : TransactionLedgerEnvelope(nullptr, ::std::move(from)) {}
+  inline TransactionLedgerEnvelope& operator=(const TransactionLedgerEnvelope& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline TransactionLedgerEnvelope& operator=(TransactionLedgerEnvelope&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const TransactionLedgerEnvelope& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<TransactionLedgerEnvelope>(&TransactionLedgerEnvelope_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 5;
+  friend void swap(TransactionLedgerEnvelope& a, TransactionLedgerEnvelope& b) { a.Swap(&b); }
+  inline void Swap(TransactionLedgerEnvelope* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(TransactionLedgerEnvelope* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] TransactionLedgerEnvelope* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<TransactionLedgerEnvelope>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const TransactionLedgerEnvelope& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const TransactionLedgerEnvelope& from) { TransactionLedgerEnvelope::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(TransactionLedgerEnvelope* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "eve.transaction.proto.TransactionLedgerEnvelope"; }
+
+  explicit TransactionLedgerEnvelope(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  TransactionLedgerEnvelope(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const TransactionLedgerEnvelope& from);
+  TransactionLedgerEnvelope(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, TransactionLedgerEnvelope&& from) noexcept
+      : TransactionLedgerEnvelope(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kTypeFieldNumber = 1,
+    kSchemaFieldNumber = 2,
+    kInstanceIdFieldNumber = 4,
+    kPayloadWireFieldNumber = 7,
+    kDigestFieldNumber = 8,
+    kRevisionFieldNumber = 5,
+    kTickFieldNumber = 6,
+    kVersionFieldNumber = 3,
+  };
+  // optional string type = 1;
+  [[nodiscard]] bool has_type()
+      const;
+  void clear_type() ;
+  [[nodiscard]] const ::std::string& type() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_type(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_type();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_type();
+  void set_allocated_type(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_type() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_type(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_type();
+
+  public:
+  // optional string schema = 2;
+  [[nodiscard]] bool has_schema()
+      const;
+  void clear_schema() ;
+  [[nodiscard]] const ::std::string& schema() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_schema(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_schema();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_schema();
+  void set_allocated_schema(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_schema() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_schema(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_schema();
+
+  public:
+  // optional string instance_id = 4;
+  [[nodiscard]] bool has_instance_id()
+      const;
+  void clear_instance_id() ;
+  [[nodiscard]] const ::std::string& instance_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_instance_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_instance_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_instance_id();
+  void set_allocated_instance_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_instance_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_instance_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_instance_id();
+
+  public:
+  // optional bytes payload_wire = 7;
+  [[nodiscard]] bool has_payload_wire()
+      const;
+  void clear_payload_wire() ;
+  [[nodiscard]] const ::std::string& payload_wire() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_payload_wire(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_payload_wire();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_payload_wire();
+  void set_allocated_payload_wire(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_payload_wire() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_payload_wire(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_payload_wire();
+
+  public:
+  // optional bytes digest = 8;
+  [[nodiscard]] bool has_digest()
+      const;
+  void clear_digest() ;
+  [[nodiscard]] const ::std::string& digest() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_digest(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_digest();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_digest();
+  void set_allocated_digest(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_digest() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_digest(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_digest();
+
+  public:
+  // optional uint64 revision = 5;
+  [[nodiscard]] bool has_revision()
+      const;
+  void clear_revision() ;
+  [[nodiscard]] ::uint64_t revision() const;
+  void set_revision(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_revision() const;
+  void _internal_set_revision(::uint64_t value);
+
+  public:
+  // optional uint64 tick = 6;
+  [[nodiscard]] bool has_tick()
+      const;
+  void clear_tick() ;
+  [[nodiscard]] ::uint64_t tick() const;
+  void set_tick(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_tick() const;
+  void _internal_set_tick(::uint64_t value);
+
+  public:
+  // optional uint32 version = 3;
+  [[nodiscard]] bool has_version()
+      const;
+  void clear_version() ;
+  [[nodiscard]] ::uint32_t version() const;
+  void set_version(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_version() const;
+  void _internal_set_version(::uint32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:eve.transaction.proto.TransactionLedgerEnvelope)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<3, 8,
+                          0, 85,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const TransactionLedgerEnvelope& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr type_;
+    ::google::protobuf::internal::ArenaStringPtr schema_;
+    ::google::protobuf::internal::ArenaStringPtr instance_id_;
+    ::google::protobuf::internal::ArenaStringPtr payload_wire_;
+    ::google::protobuf::internal::ArenaStringPtr digest_;
+    ::uint64_t revision_;
+    ::uint64_t tick_;
+    ::uint32_t version_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_transaction_5fledger_2eproto;
+};
+// -------------------------------------------------------------------
+
 class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED TransactionEvent final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.transaction.proto.TransactionEvent) */ {
  public:
@@ -247,7 +589,7 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Transaction
   [[nodiscard]] static const TransactionEvent& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<TransactionEvent>(&TransactionEvent_globals_);
   }
-  static constexpr int kIndexInFileMessages = 7;
+  static constexpr int kIndexInFileMessages = 9;
   friend void swap(TransactionEvent& a, TransactionEvent& b) { a.Swap(&b); }
   inline void Swap(TransactionEvent* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -1509,7 +1851,7 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Transaction
   [[nodiscard]] static const TransactionOperation& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<TransactionOperation>(&TransactionOperation_globals_);
   }
-  static constexpr int kIndexInFileMessages = 6;
+  static constexpr int kIndexInFileMessages = 8;
   friend void swap(TransactionOperation& a, TransactionOperation& b) { a.Swap(&b); }
   inline void Swap(TransactionOperation* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -1839,7 +2181,7 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Transaction
   [[nodiscard]] static const TransactionPlan& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<TransactionPlan>(&TransactionPlan_globals_);
   }
-  static constexpr int kIndexInFileMessages = 5;
+  static constexpr int kIndexInFileMessages = 7;
   friend void swap(TransactionPlan& a, TransactionPlan& b) { a.Swap(&b); }
   inline void Swap(TransactionPlan* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -2430,6 +2772,331 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Transaction
     ::google::protobuf::RepeatedPtrField< ::eve::transaction::proto::TransactionPlan > plans_;
     ::google::protobuf::internal::ArenaStringPtr schema_;
     ::uint64_t next_transaction_;
+    ::uint32_t version_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_transaction_5fledger_2eproto;
+};
+// -------------------------------------------------------------------
+
+class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED TransactionLedgerJsonDocument final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:eve.transaction.proto.TransactionLedgerJsonDocument) */ {
+ public:
+  inline TransactionLedgerJsonDocument() : TransactionLedgerJsonDocument(nullptr) {}
+  ~TransactionLedgerJsonDocument() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(TransactionLedgerJsonDocument* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(TransactionLedgerJsonDocument));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr TransactionLedgerJsonDocument(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline TransactionLedgerJsonDocument(const TransactionLedgerJsonDocument& from) : TransactionLedgerJsonDocument(nullptr, from) {}
+  inline TransactionLedgerJsonDocument(TransactionLedgerJsonDocument&& from) noexcept : TransactionLedgerJsonDocument(nullptr, ::std::move(from)) {}
+  inline TransactionLedgerJsonDocument& operator=(const TransactionLedgerJsonDocument& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline TransactionLedgerJsonDocument& operator=(TransactionLedgerJsonDocument&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const TransactionLedgerJsonDocument& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<TransactionLedgerJsonDocument>(&TransactionLedgerJsonDocument_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 6;
+  friend void swap(TransactionLedgerJsonDocument& a, TransactionLedgerJsonDocument& b) { a.Swap(&b); }
+  inline void Swap(TransactionLedgerJsonDocument* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(TransactionLedgerJsonDocument* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] TransactionLedgerJsonDocument* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<TransactionLedgerJsonDocument>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const TransactionLedgerJsonDocument& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const TransactionLedgerJsonDocument& from) { TransactionLedgerJsonDocument::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(TransactionLedgerJsonDocument* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "eve.transaction.proto.TransactionLedgerJsonDocument"; }
+
+  explicit TransactionLedgerJsonDocument(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  TransactionLedgerJsonDocument(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const TransactionLedgerJsonDocument& from);
+  TransactionLedgerJsonDocument(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, TransactionLedgerJsonDocument&& from) noexcept
+      : TransactionLedgerJsonDocument(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kTypeFieldNumber = 1,
+    kSchemaFieldNumber = 2,
+    kInstanceIdFieldNumber = 4,
+    kDigestFieldNumber = 8,
+    kPayloadFieldNumber = 7,
+    kRevisionFieldNumber = 5,
+    kTickFieldNumber = 6,
+    kVersionFieldNumber = 3,
+  };
+  // optional string type = 1;
+  [[nodiscard]] bool has_type()
+      const;
+  void clear_type() ;
+  [[nodiscard]] const ::std::string& type() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_type(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_type();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_type();
+  void set_allocated_type(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_type() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_type(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_type();
+
+  public:
+  // optional string schema = 2;
+  [[nodiscard]] bool has_schema()
+      const;
+  void clear_schema() ;
+  [[nodiscard]] const ::std::string& schema() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_schema(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_schema();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_schema();
+  void set_allocated_schema(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_schema() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_schema(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_schema();
+
+  public:
+  // optional string instance_id = 4;
+  [[nodiscard]] bool has_instance_id()
+      const;
+  void clear_instance_id() ;
+  [[nodiscard]] const ::std::string& instance_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_instance_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_instance_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_instance_id();
+  void set_allocated_instance_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_instance_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_instance_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_instance_id();
+
+  public:
+  // optional bytes digest = 8;
+  [[nodiscard]] bool has_digest()
+      const;
+  void clear_digest() ;
+  [[nodiscard]] const ::std::string& digest() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_digest(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_digest();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_digest();
+  void set_allocated_digest(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_digest() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_digest(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_digest();
+
+  public:
+  // optional .eve.transaction.proto.TransactionLedgerSave payload = 7;
+  [[nodiscard]] bool has_payload()
+      const;
+  void clear_payload() ;
+  [[nodiscard]] const ::eve::transaction::proto::TransactionLedgerSave& payload() const;
+  [[nodiscard]] ::eve::transaction::proto::TransactionLedgerSave* PROTOBUF_NULLABLE release_payload();
+  ::eve::transaction::proto::TransactionLedgerSave* PROTOBUF_NONNULL mutable_payload();
+  void set_allocated_payload(::eve::transaction::proto::TransactionLedgerSave* PROTOBUF_NULLABLE value);
+  void unsafe_arena_set_allocated_payload(::eve::transaction::proto::TransactionLedgerSave* PROTOBUF_NULLABLE value);
+  ::eve::transaction::proto::TransactionLedgerSave* PROTOBUF_NULLABLE unsafe_arena_release_payload();
+
+  private:
+  const ::eve::transaction::proto::TransactionLedgerSave& _internal_payload() const;
+  ::eve::transaction::proto::TransactionLedgerSave* PROTOBUF_NONNULL _internal_mutable_payload();
+
+  public:
+  // optional uint64 revision = 5;
+  [[nodiscard]] bool has_revision()
+      const;
+  void clear_revision() ;
+  [[nodiscard]] ::uint64_t revision() const;
+  void set_revision(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_revision() const;
+  void _internal_set_revision(::uint64_t value);
+
+  public:
+  // optional uint64 tick = 6;
+  [[nodiscard]] bool has_tick()
+      const;
+  void clear_tick() ;
+  [[nodiscard]] ::uint64_t tick() const;
+  void set_tick(::uint64_t value);
+
+  private:
+  ::uint64_t _internal_tick() const;
+  void _internal_set_tick(::uint64_t value);
+
+  public:
+  // optional uint32 version = 3;
+  [[nodiscard]] bool has_version()
+      const;
+  void clear_version() ;
+  [[nodiscard]] ::uint32_t version() const;
+  void set_version(::uint32_t value);
+
+  private:
+  ::uint32_t _internal_version() const;
+  void _internal_set_version(::uint32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:eve.transaction.proto.TransactionLedgerJsonDocument)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<3, 8,
+                          1, 89,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const TransactionLedgerJsonDocument& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr type_;
+    ::google::protobuf::internal::ArenaStringPtr schema_;
+    ::google::protobuf::internal::ArenaStringPtr instance_id_;
+    ::google::protobuf::internal::ArenaStringPtr digest_;
+    ::eve::transaction::proto::TransactionLedgerSave* PROTOBUF_NULLABLE payload_;
+    ::uint64_t revision_;
+    ::uint64_t tick_;
     ::uint32_t version_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -3306,6 +3973,892 @@ inline ::google::protobuf::RepeatedPtrField<::eve::transaction::proto::Transacti
 TransactionLedgerSave::_internal_mutable_plans() {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return &_impl_.plans_;
+}
+
+// -------------------------------------------------------------------
+
+// TransactionLedgerEnvelope
+
+// optional string type = 1;
+inline bool TransactionLedgerEnvelope::has_type() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000001U);
+  return value;
+}
+inline void TransactionLedgerEnvelope::clear_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.type_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::std::string& TransactionLedgerEnvelope::type() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.transaction.proto.TransactionLedgerEnvelope.type)
+  return _internal_type();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void TransactionLedgerEnvelope::set_type(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.type_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.transaction.proto.TransactionLedgerEnvelope.type)
+}
+inline ::std::string* PROTOBUF_NONNULL TransactionLedgerEnvelope::mutable_type()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_type();
+  // @@protoc_insertion_point(field_mutable:eve.transaction.proto.TransactionLedgerEnvelope.type)
+  return _s;
+}
+inline const ::std::string& TransactionLedgerEnvelope::_internal_type() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.type_.Get();
+}
+inline void TransactionLedgerEnvelope::_internal_set_type(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.type_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL TransactionLedgerEnvelope::_internal_mutable_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.type_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE TransactionLedgerEnvelope::release_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.transaction.proto.TransactionLedgerEnvelope.type)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.type_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.type_.Set("", GetArena());
+  }
+  return released;
+}
+inline void TransactionLedgerEnvelope::set_allocated_type(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.type_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.type_.IsDefault()) {
+    _impl_.type_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.transaction.proto.TransactionLedgerEnvelope.type)
+}
+
+// optional string schema = 2;
+inline bool TransactionLedgerEnvelope::has_schema() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000002U);
+  return value;
+}
+inline void TransactionLedgerEnvelope::clear_schema() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.schema_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::std::string& TransactionLedgerEnvelope::schema() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.transaction.proto.TransactionLedgerEnvelope.schema)
+  return _internal_schema();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void TransactionLedgerEnvelope::set_schema(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  _impl_.schema_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.transaction.proto.TransactionLedgerEnvelope.schema)
+}
+inline ::std::string* PROTOBUF_NONNULL TransactionLedgerEnvelope::mutable_schema()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::std::string* _s = _internal_mutable_schema();
+  // @@protoc_insertion_point(field_mutable:eve.transaction.proto.TransactionLedgerEnvelope.schema)
+  return _s;
+}
+inline const ::std::string& TransactionLedgerEnvelope::_internal_schema() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.schema_.Get();
+}
+inline void TransactionLedgerEnvelope::_internal_set_schema(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.schema_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL TransactionLedgerEnvelope::_internal_mutable_schema() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.schema_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE TransactionLedgerEnvelope::release_schema() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.transaction.proto.TransactionLedgerEnvelope.schema)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  auto* released = _impl_.schema_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.schema_.Set("", GetArena());
+  }
+  return released;
+}
+inline void TransactionLedgerEnvelope::set_allocated_schema(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  _impl_.schema_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.schema_.IsDefault()) {
+    _impl_.schema_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.transaction.proto.TransactionLedgerEnvelope.schema)
+}
+
+// optional uint32 version = 3;
+inline bool TransactionLedgerEnvelope::has_version() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000080U);
+  return value;
+}
+inline void TransactionLedgerEnvelope::clear_version() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.version_ = 0u;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
+}
+inline ::uint32_t TransactionLedgerEnvelope::version() const {
+  // @@protoc_insertion_point(field_get:eve.transaction.proto.TransactionLedgerEnvelope.version)
+  return _internal_version();
+}
+inline void TransactionLedgerEnvelope::set_version(::uint32_t value) {
+  _internal_set_version(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
+  // @@protoc_insertion_point(field_set:eve.transaction.proto.TransactionLedgerEnvelope.version)
+}
+inline ::uint32_t TransactionLedgerEnvelope::_internal_version() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.version_;
+}
+inline void TransactionLedgerEnvelope::_internal_set_version(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.version_ = value;
+}
+
+// optional string instance_id = 4;
+inline bool TransactionLedgerEnvelope::has_instance_id() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000004U);
+  return value;
+}
+inline void TransactionLedgerEnvelope::clear_instance_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.instance_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline const ::std::string& TransactionLedgerEnvelope::instance_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.transaction.proto.TransactionLedgerEnvelope.instance_id)
+  return _internal_instance_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void TransactionLedgerEnvelope::set_instance_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  _impl_.instance_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.transaction.proto.TransactionLedgerEnvelope.instance_id)
+}
+inline ::std::string* PROTOBUF_NONNULL TransactionLedgerEnvelope::mutable_instance_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ::std::string* _s = _internal_mutable_instance_id();
+  // @@protoc_insertion_point(field_mutable:eve.transaction.proto.TransactionLedgerEnvelope.instance_id)
+  return _s;
+}
+inline const ::std::string& TransactionLedgerEnvelope::_internal_instance_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.instance_id_.Get();
+}
+inline void TransactionLedgerEnvelope::_internal_set_instance_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.instance_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL TransactionLedgerEnvelope::_internal_mutable_instance_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.instance_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE TransactionLedgerEnvelope::release_instance_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.transaction.proto.TransactionLedgerEnvelope.instance_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000004U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  auto* released = _impl_.instance_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.instance_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void TransactionLedgerEnvelope::set_allocated_instance_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  }
+  _impl_.instance_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.instance_id_.IsDefault()) {
+    _impl_.instance_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.transaction.proto.TransactionLedgerEnvelope.instance_id)
+}
+
+// optional uint64 revision = 5;
+inline bool TransactionLedgerEnvelope::has_revision() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000020U);
+  return value;
+}
+inline void TransactionLedgerEnvelope::clear_revision() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.revision_ = ::uint64_t{0u};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+}
+inline ::uint64_t TransactionLedgerEnvelope::revision() const {
+  // @@protoc_insertion_point(field_get:eve.transaction.proto.TransactionLedgerEnvelope.revision)
+  return _internal_revision();
+}
+inline void TransactionLedgerEnvelope::set_revision(::uint64_t value) {
+  _internal_set_revision(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  // @@protoc_insertion_point(field_set:eve.transaction.proto.TransactionLedgerEnvelope.revision)
+}
+inline ::uint64_t TransactionLedgerEnvelope::_internal_revision() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.revision_;
+}
+inline void TransactionLedgerEnvelope::_internal_set_revision(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.revision_ = value;
+}
+
+// optional uint64 tick = 6;
+inline bool TransactionLedgerEnvelope::has_tick() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000040U);
+  return value;
+}
+inline void TransactionLedgerEnvelope::clear_tick() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.tick_ = ::uint64_t{0u};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+}
+inline ::uint64_t TransactionLedgerEnvelope::tick() const {
+  // @@protoc_insertion_point(field_get:eve.transaction.proto.TransactionLedgerEnvelope.tick)
+  return _internal_tick();
+}
+inline void TransactionLedgerEnvelope::set_tick(::uint64_t value) {
+  _internal_set_tick(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  // @@protoc_insertion_point(field_set:eve.transaction.proto.TransactionLedgerEnvelope.tick)
+}
+inline ::uint64_t TransactionLedgerEnvelope::_internal_tick() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.tick_;
+}
+inline void TransactionLedgerEnvelope::_internal_set_tick(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.tick_ = value;
+}
+
+// optional bytes payload_wire = 7;
+inline bool TransactionLedgerEnvelope::has_payload_wire() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000008U);
+  return value;
+}
+inline void TransactionLedgerEnvelope::clear_payload_wire() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.payload_wire_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+}
+inline const ::std::string& TransactionLedgerEnvelope::payload_wire() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.transaction.proto.TransactionLedgerEnvelope.payload_wire)
+  return _internal_payload_wire();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void TransactionLedgerEnvelope::set_payload_wire(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  _impl_.payload_wire_.SetBytes(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.transaction.proto.TransactionLedgerEnvelope.payload_wire)
+}
+inline ::std::string* PROTOBUF_NONNULL TransactionLedgerEnvelope::mutable_payload_wire()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  ::std::string* _s = _internal_mutable_payload_wire();
+  // @@protoc_insertion_point(field_mutable:eve.transaction.proto.TransactionLedgerEnvelope.payload_wire)
+  return _s;
+}
+inline const ::std::string& TransactionLedgerEnvelope::_internal_payload_wire() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.payload_wire_.Get();
+}
+inline void TransactionLedgerEnvelope::_internal_set_payload_wire(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.payload_wire_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL TransactionLedgerEnvelope::_internal_mutable_payload_wire() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.payload_wire_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE TransactionLedgerEnvelope::release_payload_wire() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.transaction.proto.TransactionLedgerEnvelope.payload_wire)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000008U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  auto* released = _impl_.payload_wire_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.payload_wire_.Set("", GetArena());
+  }
+  return released;
+}
+inline void TransactionLedgerEnvelope::set_allocated_payload_wire(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  }
+  _impl_.payload_wire_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.payload_wire_.IsDefault()) {
+    _impl_.payload_wire_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.transaction.proto.TransactionLedgerEnvelope.payload_wire)
+}
+
+// optional bytes digest = 8;
+inline bool TransactionLedgerEnvelope::has_digest() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000010U);
+  return value;
+}
+inline void TransactionLedgerEnvelope::clear_digest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.digest_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+}
+inline const ::std::string& TransactionLedgerEnvelope::digest() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.transaction.proto.TransactionLedgerEnvelope.digest)
+  return _internal_digest();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void TransactionLedgerEnvelope::set_digest(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  _impl_.digest_.SetBytes(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.transaction.proto.TransactionLedgerEnvelope.digest)
+}
+inline ::std::string* PROTOBUF_NONNULL TransactionLedgerEnvelope::mutable_digest()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ::std::string* _s = _internal_mutable_digest();
+  // @@protoc_insertion_point(field_mutable:eve.transaction.proto.TransactionLedgerEnvelope.digest)
+  return _s;
+}
+inline const ::std::string& TransactionLedgerEnvelope::_internal_digest() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.digest_.Get();
+}
+inline void TransactionLedgerEnvelope::_internal_set_digest(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.digest_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL TransactionLedgerEnvelope::_internal_mutable_digest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.digest_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE TransactionLedgerEnvelope::release_digest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.transaction.proto.TransactionLedgerEnvelope.digest)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000010U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  auto* released = _impl_.digest_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.digest_.Set("", GetArena());
+  }
+  return released;
+}
+inline void TransactionLedgerEnvelope::set_allocated_digest(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  }
+  _impl_.digest_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.digest_.IsDefault()) {
+    _impl_.digest_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.transaction.proto.TransactionLedgerEnvelope.digest)
+}
+
+// -------------------------------------------------------------------
+
+// TransactionLedgerJsonDocument
+
+// optional string type = 1;
+inline bool TransactionLedgerJsonDocument::has_type() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000001U);
+  return value;
+}
+inline void TransactionLedgerJsonDocument::clear_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.type_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::std::string& TransactionLedgerJsonDocument::type() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.transaction.proto.TransactionLedgerJsonDocument.type)
+  return _internal_type();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void TransactionLedgerJsonDocument::set_type(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.type_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.transaction.proto.TransactionLedgerJsonDocument.type)
+}
+inline ::std::string* PROTOBUF_NONNULL TransactionLedgerJsonDocument::mutable_type()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_type();
+  // @@protoc_insertion_point(field_mutable:eve.transaction.proto.TransactionLedgerJsonDocument.type)
+  return _s;
+}
+inline const ::std::string& TransactionLedgerJsonDocument::_internal_type() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.type_.Get();
+}
+inline void TransactionLedgerJsonDocument::_internal_set_type(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.type_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL TransactionLedgerJsonDocument::_internal_mutable_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.type_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE TransactionLedgerJsonDocument::release_type() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.transaction.proto.TransactionLedgerJsonDocument.type)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.type_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.type_.Set("", GetArena());
+  }
+  return released;
+}
+inline void TransactionLedgerJsonDocument::set_allocated_type(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.type_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.type_.IsDefault()) {
+    _impl_.type_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.transaction.proto.TransactionLedgerJsonDocument.type)
+}
+
+// optional string schema = 2;
+inline bool TransactionLedgerJsonDocument::has_schema() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000002U);
+  return value;
+}
+inline void TransactionLedgerJsonDocument::clear_schema() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.schema_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::std::string& TransactionLedgerJsonDocument::schema() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.transaction.proto.TransactionLedgerJsonDocument.schema)
+  return _internal_schema();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void TransactionLedgerJsonDocument::set_schema(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  _impl_.schema_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.transaction.proto.TransactionLedgerJsonDocument.schema)
+}
+inline ::std::string* PROTOBUF_NONNULL TransactionLedgerJsonDocument::mutable_schema()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::std::string* _s = _internal_mutable_schema();
+  // @@protoc_insertion_point(field_mutable:eve.transaction.proto.TransactionLedgerJsonDocument.schema)
+  return _s;
+}
+inline const ::std::string& TransactionLedgerJsonDocument::_internal_schema() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.schema_.Get();
+}
+inline void TransactionLedgerJsonDocument::_internal_set_schema(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.schema_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL TransactionLedgerJsonDocument::_internal_mutable_schema() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.schema_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE TransactionLedgerJsonDocument::release_schema() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.transaction.proto.TransactionLedgerJsonDocument.schema)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  auto* released = _impl_.schema_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.schema_.Set("", GetArena());
+  }
+  return released;
+}
+inline void TransactionLedgerJsonDocument::set_allocated_schema(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  _impl_.schema_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.schema_.IsDefault()) {
+    _impl_.schema_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.transaction.proto.TransactionLedgerJsonDocument.schema)
+}
+
+// optional uint32 version = 3;
+inline bool TransactionLedgerJsonDocument::has_version() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000080U);
+  return value;
+}
+inline void TransactionLedgerJsonDocument::clear_version() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.version_ = 0u;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
+}
+inline ::uint32_t TransactionLedgerJsonDocument::version() const {
+  // @@protoc_insertion_point(field_get:eve.transaction.proto.TransactionLedgerJsonDocument.version)
+  return _internal_version();
+}
+inline void TransactionLedgerJsonDocument::set_version(::uint32_t value) {
+  _internal_set_version(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
+  // @@protoc_insertion_point(field_set:eve.transaction.proto.TransactionLedgerJsonDocument.version)
+}
+inline ::uint32_t TransactionLedgerJsonDocument::_internal_version() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.version_;
+}
+inline void TransactionLedgerJsonDocument::_internal_set_version(::uint32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.version_ = value;
+}
+
+// optional string instance_id = 4;
+inline bool TransactionLedgerJsonDocument::has_instance_id() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000004U);
+  return value;
+}
+inline void TransactionLedgerJsonDocument::clear_instance_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.instance_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline const ::std::string& TransactionLedgerJsonDocument::instance_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.transaction.proto.TransactionLedgerJsonDocument.instance_id)
+  return _internal_instance_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void TransactionLedgerJsonDocument::set_instance_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  _impl_.instance_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.transaction.proto.TransactionLedgerJsonDocument.instance_id)
+}
+inline ::std::string* PROTOBUF_NONNULL TransactionLedgerJsonDocument::mutable_instance_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ::std::string* _s = _internal_mutable_instance_id();
+  // @@protoc_insertion_point(field_mutable:eve.transaction.proto.TransactionLedgerJsonDocument.instance_id)
+  return _s;
+}
+inline const ::std::string& TransactionLedgerJsonDocument::_internal_instance_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.instance_id_.Get();
+}
+inline void TransactionLedgerJsonDocument::_internal_set_instance_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.instance_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL TransactionLedgerJsonDocument::_internal_mutable_instance_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.instance_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE TransactionLedgerJsonDocument::release_instance_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.transaction.proto.TransactionLedgerJsonDocument.instance_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000004U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  auto* released = _impl_.instance_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.instance_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void TransactionLedgerJsonDocument::set_allocated_instance_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  }
+  _impl_.instance_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.instance_id_.IsDefault()) {
+    _impl_.instance_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.transaction.proto.TransactionLedgerJsonDocument.instance_id)
+}
+
+// optional uint64 revision = 5;
+inline bool TransactionLedgerJsonDocument::has_revision() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000020U);
+  return value;
+}
+inline void TransactionLedgerJsonDocument::clear_revision() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.revision_ = ::uint64_t{0u};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+}
+inline ::uint64_t TransactionLedgerJsonDocument::revision() const {
+  // @@protoc_insertion_point(field_get:eve.transaction.proto.TransactionLedgerJsonDocument.revision)
+  return _internal_revision();
+}
+inline void TransactionLedgerJsonDocument::set_revision(::uint64_t value) {
+  _internal_set_revision(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  // @@protoc_insertion_point(field_set:eve.transaction.proto.TransactionLedgerJsonDocument.revision)
+}
+inline ::uint64_t TransactionLedgerJsonDocument::_internal_revision() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.revision_;
+}
+inline void TransactionLedgerJsonDocument::_internal_set_revision(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.revision_ = value;
+}
+
+// optional uint64 tick = 6;
+inline bool TransactionLedgerJsonDocument::has_tick() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000040U);
+  return value;
+}
+inline void TransactionLedgerJsonDocument::clear_tick() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.tick_ = ::uint64_t{0u};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+}
+inline ::uint64_t TransactionLedgerJsonDocument::tick() const {
+  // @@protoc_insertion_point(field_get:eve.transaction.proto.TransactionLedgerJsonDocument.tick)
+  return _internal_tick();
+}
+inline void TransactionLedgerJsonDocument::set_tick(::uint64_t value) {
+  _internal_set_tick(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  // @@protoc_insertion_point(field_set:eve.transaction.proto.TransactionLedgerJsonDocument.tick)
+}
+inline ::uint64_t TransactionLedgerJsonDocument::_internal_tick() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.tick_;
+}
+inline void TransactionLedgerJsonDocument::_internal_set_tick(::uint64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.tick_ = value;
+}
+
+// optional .eve.transaction.proto.TransactionLedgerSave payload = 7;
+inline bool TransactionLedgerJsonDocument::has_payload() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000010U);
+  PROTOBUF_ASSUME(!value || _impl_.payload_ != nullptr);
+  return value;
+}
+inline void TransactionLedgerJsonDocument::clear_payload() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.payload_ != nullptr) _impl_.payload_->Clear();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+}
+inline const ::eve::transaction::proto::TransactionLedgerSave& TransactionLedgerJsonDocument::_internal_payload() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  const ::eve::transaction::proto::TransactionLedgerSave* p = _impl_.payload_;
+  return p != nullptr ? *p : *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<::eve::transaction::proto::TransactionLedgerSave>(&::eve::transaction::proto::TransactionLedgerSave_globals_);
+}
+inline const ::eve::transaction::proto::TransactionLedgerSave& TransactionLedgerJsonDocument::payload() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.transaction.proto.TransactionLedgerJsonDocument.payload)
+  return _internal_payload();
+}
+inline void TransactionLedgerJsonDocument::unsafe_arena_set_allocated_payload(
+    ::eve::transaction::proto::TransactionLedgerSave* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (GetArena() == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.payload_);
+  }
+  _impl_.payload_ = reinterpret_cast<::eve::transaction::proto::TransactionLedgerSave*>(value);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:eve.transaction.proto.TransactionLedgerJsonDocument.payload)
+}
+inline ::eve::transaction::proto::TransactionLedgerSave* PROTOBUF_NULLABLE TransactionLedgerJsonDocument::release_payload() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ::eve::transaction::proto::TransactionLedgerSave* released = _impl_.payload_;
+  _impl_.payload_ = nullptr;
+  if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
+    auto* old = reinterpret_cast<::google::protobuf::MessageLite*>(released);
+    released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    if (GetArena() == nullptr) {
+      delete old;
+    }
+  } else {
+    if (GetArena() != nullptr) {
+      released = ::google::protobuf::internal::DuplicateIfNonNull(released);
+    }
+  }
+  return released;
+}
+inline ::eve::transaction::proto::TransactionLedgerSave* PROTOBUF_NULLABLE TransactionLedgerJsonDocument::unsafe_arena_release_payload() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.transaction.proto.TransactionLedgerJsonDocument.payload)
+
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ::eve::transaction::proto::TransactionLedgerSave* temp = _impl_.payload_;
+  _impl_.payload_ = nullptr;
+  return temp;
+}
+inline ::eve::transaction::proto::TransactionLedgerSave* PROTOBUF_NONNULL TransactionLedgerJsonDocument::_internal_mutable_payload() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.payload_ == nullptr) {
+    auto* p = ::google::protobuf::Message::DefaultConstruct<::eve::transaction::proto::TransactionLedgerSave>(GetArena());
+    _impl_.payload_ = reinterpret_cast<::eve::transaction::proto::TransactionLedgerSave*>(p);
+  }
+  return _impl_.payload_;
+}
+inline ::eve::transaction::proto::TransactionLedgerSave* PROTOBUF_NONNULL TransactionLedgerJsonDocument::mutable_payload()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ::eve::transaction::proto::TransactionLedgerSave* _msg = _internal_mutable_payload();
+  // @@protoc_insertion_point(field_mutable:eve.transaction.proto.TransactionLedgerJsonDocument.payload)
+  return _msg;
+}
+inline void TransactionLedgerJsonDocument::set_allocated_payload(::eve::transaction::proto::TransactionLedgerSave* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::Arena* message_arena = GetArena();
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (message_arena == nullptr) {
+    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.payload_);
+  }
+
+  if (value != nullptr) {
+    ::google::protobuf::Arena* submessage_arena = value->GetArena();
+    if (message_arena != submessage_arena) {
+      value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
+    }
+    SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  }
+
+  _impl_.payload_ = reinterpret_cast<::eve::transaction::proto::TransactionLedgerSave*>(value);
+  // @@protoc_insertion_point(field_set_allocated:eve.transaction.proto.TransactionLedgerJsonDocument.payload)
+}
+
+// optional bytes digest = 8;
+inline bool TransactionLedgerJsonDocument::has_digest() const {
+  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000008U);
+  return value;
+}
+inline void TransactionLedgerJsonDocument::clear_digest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.digest_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+}
+inline const ::std::string& TransactionLedgerJsonDocument::digest() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:eve.transaction.proto.TransactionLedgerJsonDocument.digest)
+  return _internal_digest();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void TransactionLedgerJsonDocument::set_digest(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  _impl_.digest_.SetBytes(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:eve.transaction.proto.TransactionLedgerJsonDocument.digest)
+}
+inline ::std::string* PROTOBUF_NONNULL TransactionLedgerJsonDocument::mutable_digest()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  ::std::string* _s = _internal_mutable_digest();
+  // @@protoc_insertion_point(field_mutable:eve.transaction.proto.TransactionLedgerJsonDocument.digest)
+  return _s;
+}
+inline const ::std::string& TransactionLedgerJsonDocument::_internal_digest() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.digest_.Get();
+}
+inline void TransactionLedgerJsonDocument::_internal_set_digest(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.digest_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL TransactionLedgerJsonDocument::_internal_mutable_digest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.digest_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE TransactionLedgerJsonDocument::release_digest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:eve.transaction.proto.TransactionLedgerJsonDocument.digest)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000008U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  auto* released = _impl_.digest_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.digest_.Set("", GetArena());
+  }
+  return released;
+}
+inline void TransactionLedgerJsonDocument::set_allocated_digest(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  }
+  _impl_.digest_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.digest_.IsDefault()) {
+    _impl_.digest_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:eve.transaction.proto.TransactionLedgerJsonDocument.digest)
 }
 
 // -------------------------------------------------------------------

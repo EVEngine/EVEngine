@@ -7,7 +7,7 @@
       "scope": "src/modules/transaction/Transaction.*",
       "owner": "transaction::Ledger",
       "issue": "https://github.com/EVEngine/EVEngine/pull/570",
-      "reason": "The ledger and its ordered plan, operation and event records have a typed Protobuf snapshot; operation payloads remain open-ended.",
+      "reason": "The ledger and its ordered plan, operation and event records use typed Protobuf binary, JSON and envelope snapshots; operation payloads remain open-ended.",
       "expiry": "2027-12-31",
       "evidence": [
         "proto/transaction_ledger.proto",
@@ -17,9 +17,9 @@
         "test/transaction.cpp"
       ],
       "schema": "transaction:ledger version 2 stores fixed ledger fields in TransactionLedgerSave and dynamic operation payloads in a lossless recursive Protobuf value with distinct Int64 and Double variants.",
-      "version": "The new binary writer emits version 2; legacy version 1 JSON remains readable through the existing restore API.",
-      "migration": "Legacy version 1 JSON is read into a detached ledger image; new binary snapshots use the version 2 Protobuf contract.",
-      "unknown_fields": "Binary restore rejects unknown Protobuf fields recursively, including nested operation payload messages.",
+      "version": "Binary and JSON writers emit version 2; legacy version 1 JSON remains readable through the existing restore API.",
+      "migration": "Legacy version 1 JSON and common Value envelopes are read into a detached ledger image; new writes use typed version 2 Protobuf binary, JSON and envelopes.",
+      "unknown_fields": "Binary restore rejects unknown Protobuf fields recursively; Protobuf JSON rejects unknown names, including nested operation payload messages.",
       "restore_atomicity": "The full plan and event image is validated in temporary storage; the live ledger is replaced only after all records pass."
     },
     {
@@ -28,7 +28,7 @@
       "scope": "src/modules/transaction/**",
       "owner": "transaction::Ledger",
       "issue": "https://github.com/EVEngine/EVEngine/pull/570",
-      "reason": "The transaction module exposes typed Protobuf ledger persistence alongside the existing plan and script interfaces.",
+      "reason": "The transaction module exposes typed Protobuf ledger persistence and compatibility projections alongside the existing plan and script interfaces.",
       "expiry": "2027-12-31",
       "evidence": [
         "src/modules/transaction/Transaction.h",

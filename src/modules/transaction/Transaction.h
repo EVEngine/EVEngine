@@ -19,6 +19,10 @@
 
 namespace eve::transaction {
 
+namespace proto {
+class TransactionPlan;
+}
+
 /**
  * @brief Immutable context shared by every participant of one transaction.
  *
@@ -320,7 +324,13 @@ public:
      * @reentrancy Do not retain across callbacks or plan mutation.
      */
     [[nodiscard]] const Event* eventAt(int index) const;
-    /** @brief Exports this plan as deterministic compact JSON. */
+    /**
+     * @brief Compatibility-only Protobuf JSON view of this plan.
+     * @return Protobuf JSON, or an empty string on serialization failure.
+     * @cost Linear in operations, events and dynamic payload bytes per projection.
+     * @thread Call on the plan's owning thread.
+     * @reentrancy Does not invoke callbacks.
+     */
     std::string snapshotJson() const;
 
 private:
@@ -328,6 +338,7 @@ private:
     Plan(std::string id, std::string correlation, std::string causation, eve::TransactionId identity = {},
          eve::UuidEntropySource operationEntropy = {}, eve::UuidClock operationClock = {});
     void emit(const std::string& type, const std::string& operationId = {}, const std::string& detail = {});
+    [[nodiscard]] eve::Result<void> writeProto(proto::TransactionPlan& target) const;
 
     std::string           id_;
     eve::TransactionId                  identity_;
@@ -376,7 +387,13 @@ public:
     int count() const;
     /** @brief Returns a plan in creation order, or nullptr. */
     [[nodiscard]] Plan* at(int index);
-    /** @brief Exports all plans and allocator state as deterministic compact JSON. */
+    /**
+     * @brief Compatibility-only Protobuf JSON view; use snapshotBinary for persistence.
+     * @return Protobuf JSON, or an empty string on serialization failure.
+     * @cost Linear in retained records and dynamic payload bytes per projection.
+     * @thread Call on the ledger's owning thread.
+     * @reentrancy Does not invoke callbacks.
+     */
     std::string snapshotJson() const;
     /**
      * @brief Encodes the typed version-2 ledger schema as Protobuf wire bytes.
@@ -396,30 +413,68 @@ public:
      */
     [[nodiscard]] eve::Result<void> restoreBinary(std::string_view bytes);
     /**
+     * @brief Seals the typed ledger payload in a versioned Protobuf envelope.
+     * @param hashProvider Explicit digest provider over the header and exact payload bytes.
+     * @return Complete wire bytes, or a structured failure.
+     * @cost Linear in retained records and encoded bytes plus one digest per save operation.
+     * @thread Call on the ledger's owning thread.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] eve::Result<std::string> snapshotEnvelopeBinary(const eve::SnapshotHashProvider& hashProvider) const;
+    /**
+     * @brief Verifies a typed Protobuf envelope and transactionally restores its ledger.
+     * @param bytes Envelope wire bytes.
+     * @param hashProvider Provider used to verify the payload digest.
+     * @return Success, or a failure leaving all ledger state and metadata unchanged.
+     * @cost Linear in encoded bytes and retained records per restore operation.
+     * @thread Call on the ledger's owning thread.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] eve::Result<void> restoreSnapshotBinary(std::string_view                 bytes,
+                                                          const eve::SnapshotHashProvider& hashProvider);
+    /**
      * @brief Transactionally restores a raw ledger snapshot.
      * @param json Snapshot produced by snapshotJson().
      * @return Success, or a structured failure that leaves this ledger unchanged.
-     * @remarks This Result path is the single restoration implementation. The
+     * @remarks Version 2 uses the Protobuf JSON mapping; version 1 JSON is read only for migration.
+     * @cost Linear in encoded bytes and retained records per restore operation.
+     * @thread Call on the ledger's owning thread.
+     * @reentrancy Does not invoke callbacks.
      */
     [[nodiscard]] eve::Result<void> restore(std::string_view json);
 
     /**
-     * @brief Captures the ledger payload in the common SnapshotEnvelope.
+     * @brief Compatibility-only common SnapshotEnvelope projection; use snapshotEnvelopeBinary for persistence.
      * @param hashProvider Explicit content-digest provider.
      * @return A sealed transaction-ledger snapshot.
      */
     [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(const eve::SnapshotHashProvider& hashProvider) const;
     /**
-     * @brief Restores a verified or migrated transaction-ledger snapshot atomically.
+     * @brief Restores a verified legacy or common transaction-ledger envelope atomically.
      * @param snapshot Source envelope with schema `transaction:ledger`.
      * @param hashProvider Explicit content-digest provider.
      * @return Success, or a failure leaving all ledger state unchanged.
      */
     [[nodiscard]] eve::Result<void> restoreSnapshot(const eve::SnapshotEnvelope&     snapshot,
                                                     const eve::SnapshotHashProvider& hashProvider);
-    /** @brief Serializes the common transaction snapshot envelope. */
+    /**
+     * @brief Projects the typed Protobuf envelope as human-readable JSON.
+     * @param hashProvider Explicit digest provider over the header and exact payload bytes.
+     * @return Protobuf JSON, or a structured failure.
+     * @cost Linear in encoded bytes plus one digest per save operation.
+     * @thread Call on the ledger's owning thread.
+     * @reentrancy Does not invoke callbacks.
+     */
     [[nodiscard]] eve::Result<std::string> snapshotEnvelopeJson(const eve::SnapshotHashProvider& hashProvider) const;
-    /** @brief Parses and transactionally restores a common transaction snapshot envelope. */
+    /**
+     * @brief Restores a typed Protobuf JSON envelope or a legacy common envelope.
+     * @param json Envelope JSON text.
+     * @param hashProvider Provider used to verify the envelope digest.
+     * @return Success, or a failure leaving all ledger state and metadata unchanged.
+     * @cost Linear in encoded bytes and retained records per restore operation.
+     * @thread Call on the ledger's owning thread.
+     * @reentrancy Does not invoke callbacks.
+     */
     [[nodiscard]] eve::Result<void> restoreSnapshotJson(std::string_view                 json,
                                                         const eve::SnapshotHashProvider& hashProvider);
 

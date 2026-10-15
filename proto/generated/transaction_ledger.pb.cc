@@ -39,6 +39,10 @@ PROTOBUF_CONSTINIT ::google::protobuf::internal::ReflectionData
         {&::_pbi::kDescriptorMethods, &::descriptor_table_transaction_5fledger_2eproto, /* tracker*/ nullptr,},
         // ::eve::transaction::proto::TransactionLedgerSave
         {&::_pbi::kDescriptorMethods, &::descriptor_table_transaction_5fledger_2eproto, /* tracker*/ nullptr,},
+        // ::eve::transaction::proto::TransactionLedgerEnvelope
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_transaction_5fledger_2eproto, /* tracker*/ nullptr,},
+        // ::eve::transaction::proto::TransactionLedgerJsonDocument
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_transaction_5fledger_2eproto, /* tracker*/ nullptr,},
         // ::eve::transaction::proto::TransactionPlan
         {&::_pbi::kDescriptorMethods, &::descriptor_table_transaction_5fledger_2eproto, /* tracker*/ nullptr,},
         // ::eve::transaction::proto::TransactionOperation
@@ -51,6 +55,211 @@ PROTOBUF_CONSTINIT ::google::protobuf::internal::ReflectionData
 namespace eve {
 namespace transaction {
 namespace proto {
+class TransactionLedgerEnvelope::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<TransactionLedgerEnvelope>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(TransactionLedgerEnvelope, _impl_._has_bits_);
+};
+
+constexpr TransactionLedgerEnvelope::ParseTableT_ TransactionLedgerEnvelope::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(TransactionLedgerEnvelope, _impl_._has_bits_),
+      0, // no _extensions_
+      8, 56,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967040,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      8,  // num_field_entries
+      0,  // num_aux_entries
+      offsetof(ParseTableT_, field_names),  // no aux_entries
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::eve::transaction::proto::TransactionLedgerEnvelope>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      // optional bytes digest = 8;
+      {::_pbi::TcParser::FastBS1,
+       {66, 4, 0,
+        PROTOBUF_FIELD_OFFSET(TransactionLedgerEnvelope, _impl_.digest_)}},
+      // optional string type = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(TransactionLedgerEnvelope, _impl_.type_)}},
+      // optional string schema = 2;
+      {::_pbi::TcParser::FastUS1,
+       {18, 1, 0,
+        PROTOBUF_FIELD_OFFSET(TransactionLedgerEnvelope, _impl_.schema_)}},
+      // optional uint32 version = 3;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(TransactionLedgerEnvelope, _impl_.version_), 7>(),
+       {24, 7, 0,
+        PROTOBUF_FIELD_OFFSET(TransactionLedgerEnvelope, _impl_.version_)}},
+      // optional string instance_id = 4;
+      {::_pbi::TcParser::FastUS1,
+       {34, 2, 0,
+        PROTOBUF_FIELD_OFFSET(TransactionLedgerEnvelope, _impl_.instance_id_)}},
+      // optional uint64 revision = 5;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(TransactionLedgerEnvelope, _impl_.revision_), 5>(),
+       {40, 5, 0,
+        PROTOBUF_FIELD_OFFSET(TransactionLedgerEnvelope, _impl_.revision_)}},
+      // optional uint64 tick = 6;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(TransactionLedgerEnvelope, _impl_.tick_), 6>(),
+       {48, 6, 0,
+        PROTOBUF_FIELD_OFFSET(TransactionLedgerEnvelope, _impl_.tick_)}},
+      // optional bytes payload_wire = 7;
+      {::_pbi::TcParser::FastBS1,
+       {58, 3, 0,
+        PROTOBUF_FIELD_OFFSET(TransactionLedgerEnvelope, _impl_.payload_wire_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // optional string type = 1;
+      {PROTOBUF_FIELD_OFFSET(TransactionLedgerEnvelope, _impl_.type_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // optional string schema = 2;
+      {PROTOBUF_FIELD_OFFSET(TransactionLedgerEnvelope, _impl_.schema_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // optional uint32 version = 3;
+      {PROTOBUF_FIELD_OFFSET(TransactionLedgerEnvelope, _impl_.version_), _Internal::kHasBitsOffset + 7, 0, (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+      // optional string instance_id = 4;
+      {PROTOBUF_FIELD_OFFSET(TransactionLedgerEnvelope, _impl_.instance_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // optional uint64 revision = 5;
+      {PROTOBUF_FIELD_OFFSET(TransactionLedgerEnvelope, _impl_.revision_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kUInt64)},
+      // optional uint64 tick = 6;
+      {PROTOBUF_FIELD_OFFSET(TransactionLedgerEnvelope, _impl_.tick_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kUInt64)},
+      // optional bytes payload_wire = 7;
+      {PROTOBUF_FIELD_OFFSET(TransactionLedgerEnvelope, _impl_.payload_wire_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kBytes | ::_fl::kRepAString)},
+      // optional bytes digest = 8;
+      {PROTOBUF_FIELD_OFFSET(TransactionLedgerEnvelope, _impl_.digest_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kBytes | ::_fl::kRepAString)},
+    }},
+    // no aux_entries
+    {{
+      "\57\4\6\0\13\0\0\0\0\0\0\0\0\0\0\0"
+      "eve.transaction.proto.TransactionLedgerEnvelope"
+      "type"
+      "schema"
+      "instance_id"
+    }},
+  };
+}
+
+
+inline constexpr TransactionLedgerEnvelope::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        type_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        schema_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        instance_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        payload_wire_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        digest_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        revision_{::uint64_t{0u}},
+        tick_{::uint64_t{0u}},
+        version_{0u} {}
+
+template <typename>
+constexpr TransactionLedgerEnvelope::TransactionLedgerEnvelope(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL TransactionLedgerEnvelope::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) TransactionLedgerEnvelope(arena);
+}
+constexpr auto TransactionLedgerEnvelope::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(TransactionLedgerEnvelope), alignof(TransactionLedgerEnvelope));
+}
+constexpr auto TransactionLedgerEnvelope::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &TransactionLedgerEnvelope::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<TransactionLedgerEnvelope>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &TransactionLedgerEnvelope::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<TransactionLedgerEnvelope>(), &TransactionLedgerEnvelope::ByteSizeLong,
+              &TransactionLedgerEnvelope::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(TransactionLedgerEnvelope, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[5],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_transaction_5fledger_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct TransactionLedgerEnvelopeGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr TransactionLedgerEnvelopeGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 TransactionLedgerEnvelope_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(TransactionLedgerEnvelope::InternalGenerateClassData_(
+            _default, &TransactionLedgerEnvelope_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<TransactionLedgerEnvelope>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~TransactionLedgerEnvelopeGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) TransactionLedgerEnvelope _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<TransactionLedgerEnvelope>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(TransactionLedgerEnvelopeGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT EVENGINE_API_FOUNDATION
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST TransactionLedgerEnvelopeGlobalsTypeInternal TransactionLedgerEnvelope_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* TransactionLedgerEnvelope_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return TransactionLedgerEnvelope_globals_.GetClassData();
+#else
+  return TransactionLedgerEnvelope_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
 class TransactionEvent::_Internal {
  public:
   using HasBits = decltype(::std::declval<TransactionEvent>()._impl_._has_bits_);
@@ -186,7 +395,7 @@ constexpr auto TransactionEvent::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[7],
+      &file_reflection_data[9],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_transaction_5fledger_2eproto,
@@ -1025,7 +1234,7 @@ constexpr auto TransactionOperation::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[6],
+      &file_reflection_data[8],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_transaction_5fledger_2eproto,
@@ -1271,7 +1480,7 @@ constexpr auto TransactionPlan::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[5],
+      &file_reflection_data[7],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_transaction_5fledger_2eproto,
@@ -1499,6 +1708,215 @@ const ::_pbi::ClassData* TransactionLedgerSave_get_class_data() {
 }
 }  // namespace
 #endif  // PROTOBUF_CUSTOM_VTABLE
+class TransactionLedgerJsonDocument::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<TransactionLedgerJsonDocument>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(TransactionLedgerJsonDocument, _impl_._has_bits_);
+};
+
+constexpr TransactionLedgerJsonDocument::ParseTableT_ TransactionLedgerJsonDocument::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(TransactionLedgerJsonDocument, _impl_._has_bits_),
+      0, // no _extensions_
+      8, 56,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967040,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      8,  // num_field_entries
+      1,  // num_aux_entries
+      offsetof(ParseTableT_, aux_entries),
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::eve::transaction::proto::TransactionLedgerJsonDocument>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      // optional bytes digest = 8;
+      {::_pbi::TcParser::FastBS1,
+       {66, 3, 0,
+        PROTOBUF_FIELD_OFFSET(TransactionLedgerJsonDocument, _impl_.digest_)}},
+      // optional string type = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(TransactionLedgerJsonDocument, _impl_.type_)}},
+      // optional string schema = 2;
+      {::_pbi::TcParser::FastUS1,
+       {18, 1, 0,
+        PROTOBUF_FIELD_OFFSET(TransactionLedgerJsonDocument, _impl_.schema_)}},
+      // optional uint32 version = 3;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(TransactionLedgerJsonDocument, _impl_.version_), 7>(),
+       {24, 7, 0,
+        PROTOBUF_FIELD_OFFSET(TransactionLedgerJsonDocument, _impl_.version_)}},
+      // optional string instance_id = 4;
+      {::_pbi::TcParser::FastUS1,
+       {34, 2, 0,
+        PROTOBUF_FIELD_OFFSET(TransactionLedgerJsonDocument, _impl_.instance_id_)}},
+      // optional uint64 revision = 5;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(TransactionLedgerJsonDocument, _impl_.revision_), 5>(),
+       {40, 5, 0,
+        PROTOBUF_FIELD_OFFSET(TransactionLedgerJsonDocument, _impl_.revision_)}},
+      // optional uint64 tick = 6;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(TransactionLedgerJsonDocument, _impl_.tick_), 6>(),
+       {48, 6, 0,
+        PROTOBUF_FIELD_OFFSET(TransactionLedgerJsonDocument, _impl_.tick_)}},
+      // optional .eve.transaction.proto.TransactionLedgerSave payload = 7;
+      {::_pbi::TcParser::FastMtS1,
+       {58, 4, 0,
+        PROTOBUF_FIELD_OFFSET(TransactionLedgerJsonDocument, _impl_.payload_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // optional string type = 1;
+      {PROTOBUF_FIELD_OFFSET(TransactionLedgerJsonDocument, _impl_.type_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // optional string schema = 2;
+      {PROTOBUF_FIELD_OFFSET(TransactionLedgerJsonDocument, _impl_.schema_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // optional uint32 version = 3;
+      {PROTOBUF_FIELD_OFFSET(TransactionLedgerJsonDocument, _impl_.version_), _Internal::kHasBitsOffset + 7, 0, (0 | ::_fl::kFcOptional | ::_fl::kUInt32)},
+      // optional string instance_id = 4;
+      {PROTOBUF_FIELD_OFFSET(TransactionLedgerJsonDocument, _impl_.instance_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // optional uint64 revision = 5;
+      {PROTOBUF_FIELD_OFFSET(TransactionLedgerJsonDocument, _impl_.revision_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kUInt64)},
+      // optional uint64 tick = 6;
+      {PROTOBUF_FIELD_OFFSET(TransactionLedgerJsonDocument, _impl_.tick_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kUInt64)},
+      // optional .eve.transaction.proto.TransactionLedgerSave payload = 7;
+      {PROTOBUF_FIELD_OFFSET(TransactionLedgerJsonDocument, _impl_.payload_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+      // optional bytes digest = 8;
+      {PROTOBUF_FIELD_OFFSET(TransactionLedgerJsonDocument, _impl_.digest_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kBytes | ::_fl::kRepAString)},
+    }},
+    {{
+        #ifndef PROTOBUF_MESSAGE_GLOBALS
+        {::_pbi::TcParser::GetTable<::eve::transaction::proto::TransactionLedgerSave>()},
+        #else
+        {::_pbi::FieldAuxMessageGlobals(), &::eve::transaction::proto::TransactionLedgerSave_globals_},
+        #endif
+    }},
+    {{
+      "\63\4\6\0\13\0\0\0\0\0\0\0\0\0\0\0"
+      "eve.transaction.proto.TransactionLedgerJsonDocument"
+      "type"
+      "schema"
+      "instance_id"
+    }},
+  };
+}
+
+
+inline constexpr TransactionLedgerJsonDocument::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        type_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        schema_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        instance_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        digest_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        payload_{nullptr},
+        revision_{::uint64_t{0u}},
+        tick_{::uint64_t{0u}},
+        version_{0u} {}
+
+template <typename>
+constexpr TransactionLedgerJsonDocument::TransactionLedgerJsonDocument(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL TransactionLedgerJsonDocument::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) TransactionLedgerJsonDocument(arena);
+}
+constexpr auto TransactionLedgerJsonDocument::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(TransactionLedgerJsonDocument), alignof(TransactionLedgerJsonDocument));
+}
+constexpr auto TransactionLedgerJsonDocument::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &TransactionLedgerJsonDocument::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<TransactionLedgerJsonDocument>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &TransactionLedgerJsonDocument::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<TransactionLedgerJsonDocument>(), &TransactionLedgerJsonDocument::ByteSizeLong,
+              &TransactionLedgerJsonDocument::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(TransactionLedgerJsonDocument, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[6],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_transaction_5fledger_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct TransactionLedgerJsonDocumentGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr TransactionLedgerJsonDocumentGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 TransactionLedgerJsonDocument_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(TransactionLedgerJsonDocument::InternalGenerateClassData_(
+            _default, &TransactionLedgerJsonDocument_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<TransactionLedgerJsonDocument>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~TransactionLedgerJsonDocumentGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) TransactionLedgerJsonDocument _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<TransactionLedgerJsonDocument>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(TransactionLedgerJsonDocumentGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT EVENGINE_API_FOUNDATION
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST TransactionLedgerJsonDocumentGlobalsTypeInternal TransactionLedgerJsonDocument_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* TransactionLedgerJsonDocument_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return TransactionLedgerJsonDocument_globals_.GetClassData();
+#else
+  return TransactionLedgerJsonDocument_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
 }  // namespace proto
 }  // namespace transaction
 }  // namespace eve
@@ -1547,6 +1965,44 @@ const ::uint32_t
         3,
         2,
         0,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::TransactionLedgerEnvelope, _impl_._has_bits_),
+        11, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::TransactionLedgerEnvelope, _impl_.type_),
+        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::TransactionLedgerEnvelope, _impl_.schema_),
+        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::TransactionLedgerEnvelope, _impl_.version_),
+        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::TransactionLedgerEnvelope, _impl_.instance_id_),
+        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::TransactionLedgerEnvelope, _impl_.revision_),
+        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::TransactionLedgerEnvelope, _impl_.tick_),
+        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::TransactionLedgerEnvelope, _impl_.payload_wire_),
+        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::TransactionLedgerEnvelope, _impl_.digest_),
+        0,
+        1,
+        7,
+        2,
+        5,
+        6,
+        3,
+        4,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::TransactionLedgerJsonDocument, _impl_._has_bits_),
+        11, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::TransactionLedgerJsonDocument, _impl_.type_),
+        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::TransactionLedgerJsonDocument, _impl_.schema_),
+        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::TransactionLedgerJsonDocument, _impl_.version_),
+        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::TransactionLedgerJsonDocument, _impl_.instance_id_),
+        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::TransactionLedgerJsonDocument, _impl_.revision_),
+        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::TransactionLedgerJsonDocument, _impl_.tick_),
+        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::TransactionLedgerJsonDocument, _impl_.payload_),
+        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::TransactionLedgerJsonDocument, _impl_.digest_),
+        0,
+        1,
+        7,
+        2,
+        5,
+        6,
+        4,
+        3,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::TransactionPlan, _impl_._has_bits_),
         13, // hasbit index offset
@@ -1611,9 +2067,11 @@ static const ::_pbi::MigrationSchema
         {15, sizeof(::eve::transaction::proto::DynamicObject)},
         {20, sizeof(::eve::transaction::proto::DynamicField)},
         {27, sizeof(::eve::transaction::proto::TransactionLedgerSave)},
-        {38, sizeof(::eve::transaction::proto::TransactionPlan)},
-        {61, sizeof(::eve::transaction::proto::TransactionOperation)},
-        {80, sizeof(::eve::transaction::proto::TransactionEvent)},
+        {38, sizeof(::eve::transaction::proto::TransactionLedgerEnvelope)},
+        {57, sizeof(::eve::transaction::proto::TransactionLedgerJsonDocument)},
+        {76, sizeof(::eve::transaction::proto::TransactionPlan)},
+        {99, sizeof(::eve::transaction::proto::TransactionOperation)},
+        {118, sizeof(::eve::transaction::proto::TransactionEvent)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
@@ -1622,6 +2080,8 @@ static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
         &::eve::transaction::proto::DynamicObject_globals_,
         &::eve::transaction::proto::DynamicField_globals_,
         &::eve::transaction::proto::TransactionLedgerSave_globals_,
+        &::eve::transaction::proto::TransactionLedgerEnvelope_globals_,
+        &::eve::transaction::proto::TransactionLedgerJsonDocument_globals_,
         &::eve::transaction::proto::TransactionPlan_globals_,
         &::eve::transaction::proto::TransactionOperation_globals_,
         &::eve::transaction::proto::TransactionEvent_globals_,
@@ -1646,46 +2106,62 @@ const char descriptor_table_protodef_transaction_5fledger_2eproto[] ABSL_ATTRIBU
     "\001(\rH\001\210\001\001\022\035\n\020next_transaction\030\003 \001(\004H\002\210\001\001\022"
     "5\n\005plans\030\004 \003(\0132&.eve.transaction.proto.T"
     "ransactionPlanB\t\n\007_schemaB\n\n\010_versionB\023\n"
-    "\021_next_transaction\"\276\004\n\017TransactionPlan\022\017"
-    "\n\002id\030\001 \001(\tH\000\210\001\001\022\025\n\010identity\030\002 \001(\tH\001\210\001\001\022@"
-    "\n\005state\030\003 \001(\0162,.eve.transaction.proto.Tr"
-    "ansactionPlan.StateH\002\210\001\001\022\030\n\013correlation\030"
-    "\004 \001(\tH\003\210\001\001\022\026\n\tcausation\030\005 \001(\tH\004\210\001\001\022\022\n\005er"
-    "ror\030\006 \001(\tH\005\210\001\001\022\033\n\016next_operation\030\007 \001(\004H\006"
-    "\210\001\001\022\027\n\nnext_event\030\010 \001(\004H\007\210\001\001\022\?\n\noperatio"
-    "ns\030\t \003(\0132+.eve.transaction.proto.Transac"
-    "tionOperation\0227\n\006events\030\n \003(\0132\'.eve.tran"
-    "saction.proto.TransactionEvent\"c\n\005State\022"
-    "\025\n\021STATE_UNSPECIFIED\020\000\022\010\n\004OPEN\020\001\022\r\n\tVALI"
-    "DATED\020\002\022\r\n\tCOMMITTED\020\003\022\017\n\013ROLLED_BACK\020\004\022"
-    "\n\n\006FAILED\020\005B\005\n\003_idB\013\n\t_identityB\010\n\006_stat"
-    "eB\016\n\014_correlationB\014\n\n_causationB\010\n\006_erro"
-    "rB\021\n\017_next_operationB\r\n\013_next_event\"\242\002\n\024"
-    "TransactionOperation\022\017\n\002id\030\001 \001(\tH\000\210\001\001\022\025\n"
-    "\010identity\030\002 \001(\tH\001\210\001\001\022\021\n\004kind\030\003 \001(\tH\002\210\001\001\022"
-    "\023\n\006target\030\004 \001(\tH\003\210\001\001\0224\n\007payload\030\005 \001(\0132#."
-    "eve.transaction.proto.DynamicValue\022\024\n\007ch"
-    "ecked\030\006 \001(\010H\004\210\001\001\022\022\n\005valid\030\007 \001(\010H\005\210\001\001\022\022\n\005"
-    "error\030\010 \001(\tH\006\210\001\001B\005\n\003_idB\013\n\t_identityB\007\n\005"
-    "_kindB\t\n\007_targetB\n\n\010_checkedB\010\n\006_validB\010"
-    "\n\006_error\"\316\001\n\020TransactionEvent\022\025\n\010sequenc"
-    "e\030\001 \001(\004H\000\210\001\001\022\033\n\016transaction_id\030\002 \001(\tH\001\210\001"
-    "\001\022\031\n\014operation_id\030\003 \001(\tH\002\210\001\001\022\021\n\004type\030\004 \001"
-    "(\tH\003\210\001\001\022\023\n\006detail\030\005 \001(\tH\004\210\001\001B\013\n\t_sequenc"
-    "eB\021\n\017_transaction_idB\017\n\r_operation_idB\007\n"
-    "\005_typeB\t\n\007_detailb\006proto3"
+    "\021_next_transaction\"\257\002\n\031TransactionLedger"
+    "Envelope\022\021\n\004type\030\001 \001(\tH\000\210\001\001\022\023\n\006schema\030\002 "
+    "\001(\tH\001\210\001\001\022\024\n\007version\030\003 \001(\rH\002\210\001\001\022\030\n\013instan"
+    "ce_id\030\004 \001(\tH\003\210\001\001\022\025\n\010revision\030\005 \001(\004H\004\210\001\001\022"
+    "\021\n\004tick\030\006 \001(\004H\005\210\001\001\022\031\n\014payload_wire\030\007 \001(\014"
+    "H\006\210\001\001\022\023\n\006digest\030\010 \001(\014H\007\210\001\001B\007\n\005_typeB\t\n\007_"
+    "schemaB\n\n\010_versionB\016\n\014_instance_idB\013\n\t_r"
+    "evisionB\007\n\005_tickB\017\n\r_payload_wireB\t\n\007_di"
+    "gest\"\327\002\n\035TransactionLedgerJsonDocument\022\021"
+    "\n\004type\030\001 \001(\tH\000\210\001\001\022\023\n\006schema\030\002 \001(\tH\001\210\001\001\022\024"
+    "\n\007version\030\003 \001(\rH\002\210\001\001\022\030\n\013instance_id\030\004 \001("
+    "\tH\003\210\001\001\022\025\n\010revision\030\005 \001(\004H\004\210\001\001\022\021\n\004tick\030\006 "
+    "\001(\004H\005\210\001\001\022B\n\007payload\030\007 \001(\0132,.eve.transact"
+    "ion.proto.TransactionLedgerSaveH\006\210\001\001\022\023\n\006"
+    "digest\030\010 \001(\014H\007\210\001\001B\007\n\005_typeB\t\n\007_schemaB\n\n"
+    "\010_versionB\016\n\014_instance_idB\013\n\t_revisionB\007"
+    "\n\005_tickB\n\n\010_payloadB\t\n\007_digest\"\276\004\n\017Trans"
+    "actionPlan\022\017\n\002id\030\001 \001(\tH\000\210\001\001\022\025\n\010identity\030"
+    "\002 \001(\tH\001\210\001\001\022@\n\005state\030\003 \001(\0162,.eve.transact"
+    "ion.proto.TransactionPlan.StateH\002\210\001\001\022\030\n\013"
+    "correlation\030\004 \001(\tH\003\210\001\001\022\026\n\tcausation\030\005 \001("
+    "\tH\004\210\001\001\022\022\n\005error\030\006 \001(\tH\005\210\001\001\022\033\n\016next_opera"
+    "tion\030\007 \001(\004H\006\210\001\001\022\027\n\nnext_event\030\010 \001(\004H\007\210\001\001"
+    "\022\?\n\noperations\030\t \003(\0132+.eve.transaction.p"
+    "roto.TransactionOperation\0227\n\006events\030\n \003("
+    "\0132\'.eve.transaction.proto.TransactionEve"
+    "nt\"c\n\005State\022\025\n\021STATE_UNSPECIFIED\020\000\022\010\n\004OP"
+    "EN\020\001\022\r\n\tVALIDATED\020\002\022\r\n\tCOMMITTED\020\003\022\017\n\013RO"
+    "LLED_BACK\020\004\022\n\n\006FAILED\020\005B\005\n\003_idB\013\n\t_ident"
+    "ityB\010\n\006_stateB\016\n\014_correlationB\014\n\n_causat"
+    "ionB\010\n\006_errorB\021\n\017_next_operationB\r\n\013_nex"
+    "t_event\"\242\002\n\024TransactionOperation\022\017\n\002id\030\001"
+    " \001(\tH\000\210\001\001\022\025\n\010identity\030\002 \001(\tH\001\210\001\001\022\021\n\004kind"
+    "\030\003 \001(\tH\002\210\001\001\022\023\n\006target\030\004 \001(\tH\003\210\001\001\0224\n\007payl"
+    "oad\030\005 \001(\0132#.eve.transaction.proto.Dynami"
+    "cValue\022\024\n\007checked\030\006 \001(\010H\004\210\001\001\022\022\n\005valid\030\007 "
+    "\001(\010H\005\210\001\001\022\022\n\005error\030\010 \001(\tH\006\210\001\001B\005\n\003_idB\013\n\t_"
+    "identityB\007\n\005_kindB\t\n\007_targetB\n\n\010_checked"
+    "B\010\n\006_validB\010\n\006_error\"\316\001\n\020TransactionEven"
+    "t\022\025\n\010sequence\030\001 \001(\004H\000\210\001\001\022\033\n\016transaction_"
+    "id\030\002 \001(\tH\001\210\001\001\022\031\n\014operation_id\030\003 \001(\tH\002\210\001\001"
+    "\022\021\n\004type\030\004 \001(\tH\003\210\001\001\022\023\n\006detail\030\005 \001(\tH\004\210\001\001"
+    "B\013\n\t_sequenceB\021\n\017_transaction_idB\017\n\r_ope"
+    "ration_idB\007\n\005_typeB\t\n\007_detailb\006proto3"
 };
 static ::absl::once_flag descriptor_table_transaction_5fledger_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_transaction_5fledger_2eproto = {
     false,
     false,
-    1825,
+    2477,
     descriptor_table_protodef_transaction_5fledger_2eproto,
     "transaction_ledger.proto",
     &descriptor_table_transaction_5fledger_2eproto_once,
     nullptr,
     0,
-    8,
+    10,
     schemas,
     file_message_globals,
     TableStruct_transaction_5fledger_2eproto::offsets,
@@ -3115,6 +3591,747 @@ void TransactionLedgerSave::InternalSwap(TransactionLedgerSave* PROTOBUF_RESTRIC
 }
 
 ::google::protobuf::Metadata TransactionLedgerSave::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+TransactionLedgerEnvelope::TransactionLedgerEnvelope(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, TransactionLedgerEnvelope_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:eve.transaction.proto.TransactionLedgerEnvelope)
+}
+PROTOBUF_NDEBUG_INLINE TransactionLedgerEnvelope::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::eve::transaction::proto::TransactionLedgerEnvelope& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        type_(arena, from.type_),
+        schema_(arena, from.schema_),
+        instance_id_(arena, from.instance_id_),
+        payload_wire_(arena, from.payload_wire_),
+        digest_(arena, from.digest_) {}
+
+TransactionLedgerEnvelope::TransactionLedgerEnvelope(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const TransactionLedgerEnvelope& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, TransactionLedgerEnvelope_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  TransactionLedgerEnvelope* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::memcpy(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, revision_),
+           reinterpret_cast<const char*>(&from._impl_) +
+               offsetof(Impl_, revision_),
+           offsetof(Impl_, version_) -
+               offsetof(Impl_, revision_) +
+               sizeof(Impl_::version_));
+
+  // @@protoc_insertion_point(copy_constructor:eve.transaction.proto.TransactionLedgerEnvelope)
+}
+PROTOBUF_NDEBUG_INLINE TransactionLedgerEnvelope::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        type_(arena),
+        schema_(arena),
+        instance_id_(arena),
+        payload_wire_(arena),
+        digest_(arena) {}
+
+inline void TransactionLedgerEnvelope::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, revision_),
+           0,
+           offsetof(Impl_, version_) -
+               offsetof(Impl_, revision_) +
+               sizeof(Impl_::version_));
+}
+TransactionLedgerEnvelope::~TransactionLedgerEnvelope() {
+  // @@protoc_insertion_point(destructor:eve.transaction.proto.TransactionLedgerEnvelope)
+  SharedDtor(*this);
+}
+inline void TransactionLedgerEnvelope::SharedDtor(MessageLite& self) {
+  TransactionLedgerEnvelope& this_ = static_cast<TransactionLedgerEnvelope&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.type_.Destroy();
+  this_._impl_.schema_.Destroy();
+  this_._impl_.instance_id_.Destroy();
+  this_._impl_.payload_wire_.Destroy();
+  this_._impl_.digest_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull TransactionLedgerEnvelope_class_data_ =
+        TransactionLedgerEnvelope::InternalGenerateClassData_(TransactionLedgerEnvelope_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+TransactionLedgerEnvelope::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&TransactionLedgerEnvelope_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(TransactionLedgerEnvelope_class_data_.tc_table);
+  return TransactionLedgerEnvelope_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+TransactionLedgerEnvelope::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&TransactionLedgerEnvelope_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&TransactionLedgerEnvelope_globals_));
+  return TransactionLedgerEnvelope_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const TransactionLedgerEnvelope::ParseTableT_
+    TransactionLedgerEnvelope::_table_ =
+        TransactionLedgerEnvelope::InternalGenerateParseTable_(TransactionLedgerEnvelope_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void TransactionLedgerEnvelope::Clear() {
+// @@protoc_insertion_point(message_clear_start:eve.transaction.proto.TransactionLedgerEnvelope)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.type_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _impl_.schema_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _impl_.instance_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      _impl_.payload_wire_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      _impl_.digest_.ClearNonDefaultToEmpty();
+    }
+  }
+  if (BatchCheckHasBit(cached_has_bits, 0x000000e0U)) {
+    ::memset(&_impl_.revision_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.version_) -
+        reinterpret_cast<char*>(&_impl_.revision_)) + sizeof(_impl_.version_));
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL TransactionLedgerEnvelope::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const TransactionLedgerEnvelope& this_ = static_cast<const TransactionLedgerEnvelope&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL TransactionLedgerEnvelope::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const TransactionLedgerEnvelope& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:eve.transaction.proto.TransactionLedgerEnvelope)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // optional string type = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    const ::std::string& _s = this_._internal_type();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "eve.transaction.proto.TransactionLedgerEnvelope.type");
+    target = stream->WriteStringMaybeAliased(1, _s, target);
+  }
+
+  // optional string schema = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    const ::std::string& _s = this_._internal_schema();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "eve.transaction.proto.TransactionLedgerEnvelope.schema");
+    target = stream->WriteStringMaybeAliased(2, _s, target);
+  }
+
+  // optional uint32 version = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+        3, this_._internal_version(), target);
+  }
+
+  // optional string instance_id = 4;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    const ::std::string& _s = this_._internal_instance_id();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "eve.transaction.proto.TransactionLedgerEnvelope.instance_id");
+    target = stream->WriteStringMaybeAliased(4, _s, target);
+  }
+
+  // optional uint64 revision = 5;
+  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+        5, this_._internal_revision(), target);
+  }
+
+  // optional uint64 tick = 6;
+  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+        6, this_._internal_tick(), target);
+  }
+
+  // optional bytes payload_wire = 7;
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    const ::std::string& _s = this_._internal_payload_wire();
+    target = stream->WriteBytesMaybeAliased(7, _s, target);
+  }
+
+  // optional bytes digest = 8;
+  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    const ::std::string& _s = this_._internal_digest();
+    target = stream->WriteBytesMaybeAliased(8, _s, target);
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:eve.transaction.proto.TransactionLedgerEnvelope)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t TransactionLedgerEnvelope::ByteSizeLong(const MessageLite& base) {
+  const TransactionLedgerEnvelope& this_ = static_cast<const TransactionLedgerEnvelope&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t TransactionLedgerEnvelope::ByteSizeLong() const {
+  const TransactionLedgerEnvelope& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:eve.transaction.proto.TransactionLedgerEnvelope)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x000000ffU)) {
+    // optional string type = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                      this_._internal_type());
+    }
+    // optional string schema = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                      this_._internal_schema());
+    }
+    // optional string instance_id = 4;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                      this_._internal_instance_id());
+    }
+    // optional bytes payload_wire = 7;
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      total_size += 1 + ::google::protobuf::internal::WireFormatLite::BytesSize(
+                                      this_._internal_payload_wire());
+    }
+    // optional bytes digest = 8;
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      total_size += 1 + ::google::protobuf::internal::WireFormatLite::BytesSize(
+                                      this_._internal_digest());
+    }
+    // optional uint64 revision = 5;
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+          this_._internal_revision());
+    }
+    // optional uint64 tick = 6;
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+      total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+          this_._internal_tick());
+    }
+    // optional uint32 version = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+      total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+          this_._internal_version());
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void TransactionLedgerEnvelope::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<TransactionLedgerEnvelope*>(&to_msg);
+  auto& from = static_cast<const TransactionLedgerEnvelope&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(class_specific_merge_from_start:eve.transaction.proto.TransactionLedgerEnvelope)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x000000ffU)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _this->_internal_set_type(from._internal_type());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _this->_internal_set_schema(from._internal_schema());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _this->_internal_set_instance_id(from._internal_instance_id());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      _this->_internal_set_payload_wire(from._internal_payload_wire());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      _this->_internal_set_digest(from._internal_digest());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      _this->_impl_.revision_ = from._impl_.revision_;
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+      _this->_impl_.tick_ = from._impl_.tick_;
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+      _this->_impl_.version_ = from._impl_.version_;
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void TransactionLedgerEnvelope::CopyFrom(const TransactionLedgerEnvelope& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:eve.transaction.proto.TransactionLedgerEnvelope)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void TransactionLedgerEnvelope::InternalSwap(TransactionLedgerEnvelope* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.type_, &other->_impl_.type_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.schema_, &other->_impl_.schema_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.instance_id_, &other->_impl_.instance_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.payload_wire_, &other->_impl_.payload_wire_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.digest_, &other->_impl_.digest_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(TransactionLedgerEnvelope, _impl_.version_)
+      + sizeof(TransactionLedgerEnvelope::_impl_.version_)
+      - PROTOBUF_FIELD_OFFSET(TransactionLedgerEnvelope, _impl_.revision_)>(
+          reinterpret_cast<char*>(&_impl_.revision_),
+          reinterpret_cast<char*>(&other->_impl_.revision_));
+}
+
+::google::protobuf::Metadata TransactionLedgerEnvelope::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+TransactionLedgerJsonDocument::TransactionLedgerJsonDocument(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, TransactionLedgerJsonDocument_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:eve.transaction.proto.TransactionLedgerJsonDocument)
+}
+PROTOBUF_NDEBUG_INLINE TransactionLedgerJsonDocument::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::eve::transaction::proto::TransactionLedgerJsonDocument& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        type_(arena, from.type_),
+        schema_(arena, from.schema_),
+        instance_id_(arena, from.instance_id_),
+        digest_(arena, from.digest_) {}
+
+TransactionLedgerJsonDocument::TransactionLedgerJsonDocument(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const TransactionLedgerJsonDocument& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, TransactionLedgerJsonDocument_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  TransactionLedgerJsonDocument* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::uint32_t cached_has_bits = _impl_._has_bits_[0];
+  _impl_.payload_ = (CheckHasBit(cached_has_bits, 0x00000010U))
+                ? ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.payload_)
+                : nullptr;
+  ::memcpy(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, revision_),
+           reinterpret_cast<const char*>(&from._impl_) +
+               offsetof(Impl_, revision_),
+           offsetof(Impl_, version_) -
+               offsetof(Impl_, revision_) +
+               sizeof(Impl_::version_));
+
+  // @@protoc_insertion_point(copy_constructor:eve.transaction.proto.TransactionLedgerJsonDocument)
+}
+PROTOBUF_NDEBUG_INLINE TransactionLedgerJsonDocument::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        type_(arena),
+        schema_(arena),
+        instance_id_(arena),
+        digest_(arena) {}
+
+inline void TransactionLedgerJsonDocument::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, payload_),
+           0,
+           offsetof(Impl_, version_) -
+               offsetof(Impl_, payload_) +
+               sizeof(Impl_::version_));
+}
+TransactionLedgerJsonDocument::~TransactionLedgerJsonDocument() {
+  // @@protoc_insertion_point(destructor:eve.transaction.proto.TransactionLedgerJsonDocument)
+  SharedDtor(*this);
+}
+inline void TransactionLedgerJsonDocument::SharedDtor(MessageLite& self) {
+  TransactionLedgerJsonDocument& this_ = static_cast<TransactionLedgerJsonDocument&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.type_.Destroy();
+  this_._impl_.schema_.Destroy();
+  this_._impl_.instance_id_.Destroy();
+  this_._impl_.digest_.Destroy();
+  delete this_._impl_.payload_;
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull TransactionLedgerJsonDocument_class_data_ =
+        TransactionLedgerJsonDocument::InternalGenerateClassData_(TransactionLedgerJsonDocument_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+TransactionLedgerJsonDocument::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&TransactionLedgerJsonDocument_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(TransactionLedgerJsonDocument_class_data_.tc_table);
+  return TransactionLedgerJsonDocument_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+TransactionLedgerJsonDocument::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&TransactionLedgerJsonDocument_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&TransactionLedgerJsonDocument_globals_));
+  return TransactionLedgerJsonDocument_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const TransactionLedgerJsonDocument::ParseTableT_
+    TransactionLedgerJsonDocument::_table_ =
+        TransactionLedgerJsonDocument::InternalGenerateParseTable_(TransactionLedgerJsonDocument_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void TransactionLedgerJsonDocument::Clear() {
+// @@protoc_insertion_point(message_clear_start:eve.transaction.proto.TransactionLedgerJsonDocument)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.type_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _impl_.schema_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _impl_.instance_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      _impl_.digest_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      ABSL_DCHECK(_impl_.payload_ != nullptr);
+      _impl_.payload_->Clear();
+    }
+  }
+  if (BatchCheckHasBit(cached_has_bits, 0x000000e0U)) {
+    ::memset(&_impl_.revision_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.version_) -
+        reinterpret_cast<char*>(&_impl_.revision_)) + sizeof(_impl_.version_));
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL TransactionLedgerJsonDocument::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const TransactionLedgerJsonDocument& this_ = static_cast<const TransactionLedgerJsonDocument&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL TransactionLedgerJsonDocument::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const TransactionLedgerJsonDocument& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:eve.transaction.proto.TransactionLedgerJsonDocument)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // optional string type = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    const ::std::string& _s = this_._internal_type();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "eve.transaction.proto.TransactionLedgerJsonDocument.type");
+    target = stream->WriteStringMaybeAliased(1, _s, target);
+  }
+
+  // optional string schema = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    const ::std::string& _s = this_._internal_schema();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "eve.transaction.proto.TransactionLedgerJsonDocument.schema");
+    target = stream->WriteStringMaybeAliased(2, _s, target);
+  }
+
+  // optional uint32 version = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt32ToArray(
+        3, this_._internal_version(), target);
+  }
+
+  // optional string instance_id = 4;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    const ::std::string& _s = this_._internal_instance_id();
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "eve.transaction.proto.TransactionLedgerJsonDocument.instance_id");
+    target = stream->WriteStringMaybeAliased(4, _s, target);
+  }
+
+  // optional uint64 revision = 5;
+  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+        5, this_._internal_revision(), target);
+  }
+
+  // optional uint64 tick = 6;
+  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteUInt64ToArray(
+        6, this_._internal_tick(), target);
+  }
+
+  // optional .eve.transaction.proto.TransactionLedgerSave payload = 7;
+  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+        7, *this_._impl_.payload_, this_._impl_.payload_->GetCachedSize(), target,
+        stream);
+  }
+
+  // optional bytes digest = 8;
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    const ::std::string& _s = this_._internal_digest();
+    target = stream->WriteBytesMaybeAliased(8, _s, target);
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:eve.transaction.proto.TransactionLedgerJsonDocument)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t TransactionLedgerJsonDocument::ByteSizeLong(const MessageLite& base) {
+  const TransactionLedgerJsonDocument& this_ = static_cast<const TransactionLedgerJsonDocument&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t TransactionLedgerJsonDocument::ByteSizeLong() const {
+  const TransactionLedgerJsonDocument& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:eve.transaction.proto.TransactionLedgerJsonDocument)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x000000ffU)) {
+    // optional string type = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                      this_._internal_type());
+    }
+    // optional string schema = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                      this_._internal_schema());
+    }
+    // optional string instance_id = 4;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                      this_._internal_instance_id());
+    }
+    // optional bytes digest = 8;
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      total_size += 1 + ::google::protobuf::internal::WireFormatLite::BytesSize(
+                                      this_._internal_digest());
+    }
+    // optional .eve.transaction.proto.TransactionLedgerSave payload = 7;
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      total_size += 1 +
+                    ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.payload_);
+    }
+    // optional uint64 revision = 5;
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+          this_._internal_revision());
+    }
+    // optional uint64 tick = 6;
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+      total_size += ::_pbi::WireFormatLite::UInt64SizePlusOne(
+          this_._internal_tick());
+    }
+    // optional uint32 version = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+      total_size += ::_pbi::WireFormatLite::UInt32SizePlusOne(
+          this_._internal_version());
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void TransactionLedgerJsonDocument::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<TransactionLedgerJsonDocument*>(&to_msg);
+  auto& from = static_cast<const TransactionLedgerJsonDocument&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  ::google::protobuf::Arena* arena = _this->GetArena();
+  // @@protoc_insertion_point(class_specific_merge_from_start:eve.transaction.proto.TransactionLedgerJsonDocument)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x000000ffU)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _this->_internal_set_type(from._internal_type());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _this->_internal_set_schema(from._internal_schema());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _this->_internal_set_instance_id(from._internal_instance_id());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      _this->_internal_set_digest(from._internal_digest());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      ABSL_DCHECK(from._impl_.payload_ != nullptr);
+      if (_this->_impl_.payload_ == nullptr) {
+        _this->_impl_.payload_ = ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.payload_);
+      } else {
+        _this->_impl_.payload_->MergeFrom(*from._impl_.payload_);
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      _this->_impl_.revision_ = from._impl_.revision_;
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+      _this->_impl_.tick_ = from._impl_.tick_;
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+      _this->_impl_.version_ = from._impl_.version_;
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void TransactionLedgerJsonDocument::CopyFrom(const TransactionLedgerJsonDocument& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:eve.transaction.proto.TransactionLedgerJsonDocument)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void TransactionLedgerJsonDocument::InternalSwap(TransactionLedgerJsonDocument* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.type_, &other->_impl_.type_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.schema_, &other->_impl_.schema_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.instance_id_, &other->_impl_.instance_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.digest_, &other->_impl_.digest_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(TransactionLedgerJsonDocument, _impl_.version_)
+      + sizeof(TransactionLedgerJsonDocument::_impl_.version_)
+      - PROTOBUF_FIELD_OFFSET(TransactionLedgerJsonDocument, _impl_.payload_)>(
+          reinterpret_cast<char*>(&_impl_.payload_),
+          reinterpret_cast<char*>(&other->_impl_.payload_));
+}
+
+::google::protobuf::Metadata TransactionLedgerJsonDocument::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // ===================================================================

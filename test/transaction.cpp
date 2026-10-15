@@ -8,6 +8,7 @@
 #include <vector>
 #include "StatePatchTestSupport.h"
 #include "common/Module.h"
+#include "common/SnapshotHash.h"
 #include "statepatch/StatePatch.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -152,6 +153,82 @@ TEST_CASE("transaction.protobuf.roundTripsAndRejectsInvalidRestore") {
     auto afterFailure = restored.snapshotBinary();
     REQUIRE(afterFailure.ok());
     CHECK_EQ(afterFailure.value(), saved.value());
+}
+
+TEST_CASE("transaction.protobuf.jsonAndEnvelopeRoundTrips") {
+    const auto identity = eve::PersistentId::parse("aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee");
+    REQUIRE(identity.has_value());
+    const auto hash = eve::snapshotContentHashProvider();
+    Ledger     source(*identity);
+    Plan*      plan = createPlan(source, "00000000-0000-4000-8000-000000000001");
+    stageOperation(*plan, "00000000-0000-4000-8000-000000000002", "assign", "base", "{\"n\":9223372036854775807}");
+    CHECK(!plan->snapshotJson().empty());
+
+    const std::string payloadJson = source.snapshotJson();
+    CHECK(!payloadJson.empty());
+    Ledger fromJson(*identity);
+    REQUIRE(fromJson.restore(payloadJson).ok());
+    CHECK_EQ(fromJson.snapshotJson(), payloadJson);
+
+    auto wire = source.snapshotEnvelopeBinary(hash);
+    REQUIRE(wire.ok());
+    Ledger fromBinary(*identity);
+    REQUIRE(fromBinary.restoreSnapshotBinary(wire.value(), hash).ok());
+    CHECK_EQ(fromBinary.snapshotJson(), payloadJson);
+    std::string tampered = wire.value();
+    const auto  position = tampered.find("assign");
+    REQUIRE(position != std::string::npos);
+    tampered[position] = 'x';
+    auto rejected      = fromBinary.restoreSnapshotBinary(tampered, hash);
+    REQUIRE(!rejected.ok());
+    CHECK_EQ(rejected.error()->code(), eve::DiagnosticCode::HashMismatch);
+    CHECK_EQ(fromBinary.snapshotJson(), payloadJson);
+
+    auto envelopeJson = source.snapshotEnvelopeJson(hash);
+    REQUIRE(envelopeJson.ok());
+    Ledger fromEnvelopeJson(*identity);
+    REQUIRE(fromEnvelopeJson.restoreSnapshotJson(envelopeJson.value(), hash).ok());
+    CHECK_EQ(fromEnvelopeJson.snapshotJson(), payloadJson);
+    auto changedHeader = eve::Value::fromJson(envelopeJson.value());
+    REQUIRE(changedHeader.ok());
+    changedHeader.value().set("revision", eve::Value("7"));
+    auto changedJson = changedHeader.value().toJson();
+    REQUIRE(changedJson.ok());
+    auto headerFailure = fromEnvelopeJson.restoreSnapshotJson(changedJson.value(), hash);
+    REQUIRE(!headerFailure.ok());
+    CHECK_EQ(headerFailure.error()->code(), eve::DiagnosticCode::HashMismatch);
+    CHECK_EQ(fromEnvelopeJson.snapshotJson(), payloadJson);
+
+    auto common = source.snapshot(hash);
+    REQUIRE(common.ok());
+    auto commonJson = eve::serializeSnapshotEnvelope(common.value());
+    REQUIRE(commonJson.ok());
+    Ledger fromCommon(*identity);
+    REQUIRE(fromCommon.restoreSnapshotJson(commonJson.value(), hash).ok());
+    CHECK_EQ(fromCommon.snapshotJson(), payloadJson);
+
+    const std::string legacyJson =
+        R"({"version":1,"nextTransaction":"1","plans":[{"id":"00000000-0000-4000-8000-000000000001",)"
+        R"("identity":"00000000-0000-4000-8000-000000000001","state":"open","correlation":"","causation":"",)"
+        R"("error":"","nextOperation":"1","nextEvent":"2","operations":[],"events":[{"sequence":"1",)"
+        R"("transactionId":"00000000-0000-4000-8000-000000000001","operationId":"","type":"opened","detail":""}]}]})";
+    Ledger legacy(*identity);
+    REQUIRE(legacy.restore(legacyJson).ok());
+    REQUIRE(legacy.find("00000000-0000-4000-8000-000000000001") != nullptr);
+    CHECK_EQ(legacy.find("00000000-0000-4000-8000-000000000001")->eventCount(), 1);
+    auto legacyValue = eve::Value::fromJson(legacyJson);
+    REQUIRE(legacyValue.ok());
+    const auto schema = eve::LogicalId::parse("transaction:ledger");
+    REQUIRE(schema.has_value());
+    auto legacyEnvelope =
+        eve::makeSnapshotEnvelope("transaction.ledger", *schema, eve::SchemaVersion(1), *identity, eve::Revision{},
+                                  eve::SimulationTick{}, std::move(legacyValue).takeValue(), hash);
+    REQUIRE(legacyEnvelope.ok());
+    auto legacyEnvelopeJson = eve::serializeSnapshotEnvelope(legacyEnvelope.value());
+    REQUIRE(legacyEnvelopeJson.ok());
+    Ledger fromLegacyEnvelope(*identity);
+    REQUIRE(fromLegacyEnvelope.restoreSnapshotJson(legacyEnvelopeJson.value(), hash).ok());
+    CHECK_EQ(fromLegacyEnvelope.snapshotJson(), legacy.snapshotJson());
 }
 
 TEST_CASE("transaction.script.api") {
