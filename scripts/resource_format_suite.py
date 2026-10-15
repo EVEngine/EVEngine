@@ -15,6 +15,8 @@ import tempfile
 import xml.etree.ElementTree as ET
 import utf8_stdio
 
+import test_levels
+
 ROOT = Path(__file__).resolve().parent.parent
 FAMILIES = {
     "image": ["resource_format_image.cpp", "image.cpp", "image_script.cpp", "asset_graphics_loader.cpp"],
@@ -22,7 +24,7 @@ FAMILIES = {
     "model": ["resource_format_model.cpp", "model3d.cpp", "model3d_normals.cpp", "medialoader_model_link.cpp", "avatar_vrm_vulkan.cpp"],
     "font": ["font.cpp", "graphics_font.cpp"],
     "map": ["map.cpp", "resource_format_map.cpp"],
-    "asset": [p.name for p in sorted((ROOT / "test").glob("asset_*.cpp"))],
+    "asset": [],  # Derived from canonical sources/provenance by inventory().
     "resource": ["filesystem_cpp.cpp", "resource.cpp", "resource_uri.cpp", "resource_lifetime.cpp"],
 }
 CONSOLIDATED_SOURCES = {
@@ -32,29 +34,39 @@ CONSOLIDATED_SOURCES = {
 }
 
 
-def source_section(root, name):
-    physical = CONSOLIDATED_SOURCES.get(name, name)
-    source = (root / "test" / physical).read_text(encoding="utf-8-sig")
-    marker = f"// {name}"
-    start = source.find(marker)
-    if start >= 0:
-        source = source[start + len(marker):]
-        next_section = re.search(r"^// [A-Za-z0-9_]+\.cpp\s*$", source, re.MULTILINE)
-        if next_section:
-            source = source[:next_section.start()]
-    return physical, source
+def source_sections(root, name, catalogue):
+    legacy = CONSOLIDATED_SOURCES.get(name, name)
+    paths = [legacy] if (root / "test" / legacy).is_file() else [
+        path for path, policy in catalogue["sources"].items() if legacy in policy.get("origins", [])]
+    if not paths:
+        raise ValueError(f"resource source has no canonical replacement: {legacy}")
+    for physical in paths:
+        source = (root / "test" / physical).read_text(encoding="utf-8-sig")
+        marker = f"// {name}"
+        start = source.find(marker)
+        if start >= 0:
+            source = source[start + len(marker):]
+            next_section = re.search(r"^// [A-Za-z0-9_]+\.cpp\s*$", source, re.MULTILINE)
+            if next_section:
+                source = source[:next_section.start()]
+        yield physical, source
 
 
 def inventory(root=ROOT):
     result = {}
+    catalogue = json.loads((root / "test/test_levels.json").read_text(encoding="utf-8"))
     for family, files in FAMILIES.items():
+        if family == "asset":
+            files = sorted({origin for source, policy in catalogue["sources"].items()
+                            for origin in policy.get("origins", [source])
+                            if Path(origin).name.startswith("asset_") and origin.endswith(".cpp")})
         cases = {}
         for name in files:
-            physical, source = source_section(root, name)
-            for case in re.findall(r'TEST_CASE\(\s*"([^"\n]+)"', source):
-                if case in cases:
-                    raise ValueError("duplicate test: " + case)
-                cases[case] = "test/" + physical
+            for physical, source in source_sections(root, name, catalogue):
+                for case in test_levels.cases_in(source):
+                    if case in cases:
+                        raise ValueError("duplicate test: " + case)
+                    cases[case] = "test/" + physical
         extensions = []
         loader = {"image": "image/ImageLoader.cpp", "sound": "sound/SoundLoader.cpp", "model": "model3d/ModelLoader.cpp"}.get(family)
         if loader:

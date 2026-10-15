@@ -675,6 +675,7 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainLegacyThermal.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSediment.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainWaterField.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSurface.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratorRegistry.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratedArtifact.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Grid2D.cpp
@@ -722,6 +723,10 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
   if(EVENGINE_BUILD_PROCGEN_CORE_CHECK OR _eve_procgen_core_profile)
     add_library(EVProcgenCoreCheck OBJECT ${_eve_procgen_core_sources})
     target_link_libraries(EVProcgenCoreCheck PRIVATE eve_engine_includes)
+    if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+      # This check compiles implementations, rather than consuming the domain DLL.
+      target_compile_definitions(EVProcgenCoreCheck PRIVATE EVENGINE_EXPORTS_DOMAINS)
+    endif()
     target_include_directories(EVProcgenCoreCheck PRIVATE
       ${CMAKE_SOURCE_DIR}/src/modules)
     set_target_properties(EVProcgenCoreCheck PROPERTIES POSITION_INDEPENDENT_CODE ON)

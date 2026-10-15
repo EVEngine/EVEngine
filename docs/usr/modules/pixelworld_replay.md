@@ -21,4 +21,4 @@ hash 必须由宿主注入，模块不默认选择弱 hash。`restoreSnapshot()`
 version 2，其 checkpoint 保留 world digest，但没有当时尚未编码的每 Chunk 诊断。
 
 源码：[`src/modules/pixelworld/replay/`](../../../src/modules/pixelworld/replay/)。
-测试：[`test/pixelworld_replay.cpp`](../../../test/pixelworld_replay.cpp)。
+测试：[`test/unit/pixelworld_replay/pixelworld_replay.cpp`](../../../test/unit/pixelworld_replay/pixelworld_replay.cpp)。
