@@ -1,0 +1,106 @@
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+
+#include "archspace/ArchSpaceDocument.h"
+#include "archspace/ArchSpaceProjector.h"
+#include "archspace/ArchSpaceQuery.h"
+
+using namespace eve::archspace;
+
+TEST_CASE("archspace.query.architectural_region_and_door_portal") {
+    Document document;
+    REQUIRE(document.bootstrap("site", "building", "level0").ok());
+    REQUIRE(document.setTopology(TopologyKind::Architectural).ok());
+    REQUIRE(
+        document.createRoom("level0", "living", "Living", {{0, 0}, {6, 0}, {6, 4}, {0, 4}}, 3.0, 0.2, 0.2).ok());
+    REQUIRE(document.createOpening("living.wall.0", "living.door", "Door", OpeningKind::Door, 0.5, 1.0, 2.1, 0.0).ok());
+    REQUIRE(document.placeItem("level0", "desk", "Desk", "furniture.desk", Vec3{2, 0, 2}, 0).ok());
+
+    SpaceQuery query(document);
+    CHECK_EQ(query.topology(), TopologyKind::Architectural);
+    CHECK_EQ(query.strata().size(), 1);
+    CHECK_EQ(query.regions().size(), 1);
+
+    const auto hit = query.regionAt(Vec2{3, 2}, "level0");
+    REQUIRE(hit.has_value());
+    CHECK_EQ(hit->id, "living.zone");
+    CHECK(!query.regionAt(Vec2{100, 100}, "level0").has_value());
+
+    const auto anchors = query.anchorsIn("living.zone");
+    REQUIRE_EQ(anchors.size(), 1);
+    CHECK_EQ(anchors.front().id, "desk");
+
+    const auto from = query.portalsFrom("living.zone");
+    CHECK(!from.empty());
+}
+
+TEST_CASE("archspace.query.dungeon_regions_connected_through_portal") {
+    Document document;
+    REQUIRE(document.bootstrap("site", "dungeon", "level0").ok());
+    REQUIRE(document.setTopology(TopologyKind::Dungeon).ok());
+    REQUIRE(document.createRegion("level0", "hall", "Hall", {{0, 0}, {8, 0}, {8, 6}, {0, 6}}).ok());
+    REQUIRE(document.createRegion("level0", "cell", "Cell", {{10, 1}, {14, 1}, {14, 5}, {10, 5}}).ok());
+    REQUIRE(document
+                .createPortal("level0", "door", "Door", "hall", "cell", kPassageWalk, Vec3{9, 0, 3})
+                .ok());
+
+    SpaceQuery query(document);
+    CHECK_EQ(query.topology(), TopologyKind::Dungeon);
+    CHECK_EQ(query.regions().size(), 2);
+    CHECK(query.regionsConnected("hall", "cell"));
+    CHECK(query.regionsConnected("cell", "hall"));
+    CHECK(!query.regionsConnected("hall", "missing"));
+
+    const auto portals = query.portalsFrom("hall");
+    REQUIRE_EQ(portals.size(), 1);
+    CHECK_EQ(portals.front().id, "door");
+    CHECK(!portals.front().wallHosted);
+}
+
+TEST_CASE("archspace.query.cave_chamber_topology_and_grid_bake") {
+    Document document;
+    REQUIRE(document.bootstrap("site", "cave", "level0").ok());
+    REQUIRE(document.setTopology(TopologyKind::Cave).ok());
+    REQUIRE(document.createRegion("level0", "chamber.a", "A", {{0, 0}, {5, 0}, {5, 5}, {0, 5}}).ok());
+    REQUIRE(document.createRegion("level0", "chamber.b", "B", {{7, 0}, {12, 0}, {12, 5}, {7, 5}}).ok());
+    REQUIRE(document
+                .createPortal("level0", "tunnel", "Tunnel", "chamber.a", "chamber.b", kPassageWalk, Vec3{6, 0, 2.5})
+                .ok());
+
+    SpaceQuery query(document);
+    CHECK_EQ(query.topology(), TopologyKind::Cave);
+    CHECK(query.regionsConnected("chamber.a", "chamber.b"));
+
+    auto grid = bakeGridProjection(document, "level0", 1.0, "orthogonal");
+    REQUIRE(grid.ok());
+    CHECK(grid.value().width > 0);
+    CHECK(grid.value().height > 0);
+    bool hasFloor = false;
+    bool hasPortal = false;
+    for (const auto kind : grid.value().cells) {
+        if (kind == GridCellKind::Floor) hasFloor = true;
+        if (kind == GridCellKind::Portal) hasPortal = true;
+    }
+    CHECK(hasFloor);
+    CHECK(hasPortal);
+
+    auto iso = bakeGridProjection(document, "level0", 1.0, "isometric");
+    REQUIRE(iso.ok());
+    CHECK_EQ(iso.value().orientation, "isometric");
+}
+
+TEST_CASE("archspace.projector.mesh_scene_sync_and_clear") {
+    Document document;
+    REQUIRE(document.bootstrap("site", "building", "level0").ok());
+    REQUIRE(
+        document.createRoom("level0", "room", "Room", {{0, 0}, {4, 0}, {4, 4}, {0, 4}}, 3.0, 0.2, 0.2).ok());
+
+    MeshSceneProjector projector;
+    CHECK_EQ(std::string(projector.kind()), "scene3d");
+    REQUIRE(projector.sync(document, 7).ok());
+    CHECK_EQ(projector.revision(), 7);
+    CHECK(!projector.mesh().indices.empty());
+    projector.clear();
+    CHECK_EQ(projector.revision(), 0);
+    CHECK(projector.mesh().indices.empty());
+}

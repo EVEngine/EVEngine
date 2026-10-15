@@ -1,14 +1,18 @@
-# ArchSpace 建筑空间编辑器
+# ArchSpace 建筑 / 地牢 / 洞穴空间
 
 **脚本入口：** `eve.ArchSpace()` / `eve.ArchSpaceDocument()` / 模块槽 `archspace`、
 `archspaceEditor`
 
-ArchSpace 是对标 [Pascal Editor](https://github.com/pascalorg/editor) 的**建筑空间文档域**，与 RTS
-`building` 放置、以及 `housegen` 程序化拼装完全分开。
+ArchSpace 是对标 [Pascal Editor](https://github.com/pascalorg/editor) 的**室内与地下空间文档域**，
+与 RTS `building` 放置、以及 `housegen` / `procgen` 生成算法完全分开。名称保持 ArchSpace；拓扑方言覆盖
+户型、地牢与山洞。
 
 引擎提供 UI 无关的：
 
-- 文档模型：`site → building → level → wall/slab/zone/item`，`opening` 挂在墙上；
+- 文档模型：`site → building → level → wall/slab/zone/item/portal`，墙上还可挂 `opening`；
+- 拓扑方言：`architectural`（默认）/ `dungeon` / `cave`（`setTopology`）；
+- `SpaceQuery`：Region / Portal / Anchor / 连通查询（不依赖 graphics）；
+- 投影：`MeshBake` / `MeshSceneProjector`（3D），`bakeGridProjection`（ortho/iso/HD2D 宿主栅格）；
 - 可逆 DomainOperation（`archspace.document.replace.v1`）；
 - 高层编辑命令：`archspace.bootstrap.v1`、`archspace.room.create.v1`、
   `archspace.wall.create.v1`、`archspace.opening.create.v1`、`archspace.item.place.v1`、
@@ -18,9 +22,10 @@ ArchSpace 是对标 [Pascal Editor](https://github.com/pascalorg/editor) 的**�
   `IEditAuthority` 提交 DomainOperation，预览不落盘。
 
 **诚实边界：** 洞口是参数化切腔 + reveal，不是 CSG/IFC BREP；家具是内置目录多盒几何，不是外部网格资源；
-还没有完整 CAD 产品级 UI。
+栅格投影是语义近似，不是第二真相；还没有完整 CAD 产品级 UI；`map`/`hd2d` 适配器后续接上。
 
-项目自己组合工具栏、视口与 MCP host；不要把 ArchSpace 写进 `building`。
+项目自己组合工具栏、视口与 MCP host；不要把 ArchSpace 写进 `building`。设计见
+[`docs/dev/2026-10-15-archspace-multi-topology-projection.md`](../../dev/2026-10-15-archspace-multi-topology-projection.md)。
 
 ## 快速用法（脚本）
 
@@ -43,6 +48,19 @@ local mesh = gfx.newMeshFromArrays(arrays.positions, arrays.normals, arrays.uvs,
                                    arrays.vertexCount, arrays.indices, arrays.indexCount);
 
 doc.deleteNode("desk"); // cascading delete when needed
+```
+
+地牢 / 洞穴（无墙环，Region + Portal）：
+
+```squirrel
+local doc = eve.ArchSpaceDocument();
+doc.bootstrap("site", "dungeon", "level0", 3.0);
+doc.setTopology("dungeon");
+doc.createRegion("level0", "hall", "Hall", 0.0, 0.0, 8.0, 6.0);
+doc.createRegion("level0", "cell", "Cell", 10.0, 1.0, 4.0, 4.0);
+doc.createPortal("level0", "hall.cell.door", "Door", "hall", "cell", 9.0, 0.0, 3.0);
+print(doc.regionAt(2.0, 2.0, "level0") + "\n");          // hall
+print(doc.regionsConnected("hall", "cell") + "\n");      // true
 ```
 
 完整示例见 `examples/archspace-editor/`。
@@ -80,9 +98,19 @@ auto mesh = target.bakeMesh();  // positions + indices + primitiveIds（含 *.re
 - `placeItem(levelId, itemId, name, catalogId, x, y, z, yawDegrees)` → Result。
   `catalogId` 解析内置家具目录；未知 id 使用 marker。
 - `deleteNode(id)` → Result；级联删除子树。
+- `topology()` / `setTopology("architectural"|"dungeon"|"cave")` → Result。
+- `createRegion(levelId, regionId, name, originX, originZ, sizeX, sizeZ)` → Result；
+  无墙 Zone（地牢房间 / 洞穴腔室）。
+- `createPortal(levelId, portalId, name, regionAId, regionBId, x, y, z)` → Result；
+  层内连通（默认 walk）。
+- `regionAt(x, z, levelId)` — 命中的 region id，未命中空串。
+- `regionsConnected(a, b)` — 经 portal 图是否连通。
 - `bakeMeshArrays()` — 返回表：`positions`/`normals`/`uvs`/`indices` 以及
   `vertexCount`/`indexCount`/`triangleCount`（洞口切腔后的上传数组）。
 - `summary()` — 人类可读摘要字符串（nodes/root/triangles/vertices）。
+
+设计说明见 [`docs/dev/2026-09-14-archspace-editor.md`](../../dev/2026-09-14-archspace-editor.md)
+与 [`docs/dev/2026-10-15-archspace-multi-topology-projection.md`](../../dev/2026-10-15-archspace-multi-topology-projection.md)。
 
 ### 编辑器工具（C++，`archspace_editor`）
 
@@ -101,5 +129,3 @@ auto mesh = target.bakeMesh();  // positions + indices + primitiveIds（含 *.re
 1. `eve_editor_target_create`，`type=archspace`，可选 `siteId` 自动 bootstrap；
 2. `eve_editor_execute` 调用上表命令；
 3. `eve_editor_inspect` / observe / `eve_screenshot` 验收。
-
-设计说明见 [`docs/dev/2026-09-14-archspace-editor.md`](../../dev/2026-09-14-archspace-editor.md)。

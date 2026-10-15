@@ -5389,6 +5389,19 @@
         "script_ownership.cpp"
       ]
     },
+    "unit/archspace/archspace_space_query.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "archspace.query.architectural_region_and_door_portal",
+          "archspace.query.dungeon_regions_connected_through_portal",
+          "archspace.query.cave_chamber_topology_and_grid_bake",
+          "archspace.projector.mesh_scene_sync_and_clear"
+        ]
+      },
+      "module": "archspace"
+    },
     "unit/avatar/avatar_tests.cpp": {
       "role": "tests",
       "default": "local-logic",
