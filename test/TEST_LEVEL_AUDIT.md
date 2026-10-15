@@ -1,6 +1,7 @@
 # C++ test reorganization and evidence
 
-Audit date: 2026-10-15. The module manifest owns the 212 declarations;
+Audit date: 2026-10-15. The current module manifest owns 193 declarations after
+`dev` removed 19 empty editor alias modules from the original 212-module baseline;
 `test_levels.json` owns test case level, module/task attribution and migration
 provenance. `MODULE_TEST_COVERAGE.md` is generated evidence for every module.
 
@@ -46,10 +47,10 @@ migration. Test-root asset addressing is independent of source nesting.
 
 ## Ownership and coverage limits
 
-All 212 modules are inventoried, across 18 task groups. Evidence is deliberately
-separated: 89 modules own local-rule cases, 44 own task cases, 72 are referenced
-by other test sources, four have API-name evidence through script/shared
-interfaces, and three contain only type forwarding plus a link anchor. The
+All 193 current modules are inventoried, across 18 task groups. Evidence is deliberately
+separated: 89 modules own local-rule cases, 44 own task cases, 57 are referenced
+by other test sources, and three have API-name evidence through script/shared
+interfaces. The empty alias modules were removed upstream. The
 report names all modules without independently owned local-rule cases.
 
 The initial nine modules without direct header references were reviewed. Four

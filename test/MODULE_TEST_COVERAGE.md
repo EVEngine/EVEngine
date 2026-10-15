@@ -7,13 +7,12 @@ and task ownership. References are header/API-name evidence, not measured behavi
 coverage. Missing local-rule coverage is reported explicitly; no empty assertion
 or placeholder test is counted as coverage.
 
-Declared modules: **212**. Task groups: **18**.
+Declared modules: **193**. Task groups: **18**.
 
-- api-symbol-in-other-tests: 4
+- api-symbol-in-other-tests: 3
 - local-rules-recorded: 89
-- referenced-by-other-tests: 72
+- referenced-by-other-tests: 57
 - task-tests-recorded: 44
-- type-facade-no-independent-rules: 3
 
 ## Gaps requiring behavioral review
 
@@ -36,27 +35,22 @@ Declared modules: **212**. Task groups: **18**.
 - `audio_editor` (`audio/editor`): referenced-by-other-tests; 8 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `avatar_editing` (`avatar/editing`): referenced-by-other-tests; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `avatar_editor` (`avatar/editor`): referenced-by-other-tests; 3 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `biome_editing` (`procgen/biome/editing`): referenced-by-other-tests; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `biome_editor` (`procgen/biome/editor`): referenced-by-other-tests; 3 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
+- `biome_editing` (`procgen/biome/editing`): referenced-by-other-tests; 2 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
+- `biome_editor` (`procgen/biome/editor`): referenced-by-other-tests; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `building_editing` (`building/editing`): referenced-by-other-tests; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `building_editor` (`building/editor`): referenced-by-other-tests; 2 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `camera_editing` (`camera/editing`): referenced-by-other-tests; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `camera_editor` (`camera/editor`): referenced-by-other-tests; 1 direct header references; 0 API-name references. A composition/adapter reference does not prove local rules are tested.
+- `camera_editing` (`camera/editing`): referenced-by-other-tests; 2 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `combat_navigation` (`combat/navigation`): task-tests-recorded; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `crowd_editing` (`crowd/editing`): referenced-by-other-tests; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `crowd_editor` (`crowd/editor`): referenced-by-other-tests; 1 direct header references; 0 API-name references. A composition/adapter reference does not prove local rules are tested.
+- `crowd_editing` (`crowd/editing`): referenced-by-other-tests; 2 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `database` (`database`): task-tests-recorded; 1 direct header references; 13 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `decal_editing` (`decal/editing`): referenced-by-other-tests; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `decal_editor` (`decal/editor`): type-facade-no-independent-rules; 0 direct header references; 0 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `definitions_editing` (`definitions/editing`): referenced-by-other-tests; 1 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `definitions_editor` (`definitions/editor`): referenced-by-other-tests; 3 direct header references; 0 API-name references. A composition/adapter reference does not prove local rules are tested.
+- `definitions_editing` (`definitions/editing`): referenced-by-other-tests; 3 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `demo` (`demo`): task-tests-recorded; 1 direct header references; 4 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `dialogue_editing` (`dialogue/editing`): referenced-by-other-tests; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `dialogue_editor` (`dialogue/editor`): referenced-by-other-tests; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `domain_gizmo_editing` (`editor/gizmo/editing`): task-tests-recorded; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `domain_gizmo_editor` (`editor/gizmo/editor`): referenced-by-other-tests; 1 direct header references; 0 API-name references. A composition/adapter reference does not prove local rules are tested.
+- `domain_gizmo_editing` (`editor/gizmo/editing`): task-tests-recorded; 2 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `fluids_editing` (`fluids/editing`): referenced-by-other-tests; 6 direct header references; 3 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `fluids_editor` (`fluids/editor`): referenced-by-other-tests; 7 direct header references; 3 API-name references. A composition/adapter reference does not prove local rules are tested.
+- `fluids_editor` (`fluids/editor`): referenced-by-other-tests; 5 direct header references; 3 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `font` (`font`): task-tests-recorded; 6 direct header references; 32 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `gpuagents` (`gpuagents`): task-tests-recorded; 10 direct header references; 3 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `gpuagents_editing` (`gpuagents/editing`): referenced-by-other-tests; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
@@ -64,34 +58,26 @@ Declared modules: **212**. Task groups: **18**.
 - `graphics_editing` (`graphics/editing`): task-tests-recorded; 6 direct header references; 7 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `graphics_editor` (`graphics/editor`): referenced-by-other-tests; 1 direct header references; 0 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `hd2d` (`hd2d`): task-tests-recorded; 1 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `hd2d_editing` (`hd2d/editing`): referenced-by-other-tests; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `hd2d_editor` (`hd2d/editor`): referenced-by-other-tests; 1 direct header references; 0 API-name references. A composition/adapter reference does not prove local rules are tested.
+- `hd2d_editing` (`hd2d/editing`): referenced-by-other-tests; 2 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `heightmap_target` (`procgen/heightmap_target`): referenced-by-other-tests; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `input_editing` (`editor/input/editing`): referenced-by-other-tests; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `input_editor` (`editor/input/editor`): referenced-by-other-tests; 1 direct header references; 0 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `joystick` (`joystick`): task-tests-recorded; 2 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `keyboard` (`keyboard`): task-tests-recorded; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `level_editing` (`map/level/editing`): referenced-by-other-tests; 17 direct header references; 29 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `level_editor` (`map/level/editor`): referenced-by-other-tests; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `lighting_editing` (`graphics/lighting/editing`): referenced-by-other-tests; 3 direct header references; 3 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `lighting_editor` (`graphics/lighting/editor`): referenced-by-other-tests; 1 direct header references; 0 API-name references. A composition/adapter reference does not prove local rules are tested.
+- `lighting_editing` (`graphics/lighting/editing`): referenced-by-other-tests; 3 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `localization_editing` (`i18n/editing`): referenced-by-other-tests; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `localization_editor` (`i18n/editor`): referenced-by-other-tests; 1 direct header references; 0 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `map_editing` (`map/editing`): task-tests-recorded; 4 direct header references; 3 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `map_editor` (`map/editor`): referenced-by-other-tests; 1 direct header references; 0 API-name references. A composition/adapter reference does not prove local rules are tested.
+- `map_editing` (`map/editing`): task-tests-recorded; 4 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `material_editing` (`graphics/material/editing`): referenced-by-other-tests; 5 direct header references; 5 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `material_editor` (`graphics/material/editor`): referenced-by-other-tests; 8 direct header references; 3 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `material_graphics_editing` (`graphics/material/graphics_editing`): api-symbol-in-other-tests; 0 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `mouse` (`mouse`): task-tests-recorded; 3 direct header references; 5 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `network` (`network`): task-tests-recorded; 11 direct header references; 4 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `network_editing` (`network/editing`): referenced-by-other-tests; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `network_editor` (`network/editor`): referenced-by-other-tests; 1 direct header references; 0 API-name references. A composition/adapter reference does not prove local rules are tested.
+- `network_editing` (`network/editing`): referenced-by-other-tests; 2 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `npc_ai_editing` (`npc_ai/editing`): referenced-by-other-tests; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `npc_ai_editor` (`npc_ai/editor`): type-facade-no-independent-rules; 0 direct header references; 0 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `os` (`os`): task-tests-recorded; 3 direct header references; 6 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `particles_editing` (`particles/editing`): referenced-by-other-tests; 2 direct header references; 3 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `particles_editor` (`particles/editor`): referenced-by-other-tests; 2 direct header references; 0 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `particles_graphics_editing` (`particles/graphics_editing`): api-symbol-in-other-tests; 0 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
+- `particles_editing` (`particles/editing`): referenced-by-other-tests; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
+- `particles_graphics_editing` (`particles/graphics_editing`): referenced-by-other-tests; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `physics_action` (`physics/action`): referenced-by-other-tests; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `physics_destruction_editing` (`physics/destruction/editing`): referenced-by-other-tests; 1 direct header references; 0 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `physics_destruction_graphics` (`physics/destruction/graphics`): task-tests-recorded; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
@@ -107,25 +93,20 @@ Declared modules: **212**. Task groups: **18**.
 - `pixelworld_thread` (`pixelworld/thread`): task-tests-recorded; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `plugins` (`plugins`): task-tests-recorded; 1 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `procgen_editing` (`procgen/editing`): task-tests-recorded; 16 direct header references; 7 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `procgen_editor` (`procgen/editor`): referenced-by-other-tests; 4 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
+- `procgen_editor` (`procgen/editor`): referenced-by-other-tests; 2 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `procgen_graphics_editing` (`procgen/graphics_editing`): task-tests-recorded; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `procgen_physics` (`procgen/physics`): referenced-by-other-tests; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `profiler_editing` (`profiler/editing`): referenced-by-other-tests; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `profiler_editor` (`profiler/editor`): referenced-by-other-tests; 1 direct header references; 0 API-name references. A composition/adapter reference does not prove local rules are tested.
+- `profiler_editing` (`profiler/editing`): referenced-by-other-tests; 2 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `property_access` (`property_access`): task-tests-recorded; 3 direct header references; 6 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `queue_editing` (`editor/queue/editing`): task-tests-recorded; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `queue_editor` (`editor/queue/editor`): referenced-by-other-tests; 1 direct header references; 0 API-name references. A composition/adapter reference does not prove local rules are tested.
+- `queue_editing` (`editor/queue/editing`): task-tests-recorded; 2 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `scene_editing` (`scene/editing`): task-tests-recorded; 6 direct header references; 7 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `scene_physics` (`scene/physics`): referenced-by-other-tests; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `sceneloader` (`scene/loader`): task-tests-recorded; 2 direct header references; 14 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `sceneloader_editing` (`scene/loader/editing`): referenced-by-other-tests; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `sceneloader_editor` (`scene/loader/editor`): referenced-by-other-tests; 1 direct header references; 0 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `social_editing` (`social/editing`): referenced-by-other-tests; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `social_editor` (`social/editor`): referenced-by-other-tests; 1 direct header references; 0 API-name references. A composition/adapter reference does not prove local rules are tested.
+- `social_editing` (`social/editing`): referenced-by-other-tests; 2 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `sound` (`sound`): task-tests-recorded; 9 direct header references; 4 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `spritestack` (`spritestack`): task-tests-recorded; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `spritestack_editing` (`spritestack/editing`): referenced-by-other-tests; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `spritestack_editor` (`spritestack/editor`): type-facade-no-independent-rules; 0 direct header references; 0 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `stylize_action` (`stylize/action`): task-tests-recorded; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `stylize_editing` (`stylize/editing`): referenced-by-other-tests; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `stylize_editor` (`stylize/editor`): task-tests-recorded; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
@@ -134,8 +115,7 @@ Declared modules: **212**. Task groups: **18**.
 - `touch` (`touch`): task-tests-recorded; 1 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `ui_editing` (`ui/editing`): referenced-by-other-tests; 3 direct header references; 3 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `ui_editor` (`ui/editor`): referenced-by-other-tests; 5 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `virtualgeometry_editing` (`virtualgeometry/editing`): referenced-by-other-tests; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `virtualgeometry_editor` (`virtualgeometry/editor`): referenced-by-other-tests; 1 direct header references; 0 API-name references. A composition/adapter reference does not prove local rules are tested.
+- `virtualgeometry_editing` (`virtualgeometry/editing`): referenced-by-other-tests; 2 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `voxel_editing` (`voxel/editing`): referenced-by-other-tests; 5 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `voxel_editor` (`voxel/editor`): referenced-by-other-tests; 6 direct header references; 4 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `voxelworld_target` (`voxel/voxelworld_target`): api-symbol-in-other-tests; 0 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
@@ -362,7 +342,7 @@ Source directory: `src/modules/procgen/biome/editing`. Status: **referenced-by-o
 
 Source directory: `src/modules/procgen/biome/editor`. Status: **referenced-by-other-tests**. Local cases: **0**.
 
-- Direct header evidence: [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
+- Direct header evidence: [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp)
 
 ### building
 
@@ -406,13 +386,6 @@ Source directory: `src/modules/camera`. Status: **local-rules-recorded**. Local 
 Source directory: `src/modules/camera/editing`. Status: **referenced-by-other-tests**. Local cases: **0**.
 
 - Direct header evidence: [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
-
-### camera_editor
-
-Source directory: `src/modules/camera/editor`. Status: **referenced-by-other-tests**. Local cases: **0**.
-
-This source package forwards canonical types and owns a link anchor; it has no independent runtime rules.
-- Direct header evidence: [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
 
 ### card
 
@@ -488,13 +461,6 @@ Source directory: `src/modules/crowd/editing`. Status: **referenced-by-other-tes
 
 - Direct header evidence: [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
 
-### crowd_editor
-
-Source directory: `src/modules/crowd/editor`. Status: **referenced-by-other-tests**. Local cases: **0**.
-
-This source package forwards canonical types and owns a link anchor; it has no independent runtime rules.
-- Direct header evidence: [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
-
 ### data
 
 Source directory: `src/modules/data`. Status: **local-rules-recorded**. Local cases: **24**.
@@ -534,12 +500,6 @@ Source directory: `src/modules/decal/editing`. Status: **referenced-by-other-tes
 
 - Direct header evidence: [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp)
 
-### decal_editor
-
-Source directory: `src/modules/decal/editor`. Status: **type-facade-no-independent-rules**. Local cases: **0**.
-
-This source package forwards canonical types and owns a link anchor; it has no independent runtime rules.
-
 ### decision
 
 Source directory: `src/modules/decision`. Status: **local-rules-recorded**. Local cases: **7**.
@@ -560,13 +520,6 @@ Source directory: `src/modules/definitions`. Status: **local-rules-recorded**. L
 
 Source directory: `src/modules/definitions/editing`. Status: **referenced-by-other-tests**. Local cases: **0**.
 
-- Direct header evidence: [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
-
-### definitions_editor
-
-Source directory: `src/modules/definitions/editor`. Status: **referenced-by-other-tests**. Local cases: **0**.
-
-This source package forwards canonical types and owns a link anchor; it has no independent runtime rules.
 - Direct header evidence: [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
 
 ### demo
@@ -623,13 +576,6 @@ Source directory: `src/modules/editor/gizmo/editing`. Status: **task-tests-recor
 
 - Integration task `gameplay-composition`: [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp)
 - Direct header evidence: [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
-
-### domain_gizmo_editor
-
-Source directory: `src/modules/editor/gizmo/editor`. Status: **referenced-by-other-tests**. Local cases: **0**.
-
-This source package forwards canonical types and owns a link anchor; it has no independent runtime rules.
-- Direct header evidence: [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
 
 ### economy
 
@@ -816,13 +762,6 @@ Source directory: `src/modules/hd2d/editing`. Status: **referenced-by-other-test
 
 - Direct header evidence: [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
 
-### hd2d_editor
-
-Source directory: `src/modules/hd2d/editor`. Status: **referenced-by-other-tests**. Local cases: **0**.
-
-This source package forwards canonical types and owns a link anchor; it has no independent runtime rules.
-- Direct header evidence: [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
-
 ### heightmap_target
 
 Source directory: `src/modules/procgen/heightmap_target`. Status: **referenced-by-other-tests**. Local cases: **0**.
@@ -871,13 +810,6 @@ Source directory: `src/modules/editor/input/editing`. Status: **referenced-by-ot
 
 - Direct header evidence: [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
 
-### input_editor
-
-Source directory: `src/modules/editor/input/editor`. Status: **referenced-by-other-tests**. Local cases: **0**.
-
-This source package forwards canonical types and owns a link anchor; it has no independent runtime rules.
-- Direct header evidence: [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
-
 ### inventory
 
 Source directory: `src/modules/inventory`. Status: **local-rules-recorded**. Local cases: **16**.
@@ -921,25 +853,11 @@ Source directory: `src/modules/graphics/lighting/editing`. Status: **referenced-
 
 - Direct header evidence: [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp), [gameplay_composition_graphics_editor_material_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_material_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
 
-### lighting_editor
-
-Source directory: `src/modules/graphics/lighting/editor`. Status: **referenced-by-other-tests**. Local cases: **0**.
-
-This source package forwards canonical types and owns a link anchor; it has no independent runtime rules.
-- Direct header evidence: [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
-
 ### localization_editing
 
 Source directory: `src/modules/i18n/editing`. Status: **referenced-by-other-tests**. Local cases: **0**.
 
 - Direct header evidence: [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
-
-### localization_editor
-
-Source directory: `src/modules/i18n/editor`. Status: **referenced-by-other-tests**. Local cases: **0**.
-
-This source package forwards canonical types and owns a link anchor; it has no independent runtime rules.
-- Direct header evidence: [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
 
 ### map
 
@@ -958,13 +876,6 @@ Source directory: `src/modules/map/editing`. Status: **task-tests-recorded**. Lo
 
 - Integration task `gameplay-composition`: [gameplay_composition_graphics_graphics_vegetation_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp)
 - Direct header evidence: [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp), [gameplay_composition_graphics_graphics_vegetation_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp)
-
-### map_editor
-
-Source directory: `src/modules/map/editor`. Status: **referenced-by-other-tests**. Local cases: **0**.
-
-This source package forwards canonical types and owns a link anchor; it has no independent runtime rules.
-- Direct header evidence: [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
 
 ### material_editing
 
@@ -1022,13 +933,6 @@ Source directory: `src/modules/network/editing`. Status: **referenced-by-other-t
 
 - Direct header evidence: [gameplay_composition_graphics_editor_material_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_material_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
 
-### network_editor
-
-Source directory: `src/modules/network/editor`. Status: **referenced-by-other-tests**. Local cases: **0**.
-
-This source package forwards canonical types and owns a link anchor; it has no independent runtime rules.
-- Direct header evidence: [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
-
 ### npc_ai
 
 Source directory: `src/modules/npc_ai`. Status: **local-rules-recorded**. Local cases: **16**.
@@ -1043,12 +947,6 @@ Source directory: `src/modules/npc_ai`. Status: **local-rules-recorded**. Local 
 Source directory: `src/modules/npc_ai/editing`. Status: **referenced-by-other-tests**. Local cases: **0**.
 
 - Direct header evidence: [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp)
-
-### npc_ai_editor
-
-Source directory: `src/modules/npc_ai/editor`. Status: **type-facade-no-independent-rules**. Local cases: **0**.
-
-This source package forwards canonical types and owns a link anchor; it has no independent runtime rules.
 
 ### orders
 
@@ -1082,18 +980,11 @@ Source directory: `src/modules/particles/editing`. Status: **referenced-by-other
 
 - Direct header evidence: [gameplay_composition_graphics_editor_material_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_material_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
 
-### particles_editor
-
-Source directory: `src/modules/particles/editor`. Status: **referenced-by-other-tests**. Local cases: **0**.
-
-This source package forwards canonical types and owns a link anchor; it has no independent runtime rules.
-- Direct header evidence: [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
-
 ### particles_graphics_editing
 
-Source directory: `src/modules/particles/graphics_editing`. Status: **api-symbol-in-other-tests**. Local cases: **0**.
+Source directory: `src/modules/particles/graphics_editing`. Status: **referenced-by-other-tests**. Local cases: **0**.
 
-- API-name evidence (includes script strings/shared declarations; review assertions): [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp)
+- Direct header evidence: [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp)
 
 ### physics
 
@@ -1320,7 +1211,7 @@ Source directory: `src/modules/procgen/editing`. Status: **task-tests-recorded**
 
 Source directory: `src/modules/procgen/editor`. Status: **referenced-by-other-tests**. Local cases: **0**.
 
-- Direct header evidence: [gameplay_composition_graphics_editor_material_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_material_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
+- Direct header evidence: [gameplay_composition_graphics_editor_material_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_material_target_tests.cpp)
 
 ### procgen_graphics_editing
 
@@ -1357,13 +1248,6 @@ Source directory: `src/modules/profiler/editing`. Status: **referenced-by-other-
 
 - Direct header evidence: [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
 
-### profiler_editor
-
-Source directory: `src/modules/profiler/editor`. Status: **referenced-by-other-tests**. Local cases: **0**.
-
-This source package forwards canonical types and owns a link anchor; it has no independent runtime rules.
-- Direct header evidence: [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
-
 ### property_access
 
 Source directory: `src/modules/property_access`. Status: **task-tests-recorded**. Local cases: **0**.
@@ -1377,13 +1261,6 @@ Source directory: `src/modules/editor/queue/editing`. Status: **task-tests-recor
 
 - Integration task `gameplay-composition`: [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp)
 - Direct header evidence: [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
-
-### queue_editor
-
-Source directory: `src/modules/editor/queue/editor`. Status: **referenced-by-other-tests**. Local cases: **0**.
-
-This source package forwards canonical types and owns a link anchor; it has no independent runtime rules.
-- Direct header evidence: [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
 
 ### rpg
 
@@ -1458,13 +1335,6 @@ Source directory: `src/modules/scene/loader/editing`. Status: **referenced-by-ot
 
 - Direct header evidence: [gameplay_composition_graphics_editor_material_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_material_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
 
-### sceneloader_editor
-
-Source directory: `src/modules/scene/loader/editor`. Status: **referenced-by-other-tests**. Local cases: **0**.
-
-This source package forwards canonical types and owns a link anchor; it has no independent runtime rules.
-- Direct header evidence: [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
-
 ### schema
 
 Source directory: `src/modules/schema`. Status: **local-rules-recorded**. Local cases: **16**.
@@ -1506,13 +1376,6 @@ Source directory: `src/modules/social/editing`. Status: **referenced-by-other-te
 
 - Direct header evidence: [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
 
-### social_editor
-
-Source directory: `src/modules/social/editor`. Status: **referenced-by-other-tests**. Local cases: **0**.
-
-This source package forwards canonical types and owns a link anchor; it has no independent runtime rules.
-- Direct header evidence: [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
-
 ### sound
 
 Source directory: `src/modules/sound`. Status: **task-tests-recorded**. Local cases: **0**.
@@ -1541,12 +1404,6 @@ Source directory: `src/modules/spritestack`. Status: **task-tests-recorded**. Lo
 Source directory: `src/modules/spritestack/editing`. Status: **referenced-by-other-tests**. Local cases: **0**.
 
 - Direct header evidence: [gameplay_composition_graphics_editor_material_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_material_target_tests.cpp)
-
-### spritestack_editor
-
-Source directory: `src/modules/spritestack/editor`. Status: **type-facade-no-independent-rules**. Local cases: **0**.
-
-This source package forwards canonical types and owns a link anchor; it has no independent runtime rules.
 
 ### statepatch
 
@@ -1698,13 +1555,6 @@ Source directory: `src/modules/virtualgeometry/editing`. Status: **referenced-by
 
 - Direct header evidence: [gameplay_composition_graphics_editor_material_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_material_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
 
-### virtualgeometry_editor
-
-Source directory: `src/modules/virtualgeometry/editor`. Status: **referenced-by-other-tests**. Local cases: **0**.
-
-This source package forwards canonical types and owns a link anchor; it has no independent runtime rules.
-- Direct header evidence: [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
-
 ### voxel
 
 Source directory: `src/modules/voxel`. Status: **local-rules-recorded**. Local cases: **110**.
@@ -1799,7 +1649,7 @@ Cases: 127. Referenced/owning modules: `action_editor`, `animation`, `avatar`, `
 
 ### gameplay-composition
 
-Cases: 1219. Referenced/owning modules: `action`, `action_editor`, `action_game_event`, `action_input`, `agent`, `agent_tensor`, `animation`, `animation_editing`, `animation_editor`, `animation_tensor`, `archspace`, `archspace_editing`, `archspace_editor`, `asset`, `asset_graphics`, `asset_import`, `asset_procgen`, `attributes`, `audio`, `audio_editing`, `audio_editor`, `authority`, `avatar`, `avatar_editing`, `avatar_editor`, `biome_editing`, `biome_editor`, `building`, `building_editing`, `building_editor`, `buildingfx`, `camera`, `camera_editing`, `camera_editor`, `card`, `climbing`, `combat`, `combat_navigation`, `common`, `crowd`, `crowd_editing`, `crowd_editor`, `data`, `database`, `daynight`, `decal`, `decal_editing`, `decision`, `definitions`, `definitions_editing`, `definitions_editor`, `demo`, `devtools`, `dialogue`, `dialogue_editing`, `dialogue_editor`, `dnut_interpreter`, `domain_gizmo_editing`, `domain_gizmo_editor`, `economy`, `editing`, `editor`, `effects`, `filesystem`, `fluids`, `fluids_editing`, `fluids_editor`, `font`, `game_event`, `gpgpu`, `gpuagents`, `gpuagents_editing`, `gpuagents_editor`, `graphics`, `graphics_editing`, `graphics_editor`, `graphics_fog`, `graphics_raytracing`, `grid`, `hd2d`, `hd2d_editing`, `hd2d_editor`, `heightmap_target`, `hexmap`, `i18n`, `ik`, `image`, `input_editing`, `input_editor`, `inventory`, `level_editing`, `level_editor`, `lighting_editing`, `lighting_editor`, `localization_editing`, `localization_editor`, `map`, `map_editing`, `map_editor`, `material_editing`, `material_editor`, `material_graphics_editing`, `math`, `model3d`, `network_editing`, `network_editor`, `npc_ai`, `npc_ai_editing`, `orders`, `os`, `particles`, `particles_editing`, `particles_editor`, `particles_graphics_editing`, `physics`, `physics_backend`, `physics_cloth`, `physics_destruction`, `physics_destruction_editing`, `physics_destruction_graphics`, `physics_editing`, `physics_editor`, `physics_rope`, `physics_softbody`, `physics_softbody_cook`, `physics_softbody_editing`, `physics_softbody_graphics`, `pixelworld`, `pixelworld_editor`, `platform_event`, `plugins`, `policyregistry`, `procgen`, `procgen_animation`, `procgen_editing`, `procgen_editor`, `production`, `profiler_editing`, `profiler_editor`, `property_access`, `queue_editing`, `queue_editor`, `rpg`, `rts`, `rx`, `scene`, `scene_editing`, `scene_editor`, `sceneloader`, `sceneloader_editing`, `sceneloader_editor`, `schema`, `sensing`, `settlement`, `social`, `social_editing`, `social_editor`, `sound`, `spatial`, `spritestack_editing`, `statepatch`, `stylize`, `stylize_action`, `stylize_editing`, `tactics`, `tags`, `tensor`, `thread`, `tilelayer_target`, `transaction`, `ui`, `ui_editing`, `ui_editor`, `vehicle`, `virtualgeometry_editing`, `virtualgeometry_editor`, `voxel`, `voxel_editing`, `voxel_editor`, `weapon`, `weather`, `window`.
+Cases: 1219. Referenced/owning modules: `action`, `action_editor`, `action_game_event`, `action_input`, `agent`, `agent_tensor`, `animation`, `animation_editing`, `animation_editor`, `animation_tensor`, `archspace`, `archspace_editing`, `archspace_editor`, `asset`, `asset_graphics`, `asset_import`, `asset_procgen`, `attributes`, `audio`, `audio_editing`, `audio_editor`, `authority`, `avatar`, `avatar_editing`, `avatar_editor`, `biome_editing`, `biome_editor`, `building`, `building_editing`, `building_editor`, `buildingfx`, `camera`, `camera_editing`, `card`, `climbing`, `combat`, `combat_navigation`, `common`, `crowd`, `crowd_editing`, `data`, `database`, `daynight`, `decal`, `decal_editing`, `decision`, `definitions`, `definitions_editing`, `demo`, `devtools`, `dialogue`, `dialogue_editing`, `dialogue_editor`, `dnut_interpreter`, `domain_gizmo_editing`, `economy`, `editing`, `editor`, `effects`, `filesystem`, `fluids`, `fluids_editing`, `fluids_editor`, `font`, `game_event`, `gpgpu`, `gpuagents`, `gpuagents_editing`, `gpuagents_editor`, `graphics`, `graphics_editing`, `graphics_editor`, `graphics_fog`, `graphics_raytracing`, `grid`, `hd2d`, `hd2d_editing`, `heightmap_target`, `hexmap`, `i18n`, `ik`, `image`, `input_editing`, `inventory`, `level_editing`, `level_editor`, `lighting_editing`, `localization_editing`, `map`, `map_editing`, `material_editing`, `material_editor`, `material_graphics_editing`, `math`, `model3d`, `network_editing`, `npc_ai`, `npc_ai_editing`, `orders`, `os`, `particles`, `particles_editing`, `particles_graphics_editing`, `physics`, `physics_backend`, `physics_cloth`, `physics_destruction`, `physics_destruction_editing`, `physics_destruction_graphics`, `physics_editing`, `physics_editor`, `physics_rope`, `physics_softbody`, `physics_softbody_cook`, `physics_softbody_editing`, `physics_softbody_graphics`, `pixelworld`, `pixelworld_editor`, `platform_event`, `plugins`, `policyregistry`, `procgen`, `procgen_animation`, `procgen_editing`, `procgen_editor`, `production`, `profiler_editing`, `property_access`, `queue_editing`, `rpg`, `rts`, `rx`, `scene`, `scene_editing`, `scene_editor`, `sceneloader`, `sceneloader_editing`, `schema`, `sensing`, `settlement`, `social`, `social_editing`, `sound`, `spatial`, `spritestack_editing`, `statepatch`, `stylize`, `stylize_action`, `stylize_editing`, `tactics`, `tags`, `tensor`, `thread`, `tilelayer_target`, `transaction`, `ui`, `ui_editing`, `ui_editor`, `vehicle`, `virtualgeometry_editing`, `voxel`, `voxel_editing`, `voxel_editor`, `weapon`, `weather`, `window`.
 
 - [gameplay_composition_graphics_animation_inertializer_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_animation_inertializer_tests.cpp)
 - [gameplay_composition_graphics_buildingfx_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_buildingfx_tests.cpp)

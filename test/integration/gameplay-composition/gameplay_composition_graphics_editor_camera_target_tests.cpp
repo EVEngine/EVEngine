@@ -1306,10 +1306,10 @@ TEST_CASE("editor.building.curve_tool_cancel_and_miss_do_not_mutate") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_camera_target)
-#include "PrivateTestScope.h"
 #include <map>
 #include <memory>
 #include <string>
+#include "PrivateTestScope.h"
 #include "camera/editing/CameraTarget.h"
 #include "daynight/DayNight.h"
 #include "decal/DecalManager.h"
@@ -1325,7 +1325,7 @@ TEST_CASE("editor.building.curve_tool_cancel_and_miss_do_not_mutate") {
 #include "graphics/material/editor/EditorMaterialOffscreen.h"
 #include "hd2d/editing/Hd2dTarget.h"
 #include "image/ImageData.h"
-#include "particles/editor/EditorParticleOffscreen.h"
+#include "particles/graphics_editing/ParticleOffscreen.h"
 #include "ui/editor/EditorUiOffscreen.h"
 #include "weather/Weather.h"
 #include "zeroerr/assert.h"
@@ -1609,6 +1609,8 @@ TEST_CASE("editor.decal.publishing_target_preserves_author_and_runtime_on_reject
 // editor_domain_offscreen.cpp
 using namespace eve::editor;
 using namespace eve::editing;
+using namespace eve::graphics_editing;
+using namespace eve::particles_graphics_editing;
 
 namespace {
 class Canvas final : public eve::graphics::Canvas {
@@ -2109,7 +2111,6 @@ TEST_CASE("editor.lighting.environment_detects_multiple_environment_owners") {
 }
 }  // namespace test_editor_camera_target
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_core_v2)
 #include "PrivateTestScope.h"
 #include <memory>
@@ -2654,8 +2655,8 @@ TEST_CASE("editor.timeline_capacity_drops_oldest_and_payload_is_bounded") {
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_definition_target)
 #include "PrivateTestScope.h"
 #include "definitions/Definitions.h"
-#include "definitions/editor/EditorDefinitionForm.h"
-#include "definitions/editor/EditorDefinitionTarget.h"
+#include "definitions/editing/DefinitionForm.h"
+#include "definitions/editing/DefinitionTarget.h"
 #include "editor/queue/editing/QueueInspector.h"
 #include "orders/CommandQueue.h"
 #include "production/Production.h"
@@ -2851,7 +2852,6 @@ TEST_CASE("editor.social.snapshot_rejects_dangling_or_duplicate_semantics_atomic
 }
 }  // namespace test_editor_definition_target
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_dialogue_graph)
 #include "PrivateTestScope.h"
 #include "dialogue/ConversationAuthoring.h"
@@ -2998,10 +2998,10 @@ TEST_CASE("editor.dialogue.subtitle_preview_checks_safe_area_readability_and_lip
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_extension_v2)
-#include "PrivateTestScope.h"
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <stdexcept>
 #include <string>
+#include "PrivateTestScope.h"
 #include "audio/editing/AudioTarget.h"
 #include "common/Module.h"
 #include "editor/EditorAssetDatabase.h"
@@ -3213,8 +3213,8 @@ void set(IPropertyProvider& provider, IDomainOperationTarget& target, const Sele
 }  // namespace
 
 TEST_CASE("editor.gizmo.builds_physics_audio_and_light_overlays") {
-    EditorGizmoPreviewBuilder builder;
-    PhysicsColliderTarget     collider("shape", 3);
+    eve::domain_gizmo_editing::EditorGizmoPreviewBuilder builder;
+    PhysicsColliderTarget                                collider("shape", 3);
     set(collider, collider, selection("shape"), "shape.kind", "capsule");
     set(collider, collider, selection("shape"), "shape.radius", 0.75);
     set(collider, collider, selection("shape"), "shape.capsule-height", 2.0);
@@ -3493,7 +3493,6 @@ TEST_CASE("editor.material.studio_rate_limits_with_injected_monotonic_time") {
 }
 }  // namespace test_editor_extension_v2
 #endif
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_fluid_target)
 #include "PrivateTestScope.h"
 #include "fluids/VolumeFluid.h"
