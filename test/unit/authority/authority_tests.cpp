@@ -22,7 +22,7 @@ std::string requireId(eve::Result<std::string>&& result) {
 }  // namespace
 
 TEST_CASE("authority.decision.priorityThenDenyThenCreationOrder") {
-    Store store;
+    Store      store;
     const auto grant = requireId(store.grant("actor:1", "scope:1", "edit", "role:a", 10));
     const auto deny  = requireId(store.deny("actor:1", "scope:1", "edit", "policy:a", 10));
     CHECK(!store.can("actor:1", "scope:1", "edit"));
@@ -58,7 +58,7 @@ TEST_CASE("authority.decision.wildcardMatchesAndLosesToExactDeny") {
 }
 
 TEST_CASE("authority.lifecycle.durationRevokeAndEvents") {
-    Store store;
+    Store      store;
     const auto temporary = requireId(store.grant("a", "s", "c", "temporary", 1, 0.5));
     requireId(store.deny("b", "s", "c", "policy", 1));
     store.update(0.5);
@@ -93,7 +93,7 @@ TEST_CASE("authority.lifecycle.revokeByDimensionAndEventCapacity") {
 }
 
 TEST_CASE("authority.query.reverseDimensionsAreDeterministic") {
-    Store store;
+    Store      store;
     const auto first  = requireId(store.grant("a", "s2", "read", "x"));
     const auto second = requireId(store.grant("a", "s1", "write", "y"));
     const auto third  = requireId(store.deny("b", "s1", "read", "z"));

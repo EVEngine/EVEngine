@@ -143,8 +143,8 @@ std::string eventKindName(EventKind kind) {
 namespace {
 
 eve::Result<std::string> rejectedRule(std::string message) {
-    return eve::Result<std::string>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message), "rule", {}, "authority.store"));
+    return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                    std::move(message), "rule", {}, "authority.store"));
 }
 
 eve::Result<void> notFoundRule(std::string message) {
@@ -319,7 +319,7 @@ void Store::update(double dtSeconds) {
 }
 
 Decision Store::explain(const std::string& actor, const std::string& scope, const std::string& capability) const {
-    const Rule*            winner = nullptr;
+    const Rule*              winner = nullptr;
     std::vector<std::string> candidateIds;
     if (const auto it = exactIndex_.find(exactKey(actor, scope, capability)); it != exactIndex_.end())
         candidateIds.insert(candidateIds.end(), it->second.begin(), it->second.end());
@@ -360,9 +360,9 @@ const Rule* Store::queryAt(int index) const {
 
 eve::Result<void> Store::setEventCapacity(int capacity) {
     if (capacity < 0)
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "authority event capacity must be non-negative", "eventCapacity", {},
-            "authority.store"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "authority event capacity must be non-negative",
+                                                                 "eventCapacity", {}, "authority.store"));
     eventCapacity_ = capacity;
     trimEvents();
     advanceRevision(revision_);
@@ -563,26 +563,27 @@ void Authority::expose(ssq::Table& table) {
     event.addFunc("getReason", [](Event* e) { return e ? e->reason : std::string{}; });
 
     auto store = table.addClass<Store>("AuthorityStore", std::function<Store*()>([] { return nullptr; }), false);
-    store.addFunc("grant", [vm](Store* s, const std::string& actor, const std::string& scope,
-                                const std::string& capability, const std::string& source, int priority, float duration) {
-        if (!s)
-            return eve::script::projectResult(
-                vm,
-                eve::Result<std::string>::failure(eve::Diagnostic::error(
-                    eve::DiagnosticCode::InvalidArgument, "authority store must not be null", "store", {},
-                    "authority.squirrel")),
-                projectRuleId);
-        return eve::script::projectResult(vm, s->grant(actor, scope, capability, source, priority, duration),
-                                          projectRuleId);
-    });
+    store.addFunc(
+        "grant", [vm](Store* s, const std::string& actor, const std::string& scope, const std::string& capability,
+                      const std::string& source, int priority, float duration) {
+            if (!s)
+                return eve::script::projectResult(
+                    vm,
+                    eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                             "authority store must not be null",
+                                                                             "store", {}, "authority.squirrel")),
+                    projectRuleId);
+            return eve::script::projectResult(vm, s->grant(actor, scope, capability, source, priority, duration),
+                                              projectRuleId);
+        });
     store.addFunc("deny", [vm](Store* s, const std::string& actor, const std::string& scope,
                                const std::string& capability, const std::string& source, int priority, float duration) {
         if (!s)
             return eve::script::projectResult(
                 vm,
-                eve::Result<std::string>::failure(eve::Diagnostic::error(
-                    eve::DiagnosticCode::InvalidArgument, "authority store must not be null", "store", {},
-                    "authority.squirrel")),
+                eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                         "authority store must not be null", "store",
+                                                                         {}, "authority.squirrel")),
                 projectRuleId);
         return eve::script::projectResult(vm, s->deny(actor, scope, capability, source, priority, duration),
                                           projectRuleId);
@@ -676,9 +677,9 @@ void Authority::expose(ssq::Table& table) {
             if (!view.isBound())
                 return eve::script::projectResult(
                     vm,
-                    eve::Result<std::string>::failure(eve::Diagnostic::error(
-                        eve::DiagnosticCode::StaleHandle, "owned authority store handle is stale", "store", {},
-                        "authority.squirrel")),
+                    eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                             "owned authority store handle is stale",
+                                                                             "store", {}, "authority.squirrel")),
                     projectRuleId);
             return eve::script::projectResult(vm, view->grant(actor, scope, capability, source, priority, duration),
                                               projectRuleId);
@@ -689,17 +690,17 @@ void Authority::expose(ssq::Table& table) {
             if (!value)
                 return eve::script::projectResult(
                     vm,
-                    eve::Result<std::string>::failure(eve::Diagnostic::error(
-                        eve::DiagnosticCode::InvalidArgument, "authority store proxy must not be null", "store", {},
-                        "authority.squirrel")),
+                    eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                             "authority store proxy must not be null",
+                                                                             "store", {}, "authority.squirrel")),
                     projectRuleId);
             auto view = Authority::resolve(value->reference);
             if (!view.isBound())
                 return eve::script::projectResult(
                     vm,
-                    eve::Result<std::string>::failure(eve::Diagnostic::error(
-                        eve::DiagnosticCode::StaleHandle, "authority store handle is stale", "store", {},
-                        "authority.squirrel")),
+                    eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                             "authority store handle is stale", "store",
+                                                                             {}, "authority.squirrel")),
                     projectRuleId);
             return eve::script::projectResult(vm, view->deny(actor, scope, capability, source, priority, duration),
                                               projectRuleId);

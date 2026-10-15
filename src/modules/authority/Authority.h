@@ -153,7 +153,12 @@ public:
      */
     [[nodiscard]] Decision explain(const std::string& actor, const std::string& scope,
                                    const std::string& capability) const;
-    /** @brief Returns a rule by stable ID, or nullptr. */
+    /**
+     * @brief Returns a rule by stable ID, or nullptr.
+     * @ownership Borrowed from this store; callers must not delete or retain it.
+     * @nullable Null when the id is absent.
+     * @lifetime Until the rule is revoked/expired or the store is restored/destroyed.
+     */
     [[nodiscard]] const Rule* find(const std::string& id) const;
 
     /** @brief Queries rules for an actor in deterministic creation order. */
@@ -168,7 +173,12 @@ public:
      *          `kWildcard` fields also match the corresponding non-empty query field.
      */
     int query(const std::string& actor, const std::string& scope, const std::string& capability);
-    /** @brief Returns a rule from the latest query, or nullptr. */
+    /**
+     * @brief Returns a rule from the latest query, or nullptr.
+     * @ownership Borrowed from this store; callers must not delete or retain it.
+     * @nullable Null when the index is outside the latest query range.
+     * @lifetime Until the next query/mutation/restore or store destruction.
+     */
     const Rule* queryAt(int index) const;
 
     /**
@@ -182,7 +192,13 @@ public:
     [[nodiscard]] int eventCapacity() const noexcept { return eventCapacity_; }
     /** @brief Returns retained authority event count. */
     int eventCount() const;
-    /** @brief Returns a retained event, or nullptr. */
+    /**
+     * @brief Returns a retained event, or nullptr.
+     * @ownership Borrowed from this store's retained event deque.
+     * @nullable Null when the index is outside the retained range.
+     * @lifetime Until `clearEvents`, capacity trim, restore, or destruction; do not
+     *           retain it across those calls.
+     */
     const Event* eventAt(int index) const;
     /** @brief Clears retained events without resetting sequence allocation. */
     void clearEvents();
@@ -242,24 +258,23 @@ private:
     void                                   rebuildIndex();
     [[nodiscard]] static std::string       exactKey(const std::string& actor, const std::string& scope,
                                                     const std::string& capability);
-    [[nodiscard]] static bool              ruleMatches(const Rule& rule, const std::string& actor,
-                                                       const std::string& scope, const std::string& capability);
-    [[nodiscard]] static bool              hasWildcard(const Rule& rule);
-    [[nodiscard]] int                      revokeMatching(const std::string& reason,
-                                                          const std::function<bool(const Rule&)>& predicate);
+    [[nodiscard]] static bool ruleMatches(const Rule& rule, const std::string& actor, const std::string& scope,
+                                          const std::string& capability);
+    [[nodiscard]] static bool hasWildcard(const Rule& rule);
+    [[nodiscard]] int revokeMatching(const std::string& reason, const std::function<bool(const Rule&)>& predicate);
 
-    uint64_t                                    nextId_        = 1;
-    uint64_t                                    nextOrder_     = 1;
-    uint64_t                                    nextSequence_  = 1;
-    int                                         eventCapacity_ = 0;
-    eve::PersistentId                           instanceId_;
-    eve::Revision                               revision_;
-    eve::SimulationTick                         tick_;
-    std::deque<Rule>                            rules_;
-    std::deque<Event>                           events_;
-    std::vector<const Rule*>                    query_;
+    uint64_t                                                  nextId_        = 1;
+    uint64_t                                                  nextOrder_     = 1;
+    uint64_t                                                  nextSequence_  = 1;
+    int                                                       eventCapacity_ = 0;
+    eve::PersistentId                                         instanceId_;
+    eve::Revision                                             revision_;
+    eve::SimulationTick                                       tick_;
+    std::deque<Rule>                                          rules_;
+    std::deque<Event>                                         events_;
+    std::vector<const Rule*>                                  query_;
     std::unordered_map<std::string, std::vector<std::string>> exactIndex_;
-    std::vector<std::string>                    wildcardIds_;
+    std::vector<std::string>                                  wildcardIds_;
 };
 
 /** @brief Returns the stable lowercase name of a rule effect. */

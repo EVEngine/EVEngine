@@ -4939,6 +4939,23 @@
         "weapon.cpp"
       ]
     },
+    "integration/script-api/script_api_procgen_generation_stages_tests.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "procgen.stages.scriptOwnsFieldsAndComposesCaveWithoutGraphics"
+        ]
+      },
+      "module": "procgen",
+      "modules": [
+        "procgen"
+      ],
+      "task": "script-api",
+      "origins": [
+        "procgen_generation_stages_script.cpp"
+      ]
+    },
     "integration/script-rendering/script_rendering_graphics_tests.cpp": {
       "role": "tests",
       "default": "script-render",
@@ -5006,25 +5023,6 @@
       "default": "runtime-lifecycle",
       "cases": {},
       "module": "common"
-    },
-    "procgen_generation_stages.cpp": {
-      "role": "tests",
-      "default": "local-logic",
-      "cases": {
-        "local-logic": [
-          "procgen.stages.scalarFieldIsOwningBoundedAndTransactional",
-          "procgen.stages.scalarFieldProducesReusableParametricGeometry",
-          "procgen.stages.houseDefaultScheduleMatchesCompatibilityAndOwnsKit",
-          "procgen.stages.houseGraphControlsGenerationAndFailuresPreserveStage",
-          "procgen.stages.caveDefaultScheduleMatchesRecipe",
-          "procgen.stages.caveFieldEditsAffectOutputAndFailedExtractionKeepsInput",
-          "procgen.stages.caveSkeletonAndSurfacePoliciesAreEditable"
-        ],
-        "script-binding": [
-          "procgen.stages.scriptOwnsFieldsAndComposesCaveWithoutGraphics"
-        ]
-      },
-      "module": "procgen"
     },
     "profile/capability_absent.cpp": {
       "role": "compile-contract",
@@ -6893,6 +6891,20 @@
         "RenderImageAudit.cpp"
       ]
     },
+    "unit/graphics/virtual_texture_streaming.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "graphics.virtual_texture_streaming.pack_feedback_roundtrip",
+          "graphics.virtual_texture_streaming.feedback_decode_publish_and_abandon",
+          "graphics.virtual_texture_streaming.evicts_lru_and_clears_page_table_first",
+          "graphics.virtual_texture_streaming.writer_invalidates_dirty_pages",
+          "graphics.virtual_texture_streaming.ingest_packed_feedback_collapses_mips"
+        ]
+      },
+      "module": "graphics"
+    },
     "unit/graphics_fog/graphics_fog_unit.cpp": {
       "role": "tests",
       "default": "local-logic",
@@ -8073,6 +8085,22 @@
         "procgen_rng_contract.cpp",
         "procgen.cpp"
       ]
+    },
+    "unit/procgen/procgen_generation_stages.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.stages.scalarFieldIsOwningBoundedAndTransactional",
+          "procgen.stages.scalarFieldProducesReusableParametricGeometry",
+          "procgen.stages.houseDefaultScheduleMatchesCompatibilityAndOwnsKit",
+          "procgen.stages.houseGraphControlsGenerationAndFailuresPreserveStage",
+          "procgen.stages.caveDefaultScheduleMatchesRecipe",
+          "procgen.stages.caveFieldEditsAffectOutputAndFailedExtractionKeepsInput",
+          "procgen.stages.caveSkeletonAndSurfacePoliciesAreEditable"
+        ]
+      },
+      "module": "procgen"
     },
     "unit/procgen/procgen_mesh_tests.cpp": {
       "role": "tests",
@@ -9817,20 +9845,6 @@
       "origins": [
         "gpgpu.cpp"
       ]
-    },
-    "virtual_texture_streaming.cpp": {
-      "role": "tests",
-      "default": "local-logic",
-      "cases": {
-        "local-logic": [
-          "graphics.virtual_texture_streaming.pack_feedback_roundtrip",
-          "graphics.virtual_texture_streaming.feedback_decode_publish_and_abandon",
-          "graphics.virtual_texture_streaming.evicts_lru_and_clears_page_table_first",
-          "graphics.virtual_texture_streaming.writer_invalidates_dirty_pages",
-          "graphics.virtual_texture_streaming.ingest_packed_feedback_collapses_mips"
-        ]
-      },
-      "module": "graphics"
     }
   }
 }
