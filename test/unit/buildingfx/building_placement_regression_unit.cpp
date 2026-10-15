@@ -1,3 +1,5 @@
+#include "zeroerr/assert.h"
+
 #include <cmath>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include "building/BuildingDef.h"

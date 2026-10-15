@@ -162,8 +162,8 @@ prepare 不修改项目/数据库；成功候选仍由现有 AtomicAssetPackageS
 
 ## 验证
 
-单元测试在 `test/integration/asset-pipeline/asset_import_unity_package.cpp` 和
-`test/integration/asset-pipeline/asset_import_unity_collection.cpp`，标准全量 CTest 会自动发现它们。
+单元测试在 `test/integration/asset-pipeline/asset_pipeline_graphics_asset_import_unity_vegetation_material_tests.cpp` 和
+`test/integration/asset-pipeline/asset_pipeline_graphics_asset_image_mips_tests.cpp`，标准全量 CTest 会自动发现它们。
 CPU-only 入口 `test/asset_import/CMakeLists.txt` 使用相同生产源码和测试，便于不构建
 图形宿主时验证解析、canonical 归档和 Cook。需要 zeroerr 子模块，以及匹配的 zlib、
 utf8proc、zstd、Assimp、xxHash 开发库；CLI 编译检查还需要 CLI11.hpp。

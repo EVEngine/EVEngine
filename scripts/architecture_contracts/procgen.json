@@ -14,7 +14,7 @@
         "docs/usr/modules/procgen_physics.md"
       ],
       "tests": [
-        "test/integration/physics-simulation/gts_terrain_collider.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "symbols": [
@@ -39,7 +39,7 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/integration/render-presentation/procgen.cpp", "test/unit/procgen/procgen_unit.cpp",
+        "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp", "test/unit/procgen/procgen_foundation_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -67,7 +67,7 @@
         "src/modules/procgen/heightmap/TerrainGenerationSession.cpp"
       ],
       "tests": [
-        "test/unit/procgen/terrain_smooth_stamp_persistence.cpp"
+        "test/unit/procgen/procgen_terrain_tests.cpp"
       ],
       "schema": "eve.procgen.terrain-generation-session",
       "version": "2",
@@ -88,7 +88,7 @@
         "src/modules/procgen/heightmap/TerrainSpawnPlanCodec.cpp"
       ],
       "tests": [
-        "test/unit/procgen/terrain_smooth_stamp_persistence.cpp"
+        "test/unit/procgen/procgen_terrain_tests.cpp"
       ],
       "schema": "eve.procgen.terrain-spawn-plan",
       "version": "4",
@@ -109,8 +109,8 @@
         "src/modules/procgen/editor/procgen_editor.cpp"
       ],
       "tests": [
-        "test/integration/gameplay-composition/editor_procgen_script_editor.cpp",
-        "test/integration/gameplay-composition/procgen_road_editing.cpp"
+        "test/integration/gameplay-composition/gameplay_composition_graphics_editor_material_target_tests.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_procgen_road_editing_tests.cpp"
       ],
       "provides": [
         {
@@ -167,7 +167,7 @@
         "docs/usr/modules/procgen.md"
       ],
       "tests": [
-        "test/integration/script-api/procgen_module_assembly.cpp", "test/unit/procgen/procgen_module_assembly_unit.cpp",
+        "test/integration/script-api/script_api_graphics_mcp_tests.cpp", "test/unit/procgen/procgen_composition_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [],
@@ -229,8 +229,8 @@
         "src/modules/procgen/heightmap/TerrainStamp.h"
       ],
       "tests": [
-        "test/unit/procgen/terrain_smooth_stamp.cpp",
-        "test/integration/script-api/terrain_smooth_stamp_script.cpp"
+        "test/unit/procgen/procgen_terrain_tests.cpp",
+        "test/integration/script-api/script_api_graphics_terrain_probe_tests.cpp"
       ],
       "thread_affinity": "Caller owns output rasters; source mutations serialized; read-only builder bakes may use distinct outputs concurrently.",
       "provides": [],
@@ -282,8 +282,8 @@
         "docs/usr/modules/procgen/pointset-pipeline.md"
       ],
       "tests": [
-        "test/integration/script-api/procgen_scene_sink.cpp", "test/unit/procgen/procgen_scene_sink_unit.cpp",
-        "test/integration/script-api/procgen_scene_sink.cpp", "test/unit/procgen/procgen_scene_sink_unit.cpp",
+        "test/integration/script-api/script_api_graphics_mcp_tests.cpp", "test/unit/procgen/procgen_composition_tests.cpp",
+        "test/integration/script-api/script_api_graphics_mcp_tests.cpp", "test/unit/procgen/procgen_composition_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [],

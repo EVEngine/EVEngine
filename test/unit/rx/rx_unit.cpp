@@ -1,4 +1,6 @@
 #include "zeroerr/assert.h"
+
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 #include "common/Module.h"
@@ -13,8 +15,8 @@
 
 using eve::rx::AnonymousObservable;
 using eve::rx::BehaviorSubject;
-using eve::rx::Observer;
 using eve::rx::Observable;
+using eve::rx::Observer;
 using eve::rx::ReactiveProperty;
 using eve::rx::ReplaySubject;
 using eve::rx::Subject;
@@ -67,8 +69,8 @@ TEST_CASE("rx.Value.nilAndEquals") {
 // ---------------------------------------------------------------------------
 TEST_CASE("rx.Subject.deliversOnNext") {
     Subject<int> subj;
-    int received = 0;
-    auto sub = subj.subscribe([&](const int& v) { received += v; });
+    int          received = 0;
+    auto         sub      = subj.subscribe([&](const int& v) { received += v; });
     subj.onNext(1);
     subj.onNext(2);
     subj.onNext(3);
@@ -90,8 +92,8 @@ TEST_CASE("rx.Subject.observerCount") {
 
 TEST_CASE("rx.Subject.disposeStopsDelivery") {
     Subject<int> subj;
-    int received = 0;
-    auto sub = subj.subscribe([&](const int& v) { received += v; });
+    int          received = 0;
+    auto         sub      = subj.subscribe([&](const int& v) { received += v; });
     subj.onNext(5);
     sub.dispose();
     subj.onNext(10);
@@ -100,13 +102,15 @@ TEST_CASE("rx.Subject.disposeStopsDelivery") {
 
 TEST_CASE("rx.Subject.onErrorOnCompleted") {
     Subject<int> subj;
-    bool errored = false;
-    bool completed = false;
-    std::string err;
-    auto sub = subj.subscribe([](const int&) {}, [&](const std::string& e) {
-        errored = true;
-        err = e;
-    }, [&]() { completed = true; });
+    bool         errored   = false;
+    bool         completed = false;
+    std::string  err;
+    auto         sub = subj.subscribe([](const int&) {},
+                              [&](const std::string& e) {
+                                  errored = true;
+                                  err     = e;
+                              },
+                              [&]() { completed = true; });
 
     subj.onError("boom");
     CHECK(errored);
@@ -119,10 +123,9 @@ TEST_CASE("rx.Subject.onErrorOnCompleted") {
 
 TEST_CASE("rx.Subject.onCompletedStopsDelivery") {
     Subject<int> subj;
-    int received = 0;
-    bool completed = false;
-    auto sub = subj.subscribe([&](const int& v) { received += v; }, nullptr,
-                              [&]() { completed = true; });
+    int          received  = 0;
+    bool         completed = false;
+    auto         sub       = subj.subscribe([&](const int& v) { received += v; }, nullptr, [&]() { completed = true; });
     subj.onNext(1);
     subj.onCompleted();
     subj.onNext(2);
@@ -136,9 +139,9 @@ TEST_CASE("rx.Subject.onCompletedStopsDelivery") {
 // ---------------------------------------------------------------------------
 TEST_CASE("rx.operators.map") {
     Subject<int> subj;
-    int received = 0;
-    auto mapped = subj.map<std::string>([](const int& v) { return std::to_string(v * 2); });
-    auto sub = mapped->subscribe([&](const std::string& s) { received += std::stoi(s); });
+    int          received = 0;
+    auto         mapped   = subj.map<std::string>([](const int& v) { return std::to_string(v * 2); });
+    auto         sub      = mapped->subscribe([&](const std::string& s) { received += std::stoi(s); });
     subj.onNext(3);
     subj.onNext(4);
     CHECK_EQ(received, 14);
@@ -148,9 +151,9 @@ TEST_CASE("rx.operators.map") {
 
 TEST_CASE("rx.operators.filter") {
     Subject<int> subj;
-    int received = 0;
-    auto filtered = subj.filter([](const int& v) { return v % 2 == 0; });
-    auto sub = filtered->subscribe([&](const int& v) { received += v; });
+    int          received = 0;
+    auto         filtered = subj.filter([](const int& v) { return v % 2 == 0; });
+    auto         sub      = filtered->subscribe([&](const int& v) { received += v; });
     subj.onNext(1);
     subj.onNext(2);
     subj.onNext(3);
@@ -161,12 +164,11 @@ TEST_CASE("rx.operators.filter") {
 }
 
 TEST_CASE("rx.operators.take") {
-    Subject<int> subj;
+    Subject<int>     subj;
     std::vector<int> received;
-    bool completed = false;
-    auto taken = subj.take(2);
-    auto sub = taken->subscribe([&](const int& v) { received.push_back(v); }, nullptr,
-                                [&]() { completed = true; });
+    bool             completed = false;
+    auto             taken     = subj.take(2);
+    auto sub = taken->subscribe([&](const int& v) { received.push_back(v); }, nullptr, [&]() { completed = true; });
     subj.onNext(1);
     subj.onNext(2);
     subj.onNext(3);
@@ -179,10 +181,10 @@ TEST_CASE("rx.operators.take") {
 }
 
 TEST_CASE("rx.operators.skip") {
-    Subject<int> subj;
+    Subject<int>     subj;
     std::vector<int> received;
-    auto skipped = subj.skip(2);
-    auto sub = skipped->subscribe([&](const int& v) { received.push_back(v); });
+    auto             skipped = subj.skip(2);
+    auto             sub     = skipped->subscribe([&](const int& v) { received.push_back(v); });
     subj.onNext(1);
     subj.onNext(2);
     subj.onNext(3);
@@ -195,12 +197,11 @@ TEST_CASE("rx.operators.skip") {
 }
 
 TEST_CASE("rx.operators.first") {
-    Subject<int> subj;
+    Subject<int>     subj;
     std::vector<int> received;
-    bool completed = false;
-    auto first = subj.first();
-    auto sub = first->subscribe([&](const int& v) { received.push_back(v); }, nullptr,
-                                [&]() { completed = true; });
+    bool             completed = false;
+    auto             first     = subj.first();
+    auto sub = first->subscribe([&](const int& v) { received.push_back(v); }, nullptr, [&]() { completed = true; });
     subj.onNext(10);
     subj.onNext(20);
     CHECK_EQ(received.size(), size_t(1));
@@ -211,10 +212,10 @@ TEST_CASE("rx.operators.first") {
 }
 
 TEST_CASE("rx.operators.distinctUntilChanged") {
-    Subject<int> subj;
+    Subject<int>     subj;
     std::vector<int> received;
-    auto d = subj.distinctUntilChanged();
-    auto sub = d->subscribe([&](const int& v) { received.push_back(v); });
+    auto             d   = subj.distinctUntilChanged();
+    auto             sub = d->subscribe([&](const int& v) { received.push_back(v); });
     subj.onNext(1);
     subj.onNext(1);
     subj.onNext(2);
@@ -231,9 +232,9 @@ TEST_CASE("rx.operators.distinctUntilChanged") {
 TEST_CASE("rx.operators.takeUntil") {
     Subject<int> source;
     Subject<int> stopper;
-    int received = 0;
-    auto taken = source.takeUntil(&stopper);
-    auto sub = taken->subscribe([&](const int& v) { received += v; });
+    int          received = 0;
+    auto         taken    = source.takeUntil(&stopper);
+    auto         sub      = taken->subscribe([&](const int& v) { received += v; });
     source.onNext(1);
     stopper.onNext(0);
     source.onNext(10);
@@ -247,7 +248,7 @@ TEST_CASE("rx.operators.takeUntil") {
 // ---------------------------------------------------------------------------
 TEST_CASE("rx.BehaviorSubject.replaysLatestOnSubscribe") {
     BehaviorSubject<int> bs(100);
-    int received = 0;
+    int                  received = 0;
     bs.onNext(200);
     auto sub = bs.subscribe([&](const int& v) { received = v; });
     CHECK_EQ(received, 200);  // latest replayed
@@ -264,7 +265,7 @@ TEST_CASE("rx.ReplaySubject.replaysBuffer") {
     rs.onNext(3);
     rs.onNext(4);
     std::vector<int> received;
-    auto sub = rs.subscribe([&](const int& v) { received.push_back(v); });
+    auto             sub = rs.subscribe([&](const int& v) { received.push_back(v); });
     CHECK_EQ(received.size(), size_t(3));  // capacity 3
     CHECK_EQ(received[0], 2);
     CHECK_EQ(received[1], 3);
@@ -274,8 +275,8 @@ TEST_CASE("rx.ReplaySubject.replaysBuffer") {
 
 TEST_CASE("rx.ReactiveProperty.getSetNotify") {
     ReactiveProperty<int> prop(0);
-    int received = 0;
-    auto sub = prop.subscribe([&](const int& v) { received = v; });
+    int                   received = 0;
+    auto                  sub      = prop.subscribe([&](const int& v) { received = v; });
     CHECK_EQ(prop.get(), 0);
     CHECK_EQ(received, 0);  // BehaviorSubject replays current on subscribe
     prop.set(7);
@@ -286,8 +287,8 @@ TEST_CASE("rx.ReactiveProperty.getSetNotify") {
 
 TEST_CASE("rx.ReactiveProperty.asObservable") {
     ReactiveProperty<std::string> prop("a");
-    int calls = 0;
-    auto sub = prop.asObservable()->subscribe([&](const std::string&) { calls++; });
+    int                           calls = 0;
+    auto                          sub   = prop.asObservable()->subscribe([&](const std::string&) { calls++; });
     prop.set("b");
     prop.set("c");
     CHECK(calls >= 3);  // initial replay + 2 sets

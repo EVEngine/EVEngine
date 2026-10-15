@@ -137,6 +137,73 @@ TEST_CASE("same.case") { CHECK(true); }
             desktop = next(line for line in rendered.splitlines() if line.startswith("set(EVE_TEST_DESKTOP_ORIGINS"))
             self.assertIn("unit/rules/new_rule.cpp", desktop)
 
+    def test_consolidated_namespaces_keep_helper_safety_local(self):
+        text = """namespace test_native {
+int build() { return 7; }
+TEST_CASE("local.case") { CHECK(build() == 7); }
+}  // namespace test_native
+namespace test_script {
+void build() { ScriptTest script("fixture"); }
+}  // namespace test_script
+"""
+        data, inventory = self.fixture(text)
+        self.assertEqual(levels.catalogue_errors(data, inventory), [])
+        unsafe = text.replace("CHECK(build() == 7);", "test_script::build();")
+        data, inventory = self.fixture(unsafe)
+        self.assertTrue(any("ScriptTest" in error for error in levels.catalogue_errors(data, inventory)))
+
+    def test_origin_selection_is_target_local_and_registers_only_compiled_cases(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            source = base / "merged.cpp"
+            source.write_text("// merged rules\n", encoding="utf-8")
+            cmake = base / "CMakeLists.txt"
+            cmake.write_text(
+                'cmake_minimum_required(VERSION 3.21)\nproject(selection NONE)\n'
+                f'include("{(levels.ROOT / "cmake/TestLevels.cmake").as_posix()}")\n'
+                f'set(EVE_TEST_RELOCATED_local.cpp "{source.as_posix()}")\n'
+                f'set(EVE_TEST_RELOCATED_gpu.cpp "{source.as_posix()}")\n'
+                'set(EVE_TEST_CASE_NAMES_merged.cpp local.case gpu.case)\n'
+                'set(EVE_TEST_CASE_NAMES_local.cpp local.case)\n'
+                'set(EVE_TEST_CASE_NAMES_gpu.cpp gpu.case)\n'
+                f'eve_test_origin_definitions(local_defs "{(base / "local.cpp").as_posix()}")\n'
+                f'eve_test_origin_definitions(gpu_defs "{(base / "gpu.cpp").as_posix()}")\n'
+                'add_custom_target(native)\nadd_custom_target(graphics)\n'
+                'set_property(TARGET native PROPERTY EVE_TEST_ORIGIN_DEFINITIONS ${local_defs})\n'
+                'set_property(TARGET graphics PROPERTY EVE_TEST_ORIGIN_DEFINITIONS ${gpu_defs})\n'
+                f'eve_test_source_case_names("{source.as_posix()}" native_cases native)\n'
+                f'eve_test_source_case_names("{source.as_posix()}" gpu_cases graphics)\n'
+                'if(NOT native_cases STREQUAL "local.case" OR NOT gpu_cases STREQUAL "gpu.case")\n'
+                'message(FATAL_ERROR "selections leaked between targets")\nendif()\n'
+                f'get_source_file_property(source_defs "{source.as_posix()}" COMPILE_DEFINITIONS)\n'
+                'if(source_defs)\nmessage(FATAL_ERROR "target selection mutated shared source")\nendif()\n', encoding="utf-8")
+            result = subprocess.run(["cmake", "-G", "Ninja", "-S", str(base), "-B", str(base / "build")],
+                                    text=True, encoding="utf-8", capture_output=True, check=False)
+            self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_generator_calls_cannot_share_a_registration_line(self):
+        text = '#define Generate(name) TEST_CASE("generated." #name) { CHECK(true); }\nGenerate(one) Generate(two)\n'
+        self.assertEqual(levels.generator_line_collisions(text), [2])
+        self.assertEqual(levels.generator_line_collisions(text.replace("Generate(one) Generate(two)", "Generate(one)\nGenerate(two)")), [])
+
+    def test_origin_case_policy_does_not_expand_to_the_whole_merged_file(self):
+        text = """#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_local)
+namespace test_local {
+TEST_CASE("local.case") { CHECK(true); }
+}  // namespace test_local
+#endif
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_gpu)
+namespace test_gpu {
+TEST_CASE("gpu.case") { CHECK(true); }
+}  // namespace test_gpu
+#endif
+"""
+        policy = {"origins": ["local.cpp", "gpu.cpp"], "cases": {
+            "local-logic": ["local.case"], "render-offscreen": ["gpu.case"]}}
+        selected = levels.origin_case_policies(text, policy)
+        self.assertEqual(selected["local.cpp"], {"local.case": "local-logic"})
+        self.assertEqual(selected["gpu.cpp"], {"gpu.case": "render-offscreen"})
+
     def test_actual_canonical_source_is_not_expanded_as_a_legacy_alias(self):
         with tempfile.TemporaryDirectory() as directory:
             base = Path(directory)

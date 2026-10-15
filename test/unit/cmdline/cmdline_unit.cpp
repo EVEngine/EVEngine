@@ -1,4 +1,6 @@
 #include "zeroerr/assert.h"
+
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 #include "cmdline/cmdline.h"
@@ -70,7 +72,7 @@ private:
 };
 
 [[maybe_unused]] std::filesystem::path tempDir(const char* tag) {
-    const auto p = std::filesystem::temp_directory_path() / tag;
+    const auto      p = std::filesystem::temp_directory_path() / tag;
     std::error_code ec;
     std::filesystem::remove_all(p, ec);
     std::filesystem::create_directories(p, ec);
@@ -104,10 +106,9 @@ private:
                                      (static_cast<unsigned char>(data[off + 1]) << 8));
     };
     const auto le32 = [&](size_t off) -> uint32_t {
-        return static_cast<uint32_t>(static_cast<unsigned char>(data[off]) |
-                                     (static_cast<unsigned char>(data[off + 1]) << 8) |
-                                     (static_cast<unsigned char>(data[off + 2]) << 16) |
-                                     (static_cast<unsigned char>(data[off + 3]) << 24));
+        return static_cast<uint32_t>(
+            static_cast<unsigned char>(data[off]) | (static_cast<unsigned char>(data[off + 1]) << 8) |
+            (static_cast<unsigned char>(data[off + 2]) << 16) | (static_cast<unsigned char>(data[off + 3]) << 24));
     };
 
     const uint32_t cdSize   = le32(eocd + 12);
@@ -118,8 +119,8 @@ private:
     size_t                   pos = cdOffset;
     const size_t             end = static_cast<size_t>(cdOffset) + cdSize;
     while (pos + 46 <= end && data.compare(pos, 4, "PK\x01\x02") == 0) {
-        const size_t nameLen = le16(pos + 28);
-        const size_t extraLen = le16(pos + 30);
+        const size_t nameLen    = le16(pos + 28);
+        const size_t extraLen   = le16(pos + 30);
         const size_t commentLen = le16(pos + 32);
         if (pos + 46 + nameLen + extraLen + commentLen > end) return {};
         names.emplace_back(data.substr(pos + 46, nameLen));
@@ -204,7 +205,7 @@ private:
 // the APK output that `eve build android` checks for. unsignedOnly mimics a
 // release build without a signing config (AGP emits app-release-unsigned.apk).
 [[maybe_unused]] void writeFakeGradle(const std::filesystem::path& gradleHome, bool unsignedOnly = false) {
-    const auto bin = gradleHome / "bin";
+    const auto      bin = gradleHome / "bin";
     std::error_code ec;
     std::filesystem::create_directories(bin, ec);
 #if defined(_WIN32)
@@ -216,7 +217,7 @@ private:
               "echo ok > app\\build\\outputs\\apk\\release\\" +
                   std::string(unsignedOnly ? "app-release-unsigned.apk" : "app-release.apk") +
                   "\r\n"
-              "echo ok > app\\build\\outputs\\apk\\debug\\app-debug.apk\r\n");
+                  "echo ok > app\\build\\outputs\\apk\\debug\\app-debug.apk\r\n");
 #else
     writeFile(bin / "gradle",
               "#!/bin/sh\n"
@@ -225,30 +226,28 @@ private:
               "echo ok > app/build/outputs/apk/release/" +
                   std::string(unsignedOnly ? "app-release-unsigned.apk" : "app-release.apk") +
                   "\n"
-              "echo ok > app/build/outputs/apk/debug/app-debug.apk\n");
-    std::filesystem::permissions(bin / "gradle",
-                                 std::filesystem::perms::owner_all |
-                                     std::filesystem::perms::group_read |
-                                     std::filesystem::perms::others_read,
-                                 ec);
+                  "echo ok > app/build/outputs/apk/debug/app-debug.apk\n");
+    std::filesystem::permissions(
+        bin / "gradle",
+        std::filesystem::perms::owner_all | std::filesystem::perms::group_read | std::filesystem::perms::others_read,
+        ec);
 #endif
 }
 
 // A fake sdkmanager whose only job is to exit 0 for --licenses and package
 // installs, so `eve get android` skips the real command-line-tools download.
 [[maybe_unused]] void writeFakeSdkmanager(const std::filesystem::path& sdkRoot) {
-    const auto bin = sdkRoot / "cmdline-tools" / "latest" / "bin";
+    const auto      bin = sdkRoot / "cmdline-tools" / "latest" / "bin";
     std::error_code ec;
     std::filesystem::create_directories(bin, ec);
 #if defined(_WIN32)
     writeFile(bin / "sdkmanager.bat", "@exit /b 0\r\n");
 #else
     writeFile(bin / "sdkmanager", "#!/bin/sh\nexit 0\n");
-    std::filesystem::permissions(bin / "sdkmanager",
-                                 std::filesystem::perms::owner_all |
-                                     std::filesystem::perms::group_read |
-                                     std::filesystem::perms::others_read,
-                                 ec);
+    std::filesystem::permissions(
+        bin / "sdkmanager",
+        std::filesystem::perms::owner_all | std::filesystem::perms::group_read | std::filesystem::perms::others_read,
+        ec);
 #endif
 }
 
@@ -284,12 +283,10 @@ private:
 }
 
 // 为 fake release 目录写 SHA256SUMS（correct=false 时放一个错误摘要）。
-[[maybe_unused]] void writeSha256Sums(const std::filesystem::path& releaseDir,
-                     const std::filesystem::path& zipPath, bool correct) {
-    const std::string hex =
-        correct ? eve::cmd::sdk::fileSha256(zipPath.string()) : std::string(64, '0');
-    writeFile(releaseDir / "SHA256SUMS",
-              hex + "  " + zipPath.filename().string() + "\n");
+[[maybe_unused]] void writeSha256Sums(const std::filesystem::path& releaseDir, const std::filesystem::path& zipPath,
+                                      bool correct) {
+    const std::string hex = correct ? eve::cmd::sdk::fileSha256(zipPath.string()) : std::string(64, '0');
+    writeFile(releaseDir / "SHA256SUMS", hex + "  " + zipPath.filename().string() + "\n");
 }
 
 // 在 EVEngine SDK 安装根预置一个 android SDK（跳过下载路径）。
@@ -311,8 +308,8 @@ TEST_CASE("cmdline.helpListsSubcommands") {
     const int      rc = runCli({"eve", "--help"});
     CHECK(rc == 0);
     CHECK(cap.out().find("Subcommands:") != std::string::npos);
-    for (const char* sub : {"run", "create", "zip", "package", "dev", "doc", "clean", "test", "build", "get", "mcp",
-                            "language-server"})
+    for (const char* sub :
+         {"run", "create", "zip", "package", "dev", "doc", "clean", "test", "build", "get", "mcp", "language-server"})
         CHECK(cap.out().find(sub) != std::string::npos);
 }
 

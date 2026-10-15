@@ -67,6 +67,21 @@ device runners retain their existing test lane. On CMake 3.21–3.26, repeat the
 first configure once to answer the File API query; CMake 3.27+ answers it during
 the first configure. Full CI remains the authoritative cross-platform check.
 
+## Consolidation policy
+
+A module normally owns one C++ source under `test/unit/<module>/`. Only a suite exceeding
+5000 lines is divided along named responsibilities; each resulting file stays
+below that threshold. The module coverage audit enforces this rule. Integration
+sources combine related cases by task goal; they are not module unit files.
+Consolidated sections use private namespaces to isolate helpers. Source provenance
+also drives compile selectors so standalone and trimmed builds retain their
+existing responsibility selection instead of compiling every merged section.
+Composition ownership remains independent of physical file count.
+
+Human preview holds require `EVENGINE_TEST_MANUAL_PREVIEW=1`. Automatic tests
+still render the frames needed by their assertions; no preview is required by
+unit tests.
+
 ## Boundaries
 
 Unit tests verify a local algorithm, owning value, codec, or gameplay rule with

@@ -122,7 +122,7 @@ poll 只在主线程采样 live runtime 并推送事件，不复制场景或材�
 target 或引擎对象仍按原所有权销毁，关闭观察会话不会销毁被观察对象。
 
 **源码：** [`src/modules/rx/`](../../../src/modules/rx/)
-**相关测试：** [`test/integration/script-api/rx.cpp`](../../../test/integration/script-api/rx.cpp)
+**相关测试：** [`test/integration/script-api/script_api_graphics_scene_tests.cpp`](../../../test/integration/script-api/script_api_graphics_scene_tests.cpp)
 
 ## 补充绑定参考
 

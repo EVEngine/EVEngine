@@ -19,7 +19,7 @@ createSession(id) 创建离线文档会话；createLiveSession(id,hostName) 接�
 
 ## 核对证据
 
-实现：[SceneEditorModule.cpp](../../../src/modules/scene/editor/SceneEditorModule.cpp)。流程与边界测试：[scene_editor_script.cpp](../../../test/integration/script-api/scene_editor_script.cpp)。
+实现：[SceneEditorModule.cpp](../../../src/modules/scene/editor/SceneEditorModule.cpp)。流程与边界测试：[scene_editor_script.cpp](../../../test/integration/script-api/script_api_graphics_scene_tests.cpp)。
 先看测试中的 fixture/资源条件，再移植到游戏；没有脚本方法的 C++ 契约不自动可调用。
 
 补充入口见 [绑定参考](scene_editor/api-reference.md)；通用工作区与撤销见 [Editor](editor.md)。

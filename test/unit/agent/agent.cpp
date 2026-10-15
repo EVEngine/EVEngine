@@ -1,3 +1,5 @@
+#include "zeroerr/assert.h"
+
 #include "agent/Agent.h"
 #include "agent/Codec.h"
 #include "common/Capability.h"

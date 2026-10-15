@@ -1,4 +1,6 @@
 #include "zeroerr/assert.h"
+
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 #include "common/Capability.h"
@@ -18,8 +20,8 @@ namespace {
 
 class MockFileSystem : public eve::service::IFileSystem {
 public:
-    bool failReads = false;
-    bool failWrites = false;
+    bool                                        failReads  = false;
+    bool                                        failWrites = false;
     std::map<std::string, std::vector<uint8_t>> files;
 
     bool readFile(const std::string &path, std::vector<uint8_t> &out) override {
@@ -33,25 +35,23 @@ public:
     bool writeFile(const std::string &path, const void *data, size_t size) override {
         if (failWrites) return false;
         const auto *bytes = static_cast<const uint8_t *>(data);
-        files[path] = std::vector<uint8_t>(bytes, bytes + size);
+        files[path]       = std::vector<uint8_t>(bytes, bytes + size);
         return true;
     }
 
-    bool fileExists(const std::string &path) override {
-        return files.find(path) != files.end();
-    }
+    bool fileExists(const std::string &path) override { return files.find(path) != files.end(); }
 };
 
 class MockNetwork : public eve::service::INetwork {
 public:
-    bool transportFails = false;
-    int cannedStatus = 200;
-    std::string cannedBody = "{}";
+    bool        transportFails = false;
+    int         cannedStatus   = 200;
+    std::string cannedBody     = "{}";
 
     bool httpRequest(const std::string &, const std::string &, const std::string &, int, int &status,
                      std::string &responseBody) override {
         if (transportFails) return false;
-        status = cannedStatus;
+        status       = cannedStatus;
         responseBody = cannedBody;
         return true;
     }
@@ -85,7 +85,7 @@ TEST_CASE("service.mocks.filesystemErrorPaths") {
 
     fs.failReads = true;
     CHECK(!svc->readFile("a.bin", out));  // simulated read failure
-    fs.failReads = false;
+    fs.failReads  = false;
     fs.failWrites = true;
     CHECK(!svc->writeFile("b.bin", payload, sizeof(payload) - 1));  // simulated full disk
     eve::cap::detail::clearAllRaw();
@@ -98,7 +98,7 @@ TEST_CASE("service.mocks.networkErrorPaths") {
     auto *svc = eve::cap::query<eve::service::INetwork>();
     REQUIRE(svc != nullptr);
 
-    int status = 0;
+    int         status = 0;
     std::string body;
     CHECK(svc->httpRequest("GET", "https://example.test/x", "", 1000, status, body));
     CHECK_EQ(status, 200);

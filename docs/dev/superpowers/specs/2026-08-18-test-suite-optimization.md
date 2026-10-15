@@ -417,7 +417,7 @@ debug SDK（`make sdk/win32-debug`）**沿用开发配置，即动态**：它从
 - **同一实体的每条声明都要带宏**：类内 `friend` 前置声明与命名空间声明各出现一次时只给后者加宏会 `C2375 重定义；不同的链接`（asset 2 处）。跨文件同名扫描有大半是不同命名空间的同名成员函数，不能自动套用。
 - **`_INLINE` 判据不能用字符窗口**：按"声明后 300 字符内出现 `(`…`)`"判断会把长参数表的 `EvpackGraphicsLoader::loadMesh` 误判成 header-only，给出 `_INLINE` 后消费方不导入 —— 正是 `_INLINE` 要避免的 LNK2019。权威判据是"该类型在某个 .cpp 里出现过 `Name::` 定义"。
 
-**测试侧跨 link unit 的依赖（新面）**：`voxel` 只差 `?saveImagePng@@YA_N…` —— 声明在 `test/RenderImageAudit.h:88`、定义在 `test/integration/render-presentation/RenderImageAudit.cpp:572`，该 .cpp 归 **graphics 域**，而 `voxel_render_scenes.cpp`（经 `VoxelRenderFixtures.h`）在 **voxel 域**，跨 link unit，加任何引擎宏都无效。同形状风险还有 `test/water_scene_fixture.h::createStylizedWaterScene`（graphics+procgen）、`GraphicsParitySupport.h`（graphics+weather）、`ScriptTest.h`（12 个域）。修法二选一：给每个域都编一份共享测试 TU（照 `test/main.cpp` / `nut_scripts.cpp` 的 `SHARED_RUNNER` 机制，需同步改 `test/CMakeLists.txt` 与 `scripts/test_domains.py` 的共享文件表），或把这族辅助改成 header-inline。
+**测试侧跨 link unit 的依赖（新面）**：`voxel` 只差 `?saveImagePng@@YA_N…` —— 声明在 `test/RenderImageAudit.h:88`、定义在 `test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp:572`，该 .cpp 归 **graphics 域**，而 `voxel_render_scenes.cpp`（经 `VoxelRenderFixtures.h`）在 **voxel 域**，跨 link unit，加任何引擎宏都无效。同形状风险还有 `test/water_scene_fixture.h::createStylizedWaterScene`（graphics+procgen）、`GraphicsParitySupport.h`（graphics+weather）、`ScriptTest.h`（12 个域）。修法二选一：给每个域都编一份共享测试 TU（照 `test/main.cpp` / `nut_scripts.cpp` 的 `SHARED_RUNNER` 机制，需同步改 `test/CMakeLists.txt` 与 `scripts/test_domains.py` 的共享文件表），或把这族辅助改成 header-inline。
 ### 7.9 SHARED 测试面标注：第三批四个域 + 测试侧共享 TU（2026-09-20）
 
 | 域 | LNK1120 前→后 | exe | ctest（`-E '^bundle/'`） |
@@ -601,11 +601,11 @@ debug SDK（`make sdk/win32-debug`）**沿用开发配置，即动态**：它从
 **新坑：friend/同名声明有两种，`b2_dup_decls.py` 只覆盖同文件那种。**
 第一轮重链暴露 **`error C2375`（redefinition; different linkage）7 个 `EVProcgen` 对象失败**：`TerrainMultiTile.h:89` 的 friend 声明带宏、而**另一个头文件**里的同名命名空间级声明（`TerrainDetailLayer.h:75`）不带 → `.cpp` 里连带 `C3861` 找不到标识符。修法是给跨文件的每条同实体声明也补宏。本批同文件 11 条 + 跨文件 1 条 = 12 条。**新增工具 `b11_xdecl.py`（跨文件同实体声明扫描）应并入 §7.5 流水线**——`b2_dup_decls.py` 只看单个文件，`b3_free_fn_defs.py` 只看定义侧，跨文件声明是第三条路径。
 
-**测试侧跨 link unit 符号（§7.8 家族的第三次出现）**：未解析集里有 3 个符号任何引擎宏都无效——`auditImage`（声明 `test/RenderImageAudit.h:73`，定义 `test/integration/render-presentation/RenderImageAudit.cpp:463`）、`createStylizedWaterScene`（`test/water_scene_fixture.h:26` / `.cpp:40`）、`WaterSceneFixture::update`。它们必须走 `scripts/test_domains.py` 的 `SHARED_SOURCES` 机制（把定义 TU 编进每个需要的域），不能靠标注。**注意牵连面**：`procgen` 这一批把 `test/integration/render-presentation/RenderImageAudit.cpp` 拉进了自己的链接单元，所以 `graphics` 域批要检查同一组 fixture 是否也落在它的未解析集里。
+**测试侧跨 link unit 符号（§7.8 家族的第三次出现）**：未解析集里有 3 个符号任何引擎宏都无效——`auditImage`（声明 `test/RenderImageAudit.h:73`，定义 `test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp:463`）、`createStylizedWaterScene`（`test/water_scene_fixture.h:26` / `.cpp:40`）、`WaterSceneFixture::update`。它们必须走 `scripts/test_domains.py` 的 `SHARED_SOURCES` 机制（把定义 TU 编进每个需要的域），不能靠标注。**注意牵连面**：`procgen` 这一批把 `test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp` 拉进了自己的链接单元，所以 `graphics` 域批要检查同一组 fixture 是否也落在它的未解析集里。
 
-**EOL 归一**：第一遍 `eol-churned=133`，第二遍 `eol-churned=0`（收敛）；工具内建校验从未触发 `FAIL`。5 个 `SKIP … not in base revision`（本 PR 新增文件）改用手工取证：`RenderImageAuditIo.cpp` / `SceneCameraProjection.h` 全 LF、`test_domains.py` / `RenderImageAudit.cpp` 全 CRLF，各自内部一致、无混行尾。验收：**无任何整文件 diff**（最大真实比例 `TerrainDerivedMap.h` 26/26，256 行里 26 个站点；`test/integration/render-presentation/RenderImageAudit.cpp` 是 9/570 的纯移动）。
+**EOL 归一**：第一遍 `eol-churned=133`，第二遍 `eol-churned=0`（收敛）；工具内建校验从未触发 `FAIL`。5 个 `SKIP … not in base revision`（本 PR 新增文件）改用手工取证：`RenderImageAuditIo.cpp` / `SceneCameraProjection.h` 全 LF、`test_domains.py` / `RenderImageAudit.cpp` 全 CRLF，各自内部一致、无混行尾。验收：**无任何整文件 diff**（最大真实比例 `TerrainDerivedMap.h` 26/26，256 行里 26 个站点；`test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp` 是 9/570 的纯移动）。
 
-**9 个失败用例全部出自同一个 TU `test/integration/render-presentation/procgen.cpp`**，断言都是 `SDL_Vulkan_GetInstanceExtensions failed: Video subsystem has not been initialized`——窗口初始化在 EVPlatform 组、Vulkan 入口在 EVBackends 组各自的 SDL 副本里：`procgen.render.{hexplanetPng,cloudShadowsDarkenGround,skyscraperPng,castlePng}`、`graphics.waterfall.{paramsRoundTrip,render.flowAndFoam}`、`graphics.water.{paramsRoundTrip,render.dynamicRipplesAndReflection}`、`graphics.render3d.toCanvas`。探针：该域 link unit 里 ECS 表 **0 份**、ImGui 0、box3d 0，SDL 副本 8 份（7 个组 DLL + exe）→ 只有 SDL 族被触发。
+**9 个失败用例全部出自同一个 TU `test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp`**，断言都是 `SDL_Vulkan_GetInstanceExtensions failed: Video subsystem has not been initialized`——窗口初始化在 EVPlatform 组、Vulkan 入口在 EVBackends 组各自的 SDL 副本里：`procgen.render.{hexplanetPng,cloudShadowsDarkenGround,skyscraperPng,castlePng}`、`graphics.waterfall.{paramsRoundTrip,render.flowAndFoam}`、`graphics.water.{paramsRoundTrip,render.dynamicRipplesAndReflection}`、`graphics.render3d.toCanvas`。探针：该域 link unit 里 ECS 表 **0 份**、ImGui 0、box3d 0，SDL 副本 8 份（7 个组 DLL + exe）→ 只有 SDL 族被触发。
 
 进度：30 个域中 **25 个已链通**（21 个全绿）；余 `graphics`。
 
@@ -743,7 +743,7 @@ ELF 不允许把非 PIC 的目标文件链进共享对象；OBJECT（release/SDK
 
 twin 的两个 CMake 细节：(a) `DEFINE_SYMBOL box3d_EXPORTS` / `Box2D_EXPORTS` —— box3d 的 `B3_API` 与 Box2D 的数据符号宏都按 `<target>_EXPORTS` 判断"我是导出侧"，换个 target 名就会丢掉这个宏；(b) 清空 `DEBUG/RELEASE/MINSIZEREL/RELWITHDEBINFO_POSTFIX`，让导入库只有一个可预测的名字。twin 只在桌面平台构建（与 `SDL_SHARED` 同一守卫）：Emscripten 没有共享库概念，移动端不需要它。
 
-**陷阱 1：MSVC 不允许"先普通声明、再 dllexport 定义"（C2375）。** Box2D 的公共数据符号 `b2Vec2_zero`（`test/integration/physics-simulation/physics_core_boundary.cpp` 的 `b2World rawWorld(b2Vec2_zero)`）在 DLL 化之后 LNK2001：`WINDOWS_EXPORT_ALL_SYMBOLS` 只导出**函数**，数据必须显式标注。头文件写 `extern B2_DATA_API const b2Vec2 b2Vec2_zero;`、`.cpp` 写 `B2_DATA_API const b2Vec2 b2Vec2_zero(...)` —— **两处都必须带宏**：最小复现 `inline int &f();` + `__declspec(dllexport) int &f() { … }` → C2375"重定义；不同的链接"（§7.24 的 C2375 是同一错误码的另一种成因：跨文件 friend 声明缺符号）。`B2_DATA_API` 的判据与 box3d 对齐：`Box2D_EXPORTS`（twin 自带）→ dllexport，引擎消费侧 `BOX2D_DLL`（`link_groups.cmake` 中与 `BOX3D_DLL` 并列）→ dllimport，两者都没有时展开为空（归档路线不受影响）。
+**陷阱 1：MSVC 不允许"先普通声明、再 dllexport 定义"（C2375）。** Box2D 的公共数据符号 `b2Vec2_zero`（`test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp` 的 `b2World rawWorld(b2Vec2_zero)`）在 DLL 化之后 LNK2001：`WINDOWS_EXPORT_ALL_SYMBOLS` 只导出**函数**，数据必须显式标注。头文件写 `extern B2_DATA_API const b2Vec2 b2Vec2_zero;`、`.cpp` 写 `B2_DATA_API const b2Vec2 b2Vec2_zero(...)` —— **两处都必须带宏**：最小复现 `inline int &f();` + `__declspec(dllexport) int &f() { … }` → C2375"重定义；不同的链接"（§7.24 的 C2375 是同一错误码的另一种成因：跨文件 friend 声明缺符号）。`B2_DATA_API` 的判据与 box3d 对齐：`Box2D_EXPORTS`（twin 自带）→ dllexport，引擎消费侧 `BOX2D_DLL`（`link_groups.cmake` 中与 `BOX3D_DLL` 并列）→ dllimport，两者都没有时展开为空（归档路线不受影响）。
 
 **陷阱 2：`file(GLOB)` 在 configure 期求值，冷构建会漏。** `eve_third_party_runtime`（把 `SDL2*.dll` / `box3d*.dll` 拷到 exe 旁）原来在 configure 期 glob：冷构建时 ninja 先跑 `deps`，此刻第三方安装树还是空的 → 列表为空 → `box3dd.dll` 从未被拷贝 → **30 个测试 exe 的 zeroerr discovery 步骤全部失败**，而 `extract_unresolved.py` 报 0 个未解析符号，极易误判成链接问题。修法：`cmake/copy_third_party_runtime.cmake` 用 `cmake -P` 在**构建期** glob（该目标 `DEPENDS third-party`，执行时安装树已经是新的），对时序免疫。
 
@@ -751,7 +751,7 @@ twin 的两个 CMake 细节：(a) `DEFINE_SYMBOL box3d_EXPORTS` / `Box2D_EXPORTS
 
 **陷阱 4：改广泛包含的头之后必须清对象重编。** ECS.hpp 的内联函数改了语义，但 ninja 的 unscanned 依赖不追头文件；只重编"看着相关"的那批 TU 会得到"6 个失败修好 3 个"的假象。本轮做法：清空 `build/<tree>/**/*.obj` 后全量重编（2794 个对象）。
 
-**陷阱 5：为 SHARED 加的标注会在 OBJECT 模式变成 dllexport，从而强制实例化成员。** `src/modules/network/NetRpc.h` 里 `class EVENGINE_API_PLATFORM NetRpc` 有一个 `std::map<uint16_t, ssq::Object>` 成员，而该头只前置声明了 `ssq::Object`。SHARED 下消费方看到的是 dllimport，不强制实例化，测试 TU 编译得过；OBJECT 下 `EVENGINE_API_PLATFORM` 退化为 `EVENGINE_API` = **dllexport**，MSVC 于是实例化该类的成员 → `test/integration/concurrency/network.cpp` 报 C2079（`std::pair<…,ssq::Object>::second` 使用未定义的 class），而同一次 `ninja -C C:\evs eve` 不会碰到（不编测试）。修法是让头文件**包含它按值持有的类型**（`#include <simplesquirrel/object.hpp>`）——这也是"类级 dllexport 会让成员实例化"这条（§7.5 的 C2280/C2027 家族）第一次落在**测试面**上：只构建 `eve` 的静态路线验收会漏掉它，必须真的编一次 OBJECT 测试。
+**陷阱 5：为 SHARED 加的标注会在 OBJECT 模式变成 dllexport，从而强制实例化成员。** `src/modules/network/NetRpc.h` 里 `class EVENGINE_API_PLATFORM NetRpc` 有一个 `std::map<uint16_t, ssq::Object>` 成员，而该头只前置声明了 `ssq::Object`。SHARED 下消费方看到的是 dllimport，不强制实例化，测试 TU 编译得过；OBJECT 下 `EVENGINE_API_PLATFORM` 退化为 `EVENGINE_API` = **dllexport**，MSVC 于是实例化该类的成员 → `test/integration/concurrency/concurrency_graphics_tests.cpp` 报 C2079（`std::pair<…,ssq::Object>::second` 使用未定义的 class），而同一次 `ninja -C C:\evs eve` 不会碰到（不编测试）。修法是让头文件**包含它按值持有的类型**（`#include <simplesquirrel/object.hpp>`）——这也是"类级 dllexport 会让成员实例化"这条（§7.5 的 C2280/C2027 家族）第一次落在**测试面**上：只构建 `eve` 的静态路线验收会漏掉它，必须真的编一次 OBJECT 测试。
 
 **陷阱 6：Windows 上必需的"SDL 共享化"在 Linux 上暴露了第三个上游兼容问题。** 这个 pinned 的 SDL 2.0.16 以 `WAYLAND_SHARED=ON`（默认）动态加载 Wayland（dlopen + 函数指针表），因此**从不链接** `libwayland-client`。但 wayland 头文件从 1.20 起把 `wl_proxy_marshal()` 导向 `wl_proxy_marshal_flags()`，于是 SDL 编出来的目标文件里留下了直接引用：静态归档不会因此报错（引擎侧 `cmake/system_libraries.cmake` 本来就链了 `wayland-client wayland-cursor wayland-egl xkbcommon`），而**共享** SDL 会以 `undefined reference to wl_proxy_marshal_flags` 收场。第 15 个补丁给它补上 `wayland-client`。这条只在"Linux + 共享 SDL"同时成立时出现，Windows 侧的验证完全看不到它。
 
@@ -786,7 +786,7 @@ twin 的两个 CMake 细节：(a) `DEFINE_SYMBOL box3d_EXPORTS` / `Box2D_EXPORTS
 
 ### 7.27 第二次合并 dev：合并树才是 CI 的输入 + 两个 ELF 专属陷阱（2026-09-20）
 
-**前提修正（最重要的一条）**：`pull_request` 事件下 GitHub 检出的不是分支头，而是 `refs/pull/<n>/merge`——**分支与当前 dev 的合并树**。只验证分支本身会系统性地漏掉 dev 的新面：这轮 dev 又前进 **28 个提交 / 44 个文件**，新增 `test/integration/render-presentation/hexmap_module.cpp` 等，于是 SHARED 全量构建出现 **10 个未解析符号**（`eve::hexmap::HexMapModule` 的构造/析构/`newGrid`/`newSphere`/`rebuildDirtyChunks`/`rebuildSphere`/`chunkMeshAt`/`releaseMeshes`/`releaseSphereMeshes` + 自由函数 `buildSphereWaterMesh`）——它们写在"默认还是 OBJECT"的时期，类/函数都没标注，组库里根本不导出。修法是两行标注（`HexMapModule.h` 的类、`HexSphereMesh.h` 的自由函数，均为 `EVENGINE_API_WORLD`），合并树上 Windows SHARED 全量 **5553 / 0 失败**。**流程结论**：验收 SHARED 路线要在合并树上做（`git merge origin/dev` 后构建），否则 CI 会替你发现。
+**前提修正（最重要的一条）**：`pull_request` 事件下 GitHub 检出的不是分支头，而是 `refs/pull/<n>/merge`——**分支与当前 dev 的合并树**。只验证分支本身会系统性地漏掉 dev 的新面：这轮 dev 又前进 **28 个提交 / 44 个文件**，新增 `test/integration/render-presentation/render_presentation_graphics_hex_level_simulation_tests.cpp` 等，于是 SHARED 全量构建出现 **10 个未解析符号**（`eve::hexmap::HexMapModule` 的构造/析构/`newGrid`/`newSphere`/`rebuildDirtyChunks`/`rebuildSphere`/`chunkMeshAt`/`releaseMeshes`/`releaseSphereMeshes` + 自由函数 `buildSphereWaterMesh`）——它们写在"默认还是 OBJECT"的时期，类/函数都没标注，组库里根本不导出。修法是两行标注（`HexMapModule.h` 的类、`HexSphereMesh.h` 的自由函数，均为 `EVENGINE_API_WORLD`），合并树上 Windows SHARED 全量 **5553 / 0 失败**。**流程结论**：验收 SHARED 路线要在合并树上做（`git merge origin/dev` 后构建），否则 CI 会替你发现。
 
 **陷阱 12：ELF 的 copy relocation 会复制"惰性初始化"的数据符号。** CI Linux 的 42 个 GPU 用例 SEGFAULT（tensor/gpgpu/virtualgeometry/UI/softbody-gpu），本地用 lavapipe + Xvfb 复现出完全一样的栈：`vk::Device::getQueue<vk::DispatchLoaderDynamic>` 跳到 **0x0**。原因不是 vkbuilder 没初始化，而是 **exe 对 `vk::defaultDispatchLoaderDynamic` 生成了 `R_X86_64_COPY` 重定位**（`readelf -rW` 里 65 条 COPY，其中就有它）：加载时把库里的*初始*字节抄进 exe 的 BSS，之后所有模块都通过 exe 的那份解析这个符号——而 dispatcher 是引擎创建设备时才赋值的，exe 的副本永远保持全零（且 `-Bsymbolic` 让拥有者那一组的赋值只写自己的副本，两份永远不会汇合）。修法：给可执行文件加 `-Wl,-z,nocopyreloc`（`eve_engine_includes` INTERFACE，仅 ELF），数据引用改走 GOT。取证：COPY 数 65 → **0**；`nm -D libEVBackends.so` 仍是 dispatcher 的唯一定义者、exe 只剩 `U`；`gpgpu.dispatch.scaleFloats`、`tensor.gpu.reduceLargeTensor`、`softbody.gpu.clothBoundsAndInteract`、`virtualgeometry.gpu.buildIcosphere` 从 SEGFAULT 变通过。
 
@@ -825,11 +825,11 @@ twin 的两个 CMake 细节：(a) `DEFINE_SYMBOL box3d_EXPORTS` / `Box2D_EXPORTS
 
 第三次把 dev（`d74a1538b`）合进 `codex/test-domain-split`（合并提交 `bce79e1a4`，共 445 个文件、其中 51 个头文件需要人工判冲突）之后，CI 的读数不是"再跑一遍就行"，而是暴露了四类**在任一父提交上都看不到**的缺陷。它们的共同点是：**冲突解决器会产生"能提交、能 configure、但编译/链接/脚本执行时才报"的文本**。
 
-**缺陷 1：子模块 gitlink 冲突被解决成旧提交（最隐蔽）。** 双方都动过 `external/ECS.hpp`，但只有 dev 移动了指针（`f50a6138` → `47fe2979`，*Relax ECS storage requirements*）；冲突解决取了我这边的旧指针。单看主树毫无异常——`git status` 干净、configure 通过——但 `test/integration/script-api/ECS.cpp` 取自 dev，用的是新 API：
+**缺陷 1：子模块 gitlink 冲突被解决成旧提交（最隐蔽）。** 双方都动过 `external/ECS.hpp`，但只有 dev 移动了指针（`f50a6138` → `47fe2979`，*Relax ECS storage requirements*）；冲突解决取了我这边的旧指针。单看主树毫无异常——`git status` 干净、configure 通过——但 `test/integration/script-api/script_api_graphics_ScriptECS_tests.cpp` 取自 dev，用的是新 API：
 
 ```
-test/integration/script-api/ECS.cpp(460): error C2665: StrictNode::create: 没有重载函数可以转换所有参数类型
-test/integration/script-api/ECS.cpp(480): error C2039: "has" 不是 ecs::ComponentRef<SeededComponent> 的成员
+test/integration/script-api/script_api_graphics_ScriptECS_tests.cpp(460): error C2665: StrictNode::create: 没有重载函数可以转换所有参数类型
+test/integration/script-api/script_api_graphics_ScriptECS_tests.cpp(480): error C2039: "has" 不是 ecs::ComponentRef<SeededComponent> 的成员
 ```
 
 判据与配方：**子模块指针冲突要取"后代"那一侧**（`git -C <sub> merge-base --is-ancestor A B`），并且移动指针后必须重跑 configure —— 因为子模块补丁是 configure 期应用的（§7.28），补丁能否落地就是"新子模块是否兼容"的现成探针。取证：`git ls-tree bce79e1a4^2 -- external/ECS.hpp`（dev，`47fe2979`）vs `^1`（旧，`f50a6138`），`git apply --check cmake/patches/ecs-shared-default-table.patch` 在新提交上 exit 0。顺带核对四个子模块：只有 ECS 两侧不同，且旧的正是新的祖先。
@@ -872,7 +872,7 @@ EVWorld.dll : fatal error LNK1120
 
 后果比一般链接失败更容易误判：**同一目录里其余 7 个组 DLL 都在，唯独 `EVWorld.dll` 不存在**，于是任何放在该目录旁的测试 exe / `eve.exe` 启动时都由加载器弹出模态框"找不到 EVWorld.dll"（一次 ctest 会把它放大成几十上百次弹窗）。修法与同目录既有写法一致：`GlslCompiler.h` 加 `#include "common/Export.h"` + 两个函数标 `EVENGINE_API_BACKENDS`（参照 `ShaderResourceReload.h`、`Graphics.h`）。复验：`Get-ChildItem build\win32-debug\EV*.dll` 出现 `EVWorld.dll`（61 MB），SHARED `ninja` exit 0。
 
-**缺陷 2：dev 新增的测试文件没有域归属。** `test/integration/script-api/rpg_script.cpp`（只 include zeroerr + `common/Module.h` + simplesquirrel，没有任何模块包根）会让 configure 直接硬失败：`test domain partition failed ... rpg_script.cpp: no include names a module root and no basename rule matches`。按既有回退表补 `"rpg_script;rpg"` 到 `EVE_TEST_PREFIX_DOMAIN`。
+**缺陷 2：dev 新增的测试文件没有域归属。** `test/integration/script-api/script_api_graphics_mcp_tests.cpp`（只 include zeroerr + `common/Module.h` + simplesquirrel，没有任何模块包根）会让 configure 直接硬失败：`test domain partition failed ... rpg_script.cpp: no include names a module root and no basename rule matches`。按既有回退表补 `"rpg_script;rpg"` 到 `EVE_TEST_PREFIX_DOMAIN`。
 
 **验证口径（用户指令，2026-09-21 起）**：**本地不再跑全量用例，全量交给 CI**。本地只做"链接级"验证——Windows SHARED 全量 `ninja`（7 组库 + 30 个域 exe）+ OBJECT `eve` 目标，外加源码门禁与 `scripts/tests`。理由有两条硬的：**(a)** 本地全量 ctest 要反复启动数千个测试 exe，一旦某个组库没链出来，每个 exe 都会弹一个模态加载失败框，把使用者桌面占住（本轮就是这么踩的）；**(b)** CI 的 runner 是干净的 merge ref（branch + 当前 dev），本来就比本地树更接近评审口径。
 
@@ -921,10 +921,10 @@ ClassSystem.cpp(13): error C2825: 'eve::ClassSystem': must be a class or namespa
 
 **残渣分类**（共同点：能提交、能 configure，只在编译/链接/脚本执行时才报）：
 
-1. **子模块 gitlink 取到旧提交**：`external/ECS.hpp` 只有 dev 移动过指针（`f50a6138` → `47fe2979`），冲突解决却留了旧的一侧，于是取自 dev 的 `test/integration/script-api/ECS.cpp` 用新 API 编不过（`C2665 StrictNode::create` / `C2039 ComponentRef::has`）。判据与配方见 §7.29 缺陷 1。
+1. **子模块 gitlink 取到旧提交**：`external/ECS.hpp` 只有 dev 移动过指针（`f50a6138` → `47fe2979`），冲突解决却留了旧的一侧，于是取自 dev 的 `test/integration/script-api/script_api_graphics_ScriptECS_tests.cpp` 用新 API 编不过（`C2665 StrictNode::create` / `C2039 ComponentRef::has`）。判据与配方见 §7.29 缺陷 1。
 2. **`cmake -P` 脚本多一个 `endif()`**：`ZeroErrDiscoverTestsImpl.cmake` 只在链接每个测试 exe 后被调用，configure 全绿、首次链接才炸 `Flow control statements are not properly nested`。
 3. **测试里的截断断言**：`scripts/tests/test_zeroerr_discovery.py` 留下 `self.assertIn(generated,)`（`TypeError: missing 'container'`）。
-4. **域表漏项**：dev 新增的 `test/integration/script-api/rpg_script.cpp`（不含任何模块包根）让 configure 直接硬失败 `test domain partition failed`。
+4. **域表漏项**：dev 新增的 `test/integration/script-api/script_api_graphics_mcp_tests.cpp`（不含任何模块包根）让 configure 直接硬失败 `test domain partition failed`。
 5. **配方**：合并后必须跑 ① 全量 build（**链接期**才是 discovery 脚本的执行期）② `python3 -X utf8 -m unittest discover -s scripts/tests -p "test_*.py"` ③ 域表/清单类门禁（`check_test_manifest.py` 等）。
 
 **本地验证的两个假阴性**（本轮都实际踩到，值得写进肌肉记忆）：

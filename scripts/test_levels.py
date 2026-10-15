@@ -210,6 +210,28 @@ def reachable_helper_text(body: str, fixture: str, helpers: dict[str, str]) -> s
         result += "\n" + "\n".join(helpers[name] for name in sorted(names))
 
 
+def generator_line_collisions(text: str) -> list[int]:
+    """zeroerr registration identity includes the physical source line."""
+    lines = mask_cpp(text).splitlines()
+    macros = set()
+    definitions = set()
+    for index, line in enumerate(lines):
+        match = re.match(r"\s*#define\s+(\w+)\(", line)
+        if not match:
+            continue
+        body = line
+        definitions.add(index)
+        stop = index
+        while lines[stop].rstrip().endswith("\\") and stop + 1 < len(lines):
+            stop += 1
+            definitions.add(stop)
+            body += "\n" + lines[stop]
+        if CASE.search(body):
+            macros.add(match[1])
+    return [index + 1 for index, line in enumerate(lines) if index not in definitions
+            and sum(len(re.findall(r"\b" + re.escape(macro) + r"\s*\(", line)) for macro in macros) > 1]
+
+
 def catalogue_errors(data: dict, inventory: dict) -> list[str]:
     errors = []
     if data.get("schema") != "evengine.test-levels" or data.get("version") != 1:
@@ -223,17 +245,24 @@ def catalogue_errors(data: dict, inventory: dict) -> list[str]:
         errors.append(f"{source}: stale source classification")
     for source in sorted(set(sources) & set(inventory)):
         policy = sources[source]
-        if not {"role", "default", "cases"} <= set(policy) or set(policy) - {"role", "default", "cases", "generated", "module", "task", "origins"}:
+        if not {"role", "default", "cases"} <= set(policy) or set(policy) - {"role", "default", "cases", "generated", "module", "task", "origins", "modules"}:
             errors.append(f"{source}: unknown/missing source fields")
         if policy.get("role") not in {"tests", "runner", "helper", "probe", "compile-contract", "fuzz"}:
             errors.append(f"{source}: invalid source role")
         if policy.get("default") not in CLASSIFICATIONS:
             errors.append(f"{source}: invalid default classification")
+        owners = policy.get("modules", [policy.get("module")])
+        if "modules" in policy and (not source.startswith("integration/") or not isinstance(owners, list)
+                                    or not owners or any(not isinstance(owner, str) for owner in owners)
+                                    or len(owners) != len(set(owners))):
+            errors.append(f"{source}: invalid composition owners")
         origins = policy.get("origins", [])
         if not isinstance(origins, list) or any(not isinstance(o, str) or not re.fullmatch(r"[A-Za-z0-9_]+\.cpp", o) for o in origins):
             errors.append(f"{source}: invalid relocation origins")
         elif len(origins) != len(set(origins)):
             errors.append(f"{source}: duplicate relocation origins")
+        for line in generator_line_collisions(inventory[source]["text"]):
+            errors.append(f"{source}:{line}: generator invocations share a source line and can lose registrations")
         generated = policy.get("generated", [])
         if not isinstance(generated, list) or any(not isinstance(p, str) or not p for p in generated):
             errors.append(f"{source}: invalid generated-name prefixes")
@@ -262,11 +291,39 @@ def catalogue_errors(data: dict, inventory: dict) -> list[str]:
             setup = UNIT_SETUP.search(mask_cpp(helper_text))
             if setup:
                 errors.append(f"{source}: unit generator contains external setup {setup[0]}")
+        source_text = inventory[source]["text"]
+        line_offsets = [0]
+        for line in source_text.splitlines(keepends=True):
+            line_offsets.append(line_offsets[-1] + len(line))
+        scopes = list(re.finditer(r"^namespace (test_\w+) \{\n", source_text, re.MULTILINE))
+        scope_helpers = {}
         for name in sorted(set(declared) & set(cases)):
             category = declared[name]
             if category in CLASSIFICATIONS and CLASSIFICATIONS[category][0] == "unit":
                 case = cases[name]
-                reachable = reachable_helper_text(case["body"], case["fixture"], helpers)
+                scoped_helpers = helpers
+                # Consolidated responsibilities live in separate C++ namespaces.
+                # Resolve unqualified helper names within the case's responsibility,
+                # rather than unioning unrelated fixtures with the same method name.
+                case_offset = line_offsets[case["line"] - 1]
+                for scope in scopes:
+                    close = source_text.find("}  // namespace " + scope[1], scope.end())
+                    if scope.start() <= case_offset < close:
+                        if scope[1] not in scope_helpers:
+                            section = source_text[scope.end():close]
+                            # Keep the responsibility's own include directives for fixture headers.
+                            section_start = source_text.rfind("#if !defined(EVE_TEST_FILTER_ORIGINS)", 0, scope.start())
+                            includes = source_text[section_start:scope.start()]
+                            for qualifier in re.findall(r"\b(test_\w+)::", mask_cpp(section)):
+                                target = next((candidate for candidate in scopes if candidate[1] == qualifier), None)
+                                if target:
+                                    target_end = source_text.find("}  // namespace " + qualifier, target.end())
+                                    section += "\n" + source_text[target.end():target_end]
+                            scoped_helpers = helper_bodies(local_helper_text(test_dir / source, includes + section, test_dir))
+                            scope_helpers[scope[1]] = scoped_helpers
+                        scoped_helpers = scope_helpers[scope[1]]
+                        break
+                reachable = reachable_helper_text(case["body"], case["fixture"], scoped_helpers)
                 setup = UNIT_SETUP.search(mask_cpp(reachable))
                 if setup:
                     errors.append(f"{source}:{name}: unit case contains external setup {setup[0]}")
@@ -279,17 +336,35 @@ def cmake_quote(text: str) -> str:
     return '"' + text.replace("\\", "/").replace('"', '\\"').replace("$", "\\$") + '"'
 
 
+def origin_case_policies(text: str, policy: dict) -> dict[str, dict[str, str]]:
+    """Derive legacy selections from the C++ origin guards, never another list."""
+    declared = classified_cases(policy)
+    result = {}
+    guards = list(re.finditer(r"^#if !defined\(EVE_TEST_FILTER_ORIGINS\)(?:[^\n]*\\\n)*[^\n]*\n", text, re.MULTILINE))
+    for index, guard in enumerate(guards):
+        end = guards[index + 1].start() if index + 1 < len(guards) else len(text)
+        names = cases_in(text[guard.end():end])
+        for origin in re.findall(r"defined\(EVE_TEST_ORIGIN_(\w+)\)", guard[0].replace("\\\n", " ")):
+            result[origin + ".cpp"] = {name: declared[name] for name in names if name in declared}
+    for origin in policy.get("origins", []):
+        result.setdefault(origin, declared)
+    return result
+
+
 def emit_cmake(data: dict, output: Path) -> None:
     """Emit one policy for source defaults and each literal compiled identity."""
     lines = ["# Generated from test/test_levels.json; do not edit."]
     seen = set()
     aliases: dict[str, list[str]] = {}
+    origin_policies = {}
     root = CATALOGUE.parent
     for source, policy in data["sources"].items():
         basename = Path(source).name
         if basename in seen:
             raise ValueError(f"ambiguous zeroerr source basename: {basename}")
         seen.add(basename)
+        path = root / source
+        origin_policies[source] = origin_case_policies(path.read_text(encoding="utf-8"), policy) if path.exists() else {}
         for origin in policy.get("origins", []):
             aliases.setdefault(origin, []).append(source)
         lines.append(f"set({cmake_quote('EVE_TEST_GENERATED_' + basename)} {cmake_quote(';'.join(policy.get('generated', [])))})")
@@ -318,7 +393,7 @@ def emit_cmake(data: dict, output: Path) -> None:
         for dest in destinations:
             policy = data['sources'][dest]
             prefixes.extend(policy.get('generated', []))
-            for name, category in classified_cases(policy).items():
+            for name, category in origin_policies[dest].get(origin, classified_cases(policy)).items():
                 names.append(name)
                 level, resources = CLASSIFICATIONS[category]
                 labels = [level, 'reason:' + category] + ['requires:' + r for r in resources]

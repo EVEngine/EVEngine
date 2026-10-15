@@ -1,4 +1,6 @@
 #include "zeroerr/assert.h"
+
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 #include "physics/Body.h"
@@ -6,9 +8,9 @@
 #include "physics/Physics.h"
 #include "physics/PhysicsLink.h"
 #include "physics/Shape3D.h"
+#include "physics/World.h"
 #include "physics/World3D.h"
 #include "physics/backend/SimulationBackend.h"
-#include "physics/World.h"
 
 #include "common/Capability.h"
 
@@ -37,7 +39,7 @@ public:
     }
 
     [[nodiscard]] eve::Result<std::unique_ptr<ISimulationBackend>> create(SimulationBackendDomain domain,
-                                                                          void * /*state*/) override {
+                                                                          void* /*state*/) override {
         if (!supports(domain)) {
             return eve::Result<std::unique_ptr<ISimulationBackend>>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::Unsupported, "Mock accelerator does not implement this domain"));
@@ -52,8 +54,7 @@ public:
 
     [[nodiscard]] bool supports(SimulationBackendDomain) const noexcept override { return true; }
 
-    [[nodiscard]] eve::Result<std::unique_ptr<ISimulationBackend>> create(SimulationBackendDomain,
-                                                                          void*) override {
+    [[nodiscard]] eve::Result<std::unique_ptr<ISimulationBackend>> create(SimulationBackendDomain, void*) override {
         if (throws_) throw std::runtime_error("accelerator setup exploded");
         return eve::Result<std::unique_ptr<ISimulationBackend>>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Conflict, "accelerator rejected shared state", "provider.state"));
@@ -69,8 +70,7 @@ public:
         : delegate_(detail::makeCallbackSimulationBackend(world, &stepBox3D, SimulationBackendKind::MockAccelerator,
                                                           SimulationDeterminism::ToleranceBounded)) {}
 
-    [[nodiscard]] eve::Result<void> step(const eve::SimulationStep& step,
-                                         const SimulationSettings& settings) override {
+    [[nodiscard]] eve::Result<void> step(const eve::SimulationStep& step, const SimulationSettings& settings) override {
         if (delegate_->observation().stepCount != 0) {
             return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::Failed, "injected second-step failure", "physics.test.step"));
@@ -80,13 +80,12 @@ public:
     [[nodiscard]] SimulationObservation observation() const noexcept override { return delegate_->observation(); }
     [[nodiscard]] SimulationBackendKind kind() const noexcept override { return delegate_->kind(); }
     [[nodiscard]] SimulationDeterminism determinism() const noexcept override { return delegate_->determinism(); }
-    [[nodiscard]] eve::Result<void> restoreObservation(const SimulationObservation& value) override {
+    [[nodiscard]] eve::Result<void>     restoreObservation(const SimulationObservation& value) override {
         return delegate_->restoreObservation(value);
     }
 
 private:
-    static void stepBox3D(void* context, const eve::SimulationStep& step,
-                          const SimulationSettings& settings) noexcept {
+    static void stepBox3D(void* context, const eve::SimulationStep& step, const SimulationSettings& settings) noexcept {
         b3World_Step(*static_cast<b3WorldId*>(context), static_cast<float>(step.delta.seconds()),
                      settings.subStepCount);
     }
@@ -106,7 +105,7 @@ public:
     }
 };
 
-[[maybe_unused]] void checkObservableContract(ISimulationBackend &backend) {
+[[maybe_unused]] void checkObservableContract(ISimulationBackend& backend) {
     const eve::SimulationStep step{eve::SimulationTick{1}, eve::Duration::fromNanoseconds(16666667)};
     auto                      applied   = backend.step(step, SimulationSettings{});
     const bool                appliedOk = applied.ok();

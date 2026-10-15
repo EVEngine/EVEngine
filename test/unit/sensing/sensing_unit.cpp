@@ -1,10 +1,12 @@
-#include "sensing/Sensing.h"
+#include "zeroerr/assert.h"
+
 #include <cstddef>
 #include <optional>
 #include <string>
 #include <utility>
 #include "common/Module.h"
 #include "sensing/LineOfSightRouter.h"
+#include "sensing/Sensing.h"
 #include "sensing/TargetingPipeline.h"
 #include "simplesquirrel/simplesquirrel.hpp"
 #include "zeroerr/assert.h"

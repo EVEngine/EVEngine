@@ -137,7 +137,7 @@ MixHeight；本接口自身不创建编辑器撤销记录，事务历史由拥�
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
 
 **源码：** [`src/modules/procgen/`](../../../../src/modules/procgen/)
-**相关测试：** 在 [`test/`](../../../../test/) 中搜索 `procgen`；跨模块 hex 关卡见 [`test/integration/render-presentation/hex_level_simulation.cpp`](../../../../test/integration/render-presentation/hex_level_simulation.cpp)、[`test/integration/file-io/hex_level_data.cpp`](../../../../test/integration/file-io/hex_level_data.cpp)、[`examples/hex-levels/`](../../../../examples/hex-levels/)。
+**相关测试：** 在 [`test/`](../../../../test/) 中搜索 `procgen`；跨模块 hex 关卡见 [`test/integration/render-presentation/render_presentation_graphics_hex_level_simulation_tests.cpp`](../../../../test/integration/render-presentation/render_presentation_graphics_hex_level_simulation_tests.cpp)、[`test/integration/file-io/file_io_graphics_hex_level_data_tests.cpp`](../../../../test/integration/file-io/file_io_graphics_hex_level_data_tests.cpp)、[`examples/hex-levels/`](../../../../examples/hex-levels/)。
 
 ### Terrain contrast
 

@@ -1,3 +1,5 @@
+#include "zeroerr/assert.h"
+
 #include <zeroerr/unittest.h>
 #include <algorithm>
 #include <cmath>
@@ -148,8 +150,8 @@ namespace {
 [[maybe_unused]] std::array<float, 16> identityBind() { return {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1}; }
 
 [[maybe_unused]] std::unique_ptr<animation::AnimSkin> skinFor(const procgen::MeshBuild& mesh, std::vector<int> bones,
-                                             std::vector<std::array<float, 16>> binds, std::vector<int> joints,
-                                             std::vector<float> weights) {
+                                                              std::vector<std::array<float, 16>> binds,
+                                                              std::vector<int> joints, std::vector<float> weights) {
     animation::AnimSkinStreamData data;
     data.vertexCount         = mesh.getVertexCount();
     data.bindPositions       = mesh.positions();

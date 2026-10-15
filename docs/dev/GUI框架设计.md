@@ -492,11 +492,11 @@ sequenceDiagram
 ## 9. 验收标准（第一期）
 
 - [x] 工程可编译并链接 imgui；`#include <imgui.h>`
-- [x] C++ 创建 `UIHost`，树含 Window+Text+Button；`UISystem` 每帧画出路径存在；**无**脚本 per-frame UI 循环（见 `test/integration/ui-workflows/UISystem.cpp`）
+- [x] C++ 创建 `UIHost`，树含 Window+Text+Button；`UISystem` 每帧画出路径存在；**无**脚本 per-frame UI 循环（见 `test/integration/ui-workflows/ui_workflows_graphics_tests.cpp`）
 - [x] 点击 Button 触发回调并改 Text（C++ handler + `dispatchEvents`）
 - [x] `setProps` / `setLabelText` 后保留树字段更新
 - [x] 与 boot 帧序对接（`src/scripts/load.nut`）
-- [x] 与现有 `RenderSystem` 同帧 Vulkan overlay 实机冒烟（`test/integration/render-presentation/UIOverlaySmoke.cpp`）
+- [x] 与现有 `RenderSystem` 同帧 Vulkan overlay 实机冒烟（`test/integration/render-presentation/render_presentation_graphics_RenderSystem_tests.cpp`）
 
 
 ## 10. 内部逃生舱

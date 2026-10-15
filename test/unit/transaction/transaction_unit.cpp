@@ -1,4 +1,5 @@
-#include "transaction/Transaction.h"
+#include "zeroerr/assert.h"
+
 #include <array>
 #include <initializer_list>
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -9,6 +10,7 @@
 #include "StatePatchTestSupport.h"
 #include "common/Module.h"
 #include "statepatch/StatePatch.h"
+#include "transaction/Transaction.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
@@ -27,14 +29,15 @@ namespace {
     return parsed ? *parsed : eve::OperationId::nil();
 }
 
-[[maybe_unused]] Plan* createPlan(Ledger& ledger, const char* transaction, const char* correlation = "", const char* causation = "") {
+[[maybe_unused]] Plan* createPlan(Ledger& ledger, const char* transaction, const char* correlation = "",
+                                  const char* causation = "") {
     auto result = ledger.create(correlation, causation, transactionId(transaction));
     REQUIRE(result.ok());
     return result.value();
 }
 
-[[maybe_unused]] eve::OperationId stageOperation(Plan& plan, const char* operation, const char* kind, const char* target,
-                                const char* payload) {
+[[maybe_unused]] eve::OperationId stageOperation(Plan& plan, const char* operation, const char* kind,
+                                                 const char* target, const char* payload) {
     auto result = plan.stage(kind, target, payload, operationId(operation));
     REQUIRE(result.ok());
     return result.value();
@@ -217,7 +220,8 @@ private:
     std::vector<std::string>& events_;
 };
 
-[[maybe_unused]] void checkEvents(const std::vector<std::string>& actual, std::initializer_list<std::string_view> expected) {
+[[maybe_unused]] void checkEvents(const std::vector<std::string>&         actual,
+                                  std::initializer_list<std::string_view> expected) {
     CHECK_EQ(actual.size(), expected.size());
     size_t index = 0;
     for (const auto value : expected) {

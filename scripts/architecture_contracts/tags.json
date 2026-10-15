@@ -14,8 +14,8 @@
         "src/modules/tags/Tags.cpp"
       ],
       "tests": [
-        "test/integration/script-api/tags.cpp", "test/unit/tags/tags_unit.cpp",
-        "test/integration/gameplay-composition/dialogue_state_integration.cpp",
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp", "test/unit/tags/tags_tests.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [

@@ -14,8 +14,8 @@
         "docs/usr/modules/hexmap.md"
       ],
       "tests": [
-        "test/integration/script-api/hexmap_sphere_script.cpp",
-        "test/unit/hexmap/hexmap_sphere.cpp"
+        "test/integration/script-api/script_api_graphics_dap_tests.cpp",
+        "test/unit/hexmap/hexmap_tests.cpp"
       ],
       "provides": [],
       "requires": [],

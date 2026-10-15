@@ -14,7 +14,7 @@
         "docs/dev/领域短根继承与跨域组合架构.md"
       ],
       "tests": [
-        "test/integration/gameplay-composition/rts_composition.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_rts_combat_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "symbols": [
@@ -60,13 +60,13 @@
         "src/modules/rts/RTSSnapshotInternal.h"
       ],
       "tests": [
-        "test/integration/gameplay-composition/rts_composition.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_rts_combat_tests.cpp",
         "scripts/tests/test_architecture_contracts.py",
-        "test/integration/rts-unit-lifecycle/rts_crowd.cpp",
-        "test/integration/rts-unit-lifecycle/rts_production.cpp",
-        "test/integration/rts-unit-lifecycle/rts_crowd_production.cpp",
-        "test/integration/rts-unit-lifecycle/rts_formation.cpp",
-        "test/integration/rts-unit-lifecycle/rts_groups.cpp"
+        "test/integration/rts-unit-lifecycle/rts_unit_lifecycle_tactics_rts_tests.cpp",
+        "test/integration/rts-unit-lifecycle/rts_unit_lifecycle_tactics_rts_tests.cpp",
+        "test/integration/rts-unit-lifecycle/rts_unit_lifecycle_tactics_rts_tests.cpp",
+        "test/integration/rts-unit-lifecycle/rts_unit_lifecycle_tactics_rts_tests.cpp",
+        "test/integration/rts-unit-lifecycle/rts_unit_lifecycle_tactics_rts_tests.cpp"
       ],
       "systems": [
         "CommandFanOutSystem",
@@ -102,9 +102,9 @@
         "docs/usr/modules/crowd.md"
       ],
       "tests": [
-        "test/integration/rts-unit-lifecycle/rts_formation.cpp",
-        "test/integration/rts-unit-lifecycle/rts_restore.cpp",
-        "test/integration/rts-unit-lifecycle/rts_groups.cpp"
+        "test/integration/rts-unit-lifecycle/rts_unit_lifecycle_tactics_rts_tests.cpp",
+        "test/integration/rts-unit-lifecycle/rts_unit_lifecycle_tactics_rts_tests.cpp",
+        "test/integration/rts-unit-lifecycle/rts_unit_lifecycle_tactics_rts_tests.cpp"
       ],
       "schema": "EVERTS_COMMANDS positional text schema with explicit version header.",
       "version": "Versions 1 through 5; v4 stores orientation/new layouts, v5 adds MovementGroup operation and groupLeadDistance.",
@@ -127,8 +127,8 @@
         "docs/usr/modules/crowd.md"
       ],
       "tests": [
-        "test/integration/rts-unit-lifecycle/rts_groups.cpp",
-        "test/integration/rts-unit-lifecycle/rts_restore.cpp"
+        "test/integration/rts-unit-lifecycle/rts_unit_lifecycle_tactics_rts_tests.cpp",
+        "test/integration/rts-unit-lifecycle/rts_unit_lifecycle_tactics_rts_tests.cpp"
       ],
       "schema": "RTSStateSnapshot typed in-memory schema; canonicalStateJson is its synchronization projection.",
       "version": "Version 2 adds stable movement-group membership and leadDistance.",
@@ -153,8 +153,8 @@
         "docs/dev/群体行为与流场模块设计.md"
       ],
       "tests": [
-        "test/integration/rts-unit-lifecycle/rts_groups.cpp",
-        "test/integration/rts-unit-lifecycle/rts_restore.cpp"
+        "test/integration/rts-unit-lifecycle/rts_unit_lifecycle_tactics_rts_tests.cpp",
+        "test/integration/rts-unit-lifecycle/rts_unit_lifecycle_tactics_rts_tests.cpp"
       ],
       "provides": [],
       "requires": [],
@@ -204,7 +204,7 @@
         "docs/usr/GAMEPLAY_PAYMENT_COMPOSITION.md"
       ],
       "tests": [
-        "test/integration/card-rts-payment/card_rts_script_composition.cpp"
+        "test/integration/card-rts-payment/card_rts_payment_card_tests.cpp"
       ],
       "provides": [],
       "requires": [],
@@ -256,8 +256,8 @@
         "src/modules/rts/RTSAbilityAdmission.cpp"
       ],
       "tests": [
-        "test/integration/gameplay-composition/card_payment_composition.cpp",
-        "test/integration/card-rts-payment/card_rts_script_composition.cpp"
+        "test/integration/gameplay-composition/gameplay_composition_graphics_buildingfx_tests.cpp",
+        "test/integration/card-rts-payment/card_rts_payment_card_tests.cpp"
       ],
       "provides": [],
       "requires": [],

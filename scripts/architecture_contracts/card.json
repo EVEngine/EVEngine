@@ -16,8 +16,8 @@
         "src/modules/card/CardStageBindings.cpp"
       ],
       "tests": [
-        "test/integration/gameplay-composition/card_payment_composition.cpp",
-        "test/integration/card-rts-payment/card_rts_script_composition.cpp"
+        "test/integration/gameplay-composition/gameplay_composition_graphics_buildingfx_tests.cpp",
+        "test/integration/card-rts-payment/card_rts_payment_card_tests.cpp"
       ],
       "provides": [],
       "requires": [],

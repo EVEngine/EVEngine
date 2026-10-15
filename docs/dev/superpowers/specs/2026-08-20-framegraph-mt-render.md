@@ -111,7 +111,7 @@ eve_render()                          │
   相机 view-proj 在主线程预收集，worker 只读。
 - 新增 `src/modules/graphics/vulkan/FrameGraphJobs.h`：把 JobSystem 接到
   `vkb::PassRecordExecutor` 的粘合层（layer 内 fork/join，layer 间顺序执行）。
-- 新增 `test/integration/concurrency/render_graph.cpp`（零 GPU 依赖）：
+- 新增 `test/integration/concurrency/concurrency_graphics_tests.cpp`（零 GPU 依赖）：
   - 引擎目标 pass 拓扑（shadow×3 + gbuffer 同层并行 → forward → present）的
     规划断言：分层、依赖序、attachment→sampled 折叠（forward/present 零显式
     barrier）；

@@ -21,13 +21,13 @@
         "src/modules/rpg/LootSystem.h"
       ],
       "tests": [
-        "test/unit/rpg/rpg_quest.cpp",
-        "test/unit/rpg/rpg_progression.cpp",
-        "test/unit/rpg/rpg_trait.cpp",
-        "test/unit/rpg/rpg_battle.cpp",
-        "test/unit/rpg/rpg_class.cpp",
-        "test/integration/gameplay-composition/rpg_equipment.cpp",
-        "test/unit/rpg/rpg_gamestate.cpp"
+        "test/unit/rpg/rpg_tests.cpp",
+        "test/unit/rpg/rpg_tests.cpp",
+        "test/unit/rpg/rpg_tests.cpp",
+        "test/unit/rpg/rpg_tests.cpp",
+        "test/unit/rpg/rpg_tests.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_procgen_road_editing_tests.cpp",
+        "test/unit/rpg/rpg_tests.cpp"
       ],
       "systems": [
         "LevelSystem",
@@ -63,8 +63,8 @@
         "src/modules/rpg/RPGSaveSession.h"
       ],
       "tests": [
-        "test/integration/gameplay-composition/rpg_save_prepare.cpp",
-        "test/integration/gameplay-composition/game_save_integration.cpp"
+        "test/integration/gameplay-composition/gameplay_composition_graphics_procgen_road_editing_tests.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_gameplay_action_tests.cpp"
       ],
       "provides": [
         {

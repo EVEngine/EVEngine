@@ -1,7 +1,7 @@
 # RPG 模块设计：任务 / 目标追踪器
 
 日期：2026-08-18
-状态：已实现（`src/modules/rpg/`：Quest.h/.cpp、Tracker.h/.cpp、QuestSystem.h/.cpp、QuestTypes.h；测试 `test/unit/rpg/rpg_quest.cpp`）
+状态：已实现（`src/modules/rpg/`：Quest.h/.cpp、Tracker.h/.cpp、QuestSystem.h/.cpp、QuestTypes.h；测试 `test/unit/rpg/rpg_tests.cpp`）
 
 相关：[RPG系统设计.md](./RPG系统设计.md)（属性 / 效果 / 状态 / 技能 / 结算）、[模块设计.md](./模块设计.md)
 
@@ -305,7 +305,7 @@ for (local i = 0; i < log.getEventCount(); i++) {
 
 ## 测试
 
-`test/unit/rpg/rpg.cpp` 或拆出 `test/unit/rpg/rpg_quest.cpp`（须在 `test/CMakeLists.txt` 登记）。zeroerr，`TEST_CASE("rpg.quest....")`。每个用例 `QuestRegistry::clear()`。不依赖 `rpg.update(dt)`。
+`test/unit/rpg/rpg_tests.cpp` 或拆出 `test/unit/rpg/rpg_tests.cpp`（须在 `test/CMakeLists.txt` 登记）。zeroerr，`TEST_CASE("rpg.quest....")`。每个用例 `QuestRegistry::clear()`。不依赖 `rpg.update(dt)`。
 
 **注册表：** JSON 缺省 policy、`count<=0`→1、`extra`/`tags`/`rewards`；缺 `id`、重复 objective id、循环 `requires` 不注册；`clear` 后 `find` 为空。
 

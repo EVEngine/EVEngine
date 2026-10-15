@@ -86,7 +86,7 @@ if (!replayed.ok) throw "battle replay failed";
 快照与日志必须来自同一基线、同一内容定义；日志并不是可重复追加的增量补丁。
 快照恢复与日志回放是两个独立调用；要让 RPG 与战棋权威状态一起恢复，使用下面的 C++ 协调器。
 接口及 Result 投影见 [Tactics.cpp](../../src/modules/tactics/Tactics.cpp)，失败、校验和
-回放用例见 [tactics_snapshot_script.cpp](../../test/integration/script-api/tactics_snapshot_script.cpp)。
+回放用例见 [tactics_snapshot_script.cpp](../../test/integration/script-api/script_api_graphics_scene_tests.cpp)。
 
 HP / 技能冷却若在脚本 ECS 或 RPG 侧，**不要**指望 tactics 快照自动带上。
 
@@ -96,7 +96,7 @@ HP / 技能冷却若在脚本 ECS 或 RPG 侧，**不要**指望 tactics 快照�
 `RPGGameSaveParticipant`，将已创建的 `Battle` 包装为 `TacticsGameSaveParticipant`，
 再注册到同一个 `GameSaveSession(contentVersion)`。两个适配器和它们借用的游戏状态
 都必须比协调器活得久，保存和恢复在暂停的仿真线程上执行。完整的可编译接线见
-[组合测试](../../test/integration/gameplay-composition/game_save_integration.cpp)。
+[组合测试](../../test/integration/gameplay-composition/gameplay_composition_graphics_gameplay_action_tests.cpp)。
 
 调用 `snapshotJson(hashProvider)` 得到单份封存的 JSON，然后用已检查结果的
 `fs.writeTextAtomic` 写槽位。读档先加载同版本的内容定义，随后对主档或备份调用

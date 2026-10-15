@@ -65,7 +65,7 @@ for (local i = 0; i < tree.getResultCount(); i++) {
 
 **源码：** [`src/modules/spatial/`](../../../src/modules/spatial/)  
 **设计文档：** [`docs/dev/空间索引模块设计.md`](../../dev/空间索引模块设计.md)  
-**相关测试：** [`test/integration/render-presentation/spatial.cpp`](../../../test/integration/render-presentation/spatial.cpp)
+**相关测试：** [`test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp`](../../../test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp)
 
 ## 补充绑定参考
 

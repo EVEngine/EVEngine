@@ -1,3 +1,5 @@
+#include "zeroerr/assert.h"
+
 #include <memory>
 #include "physics/Body3D.h"
 #include "physics/Physics.h"

@@ -1,9 +1,11 @@
-#include "effects/Effects.h"
+#include "zeroerr/assert.h"
+
 #include <cmath>
 #include <cstdint>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <string>
 #include "common/Module.h"
+#include "effects/Effects.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 

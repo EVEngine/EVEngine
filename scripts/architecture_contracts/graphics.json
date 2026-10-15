@@ -15,7 +15,7 @@
         "docs/dev/realtime-fog-system.md"
       ],
       "tests": [
-        "test/integration/render-pipeline/graphics_fog.cpp", "test/unit/graphics_fog/graphics_fog_unit.cpp",
+        "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp", "test/unit/graphics_fog/graphics_fog_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "state": "FogDensityField and MacFluidGrid own media; FogProfile owns optical constants; BeerLightCache is a derived cache; ContinuousArtParams are presentation-only.",
@@ -36,7 +36,7 @@
         "docs/dev/realtime-fog-system.md"
       ],
       "tests": [
-        "test/integration/render-pipeline/graphics_fog.cpp", "test/unit/graphics_fog/graphics_fog_unit.cpp",
+        "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp", "test/unit/graphics_fog/graphics_fog_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -64,7 +64,7 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/integration/render-pipeline/graphics_headless.cpp",
+        "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -93,8 +93,8 @@
         "docs/dev/uds-sky-runtime-contract.md"
       ],
       "tests": [
-        "test/integration/file-io/SkyWispsAsset.cpp", "test/unit/filesystem/SkyWispsAsset_unit.cpp",
-        "test/integration/render-presentation/SkyWisps.cpp"
+        "test/integration/file-io/file_io_graphics_hex_level_data_tests.cpp", "test/unit/filesystem/filesystem_tests.cpp",
+        "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp"
       ],
       "schema": "eve.sky-wisps/7 manifest and eve.sky-mesh/1 geometry; explicit texture dimensions and linear or sRGB R8/RGBA8 source encoding; version 5 validates daylight coefficients and both owned star textures; version 6 adds optical tints and bounded explicit RGBA8/RGBA16F mip chains; version 7 adds lunar surface, phase, glow and two owned linear RGBA16F mip chains.",
       "version": "Manifest versions 1 through 7; geometry version 1.",
@@ -118,8 +118,8 @@
         "docs/dev/uds-sky-runtime-contract.md"
       ],
       "tests": [
-        "test/unit/graphics/BloomSettings.cpp",
-        "test/integration/render-presentation/BloomPyramid.cpp"
+        "test/unit/graphics/graphics_pipeline_state_tests.cpp",
+        "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
       ],
       "contract": "Graphics-owned targets and copied settings; render-thread builds preserve the previous canvas. GaussianPyramid adds normalized weighted scales; existing filter defaults remain unchanged.",
       "providers": "Shared C++ orchestration with GLSL/SPIR-V and WGSL shader implementations. Runtime validation is required separately for each enabled provider.",
@@ -153,8 +153,8 @@
         "docs/dev/uds-sky-runtime-contract.md"
       ],
       "tests": [
-        "test/integration/render-presentation/SkyAtmospherePass.cpp",
-        "test/integration/render-presentation/SkyScriptBindings.cpp"
+        "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+        "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp"
       ],
       "contract": "Graphics owns one render-thread display mode; None, Aces and Filmic select final presentation only. Aces remains the default; independent cosine-fourth photographic vignette defaults to zero and affects presentation before tone mapping; HDR capture stays linear.",
       "providers": "Vulkan implements all three modes and photographic vignette. Other providers retain their existing mode and zero vignette, returning Unsupported for unavailable changes.",
@@ -191,12 +191,12 @@
         "src/modules/graphics/ViewPreparation.cpp"
       ],
       "tests": [
-        "test/integration/render-presentation/SkyAtmospherePass.cpp",
-        "test/unit/graphics/SkyAtmosphereLuts.cpp",
-        "test/integration/render-presentation/SkyWisps.cpp",
-        "test/integration/render-presentation/SkyMoon.cpp",
-        "test/integration/file-io/SkyWispsAsset.cpp", "test/unit/filesystem/SkyWispsAsset_unit.cpp",
-        "test/integration/render-presentation/SkyViewPreparation.cpp"
+        "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+        "test/unit/graphics/graphics_pipeline_state_tests.cpp",
+        "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+        "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+        "test/integration/file-io/file_io_graphics_hex_level_data_tests.cpp", "test/unit/filesystem/filesystem_tests.cpp",
+        "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp"
       ],
       "contract": "Prepared immutable coefficients and transmission/multiple-scattering lookup tables feed a physically integrated HDR pass. No visual-parity claim until all remaining UDS stages are implemented and compared. Optional authored wisps copy corner attributes and an explicit sampled texture during preparation; atmosphere and wisps draw in fixed order with identical fog composition through the same callback. A checked view-preparation phase generates a 192x104 sky-view texture before opening the destination; identical camera/light blocks reuse it. Main and capture draws consume the same cache sequentially. Solar lighting and normalized authored-wisps phase publish atomically; validation failure leaves both unchanged. Cloud phase never invalidates the atmosphere-only view LUT.",
       "providers": "Vulkan resource program implementation; other backends explicitly Unsupported.",
@@ -229,8 +229,8 @@
         "docs/usr/modules/graphics.md"
       ],
       "tests": [
-        "test/unit/graphics/SkyTextureResources.cpp",
-        "test/integration/render-presentation/SkyTextureGpu.cpp"
+        "test/unit/graphics/graphics_resources_tests.cpp",
+        "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp"
       ],
       "contract": "Packed volume mips shrink XYZ; linear HDR samples retain source precision. Validation or upload failure preserves the previously published shader resources.",
       "providers": "Vulkan implements 3D and HDR sampled images. The existing base/WebGPU resource-program boundary returns explicit Unsupported without publication.",
@@ -263,8 +263,8 @@
         "docs/dev/uds-sky-runtime-contract.md"
       ],
       "tests": [
-        "test/integration/render-presentation/SkyViewPreparation.cpp",
-        "test/integration/render-presentation/SkyAtmospherePass.cpp"
+        "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+        "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp"
       ],
       "contract": "No providers is success. Registered callbacks run synchronously before target opening; first failure cancels the view. Detachment removes future invocations. Recursive dispatch and mutation during dispatch are forbidden.",
       "providers": "Backend-independent phase; the sky provider explicitly requires Vulkan resource programs.",
@@ -299,10 +299,10 @@
         "src/modules/graphics/hair/GroomAsset.cpp"
       ],
       "tests": [
-        "test/integration/render-presentation/resource_lifetime.cpp",
-        "test/integration/asset-pipeline/graphics_vegetation_translucency.cpp",
-        "test/integration/render-presentation/graphics_resource_reuse.cpp",
-        "test/integration/gameplay-composition/graphics_authoring_projection.cpp",
+        "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+        "test/integration/asset-pipeline/asset_pipeline_graphics_asset_import_unity_vegetation_material_tests.cpp",
+        "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp",
         "scripts/scene_authoring_smoke.py"
       ],
       "provides": [
@@ -415,8 +415,8 @@
         "cmake/module_manifest/modules/graphics.cmake"
       ],
       "tests": [
-        "test/integration/gameplay-composition/graphics_raytracing.cpp", "test/unit/graphics_raytracing/graphics_raytracing_unit.cpp",
-        "test/integration/render-pipeline/graphics_raytracing_alignment.cpp"
+        "test/integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp", "test/unit/graphics_raytracing/graphics_raytracing_unit.cpp",
+        "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp"
       ],
       "provides": [
         {
@@ -489,10 +489,10 @@
         "docs/dev/2026-10-12-scene-projected-overlap-validation.md"
       ],
       "tests": [
-        "test/unit/scene/scene_visibility.cpp",
+        "test/unit/scene/scene_tests.cpp",
         "scripts/scene_authoring_smoke.py",
-        "test/integration/gameplay-composition/scene_regions.cpp",
-        "test/integration/gameplay-composition/scene_projected_overlap.cpp"
+        "test/integration/gameplay-composition/gameplay_composition_graphics_rts_script_tests.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_rts_script_tests.cpp"
       ],
       "provides": [
         {

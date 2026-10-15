@@ -66,4 +66,4 @@ pass。上升沿 / once / cooldown 锁存仅在该次激活的动作全部成功
 
 **源码：** [`src/modules/emergence/`](../../../src/modules/emergence/)
 **设计：** [`docs/dev/涌现式规则触发框架.md`](../../dev/涌现式规则触发框架.md)
-**相关测试：** `test/emergence_rule_engine.cpp`、`test/integration/performance/emergence_perf.cpp`
+**相关测试：** `test/emergence_rule_engine.cpp`、`test/integration/performance/performance_graphics_tests.cpp`

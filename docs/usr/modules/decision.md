@@ -49,7 +49,7 @@ sample 按世界坐标读取并提供 fallback。游戏决定何时更新权重�
 [NpcAi](npc_ai.md)，不要把黑板、动作执行与路径服务塞进一个万能 context。
 
 源码：[Decision.cpp](../../../src/modules/decision/Decision.cpp)，语义测试：
-[decision.cpp](../../../test/unit/decision/decision.cpp)。验证合法/非法 scalar、无转移、非法网格、
+[decision.cpp](../../../test/unit/decision/decision_tests.cpp)。验证合法/非法 scalar、无转移、非法网格、
 坏快照和失效代理，确定性由输入事实及游戏的模拟 tick 顺序保证。
 
 ## 补充绑定参考

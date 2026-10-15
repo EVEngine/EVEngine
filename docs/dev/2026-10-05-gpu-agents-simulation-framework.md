@@ -15,7 +15,7 @@
 - 统一 SDF 障碍管线（静态场 + 动态球源，当前位置与速度外推位置双采样）
 - CPU 参考求解器（可测、确定性/容差契约）；GPU 内核路径为 P1
 
-测试：`test/integration/gameplay-composition/gpuagents.cpp`、`test/integration/gameplay-composition/editor_gpuagents.cpp`；示例：`examples/gpu-agents`；用户文档：`docs/usr/modules/gpuagents.md`。
+测试：`test/integration/gameplay-composition/gameplay_composition_graphics_gameplay_action_tests.cpp`、`test/integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp`；示例：`examples/gpu-agents`；用户文档：`docs/usr/modules/gpuagents.md`。
 
 **层**：宿主 `LAYER 5`，`DEPS gpgpu graphics`；editing `LAYER 6`；editor `LAYER 7`。P0/P2 步进不要求 Graphics 设备已初始化（纯 CPU 路径）；材质纹理上传在有 Graphics 时可选。
 

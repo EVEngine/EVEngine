@@ -204,6 +204,11 @@ def classify(
         # one; see SHARED_SOURCES.
         return None, "shared helper", None
 
+    # Consolidated integration files carry the existing executable domain in
+    # their name after the task goal. Their includes can span several modules.
+    for domain in sorted(tables["domains"], key=len, reverse=True):
+        if re.match(rf"^[a-z0-9_]+_{re.escape(domain)}(?:_|$)", basename) and basename.endswith("_tests"):
+            return domain, f"task-domain:{domain}", None
     module_domain = dict(tables["module_domain"])  # type: ignore[arg-type]
     package_override = dict(tables["package_override"])  # type: ignore[arg-type]
     by_include = _module_domains(source, module_domain, package_override)

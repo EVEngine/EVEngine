@@ -15,7 +15,7 @@
         "docs/usr/modules/npc_ai.md"
       ],
       "tests": [
-        "test/unit/npc_ai/npc_ai_ecs.cpp",
+        "test/unit/npc_ai/npc_ai_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [

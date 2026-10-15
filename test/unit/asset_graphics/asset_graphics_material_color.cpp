@@ -1,3 +1,5 @@
+#include "zeroerr/assert.h"
+
 #include "asset/RuntimeDefinition.h"
 #include "asset/graphics/CookedMaterial.h"
 #include "zeroerr/assert.h"
@@ -160,11 +162,11 @@ TEST_CASE("asset.graphics.materialColorRejectsMalformedOrUnversionedParameters")
 }
 
 TEST_CASE("asset.graphics.materialMotionHighlightRequiresV5") {
-    auto root = definition();
+    auto root                    = definition();
     root["motionHighlightColor"] = Value::Array{3.0, .5, 0.0};
     REQUIRE(!load(root, 4).ok());
     root["schemaVersion"] = 5;
-    auto material = load(root, 5);
+    auto material         = load(root, 5);
     REQUIRE(material.ok());
     REQUIRE_EQ(material.value().surface.motionHighlightColor[0], 3.f);
     root["motionHighlightColor"] = Value::Array{1, -1, 0};
@@ -175,16 +177,13 @@ TEST_CASE("asset.graphics.materialMotionHighlightRequiresV5") {
 
 TEST_CASE("asset.graphics.materialVegetationSurfaceRequiresV6") {
     auto root = definition();
-    root["vegetationSurface"] = Value::Object{{"sourceFamily", "tve-12"},
-                                                {"overlay", .3},
-                                                {"wetness", .8},
-                                                {"overlayVariation", .1},
-                                                {"overlayProjection", .6},
-                                                {"vertexOcclusionAlpha", .34117648},
-                                                {"invertVertexOcclusion", false}};
+    root["vegetationSurface"] =
+        Value::Object{{"sourceFamily", "tve-12"},      {"overlay", .3},           {"wetness", .8},
+                      {"overlayVariation", .1},        {"overlayProjection", .6}, {"vertexOcclusionAlpha", .34117648},
+                      {"invertVertexOcclusion", false}};
     REQUIRE(!load(root, 5).ok());
     root["schemaVersion"] = 6;
-    auto material = load(root, 6);
+    auto material         = load(root, 6);
     REQUIRE(material.ok());
     REQUIRE(material.value().vegetationSurface.has_value());
     REQUIRE_EQ(material.value().vegetationSurface->overlayCoverage, .3f);
@@ -198,7 +197,7 @@ TEST_CASE("asset.graphics.materialVegetationSurfaceRequiresV6") {
     auto malformed = root;
     malformed.at("vegetationSurface").getIf<Value::Object>()->erase("overlayProjection");
     REQUIRE(!load(malformed, 6).ok());
-    auto invalid = root;
+    auto invalid                                                         = root;
     (*invalid.at("vegetationSurface").getIf<Value::Object>())["overlay"] = 1.1;
     REQUIRE(!load(invalid, 6).ok());
 }

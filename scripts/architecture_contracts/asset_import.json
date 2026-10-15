@@ -15,7 +15,7 @@
         "docs/usr/modules/asset-structured-models.md"
       ],
       "tests": [
-        "test/integration/asset-pipeline/asset_import_structured_models.cpp"
+        "test/integration/asset-pipeline/asset_pipeline_graphics_asset_image_mips_tests.cpp"
       ],
       "provides": [],
       "requires": [],

@@ -19,7 +19,7 @@ newTileBuffer(width,height) 建立权威瓦片缓冲，newBrush/newHistory 建�
 
 ## 核对证据
 
-实现：[LevelEditorModule.cpp](../../../src/modules/map/level/editor/LevelEditorModule.cpp)。流程与边界测试：[editor_level.cpp](../../../test/unit/editor/editor_level.cpp)。
+实现：[LevelEditorModule.cpp](../../../src/modules/map/level/editor/LevelEditorModule.cpp)。流程与边界测试：[editor_level.cpp](../../../test/unit/editor/editor_tests.cpp)。
 先看测试中的 fixture/资源条件，再移植到游戏；没有脚本方法的 C++ 契约不自动可调用。
 
 补充入口见 [绑定参考](level_editor/api-reference.md)；通用工作区与撤销见 [Editor](editor.md)。

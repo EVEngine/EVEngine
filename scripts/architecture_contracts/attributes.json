@@ -15,7 +15,7 @@
       ],
       "tests": [
         "test/unit/attributes/attributes.cpp",
-        "test/integration/gameplay-composition/dialogue_state_integration.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [

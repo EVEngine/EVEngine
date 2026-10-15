@@ -53,7 +53,7 @@ RPG/Combat 已拥有属性时，用它们的接口取得或同步属性，不再
 
 证据：[Attributes.cpp](../../../src/modules/attributes/Attributes.cpp)、
 [attributes.cpp](../../../test/unit/attributes/attributes.cpp)、
-[RPG 属性统一测试](../../../test/integration/gameplay-composition/attributes_rpg_unification.cpp)。
+[RPG 属性统一测试](../../../test/integration/gameplay-composition/gameplay_composition_graphics_animation_inertializer_tests.cpp)。
 
 ## 补充绑定参考
 

@@ -32,7 +32,9 @@ eve_test_source_properties(physics_jolt.cpp physics_jolt_cooking.cpp physics_jol
 # Resource sharing must test the same optional validation provider as EVGraphics.
 get_target_property(_eve_graphics_definitions EVGraphics COMPILE_DEFINITIONS)
 if("EVENGINE_SPIRV_ASSET_VALIDATION=1" IN_LIST _eve_graphics_definitions)
-  set_property(SOURCE ShaderResourceSharing.cpp SkyTextureGpu.cpp SkyAtmospherePass.cpp SkyRuntime.cpp SkyWisps.cpp SkyScriptBindings.cpp BloomPyramid.cpp APPEND PROPERTY COMPILE_DEFINITIONS EVE_TEST_RESOURCE_VALIDATION=1)
+  eve_resolve_test_sources(_eve_validation_sources ShaderResourceSharing.cpp SkyTextureGpu.cpp
+    SkyAtmospherePass.cpp SkyRuntime.cpp SkyWisps.cpp SkyScriptBindings.cpp BloomPyramid.cpp)
+  set_property(SOURCE ${_eve_validation_sources} APPEND PROPERTY COMPILE_DEFINITIONS EVE_TEST_RESOURCE_VALIDATION=1)
 endif()
 # The legacy RNG oracle uses the same pinned DTL compatibility headers as procgen.
 eve_test_source_properties(procgen_rng_contract.cpp PROPERTIES INCLUDE_DIRECTORIES
@@ -142,6 +144,7 @@ if(NOT _eve_test_has_devtools)
   endforeach()
 endif()
 
+eve_test_origin_definitions(_eve_test_origin_definitions ${all_test_cpp})
 eve_resolve_test_sources(all_test_cpp ${all_test_cpp})
 
 # Partition the profile-filtered sources into one link unit per domain. The rule
@@ -231,6 +234,7 @@ elseif(EVENGINE_IOS_TEST_APP)
     ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
     ios_test.mm
   )
+  eve_apply_test_origin_definitions(eve ${_eve_test_origin_definitions})
   eve_test_source_properties(ios_test.mm PROPERTIES LANGUAGE OBJCXX)
   target_link_libraries(eve eve_engine_includes)
 else()
@@ -456,13 +460,17 @@ else()
       if(NOT ANDROID AND NOT EVENGINE_ANDROID AND NOT EVENGINE_IOS AND NOT IOS AND NOT EMSCRIPTEN)
         eve_add_test_executable(scad_compiler_timeout_fixture asset_import/ScadCompilerTimeoutFixture.cpp)
         target_compile_features(scad_compiler_timeout_fixture PRIVATE cxx_std_20)
-        set_property(SOURCE asset_import_structured_models.cpp APPEND PROPERTY COMPILE_DEFINITIONS
+        eve_resolve_test_sources(_eve_scad_sources asset_import_structured_models.cpp)
+        set_property(SOURCE ${_eve_scad_sources} APPEND PROPERTY COMPILE_DEFINITIONS
           EVE_SCAD_TEST_COMPILER="$<TARGET_FILE:scad_compiler_timeout_fixture>")
-        if(TARGET unit_test_asset)
-          add_dependencies(unit_test_asset scad_compiler_timeout_fixture)
-        elseif(TARGET unit_test)
-          add_dependencies(unit_test scad_compiler_timeout_fixture)
-        endif()
+        foreach(_eve_test_target IN LISTS EVE_TEST_TARGETS)
+          get_target_property(_eve_target_sources ${_eve_test_target} SOURCES)
+          foreach(_eve_scad_source IN LISTS _eve_scad_sources)
+            if(_eve_scad_source IN_LIST _eve_target_sources)
+              add_dependencies(${_eve_test_target} scad_compiler_timeout_fixture)
+            endif()
+          endforeach()
+        endforeach()
       endif()
       eve_add_test_executable(structured_model_graphics_probe EXCLUDE_FROM_ALL asset_import/StructuredModelGraphicsProbe.cpp)
       target_link_libraries(structured_model_graphics_probe eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty}
@@ -662,6 +670,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/ZeroErrDiscoverTests.cmake)
 # the union with per-case isolation unchanged. The label is the target name, which
 # is what `make test/<platform> DOMAIN=<domain>` selects on.
 foreach(_eve_test_target IN LISTS EVE_TEST_TARGETS)
+  eve_apply_test_origin_definitions(${_eve_test_target} ${_eve_test_origin_definitions})
   zeroerr_discover_tests(${_eve_test_target} LABEL "${_eve_test_target}")
 endforeach()
 endif()

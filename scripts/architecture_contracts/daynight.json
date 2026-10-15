@@ -20,10 +20,10 @@
         "docs/dev/uds-sky-runtime-contract.md"
       ],
       "tests": [
-        "test/unit/daynight/SkyTimeline.cpp",
-        "test/unit/daynight/SkySolarOrbit.cpp",
-        "test/integration/render-presentation/SkyRuntime.cpp",
-        "test/integration/render-presentation/SkyScriptBindings.cpp"
+        "test/unit/daynight/daynight_tests.cpp",
+        "test/unit/daynight/daynight_tests.cpp",
+        "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+        "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp"
       ],
       "time_source": "Caller-supplied eve::Duration; checked accumulated integer nanoseconds.",
       "rng_stream": "No RNG in this deterministic interpolation layer.",
@@ -55,8 +55,8 @@
         "docs/dev/uds-sky-runtime-contract.md"
       ],
       "tests": [
-        "test/integration/file-io/SkyProfile.cpp",
-        "test/integration/render-presentation/SkyRuntime.cpp"
+        "test/integration/file-io/file_io_graphics_hex_level_data_tests.cpp",
+        "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp"
       ],
       "schema": "eve.sky-profile; explicit atmosphere mode with complete clock, weather, sun and optical parameters.",
       "version": "Integer version 6 adds proceduralSeed and null wispsAsset selection; version 5 adds directional fog elevation range; version 4 adds cloudMotion controls (phase, speed, timeScale, windMultiplier). Version 3 adds wisps; version 2 adds background height fog. Not a simulation save.",

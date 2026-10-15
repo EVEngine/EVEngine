@@ -1,4 +1,6 @@
 #include "zeroerr/assert.h"
+
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 #include "common/Diagnostic.h"
@@ -39,8 +41,8 @@ static const char kNoUvCubeObj[] =
     "f 1 3 4\n";
 
 eve::model3d::ModelData *loadObj(const char *text, bool flipUVs = true) {
-    auto *mod = eve::model3d::Model3D::create();
-    eve::data::ByteData data(text, std::char_traits<char>::length(text));
+    auto                          *mod = eve::model3d::Model3D::create();
+    eve::data::ByteData            data(text, std::char_traits<char>::length(text));
     eve::model3d::ModelLoadOptions options;
     options.flipUVs = flipUVs;
     return mod->newModelData(&data, ".obj", options);
@@ -62,12 +64,12 @@ TEST_CASE("model3d.normals.applyRadialFromOrigin") {
     const int n = md->getVertexCount(0);
     REQUIRE(n >= 4);
     for (int i = 0; i < n; ++i) {
-        const float px = md->getVertexPosition(0, i, 0);
-        const float py = md->getVertexPosition(0, i, 1);
-        const float pz = md->getVertexPosition(0, i, 2);
-        const float nx = md->getVertexNormal(0, i, 0);
-        const float ny = md->getVertexNormal(0, i, 1);
-        const float nz = md->getVertexNormal(0, i, 2);
+        const float px  = md->getVertexPosition(0, i, 0);
+        const float py  = md->getVertexPosition(0, i, 1);
+        const float pz  = md->getVertexPosition(0, i, 2);
+        const float nx  = md->getVertexNormal(0, i, 0);
+        const float ny  = md->getVertexNormal(0, i, 1);
+        const float nz  = md->getVertexNormal(0, i, 2);
         const float len = length3(px, py, pz);
         REQUIRE(len > 1e-6f);
         CHECK(std::fabs(nx - px / len) < 1e-5f);
@@ -110,11 +112,11 @@ TEST_CASE("model3d.normals.bakeObjectSpaceCorner") {
     CHECK_EQ(map->getHeight(), 32);
 
     // UV (0.9, 0.9) is near vertex (0.5, 0.5, 0.5); image Y = (1-v)*height.
-    const auto pixel = map->getPixel(28, 3);
-    const float nx = pixel.r * 2.f - 1.f;
-    const float ny = pixel.g * 2.f - 1.f;
-    const float nz = pixel.b * 2.f - 1.f;
-    const float len = length3(nx, ny, nz);
+    const auto  pixel = map->getPixel(28, 3);
+    const float nx    = pixel.r * 2.f - 1.f;
+    const float ny    = pixel.g * 2.f - 1.f;
+    const float nz    = pixel.b * 2.f - 1.f;
+    const float len   = length3(nx, ny, nz);
     REQUIRE(len > 0.5f);
     CHECK(nx > 0.2f);
     CHECK(ny > 0.2f);

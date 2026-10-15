@@ -49,7 +49,7 @@ V2 采用以下增量升级：
 | `IEditorInspector` 即时修改引用值 | 增加 Property schema/read/write command | 简单 Tool setting 仍可用旧接口 |
 | `IEditorHost` 传递 JSON 字符串 | 新增类型化 `IEditingHost` | DevTools JSON host 成为 presenter adapter |
 
-不建议一次性重写现有模块。每一阶段必须保持 `test/integration/gameplay-composition/editor.cpp` 和现有 Squirrel API 通过。
+不建议一次性重写现有模块。每一阶段必须保持 `test/integration/gameplay-composition/gameplay_composition_graphics_editor_common_result_header_tests.cpp` 和现有 Squirrel API 通过。
 
 ## 3. 模块与目录
 

@@ -55,6 +55,21 @@ class ModuleCoverageTests(unittest.TestCase):
         data["sources"]["integration/save-restore/journey.cpp"]["task"] = "different"
         self.assertTrue(coverage.audit(data, inventory, modules)[1])
 
+    def test_small_unit_module_cannot_regress_to_fragments(self):
+        data, inventory, modules = self.fixture()
+        source = "unit/rules/fragment.cpp"
+        data["sources"][source] = {"role": "tests", "module": "rules", "cases": {"local-logic": ["rules.other"]}}
+        inventory[source] = {"text": "TEST_CASE(\"rules.other\") {}\n"}
+        self.assertTrue(any("consolidate below 5000" in error for error in coverage.audit(data, inventory, modules)[1]))
+
+    def test_merged_task_preserves_each_composition_owner(self):
+        data, inventory, modules = self.fixture()
+        data["sources"]["integration/save-restore/journey.cpp"]["modules"] = ["rules", "rules_editor"]
+        report, errors = coverage.audit(data, inventory, modules)
+        self.assertEqual(errors, [])
+        self.assertEqual(report["modules"]["rules_editor"]["status"], "task-tests-recorded")
+        self.assertEqual(report["modules"]["rules_editor"]["unit_cases"], 0)
+
     def test_undeclared_module_and_flat_tests_are_errors(self):
         data, inventory, modules = self.fixture()
         data["sources"]["unit/rules/rules.cpp"]["module"] = "unknown"

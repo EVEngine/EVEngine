@@ -14,7 +14,7 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/integration/script-api/weapon.cpp", "test/unit/weapon/weapon_unit.cpp",
+        "test/integration/script-api/script_api_graphics_terrain_probe_tests.cpp", "test/unit/weapon/weapon_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [

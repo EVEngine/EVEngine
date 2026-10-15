@@ -1,3 +1,5 @@
+#include "zeroerr/assert.h"
+
 #include <chrono>
 #include <cstdio>
 #include <string>

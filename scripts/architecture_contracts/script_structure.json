@@ -15,8 +15,8 @@
         "docs/dev/ProjectSemanticIndex设计.md"
       ],
       "tests": [
-        "test/unit/common/script_structure_unit.cpp",
-        "test/integration/file-io/mcp_project_index.cpp",
+        "test/unit/common/common_tests.cpp",
+        "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
         "scripts/tests/test_binding_semantics.py"
       ],
       "provides": [],
@@ -37,7 +37,7 @@
       "trim": {
         "claim": "Compiler metadata, no binary-trim claim",
         "absent_profile": "Source structure lives in common; native facts only exist for linked contracts.",
-        "evidence": "test/unit/common/script_structure_unit.cpp"
+        "evidence": "test/unit/common/common_tests.cpp"
       }
     }
   ]

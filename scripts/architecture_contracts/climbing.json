@@ -14,12 +14,12 @@
         "docs/usr/modules/climbing.md"
       ],
       "tests": [
-        "test/integration/physics-simulation/climbing_input.cpp", "test/unit/climbing/climbing_controller_rules.cpp",
-        "test/integration/physics-simulation/climbing.cpp", "test/unit/climbing/climbing_unit.cpp",
-        "test/integration/physics-simulation/climbing_anchor_execution.cpp",
-        "test/integration/physics-simulation/climbing_anchor_graph.cpp", "test/unit/climbing/climbing_controller_rules.cpp",
-        "test/integration/physics-simulation/climbing_events.cpp",
-        "test/integration/physics-simulation/climbing_snapshot.cpp"
+        "test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp", "test/unit/climbing/climbing_tests.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp", "test/unit/climbing/climbing_tests.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp", "test/unit/climbing/climbing_tests.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp",
+        "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp"
       ],
       "systems": [
         "ClimbingInputSystem",

@@ -14,7 +14,7 @@
         "docs/dev/重构代码质量与系统完整性规范.md"
       ],
       "tests": [
-        "test/integration/script-api/economy.cpp", "test/unit/economy/economy_unit.cpp",
+        "test/integration/script-api/script_api_graphics_dap_tests.cpp", "test/unit/economy/economy_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -44,8 +44,8 @@
         "src/modules/economy/Economy.cpp"
       ],
       "tests": [
-        "test/integration/gameplay-composition/card_payment_composition.cpp",
-        "test/integration/card-rts-payment/card_rts_script_composition.cpp"
+        "test/integration/gameplay-composition/gameplay_composition_graphics_buildingfx_tests.cpp",
+        "test/integration/card-rts-payment/card_rts_payment_card_tests.cpp"
       ],
       "provides": [],
       "requires": [],

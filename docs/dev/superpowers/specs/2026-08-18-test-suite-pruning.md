@@ -15,7 +15,7 @@
 
 ## 已处理文件
 
-### test/integration/concurrency/voxel.cpp：134 → 90（-44）
+### test/integration/concurrency/concurrency_graphics_tests.cpp：134 → 90（-44）
 
 | 合并/删除的用例 | 去向 |
 | --- | --- |
@@ -36,7 +36,7 @@
 保留：各类贪心合并形状（L 形/环/棋盘/隧道/台阶等）、cross-chunk/负坐标、visible 范围过滤、
 注册表零纹理等各有独立断言的用例。
 
-### test/integration/gameplay-composition/particles_attach_skin.cpp：11 → 8（-3）
+### test/integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp：11 → 8（-3）
 
 | 合并/删除的用例 | 去向 |
 | --- | --- |
@@ -47,7 +47,7 @@
 保留：`byNameAndOffset`、`emitsAtBone`、`animPoseDynamicEmitAcrossFrames`（无资产路径）、
 `clipSampleMovesEmitter`（真实动画资产路径）、`emptyBoneFilterFallsBack` 等。
 
-### test/integration/gameplay-composition/particles_attach_more.cpp：20 → 20（通读后无重复）
+### test/integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp：20 → 20（通读后无重复）
 
 每个用例覆盖不同行为：发射器寿命、缓冲上限、重绑定骨骼、缩放 0/负、停止/启动保留附着、
 发射区域、随骨旋转的发射速度、径向力随动原点、detach 后骨骼索引、姿态不变不漂移、
@@ -87,4 +87,4 @@ Spine 旋转父级偏移、IK2D 求解追踪、IK3D 偏移投影、按名重附�
 > 备注：远端 main（fbf9db0）的 scene-ecs 合并存在已知编译问题
 > （`SceneLoader.cpp` 引用不存在的 `SceneNode::linkTarget/linkKind`），为让本 PR 可编译，
 > 按仓库 `codex/fix-sceneloader-merge-ci` 分支的修复一并提交了这两处补丁
-> （`src/modules/scene/loader/SceneLoader.cpp` + `test/integration/asset-import/sceneloader.cpp`）。
+> （`src/modules/scene/loader/SceneLoader.cpp` + `test/integration/asset-import/asset_import_graphics_tests.cpp`）。

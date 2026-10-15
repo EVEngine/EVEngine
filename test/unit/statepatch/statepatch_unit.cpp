@@ -1,4 +1,6 @@
 #include "zeroerr/assert.h"
+
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 #include "StatePatchTestSupport.h"
@@ -127,7 +129,7 @@ TEST_CASE("statepatch.snapshot.roundTripsAndRestoreIsTransactional") {
     REQUIRE(restoredResult.ok());
     CHECK_EQ(restored.snapshotJson(), snapshot);
     CHECK_EQ(restored.revision(), uint64_t{1});
-    const std::string before = restored.snapshotJson();
+    const std::string before   = restored.snapshotJson();
     auto              rejected = restored.restoreJson("{\"version\":1}");
     REQUIRE(!rejected.ok());
     REQUIRE(rejected.error() != nullptr);

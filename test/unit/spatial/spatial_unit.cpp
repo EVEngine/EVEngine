@@ -1,4 +1,6 @@
 #include "zeroerr/assert.h"
+
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 #include "spatial/BSPTree2D.h"
@@ -146,13 +148,13 @@ TEST_CASE("spatial.bsp3d.query") {
 }
 
 TEST_CASE("spatial.factories") {
-    auto *mod = Spatial::create();
-    std::unique_ptr<QuadTree> qt(mod->newQuadTree(0, 0, 10, 10));
-    std::unique_ptr<Octree> ot(mod->newOctree(0, 0, 0, 10, 10, 10));
+    auto                          *mod = Spatial::create();
+    std::unique_ptr<QuadTree>      qt(mod->newQuadTree(0, 0, 10, 10));
+    std::unique_ptr<Octree>        ot(mod->newOctree(0, 0, 0, 10, 10, 10));
     std::unique_ptr<SpatialHash2D> h2(mod->newSpatialHash2D(8.f));
     std::unique_ptr<SpatialHash3D> h3(mod->newSpatialHash3D(8.f));
-    std::unique_ptr<BSPTree2D> b2(mod->newBSPTree2D(0, 0, 10, 10));
-    std::unique_ptr<BSPTree3D> b3(mod->newBSPTree3D(0, 0, 0, 10, 10, 10));
+    std::unique_ptr<BSPTree2D>     b2(mod->newBSPTree2D(0, 0, 10, 10));
+    std::unique_ptr<BSPTree3D>     b3(mod->newBSPTree3D(0, 0, 0, 10, 10, 10));
     // zeroerr CHECK() pretty-prints the expression value; unique_ptr is not copyable.
     CHECK(qt.get() != nullptr);
     CHECK(ot.get() != nullptr);

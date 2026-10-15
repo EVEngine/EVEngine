@@ -67,7 +67,7 @@ the existing Model3D GLB playback path is a separate runtime consumer.
 
 ## Verification
 
-`test/integration/asset-pipeline/asset_import_gltf_animation.cpp` covers archive/Cook retention, remapped
+`test/integration/asset-pipeline/asset_pipeline_graphics_asset_image_mips_tests.cpp` covers archive/Cook retention, remapped
 bone and key values, malformed targets, cycles, invalid joints, budgets, unknown
 interpolation, and multiple quantized weight sets. The same tests run through
 `eve_gltf_animation_check` with `EVENGINE_BUILD_PROFILE_CHECKS=ON` in

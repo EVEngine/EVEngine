@@ -1,8 +1,10 @@
-#include "vehicle/Vehicle.h"
+#include "zeroerr/assert.h"
+
 #include <utility>
 #include "ScriptTest.h"
 #include "common/Capability.h"
 #include "common/ECS.h"
+#include "vehicle/Vehicle.h"
 #include "vehicle/VehicleMobility.h"
 #include "vehicle/VehicleOrderQueueAdapter.h"
 #include "weapon/Weapon.h"
@@ -39,7 +41,9 @@ const char* kFpsDefs = R"JSON(
            {"name":"gunner","cameraMode":"third","mountIndex":0}]}]
 )JSON";
 
-[[maybe_unused]] eve::weapon::Weapon* weaponMod() { return eve::ModuleManager::requireInstance<eve::weapon::Weapon>("Weapon"); }
+[[maybe_unused]] eve::weapon::Weapon* weaponMod() {
+    return eve::ModuleManager::requireInstance<eve::weapon::Weapon>("Weapon");
+}
 
 [[maybe_unused]] int countVehicleView() {
     int  n    = 0;

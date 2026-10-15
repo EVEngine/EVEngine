@@ -1,4 +1,6 @@
 #include "zeroerr/assert.h"
+
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 #include "camera/CameraController.h"
@@ -260,7 +262,7 @@ TEST_CASE("camera.impulseExpires") {
 
 TEST_CASE("camera.actionCueRegistrationDrivesRealControllerImpulse") {
     CameraController cc;
-    Camera3D* cam = Camera3D::createCamera();
+    Camera3D*        cam = Camera3D::createCamera();
     cc.setCamera(cam);
     cc.setTarget(0.f, 0.f, 0.f);
     cc.setOffset(0.f, 0.f, 5.f);
@@ -271,14 +273,17 @@ TEST_CASE("camera.actionCueRegistrationDrivesRealControllerImpulse") {
 
     auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
     REQUIRE(registry.ok());
-    eve::action::ActionTimelineEvent event{
-        eve::action::ActionTimelineEventKind::Notify,
-        *eve::LogicalId::parse("camera-track:main"),
-        *eve::LogicalId::parse("camera-cue:impact"),
-        *eve::LogicalId::parse("presentation:camera"),
-        eve::Duration::zero(),
-        {{"cue", "combat:impact"}, {"positionAmplitude", 1.0}, {"rotationAmplitude", 0.0},
-         {"fovAmplitude", 5.0}, {"durationSeconds", 0.2}, {"seed", 9}}};
+    eve::action::ActionTimelineEvent event{eve::action::ActionTimelineEventKind::Notify,
+                                           *eve::LogicalId::parse("camera-track:main"),
+                                           *eve::LogicalId::parse("camera-cue:impact"),
+                                           *eve::LogicalId::parse("presentation:camera"),
+                                           eve::Duration::zero(),
+                                           {{"cue", "combat:impact"},
+                                            {"positionAmplitude", 1.0},
+                                            {"rotationAmplitude", 0.0},
+                                            {"fovAmplitude", 5.0},
+                                            {"durationSeconds", 0.2},
+                                            {"seed", 9}}};
     eve::action::ActionNotifyContext context;
     context.executionId = eve::action::ActionExecutionId{303};
     REQUIRE(registry.value().dispatch(event, context).ok());

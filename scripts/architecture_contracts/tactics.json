@@ -15,9 +15,9 @@
         "docs/dev/战棋系统设计.md"
       ],
       "tests": [
-        "test/unit/tactics/tactics_turn_rules.cpp",
-        "test/unit/tactics/tactics_state_formats.cpp",
-        "test/integration/script-api/tactics_script.cpp"
+        "test/unit/tactics/tactics_tests.cpp",
+        "test/unit/tactics/tactics_tests.cpp",
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp"
       ],
       "symbols": [
         "Membership",
@@ -42,11 +42,11 @@
         "docs/dev/战棋系统设计.md"
       ],
       "tests": [
-        "test/unit/tactics/tactics_board_geometry.cpp",
-        "test/unit/tactics/tactics_turn_rules.cpp",
-        "test/integration/gameplay-composition/tactics_action.cpp",
-        "test/unit/tactics/tactics_objective_unit.cpp",
-        "test/unit/tactics/tactics_state_formats.cpp",
+        "test/unit/tactics/tactics_tests.cpp",
+        "test/unit/tactics/tactics_tests.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_stylize_attack_vfx_layers_tests.cpp",
+        "test/unit/tactics/tactics_tests.cpp",
+        "test/unit/tactics/tactics_tests.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "systems": [
@@ -75,9 +75,9 @@
         "src/modules/tactics/TacticsReplay.cpp"
       ],
       "tests": [
-        "test/unit/tactics/tactics_state_formats.cpp",
+        "test/unit/tactics/tactics_tests.cpp",
         "scripts/tests/test_architecture_contracts.py",
-        "test/integration/script-api/tactics_graph.cpp", "test/unit/tactics/tactics_board_geometry.cpp"
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp", "test/unit/tactics/tactics_tests.cpp"
       ],
       "schema": "SnapshotEnvelope type tactics.battle with LogicalId schema tactics:battle.",
       "version": "Grid boards emit schema 6; ExplicitGraph boards emit schema 7. Revision and SimulationTick remain distinct.",
@@ -98,8 +98,8 @@
         "src/modules/tactics/TacticsPersistence.h"
       ],
       "tests": [
-        "test/integration/save-restore/common_game_save_session.cpp",
-        "test/integration/gameplay-composition/game_save_integration.cpp"
+        "test/integration/save-restore/save_restore_graphics_tests.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_gameplay_action_tests.cpp"
       ],
       "provides": [
         {
@@ -141,8 +141,8 @@
         "src/modules/tactics/TacticsTypes.h"
       ],
       "tests": [
-        "test/integration/script-api/tactics_graph.cpp", "test/unit/tactics/tactics_board_geometry.cpp",
-        "test/integration/script-api/tactics_script.cpp",
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp", "test/unit/tactics/tactics_tests.cpp",
+        "test/integration/script-api/script_api_graphics_scene_tests.cpp",
         "examples/hex-planet/civilization_test.nut"
       ],
       "provides": [

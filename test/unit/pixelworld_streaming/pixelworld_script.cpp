@@ -1,3 +1,5 @@
+#include "zeroerr/assert.h"
+
 #include <algorithm>
 #include <cstdint>
 #include <string_view>

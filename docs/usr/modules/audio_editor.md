@@ -19,7 +19,7 @@
 
 ## 核对证据
 
-实现：[AudioEditorModule.cpp](../../../src/modules/audio/editor/AudioEditorModule.cpp)、[audio_editor.cpp](../../../src/modules/audio/editor/audio_editor.cpp)。流程与边界测试：[editor_audio_source_script.cpp](../../../test/integration/gameplay-composition/editor_audio_source_script.cpp)。
+实现：[AudioEditorModule.cpp](../../../src/modules/audio/editor/AudioEditorModule.cpp)、[audio_editor.cpp](../../../src/modules/audio/editor/audio_editor.cpp)。流程与边界测试：[editor_audio_source_script.cpp](../../../test/integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)。
 先看测试中的 fixture/资源条件，再移植到游戏；没有脚本方法的 C++ 契约不自动可调用。
 
 补充入口见 [绑定参考](audio_editor/api-reference.md)；通用工作区与撤销见 [Editor](editor.md)。

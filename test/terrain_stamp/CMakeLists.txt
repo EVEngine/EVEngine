@@ -33,12 +33,39 @@ add_library(terrain_stamp_core STATIC
     "${EVE_ROOT}/src/modules/procgen/AttributeTable.cpp"
     "${EVE_ROOT}/src/modules/procgen/Params.cpp"
     "${EVE_ROOT}/src/modules/procgen/Semantic.cpp"
+    "${EVE_ROOT}/src/modules/procgen/PcgSpawnProgress.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/PcgBiomeController.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/PcgRuntimeStamper.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/PcgTerrainStreaming.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/PcgTerrainWatcher.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/PcgTreeManager.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainBiomePreset.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainBiomePresetCodec.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainCollisionMask.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainPolygonMask.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainProbePlacement.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainSpawnPlan.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainSpawnPlanCodec.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainSplatmap.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainWorldWorkspace.cpp"
+    "${EVE_ROOT}/src/engine/common/Capability.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainNoiseMask.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainDerivedMap.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainLegacyThermal.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainLegacyHydraulic.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainSurface.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainAsset.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainPipeline.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainMeshStamp.cpp"
+    "${EVE_ROOT}/src/modules/procgen/MeshBuild.cpp"
+    "${EVE_ROOT}/src/engine/common/RuntimeRegistry.cpp"
+    "${EVE_ROOT}/src/engine/common/CapabilityOwned.cpp"
     "${EVE_ROOT}/src/engine/common/Value.cpp"
     "${EVE_ROOT}/src/engine/common/Diagnostic.cpp"
     "${EVE_ROOT}/src/engine/common/Status.cpp"
     "${EVE_ROOT}/src/engine/common/Result.cpp"
     "${EVE_ROOT}/src/engine/common/Json.cpp")
-target_include_directories(terrain_stamp_core PUBLIC "${EVE_ROOT}/src/engine" "${EVE_ROOT}/src/modules")
+target_include_directories(terrain_stamp_core PUBLIC "${EVE_ROOT}/src/engine" "${EVE_ROOT}/src/modules" "${EVE_ROOT}/third-party/glm")
 target_link_libraries(terrain_stamp_core PUBLIC zeroerr)
 
 file(GLOB squirrel_sources "${EVE_ROOT}/third-party/squirrel/squirrel/*.cpp"
@@ -46,8 +73,11 @@ file(GLOB squirrel_sources "${EVE_ROOT}/third-party/squirrel/squirrel/*.cpp"
     "${EVE_ROOT}/third-party/simplesquirrel/source/*.cpp")
 add_library(terrain_stamp_script STATIC ${squirrel_sources}
     "${EVE_ROOT}/src/engine/common/SquirrelBinding.cpp"
-    "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainStampScript.cpp")
-target_include_directories(terrain_stamp_script PUBLIC "${EVE_ROOT}/third-party/squirrel/include"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainStampScript.cpp"
+    "${EVE_ROOT}/src/modules/procgen/heightmap/TerrainStampSettingsScript.cpp"
+)
+target_include_directories(terrain_stamp_script PUBLIC "${EVE_ROOT}/third-party/glm"
+    "${EVE_ROOT}/third-party/squirrel/include"
     "${EVE_ROOT}/third-party/simplesquirrel/include")
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     target_compile_definitions(terrain_stamp_script PUBLIC _SQ64)
@@ -59,8 +89,6 @@ eve_add_test_executable(terrain_stamp_tests "${EVE_ROOT}/test/profile/gltf_anima
     "${EVE_ROOT}/src/modules/graphics/GrassBillboards.cpp"
     "${EVE_ROOT}/src/modules/graphics/VegetationWind.cpp"
     "${EVE_ROOT}/src/modules/graphics/GrassWind.cpp"
-    "${EVE_ROOT}/src/modules/graphics/TreeWind.cpp"
-    "${EVE_ROOT}/src/modules/graphics/GrassWindBindings.cpp"
     "${EVE_ROOT}/src/modules/graphics/GrassParameters.cpp"
     "${EVE_ROOT}/src/modules/graphics/Shader.cpp"
     "${EVE_ROOT}/src/engine/common/Exception.cpp"
@@ -71,16 +99,15 @@ target_link_libraries(terrain_stamp_tests PRIVATE terrain_stamp_script)
 target_include_directories(terrain_stamp_tests PRIVATE "${EVE_ROOT}/third-party/glm")
 if(MSVC)
     foreach(target terrain_stamp_core terrain_stamp_script terrain_stamp_tests)
-        target_compile_options(${target} PRIVATE /utf-8 /EHsc /bigobj)
+        target_compile_options(${target} PRIVATE /utf-8 /EHsc /bigobj /Gy)
     endforeach()
 endif()
 enable_testing()
 set(_stamp_sources terrain_stamp.cpp terrain_stamp_script.cpp terrain_mask.cpp terrain_effect.cpp terrain_erosion.cpp terrain_water.cpp terrain_sediment.cpp terrain_generation_session.cpp terrain_detail.cpp terrain_tree.cpp terrain_multitile.cpp grass_billboard.cpp grass_wind.cpp tree_wind.cpp)
 eve_resolve_test_sources(_stamp_sources ${_stamp_sources})
 foreach(source IN LISTS _stamp_sources)
-    file(STRINGS "${source}" cases REGEX "^TEST_CASE\\(\"")
-    foreach(line IN LISTS cases)
-        string(REGEX REPLACE "TEST_CASE\\(\"([^\"]+)\".*" "\\1" name "${line}")
+    eve_test_source_case_names("${source}" cases terrain_stamp_tests)
+    foreach(name IN LISTS cases)
         string(REPLACE "." "\\." pattern "${name}")
         add_test(NAME "${name}" COMMAND terrain_stamp_tests "--testcase=^${pattern}$")
         # A stale executable with no matching case otherwise exits successfully in zeroerr.

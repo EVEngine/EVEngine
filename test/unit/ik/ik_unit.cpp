@@ -1,4 +1,6 @@
 #include "zeroerr/assert.h"
+
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 #include "ik/IK.h"
@@ -45,9 +47,7 @@ using eve::graphics::Color;
 using namespace eve::ik;
 using namespace eve::graphics;
 
-[[maybe_unused]] static bool near(float a, float b, float eps = 1e-3f) {
-    return std::fabs(a - b) <= eps;
-}
+[[maybe_unused]] static bool near(float a, float b, float eps = 1e-3f) { return std::fabs(a - b) <= eps; }
 
 TEST_CASE("ik.module.name") {
     auto *mod = IK::create();
@@ -75,8 +75,8 @@ TEST_CASE("ik.skeleton2d.topology") {
 
 TEST_CASE("ik.skeleton2d.forwardKinematics") {
     std::unique_ptr<Skeleton2D> sk(new Skeleton2D());
-    int b1 = sk->createBone(0, 1.f);
-    int b2 = sk->createBone(b1, 1.f);
+    int                         b1 = sk->createBone(0, 1.f);
+    int                         b2 = sk->createBone(b1, 1.f);
 
     sk->setPosition(0, 0.f, 0.f);
     sk->setRotation(0, 0.f);
@@ -92,8 +92,8 @@ TEST_CASE("ik.skeleton2d.forwardKinematics") {
 
 TEST_CASE("ik.solver2d.reachesTarget") {
     std::unique_ptr<Skeleton2D> sk(new Skeleton2D());
-    int b1 = sk->createBone(0, 1.f);
-    int b2 = sk->createBone(b1, 1.f);
+    int                         b1 = sk->createBone(0, 1.f);
+    int                         b2 = sk->createBone(b1, 1.f);
     sk->initStraightPose(0.f, 0.f);
 
     std::unique_ptr<Solver2D> solver(new Solver2D());
@@ -108,8 +108,8 @@ TEST_CASE("ik.solver2d.reachesTarget") {
 
 TEST_CASE("ik.solver2d.constraints") {
     std::unique_ptr<Skeleton2D> sk(new Skeleton2D());
-    int b1 = sk->createBone(0, 1.f);
-    int b2 = sk->createBone(b1, 1.f);
+    int                         b1 = sk->createBone(0, 1.f);
+    int                         b2 = sk->createBone(b1, 1.f);
     sk->initStraightPose(0.f, 0.f);
     sk->setConstraints(b1, -0.2f, 0.2f);
     CHECK(sk->hasConstraints(b1));
@@ -126,8 +126,8 @@ TEST_CASE("ik.solver2d.constraints") {
 
 TEST_CASE("ik.skeleton3d.straightPoseAndSolve") {
     std::unique_ptr<Skeleton3D> sk(new Skeleton3D());
-    int b1 = sk->createBone(0, 1.f);
-    int b2 = sk->createBone(b1, 1.f);
+    int                         b1 = sk->createBone(0, 1.f);
+    int                         b2 = sk->createBone(b1, 1.f);
     sk->initStraightPose(0.f, 0.f, 0.f);
     CHECK(near(sk->getX(b2), 2.f));
     CHECK(near(sk->getY(b2), 0.f));
@@ -143,9 +143,9 @@ TEST_CASE("ik.skeleton3d.straightPoseAndSolve") {
 
 TEST_CASE("ik.solver2d.solveChain") {
     std::unique_ptr<Skeleton2D> sk(new Skeleton2D());
-    int b1 = sk->createBone(0, 1.f);
-    int b2 = sk->createBone(b1, 1.f);
-    int b3 = sk->createBone(0, 1.f);  // side branch under the skeleton root
+    int                         b1 = sk->createBone(0, 1.f);
+    int                         b2 = sk->createBone(b1, 1.f);
+    int                         b3 = sk->createBone(0, 1.f);  // side branch under the skeleton root
     // createBone renumbers the skeleton (BFS order), so re-query ids afterwards.
     b1 = sk->getChild(0, 0);
     b3 = sk->getChild(0, 1);
@@ -174,12 +174,12 @@ TEST_CASE("ik.solver2d.solveChain") {
 
 TEST_CASE("ik.solver2d.solveChain.validation") {
     std::unique_ptr<Skeleton2D> sk(new Skeleton2D());
-    int b1 = sk->createBone(0, 1.f);
-    int b2 = sk->createBone(b1, 1.f);
-    int b3 = sk->createBone(0, 1.f);
-    b1 = sk->getChild(0, 0);
-    b3 = sk->getChild(0, 1);
-    b2 = sk->getChild(b1, 0);
+    int                         b1 = sk->createBone(0, 1.f);
+    int                         b2 = sk->createBone(b1, 1.f);
+    int                         b3 = sk->createBone(0, 1.f);
+    b1                             = sk->getChild(0, 0);
+    b3                             = sk->getChild(0, 1);
+    b2                             = sk->getChild(b1, 0);
     sk->initStraightPose(0.f, 0.f);
 
     std::unique_ptr<Solver2D> solver(new Solver2D());
@@ -194,8 +194,8 @@ TEST_CASE("ik.solver2d.solveChain.validation") {
 
 TEST_CASE("ik.solver2d.influence") {
     std::unique_ptr<Skeleton2D> sk(new Skeleton2D());
-    int b1 = sk->createBone(0, 1.f);
-    int b2 = sk->createBone(b1, 1.f);
+    int                         b1 = sk->createBone(0, 1.f);
+    int                         b2 = sk->createBone(b1, 1.f);
     sk->initStraightPose(0.f, 0.f);
 
     std::unique_ptr<Solver2D> solver(new Solver2D());
@@ -217,12 +217,12 @@ TEST_CASE("ik.solver2d.influence") {
 
 TEST_CASE("ik.solver3d.solveChain.pinsChainRoot") {
     std::unique_ptr<Skeleton3D> sk(new Skeleton3D());
-    int b1 = sk->createBone(0, 1.f);
-    int b2 = sk->createBone(b1, 1.f);
-    int b3 = sk->createBone(0, 1.f);
-    b1 = sk->getChild(0, 0);
-    b3 = sk->getChild(0, 1);
-    b2 = sk->getChild(b1, 0);
+    int                         b1 = sk->createBone(0, 1.f);
+    int                         b2 = sk->createBone(b1, 1.f);
+    int                         b3 = sk->createBone(0, 1.f);
+    b1                             = sk->getChild(0, 0);
+    b3                             = sk->getChild(0, 1);
+    b2                             = sk->getChild(b1, 0);
     sk->initStraightPose(0.f, 0.f, 0.f);
 
     std::unique_ptr<Solver3D> solver(new Solver3D());
@@ -242,8 +242,8 @@ TEST_CASE("ik.solver3d.solveChain.pinsChainRoot") {
 
 TEST_CASE("ik.solver3d.pole") {
     std::unique_ptr<Skeleton3D> sk(new Skeleton3D());
-    int b1 = sk->createBone(0, 1.f);
-    int b2 = sk->createBone(b1, 1.f);
+    int                         b1 = sk->createBone(0, 1.f);
+    int                         b2 = sk->createBone(b1, 1.f);
     sk->initStraightPose(0.f, 0.f, 0.f);
 
     std::unique_ptr<Solver3D> solver(new Solver3D());
@@ -272,8 +272,8 @@ TEST_CASE("ik.solver3d.pole") {
 
 TEST_CASE("ik.solver3d.tipRotation") {
     std::unique_ptr<Skeleton3D> sk(new Skeleton3D());
-    int b1 = sk->createBone(0, 1.f);
-    int b2 = sk->createBone(b1, 1.f);
+    int                         b1 = sk->createBone(0, 1.f);
+    int                         b2 = sk->createBone(b1, 1.f);
     sk->initStraightPose(0.f, 0.f, 0.f);
 
     std::unique_ptr<Solver3D> solver(new Solver3D());
@@ -296,8 +296,8 @@ TEST_CASE("ik.solver3d.tipRotation") {
 
 TEST_CASE("ik.solver2d.stepChain") {
     std::unique_ptr<Skeleton2D> sk(new Skeleton2D());
-    int b1 = sk->createBone(0, 1.f);
-    int b2 = sk->createBone(b1, 1.f);
+    int                         b1 = sk->createBone(0, 1.f);
+    int                         b2 = sk->createBone(b1, 1.f);
     sk->initStraightPose(0.f, 0.f);
 
     std::unique_ptr<Solver2D> solver(new Solver2D());
@@ -308,16 +308,16 @@ TEST_CASE("ik.solver2d.stepChain") {
 }
 
 TEST_CASE("ik.factory") {
-    auto *mod = IK::create();
+    auto                       *mod = IK::create();
     std::unique_ptr<Skeleton2D> sk(mod->newSkeleton2D());
-    std::unique_ptr<Solver2D> solver(mod->newSolver2D());
+    std::unique_ptr<Solver2D>   solver(mod->newSolver2D());
     CHECK_EQ(sk->getBoneCount(), 1);
     CHECK_EQ(solver->getMaxIterations(), 16);
 }
 
 TEST_CASE("ik.invalidBoneThrows") {
     std::unique_ptr<Skeleton2D> sk(new Skeleton2D());
-    bool threw = false;
+    bool                        threw = false;
     try {
         sk->getX(99);
     } catch (const eve::Exception &) {
@@ -327,8 +327,8 @@ TEST_CASE("ik.invalidBoneThrows") {
 }
 
 [[maybe_unused]] static void drawSeg(Graphics *gfx, float x0, float y0, float x1, float y1, const Color &c) {
-    const float dx = x1 - x0;
-    const float dy = y1 - y0;
+    const float dx  = x1 - x0;
+    const float dy  = y1 - y0;
     const float len = std::sqrt(dx * dx + dy * dy);
     if (len < 0.5f) return;
     const float steps = std::max(1.f, len / 2.5f);

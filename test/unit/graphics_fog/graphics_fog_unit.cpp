@@ -1,3 +1,5 @@
+#include "zeroerr/assert.h"
+
 #include <cmath>
 #include <vector>
 #include "GraphicsParitySupport.h"

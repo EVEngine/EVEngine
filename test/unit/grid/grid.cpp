@@ -1,4 +1,6 @@
 #include "zeroerr/assert.h"
+
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 #include "grid/GridConfig.h"
@@ -31,8 +33,8 @@ void expectCellWorld(const GridConfig &cfg, int cx, int cy, float ex, float ey) 
 
 TEST_CASE("grid.rectangle.roundtrip") {
     GridConfig cfg;
-    cfg.cellW = 32.f;
-    cfg.cellH = 16.f;
+    cfg.cellW   = 32.f;
+    cfg.cellH   = 16.f;
     cfg.originX = 10.f;
     cfg.originY = 20.f;
 
@@ -46,9 +48,9 @@ TEST_CASE("grid.rectangle.roundtrip") {
 
 TEST_CASE("grid.isometric.roundtrip") {
     GridConfig cfg;
-    cfg.layout = GridLayout::Isometric;
-    cfg.cellW = 64.f;
-    cfg.cellH = 32.f;
+    cfg.layout  = GridLayout::Isometric;
+    cfg.cellW   = 64.f;
+    cfg.cellH   = 32.f;
     cfg.originX = 0.f;
     cfg.originY = 0.f;
 
@@ -60,10 +62,10 @@ TEST_CASE("grid.isometric.roundtrip") {
 
 TEST_CASE("grid.staggered.cellToWorld") {
     GridConfig cfg;
-    cfg.layout = GridLayout::Staggered;
-    cfg.cellW = 32.f;
-    cfg.cellH = 32.f;
-    cfg.staggerAxis = StaggerAxis::Y;
+    cfg.layout       = GridLayout::Staggered;
+    cfg.cellW        = 32.f;
+    cfg.cellH        = 32.f;
+    cfg.staggerAxis  = StaggerAxis::Y;
     cfg.staggerIndex = StaggerIndex::Odd;
 
     float wx = 0.f, wy = 0.f;
@@ -88,12 +90,12 @@ TEST_CASE("grid.staggered.cellToWorld") {
 
 TEST_CASE("grid.hex.cellToWorldDepth") {
     GridConfig cfg;
-    cfg.layout = GridLayout::Hexagon;
-    cfg.cellW = 32.f;
-    cfg.cellH = 32.f;
+    cfg.layout        = GridLayout::Hexagon;
+    cfg.cellW         = 32.f;
+    cfg.cellH         = 32.f;
     cfg.hexSideLength = 14.f;
-    cfg.staggerAxis = StaggerAxis::Y;
-    cfg.staggerIndex = StaggerIndex::Odd;
+    cfg.staggerAxis   = StaggerAxis::Y;
+    cfg.staggerIndex  = StaggerIndex::Odd;
 
     float wx = 0.f, wy = 0.f;
     cellToWorld(cfg, 0, 0, wx, wy);
@@ -106,24 +108,18 @@ TEST_CASE("grid.hex.cellToWorldDepth") {
 }
 
 TEST_CASE("grid.footprint.cardinalRotate") {
-    std::vector<uint8_t> mask;  // 实心 2x1
+    std::vector<uint8_t>             mask;  // 实心 2x1
     std::vector<std::pair<int, int>> cells;
-    foreachRotatedFootprint(2, 1, mask, 1, false, [&](int lx, int ly) {
-        cells.emplace_back(lx, ly);
-    });
+    foreachRotatedFootprint(2, 1, mask, 1, false, [&](int lx, int ly) { cells.emplace_back(lx, ly); });
     // 90° 后变为 1x2：{(0,0),(0,1)}
     REQUIRE_EQ(cells.size(), size_t(2));
-    const bool has00 = (cells[0].first == 0 && cells[0].second == 0) ||
-                       (cells[1].first == 0 && cells[1].second == 0);
-    const bool has01 = (cells[0].first == 0 && cells[0].second == 1) ||
-                       (cells[1].first == 0 && cells[1].second == 1);
+    const bool has00 = (cells[0].first == 0 && cells[0].second == 0) || (cells[1].first == 0 && cells[1].second == 0);
+    const bool has01 = (cells[0].first == 0 && cells[0].second == 1) || (cells[1].first == 0 && cells[1].second == 1);
     REQUIRE(has00);
     REQUIRE(has01);
 
     cells.clear();
-    foreachRotatedFootprint(2, 1, mask, 4, false, [&](int lx, int ly) {
-        cells.emplace_back(lx, ly);
-    });
+    foreachRotatedFootprint(2, 1, mask, 4, false, [&](int lx, int ly) { cells.emplace_back(lx, ly); });
     // 360° = 恒等
     REQUIRE_EQ(cells.size(), size_t(2));
     REQUIRE_EQ(cells[0].first, 0);
@@ -133,18 +129,14 @@ TEST_CASE("grid.footprint.cardinalRotate") {
 }
 
 TEST_CASE("grid.footprint.hexRotate") {
-    std::vector<uint8_t> mask;  // 实心 2x1
+    std::vector<uint8_t>             mask;  // 实心 2x1
     std::vector<std::pair<int, int>> cells;
-    foreachRotatedFootprint(2, 1, mask, 1, true, [&](int lx, int ly) {
-        cells.emplace_back(lx, ly);
-    });
+    foreachRotatedFootprint(2, 1, mask, 1, true, [&](int lx, int ly) { cells.emplace_back(lx, ly); });
     // 60° 旋转 2x1 在 offset 空间产生 2 个格（不再是 1x2 轴对齐）。
     REQUIRE_EQ(cells.size(), size_t(2));
 
     cells.clear();
-    foreachRotatedFootprint(2, 1, mask, 6, true, [&](int lx, int ly) {
-        cells.emplace_back(lx, ly);
-    });
+    foreachRotatedFootprint(2, 1, mask, 6, true, [&](int lx, int ly) { cells.emplace_back(lx, ly); });
     REQUIRE_EQ(cells.size(), size_t(2));
     REQUIRE_EQ(cells[0].first, 0);
     REQUIRE_EQ(cells[0].second, 0);
@@ -158,8 +150,7 @@ TEST_CASE("grid.footprint.hexRotate") {
 }
 
 TEST_CASE("grid.layoutNames") {
-    const bool nameOk =
-        std::strcmp(GridConfig::layoutName(GridLayout::Isometric), "isometric") == 0;
+    const bool nameOk = std::strcmp(GridConfig::layoutName(GridLayout::Isometric), "isometric") == 0;
     REQUIRE(nameOk);
     REQUIRE_EQ(int(GridConfig::layoutFromName("hex")), int(GridLayout::Hexagon));
     REQUIRE_EQ(int(GridConfig::layoutFromName("bogus")), int(GridLayout::Rectangle));

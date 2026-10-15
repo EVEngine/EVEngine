@@ -45,8 +45,8 @@ GameplayTagRegistry 管理；匹配 descendant 需要明确选项，不能把任
 tags.registerTag。分别参阅 Action/Combat 的 tag 数据接口与它们的实际脚本契约。
 
 证据：[Tags.cpp](../../../src/modules/tags/Tags.cpp)、
-[tags.cpp](../../../test/integration/script-api/tags.cpp)、
-[GameplayTag 测试](../../../test/unit/tags/gameplay_tags.cpp)。
+[tags.cpp](../../../test/integration/script-api/script_api_graphics_scene_tests.cpp)、
+[GameplayTag 测试](../../../test/unit/tags/tags_tests.cpp)。
 
 ## 补充绑定参考
 

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
@@ -15,7 +17,6 @@
         name() : ScriptTest(content) {} \
     }
 
-using namespace eve;
 
 class ScriptTest {
 public:
@@ -27,10 +28,8 @@ public:
   }
 
 protected:
-  static void expose(ssq::VM& vm) {
-    ModuleManager::expose(vm);
-  }
+    static void expose(ssq::VM& vm) { eve::ModuleManager::expose(vm); }
 
-  const char* script;
-  ssq::VM vm;
+    const char* script;
+    ssq::VM     vm;
 };

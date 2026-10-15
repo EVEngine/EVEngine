@@ -1,3 +1,5 @@
+#include "zeroerr/assert.h"
+
 #include <SDL2/SDL.h>
 #include <cmath>
 #include <memory>
@@ -249,8 +251,9 @@ TEST_CASE("softbody.cloth3d.foldAngleLimited") {
 
 namespace {
 
-[[maybe_unused]] float testClosestPointTriangle(float ax, float ay, float az, float bx, float by, float bz, float cx, float cy, float cz,
-                               float px, float py, float pz, float &qx, float &qy, float &qz) {
+[[maybe_unused]] float testClosestPointTriangle(float ax, float ay, float az, float bx, float by, float bz, float cx,
+                                                float cy, float cz, float px, float py, float pz, float &qx, float &qy,
+                                                float &qz) {
     // Mirrors Cloth3D's Ericson closest-point-on-triangle (test-only).
     const float abx = bx - ax, aby = by - ay, abz = bz - az;
     const float acx = cx - ax, acy = cy - ay, acz = cz - az;
@@ -408,8 +411,8 @@ namespace {
     return win->setWindowSettings(s);
 }
 
-[[maybe_unused]] std::unique_ptr<ClothGPU> tryMakeCloth(eve::gpgpu::Gpgpu *gpgpu, int cols, int rows, float spacing, float ox,
-                                       float oy) {
+[[maybe_unused]] std::unique_ptr<ClothGPU> tryMakeCloth(eve::gpgpu::Gpgpu *gpgpu, int cols, int rows, float spacing,
+                                                        float ox, float oy) {
     try {
         return std::unique_ptr<ClothGPU>(new ClothGPU(gpgpu, cols, rows, spacing, ox, oy));
     } catch (...) {

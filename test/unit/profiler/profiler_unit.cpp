@@ -1,7 +1,9 @@
-#include "profiler/Profiler.h"
+#include "zeroerr/assert.h"
+
 #include <string>
 #include "ScriptTest.h"
 #include "common/Profile.h"
+#include "profiler/Profiler.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 

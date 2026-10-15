@@ -7,23 +7,35 @@ provenance. `MODULE_TEST_COVERAGE.md` is generated evidence for every module.
 ## Completed source migration
 
 The 773-source baseline had 6411 literal case identities and 150 mixed sources.
-All 747 desktop case-owning sources moved into the canonical layout. The 150
-mixed files were split without changing literal names or assertions. Twenty
-cohesive responsibility files combine 52 prior source parts (32 fewer compilation
-units than an unmerged split). No numeric chunk files or forwarding `.cpp` files
-remain. Shared fixtures, standalone entrypoints, compile contracts and the fuzz
-entrypoint keep their dedicated roles.
+All desktop case-owning sources use the canonical layout. The 150 mixed files
+were split without changing literal names or assertions, then consolidated by
+module and integration task. The current inventory has **165** `.cpp` sources:
+**95** organized unit sources, **44** task integration sources and **26** dedicated
+helper/runner/probe/contract/fuzz sources. That is 728 fewer files than the first
+893-source reorganization, and 608 fewer than the original 773-source baseline.
 
-The current inventory has 893 `.cpp` sources: 328 organized unit sources,
-539 task integration sources and 26 dedicated helper/runner/probe/contract/fuzz
-sources. There are 6413 literal identities: 3290 unit and 3123 integration,
+Of the 87 modules owning local cases, 84 have exactly one unit file. Fluids,
+graphics and procgen exceed 5000 total lines and have named responsibility
+files; no unit file exceeds 5000 lines. The module audit rejects small-module
+fragmentation and oversized unit files. Integration files consolidate the 18 task
+goals; large tasks retain bounded responsibility files. Private helper namespaces
+preserve helper identities, and embedded shader data keeps its original scope.
+
+There are 6413 literal identities: 3290 unit and 3123 integration,
 plus six bounded generator-prefix policies. The two added cases exercise real
 heightmap/stylize preview admission without a provider and verify structured
 failure plus unchanged input state. No desktop source mixes both levels.
+The synthetic image-audit unit now contains only CPU helpers and assertions;
+unused GPU scene scaffolding and report/overlay file writes have been removed.
 
 CMake resolves legacy profile/standalone source references to actual canonical
 files. Canonical paths are never expanded again; a real CMake regression covers
-that distinction and duplicate elimination. Source property flags follow both
+that distinction, duplicate elimination, and origin selection after consolidation.
+The catalogue's provenance generates per-target compile-selection headers, so a trimmed
+profile or standalone project enables only its requested original responsibilities;
+merging does not silently re-enable filtered tests. Integration composition owners
+remain explicitly recorded even when their cases share one task file. Source
+property flags follow both
 halves of mixed sources. Source snapshots and Make stale checks discover the
 unit/integration trees. Binding/architecture proof paths and manuals follow the
 migration. Test-root asset addressing is independent of source nesting.
@@ -42,6 +54,14 @@ facades with no independent runtime rules. The two uncovered preview adapters
 now have failure-admission cases. API/header presence does not establish branch
 coverage, and these added negative cases do not prove successful GPU preview
 behavior. No empty assertion is used to make a module count appear covered.
+
+## Rendering work
+
+Texture, shadow-scene, rotating-environment and 2D lighting human-preview holds
+now require `EVENGINE_TEST_MANUAL_PREVIEW=1`. Automated pixel assertions, required
+warm-up frames and readbacks remain in place. The window script no longer runs an
+unrelated ten-million-iteration busy loop. CPU-only composition and binding tests
+stay separate from rendering tests in the case catalogue.
 
 ## Unit runtime boundary
 
@@ -85,11 +105,36 @@ and generated its new source index. Focused native gameplay validation passed
 the no-render runtime contract. Both new preview-admission integrations passed.
 The negative rendering-fixture probe now exits 1 as required.
 
-Full SHARED and OBJECT builds both passed, including discovery and compact impact
-index generation for all normal test targets. `make check` passed with 305 Python
-script tests. Twenty-two focused OBJECT units and ten reorganized standalone
+Full SHARED and OBJECT builds both passed, including identical discovery of
+6425 registrations and compact impact index generation for all normal test
+targets. `make check` passed with 311 Python script tests. Twenty-two focused OBJECT units and ten reorganized standalone
 tilemap units also passed. The negative rendering-fixture admission probe returned
 exit code 1 and logged the unit-lane rejection before device startup.
+
+Consolidation validation additionally passed 477 native unit cases (gameplay plus
+one active case from each unit source), 24 focused OBJECT units, and the standalone
+terrain project's 148 cases (112 unit, 36 CPU-only integration). Terrain surface,
+streaming and terrace CPU implementations move token-equivalently out of the grass
+adapter into `TerrainSurface.cpp`, preserving every API and algorithm. This lets
+the standalone project link its real logic and bindings without a renderer.
+The project now includes the actual CPU dependencies of its current binding table.
+The existing procgen core compile boundary also accepts the new CPU source;
+its implementation target carries its own link-group export identity in SHARED.
+Resource-validation and SCAD-compiler source flags resolve through migration
+provenance, restoring eight previously omitted registrations. SCAD fixture build
+dependencies follow the executable that actually owns the relocated source.
+Nineteen restored/composition contracts and all seven provider-conditioned
+resource cases passed. The case-source reverse selector
+maps a changed consolidated card unit file to exactly its 22 active unit cases.
+Two existing fixture errors exposed by that lane were corrected: the tree-budget
+scenario no longer mutates the subsequent removal scenario's east tile, and the
+water-flow assertion accounts for the final pooled deposit.
+
+Thirteen of fourteen targeted pixel integrations passed with automatic human
+preview holds removed. `Shadow3D.receiveShadowFalseIgnoresMap` fails the same
+`maxLumaDelta == 0` assertion using the retained pre-consolidation Shadow3D object
+linked to the identical engine DLLs. Its assertion and registration remain active;
+this existing rendering issue is not skipped or weakened by this PR.
 No local full graphics/window suite is run; the repository directs that lane to
 CI. Asset downloads are disabled for the link checks, and third-party binaries
 are read-only at the matching pinned aggregate revision.

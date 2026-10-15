@@ -18,7 +18,7 @@ Animation 的 owner 发布。不要把模型文件、临时 Tensor 和角色姿�
 
 ## 核对证据
 
-实现：[AnimationTensor.cpp](../../../src/modules/animation/tensor/AnimationTensor.cpp)。流程与边界测试：[animation_smr_neural_retarget.cpp](../../../test/integration/gameplay-composition/animation_smr_neural_retarget.cpp)。
+实现：[AnimationTensor.cpp](../../../src/modules/animation/tensor/AnimationTensor.cpp)。流程与边界测试：[animation_smr_neural_retarget.cpp](../../../test/integration/gameplay-composition/gameplay_composition_graphics_animation_inertializer_tests.cpp)。
 先看测试中的 fixture/资源条件，再移植到游戏；没有脚本方法的 C++ 契约不自动可调用。
 
 当前脚本仅有 getName；角色姿态与重定向入口见 [Animation](animation.md)。

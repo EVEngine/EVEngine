@@ -1,4 +1,5 @@
-#include "economy/Economy.h"
+#include "zeroerr/assert.h"
+
 #include <cstdint>
 #include <cstdio>
 #include <initializer_list>
@@ -13,6 +14,7 @@
 #include "common/IEconomy.h"
 #include "common/Module.h"
 #include "economy/Collector.h"
+#include "economy/Economy.h"
 #include "economy/EconomySystem.h"
 #include "economy/GatherNode.h"
 #include "economy/ResourceType.h"
@@ -472,7 +474,7 @@ struct EconomyFixture {
 };
 
 [[maybe_unused]] eve::GameplayCommand command(const EconomyFixture& fixture, const char* id, const char* actionText,
-                             std::uint64_t expectedRevision, eve::Value parameters) {
+                                              std::uint64_t expectedRevision, eve::Value parameters) {
     eve::GameplayCommand result;
     result.id               = id;
     result.action           = action(actionText);
@@ -484,7 +486,7 @@ struct EconomyFixture {
 }
 
 [[maybe_unused]] eve::GameplayCommand move(const EconomyFixture& fixture, const char* id, const char* actionText,
-                          std::uint64_t expectedRevision, const char* type, std::int64_t amount) {
+                                           std::uint64_t expectedRevision, const char* type, std::int64_t amount) {
     return command(fixture, id, actionText, expectedRevision,
                    object({{"type", eve::Value(type)}, {"amount", eve::Value(amount)}}));
 }
@@ -497,7 +499,7 @@ struct EconomyFixture {
 }
 
 [[maybe_unused]] std::string jsonCommand(const char* id, const char* actionText, std::uint64_t expectedRevision,
-                        const char* parameters) {
+                                         const char* parameters) {
     return std::string(",\"command\":{\"id\":\"") + id + "\",\"action\":\"" + actionText + "\",\"subject\":\"" +
            kOwnerId + "\",\"observedTick\":0,\"expectedRevision\":" + std::to_string(expectedRevision) +
            ",\"parameters\":" + parameters + "}";

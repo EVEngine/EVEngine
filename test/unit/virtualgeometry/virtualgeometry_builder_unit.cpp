@@ -1,3 +1,5 @@
+#include "zeroerr/assert.h"
+
 #include <array>
 #include <cmath>
 #include <cstdint>

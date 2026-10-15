@@ -1,3 +1,5 @@
+#include "zeroerr/assert.h"
+
 #include "ScriptTest.h"
 #include "physics/cloth/Cloth3D.h"
 #include "physics/cloth/ClothModel.h"
@@ -192,7 +194,7 @@ TEST_CASE("PhysicsCloth.runtimeTearingChangesAuthoritativeConstraintAndSurfaceTo
     auto model = eve::physics::ClothModel::grid(2, 2, 0.5f, 0.f, 0.f, 0.f);
     REQUIRE(model.hasValue());
     eve::physics::Cloth3D cloth(model.value());
-    const int originalLinks = cloth.getDistanceConstraintCount();
+    const int             originalLinks = cloth.getDistanceConstraintCount();
     CHECK(cloth.getTriangleCount() == 2);
     cloth.tearConstraint(0, 1);
     CHECK(cloth.getTornConstraintCount() == 1);

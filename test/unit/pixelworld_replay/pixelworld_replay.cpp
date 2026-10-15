@@ -1,4 +1,6 @@
 #include "zeroerr/assert.h"
+
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 #include "pixelworld/PixelWorld.h"
@@ -15,15 +17,15 @@ namespace {
 
 eve::SnapshotHashProvider replayHashProvider() {
     return [](std::string_view input) -> eve::Result<eve::ContentId> {
-        std::uint64_t left = 14695981039346656037ULL;
+        std::uint64_t left  = 14695981039346656037ULL;
         std::uint64_t right = 1099511628211ULL;
         for (const unsigned char byte : input) {
-            left = (left ^ byte) * 1099511628211ULL;
+            left  = (left ^ byte) * 1099511628211ULL;
             right = (right ^ (std::uint64_t(byte) + 0x9e3779b97f4a7c15ULL)) * 14029467366897019727ULL;
         }
         eve::ContentId::Bytes bytes{};
         for (int index = 0; index < 8; ++index) {
-            bytes[std::size_t(index)] = std::uint8_t(left >> (56 - index * 8));
+            bytes[std::size_t(index)]     = std::uint8_t(left >> (56 - index * 8));
             bytes[std::size_t(index + 8)] = std::uint8_t(right >> (56 - index * 8));
         }
         return eve::Result<eve::ContentId>::success(eve::ContentId(bytes));
@@ -67,16 +69,16 @@ eve::Value versionOnePayload() {
 }  // namespace
 
 TEST_CASE("pixelworld_replay.command_log_checkpoints_replay_bit_exact") {
-    PixelWorld source(8101);
+    PixelWorld     source(8101);
     PixelReplayLog log;
     for (std::uint64_t tick = 1; tick <= 80; ++tick) {
         if (tick == 1 || tick == 20 || tick == 45) {
             PixelEditCommand command;
             command.sequence = tick == 1 ? 1 : tick == 20 ? 2 : 3;
-            command.kind = PixelEditKind::PaintCircle;
-            command.centerX = int(tick) - 30;
-            command.centerY = 5;
-            command.radius = 8;
+            command.kind     = PixelEditKind::PaintCircle;
+            command.centerX  = int(tick) - 30;
+            command.centerY  = 5;
+            command.radius   = 8;
             command.material = tick == 45 ? MaterialId::Water : MaterialId::Sand;
             log.append({eve::SimulationTick(tick), command}).expect("append replay command");
             source.applyEdit(command).expect("apply source command");
@@ -90,13 +92,13 @@ TEST_CASE("pixelworld_replay.command_log_checkpoints_replay_bit_exact") {
     CHECK_EQ(int(receipt.match), int(PixelReplayMatch::Matched));
     CHECK_EQ(receipt.commandsApplied, std::uint64_t(3));
     const auto expected = source.saveSnapshot().expect("source snapshot");
-    const auto actual = replayed.saveSnapshot().expect("replayed snapshot");
+    const auto actual   = replayed.saveSnapshot().expect("replayed snapshot");
     REQUIRE_EQ(expected.size(), actual.size());
     CHECK(std::equal(expected.begin(), expected.end(), actual.begin()));
 }
 
 TEST_CASE("pixelworld_replay_reports_first_tick_and_chunk_divergence") {
-    PixelWorld source(8102);
+    PixelWorld     source(8102);
     PixelReplayLog log;
     source.paintCircle(0, 0, 5, "stone");  // Deliberately absent from the command log.
     for (std::uint64_t tick = 1; tick <= 10; ++tick) source.advance(eve::SimulationTick(tick)).expect("step");
@@ -107,8 +109,8 @@ TEST_CASE("pixelworld_replay_reports_first_tick_and_chunk_divergence") {
     CHECK_EQ(int(receipt.match), int(PixelReplayMatch::Diverged));
     REQUIRE(receipt.firstDivergence.has_value());
     CHECK_EQ(receipt.firstDivergence->tick.value(), std::uint64_t(10));
-    const bool hasChunkDiagnostic = receipt.firstDivergence->expectedChunk.has_value() ||
-                                    receipt.firstDivergence->actualChunk.has_value();
+    const bool hasChunkDiagnostic =
+        receipt.firstDivergence->expectedChunk.has_value() || receipt.firstDivergence->actualChunk.has_value();
     CHECK(hasChunkDiagnostic);
 }
 
@@ -124,24 +126,24 @@ TEST_CASE("pixelworld_replay_chunk_digest_has_canonical_little_endian_encoding")
 }
 
 TEST_CASE("pixelworld_replay_rejects_sequence_tick_and_nonempty_target_without_log_mutation") {
-    PixelReplayLog log;
+    PixelReplayLog   log;
     PixelEditCommand command;
     command.sequence = 2;
-    auto gap = log.append({eve::SimulationTick(1), command});
+    auto gap         = log.append({eve::SimulationTick(1), command});
     CHECK(!gap.ok());
     CHECK(log.entries().empty());
 
     command.sequence = 1;
     log.append({eve::SimulationTick(2), command}).expect("first entry");
     command.sequence = 2;
-    auto backwards = log.append({eve::SimulationTick(1), command});
+    auto backwards   = log.append({eve::SimulationTick(1), command});
     CHECK(!backwards.ok());
     CHECK_EQ(log.entries().size(), std::size_t(1));
 
     PixelWorld nonempty(8103);
     nonempty.setMaterial(0, 0, "stone");
-    const auto before = nonempty.saveSnapshot().expect("before rejection");
-    auto rejected = log.replay(nonempty, eve::SimulationTick(2));
+    const auto before   = nonempty.saveSnapshot().expect("before rejection");
+    auto       rejected = log.replay(nonempty, eve::SimulationTick(2));
     CHECK(!rejected.ok());
     const auto after = nonempty.saveSnapshot().expect("after rejection");
     REQUIRE_EQ(before.size(), after.size());
@@ -149,15 +151,15 @@ TEST_CASE("pixelworld_replay_rejects_sequence_tick_and_nonempty_target_without_l
 }
 
 TEST_CASE("pixelworld_replay_snapshot_v2_round_trip_preserves_bit_exact_replay") {
-    const auto hash = replayHashProvider();
-    PixelWorld source(8201);
-    PixelReplayLog original;
+    const auto       hash = replayHashProvider();
+    PixelWorld       source(8201);
+    PixelReplayLog   original;
     PixelEditCommand command;
     command.sequence = 1;
-    command.kind = PixelEditKind::PaintCircle;
-    command.centerX = -9;
-    command.centerY = 2;
-    command.radius = 4;
+    command.kind     = PixelEditKind::PaintCircle;
+    command.centerX  = -9;
+    command.centerY  = 2;
+    command.radius   = 4;
     command.material = MaterialId::Water;
     original.append({eve::SimulationTick(1), command}).expect("append");
     source.applyEdit(command).expect("apply");
@@ -168,8 +170,8 @@ TEST_CASE("pixelworld_replay_snapshot_v2_round_trip_preserves_bit_exact_replay")
 
     const auto sealed = original.snapshot(eve::PersistentId::nil(), hash).expect("seal replay");
     CHECK_EQ(sealed.schemaVersion.value(), std::uint64_t(2));
-    const auto json = eve::serializeSnapshotEnvelope(sealed).expect("serialize replay");
-    const auto parsed = eve::parseSnapshotEnvelope(json, hash).expect("parse replay");
+    const auto     json   = eve::serializeSnapshotEnvelope(sealed).expect("serialize replay");
+    const auto     parsed = eve::parseSnapshotEnvelope(json, hash).expect("parse replay");
     PixelReplayLog restored;
     restored.restoreSnapshot(parsed, hash).expect("restore replay");
     CHECK_EQ(restored.entries().size(), original.entries().size());
@@ -182,11 +184,10 @@ TEST_CASE("pixelworld_replay_snapshot_v2_round_trip_preserves_bit_exact_replay")
 }
 
 TEST_CASE("pixelworld_replay_migrates_v1_checkpoint_without_chunk_diagnostics") {
-    const auto hash = replayHashProvider();
-    const auto legacy = eve::makeSnapshotEnvelope(
-                            "pixelworld.replay-log", replaySchema(), eve::SchemaVersion(1),
-                            eve::PersistentId::nil(), eve::Revision(2), eve::SimulationTick(2),
-                            versionOnePayload(), hash)
+    const auto hash   = replayHashProvider();
+    const auto legacy = eve::makeSnapshotEnvelope("pixelworld.replay-log", replaySchema(), eve::SchemaVersion(1),
+                                                  eve::PersistentId::nil(), eve::Revision(2), eve::SimulationTick(2),
+                                                  versionOnePayload(), hash)
                             .expect("seal v1 replay");
     PixelReplayLog restored;
     restored.restoreSnapshot(legacy, hash).expect("restore v1 replay");
@@ -198,31 +199,30 @@ TEST_CASE("pixelworld_replay_migrates_v1_checkpoint_without_chunk_diagnostics") 
 }
 
 TEST_CASE("pixelworld_replay_bad_envelopes_leave_existing_log_unchanged") {
-    const auto hash = replayHashProvider();
-    PixelReplayLog existing;
+    const auto       hash = replayHashProvider();
+    PixelReplayLog   existing;
     PixelEditCommand command;
     command.sequence = 1;
     existing.append({eve::SimulationTick(1), command}).expect("append existing");
     const auto before = existing.snapshot(eve::PersistentId::nil(), hash).expect("before");
 
-    auto badHash = before;
+    auto badHash        = before;
     badHash.contentHash = eve::ContentId::nil();
     CHECK(!existing.restoreSnapshot(badHash, hash).ok());
     CHECK_EQ(existing.entries().size(), std::size_t(1));
 
-    auto unknown = eve::makeSnapshotEnvelope(
-                       "pixelworld.replay-log", replaySchema(), eve::SchemaVersion(3),
-                       eve::PersistentId::nil(), before.revision, before.tick, before.payload, hash)
-                       .expect("seal unknown version");
+    auto unknown =
+        eve::makeSnapshotEnvelope("pixelworld.replay-log", replaySchema(), eve::SchemaVersion(3),
+                                  eve::PersistentId::nil(), before.revision, before.tick, before.payload, hash)
+            .expect("seal unknown version");
     CHECK(!existing.restoreSnapshot(unknown, hash).ok());
     CHECK_EQ(existing.entries().size(), std::size_t(1));
 
     auto malformedPayload = before.payload;
     malformedPayload.getIf<eve::Value::Object>()->emplace("unknown", eve::Value(true));
-    auto malformed = eve::makeSnapshotEnvelope(
-                         "pixelworld.replay-log", replaySchema(), eve::SchemaVersion(2),
-                         eve::PersistentId::nil(), before.revision, before.tick,
-                         std::move(malformedPayload), hash)
+    auto malformed = eve::makeSnapshotEnvelope("pixelworld.replay-log", replaySchema(), eve::SchemaVersion(2),
+                                               eve::PersistentId::nil(), before.revision, before.tick,
+                                               std::move(malformedPayload), hash)
                          .expect("seal malformed payload");
     CHECK(!existing.restoreSnapshot(malformed, hash).ok());
     CHECK_EQ(existing.entries().size(), std::size_t(1));

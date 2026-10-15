@@ -1,3 +1,5 @@
+#include "zeroerr/assert.h"
+
 #include <cmath>
 #include "editor/TransformGizmo.h"
 #include "zeroerr/assert.h"

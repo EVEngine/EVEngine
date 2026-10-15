@@ -61,8 +61,12 @@ def audit(data: dict, inventory: dict, declarations: list) -> tuple[dict, list[s
                 tasks.setdefault(task, {"sources": [], "modules": set(), "cases": 0})
                 tasks[task]["sources"].append(source)
                 tasks[task]["cases"] += sum(len(names) for names in policy["cases"].values())
-                tasks[task]["modules"].add(module)
-                modules[module]["integration_tasks"].setdefault(task, []).append(source)
+                for owner in policy.get("modules", [module]):
+                    if owner not in modules:
+                        errors.append(f"{source}: undeclared composition owner {owner}")
+                        continue
+                    tasks[task]["modules"].add(owner)
+                    modules[owner]["integration_tasks"].setdefault(task, []).append(source)
         elif "/" not in source and policy["role"] == "tests":
             errors.append(f"{source}: case-owning desktop source outside unit/integration layout")
         text = inventory[source]["text"]
@@ -84,6 +88,14 @@ def audit(data: dict, inventory: dict, declarations: list) -> tuple[dict, list[s
                     if policy.get("task") in tasks:
                         tasks[policy["task"]]["modules"].add(declaration.name)
                     break
+    for name, module in modules.items():
+        unit_sources = module["unit_sources"]
+        lines = sum(len(inventory[source]["text"].splitlines()) for source in unit_sources)
+        if len(unit_sources) > 1 and lines <= 5000:
+            errors.append(f"{name}: {len(unit_sources)} unit files contain only {lines} lines; consolidate below 5000 lines")
+        for source in unit_sources:
+            if len(inventory[source]["text"].splitlines()) > 5000:
+                errors.append(f"{source}: unit file exceeds 5000 lines; split along responsibilities")
     for module in modules.values():
         module["status"] = ("local-rules-recorded" if module["unit_cases"] else
                             "task-tests-recorded" if module["integration_tasks"] else

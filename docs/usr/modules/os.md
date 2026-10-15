@@ -42,4 +42,4 @@ os.setClipboardText("EVEngine");
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
 
 **源码：** [`src/modules/os/`](../../../src/modules/os/)
-**相关测试：** [`test/integration/runtime-lifecycle/os.cpp`](../../../test/integration/runtime-lifecycle/os.cpp)
+**相关测试：** [`test/integration/runtime-lifecycle/runtime_lifecycle_graphics_tests.cpp`](../../../test/integration/runtime-lifecycle/runtime_lifecycle_graphics_tests.cpp)

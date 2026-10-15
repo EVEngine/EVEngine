@@ -52,7 +52,7 @@ if (!restored.ok) throw restored.status.summary;
 queryType/Source/Subject/Sequence 会形成查询结果，再用 queryAt 消费，下一次查询可能
 覆盖前一次查询集合。实现及生命周期见
 [GameEvent.cpp](../../../src/modules/game_event/GameEvent.cpp)。
-完整领域组合可参考 [Action 事件适配测试](../../../test/integration/gameplay-composition/action_game_event.cpp)。
+完整领域组合可参考 [Action 事件适配测试](../../../test/integration/gameplay-composition/gameplay_composition_graphics_animation_inertializer_tests.cpp)。
 
 ## 补充绑定参考
 

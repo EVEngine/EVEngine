@@ -15,7 +15,7 @@
         "docs/usr/modules/math.md"
       ],
       "tests": [
-        "test/unit/math/math_interpolation_steering.cpp"
+        "test/unit/math/math_tests.cpp"
       ],
       "thread_affinity": "Pure scalar calculation on any thread; no module registration or RNG access.",
       "provides": [],

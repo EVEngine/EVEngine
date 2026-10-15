@@ -14,8 +14,8 @@
         "docs/usr/modules/asset-unity-import.md"
       ],
       "tests": [
-        "test/integration/asset-pipeline/asset_import_unity_fbx.cpp",
-        "test/integration/asset-pipeline/asset_import_gltf_animation.cpp"
+        "test/integration/asset-pipeline/asset_pipeline_graphics_asset_import_unity_vegetation_material_tests.cpp",
+        "test/integration/asset-pipeline/asset_pipeline_graphics_asset_image_mips_tests.cpp"
       ],
       "provides": [],
       "requires": [],

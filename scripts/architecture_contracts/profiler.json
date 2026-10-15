@@ -14,7 +14,7 @@
         "src/modules/profiler/ProfilerCapabilities.cpp"
       ],
       "tests": [
-        "test/integration/script-api/profiler.cpp", "test/unit/profiler/profiler_unit.cpp",
+        "test/integration/script-api/script_api_graphics_mcp_tests.cpp", "test/unit/profiler/profiler_unit.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [

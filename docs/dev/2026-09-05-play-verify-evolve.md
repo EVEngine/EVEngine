@@ -273,7 +273,7 @@ VibeGame 的污染风险成立：错误经验写进源码会伤害后续项目�
 ### P0 — Play 门面（最小可教路径） — 已落地
 
 - `evengine.play-request` v1：`status` / `clock` / `step(frame)` / `observe(script-root)` / `capture` / `checkpoint` / `batch`
-- MCP `eve_play` + `test/integration/runtime-lifecycle/play_host.cpp`（无 `IRenderCapture` 时 `Unsupported`）
+- MCP `eve_play` + `test/integration/runtime-lifecycle/runtime_lifecycle_graphics_tests.cpp`（无 `IRenderCapture` 时 `Unsupported`）
 - `examples/ai-game/game.agent.json`；`agent_demo.py` 改走 `eve_play`
 - 文档：`Agent游戏开发范式.md` 的 Discover 改为先读契约
 
@@ -313,7 +313,7 @@ VibeGame 的污染风险成立：错误经验写进源码会伤害后续项目�
 
 ## 12. 测试与架构门
 
-- 新协议走 `test/integration/runtime-lifecycle/play_host.cpp`、`test/unit/devtools/play_trace.cpp`（过程隔离），不塞进共享 test main。
+- 新协议走 `test/integration/runtime-lifecycle/runtime_lifecycle_graphics_tests.cpp`、`test/unit/devtools/devtools_tests.cpp`（过程隔离），不塞进共享 test main。
 - 每个 `IGameplayControlProvider` 的现有合同测试保持；Play 只增加「经 Host 调用与直连 JSON 门面等价」一条。
 - `game.agent.json` / play-request / play-trace 列入 schema 与未知字段拒绝测试。
 - 可选图形：无 `IRenderCapture` 的测试必须看到 `Unsupported`，不能 skip 成通过。

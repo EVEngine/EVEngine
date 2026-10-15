@@ -15,7 +15,7 @@
         "docs/usr/GAMEPLAY_PAYMENT_COMPOSITION.md"
       ],
       "tests": [
-        "test/integration/card-rts-payment/card_rts_script_composition.cpp"
+        "test/integration/card-rts-payment/card_rts_payment_card_tests.cpp"
       ],
       "provides": [],
       "requires": [],

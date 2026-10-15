@@ -1,3 +1,5 @@
+#include "zeroerr/assert.h"
+
 #include "CaveFixtures.h"
 
 // procgen_cave_formations.cpp
