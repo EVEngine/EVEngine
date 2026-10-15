@@ -838,11 +838,11 @@ jobs:
             -k 'thread backtrace' \
             -k 'frame select 5' \
             -k 'expr -- sizeof(vk::DispatchLoaderDynamic)' \
-            -k 'expr -- (char *)&d.vkGetPhysicalDeviceSurfaceSupportKHR - (char *)&d' \
-            -k 'expr -- (void *)d.vkGetPhysicalDeviceSurfaceSupportKHR' \
+            -k 'expr -- __builtin_offsetof(vk::DispatchLoaderDynamic, vkGetPhysicalDeviceSurfaceSupportKHR)' \
+            -k 'frame variable d' \
             -k 'frame select 9' \
             -k 'expr -- sizeof(vk::DispatchLoaderDynamic)' \
-            -k 'expr -- (char *)&vk::defaultDispatchLoaderDynamic.vkGetPhysicalDeviceSurfaceSupportKHR - (char *)&vk::defaultDispatchLoaderDynamic' \
+            -k 'expr -- __builtin_offsetof(vk::DispatchLoaderDynamic, vkGetPhysicalDeviceSurfaceSupportKHR)' \
             -k 'expr -- (void *)vk::defaultDispatchLoaderDynamic.vkGetPhysicalDeviceSurfaceSupportKHR' \
             -- build/macosx-debug/test/unit_test
           exit 1
