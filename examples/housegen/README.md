@@ -41,3 +41,9 @@ Texture paths are resolved beside the GLB. Values must be in `[0, 1]`; `parallax
 to `[0, 0.2]`. Omit a property to inherit it from the GLB. Embedded and external glTF base-color,
 normal and height textures are supported. The renderer currently uses scalar metallic/roughness;
 packed metallic-roughness maps are deliberately not advertised by this manifest.
+## Editable generation
+
+Edit `generators/house.nut` to change plot dimensions, seed, per-floor room types or upper-floor
+inset. It composes an owning `HouseGeneration` with optional GridGraph processing before floor
+emission. The default preserves the original showcase. See
+[generation stages](../../docs/usr/modules/procgen/generation-stages.md) for ownership and failure rules.

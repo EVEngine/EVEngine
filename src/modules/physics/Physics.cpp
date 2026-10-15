@@ -1,20 +1,23 @@
 #include "physics/Physics.h"
 #include "physics/Body.h"
 #include "physics/Body3D.h"
+#include "physics/DistanceField3D.h"
+#include "physics/Fixture.h"
+#include "physics/Fluid2D.h"
 #include "physics/Joint2D.h"
 #include "physics/Joint3D.h"
 #include "physics/Mechanism2D.h"
 #include "physics/Mechanism3D.h"
-#include "physics/DistanceField3D.h"
-#include "physics/softbody/SoftBody3D.h"
-#include "physics/softbody/graphics/SoftBody3DRenderer.h"
-#include "physics/Fixture.h"
-#include "physics/Fluid2D.h"
 #include "physics/PhysicsCapabilities.h"
 #include "physics/Shape3D.h"
+#include "physics/TerrainLoadGravity.h"
 #include "physics/World.h"
 #include "physics/World3D.h"
-#include "physics/TerrainLoadGravity.h"
+#include "physics/forces/ForceBindings.h"
+#include "physics/mechanics/Coupling3DBindings.h"
+#include "physics/mechanics/Joint2DBindings.h"
+#include "physics/softbody/SoftBody3D.h"
+#include "physics/softbody/graphics/SoftBody3DRenderer.h"
 
 #include "common/Exception.h"
 #include "common/SquirrelBinding.h"
@@ -38,23 +41,6 @@ void Physics::setMeter(float pixelsPerMeter) {
 
 float Physics::getMeter() const { return meter_; }
 
-World *Physics::newWorld(float gravityX, float gravityY, bool sleep) {
-    return new World(gravityX, gravityY, sleep, meter_);
-}
-
-World3D *Physics::newWorld3DWithBackend(const std::string &backend, float gravityX, float gravityY, float gravityZ,
-                                        bool sleep) {
-    if (backend != "box3d" && backend != "jolt") throw eve::Exception("Unknown rigid backend: %s", backend.c_str());
-    auto result = World3D::createWithBackend(backend == "jolt" ? RigidBackend3D::Jolt : RigidBackend3D::Box3D, gravityX,
-                                             gravityY, gravityZ, sleep);
-    if (!result) throw eve::Exception("%s", result.status().describe().c_str());
-    return std::move(result).takeValue().release();
-}
-
-World3D *Physics::newWorld3D(float gravityX, float gravityY, float gravityZ, bool sleep) {
-    return new World3D(gravityX, gravityY, gravityZ, sleep);
-}
-
 DistanceField3D *Physics::newDistanceField3D(int width, int height, int depth, float cellSize,
                                              float originX, float originY, float originZ,
                                              float outsideDistance) {
@@ -76,6 +62,9 @@ SoftBody3DRenderer *Physics::newSoftBody3DRenderer(SoftBody3D *body) {
 Fluid2D *Physics::newFluid2D(int capacity) { return new Fluid2D(capacity); }
 
 void Physics::expose(ssq::Table &table) {
+    exposeForceBindings(table);
+    exposeJoint2DBindings(table);
+    exposeCoupling3DBindings(table);
     auto cls = table.addClass(name, Physics::create, false);
     expose(cls);
     auto terrainLoadState = table.addClass<TerrainLoadGravityState>("TerrainLoadGravityState");
@@ -529,47 +518,6 @@ void Physics::expose(ssq::Table &table) {
     body.addFunc("newCircleFixture", &Body::newCircleFixture);
     body.addFunc("destroy", &Body::destroy);
 
-    auto joint2 = table.addClass<Joint2D>(
-        "Joint2D", std::function<Joint2D *()>([]() -> Joint2D * { return nullptr; }), true);
-    joint2.addFunc("getId", &Joint2D::getId);
-    joint2.addFunc("getKind", &Joint2D::getKind);
-    joint2.addFunc("getBodyAId", &Joint2D::getBodyAId);
-    joint2.addFunc("getBodyBId", &Joint2D::getBodyBId);
-    joint2.addFunc("setCollideConnected", &Joint2D::setCollideConnected);
-    joint2.addFunc("getCollideConnected", &Joint2D::getCollideConnected);
-    joint2.addFunc("setDistanceLength", &Joint2D::setDistanceLength);
-    joint2.addFunc("getDistanceLength", &Joint2D::getDistanceLength);
-    joint2.addFunc("setDistanceSpring", &Joint2D::setDistanceSpring);
-    joint2.addFunc("getDistanceFrequency", &Joint2D::getDistanceFrequency);
-    joint2.addFunc("getDistanceDampingRatio", &Joint2D::getDistanceDampingRatio);
-    joint2.addFunc("setRevoluteLimits", &Joint2D::setRevoluteLimits);
-    joint2.addFunc("setRevoluteMotor", &Joint2D::setRevoluteMotor);
-    joint2.addFunc("getRevoluteAngle", &Joint2D::getRevoluteAngle);
-    joint2.addFunc("getRevoluteSpeed", &Joint2D::getRevoluteSpeed);
-    joint2.addFunc("getRevoluteMotorTorque", &Joint2D::getRevoluteMotorTorque);
-    joint2.addFunc("setPrismaticLimits", &Joint2D::setPrismaticLimits);
-    joint2.addFunc("setPrismaticMotor", &Joint2D::setPrismaticMotor);
-    joint2.addFunc("getPrismaticTranslation", &Joint2D::getPrismaticTranslation);
-    joint2.addFunc("getPrismaticSpeed", &Joint2D::getPrismaticSpeed);
-    joint2.addFunc("setWeldSpring", &Joint2D::setWeldSpring);
-    joint2.addFunc("getWeldFrequency", &Joint2D::getWeldFrequency);
-    joint2.addFunc("getWeldDampingRatio", &Joint2D::getWeldDampingRatio);
-    joint2.addFunc("setWheelSpring", &Joint2D::setWheelSpring);
-    joint2.addFunc("setWheelMotor", &Joint2D::setWheelMotor);
-    joint2.addFunc("getWheelTranslation", &Joint2D::getWheelTranslation);
-    joint2.addFunc("getWheelSpeed", &Joint2D::getWheelSpeed);
-    joint2.addFunc("setMotorLinearOffset", &Joint2D::setMotorLinearOffset);
-    joint2.addFunc("setMotorAngularOffset", &Joint2D::setMotorAngularOffset);
-    joint2.addFunc("setMotorLimits", &Joint2D::setMotorLimits);
-    joint2.addFunc("getMotorLinearOffsetX", &Joint2D::getMotorLinearOffsetX);
-    joint2.addFunc("getMotorLinearOffsetY", &Joint2D::getMotorLinearOffsetY);
-    joint2.addFunc("getMotorAngularOffset", &Joint2D::getMotorAngularOffset);
-    joint2.addFunc("setGearRatio", &Joint2D::setGearRatio);
-    joint2.addFunc("getGearRatio", &Joint2D::getGearRatio);
-    joint2.addFunc("getGearJoint1", &Joint2D::getGearJoint1);
-    joint2.addFunc("getGearJoint2", &Joint2D::getGearJoint2);
-    joint2.addFunc("destroy", &Joint2D::destroy);
-    joint2.addFunc("isValid", &Joint2D::isValid);
 
     auto mechanism2 = table.addClass<Mechanism2D>(
         "Mechanism2D", std::function<Mechanism2D *()>([]() -> Mechanism2D * { return nullptr; }),

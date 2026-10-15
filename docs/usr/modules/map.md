@@ -348,7 +348,7 @@ Fov：`getWidth`、`getHeight`、`getDepth`、`setMode`、`getMode`、`setAlgori
 
 **源码：** [`src/modules/map/`](../../../src/modules/map/)
 **设计：** [`docs/dev/寻路系统设计.md`](../../dev/寻路系统设计.md)、[`docs/dev/动态视野系统设计.md`](../../dev/动态视野系统设计.md)
-**相关测试：** [`test/map.cpp`](../../../test/map.cpp)、[`test/map_path.cpp`](../../../test/map_path.cpp)、[`test/map_fov.cpp`](../../../test/map_fov.cpp)、[`test/hex_level_simulation.cpp`](../../../test/hex_level_simulation.cpp)、[`test/hex_level_data.cpp`](../../../test/hex_level_data.cpp)
+**相关测试：** [`test/integration/asset-import/asset_import_graphics_tests.cpp`](../../../test/integration/asset-import/asset_import_graphics_tests.cpp)、[`test/map_path.cpp`](../../../test/map_path.cpp)、[`test/integration/render-presentation/render_presentation_graphics_hex_level_simulation_tests.cpp`](../../../test/integration/render-presentation/render_presentation_graphics_hex_level_simulation_tests.cpp)、[`test/integration/render-presentation/render_presentation_graphics_hex_level_simulation_tests.cpp`](../../../test/integration/render-presentation/render_presentation_graphics_hex_level_simulation_tests.cpp)、[`test/integration/file-io/file_io_graphics_hex_level_data_tests.cpp`](../../../test/integration/file-io/file_io_graphics_hex_level_data_tests.cpp)
 **示例：** [`examples/hex-levels/`](../../../examples/hex-levels/)
 
 ### GID 与混合地形编辑

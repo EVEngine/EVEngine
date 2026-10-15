@@ -21,6 +21,25 @@
 
 namespace eve_test_path {
 
+/** @brief Resolve test/ independently of the unit/integration source layout. */
+inline std::string testDirectoryFromSource(const char *file) {
+    std::string source = file ? file : "";
+    for (char &ch : source)
+        if (ch == '\\') ch = '/';
+    const auto marker = source.rfind("/test/");
+    if (marker != std::string::npos) return source.substr(0, marker + 5);
+    if (source.rfind("test/", 0) == 0) return "test";
+    const auto slash = source.find_last_of('/');
+    return slash == std::string::npos ? "." : source.substr(0, slash);
+}
+
+/** @brief Preserve test-root asset addressing when a test source is relocated. */
+inline std::string sourceBesideTestDir(const char *file) {
+    const std::string source = file ? file : "";
+    const auto        slash  = source.find_last_of("/\\");
+    return testDirectoryFromSource(file) + "/" + (slash == std::string::npos ? source : source.substr(slash + 1));
+}
+
 #if defined(EVENGINE_ANDROID)
 inline std::string androidTestRoot() {
     static const std::string root = [] {
@@ -80,9 +99,7 @@ inline std::string pathBesideSourceImpl(const char *file, const char *relative) 
     std::string dir    = (slash == std::string::npos) ? std::string(".") : source.substr(0, slash);
     return dir + "/" + relative;
 #else
-    std::string here = file ? file : "";
-    auto slash = here.find_last_of("/\\");
-    std::string dir = (slash == std::string::npos) ? std::string(".") : here.substr(0, slash);
+    std::string dir = testDirectoryFromSource(file);
     return dir + "/" + relative;
 #endif
 }
@@ -102,16 +119,14 @@ inline std::string pathBesideTestDir(const char *file, const std::string &relati
     while (rel.rfind("../", 0) == 0) rel = rel.substr(3);
     return iosTestRoot() + "/" + rel;
 #else
-    std::string here  = file ? file : "";
-    auto        slash = here.find_last_of("/\\");
-    std::string dir   = (slash == std::string::npos) ? std::string(".") : here.substr(0, slash);
+    std::string dir = testDirectoryFromSource(file);
     return dir + "/" + relative;
 #endif
 }
 
 }  // namespace eve_test_path
 
-#define EVE_DEFINE_PATH_BESIDE_SOURCE()                                            \
-    static std::string pathBesideThisSource(const char *filename) {                \
-        return eve_test_path::pathBesideSourceImpl(__FILE__, filename);            \
+#define EVE_DEFINE_PATH_BESIDE_SOURCE()                                              \
+    [[maybe_unused]] static std::string pathBesideThisSource(const char *filename) { \
+        return eve_test_path::pathBesideSourceImpl(__FILE__, filename);              \
     }

@@ -134,7 +134,48 @@ bin\eve.exe run mygame
 | C++ compiler | **C++20** | MSVC / GCC / Clang |
 | Vulkan SDK | **≥ 1.2** | Graphics backend; environment variables must be set correctly |
 
-Third-party libraries (SDL2, Box2D, Squirrel, Poco, ImGui, OpenAL Soft, FreeType, GLM, VKBuilder, etc.) are fetched and built automatically via CMake `ExternalProject` from [EVEngine/third-party](https://github.com/EVEngine/third-party). Manual installs are usually unnecessary.
+Third-party libraries are independently released by [EVEngine/third-party](https://github.com/EVEngine/third-party/releases).
+`cmake/third_party_pin.cmake` fixes both the release tag and its source commit.
+Normal supported native builds automatically download and verify that release,
+then reuse the installed prefix; EVEngine's release CI builds only the engine and
+SDK, without rebuilding these dependency libraries (including Jolt).
+
+```powershell
+make build/win32-debug
+# Optional: download explicitly before configuring, or prepare an offline prefix.
+python scripts/third_party_package.py win32 --configuration Debug
+```
+
+Packages cover Windows x64 Release/Debug, Linux x86_64 Release, macOS arm64 and
+x86_64 Release, Android arm64-v8a Release, and iOS arm64 device Release.
+Non-Windows Debug engines use Release dependency libraries, matching source builds.
+Downloads verify SHA256, schema version, release tag, source commit, target platform,
+architecture and library configuration. Compatible existing installs are reused;
+incompatible directories are rejected and never overwritten. Installation publishes
+only after all validation succeeds. AUTO falls back to the pinned source build when downloads are unavailable (missing assets or network failures), with an explicit configure message. Invalid checksums or incompatible packages remain errors. PREBUILT requires a successful download.
+
+To build dependencies locally instead, select `SOURCE`:
+
+```powershell
+make build/win32-debug CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=SOURCE"
+```
+
+`AUTO` is the default. It selects source builds for unpackaged targets such as
+Emscripten, iOS simulator, other Android ABIs, universal macOS and custom sanitizer/
+code-model flags. `PREBUILT` requires a supported package. An explicit
+`EVENGINE_THIRD_PARTY_BINARY_DIR` still supports a compatible offline/local prefix.
+Changing the dependency release requires updating both pin values after the upstream
+release assets have been published. Dependency patches are owned and applied by the
+pinned third-party repository; engine-owned `external/ECS.hpp` and `external/zeroerr`
+patches remain here.
+
+These are complete library install trees with headers, static/shared libraries,
+runtime binaries, metadata and license notices. You still need platform build tools,
+Vulkan SDK, system development libraries and engine submodules. CMake fetches pinned
+sources for vendored code compiled directly into the engine, such as ImGui.
+ABI baselines are MSVC x64 dynamic CRT, Ubuntu 24.04/GCC, macOS 13+ (matching CPU),
+NDK 27.3.13750724 / Android API 24 / c++_shared, and iOS 13+ arm64 device SDK.
+Use source mode for toolchains incompatible with those baselines.
 
 #### Windows
 
@@ -484,6 +525,8 @@ cmake --build build/linux-debug --target deps -j 32
 cmake --build build/macosx-debug --target deps -j 32
 ```
 
+With AUTO/PREBUILT on supported targets, `deps` reuses the downloaded release and does not compile dependencies. The commands below build libraries when SOURCE mode is selected or AUTO falls back after an unavailable download.
+
 The first third-party build takes a while. Outputs land in `build/third-party/<platform>[-debug]/` and `build/third-party-binary/<platform>[-debug]/`. Later incremental builds reuse installed results.
 
 #### 3. Build the engine
@@ -509,7 +552,9 @@ Or use `make build/win32` / `make build/macosx-debug` etc. to configure and buil
 `BUILD_TESTING` is on by default. After building:
 
 ```sh
-make test/win32-debug    # runs build/win32-debug/test/Debug/unit_test.exe
+make test/win32-debug    # runs the configured C++ test suite
+make test/win32-debug TEST_LEVEL=unit          # local C++ logic; no rendering setup
+make test/win32-debug TEST_LEVEL=integration   # runtime/composition coverage
 make test/win32          # Release tests
 make test/linux-debug
 make test/linux
