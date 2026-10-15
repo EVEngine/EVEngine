@@ -211,8 +211,8 @@ void set(IPropertyProvider& provider, IDomainOperationTarget& target, const Sele
 }  // namespace
 
 TEST_CASE("editor.gizmo.builds_physics_audio_and_light_overlays") {
-    EditorGizmoPreviewBuilder builder;
-    PhysicsColliderTarget     collider("shape", 3);
+    eve::domain_gizmo_editing::EditorGizmoPreviewBuilder builder;
+    PhysicsColliderTarget                                collider("shape", 3);
     set(collider, collider, selection("shape"), "shape.kind", "capsule");
     set(collider, collider, selection("shape"), "shape.radius", 0.75);
     set(collider, collider, selection("shape"), "shape.capsule-height", 2.0);

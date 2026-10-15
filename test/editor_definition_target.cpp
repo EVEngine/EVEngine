@@ -1,6 +1,6 @@
 #include "definitions/Definitions.h"
-#include "definitions/editor/EditorDefinitionForm.h"
-#include "definitions/editor/EditorDefinitionTarget.h"
+#include "definitions/editing/DefinitionForm.h"
+#include "definitions/editing/DefinitionTarget.h"
 #include "editor/queue/editing/QueueInspector.h"
 #include "orders/CommandQueue.h"
 #include "production/Production.h"
