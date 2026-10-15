@@ -38,6 +38,13 @@ void Profiler::setEnabled(bool on) {
 
 bool Profiler::enabled() const { return eve::prof::Profiler::enabled(); }
 
+const char* Profiler::internScopeName(const std::string& name) {
+    // unordered_set nodes are stable across rehash, so c_str() stays valid for the
+    // module's lifetime; distinct names are bounded by what a game's scripts use.
+    const auto inserted = scopeNames_.insert(name.empty() ? std::string("scope") : name);
+    return inserted.first->c_str();
+}
+
 void Profiler::reset() {
     eve::prof::Profiler::reset();
     frameMs_ = 0.f;
@@ -158,7 +165,15 @@ void Profiler::expose(ssq::Class& cls) {
     cls.addFunc("reset", &Profiler::reset);
     cls.addFunc("beginFrame", &Profiler::beginFrame);
     cls.addFunc("endFrame", &Profiler::endFrame);
-    cls.addFunc("begin", &Profiler::begin);
+    // Two shapes have to be bridged here, both discovered by the script smoke test.
+    // `&Profiler::begin` takes `const char*`, which the binding layer treats as an
+    // opaque pointer type and expects an *instance* for, so a script passing a string
+    // failed with "bad cast expected: INSTANCE got: STRING". Converting to std::string
+    // fixes that, but the collector keeps the pointer and reads it at frameMark(), so
+    // the string must also be interned rather than passed as a temporary's c_str().
+    cls.addFunc("begin", [](Profiler* self, const std::string& name) {
+        if (self) self->begin(self->internScopeName(name));
+    });
     cls.addFunc("end", &Profiler::end);
     cls.addFunc("hasFrame", &Profiler::hasFrame);
     cls.addFunc("frameMs", &Profiler::frameMs);

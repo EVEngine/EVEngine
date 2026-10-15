@@ -14,8 +14,13 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include "common/Module.h"
+
+#include <simplesquirrel/simplesquirrel.hpp>
+
 #include <memory>
 #include <set>
+#include <string>
 
 using namespace eve::procgen;
 using namespace eve::graphics;
@@ -230,4 +235,37 @@ TEST_CASE("procgen.lsystem.scriptFacade") {
     ls->toPointSet(points);
     CHECK(points.getCount() > 0);
     REQUIRE(proc.release(handle).ok());
+}
+
+TEST_CASE("procgen.script.newLSystemIsTheDocumentedEntryPoint") {
+    // docs/usr/modules/procgen.md's L-system section starts from
+    // `procgen.newLSystem()`. Like newShapeGrammar, the script class and the
+    // handle/resolve/release trio all existed with no factory bound, so the documented
+    // sample could not run. This drives the documented path instead of the C++ one.
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        procgen <- eve.Procgen();
+        lsCreated <- procgen.newLSystem();
+        ls <- lsCreated.ok ? lsCreated.value : null;
+        lsIsProxy <- ls != null && ls instanceof eve.ProcgenLSystem;
+        if (ls != null) {
+            ls.setAxiom("F");
+            ls.addRule('F', "F[+F]F[-F]F");
+            ls.setIterations(3);
+            ls.setAngle(26.0);
+            ls.setSeed(42);
+        }
+        derived <- ls == null ? "" : ls.derive();
+        roadCreated <- procgen.newPointSet();
+        road <- roadCreated.ok ? roadCreated.value : null;
+        if (ls != null && road != null) ls.trace(road);
+        points <- road == null ? -1 : road.getCount();
+    )"));
+
+    REQUIRE(vm.find("lsCreated").find("ok").toBool());
+    REQUIRE(vm.find("lsIsProxy").toBool());
+    REQUIRE(vm.find("derived").toString().size() > 0);
+    REQUIRE(vm.find("roadCreated").find("ok").toBool());
+    REQUIRE(vm.find("points").toInt() > 0);
 }

@@ -3,6 +3,7 @@
 // These are the only kinds that can drive a node instead of following it
 // (syncMode 1), so they are also the only ones supplying pullWorld.
 
+#include "common/TransformEuler.h"
 #include "physics/Body.h"
 #include "physics/Body3D.h"
 #include "scene/SceneHost.h"
@@ -48,10 +49,10 @@ void pullBody3D(SceneNode &n, void *target) {
     n.y = b->getY();
     n.z = b->getZ();
     glm::quat q(b->getRotW(), b->getRotX(), b->getRotY(), b->getRotZ());
-    glm::vec3 e = glm::eulerAngles(q);  // pitch(x), yaw(y), roll(z)
-    n.pitch = e.x;
-    n.yaw = e.y;
-    n.roll = e.z;
+    // Exact inverse of the composition in pushBody3D() (see TransformEuler.h):
+    // glm::eulerAngles() returns a different Euler family, so a body rotated about
+    // more than one axis came back to the node at the wrong orientation.
+    eve::eulerYxzFromQuat(q, n.yaw, n.pitch, n.roll);
 }
 
 bool aliveBody3D(const void *target) {

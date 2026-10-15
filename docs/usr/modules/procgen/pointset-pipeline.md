@@ -1,4 +1,4 @@
-# Procgen PointSet 管线
+﻿# Procgen PointSet 管线
 
 [返回模块概览](../procgen.md)
 
@@ -303,8 +303,12 @@ cell、stale ticket 或错误 scheduler 的 request 都会使整组保持原状�
 惰性 DAG；普通项目仍可继续直接组合前述纯函数。节点以稳定字符串 id 标识，连接到
 input slot 0/1，执行时自动拒绝缺失输入和环：
 
+> **工厂的返回形状**：`procgen.new*()` 一律返回**结果表**（`ok` / `value` / `ownership` /
+> `ownerEpoch` / `handle`），实例在 `value` 里，所以取用要写 `.value`。生产代码应先看
+> `ok`，示例为可读性直接取 `value`。
+
 ```nut
-local graph = procgen.newPointGraph();
+local graph = procgen.newPointGraph().value;
 graph.addNode("sample", "spatial.sample");
 graph.setNodeSpatial("sample", forestVolume);
 graph.setNodeFloat("sample", "spacing", 12.0);
@@ -461,7 +465,7 @@ failGeneration/completeCleanup` 是同一 PR #345 迁移窗口内的兼容投影
 子图节点将首个输入写入嵌套图指定的 input node，并返回指定 output node：
 
 ```nut
-local sub = procgen.newPointGraph();
+local sub = procgen.newPointGraph().value;
 sub.addNode("in", "input");
 sub.addNode("jitter", "jitter");
 sub.connect("in", "jitter");
@@ -481,7 +485,7 @@ priority 和 density；重叠位置选择 priority 最大的层。全局 exclusi
 候选，资产表按 weight 稳定选择，并可设置随机 yaw 与缩放范围：
 
 ```nut
-local biome = procgen.newBiomeRules();
+local biome = procgen.newBiomeRules().value;
 biome.addLayer("forest", forestVolume, 10, 0.72);
 biome.addAsset("forest", "oak", 4.0, 0.8, 1.2, true);
 biome.addAsset("forest", "pine", 1.0, 0.9, 1.3, true);
@@ -505,7 +509,7 @@ local instances = biome.generate(cellDomain, 12.0, cellSeed, 0.65);
 中心，yaw 沿当前 Spline 切线：
 
 ```nut
-local grammar = procgen.newShapeGrammar();
+local grammar = procgen.newShapeGrammar().value;
 grammar.addModule("Wall", "stone-wall-a", 4.0, 3.0);
 grammar.addModule("Wall", "stone-wall-b", 4.0, 1.0);
 grammar.addModule("Post", "stone-post", 1.0, 1.0);

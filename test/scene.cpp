@@ -42,11 +42,13 @@
 #include "spatial/Octree.h"
 #include "window/Window.h"
 
-#include "common/ECS.h"
 #include "common/Capability.h"
+#include "common/ECS.h"
 #include "common/EntitySpatialResolver.h"
 #include "common/Module.h"
 #include "common/ProcgenSceneSink.h"
+#include "common/ScriptComponentSnapshot.h"
+#include "common/SquirrelBinding.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -54,6 +56,7 @@
 
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include <string>
 #include <utility>
 
@@ -504,6 +507,35 @@ TEST_CASE("Scene.link.syncRenderable2DWorld") {
     CHECK(approxEq(r->transform()->y, 8.f));
 }
 
+TEST_CASE("Scene.link.syncRenderable3DWorldRotation") {
+    // The node sync has to decompose the world matrix with the inverse of the order
+    // the renderer recomposes it (RenderSystem3D's modelFromTransform is
+    // T*Ry(yaw)*Rx(pitch)*Rz(roll)*S). Extracting with glm::eulerAngles() instead
+    // returns a different Euler family, so a multi-axis node rendered at a wrong
+    // orientation. A single-axis rotation happens to survive either way, hence the
+    // three-axis angles here.
+    SceneHost* h = sceneValue(SceneHost::createHost("link3d"));
+    h->setTree(
+        node("root",
+             {node("mesh").withPosition(1.f, 2.f, 3.f).withRotation(0.5f, 0.25f, 0.1f).withScaleXYZ(2.f, 3.f, 4.f)}));
+
+    auto* r = eve::graphics::Renderable3D::create();
+    REQUIRE(r != nullptr);
+    CHECK(h->linkRenderable3D("mesh", r));
+    TransformSystem::updateHost(h);
+
+    const auto t = r->transform();
+    REQUIRE(approxEq(t->x, 1.f));
+    REQUIRE(approxEq(t->y, 2.f));
+    REQUIRE(approxEq(t->z, 3.f));
+    REQUIRE(approxEq(t->sx, 2.f));
+    REQUIRE(approxEq(t->sy, 3.f));
+    REQUIRE(approxEq(t->sz, 4.f));
+    REQUIRE(approxEq(t->yaw, 0.5f));
+    REQUIRE(approxEq(t->pitch, 0.25f));
+    REQUIRE(approxEq(t->roll, 0.1f));
+}
+
 TEST_CASE("Scene.query.pathParentChildren") {
     SceneHost *h = sceneValue(SceneHost::createHost("query"));
     h->setTree(node("root",
@@ -718,6 +750,15 @@ TEST_CASE("Scene.objectId.preservedAcrossFullRebuild") {
     o->release();
 }
 
+TEST_CASE("Scene.objectId.zeroMarkerIsUnreachableForDenseEntityIds") {
+    // The ECS registry allocates dense entity ids starting at 0, so a 0 "no SceneObject"
+    // marker would have made the *first* SceneObject in a process unreachable: the node
+    // looked unbound, so `Scene::rootEntity` created a fresh object each call and
+    // `forEachEntity` yielded nothing. The locator is `entity id + 1`, so 0 is a value
+    // no dense id can produce and the marker stays unambiguous.
+    REQUIRE_EQ(eve::scene::SceneNode{}.objectId, 0u);
+}
+
 TEST_CASE("Scene.link.genericMultiLinkAndSync") {
     SceneHost *h = sceneValue(SceneHost::createHost("genlink"));
     h->setTree(node("root", {node("soldier")}));
@@ -802,6 +843,36 @@ TEST_CASE("Scene.link.physics2D") {
 
     CHECK(h->unlink("p", findLinkKind("physics2d")));
     CHECK_EQ(h->linkCount("p"), 0);
+    w.destroy();
+}
+
+TEST_CASE("Scene.link.body3DPullRoundTripsEuler") {
+    // pushBody3D composes Ry(yaw)*Rx(pitch)*Rz(roll) onto the body, so pullBody3D has
+    // to invert exactly that order. glm::eulerAngles() returns a different Euler
+    // family, which handed a body-authoritative node the wrong angles for any
+    // multi-axis rotation; localMatrix() then rebuilt a different orientation than
+    // the body actually has. Single-axis values agree either way, hence three axes.
+    SceneHost* h = sceneValue(SceneHost::createHost("link3drot"));
+    h->setTree(node("root", {node("rig")}));
+
+    eve::physics::World3D w(0.f, -9.8f, 0.f, true);
+    eve::physics::Body3D* b = w.newBody("kinematic", 0.f, 0.f, 0.f);
+    REQUIRE(b != nullptr);
+
+    const float     yaw = 0.5f, pitch = 0.25f, roll = 0.1f;
+    const glm::quat q = glm::angleAxis(yaw, glm::vec3(0.f, 1.f, 0.f)) *
+                        glm::angleAxis(pitch, glm::vec3(1.f, 0.f, 0.f)) *
+                        glm::angleAxis(roll, glm::vec3(0.f, 0.f, 1.f));
+    b->setRotation(q.x, q.y, q.z, q.w);
+
+    CHECK(h->linkPhysics3D("rig", b, 1));  // body-authoritative: pull into the node
+    TransformSystem::updateHost(h);
+
+    SceneNode* n = sceneValue(h->findById("rig"));
+    REQUIRE(n != nullptr);
+    REQUIRE(approxEq(n->yaw, yaw));
+    REQUIRE(approxEq(n->pitch, pitch));
+    REQUIRE(approxEq(n->roll, roll));
     w.destroy();
 }
 
@@ -1149,7 +1220,7 @@ TEST_CASE("Scene.spatial.syncOctree") {
 // Script side: eve.SceneEntity attach / detach / update / view integration
 // ---------------------------------------------------------------------------
 
-static const char *kSceneEcsScriptContent = R"SQ(
+static const char* kSceneEcsScriptContent = R"SQ(
 function testSceneEntityLifecycle() {
     class MoveComp extends eve.Component { speed = 2.0 }
     class EnemyAI extends eve.SceneEntity {
@@ -1167,8 +1238,8 @@ function testSceneEntityLifecycle() {
 
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("enemy")
+    scene.beginNode("root", "")
+    scene.addNode("enemy", "")
     scene.end()
     scene.mountBuildAs("battle")
 
@@ -1199,8 +1270,8 @@ function testSceneEntityLifecycle() {
 
     // reconcile keeps the binding alive (same node id)
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("enemy")
+    scene.beginNode("root", "")
+    scene.addNode("enemy", "")
     scene.end()
     scene.remountBuildAs("battle")
     if (!scene.hasEntity("enemy", EnemyAI)) return false
@@ -1209,7 +1280,7 @@ function testSceneEntityLifecycle() {
 
     // full rebuild removing the node tears the binding down
     scene.beginBuild()
-    scene.beginNode("root")
+    scene.beginNode("root", "")
     scene.end()
     scene.mountBuildAs("battle")
     if (scene.hasEntity("enemy", EnemyAI)) return false
@@ -1225,9 +1296,9 @@ function testSceneEntityViewCacheAfterDetach() {
 
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("a")
-    scene.addNode("b")
+    scene.beginNode("root", "")
+    scene.addNode("a", "")
+    scene.addNode("b", "")
     scene.end()
     scene.mountBuildAs("units")
 
@@ -1296,8 +1367,8 @@ function testSceneEntityEnableAndDelayedDetach() {
 function testSceneLinkPhysics2D() {
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("ball")
+    scene.beginNode("root", "")
+    scene.addNode("ball", "")
     scene.setBuildPosition(50.0, 60.0, 0.0)
     scene.end()
     scene.mountBuildAs("links")
@@ -1330,10 +1401,10 @@ function testSceneLinkPhysics2D() {
 function testSceneApiCompleteness() {
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("pivot")
+    scene.beginNode("root", "")
+    scene.addNode("pivot", "")
     scene.setBuildPosition(10.0, 0.0, 0.0)
-    scene.addNode("ball")
+    scene.addNode("ball", "")
     scene.setBuildPosition(1.0, 2.0, 3.0)
     scene.end()
     scene.mountBuildAs("api")
@@ -1347,18 +1418,33 @@ function testSceneApiCompleteness() {
     scene.setNodeVisible("ball", false)
     if (scene.getNodeVisible("ball")) return false
 
-    // world + space conversion
+    // world + space conversion. addNode() adds a *sibling* of the open node (the
+    // documented order used by examples/scene-ecs/main.nut), so ball hangs off root,
+    // not off pivot: its world position is its own local position here.
     scene.updateTransforms()
+    local wpi = scene.getNodeWorldPosition("pivot")
+    if (wpi[0] != 10.0 || wpi[1] != 0.0 || wpi[2] != 0.0) return false
     local wp = scene.getNodeWorldPosition("ball")
-    if (wp[0] != 11.0 || wp[1] != 2.0 || wp[2] != 3.0) return false
+    if (wp[0] != 1.0 || wp[1] != 2.0 || wp[2] != 3.0) return false
     local lw = scene.localToWorld("ball", 0.0, 0.0, 0.0)
-    if (lw[0] != 11.0) return false
-    local wl = scene.worldToLocal("ball", 11.0, 2.0, 3.0)
+    if (lw[0] != 1.0) return false
+    local wl = scene.worldToLocal("ball", 1.0, 2.0, 3.0)
     if (wl[0] != 0.0 || wl[1] != 0.0) return false
 
     // hierarchy ops
     if (!scene.setNodeParent("ball", "pivot")) return false
     if (scene.getParentId("ball") != "pivot") return false
+
+    // Reparenting keeps the local transform (SceneHost::setParent only relinks), so
+    // the parent's offset now shows up: pivot(10) + ball local(1) == 11.
+    scene.updateTransforms()
+    local wp2 = scene.getNodeWorldPosition("ball")
+    if (wp2[0] != 11.0 || wp2[1] != 2.0 || wp2[2] != 3.0) return false
+    local lw2 = scene.localToWorld("ball", 0.0, 0.0, 0.0)
+    if (lw2[0] != 11.0) return false
+    local wl2 = scene.worldToLocal("ball", 11.0, 2.0, 3.0)
+    if (wl2[0] != 0.0 || wl2[1] != 0.0) return false
+
     if (!scene.removeNode("ball")) return false
     if (scene.getParentId("ball") != "") return false
     if (!scene.addNodeChild("root", "ball")) return false
@@ -1393,8 +1479,8 @@ function testSceneApiCompleteness() {
 function testSceneNodeEvents() {
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("a")
+    scene.beginNode("root", "")
+    scene.addNode("a", "")
     scene.end()
     scene.mountBuildAs("evt")
 
@@ -1407,8 +1493,8 @@ function testSceneNodeEvents() {
     // reconcile patch fires node_changed per affected node
     events.clear()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("a")
+    scene.beginNode("root", "")
+    scene.addNode("a", "")
     scene.setBuildPosition(3.0, 0.0, 0.0)
     scene.end()
     scene.remountBuildAs("evt")
@@ -1418,16 +1504,16 @@ function testSceneNodeEvents() {
     // full rebuild removing a node fires node_removed
     events.clear()
     scene.beginBuild()
-    scene.beginNode("root")
+    scene.beginNode("root", "")
     scene.end()
     scene.mountBuildAs("evt")
     if (events.len() < 1 || events[0] != "node_removed:a") return false
 
     // reparent fires node_moved
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("x")
-    scene.addNode("y")
+    scene.beginNode("root", "")
+    scene.addNode("x", "")
+    scene.addNode("y", "")
     scene.end()
     scene.mountBuildAs("evt")
     events.clear()
@@ -1442,9 +1528,13 @@ function testSceneComponentOnMount() {
     class MyComp extends eve.SceneComponent {
         function onMount() { mounted += 1 }
         function build() {
-            scene.beginBuild()
-            scene.beginNode("root")
-            scene.end()
+            // `scene` bare would resolve to the inherited SceneComponent.scene()
+            // accessor method, so the documented pattern is to call the accessor
+            // (see examples/basic/ui_component.nut: `local u = ui()`). updateIfDirty()
+            // has already called beginBuild() for this pass.
+            local s = scene()
+            s.beginNode("root", "")
+            s.end()
         }
     }
     local c = MyComp()
@@ -1459,8 +1549,8 @@ function testSceneComponentOnMount() {
 function testSceneErrorSemantics() {
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("a")
+    scene.beginNode("root", "")
+    scene.addNode("a", "")
     scene.end()
     scene.mountBuildAs("err")
     local threw = false
@@ -1476,8 +1566,8 @@ function testSceneErrorSemantics() {
 function testSceneSerializeAndPick() {
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("target")
+    scene.beginNode("root", "")
+    scene.addNode("target", "")
     scene.end()
     scene.mountBuildAs("spk")
     scene.setNodeBounds("target", -1.0, -1.0, -1.0, 1.0, 1.0, 1.0)
@@ -1491,6 +1581,122 @@ function testSceneSerializeAndPick() {
     if (scene.pickRay(0.0, 0.0, 5.0, 0.0, 0.0, -1.0) != "target") return false
     return true
 }
+function testAttachRejectsPlainEntity() {
+    // This used to have to touch eve.Component first, because eve.SceneEntity is
+    // installed by a post-ECS hook and a script whose first ECS name was SceneEntity
+    // did not find it. The lazy resolver now injects the script ECS base itself, so
+    // the ordering no longer matters (see testSceneEntityIsTheFirstEcsName).
+    class Marker extends eve.Component { v = 0 }
+    class PlainEntity extends eve.Entity { mark = Marker }
+
+    local scene = eve.Scene()
+    scene.beginBuild()
+    scene.beginNode("root", "")
+    scene.addNode("n", "")
+    scene.end()
+    scene.mountBuildAs("guard")
+
+    // A plain Entity is not a script scene entity. This used to die mid-call with
+    // "the index '_scene' does not exist" because the body stores the host binding in
+    // members only eve.SceneEntity declares.
+    if (scene.attachEntity("n", PlainEntity) != null) return false
+    return scene.entitiesOf("n").len() == 0
+}
+
+function testSceneEntityIsTheFirstEcsName() {
+    // `class MyThing extends eve.SceneEntity` is the natural opening line of a user
+    // script, so SceneEntity being the *first* eve.* name touched has to work.
+    class OnlyEntity extends eve.SceneEntity { }
+
+    local scene = eve.Scene()
+    scene.beginBuild()
+    scene.beginNode("root", "")
+    scene.addNode("n", "")
+    scene.end()
+    scene.mountBuildAs("first")
+
+    local e = scene.attachEntity("n", OnlyEntity)
+    if (e == null) return false
+    if (!e.isAlive()) return false
+    if (!scene.hasEntity("n", OnlyEntity)) return false
+    if (!eve.isSubclass(OnlyEntity, eve.SceneEntity)) return false
+    return eve.view(OnlyEntity).len() == 1
+}
+
+function testCallbackFailureIsReported() {
+    class Marker extends eve.Component { v = 1 }
+    class Unit extends eve.SceneEntity { mark = Marker }
+
+    local scene = eve.Scene()
+    scene.beginBuild()
+    scene.beginNode("root", "")
+    scene.addNode("a", "")
+    scene.end()
+    scene.mountBuildAs("failreport")
+    if (scene.attachEntity("a", Unit) == null) return false
+
+    // The callback runs and throws. `visited == 1` is what makes this a *throw* rather
+    // than a callback that never ran, so the failure the engine has to report is real.
+    local visited = 0
+    scene.forEachEntity("failreport", "a", function(entity, index) {
+        visited += 1
+        throw "callback exploded"
+    })
+    return visited == 1
+}
+
+function testUpdateFailureIsReported() {
+    class Boom extends eve.SceneEntity {
+        function update(dt) { throw "update exploded" }
+    }
+
+    local scene = eve.Scene()
+    scene.beginBuild()
+    scene.beginNode("root", "")
+    scene.addNode("n", "")
+    scene.end()
+    scene.mountBuildAs("updfail")
+    if (scene.attachEntity("n", Boom) == null) return false
+
+    // scene.update(dt) drives every rooted instance's update(dt); this one throws. The
+    // engine has to report that rather than treat it like an instance that returned early.
+    scene.update(0.016)
+    return true
+}
+
+// 原生工具（编辑器 inspector / MCP / 诊断）要怎么读到"这个节点上的脚本组件状态"：
+// `Scene::scriptEntitiesAt` 给实例，`scriptComponentInstancesOf` 给已登记组件的字段。
+function buildSceneWithRegisteredComponent() {
+    class ToolProbe extends eve.Component { x = 1.5; y = 2.5 }
+    class ToolEntity extends eve.SceneEntity { probe = ToolProbe }
+
+    local registered = eve.component("ToolProbe", 1, ToolProbe).ok
+    local scene = eve.Scene()
+    scene.beginBuild()
+    scene.beginNode("root", "")
+    scene.addNode("probe", "")
+    scene.end()
+    scene.mountBuildAs("tools")
+    local e = scene.attachEntity("probe", ToolEntity)
+    if (e == null) return false
+    e.probe.x = 42.0
+    return registered
+}
+
+// 未登记组件（纯槽位语义）的对照片：引擎工具**不该**看到它——它没有名字与版本，无从寻址。
+function buildSceneWithUnregisteredComponent() {
+    class LooseProbe extends eve.Component { v = 7.0 }
+    class LooseEntity extends eve.SceneEntity { loose = LooseProbe }
+
+    local scene = eve.Scene()
+    scene.beginBuild()
+    scene.beginNode("root", "")
+    scene.addNode("loose", "")
+    scene.end()
+    scene.mountBuildAs("loosehost")
+    return scene.attachEntity("loose", LooseEntity) != null
+}
+
 )SQ";
 
 class SceneEcsBridgeFixture {
@@ -1505,11 +1711,55 @@ public:
 };
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityLifecycle") {
-    CHECK(vm.callFunc(vm.findFunc("testSceneEntityLifecycle"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneEntityLifecycle"), vm).toBool());
+}
+
+// J-3 的"引擎工具读到脚本组件"读侧：节点 → 脚本实体（原生访问）→ 已登记组件 → 字段值。
+// 这是编辑器 inspector / MCP 那一格的地基，所以在这里钉住它（不依赖编辑器 UI）。
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.nativeAccessReadsRegisteredComponentState") {
+    REQUIRE(vm.callFunc(vm.findFunc("buildSceneWithRegisteredComponent"), vm).toBool());
+
+    auto* scene = eve::scene::Scene::create();
+    REQUIRE(scene != nullptr);
+
+    const auto entities = scene->scriptEntitiesAt("tools", "probe");
+    REQUIRE_EQ(entities.size(), std::size_t{1});
+
+    auto states = eve::scriptComponentInstancesOf(entities.front());
+    REQUIRE(states.ok());
+    REQUIRE_EQ(states.value().size(), std::size_t{1});
+    CHECK_EQ(states.value().front().name, std::string("ToolProbe"));
+    CHECK_EQ(states.value().front().version.value(), std::uint64_t{1});
+    CHECK(states.value().front().generation.value() >= 1);
+    // 字段按声明顺序收集，值来自引擎侧那一个权威存储（脚本写 42.0 的那次也是写它）。
+    const auto& fields = states.value().front().fields;
+    const auto  x      = fields.find("x");
+    const auto  y      = fields.find("y");
+    REQUIRE(x != fields.end());
+    REQUIRE(y != fields.end());
+    CHECK_EQ(x->second.asDouble(), 42.0);
+    CHECK_EQ(y->second.asDouble(), 2.5);
+
+    // 负例：没有挂脚本的节点、未知宿主/节点都返回空数组（不是错误），调用方据此报"这里没有脚本"。
+    CHECK(scene->scriptEntitiesAt("tools", "root").empty());
+    CHECK(scene->scriptEntitiesAt("nope", "probe").empty());
+}
+
+// 未登记的组件（纯槽位语义）**不该**出现在原生工具里：它没有名字与版本，引擎无从寻址。
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.nativeAccessSkipsUnregisteredComponents") {
+    REQUIRE(vm.callFunc(vm.findFunc("buildSceneWithUnregisteredComponent"), vm).toBool());
+
+    auto*      scene    = eve::scene::Scene::create();
+    const auto entities = scene->scriptEntitiesAt("loosehost", "loose");
+    REQUIRE_EQ(entities.size(), std::size_t{1});
+
+    auto states = eve::scriptComponentInstancesOf(entities.front());
+    REQUIRE(states.ok());
+    CHECK(states.value().empty());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityViewCacheAfterDetach") {
-    CHECK(vm.callFunc(vm.findFunc("testSceneEntityViewCacheAfterDetach"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneEntityViewCacheAfterDetach"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityEnableAndDelayedDetach") {
@@ -1517,27 +1767,52 @@ TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityEnableAndDelayedDet
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.linkPhysics2D") {
-    CHECK(vm.callFunc(vm.findFunc("testSceneLinkPhysics2D"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneLinkPhysics2D"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.apiCompleteness") {
-    CHECK(vm.callFunc(vm.findFunc("testSceneApiCompleteness"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneApiCompleteness"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.nodeEvents") {
-    CHECK(vm.callFunc(vm.findFunc("testSceneNodeEvents"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneNodeEvents"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.componentOnMount") {
-    CHECK(vm.callFunc(vm.findFunc("testSceneComponentOnMount"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneComponentOnMount"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.errorSemantics") {
-    CHECK(vm.callFunc(vm.findFunc("testSceneErrorSemantics"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneErrorSemantics"), vm).toBool());
+}
+
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.attachRejectsPlainEntity") {
+    REQUIRE(vm.callFunc(vm.findFunc("testAttachRejectsPlainEntity"), vm).toBool());
+}
+
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityIsTheFirstEcsName") {
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneEntityIsTheFirstEcsName"), vm).toBool());
+}
+
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.callbackFailureIsNotSilent") {
+    // A callback that throws used to look exactly like an empty node: the failed sq_call
+    // was turned into a false return and the script error was dropped, so a broken
+    // handler produced no signal at all (plan doc 10.8).
+    eve::script::resetReportedScriptCallFailures();
+    REQUIRE(vm.callFunc(vm.findFunc("testCallbackFailureIsReported"), vm).toBool());
+    REQUIRE(eve::script::reportedScriptCallFailures() >= 1);
+}
+
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.updateFailureIsNotSilent") {
+    // The per-instance update(dt) path (Scene::callMethod) had the same gap as the
+    // forEachEntity callback: a throwing update() returned false and said nothing.
+    eve::script::resetReportedScriptCallFailures();
+    REQUIRE(vm.callFunc(vm.findFunc("testUpdateFailureIsReported"), vm).toBool());
+    REQUIRE(eve::script::reportedScriptCallFailures() >= 1);
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.serializeAndPick") {
-    CHECK(vm.callFunc(vm.findFunc("testSceneSerializeAndPick"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneSerializeAndPick"), vm).toBool());
 }
 
 TEST_CASE("Scene.nodeRef.transformsAndStructure") {

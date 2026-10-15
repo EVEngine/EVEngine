@@ -28,6 +28,43 @@
       "events": "WeaponEventSink receives post-mutation facts synchronously.",
       "services": "Registered IWeaponLogic observers are borrowed; registration replacement is synchronous.",
       "phase": "Combat command resolution phase."
+    },
+    {
+      "id": "weapon-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/weapon/**",
+      "owner": "weapon",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "The projectile logic consumes IProjectileService through cap::query and the script seam answers it through cap::provide, so the same capability appears on both faces; recording them makes the next provider or consumer declare itself instead of silently displacing the single-provider slot.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/weapon/WeaponLogic.h",
+        "src/modules/weapon/WeaponSystem.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IProjectileService"
+      ],
+      "requires": [
+        "IProjectileService"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.Weapon, eve.WeaponEntity, eve.WeaponMountEntity, eve.WeaponRigEntity, eve.AmmoPoolEntity; eve.provider.publishFor('IProjectileService', name, instance)"
+      ],
+      "protocol": [],
+      "thread_affinity": "Weapon owner thread; the projectile service answers each spawn/step query synchronously with an owning value and retains nothing across frames",
+      "trim": {
+        "absent_profile": "Profiles without weapon drop the module and its projectile service; a script that published one keeps the handle but every later call reports the provider as gone",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "The projectile service is consulted once per projectile spawn/step; the seam marshals one table per call and retains no VM value."
+      ],
+      "hot_path": []
     }
   ]
 }

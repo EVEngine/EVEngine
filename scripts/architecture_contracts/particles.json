@@ -28,6 +28,47 @@
       "events": "Particle lifecycle remains internal to emitter buffers; external events are emitted only after mutation if configured.",
       "services": "Injected SimulationStep and optional scheduler services; no wall-clock reads.",
       "phase": "Particle simulation phase."
+    },
+    {
+      "id": "particles-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/particles/**",
+      "owner": "particles",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Particle emitters publish query, VFX-duration, action-notify and asset-reload capabilities, while the per-frame emitter cull and simulation path must not re-resolve a module by string key.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/particles/ParticleSystem.cpp",
+        "src/modules/particles/ParticlesCapabilities.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IActionNotifyProvider",
+        "IActionPreviewSinkProvider",
+        "IActionVfxDurationProvider",
+        "IAssetReloader",
+        "IParticlesQuery"
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.Particles (plus ParticleEmitter, PcgMaterialSelector, ParticleEffect)"
+      ],
+      "protocol": [],
+      "thread_affinity": "Particles owner thread; the per-frame emitter cull and simulation read a pointer resolved once at the composition boundary and never re-resolve a module by string key",
+      "trim": {
+        "absent_profile": "minimal and other profiles without particles drop every capability listed here; remaining modules that queried them fall back to their documented absent behavior",
+        "layer": "L3 runtime"
+      },
+      "cost_notes": [
+        "The emitter cull and simulation run per frame, so their dependencies are resolved once at the composition boundary instead of per frame."
+      ],
+      "hot_path": [
+        "src/modules/particles/ParticleSystem.cpp"
+      ]
     }
   ]
 }
