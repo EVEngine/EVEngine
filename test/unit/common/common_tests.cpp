@@ -3739,6 +3739,8 @@ TEST_CASE("value-protobuf.rejectsInvalidValuesWithoutChangingDestination") {
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_protobuf_snapshot)
 #include "PrivateTestScope.h"
 #include "common/ProtobufSnapshot.h"
+#include "common/ScriptComponentSnapshot.h"
+#include "common/ScriptComponentStore.h"
 
 #include "common/SnapshotHash.h"
 #include "snapshot_envelope.pb.h"
@@ -3783,6 +3785,22 @@ TEST_CASE("protobuf-snapshot.roundTripsTypedPayloadAndRejectsTampering") {
     tampered.GetReflection()->MutableUnknownFields(&tampered)->AddVarint(99, 1);
     REQUIRE(tampered.SerializeToString(&bytes));
     CHECK(!eve::proto_support::parseBinarySnapshot(bytes, hash).ok());
+}
+
+TEST_CASE("protobuf-snapshot.scriptComponentEmptyStoreRoundTripAndAtomicRejection") {
+    eve::clearScriptComponentStore();
+    const auto hash     = eve::snapshotContentHashProvider();
+    const auto identity = eve::PersistentId::parse("aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee");
+    REQUIRE(identity.has_value());
+    auto saved = eve::serializeScriptComponentSnapshotBinary(*identity, eve::Revision(1), eve::SimulationTick(2), hash);
+    REQUIRE(saved.ok());
+    REQUIRE(eve::restoreScriptComponentSnapshotBinary(saved.value(), hash).ok());
+    CHECK_EQ(eve::scriptComponentStoreSize(), std::size_t(0));
+    CHECK(!eve::restoreScriptComponentSnapshotBinary("invalid", hash).ok());
+    auto repeated =
+        eve::serializeScriptComponentSnapshotBinary(*identity, eve::Revision(1), eve::SimulationTick(2), hash);
+    REQUIRE(repeated.ok());
+    CHECK_EQ(repeated.value(), saved.value());
 }
 }  // namespace test_protobuf_snapshot
 #endif

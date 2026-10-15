@@ -107,13 +107,38 @@ struct EVENGINE_API_FOUNDATION_INLINE ScriptComponentInstanceState {
 [[nodiscard]] EVENGINE_API_FOUNDATION Result<void> restoreScriptComponents(const SnapshotEnvelope&     snapshot,
                                                                            const SnapshotHashProvider& hashProvider);
 
-/** @brief 采集并序列化成确定性 JSON（存档写盘用）。 @cost 同 `snapshotScriptComponents` + 一次序列化。 */
+/** @brief Legacy version-1 JSON compatibility writer; new persistence uses serializeScriptComponentSnapshotBinary().
+ * @cost 同 `snapshotScriptComponents` + 一次序列化。 */
 [[nodiscard]] EVENGINE_API_FOUNDATION Result<std::string> serializeScriptComponentSnapshot(
     PersistentId instanceId, Revision revision, SimulationTick tick, const SnapshotHashProvider& hashProvider);
 
-/** @brief 从 JSON 解析、校验并恢复。 @return 成功，或解析/校验/未知组件失败。 */
+/** @brief Legacy version-1 JSON compatibility importer. @return 成功，或解析/校验/未知组件失败。 */
 [[nodiscard]] EVENGINE_API_FOUNDATION Result<void> restoreScriptComponentSnapshotJson(
     std::string_view json, const SnapshotHashProvider& hashProvider);
+
+/**
+ * @brief Serialize script component identities and open-ended field values in a typed Protobuf snapshot.
+ * @param instanceId Owner identity for the shared binary snapshot envelope.
+ * @param revision State revision at capture time.
+ * @param tick Simulation tick at capture time.
+ * @param hashProvider Injected digest provider for the binary envelope.
+ * @return Independent binary snapshot, or a structured encoding failure.
+ * @cost Linear in stored components and field bytes per snapshot.
+ * @thread Call on the script component store owner thread; no callbacks except the hash provider.
+ */
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::string> serializeScriptComponentSnapshotBinary(
+    PersistentId instanceId, Revision revision, SimulationTick tick, const SnapshotHashProvider& hashProvider);
+
+/**
+ * @brief Validate a typed Protobuf snapshot and replace the script component store atomically.
+ * @param bytes Binary snapshot produced by serializeScriptComponentSnapshotBinary().
+ * @param hashProvider Digest provider used when the snapshot was sealed.
+ * @return Success, or a structured failure leaving the store unchanged.
+ * @cost Linear in snapshot bytes and the registered component field count per restore.
+ * @thread Call on the script component store owner thread; no callbacks except the hash provider.
+ */
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<void> restoreScriptComponentSnapshotBinary(
+    std::string_view bytes, const SnapshotHashProvider& hashProvider);
 
 /**
  * @brief 引擎侧脚本组件数据的**工具视图**（MCP `eve_script_components` 与诊断用）。

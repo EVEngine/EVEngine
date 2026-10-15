@@ -4998,6 +4998,17 @@
         "weapon.cpp"
       ]
     },
+    "integration/script-api/script_component_protobuf.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "ScriptECS.protobufSnapshotRoundTripsAndRejectsCorruptionAtomically"
+        ]
+      },
+      "module": "common",
+      "task": "script-api"
+    },
     "integration/script-rendering/script_rendering_graphics_tests.cpp": {
       "role": "tests",
       "default": "script-render",
@@ -5883,7 +5894,8 @@
         "local-format": [
           "value-protobuf.roundTripsExactDynamicValues",
           "value-protobuf.rejectsInvalidValuesWithoutChangingDestination",
-          "protobuf-snapshot.roundTripsTypedPayloadAndRejectsTampering"
+          "protobuf-snapshot.roundTripsTypedPayloadAndRejectsTampering",
+          "protobuf-snapshot.scriptComponentEmptyStoreRoundTripAndAtomicRejection"
         ]
       },
       "module": "common",

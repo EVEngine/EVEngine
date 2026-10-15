@@ -343,7 +343,11 @@ endif()
 
 # Generated Protobuf headers are third-party output and carry upstream MSVC
 # conversion warnings; direct test includes must use the system include path.
-foreach(_eve_proto_test_target IN ITEMS unit_test_core unit_test_game_save unit_test_decision unit_test_rpg unit_test_tactics_rts unit_test)
+set(_eve_proto_test_targets ${EVE_TEST_TARGETS})
+if(EVENGINE_IOS_TEST_APP)
+  list(APPEND _eve_proto_test_targets eve)
+endif()
+foreach(_eve_proto_test_target IN LISTS _eve_proto_test_targets)
   if(TARGET ${_eve_proto_test_target})
     target_include_directories(${_eve_proto_test_target} SYSTEM PRIVATE
       ${CMAKE_SOURCE_DIR}/proto/generated)
@@ -786,6 +790,28 @@ if(TARGET EVCommon AND TARGET EVFoundation)
   endif()
   zeroerr_discover_tests(protobuf_snapshot_test
     LABEL "protobuf_snapshot_test" NAME_PREFIX "protobuf-snapshot/")
+endif()
+
+if(TARGET EVCommon AND TARGET EVFoundation)
+  add_executable(script_component_protobuf_test EXCLUDE_FROM_ALL
+    main.cpp integration/script-api/script_component_protobuf.cpp)
+  target_include_directories(script_component_protobuf_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+  target_link_libraries(script_component_protobuf_test PRIVATE
+    eve_engine_includes ${ThirdParty} EVFoundation zeroerr protobuf::libprotobuf)
+  target_include_directories(script_component_protobuf_test SYSTEM PRIVATE
+    ${CMAKE_SOURCE_DIR}/proto/generated)
+  target_compile_options(script_component_protobuf_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(script_component_protobuf_test PRIVATE EVBacktrace)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/script_component_protobuf_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/script_component_protobuf_test_zeroerr_tests.cmake"
+      "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(script_component_protobuf_test
+    LABEL "script_component_protobuf_test" NAME_PREFIX "script-component-protobuf/")
 endif()
 
 if(TARGET EVGame_event AND TARGET EVFoundation)
