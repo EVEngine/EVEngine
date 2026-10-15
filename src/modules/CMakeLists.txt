@@ -292,6 +292,17 @@ if(TARGET EVInventory)
   target_link_libraries(EVInventory PUBLIC protobuf::libprotobuf)
 endif()
 
+if(TARGET EVRPG)
+  # Generated with the pinned third-party protoc from proto/rpg_tracker.proto.
+  target_sources(EVRPG PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/rpg_tracker.pb.cc)
+  target_include_directories(EVRPG PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  if(MSVC)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/rpg_tracker.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+  endif()
+  target_link_libraries(EVRPG PUBLIC protobuf::libprotobuf)
+endif()
+
 if(TARGET EVPhysics)
   target_compile_definitions(EVPhysics PRIVATE EVENGINE_HAS_JOLT=$<BOOL:${EVENGINE_BUILD_JOLT}>)
   if(TARGET Jolt)

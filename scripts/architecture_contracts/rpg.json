@@ -51,6 +51,29 @@
       "phase": "script/game-driven simulation; Battle is turn-based, others are update(dt)-driven"
     },
     {
+      "id": "rpg-tracker-protobuf-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/rpg/Tracker.*",
+      "owner": "rpg::Tracker",
+      "issue": "EVENGINE-ARCH-RPG-SAVE",
+      "reason": "Quest progress uses a versioned Protobuf record while the JSON entry points remain a compatibility projection.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "proto/rpg_tracker.proto",
+        "src/modules/rpg/Tracker.h",
+        "src/modules/rpg/Tracker.cpp"
+      ],
+      "tests": [
+        "test/rpg_tracker_protobuf.cpp",
+        "test/rpg_quest.cpp"
+      ],
+      "schema": "eve.rpg.proto.TrackerSave in proto/rpg_tracker.proto",
+      "version": "schema eve.rpg.quest-tracker, wire version 1",
+      "migration": "Version-1 JSON is read through Protobuf JSON mapping; unsupported versions fail before mutation.",
+      "unknown_fields": "Version 1 ignores unknown binary and JSON fields to preserve the prior quest tracker policy.",
+      "restore_atomicity": "All quest identities, objective bounds and state invariants are checked in a private Tracker candidate before swapping live state."
+    },
+    {
       "id": "rpg-game-save-participant-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/rpg/RPGGameSaveParticipant*",

@@ -2,9 +2,12 @@
 
 #include "rpg/Quest.h"
 #include "rpg/QuestSystem.h"
-#include "common/Value.h"
+#include "rpg_tracker.pb.h"
+
+#include <google/protobuf/util/json_util.h>
 
 #include <algorithm>
+#include <limits>
 #include <unordered_set>
 #include <utility>
 
@@ -41,102 +44,77 @@ void Tracker::pollEvents() {
     pending.clear();
 }
 
-eve::Result<std::string> Tracker::snapshotJson() const {
-    eve::Value::Array encodedEntries;
-    encodedEntries.reserve(order.size());
-    for (const auto &id : order) {
-        const auto found = entries.find(id);
-        if (found == entries.end())
-            return eve::Result<std::string>::failure(eve::Diagnostic::error(
+namespace {
+constexpr char kTrackerSchema[] = "eve.rpg.quest-tracker";
+
+eve::Result<void> captureTrackerMessage(const Tracker &tracker, proto::TrackerSave &save) {
+    save.set_schema(kTrackerSchema);
+    save.set_version(1);
+    for (const auto &id : tracker.order) {
+        const auto found = tracker.entries.find(id);
+        if (found == tracker.entries.end())
+            return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::InvariantViolation, "quest tracker order references a missing entry", id));
-        eve::Value::Array objectives;
-        objectives.reserve(found->second.objectives.size());
+        auto *entry = save.add_entries();
+        entry->set_id(found->second.id);
+        entry->set_state(found->second.state);
         for (const auto &objective : found->second.objectives) {
-            eve::Value::Object encodedObjective;
-            encodedObjective.emplace("current", eve::Value(objective.current));
-            encodedObjective.emplace("id", eve::Value(objective.id));
-            objectives.emplace_back(std::move(encodedObjective));
+            auto *encoded = entry->add_objectives();
+            encoded->set_id(objective.id);
+            encoded->set_current(objective.current);
         }
-        eve::Value::Object encodedEntry;
-        encodedEntry.emplace("id", eve::Value(found->second.id));
-        encodedEntry.emplace("objectives", eve::Value(std::move(objectives)));
-        encodedEntry.emplace("state", eve::Value(found->second.state));
-        encodedEntries.emplace_back(std::move(encodedEntry));
     }
-    eve::Value::Object root;
-    root.emplace("entries", eve::Value(std::move(encodedEntries)));
-    root.emplace("schema", eve::Value("eve.rpg.quest-tracker"));
-    root.emplace("version", eve::Value(1));
-    return eve::Value(std::move(root)).toJson();
+    return eve::Result<void>::success();
 }
 
-eve::Result<void> Tracker::restoreSnapshotJson(std::string_view json) {
-    auto parsed = eve::Value::fromJson(json);
-    if (!parsed.ok()) return eve::Result<void>::failure(parsed.status());
-    const eve::Value &root = parsed.value();
+eve::Result<void> restoreTrackerMessage(Tracker &tracker, const proto::TrackerSave &save) {
     auto fail = [](eve::DiagnosticCode code, std::string message, std::string path) {
-        return eve::Result<void>::failure(eve::Diagnostic::error(code, message, path));
+        return eve::Result<void>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
     };
-    if (!root.isObject())
-        return fail(eve::DiagnosticCode::ParseError, "quest tracker root must be an object", "$");
-    const eve::Value *schema = root.find("schema");
-    if (!schema || !schema->isString() || schema->asString() != "eve.rpg.quest-tracker")
+    if (!save.has_schema() || save.schema() != kTrackerSchema)
         return fail(eve::DiagnosticCode::InvalidArgument, "snapshot does not belong to RPG Tracker", "$.schema");
-    const eve::Value *version = root.find("version");
-    if (!version || !version->isInt64() || version->asInt() != 1)
+    if (!save.has_version() || save.version() != 1)
         return fail(eve::DiagnosticCode::UnknownVersion, "unsupported RPG Tracker snapshot version", "$.version");
-    const eve::Value *encodedEntries = root.find("entries");
-    if (!encodedEntries || !encodedEntries->isArray())
-        return fail(eve::DiagnosticCode::ParseError, "quest tracker entries must be an array", "$.entries");
 
     Tracker candidate;
-    if (encodedEntries->arraySize() != candidate.order.size())
+    if (static_cast<std::size_t>(save.entries_size()) != candidate.order.size())
         return fail(eve::DiagnosticCode::Conflict,
                     "quest tracker snapshot does not match the current quest registry", "$.entries");
     std::unordered_set<std::string> seenEntries;
-    for (std::size_t index = 0; index < candidate.order.size(); ++index) {
-        const eve::Value &encoded = encodedEntries->at(index);
+    for (int index = 0; index < save.entries_size(); ++index) {
+        const auto       &encoded = save.entries(index);
         const std::string path = "$.entries[" + std::to_string(index) + "]";
-        if (!encoded.isObject())
-            return fail(eve::DiagnosticCode::ParseError, "quest tracker entry must be an object", path);
-        const eve::Value *id = encoded.find("id");
-        const eve::Value *state = encoded.find("state");
-        const eve::Value *objectives = encoded.find("objectives");
-        if (!id || !id->isString() || !state || !state->isString() || !objectives || !objectives->isArray())
-            return fail(eve::DiagnosticCode::ParseError, "quest tracker entry fields have invalid types", path);
-        if (!seenEntries.emplace(id->asString()).second)
+        if (!encoded.has_id() || !encoded.has_state())
+            return fail(eve::DiagnosticCode::ParseError, "quest tracker entry fields are missing", path);
+        if (!seenEntries.emplace(encoded.id()).second)
             return fail(eve::DiagnosticCode::Conflict, "quest tracker entry id is duplicated", path + ".id");
-        if (id->asString() != candidate.order[index])
+        if (encoded.id() != candidate.order[static_cast<std::size_t>(index)])
             return fail(eve::DiagnosticCode::Conflict,
                         "quest tracker entry order or id does not match the current registry", path + ".id");
-        auto entryIt = candidate.entries.find(id->asString());
+        auto entryIt = candidate.entries.find(encoded.id());
         if (entryIt == candidate.entries.end())
             return fail(eve::DiagnosticCode::NotFound, "quest definition is not registered", path + ".id");
-        const std::string &stateName = state->asString();
+        const std::string &stateName = encoded.state();
         if (stateName != "locked" && stateName != "inactive" && stateName != "active" &&
             stateName != "ready" && stateName != "completed" && stateName != "failed")
             return fail(eve::DiagnosticCode::InvalidArgument, "quest tracker state is invalid", path + ".state");
-        if (objectives->arraySize() != entryIt->second.objectives.size())
+        if (static_cast<std::size_t>(encoded.objectives_size()) != entryIt->second.objectives.size())
             return fail(eve::DiagnosticCode::Conflict,
                         "quest objective list does not match the current definition", path + ".objectives");
         bool allDone = true;
-        for (std::size_t objectiveIndex = 0; objectiveIndex < entryIt->second.objectives.size(); ++objectiveIndex) {
-            const eve::Value &encodedObjective = objectives->at(objectiveIndex);
+        for (int objectiveIndex = 0; objectiveIndex < encoded.objectives_size(); ++objectiveIndex) {
+            const auto       &encodedObjective = encoded.objectives(objectiveIndex);
             const std::string objectivePath = path + ".objectives[" + std::to_string(objectiveIndex) + "]";
-            if (!encodedObjective.isObject())
-                return fail(eve::DiagnosticCode::ParseError, "quest objective must be an object", objectivePath);
-            const eve::Value *objectiveId = encodedObjective.find("id");
-            const eve::Value *current = encodedObjective.find("current");
-            auto &runtime = entryIt->second.objectives[objectiveIndex];
-            if (!objectiveId || !objectiveId->isString() || !current || !current->isInt64())
-                return fail(eve::DiagnosticCode::ParseError, "quest objective fields have invalid types", objectivePath);
-            if (objectiveId->asString() != runtime.id)
+            auto             &runtime          = entryIt->second.objectives[static_cast<std::size_t>(objectiveIndex)];
+            if (!encodedObjective.has_id() || !encodedObjective.has_current())
+                return fail(eve::DiagnosticCode::ParseError, "quest objective fields are missing", objectivePath);
+            if (encodedObjective.id() != runtime.id)
                 return fail(eve::DiagnosticCode::Conflict,
                             "quest objective id or order does not match the current definition", objectivePath + ".id");
-            if (current->asInt() < 0 || current->asInt() > runtime.count)
+            if (encodedObjective.current() < 0 || encodedObjective.current() > runtime.count)
                 return fail(eve::DiagnosticCode::InvalidArgument,
                             "quest objective progress is outside its definition bounds", objectivePath + ".current");
-            runtime.current = static_cast<int>(current->asInt());
+            runtime.current = encodedObjective.current();
             runtime.done = runtime.current >= runtime.count;
             allDone = allDone && runtime.done;
         }
@@ -155,11 +133,57 @@ eve::Result<void> Tracker::restoreSnapshotJson(std::string_view json) {
     }
     candidate.pending.clear();
     candidate.polled.clear();
-    entries.swap(candidate.entries);
-    order.swap(candidate.order);
-    pending.swap(candidate.pending);
-    polled.swap(candidate.polled);
+    tracker.entries.swap(candidate.entries);
+    tracker.order.swap(candidate.order);
+    tracker.pending.swap(candidate.pending);
+    tracker.polled.swap(candidate.polled);
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+}  // namespace
+
+eve::Result<std::string> Tracker::snapshotBinary() const {
+    proto::TrackerSave save;
+    auto               captured = captureTrackerMessage(*this, save);
+    if (!captured.ok()) return eve::Result<std::string>::failure(captured.status());
+    std::string bytes;
+    if (!save.SerializeToString(&bytes))
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                                        "quest tracker Protobuf serialization failed"));
+    return eve::Result<std::string>::success(std::move(bytes));
+}
+
+eve::Result<std::string> Tracker::snapshotJson() const {
+    proto::TrackerSave save;
+    auto               captured = captureTrackerMessage(*this, save);
+    if (!captured.ok()) return eve::Result<std::string>::failure(captured.status());
+    std::string json;
+    const auto  status = google::protobuf::util::MessageToJsonString(save, &json);
+    if (!status.ok())
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::SerializationError, "quest tracker Protobuf JSON conversion failed"));
+    return eve::Result<std::string>::success(std::move(json));
+}
+
+eve::Result<void> Tracker::restoreSnapshotBinary(std::string_view bytes) {
+    if (bytes.size() > static_cast<std::size_t>(std::numeric_limits<int>::max()))
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "quest tracker snapshot is too large"));
+    proto::TrackerSave save;
+    if (!save.ParseFromArray(bytes.data(), static_cast<int>(bytes.size())))
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid quest tracker Protobuf bytes"));
+    return restoreTrackerMessage(*this, save);
+}
+
+eve::Result<void> Tracker::restoreSnapshotJson(std::string_view json) {
+    proto::TrackerSave                       save;
+    google::protobuf::util::JsonParseOptions options;
+    options.ignore_unknown_fields = true;
+    const auto status             = google::protobuf::util::JsonStringToMessage(std::string(json), &save, options);
+    if (!status.ok())
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid quest tracker Protobuf JSON"));
+    return restoreTrackerMessage(*this, save);
 }
 
 int Tracker::getCount() const { return int(entries.size()); }

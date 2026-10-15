@@ -6,7 +6,7 @@ authority for its live state; a protobuf message is an owning snapshot, not a
 second mutable runtime model. `Value` remains available for genuinely dynamic
 script and tool data, but is not the serialization step for known records.
 
-## Implemented first slice: inventory
+## Implemented typed persistence: inventory and quest tracker
 
 `proto/inventory_save.proto` defines the version-1 inventory record. The
 generated C++ sources in `proto/generated/` come from the pinned protobuf
@@ -48,6 +48,18 @@ slice; the host tool that compiles those files is a separate concern from the
 cross-compiled runtime.
 
 ## Remaining migration boundaries
+
+`Tracker` quest progress now has a typed `TrackerSave` message and binary
+snapshot API. The old JSON entry points use Protobuf JSON mapping for version-1
+content. The quest registry remains the authoritative definition source;
+restoration validates every quest/objective identity and bound in a private
+candidate before publishing it. Runtime event queues are intentionally absent
+from the persistent message. Version 1 retains the previous policy of ignoring
+unknown fields while rejecting unsupported versions.
+
+`Value` remains a supported runtime type for genuinely dynamic script, editor
+and tool data. The migration target is its use as an intermediate format for
+known persistence records, not the `Value` type itself.
 
 `GameSaveSession` and its RPG/Tactics participants still exchange `Value`
 payloads and JSON. Their next contract should be typed participant messages
