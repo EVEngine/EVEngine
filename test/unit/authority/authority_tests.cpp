@@ -1,9 +1,9 @@
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_authority)
-#include "PrivateTestScope.h"
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <string>
+#include "PrivateTestScope.h"
 #include "authority/Authority.h"
 #include "common/Module.h"
 #include "common/SnapshotHash.h"

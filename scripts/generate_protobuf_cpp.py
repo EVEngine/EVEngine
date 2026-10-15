@@ -20,6 +20,7 @@ PROTO_GROUPS = {
     "game_save_session.proto": "FOUNDATION",
     "game_event_stream.proto": "FOUNDATION",
     "inventory_save.proto": "FOUNDATION",
+    "orders_command_queue.proto": "FOUNDATION",
     "policy_registry.proto": "FOUNDATION",
     "production_queue.proto": "FOUNDATION",
     "snapshot_envelope.proto": "FOUNDATION",

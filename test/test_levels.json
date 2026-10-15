@@ -7483,7 +7483,9 @@
           "orders.lifecycle.completeFailCancel",
           "orders.timeout.failsAndActivatesNext",
           "orders.payload.isDeterministicJsonCompatible",
-          "orders.snapshot.roundTripAndMalformedRestorePreservesState"
+          "orders.snapshot.roundTripAndMalformedRestorePreservesState",
+          "orders.protobuf.binaryRoundTripRejectsInvalidWithoutMutation",
+          "orders.protobuf.legacyJsonImportRewritesTypedSchema"
         ]
       },
       "module": "orders",

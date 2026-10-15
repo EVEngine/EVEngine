@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package eve.orders.proto;
+
+import "dynamic_value.proto";
+
+// Version 2 is the canonical typed command queue format. Version 1 JSON is
+// accepted only at the compatibility import boundary.
+message CommandQueueSave {
+  optional string schema = 1;
+  optional uint32 version = 2;
+  optional uint64 next_id = 3;
+  optional uint64 next_sequence = 4;
+  optional uint64 active_index = 5;
+  repeated uint64 queued_indices = 6;
+  repeated CommandOrder orders = 7;
+  repeated CommandOrderEvent events = 8;
+}
+
+enum CommandOrderState {
+  QUEUED = 0;
+  ACTIVE = 1;
+  COMPLETED = 2;
+  FAILED = 3;
+  CANCELLED = 4;
+}
+
+message CommandOrder {
+  optional string id = 1;
+  optional string kind = 2;
+  optional int32 priority = 3;
+  optional double timeout_seconds = 4;
+  optional double elapsed_seconds = 5;
+  optional CommandOrderState state = 6;
+  optional string reason = 7;
+  eve.persistence.proto.DynamicValue payload = 8;
+}
+
+message CommandOrderEvent {
+  optional uint64 sequence = 1;
+  optional string order_id = 2;
+  optional string kind = 3;
+  optional CommandOrderState from = 4;
+  optional CommandOrderState to = 5;
+  optional string reason = 6;
+}

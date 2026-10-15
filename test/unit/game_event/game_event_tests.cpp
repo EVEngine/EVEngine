@@ -158,10 +158,10 @@ TEST_CASE("event_envelope.restoreRejectsDuplicateNonNilEventId") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_eventstream)
-#include "PrivateTestScope.h"
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <string>
 #include "GameEventTestSupport.h"
+#include "PrivateTestScope.h"
 #include "common/Module.h"
 #include "common/SnapshotHash.h"
 #include "game_event/GameEvent.h"

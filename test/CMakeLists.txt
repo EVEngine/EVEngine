@@ -836,6 +836,28 @@ if(TARGET EVProduction AND TARGET EVFoundation)
     LABEL "production_protobuf_test" NAME_PREFIX "production-protobuf/")
 endif()
 
+if(TARGET EVOrders AND TARGET EVFoundation)
+  add_executable(orders_protobuf_test EXCLUDE_FROM_ALL
+    main.cpp unit/orders/orders_unit.cpp)
+  target_include_directories(orders_protobuf_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+  target_link_libraries(orders_protobuf_test PRIVATE
+    eve_engine_includes ${ThirdParty} EVFoundation zeroerr protobuf::libprotobuf)
+  target_include_directories(orders_protobuf_test SYSTEM PRIVATE
+    ${CMAKE_SOURCE_DIR}/proto/generated)
+  target_compile_options(orders_protobuf_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(orders_protobuf_test PRIVATE EVBacktrace)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/orders_protobuf_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/orders_protobuf_test_zeroerr_tests.cmake"
+      "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(orders_protobuf_test
+    LABEL "orders_protobuf_test" NAME_PREFIX "orders-protobuf/")
+endif()
+
 if(TARGET EVStatepatch AND TARGET EVFoundation)
   add_executable(statepatch_protobuf_test EXCLUDE_FROM_ALL
     main.cpp unit/statepatch/statepatch_unit.cpp)

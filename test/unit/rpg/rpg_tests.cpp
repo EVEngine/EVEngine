@@ -4547,8 +4547,7 @@ TEST_CASE("rpg.actorProtobuf.binaryRoundTripAndAtomicFailure") {
     CHECK_EQ(destination->getLevel(), 4);
 
     CHECK(!destination->restoreCheckpointBinary("malformed protobuf").ok());
-    CHECK(!destination->restoreCheckpointJson(
-        R"({"schema":"eve.rpg.actor-checkpoint","version":2})").ok());
+    CHECK(!destination->restoreCheckpointJson(R"({"schema":"eve.rpg.actor-checkpoint","version":2})").ok());
     CHECK_EQ(destination->getBaseAttribute("attack"), 18.0);
     CHECK_EQ(destination->getCurrent("hp"), 47.0);
     CHECK_EQ(destination->getLevel(), 4);
@@ -4639,8 +4638,8 @@ TEST_CASE("rpg.gameState.protobufRoundTripAndAtomicRejection") {
 namespace test_rpg_party_protobuf {
 TEST_CASE("rpg.partyProtobuf.binaryRoundTripAndAtomicFailure") {
     eve::rpg::Party party;
-    auto *hero = eve::rpg::RPGActor::createActor();
-    auto *companion = eve::rpg::RPGActor::createActor();
+    auto           *hero      = eve::rpg::RPGActor::createActor();
+    auto           *companion = eve::rpg::RPGActor::createActor();
     REQUIRE(hero != nullptr);
     REQUIRE(companion != nullptr);
     hero->setBaseAttribute("attack", 20.0);

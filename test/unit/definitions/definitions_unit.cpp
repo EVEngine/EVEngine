@@ -240,11 +240,11 @@ TEST_CASE("definitions-protobuf.legacyEnvelopeAndInvalidBinaryAreAtomic") {
     invalid.set_schema("definitions:registry");
     invalid.set_version(2);
     invalid.set_next_event_sequence(1);
-    auto* generation = invalid.add_generations();
+    auto *generation = invalid.add_generations();
     generation->set_type("unit");
     generation->set_id("bad");
     generation->set_generation(1);
-    auto* definition = invalid.add_definitions();
+    auto *definition = invalid.add_definitions();
     definition->set_type("unit");
     definition->set_id("bad");
     definition->set_version(1);

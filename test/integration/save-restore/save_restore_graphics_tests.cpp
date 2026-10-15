@@ -1,14 +1,14 @@
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_common_game_save_session)
-#include "PrivateTestScope.h"
+#include <google/protobuf/wrappers.pb.h>
 #include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
+#include "PrivateTestScope.h"
 #include "common/GameSaveSession.h"
-#include <google/protobuf/wrappers.pb.h>
 #include "zeroerr/unittest.h"
 // common_game_save_session.cpp
 namespace test_common_game_save_session {
@@ -183,7 +183,7 @@ TEST_CASE("gameSave.protobufContentMigrationIsExplicit") {
     CHECK_EQ(first.value, 99);
     REQUIRE(destination
                 .addBinaryContentMigration("game-content-v1",
-                                           [](const eve::GameSaveParticipantMessages& states) {
+                                           [](const eve::GameSaveParticipantMessages &states) {
                                                return eve::Result<eve::GameSaveParticipantMessages>::success(states);
                                            })
                 .ok());
@@ -330,6 +330,7 @@ TEST_CASE("graphics.canvas.separateSubmissionsPreserveAndClearRGBA8") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_save_session)
+#include <google/protobuf/util/json_util.h>
 #include "PrivateTestScope.h"
 #include "common/Value.h"
 #include "inventory/Bag.h"
@@ -343,7 +344,6 @@ TEST_CASE("graphics.canvas.separateSubmissionsPreserveAndClearRGBA8") {
 #include "rpg/RPGSaveSession.h"
 #include "rpg/Tracker.h"
 #include "rpg_save_session.pb.h"
-#include <google/protobuf/util/json_util.h>
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // rpg_save_session.cpp

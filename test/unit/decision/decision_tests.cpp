@@ -132,8 +132,8 @@ TEST_CASE("decision.conditionUnavailableIsDifferentFromFalse") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_decision)
-#include "PrivateTestScope.h"
 #include <cmath>
+#include "PrivateTestScope.h"
 #include "decision/Decision.h"
 #include "decision_context.pb.h"
 #include "zeroerr/assert.h"

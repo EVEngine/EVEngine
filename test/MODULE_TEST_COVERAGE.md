@@ -952,7 +952,7 @@ Source directory: `src/modules/npc_ai/editing`. Status: **referenced-by-other-te
 
 ### orders
 
-Source directory: `src/modules/orders`. Status: **local-rules-recorded**. Local cases: **7**.
+Source directory: `src/modules/orders`. Status: **local-rules-recorded**. Local cases: **9**.
 
 - Unit: [unit/orders/orders_unit.cpp](unit/orders/orders_unit.cpp)
 - Integration task `script-api`: [script_api_graphics_mcp_tests.cpp](integration/script-api/script_api_graphics_mcp_tests.cpp)

@@ -5,6 +5,7 @@
 
 #include "common/Module.h"
 #include "orders/CommandQueue.h"
+#include "orders_command_queue.pb.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -159,10 +160,67 @@ TEST_CASE("orders.snapshot.roundTripAndMalformedRestorePreservesState") {
     CHECK_EQ(std::move(afterMalformed).takeValue(), before);
 
     auto invalid = restored.restore(
-        R"({"schema":"orders.command_queue","version":1,"nextId":"1","nextSequence":"1",
+        R"({"schema":"orders.command_queue","version":1,"nextId":"0","nextSequence":"1",
             "active":null,"queued":[],"orders":[],"events":[]})");
     CHECK(!invalid.ok());
     auto afterInvalid = restored.snapshot();
     REQUIRE(afterInvalid.ok());
     CHECK_EQ(std::move(afterInvalid).takeValue(), before);
+}
+
+TEST_CASE("orders.protobuf.binaryRoundTripRejectsInvalidWithoutMutation") {
+    CommandQueue source;
+    const auto   first   = takeId(source.append("first", 2, 4.0));
+    const auto   next    = takeId(source.append("next", 1));
+    auto*        payload = &source.find(first)->get().payload;
+    REQUIRE(payload->setJson("exact", "9223372036854775807").ok());
+    auto saved = source.snapshotBinary();
+    REQUIRE(saved.ok());
+
+    CommandQueue restored;
+    REQUIRE(restored.restoreBinary(saved.value()).ok());
+    auto repeated = restored.snapshotBinary();
+    REQUIRE(repeated.ok());
+    CHECK_EQ(repeated.value(), saved.value());
+    REQUIRE(restored.find(first));
+    CHECK_EQ(restored.find(first)->get().payload.getJson("exact"), std::string("9223372036854775807"));
+    CHECK_EQ(restored.queuedCount(), 1);
+    REQUIRE(restored.find(next));
+
+    eve::orders::proto::CommandQueueSave invalid;
+    REQUIRE(invalid.ParseFromString(saved.value()));
+    invalid.set_version(3);
+    std::string future;
+    REQUIRE(invalid.SerializeToString(&future));
+    auto rejected = restored.restoreBinary(future);
+    REQUIRE(!rejected.ok());
+    CHECK_EQ(rejected.error()->code(), eve::DiagnosticCode::UnknownVersion);
+    invalid.set_version(2);
+    invalid.GetReflection()->MutableUnknownFields(&invalid)->AddVarint(100, 1);
+    std::string unknown;
+    REQUIRE(invalid.SerializeToString(&unknown));
+    CHECK(!restored.restoreBinary(unknown).ok());
+    CHECK(!restored.restoreBinary("invalid").ok());
+    auto after = restored.snapshotBinary();
+    REQUIRE(after.ok());
+    CHECK_EQ(after.value(), saved.value());
+}
+
+TEST_CASE("orders.protobuf.legacyJsonImportRewritesTypedSchema") {
+    constexpr std::string_view legacy =
+        R"({"schema":"orders.command_queue","version":1,"nextId":"2","nextSequence":"3","active":0,"queued":[],"orders":[{"elapsedSeconds":0,"id":"order-0000000000000001","kind":"work","payload":{"exact":9223372036854775807},"priority":2,"reason":"","state":"active","timeoutSeconds":0}],"events":[{"from":"queued","kind":"work","orderId":"order-0000000000000001","reason":"","sequence":"1","to":"queued"},{"from":"queued","kind":"work","orderId":"order-0000000000000001","reason":"","sequence":"2","to":"active"}]})";
+    CommandQueue restored;
+    REQUIRE(restored.restore(legacy).ok());
+    REQUIRE(restored.current());
+    CHECK_EQ(restored.current()->get().payload.getJson("exact"), std::string("9223372036854775807"));
+    auto rewritten = restored.snapshot();
+    REQUIRE(rewritten.ok());
+    CHECK(rewritten.value().find("\"version\":2") != std::string::npos);
+    CommandQueue copy;
+    REQUIRE(copy.restore(rewritten.value()).ok());
+    auto stable   = copy.snapshotBinary();
+    auto original = restored.snapshotBinary();
+    REQUIRE(stable.ok());
+    REQUIRE(original.ok());
+    CHECK_EQ(stable.value(), original.value());
 }

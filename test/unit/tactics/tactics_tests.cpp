@@ -1945,11 +1945,12 @@ TEST_CASE("tactics.reactionDepthIsBounded") {
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_tactics_migration) || \
     defined(EVE_TEST_ORIGIN_tactics_replay) || defined(EVE_TEST_ORIGIN_tactics_snapshot_script)
-#include "PrivateTestScope.h"
+#include <google/protobuf/util/json_util.h>
 #include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
+#include "PrivateTestScope.h"
 #include "common/Capability.h"
 #include "common/ECS.h"
 #include "common/Snapshot.h"
@@ -1958,7 +1959,6 @@ TEST_CASE("tactics.reactionDepthIsBounded") {
 #include "tactics/TacticsPersistence.h"
 #include "tactics/TacticsReplay.h"
 #include "tactics_battle.pb.h"
-#include <google/protobuf/util/json_util.h>
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // Responsibility: tactics_state_formats
