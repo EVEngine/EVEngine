@@ -1,8 +1,12 @@
 #include "policyregistry/PolicyRegistry.h"
 
 #include "common/SquirrelBinding.h"
+#include "policy_registry.pb.h"
 #include "schema/SchemaRegistry.h"
 
+#include <google/protobuf/io/coded_stream.h>
+#include <google/protobuf/io/zero_copy_stream_impl_lite.h>
+#include <google/protobuf/util/json_util.h>
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <charconv>
@@ -13,6 +17,30 @@
 
 namespace eve::policyregistry {
 namespace {
+
+bool serializeDeterministic(const google::protobuf::MessageLite& message, std::string& bytes) {
+    google::protobuf::io::StringOutputStream output(&bytes);
+    google::protobuf::io::CodedOutputStream  coded(&output);
+    coded.SetSerializationDeterministic(true);
+    return message.SerializeToCodedStream(&coded) && !coded.HadError();
+}
+
+bool hasUnknownProtoFields(const google::protobuf::Message& message) {
+    const auto* reflection = message.GetReflection();
+    if (!reflection->GetUnknownFields(message).empty()) return true;
+    std::vector<const google::protobuf::FieldDescriptor*> fields;
+    reflection->ListFields(message, &fields);
+    for (const auto* field : fields) {
+        if (field->cpp_type() != google::protobuf::FieldDescriptor::CPPTYPE_MESSAGE) continue;
+        if (field->is_repeated()) {
+            for (int index = 0; index < reflection->FieldSize(message, field); ++index)
+                if (hasUnknownProtoFields(reflection->GetRepeatedMessage(message, field, index))) return true;
+        } else if (hasUnknownProtoFields(reflection->GetMessage(message, field))) {
+            return true;
+        }
+    }
+    return false;
+}
 
 const eve::Value* field(const eve::Value::Object& object, std::string_view name) {
     const auto it = object.find(std::string(name));
@@ -46,12 +74,6 @@ bool readUint64String(const eve::Value& value, std::uint64_t& output) {
     if (!text || text->empty()) return false;
     const auto [end, error] = std::from_chars(text->data(), text->data() + text->size(), output);
     return error == std::errc{} && end == text->data() + text->size();
-}
-
-eve::Value parseStoredJson(std::string_view text) {
-    auto parsed = eve::Value::fromJson(text);
-    if (!parsed.ok()) std::terminate();
-    return std::move(parsed).takeValue();
 }
 
 eve::LogicalId policySchema() {
@@ -387,62 +409,237 @@ void PolicyRegistry::clearEvents() {
     if (const auto next = revision_.incremented()) revision_ = *next;
 }
 
-std::string PolicyRegistry::snapshotJson() const {
-    const auto        state = storage_.snapshotState();
-    eve::Value::Array descriptors;
-    eve::Value::Array events;
-    eve::Value::Array generations;
-    descriptors.reserve(storage_.size());
-    events.reserve(storage_.eventCount());
-    generations.reserve(state.entries.size());
-
+eve::Result<std::string> PolicyRegistry::snapshotBinary() const {
+    const auto                state = storage_.snapshotState();
+    proto::PolicyRegistrySave save;
+    save.set_schema("policyregistry:registry");
+    save.set_version(2);
+    save.set_next_event_sequence(state.nextEventSequence.value());
     for (const auto& [key, entry] : state.entries) {
-        eve::Value::Object generation;
-        generation.emplace("domain", eve::Value(key.first));
-        generation.emplace("generation", eve::Value(std::to_string(entry.generation.value())));
-        generation.emplace("name", eve::Value(key.second));
-        generations.emplace_back(std::move(generation));
+        auto* slot = save.add_slots();
+        slot->set_domain(key.first);
+        slot->set_name(key.second);
+        slot->set_generation(entry.generation.value());
+        if (!entry.value) continue;
+        const auto& descriptor = *entry.value;
+        auto*       item       = slot->mutable_policy();
+        item->set_version(descriptor.version.value());
+        item->set_priority(descriptor.priority);
+        item->set_enabled(descriptor.enabled);
+        switch (descriptor.kind) {
+            case ImplementationKind::Builtin: item->set_kind(proto::Descriptor::BUILTIN); break;
+            case ImplementationKind::Script: item->set_kind(proto::Descriptor::SCRIPT); break;
+            case ImplementationKind::Batch: item->set_kind(proto::Descriptor::BATCH); break;
+        }
+        item->set_schema_id(descriptor.schemaId);
+        if (!google::protobuf::util::JsonStringToMessage(descriptor.metadataJson, item->mutable_metadata()).ok())
+            return eve::Result<std::string>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, "invalid retained policy metadata"));
+    }
+    for (const auto& event : state.events) {
+        auto* item = save.add_events();
+        item->set_sequence(event.sequence.value());
+        item->set_domain(event.key.first);
+        item->set_name(event.key.second);
+        item->set_generation(event.generation.value());
+        switch (event.operation) {
+            case eve::RegistryOperation::Insert: item->set_operation(proto::Mutation::INSERT); break;
+            case eve::RegistryOperation::Replace: item->set_operation(proto::Mutation::REPLACE); break;
+            case eve::RegistryOperation::Remove: item->set_operation(proto::Mutation::REMOVE); break;
+        }
+        item->set_tombstone(event.tombstone);
+        item->set_label(event.label);
+        item->set_version(event.data.version.value());
+        item->set_enabled(event.data.enabled);
+    }
+    std::string bytes;
+    if (!serializeDeterministic(save, bytes))
+        return eve::Result<std::string>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, "policy Protobuf serialization failed"));
+    return eve::Result<std::string>::success(std::move(bytes));
+}
 
-        if (!entry.value.has_value()) continue;
-        const auto&        descriptor = *entry.value;
-        eve::Value::Object item;
-        item.emplace("domain", eve::Value(descriptor.domain));
-        item.emplace("enabled", eve::Value(descriptor.enabled));
-        item.emplace("generation", eve::Value(std::to_string(entry.generation.value())));
-        item.emplace("kind", eve::Value(implementationKindName(descriptor.kind)));
-        item.emplace("metadata", parseStoredJson(descriptor.metadataJson));
-        item.emplace("name", eve::Value(descriptor.name));
-        item.emplace("priority", eve::Value(static_cast<std::int64_t>(descriptor.priority)));
-        item.emplace("schemaId", eve::Value(descriptor.schemaId));
-        item.emplace("version", eve::Value(static_cast<std::int64_t>(descriptor.version.value())));
-        descriptors.emplace_back(std::move(item));
+eve::Result<void> PolicyRegistry::restoreBinary(std::string_view bytes) {
+    const auto invalid = [](std::string message) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move(message)));
+    };
+    proto::PolicyRegistrySave save;
+    if (bytes.size() > static_cast<std::size_t>(std::numeric_limits<int>::max()) ||
+        !save.ParseFromArray(bytes.data(), static_cast<int>(bytes.size())) || hasUnknownProtoFields(save) ||
+        !save.has_schema() || save.schema() != "policyregistry:registry" || !save.has_version() ||
+        save.version() != 2 || !save.has_next_event_sequence() || save.next_event_sequence() == 0)
+        return invalid("invalid policy Protobuf snapshot");
+
+    Storage::State candidate;
+    for (const auto& slot : save.slots()) {
+        if (!slot.has_domain() || slot.domain().empty() || !slot.has_name() || slot.name().empty() ||
+            !slot.has_generation() || slot.generation() == 0)
+            return invalid("invalid policy slot");
+        Storage::Entry entry{eve::Generation(slot.generation()), std::nullopt};
+        if (slot.has_policy()) {
+            const auto& item = slot.policy();
+            if (!item.has_version() || item.version() == 0 || !item.has_priority() || !item.has_enabled() ||
+                !item.has_kind() || !item.has_schema_id() || !item.has_metadata())
+                return invalid("incomplete policy descriptor");
+            PolicyDescriptor descriptor;
+            switch (item.kind()) {
+                case proto::Descriptor::BUILTIN: descriptor.kind = ImplementationKind::Builtin; break;
+                case proto::Descriptor::SCRIPT: descriptor.kind = ImplementationKind::Script; break;
+                case proto::Descriptor::BATCH: descriptor.kind = ImplementationKind::Batch; break;
+                default: return invalid("invalid policy implementation kind");
+            }
+            descriptor.domain     = slot.domain();
+            descriptor.name       = slot.name();
+            descriptor.version    = eve::SchemaVersion(item.version());
+            descriptor.priority   = item.priority();
+            descriptor.enabled    = item.enabled();
+            descriptor.schemaId   = item.schema_id();
+            descriptor.generation = eve::Generation(slot.generation());
+            std::string metadataJson;
+            if (!google::protobuf::util::MessageToJsonString(item.metadata(), &metadataJson).ok())
+                return invalid("invalid policy metadata");
+            auto metadata = eve::Value::fromJson(metadataJson);
+            if (!metadata.ok() || !metadata.value().isObject()) return invalid("invalid policy metadata object");
+            auto canonical = metadata.value().toJson();
+            if (!canonical.ok()) return eve::Result<void>::failure(canonical.status());
+            descriptor.metadataJson = std::move(canonical).takeValue();
+            entry.value             = std::move(descriptor);
+        }
+        if (!candidate.entries.emplace(Key{slot.domain(), slot.name()}, std::move(entry)).second)
+            return invalid("duplicate policy slot");
     }
 
-    for (const auto& raw : state.events) {
-        const auto         event = projectEvent(raw);
-        eve::Value::Object item;
-        item.emplace("domain", eve::Value(event.domain));
-        item.emplace("enabled", eve::Value(event.enabled));
-        item.emplace("generation", eve::Value(std::to_string(event.generation.value())));
-        item.emplace("name", eve::Value(event.name));
-        item.emplace("policyName", eve::Value(event.policyName));
-        item.emplace("sequence", eve::Value(std::to_string(event.sequence.value())));
-        item.emplace("version", eve::Value(static_cast<std::int64_t>(event.version.value())));
-        events.emplace_back(std::move(item));
+    eve::EventSequence previous;
+    for (const auto& item : save.events()) {
+        if (!item.has_sequence() || item.sequence() == 0 || eve::EventSequence(item.sequence()) <= previous ||
+            !item.has_domain() || item.domain().empty() || !item.has_name() || item.name().empty() ||
+            !item.has_generation() || item.generation() == 0 || !item.has_operation() || !item.has_tombstone() ||
+            !item.has_label() || !item.has_version() || item.version() == 0 || !item.has_enabled())
+            return invalid("invalid policy event");
+        Storage::Event event;
+        switch (item.operation()) {
+            case proto::Mutation::INSERT: event.operation = eve::RegistryOperation::Insert; break;
+            case proto::Mutation::REPLACE: event.operation = eve::RegistryOperation::Replace; break;
+            case proto::Mutation::REMOVE: event.operation = eve::RegistryOperation::Remove; break;
+            default: return invalid("invalid policy mutation operation");
+        }
+        if (item.tombstone() != (event.operation == eve::RegistryOperation::Remove) ||
+            (!item.label().empty() &&
+             (item.label() != "enabled" || event.operation != eve::RegistryOperation::Replace)))
+            return invalid("inconsistent policy event");
+        event.sequence     = eve::EventSequence(item.sequence());
+        event.key          = Key{item.domain(), item.name()};
+        event.generation   = eve::Generation(item.generation());
+        event.tombstone    = item.tombstone();
+        event.label        = item.label();
+        event.data.version = eve::SchemaVersion(item.version());
+        event.data.enabled = item.enabled();
+        candidate.events.push_back(std::move(event));
+        previous = eve::EventSequence(item.sequence());
     }
+    if (!previous.isZero() && eve::EventSequence(save.next_event_sequence()) <= previous)
+        return invalid("invalid policy next event sequence");
+    candidate.nextEventSequence = eve::EventSequence(save.next_event_sequence());
+    auto restored               = storage_.restoreState(std::move(candidate));
+    if (!restored.ok()) return eve::Result<void>::failure(restored.status());
+    clearEventProjection();
+    revision_ = eve::Revision(save.next_event_sequence() - 1);
+    tick_     = eve::SimulationTick{};
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
 
-    eve::Value::Object root;
-    root.emplace("descriptors", eve::Value(std::move(descriptors)));
-    root.emplace("events", eve::Value(std::move(events)));
-    root.emplace("generations", eve::Value(std::move(generations)));
-    root.emplace("nextEventSequence", eve::Value(std::to_string(state.nextEventSequence.value())));
-    root.emplace("version", eve::Value(std::int64_t(1)));
-    auto encoded = eve::Value(std::move(root)).toJson();
-    if (!encoded.ok()) std::terminate();
-    return std::move(encoded).takeValue();
+eve::Result<std::string> PolicyRegistry::snapshotEnvelopeBinary(const eve::SnapshotHashProvider& hashProvider) const {
+    if (!hashProvider)
+        return eve::Result<std::string>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "policy snapshot requires a hash provider"));
+    auto payload = snapshotBinary();
+    if (!payload.ok()) return eve::Result<std::string>::failure(payload.status());
+    proto::PolicyRegistryEnvelope envelope;
+    envelope.set_type("policyregistry.registry");
+    envelope.set_schema("policyregistry:registry");
+    envelope.set_version(2);
+    envelope.set_instance_id(instanceId_.format());
+    envelope.set_revision(revision_.value());
+    envelope.set_tick(tick_.value());
+    envelope.set_payload_wire(std::move(payload).takeValue());
+    std::string hashInput;
+    if (!serializeDeterministic(envelope, hashInput))
+        return eve::Result<std::string>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, "policy envelope serialization failed"));
+    auto digest = hashProvider(hashInput);
+    if (!digest.ok()) return eve::Result<std::string>::failure(digest.status());
+    const auto digestBytes = digest.value().bytes();
+    envelope.set_digest(std::string(reinterpret_cast<const char*>(digestBytes.data()), digestBytes.size()));
+    std::string wire;
+    if (!serializeDeterministic(envelope, wire))
+        return eve::Result<std::string>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, "policy envelope serialization failed"));
+    return eve::Result<std::string>::success(std::move(wire));
+}
+
+eve::Result<void> PolicyRegistry::restoreSnapshotBinary(std::string_view                 bytes,
+                                                        const eve::SnapshotHashProvider& hashProvider) {
+    if (!hashProvider)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "policy restore requires a hash provider"));
+    proto::PolicyRegistryEnvelope envelope;
+    if (bytes.size() > static_cast<std::size_t>(std::numeric_limits<int>::max()) ||
+        !envelope.ParseFromArray(bytes.data(), static_cast<int>(bytes.size())) || hasUnknownProtoFields(envelope) ||
+        !envelope.has_type() || envelope.type() != "policyregistry.registry" || !envelope.has_schema() ||
+        envelope.schema() != "policyregistry:registry" || !envelope.has_version() || !envelope.has_instance_id() ||
+        !envelope.has_revision() || !envelope.has_tick() || !envelope.has_payload_wire() || !envelope.has_digest())
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid policy Protobuf envelope"));
+    if (envelope.version() != 2)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::UnknownVersion, "unsupported policy envelope version"));
+    const auto identity = eve::PersistentId::parse(envelope.instance_id());
+    if (!identity || (!instanceId_.isNil() && *identity != instanceId_))
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "policy snapshot identity differs from target"));
+    if (envelope.payload_wire().empty() || envelope.digest().size() != eve::ContentId::Bytes{}.size())
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "incomplete policy Protobuf envelope"));
+    const std::string expectedDigest = envelope.digest();
+    envelope.clear_digest();
+    std::string hashInput;
+    if (!serializeDeterministic(envelope, hashInput))
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, "policy envelope serialization failed"));
+    auto digest = hashProvider(hashInput);
+    if (!digest.ok()) return eve::Result<void>::failure(digest.status());
+    const auto digestBytes = digest.value().bytes();
+    if (expectedDigest != std::string(reinterpret_cast<const char*>(digestBytes.data()), digestBytes.size()))
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::HashMismatch, "policy snapshot digest differs from envelope"));
+    auto restored = restoreBinary(envelope.payload_wire());
+    if (!restored.ok()) return eve::Result<void>::failure(restored.status());
+    instanceId_ = *identity;
+    revision_   = eve::Revision(envelope.revision());
+    tick_       = eve::SimulationTick(envelope.tick());
+    return eve::Result<void>::success();
+}
+
+std::string PolicyRegistry::snapshotJson() const {
+    auto bytes = snapshotBinary();
+    if (!bytes.ok()) return {};
+    proto::PolicyRegistrySave save;
+    if (!save.ParseFromString(bytes.value())) return {};
+    std::string json;
+    return google::protobuf::util::MessageToJsonString(save, &json).ok() ? json : std::string{};
 }
 
 eve::Result<void> PolicyRegistry::restoreJson(const std::string& json) {
+    proto::PolicyRegistrySave save;
+    if (google::protobuf::util::JsonStringToMessage(json, &save).ok() && save.has_schema()) {
+        std::string bytes;
+        if (!serializeDeterministic(save, bytes))
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, "policy JSON serialization failed"));
+        return restoreBinary(bytes);
+    }
+
+    // The version-1 Value shape remains a read-only migration source.
     auto parsed = eve::Value::fromJson(json);
     if (!parsed.ok()) {
         return eve::Result<void>::failure(parsed.status());
@@ -596,7 +793,7 @@ eve::Result<void> PolicyRegistry::restoreJson(const std::string& json) {
 eve::Result<eve::SnapshotEnvelope> PolicyRegistry::snapshot(const eve::SnapshotHashProvider& hashProvider) const {
     auto payload = eve::Value::fromJson(snapshotJson());
     if (!payload.ok()) return eve::Result<eve::SnapshotEnvelope>::failure(payload.status());
-    return eve::makeSnapshotEnvelope("policyregistry.registry", policySchema(), eve::SchemaVersion(1), instanceId_,
+    return eve::makeSnapshotEnvelope("policyregistry.registry", policySchema(), eve::SchemaVersion(2), instanceId_,
                                      revision_, tick_, std::move(payload).takeValue(), hashProvider);
 }
 
@@ -608,7 +805,8 @@ eve::Result<void> PolicyRegistry::restoreSnapshot(const eve::SnapshotEnvelope&  
     if (!instanceId_.isNil() && source.instanceId != instanceId_)
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Conflict, "snapshot instanceId does not match policyregistry::PolicyRegistry"));
-    auto migrated = policyMigrations().migrate(source, eve::SchemaVersion(1), hashProvider);
+    auto migrated =
+        policyMigrations().migrate(source, eve::SchemaVersion(source.schemaVersion.value() == 2 ? 2 : 1), hashProvider);
     if (!migrated.ok()) return eve::Result<void>::failure(migrated.status());
     auto payload = migrated.value().payload.toJson();
     if (!payload.ok()) return eve::Result<void>::failure(payload.status());
@@ -622,14 +820,57 @@ eve::Result<void> PolicyRegistry::restoreSnapshot(const eve::SnapshotEnvelope&  
 }
 
 eve::Result<std::string> PolicyRegistry::snapshotEnvelopeJson(const eve::SnapshotHashProvider& hashProvider) const {
-    auto value = snapshot(hashProvider);
-    if (!value.ok()) return eve::Result<std::string>::failure(value.status());
-    return std::move(value).andThen(
-        [](eve::SnapshotEnvelope&& envelope) { return eve::serializeSnapshotEnvelope(envelope); });
+    auto bytes = snapshotEnvelopeBinary(hashProvider);
+    if (!bytes.ok()) return eve::Result<std::string>::failure(bytes.status());
+    proto::PolicyRegistryEnvelope envelope;
+    if (!envelope.ParseFromString(bytes.value()))
+        return eve::Result<std::string>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, "policy envelope decoding failed"));
+    proto::PolicyRegistryJsonDocument document;
+    document.set_type(envelope.type());
+    document.set_schema(envelope.schema());
+    document.set_version(envelope.version());
+    document.set_instance_id(envelope.instance_id());
+    document.set_revision(envelope.revision());
+    document.set_tick(envelope.tick());
+    document.set_digest(envelope.digest());
+    if (!document.mutable_payload()->ParseFromString(envelope.payload_wire()))
+        return eve::Result<std::string>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, "policy payload decoding failed"));
+    std::string json;
+    if (!google::protobuf::util::MessageToJsonString(document, &json).ok())
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                                        "policy envelope JSON serialization failed"));
+    return eve::Result<std::string>::success(std::move(json));
 }
 
 eve::Result<void> PolicyRegistry::restoreSnapshotJson(std::string_view                 json,
                                                       const eve::SnapshotHashProvider& hashProvider) {
+    proto::PolicyRegistryJsonDocument document;
+    if (google::protobuf::util::JsonStringToMessage(std::string(json), &document).ok() && document.has_type()) {
+        if (hasUnknownProtoFields(document) || !document.has_schema() || !document.has_version() ||
+            !document.has_instance_id() || !document.has_revision() || !document.has_tick() ||
+            !document.has_payload() || !document.has_digest())
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "incomplete policy Protobuf JSON envelope"));
+        proto::PolicyRegistryEnvelope envelope;
+        envelope.set_type(document.type());
+        envelope.set_schema(document.schema());
+        envelope.set_version(document.version());
+        envelope.set_instance_id(document.instance_id());
+        envelope.set_revision(document.revision());
+        envelope.set_tick(document.tick());
+        envelope.set_digest(document.digest());
+        if (!serializeDeterministic(document.payload(), *envelope.mutable_payload_wire()))
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, "policy payload serialization failed"));
+        std::string wire;
+        if (!serializeDeterministic(envelope, wire))
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                                     "policy envelope serialization failed"));
+        return restoreSnapshotBinary(wire, hashProvider);
+    }
+    // Older common Value envelopes are decoded only for migration.
     auto source = eve::parseSnapshotEnvelope(json, hashProvider);
     if (!source.ok()) return eve::Result<void>::failure(source.status());
     return restoreSnapshot(std::move(source).takeValue(), hashProvider);

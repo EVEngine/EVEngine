@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package eve.policyregistry.proto;
+
+import "google/protobuf/struct.proto";
+
+// Version 2 replaces the fixed registry and event shape with typed fields.
+// Metadata is open-ended JSON by contract and uses Protobuf Struct.
+message PolicyRegistrySave {
+  optional string schema = 1;
+  optional uint32 version = 2;
+  optional uint64 next_event_sequence = 3;
+  repeated Slot slots = 4;
+  repeated Mutation events = 5;
+}
+
+// The digest covers the canonical header and exact payload_wire bytes.
+message PolicyRegistryEnvelope {
+  optional string type = 1;
+  optional string schema = 2;
+  optional uint32 version = 3;
+  optional string instance_id = 4;
+  optional uint64 revision = 5;
+  optional uint64 tick = 6;
+  optional bytes payload_wire = 7;
+  optional bytes digest = 8;
+}
+
+message PolicyRegistryJsonDocument {
+  optional string type = 1;
+  optional string schema = 2;
+  optional uint32 version = 3;
+  optional string instance_id = 4;
+  optional uint64 revision = 5;
+  optional uint64 tick = 6;
+  PolicyRegistrySave payload = 7;
+  optional bytes digest = 8;
+}
+
+message Slot {
+  optional string domain = 1;
+  optional string name = 2;
+  optional uint64 generation = 3;
+  Descriptor policy = 4;
+}
+
+message Descriptor {
+  optional uint64 version = 1;
+  optional int32 priority = 2;
+  optional bool enabled = 3;
+  enum Kind {
+    KIND_UNSPECIFIED = 0;
+    BUILTIN = 1;
+    SCRIPT = 2;
+    BATCH = 3;
+  }
+  optional Kind kind = 4;
+  optional string schema_id = 5;
+  google.protobuf.Struct metadata = 6;
+}
+
+message Mutation {
+  optional uint64 sequence = 1;
+  optional string domain = 2;
+  optional string name = 3;
+  optional uint64 generation = 4;
+  enum Operation {
+    OPERATION_UNSPECIFIED = 0;
+    INSERT = 1;
+    REPLACE = 2;
+    REMOVE = 3;
+  }
+  optional Operation operation = 5;
+  optional bool tombstone = 6;
+  optional string label = 7;
+  optional uint64 version = 8;
+  optional bool enabled = 9;
+}
