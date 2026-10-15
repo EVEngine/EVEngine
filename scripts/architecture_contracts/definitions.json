@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "definitions-registry-protobuf-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/definitions/Definitions.*",
+      "owner": "definitions::DefinitionRegistry",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "Registry identity, generations and events now use a typed Protobuf schema while open-ended definition bodies use the shared lossless dynamic message.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "proto/definitions_registry.proto",
+        "src/modules/definitions/Definitions.cpp"
+      ],
+      "tests": [
+        "test/definitions_protobuf.cpp",
+        "test/definitions.cpp"
+      ],
+      "schema": "definitions:registry version 2 is DefinitionRegistrySave with typed definition, generation and lifecycle event records.",
+      "version": "Binary and Protobuf JSON writers emit version 2. The hand-written version 1 schema remains only to validate legacy JSON imports.",
+      "migration": "Version 1 common envelopes are validated in a detached registry and recaptured as version 2 payloads; direct legacy JSON remains readable.",
+      "unknown_fields": "Binary restore rejects unknown Protobuf fields recursively; typed Protobuf JSON rejects unknown names, and legacy JSON uses its version 1 strict schema.",
+      "restore_atomicity": "The complete generation, definition and event image is validated in a detached VersionedRegistry state and published only after restoreState succeeds."
+    },
+    {
+      "id": "definitions-registry-protobuf-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/definitions/**",
+      "owner": "definitions::DefinitionRegistry",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "The registry offers Protobuf binary persistence alongside compatibility JSON and script APIs.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/definitions/Definitions.h",
+        "src/modules/definitions/Definitions.cpp",
+        "proto/definitions_registry.proto"
+      ],
+      "tests": [
+        "test/definitions_protobuf.cpp",
+        "test/definitions.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        { "script_class": "DefinitionRegistry", "methods": [ "snapshotJson", "restoreJson" ] }
+      ],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "No L1-L4 trim claim is made for this persistence change."
+      },
+      "thread_affinity": "Registry persistence runs on its owner thread and invokes no subscriber callbacks during restore.",
+      "cost_notes": [
+        "Binary capture and restore cost linear time in retained definitions, events and body bytes per operation."
+      ],
+      "hot_path": []
+    }
+  ]
+}

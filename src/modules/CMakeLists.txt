@@ -324,6 +324,16 @@ if(TARGET EVStatepatch)
   target_link_libraries(EVStatepatch PUBLIC protobuf::libprotobuf)
 endif()
 
+if(TARGET EVDefinitions)
+  target_sources(EVDefinitions PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/definitions_registry.pb.cc)
+  target_include_directories(EVDefinitions SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  if(MSVC)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/definitions_registry.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+  endif()
+  target_link_libraries(EVDefinitions PUBLIC protobuf::libprotobuf)
+endif()
+
 if(TARGET EVDecision)
   target_sources(EVDecision PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/decision_context.pb.cc)
   target_include_directories(EVDecision SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)

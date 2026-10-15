@@ -122,9 +122,32 @@ public:
     const DefinitionEvent* eventAt(int index) const;
     /** @brief Clears retained events without resetting their sequence allocator. */
     void clearEvents();
-    /** @brief Exports all registry state as deterministic canonical JSON. */
+    /**
+     * @brief Compatibility Protobuf JSON projection of the registry snapshot.
+     * @return Protobuf JSON, or an empty string if encoding fails.
+     * @compatibility Prefer snapshotBinary() for persistent C++ storage.
+     */
     std::string snapshotJson() const;
-    /** @brief Transactionally restores registry state from snapshotJson() output. */
+    /**
+     * @brief Exports registry identity, generations and events as typed Protobuf binary.
+     * @return Encoded snapshot, or a structured failure without changing the registry.
+     * @cost Linear in retained definitions, events and recursively owned body sizes per capture.
+     * @thread Call on the registry owner thread; no callbacks are invoked.
+     */
+    [[nodiscard]] eve::Result<std::string> snapshotBinary() const;
+    /**
+     * @brief Validates and atomically restores a typed Protobuf binary snapshot.
+     * @param bytes Complete DefinitionRegistrySave message.
+     * @return Success, or a failure leaving the registry unchanged.
+     * @cost Linear in the encoded snapshot size per restore.
+     * @thread Call on the registry owner thread; no callbacks are invoked.
+     */
+    [[nodiscard]] eve::Result<void> restoreBinary(std::string_view bytes);
+    /**
+     * @brief Transactionally restores Protobuf JSON or legacy version 1 JSON.
+     * @return Success, or a failure leaving the registry unchanged.
+     * @compatibility Prefer restoreBinary() for persistent C++ storage.
+     */
     [[nodiscard]] eve::Result<void> restoreJson(const std::string& json);
 
     /**

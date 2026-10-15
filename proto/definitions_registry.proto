@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package eve.definitions.proto;
+
+import "dynamic_value.proto";
+
+// Version 2 replaces the hand-written registry snapshot schema. Definition
+// bodies are open-ended data; registry identity and lifecycle are typed.
+message DefinitionRegistrySave {
+  optional string schema = 1;
+  optional uint32 version = 2;
+  repeated DefinitionRecord definitions = 3;
+  repeated GenerationRecord generations = 4;
+  repeated DefinitionEventRecord events = 5;
+  optional uint64 next_event_sequence = 6;
+}
+
+message DefinitionRecord {
+  optional string type = 1;
+  optional string id = 2;
+  optional uint64 version = 3;
+  optional uint64 generation = 4;
+  eve.persistence.proto.DynamicValue body = 5;
+}
+
+message GenerationRecord {
+  optional string type = 1;
+  optional string id = 2;
+  optional uint64 generation = 3;
+}
+
+message DefinitionEventRecord {
+  enum Operation {
+    OPERATION_UNSPECIFIED = 0;
+    INSERT = 1;
+    REPLACE = 2;
+    REMOVE = 3;
+  }
+
+  optional uint64 sequence = 1;
+  optional Operation operation = 2;
+  optional string type = 3;
+  optional string id = 4;
+  optional uint64 version = 5;
+  optional uint64 generation = 6;
+}

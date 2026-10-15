@@ -758,6 +758,27 @@ if(TARGET EVStatepatch AND TARGET EVFoundation)
   zeroerr_discover_tests(statepatch_protobuf_test
     LABEL "statepatch_protobuf_test" NAME_PREFIX "statepatch-protobuf/")
 endif()
+
+if(TARGET EVDefinitions AND TARGET EVFoundation)
+  add_executable(definitions_protobuf_test EXCLUDE_FROM_ALL
+    main.cpp definitions.cpp definitions_protobuf.cpp)
+  target_link_libraries(definitions_protobuf_test PRIVATE
+    eve_engine_includes EVFoundation zeroerr protobuf::libprotobuf)
+  target_include_directories(definitions_protobuf_test SYSTEM PRIVATE
+    ${CMAKE_SOURCE_DIR}/proto/generated)
+  target_compile_options(definitions_protobuf_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(definitions_protobuf_test PRIVATE EVBacktrace)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/definitions_protobuf_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/definitions_protobuf_test_zeroerr_tests.cmake"
+      "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(definitions_protobuf_test
+    LABEL "definitions_protobuf_test" NAME_PREFIX "definitions-protobuf/")
+endif()
 endif()
 include(asset_shader/GraphicsProbe.cmake)
 

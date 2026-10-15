@@ -16,6 +16,7 @@ PROTO_GROUPS = {
     "dynamic_value.proto": "FOUNDATION",
     "authority_store.proto": "FOUNDATION",
     "decision_context.proto": "FOUNDATION",
+    "definitions_registry.proto": "FOUNDATION",
     "game_save_session.proto": "FOUNDATION",
     "inventory_save.proto": "FOUNDATION",
     "policy_registry.proto": "FOUNDATION",
