@@ -12,7 +12,9 @@ public:
     /** @brief Battle and digest contract must remain stable for this adapter's lifetime. */
     TacticsGameSaveParticipant(Battle& battle, SnapshotHashProvider hashProvider);
     std::string_view                                            saveKey() const noexcept override;
-    [[nodiscard]] Result<Value>                                 capture() const override;
+    std::string_view                                            messageType() const noexcept override;
+    [[nodiscard]] Result<std::string>                           captureBinary() const override;
+    [[nodiscard]] Result<std::unique_ptr<IPreparedGameRestore>> prepareBinary(std::string_view wire) override;
     [[nodiscard]] Result<std::unique_ptr<IPreparedGameRestore>> prepare(const Value& state) override;
 
 private:

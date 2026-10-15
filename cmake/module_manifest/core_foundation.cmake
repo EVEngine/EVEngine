@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------------
 
 eve_declare_module(NAME common CORE REQUIRED LIB EVCommon LAYER -1
-                   THIRDPARTY squirrel)
+                   THIRDPARTY squirrel protobuf)
 eve_declare_module(NAME cmdline CORE REQUIRED LIB EVCmdLine LAYER -1
                    DEPS filesystem
                    THIRDPARTY squirrel poco)

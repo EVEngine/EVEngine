@@ -32,6 +32,7 @@
 
 set(EVE_TEST_DOMAINS
     core
+    game_save
     schema
     scripts
     graphics
@@ -222,6 +223,7 @@ set(EVE_TEST_PREFIX_DOMAIN
     "capability;core"
     "cmdline;core"
     "common_;core"
+    "=common_game_save_session;game_save"
     "crashlog;core"
     "diagnostic_value;core"
     "ecs_container_instances;core"

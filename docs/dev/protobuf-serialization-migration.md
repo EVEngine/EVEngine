@@ -27,16 +27,17 @@ after all checks pass. A later version needs an explicit migration from version
 The inventory module links the full protobuf runtime only when it is enabled.
 The engine CMake graph builds that target directly from the pinned `third-party`
 checkout so the imported protobuf target carries its Abseil link dependencies
-on the first configure. The generated files can be refreshed with:
+on the first configure. The generated files can be refreshed with the pinned
+Protobuf 35.1 compiler:
 
 ```sh
-protoc --proto_path=proto --cpp_out=proto/generated proto/inventory_save.proto
+python3 scripts/generate_protobuf_cpp.py --protoc /path/to/pinned/protoc
 ```
 
-Use the `protoc` version pinned in `third-party/protobuf` and verify the
-generated diff before committing. For `rpg_save_session.proto`, also pass
-`--proto_path=third-party/protobuf/src` so `google/protobuf/any.proto` resolves;
-strip protoc's trailing spaces in its generated oneof accessors before staging.
+The script passes each link group's export macro through protoc's
+`dllexport_decl` option and inserts `common/Export.h` into generated headers.
+This lets Windows SHARED consumers link message classes and descriptors from
+their owning engine DLL. Verify the generated diff before committing.
 Runtime descriptor pools and dynamic messages
 can consume `FileDescriptorSet` produced from dynamically authored `.proto`
 files:
@@ -46,9 +47,10 @@ protoc --proto_path=proto --include_imports \
   --descriptor_set_out=build/inventory.desc proto/inventory_save.proto
 ```
 
-The engine-side dynamic descriptor loader is not implemented in this first
-slice; the host tool that compiles those files is a separate concern from the
-cross-compiled runtime.
+`schema::ProtobufSchema::registerDescriptorSet` loads these descriptor bytes
+at runtime, and its `encodeJson`/`decodeJson` methods use dynamic messages.
+Compiling a newly authored `.proto` into a descriptor set remains a host-tool
+step outside the cross-compiled runtime.
 
 ## Remaining migration boundaries
 
@@ -92,11 +94,13 @@ not use `Value`.
 and tool data. The migration target is its use as an intermediate format for
 known persistence records, not the `Value` type itself.
 
-The generic `GameSaveSession` and its RPG/Tactics adapters still exchange
-`Value` payloads and JSON. Their next contract should use typed participant
-messages in a versioned envelope, with an explicit participant type and version.
-The RPG envelope above demonstrates the original-wire-byte integrity policy;
-the generic layer needs the same policy before every participant commit.
+The generic `GameSaveSession` now writes a version-2 Protobuf envelope with
+typed `Any` participant records, a content version, and a digest over the exact
+payload wire bytes. It prepares every participant before publishing any state;
+version-1 JSON is a read-only compatibility input. The RPG adapter uses its
+typed binary envelope directly. Tactics still wraps its old JSON snapshot in a
+Protobuf `BytesValue` participant, so its own persistence codec must migrate to
+typed `.proto` messages before this boundary is complete.
 
 Other domain snapshots, authored assets, event logs, and network records need
 their own `.proto` definitions, fixture migrations, and domain validation. The

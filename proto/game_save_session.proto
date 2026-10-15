@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package eve.game.proto;
+
+import "google/protobuf/any.proto";
+
+// Each domain owns the message identified by its Any type URL. The outer
+// session only coordinates capture, validation, migration and publication.
+message GameSavePayload {
+  optional string content_version = 1;
+  map<string, google.protobuf.Any> participants = 2;
+}
+
+// Digest covers payload_wire exactly as saved, never a parsed reserialization.
+message GameSaveEnvelope {
+  optional string type = 1;
+  optional string schema = 2;
+  optional uint32 version = 3;
+  bytes payload_wire = 4;
+  bytes digest = 5;
+}

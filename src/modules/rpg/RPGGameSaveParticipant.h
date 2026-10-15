@@ -12,7 +12,9 @@ public:
     /** @brief The bound session must outlive this adapter and any game-save transaction. */
     explicit RPGGameSaveParticipant(RPGSaveSession& session) noexcept;
     std::string_view                                            saveKey() const noexcept override;
-    [[nodiscard]] Result<Value>                                 capture() const override;
+    std::string_view                                            messageType() const noexcept override;
+    [[nodiscard]] Result<std::string>                           captureBinary() const override;
+    [[nodiscard]] Result<std::unique_ptr<IPreparedGameRestore>> prepareBinary(std::string_view wire) override;
     [[nodiscard]] Result<std::unique_ptr<IPreparedGameRestore>> prepare(const Value& state) override;
 
 private:

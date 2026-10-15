@@ -329,7 +329,7 @@ endif()
 
 # Generated Protobuf headers are third-party output and carry upstream MSVC
 # conversion warnings; direct test includes must use the system include path.
-foreach(_eve_proto_test_target IN ITEMS unit_test_rpg unit_test)
+foreach(_eve_proto_test_target IN ITEMS unit_test_game_save unit_test_rpg unit_test)
   if(TARGET ${_eve_proto_test_target})
     target_include_directories(${_eve_proto_test_target} SYSTEM PRIVATE
       ${CMAKE_SOURCE_DIR}/proto/generated)

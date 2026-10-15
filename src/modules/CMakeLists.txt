@@ -320,6 +320,10 @@ if(TARGET EVRPG)
   target_link_libraries(EVRPG PUBLIC protobuf::libprotobuf)
 endif()
 
+if(TARGET EVTactics)
+  target_link_libraries(EVTactics PUBLIC protobuf::libprotobuf)
+endif()
+
 if(TARGET EVPhysics)
   target_compile_definitions(EVPhysics PRIVATE EVENGINE_HAS_JOLT=$<BOOL:${EVENGINE_BUILD_JOLT}>)
   if(TARGET Jolt)
