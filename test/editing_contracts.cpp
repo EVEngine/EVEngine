@@ -38,21 +38,15 @@
 #include "editor/EditorValue.h"
 #include "editor/EditorVolumeTarget.h"
 #include "editor/gizmo/editing/DomainGizmoPreview.h"
-#include "editor/gizmo/editor/EditorGizmoPreview.h"
 #include "editor/input/editing/InputMapTarget.h"
-#include "editor/input/editor/EditorInputMapTarget.h"
 #include "editor/queue/editing/QueueInspector.h"
-#include "editor/queue/editor/EditorQueueInspector.h"
 #include "fluids/editing/FluidTarget.h"
 #include "fluids/editing/SurfaceFluidTarget.h"
 #include "fluids/editing/VolumeFluidTarget.h"
-#include "fluids/editor/EditorFluidTarget.h"
 #include "fluids/editor/EditorSurfaceFluidTarget.h"
-#include "fluids/editor/EditorVolumeFluidTarget.h"
 #include "graphics/editing/OffscreenPreview.h"
 #include "graphics/editor/EditorOffscreenPreview.h"
 #include "graphics/lighting/editing/LightingTarget.h"
-#include "graphics/lighting/editor/EditorLightingTarget.h"
 #include "graphics/material/editing/MaterialGraph.h"
 #include "graphics/material/editing/MaterialTarget.h"
 #include "graphics/material/editor/EditorGraph.h"
@@ -67,16 +61,12 @@
 #include "physics/editor/EditorPhysicsAsset.h"
 #include "physics/editor/EditorPhysicsTarget.h"
 #include "procgen/biome/editing/BiomeTarget.h"
-#include "procgen/biome/editor/EditorBiomeTarget.h"
 #include "procgen/editing/HouseGenTarget.h"
 #include "procgen/editing/TextureRecipeTarget.h"
-#include "procgen/editor/EditorHouseGenTarget.h"
-#include "procgen/editor/EditorTextureRecipeTarget.h"
 #include "profiler/editing/ProfilerModel.h"
 #include "scene/editing/SceneTarget.h"
 #include "scene/editor/EditorSceneTarget.h"
 #include "scene/loader/editing/SceneImportTarget.h"
-#include "scene/loader/editor/EditorSceneImportTarget.h"
 #include "social/editing/SocialDocument.h"
 #include "ui/editing/UiDocument.h"
 #include "ui/editor/EditorUiDocumentTarget.h"
@@ -116,26 +106,15 @@ static_assert(std::is_same_v<eve::editor::PhysicsColliderTarget, eve::physics_ed
 static_assert(
     std::is_same_v<eve::editor::IPhysicsColliderAssetResolver, eve::physics_editing::IPhysicsColliderAssetResolver>);
 static_assert(std::is_same_v<eve::editor::SceneDocumentTarget, eve::scene_editing::SceneDocumentTarget>);
-static_assert(std::is_same_v<eve::editor::SceneImportTarget, eve::sceneloader_editing::SceneImportTarget>);
 static_assert(
     std::is_same_v<eve::editor::AnimationClipDocumentTarget, eve::animation_editing::AnimationClipDocumentTarget>);
 static_assert(std::is_same_v<eve::editor::AvatarDocumentTarget, eve::avatar_editing::AvatarDocumentTarget>);
-static_assert(std::is_same_v<eve::editor::BiomeDocumentTarget, eve::biome_editing::BiomeDocumentTarget>);
 static_assert(std::is_same_v<eve::editor::BuildingPlacementTarget, eve::building_editing::BuildingPlacementTarget>);
-static_assert(std::is_same_v<eve::editor::RuntimeQueueInspector, eve::queue_editing::RuntimeQueueInspector>);
 static_assert(std::is_same_v<eve::editor::GraphicsOffscreenPreviewService,
                              eve::graphics_editing::GraphicsOffscreenPreviewService>);
-static_assert(
-    std::is_same_v<eve::editor::EditorGizmoPreviewBuilder, eve::domain_gizmo_editing::EditorGizmoPreviewBuilder>);
-static_assert(std::is_same_v<eve::editor::TextureRecipeTarget, eve::procgen_editing::TextureRecipeTarget>);
 static_assert(std::is_same_v<eve::editor::UiDocumentTarget, eve::ui_editing::UiDocumentTarget>);
 static_assert(std::is_same_v<eve::editor::UiThemeCatalogTarget, eve::ui_editing::UiThemeCatalogTarget>);
-static_assert(std::is_same_v<eve::editor::InputMapTarget, eve::input_editing::InputMapTarget>);
-static_assert(std::is_same_v<eve::editor::HouseGenDocumentTarget, eve::housegen_editing::HouseGenDocumentTarget>);
-static_assert(std::is_same_v<eve::editor::FluidSimulationTarget, eve::fluids_editing::FluidSimulationTarget>);
 static_assert(std::is_same_v<eve::editor::SurfaceFluidTarget, eve::fluids_editing::SurfaceFluidTarget>);
-static_assert(std::is_same_v<eve::editor::VolumeFluidTarget, eve::fluids_editing::VolumeFluidTarget>);
-static_assert(std::is_same_v<eve::editor::Light3DDocumentTarget, eve::lighting_editing::Light3DDocumentTarget>);
 static_assert(std::is_same_v<eve::editor::VoxelPaletteTarget, eve::voxel_editing::VoxelPaletteTarget>);
 static_assert(std::is_same_v<eve::editor::VoxelCatalogTarget, eve::voxel_editing::VoxelCatalogTarget>);
 static_assert(std::is_same_v<eve::editor::VoxelModelValue, eve::voxel_editing::VoxelModelValue>);
