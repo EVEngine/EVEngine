@@ -97,7 +97,7 @@ void kinematicMove(VehicleEntity& v, float dt) {
 
 /** @brief 轮式移动：2D/3D 物理体优先，无物理回退 kinematic。 */
 void wheelMove(VehicleEntity& v, float dt) {
-    if (VehiclePhysics::tryWheelMove(v, dt) == VehiclePhysicsStatus::Applied) return;
+    if (VehiclePhysics::tryWheelMove(v, dt) != VehiclePhysicsStatus::Unavailable) return;
     kinematicMove(v, dt);
 }
 

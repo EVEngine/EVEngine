@@ -4,6 +4,7 @@
 #include "physics/Joint2D.h"
 #include "physics/Mechanism2D.h"
 #include "physics/backend/SimulationBackend.h"
+#include "physics/mechanics/Joint2D.h"
 
 #include "common/Exception.h"
 #include "common/Profile.h"
@@ -238,6 +239,7 @@ World::World(float gravityX, float gravityY, bool sleep, float meter, eve::Persi
 World::~World() { destroy(); }
 
 void World::adoptPreparedTopology(World &prepared) {
+    cancelForceStep();
     std::swap(world_, prepared.world_);
     std::swap(relay_, prepared.relay_);
     std::swap(simulation_, prepared.simulation_);
@@ -245,6 +247,16 @@ void World::adoptPreparedTopology(World &prepared) {
     std::swap(nextId_, prepared.nextId_);
     std::swap(bodies_, prepared.bodies_);
     std::swap(fixtures_, prepared.fixtures_);
+    std::swap(joints_, prepared.joints_);
+    std::swap(jointHandles_, prepared.jointHandles_);
+    std::swap(mechanisms_, prepared.mechanisms_);
+    std::swap(restoredJoints2D_, prepared.restoredJoints2D_);
+    std::swap(restoredBodies_, prepared.restoredBodies_);
+    std::swap(restoredFixtures_, prepared.restoredFixtures_);
+    std::swap(nextJointId_, prepared.nextJointId_);
+    std::swap(nextJointHandleIndex_, prepared.nextJointHandleIndex_);
+    for (Joint2D *joint : joints_) joint->world_ = this;
+    for (Joint2D *joint : prepared.joints_) joint->world_ = &prepared;
     std::swap(simulationTick_, prepared.simulationTick_);
     for (Body *body : bodies_) body->world_ = this;
     for (Fixture *fixture : fixtures_) fixture->world_ = this;
@@ -258,8 +270,10 @@ void World::adoptPreparedTopology(World &prepared) {
 
 void World::destroy() {
     if (destroyed_) return;
+    cancelForceStep();
     destroyed_ = true;
     lifetime_.reset();
+    invalidateJoints2D();
 
     std::vector<Mechanism2D *> mechanisms(mechanisms_.begin(), mechanisms_.end());
     for (Mechanism2D *mechanism : mechanisms) {
@@ -291,6 +305,8 @@ void World::destroy() {
         if (f) f->invalidate();
     }
     fixtures_.clear();
+    restoredFixtures_.clear();
+    restoredBodies_.clear();
     clearContactEvents();
 
     simulation_.reset();
@@ -366,19 +382,27 @@ void World::updateFull(float dt, int velocityIterations, int positionIterations)
 }
 
 eve::Result<void> World::step(const eve::SimulationStep &stepValue, const SimulationSettings &settings) {
-    if (!isValid() || !simulation_) {
+    if (!isValid() || !simulation_ || simulationStepActive_ || world_->IsLocked()) {
         return eve::Result<void>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
                                    "Cannot step a destroyed or uninitialized physics world", "physics.world.step"));
     }
+    auto forceStep = validateForceStep(stepValue);
+    if (!forceStep) return forceStep;
     auto valid = detail::validateSimulationStep(stepValue, settings, simulation_->observation());
     if (!valid) return valid;
+    struct StepGuard {
+        bool &active;
+        explicit StepGuard(bool &flag) : active(flag) { active = true; }
+        ~StepGuard() { active = false; }
+    } guard(simulationStepActive_);
     for (Mechanism2D *mechanism : mechanisms_) {
         if (mechanism) mechanism->syncBeforeStep();
     }
     auto result = simulation_->step(stepValue, settings);
     if (!result) return result;
     simulationTick_ = stepValue.tick;
+    finishForceStep();
     return result;
 }
 
