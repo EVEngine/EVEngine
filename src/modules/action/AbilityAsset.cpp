@@ -623,10 +623,13 @@ Result<AbilityDefinition> abilityDefinitionFromTimeline(LogicalId definitionId, 
                                                         Duration cooldown, AbilityInstancingPolicy instancing,
                                                         AbilityActivationGroup activationGroup,
                                                         std::string_view       triggerTag) {
+    auto timing = actionTimingFromPhysicalSections(timeline);
+    if (!timing) return Result<AbilityDefinition>::failure(timing.status());
     AbilityDefinition definition;
     definition.id              = std::move(definitionId);
     definition.action.id       = timeline.actionId;
-    definition.action.timeline = timeline;
+    definition.action.timing   = timing.value();
+    definition.action.timeline = std::move(timeline);
     definition.cooldown        = cooldown;
     definition.instancing      = instancing;
     definition.activationGroup = activationGroup;
@@ -634,20 +637,6 @@ Result<AbilityDefinition> abilityDefinitionFromTimeline(LogicalId definitionId, 
         if (!tags::isValidGameplayTagName(triggerTag))
             return invalid<AbilityDefinition>("ability trigger tag is invalid", "triggerTag");
         definition.triggers.push_back({std::string(triggerTag), tags::GameplayTagMatch::Exact});
-    }
-
-    const auto& splits = timeline.splitTimestamps;
-    if (splits.empty()) {
-        definition.action.timing.active = timeline.duration;
-    } else if (splits.size() == 1) {
-        definition.action.timing.windup = splits[0];
-        definition.action.timing.active =
-            Duration::fromNanoseconds(timeline.duration.nanoseconds() - splits[0].nanoseconds());
-    } else {
-        definition.action.timing.windup = splits[0];
-        definition.action.timing.active = Duration::fromNanoseconds(splits[1].nanoseconds() - splits[0].nanoseconds());
-        definition.action.timing.recover =
-            Duration::fromNanoseconds(timeline.duration.nanoseconds() - splits[1].nanoseconds());
     }
     auto valid = definition.validate();
     if (!valid) return Result<AbilityDefinition>::failure(valid.status());

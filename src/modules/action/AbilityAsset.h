@@ -46,14 +46,15 @@ inline constexpr std::uint64_t    kAbilityAssetSchemaVersion = 2;
 /**
  * @brief Assemble one AbilityDefinition from a timeline asset and policy inputs.
  * @param definitionId Ability identity.
- * @param timeline Owning timeline whose duration and splitTimestamps define action timing.
+ * @param timeline Owning timeline; phase timing is projected via `actionTimingFromPhysicalSections`.
  * @param cooldown Injected cooldown duration.
  * @param instancing Instancing policy.
  * @param activationGroup Concurrency group.
  * @param triggerTag Optional exact gameplay-event trigger; empty omits triggers.
  * @return Fully validated owning definition, or a structured assembly/validation failure.
- * @remarks This is the asset/assembly face; AbilityRuntime remains the grant/activation owner.
- *          Failure publishes no runtime state.
+ * @remarks Asset/assembly face only. Uses the physical-section→timing assembly convention;
+ *          ActionRuntime still reads only `ActionTiming`. AbilityRuntime remains the
+ *          grant/activation owner. Failure publishes no runtime state.
  */
 [[nodiscard]] EVENGINE_API_PLATFORM Result<AbilityDefinition> abilityDefinitionFromTimeline(
     LogicalId definitionId, ActionTimeline timeline, Duration cooldown, AbilityInstancingPolicy instancing,

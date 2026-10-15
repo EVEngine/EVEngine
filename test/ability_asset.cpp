@@ -151,6 +151,30 @@ TEST_CASE("abilityAsset.migratesV1MillisecondsAndRejectsFutureUnknownOrMalformed
     CHECK(!eve::action::decodeAbilityAsset(fractionalGrid).ok());
 }
 
+TEST_CASE("actionTiming.physicalSectionsProjectAtMostTwoSplitsAndRemainNonAuthoritative") {
+    eve::action::ActionTimeline timeline;
+    timeline.actionId = id("action:slash");
+    timeline.duration = eve::Duration::fromNanoseconds(600);
+    auto none         = eve::action::actionTimingFromPhysicalSections(timeline);
+    REQUIRE(none.ok());
+    CHECK_EQ(none.value().active.nanoseconds(), 600);
+    CHECK_EQ(none.value().windup.nanoseconds(), 0);
+    CHECK_EQ(none.value().recover.nanoseconds(), 0);
+
+    timeline.splitTimestamps = {eve::Duration::fromNanoseconds(100), eve::Duration::fromNanoseconds(350)};
+    auto two = eve::action::actionTimingFromPhysicalSections(timeline);
+    REQUIRE(two.ok());
+    CHECK_EQ(two.value().windup.nanoseconds(), 100);
+    CHECK_EQ(two.value().active.nanoseconds(), 250);
+    CHECK_EQ(two.value().recover.nanoseconds(), 250);
+    auto total = two.value().total();
+    REQUIRE(total.ok());
+    CHECK_EQ(total.value(), timeline.duration);
+
+    timeline.splitTimestamps.push_back(eve::Duration::fromNanoseconds(500));
+    CHECK(!eve::action::actionTimingFromPhysicalSections(timeline).ok());
+}
+
 TEST_CASE("abilityAsset.parsePolicySpellingsAndAssembleDefinitionFromTimeline") {
     auto instancing = eve::action::parseAbilityInstancingPolicy("per-execution");
     REQUIRE(instancing.ok());
