@@ -7,7 +7,7 @@ and task ownership. References are header/API-name evidence, not measured behavi
 coverage. Missing local-rule coverage is reported explicitly; no empty assertion
 or placeholder test is counted as coverage.
 
-Declared modules: **193**. Task groups: **20**.
+Declared modules: **193**. Task groups: **19**.
 
 - api-symbol-in-other-tests: 3
 - local-rules-recorded: 89
@@ -160,10 +160,9 @@ Source directory: `src/modules/action/input`. Status: **local-rules-recorded**. 
 Source directory: `src/modules/agent`. Status: **local-rules-recorded**. Local cases: **7**.
 
 - Unit: [unit/agent/agent.cpp](unit/agent/agent.cpp)
-- Integration task `agent-persistence`: [agent_protobuf.cpp](integration/agent-persistence/agent_protobuf.cpp)
 - Integration task `gameplay-composition`: [gameplay_composition_graphics_animation_inertializer_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_animation_inertializer_tests.cpp)
 - Integration task `script-api`: [script_api_graphics_ScriptECS_tests.cpp](integration/script-api/script_api_graphics_ScriptECS_tests.cpp)
-- Direct header evidence: [GpuProbe.cpp](agent/GpuProbe.cpp), [agent_protobuf.cpp](integration/agent-persistence/agent_protobuf.cpp), [gameplay_composition_graphics_animation_inertializer_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_animation_inertializer_tests.cpp), [script_api_graphics_ScriptECS_tests.cpp](integration/script-api/script_api_graphics_ScriptECS_tests.cpp), [agent.cpp](unit/agent/agent.cpp)
+- Direct header evidence: [GpuProbe.cpp](agent/GpuProbe.cpp), [gameplay_composition_graphics_animation_inertializer_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_animation_inertializer_tests.cpp), [script_api_graphics_ScriptECS_tests.cpp](integration/script-api/script_api_graphics_ScriptECS_tests.cpp), [agent.cpp](unit/agent/agent.cpp)
 
 ### agent_tensor
 
@@ -1615,12 +1614,6 @@ Source directory: `src/modules/window`. Status: **task-tests-recorded**. Local c
 - Direct header evidence: [UnityGraphicsProbe.cpp](asset_import/UnityGraphicsProbe.cpp), [asset_import_graphics_tests.cpp](integration/asset-import/asset_import_graphics_tests.cpp), [asset_pipeline_graphics_asset_import_unity_vegetation_material_tests.cpp](integration/asset-pipeline/asset_pipeline_graphics_asset_import_unity_vegetation_material_tests.cpp), [audio_playback_graphics_tests.cpp](integration/audio-playback/audio_playback_graphics_tests.cpp), [file_io_graphics_hex_level_data_tests.cpp](integration/file-io/file_io_graphics_hex_level_data_tests.cpp), [gameplay_composition_graphics_procgen_core_boundary_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_procgen_core_boundary_tests.cpp), [gameplay_composition_graphics_procgen_road_editing_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_procgen_road_editing_tests.cpp), [gameplay_composition_graphics_rts_script_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_rts_script_tests.cpp), [gameplay_composition_graphics_stylize_attack_vfx_layers_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_stylize_attack_vfx_layers_tests.cpp), [performance_graphics_tests.cpp](integration/performance/performance_graphics_tests.cpp), [physics_simulation_graphics_box3d_tests.cpp](integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp), [render_pipeline_graphics_graphics_backend_parity_tests.cpp](integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp), [render_pipeline_graphics_graphics_vegetation_extras_tests.cpp](integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp), [render_presentation_graphics_ClassicScenes_tests.cpp](integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp), [render_presentation_graphics_RenderImageAudit_tests.cpp](integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp), [render_presentation_graphics_RenderSystem3D_tests.cpp](integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp), [render_presentation_graphics_gpu_driven_tests.cpp](integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp), [render_presentation_graphics_hex_level_simulation_tests.cpp](integration/render-presentation/render_presentation_graphics_hex_level_simulation_tests.cpp), [render_presentation_graphics_procgen_tests.cpp](integration/render-presentation/render_presentation_graphics_procgen_tests.cpp), [render_presentation_graphics_voxel_face_dir_tests.cpp](integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp), [render_presentation_graphics_window_cpp_tests.cpp](integration/render-presentation/render_presentation_graphics_window_cpp_tests.cpp), [runtime_lifecycle_graphics_tests.cpp](integration/runtime-lifecycle/runtime_lifecycle_graphics_tests.cpp), [script_api_graphics_scene_tests.cpp](integration/script-api/script_api_graphics_scene_tests.cpp), [animation_tests.cpp](unit/animation/animation_tests.cpp), [decal_unit.cpp](unit/decal/decal_unit.cpp), [dialogue_tests.cpp](unit/dialogue/dialogue_tests.cpp), [filesystem_tests.cpp](unit/filesystem/filesystem_tests.cpp), [graphics_pipeline_state_tests.cpp](unit/graphics/graphics_pipeline_state_tests.cpp), [ik_unit.cpp](unit/ik/ik_unit.cpp), [inventory_tests.cpp](unit/inventory/inventory_tests.cpp), [map_tests.cpp](unit/map/map_tests.cpp), [particles_tests.cpp](unit/particles/particles_tests.cpp), [physics_tests.cpp](unit/physics/physics_tests.cpp), [softbody_unit.cpp](unit/physics_softbody/softbody_unit.cpp), [procgen_foundation_tests.cpp](unit/procgen/procgen_foundation_tests.cpp), [procgen_mesh_tests.cpp](unit/procgen/procgen_mesh_tests.cpp), [procgen_points_tests.cpp](unit/procgen/procgen_points_tests.cpp), [scene_tests.cpp](unit/scene/scene_tests.cpp), [spatial_unit.cpp](unit/spatial/spatial_unit.cpp), [stylize_tests.cpp](unit/stylize/stylize_tests.cpp), [tensor_tests.cpp](unit/tensor/tensor_tests.cpp), [virtualgeometry_builder_unit.cpp](unit/virtualgeometry/virtualgeometry_builder_unit.cpp), [weather_tests.cpp](unit/weather/weather_tests.cpp)
 
 ## Integration tasks
-
-### agent-persistence
-
-Cases: 2. Referenced/owning modules: `agent`.
-
-- [agent_protobuf.cpp](integration/agent-persistence/agent_protobuf.cpp)
 
 ### asset-import
 
