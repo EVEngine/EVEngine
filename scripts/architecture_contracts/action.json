@@ -140,6 +140,7 @@
         "Native ActionRuntime/AbilityRuntime/AbilityAsset are the authoritative C++ faces; ScriptActionRuntime is the shared script projection surface. ScriptCombatRuntime composes ScriptActionRuntime for ability methods instead of owning a second AbilityRuntime or reimplementing projection.",
         "AbilityRuntime::step owns advance-all + cooldown + synchronize; abilityDefinitionFromTimeline owns timeline→definition assembly via actionTimingFromPhysicalSections; façades must not duplicate those loops.",
         "ActionTiming is the sole ActionRuntime phase authority; timeline.duration must equal timing.total(); splitTimestamps are physical sections only (never read as phases).",
+        "Notify Enter/Update/Exit playback is composed via ActionNotifyPlayback (registry + ActionBlockRuntime). ScriptActionRuntime does not own that pipeline.",
         "Optional presentation/combat sinks (damage, audio, VFX, camera, state windows) are consumed through cap::forEach* inside ActionNotifyRegistry; absence is an observable NotFound path, not a silent success."
       ],
       "trim": {

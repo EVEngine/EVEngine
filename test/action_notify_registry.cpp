@@ -1,6 +1,7 @@
-#include "action/ActionBlockRuntime.h"
 #include "action/ActionAudioBlock.h"
+#include "action/ActionBlockRuntime.h"
 #include "action/ActionCameraBlock.h"
+#include "action/ActionNotifyPlayback.h"
 #include "action/ActionNotifyRegistry.h"
 #include "action/ActionParameterCurve.h"
 #include "action/ActionPrefabBlock.h"
@@ -526,4 +527,12 @@ TEST_CASE("actionNotifyRegistry.advancesSharedHandlerOnceAndPropagatesFailure") 
     CHECK(!failed.ok());
     CHECK_EQ(failed.status().diagnostics().front().path(), "handler");
     CHECK_EQ(handler->advances, 2);
+}
+
+TEST_CASE("actionNotifyPlayback.composesRegistryAndBlockRuntimeForHosts") {
+    auto playback = eve::action::ActionNotifyPlayback::withBuiltins();
+    REQUIRE(playback.ok());
+    REQUIRE(playback.value());
+    CHECK(!playback.value()->registry().descriptors().empty());
+    CHECK_EQ(playback.value()->executionCount(), 0u);
 }

@@ -1,6 +1,6 @@
 #include "action/editor/ActionTimelineScriptBindings.h"
 
-#include "action/ActionBlockRuntime.h"
+#include "action/ActionNotifyPlayback.h"
 #include "action/ActionNotifyRegistry.h"
 #include "action/ActionParameterCurve.h"
 #include "action/editor/ActionEditorModule.h"
@@ -230,10 +230,9 @@ public:
     ScriptActionTimelineEditor(std::string targetId, action::ActionTimeline timeline,
                                action::ActionNotifyRegistry registry,
                                std::shared_ptr<ActionTimelineClipboard> clipboard)
-        : registry_(std::move(registry)),
-          blockRuntime_(registry_),
+        : playback_(std::move(registry)),
           editor_(std::move(targetId), std::move(timeline), std::move(clipboard)),
-          widget_(editor_, registry_) {
+          widget_(editor_, playback_.registry()) {
         auto composed = std::make_unique<ComposedActionPreviewSink>();
         const auto providerCount = cap::listenerCount<action::IActionPreviewSinkProvider>();
         for (std::size_t index = 0; index < providerCount; ++index) {
@@ -254,7 +253,7 @@ public:
     ~ScriptActionTimelineEditor() {
         if (executionId_.isZero()) return;
         const auto* montage = activeMontage();
-        auto interrupted = blockRuntime_.interrupt(runtimeContext(montage ? montage->time() : Duration::zero()));
+        auto interrupted = playback_.interrupt(runtimeContext(montage ? montage->time() : Duration::zero()));
         interrupted.ignore();
     }
 
@@ -263,7 +262,7 @@ public:
 
     const ActionTimelineEditor& editor() const noexcept { return editor_; }
     const ActionTimelineWidget& widget() const noexcept { return widget_; }
-    const action::ActionNotifyRegistry& registry() const noexcept { return registry_; }
+    const action::ActionNotifyRegistry& registry() const noexcept { return playback_.registry(); }
 
     [[nodiscard]] bool hasPreviewHost() const noexcept { return previewController_ != nullptr; }
 
@@ -605,7 +604,7 @@ public:
             return Result<void>::failure(
                 Diagnostic::error(DiagnosticCode::InvalidArgument,
                                   "externally handled runtime block type is invalid", "type"));
-        if (!registry_.hasHandler(type))
+        if (!playback_.registry().hasHandler(type))
             return Result<void>::failure(
                 Diagnostic::error(DiagnosticCode::NotFound,
                                   "runtime block type has no registered handler", type));
@@ -773,7 +772,7 @@ public:
         tick_          = SimulationTick(tick_.value() + 1);
         auto cancelled = runtime_->cancel(executionId_, tick_);
         if (!cancelled) return cancelled;
-        auto interrupted = blockRuntime_.interrupt(runtimeContext(montage->time()));
+        auto interrupted = playback_.interrupt(runtimeContext(montage->time()));
         if (!interrupted) return interrupted;
         montage->stop();
         return Result<void>::success(Status::success(StatusCode::Applied));
@@ -900,7 +899,7 @@ private:
         const auto previousLayer    = activeLayer_;
         if (!executionId_.isZero()) {
             const auto* montage = activeMontage();
-            auto interrupted = blockRuntime_.interrupt(runtimeContext(montage ? montage->time() : Duration::zero()));
+            auto interrupted = playback_.interrupt(runtimeContext(montage ? montage->time() : Duration::zero()));
             if (!interrupted) return interrupted;
         }
         auto                  runtime    = std::make_unique<action::ActionRuntime>();
@@ -944,18 +943,17 @@ private:
         handled.phaseElapsed = advance.phaseElapsed;
         handled.totalElapsed = advance.totalElapsed;
         for (const auto& event : advance.timelineEvents)
-            if (registry_.hasHandler(event.type.format()) &&
+            if (playback_.registry().hasHandler(event.type.format()) &&
                 !externallyHandledTypes_.contains(event.type.format()))
                 handled.timelineEvents.push_back(event);
         for (const auto& block : advance.activeBlocks)
-            if (registry_.hasHandler(block.type.format()) &&
+            if (playback_.registry().hasHandler(block.type.format()) &&
                 !externallyHandledTypes_.contains(block.type.format()))
                 handled.activeBlocks.push_back(block);
-        return blockRuntime_.apply(handled, runtimeContext(advance.totalElapsed));
+        return playback_.apply(handled, runtimeContext(advance.totalElapsed));
     }
 
-    action::ActionNotifyRegistry registry_;
-    action::ActionBlockRuntime   blockRuntime_;
+    action::ActionNotifyPlayback playback_;
     ActionTimelineEditor         editor_;
     ActionTimelineWidget         widget_;
     std::unique_ptr<action::IActionPreviewSink> previewSink_;
