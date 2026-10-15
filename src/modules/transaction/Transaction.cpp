@@ -2,6 +2,7 @@
 #include "transaction/AtomicBatch.h"
 
 #include "common/Json.h"
+#include "common/ProtobufDynamicValue.h"
 #include "common/SquirrelBinding.h"
 #include "transaction_ledger.pb.h"
 
@@ -12,7 +13,6 @@
 
 #include <algorithm>
 #include <charconv>
-#include <cmath>
 #include <exception>
 #include <iomanip>
 #include <limits>
@@ -45,76 +45,6 @@ bool hasUnknownProtoFields(const google::protobuf::Message& message) {
         }
     }
     return false;
-}
-
-bool encodeDynamicValue(const eve::Value& source, proto::DynamicValue& target, unsigned depth = 0) {
-    if (depth > 100) return false;
-    if (source.isNull())
-        target.set_null_value(true);
-    else if (source.isBool())
-        target.set_bool_value(source.asBool());
-    else if (source.isInt64())
-        target.set_int_value(source.asInt());
-    else if (source.isDouble()) {
-        if (!std::isfinite(source.asDouble())) return false;
-        target.set_double_value(source.asDouble());
-    } else if (source.isString())
-        target.set_string_value(source.asString());
-    else if (const auto* array = source.getIf<eve::Value::Array>()) {
-        auto* list = target.mutable_list_value();
-        for (const auto& element : *array)
-            if (!encodeDynamicValue(element, *list->add_values(), depth + 1)) return false;
-    } else if (const auto* object = source.getIf<eve::Value::Object>()) {
-        auto* saved = target.mutable_object_value();
-        for (const auto& [key, value] : *object) {
-            auto* field = saved->add_fields();
-            field->set_key(key);
-            if (!encodeDynamicValue(value, *field->mutable_value(), depth + 1)) return false;
-        }
-    } else
-        return false;
-    return true;
-}
-
-eve::Result<eve::Value> decodeDynamicValue(const proto::DynamicValue& source, unsigned depth = 0) {
-    const auto invalid = [] {
-        return eve::Result<eve::Value>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid transaction dynamic payload"));
-    };
-    if (depth > 100) return invalid();
-    switch (source.kind_case()) {
-        case proto::DynamicValue::kNullValue:
-            return source.null_value() ? eve::Result<eve::Value>::success(eve::Value()) : invalid();
-        case proto::DynamicValue::kBoolValue: return eve::Result<eve::Value>::success(eve::Value(source.bool_value()));
-        case proto::DynamicValue::kIntValue: return eve::Result<eve::Value>::success(eve::Value(source.int_value()));
-        case proto::DynamicValue::kDoubleValue:
-            return std::isfinite(source.double_value())
-                       ? eve::Result<eve::Value>::success(eve::Value(source.double_value()))
-                       : invalid();
-        case proto::DynamicValue::kStringValue:
-            return eve::Result<eve::Value>::success(eve::Value(source.string_value()));
-        case proto::DynamicValue::kListValue: {
-            eve::Value::Array values;
-            values.reserve(source.list_value().values_size());
-            for (const auto& element : source.list_value().values()) {
-                auto decoded = decodeDynamicValue(element, depth + 1);
-                if (!decoded.ok()) return decoded;
-                values.push_back(std::move(decoded).takeValue());
-            }
-            return eve::Result<eve::Value>::success(eve::Value(std::move(values)));
-        }
-        case proto::DynamicValue::kObjectValue: {
-            eve::Value::Object values;
-            for (const auto& field : source.object_value().fields()) {
-                if (!field.has_key() || !field.has_value()) return invalid();
-                auto decoded = decodeDynamicValue(field.value(), depth + 1);
-                if (!decoded.ok() || !values.emplace(field.key(), std::move(decoded).takeValue()).second)
-                    return invalid();
-            }
-            return eve::Result<eve::Value>::success(eve::Value(std::move(values)));
-        }
-        default: return invalid();
-    }
 }
 
 std::string quote(const std::string& value) {
@@ -641,9 +571,11 @@ eve::Result<void> Plan::writeProto(proto::TransactionPlan& item) const {
         saved->set_kind(op.kind);
         saved->set_target(op.target);
         auto payload = eve::Value::fromJson(op.payload);
-        if (!payload.ok() || !encodeDynamicValue(payload.value(), *saved->mutable_payload()))
+        if (!payload.ok())
             return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
                                                                      "invalid retained transaction operation payload"));
+        auto encoded = eve::proto_support::encodeDynamicValue(payload.value(), *saved->mutable_payload());
+        if (!encoded.ok()) return encoded;
         saved->set_checked(op.checked);
         saved->set_valid(op.valid);
         saved->set_error(op.error);
@@ -799,7 +731,7 @@ eve::Result<void> Ledger::restoreBinary(std::string_view bytes) {
             op.checked   = saved.checked();
             op.valid     = saved.valid();
             op.error     = saved.error();
-            auto payload = decodeDynamicValue(saved.payload());
+            auto payload = eve::proto_support::decodeDynamicValue(saved.payload());
             if (!payload.ok()) return eve::Result<void>::failure(payload.status());
             auto canonical = payload.value().toJson();
             if (!canonical.ok()) return eve::Result<void>::failure(canonical.status());

@@ -33,6 +33,7 @@
 #include "google/protobuf/extension_set.h"  // IWYU pragma: export
 #include "google/protobuf/generated_enum_reflection.h"
 #include "google/protobuf/unknown_field_set.h"
+#include "dynamic_value.pb.h"
 // @@protoc_insertion_point(includes)
 
 // Must be included last.
@@ -61,38 +62,6 @@ namespace transaction {
 namespace proto {
 enum TransactionPlan_State : int;
 EVENGINE_API_FOUNDATION extern const uint32_t TransactionPlan_State_internal_data_[];
-class DynamicField;
-struct DynamicFieldGlobalsTypeInternal;
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-EVENGINE_API_FOUNDATION extern DynamicFieldGlobalsTypeInternal DynamicField_globals_;
-EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull DynamicField_class_data_;
-#else
-EVENGINE_API_FOUNDATION extern const DynamicFieldGlobalsTypeInternal DynamicField_globals_;
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-class DynamicList;
-struct DynamicListGlobalsTypeInternal;
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-EVENGINE_API_FOUNDATION extern DynamicListGlobalsTypeInternal DynamicList_globals_;
-EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull DynamicList_class_data_;
-#else
-EVENGINE_API_FOUNDATION extern const DynamicListGlobalsTypeInternal DynamicList_globals_;
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-class DynamicObject;
-struct DynamicObjectGlobalsTypeInternal;
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-EVENGINE_API_FOUNDATION extern DynamicObjectGlobalsTypeInternal DynamicObject_globals_;
-EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull DynamicObject_class_data_;
-#else
-EVENGINE_API_FOUNDATION extern const DynamicObjectGlobalsTypeInternal DynamicObject_globals_;
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-class DynamicValue;
-struct DynamicValueGlobalsTypeInternal;
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-EVENGINE_API_FOUNDATION extern DynamicValueGlobalsTypeInternal DynamicValue_globals_;
-EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull DynamicValue_class_data_;
-#else
-EVENGINE_API_FOUNDATION extern const DynamicValueGlobalsTypeInternal DynamicValue_globals_;
-#endif  // PROTOBUF_MESSAGE_GLOBALS
 class TransactionEvent;
 struct TransactionEventGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
@@ -263,7 +232,7 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Transaction
   [[nodiscard]] static const TransactionLedgerEnvelope& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<TransactionLedgerEnvelope>(&TransactionLedgerEnvelope_globals_);
   }
-  static constexpr int kIndexInFileMessages = 5;
+  static constexpr int kIndexInFileMessages = 1;
   friend void swap(TransactionLedgerEnvelope& a, TransactionLedgerEnvelope& b) { a.Swap(&b); }
   inline void Swap(TransactionLedgerEnvelope* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -589,7 +558,7 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Transaction
   [[nodiscard]] static const TransactionEvent& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<TransactionEvent>(&TransactionEvent_globals_);
   }
-  static constexpr int kIndexInFileMessages = 9;
+  static constexpr int kIndexInFileMessages = 5;
   friend void swap(TransactionEvent& a, TransactionEvent& b) { a.Swap(&b); }
   inline void Swap(TransactionEvent* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -812,989 +781,6 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Transaction
 };
 // -------------------------------------------------------------------
 
-class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED DynamicField final : public ::google::protobuf::Message
-/* @@protoc_insertion_point(class_definition:eve.transaction.proto.DynamicField) */ {
- public:
-  inline DynamicField() : DynamicField(nullptr) {}
-  ~DynamicField() PROTOBUF_FINAL;
-
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-  void operator delete(DynamicField* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
-    SharedDtor(*msg);
-    ::google::protobuf::internal::SizedDelete(msg, sizeof(DynamicField));
-  }
-#endif
-
-  template <typename = void>
-  explicit constexpr DynamicField(::google::protobuf::internal::ConstantInitialized,
-                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
-                               class_data);
-
-  inline DynamicField(const DynamicField& from) : DynamicField(nullptr, from) {}
-  inline DynamicField(DynamicField&& from) noexcept : DynamicField(nullptr, ::std::move(from)) {}
-  inline DynamicField& operator=(const DynamicField& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline DynamicField& operator=(DynamicField&& from) noexcept {
-    if (this == &from) return *this;
-    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
-      InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
-  }
-  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
-  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
-  }
-
-  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
-    return GetDescriptor();
-  }
-  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
-  GetDescriptor() {
-    return default_instance().GetMetadata().descriptor;
-  }
-  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
-    return default_instance().GetMetadata().reflection;
-  }
-  [[nodiscard]] static const DynamicField& default_instance() {
-    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<DynamicField>(&DynamicField_globals_);
-  }
-  static constexpr int kIndexInFileMessages = 3;
-  friend void swap(DynamicField& a, DynamicField& b) { a.Swap(&b); }
-  inline void Swap(DynamicField* PROTOBUF_NONNULL other) {
-    if (other == this) return;
-    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
-      InternalSwap(other);
-    } else {
-      ::google::protobuf::internal::GenericSwap(this, other);
-    }
-  }
-  void UnsafeArenaSwap(DynamicField* PROTOBUF_NONNULL other) {
-    if (other == this) return;
-    ABSL_DCHECK(GetArena() == other->GetArena());
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  [[nodiscard]] DynamicField* PROTOBUF_NONNULL
-  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
-    return ::google::protobuf::Message::DefaultConstruct<DynamicField>(arena);
-  }
-  using ::google::protobuf::Message::CopyFrom;
-  void CopyFrom(const DynamicField& from);
-  using ::google::protobuf::Message::MergeFrom;
-  void MergeFrom(const DynamicField& from) { DynamicField::MergeImpl(*this, from); }
-
-  private:
-  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
-                        const ::google::protobuf::MessageLite& from_msg);
-
-  public:
-  [[nodiscard]] bool IsInitialized() const {
-    return true;
-  }
-  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
-  #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
-  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
-    return _InternalSerialize(*this, target, stream);
-  }
-  #else   // PROTOBUF_CUSTOM_VTABLE
-  [[nodiscard]] ::size_t ByteSizeLong() const final;
-  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
-  #endif  // PROTOBUF_CUSTOM_VTABLE
-  [[nodiscard]] int GetCachedSize() const {
-    return _impl_._cached_size_.Get();
-  }
-
-  private:
-  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-  static void SharedDtor(MessageLite& self);
-  void InternalSwap(DynamicField* PROTOBUF_NONNULL other);
- private:
-  template <typename T>
-  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "eve.transaction.proto.DynamicField"; }
-
-  explicit DynamicField(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-  DynamicField(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const DynamicField& from);
-  DynamicField(
-      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, DynamicField&& from) noexcept
-      : DynamicField(arena) {
-    *this = ::std::move(from);
-  }
-  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
-  static void* PROTOBUF_NONNULL PlacementNew_(
-      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
-      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-  static constexpr auto InternalNewImpl_();
-
- public:
-  static constexpr auto InternalGenerateClassData_(
-      const MessageLite& prototype,
-      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
-
-  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-  enum : int {
-    kKeyFieldNumber = 1,
-    kValueFieldNumber = 2,
-  };
-  // optional string key = 1;
-  [[nodiscard]] bool has_key()
-      const;
-  void clear_key() ;
-  [[nodiscard]] const ::std::string& key() const;
-  template <typename Arg_ = const ::std::string&, typename... Args_>
-  void set_key(Arg_&& arg, Args_... args);
-  ::std::string* PROTOBUF_NONNULL mutable_key();
-  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_key();
-  void set_allocated_key(::std::string* PROTOBUF_NULLABLE value);
-
-  private:
-  const ::std::string& _internal_key() const;
-  PROTOBUF_ALWAYS_INLINE void _internal_set_key(const ::std::string& value);
-  ::std::string* PROTOBUF_NONNULL _internal_mutable_key();
-
-  public:
-  // .eve.transaction.proto.DynamicValue value = 2;
-  [[nodiscard]] bool has_value()
-      const;
-  void clear_value() ;
-  [[nodiscard]] const ::eve::transaction::proto::DynamicValue& value() const;
-  [[nodiscard]] ::eve::transaction::proto::DynamicValue* PROTOBUF_NULLABLE release_value();
-  ::eve::transaction::proto::DynamicValue* PROTOBUF_NONNULL mutable_value();
-  void set_allocated_value(::eve::transaction::proto::DynamicValue* PROTOBUF_NULLABLE value);
-  void unsafe_arena_set_allocated_value(::eve::transaction::proto::DynamicValue* PROTOBUF_NULLABLE value);
-  ::eve::transaction::proto::DynamicValue* PROTOBUF_NULLABLE unsafe_arena_release_value();
-
-  private:
-  const ::eve::transaction::proto::DynamicValue& _internal_value() const;
-  ::eve::transaction::proto::DynamicValue* PROTOBUF_NONNULL _internal_mutable_value();
-
-  public:
-  // @@protoc_insertion_point(class_scope:eve.transaction.proto.DynamicField)
- private:
-  class _Internal;
-  using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<1, 2,
-                          1, 46,
-                          2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
-  friend class ::google::protobuf::internal::TcParser;
-  #ifndef PROTOBUF_MESSAGE_GLOBALS
-  static const ParseTableT_ _table_;
-  #endif
-
-  friend class ::google::protobuf::MessageLite;
-  friend class ::google::protobuf::Arena;
-  friend ::google::protobuf::internal::PrivateAccess;
-  template <typename T>
-  friend class ::google::protobuf::Arena::InternalHelper;
-  using InternalArenaConstructable_ = void;
-  using DestructorSkippable_ = void;
-  struct Impl_ {
-    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
-                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
-    inline explicit Impl_(
-        ::google::protobuf::internal::InternalVisibility visibility,
-        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-    inline explicit Impl_(
-        ::google::protobuf::internal::InternalVisibility visibility,
-        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
-        const DynamicField& from_msg);
-    ::google::protobuf::internal::HasBits<1> _has_bits_;
-    ::google::protobuf::internal::CachedSize _cached_size_;
-    ::google::protobuf::internal::ArenaStringPtr key_;
-    ::eve::transaction::proto::DynamicValue* PROTOBUF_NULLABLE value_;
-    PROTOBUF_TSAN_DECLARE_MEMBER
-  };
-  union { Impl_ _impl_; };
-  friend struct ::TableStruct_transaction_5fledger_2eproto;
-};
-// -------------------------------------------------------------------
-
-class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED DynamicList final : public ::google::protobuf::Message
-/* @@protoc_insertion_point(class_definition:eve.transaction.proto.DynamicList) */ {
- public:
-  inline DynamicList() : DynamicList(nullptr) {}
-  ~DynamicList() PROTOBUF_FINAL;
-
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-  void operator delete(DynamicList* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
-    SharedDtor(*msg);
-    ::google::protobuf::internal::SizedDelete(msg, sizeof(DynamicList));
-  }
-#endif
-
-  template <typename = void>
-  explicit constexpr DynamicList(::google::protobuf::internal::ConstantInitialized,
-                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
-                               class_data);
-
-  inline DynamicList(const DynamicList& from) : DynamicList(nullptr, from) {}
-  inline DynamicList(DynamicList&& from) noexcept : DynamicList(nullptr, ::std::move(from)) {}
-  inline DynamicList& operator=(const DynamicList& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline DynamicList& operator=(DynamicList&& from) noexcept {
-    if (this == &from) return *this;
-    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
-      InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
-  }
-  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
-  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
-  }
-
-  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
-    return GetDescriptor();
-  }
-  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
-  GetDescriptor() {
-    return default_instance().GetMetadata().descriptor;
-  }
-  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
-    return default_instance().GetMetadata().reflection;
-  }
-  [[nodiscard]] static const DynamicList& default_instance() {
-    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<DynamicList>(&DynamicList_globals_);
-  }
-  static constexpr int kIndexInFileMessages = 1;
-  friend void swap(DynamicList& a, DynamicList& b) { a.Swap(&b); }
-  inline void Swap(DynamicList* PROTOBUF_NONNULL other) {
-    if (other == this) return;
-    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
-      InternalSwap(other);
-    } else {
-      ::google::protobuf::internal::GenericSwap(this, other);
-    }
-  }
-  void UnsafeArenaSwap(DynamicList* PROTOBUF_NONNULL other) {
-    if (other == this) return;
-    ABSL_DCHECK(GetArena() == other->GetArena());
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  [[nodiscard]] DynamicList* PROTOBUF_NONNULL
-  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
-    return ::google::protobuf::Message::DefaultConstruct<DynamicList>(arena);
-  }
-  using ::google::protobuf::Message::CopyFrom;
-  void CopyFrom(const DynamicList& from);
-  using ::google::protobuf::Message::MergeFrom;
-  void MergeFrom(const DynamicList& from) { DynamicList::MergeImpl(*this, from); }
-
-  private:
-  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
-                        const ::google::protobuf::MessageLite& from_msg);
-
-  public:
-  [[nodiscard]] bool IsInitialized() const {
-    return true;
-  }
-  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
-  #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
-  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
-    return _InternalSerialize(*this, target, stream);
-  }
-  #else   // PROTOBUF_CUSTOM_VTABLE
-  [[nodiscard]] ::size_t ByteSizeLong() const final;
-  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
-  #endif  // PROTOBUF_CUSTOM_VTABLE
-  [[nodiscard]] int GetCachedSize() const {
-    return _impl_._cached_size_.Get();
-  }
-
-  private:
-  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-  static void SharedDtor(MessageLite& self);
-  void InternalSwap(DynamicList* PROTOBUF_NONNULL other);
- private:
-  template <typename T>
-  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "eve.transaction.proto.DynamicList"; }
-
-  explicit DynamicList(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-  DynamicList(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const DynamicList& from);
-  DynamicList(
-      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, DynamicList&& from) noexcept
-      : DynamicList(arena) {
-    *this = ::std::move(from);
-  }
-  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
-  static void* PROTOBUF_NONNULL PlacementNew_(
-      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
-      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-  static constexpr auto InternalNewImpl_();
-
- public:
-  static constexpr auto InternalGenerateClassData_(
-      const MessageLite& prototype,
-      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
-
-  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-  enum : int {
-    kValuesFieldNumber = 1,
-  };
-  // repeated .eve.transaction.proto.DynamicValue values = 1;
-  [[nodiscard]] int values_size()
-      const;
-  private:
-  int _internal_values_size() const;
-
-  public:
-  void clear_values() ;
-  [[nodiscard]] const ::eve::transaction::proto::DynamicValue& values(int index) const;
-  [[nodiscard]] ::eve::transaction::proto::DynamicValue* PROTOBUF_NONNULL mutable_values(int index);
-  ::eve::transaction::proto::DynamicValue* PROTOBUF_NONNULL add_values();
-  [[nodiscard]] const ::google::protobuf::RepeatedPtrField<::eve::transaction::proto::DynamicValue>&
-  values() const;
-  [[nodiscard]] ::google::protobuf::RepeatedPtrField<::eve::transaction::proto::DynamicValue>* PROTOBUF_NONNULL
-  mutable_values();
-
-  private:
-  const ::google::protobuf::RepeatedPtrField<::eve::transaction::proto::DynamicValue>& _internal_values() const;
-  ::google::protobuf::RepeatedPtrField<::eve::transaction::proto::DynamicValue>* PROTOBUF_NONNULL _internal_mutable_values();
-
-  public:
-  // @@protoc_insertion_point(class_scope:eve.transaction.proto.DynamicList)
- private:
-  class _Internal;
-  using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<0, 1,
-                          1, 0,
-                          2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
-  friend class ::google::protobuf::internal::TcParser;
-  #ifndef PROTOBUF_MESSAGE_GLOBALS
-  static const ParseTableT_ _table_;
-  #endif
-
-  friend class ::google::protobuf::MessageLite;
-  friend class ::google::protobuf::Arena;
-  friend ::google::protobuf::internal::PrivateAccess;
-  template <typename T>
-  friend class ::google::protobuf::Arena::InternalHelper;
-  using InternalArenaConstructable_ = void;
-  using DestructorSkippable_ = void;
-  struct Impl_ {
-    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
-                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
-    inline explicit Impl_(
-        ::google::protobuf::internal::InternalVisibility visibility,
-        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-    inline explicit Impl_(
-        ::google::protobuf::internal::InternalVisibility visibility,
-        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
-        const DynamicList& from_msg);
-    ::google::protobuf::internal::HasBits<1> _has_bits_;
-    ::google::protobuf::internal::CachedSize _cached_size_;
-    ::google::protobuf::RepeatedPtrField< ::eve::transaction::proto::DynamicValue > values_;
-    PROTOBUF_TSAN_DECLARE_MEMBER
-  };
-  union { Impl_ _impl_; };
-  friend struct ::TableStruct_transaction_5fledger_2eproto;
-};
-// -------------------------------------------------------------------
-
-class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED DynamicObject final : public ::google::protobuf::Message
-/* @@protoc_insertion_point(class_definition:eve.transaction.proto.DynamicObject) */ {
- public:
-  inline DynamicObject() : DynamicObject(nullptr) {}
-  ~DynamicObject() PROTOBUF_FINAL;
-
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-  void operator delete(DynamicObject* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
-    SharedDtor(*msg);
-    ::google::protobuf::internal::SizedDelete(msg, sizeof(DynamicObject));
-  }
-#endif
-
-  template <typename = void>
-  explicit constexpr DynamicObject(::google::protobuf::internal::ConstantInitialized,
-                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
-                               class_data);
-
-  inline DynamicObject(const DynamicObject& from) : DynamicObject(nullptr, from) {}
-  inline DynamicObject(DynamicObject&& from) noexcept : DynamicObject(nullptr, ::std::move(from)) {}
-  inline DynamicObject& operator=(const DynamicObject& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline DynamicObject& operator=(DynamicObject&& from) noexcept {
-    if (this == &from) return *this;
-    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
-      InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
-  }
-  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
-  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
-  }
-
-  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
-    return GetDescriptor();
-  }
-  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
-  GetDescriptor() {
-    return default_instance().GetMetadata().descriptor;
-  }
-  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
-    return default_instance().GetMetadata().reflection;
-  }
-  [[nodiscard]] static const DynamicObject& default_instance() {
-    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<DynamicObject>(&DynamicObject_globals_);
-  }
-  static constexpr int kIndexInFileMessages = 2;
-  friend void swap(DynamicObject& a, DynamicObject& b) { a.Swap(&b); }
-  inline void Swap(DynamicObject* PROTOBUF_NONNULL other) {
-    if (other == this) return;
-    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
-      InternalSwap(other);
-    } else {
-      ::google::protobuf::internal::GenericSwap(this, other);
-    }
-  }
-  void UnsafeArenaSwap(DynamicObject* PROTOBUF_NONNULL other) {
-    if (other == this) return;
-    ABSL_DCHECK(GetArena() == other->GetArena());
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  [[nodiscard]] DynamicObject* PROTOBUF_NONNULL
-  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
-    return ::google::protobuf::Message::DefaultConstruct<DynamicObject>(arena);
-  }
-  using ::google::protobuf::Message::CopyFrom;
-  void CopyFrom(const DynamicObject& from);
-  using ::google::protobuf::Message::MergeFrom;
-  void MergeFrom(const DynamicObject& from) { DynamicObject::MergeImpl(*this, from); }
-
-  private:
-  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
-                        const ::google::protobuf::MessageLite& from_msg);
-
-  public:
-  [[nodiscard]] bool IsInitialized() const {
-    return true;
-  }
-  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
-  #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
-  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
-    return _InternalSerialize(*this, target, stream);
-  }
-  #else   // PROTOBUF_CUSTOM_VTABLE
-  [[nodiscard]] ::size_t ByteSizeLong() const final;
-  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
-  #endif  // PROTOBUF_CUSTOM_VTABLE
-  [[nodiscard]] int GetCachedSize() const {
-    return _impl_._cached_size_.Get();
-  }
-
-  private:
-  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-  static void SharedDtor(MessageLite& self);
-  void InternalSwap(DynamicObject* PROTOBUF_NONNULL other);
- private:
-  template <typename T>
-  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "eve.transaction.proto.DynamicObject"; }
-
-  explicit DynamicObject(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-  DynamicObject(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const DynamicObject& from);
-  DynamicObject(
-      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, DynamicObject&& from) noexcept
-      : DynamicObject(arena) {
-    *this = ::std::move(from);
-  }
-  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
-  static void* PROTOBUF_NONNULL PlacementNew_(
-      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
-      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-  static constexpr auto InternalNewImpl_();
-
- public:
-  static constexpr auto InternalGenerateClassData_(
-      const MessageLite& prototype,
-      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
-
-  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-  enum : int {
-    kFieldsFieldNumber = 1,
-  };
-  // repeated .eve.transaction.proto.DynamicField fields = 1;
-  [[nodiscard]] int fields_size()
-      const;
-  private:
-  int _internal_fields_size() const;
-
-  public:
-  void clear_fields() ;
-  [[nodiscard]] const ::eve::transaction::proto::DynamicField& fields(int index) const;
-  [[nodiscard]] ::eve::transaction::proto::DynamicField* PROTOBUF_NONNULL mutable_fields(int index);
-  ::eve::transaction::proto::DynamicField* PROTOBUF_NONNULL add_fields();
-  [[nodiscard]] const ::google::protobuf::RepeatedPtrField<::eve::transaction::proto::DynamicField>&
-  fields() const;
-  [[nodiscard]] ::google::protobuf::RepeatedPtrField<::eve::transaction::proto::DynamicField>* PROTOBUF_NONNULL
-  mutable_fields();
-
-  private:
-  const ::google::protobuf::RepeatedPtrField<::eve::transaction::proto::DynamicField>& _internal_fields() const;
-  ::google::protobuf::RepeatedPtrField<::eve::transaction::proto::DynamicField>* PROTOBUF_NONNULL _internal_mutable_fields();
-
-  public:
-  // @@protoc_insertion_point(class_scope:eve.transaction.proto.DynamicObject)
- private:
-  class _Internal;
-  using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<0, 1,
-                          1, 0,
-                          2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
-  friend class ::google::protobuf::internal::TcParser;
-  #ifndef PROTOBUF_MESSAGE_GLOBALS
-  static const ParseTableT_ _table_;
-  #endif
-
-  friend class ::google::protobuf::MessageLite;
-  friend class ::google::protobuf::Arena;
-  friend ::google::protobuf::internal::PrivateAccess;
-  template <typename T>
-  friend class ::google::protobuf::Arena::InternalHelper;
-  using InternalArenaConstructable_ = void;
-  using DestructorSkippable_ = void;
-  struct Impl_ {
-    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
-                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
-    inline explicit Impl_(
-        ::google::protobuf::internal::InternalVisibility visibility,
-        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-    inline explicit Impl_(
-        ::google::protobuf::internal::InternalVisibility visibility,
-        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
-        const DynamicObject& from_msg);
-    ::google::protobuf::internal::HasBits<1> _has_bits_;
-    ::google::protobuf::internal::CachedSize _cached_size_;
-    ::google::protobuf::RepeatedPtrField< ::eve::transaction::proto::DynamicField > fields_;
-    PROTOBUF_TSAN_DECLARE_MEMBER
-  };
-  union { Impl_ _impl_; };
-  friend struct ::TableStruct_transaction_5fledger_2eproto;
-};
-// -------------------------------------------------------------------
-
-class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED DynamicValue final : public ::google::protobuf::Message
-/* @@protoc_insertion_point(class_definition:eve.transaction.proto.DynamicValue) */ {
- public:
-  inline DynamicValue() : DynamicValue(nullptr) {}
-  ~DynamicValue() PROTOBUF_FINAL;
-
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-  void operator delete(DynamicValue* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
-    SharedDtor(*msg);
-    ::google::protobuf::internal::SizedDelete(msg, sizeof(DynamicValue));
-  }
-#endif
-
-  template <typename = void>
-  explicit constexpr DynamicValue(::google::protobuf::internal::ConstantInitialized,
-                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
-                               class_data);
-
-  inline DynamicValue(const DynamicValue& from) : DynamicValue(nullptr, from) {}
-  inline DynamicValue(DynamicValue&& from) noexcept : DynamicValue(nullptr, ::std::move(from)) {}
-  inline DynamicValue& operator=(const DynamicValue& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline DynamicValue& operator=(DynamicValue&& from) noexcept {
-    if (this == &from) return *this;
-    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
-      InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
-  }
-  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
-  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
-  }
-
-  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
-    return GetDescriptor();
-  }
-  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
-  GetDescriptor() {
-    return default_instance().GetMetadata().descriptor;
-  }
-  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
-    return default_instance().GetMetadata().reflection;
-  }
-  [[nodiscard]] static const DynamicValue& default_instance() {
-    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<DynamicValue>(&DynamicValue_globals_);
-  }
-  enum KindCase {
-    kNullValue = 1,
-    kBoolValue = 2,
-    kIntValue = 3,
-    kDoubleValue = 4,
-    kStringValue = 5,
-    kListValue = 6,
-    kObjectValue = 7,
-    KIND_NOT_SET = 0,
-  };
-  static constexpr int kIndexInFileMessages = 0;
-  friend void swap(DynamicValue& a, DynamicValue& b) { a.Swap(&b); }
-  inline void Swap(DynamicValue* PROTOBUF_NONNULL other) {
-    if (other == this) return;
-    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
-      InternalSwap(other);
-    } else {
-      ::google::protobuf::internal::GenericSwap(this, other);
-    }
-  }
-  void UnsafeArenaSwap(DynamicValue* PROTOBUF_NONNULL other) {
-    if (other == this) return;
-    ABSL_DCHECK(GetArena() == other->GetArena());
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  [[nodiscard]] DynamicValue* PROTOBUF_NONNULL
-  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
-    return ::google::protobuf::Message::DefaultConstruct<DynamicValue>(arena);
-  }
-  using ::google::protobuf::Message::CopyFrom;
-  void CopyFrom(const DynamicValue& from);
-  using ::google::protobuf::Message::MergeFrom;
-  void MergeFrom(const DynamicValue& from) { DynamicValue::MergeImpl(*this, from); }
-
-  private:
-  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
-                        const ::google::protobuf::MessageLite& from_msg);
-
-  public:
-  [[nodiscard]] bool IsInitialized() const {
-    return true;
-  }
-  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
-  #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
-  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
-    return _InternalSerialize(*this, target, stream);
-  }
-  #else   // PROTOBUF_CUSTOM_VTABLE
-  [[nodiscard]] ::size_t ByteSizeLong() const final;
-  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
-  #endif  // PROTOBUF_CUSTOM_VTABLE
-  [[nodiscard]] int GetCachedSize() const {
-    return _impl_._cached_size_.Get();
-  }
-
-  private:
-  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-  static void SharedDtor(MessageLite& self);
-  void InternalSwap(DynamicValue* PROTOBUF_NONNULL other);
- private:
-  template <typename T>
-  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "eve.transaction.proto.DynamicValue"; }
-
-  explicit DynamicValue(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-  DynamicValue(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const DynamicValue& from);
-  DynamicValue(
-      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, DynamicValue&& from) noexcept
-      : DynamicValue(arena) {
-    *this = ::std::move(from);
-  }
-  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
-  static void* PROTOBUF_NONNULL PlacementNew_(
-      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
-      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-  static constexpr auto InternalNewImpl_();
-
- public:
-  static constexpr auto InternalGenerateClassData_(
-      const MessageLite& prototype,
-      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
-
-  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-  enum : int {
-    kNullValueFieldNumber = 1,
-    kBoolValueFieldNumber = 2,
-    kIntValueFieldNumber = 3,
-    kDoubleValueFieldNumber = 4,
-    kStringValueFieldNumber = 5,
-    kListValueFieldNumber = 6,
-    kObjectValueFieldNumber = 7,
-  };
-  // bool null_value = 1;
-  [[nodiscard]] bool has_null_value()
-      const;
-  void clear_null_value() ;
-  [[nodiscard]] bool null_value() const;
-  void set_null_value(bool value);
-
-  private:
-  bool _internal_null_value() const;
-  void _internal_set_null_value(bool value);
-
-  public:
-  // bool bool_value = 2;
-  [[nodiscard]] bool has_bool_value()
-      const;
-  void clear_bool_value() ;
-  [[nodiscard]] bool bool_value() const;
-  void set_bool_value(bool value);
-
-  private:
-  bool _internal_bool_value() const;
-  void _internal_set_bool_value(bool value);
-
-  public:
-  // int64 int_value = 3;
-  [[nodiscard]] bool has_int_value()
-      const;
-  void clear_int_value() ;
-  [[nodiscard]] ::int64_t int_value() const;
-  void set_int_value(::int64_t value);
-
-  private:
-  ::int64_t _internal_int_value() const;
-  void _internal_set_int_value(::int64_t value);
-
-  public:
-  // double double_value = 4;
-  [[nodiscard]] bool has_double_value()
-      const;
-  void clear_double_value() ;
-  [[nodiscard]] double double_value() const;
-  void set_double_value(double value);
-
-  private:
-  double _internal_double_value() const;
-  void _internal_set_double_value(double value);
-
-  public:
-  // string string_value = 5;
-  [[nodiscard]] bool has_string_value()
-      const;
-  void clear_string_value() ;
-  [[nodiscard]] const ::std::string& string_value() const;
-  template <typename Arg_ = const ::std::string&, typename... Args_>
-  void set_string_value(Arg_&& arg, Args_... args);
-  ::std::string* PROTOBUF_NONNULL mutable_string_value();
-  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_string_value();
-  void set_allocated_string_value(::std::string* PROTOBUF_NULLABLE value);
-
-  private:
-  const ::std::string& _internal_string_value() const;
-  PROTOBUF_ALWAYS_INLINE void _internal_set_string_value(const ::std::string& value);
-  ::std::string* PROTOBUF_NONNULL _internal_mutable_string_value();
-
-  public:
-  // .eve.transaction.proto.DynamicList list_value = 6;
-  [[nodiscard]] bool has_list_value()
-      const;
-  private:
-  bool _internal_has_list_value() const;
-
-  public:
-  void clear_list_value() ;
-  [[nodiscard]] const ::eve::transaction::proto::DynamicList& list_value() const;
-  [[nodiscard]] ::eve::transaction::proto::DynamicList* PROTOBUF_NULLABLE release_list_value();
-  ::eve::transaction::proto::DynamicList* PROTOBUF_NONNULL mutable_list_value();
-  void set_allocated_list_value(::eve::transaction::proto::DynamicList* PROTOBUF_NULLABLE value);
-  void unsafe_arena_set_allocated_list_value(::eve::transaction::proto::DynamicList* PROTOBUF_NULLABLE value);
-  ::eve::transaction::proto::DynamicList* PROTOBUF_NULLABLE unsafe_arena_release_list_value();
-
-  private:
-  const ::eve::transaction::proto::DynamicList& _internal_list_value() const;
-  ::eve::transaction::proto::DynamicList* PROTOBUF_NONNULL _internal_mutable_list_value();
-
-  public:
-  // .eve.transaction.proto.DynamicObject object_value = 7;
-  [[nodiscard]] bool has_object_value()
-      const;
-  private:
-  bool _internal_has_object_value() const;
-
-  public:
-  void clear_object_value() ;
-  [[nodiscard]] const ::eve::transaction::proto::DynamicObject& object_value() const;
-  [[nodiscard]] ::eve::transaction::proto::DynamicObject* PROTOBUF_NULLABLE release_object_value();
-  ::eve::transaction::proto::DynamicObject* PROTOBUF_NONNULL mutable_object_value();
-  void set_allocated_object_value(::eve::transaction::proto::DynamicObject* PROTOBUF_NULLABLE value);
-  void unsafe_arena_set_allocated_object_value(::eve::transaction::proto::DynamicObject* PROTOBUF_NULLABLE value);
-  ::eve::transaction::proto::DynamicObject* PROTOBUF_NULLABLE unsafe_arena_release_object_value();
-
-  private:
-  const ::eve::transaction::proto::DynamicObject& _internal_object_value() const;
-  ::eve::transaction::proto::DynamicObject* PROTOBUF_NONNULL _internal_mutable_object_value();
-
-  public:
-  void clear_kind();
-  KindCase kind_case() const;
-  // @@protoc_insertion_point(class_scope:eve.transaction.proto.DynamicValue)
- private:
-  class _Internal;
-  void set_has_null_value();
-  void set_has_bool_value();
-  void set_has_int_value();
-  void set_has_double_value();
-  void set_has_string_value();
-  void set_has_list_value();
-  void set_has_object_value();
-  [[nodiscard]] inline bool has_kind() const;
-  inline void clear_has_kind();
-  using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<0, 7,
-                          2, 55,
-                          2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
-  friend class ::google::protobuf::internal::TcParser;
-  #ifndef PROTOBUF_MESSAGE_GLOBALS
-  static const ParseTableT_ _table_;
-  #endif
-
-  friend class ::google::protobuf::MessageLite;
-  friend class ::google::protobuf::Arena;
-  friend ::google::protobuf::internal::PrivateAccess;
-  template <typename T>
-  friend class ::google::protobuf::Arena::InternalHelper;
-  using InternalArenaConstructable_ = void;
-  using DestructorSkippable_ = void;
-  struct Impl_ {
-    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
-                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
-    inline explicit Impl_(
-        ::google::protobuf::internal::InternalVisibility visibility,
-        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-    inline explicit Impl_(
-        ::google::protobuf::internal::InternalVisibility visibility,
-        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
-        const DynamicValue& from_msg);
-    union KindUnion {
-      constexpr KindUnion() : _constinit_{} {}
-      ::google::protobuf::internal::ConstantInitialized _constinit_;
-      bool null_value_;
-      bool bool_value_;
-      ::int64_t int_value_;
-      double double_value_;
-      ::google::protobuf::internal::ArenaStringPtr string_value_;
-      ::eve::transaction::proto::DynamicList* PROTOBUF_NULLABLE list_value_;
-      ::eve::transaction::proto::DynamicObject* PROTOBUF_NULLABLE object_value_;
-    } kind_;
-    ::google::protobuf::internal::CachedSize _cached_size_;
-    ::uint32_t _oneof_case_[1];
-    PROTOBUF_TSAN_DECLARE_MEMBER
-  };
-  union { Impl_ _impl_; };
-  friend struct ::TableStruct_transaction_5fledger_2eproto;
-};
-// -------------------------------------------------------------------
-
 class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED TransactionOperation final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.transaction.proto.TransactionOperation) */ {
  public:
@@ -1851,7 +837,7 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Transaction
   [[nodiscard]] static const TransactionOperation& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<TransactionOperation>(&TransactionOperation_globals_);
   }
-  static constexpr int kIndexInFileMessages = 8;
+  static constexpr int kIndexInFileMessages = 4;
   friend void swap(TransactionOperation& a, TransactionOperation& b) { a.Swap(&b); }
   inline void Swap(TransactionOperation* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -2037,20 +1023,20 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Transaction
   ::std::string* PROTOBUF_NONNULL _internal_mutable_error();
 
   public:
-  // .eve.transaction.proto.DynamicValue payload = 5;
+  // .eve.persistence.proto.DynamicValue payload = 5;
   [[nodiscard]] bool has_payload()
       const;
   void clear_payload() ;
-  [[nodiscard]] const ::eve::transaction::proto::DynamicValue& payload() const;
-  [[nodiscard]] ::eve::transaction::proto::DynamicValue* PROTOBUF_NULLABLE release_payload();
-  ::eve::transaction::proto::DynamicValue* PROTOBUF_NONNULL mutable_payload();
-  void set_allocated_payload(::eve::transaction::proto::DynamicValue* PROTOBUF_NULLABLE value);
-  void unsafe_arena_set_allocated_payload(::eve::transaction::proto::DynamicValue* PROTOBUF_NULLABLE value);
-  ::eve::transaction::proto::DynamicValue* PROTOBUF_NULLABLE unsafe_arena_release_payload();
+  [[nodiscard]] const ::eve::persistence::proto::DynamicValue& payload() const;
+  [[nodiscard]] ::eve::persistence::proto::DynamicValue* PROTOBUF_NULLABLE release_payload();
+  ::eve::persistence::proto::DynamicValue* PROTOBUF_NONNULL mutable_payload();
+  void set_allocated_payload(::eve::persistence::proto::DynamicValue* PROTOBUF_NULLABLE value);
+  void unsafe_arena_set_allocated_payload(::eve::persistence::proto::DynamicValue* PROTOBUF_NULLABLE value);
+  ::eve::persistence::proto::DynamicValue* PROTOBUF_NULLABLE unsafe_arena_release_payload();
 
   private:
-  const ::eve::transaction::proto::DynamicValue& _internal_payload() const;
-  ::eve::transaction::proto::DynamicValue* PROTOBUF_NONNULL _internal_mutable_payload();
+  const ::eve::persistence::proto::DynamicValue& _internal_payload() const;
+  ::eve::persistence::proto::DynamicValue* PROTOBUF_NONNULL _internal_mutable_payload();
 
   public:
   // optional bool checked = 6;
@@ -2115,7 +1101,7 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Transaction
     ::google::protobuf::internal::ArenaStringPtr kind_;
     ::google::protobuf::internal::ArenaStringPtr target_;
     ::google::protobuf::internal::ArenaStringPtr error_;
-    ::eve::transaction::proto::DynamicValue* PROTOBUF_NULLABLE payload_;
+    ::eve::persistence::proto::DynamicValue* PROTOBUF_NULLABLE payload_;
     bool checked_;
     bool valid_;
     PROTOBUF_TSAN_DECLARE_MEMBER
@@ -2181,7 +1167,7 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Transaction
   [[nodiscard]] static const TransactionPlan& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<TransactionPlan>(&TransactionPlan_globals_);
   }
-  static constexpr int kIndexInFileMessages = 7;
+  static constexpr int kIndexInFileMessages = 3;
   friend void swap(TransactionPlan& a, TransactionPlan& b) { a.Swap(&b); }
   inline void Swap(TransactionPlan* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -2577,7 +1563,7 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Transaction
   [[nodiscard]] static const TransactionLedgerSave& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<TransactionLedgerSave>(&TransactionLedgerSave_globals_);
   }
-  static constexpr int kIndexInFileMessages = 4;
+  static constexpr int kIndexInFileMessages = 0;
   friend void swap(TransactionLedgerSave& a, TransactionLedgerSave& b) { a.Swap(&b); }
   inline void Swap(TransactionLedgerSave* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -2836,7 +1822,7 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Transaction
   [[nodiscard]] static const TransactionLedgerJsonDocument& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<TransactionLedgerJsonDocument>(&TransactionLedgerJsonDocument_globals_);
   }
-  static constexpr int kIndexInFileMessages = 6;
+  static constexpr int kIndexInFileMessages = 2;
   friend void swap(TransactionLedgerJsonDocument& a, TransactionLedgerJsonDocument& b) { a.Swap(&b); }
   inline void Swap(TransactionLedgerJsonDocument* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -3116,682 +2102,6 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Transaction
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
-// -------------------------------------------------------------------
-
-// DynamicValue
-
-// bool null_value = 1;
-inline bool DynamicValue::has_null_value() const {
-  return kind_case() == kNullValue;
-}
-inline void DynamicValue::set_has_null_value() {
-  _impl_._oneof_case_[0] = kNullValue;
-}
-inline void DynamicValue::clear_null_value() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (kind_case() == kNullValue) {
-    _impl_.kind_.null_value_ = false;
-    clear_has_kind();
-  }
-}
-inline bool DynamicValue::null_value() const {
-  // @@protoc_insertion_point(field_get:eve.transaction.proto.DynamicValue.null_value)
-  return _internal_null_value();
-}
-inline void DynamicValue::set_null_value(bool value) {
-  if (kind_case() != kNullValue) {
-    clear_kind();
-    set_has_null_value();
-  }
-  _impl_.kind_.null_value_ = value;
-  // @@protoc_insertion_point(field_set:eve.transaction.proto.DynamicValue.null_value)
-}
-inline bool DynamicValue::_internal_null_value() const {
-  if (kind_case() == kNullValue) {
-    return _impl_.kind_.null_value_;
-  }
-  return false;
-}
-
-// bool bool_value = 2;
-inline bool DynamicValue::has_bool_value() const {
-  return kind_case() == kBoolValue;
-}
-inline void DynamicValue::set_has_bool_value() {
-  _impl_._oneof_case_[0] = kBoolValue;
-}
-inline void DynamicValue::clear_bool_value() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (kind_case() == kBoolValue) {
-    _impl_.kind_.bool_value_ = false;
-    clear_has_kind();
-  }
-}
-inline bool DynamicValue::bool_value() const {
-  // @@protoc_insertion_point(field_get:eve.transaction.proto.DynamicValue.bool_value)
-  return _internal_bool_value();
-}
-inline void DynamicValue::set_bool_value(bool value) {
-  if (kind_case() != kBoolValue) {
-    clear_kind();
-    set_has_bool_value();
-  }
-  _impl_.kind_.bool_value_ = value;
-  // @@protoc_insertion_point(field_set:eve.transaction.proto.DynamicValue.bool_value)
-}
-inline bool DynamicValue::_internal_bool_value() const {
-  if (kind_case() == kBoolValue) {
-    return _impl_.kind_.bool_value_;
-  }
-  return false;
-}
-
-// int64 int_value = 3;
-inline bool DynamicValue::has_int_value() const {
-  return kind_case() == kIntValue;
-}
-inline void DynamicValue::set_has_int_value() {
-  _impl_._oneof_case_[0] = kIntValue;
-}
-inline void DynamicValue::clear_int_value() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (kind_case() == kIntValue) {
-    _impl_.kind_.int_value_ = ::int64_t{0};
-    clear_has_kind();
-  }
-}
-inline ::int64_t DynamicValue::int_value() const {
-  // @@protoc_insertion_point(field_get:eve.transaction.proto.DynamicValue.int_value)
-  return _internal_int_value();
-}
-inline void DynamicValue::set_int_value(::int64_t value) {
-  if (kind_case() != kIntValue) {
-    clear_kind();
-    set_has_int_value();
-  }
-  _impl_.kind_.int_value_ = value;
-  // @@protoc_insertion_point(field_set:eve.transaction.proto.DynamicValue.int_value)
-}
-inline ::int64_t DynamicValue::_internal_int_value() const {
-  if (kind_case() == kIntValue) {
-    return _impl_.kind_.int_value_;
-  }
-  return ::int64_t{0};
-}
-
-// double double_value = 4;
-inline bool DynamicValue::has_double_value() const {
-  return kind_case() == kDoubleValue;
-}
-inline void DynamicValue::set_has_double_value() {
-  _impl_._oneof_case_[0] = kDoubleValue;
-}
-inline void DynamicValue::clear_double_value() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (kind_case() == kDoubleValue) {
-    _impl_.kind_.double_value_ = 0;
-    clear_has_kind();
-  }
-}
-inline double DynamicValue::double_value() const {
-  // @@protoc_insertion_point(field_get:eve.transaction.proto.DynamicValue.double_value)
-  return _internal_double_value();
-}
-inline void DynamicValue::set_double_value(double value) {
-  if (kind_case() != kDoubleValue) {
-    clear_kind();
-    set_has_double_value();
-  }
-  _impl_.kind_.double_value_ = value;
-  // @@protoc_insertion_point(field_set:eve.transaction.proto.DynamicValue.double_value)
-}
-inline double DynamicValue::_internal_double_value() const {
-  if (kind_case() == kDoubleValue) {
-    return _impl_.kind_.double_value_;
-  }
-  return 0;
-}
-
-// string string_value = 5;
-inline bool DynamicValue::has_string_value() const {
-  return kind_case() == kStringValue;
-}
-inline void DynamicValue::set_has_string_value() {
-  _impl_._oneof_case_[0] = kStringValue;
-}
-inline void DynamicValue::clear_string_value() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (kind_case() == kStringValue) {
-    _impl_.kind_.string_value_.Destroy();
-    clear_has_kind();
-  }
-}
-inline const ::std::string& DynamicValue::string_value() const
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:eve.transaction.proto.DynamicValue.string_value)
-  return _internal_string_value();
-}
-template <typename Arg_, typename... Args_>
-PROTOBUF_ALWAYS_INLINE void DynamicValue::set_string_value(Arg_&& arg, Args_... args) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (kind_case() != kStringValue) {
-    clear_kind();
-
-    set_has_string_value();
-    _impl_.kind_.string_value_.InitDefault();
-  }
-  _impl_.kind_.string_value_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:eve.transaction.proto.DynamicValue.string_value)
-}
-inline ::std::string* PROTOBUF_NONNULL DynamicValue::mutable_string_value()
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  if (kind_case() != kStringValue) {
-    clear_kind();
-
-    set_has_string_value();
-    _impl_.kind_.string_value_.InitDefault();
-  }
-  ::std::string* _s = _internal_mutable_string_value();
-  // @@protoc_insertion_point(field_mutable:eve.transaction.proto.DynamicValue.string_value)
-  return _s;
-}
-inline const ::std::string& DynamicValue::_internal_string_value() const {
-  ::google::protobuf::internal::TSanRead(&_impl_);
-  if (kind_case() != kStringValue) {
-    return ::google::protobuf::internal::GetEmptyStringAlreadyInited();
-  }
-  return _impl_.kind_.string_value_.Get();
-}
-inline void DynamicValue::_internal_set_string_value(const ::std::string& value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.kind_.string_value_.Set(value, GetArena());
-}
-inline ::std::string* PROTOBUF_NONNULL DynamicValue::_internal_mutable_string_value() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _impl_.kind_.string_value_.Mutable( GetArena());
-}
-inline ::std::string* PROTOBUF_NULLABLE DynamicValue::release_string_value() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:eve.transaction.proto.DynamicValue.string_value)
-  if (kind_case() != kStringValue) {
-    return nullptr;
-  }
-  clear_has_kind();
-  return _impl_.kind_.string_value_.Release();
-}
-inline void DynamicValue::set_allocated_string_value(::std::string* PROTOBUF_NULLABLE value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (has_kind()) {
-    clear_kind();
-  }
-  if (value != nullptr) {
-    set_has_string_value();
-    _impl_.kind_.string_value_.InitAllocated(value, GetArena());
-  }
-  // @@protoc_insertion_point(field_set_allocated:eve.transaction.proto.DynamicValue.string_value)
-}
-
-// .eve.transaction.proto.DynamicList list_value = 6;
-inline bool DynamicValue::has_list_value() const {
-  return kind_case() == kListValue;
-}
-inline bool DynamicValue::_internal_has_list_value() const {
-  return kind_case() == kListValue;
-}
-inline void DynamicValue::set_has_list_value() {
-  _impl_._oneof_case_[0] = kListValue;
-}
-inline void DynamicValue::clear_list_value() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (kind_case() == kListValue) {
-    if (GetArena() == nullptr) {
-      delete _impl_.kind_.list_value_;
-    } else if (::google::protobuf::internal::DebugHardenClearOneofMessageOnArena()) {
-      ::google::protobuf::internal::MaybePoisonAfterClear(_impl_.kind_.list_value_);
-    }
-    clear_has_kind();
-  }
-}
-inline ::eve::transaction::proto::DynamicList* PROTOBUF_NULLABLE DynamicValue::release_list_value() {
-  // @@protoc_insertion_point(field_release:eve.transaction.proto.DynamicValue.list_value)
-  if (kind_case() == kListValue) {
-    clear_has_kind();
-    auto* temp = _impl_.kind_.list_value_;
-    if (GetArena() != nullptr) {
-      temp = ::google::protobuf::internal::DuplicateIfNonNull(temp);
-    }
-    _impl_.kind_.list_value_ = nullptr;
-    return temp;
-  } else {
-    return nullptr;
-  }
-}
-inline const ::eve::transaction::proto::DynamicList& DynamicValue::_internal_list_value() const {
-  return kind_case() == kListValue ? static_cast<const ::eve::transaction::proto::DynamicList&>(*_impl_.kind_.list_value_)
-                     : *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<::eve::transaction::proto::DynamicList>(&::eve::transaction::proto::DynamicList_globals_);
-}
-inline const ::eve::transaction::proto::DynamicList& DynamicValue::list_value() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:eve.transaction.proto.DynamicValue.list_value)
-  return _internal_list_value();
-}
-inline ::eve::transaction::proto::DynamicList* PROTOBUF_NULLABLE DynamicValue::unsafe_arena_release_list_value() {
-  // @@protoc_insertion_point(field_unsafe_arena_release:eve.transaction.proto.DynamicValue.list_value)
-  if (kind_case() == kListValue) {
-    clear_has_kind();
-    auto* temp = _impl_.kind_.list_value_;
-    _impl_.kind_.list_value_ = nullptr;
-    return temp;
-  } else {
-    return nullptr;
-  }
-}
-inline void DynamicValue::unsafe_arena_set_allocated_list_value(
-    ::eve::transaction::proto::DynamicList* PROTOBUF_NULLABLE value) {
-  // We rely on the oneof clear method to free the earlier contents
-  // of this oneof. We can directly use the pointer we're given to
-  // set the new value.
-  clear_kind();
-  if (value) {
-    set_has_list_value();
-    _impl_.kind_.list_value_ = value;
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:eve.transaction.proto.DynamicValue.list_value)
-}
-inline ::eve::transaction::proto::DynamicList* PROTOBUF_NONNULL DynamicValue::_internal_mutable_list_value() {
-  if (kind_case() != kListValue) {
-    clear_kind();
-    set_has_list_value();
-    _impl_.kind_.list_value_ =
-        ::google::protobuf::Message::DefaultConstruct<::eve::transaction::proto::DynamicList>(GetArena());
-  }
-  return _impl_.kind_.list_value_;
-}
-inline ::eve::transaction::proto::DynamicList* PROTOBUF_NONNULL DynamicValue::mutable_list_value()
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  ::eve::transaction::proto::DynamicList* _msg = _internal_mutable_list_value();
-  // @@protoc_insertion_point(field_mutable:eve.transaction.proto.DynamicValue.list_value)
-  return _msg;
-}
-
-// .eve.transaction.proto.DynamicObject object_value = 7;
-inline bool DynamicValue::has_object_value() const {
-  return kind_case() == kObjectValue;
-}
-inline bool DynamicValue::_internal_has_object_value() const {
-  return kind_case() == kObjectValue;
-}
-inline void DynamicValue::set_has_object_value() {
-  _impl_._oneof_case_[0] = kObjectValue;
-}
-inline void DynamicValue::clear_object_value() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (kind_case() == kObjectValue) {
-    if (GetArena() == nullptr) {
-      delete _impl_.kind_.object_value_;
-    } else if (::google::protobuf::internal::DebugHardenClearOneofMessageOnArena()) {
-      ::google::protobuf::internal::MaybePoisonAfterClear(_impl_.kind_.object_value_);
-    }
-    clear_has_kind();
-  }
-}
-inline ::eve::transaction::proto::DynamicObject* PROTOBUF_NULLABLE DynamicValue::release_object_value() {
-  // @@protoc_insertion_point(field_release:eve.transaction.proto.DynamicValue.object_value)
-  if (kind_case() == kObjectValue) {
-    clear_has_kind();
-    auto* temp = _impl_.kind_.object_value_;
-    if (GetArena() != nullptr) {
-      temp = ::google::protobuf::internal::DuplicateIfNonNull(temp);
-    }
-    _impl_.kind_.object_value_ = nullptr;
-    return temp;
-  } else {
-    return nullptr;
-  }
-}
-inline const ::eve::transaction::proto::DynamicObject& DynamicValue::_internal_object_value() const {
-  return kind_case() == kObjectValue ? static_cast<const ::eve::transaction::proto::DynamicObject&>(*_impl_.kind_.object_value_)
-                     : *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<::eve::transaction::proto::DynamicObject>(&::eve::transaction::proto::DynamicObject_globals_);
-}
-inline const ::eve::transaction::proto::DynamicObject& DynamicValue::object_value() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:eve.transaction.proto.DynamicValue.object_value)
-  return _internal_object_value();
-}
-inline ::eve::transaction::proto::DynamicObject* PROTOBUF_NULLABLE DynamicValue::unsafe_arena_release_object_value() {
-  // @@protoc_insertion_point(field_unsafe_arena_release:eve.transaction.proto.DynamicValue.object_value)
-  if (kind_case() == kObjectValue) {
-    clear_has_kind();
-    auto* temp = _impl_.kind_.object_value_;
-    _impl_.kind_.object_value_ = nullptr;
-    return temp;
-  } else {
-    return nullptr;
-  }
-}
-inline void DynamicValue::unsafe_arena_set_allocated_object_value(
-    ::eve::transaction::proto::DynamicObject* PROTOBUF_NULLABLE value) {
-  // We rely on the oneof clear method to free the earlier contents
-  // of this oneof. We can directly use the pointer we're given to
-  // set the new value.
-  clear_kind();
-  if (value) {
-    set_has_object_value();
-    _impl_.kind_.object_value_ = value;
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:eve.transaction.proto.DynamicValue.object_value)
-}
-inline ::eve::transaction::proto::DynamicObject* PROTOBUF_NONNULL DynamicValue::_internal_mutable_object_value() {
-  if (kind_case() != kObjectValue) {
-    clear_kind();
-    set_has_object_value();
-    _impl_.kind_.object_value_ =
-        ::google::protobuf::Message::DefaultConstruct<::eve::transaction::proto::DynamicObject>(GetArena());
-  }
-  return _impl_.kind_.object_value_;
-}
-inline ::eve::transaction::proto::DynamicObject* PROTOBUF_NONNULL DynamicValue::mutable_object_value()
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  ::eve::transaction::proto::DynamicObject* _msg = _internal_mutable_object_value();
-  // @@protoc_insertion_point(field_mutable:eve.transaction.proto.DynamicValue.object_value)
-  return _msg;
-}
-
-inline bool DynamicValue::has_kind() const {
-  return kind_case() != KIND_NOT_SET;
-}
-inline void DynamicValue::clear_has_kind() {
-  _impl_._oneof_case_[0] = KIND_NOT_SET;
-}
-inline DynamicValue::KindCase DynamicValue::kind_case() const {
-  return DynamicValue::KindCase(_impl_._oneof_case_[0]);
-}
-// -------------------------------------------------------------------
-
-// DynamicList
-
-// repeated .eve.transaction.proto.DynamicValue values = 1;
-inline int DynamicList::_internal_values_size() const {
-  return _internal_values().size();
-}
-inline int DynamicList::values_size() const {
-  return _internal_values_size();
-}
-inline void DynamicList::clear_values() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.values_.Clear();
-  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
-}
-inline const ::eve::transaction::proto::DynamicValue& DynamicList::values(int index) const
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:eve.transaction.proto.DynamicList.values)
-  return _internal_values().Get(index);
-}
-inline ::eve::transaction::proto::DynamicValue* PROTOBUF_NONNULL DynamicList::mutable_values(int index)
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_mutable:eve.transaction.proto.DynamicList.values)
-  return _internal_mutable_values()->Mutable(index);
-}
-inline ::eve::transaction::proto::DynamicValue* PROTOBUF_NONNULL DynamicList::add_values()
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  ::eve::transaction::proto::DynamicValue* _add =
-      _internal_mutable_values()->InternalAddWithArena(
-          ::google::protobuf::MessageLite::internal_visibility(), GetArena());
-  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
-  // @@protoc_insertion_point(field_add:eve.transaction.proto.DynamicList.values)
-  return _add;
-}
-inline const ::google::protobuf::RepeatedPtrField<::eve::transaction::proto::DynamicValue>& DynamicList::values() const
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_list:eve.transaction.proto.DynamicList.values)
-  return _internal_values();
-}
-inline ::google::protobuf::RepeatedPtrField<::eve::transaction::proto::DynamicValue>* PROTOBUF_NONNULL
-DynamicList::mutable_values() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
-  // @@protoc_insertion_point(field_mutable_list:eve.transaction.proto.DynamicList.values)
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _internal_mutable_values();
-}
-inline const ::google::protobuf::RepeatedPtrField<::eve::transaction::proto::DynamicValue>&
-DynamicList::_internal_values() const {
-  ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.values_;
-}
-inline ::google::protobuf::RepeatedPtrField<::eve::transaction::proto::DynamicValue>* PROTOBUF_NONNULL
-DynamicList::_internal_mutable_values() {
-  ::google::protobuf::internal::TSanRead(&_impl_);
-  return &_impl_.values_;
-}
-
-// -------------------------------------------------------------------
-
-// DynamicObject
-
-// repeated .eve.transaction.proto.DynamicField fields = 1;
-inline int DynamicObject::_internal_fields_size() const {
-  return _internal_fields().size();
-}
-inline int DynamicObject::fields_size() const {
-  return _internal_fields_size();
-}
-inline void DynamicObject::clear_fields() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.fields_.Clear();
-  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
-}
-inline const ::eve::transaction::proto::DynamicField& DynamicObject::fields(int index) const
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:eve.transaction.proto.DynamicObject.fields)
-  return _internal_fields().Get(index);
-}
-inline ::eve::transaction::proto::DynamicField* PROTOBUF_NONNULL DynamicObject::mutable_fields(int index)
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_mutable:eve.transaction.proto.DynamicObject.fields)
-  return _internal_mutable_fields()->Mutable(index);
-}
-inline ::eve::transaction::proto::DynamicField* PROTOBUF_NONNULL DynamicObject::add_fields()
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  ::eve::transaction::proto::DynamicField* _add =
-      _internal_mutable_fields()->InternalAddWithArena(
-          ::google::protobuf::MessageLite::internal_visibility(), GetArena());
-  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
-  // @@protoc_insertion_point(field_add:eve.transaction.proto.DynamicObject.fields)
-  return _add;
-}
-inline const ::google::protobuf::RepeatedPtrField<::eve::transaction::proto::DynamicField>& DynamicObject::fields() const
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_list:eve.transaction.proto.DynamicObject.fields)
-  return _internal_fields();
-}
-inline ::google::protobuf::RepeatedPtrField<::eve::transaction::proto::DynamicField>* PROTOBUF_NONNULL
-DynamicObject::mutable_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
-  // @@protoc_insertion_point(field_mutable_list:eve.transaction.proto.DynamicObject.fields)
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _internal_mutable_fields();
-}
-inline const ::google::protobuf::RepeatedPtrField<::eve::transaction::proto::DynamicField>&
-DynamicObject::_internal_fields() const {
-  ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.fields_;
-}
-inline ::google::protobuf::RepeatedPtrField<::eve::transaction::proto::DynamicField>* PROTOBUF_NONNULL
-DynamicObject::_internal_mutable_fields() {
-  ::google::protobuf::internal::TSanRead(&_impl_);
-  return &_impl_.fields_;
-}
-
-// -------------------------------------------------------------------
-
-// DynamicField
-
-// optional string key = 1;
-inline bool DynamicField::has_key() const {
-  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000001U);
-  return value;
-}
-inline void DynamicField::clear_key() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.key_.ClearToEmpty();
-  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
-}
-inline const ::std::string& DynamicField::key() const
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:eve.transaction.proto.DynamicField.key)
-  return _internal_key();
-}
-template <typename Arg_, typename... Args_>
-PROTOBUF_ALWAYS_INLINE void DynamicField::set_key(Arg_&& arg, Args_... args) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
-  _impl_.key_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:eve.transaction.proto.DynamicField.key)
-}
-inline ::std::string* PROTOBUF_NONNULL DynamicField::mutable_key()
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
-  ::std::string* _s = _internal_mutable_key();
-  // @@protoc_insertion_point(field_mutable:eve.transaction.proto.DynamicField.key)
-  return _s;
-}
-inline const ::std::string& DynamicField::_internal_key() const {
-  ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.key_.Get();
-}
-inline void DynamicField::_internal_set_key(const ::std::string& value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.key_.Set(value, GetArena());
-}
-inline ::std::string* PROTOBUF_NONNULL DynamicField::_internal_mutable_key() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _impl_.key_.Mutable( GetArena());
-}
-inline ::std::string* PROTOBUF_NULLABLE DynamicField::release_key() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:eve.transaction.proto.DynamicField.key)
-  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
-    return nullptr;
-  }
-  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
-  auto* released = _impl_.key_.Release();
-  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
-    _impl_.key_.Set("", GetArena());
-  }
-  return released;
-}
-inline void DynamicField::set_allocated_key(::std::string* PROTOBUF_NULLABLE value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (value != nullptr) {
-    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
-  } else {
-    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
-  }
-  _impl_.key_.SetAllocated(value, GetArena());
-  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.key_.IsDefault()) {
-    _impl_.key_.Set("", GetArena());
-  }
-  // @@protoc_insertion_point(field_set_allocated:eve.transaction.proto.DynamicField.key)
-}
-
-// .eve.transaction.proto.DynamicValue value = 2;
-inline bool DynamicField::has_value() const {
-  bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000002U);
-  PROTOBUF_ASSUME(!value || _impl_.value_ != nullptr);
-  return value;
-}
-inline void DynamicField::clear_value() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (_impl_.value_ != nullptr) _impl_.value_->Clear();
-  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
-}
-inline const ::eve::transaction::proto::DynamicValue& DynamicField::_internal_value() const {
-  ::google::protobuf::internal::TSanRead(&_impl_);
-  const ::eve::transaction::proto::DynamicValue* p = _impl_.value_;
-  return p != nullptr ? *p : *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<::eve::transaction::proto::DynamicValue>(&::eve::transaction::proto::DynamicValue_globals_);
-}
-inline const ::eve::transaction::proto::DynamicValue& DynamicField::value() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:eve.transaction.proto.DynamicField.value)
-  return _internal_value();
-}
-inline void DynamicField::unsafe_arena_set_allocated_value(
-    ::eve::transaction::proto::DynamicValue* PROTOBUF_NULLABLE value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (GetArena() == nullptr) {
-    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.value_);
-  }
-  _impl_.value_ = reinterpret_cast<::eve::transaction::proto::DynamicValue*>(value);
-  if (value != nullptr) {
-    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
-  } else {
-    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
-  }
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:eve.transaction.proto.DynamicField.value)
-}
-inline ::eve::transaction::proto::DynamicValue* PROTOBUF_NULLABLE DynamicField::release_value() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-
-  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
-  ::eve::transaction::proto::DynamicValue* released = _impl_.value_;
-  _impl_.value_ = nullptr;
-  if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
-    auto* old = reinterpret_cast<::google::protobuf::MessageLite*>(released);
-    released = ::google::protobuf::internal::DuplicateIfNonNull(released);
-    if (GetArena() == nullptr) {
-      delete old;
-    }
-  } else {
-    if (GetArena() != nullptr) {
-      released = ::google::protobuf::internal::DuplicateIfNonNull(released);
-    }
-  }
-  return released;
-}
-inline ::eve::transaction::proto::DynamicValue* PROTOBUF_NULLABLE DynamicField::unsafe_arena_release_value() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:eve.transaction.proto.DynamicField.value)
-
-  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
-  ::eve::transaction::proto::DynamicValue* temp = _impl_.value_;
-  _impl_.value_ = nullptr;
-  return temp;
-}
-inline ::eve::transaction::proto::DynamicValue* PROTOBUF_NONNULL DynamicField::_internal_mutable_value() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (_impl_.value_ == nullptr) {
-    auto* p = ::google::protobuf::Message::DefaultConstruct<::eve::transaction::proto::DynamicValue>(GetArena());
-    _impl_.value_ = reinterpret_cast<::eve::transaction::proto::DynamicValue*>(p);
-  }
-  return _impl_.value_;
-}
-inline ::eve::transaction::proto::DynamicValue* PROTOBUF_NONNULL DynamicField::mutable_value()
-    ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
-  ::eve::transaction::proto::DynamicValue* _msg = _internal_mutable_value();
-  // @@protoc_insertion_point(field_mutable:eve.transaction.proto.DynamicField.value)
-  return _msg;
-}
-inline void DynamicField::set_allocated_value(::eve::transaction::proto::DynamicValue* PROTOBUF_NULLABLE value) {
-  ::google::protobuf::Arena* message_arena = GetArena();
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (message_arena == nullptr) {
-    delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.value_);
-  }
-
-  if (value != nullptr) {
-    ::google::protobuf::Arena* submessage_arena = value->GetArena();
-    if (message_arena != submessage_arena) {
-      value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
-    }
-    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
-  } else {
-    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
-  }
-
-  _impl_.value_ = reinterpret_cast<::eve::transaction::proto::DynamicValue*>(value);
-  // @@protoc_insertion_point(field_set_allocated:eve.transaction.proto.DynamicField.value)
-}
-
 // -------------------------------------------------------------------
 
 // TransactionLedgerSave
@@ -5675,33 +3985,28 @@ inline void TransactionOperation::set_allocated_target(::std::string* PROTOBUF_N
   // @@protoc_insertion_point(field_set_allocated:eve.transaction.proto.TransactionOperation.target)
 }
 
-// .eve.transaction.proto.DynamicValue payload = 5;
+// .eve.persistence.proto.DynamicValue payload = 5;
 inline bool TransactionOperation::has_payload() const {
   bool value = CheckHasBit(_impl_._has_bits_[0], 0x00000020U);
   PROTOBUF_ASSUME(!value || _impl_.payload_ != nullptr);
   return value;
 }
-inline void TransactionOperation::clear_payload() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  if (_impl_.payload_ != nullptr) _impl_.payload_->Clear();
-  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
-}
-inline const ::eve::transaction::proto::DynamicValue& TransactionOperation::_internal_payload() const {
+inline const ::eve::persistence::proto::DynamicValue& TransactionOperation::_internal_payload() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  const ::eve::transaction::proto::DynamicValue* p = _impl_.payload_;
-  return p != nullptr ? *p : *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<::eve::transaction::proto::DynamicValue>(&::eve::transaction::proto::DynamicValue_globals_);
+  const ::eve::persistence::proto::DynamicValue* p = _impl_.payload_;
+  return p != nullptr ? *p : *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<::eve::persistence::proto::DynamicValue>(&::eve::persistence::proto::DynamicValue_globals_);
 }
-inline const ::eve::transaction::proto::DynamicValue& TransactionOperation::payload() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+inline const ::eve::persistence::proto::DynamicValue& TransactionOperation::payload() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
   // @@protoc_insertion_point(field_get:eve.transaction.proto.TransactionOperation.payload)
   return _internal_payload();
 }
 inline void TransactionOperation::unsafe_arena_set_allocated_payload(
-    ::eve::transaction::proto::DynamicValue* PROTOBUF_NULLABLE value) {
+    ::eve::persistence::proto::DynamicValue* PROTOBUF_NULLABLE value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (GetArena() == nullptr) {
     delete reinterpret_cast<::google::protobuf::MessageLite*>(_impl_.payload_);
   }
-  _impl_.payload_ = reinterpret_cast<::eve::transaction::proto::DynamicValue*>(value);
+  _impl_.payload_ = reinterpret_cast<::eve::persistence::proto::DynamicValue*>(value);
   if (value != nullptr) {
     SetHasBit(_impl_._has_bits_[0], 0x00000020U);
   } else {
@@ -5709,11 +4014,11 @@ inline void TransactionOperation::unsafe_arena_set_allocated_payload(
   }
   // @@protoc_insertion_point(field_unsafe_arena_set_allocated:eve.transaction.proto.TransactionOperation.payload)
 }
-inline ::eve::transaction::proto::DynamicValue* PROTOBUF_NULLABLE TransactionOperation::release_payload() {
+inline ::eve::persistence::proto::DynamicValue* PROTOBUF_NULLABLE TransactionOperation::release_payload() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
 
   ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
-  ::eve::transaction::proto::DynamicValue* released = _impl_.payload_;
+  ::eve::persistence::proto::DynamicValue* released = _impl_.payload_;
   _impl_.payload_ = nullptr;
   if (::google::protobuf::internal::DebugHardenForceCopyInRelease()) {
     auto* old = reinterpret_cast<::google::protobuf::MessageLite*>(released);
@@ -5728,31 +4033,31 @@ inline ::eve::transaction::proto::DynamicValue* PROTOBUF_NULLABLE TransactionOpe
   }
   return released;
 }
-inline ::eve::transaction::proto::DynamicValue* PROTOBUF_NULLABLE TransactionOperation::unsafe_arena_release_payload() {
+inline ::eve::persistence::proto::DynamicValue* PROTOBUF_NULLABLE TransactionOperation::unsafe_arena_release_payload() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   // @@protoc_insertion_point(field_release:eve.transaction.proto.TransactionOperation.payload)
 
   ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
-  ::eve::transaction::proto::DynamicValue* temp = _impl_.payload_;
+  ::eve::persistence::proto::DynamicValue* temp = _impl_.payload_;
   _impl_.payload_ = nullptr;
   return temp;
 }
-inline ::eve::transaction::proto::DynamicValue* PROTOBUF_NONNULL TransactionOperation::_internal_mutable_payload() {
+inline ::eve::persistence::proto::DynamicValue* PROTOBUF_NONNULL TransactionOperation::_internal_mutable_payload() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (_impl_.payload_ == nullptr) {
-    auto* p = ::google::protobuf::Message::DefaultConstruct<::eve::transaction::proto::DynamicValue>(GetArena());
-    _impl_.payload_ = reinterpret_cast<::eve::transaction::proto::DynamicValue*>(p);
+    auto* p = ::google::protobuf::Message::DefaultConstruct<::eve::persistence::proto::DynamicValue>(GetArena());
+    _impl_.payload_ = reinterpret_cast<::eve::persistence::proto::DynamicValue*>(p);
   }
   return _impl_.payload_;
 }
-inline ::eve::transaction::proto::DynamicValue* PROTOBUF_NONNULL TransactionOperation::mutable_payload()
+inline ::eve::persistence::proto::DynamicValue* PROTOBUF_NONNULL TransactionOperation::mutable_payload()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
   SetHasBit(_impl_._has_bits_[0], 0x00000020U);
-  ::eve::transaction::proto::DynamicValue* _msg = _internal_mutable_payload();
+  ::eve::persistence::proto::DynamicValue* _msg = _internal_mutable_payload();
   // @@protoc_insertion_point(field_mutable:eve.transaction.proto.TransactionOperation.payload)
   return _msg;
 }
-inline void TransactionOperation::set_allocated_payload(::eve::transaction::proto::DynamicValue* PROTOBUF_NULLABLE value) {
+inline void TransactionOperation::set_allocated_payload(::eve::persistence::proto::DynamicValue* PROTOBUF_NULLABLE value) {
   ::google::protobuf::Arena* message_arena = GetArena();
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (message_arena == nullptr) {
@@ -5760,7 +4065,7 @@ inline void TransactionOperation::set_allocated_payload(::eve::transaction::prot
   }
 
   if (value != nullptr) {
-    ::google::protobuf::Arena* submessage_arena = value->GetArena();
+    ::google::protobuf::Arena* submessage_arena = reinterpret_cast<::google::protobuf::Message*>(value)->GetArena();
     if (message_arena != submessage_arena) {
       value = ::google::protobuf::internal::GetOwnedMessage(message_arena, value, submessage_arena);
     }
@@ -5769,7 +4074,7 @@ inline void TransactionOperation::set_allocated_payload(::eve::transaction::prot
     ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
   }
 
-  _impl_.payload_ = reinterpret_cast<::eve::transaction::proto::DynamicValue*>(value);
+  _impl_.payload_ = reinterpret_cast<::eve::persistence::proto::DynamicValue*>(value);
   // @@protoc_insertion_point(field_set_allocated:eve.transaction.proto.TransactionOperation.payload)
 }
 

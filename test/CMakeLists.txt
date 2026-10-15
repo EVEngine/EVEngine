@@ -714,6 +714,29 @@ if(TARGET EVTransaction AND TARGET EVFoundation)
   zeroerr_discover_tests(transaction_protobuf_test
     LABEL "transaction_protobuf_test" NAME_PREFIX "transaction-protobuf/")
 endif()
+
+# The shared dynamic value codec must be independently usable by every
+# persistence module, including a trimmed foundation host.
+if(TARGET EVCommon AND TARGET EVFoundation)
+  add_executable(dynamic_value_protobuf_test EXCLUDE_FROM_ALL
+    main.cpp value_protobuf.cpp)
+  target_link_libraries(dynamic_value_protobuf_test PRIVATE
+    eve_engine_includes EVFoundation zeroerr protobuf::libprotobuf)
+  target_include_directories(dynamic_value_protobuf_test SYSTEM PRIVATE
+    ${CMAKE_SOURCE_DIR}/proto/generated)
+  target_compile_options(dynamic_value_protobuf_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(dynamic_value_protobuf_test PRIVATE EVBacktrace)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/dynamic_value_protobuf_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/dynamic_value_protobuf_test_zeroerr_tests.cmake"
+      "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(dynamic_value_protobuf_test
+    LABEL "dynamic_value_protobuf_test" NAME_PREFIX "dynamic-value-protobuf/")
+endif()
 endif()
 include(asset_shader/GraphicsProbe.cmake)
 

@@ -13,6 +13,7 @@ import utf8_stdio
 
 ROOT = Path(__file__).resolve().parent.parent
 PROTO_GROUPS = {
+    "dynamic_value.proto": "FOUNDATION",
     "authority_store.proto": "FOUNDATION",
     "decision_context.proto": "FOUNDATION",
     "game_save_session.proto": "FOUNDATION",

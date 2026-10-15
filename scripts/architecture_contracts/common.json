@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "common-lossless-dynamic-protobuf",
+      "rule": "persistence",
+      "scope": "src/engine/common/ProtobufDynamicValue.*",
+      "owner": "eve::proto_support",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "Open-ended JSON-compatible values need one Protobuf representation that retains distinct Int64 and Double values across typed domain snapshots.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "proto/dynamic_value.proto",
+        "src/engine/common/ProtobufDynamicValue.cpp"
+      ],
+      "tests": [
+        "test/value_protobuf.cpp"
+      ],
+      "schema": "eve.persistence.proto.DynamicValue is a recursive oneof for null, bool, Int64, finite Double, string, list and object.",
+      "version": "The shared value message is embedded inside versioned owning-domain messages; it is not an independent persistent root.",
+      "migration": "Owning domains migrate their outer schema and can convert prior JSON values through the same dynamic runtime contract.",
+      "unknown_fields": "Owning-domain binary restore rejects unknown fields recursively; the codec rejects unset kinds, false null markers, duplicate object keys and non-finite doubles.",
+      "restore_atomicity": "Decode builds an independent Value; encode swaps a complete temporary message only after every nested value succeeds."
+    },
+    {
+      "id": "common-lossless-dynamic-protobuf-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/common/ProtobufDynamicValue.*",
+      "owner": "eve::proto_support",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "Foundation persistence modules share a typed conversion boundary for genuinely dynamic data.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/ProtobufDynamicValue.h",
+        "src/engine/common/ProtobufDynamicValue.cpp",
+        "proto/dynamic_value.proto"
+      ],
+      "tests": [
+        "test/value_protobuf.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "No L1-L4 trim claim is made for the common codec."
+      },
+      "thread_affinity": "The caller owns the input and output values; conversion has no shared state or callbacks.",
+      "cost_notes": [
+        "Encoding and decoding cost linear time in recursively owned value size per persistence operation."
+      ],
+      "hot_path": []
+    }
+  ]
+}

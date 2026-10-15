@@ -29,14 +29,6 @@ namespace _fl = ::google::protobuf::internal::field_layout;
 namespace {
 PROTOBUF_CONSTINIT ::google::protobuf::internal::ReflectionData
     file_reflection_data[] = {
-        // ::eve::transaction::proto::DynamicValue
-        {&::_pbi::kDescriptorMethods, &::descriptor_table_transaction_5fledger_2eproto, /* tracker*/ nullptr,},
-        // ::eve::transaction::proto::DynamicList
-        {&::_pbi::kDescriptorMethods, &::descriptor_table_transaction_5fledger_2eproto, /* tracker*/ nullptr,},
-        // ::eve::transaction::proto::DynamicObject
-        {&::_pbi::kDescriptorMethods, &::descriptor_table_transaction_5fledger_2eproto, /* tracker*/ nullptr,},
-        // ::eve::transaction::proto::DynamicField
-        {&::_pbi::kDescriptorMethods, &::descriptor_table_transaction_5fledger_2eproto, /* tracker*/ nullptr,},
         // ::eve::transaction::proto::TransactionLedgerSave
         {&::_pbi::kDescriptorMethods, &::descriptor_table_transaction_5fledger_2eproto, /* tracker*/ nullptr,},
         // ::eve::transaction::proto::TransactionLedgerEnvelope
@@ -209,7 +201,7 @@ constexpr auto TransactionLedgerEnvelope::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[5],
+      &file_reflection_data[1],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_transaction_5fledger_2eproto,
@@ -395,7 +387,7 @@ constexpr auto TransactionEvent::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[9],
+      &file_reflection_data[5],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_transaction_5fledger_2eproto,
@@ -446,632 +438,6 @@ const ::_pbi::ClassData* TransactionEvent_get_class_data() {
 }
 }  // namespace
 #endif  // PROTOBUF_CUSTOM_VTABLE
-class DynamicField::_Internal {
- public:
-  using HasBits = decltype(::std::declval<DynamicField>()._impl_._has_bits_);
-  static constexpr ::int32_t kHasBitsOffset =
-      8 * PROTOBUF_FIELD_OFFSET(DynamicField, _impl_._has_bits_);
-};
-
-constexpr DynamicField::ParseTableT_ DynamicField::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
-  return ParseTableT_{
-    {
-      PROTOBUF_FIELD_OFFSET(DynamicField, _impl_._has_bits_),
-      0, // no _extensions_
-      2, 8,  // max_field_number, fast_idx_mask
-      offsetof(ParseTableT_, field_lookup_table),
-      4294967292,  // skipmap
-      offsetof(ParseTableT_, field_entries),
-      2,  // num_field_entries
-      1,  // num_aux_entries
-      offsetof(ParseTableT_, aux_entries),
-      class_data,
-      nullptr,  // post_loop_handler
-      ::_pbi::TcParser::GenericFallback,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::eve::transaction::proto::DynamicField>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
-    }, {{
-      // .eve.transaction.proto.DynamicValue value = 2;
-      {::_pbi::TcParser::FastMtS1,
-       {18, 1, 0,
-        PROTOBUF_FIELD_OFFSET(DynamicField, _impl_.value_)}},
-      // optional string key = 1;
-      {::_pbi::TcParser::FastUS1,
-       {10, 0, 0,
-        PROTOBUF_FIELD_OFFSET(DynamicField, _impl_.key_)}},
-    }}, {{
-      65535, 65535
-    }}, {{
-      // optional string key = 1;
-      {PROTOBUF_FIELD_OFFSET(DynamicField, _impl_.key_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
-      // .eve.transaction.proto.DynamicValue value = 2;
-      {PROTOBUF_FIELD_OFFSET(DynamicField, _impl_.value_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
-    }},
-    {{
-        #ifndef PROTOBUF_MESSAGE_GLOBALS
-        {::_pbi::TcParser::GetTable<::eve::transaction::proto::DynamicValue>()},
-        #else
-        {::_pbi::FieldAuxMessageGlobals(), &::eve::transaction::proto::DynamicValue_globals_},
-        #endif
-    }},
-    {{
-      "\42\3\0\0\0\0\0\0"
-      "eve.transaction.proto.DynamicField"
-      "key"
-    }},
-  };
-}
-
-
-inline constexpr DynamicField::Impl_::Impl_(
-    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
-    ::_pbi::ConstantInitialized) noexcept
-      : _cached_size_{0},
-        key_(
-            &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()),
-        value_{nullptr} {}
-
-template <typename>
-constexpr DynamicField::DynamicField(::_pbi::ConstantInitialized,
-                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
-    : ::google::protobuf::Message(
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-          class_data
-#endif  // PROTOBUF_CUSTOM_VTABLE
-          ),
-      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
-}
-inline void* PROTOBUF_NONNULL DynamicField::PlacementNew_(
-    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
-    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
-  return ::new (mem) DynamicField(arena);
-}
-constexpr auto DynamicField::InternalNewImpl_() {
-  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(DynamicField), alignof(DynamicField));
-}
-constexpr auto DynamicField::InternalGenerateClassData_(
-    const MessageLite& prototype,
-    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
-  return ::google::protobuf::internal::ClassDataFull{
-      ::google::protobuf::internal::ClassData{
-          &prototype,
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-          &_table_.header,
-#else
-          tc_table,
-#endif
-          nullptr,  // IsInitialized
-          &DynamicField::MergeImpl,
-          ::google::protobuf::Message::GetNewImpl<DynamicField>(),
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-          &DynamicField::SharedDtor,
-          ::google::protobuf::Message::GetClearImpl<DynamicField>(), &DynamicField::ByteSizeLong,
-              &DynamicField::_InternalSerialize,
-#endif  // PROTOBUF_CUSTOM_VTABLE
-          PROTOBUF_FIELD_OFFSET(DynamicField, _impl_._cached_size_),
-          false,
-      },
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[3],
-#else   // !PROTOBUF_MESSAGE_GLOBALS
-      &::_pbi::kDescriptorMethods,
-      &descriptor_table_transaction_5fledger_2eproto,
-      nullptr,  // tracker
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-  };
-}
-struct DynamicFieldGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
-  constexpr DynamicFieldGlobalsTypeInternal()
-      :
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-        _default(::_pbi::ConstantInitialized{},
-                 DynamicField_class_data_.base())
-#else   // !PROTOBUF_MESSAGE_GLOBALS
-        MessageGlobalsBase(DynamicField::InternalGenerateClassData_(
-            _default, &DynamicField_globals_._table.header)),
-        _default(::_pbi::ConstantInitialized{}, GetClassData()),
-        _table(::_pbi::PrivateAccess::GenerateParseTable<DynamicField>(
-            GetClassData()))
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-  {
-  }
-  ~DynamicFieldGlobalsTypeInternal() {}
-  union {
-    alignas(::_pbi::kMaxMessageAlignment) DynamicField _default;
-  };
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-  decltype(::_pbi::PrivateAccess::GenerateParseTable<DynamicField>(
-      ::std::declval<const ::_pbi::ClassData*>())) _table;
-#endif
-};
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-static_assert(PROTOBUF_FIELD_OFFSET(DynamicFieldGlobalsTypeInternal, _default) ==
-              ::_pbi::MessageGlobalsBase::OffsetToDefault());
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT EVENGINE_API_FOUNDATION
-    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST DynamicFieldGlobalsTypeInternal DynamicField_globals_
-        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-namespace {
-const ::_pbi::ClassData* DynamicField_get_class_data() {
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-  return DynamicField_globals_.GetClassData();
-#else
-  return DynamicField_class_data_.base();
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-}
-}  // namespace
-#endif  // PROTOBUF_CUSTOM_VTABLE
-class DynamicList::_Internal {
- public:
-  using HasBits = decltype(::std::declval<DynamicList>()._impl_._has_bits_);
-  static constexpr ::int32_t kHasBitsOffset =
-      8 * PROTOBUF_FIELD_OFFSET(DynamicList, _impl_._has_bits_);
-};
-
-constexpr DynamicList::ParseTableT_ DynamicList::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
-  return ParseTableT_{
-    {
-      PROTOBUF_FIELD_OFFSET(DynamicList, _impl_._has_bits_),
-      0, // no _extensions_
-      1, 0,  // max_field_number, fast_idx_mask
-      offsetof(ParseTableT_, field_lookup_table),
-      4294967294,  // skipmap
-      offsetof(ParseTableT_, field_entries),
-      1,  // num_field_entries
-      1,  // num_aux_entries
-      offsetof(ParseTableT_, aux_entries),
-      class_data,
-      nullptr,  // post_loop_handler
-      ::_pbi::TcParser::GenericFallback,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::eve::transaction::proto::DynamicList>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
-    }, {{
-      // repeated .eve.transaction.proto.DynamicValue values = 1;
-      {::_pbi::TcParser::FastMtR1,
-       {10, 0, 0,
-        PROTOBUF_FIELD_OFFSET(DynamicList, _impl_.values_)}},
-    }}, {{
-      65535, 65535
-    }}, {{
-      // repeated .eve.transaction.proto.DynamicValue values = 1;
-      {PROTOBUF_FIELD_OFFSET(DynamicList, _impl_.values_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
-    }},
-    {{
-        #ifndef PROTOBUF_MESSAGE_GLOBALS
-        {::_pbi::TcParser::GetTable<::eve::transaction::proto::DynamicValue>()},
-        #else
-        {::_pbi::FieldAuxMessageGlobals(), &::eve::transaction::proto::DynamicValue_globals_},
-        #endif
-    }},
-    {{
-    }},
-  };
-}
-
-
-inline constexpr DynamicList::Impl_::Impl_(
-    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
-    ::_pbi::ConstantInitialized) noexcept
-      : _cached_size_{0},
-        values_ { visibility, ::_pbi::InternalMetadataOffset::Build<
-            ::eve::transaction::proto::DynamicList,
-            PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicList, _impl_.values_)>()
-         }
-     {}
-
-template <typename>
-constexpr DynamicList::DynamicList(::_pbi::ConstantInitialized,
-                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
-    : ::google::protobuf::Message(
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-          class_data
-#endif  // PROTOBUF_CUSTOM_VTABLE
-          ),
-      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
-}
-inline void* PROTOBUF_NONNULL DynamicList::PlacementNew_(
-    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
-    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
-  return ::new (mem) DynamicList(arena);
-}
-constexpr auto DynamicList::InternalNewImpl_() {
-  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(DynamicList), alignof(DynamicList));
-}
-constexpr auto DynamicList::InternalGenerateClassData_(
-    const MessageLite& prototype,
-    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
-  return ::google::protobuf::internal::ClassDataFull{
-      ::google::protobuf::internal::ClassData{
-          &prototype,
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-          &_table_.header,
-#else
-          tc_table,
-#endif
-          nullptr,  // IsInitialized
-          &DynamicList::MergeImpl,
-          ::google::protobuf::Message::GetNewImpl<DynamicList>(),
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-          &DynamicList::SharedDtor,
-          ::google::protobuf::Message::GetClearImpl<DynamicList>(), &DynamicList::ByteSizeLong,
-              &DynamicList::_InternalSerialize,
-#endif  // PROTOBUF_CUSTOM_VTABLE
-          PROTOBUF_FIELD_OFFSET(DynamicList, _impl_._cached_size_),
-          false,
-      },
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[1],
-#else   // !PROTOBUF_MESSAGE_GLOBALS
-      &::_pbi::kDescriptorMethods,
-      &descriptor_table_transaction_5fledger_2eproto,
-      nullptr,  // tracker
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-  };
-}
-struct DynamicListGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
-  constexpr DynamicListGlobalsTypeInternal()
-      :
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-        _default(::_pbi::ConstantInitialized{},
-                 DynamicList_class_data_.base())
-#else   // !PROTOBUF_MESSAGE_GLOBALS
-        MessageGlobalsBase(DynamicList::InternalGenerateClassData_(
-            _default, &DynamicList_globals_._table.header)),
-        _default(::_pbi::ConstantInitialized{}, GetClassData()),
-        _table(::_pbi::PrivateAccess::GenerateParseTable<DynamicList>(
-            GetClassData()))
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-  {
-  }
-  ~DynamicListGlobalsTypeInternal() {}
-  union {
-    alignas(::_pbi::kMaxMessageAlignment) DynamicList _default;
-  };
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-  decltype(::_pbi::PrivateAccess::GenerateParseTable<DynamicList>(
-      ::std::declval<const ::_pbi::ClassData*>())) _table;
-#endif
-};
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-static_assert(PROTOBUF_FIELD_OFFSET(DynamicListGlobalsTypeInternal, _default) ==
-              ::_pbi::MessageGlobalsBase::OffsetToDefault());
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT EVENGINE_API_FOUNDATION
-    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST DynamicListGlobalsTypeInternal DynamicList_globals_
-        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-namespace {
-const ::_pbi::ClassData* DynamicList_get_class_data() {
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-  return DynamicList_globals_.GetClassData();
-#else
-  return DynamicList_class_data_.base();
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-}
-}  // namespace
-#endif  // PROTOBUF_CUSTOM_VTABLE
-class DynamicObject::_Internal {
- public:
-  using HasBits = decltype(::std::declval<DynamicObject>()._impl_._has_bits_);
-  static constexpr ::int32_t kHasBitsOffset =
-      8 * PROTOBUF_FIELD_OFFSET(DynamicObject, _impl_._has_bits_);
-};
-
-constexpr DynamicObject::ParseTableT_ DynamicObject::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
-  return ParseTableT_{
-    {
-      PROTOBUF_FIELD_OFFSET(DynamicObject, _impl_._has_bits_),
-      0, // no _extensions_
-      1, 0,  // max_field_number, fast_idx_mask
-      offsetof(ParseTableT_, field_lookup_table),
-      4294967294,  // skipmap
-      offsetof(ParseTableT_, field_entries),
-      1,  // num_field_entries
-      1,  // num_aux_entries
-      offsetof(ParseTableT_, aux_entries),
-      class_data,
-      nullptr,  // post_loop_handler
-      ::_pbi::TcParser::GenericFallback,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::eve::transaction::proto::DynamicObject>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
-    }, {{
-      // repeated .eve.transaction.proto.DynamicField fields = 1;
-      {::_pbi::TcParser::FastMtR1,
-       {10, 0, 0,
-        PROTOBUF_FIELD_OFFSET(DynamicObject, _impl_.fields_)}},
-    }}, {{
-      65535, 65535
-    }}, {{
-      // repeated .eve.transaction.proto.DynamicField fields = 1;
-      {PROTOBUF_FIELD_OFFSET(DynamicObject, _impl_.fields_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
-    }},
-    {{
-        #ifndef PROTOBUF_MESSAGE_GLOBALS
-        {::_pbi::TcParser::GetTable<::eve::transaction::proto::DynamicField>()},
-        #else
-        {::_pbi::FieldAuxMessageGlobals(), &::eve::transaction::proto::DynamicField_globals_},
-        #endif
-    }},
-    {{
-    }},
-  };
-}
-
-
-inline constexpr DynamicObject::Impl_::Impl_(
-    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
-    ::_pbi::ConstantInitialized) noexcept
-      : _cached_size_{0},
-        fields_ { visibility, ::_pbi::InternalMetadataOffset::Build<
-            ::eve::transaction::proto::DynamicObject,
-            PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicObject, _impl_.fields_)>()
-         }
-     {}
-
-template <typename>
-constexpr DynamicObject::DynamicObject(::_pbi::ConstantInitialized,
-                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
-    : ::google::protobuf::Message(
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-          class_data
-#endif  // PROTOBUF_CUSTOM_VTABLE
-          ),
-      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
-}
-inline void* PROTOBUF_NONNULL DynamicObject::PlacementNew_(
-    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
-    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
-  return ::new (mem) DynamicObject(arena);
-}
-constexpr auto DynamicObject::InternalNewImpl_() {
-  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(DynamicObject), alignof(DynamicObject));
-}
-constexpr auto DynamicObject::InternalGenerateClassData_(
-    const MessageLite& prototype,
-    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
-  return ::google::protobuf::internal::ClassDataFull{
-      ::google::protobuf::internal::ClassData{
-          &prototype,
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-          &_table_.header,
-#else
-          tc_table,
-#endif
-          nullptr,  // IsInitialized
-          &DynamicObject::MergeImpl,
-          ::google::protobuf::Message::GetNewImpl<DynamicObject>(),
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-          &DynamicObject::SharedDtor,
-          ::google::protobuf::Message::GetClearImpl<DynamicObject>(), &DynamicObject::ByteSizeLong,
-              &DynamicObject::_InternalSerialize,
-#endif  // PROTOBUF_CUSTOM_VTABLE
-          PROTOBUF_FIELD_OFFSET(DynamicObject, _impl_._cached_size_),
-          false,
-      },
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[2],
-#else   // !PROTOBUF_MESSAGE_GLOBALS
-      &::_pbi::kDescriptorMethods,
-      &descriptor_table_transaction_5fledger_2eproto,
-      nullptr,  // tracker
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-  };
-}
-struct DynamicObjectGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
-  constexpr DynamicObjectGlobalsTypeInternal()
-      :
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-        _default(::_pbi::ConstantInitialized{},
-                 DynamicObject_class_data_.base())
-#else   // !PROTOBUF_MESSAGE_GLOBALS
-        MessageGlobalsBase(DynamicObject::InternalGenerateClassData_(
-            _default, &DynamicObject_globals_._table.header)),
-        _default(::_pbi::ConstantInitialized{}, GetClassData()),
-        _table(::_pbi::PrivateAccess::GenerateParseTable<DynamicObject>(
-            GetClassData()))
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-  {
-  }
-  ~DynamicObjectGlobalsTypeInternal() {}
-  union {
-    alignas(::_pbi::kMaxMessageAlignment) DynamicObject _default;
-  };
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-  decltype(::_pbi::PrivateAccess::GenerateParseTable<DynamicObject>(
-      ::std::declval<const ::_pbi::ClassData*>())) _table;
-#endif
-};
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-static_assert(PROTOBUF_FIELD_OFFSET(DynamicObjectGlobalsTypeInternal, _default) ==
-              ::_pbi::MessageGlobalsBase::OffsetToDefault());
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT EVENGINE_API_FOUNDATION
-    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST DynamicObjectGlobalsTypeInternal DynamicObject_globals_
-        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-namespace {
-const ::_pbi::ClassData* DynamicObject_get_class_data() {
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-  return DynamicObject_globals_.GetClassData();
-#else
-  return DynamicObject_class_data_.base();
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-}
-}  // namespace
-#endif  // PROTOBUF_CUSTOM_VTABLE
-class DynamicValue::_Internal {
- public:
-  static constexpr ::int32_t kOneofCaseOffset =
-      PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicValue, _impl_._oneof_case_);
-};
-
-constexpr DynamicValue::ParseTableT_ DynamicValue::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
-  return ParseTableT_{
-    {
-      PROTOBUF_FIELD_OFFSET(DynamicValue,
-                            _impl_._cached_size_),  // no hasbits
-      0, // no _extensions_
-      7, 0,  // max_field_number, fast_idx_mask
-      offsetof(ParseTableT_, field_lookup_table),
-      4294967168,  // skipmap
-      offsetof(ParseTableT_, field_entries),
-      7,  // num_field_entries
-      2,  // num_aux_entries
-      offsetof(ParseTableT_, aux_entries),
-      class_data,
-      nullptr,  // post_loop_handler
-      ::_pbi::TcParser::GenericFallback,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::eve::transaction::proto::DynamicValue>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
-    }, {{
-      {::_pbi::TcParser::MiniParse, {}},
-    }}, {{
-      65535, 65535
-    }}, {{
-      // bool null_value = 1;
-      {PROTOBUF_FIELD_OFFSET(DynamicValue, _impl_.kind_.null_value_), _Internal::kOneofCaseOffset + 0, 0, (0 | ::_fl::kFcOneof | ::_fl::kBool)},
-      // bool bool_value = 2;
-      {PROTOBUF_FIELD_OFFSET(DynamicValue, _impl_.kind_.bool_value_), _Internal::kOneofCaseOffset + 0, 0, (0 | ::_fl::kFcOneof | ::_fl::kBool)},
-      // int64 int_value = 3;
-      {PROTOBUF_FIELD_OFFSET(DynamicValue, _impl_.kind_.int_value_), _Internal::kOneofCaseOffset + 0, 0, (0 | ::_fl::kFcOneof | ::_fl::kInt64)},
-      // double double_value = 4;
-      {PROTOBUF_FIELD_OFFSET(DynamicValue, _impl_.kind_.double_value_), _Internal::kOneofCaseOffset + 0, 0, (0 | ::_fl::kFcOneof | ::_fl::kDouble)},
-      // string string_value = 5;
-      {PROTOBUF_FIELD_OFFSET(DynamicValue, _impl_.kind_.string_value_), _Internal::kOneofCaseOffset + 0, 0, (0 | ::_fl::kFcOneof | ::_fl::kUtf8String | ::_fl::kRepAString)},
-      // .eve.transaction.proto.DynamicList list_value = 6;
-      {PROTOBUF_FIELD_OFFSET(DynamicValue, _impl_.kind_.list_value_), _Internal::kOneofCaseOffset + 0, 0, (0 | ::_fl::kFcOneof | ::_fl::kMessage | ::_fl::kTvTable)},
-      // .eve.transaction.proto.DynamicObject object_value = 7;
-      {PROTOBUF_FIELD_OFFSET(DynamicValue, _impl_.kind_.object_value_), _Internal::kOneofCaseOffset + 0, 1, (0 | ::_fl::kFcOneof | ::_fl::kMessage | ::_fl::kTvTable)},
-    }},
-    {{
-        #ifndef PROTOBUF_MESSAGE_GLOBALS
-        {::_pbi::TcParser::GetTable<::eve::transaction::proto::DynamicList>()},
-        #else
-        {::_pbi::FieldAuxMessageGlobals(), &::eve::transaction::proto::DynamicList_globals_},
-        #endif
-        #ifndef PROTOBUF_MESSAGE_GLOBALS
-        {::_pbi::TcParser::GetTable<::eve::transaction::proto::DynamicObject>()},
-        #else
-        {::_pbi::FieldAuxMessageGlobals(), &::eve::transaction::proto::DynamicObject_globals_},
-        #endif
-    }},
-    {{
-      "\42\0\0\0\0\14\0\0"
-      "eve.transaction.proto.DynamicValue"
-      "string_value"
-    }},
-  };
-}
-
-
-inline constexpr DynamicValue::Impl_::Impl_(
-    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
-    ::_pbi::ConstantInitialized) noexcept
-      : kind_{},
-        _cached_size_{0},
-        _oneof_case_{} {}
-
-template <typename>
-constexpr DynamicValue::DynamicValue(::_pbi::ConstantInitialized,
-                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
-    : ::google::protobuf::Message(
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-          class_data
-#endif  // PROTOBUF_CUSTOM_VTABLE
-          ),
-      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
-}
-inline void* PROTOBUF_NONNULL DynamicValue::PlacementNew_(
-    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
-    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
-  return ::new (mem) DynamicValue(arena);
-}
-constexpr auto DynamicValue::InternalNewImpl_() {
-  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(DynamicValue), alignof(DynamicValue));
-}
-constexpr auto DynamicValue::InternalGenerateClassData_(
-    const MessageLite& prototype,
-    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
-  return ::google::protobuf::internal::ClassDataFull{
-      ::google::protobuf::internal::ClassData{
-          &prototype,
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-          &_table_.header,
-#else
-          tc_table,
-#endif
-          nullptr,  // IsInitialized
-          &DynamicValue::MergeImpl,
-          ::google::protobuf::Message::GetNewImpl<DynamicValue>(),
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-          &DynamicValue::SharedDtor,
-          ::google::protobuf::Message::GetClearImpl<DynamicValue>(), &DynamicValue::ByteSizeLong,
-              &DynamicValue::_InternalSerialize,
-#endif  // PROTOBUF_CUSTOM_VTABLE
-          PROTOBUF_FIELD_OFFSET(DynamicValue, _impl_._cached_size_),
-          false,
-      },
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[0],
-#else   // !PROTOBUF_MESSAGE_GLOBALS
-      &::_pbi::kDescriptorMethods,
-      &descriptor_table_transaction_5fledger_2eproto,
-      nullptr,  // tracker
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-  };
-}
-struct DynamicValueGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
-  constexpr DynamicValueGlobalsTypeInternal()
-      :
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-        _default(::_pbi::ConstantInitialized{},
-                 DynamicValue_class_data_.base())
-#else   // !PROTOBUF_MESSAGE_GLOBALS
-        MessageGlobalsBase(DynamicValue::InternalGenerateClassData_(
-            _default, &DynamicValue_globals_._table.header)),
-        _default(::_pbi::ConstantInitialized{}, GetClassData()),
-        _table(::_pbi::PrivateAccess::GenerateParseTable<DynamicValue>(
-            GetClassData()))
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-  {
-  }
-  ~DynamicValueGlobalsTypeInternal() {}
-  union {
-    alignas(::_pbi::kMaxMessageAlignment) DynamicValue _default;
-  };
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-  decltype(::_pbi::PrivateAccess::GenerateParseTable<DynamicValue>(
-      ::std::declval<const ::_pbi::ClassData*>())) _table;
-#endif
-};
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-static_assert(PROTOBUF_FIELD_OFFSET(DynamicValueGlobalsTypeInternal, _default) ==
-              ::_pbi::MessageGlobalsBase::OffsetToDefault());
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT EVENGINE_API_FOUNDATION
-    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST DynamicValueGlobalsTypeInternal DynamicValue_globals_
-        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-namespace {
-const ::_pbi::ClassData* DynamicValue_get_class_data() {
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-  return DynamicValue_globals_.GetClassData();
-#else
-  return DynamicValue_class_data_.base();
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-}
-}  // namespace
-#endif  // PROTOBUF_CUSTOM_VTABLE
 class TransactionOperation::_Internal {
  public:
   using HasBits = decltype(::std::declval<TransactionOperation>()._impl_._has_bits_);
@@ -1118,7 +484,7 @@ constexpr TransactionOperation::ParseTableT_ TransactionOperation::InternalGener
       {::_pbi::TcParser::FastUS1,
        {34, 3, 0,
         PROTOBUF_FIELD_OFFSET(TransactionOperation, _impl_.target_)}},
-      // .eve.transaction.proto.DynamicValue payload = 5;
+      // .eve.persistence.proto.DynamicValue payload = 5;
       {::_pbi::TcParser::FastMtS1,
        {42, 5, 0,
         PROTOBUF_FIELD_OFFSET(TransactionOperation, _impl_.payload_)}},
@@ -1141,7 +507,7 @@ constexpr TransactionOperation::ParseTableT_ TransactionOperation::InternalGener
       {PROTOBUF_FIELD_OFFSET(TransactionOperation, _impl_.kind_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // optional string target = 4;
       {PROTOBUF_FIELD_OFFSET(TransactionOperation, _impl_.target_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
-      // .eve.transaction.proto.DynamicValue payload = 5;
+      // .eve.persistence.proto.DynamicValue payload = 5;
       {PROTOBUF_FIELD_OFFSET(TransactionOperation, _impl_.payload_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
       // optional bool checked = 6;
       {PROTOBUF_FIELD_OFFSET(TransactionOperation, _impl_.checked_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
@@ -1152,9 +518,9 @@ constexpr TransactionOperation::ParseTableT_ TransactionOperation::InternalGener
     }},
     {{
         #ifndef PROTOBUF_MESSAGE_GLOBALS
-        {::_pbi::TcParser::GetTable<::eve::transaction::proto::DynamicValue>()},
+        {::_pbi::TcParser::GetTable<::eve::persistence::proto::DynamicValue>()},
         #else
-        {::_pbi::FieldAuxMessageGlobals(), &::eve::transaction::proto::DynamicValue_globals_},
+        {::_pbi::FieldAuxMessageGlobals(), &::eve::persistence::proto::DynamicValue_globals_},
         #endif
     }},
     {{
@@ -1234,7 +600,7 @@ constexpr auto TransactionOperation::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[8],
+      &file_reflection_data[4],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_transaction_5fledger_2eproto,
@@ -1480,7 +846,7 @@ constexpr auto TransactionPlan::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[7],
+      &file_reflection_data[3],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_transaction_5fledger_2eproto,
@@ -1657,7 +1023,7 @@ constexpr auto TransactionLedgerSave::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[4],
+      &file_reflection_data[0],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_transaction_5fledger_2eproto,
@@ -1866,7 +1232,7 @@ constexpr auto TransactionLedgerJsonDocument::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[6],
+      &file_reflection_data[2],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_transaction_5fledger_2eproto,
@@ -1927,33 +1293,6 @@ static constexpr const ::_pb::ServiceDescriptor* PROTOBUF_NONNULL* PROTOBUF_NULL
 const ::uint32_t
     TableStruct_transaction_5fledger_2eproto::offsets[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
         protodesc_cold) = {
-        0x004, // bitmap
-        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicValue, _impl_._oneof_case_[0]),
-        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicValue, _impl_.kind_),
-        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicValue, _impl_.kind_),
-        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicValue, _impl_.kind_),
-        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicValue, _impl_.kind_),
-        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicValue, _impl_.kind_),
-        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicValue, _impl_.kind_),
-        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicValue, _impl_.kind_),
-        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicValue, _impl_.kind_),
-        0x081, // bitmap
-        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicList, _impl_._has_bits_),
-        4, // hasbit index offset
-        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicList, _impl_.values_),
-        0,
-        0x081, // bitmap
-        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicObject, _impl_._has_bits_),
-        4, // hasbit index offset
-        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicObject, _impl_.fields_),
-        0,
-        0x081, // bitmap
-        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicField, _impl_._has_bits_),
-        5, // hasbit index offset
-        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicField, _impl_.key_),
-        PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicField, _impl_.value_),
-        0,
-        1,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::TransactionLedgerSave, _impl_._has_bits_),
         7, // hasbit index offset
@@ -2062,23 +1401,15 @@ const ::uint32_t
 
 static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-        {0, sizeof(::eve::transaction::proto::DynamicValue)},
-        {10, sizeof(::eve::transaction::proto::DynamicList)},
-        {15, sizeof(::eve::transaction::proto::DynamicObject)},
-        {20, sizeof(::eve::transaction::proto::DynamicField)},
-        {27, sizeof(::eve::transaction::proto::TransactionLedgerSave)},
-        {38, sizeof(::eve::transaction::proto::TransactionLedgerEnvelope)},
-        {57, sizeof(::eve::transaction::proto::TransactionLedgerJsonDocument)},
-        {76, sizeof(::eve::transaction::proto::TransactionPlan)},
-        {99, sizeof(::eve::transaction::proto::TransactionOperation)},
-        {118, sizeof(::eve::transaction::proto::TransactionEvent)},
+        {0, sizeof(::eve::transaction::proto::TransactionLedgerSave)},
+        {11, sizeof(::eve::transaction::proto::TransactionLedgerEnvelope)},
+        {30, sizeof(::eve::transaction::proto::TransactionLedgerJsonDocument)},
+        {49, sizeof(::eve::transaction::proto::TransactionPlan)},
+        {72, sizeof(::eve::transaction::proto::TransactionOperation)},
+        {91, sizeof(::eve::transaction::proto::TransactionEvent)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
-        &::eve::transaction::proto::DynamicValue_globals_,
-        &::eve::transaction::proto::DynamicList_globals_,
-        &::eve::transaction::proto::DynamicObject_globals_,
-        &::eve::transaction::proto::DynamicField_globals_,
         &::eve::transaction::proto::TransactionLedgerSave_globals_,
         &::eve::transaction::proto::TransactionLedgerEnvelope_globals_,
         &::eve::transaction::proto::TransactionLedgerJsonDocument_globals_,
@@ -2089,79 +1420,72 @@ static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
 const char descriptor_table_protodef_transaction_5fledger_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
     "\n\030transaction_ledger.proto\022\025eve.transact"
-    "ion.proto\"\377\001\n\014DynamicValue\022\024\n\nnull_value"
-    "\030\001 \001(\010H\000\022\024\n\nbool_value\030\002 \001(\010H\000\022\023\n\tint_va"
-    "lue\030\003 \001(\003H\000\022\026\n\014double_value\030\004 \001(\001H\000\022\026\n\014s"
-    "tring_value\030\005 \001(\tH\000\0228\n\nlist_value\030\006 \001(\0132"
-    "\".eve.transaction.proto.DynamicListH\000\022<\n"
-    "\014object_value\030\007 \001(\0132$.eve.transaction.pr"
-    "oto.DynamicObjectH\000B\006\n\004kind\"B\n\013DynamicLi"
-    "st\0223\n\006values\030\001 \003(\0132#.eve.transaction.pro"
-    "to.DynamicValue\"D\n\rDynamicObject\0223\n\006fiel"
-    "ds\030\001 \003(\0132#.eve.transaction.proto.Dynamic"
-    "Field\"\\\n\014DynamicField\022\020\n\003key\030\001 \001(\tH\000\210\001\001\022"
-    "2\n\005value\030\002 \001(\0132#.eve.transaction.proto.D"
-    "ynamicValueB\006\n\004_key\"\304\001\n\025TransactionLedge"
-    "rSave\022\023\n\006schema\030\001 \001(\tH\000\210\001\001\022\024\n\007version\030\002 "
-    "\001(\rH\001\210\001\001\022\035\n\020next_transaction\030\003 \001(\004H\002\210\001\001\022"
-    "5\n\005plans\030\004 \003(\0132&.eve.transaction.proto.T"
-    "ransactionPlanB\t\n\007_schemaB\n\n\010_versionB\023\n"
-    "\021_next_transaction\"\257\002\n\031TransactionLedger"
-    "Envelope\022\021\n\004type\030\001 \001(\tH\000\210\001\001\022\023\n\006schema\030\002 "
-    "\001(\tH\001\210\001\001\022\024\n\007version\030\003 \001(\rH\002\210\001\001\022\030\n\013instan"
-    "ce_id\030\004 \001(\tH\003\210\001\001\022\025\n\010revision\030\005 \001(\004H\004\210\001\001\022"
-    "\021\n\004tick\030\006 \001(\004H\005\210\001\001\022\031\n\014payload_wire\030\007 \001(\014"
-    "H\006\210\001\001\022\023\n\006digest\030\010 \001(\014H\007\210\001\001B\007\n\005_typeB\t\n\007_"
-    "schemaB\n\n\010_versionB\016\n\014_instance_idB\013\n\t_r"
-    "evisionB\007\n\005_tickB\017\n\r_payload_wireB\t\n\007_di"
-    "gest\"\327\002\n\035TransactionLedgerJsonDocument\022\021"
-    "\n\004type\030\001 \001(\tH\000\210\001\001\022\023\n\006schema\030\002 \001(\tH\001\210\001\001\022\024"
-    "\n\007version\030\003 \001(\rH\002\210\001\001\022\030\n\013instance_id\030\004 \001("
-    "\tH\003\210\001\001\022\025\n\010revision\030\005 \001(\004H\004\210\001\001\022\021\n\004tick\030\006 "
-    "\001(\004H\005\210\001\001\022B\n\007payload\030\007 \001(\0132,.eve.transact"
-    "ion.proto.TransactionLedgerSaveH\006\210\001\001\022\023\n\006"
-    "digest\030\010 \001(\014H\007\210\001\001B\007\n\005_typeB\t\n\007_schemaB\n\n"
-    "\010_versionB\016\n\014_instance_idB\013\n\t_revisionB\007"
-    "\n\005_tickB\n\n\010_payloadB\t\n\007_digest\"\276\004\n\017Trans"
-    "actionPlan\022\017\n\002id\030\001 \001(\tH\000\210\001\001\022\025\n\010identity\030"
-    "\002 \001(\tH\001\210\001\001\022@\n\005state\030\003 \001(\0162,.eve.transact"
-    "ion.proto.TransactionPlan.StateH\002\210\001\001\022\030\n\013"
-    "correlation\030\004 \001(\tH\003\210\001\001\022\026\n\tcausation\030\005 \001("
-    "\tH\004\210\001\001\022\022\n\005error\030\006 \001(\tH\005\210\001\001\022\033\n\016next_opera"
-    "tion\030\007 \001(\004H\006\210\001\001\022\027\n\nnext_event\030\010 \001(\004H\007\210\001\001"
-    "\022\?\n\noperations\030\t \003(\0132+.eve.transaction.p"
-    "roto.TransactionOperation\0227\n\006events\030\n \003("
-    "\0132\'.eve.transaction.proto.TransactionEve"
-    "nt\"c\n\005State\022\025\n\021STATE_UNSPECIFIED\020\000\022\010\n\004OP"
-    "EN\020\001\022\r\n\tVALIDATED\020\002\022\r\n\tCOMMITTED\020\003\022\017\n\013RO"
-    "LLED_BACK\020\004\022\n\n\006FAILED\020\005B\005\n\003_idB\013\n\t_ident"
-    "ityB\010\n\006_stateB\016\n\014_correlationB\014\n\n_causat"
-    "ionB\010\n\006_errorB\021\n\017_next_operationB\r\n\013_nex"
-    "t_event\"\242\002\n\024TransactionOperation\022\017\n\002id\030\001"
-    " \001(\tH\000\210\001\001\022\025\n\010identity\030\002 \001(\tH\001\210\001\001\022\021\n\004kind"
-    "\030\003 \001(\tH\002\210\001\001\022\023\n\006target\030\004 \001(\tH\003\210\001\001\0224\n\007payl"
-    "oad\030\005 \001(\0132#.eve.transaction.proto.Dynami"
-    "cValue\022\024\n\007checked\030\006 \001(\010H\004\210\001\001\022\022\n\005valid\030\007 "
-    "\001(\010H\005\210\001\001\022\022\n\005error\030\010 \001(\tH\006\210\001\001B\005\n\003_idB\013\n\t_"
-    "identityB\007\n\005_kindB\t\n\007_targetB\n\n\010_checked"
-    "B\010\n\006_validB\010\n\006_error\"\316\001\n\020TransactionEven"
-    "t\022\025\n\010sequence\030\001 \001(\004H\000\210\001\001\022\033\n\016transaction_"
-    "id\030\002 \001(\tH\001\210\001\001\022\031\n\014operation_id\030\003 \001(\tH\002\210\001\001"
-    "\022\021\n\004type\030\004 \001(\tH\003\210\001\001\022\023\n\006detail\030\005 \001(\tH\004\210\001\001"
-    "B\013\n\t_sequenceB\021\n\017_transaction_idB\017\n\r_ope"
-    "ration_idB\007\n\005_typeB\t\n\007_detailb\006proto3"
+    "ion.proto\032\023dynamic_value.proto\"\304\001\n\025Trans"
+    "actionLedgerSave\022\023\n\006schema\030\001 \001(\tH\000\210\001\001\022\024\n"
+    "\007version\030\002 \001(\rH\001\210\001\001\022\035\n\020next_transaction\030"
+    "\003 \001(\004H\002\210\001\001\0225\n\005plans\030\004 \003(\0132&.eve.transact"
+    "ion.proto.TransactionPlanB\t\n\007_schemaB\n\n\010"
+    "_versionB\023\n\021_next_transaction\"\257\002\n\031Transa"
+    "ctionLedgerEnvelope\022\021\n\004type\030\001 \001(\tH\000\210\001\001\022\023"
+    "\n\006schema\030\002 \001(\tH\001\210\001\001\022\024\n\007version\030\003 \001(\rH\002\210\001"
+    "\001\022\030\n\013instance_id\030\004 \001(\tH\003\210\001\001\022\025\n\010revision\030"
+    "\005 \001(\004H\004\210\001\001\022\021\n\004tick\030\006 \001(\004H\005\210\001\001\022\031\n\014payload"
+    "_wire\030\007 \001(\014H\006\210\001\001\022\023\n\006digest\030\010 \001(\014H\007\210\001\001B\007\n"
+    "\005_typeB\t\n\007_schemaB\n\n\010_versionB\016\n\014_instan"
+    "ce_idB\013\n\t_revisionB\007\n\005_tickB\017\n\r_payload_"
+    "wireB\t\n\007_digest\"\327\002\n\035TransactionLedgerJso"
+    "nDocument\022\021\n\004type\030\001 \001(\tH\000\210\001\001\022\023\n\006schema\030\002"
+    " \001(\tH\001\210\001\001\022\024\n\007version\030\003 \001(\rH\002\210\001\001\022\030\n\013insta"
+    "nce_id\030\004 \001(\tH\003\210\001\001\022\025\n\010revision\030\005 \001(\004H\004\210\001\001"
+    "\022\021\n\004tick\030\006 \001(\004H\005\210\001\001\022B\n\007payload\030\007 \001(\0132,.e"
+    "ve.transaction.proto.TransactionLedgerSa"
+    "veH\006\210\001\001\022\023\n\006digest\030\010 \001(\014H\007\210\001\001B\007\n\005_typeB\t\n"
+    "\007_schemaB\n\n\010_versionB\016\n\014_instance_idB\013\n\t"
+    "_revisionB\007\n\005_tickB\n\n\010_payloadB\t\n\007_diges"
+    "t\"\276\004\n\017TransactionPlan\022\017\n\002id\030\001 \001(\tH\000\210\001\001\022\025"
+    "\n\010identity\030\002 \001(\tH\001\210\001\001\022@\n\005state\030\003 \001(\0162,.e"
+    "ve.transaction.proto.TransactionPlan.Sta"
+    "teH\002\210\001\001\022\030\n\013correlation\030\004 \001(\tH\003\210\001\001\022\026\n\tcau"
+    "sation\030\005 \001(\tH\004\210\001\001\022\022\n\005error\030\006 \001(\tH\005\210\001\001\022\033\n"
+    "\016next_operation\030\007 \001(\004H\006\210\001\001\022\027\n\nnext_event"
+    "\030\010 \001(\004H\007\210\001\001\022\?\n\noperations\030\t \003(\0132+.eve.tr"
+    "ansaction.proto.TransactionOperation\0227\n\006"
+    "events\030\n \003(\0132\'.eve.transaction.proto.Tra"
+    "nsactionEvent\"c\n\005State\022\025\n\021STATE_UNSPECIF"
+    "IED\020\000\022\010\n\004OPEN\020\001\022\r\n\tVALIDATED\020\002\022\r\n\tCOMMIT"
+    "TED\020\003\022\017\n\013ROLLED_BACK\020\004\022\n\n\006FAILED\020\005B\005\n\003_i"
+    "dB\013\n\t_identityB\010\n\006_stateB\016\n\014_correlation"
+    "B\014\n\n_causationB\010\n\006_errorB\021\n\017_next_operat"
+    "ionB\r\n\013_next_event\"\242\002\n\024TransactionOperat"
+    "ion\022\017\n\002id\030\001 \001(\tH\000\210\001\001\022\025\n\010identity\030\002 \001(\tH\001"
+    "\210\001\001\022\021\n\004kind\030\003 \001(\tH\002\210\001\001\022\023\n\006target\030\004 \001(\tH\003"
+    "\210\001\001\0224\n\007payload\030\005 \001(\0132#.eve.persistence.p"
+    "roto.DynamicValue\022\024\n\007checked\030\006 \001(\010H\004\210\001\001\022"
+    "\022\n\005valid\030\007 \001(\010H\005\210\001\001\022\022\n\005error\030\010 \001(\tH\006\210\001\001B"
+    "\005\n\003_idB\013\n\t_identityB\007\n\005_kindB\t\n\007_targetB"
+    "\n\n\010_checkedB\010\n\006_validB\010\n\006_error\"\316\001\n\020Tran"
+    "sactionEvent\022\025\n\010sequence\030\001 \001(\004H\000\210\001\001\022\033\n\016t"
+    "ransaction_id\030\002 \001(\tH\001\210\001\001\022\031\n\014operation_id"
+    "\030\003 \001(\tH\002\210\001\001\022\021\n\004type\030\004 \001(\tH\003\210\001\001\022\023\n\006detail"
+    "\030\005 \001(\tH\004\210\001\001B\013\n\t_sequenceB\021\n\017_transaction"
+    "_idB\017\n\r_operation_idB\007\n\005_typeB\t\n\007_detail"
+    "b\006proto3"
+};
+static const ::_pbi::DescriptorTable* PROTOBUF_NONNULL const
+    descriptor_table_transaction_5fledger_2eproto_deps[1] = {
+        &::descriptor_table_dynamic_5fvalue_2eproto,
 };
 static ::absl::once_flag descriptor_table_transaction_5fledger_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_transaction_5fledger_2eproto = {
     false,
     false,
-    2477,
+    2008,
     descriptor_table_protodef_transaction_5fledger_2eproto,
     "transaction_ledger.proto",
     &descriptor_table_transaction_5fledger_2eproto_once,
-    nullptr,
-    0,
-    10,
+    descriptor_table_transaction_5fledger_2eproto_deps,
+    1,
+    6,
     schemas,
     file_message_globals,
     TableStruct_transaction_5fledger_2eproto::offsets,
@@ -2178,1116 +1502,6 @@ TransactionPlan_State_descriptor() {
 }
 PROTOBUF_CONSTINIT const uint32_t TransactionPlan_State_internal_data_[] = {
     393216u, 0u, };
-// ===================================================================
-
-void DynamicValue::set_allocated_list_value(::eve::transaction::proto::DynamicList* PROTOBUF_NULLABLE list_value) {
-  ::google::protobuf::Arena* message_arena = GetArena();
-  clear_kind();
-  if (list_value) {
-    ::google::protobuf::Arena* submessage_arena = list_value->GetArena();
-    if (message_arena != submessage_arena) {
-      list_value = ::google::protobuf::internal::GetOwnedMessage(message_arena, list_value, submessage_arena);
-    }
-    set_has_list_value();
-    _impl_.kind_.list_value_ = list_value;
-  }
-  // @@protoc_insertion_point(field_set_allocated:eve.transaction.proto.DynamicValue.list_value)
-}
-void DynamicValue::set_allocated_object_value(::eve::transaction::proto::DynamicObject* PROTOBUF_NULLABLE object_value) {
-  ::google::protobuf::Arena* message_arena = GetArena();
-  clear_kind();
-  if (object_value) {
-    ::google::protobuf::Arena* submessage_arena = object_value->GetArena();
-    if (message_arena != submessage_arena) {
-      object_value = ::google::protobuf::internal::GetOwnedMessage(message_arena, object_value, submessage_arena);
-    }
-    set_has_object_value();
-    _impl_.kind_.object_value_ = object_value;
-  }
-  // @@protoc_insertion_point(field_set_allocated:eve.transaction.proto.DynamicValue.object_value)
-}
-DynamicValue::DynamicValue(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-    : ::google::protobuf::Message(arena, DynamicValue_get_class_data()) {
-#else   // PROTOBUF_CUSTOM_VTABLE
-    : ::google::protobuf::Message(arena) {
-#endif  // PROTOBUF_CUSTOM_VTABLE
-  SharedCtor(arena);
-  // @@protoc_insertion_point(arena_constructor:eve.transaction.proto.DynamicValue)
-}
-PROTOBUF_NDEBUG_INLINE DynamicValue::Impl_::Impl_(
-    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
-    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
-    [[maybe_unused]] const ::eve::transaction::proto::DynamicValue& from_msg)
-      : kind_{},
-        _cached_size_{0},
-        _oneof_case_{from._oneof_case_[0]} {}
-
-DynamicValue::DynamicValue(
-    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
-    const DynamicValue& from)
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-    : ::google::protobuf::Message(arena, DynamicValue_get_class_data()) {
-
-#else   // PROTOBUF_CUSTOM_VTABLE
-    : ::google::protobuf::Message(arena) {
-#endif  // PROTOBUF_CUSTOM_VTABLE
-  DynamicValue* const _this = this;
-  (void)_this;
-  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
-      from._internal_metadata_);
-  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
-  switch (kind_case()) {
-    case KIND_NOT_SET:
-      break;
-      case kNullValue:
-        _impl_.kind_.null_value_ = from._impl_.kind_.null_value_;
-        break;
-      case kBoolValue:
-        _impl_.kind_.bool_value_ = from._impl_.kind_.bool_value_;
-        break;
-      case kIntValue:
-        _impl_.kind_.int_value_ = from._impl_.kind_.int_value_;
-        break;
-      case kDoubleValue:
-        _impl_.kind_.double_value_ = from._impl_.kind_.double_value_;
-        break;
-      case kStringValue:
-        new (&_impl_.kind_.string_value_) decltype(_impl_.kind_.string_value_){arena, from._impl_.kind_.string_value_};
-        break;
-      case kListValue:
-        _impl_.kind_.list_value_ = ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.kind_.list_value_);
-        break;
-      case kObjectValue:
-        _impl_.kind_.object_value_ = ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.kind_.object_value_);
-        break;
-  }
-
-  // @@protoc_insertion_point(copy_constructor:eve.transaction.proto.DynamicValue)
-}
-PROTOBUF_NDEBUG_INLINE DynamicValue::Impl_::Impl_(
-    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
-    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
-      : kind_{},
-        _cached_size_{0},
-        _oneof_case_{} {}
-
-inline void DynamicValue::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
-  new (&_impl_) Impl_(internal_visibility(), arena);
-}
-DynamicValue::~DynamicValue() {
-  // @@protoc_insertion_point(destructor:eve.transaction.proto.DynamicValue)
-  SharedDtor(*this);
-}
-inline void DynamicValue::SharedDtor(MessageLite& self) {
-  DynamicValue& this_ = static_cast<DynamicValue&>(self);
-  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
-    this_.CheckHasBitConsistency();
-  }
-  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
-  ABSL_DCHECK(this_.GetArena() == nullptr);
-  if (this_.has_kind()) {
-    this_.clear_kind();
-  }
-  this_._impl_.~Impl_();
-}
-
-void DynamicValue::clear_kind() {
-// @@protoc_insertion_point(one_of_clear_start:eve.transaction.proto.DynamicValue)
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  switch (kind_case()) {
-    case kNullValue: {
-      // No need to clear
-      break;
-    }
-    case kBoolValue: {
-      // No need to clear
-      break;
-    }
-    case kIntValue: {
-      // No need to clear
-      break;
-    }
-    case kDoubleValue: {
-      // No need to clear
-      break;
-    }
-    case kStringValue: {
-      _impl_.kind_.string_value_.Destroy();
-      break;
-    }
-    case kListValue: {
-      if (GetArena() == nullptr) {
-        delete _impl_.kind_.list_value_;
-      } else if (::google::protobuf::internal::DebugHardenClearOneofMessageOnArena()) {
-        ::google::protobuf::internal::MaybePoisonAfterClear(_impl_.kind_.list_value_);
-      }
-      break;
-    }
-    case kObjectValue: {
-      if (GetArena() == nullptr) {
-        delete _impl_.kind_.object_value_;
-      } else if (::google::protobuf::internal::DebugHardenClearOneofMessageOnArena()) {
-        ::google::protobuf::internal::MaybePoisonAfterClear(_impl_.kind_.object_value_);
-      }
-      break;
-    }
-    case KIND_NOT_SET: {
-      break;
-    }
-  }
-  _impl_._oneof_case_[0] = KIND_NOT_SET;
-}
-
-
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
-    ::google::protobuf::internal::ClassDataFull DynamicValue_class_data_ =
-        DynamicValue::InternalGenerateClassData_(DynamicValue_globals_._default);
-
-PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
-DynamicValue::GetClassData() const {
-  ::google::protobuf::internal::PrefetchToLocalCache(&DynamicValue_class_data_);
-  ::google::protobuf::internal::PrefetchToLocalCache(DynamicValue_class_data_.tc_table);
-  return DynamicValue_class_data_.base();
-}
-#else
-PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
-DynamicValue::GetClassData() const {
-  ::google::protobuf::internal::PrefetchToLocalCache(&DynamicValue_globals_);
-  ::google::protobuf::internal::PrefetchToLocalCache(
-      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&DynamicValue_globals_));
-  return DynamicValue_globals_.GetClassData();
-}
-#endif  // !PROTOBUF_MESSAGE_GLOBALS
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-PROTOBUF_CONSTINIT
-PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const DynamicValue::ParseTableT_
-    DynamicValue::_table_ =
-        DynamicValue::InternalGenerateParseTable_(DynamicValue_class_data_.base());
-#endif  // !PROTOBUF_MESSAGE_GLOBALS
-PROTOBUF_NOINLINE void DynamicValue::Clear() {
-// @@protoc_insertion_point(message_clear_start:eve.transaction.proto.DynamicValue)
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  ::uint32_t cached_has_bits = 0;
-  // Prevent compiler warnings about cached_has_bits being unused
-  (void) cached_has_bits;
-
-  clear_kind();
-  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
-}
-
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-::uint8_t* PROTOBUF_NONNULL DynamicValue::_InternalSerialize(
-    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
-    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
-  const DynamicValue& this_ = static_cast<const DynamicValue&>(base);
-#else   // PROTOBUF_CUSTOM_VTABLE
-::uint8_t* PROTOBUF_NONNULL DynamicValue::_InternalSerialize(
-    ::uint8_t* PROTOBUF_NONNULL target,
-    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
-  const DynamicValue& this_ = *this;
-#endif  // PROTOBUF_CUSTOM_VTABLE
-  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
-    this_.CheckHasBitConsistency();
-  }
-  // @@protoc_insertion_point(serialize_to_array_start:eve.transaction.proto.DynamicValue)
-  ::uint32_t cached_has_bits = 0;
-  (void)cached_has_bits;
-
-  switch (this_.kind_case()) {
-    case kNullValue: {
-      target = stream->EnsureSpace(target);
-      target = ::_pbi::WireFormatLite::WriteBoolToArray(
-          1, this_._internal_null_value(), target);
-      break;
-    }
-    case kBoolValue: {
-      target = stream->EnsureSpace(target);
-      target = ::_pbi::WireFormatLite::WriteBoolToArray(
-          2, this_._internal_bool_value(), target);
-      break;
-    }
-    case kIntValue: {
-      target =
-          ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<3>(
-              stream, this_._internal_int_value(), target);
-      break;
-    }
-    case kDoubleValue: {
-      target = stream->EnsureSpace(target);
-      target = ::_pbi::WireFormatLite::WriteDoubleToArray(
-          4, this_._internal_double_value(), target);
-      break;
-    }
-    case kStringValue: {
-      const ::std::string& _s = this_._internal_string_value();
-      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "eve.transaction.proto.DynamicValue.string_value");
-      target = stream->WriteStringMaybeAliased(5, _s, target);
-      break;
-    }
-    case kListValue: {
-      target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
-          6, *this_._impl_.kind_.list_value_, this_._impl_.kind_.list_value_->GetCachedSize(), target,
-          stream);
-      break;
-    }
-    case kObjectValue: {
-      target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
-          7, *this_._impl_.kind_.object_value_, this_._impl_.kind_.object_value_->GetCachedSize(), target,
-          stream);
-      break;
-    }
-    default:
-      break;
-  }
-  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
-    target =
-        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
-  }
-  // @@protoc_insertion_point(serialize_to_array_end:eve.transaction.proto.DynamicValue)
-  return target;
-}
-
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-::size_t DynamicValue::ByteSizeLong(const MessageLite& base) {
-  const DynamicValue& this_ = static_cast<const DynamicValue&>(base);
-#else   // PROTOBUF_CUSTOM_VTABLE
-::size_t DynamicValue::ByteSizeLong() const {
-  const DynamicValue& this_ = *this;
-#endif  // PROTOBUF_CUSTOM_VTABLE
-  // @@protoc_insertion_point(message_byte_size_start:eve.transaction.proto.DynamicValue)
-  ::size_t total_size = 0;
-
-  ::uint32_t cached_has_bits = 0;
-  // Prevent compiler warnings about cached_has_bits being unused
-  (void)cached_has_bits;
-
-  switch (this_.kind_case()) {
-    // bool null_value = 1;
-    case kNullValue: {
-      total_size += 2;
-      break;
-    }
-    // bool bool_value = 2;
-    case kBoolValue: {
-      total_size += 2;
-      break;
-    }
-    // int64 int_value = 3;
-    case kIntValue: {
-      total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
-          this_._internal_int_value());
-      break;
-    }
-    // double double_value = 4;
-    case kDoubleValue: {
-      total_size += 9;
-      break;
-    }
-    // string string_value = 5;
-    case kStringValue: {
-      total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
-                                      this_._internal_string_value());
-      break;
-    }
-    // .eve.transaction.proto.DynamicList list_value = 6;
-    case kListValue: {
-      total_size += 1 +
-                    ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.kind_.list_value_);
-      break;
-    }
-    // .eve.transaction.proto.DynamicObject object_value = 7;
-    case kObjectValue: {
-      total_size += 1 +
-                    ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.kind_.object_value_);
-      break;
-    }
-    case KIND_NOT_SET: {
-      break;
-    }
-  }
-  return this_.MaybeComputeUnknownFieldsSize(total_size,
-                                             &this_._impl_._cached_size_);
-}
-
-void DynamicValue::MergeImpl(::google::protobuf::MessageLite& to_msg,
-                      const ::google::protobuf::MessageLite& from_msg) {
-   auto* const _this = static_cast<DynamicValue*>(&to_msg);
-  auto& from = static_cast<const DynamicValue&>(from_msg);
-  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
-    from.CheckHasBitConsistency();
-  }
-  ::google::protobuf::Arena* arena = _this->GetArena();
-  // @@protoc_insertion_point(class_specific_merge_from_start:eve.transaction.proto.DynamicValue)
-  ABSL_DCHECK_NE(&from, _this);
-  ::uint32_t cached_has_bits = 0;
-  (void)cached_has_bits;
-
-  if (const uint32_t oneof_from_case =
-          from._impl_._oneof_case_[0]) {
-    const uint32_t oneof_to_case = _this->_impl_._oneof_case_[0];
-    const bool oneof_needs_init = oneof_to_case != oneof_from_case;
-    if (oneof_needs_init) {
-      if (oneof_to_case != 0) {
-        _this->clear_kind();
-      }
-      _this->_impl_._oneof_case_[0] = oneof_from_case;
-    }
-
-    switch (oneof_from_case) {
-      case kNullValue: {
-        _this->_impl_.kind_.null_value_ = from._impl_.kind_.null_value_;
-        break;
-      }
-      case kBoolValue: {
-        _this->_impl_.kind_.bool_value_ = from._impl_.kind_.bool_value_;
-        break;
-      }
-      case kIntValue: {
-        _this->_impl_.kind_.int_value_ = from._impl_.kind_.int_value_;
-        break;
-      }
-      case kDoubleValue: {
-        _this->_impl_.kind_.double_value_ = from._impl_.kind_.double_value_;
-        break;
-      }
-      case kStringValue: {
-        if (oneof_needs_init) {
-          _this->_impl_.kind_.string_value_.InitDefault();
-        }
-        _this->_impl_.kind_.string_value_.Set(from._internal_string_value(), arena);
-        break;
-      }
-      case kListValue: {
-        if (oneof_needs_init) {
-          _this->_impl_.kind_.list_value_ = ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.kind_.list_value_);
-        } else {
-          _this->_impl_.kind_.list_value_->MergeFrom(*from._impl_.kind_.list_value_);
-        }
-        break;
-      }
-      case kObjectValue: {
-        if (oneof_needs_init) {
-          _this->_impl_.kind_.object_value_ = ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.kind_.object_value_);
-        } else {
-          _this->_impl_.kind_.object_value_->MergeFrom(*from._impl_.kind_.object_value_);
-        }
-        break;
-      }
-      case KIND_NOT_SET:
-        break;
-    }
-  }
-  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
-      from._internal_metadata_);
-}
-
-void DynamicValue::CopyFrom(const DynamicValue& from) {
-  // @@protoc_insertion_point(class_specific_copy_from_start:eve.transaction.proto.DynamicValue)
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-
-void DynamicValue::InternalSwap(DynamicValue* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
-  using ::std::swap;
-  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  swap(_impl_.kind_, other->_impl_.kind_);
-  swap(_impl_._oneof_case_[0], other->_impl_._oneof_case_[0]);
-}
-
-::google::protobuf::Metadata DynamicValue::GetMetadata() const {
-  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
-}
-// ===================================================================
-
-DynamicList::DynamicList(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-    : ::google::protobuf::Message(arena, DynamicList_get_class_data()) {
-#else   // PROTOBUF_CUSTOM_VTABLE
-    : ::google::protobuf::Message(arena) {
-#endif  // PROTOBUF_CUSTOM_VTABLE
-  SharedCtor(arena);
-  // @@protoc_insertion_point(arena_constructor:eve.transaction.proto.DynamicList)
-}
-PROTOBUF_NDEBUG_INLINE DynamicList::Impl_::Impl_(
-    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
-    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
-    [[maybe_unused]] const ::eve::transaction::proto::DynamicList& from_msg)
-      : _has_bits_{from._has_bits_},
-        _cached_size_{0},
-        values_ {
-          visibility, ::_pbi::InternalMetadataOffset::Build<
-              ::eve::transaction::proto::DynamicList,
-              PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicList, _impl_.values_)>()
-          , from.values_
-        }
-     {}
-
-DynamicList::DynamicList(
-    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
-    const DynamicList& from)
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-    : ::google::protobuf::Message(arena, DynamicList_get_class_data()) {
-
-#else   // PROTOBUF_CUSTOM_VTABLE
-    : ::google::protobuf::Message(arena) {
-#endif  // PROTOBUF_CUSTOM_VTABLE
-  DynamicList* const _this = this;
-  (void)_this;
-  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
-      from._internal_metadata_);
-  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
-
-  // @@protoc_insertion_point(copy_constructor:eve.transaction.proto.DynamicList)
-}
-PROTOBUF_NDEBUG_INLINE DynamicList::Impl_::Impl_(
-    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
-    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
-      : _cached_size_{0},
-        values_ { visibility, ::_pbi::InternalMetadataOffset::Build<
-            ::eve::transaction::proto::DynamicList,
-            PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicList, _impl_.values_)>()
-         }
-     {}
-
-inline void DynamicList::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
-  new (&_impl_) Impl_(internal_visibility(), arena);
-}
-DynamicList::~DynamicList() {
-  // @@protoc_insertion_point(destructor:eve.transaction.proto.DynamicList)
-  SharedDtor(*this);
-}
-inline void DynamicList::SharedDtor(MessageLite& self) {
-  DynamicList& this_ = static_cast<DynamicList&>(self);
-  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
-    this_.CheckHasBitConsistency();
-  }
-  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
-  ABSL_DCHECK(this_.GetArena() == nullptr);
-  this_._impl_.~Impl_();
-}
-
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
-    ::google::protobuf::internal::ClassDataFull DynamicList_class_data_ =
-        DynamicList::InternalGenerateClassData_(DynamicList_globals_._default);
-
-PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
-DynamicList::GetClassData() const {
-  ::google::protobuf::internal::PrefetchToLocalCache(&DynamicList_class_data_);
-  ::google::protobuf::internal::PrefetchToLocalCache(DynamicList_class_data_.tc_table);
-  return DynamicList_class_data_.base();
-}
-#else
-PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
-DynamicList::GetClassData() const {
-  ::google::protobuf::internal::PrefetchToLocalCache(&DynamicList_globals_);
-  ::google::protobuf::internal::PrefetchToLocalCache(
-      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&DynamicList_globals_));
-  return DynamicList_globals_.GetClassData();
-}
-#endif  // !PROTOBUF_MESSAGE_GLOBALS
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-PROTOBUF_CONSTINIT
-PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const DynamicList::ParseTableT_
-    DynamicList::_table_ =
-        DynamicList::InternalGenerateParseTable_(DynamicList_class_data_.base());
-#endif  // !PROTOBUF_MESSAGE_GLOBALS
-PROTOBUF_NOINLINE void DynamicList::Clear() {
-// @@protoc_insertion_point(message_clear_start:eve.transaction.proto.DynamicList)
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  ::uint32_t cached_has_bits = 0;
-  // Prevent compiler warnings about cached_has_bits being unused
-  (void) cached_has_bits;
-
-  cached_has_bits = _impl_._has_bits_[0];
-  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-    _impl_.values_.Clear();
-  }
-  _impl_._has_bits_.Clear();
-  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
-}
-
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-::uint8_t* PROTOBUF_NONNULL DynamicList::_InternalSerialize(
-    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
-    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
-  const DynamicList& this_ = static_cast<const DynamicList&>(base);
-#else   // PROTOBUF_CUSTOM_VTABLE
-::uint8_t* PROTOBUF_NONNULL DynamicList::_InternalSerialize(
-    ::uint8_t* PROTOBUF_NONNULL target,
-    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
-  const DynamicList& this_ = *this;
-#endif  // PROTOBUF_CUSTOM_VTABLE
-  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
-    this_.CheckHasBitConsistency();
-  }
-  // @@protoc_insertion_point(serialize_to_array_start:eve.transaction.proto.DynamicList)
-  ::uint32_t cached_has_bits = 0;
-  (void)cached_has_bits;
-
-  cached_has_bits = this_._impl_._has_bits_[0];
-  // repeated .eve.transaction.proto.DynamicValue values = 1;
-  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-    for (unsigned i = 0, n = static_cast<unsigned>(
-                             this_._internal_values_size());
-         i < n; i++) {
-      const auto& repfield = this_._internal_values().Get(i);
-      target =
-          ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
-              1, repfield, repfield.GetCachedSize(),
-              target, stream);
-    }
-  }
-
-  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
-    target =
-        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
-  }
-  // @@protoc_insertion_point(serialize_to_array_end:eve.transaction.proto.DynamicList)
-  return target;
-}
-
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-::size_t DynamicList::ByteSizeLong(const MessageLite& base) {
-  const DynamicList& this_ = static_cast<const DynamicList&>(base);
-#else   // PROTOBUF_CUSTOM_VTABLE
-::size_t DynamicList::ByteSizeLong() const {
-  const DynamicList& this_ = *this;
-#endif  // PROTOBUF_CUSTOM_VTABLE
-  // @@protoc_insertion_point(message_byte_size_start:eve.transaction.proto.DynamicList)
-  ::size_t total_size = 0;
-
-  ::uint32_t cached_has_bits = 0;
-  // Prevent compiler warnings about cached_has_bits being unused
-  (void)cached_has_bits;
-
-  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
-   {
-    // repeated .eve.transaction.proto.DynamicValue values = 1;
-    cached_has_bits = this_._impl_._has_bits_[0];
-    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-      total_size += 1UL * this_._internal_values_size();
-      for (const auto& msg : this_._internal_values()) {
-        total_size += ::google::protobuf::internal::WireFormatLite::MessageSize(msg);
-      }
-    }
-  }
-  return this_.MaybeComputeUnknownFieldsSize(total_size,
-                                             &this_._impl_._cached_size_);
-}
-
-void DynamicList::MergeImpl(::google::protobuf::MessageLite& to_msg,
-                      const ::google::protobuf::MessageLite& from_msg) {
-   auto* const _this = static_cast<DynamicList*>(&to_msg);
-  auto& from = static_cast<const DynamicList&>(from_msg);
-  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
-    from.CheckHasBitConsistency();
-  }
-  ::google::protobuf::Arena* arena = _this->GetArena();
-  // @@protoc_insertion_point(class_specific_merge_from_start:eve.transaction.proto.DynamicList)
-  ABSL_DCHECK_NE(&from, _this);
-  ::uint32_t cached_has_bits = 0;
-  (void)cached_has_bits;
-
-  cached_has_bits = from._impl_._has_bits_[0];
-  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-    _this->_internal_mutable_values()->InternalMergeFromWithArena(
-        ::google::protobuf::MessageLite::internal_visibility(), arena,
-        from._internal_values());
-  }
-  _this->_impl_._has_bits_[0] |= cached_has_bits;
-  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
-      from._internal_metadata_);
-}
-
-void DynamicList::CopyFrom(const DynamicList& from) {
-  // @@protoc_insertion_point(class_specific_copy_from_start:eve.transaction.proto.DynamicList)
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-
-void DynamicList::InternalSwap(DynamicList* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
-  using ::std::swap;
-  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
-  _impl_.values_.InternalSwap(&other->_impl_.values_);
-}
-
-::google::protobuf::Metadata DynamicList::GetMetadata() const {
-  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
-}
-// ===================================================================
-
-DynamicObject::DynamicObject(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-    : ::google::protobuf::Message(arena, DynamicObject_get_class_data()) {
-#else   // PROTOBUF_CUSTOM_VTABLE
-    : ::google::protobuf::Message(arena) {
-#endif  // PROTOBUF_CUSTOM_VTABLE
-  SharedCtor(arena);
-  // @@protoc_insertion_point(arena_constructor:eve.transaction.proto.DynamicObject)
-}
-PROTOBUF_NDEBUG_INLINE DynamicObject::Impl_::Impl_(
-    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
-    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
-    [[maybe_unused]] const ::eve::transaction::proto::DynamicObject& from_msg)
-      : _has_bits_{from._has_bits_},
-        _cached_size_{0},
-        fields_ {
-          visibility, ::_pbi::InternalMetadataOffset::Build<
-              ::eve::transaction::proto::DynamicObject,
-              PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicObject, _impl_.fields_)>()
-          , from.fields_
-        }
-     {}
-
-DynamicObject::DynamicObject(
-    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
-    const DynamicObject& from)
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-    : ::google::protobuf::Message(arena, DynamicObject_get_class_data()) {
-
-#else   // PROTOBUF_CUSTOM_VTABLE
-    : ::google::protobuf::Message(arena) {
-#endif  // PROTOBUF_CUSTOM_VTABLE
-  DynamicObject* const _this = this;
-  (void)_this;
-  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
-      from._internal_metadata_);
-  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
-
-  // @@protoc_insertion_point(copy_constructor:eve.transaction.proto.DynamicObject)
-}
-PROTOBUF_NDEBUG_INLINE DynamicObject::Impl_::Impl_(
-    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
-    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
-      : _cached_size_{0},
-        fields_ { visibility, ::_pbi::InternalMetadataOffset::Build<
-            ::eve::transaction::proto::DynamicObject,
-            PROTOBUF_FIELD_OFFSET(::eve::transaction::proto::DynamicObject, _impl_.fields_)>()
-         }
-     {}
-
-inline void DynamicObject::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
-  new (&_impl_) Impl_(internal_visibility(), arena);
-}
-DynamicObject::~DynamicObject() {
-  // @@protoc_insertion_point(destructor:eve.transaction.proto.DynamicObject)
-  SharedDtor(*this);
-}
-inline void DynamicObject::SharedDtor(MessageLite& self) {
-  DynamicObject& this_ = static_cast<DynamicObject&>(self);
-  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
-    this_.CheckHasBitConsistency();
-  }
-  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
-  ABSL_DCHECK(this_.GetArena() == nullptr);
-  this_._impl_.~Impl_();
-}
-
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
-    ::google::protobuf::internal::ClassDataFull DynamicObject_class_data_ =
-        DynamicObject::InternalGenerateClassData_(DynamicObject_globals_._default);
-
-PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
-DynamicObject::GetClassData() const {
-  ::google::protobuf::internal::PrefetchToLocalCache(&DynamicObject_class_data_);
-  ::google::protobuf::internal::PrefetchToLocalCache(DynamicObject_class_data_.tc_table);
-  return DynamicObject_class_data_.base();
-}
-#else
-PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
-DynamicObject::GetClassData() const {
-  ::google::protobuf::internal::PrefetchToLocalCache(&DynamicObject_globals_);
-  ::google::protobuf::internal::PrefetchToLocalCache(
-      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&DynamicObject_globals_));
-  return DynamicObject_globals_.GetClassData();
-}
-#endif  // !PROTOBUF_MESSAGE_GLOBALS
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-PROTOBUF_CONSTINIT
-PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const DynamicObject::ParseTableT_
-    DynamicObject::_table_ =
-        DynamicObject::InternalGenerateParseTable_(DynamicObject_class_data_.base());
-#endif  // !PROTOBUF_MESSAGE_GLOBALS
-PROTOBUF_NOINLINE void DynamicObject::Clear() {
-// @@protoc_insertion_point(message_clear_start:eve.transaction.proto.DynamicObject)
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  ::uint32_t cached_has_bits = 0;
-  // Prevent compiler warnings about cached_has_bits being unused
-  (void) cached_has_bits;
-
-  cached_has_bits = _impl_._has_bits_[0];
-  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-    _impl_.fields_.Clear();
-  }
-  _impl_._has_bits_.Clear();
-  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
-}
-
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-::uint8_t* PROTOBUF_NONNULL DynamicObject::_InternalSerialize(
-    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
-    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
-  const DynamicObject& this_ = static_cast<const DynamicObject&>(base);
-#else   // PROTOBUF_CUSTOM_VTABLE
-::uint8_t* PROTOBUF_NONNULL DynamicObject::_InternalSerialize(
-    ::uint8_t* PROTOBUF_NONNULL target,
-    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
-  const DynamicObject& this_ = *this;
-#endif  // PROTOBUF_CUSTOM_VTABLE
-  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
-    this_.CheckHasBitConsistency();
-  }
-  // @@protoc_insertion_point(serialize_to_array_start:eve.transaction.proto.DynamicObject)
-  ::uint32_t cached_has_bits = 0;
-  (void)cached_has_bits;
-
-  cached_has_bits = this_._impl_._has_bits_[0];
-  // repeated .eve.transaction.proto.DynamicField fields = 1;
-  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-    for (unsigned i = 0, n = static_cast<unsigned>(
-                             this_._internal_fields_size());
-         i < n; i++) {
-      const auto& repfield = this_._internal_fields().Get(i);
-      target =
-          ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
-              1, repfield, repfield.GetCachedSize(),
-              target, stream);
-    }
-  }
-
-  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
-    target =
-        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
-  }
-  // @@protoc_insertion_point(serialize_to_array_end:eve.transaction.proto.DynamicObject)
-  return target;
-}
-
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-::size_t DynamicObject::ByteSizeLong(const MessageLite& base) {
-  const DynamicObject& this_ = static_cast<const DynamicObject&>(base);
-#else   // PROTOBUF_CUSTOM_VTABLE
-::size_t DynamicObject::ByteSizeLong() const {
-  const DynamicObject& this_ = *this;
-#endif  // PROTOBUF_CUSTOM_VTABLE
-  // @@protoc_insertion_point(message_byte_size_start:eve.transaction.proto.DynamicObject)
-  ::size_t total_size = 0;
-
-  ::uint32_t cached_has_bits = 0;
-  // Prevent compiler warnings about cached_has_bits being unused
-  (void)cached_has_bits;
-
-  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
-   {
-    // repeated .eve.transaction.proto.DynamicField fields = 1;
-    cached_has_bits = this_._impl_._has_bits_[0];
-    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-      total_size += 1UL * this_._internal_fields_size();
-      for (const auto& msg : this_._internal_fields()) {
-        total_size += ::google::protobuf::internal::WireFormatLite::MessageSize(msg);
-      }
-    }
-  }
-  return this_.MaybeComputeUnknownFieldsSize(total_size,
-                                             &this_._impl_._cached_size_);
-}
-
-void DynamicObject::MergeImpl(::google::protobuf::MessageLite& to_msg,
-                      const ::google::protobuf::MessageLite& from_msg) {
-   auto* const _this = static_cast<DynamicObject*>(&to_msg);
-  auto& from = static_cast<const DynamicObject&>(from_msg);
-  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
-    from.CheckHasBitConsistency();
-  }
-  ::google::protobuf::Arena* arena = _this->GetArena();
-  // @@protoc_insertion_point(class_specific_merge_from_start:eve.transaction.proto.DynamicObject)
-  ABSL_DCHECK_NE(&from, _this);
-  ::uint32_t cached_has_bits = 0;
-  (void)cached_has_bits;
-
-  cached_has_bits = from._impl_._has_bits_[0];
-  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-    _this->_internal_mutable_fields()->InternalMergeFromWithArena(
-        ::google::protobuf::MessageLite::internal_visibility(), arena,
-        from._internal_fields());
-  }
-  _this->_impl_._has_bits_[0] |= cached_has_bits;
-  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
-      from._internal_metadata_);
-}
-
-void DynamicObject::CopyFrom(const DynamicObject& from) {
-  // @@protoc_insertion_point(class_specific_copy_from_start:eve.transaction.proto.DynamicObject)
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-
-void DynamicObject::InternalSwap(DynamicObject* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
-  using ::std::swap;
-  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
-  _impl_.fields_.InternalSwap(&other->_impl_.fields_);
-}
-
-::google::protobuf::Metadata DynamicObject::GetMetadata() const {
-  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
-}
-// ===================================================================
-
-DynamicField::DynamicField(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-    : ::google::protobuf::Message(arena, DynamicField_get_class_data()) {
-#else   // PROTOBUF_CUSTOM_VTABLE
-    : ::google::protobuf::Message(arena) {
-#endif  // PROTOBUF_CUSTOM_VTABLE
-  SharedCtor(arena);
-  // @@protoc_insertion_point(arena_constructor:eve.transaction.proto.DynamicField)
-}
-PROTOBUF_NDEBUG_INLINE DynamicField::Impl_::Impl_(
-    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
-    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
-    [[maybe_unused]] const ::eve::transaction::proto::DynamicField& from_msg)
-      : _has_bits_{from._has_bits_},
-        _cached_size_{0},
-        key_(arena, from.key_) {}
-
-DynamicField::DynamicField(
-    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
-    const DynamicField& from)
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-    : ::google::protobuf::Message(arena, DynamicField_get_class_data()) {
-
-#else   // PROTOBUF_CUSTOM_VTABLE
-    : ::google::protobuf::Message(arena) {
-#endif  // PROTOBUF_CUSTOM_VTABLE
-  DynamicField* const _this = this;
-  (void)_this;
-  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
-      from._internal_metadata_);
-  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
-  ::uint32_t cached_has_bits = _impl_._has_bits_[0];
-  _impl_.value_ = (CheckHasBit(cached_has_bits, 0x00000002U))
-                ? ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.value_)
-                : nullptr;
-
-  // @@protoc_insertion_point(copy_constructor:eve.transaction.proto.DynamicField)
-}
-PROTOBUF_NDEBUG_INLINE DynamicField::Impl_::Impl_(
-    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
-    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
-      : _cached_size_{0},
-        key_(arena) {}
-
-inline void DynamicField::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
-  new (&_impl_) Impl_(internal_visibility(), arena);
-  _impl_.value_ = {};
-}
-DynamicField::~DynamicField() {
-  // @@protoc_insertion_point(destructor:eve.transaction.proto.DynamicField)
-  SharedDtor(*this);
-}
-inline void DynamicField::SharedDtor(MessageLite& self) {
-  DynamicField& this_ = static_cast<DynamicField&>(self);
-  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
-    this_.CheckHasBitConsistency();
-  }
-  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
-  ABSL_DCHECK(this_.GetArena() == nullptr);
-  this_._impl_.key_.Destroy();
-  delete this_._impl_.value_;
-  this_._impl_.~Impl_();
-}
-
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
-    ::google::protobuf::internal::ClassDataFull DynamicField_class_data_ =
-        DynamicField::InternalGenerateClassData_(DynamicField_globals_._default);
-
-PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
-DynamicField::GetClassData() const {
-  ::google::protobuf::internal::PrefetchToLocalCache(&DynamicField_class_data_);
-  ::google::protobuf::internal::PrefetchToLocalCache(DynamicField_class_data_.tc_table);
-  return DynamicField_class_data_.base();
-}
-#else
-PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
-DynamicField::GetClassData() const {
-  ::google::protobuf::internal::PrefetchToLocalCache(&DynamicField_globals_);
-  ::google::protobuf::internal::PrefetchToLocalCache(
-      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&DynamicField_globals_));
-  return DynamicField_globals_.GetClassData();
-}
-#endif  // !PROTOBUF_MESSAGE_GLOBALS
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-PROTOBUF_CONSTINIT
-PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const DynamicField::ParseTableT_
-    DynamicField::_table_ =
-        DynamicField::InternalGenerateParseTable_(DynamicField_class_data_.base());
-#endif  // !PROTOBUF_MESSAGE_GLOBALS
-PROTOBUF_NOINLINE void DynamicField::Clear() {
-// @@protoc_insertion_point(message_clear_start:eve.transaction.proto.DynamicField)
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  ::uint32_t cached_has_bits = 0;
-  // Prevent compiler warnings about cached_has_bits being unused
-  (void) cached_has_bits;
-
-  cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
-    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-      _impl_.key_.ClearNonDefaultToEmpty();
-    }
-    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
-      ABSL_DCHECK(_impl_.value_ != nullptr);
-      _impl_.value_->Clear();
-    }
-  }
-  _impl_._has_bits_.Clear();
-  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
-}
-
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-::uint8_t* PROTOBUF_NONNULL DynamicField::_InternalSerialize(
-    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
-    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
-  const DynamicField& this_ = static_cast<const DynamicField&>(base);
-#else   // PROTOBUF_CUSTOM_VTABLE
-::uint8_t* PROTOBUF_NONNULL DynamicField::_InternalSerialize(
-    ::uint8_t* PROTOBUF_NONNULL target,
-    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
-  const DynamicField& this_ = *this;
-#endif  // PROTOBUF_CUSTOM_VTABLE
-  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
-    this_.CheckHasBitConsistency();
-  }
-  // @@protoc_insertion_point(serialize_to_array_start:eve.transaction.proto.DynamicField)
-  ::uint32_t cached_has_bits = 0;
-  (void)cached_has_bits;
-
-  cached_has_bits = this_._impl_._has_bits_[0];
-  // optional string key = 1;
-  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-    const ::std::string& _s = this_._internal_key();
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-        _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "eve.transaction.proto.DynamicField.key");
-    target = stream->WriteStringMaybeAliased(1, _s, target);
-  }
-
-  // .eve.transaction.proto.DynamicValue value = 2;
-  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
-    target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
-        2, *this_._impl_.value_, this_._impl_.value_->GetCachedSize(), target,
-        stream);
-  }
-
-  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
-    target =
-        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
-  }
-  // @@protoc_insertion_point(serialize_to_array_end:eve.transaction.proto.DynamicField)
-  return target;
-}
-
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-::size_t DynamicField::ByteSizeLong(const MessageLite& base) {
-  const DynamicField& this_ = static_cast<const DynamicField&>(base);
-#else   // PROTOBUF_CUSTOM_VTABLE
-::size_t DynamicField::ByteSizeLong() const {
-  const DynamicField& this_ = *this;
-#endif  // PROTOBUF_CUSTOM_VTABLE
-  // @@protoc_insertion_point(message_byte_size_start:eve.transaction.proto.DynamicField)
-  ::size_t total_size = 0;
-
-  ::uint32_t cached_has_bits = 0;
-  // Prevent compiler warnings about cached_has_bits being unused
-  (void)cached_has_bits;
-
-  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
-  cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
-    // optional string key = 1;
-    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-      total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
-                                      this_._internal_key());
-    }
-    // .eve.transaction.proto.DynamicValue value = 2;
-    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
-      total_size += 1 +
-                    ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.value_);
-    }
-  }
-  return this_.MaybeComputeUnknownFieldsSize(total_size,
-                                             &this_._impl_._cached_size_);
-}
-
-void DynamicField::MergeImpl(::google::protobuf::MessageLite& to_msg,
-                      const ::google::protobuf::MessageLite& from_msg) {
-   auto* const _this = static_cast<DynamicField*>(&to_msg);
-  auto& from = static_cast<const DynamicField&>(from_msg);
-  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
-    from.CheckHasBitConsistency();
-  }
-  ::google::protobuf::Arena* arena = _this->GetArena();
-  // @@protoc_insertion_point(class_specific_merge_from_start:eve.transaction.proto.DynamicField)
-  ABSL_DCHECK_NE(&from, _this);
-  ::uint32_t cached_has_bits = 0;
-  (void)cached_has_bits;
-
-  cached_has_bits = from._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
-    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-      _this->_internal_set_key(from._internal_key());
-    }
-    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
-      ABSL_DCHECK(from._impl_.value_ != nullptr);
-      if (_this->_impl_.value_ == nullptr) {
-        _this->_impl_.value_ = ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.value_);
-      } else {
-        _this->_impl_.value_->MergeFrom(*from._impl_.value_);
-      }
-    }
-  }
-  _this->_impl_._has_bits_[0] |= cached_has_bits;
-  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
-      from._internal_metadata_);
-}
-
-void DynamicField::CopyFrom(const DynamicField& from) {
-  // @@protoc_insertion_point(class_specific_copy_from_start:eve.transaction.proto.DynamicField)
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-
-void DynamicField::InternalSwap(DynamicField* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
-  using ::std::swap;
-  auto* arena = GetArena();
-  ABSL_DCHECK_EQ(arena, other->GetArena());
-  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
-  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.key_, &other->_impl_.key_, arena);
-  swap(_impl_.value_, other->_impl_.value_);
-}
-
-::google::protobuf::Metadata DynamicField::GetMetadata() const {
-  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
-}
 // ===================================================================
 
 TransactionLedgerSave::TransactionLedgerSave(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
@@ -4794,6 +3008,11 @@ void TransactionPlan::InternalSwap(TransactionPlan* PROTOBUF_RESTRICT PROTOBUF_N
 }
 // ===================================================================
 
+void TransactionOperation::clear_payload() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (_impl_.payload_ != nullptr) _impl_.payload_->Clear();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+}
 TransactionOperation::TransactionOperation(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
     : ::google::protobuf::Message(arena, TransactionOperation_get_class_data()) {
@@ -4995,7 +3214,7 @@ PROTOBUF_NOINLINE void TransactionOperation::Clear() {
     target = stream->WriteStringMaybeAliased(4, _s, target);
   }
 
-  // .eve.transaction.proto.DynamicValue payload = 5;
+  // .eve.persistence.proto.DynamicValue payload = 5;
   if (CheckHasBit(cached_has_bits, 0x00000020U)) {
     target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
         5, *this_._impl_.payload_, this_._impl_.payload_->GetCachedSize(), target,
@@ -5076,7 +3295,7 @@ PROTOBUF_NOINLINE void TransactionOperation::Clear() {
       total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                       this_._internal_error());
     }
-    // .eve.transaction.proto.DynamicValue payload = 5;
+    // .eve.persistence.proto.DynamicValue payload = 5;
     if (CheckHasBit(cached_has_bits, 0x00000020U)) {
       total_size += 1 +
                     ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.payload_);

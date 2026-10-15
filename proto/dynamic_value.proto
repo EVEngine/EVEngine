@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package eve.persistence.proto;
+
+// Open-ended JSON-compatible data with exact Int64 and finite Double variants.
+// Fixed domain records should use their own generated Protobuf messages.
+message DynamicValue {
+  oneof kind {
+    bool null_value = 1;
+    bool bool_value = 2;
+    int64 int_value = 3;
+    double double_value = 4;
+    string string_value = 5;
+    DynamicList list_value = 6;
+    DynamicObject object_value = 7;
+  }
+}
+
+message DynamicList {
+  repeated DynamicValue values = 1;
+}
+
+message DynamicObject {
+  repeated DynamicField fields = 1;
+}
+
+message DynamicField {
+  optional string key = 1;
+  DynamicValue value = 2;
+}
