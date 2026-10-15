@@ -16,7 +16,7 @@
  *  - Notify Enter/Update/Exit playback (hosts compose ActionNotifyPlayback)
  */
 
-#include "action/AbilitySystem.h"
+#include "action/AbilityRuntime.h"
 #include "action/Action.h"
 #include "common/Result.h"
 #include "common/Value.h"

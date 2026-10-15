@@ -1,7 +1,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "action/AbilitySystem.h"
+#include "action/AbilityRuntime.h"
 
 namespace {
 

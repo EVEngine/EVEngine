@@ -16,7 +16,7 @@ namespace eve::action {
  * grant identity remain owned by those C++ runtimes; script only injects
  * tick/delta and observes Result projections.
  *
- * C++ gameplay code should include `action/Action.h` / `action/AbilitySystem.h`
+ * C++ gameplay code should include `action/Action.h` / `action/AbilityRuntime.h`
  * and use those runtimes directly instead of going through this module.
  */
 class EVENGINE_API_PLATFORM Action final : public Module {

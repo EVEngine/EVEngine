@@ -4,7 +4,7 @@
 
 /** @file AbilityAsset.h @brief Versioned persistent codec and timeline assembly for ability definitions. */
 
-#include "action/AbilitySystem.h"
+#include "action/AbilityRuntime.h"
 #include "action/ActionTimeline.h"
 #include "common/SchemaVersion.h"
 

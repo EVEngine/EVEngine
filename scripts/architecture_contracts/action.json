@@ -4,14 +4,14 @@
     {
       "id": "action-ability-activation-link",
       "rule": "link",
-      "scope": "src/modules/action/AbilitySystem.*",
+      "scope": "src/modules/action/AbilityRuntime.*",
       "owner": "action::AbilityRuntime",
       "issue": "EVENGINE-ARCH-LINK-CONTRACTS",
       "reason": "Ability activations bind grant identity to ActionExecutionId; either destruction order must clear or stale-detect without retaining raw ActionExecution pointers.",
       "expiry": "2027-12-31",
       "evidence": [
-        "src/modules/action/AbilitySystem.h",
-        "src/modules/action/AbilitySystem.cpp",
+        "src/modules/action/AbilityRuntime.h",
+        "src/modules/action/AbilityRuntime.cpp",
         "docs/dev/战斗系统与动作编辑器.md"
       ],
       "tests": [
@@ -90,7 +90,7 @@
         "src/modules/action/ActionScriptBindings.cpp",
         "src/modules/action/ScriptActionRuntime.h",
         "src/modules/action/Action.h",
-        "src/modules/action/AbilitySystem.h",
+        "src/modules/action/AbilityRuntime.h",
         "src/modules/action/AbilityAsset.h",
         "src/modules/action/ActionNotifyContracts.h",
         "docs/dev/战斗系统与动作编辑器.md"

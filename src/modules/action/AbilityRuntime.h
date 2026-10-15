@@ -2,7 +2,7 @@
 #include "common/Export.h"
 
 
-/** @file AbilitySystem.h @brief Grants, cooldowns, instancing, activation groups and gameplay-event triggers. */
+/** @file AbilityRuntime.h @brief Grants, cooldowns, instancing, activation groups and gameplay-event triggers. */
 
 #include "action/Action.h"
 #include "common/StrongUint64.h"

@@ -3,6 +3,7 @@
 #include "action/ActionNotifyPlayback.h"
 #include "action/ActionNotifyRegistry.h"
 #include "action/ActionParameterCurve.h"
+#include "action/ActionPreviewComposition.h"
 #include "action/editor/ActionEditorModule.h"
 #include "action/editor/ActionPreviewController.h"
 #include "action/editor/ActionTimelineEditor.h"
@@ -197,34 +198,6 @@ void accumulateRootMotion(animation::TransformTRS& total, const animation::Trans
     total.qw       = tw * delta.qw - tx * delta.qx - ty * delta.qy - tz * delta.qz;
 }
 
-class ComposedActionPreviewSink final : public action::IActionPreviewSink {
-public:
-    void add(std::unique_ptr<action::IActionPreviewSink> sink) { sinks_.push_back(std::move(sink)); }
-    [[nodiscard]] bool empty() const noexcept { return sinks_.empty(); }
-
-    Result<void> prepare(const action::ActionPreviewFrame& frame) override {
-        std::size_t prepared = 0;
-        for (; prepared < sinks_.size(); ++prepared) {
-            auto result = sinks_[prepared]->prepare(frame);
-            if (result) continue;
-            for (std::size_t index = 0; index <= prepared; ++index) sinks_[index]->discardPrepared();
-            return Result<void>::failure(result.status());
-        }
-        return Result<void>::success(Status::success(StatusCode::Applied));
-    }
-
-    void present(const action::ActionPreviewFrame& frame) noexcept override {
-        for (auto& sink : sinks_) sink->present(frame);
-    }
-
-    void discardPrepared() noexcept override {
-        for (auto& sink : sinks_) sink->discardPrepared();
-    }
-
-private:
-    std::vector<std::unique_ptr<action::IActionPreviewSink>> sinks_;
-};
-
 class ScriptActionTimelineEditor {
 public:
     ScriptActionTimelineEditor(std::string targetId, action::ActionTimeline timeline,
@@ -233,20 +206,13 @@ public:
         : playback_(std::move(registry)),
           editor_(std::move(targetId), std::move(timeline), std::move(clipboard)),
           widget_(editor_, playback_.registry()) {
-        auto composed = std::make_unique<ComposedActionPreviewSink>();
-        const auto providerCount = cap::listenerCount<action::IActionPreviewSinkProvider>();
-        for (std::size_t index = 0; index < providerCount; ++index) {
-            auto* provider = cap::listenerAt<action::IActionPreviewSinkProvider>(index);
-            if (!provider) continue;
-            auto sink = provider->createActionPreviewSink();
-            if (!sink) {
-                previewInitializationFailure_ = sink.status();
-                return;
-            }
-            composed->add(std::move(sink).takeValue());
+        auto composed = action::composeActionPreviewSinksFromProviders();
+        if (!composed) {
+            previewInitializationFailure_ = composed.status();
+            return;
         }
-        if (composed->empty()) return;
-        previewSink_       = std::move(composed);
+        if (!composed.value()) return;
+        previewSink_       = std::move(composed).takeValue();
         previewController_ = std::make_unique<ActionPreviewController>(editor_, *previewSink_);
     }
 
