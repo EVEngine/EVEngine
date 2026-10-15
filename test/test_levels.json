@@ -324,29 +324,6 @@
       ],
       "task": "map-navigation"
     },
-    "integration/procgen-stages/procgen_generation_stages.cpp": {
-      "role": "tests",
-      "default": "module-composition",
-      "cases": {
-        "module-composition": [
-          "procgen.stages.scalarFieldIsOwningBoundedAndTransactional",
-          "procgen.stages.scalarFieldProducesReusableParametricGeometry",
-          "procgen.stages.houseDefaultScheduleMatchesCompatibilityAndOwnsKit",
-          "procgen.stages.houseGraphControlsGenerationAndFailuresPreserveStage",
-          "procgen.stages.caveDefaultScheduleMatchesRecipe",
-          "procgen.stages.caveFieldEditsAffectOutputAndFailedExtractionKeepsInput",
-          "procgen.stages.caveSkeletonAndSurfacePoliciesAreEditable"
-        ],
-        "script-binding": [
-          "procgen.stages.scriptOwnsFieldsAndComposesCaveWithoutGraphics"
-        ]
-      },
-      "module": "procgen",
-      "origins": [
-        "procgen_generation_stages.cpp"
-      ],
-      "task": "procgen-stages"
-    },
     "profile/crowd_benchmark.cpp": {
       "role": "compile-contract",
       "default": "performance",
@@ -601,24 +578,6 @@
         "sensing_spatial_cells.cpp"
       ],
       "task": "sensing"
-    },
-    "integration/graphics-virtual-texture/virtual_texture_streaming.cpp": {
-      "role": "tests",
-      "default": "module-composition",
-      "cases": {
-        "module-composition": [
-          "graphics.virtual_texture_streaming.pack_feedback_roundtrip",
-          "graphics.virtual_texture_streaming.feedback_decode_publish_and_abandon",
-          "graphics.virtual_texture_streaming.evicts_lru_and_clears_page_table_first",
-          "graphics.virtual_texture_streaming.writer_invalidates_dirty_pages",
-          "graphics.virtual_texture_streaming.ingest_packed_feedback_collapses_mips"
-        ]
-      },
-      "module": "graphics",
-      "origins": [
-        "virtual_texture_streaming.cpp"
-      ],
-      "task": "graphics-virtual-texture"
     },
     "GraphicsWindowFixtures.cpp": {
       "role": "helper",
@@ -3304,6 +3263,170 @@
         "stylize_mesh_vfx_benchmark.cpp"
       ]
     },
+    "integration/physics-simulation/physics_buoyancy_geometry.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "physics-backend": [
+          "physics.forces.immersionHalfDryFullAndThickness",
+          "physics.forces.immersionMatchesIndependentSliceIntegration",
+          "physics.forces.geometricBuoyancyBalancesGravity2DAnd3D"
+        ]
+      },
+      "module": "physics",
+      "task": "physics-simulation"
+    },
+    "integration/physics-simulation/physics_coupling3d.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "physics-backend": [
+          "physics.coupling3d.gearTracksMultipleTurnsAndSourceDeath",
+          "physics.coupling3d.pulleyConservesWeightedLength",
+          "physics.coupling3d.slackRopeDoesNotPush",
+          "physics.coupling3d.mixedRackAndPinion",
+          "physics.coupling3d.offCenterPulleyAppliesTorqueAndForceCap",
+          "physics.coupling3d.worldFirstAndWrapperFirstLifetime",
+          "physics.coupling3d.backendFailureRollsBackProjectionAndPhase"
+        ]
+      },
+      "module": "physics",
+      "task": "physics-simulation"
+    },
+    "integration/physics-simulation/physics_coupling3d_script.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "script-binding": [
+          "physics.coupling3d.scriptOwnershipAndTypeSafety",
+          "physics.coupling3d.scriptWorldFirstInvalidation"
+        ]
+      },
+      "module": "physics",
+      "task": "physics-simulation"
+    },
+    "integration/physics-simulation/physics_field_set.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "physics-backend": [
+          "physics.forces.fieldSetFiltersAndSuperposes2D",
+          "physics.forces.fieldSet3DOrderAndAtomicFailures"
+        ]
+      },
+      "module": "physics",
+      "task": "physics-simulation"
+    },
+    "integration/physics-simulation/physics_force_application.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "physics-backend": [
+          "physics.forces.application2DIsMeterIndependent",
+          "physics.forces.application3DForceAndOffCenterTorque",
+          "physics.forces.applicationRejectsStaticWithoutMutation",
+          "physics.forces.batch2DAtomicityAndCoupleAreMeterIndependent",
+          "physics.forces.batchRejectsInvalidTailBeforeWaking",
+          "physics.forces.batchMoveAndForeignWorldCannotDuplicateSubmission",
+          "physics.forces.batch2DRevalidatesWholeBatchAtCommit",
+          "physics.forces.angularDampingBatchUsesActualInertia",
+          "physics.forces.tireImplicitImpulseMatchesRealChassis"
+        ]
+      },
+      "module": "physics",
+      "task": "physics-simulation"
+    },
+    "integration/physics-simulation/physics_force_receipt.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "physics-backend": [
+          "physics.forces.receiptRejectsWrongStepAndRetriesBackendOnce",
+          "physics.forces.receiptRestoreAndDestroyCancelPendingOnly",
+          "physics.forces.receiptRequiresAutomaticForceClearing2D"
+        ]
+      },
+      "module": "physics",
+      "task": "physics-simulation"
+    },
+    "integration/physics-simulation/physics_force_script.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "script-binding": [
+          "physics.forces.scriptModelsProjectResults",
+          "physics.forces.scriptFieldSetsOwnValuesAndBatchRights",
+          "physics.forces.scriptWingAssembliesControlBothDimensions"
+        ]
+      },
+      "module": "physics",
+      "task": "physics-simulation"
+    },
+    "integration/physics-simulation/physics_joint2d.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "physics-backend": [
+          "physics.joint2d.revoluteMotorLimitsAndBodyTeardown",
+          "physics.joint2d.prismaticDistanceWheelAndWeld",
+          "physics.joint2d.pulleyConservesWeightedLength",
+          "physics.joint2d.gearRatioAndSourceDestruction",
+          "physics.joint2d.gearFirstAndWorldFirstDestruction",
+          "physics.joint2d.invalidInputDoesNotCreateConstraints",
+          "physics.joint2d.linkRejectsForeignWorldAndDestroyedJoint",
+          "physics.joint2d.bodyDestructionInvalidatesDependentGear",
+          "physics.joint2d.lockedWorldRejectsMutation"
+        ]
+      },
+      "module": "physics",
+      "task": "physics-simulation"
+    },
+    "integration/physics-simulation/physics_joint2d_script.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "script-binding": [
+          "physics.joint2d.scriptResultAndOwningRelease"
+        ]
+      },
+      "module": "physics",
+      "task": "physics-simulation"
+    },
+    "integration/physics-simulation/physics_joint2d_snapshot.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "physics-backend": [
+          "physics.joint2d.snapshotAllKindsPreserveParametersAndInvalidateLinks",
+          "physics.joint2d.snapshotRestoredMotorActuallyDrivesAndHonorsLimit",
+          "physics.joint2d.snapshotGearPreservesOriginalPhaseAndDependencyTeardown",
+          "physics.joint2d.snapshotRejectsInvalidTopologyAtomically",
+          "physics.joint2d.snapshotMigratesV2AndRejectsV1AndUnmanagedJoints",
+          "physics.joint2d.snapshotRejectsSolverCallbackReentrancy",
+          "physics.snapshot2d.materialAndDynamicsPreserveMassAndTrajectory",
+          "physics.snapshot2d.invalidMaterialAndDynamicsPreserveLiveWorld"
+        ],
+        "script-binding": [
+          "physics.joint2d.snapshotScriptReferencesObserveRestoreAndWorldLifetime"
+        ]
+      },
+      "module": "physics",
+      "task": "physics-simulation"
+    },
+    "integration/physics-simulation/physics_merge_contract.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "physics-backend": [
+          "physics.merge.planarFactoriesShareIdentityAndSnapshot",
+          "physics.merge.spatialAddedJointKindsRetainParameters",
+          "physics.merge.joltKeepsPortableSnapshotsAndAcceptsForces",
+          "physics.merge.joltRayTiresRejectWithoutPublishingState"
+        ]
+      },
+      "module": "physics",
+      "task": "physics-simulation"
+    },
     "integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp": {
       "role": "tests",
       "default": "physics-backend",
@@ -3550,12 +3673,13 @@
           "physics.snapshot_v2_success_invalidates_2d_body_handles",
           "physics.snapshot_v2_success_invalidates_3d_body_shape_and_joint_handles",
           "physics.snapshot_v2_rejects_foreign_3d_world_without_invalidating_handles",
-          "physics.snapshot_v1_migrates_only_against_topology_compatible_live_world",
           "pixelworld_physics.fragment_decomposition_and_sleep_settlement_are_transactional",
           "pixelworld_physics.both_destruction_orders_and_restore_staleness_are_safe",
           "pixelworld_physics.terrain_cache_rebuilds_dirty_chunks_and_rolls_back_budget_failure",
           "pixelworld_physics.terrain_cache_rejects_live_world_rebind_without_orphaning_bodies",
-          "targeting.physicsAdapterRequiresOneActiveWorld"
+          "targeting.physicsAdapterRequiresOneActiveWorld",
+          "physics.snapshot_v1_is_outside_2d_migration_window",
+          "physics.snapshot_v2_roundtrips_closed_chain_geometry"
         ],
         "module-composition": [
           "container.adaptersFailureInjectionLeavesMembershipUnchanged",
@@ -3606,6 +3730,105 @@
         "pixelworld_physics.cpp",
         "targeting.cpp"
       ]
+    },
+    "integration/physics-simulation/physics_snapshot3d_ownership.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "physics-backend": [
+          "physics.snapshot3d.candidateOwnershipCommitAndRollback",
+          "physics.snapshot3d.preservesIndependentJointFrames",
+          "physics.snapshot3d.jointParametersRoundTripAllKinds",
+          "physics.snapshot3d.motorTrajectorySurvivesRestore",
+          "physics.snapshot3d.rejectsReentrantSnapshotAndRestore",
+          "physics.snapshot3d.transmissionPhaseTopologyAndTrajectory",
+          "physics.snapshot3d.dampingGravityAndSleepPreserveTrajectory",
+          "physics.snapshot3d.localShapeTransformPreservesCenterOfMass",
+          "physics.snapshot3d.contactEventsUseRestoredSparseShapeIds",
+          "physics.snapshot3d.contactMaterialDensityAndFilterRoundTrip",
+          "physics.snapshot3d.invalidContactRestoresNothing",
+          "physics.snapshot3d.meshMaterialsAndSensorBehavior"
+        ],
+        "script-binding": [
+          "physics.snapshot3d.scriptReferencesDoNotRetargetAfterRestore"
+        ]
+      },
+      "module": "physics",
+      "task": "physics-simulation"
+    },
+    "integration/physics-simulation/physics_vehicle_tires.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "physics-backend": [
+          "physics.vehicleTires2D.forcesDriveAndSteerWithoutVelocitySetters",
+          "physics.vehicleTires2D.pendingRetryCannotPublishOrDoubleApply",
+          "physics.vehicleTires2D.brakeAndAirborneRespectContactCapacity",
+          "physics.vehicleTires2D.invalidTailAndDestroyedBodyKeepCompletedState",
+          "physics.vehicleTires2D.offCenterCombinedSlipDissipatesAtMultipleScales",
+          "physics.vehicleTires2D.compatibilityMobilityQueuesInsteadOfTeleporting",
+          "physics.vehicleTires.definitionCodecAdmitsAndRejectsTireParameters"
+        ]
+      },
+      "module": "physics",
+      "task": "physics-simulation"
+    },
+    "integration/physics-simulation/physics_vehicle_tires3d.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "physics-backend": [
+          "physics.vehicleTires3D.suspensionMobilityDrivesAndSteersByForces",
+          "physics.vehicleTires3D.dynamicGroundReceivesOppositeImpulse",
+          "physics.vehicleTires3D.relativePointVelocityIncludesMovingGroundSpin",
+          "physics.vehicleTires3D.fullAttitudeAndContactPlaneRotateCovariantly",
+          "physics.vehicleTires3D.sensorFilteringDoesNotMutateWorldQueryState",
+          "physics.vehicleTires3D.airborneAndZeroFrictionCannotDriveChassis",
+          "physics.vehicleTires3D.rejectedStepAndInvalidWheelAreAtomic",
+          "physics.vehicleTires3D.brakesHoldOnSlopeAndStopForwardMotion",
+          "physics.vehicleTires3D.conveyorVelocityUsesShapeAndBodyRotation",
+          "physics.vehicleTires3D.meshTriangleFrictionOverridesBaseMaterial"
+        ]
+      },
+      "module": "physics",
+      "task": "physics-simulation"
+    },
+    "integration/physics-simulation/physics_wing_assembly.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "physics-backend": [
+          "physics.forces.wingAssembly2DUsesRotatedPointVelocity",
+          "physics.forces.wingAssembly3DControlSurfacesAndWind",
+          "physics.forces.wingAssemblyFailureIsAtomic",
+          "physics.forces.wingReverseFlowAndStallContinuity"
+        ]
+      },
+      "module": "physics",
+      "task": "physics-simulation"
+    },
+    "integration/procedural-generation/procgen_generation_stages.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.stages.scalarFieldIsOwningBoundedAndTransactional",
+          "procgen.stages.scalarFieldProducesReusableParametricGeometry",
+          "procgen.stages.houseDefaultScheduleMatchesCompatibilityAndOwnsKit",
+          "procgen.stages.houseGraphControlsGenerationAndFailuresPreserveStage",
+          "procgen.stages.caveDefaultScheduleMatchesRecipe",
+          "procgen.stages.caveFieldEditsAffectOutputAndFailedExtractionKeepsInput",
+          "procgen.stages.caveSkeletonAndSurfacePoliciesAreEditable"
+        ],
+        "script-binding": [
+          "procgen.stages.scriptOwnsFieldsAndComposesCaveWithoutGraphics"
+        ]
+      },
+      "module": "procgen",
+      "origins": [
+        "procgen_generation_stages.cpp"
+      ],
+      "task": "procedural-generation"
     },
     "integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp": {
       "role": "tests",
@@ -5649,6 +5872,18 @@
       "cases": {},
       "module": "common"
     },
+    "profile/physics_mechanics/NoPlatformEvent.cpp": {
+      "role": "helper",
+      "default": "module-composition",
+      "cases": {},
+      "module": "physics"
+    },
+    "profile/physics_mechanics/VehicleAbsent.cpp": {
+      "role": "probe",
+      "default": "module-composition",
+      "cases": {},
+      "module": "vehicle"
+    },
     "profile/public_headers_common.cpp": {
       "role": "compile-contract",
       "default": "module-composition",
@@ -6850,6 +7085,20 @@
         "economy.cpp"
       ]
     },
+    "unit/editing/editing_tests.cpp": {
+      "role": "tests",
+      "default": "local-format",
+      "cases": {
+        "local-format": [
+          "editing.property_schema_json.projects_empty_object_and_fields",
+          "editing.property_schema_json.rejects_empty_schema_id"
+        ]
+      },
+      "module": "editing",
+      "origins": [
+        "editing_property_schema_json.cpp"
+      ]
+    },
     "unit/editor/editor_tests.cpp": {
       "role": "tests",
       "default": "local-format",
@@ -7249,6 +7498,19 @@
         "eventstream.cpp"
       ]
     },
+    "unit/gpgpu/gpgpu_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "gpgpu.buffer.readFloat32sCopyClipsToCapacity"
+        ]
+      },
+      "module": "gpgpu",
+      "origins": [
+        "gpgpu.cpp"
+      ]
+    },
     "unit/graphics/graphics_pipeline_state_tests.cpp": {
       "role": "tests",
       "default": "local-logic",
@@ -7490,6 +7752,23 @@
         "ShaderResources.cpp",
         "virtual_texture_blend.cpp",
         "RenderImageAudit.cpp"
+      ]
+    },
+    "unit/graphics/virtual_texture_streaming.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "graphics.virtual_texture_streaming.pack_feedback_roundtrip",
+          "graphics.virtual_texture_streaming.feedback_decode_publish_and_abandon",
+          "graphics.virtual_texture_streaming.evicts_lru_and_clears_page_table_first",
+          "graphics.virtual_texture_streaming.writer_invalidates_dirty_pages",
+          "graphics.virtual_texture_streaming.ingest_packed_feedback_collapses_mips"
+        ]
+      },
+      "module": "graphics",
+      "origins": [
+        "virtual_texture_streaming.cpp"
       ]
     },
     "unit/graphics_fog/graphics_fog_unit.cpp": {
@@ -8138,7 +8417,22 @@
           "graphics.WaterSystem.infiniteIntervalAndSeaLevel",
           "graphics.WaterSystem.sceneConditionsAndAtomicFailure",
           "graphics.WaterUnderwater.transitionsFogCausticsAndSurfaceRestore",
-          "graphics.WaterUnderwater.hdrpOverrideAndAtomicFailure"
+          "graphics.WaterUnderwater.hdrpOverrideAndAtomicFailure",
+          "physics.forces.directionAndRegionAreMassScaled",
+          "physics.forces.radialSoftCoreAndRepulsion",
+          "physics.forces.buoyancyDisplacedVolume",
+          "physics.forces.dampingDissipatesWithoutOvershoot",
+          "physics.forces.wingLiftDragStallAndWind",
+          "physics.forces.frictionStickSlipAndNoContact",
+          "physics.forces.tireCombinedSlipAndWheelTorque",
+          "physics.forces.tireAirborneFreeRollingAndBrakeLock",
+          "physics.forces.invalidAndOverflowInputsReject",
+          "physics.forces.constantDirectionAndRadialCaps",
+          "physics.forces.boxAndRectangleRegionFade",
+          "physics.forces.angularDampingDissipatesRelativeRotation",
+          "physics.forces.tireStiffLowSpeedConservesImpulseAndDissipates",
+          "physics.forces.tireDriveAndBrakeSolveTogether",
+          "physics.forces.tireRefinementConvergesToSlipDecay"
         ]
       },
       "module": "physics",
@@ -8149,7 +8443,9 @@
         "physics_jolt_cooking.cpp",
         "physics_rigid_backend.cpp",
         "targeting.cpp",
-        "water_mesh.cpp"
+        "water_mesh.cpp",
+        "physics_force_models.cpp",
+        "physics_tire_stability.cpp"
       ]
     },
     "unit/physics_backend/physics_core_boundary_unit.cpp": {
@@ -10389,33 +10685,6 @@
       "default": "local-logic",
       "cases": {},
       "module": "graphics"
-    },
-    "unit/editing/editing_tests.cpp": {
-      "role": "tests",
-      "default": "local-format",
-      "cases": {
-        "local-format": [
-          "editing.property_schema_json.projects_empty_object_and_fields",
-          "editing.property_schema_json.rejects_empty_schema_id"
-        ]
-      },
-      "module": "editing",
-      "origins": [
-        "editing_property_schema_json.cpp"
-      ]
-    },
-    "unit/gpgpu/gpgpu_tests.cpp": {
-      "role": "tests",
-      "default": "local-logic",
-      "cases": {
-        "local-logic": [
-          "gpgpu.buffer.readFloat32sCopyClipsToCapacity"
-        ]
-      },
-      "module": "gpgpu",
-      "origins": [
-        "gpgpu.cpp"
-      ]
     }
   }
 }
