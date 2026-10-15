@@ -368,6 +368,7 @@ private:
     friend class box3d::WorldBackend;
     friend struct box3d::Access;
     friend struct WorldSnapshotAccess;
+    friend struct PortableWorldSnapshotAccess;
     friend class World3D;
     friend class Shape3D;
 
