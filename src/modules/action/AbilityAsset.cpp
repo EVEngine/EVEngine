@@ -113,15 +113,19 @@ Result<TargetingMode> parseTargetingMode(std::string_view value) {
     return invalid<TargetingMode>("unknown targeting mode", "action.targetingMode");
 }
 
-Value encodeCondition(const decision::Condition& condition) {
+Value encodeAbilityCondition(const decision::Condition& condition) {
     auto encoded = eve::decision::encodeCondition(condition);
-    if (!encoded) return Value::Object{{"kind", Value("invalid")}};
+    if (!encoded) {
+        Value::Object object;
+        object.emplace("kind", Value("invalid"));
+        return Value(std::move(object));
+    }
     return std::move(encoded).takeValue();
 }
 
 Result<std::vector<std::string>> decodeStrings(const Value& parent, std::string_view name, std::string path);
 
-Result<decision::Condition> decodeCondition(const Value& value, const std::string& path) {
+Result<decision::Condition> decodeAbilityCondition(const Value& value, const std::string& path) {
     (void)path;
     return eve::decision::decodeCondition(value);
 }
@@ -356,7 +360,7 @@ Result<Value> encodeAbilityAsset(const AbilityDefinition& definition) {
                          {"timing", Value::Object{{"windupNs", definition.action.timing.windup.nanoseconds()},
                                                   {"activeNs", definition.action.timing.active.nanoseconds()},
                                                   {"recoverNs", definition.action.timing.recover.nanoseconds()}}},
-                         {"condition", encodeCondition(definition.action.condition)},
+                         {"condition", encodeAbilityCondition(definition.action.condition)},
                          {"targetingMode", std::string(targetingModeName(definition.action.targetingMode))},
                          {"targetingSpec", definition.action.targetingSpec
                                                ? encodeTargetingSpec(*definition.action.targetingSpec)
@@ -437,7 +441,7 @@ Result<AbilityDefinition> decodeAbilityAsset(const Value& value) {
     if (!recover) return Result<AbilityDefinition>::failure(recover.status());
     auto mode = parseTargetingMode(modeText.value());
     if (!mode) return Result<AbilityDefinition>::failure(mode.status());
-    auto decodedCondition = decodeCondition(*condition, "action.condition");
+    auto decodedCondition = decodeAbilityCondition(*condition, "action.condition");
     if (!decodedCondition) return Result<AbilityDefinition>::failure(decodedCondition.status());
     if (!actionId) return invalid<AbilityDefinition>("action identity is invalid", "action.id");
     result.action.id = *actionId;
