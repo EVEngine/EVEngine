@@ -204,7 +204,7 @@ eve_update(dt) { scene.update(dt) }     // 引擎约定，与 eve.System.update 
 - [x] `Scene.cpp`：原生原语 `rootEntity / unrootEntityAt / forEachEntity / updateScripts / getNodeRefAt*` + expose `eve.SceneNodeRef`。
 - [x] `ECS.h/.cpp`：post-ECS 钩子 + `_cppHasView`；`Scene::expose` 注入 `eve.SceneEntity`。
 - [x] `NodeDesc.cpp`：applyTree/applyTreeReconcile 的 objectId 保留；孤儿绑定由 `Scene::pruneOrphanObjects` 拆除。
-- [x] `test/scene.cpp`：objectId 保留（C++）+ 脚本生命周期/view 集成；`test/ScriptECS.cpp`：view 缓存、O(1) 销毁、默认值缓存回归。
+- [x] `test/integration/script-api/script_api_graphics_editor_tests.cpp`：objectId 保留（C++）+ 脚本生命周期/view 集成；`test/integration/script-api/script_api_graphics_tests_tests.cpp`：view 缓存、O(1) 销毁、默认值缓存回归。
 - [x] 示例 `examples/scene-ecs/main.nut` + 更新 `docs/usr/modules/scene.md` 与 `docs/dev/模块设计.md` 清单。
 
 ### 实现取舍（相对设计稿）
@@ -241,7 +241,7 @@ src/modules/scene/SceneNodeRef.h/.cpp      新增（~200 行）
 src/modules/scene/SceneHost.h               SceneNode +objectId（1 行）
 src/modules/scene/Scene.cpp                新 API + expose + SceneEntity 注入钩子（~350 行）
 src/modules/scene/NodeDesc.cpp              绑定保留/销毁（~40 行）
-test/scene.cpp                             新测试（~200 行）
+test/integration/script-api/script_api_graphics_editor_tests.cpp                             新测试（~200 行）
 examples/scene-ecs/main.nut                新示例（~80 行）
 docs/usr/modules/scene.md                  新增 API 快查
 docs/dev/模块设计.md                        第 20 节清单更新

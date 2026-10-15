@@ -267,6 +267,7 @@ set(EVE_TEST_PREFIX_DOMAIN
 
     "procgen_cave;procgen"
     "procgen_schema_script;procgen"
+    "=procgen_generation_stages_script;procgen"
 
     "voxel_render;voxel"
 
@@ -286,6 +287,7 @@ set(EVE_TEST_PREFIX_DOMAIN
     "window;platform"
 
     "agent_development_session;devtools"
+    "devtools_;devtools"
     "callgraph;devtools"
     "console;devtools"
     "frame_stats;devtools"

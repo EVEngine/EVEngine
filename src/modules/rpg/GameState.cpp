@@ -249,8 +249,13 @@ eve::Result<void> GameState::restoreSnapshotJson(std::string_view json) {
     proto::GameStateSave                     typed;
     google::protobuf::util::JsonParseOptions options;
     options.ignore_unknown_fields = true;
-    if (google::protobuf::util::JsonStringToMessage(std::string(json), &typed, options).ok())
-        return restoreMessage(typed);
+    if (google::protobuf::util::JsonStringToMessage(std::string(json), &typed, options).ok()) {
+        const auto missingScope = [](const auto &facts) { return !facts.has_scope(); };
+        const bool legacyScopeShape =
+            std::any_of(typed.self_variables().begin(), typed.self_variables().end(), missingScope) ||
+            std::any_of(typed.self_strings().begin(), typed.self_strings().end(), missingScope);
+        if (!legacyScopeShape) return restoreMessage(typed);
+    }
 
     // Version-1 JSON used nested scope maps; parse it only to upgrade old saves.
     google::protobuf::Struct legacy;

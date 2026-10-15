@@ -67,8 +67,8 @@ silhouette IoU/centroid/area 测量。只保留 IoU 改善，否则恢复原文�
 
 ## 验证契约
 
-test/scene_authoring.cpp 覆盖事务、schema、历史、父反射/剪切、贴地、间距和画面锚点。
-test/graphics_authoring_projection.cpp 覆盖矩阵保真、保守裁剪、mesh bounds。
+test/integration/gameplay-composition/gameplay_composition_graphics_rts_script_tests.cpp 覆盖事务、schema、历史、父反射/剪切、贴地、间距和画面锚点。
+test/integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp 覆盖矩阵保真、保守裁剪、mesh bounds。
 工具测试覆盖像素偏移、空 mask、并发 revision。实际 SHARED/OBJECT 链接、定向测试和
 真实帧验证在交付时报告；不声明未测量的还原率或跨后端视觉等价性。
 

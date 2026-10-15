@@ -41,9 +41,11 @@ from collections.abc import Sequence
 from pathlib import Path
 
 import utf8_stdio
+import test_levels
 
 BASELINE = Path("scripts/test_assert_level_baseline.json")
 SOURCE_ROOT = Path("test")
+TEST_CATALOGUE = SOURCE_ROOT / "test_levels.json"
 
 # Files whose cases are the *evidence* for a contract, so every one of them must be able to
 # fail. Add a file here only when all of its cases are evidence; a module's general coverage
@@ -64,6 +66,7 @@ FAIL_ASSERT = re.compile(r"\b(REQUIRE[A-Z_]*|ASSERT[A-Z_]*|EV_ASSERT|EV_PARAM_CH
 # A function definition in the same file; its body is scanned for failure-level assertions.
 FUNCTION_DEF = re.compile(
     r"(?:^|\n)[ \t]*(?:template\s*<[^;{}]*>\s*)?"
+    r"(?:\[\[[^\]\n]*\]\]\s*)*"
     r"(?:static\s+|inline\s+|constexpr\s+|const\s+)*"
     r"[A-Za-z_][\w:<>,\s*&]*?[ \t*&]([A-Za-z_]\w*)\s*\([^;{}]*\)\s*"
     r"(?:const\s*)?(?:noexcept\s*)?\{"
@@ -240,6 +243,26 @@ def enclosing_case(masked: str, text: str, index: int) -> str:
     return name
 
 
+def strict_sources(name: str) -> list[tuple[Path, str]]:
+    """Resolve legacy evidence through the authoritative migration catalogue."""
+    path = Path(name)
+    if path.is_file():
+        return [(path, path.read_text(encoding="utf-8"))]
+    if not TEST_CATALOGUE.is_file() or path.parent != SOURCE_ROOT:
+        return []
+    sources = json.loads(TEST_CATALOGUE.read_text(encoding="utf-8"))["sources"]
+    resolved = []
+    for source, policy in sources.items():
+        if path.name not in policy.get("origins", []):
+            continue
+        target = TEST_CATALOGUE.parent / source
+        if not target.is_file():
+            return []
+        sections = test_levels.origin_source_sections(target.read_text(encoding="utf-8"), policy)
+        resolved.append((target, sections[path.name]))
+    return resolved
+
+
 def strict_violations(files: Sequence[str] = STRICT_FILES) -> list[str]:
     """Warning-level assertions in a file that has to be able to fail.
 
@@ -248,16 +271,35 @@ def strict_violations(files: Sequence[str] = STRICT_FILES) -> list[str]:
     """
     found: list[str] = []
     for name in files:
-        path = Path(name)
-        if not path.exists():
+        sources = strict_sources(name)
+        if not sources:
             found.append(f"{name}|<missing>|0")
             continue
-        text = path.read_text(encoding="utf-8")
-        masked = mask_non_code(text)
-        for match in WARN_ASSERT.finditer(masked):
-            line = text.count("\n", 0, match.start()) + 1
-            found.append(f"{name}|{enclosing_case(masked, text, match.start())}|{line}")
+        for path, text in sources:
+            masked = mask_non_code(text)
+            for match in WARN_ASSERT.finditer(masked):
+                line = text.count("\n", 0, match.start()) + 1
+                found.append(f"{path.as_posix()}|{enclosing_case(masked, text, match.start())}|{line}")
     return found
+
+
+def relocated_baseline(sites: Sequence[str]) -> set[str]:
+    """Move existing frozen identities through provenance without freezing new cases."""
+    owners: dict[str, list[tuple[str, set[str]]]] = {}
+    known: set[str] = set()
+    for site in sites:
+        source, name, occurrence = site.split("|")
+        if source not in owners:
+            owners[source] = []
+            for path, text in strict_sources(source):
+                masked = mask_non_code(text)
+                names = {case_name(text, match.end()) for match in CASE_MACRO.finditer(masked)}
+                owners[source].append((path.as_posix(), names))
+        targets = [path for path, names in owners[source] if name in names]
+        known.update(f"{path}|{name}|{occurrence}" for path in targets)
+        if not targets:
+            known.add(site)
+    return known
 
 
 def main() -> int:
@@ -285,7 +327,7 @@ def main() -> int:
                 print(f"{path.as_posix()}:{line}: {name}")
 
     baseline = json.loads(BASELINE.read_text(encoding="utf-8"))["sites"]
-    known = set(baseline)
+    known = relocated_baseline(baseline)
     current = set(found)
     added = sorted(current - known)
     stale = sorted(known - current)

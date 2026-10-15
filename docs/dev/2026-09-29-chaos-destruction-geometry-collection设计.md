@@ -21,8 +21,8 @@
 - `physics_destruction_graphics`（`eve.DestructionFx()`）：盒代理骨块 draw、内材色、Sleep 合批
 - `physics_destruction_editing`：`fractureRecipeSchema()`（UI 无关 PropertySchema）
 
-测试：`test/physics_destruction.cpp`、`test/physics_destruction_cook.cpp`、
-`test/physics_destruction_graphics.cpp`；示例：`examples/destruction-basic`；
+测试：`test/integration/physics-simulation/physics_simulation_graphics_climbing_reload_tests.cpp`、`test/unit/physics_destruction_cook/physics_destruction_cook.cpp`、
+`test/integration/gameplay-composition/gameplay_composition_graphics_procgen_simulation_tests.cpp`；示例：`examples/destruction-basic`；
 用户文档：`docs/usr/modules/physics_destruction.md`、
 `docs/usr/modules/physics_destruction_graphics.md`。
 
@@ -321,7 +321,7 @@ DestructionWorld::applyField(RuntimeHandle<GeometryCollectionTag>, const Destruc
 
 - [x] `physics_destruction`：Asset v1 编解码、Instance、手工 fixture 连接图（跳过 cook）、断边 → Body、双销毁顺序测试
 - [x] `DestructionField`：Strain + Anchor + Sleep
-- [x] Contract：`physics-destruction-bone-link-contract` + `test/physics_destruction.cpp`
+- [x] Contract：`physics-destruction-bone-link-contract` + `test/integration/physics-simulation/physics_simulation_graphics_climbing_reload_tests.cpp`
 - [x] 示例：`examples/destruction-basic`（预置两块焊接盒子）
 
 ### P1 — Cook

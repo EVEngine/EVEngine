@@ -1,0 +1,371 @@
+#include "zeroerr/assert.h"
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_authority)
+#include "PrivateTestScope.h"
+#include <simplesquirrel/simplesquirrel.hpp>
+#include <string>
+#include "authority/Authority.h"
+#include "common/Module.h"
+#include "common/SnapshotHash.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+// authority.cpp
+namespace test_authority_unit {
+using namespace eve::authority;
+
+TEST_CASE("authority.decision.priorityThenDenyThenCreationOrder") {
+    Store      store;
+    const auto grant = store.grant("actor:1", "scope:1", "edit", "role:a", 10);
+    const auto deny  = store.deny("actor:1", "scope:1", "edit", "policy:a", 10);
+    CHECK(!store.can("actor:1", "scope:1", "edit"));
+    CHECK_EQ(store.explain("actor:1", "scope:1", "edit").winningRuleId, deny);
+
+    const auto elevated = store.grant("actor:1", "scope:1", "edit", "override", 11);
+    const auto decision = store.explain("actor:1", "scope:1", "edit");
+    CHECK(decision.allowed);
+    CHECK_EQ(decision.winningRuleId, elevated);
+    CHECK_EQ(decision.reason, std::string("granted"));
+    CHECK_EQ(store.find(grant)->source, std::string("role:a"));
+}
+
+TEST_CASE("authority.decision.defaultDenyIsExplainable") {
+    Store      store;
+    const auto result = store.explain("unknown", "scope", "read");
+    CHECK(!result.allowed);
+    CHECK_EQ(result.reason, std::string("no_matching_rule"));
+    CHECK(result.winningRuleId.empty());
+}
+
+TEST_CASE("authority.lifecycle.durationRevokeAndEvents") {
+    Store      store;
+    const auto temporary = store.grant("a", "s", "c", "temporary", 1, 0.5);
+    store.deny("b", "s", "c", "policy", 1);
+    store.update(0.5);
+    CHECK(store.find(temporary) == nullptr);
+    REQUIRE(store.eventCount() == 3);
+    CHECK_EQ(eventKindName(store.eventAt(2)->kind), std::string("expired"));
+    CHECK_EQ(store.eventAt(2)->reason, std::string("duration_elapsed"));
+    CHECK_EQ(store.revokeBySource("policy"), 1);
+    CHECK_EQ(eventKindName(store.eventAt(3)->kind), std::string("revoked"));
+}
+
+TEST_CASE("authority.query.reverseDimensionsAreDeterministic") {
+    Store      store;
+    const auto first  = store.grant("a", "s2", "read", "x");
+    const auto second = store.grant("a", "s1", "write", "y");
+    const auto third  = store.deny("b", "s1", "read", "z");
+    REQUIRE(store.queryActor("a") == 2);
+    CHECK_EQ(store.queryAt(0)->id, first);
+    CHECK_EQ(store.queryAt(1)->id, second);
+    REQUIRE(store.queryScope("s1") == 2);
+    CHECK_EQ(store.queryAt(0)->id, second);
+    CHECK_EQ(store.queryAt(1)->id, third);
+    REQUIRE(store.queryCapability("read") == 2);
+    CHECK_EQ(store.queryAt(0)->id, first);
+    CHECK_EQ(store.queryAt(1)->id, third);
+}
+
+TEST_CASE("authority.snapshot.restoreIsDeterministicAndTransactional") {
+    Store original;
+    original.grant("a", "s", "read", "role", 3);
+    original.deny("a", "s", "write", "policy", 4, 5.0);
+    original.update(1.0);
+    const auto snapshot = original.snapshotJson();
+
+    Store restored;
+    auto  restoredResult = restored.restoreJson(snapshot);
+    REQUIRE(restoredResult.ok());
+    CHECK_EQ(restored.snapshotJson(), snapshot);
+    CHECK(restored.can("a", "s", "read"));
+    CHECK(!restored.can("a", "s", "write"));
+    const auto before   = restored.snapshotJson();
+    auto       rejected = restored.restoreJson("{\"version\":1}");
+    REQUIRE(!rejected.ok());
+    const auto* diagnostic = rejected.error();
+    REQUIRE(diagnostic != nullptr);
+    CHECK_EQ(diagnostic->code(), eve::DiagnosticCode::ParseError);
+    CHECK_EQ(restored.snapshotJson(), before);
+
+    auto malformed = restored.restoreJson("{");
+    CHECK(!malformed.ok());
+    const auto* parseDiagnostic = malformed.error();
+    REQUIRE(parseDiagnostic != nullptr);
+    CHECK_EQ(parseDiagnostic->code(), eve::DiagnosticCode::ParseError);
+    CHECK(!parseDiagnostic->message().empty());
+    CHECK_EQ(restored.snapshotJson(), before);
+}
+
+TEST_CASE("authority.snapshot.protobufRoundTripAndFailedRestoreAreTransactional") {
+    Store source;
+    source.grant("actor", "scene", "edit", "role", 3);
+    source.deny("actor", "scene", "delete", "policy", 5, 2.0);
+    source.update(0.5);
+    auto encoded = source.snapshotBinary();
+    REQUIRE(encoded.ok());
+
+    Store restored;
+    REQUIRE(restored.restoreBinary(encoded.value()).ok());
+    CHECK(restored.can("actor", "scene", "edit"));
+    CHECK(!restored.can("actor", "scene", "delete"));
+    auto repeated = restored.snapshotBinary();
+    REQUIRE(repeated.ok());
+    CHECK_EQ(repeated.value(), encoded.value());
+
+    const auto before = restored.snapshotJson();
+    CHECK(!restored.restoreBinary("\x00\x01\x02").ok());
+    CHECK_EQ(restored.snapshotJson(), before);
+    std::string truncated = encoded.value();
+    truncated.pop_back();
+    CHECK(!restored.restoreBinary(truncated).ok());
+    CHECK_EQ(restored.snapshotJson(), before);
+    std::string futureField = encoded.value();
+    futureField.append("\xA0\x06\x01", 3);  // Unknown field 100, varint 1.
+    CHECK(!restored.restoreBinary(futureField).ok());
+    CHECK_EQ(restored.snapshotJson(), before);
+}
+
+TEST_CASE("authority.snapshot.legacyJsonIsReadButRewrittenWithProtobufSchema") {
+    const std::string legacy =
+        R"({"version":1,"nextId":"2","nextOrder":"2","nextSequence":"2","rules":[{"id":"authority-0000000000000001","actor":"actor","scope":"scene","capability":"edit","source":"role","effect":"grant","priority":3,"duration":0,"remaining":-1,"order":"1"}]})";
+    Store restored;
+    REQUIRE(restored.restoreJson(legacy).ok());
+    CHECK(restored.can("actor", "scene", "edit"));
+    const auto rewritten = restored.snapshotJson();
+    CHECK(rewritten.find("authority:store") != std::string::npos);
+    CHECK(rewritten != legacy);
+    Store copy;
+    REQUIRE(copy.restoreJson(rewritten).ok());
+    CHECK(copy.can("actor", "scene", "edit"));
+}
+
+TEST_CASE("authority.snapshot.typedEnvelopeVerifiesDigestAndIdentity") {
+    const auto identity = eve::PersistentId::parse("11111111-2222-4333-8444-555555555555");
+    REQUIRE(identity.has_value());
+    const auto hash = eve::snapshotContentHashProvider();
+    Store      source(*identity);
+    source.grant("actor", "scene", "edit", "role", 3);
+    auto wire = source.snapshotEnvelopeBinary(hash);
+    REQUIRE(wire.ok());
+
+    Store restored(*identity);
+    REQUIRE(restored.restoreSnapshotBinary(wire.value(), hash).ok());
+    CHECK(restored.can("actor", "scene", "edit"));
+    const auto  stable   = restored.snapshotJson();
+    std::string tampered = wire.value();
+    const auto  position = tampered.find("actor");
+    REQUIRE(position != std::string::npos);
+    tampered[position] = 'x';
+    auto rejected      = restored.restoreSnapshotBinary(tampered, hash);
+    REQUIRE(!rejected.ok());
+    CHECK_EQ(rejected.error()->code(), eve::DiagnosticCode::HashMismatch);
+    CHECK_EQ(restored.snapshotJson(), stable);
+
+    auto json = source.snapshotEnvelopeJson(hash);
+    REQUIRE(json.ok());
+    CHECK(json.value().find("\"payload\"") != std::string::npos);
+    Store fromJson(*identity);
+    REQUIRE(fromJson.restoreSnapshotJson(json.value(), hash).ok());
+    CHECK_EQ(fromJson.snapshotJson(), source.snapshotJson());
+
+    auto parsedJson = eve::Value::fromJson(json.value());
+    REQUIRE(parsedJson.ok());
+    auto* fields = parsedJson.value().getIf<eve::Value::Object>();
+    REQUIRE(fields != nullptr);
+    (*fields)["revision"] = eve::Value("900");
+    auto changedHeader    = parsedJson.value().toJson();
+    REQUIRE(changedHeader.ok());
+    auto headerFailure = fromJson.restoreSnapshotJson(changedHeader.value(), hash);
+    REQUIRE(!headerFailure.ok());
+    CHECK_EQ(headerFailure.error()->code(), eve::DiagnosticCode::HashMismatch);
+    CHECK_EQ(fromJson.snapshotJson(), source.snapshotJson());
+
+    auto compatible = source.snapshot(hash);
+    REQUIRE(compatible.ok());
+    auto oldEnvelope = eve::serializeSnapshotEnvelope(compatible.value());
+    REQUIRE(oldEnvelope.ok());
+    Store fromOldEnvelope(*identity);
+    REQUIRE(fromOldEnvelope.restoreSnapshotJson(oldEnvelope.value(), hash).ok());
+    CHECK_EQ(fromOldEnvelope.snapshotJson(), source.snapshotJson());
+
+    const auto foreignId = eve::PersistentId::parse("aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee");
+    REQUIRE(foreignId.has_value());
+    Store foreign(*foreignId);
+    CHECK(!foreign.restoreSnapshotBinary(wire.value(), hash).ok());
+    CHECK(foreign.snapshotJson() != source.snapshotJson());
+}
+
+TEST_CASE("authority.input.invalidFactsDoNotMutate") {
+    Store store;
+    CHECK(store.grant("", "scope", "read", "source").empty());
+    CHECK(store.deny("actor", "", "read", "source").empty());
+    CHECK(store.grant("actor", "scope", "", "source").empty());
+    CHECK_EQ(store.query("", "", ""), 0);
+    CHECK_EQ(store.eventCount(), 0);
+}
+}  // namespace test_authority_unit
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_script_ownership)
+#include "PrivateTestScope.h"
+#include <memory>
+#include <simplesquirrel/simplesquirrel.hpp>
+#include <string>
+#include "authority/Authority.h"
+#include "common/SquirrelOwnership.h"
+#include "decision/Decision.h"
+#include "effects/Effects.h"
+#include "orders/CommandQueue.h"
+#include "procgen/Procgen.h"
+#include "production/Production.h"
+#include "statepatch/StatePatch.h"
+#include "zeroerr/unittest.h"
+// script_ownership.cpp
+namespace test_script_ownership_unit {
+/**
+ * @file script_ownership.cpp
+ * @brief Contract tests for Value/Owned/Borrowed script object semantics.
+ */
+
+
+// A RuntimePin references its producing store by address, so that store must never be
+// relocated while a pin can exist. RuntimeObjectRegistry keeps it behind a stable heap
+// address and stays movable itself (statepatch::Store move-assigns one).
+static_assert(!std::is_move_constructible_v<eve::script::detail::RuntimeSlotStore>);
+static_assert(!std::is_move_assignable_v<eve::script::detail::RuntimeSlotStore>);
+
+
+TEST_CASE("scriptOwnership.commonSemanticsAndRegistryStaleGeneration") {
+    struct Tag {};
+    struct Item {
+        int value = 7;
+    };
+
+    CHECK_EQ(std::string(eve::script::objectSemanticName(eve::script::ObjectSemantic::Value)), std::string("value"));
+    CHECK_EQ(std::string(eve::script::objectSemanticName(eve::script::ObjectSemantic::Owned)), std::string("owned"));
+    CHECK_EQ(std::string(eve::script::objectSemanticName(eve::script::ObjectSemantic::Borrowed)),
+             std::string("borrowed"));
+
+    eve::script::RuntimeObjectRegistry<Item, Tag> registry;
+    auto                                          created = registry.emplace(std::make_unique<Item>());
+    REQUIRE(created.ok());
+    const auto reference = std::move(created).takeValue();
+    auto       borrowed  = registry.resolve(reference);
+    REQUIRE(borrowed.isBound());
+    CHECK_EQ(borrowed->value, 7);
+    CHECK(!registry.isStale(reference));
+
+    auto released = registry.erase(reference);
+    REQUIRE(released.ok());
+    CHECK(registry.isStale(reference));
+    CHECK(!registry.resolve(reference).isBound());
+
+    auto replacement = registry.emplace(std::make_unique<Item>());
+    REQUIRE(replacement.ok());
+    const auto replacementReference = std::move(replacement).takeValue();
+    CHECK(replacementReference.handle.index() == reference.handle.index());
+    CHECK(replacementReference.handle.generation() != reference.handle.generation());
+    CHECK(registry.isStale(reference));
+    CHECK(!registry.isStale(replacementReference));
+
+    const auto                         oldEpoch          = registry.ownerEpoch();
+    eve::script::RuntimeHandleRef<Tag> unloadedReference = replacementReference;
+    registry.clear();
+    CHECK(registry.isStale(unloadedReference));
+    CHECK(!registry.resolve(unloadedReference).isBound());
+    {
+        eve::script::RuntimeObjectRegistry<Item, Tag> reloadedRegistry;
+        CHECK(reloadedRegistry.ownerEpoch() != oldEpoch);
+        CHECK(reloadedRegistry.isStale(unloadedReference));
+    }
+}
+
+TEST_CASE("scriptOwnership.pinKeepsErasedPayloadAliveUntilRelease") {
+    struct Tag {};
+    struct Tracked {
+        int  value     = 7;
+        int* destroyed = nullptr;
+        ~Tracked() {
+            if (destroyed != nullptr) ++*destroyed;
+        }
+    };
+
+    int                                              destroyed = 0;
+    eve::script::RuntimeObjectRegistry<Tracked, Tag> registry;
+
+    auto item       = std::make_unique<Tracked>();
+    item->destroyed = &destroyed;
+    auto created    = registry.emplace(std::move(item));
+    REQUIRE(created.ok());
+    const auto reference = std::move(created).takeValue();
+
+    auto pinned = registry.pin(reference);
+    REQUIRE(pinned.ok());
+    CHECK(pinned.value().isBound());
+    CHECK_EQ(pinned.value().get()->value, 7);
+    CHECK(pinned.value().borrow().isBound());
+
+    // Destroy order A: the holder is released after the owner erased the entry.
+    auto released = registry.erase(reference);
+    REQUIRE(released.ok());
+    CHECK(registry.isStale(reference));
+    CHECK(!registry.resolve(reference).isBound());
+    CHECK_EQ(destroyed, 0);
+    CHECK_EQ(pinned.value().get()->value, 7);
+    CHECK(!registry.pin(reference).ok());
+
+    // A slot with a live pin is never handed out again, even though the handle is stale.
+    auto replacement = registry.emplace(std::make_unique<Tracked>());
+    REQUIRE(replacement.ok());
+    const auto replacementReference = std::move(replacement).takeValue();
+    CHECK(replacementReference.handle.index() != reference.handle.index());
+
+    // Moving the pin transfers the keep-alive; releasing the source is a no-op.
+    {
+        auto moved = std::move(pinned).takeValue();
+        CHECK(moved.isBound());
+        CHECK_EQ(moved.get()->value, 7);
+        CHECK_EQ(destroyed, 0);
+    }
+    CHECK_EQ(destroyed, 1);
+}
+
+TEST_CASE("scriptOwnership.clearDefersPinnedPayloadDestruction") {
+    struct Tag {};
+    struct Tracked {
+        int* destroyed = nullptr;
+        ~Tracked() {
+            if (destroyed != nullptr) ++*destroyed;
+        }
+    };
+
+    int                                              kept    = 0;
+    int                                              dropped = 0;
+    eve::script::RuntimeObjectRegistry<Tracked, Tag> registry;
+
+    auto pinnedItem       = std::make_unique<Tracked>();
+    pinnedItem->destroyed = &kept;
+    auto pinnedRef        = std::move(registry.emplace(std::move(pinnedItem))).takeValue();
+    auto held             = registry.pin(pinnedRef);
+    REQUIRE(held.ok());
+
+    auto droppedItem       = std::make_unique<Tracked>();
+    droppedItem->destroyed = &dropped;
+    auto droppedRef        = std::move(registry.emplace(std::move(droppedItem))).takeValue();
+
+    registry.clear();
+
+    // Destroy order B: the owner was cleared first, the holder is still alive.
+    CHECK_EQ(dropped, 1);
+    CHECK_EQ(kept, 0);
+    CHECK(registry.isStale(pinnedRef));
+    CHECK(registry.isStale(droppedRef));
+    CHECK(!registry.resolve(pinnedRef).isBound());
+
+    // Releasing the last pin destroys the object the clear() had kept alive; the
+    // move-assignment shape also covers releasing through a moved-from pin.
+    held.value() = eve::script::RuntimePin<Tracked, Tag>{};
+    CHECK(!held.value().isBound());
+    CHECK_EQ(kept, 1);
+}
+}  // namespace test_script_ownership_unit
+#endif

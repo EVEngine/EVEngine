@@ -131,7 +131,38 @@ bin\eve.exe run mygame
 | C++ 编译器 | 支持 **C++20** | MSVC / GCC / Clang |
 | Vulkan SDK | **≥ 1.2** | 图形后端；需正确设置环境变量 |
 
-第三方库（SDL2、Box2D、Squirrel、Poco、ImGui、OpenAL Soft、FreeType、GLM、VKBuilder 等）由 CMake 的 `ExternalProject` 自动从 [EVEngine/third-party](https://github.com/EVEngine/third-party) 拉取并编译，一般无需手动安装。
+第三方库由 [EVEngine/third-party 独立发布](https://github.com/EVEngine/third-party/releases)。
+`cmake/third_party_pin.cmake` 同时固定发布 tag 和源码提交。支持的平台默认在配置时下载、
+校验并复用预编译依赖，EVEngine release CI 只构建引擎及 SDK，不再重编这些依赖库（含 Jolt）。
+
+```powershell
+make build/win32-debug
+# 也可提前下载，准备离线依赖目录：
+python scripts/third_party_package.py win32 --configuration Debug
+```
+
+依赖包包括 Windows x64 的 Release/Debug、Linux x86_64、macOS arm64/x86_64、
+Android arm64-v8a 和 iOS arm64 真机。非 Windows 的 Debug 引擎复用 Release 依赖库。
+下载工具校验 SHA256、格式版本、发布 tag、源码提交、平台、架构和库配置；兼容目录直接复用，
+不兼容目录报错且不会覆盖。全部校验成功后才发布安装目录。
+AUTO 模式遇到下载不可用（缺少资产、网络失败等）时明确输出原因并构建固定版本源码；
+校验失败或包不兼容仍报错。PREBUILT 模式要求下载成功。
+
+需要自行编译依赖时明确指定：
+
+```powershell
+make build/win32-debug CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=SOURCE"
+```
+
+默认 `AUTO` 对已提供依赖包的目标使用二进制；Emscripten、iOS 模拟器、其他 Android ABI、
+macOS 通用架构和自定义 sanitizer/code-model 构建使用源码。`PREBUILT` 则要求目标有预编译包。
+原有 `EVENGINE_THIRD_PARTY_BINARY_DIR` 仍可指定兼容的离线/本机依赖目录。
+升级依赖时，先等 third-party 独立 release 上传完成，再更新引擎中的 tag 和提交两个固定值。
+依赖补丁由 third-party 仓库维护；引擎自有 `external/ECS.hpp`、`external/zeroerr` 的补丁留在本仓库。
+
+zip 包含头文件、静态/动态库、运行时文件、版本信息和许可文件。仍需安装平台构建工具、
+Vulkan SDK、系统开发库，并初始化引擎子模块；配置时也会拉取 ImGui 等直接参与引擎编译的源码。
+各包的编译器、系统和 SDK 兼容基线见[英文构建说明](Readme.en.md)，不兼容的工具链使用源码模式。
 
 #### Windows
 
@@ -424,6 +455,9 @@ cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=macosx -B bu
 #### 2. 编译第三方依赖（deps）
 
 第三方通过自定义目标 `deps` / `third-party` 构建。配置完成后：
+
+默认 AUTO 优先复用固定版本 zip，下载成功时 `deps` 不再编译依赖；
+只有下载不可用或目标没有对应包时才构建源码。SOURCE 可强制源码构建。
 
 ```sh
 # 以 Windows Debug 为例

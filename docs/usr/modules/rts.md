@@ -57,8 +57,8 @@ RTS 的持久主体 ID 是 UUID；例子的值用于独立演示，项目要给�
 
 不要直接在 inspectState 返回表上改单位位置来发命令，它是观察结果。生产队列扣款、
 完成、取消与失败按 RTS/Production 域接口处理；不能又手动从 Economy 扣同一笔资源。
-测试 [rts_script.cpp](../../../test/rts_script.cpp) 覆盖支付后产出和帧回调身份，
-[rts_crowd_production.cpp](../../../test/rts_crowd_production.cpp) 验证组合。
+测试 [rts_script.cpp](../../../test/integration/gameplay-composition/gameplay_composition_graphics_rts_script_tests.cpp) 覆盖支付后产出和帧回调身份，
+[rts_crowd_production.cpp](../../../test/integration/rts-unit-lifecycle/rts_unit_lifecycle_tactics_rts_tests.cpp) 验证组合。
 
 ## 重载、保存与失败
 
