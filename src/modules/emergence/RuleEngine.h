@@ -23,7 +23,8 @@ namespace eve::emergence {
 
 namespace proto {
 class RuleEngineSave;
-}
+class RuleCatalogueSave;
+}  // namespace proto
 
 /** @brief Handle domain for module-owned rule engines. */
 struct RuleEngineHandleTag {};
@@ -65,9 +66,25 @@ public:
      */
     [[nodiscard]] eve::Result<int> replaceCatalogue(std::vector<RuleDefinition> rules);
 
+    /** @brief Serialize the current typed rule catalogue as versioned Protobuf.
+     * @return Deterministic bytes, or a structured serialization failure.
+     * @cost Linear in rule, condition, watch-key and action payload sizes.
+     * @thread Owning simulation thread only. */
+    [[nodiscard]] eve::Result<std::string> snapshotCatalogueBinary() const;
+    /** @brief Export the typed catalogue as Protobuf JSON for tools and compatibility.
+     * @return UTF-8 Protobuf JSON, or a structured serialization failure.
+     * @cost Linear in catalogue payload size per export.
+     * @thread Owning simulation thread only. */
+    [[nodiscard]] eve::Result<std::string> snapshotCatalogueJson() const;
+    /** @brief Validate and atomically replace rules from typed Protobuf bytes.
+     * @return Committed rule count, or failure preserving the prior catalogue.
+     * @cost Linear in catalogue bytes and condition tree size.
+     * @thread Owning simulation thread only. */
+    [[nodiscard]] eve::Result<int> replaceCatalogueBinary(std::string_view bytes);
+
     /**
-     * @brief Replace the catalogue from a versioned JSON document.
-     * @param json UTF-8 `eve.emergence.rules` version 1 document.
+     * @brief Compatibility JSON import for Protobuf version 2 or legacy version 1.
+     * @param json UTF-8 `eve.emergence.rules` document.
      * @return Committed rule count, or structured failure preserving the prior catalogue.
      */
     [[nodiscard]] eve::Result<int> replaceCatalogueJson(std::string_view json);
@@ -174,6 +191,8 @@ public:
     [[nodiscard]] eve::Result<void> restoreJson(std::string_view json);
 
 private:
+    [[nodiscard]] eve::Result<void> captureCatalogueMessage(proto::RuleCatalogueSave& save) const;
+    [[nodiscard]] eve::Result<int>  replaceCatalogueMessage(const proto::RuleCatalogueSave& save);
     [[nodiscard]] eve::Result<void> captureMessage(proto::RuleEngineSave& save) const;
     [[nodiscard]] eve::Result<void> restoreMessage(const proto::RuleEngineSave& save);
     struct RuleRuntime {

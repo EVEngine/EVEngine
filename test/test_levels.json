@@ -968,7 +968,8 @@
       "cases": {
         "module-composition": [
           "emergence.factStoreTypedProtobufRoundTripAndLegacyImport",
-          "emergence.ruleEngineTypedProtobufRestoresAtomically"
+          "emergence.ruleEngineTypedProtobufRestoresAtomically",
+          "emergence.ruleCatalogueTypedProtobufAndLegacyJson"
         ]
       },
       "module": "emergence",

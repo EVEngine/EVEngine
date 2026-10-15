@@ -369,10 +369,14 @@ if(TARGET EVDecision)
 endif()
 
 if(TARGET EVEmergence)
-  target_sources(EVEmergence PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/emergence_runtime.pb.cc)
+  target_sources(EVEmergence PRIVATE
+    ${CMAKE_SOURCE_DIR}/proto/generated/emergence_runtime.pb.cc
+    ${CMAKE_SOURCE_DIR}/proto/generated/emergence_catalogue.pb.cc)
   target_include_directories(EVEmergence SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
   if(MSVC)
     set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/emergence_runtime.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/emergence_catalogue.pb.cc
       PROPERTIES COMPILE_OPTIONS /wd4267)
   endif()
   target_link_libraries(EVEmergence PUBLIC protobuf::libprotobuf)

@@ -7,6 +7,7 @@
 #include "common/Diagnostic.h"
 #include "common/IEconomy.h"
 #include "common/IEmergenceActionHandler.h"
+#include "emergence_catalogue.pb.h"
 #include "emergence_runtime.pb.h"
 
 #include <google/protobuf/util/json_util.h>
@@ -126,6 +127,10 @@ eve::Result<int> RuleEngine::replaceCatalogue(std::vector<RuleDefinition> rules)
 }
 
 eve::Result<int> RuleEngine::replaceCatalogueJson(std::string_view json) {
+    proto::RuleCatalogueSave typed;
+    if (google::protobuf::util::JsonStringToMessage(std::string(json), &typed).ok() && typed.has_schema() &&
+        typed.schema() == "eve.emergence.rules" && typed.has_version() && typed.version() == 2)
+        return replaceCatalogueMessage(typed);
     auto parsed = eve::Value::fromJson(json);
     if (!parsed) return eve::Result<int>::failure(parsed.status());
     const auto* root = parsed.value().getIf<eve::Value::Object>();

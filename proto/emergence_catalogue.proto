@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package eve.emergence.proto;
+
+import "dynamic_value.proto";
+
+// Version 2 is the canonical typed rules catalogue; version-1 JSON is import-only.
+message RuleCatalogueSave {
+  optional string schema = 1;
+  optional uint32 version = 2;
+  repeated RuleDefinition rules = 3;
+}
+
+enum RuleFireMode {
+  RISING = 0;
+  LEVEL = 1;
+}
+
+message RuleDefinition {
+  optional string id = 1;
+  optional sint32 priority = 2;
+  optional RuleFireMode fire_mode = 3;
+  optional bool once = 4;
+  optional uint64 cooldown_ticks = 5;
+  Condition condition = 6;
+  repeated string watch_keys = 7;
+  repeated Action actions = 8;
+}
+
+message Action {
+  optional string kind = 1;
+  eve.persistence.proto.DynamicValue args = 2;
+}
+
+enum ConditionKind {
+  ALL = 0;
+  ANY = 1;
+  NOT = 2;
+  COMPARE = 3;
+  HAS_TAG = 4;
+  HAS_ATTRIBUTE = 5;
+  HAS_RESOURCE = 6;
+  STATE_EQUALS = 7;
+  AUTHORITY_CHECK = 8;
+  POLICY_CALL = 9;
+}
+
+enum CompareOperator {
+  EQUAL = 0;
+  NOT_EQUAL = 1;
+  LESS = 2;
+  LESS_EQUAL = 3;
+  GREATER = 4;
+  GREATER_EQUAL = 5;
+}
+
+enum DeterminismLevel {
+  BIT_EXACT = 0;
+  TICK_DETERMINISTIC = 1;
+  TOLERANCE_BOUNDED = 2;
+  EXPLICITLY_NONDETERMINISTIC = 3;
+}
+
+message ScriptConditionDeclaration {
+  optional string name = 1;
+  repeated string dependencies = 2;
+  optional DeterminismLevel determinism = 3;
+}
+
+message Condition {
+  optional ConditionKind kind = 1;
+  repeated Condition children = 2;
+  optional string key = 3;
+  optional CompareOperator operator = 4;
+  eve.persistence.proto.DynamicValue expected = 5;
+  eve.persistence.proto.DynamicValue arguments = 6;
+  ScriptConditionDeclaration script_declaration = 7;
+}

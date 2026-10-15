@@ -17,6 +17,7 @@ PROTO_GROUPS = {
     "authority_store.proto": "FOUNDATION",
     "decision_context.proto": "FOUNDATION",
     "emergence_runtime.proto": "FOUNDATION",
+    "emergence_catalogue.proto": "FOUNDATION",
     "definitions_registry.proto": "FOUNDATION",
     "game_save_session.proto": "FOUNDATION",
     "game_event_stream.proto": "FOUNDATION",

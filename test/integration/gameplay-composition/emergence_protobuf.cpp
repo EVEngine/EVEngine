@@ -1,6 +1,7 @@
 #include "decision/Condition.h"
 #include "emergence/FactStore.h"
 #include "emergence/RuleEngine.h"
+#include "emergence_catalogue.pb.h"
 #include "emergence_runtime.pb.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -94,4 +95,68 @@ TEST_CASE("emergence.ruleEngineTypedProtobufRestoresAtomically") {
                 R"({"schema":"eve.emergence.runtime","version":1,"facts":{"schema":"eve.emergence.facts","version":1,"tags":{"go":true}},"rules":[{"id":"gate","passed":false,"fired":false,"disabled":false,"cooldownUntil":0}]})")
             .ok());
     CHECK_EQ(restored.facts().hasTag("go"), std::optional<bool>(true));
+}
+
+TEST_CASE("emergence.ruleCatalogueTypedProtobufAndLegacyJson") {
+    eve::decision::ScriptConditionDeclaration declaration;
+    declaration.name         = "safe";
+    declaration.dependencies = {"tag:ready"};
+    declaration.determinism  = eve::decision::DeterminismLevel::TickDeterministic;
+    eve::emergence::RuleDefinition rule;
+    rule.id            = "gate";
+    rule.priority      = -3;
+    rule.fireMode      = eve::emergence::FireMode::Level;
+    rule.once          = true;
+    rule.cooldownTicks = 42;
+    rule.condition     = eve::decision::Condition::all(
+        {eve::decision::Condition::compare("score", eve::decision::CompareOperator::GreaterEqual, eve::Value(7)),
+             eve::decision::Condition::stateEquals("phase", eve::Value("active")),
+             eve::decision::Condition::policyCall("safe", eve::Value::Object{{"strict", eve::Value(true)}}, declaration)});
+    rule.actions.push_back({"emit", eve::Value::Object{{"name", eve::Value("opened")}}});
+    eve::emergence::RuleEngine source;
+    REQUIRE(source.replaceCatalogue({rule}).ok());
+    auto bytes = source.snapshotCatalogueBinary();
+    REQUIRE(bytes.ok());
+    CHECK_EQ(source.snapshotCatalogueBinary().expect("deterministic catalogue"), bytes.value());
+
+    eve::emergence::RuleEngine restored;
+    REQUIRE(restored.replaceCatalogueBinary(bytes.value()).ok());
+    CHECK_EQ(restored.snapshotCatalogueBinary().expect("catalogue round trip"), bytes.value());
+    REQUIRE(restored.find("gate") != nullptr);
+    CHECK_EQ(restored.find("gate")->priority, -3);
+    const auto* actionName = restored.find("gate")->actions.front().args.find("name");
+    REQUIRE(actionName != nullptr);
+    CHECK_EQ(actionName->asString(), "opened");
+
+    eve::emergence::proto::RuleCatalogueSave malformed;
+    REQUIRE(malformed.ParseFromString(bytes.value()));
+    malformed.mutable_rules(0)
+        ->mutable_condition()
+        ->GetReflection()
+        ->MutableUnknownFields(malformed.mutable_rules(0)->mutable_condition())
+        ->AddVarint(101, 1);
+    std::string unknown;
+    REQUIRE(malformed.SerializeToString(&unknown));
+    CHECK(!restored.replaceCatalogueBinary(unknown).ok());
+    CHECK_EQ(restored.snapshotCatalogueBinary().expect("catalogue unchanged"), bytes.value());
+
+    eve::emergence::proto::RuleCatalogueSave future;
+    REQUIRE(future.ParseFromString(bytes.value()));
+    future.set_version(3);
+    std::string futureBytes;
+    REQUIRE(future.SerializeToString(&futureBytes));
+    CHECK(!restored.replaceCatalogueBinary(futureBytes).ok());
+    CHECK_EQ(restored.snapshotCatalogueBinary().expect("future catalogue unchanged"), bytes.value());
+
+    auto json = source.snapshotCatalogueJson();
+    REQUIRE(json.ok());
+    REQUIRE(restored.replaceCatalogueJson(json.value()).ok());
+    CHECK_EQ(restored.snapshotCatalogueBinary().expect("Protobuf JSON catalogue"), bytes.value());
+
+    REQUIRE(
+        restored
+            .replaceCatalogueJson(
+                R"({"schema":"eve.emergence.rules","version":1,"rules":[{"id":"legacy","condition":{"kind":"has_tag","key":"ready"}}]})")
+            .ok());
+    CHECK(restored.contains("legacy"));
 }
