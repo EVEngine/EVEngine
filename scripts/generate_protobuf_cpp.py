@@ -18,6 +18,7 @@ PROTO_GROUPS = {
     "decision_context.proto": "FOUNDATION",
     "definitions_registry.proto": "FOUNDATION",
     "game_save_session.proto": "FOUNDATION",
+    "game_event_stream.proto": "FOUNDATION",
     "inventory_save.proto": "FOUNDATION",
     "policy_registry.proto": "FOUNDATION",
     "snapshot_envelope.proto": "FOUNDATION",

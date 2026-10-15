@@ -366,17 +366,50 @@ public:
     void clear();
     /** @brief Removes all state and restarts sequence allocation at one. */
     void reset();
-    /** @brief Exports stream state as deterministic compact JSON. */
+    /** @brief Compatibility-only deterministic JSON projection; use snapshotBinary for persistence. */
     std::string snapshotJson() const;
     /**
-     * @brief Transactionally restores stream state from a snapshot.
+     * @brief Serializes fixed event-stream metadata with the versioned Protobuf schema.
+     * @return Binary snapshot bytes; event payloads remain domain-owned wire data.
+     * @cost Linear in the retained event count and payload bytes.
+     * @thread GameEventLog owner thread; no callbacks are invoked.
+     */
+    [[nodiscard]] eve::Result<std::string> snapshotBinary() const;
+    /**
+     * @brief Restores a Protobuf event-stream snapshot atomically.
+     * @param bytes Versioned binary stream snapshot.
+     * @return Success, or a parse/validation failure leaving the log unchanged.
+     * @cost Linear in the retained event count and payload bytes.
+     * @thread GameEventLog owner thread; no callbacks are invoked.
+     */
+    [[nodiscard]] eve::Result<void> restoreBinary(std::string_view bytes);
+    /**
+     * @brief Captures the typed stream in a hashed Protobuf binary envelope.
+     * @param hashProvider Digest provider for deterministic envelope bytes.
+     * @return Version 3 binary envelope suitable for persistent storage.
+     * @cost Linear in retained event count and payload bytes, plus one digest.
+     * @thread GameEventLog owner thread; invokes only the supplied hash provider.
+     */
+    [[nodiscard]] eve::Result<std::string> snapshotEnvelopeBinary(const eve::SnapshotHashProvider& hashProvider) const;
+    /**
+     * @brief Verifies and atomically restores a typed stream envelope.
+     * @param bytes Binary envelope bytes.
+     * @param hashProvider Provider used to verify the content digest.
+     * @return Success, or a failure that preserves stream state and cursors.
+     * @cost Linear in envelope size and event count, plus one digest.
+     * @thread GameEventLog owner thread; invokes only the supplied hash provider.
+     */
+    [[nodiscard]] eve::Result<void> restoreSnapshotBinary(std::string_view                 bytes,
+                                                          const eve::SnapshotHashProvider& hashProvider);
+    /**
+     * @brief Transactionally imports a legacy JSON stream snapshot.
      * @param json Snapshot produced by snapshotJson().
      * @return Success, or structured parse/validation failure; failure leaves
      *         all retained events, consumers and sequence allocation unchanged.
      */
     [[nodiscard]] eve::Result<void> restore(std::string_view json);
 
-    /** @brief Captures the stream payload in the common snapshot envelope. */
+    /** @brief Compatibility-only Value envelope; use snapshotEnvelopeBinary for persistence. */
     [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(const eve::SnapshotHashProvider& hashProvider) const;
     /**
      * @brief Restores a verified or migrated stream envelope atomically.
@@ -386,7 +419,7 @@ public:
      */
     [[nodiscard]] eve::Result<void> restoreSnapshot(const eve::SnapshotEnvelope&     snapshot,
                                                     const eve::SnapshotHashProvider& hashProvider);
-    /** @brief Serializes the common event-stream snapshot envelope. */
+    /** @brief Compatibility-only JSON envelope; use snapshotEnvelopeBinary for persistence. */
     [[nodiscard]] eve::Result<std::string> snapshotEnvelopeJson(const eve::SnapshotHashProvider& hashProvider) const;
     /** @brief Parses and transactionally restores a common event-stream envelope. */
     [[nodiscard]] eve::Result<void> restoreSnapshotJson(std::string_view                 json,

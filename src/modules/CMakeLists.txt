@@ -334,6 +334,11 @@ if(TARGET EVDefinitions)
   target_link_libraries(EVDefinitions PUBLIC protobuf::libprotobuf)
 endif()
 
+if(TARGET EVGame_event)
+  target_include_directories(EVGame_event SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  target_link_libraries(EVGame_event PUBLIC protobuf::libprotobuf)
+endif()
+
 if(TARGET EVDecision)
   target_sources(EVDecision PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/decision_context.pb.cc)
   target_include_directories(EVDecision SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)

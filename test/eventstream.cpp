@@ -3,6 +3,7 @@
 
 #include "GameEventTestSupport.h"
 #include "common/Module.h"
+#include "common/SnapshotHash.h"
 #include "game_event/GameEvent.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -114,6 +115,36 @@ TEST_CASE("game_event.snapshot.roundTripsDeterministically") {
     const std::string unknownField   = snapshot.substr(0, snapshot.size() - 1) + ",\"unexpected\":true}";
     auto              schemaRejected = restored.restore(unknownField);
     CHECK(!schemaRejected.ok());
+    CHECK_EQ(restored.snapshotJson(), before);
+
+    const auto hash     = eve::snapshotContentHashProvider();
+    auto       envelope = original.snapshotEnvelopeBinary(hash);
+    REQUIRE(envelope.ok());
+    GameEventLog sealed;
+    REQUIRE(sealed.restoreSnapshotBinary(envelope.value(), hash).ok());
+    CHECK_EQ(sealed.snapshotJson(), original.snapshotJson());
+    std::string tampered = envelope.value();
+    tampered.back() ^= 1;
+    CHECK(!sealed.restoreSnapshotBinary(tampered, hash).ok());
+    CHECK_EQ(sealed.snapshotJson(), original.snapshotJson());
+}
+
+TEST_CASE("game_event.protobuf.roundTripAndAtomicFailure") {
+    GameEventLog original;
+    CHECK_EQ(appendSuccess(original, 1, "created", "system", "unit-1", "", "flow-1", 9, 3, "{\"value\":42}"),
+             uint64_t{1});
+    auto binary = original.snapshotBinary();
+    REQUIRE(binary.ok());
+    GameEventLog restored;
+    REQUIRE(restored.restoreBinary(binary.value()).ok());
+    REQUIRE(restored.find(1) != nullptr);
+    CHECK_EQ(restored.find(1)->payload, std::string("{\"value\":42}"));
+    CHECK_EQ(restored.find(1)->tick.value(), uint64_t{9});
+    auto repeated = restored.snapshotBinary();
+    REQUIRE(repeated.ok());
+    CHECK_EQ(repeated.value(), binary.value());
+    const std::string before = restored.snapshotJson();
+    CHECK(!restored.restoreBinary("invalid").ok());
     CHECK_EQ(restored.snapshotJson(), before);
 }
 

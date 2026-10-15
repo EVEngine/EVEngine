@@ -329,7 +329,7 @@ endif()
 
 # Generated Protobuf headers are third-party output and carry upstream MSVC
 # conversion warnings; direct test includes must use the system include path.
-foreach(_eve_proto_test_target IN ITEMS unit_test_game_save unit_test_decision unit_test_rpg unit_test_tactics_rts unit_test)
+foreach(_eve_proto_test_target IN ITEMS unit_test_core unit_test_game_save unit_test_decision unit_test_rpg unit_test_tactics_rts unit_test)
   if(TARGET ${_eve_proto_test_target})
     target_include_directories(${_eve_proto_test_target} SYSTEM PRIVATE
       ${CMAKE_SOURCE_DIR}/proto/generated)
@@ -757,6 +757,27 @@ if(TARGET EVCommon AND TARGET EVFoundation)
   endif()
   zeroerr_discover_tests(protobuf_snapshot_test
     LABEL "protobuf_snapshot_test" NAME_PREFIX "protobuf-snapshot/")
+endif()
+
+if(TARGET EVGame_event AND TARGET EVFoundation)
+  add_executable(game_event_protobuf_test EXCLUDE_FROM_ALL
+    main.cpp game_event_protobuf.cpp)
+  target_link_libraries(game_event_protobuf_test PRIVATE
+    eve_engine_includes EVFoundation zeroerr protobuf::libprotobuf)
+  target_include_directories(game_event_protobuf_test SYSTEM PRIVATE
+    ${CMAKE_SOURCE_DIR}/proto/generated)
+  target_compile_options(game_event_protobuf_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(game_event_protobuf_test PRIVATE EVBacktrace)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/game_event_protobuf_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/game_event_protobuf_test_zeroerr_tests.cmake"
+      "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(game_event_protobuf_test
+    LABEL "game_event_protobuf_test" NAME_PREFIX "game-event-protobuf/")
 endif()
 
 if(TARGET EVStatepatch AND TARGET EVFoundation)
