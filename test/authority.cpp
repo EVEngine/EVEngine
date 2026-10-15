@@ -121,6 +121,20 @@ TEST_CASE("authority.snapshot.protobufRoundTripAndFailedRestoreAreTransactional"
     CHECK_EQ(restored.snapshotJson(), before);
 }
 
+TEST_CASE("authority.snapshot.legacyJsonIsReadButRewrittenWithProtobufSchema") {
+    const std::string legacy =
+        R"({"version":1,"nextId":"2","nextOrder":"2","nextSequence":"2","rules":[{"id":"authority-0000000000000001","actor":"actor","scope":"scene","capability":"edit","source":"role","effect":"grant","priority":3,"duration":0,"remaining":-1,"order":"1"}]})";
+    Store restored;
+    REQUIRE(restored.restoreJson(legacy).ok());
+    CHECK(restored.can("actor", "scene", "edit"));
+    const auto rewritten = restored.snapshotJson();
+    CHECK(rewritten.find("authority:store") != std::string::npos);
+    CHECK(rewritten != legacy);
+    Store copy;
+    REQUIRE(copy.restoreJson(rewritten).ok());
+    CHECK(copy.can("actor", "scene", "edit"));
+}
+
 TEST_CASE("authority.input.invalidFactsDoNotMutate") {
     Store store;
     CHECK(store.grant("", "scope", "read", "source").empty());

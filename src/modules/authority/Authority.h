@@ -107,7 +107,10 @@ public:
     const Event* eventAt(int index) const;
     /** @brief Clears retained events without resetting sequence allocation. */
     void clearEvents();
-    /** @brief Exports persistent state as deterministic compact JSON. */
+    /**
+     * @brief Compatibility-only JSON projection of the typed version-2 Protobuf snapshot.
+     * @return Protobuf JSON, or an empty string on serialization failure; use snapshotBinary() for a structured result.
+     */
     std::string snapshotJson() const;
     /**
      * @brief Encodes the typed authority-store schema as Protobuf wire bytes.
@@ -125,7 +128,7 @@ public:
      */
     [[nodiscard]] eve::Result<void> restoreBinary(std::string_view bytes);
     /**
-     * @brief Transactionally restores a snapshot produced by snapshotJson().
+     * @brief Transactionally restores Protobuf JSON or a legacy version-1 snapshot.
      * @param json Snapshot JSON to parse and validate.
      * @return Success, or a structured parse/invariant diagnostic; failure
      *         leaves every observable store field unchanged.

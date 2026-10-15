@@ -4,6 +4,7 @@
 #include "common/Json.h"
 #include "common/SquirrelBinding.h"
 
+#include <google/protobuf/util/json_util.h>
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <algorithm>
@@ -44,26 +45,6 @@ ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&
     result.set("ownerEpoch", static_cast<std::int64_t>(ref.ownerEpoch));
     result.set("handle", static_cast<std::int64_t>(ref.packed()));
     return result;
-}
-
-std::string quote(const std::string& value) {
-    std::ostringstream out;
-    out << '"';
-    for (unsigned char c : value) {
-        switch (c) {
-            case '"': out << "\\\""; break;
-            case '\\': out << "\\\\"; break;
-            case '\n': out << "\\n"; break;
-            case '\r': out << "\\r"; break;
-            case '\t': out << "\\t"; break;
-            default:
-                if (c < 0x20)
-                    out << "\\u" << std::hex << std::setw(4) << std::setfill('0') << int(c) << std::dec;
-                else
-                    out << static_cast<char>(c);
-        }
-    }
-    return out.str() + '"';
 }
 
 bool parseU64(const eve::json::Value& value, uint64_t& output) {
@@ -349,24 +330,25 @@ eve::Result<void> Store::restoreBinary(std::string_view bytes) {
 }
 
 std::string Store::snapshotJson() const {
-    std::ostringstream out;
-    out << "{\"version\":1,\"nextId\":" << quote(std::to_string(nextId_))
-        << ",\"nextOrder\":" << quote(std::to_string(nextOrder_))
-        << ",\"nextSequence\":" << quote(std::to_string(nextSequence_)) << ",\"rules\":[";
-    bool first = true;
-    for (const auto& rule : rules_) {
-        if (!first) out << ',';
-        first = false;
-        out << "{\"id\":" << quote(rule.id) << ",\"actor\":" << quote(rule.actor) << ",\"scope\":" << quote(rule.scope)
-            << ",\"capability\":" << quote(rule.capability) << ",\"source\":" << quote(rule.source)
-            << ",\"effect\":" << quote(effectName(rule.effect)) << ",\"priority\":" << rule.priority
-            << ",\"duration\":" << std::setprecision(17) << rule.duration << ",\"remaining\":" << rule.remaining
-            << ",\"order\":" << quote(std::to_string(rule.order)) << '}';
-    }
-    return out.str() + "]}";
+    auto bytes = snapshotBinary();
+    if (!bytes.ok()) return {};
+    eve::authority::proto::AuthorityStoreSave save;
+    if (!save.ParseFromString(bytes.value())) return {};
+    std::string json;
+    return google::protobuf::util::MessageToJsonString(save, &json).ok() ? json : std::string{};
 }
 
 eve::Result<void> Store::restoreJson(const std::string& json) {
+    eve::authority::proto::AuthorityStoreSave save;
+    if (google::protobuf::util::JsonStringToMessage(json, &save).ok() && save.has_schema()) {
+        std::string bytes;
+        if (!save.SerializeToString(&bytes))
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid authority Protobuf JSON"));
+        return restoreBinary(bytes);
+    }
+
+    // Version 1 is read only. New snapshots are emitted from the Protobuf schema.
     std::string parseError;
     auto        document = eve::json::Document::parse(json, &parseError);
     const auto root     = document.root();
@@ -429,7 +411,7 @@ eve::Result<void> Store::restoreJson(const std::string& json) {
 eve::Result<eve::SnapshotEnvelope> Store::snapshot(const eve::SnapshotHashProvider& hashProvider) const {
     auto payload = eve::Value::fromJson(snapshotJson());
     if (!payload.ok()) return eve::Result<eve::SnapshotEnvelope>::failure(payload.status());
-    return eve::makeSnapshotEnvelope("authority.store", authoritySchema(), eve::SchemaVersion(1), instanceId_,
+    return eve::makeSnapshotEnvelope("authority.store", authoritySchema(), eve::SchemaVersion(2), instanceId_,
                                      revision_, tick_, std::move(payload).takeValue(), hashProvider);
 }
 
@@ -442,7 +424,8 @@ eve::Result<void> Store::restoreSnapshot(const eve::SnapshotEnvelope&     source
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Conflict, "snapshot instanceId does not match authority::Store"));
 
-    auto migrated = authorityMigrations().migrate(source, eve::SchemaVersion(1), hashProvider);
+    auto migrated = authorityMigrations().migrate(source, eve::SchemaVersion(source.schemaVersion.value() == 2 ? 2 : 1),
+                                                  hashProvider);
     if (!migrated.ok()) return eve::Result<void>::failure(migrated.status());
     const auto& candidate = migrated.value();
     auto        metadata  = eve::validateSnapshotPayloadMetadata(candidate.payload, candidate.revision, candidate.tick);
