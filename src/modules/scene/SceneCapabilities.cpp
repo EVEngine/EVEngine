@@ -2,6 +2,7 @@
 #include "common/EntitySpatialResolver.h"
 #include "common/ProcgenSceneSink.h"
 #include "common/SceneQuery.h"
+#include "common/TransformEuler.h"
 #include "scene/Scene.h"
 #include "scene/SceneHost.h"
 #include "scene/SceneObject.h"
@@ -70,7 +71,10 @@ public:
         glm::vec4 perspective;
         if (!glm::decompose(node.value()->world, scale, rotation, translation, skew, perspective))
             return failure(eve::DiagnosticCode::Failed, "scene world transform could not be decomposed", "entity");
-        const glm::vec3 euler = glm::degrees(glm::eulerAngles(rotation));
+        float yaw = 0.f, pitch = 0.f, roll = 0.f;
+        eve::eulerYxzFromQuat(rotation, yaw, pitch, roll);
+        // rotationX/Y/Z keep meaning rotation about X/Y/Z, i.e. pitch/yaw/roll.
+        const glm::vec3 euler = glm::degrees(glm::vec3(pitch, yaw, roll));
         return eve::Result<eve::EntitySpatialPose>::success({translation.x, translation.y, translation.z,
                                                               euler.x, euler.y, euler.z,
                                                               scale.x, scale.y, scale.z});

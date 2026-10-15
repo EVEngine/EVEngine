@@ -12,9 +12,7 @@
 extern const char* simplesquirrel_content;
 UnitSciptTest(SimpleSquirrelTest, simplesquirrel_content);
 
-TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.ExportClass") {
-    CHECK(vm.callFunc(vm.findFunc("exportClass"), vm).toBool());
-}
+TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.ExportClass") { REQUIRE(callScript("exportClass")); }
 
 class A {
 public:
@@ -70,7 +68,7 @@ void B::expose(ssq::Class& cls) {
 TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.RefTest") {
     A::expose(vm);
     B::expose(vm);
-    CHECK(vm.callFunc(vm.findFunc("refTest"), vm).toBool());
+    REQUIRE(callScript("refTest"));
 }
 
 #if !(defined(__APPLE__) && defined(NDEBUG))
@@ -108,7 +106,7 @@ TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.TestDefClass") {
     ssq::Object obj = cls.find("attr1");
     ssq::Class attr = obj.toClass();
 
-    CHECK(vm.callFunc(vm.findFunc("testDefClass"), vm).toBool());
+    REQUIRE(callScript("testDefClass"));
 }
 #endif
 
@@ -147,9 +145,7 @@ TEST_CASE("SimpleSquirrelTest.PerformInteration") {
 }
 
 
-TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.GetterTest") {
-    CHECK(vm.callFunc(vm.findFunc("getterTest"), vm).toBool());
-}
+TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.GetterTest") { REQUIRE(callScript("getterTest")); }
 
 
 TEST_CASE("SimpleSquirrelTest.GetAttr") {
@@ -189,4 +185,89 @@ TEST_CASE("SimpleSquirrelTest.GetAttr") {
     REQUIRE(sq_gettype(v, -1) == OT_NULL);
     sq_pop(v, 2);
     REQUIRE(sq_gettop(v) == initialTop);
+}
+
+// ---------------------------------------------------------------------------
+// Instance `_get` / `_set` metamethods.
+//
+// The plan's step 2 makes the engine the authoritative store for script component
+// fields. Whether that forces every script to switch to setters depends on these
+// three VM behaviours, so they are pinned here rather than assumed.
+// ---------------------------------------------------------------------------
+
+TEST_CASE("SimpleSquirrelTest.InstanceGetAndSetMetamethodsAreConsulted") {
+    ssq::VM vm(128);
+    vm.run(vm.compileSource(R"(
+        class Probe {
+            log = ""
+            function _get(key) { log = "get:" + key; return 42 }
+            function _set(key, value) { log = "set:" + key + ":" + value; return value }
+        }
+        probe <- Probe()
+        readMissing <- probe.missing
+        probe.other = 7
+        writeLog <- probe.log
+    )"));
+
+    // 未声明的成员读写都落到元方法上。
+    REQUIRE_EQ(vm.find("readMissing").toInt(), 42);
+    REQUIRE_EQ(vm.find("writeLog").toString(), std::string("set:other:7"));
+}
+
+TEST_CASE("SimpleSquirrelTest.DeclaredFieldShadowsTheMetamethods") {
+    ssq::VM vm(128);
+    vm.run(vm.compileSource(R"(
+        class Probe {
+            x = 0.0
+            calls = 0
+            function _get(key) { calls = calls + 1; return 99.0 }
+            function _set(key, value) { calls = calls + 1 }
+        }
+        probe <- Probe()
+        declaredRead <- probe.x
+        probe.x = 5.0
+        declaredReread <- probe.x
+        calls <- probe.calls
+    )"));
+
+    // 声明过的字段走实例槽位，元方法完全不会被调用：这正是"字段留在类里"就没法让引擎当权威的原因。
+    REQUIRE_EQ(vm.find("declaredRead").toFloat(), 0.0);
+    REQUIRE_EQ(vm.find("declaredReread").toFloat(), 5.0);
+    REQUIRE_EQ(vm.find("calls").toInt(), 0);
+}
+
+TEST_CASE("SimpleSquirrelTest.RemovingAClassFieldFallsThroughToTheMetamethods") {
+    // 结论性的一条：把一个已声明的字段从**类**的成员表里摘掉之后，同名成员的读写是否就落到
+    // 元方法上？若是，引擎就能在登记组件时"取走字段名与默认值、再把槽位摘掉"，从而既让引擎
+    // 持有权威数据，又**不改用户脚本的 `e.pos.x` 写法**。
+    ssq::VM vm(128);
+    vm.run(vm.compileSource(R"(
+        class Probe {
+            x = 0.0
+            log = ""
+            function _get(key) { log = "get:" + key; return 99.0 }
+            function _set(key, value) { log = "set:" + key; return value }
+        }
+        probe <- Probe()
+    )"));
+
+    HSQUIRRELVM v   = vm.getHandle();
+    const auto  top = sq_gettop(v);
+    sq_pushroottable(v);
+    sq_pushstring(v, "probe", -1);
+    REQUIRE(SQ_SUCCEEDED(sq_get(v, -2)));
+    SQObjectPtr instance;
+    sq_getstackobj(v, -1, &instance);
+    REQUIRE(sq_gettype(v, -1) == OT_INSTANCE);
+    _class(instance)->_members->Remove(SQObjectPtr(SQString::Create(_ss(v), "x")));
+    sq_settop(v, top);
+
+    vm.run(vm.compileSource(R"(
+        afterRead <- probe.x
+        probe.x = 5.0
+        afterLog <- probe.log
+    )"));
+
+    REQUIRE_EQ(vm.find("afterRead").toFloat(), 99.0);                  // 读到的是元方法给的值
+    REQUIRE_EQ(vm.find("afterLog").toString(), std::string("set:x"));  // 写入也走了元方法
 }

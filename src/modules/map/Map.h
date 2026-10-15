@@ -33,7 +33,7 @@ public:
     /** @brief Map. */
     Map();
     /** @brief Map. */
-    ~Map() override = default;
+    ~Map() override;
 
     /** @brief Creates a layer. @ownership Caller deletes unless documented otherwise. */
     TileLayer *newLayer(int mapW, int mapH, float tileW = 32.f, float tileH = 32.f);

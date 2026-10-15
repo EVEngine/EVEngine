@@ -9,45 +9,35 @@
 #include "devtools/Snapshot.hpp"
 #include "scripts.h"
 
+#include <iostream>
 #include <simplesquirrel/simplesquirrel.hpp>
 
 namespace {
 
+/**
+ * @brief The production state-migration helpers, taken verbatim from the bootstrap.
+ *
+ * These used to be a hand-written mirror in this file, which meant the test could keep
+ * passing while `load.nut`'s real helper diverged -- and it did: the production version
+ * silently copied nothing for a while because `n[k] <- v` throws for a dynamic key on a
+ * class instance (plan doc 9.21.1). Slicing the two functions out of `eve::load_content`
+ * makes the test execute the same source scripts run, and a rename or a rewrite in
+ * load.nut fails the reload cases instead of drifting unnoticed.
+ *
+ * The whole bootstrap cannot simply be run here: its top level reads config.nut,
+ * instantiates modules, opens a window and drives frames.
+ */
+std::string migrationHelpersSource() {
+    const std::string source(eve::load_content);
+    const size_t      begin = source.find("function migrate_instance(");
+    const size_t      remap = source.find("function remap_instances(");
+    if (begin == std::string::npos || remap == std::string::npos || remap < begin) return {};
+    const size_t end = source.find("\n}\n", remap);
+    if (end == std::string::npos) return {};
+    return source.substr(begin, end - begin + 3);
+}
+
 const char* kReloadScript = R"(
-// Mirror of the load.nut migrate_instance helper (tables fully; class
-// instances via their declared members).
-function migrate_inst(old, NewClass) {
-    local n = NewClass();
-    if (old == null) return n;
-    if (typeof old == "table") {
-        foreach (k, v in old) {
-            try { n[k] <- v; } catch (e) {}
-        }
-        return n;
-    }
-    if (typeof old != "instance") return n;
-    foreach (k, v in getclass(old)) {
-        if (typeof v == "function") continue;
-        try { n[k] <- old[k]; } catch (e) {}
-    }
-    return n;
-}
-
-function remap_inst(container, NewClass) {
-    if (typeof container == "array") {
-        for (local i = 0; i < container.len(); ++i) {
-            container[i] = migrate_inst(container[i], NewClass);
-        }
-    } else if (typeof container == "table") {
-        local keys = [];
-        foreach (k, v in container) keys.append(k);
-        foreach (k in keys) {
-            container[k] = migrate_inst(container[k], NewClass);
-        }
-    }
-    return container;
-}
-
 function reloadProtocolKeepsOldValuesAndNewFields() {
     eve.dev.clearStateRoots();
     getroottable().gameState <- { level = 3, hero = "alice" };
@@ -100,7 +90,7 @@ function migrateInstanceCopiesFieldsAndKeepsDefaults() {
     local old = HeroV1();
     old.level = 5;
     old.name = "alice";
-    local n = migrate_inst(old, HeroV2);
+    local n = migrate_instance(old, HeroV2);
     return n.level == 5 && n.name == "alice" && n.title == "novice";
 }
 
@@ -111,7 +101,7 @@ function migrateInstanceFromTable() {
         title = "novice";
     }
     local t = { level = 9, name = "bob" };
-    local n = migrate_inst(t, HeroV2);
+    local n = migrate_instance(t, HeroV2);
     return n.level == 9 && n.name == "bob" && n.title == "novice";
 }
 
@@ -126,7 +116,7 @@ function remapInstancesContainer() {
     local arr = [ItemV1(), ItemV1()];
     arr[0].id = "a";
     arr[1].id = "b";
-    remap_inst(arr, ItemV2);
+    remap_instances(arr, ItemV2);
     return arr[0].id == "a" && arr[0].tag == "new" && arr[1].id == "b" &&
            arr[1].tag == "new";
 }
@@ -201,6 +191,10 @@ public:
         eve::ModuleManager::expose(vm);
         eve::dev::DevTool::instance().attach(vm);
         eve::dev::DevTool::instance().exposeScriptApi(vm);
+        // The production migration helpers first, then the cases that call them.
+        const std::string helpersSource = migrationHelpersSource();
+        ssq::Script       helpers       = vm.compileSource(helpersSource.c_str());
+        vm.run(helpers);
         ssq::Script s = vm.compileSource(script);
         vm.run(s);
     }
@@ -219,43 +213,54 @@ public:
 UnitReloadScriptTest(ReloadScriptTestFixture, kReloadScript);
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.protocolKeepsOldValuesAndNewFields") {
-    CHECK(vm.callFunc(vm.findFunc("reloadProtocolKeepsOldValuesAndNewFields"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("reloadProtocolKeepsOldValuesAndNewFields"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.protocolRestoresMissingRoot") {
-    CHECK(vm.callFunc(vm.findFunc("reloadProtocolRestoresMissingRoot"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("reloadProtocolRestoresMissingRoot"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.abortRollsBack") {
-    CHECK(vm.callFunc(vm.findFunc("reloadAbortRollsBack"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("reloadAbortRollsBack"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.migrateInstanceCopiesFieldsAndKeepsDefaults") {
-    CHECK(vm.callFunc(vm.findFunc("migrateInstanceCopiesFieldsAndKeepsDefaults"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("migrateInstanceCopiesFieldsAndKeepsDefaults"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.migrateInstanceFromTable") {
-    CHECK(vm.callFunc(vm.findFunc("migrateInstanceFromTable"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("migrateInstanceFromTable"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.remapInstancesContainer") {
-    CHECK(vm.callFunc(vm.findFunc("remapInstancesContainer"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("remapInstancesContainer"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.stateRootsReportsMarkedAndHeuristic") {
-    CHECK(vm.callFunc(vm.findFunc("stateRootsReportsMarkedAndHeuristic"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("stateRootsReportsMarkedAndHeuristic"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.transientRootsAreExcludedFromCapture") {
-    CHECK(vm.callFunc(vm.findFunc("transientRootsAreExcludedFromCapture"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("transientRootsAreExcludedFromCapture"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.abortRestoresStateRootPolicies") {
-    CHECK(vm.callFunc(vm.findFunc("abortRestoresStateRootPolicies"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("abortRestoresStateRootPolicies"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.commitKeepsNewStateRootPolicies") {
-    CHECK(vm.callFunc(vm.findFunc("commitKeepsNewStateRootPolicies"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("commitKeepsNewStateRootPolicies"), vm).toBool());
+}
+
+TEST_CASE("reloadScript.migrationHelpersComeFromTheBootstrap") {
+    // The migration cases above must exercise load.nut's helpers, not a copy of them:
+    // a mirror let them pass while the real helper silently copied nothing (plan doc
+    // 9.21.1). This pins the wiring, and a rename in load.nut fails here instead of
+    // quietly turning the three migration cases into no-ops.
+    const std::string source = migrationHelpersSource();
+    REQUIRE(!source.empty());
+    REQUIRE(source.rfind("function migrate_instance(", 0) == 0);
+    REQUIRE(source.find("function remap_instances(") != std::string::npos);
 }
 
 TEST_CASE("reloadScript.embeddedLoadScriptCompiles") {
@@ -264,9 +269,12 @@ TEST_CASE("reloadScript.embeddedLoadScriptCompiles") {
     try {
         vm.compileSource(eve::load_content);
         compiled = true;
-    } catch (...) {
+    } catch (const std::exception& error) {
+        // A broken bootstrap has to say what broke; swallowing the text would leave a
+        // bare "compiled == false" with no way to tell which line failed.
+        std::cerr << "[reloadScript] embedded load_content does not compile: " << error.what() << std::endl;
     }
-    CHECK(compiled);
+    REQUIRE(compiled);
 }
 
 namespace {
@@ -330,13 +338,13 @@ TEST_CASE("reloadScript.failedCommitCanStillAbort") {
     auto&       session = eve::dev::ReloadSession::instance();
     std::string err;
     REQUIRE(session.begin(vm.getHandle(), &err));
-    CHECK(!session.commit(vm.getHandle(), &err));
-    CHECK_EQ(provider.restoreCount, 1);
+    REQUIRE(!session.commit(vm.getHandle(), &err));
+    REQUIRE_EQ(provider.restoreCount, 1);
 
     err.clear();
-    CHECK(session.abort(vm.getHandle(), &err));
-    CHECK(err.empty());
-    CHECK_EQ(provider.restoreCount, 2);
+    REQUIRE(session.abort(vm.getHandle(), &err));
+    REQUIRE(err.empty());
+    REQUIRE_EQ(provider.restoreCount, 2);
 
     eve::cap::removeListener<eve::caps::IStateProvider>(&provider);
 }
@@ -351,10 +359,10 @@ TEST_CASE("reloadScript.nativeResetPolicySkipsCaptureAndResets") {
     auto&       session = eve::dev::ReloadSession::instance();
     std::string err;
     REQUIRE(session.begin(vm.getHandle(), &err));
-    CHECK(session.commit(vm.getHandle(), &err));
-    CHECK_EQ(provider.captureCount, 0);
-    CHECK_EQ(provider.restoreCount, 0);
-    CHECK_EQ(provider.resetCount, 1);
+    REQUIRE(session.commit(vm.getHandle(), &err));
+    REQUIRE_EQ(provider.captureCount, 0);
+    REQUIRE_EQ(provider.restoreCount, 0);
+    REQUIRE_EQ(provider.resetCount, 1);
 
     eve::cap::removeListener<eve::caps::IStateProvider>(&provider);
 }

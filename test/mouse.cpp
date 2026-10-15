@@ -4,9 +4,7 @@ extern const char* mouse_content;
 UnitSciptTest(Mouse, mouse_content);
 
 #define TestScript(func) \
-    TEST_CASE_FIXTURE(Mouse, "Mouse." #func) { \
-        CHECK(vm.callFunc(vm.findFunc(#func), vm).toBool()); \
-    }
+    TEST_CASE_FIXTURE(Mouse, "Mouse." #func) { REQUIRE(callScript(#func)); }
 
 TestScript(basic)
 TestScript(relativeMode)

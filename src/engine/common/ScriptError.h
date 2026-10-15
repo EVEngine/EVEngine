@@ -9,6 +9,27 @@
 
 namespace eve::script {
 
+/**
+ * @brief Install the engine's script error hook on a VM.
+ *
+ * Every `ssq::VM` installs simplesquirrel's `defaultRuntimeErrorFunc` as the
+ * Squirrel error handler, and that handler dereferences the callback stack without
+ * checking it (it reads stack index 2 unconditionally) -- it is a crash risk, not a
+ * diagnostic. This replaces it with the engine hook, which captures the pending
+ * error into `takeLastScriptError` instead of raising anything.
+ *
+ * Installing it is not optional for code that calls user script from native code:
+ * a call-setup failure (wrong argument count, or a native type-check mismatch)
+ * reaches the error handler from `SQVM::Execute` **regardless of `sq_call`'s
+ * `raiseerror` flag**, so a bare VM cannot report such a failure as a value.
+ *
+ * @param vm Active Squirrel VM; null is a no-op.
+ * @remarks Enables debug info and notification of caught exceptions, so the
+ *          captured context has real frames. Idempotent, and it does not stack
+ *          handlers: the last closure installed wins.
+ */
+EVENGINE_API_FOUNDATION void installScriptErrorHook(HSQUIRRELVM vm);
+
 /** @brief One call-stack frame captured while the script error is still live. */
 struct EVENGINE_API_FOUNDATION_INLINE ScriptFrame {
     std::string source;    /**< @brief Source name of the frame ("main.nut", "buffer", ...). */

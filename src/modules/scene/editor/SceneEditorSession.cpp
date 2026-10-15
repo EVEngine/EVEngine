@@ -2,6 +2,7 @@
 
 #include "common/Capability.h"
 #include "common/SceneVisibilityEvidence.h"
+#include "common/TransformEuler.h"
 #include "editing/EditingProperty.h"
 #include "editing/EditingValueJson.h"
 #include "editor/EditorCommandService.h"
@@ -129,15 +130,15 @@ editing::Result<scene_editing::SceneTransformValue> transformOf(const glm::dmat4
             editing::Status::Rejected, editing::RuleId("scene.physics-placement.sheared-transform"),
             "Physics placement cannot represent a sheared hierarchy transform as TRS");
     }
-    glm::dvec3 euler{};
-    glm::extractEulerAngleYXZ(glm::mat4_cast(glm::normalize(rotation)), euler.y, euler.x, euler.z);
+    double yaw = 0.0, pitch = 0.0, roll = 0.0;
+    eve::eulerYxzFromQuat(rotation, yaw, pitch, roll);
     scene_editing::SceneTransformValue value;
     value.x         = translation.x;
     value.y         = translation.y;
     value.z         = translation.z;
-    value.rotationX = euler.x;
-    value.rotationY = euler.y;
-    value.rotationZ = euler.z;
+    value.rotationX = pitch;
+    value.rotationY = yaw;
+    value.rotationZ = roll;
     value.scaleX    = scale.x;
     value.scaleY    = scale.y;
     value.scaleZ    = scale.z;

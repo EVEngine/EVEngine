@@ -1,6 +1,7 @@
 #include "sensing/Sensing.h"
 #include "common/Identity.h"
 #include "common/SquirrelBinding.h"
+#include "sensing/SensingScriptCandidateSeam.h"
 #include "sensing/TargetingPipeline.h"
 #include "spatial/SpatialHash2D.h"
 
@@ -623,9 +624,15 @@ struct ScriptSensingWorld {
     SensingWorldHandleRef reference;
 };
 
-Sensing::Sensing() { eve::cap::provide<eve::ISensingQuery>(this); }
+Sensing::Sensing() {
+    eve::cap::provide<eve::ISensingQuery>(this);
+    declareScriptSensingCandidateSeam();
+}
 
-Sensing::~Sensing() { eve::cap::revoke<eve::ISensingQuery>(this); }
+Sensing::~Sensing() {
+    withdrawScriptSensingCandidateSeam();
+    eve::cap::revoke<eve::ISensingQuery>(this);
+}
 
 int Sensing::worldCount() const {
     int count = 0;

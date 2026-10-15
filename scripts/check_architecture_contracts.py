@@ -59,6 +59,7 @@ HOT_PATH_GLOBS: tuple[str, ...] = (
     "src/modules/joystick/sdl/EventSink.cpp",
     "src/modules/keyboard/sdl/EventSink.cpp",
     "src/modules/model3d/ModelRenderer.cpp",
+    "src/modules/particles/ParticleSystem.cpp",
     "src/modules/physics/World3DContacts.cpp",
     "src/modules/physics/box3d/Box3DWorld.cpp",
     "src/modules/physics/box3d/Box3DWorldContacts.cpp",

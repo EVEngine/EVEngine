@@ -4,8 +4,10 @@
 #include "ScriptTest.h"
 #include "common/Capability.h"
 #include "common/ECS.h"
+#include "common/ScriptProvider.h"
 #include "weapon/Weapon.h"
 #include "weapon/WeaponLogic.h"
+#include "weapon/WeaponSystem.h"
 
 using namespace eve::weapon;
 
@@ -572,10 +574,200 @@ function testWeaponCppView() {
     }
     return false
 }
+
+// 统计某个原生实体类视图里出现指定 id 的次数。
+// weapon 模块为四个实体类各登记了一个原生→脚本视图收集器：登记到错误的类上
+// 只会得到空视图，四个类共用同一个收集器则会把别的类也数进来——两种错误都必须
+// 能被这里发现，所以同时检查"本类恰好一次"和"他类一次都没有"。
+function countVisible(cls, id) {
+    local n = 0
+    foreach (e in eve.view(cls)) {
+        if (e.getId() == id) n++
+    }
+    return n
+}
+
+function testEveryWeaponEntityClassIsVisible() {
+    local weapon = eve.Weapon()
+    weapon.registerWeaponsFromJson("[{\"id\":\"probe\",\"kind\":\"melee\",\"logic\":\"melee\"}]")
+    local w = weapon.newWeapon("probe")
+    local mount = weapon.newMount("probe-mount", "turret")
+    local rig = weapon.newRig("probe-rig", "right_hand")
+    local pool = weapon.newAmmoPool("probe-pool", "probe-ammo", -1)
+    if (w == null || mount == null || rig == null || pool == null) return false
+
+    if (countVisible(eve.WeaponEntity, w.getId()) != 1) return false
+    if (countVisible(eve.WeaponMountEntity, mount.getId()) != 1) return false
+    if (countVisible(eve.WeaponRigEntity, rig.getId()) != 1) return false
+    if (countVisible(eve.AmmoPoolEntity, pool.getId()) != 1) return false
+
+    if (countVisible(eve.WeaponMountEntity, w.getId()) != 0) return false
+    if (countVisible(eve.WeaponEntity, mount.getId()) != 0) return false
+    if (countVisible(eve.AmmoPoolEntity, rig.getId()) != 0) return false
+    return true
+}
 )SQ";
 
 UnitSciptTest(WeaponViewScriptTest, kViewScript);
 
-TEST_CASE_FIXTURE(WeaponViewScriptTest, "weapon.script.viewSeesNewWeapon") {
-    CHECK(vm.callFunc(vm.findFunc("testWeaponCppView"), vm).toBool());
+TEST_CASE_FIXTURE(WeaponViewScriptTest, "weapon.script.viewSeesNewWeapon") { REQUIRE(callScript("testWeaponCppView")); }
+
+TEST_CASE_FIXTURE(WeaponViewScriptTest, "weapon.script.viewSeesEveryNativeEntityClass") {
+    REQUIRE(callScript("testEveryWeaponEntityClassIsVisible"));
+}
+
+// ---------------------------------------------------------------------------
+// 阶段 4 的第二个插座：IProjectileService 的脚本接缝。
+// 形状与标量 sink 不同——两个结构体进、无返回——用来检验接缝不是为标量定制的。
+// ---------------------------------------------------------------------------
+
+/**
+ * 脚本投射物提供方。`seen` 是根表槽位，测试据此断言 16 个位置参数的编组（浮点都取整，
+ * 所以文本比较是精确的）；`visits` 区分"真的被调用过"和"根本没被调用"。
+ */
+static const char* kScriptProjectileProvider = R"SQ(
+seen <- ""
+visits <- 0
+function note(text) { seen = text }
+class ScriptProjectiles {
+    function spawnProjectile(weaponId, defId, ownerId, yaw, pitch, shooterId, hasTarget,
+                             targetX, targetY, targetZ, muzzleX, muzzleY, muzzleZ,
+                             spread, pelletIndex, pelletCount) {
+        visits += 1
+        note(weaponId + "|" + defId + "|" + ownerId
+             + "|" + yaw.tointeger() + "|" + pitch.tointeger() + "|" + shooterId
+             + "|" + (hasTarget ? 1 : 0)
+             + "|" + targetX.tointeger() + "|" + targetY.tointeger() + "|" + targetZ.tointeger()
+             + "|" + muzzleX.tointeger() + "|" + muzzleY.tointeger() + "|" + muzzleZ.tointeger()
+             + "|" + spread.tointeger() + "|" + pelletIndex + "|" + pelletCount)
+    }
+}
+class BrokenProjectiles {
+    function spawnProjectile(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) {
+        visits += 1
+        throw "provider is broken"
+    }
+}
+projectiles <- ScriptProjectiles()
+broken <- BrokenProjectiles()
+)SQ";
+
+/**
+ * J-4 双探针的夹具。接缝由 `Weapon` 的构造函数声明，而夹具成员是在脚本跑完之后才构造的，
+ * 所以发布/卸载的 `eve.provider` 调用必须写在测试体里。
+ */
+class WeaponProjectileProviderTest : public ScriptTest {
+public:
+    WeaponProjectileProviderTest() : ScriptTest(kScriptProjectileProvider) {
+        eve::ScriptProviderRegistry::instance().clearAll();
+    }
+    ~WeaponProjectileProviderTest() { eve::ScriptProviderRegistry::instance().clearAll(); }
+};
+
+TEST_CASE_FIXTURE(WeaponProjectileProviderTest, "weapon.script.projectileProviderPresent") {
+    Weapon mod;
+    mod.registerWeaponsFromJson(kDefs);
+    WeaponEntity* cannon = mod.newWeapon("cannon");
+    REQUIRE(cannon != nullptr);
+    cannon->identity()->ownerId = 42;
+
+    vm.run(vm.compileSource(
+        "published <- eve.provider.publishFor(\"IProjectileService\", \"weapon.script\", projectiles)"));
+    ssq::Object published = vm.find("published");
+    REQUIRE_EQ(published.getType(), ssq::Type::TABLE);
+    REQUIRE(published.find("ok").toBool());
+    // 脚本提供方占的是单实现槽位，消费者用的正是 `cap::query`。
+    REQUIRE(eve::cap::query<IProjectileService>() != nullptr);
+
+    // 用 `WeaponSystem::tryFire` 带一个自己写的请求，而不是 `fireAt`：这样每个被编组的字段
+    // 都由测试决定。注意 `tryFireRanged` 会**改写**其中几个（`WeaponSystem.cpp:182-194`）：
+    // `yaw`/`pitch` 取自武器的 aim，`spread` 取自 bloom 后的 `currentSpread`，`pelletIndex`/
+    // `pelletCount` 由 `spawnPellets` 按模板弹丸数逐粒给出。所以下面设的是**引擎真正交给
+    // 提供方的那些值**，而不是我塞进请求里的值——这正是"断言现实而不是断言假设"。
+    AttackRequest req;
+    req.shooterId                  = 7;
+    req.hasTarget                  = true;
+    req.targetX                    = 1.f;
+    req.targetY                    = 2.f;
+    req.targetZ                    = 3.f;
+    req.muzzleX                    = 4.f;
+    req.muzzleY                    = 5.f;
+    req.muzzleZ                    = 6.f;
+    cannon->aim()->yaw             = 45.f;
+    cannon->aim()->pitch           = 10.f;
+    cannon->state()->currentSpread = 2.f;
+    mod.clearEvents();
+    REQUIRE(WeaponSystem::tryFire(*cannon, req));
+
+    REQUIRE_EQ(vm.find("visits").toInt(), 1);
+    const std::string expected = cannon->identity()->id + "|cannon|42|45|10|7|1|1|2|3|4|5|6|2|0|1";
+    REQUIRE_EQ(vm.find("seen").toString(), expected);
+    // 开火事件仍然由武器系统产生（提供方只负责"投射物怎么来"）。
+    REQUIRE(mod.getEventCount() >= 1);
+    REQUIRE_EQ(mod.getEventType(0), std::string("fire"));
+
+    // 卸载后适配器从单实现槽位摘掉：再查询必须为空（开火路径本身由 absent 用例覆盖）。
+    vm.run(vm.compileSource("unloaded <- eve.provider.unload(\"weapon.script\")"));
+    REQUIRE(vm.find("unloaded").find("ok").toBool());
+    REQUIRE(eve::cap::query<IProjectileService>() == nullptr);
+}
+
+TEST_CASE_FIXTURE(WeaponProjectileProviderTest, "weapon.script.projectileProviderAbsent") {
+    // 提供方缺席：接缝已由 `Weapon` 声明，但没人发布。缺席不是错误——投射物由游戏侧
+    // 决定，开火本身必须照常成功，而且不能有任何人被调用。
+    Weapon mod;
+    mod.registerWeaponsFromJson(kDefs);
+    WeaponEntity* cannon = mod.newWeapon("cannon");
+    REQUIRE(cannon != nullptr);
+
+    REQUIRE(eve::ScriptProviderRegistry::instance().hasCapabilitySeam(IProjectileService::capabilityName));
+    REQUIRE(eve::cap::query<IProjectileService>() == nullptr);
+
+    mod.clearEvents();
+    REQUIRE(mod.fireAt(cannon, 0.f, 0.f, 0.f));
+    REQUIRE_EQ(vm.find("visits").toInt(), 0);
+    REQUIRE(mod.getEventCount() >= 1);  // 事件仍然产生：无提供方的语义没被改变
+    REQUIRE_EQ(mod.getEventType(0), std::string("fire"));
+}
+
+TEST_CASE_FIXTURE(WeaponProjectileProviderTest, "weapon.script.projectileProviderSeesEveryPellet") {
+    // 多弹丸模板：`spawnPellets` 逐粒调用提供方，粒序号/总粒数是脚本真正需要的量
+    // （一枚霰弹要生成 3 个可见投射物），所以这条断言覆盖的是"每粒一次的编组"。
+    Weapon mod;
+    mod.registerWeaponsFromJson(
+        "[{\"id\":\"scatter\",\"logic\":\"projectile\",\"cooldown\":1.0,"
+        "\"ammo\":{\"mag\":2,\"reserve\":4},"
+        "\"projectile\":{\"type\":\"pellet\",\"speed\":900,\"pelletCount\":3}}]");
+    WeaponEntity* scatter = mod.newWeapon("scatter");
+    REQUIRE(scatter != nullptr);
+
+    vm.run(vm.compileSource(
+        "published <- eve.provider.publishFor(\"IProjectileService\", \"weapon.script\", projectiles)"));
+    REQUIRE(vm.find("published").find("ok").toBool());
+
+    REQUIRE(mod.fireAt(scatter, 0.f, 0.f, 0.f));
+    // 三次调用，最后一次留在 `seen` 里（同一次开火的三粒）。
+    REQUIRE_EQ(vm.find("visits").toInt(), 3);
+    const std::string expected = scatter->identity()->id + "|scatter|0|0|0|0|1|0|0|0|0|0|0|0|2|3";
+    REQUIRE_EQ(vm.find("seen").toString(), expected);
+}
+
+TEST_CASE_FIXTURE(WeaponProjectileProviderTest, "weapon.script.projectileProviderFailureIsVisible") {
+    // 提供方抛错：一次开火不能因为游戏规则写错而被吞掉，所以 `tryFire` 仍为真、事件仍产生；
+    // 而 `visits == 1` 证明"确实是跑过并抛出"，不是"回调根本没跑"。
+    Weapon mod;
+    mod.registerWeaponsFromJson(kDefs);
+    WeaponEntity* cannon = mod.newWeapon("cannon");
+    REQUIRE(cannon != nullptr);
+
+    vm.run(vm.compileSource(
+        "brokenPublish <- eve.provider.publishFor(\"IProjectileService\", \"weapon.broken\", broken)"));
+    REQUIRE(vm.find("brokenPublish").find("ok").toBool());
+    REQUIRE(eve::cap::query<IProjectileService>() != nullptr);
+
+    mod.clearEvents();
+    REQUIRE(mod.fireAt(cannon, 0.f, 0.f, 0.f));
+    REQUIRE_EQ(vm.find("visits").toInt(), 1);
+    REQUIRE(mod.getEventCount() >= 1);
+    REQUIRE_EQ(mod.getEventType(0), std::string("fire"));
 }

@@ -137,7 +137,8 @@ seq.recordDispatch(shaderA, groupsA);                    // 录制时 shader 的
 seq.recordDispatch(shaderB, groupsB);                    // binding 已生效
 seq.recordDownload(outputBuffer, stagingBuffer, nbytes); // staging 需 "staging" 用途
 seq.submit();                                            // 一次提交，内部等待完成
-local out = stagingBuffer.readFloat32s(count);
+// staging 已映射：批量回读一次拿一个数组（起点单位是 float，不是字节）
+local out = stagingBuffer.readFloat32s(count, 0);
 ```
 
 要点：
@@ -147,6 +148,9 @@ local out = stagingBuffer.readFloat32s(count);
 - 同一 Sequence 可循环复用：`submit()` 后再 `begin()`。
 - Sequence 内部自动插入内存屏障，保证拷贝/计算/回读之间可见（单次提交没有 fence 兜底，这是与每次 dispatch 各提交一次的关键区别）。
 - 录制期间 shader 的 descriptor set 会被延迟释放，`submit()` 完成后才回收，避免多 dispatch 引用被覆盖的 set。
+- 脚本面有两种读法：逐元素 `readFloat32(index)` 与批量 `readFloat32s(count, startIndex)`（返回数组，元素个数就是这次真正读到的个数）。批量版**要求传满两个实参**——C++ 侧 `startIndex` 有默认值，脚本侧没有。
+- 范围按容量裁剪，不会读越界：`count` 超出剩余容量时只返回剩下的，起点已在容量之后或 `count <= 0` 时返回空数组。缓冲区里有几个 float 由 `getSize() / 4` 决定。
+- C++ 侧同样有两种形状：热路径用指针版 `readFloat32s(float* out, count, startIndex)`（零分配），要一份拥有拷贝时用 `readFloat32sCopy(count, startIndex)`。
 
 引擎内部的 tensor 模块（`CompiledFunction` 的 GPU 执行）已经用 Sequence 实现整图单次提交：placeholder 上传 → 所有融合 kernel dispatch → 输出回读，一次 `submit()` 完成。
 
@@ -177,6 +181,10 @@ local out = stagingBuffer.readFloat32s(count);
 
 ## 绑定与行为说明
 
+下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
+
+- `begin()`、`bindBuffer()`、`clearBindings()`、`dispatch()`、`fillFloat32()`、`getBoundBuffer()`、`getFloat()`、`getName()`、`getSize()`
+- `getUsage()`、`isAvailable()`、`newBuffer()`、`newShader()`、`newShaderFromBytecode()`、`newShaderFromSpvFile()`、`readData()`、`readFloat32()`、`readFloat32s()`、`setFloat()`
 - GPU-driven resident render：`setGpuDrivenEnabled()` / `isGpuDrivenEnabled()` / `gpuDrivenMeshRecord()` / `gpuDrivenMaterialRecord()` / `gpuDrivenMaterialUsable()` / `getGpuDrivenInstanceStride()` / `getGpuResidentOffsetAlignment()` / `writeGpuDrivenInstance()` / `submitResidentInstances()`
 - `eve.EcsShaderSystem`：`setGpgpu` / `setShaderSource` / `ensureBuffer` / `dispatch` / …
 - `eve.ShaderSystem`：`bindFields` / `setShaderSource` / `setReadback` / `update` / GPU-driven 资源注册与 `submitResidentInstances`

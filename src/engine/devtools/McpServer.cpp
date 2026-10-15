@@ -2,6 +2,7 @@
 
 #include "common/EditorAutomation.h"
 #include "common/GameplayControlJson.h"
+#include "common/ScriptComponentSnapshot.h"
 #include "common/ScriptError.h"
 #include "devtools/Immortal.hpp"
 
@@ -506,6 +507,12 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (!contract) return "{\"ok\":false,\"error\":\"binding not found or method name is ambiguous\"}";
         return std::string("{\"ok\":true,\"schema\":\"eve.binding-api\",\"schemaVersion\":1,\"contract\":") +
                contract->toJson() + "}";
+    }
+
+    // 引擎侧脚本组件数据的工具视图（J-3 的"引擎工具读得到"）。没有脚本 VM 时是空列表，不是错误。
+    if (name == "eve_script_components") {
+        auto payload = eve::scriptComponentStatesJson();
+        return payload ? std::move(payload).takeValue() : std::string("error: ") + payload.status().describe();
     }
 
     if (name == "eve_gameplay") {
@@ -1604,6 +1611,10 @@ std::string handleToolsList(const std::string& idJson) {
         "or unique method name. Prefer this after eve_api_search.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{"
         "\"key\":{\"type\":\"string\"},\"class\":{\"type\":\"string\"},\"method\":{\"type\":\"string\"}}}},"
+        "{\"name\":\"eve_script_components\","
+        "\"description\":\"Engine-side script component data: every entity's registered components and their "
+        "current field values (the authoritative store, not script slots).\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
         "{\"name\":\"eve_gameplay\",\"description\":\"Observe, discover, submit or advance player-equivalent gameplay "
         "through the versioned shared control protocol.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"request\":{\"type\":\"object\"}},\"required\":["

@@ -83,7 +83,7 @@ using CommandRequestHandler = std::function<CommandResponse(const CommandRequest
  * query, the context checks the registered `IStateQuery` capability/listeners.
  * A known false result is never confused with an unavailable provider.
  */
-class StateEvaluationContext final : public eve::decision::EvaluationContext {
+class EVENGINE_API_ORCHESTRATION StateEvaluationContext final : public eve::decision::EvaluationContext {
 public:
     /** @brief Construct a context for a stable subject id and optional provider. */
     explicit StateEvaluationContext(std::string subject = {}, eve::IStateQuery* provider = nullptr);

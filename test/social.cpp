@@ -144,6 +144,4 @@ function testSocialBindings() {
 
 UnitSciptTest(SocialScriptTest, kSocialScript);
 
-TEST_CASE_FIXTURE(SocialScriptTest, "social.script.bindings") {
-    CHECK(vm.callFunc(vm.findFunc("testSocialBindings"), vm).toBool());
-}
+TEST_CASE_FIXTURE(SocialScriptTest, "social.script.bindings") { REQUIRE(callScript("testSocialBindings")); }

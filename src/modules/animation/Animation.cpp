@@ -111,6 +111,8 @@ Animation::~Animation() {
         if (a) a->setOwner(nullptr);
     }
     spineAnims_.clear();
+    // 脚本 motion sink 适配器由本模块持有（motion 槽位借用 sink 指针），析构时一起撤。
+    clearScriptMotionSinkAdapters();
 }
 
 Tween *Animation::newTween(float duration) {

@@ -1520,3 +1520,31 @@ TEST_CASE("procgen.runtimeGeneration.rejectsWorkerThreadSchedulerMutation") {
     auto committed = runtime.completeGenerationJob(ProcgenGenerationCompletion(job, std::move(output)));
     REQUIRE(committed.ok());
 }
+
+TEST_CASE("procgen.script.newShapeGrammarIsTheDocumentedEntryPoint") {
+    // docs/usr/modules/procgen/pointset-pipeline.md tells users to start from
+    // `procgen.newShapeGrammar()`. The class and all of its methods were exposed but
+    // nothing created an instance, so that documented sample could not run at all --
+    // the binding check's reverse direction reported it as "documented but not bound".
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        procgen <- eve.Procgen();
+        created <- procgen.newShapeGrammar();
+        grammar <- created.ok ? created.value : null;
+        isProxy <- grammar != null && grammar instanceof eve.ProcgenShapeGrammar;
+        added <- grammar == null ? false : grammar.addModule("Wall", "stone-wall-a", 4.0, 3.0);
+        count <- grammar == null ? -1 : grammar.getModuleCount();
+        symbol <- grammar == null ? "" : grammar.getModuleSymbol(0);
+        valid <- grammar != null && grammar.validate("Wall,Wall");
+        report <- grammar == null ? "" : grammar.debugReport();
+    )"));
+
+    REQUIRE(vm.find("created").find("ok").toBool());
+    REQUIRE(vm.find("isProxy").toBool());
+    REQUIRE(vm.find("added").toBool());
+    REQUIRE_EQ(vm.find("count").toInt(), 1);
+    REQUIRE_EQ(vm.find("symbol").toString(), std::string("Wall"));
+    REQUIRE(vm.find("valid").toBool());
+    REQUIRE(vm.find("report").toString().find("symbols=") != std::string::npos);
+}
