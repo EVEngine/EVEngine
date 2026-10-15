@@ -82,11 +82,12 @@ struct VirtualTextureUploadBatch {
 };
 
 /**
- * @brief UE5-style runtime virtual texture session: feedback → decode → atomic publish.
+ * @brief Internal UE5-style runtime virtual texture session: feedback → decode → atomic publish.
  *
- * Owns a VirtualTextureBlend producer plus a portable physical atlas / page-table cache.
+ * Owned by Material (enableVirtualTexture / addVirtualTextureLayer). Game scripts do not construct
+ * or tick this type; Material::bind advances residency once per Graphics::mesh3dDrawEpoch().
  * GPU resources stay in Graphics; this object only stages CPU pixels and generation-qualified
- * upload batches. Sampling continues to use Material::setVirtualTexture().
+ * upload batches.
  *
  * @thread Not thread-safe; record feedback, update, and publish on one authoring/render thread.
  * @reentrancy Does not invoke callbacks.

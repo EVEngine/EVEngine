@@ -65,22 +65,23 @@ for virtual-texture materials and falls back to the standard PBR draw path.
 
 ## Runtime streaming (UE5 RVT correspondence)
 
-`graphics/VirtualTextureStreaming` owns the feedback → decode → publish loop:
+`graphics/VirtualTextureStreaming` is an **internal** Material-owned session (not a script type).
+`Material::enableVirtualTexture` / `addVirtualTextureLayer` author layers; `Material::bind` advances
+the feedback → decode → publish loop once per `Graphics::mesh3dDrawEpoch()`:
 
-1. **Feedback** — `recordFeedback` / `recordFeedbackUv` / `recordFeedbackGrid` / `ingestPackedFeedback`
-   retain page requests. Packed IDs use the same 32-bit layout as `packVirtualTextureFeedback` in
-   `virtual_texture.glsl` (pageX 12 | pageY 12 | mip 8).
+1. **Feedback** — the engine records a full mip-zero page grid (and can ingest packed GPU IDs later).
+   Packed IDs use the same 32-bit layout as `packVirtualTextureFeedback` in `virtual_texture.glsl`.
 2. **Compact + decode** — `update()` deduplicates feedback, allocates physical slots with LRU
    eviction, and decodes at most `maxDecodesPerUpdate` pages through `VirtualTextureBlend`.
 3. **Atomic publish** — staged upload batches apply page-table clears, then atlas rectangles, then
    page-table sets. `commitPublish` bumps the generation only after GPU uploads succeed;
-   `abandonPublish` restores the previous CPU mapping. `syncToMaterial` wires Graphics textures and
-   rolls GPU atlases back to the published snapshot if a mid-batch upload fails.
-4. **Writers** — `invalidatePage` / `invalidateRect` mark resident pages dirty so the next update
-   re-decodes them in place (terrain paint / decal-style attribute edits).
+   `abandonPublish` restores the previous CPU mapping. Failed mid-batch uploads roll GPU atlases
+   back to the published snapshot.
+4. **Writers** — C++ `invalidatePage` / `invalidateRect` on the session mark resident pages dirty
+   so the next bind tick re-decodes them (terrain paint / decal-style attribute edits).
 
-Script surface: `gfx.newVirtualTextureStreaming(...)`, then `addLayer` / `initializePhysicalCache` /
-`recordFeedback*` / `update` / `syncToMaterial`.
+Script surface is authoring-only: `material.enableVirtualTexture(...)` and
+`material.addVirtualTextureLayer(...)` (optional `addVirtualTextureLayerWeighted`).
 
 ## Remaining renderer evolution
 

@@ -36,7 +36,6 @@
 #include "graphics/MapFog.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
-#include "graphics/VirtualTextureStreaming.h"
 #include "graphics/Outline.h"
 #include "graphics/PcgWaterPhotoMode.h"
 #include "graphics/PrimitiveScene.h"
@@ -193,6 +192,7 @@ Module_IMPL(Graphics, new vulkan::Graphics());
 #endif
 
 void Graphics::render3D() {
+    ++mesh3dDrawEpoch_;
     pushValidationScope();
     recordingEngine3D_ = true;
     eve::debug::rtFrameBegin();
@@ -586,108 +586,52 @@ void Graphics::expose(ssq::Table& table) {
     material.addFunc("getNormalTexture", &Material::getNormalTexture);
     material.addFunc("setHeightTexture", &Material::setHeightTexture);
     material.addFunc("getHeightTexture", &Material::getHeightTexture);
-    material.addFunc("setVirtualTexture",
-                     [](Material* self, Texture* albedoAtlas, Texture* normalAtlas, Texture* pageTable, int pageCountX,
-                        int pageCountY, int atlasSlotsX, int atlasSlotsY, float borderFraction) {
-                         auto result = self->setVirtualTexture(albedoAtlas, normalAtlas, pageTable, pageCountX,
-                                                               pageCountY, atlasSlotsX, atlasSlotsY, borderFraction);
+    material.addFunc("enableVirtualTexture",
+                     [](Material* self, int width, int height, int tileSize, int borderSize, int residentCapacity,
+                        int maxDecodesPerUpdate) {
+                         if (!self) throw eve::Exception("Material.enableVirtualTexture: null self");
+                         VirtualTextureStreamingConfig config{};
+                         config.blend.width                = width;
+                         config.blend.height               = height;
+                         config.blend.tileSize             = tileSize;
+                         config.blend.borderSize           = borderSize;
+                         config.blend.residentPageCapacity = std::size_t(std::max(1, residentCapacity));
+                         config.maxDecodesPerUpdate        = std::size_t(std::max(1, maxDecodesPerUpdate));
+                         auto result                       = self->enableVirtualTexture(config);
                          if (!result.ok()) throw eve::Exception("%s", result.status().describe().c_str());
                      });
-    material.addFunc("clearVirtualTexture", &Material::clearVirtualTexture);
-    material.addFunc("usesVirtualTexture", [](Material* self) {
-        return self->virtualTextureMode() == MaterialVirtualTextureMode::AtlasPageTable;
-    });
-    auto virtualTexture = table.addClass<VirtualTextureStreaming>(
-        "VirtualTextureStreaming",
-        std::function<VirtualTextureStreaming*()>([]() -> VirtualTextureStreaming* { return nullptr; }), true);
-    auto addVtLayer = [](VirtualTextureStreaming* self, image::ImageData* albedo, image::ImageData* normal,
-                         image::ImageData* weight, float uvScale, float constantWeight, float heightContrast) {
-        if (!self) throw eve::Exception("VirtualTextureStreaming.addLayer: null self");
+    auto addMaterialVtLayer = [](Material* self, image::ImageData* albedo, image::ImageData* normal,
+                                 image::ImageData* weight, float uvScale, float constantWeight, float heightContrast) {
+        if (!self) throw eve::Exception("Material.addVirtualTextureLayer: null self");
+        if (!albedo) throw eve::Exception("Material.addVirtualTextureLayer: albedo is required");
         VirtualTextureBlendLayer layer{};
-        if (!albedo) throw eve::Exception("VirtualTextureStreaming.addLayer: albedo is required");
         layer.albedo = std::shared_ptr<image::ImageData>(albedo, [](image::ImageData*) {});
         if (normal) layer.normal = std::shared_ptr<image::ImageData>(normal, [](image::ImageData*) {});
         if (weight) layer.weight = std::shared_ptr<image::ImageData>(weight, [](image::ImageData*) {});
         layer.uvScale        = uvScale;
         layer.constantWeight = constantWeight;
         layer.heightContrast = heightContrast;
-        auto result          = self->addLayer(layer);
+        auto result          = self->addVirtualTextureLayer(layer);
         if (!result.ok()) throw eve::Exception("%s", result.status().describe().c_str());
         return int(result.value());
     };
-    virtualTexture.addFunc(
-        "addLayer", [addVtLayer](VirtualTextureStreaming* self, image::ImageData* albedo, image::ImageData* normal,
-                                 float uvScale, float constantWeight, float heightContrast) {
-            return addVtLayer(self, albedo, normal, nullptr, uvScale, constantWeight, heightContrast);
-        });
-    virtualTexture.addFunc("addLayerWeighted", [addVtLayer](VirtualTextureStreaming* self, image::ImageData* albedo,
-                                                            image::ImageData* normal, image::ImageData* weight,
-                                                            float uvScale, float constantWeight, float heightContrast) {
-        return addVtLayer(self, albedo, normal, weight, uvScale, constantWeight, heightContrast);
+    material.addFunc("addVirtualTextureLayer",
+                     [addMaterialVtLayer](Material* self, image::ImageData* albedo, image::ImageData* normal,
+                                          float uvScale, float constantWeight, float heightContrast) {
+                         return addMaterialVtLayer(self, albedo, normal, nullptr, uvScale, constantWeight,
+                                                   heightContrast);
+                     });
+    material.addFunc("addVirtualTextureLayerWeighted",
+                     [addMaterialVtLayer](Material* self, image::ImageData* albedo, image::ImageData* normal,
+                                          image::ImageData* weight, float uvScale, float constantWeight,
+                                          float heightContrast) {
+                         return addMaterialVtLayer(self, albedo, normal, weight, uvScale, constantWeight,
+                                                   heightContrast);
+                     });
+    material.addFunc("clearVirtualTexture", &Material::clearVirtualTexture);
+    material.addFunc("usesVirtualTexture", [](Material* self) {
+        return self->virtualTextureMode() == MaterialVirtualTextureMode::AtlasPageTable;
     });
-    virtualTexture.addFunc("initializePhysicalCache", [](VirtualTextureStreaming* self) {
-        if (!self) throw eve::Exception("VirtualTextureStreaming.initializePhysicalCache: null self");
-        auto result = self->initializePhysicalCache();
-        if (!result.ok()) throw eve::Exception("%s", result.status().describe().c_str());
-    });
-    virtualTexture.addFunc("recordFeedback", [](VirtualTextureStreaming* self, int pageX, int pageY, int mipLevel) {
-        if (!self) throw eve::Exception("VirtualTextureStreaming.recordFeedback: null self");
-        auto result = self->recordFeedback(pageX, pageY, mipLevel);
-        if (!result.ok()) throw eve::Exception("%s", result.status().describe().c_str());
-    });
-    virtualTexture.addFunc("recordFeedbackUv", [](VirtualTextureStreaming* self, float u, float v, int mipLevel) {
-        if (!self) throw eve::Exception("VirtualTextureStreaming.recordFeedbackUv: null self");
-        auto result = self->recordFeedbackUv(u, v, mipLevel);
-        if (!result.ok()) throw eve::Exception("%s", result.status().describe().c_str());
-    });
-    virtualTexture.addFunc("recordFeedbackGrid", [](VirtualTextureStreaming* self, int gridW, int gridH, int mipLevel) {
-        if (!self) throw eve::Exception("VirtualTextureStreaming.recordFeedbackGrid: null self");
-        auto result = self->recordFeedbackGrid(gridW, gridH, mipLevel);
-        if (!result.ok()) throw eve::Exception("%s", result.status().describe().c_str());
-    });
-    virtualTexture.addFunc("invalidatePage", [](VirtualTextureStreaming* self, int pageX, int pageY, int mipLevel) {
-        if (!self) throw eve::Exception("VirtualTextureStreaming.invalidatePage: null self");
-        auto result = self->invalidatePage(pageX, pageY, mipLevel);
-        if (!result.ok()) throw eve::Exception("%s", result.status().describe().c_str());
-    });
-    virtualTexture.addFunc("invalidateRect",
-                           [](VirtualTextureStreaming* self, float u0, float v0, float u1, float v1, int mipLevel) {
-                               if (!self) throw eve::Exception("VirtualTextureStreaming.invalidateRect: null self");
-                               auto result = self->invalidateRect(u0, v0, u1, v1, mipLevel);
-                               if (!result.ok()) throw eve::Exception("%s", result.status().describe().c_str());
-                           });
-    virtualTexture.addFunc("update", [vm = table.getHandle()](VirtualTextureStreaming* self) {
-        auto projectStats = [](const VirtualTextureStreamingStats& stats) {
-            return eve::Value::Object{{"generation", int64_t(stats.generation)},
-                                      {"residentPages", int64_t(stats.residentPages)},
-                                      {"pendingFeedback", int64_t(stats.pendingFeedback)},
-                                      {"pendingUploads", int64_t(stats.pendingUploads)},
-                                      {"pagesDecoded", int64_t(stats.pagesDecoded)},
-                                      {"pagesEvicted", int64_t(stats.pagesEvicted)},
-                                      {"publishes", int64_t(stats.publishes)}};
-        };
-        if (!self)
-            return eve::script::projectResult(
-                vm,
-                eve::Result<VirtualTextureStreamingStats>::failure(
-                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "null VirtualTextureStreaming")),
-                projectStats);
-        return eve::script::projectResult(vm, self->update(), projectStats);
-    });
-    virtualTexture.addFunc(
-        "syncToMaterial", [vm = table.getHandle()](VirtualTextureStreaming* self, Graphics* gfx, Material* material) {
-            if (!self || !gfx || !material)
-                return eve::script::projectResult(
-                    vm, eve::Result<void>::failure(eve::Diagnostic::error(
-                            eve::DiagnosticCode::InvalidArgument, "syncToMaterial requires streaming, gfx, material")));
-            return eve::script::projectResult(vm, self->syncToMaterial(*gfx, *material));
-        });
-    virtualTexture.addFunc("generation",
-                           [](VirtualTextureStreaming* self) { return self ? int(self->generation()) : 0; });
-    virtualTexture.addFunc("residentPages",
-                           [](VirtualTextureStreaming* self) { return self ? int(self->stats().residentPages) : 0; });
-    virtualTexture.addFunc("pageCountX", [](VirtualTextureStreaming* self) { return self ? self->pageCountX() : 0; });
-    virtualTexture.addFunc("pageCountY", [](VirtualTextureStreaming* self) { return self ? self->pageCountY() : 0; });
     material.addFunc("setShader", &Material::setShader);
     material.addFunc("getShader", &Material::getShader);
     material.addFunc("setTint", &Material::setTint);
@@ -1528,20 +1472,6 @@ void Graphics::expose(ssq::Class& cls) {
     });
     cls.addFunc("setCloudShadows", &Graphics::setCloudShadows);
     cls.addFunc("newMaterial", &Graphics::newMaterial);
-    cls.addFunc("newVirtualTextureStreaming",
-                [](Graphics*, int width, int height, int tileSize, int borderSize, int residentCapacity,
-                   int maxDecodesPerUpdate) -> VirtualTextureStreaming* {
-                    VirtualTextureStreamingConfig config{};
-                    config.blend.width                = width;
-                    config.blend.height               = height;
-                    config.blend.tileSize             = tileSize;
-                    config.blend.borderSize           = borderSize;
-                    config.blend.residentPageCapacity = std::size_t(std::max(1, residentCapacity));
-                    config.maxDecodesPerUpdate        = std::size_t(std::max(1, maxDecodesPerUpdate));
-                    auto created                      = VirtualTextureStreaming::create(config);
-                    if (!created.ok()) throw eve::Exception("%s", created.status().describe().c_str());
-                    return created.value().release();
-                });
     cls.addFunc("getRenderControl", &Graphics::getRenderControl);
     cls.addFunc("setMsaaSamples", &Graphics::setMsaaSamples);
     cls.addFunc("getMsaaSamples", &Graphics::getMsaaSamples);
