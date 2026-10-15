@@ -2,7 +2,11 @@
 #include "common/Export.h"
 
 
-/** @file ActionCameraBlock.h @brief Typed camera-cue action block contract. */
+/** @file ActionCameraBlock.h
+ *  @brief Typed camera-cue action block contract.
+ *  @remarks L1 typed payload contract only — no domain mutation;
+ *           providers own handlers/sinks (`IActionNotifyProvider` / capabilities).
+ */
 
 #include "action/ActionNotifyRegistry.h"
 

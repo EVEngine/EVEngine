@@ -92,6 +92,7 @@
         "src/modules/action/Action.h",
         "src/modules/action/AbilitySystem.h",
         "src/modules/action/AbilityAsset.h",
+        "src/modules/action/ActionNotifyContracts.h",
         "docs/dev/战斗系统与动作编辑器.md"
       ],
       "tests": [
@@ -99,6 +100,7 @@
         "test/ability_system.cpp",
         "test/ability_asset.cpp",
         "test/action_ability_script.cpp",
+        "test/action_notify_registry.cpp",
         "scripts/tests/test_architecture_contracts.py"
       ],
       "provides": [],
@@ -141,7 +143,7 @@
         "AbilityRuntime::step owns advance-all + cooldown + synchronize; abilityDefinitionFromTimeline owns timeline→definition assembly via actionTimingFromPhysicalSections; façades must not duplicate those loops.",
         "ActionTiming is the sole ActionRuntime phase authority; timeline.duration must equal timing.total(); splitTimestamps are physical sections only (never read as phases).",
         "Notify Enter/Update/Exit playback is composed via ActionNotifyPlayback (registry + ActionBlockRuntime). ScriptActionRuntime does not own that pipeline.",
-        "Optional presentation/combat sinks (damage, audio, VFX, camera, state windows) are consumed through cap::forEach* inside ActionNotifyRegistry; absence is an observable NotFound path, not a silent success."
+        "Action*Block headers are L1 payload contracts only; optional presentation/combat sinks and IActionNotifyProvider installers own mutation. Absence is an observable NotFound path, not a silent success."
       ],
       "trim": {
         "absent_profile": "Profiles without action drop the protocol host, script factory, and every dependent combat/RTS/tactics adapter that requires EVAction."
@@ -150,6 +152,40 @@
       "cost_notes": [
         "AbilityRuntime::step is relative to active activation count; amortize per simulation step, not per grant."
       ],
+      "hot_path": []
+    },
+    {
+      "id": "action-notify-payload-contracts",
+      "rule": "module-interface",
+      "scope": "src/modules/action/Action*Block.*",
+      "owner": "action::ActionNotifyContracts",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Typed notify/block payload schemas are L1 action contracts; presentation and combat modules own mutation through providers and sinks, not by embedding domain state in action.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/action/ActionNotifyContracts.h",
+        "src/modules/action/ActionNotifyRegistry.h",
+        "src/modules/action/ActionNotifyPlayback.h",
+        "docs/dev/战斗系统与动作编辑器.md"
+      ],
+      "tests": [
+        "test/action_notify_registry.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [
+        "Action*Block / ActionParameterCurve headers decode and validate owning payload bindings only.",
+        "ActionNotifyRegistry owns descriptors and routes handlers; built-in handlers forward to capability sinks; optional IActionNotifyProvider installers supply presentation/combat handlers.",
+        "Missing providers/sinks return structured NotFound at dispatch; descriptors remain editable without the provider module."
+      ],
+      "trim": {
+        "absent_profile": "L4 observable: without audio/particles/combat providers, descriptors remain and dispatch fails NotFound; action L1 contracts stay linked."
+      },
+      "thread_affinity": "Owner/main thread for registry install and synchronous dispatch.",
+      "cost_notes": [],
       "hot_path": []
     }
   ]
