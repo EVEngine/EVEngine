@@ -245,6 +245,7 @@ include(CTest)
 
 set(_vkbuilder_header "${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include/vkbuilder.hpp")
 set(EVENGINE_VKBUILDER_INCLUDE_DIR "${CMAKE_BINARY_DIR}/generated/vkbuilder")
+function(eve_prepare_vkbuilder_headers)
 if(EXISTS "${_vkbuilder_header}")
     file(READ "${_vkbuilder_header}" _vkbuilder_source)
     set(_vkbuilder_original [=[  PipelineBuilder& setColorBlending(vk::PipelineColorBlendStateCreateInfo color_blending) {
@@ -269,11 +270,22 @@ if(EXISTS "${_vkbuilder_header}")
     endif()
     string(REPLACE "${_vkbuilder_original}" "${_vkbuilder_fixed}" _vkbuilder_source
         "${_vkbuilder_source}")
+    if(APPLE AND EVENGINE_THIRD_PARTY_BINARY_DIR)
+        set(_vkbuilder_vulkan_root "${EVENGINE_THIRD_PARTY_BINARY_DIR}/include/vulkan")
+        if(NOT EXISTS "${_vkbuilder_vulkan_root}/vulkan.h" OR
+           NOT EXISTS "${_vkbuilder_vulkan_root}/vulkan.hpp")
+            message(FATAL_ERROR "Prebuilt third-party install is missing pinned Vulkan headers")
+        endif()
+        string(REPLACE "#include <vulkan/vulkan.hpp>"
+            "#include \"${_vkbuilder_vulkan_root}/vulkan.h\"\n#include \"${_vkbuilder_vulkan_root}/vulkan.hpp\""
+            _vkbuilder_source "${_vkbuilder_source}")
+    endif()
     file(MAKE_DIRECTORY "${EVENGINE_VKBUILDER_INCLUDE_DIR}")
     file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include/"
         DESTINATION "${EVENGINE_VKBUILDER_INCLUDE_DIR}")
     file(WRITE "${EVENGINE_VKBUILDER_INCLUDE_DIR}/vkbuilder.hpp" "${_vkbuilder_source}")
 endif()
+endfunction()
 
 
 # Build order: platform -> manifest/profile -> dependencies -> engine modules
@@ -305,6 +317,7 @@ function(main)
     eve_resolve_modules()
 
     load_third_party()
+    eve_prepare_vkbuilder_headers()
     include(${CMAKE_SOURCE_DIR}/cmake/image_webp.cmake)
     load_image_webp()
     load_asset_zstd()

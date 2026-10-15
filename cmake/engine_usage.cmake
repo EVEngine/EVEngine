@@ -239,6 +239,9 @@ function(set_include)
             # The prebuilt install owns the pinned Vulkan-Hpp headers. Linking the
             # imported target also adds SDK headers, which can give inline
             # dispatch helpers a different layout from the engine's dispatcher.
+            # Put the install root ahead of inherited SDK paths for Hpp subheaders.
+            target_compile_options(eve_engine_includes INTERFACE
+                "$<$<COMPILE_LANGUAGE:CXX>:-I${EVENGINE_THIRD_PARTY_BINARY_DIR}/include>")
             set(EVENGINE_VULKAN_LIB "${Vulkan_LIBRARY}" CACHE INTERNAL "Vulkan link target")
         else()
             target_include_directories(eve_engine_includes INTERFACE ${Vulkan_INCLUDE_DIRS})
