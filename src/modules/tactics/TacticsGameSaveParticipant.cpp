@@ -27,35 +27,35 @@ TacticsGameSaveParticipant::TacticsGameSaveParticipant(Battle& battle, SnapshotH
 
 std::string_view TacticsGameSaveParticipant::saveKey() const noexcept { return "tactics"; }
 
-std::string_view TacticsGameSaveParticipant::messageType() const noexcept { return "google.protobuf.BytesValue"; }
+std::string_view TacticsGameSaveParticipant::messageType() const noexcept {
+    return "eve.tactics.proto.BattleSaveEnvelope";
+}
+
+GameSaveMessageTypeMatch TacticsGameSaveParticipant::matchMessageType(std::string_view type) const noexcept {
+    if (type == messageType()) return GameSaveMessageTypeMatch::Current;
+    if (type == "google.protobuf.BytesValue") return GameSaveMessageTypeMatch::Legacy;
+    return GameSaveMessageTypeMatch::Unsupported;
+}
 
 Result<std::string> TacticsGameSaveParticipant::captureBinary() const {
-    auto snapshot = TacticsPersistence::snapshot(*battle_, hashProvider_);
-    if (!snapshot.ok()) return Result<std::string>::failure(snapshot.status());
-    auto json = serializeSnapshotEnvelope(snapshot.value());
-    if (!json.ok()) return Result<std::string>::failure(json.status());
-    google::protobuf::BytesValue message;
-    message.set_value(std::move(json).takeValue());
-    std::string wire;
-    if (!message.SerializeToString(&wire))
-        return Result<std::string>::failure(
-            Diagnostic::error(DiagnosticCode::SerializationError, "tactics save serialization failed"));
-    return Result<std::string>::success(std::move(wire));
+    return TacticsPersistence::snapshotBinary(*battle_, hashProvider_);
 }
 
 Result<std::unique_ptr<IPreparedGameRestore>> TacticsGameSaveParticipant::prepareBinary(std::string_view wire) {
-    if (wire.size() > static_cast<std::size_t>(std::numeric_limits<int>::max()))
-        return Result<std::unique_ptr<IPreparedGameRestore>>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "tactics save is too large"));
-    google::protobuf::BytesValue message;
-    if (!message.ParseFromArray(wire.data(), static_cast<int>(wire.size())) ||
-        !message.GetReflection()->GetUnknownFields(message).empty())
-        return Result<std::unique_ptr<IPreparedGameRestore>>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "tactics save wire is malformed"));
-    auto snapshot = parseSnapshotEnvelope(message.value(), hashProvider_);
-    if (!snapshot.ok()) return Result<std::unique_ptr<IPreparedGameRestore>>::failure(snapshot.status());
-    auto prepared = TacticsPersistence::prepareRestore(*battle_, snapshot.value(), hashProvider_);
-    if (!prepared.ok()) return Result<std::unique_ptr<IPreparedGameRestore>>::failure(prepared.status());
+    auto prepared = TacticsPersistence::prepareRestoreBinary(*battle_, wire, hashProvider_);
+    if (!prepared.ok()) {
+        const auto typedFailure = prepared.status();
+        if (wire.size() > static_cast<std::size_t>(std::numeric_limits<int>::max()))
+            return Result<std::unique_ptr<IPreparedGameRestore>>::failure(typedFailure);
+        google::protobuf::BytesValue legacy;
+        if (!legacy.ParseFromArray(wire.data(), static_cast<int>(wire.size())) ||
+            !legacy.GetReflection()->GetUnknownFields(legacy).empty())
+            return Result<std::unique_ptr<IPreparedGameRestore>>::failure(typedFailure);
+        auto snapshot = parseSnapshotEnvelope(legacy.value(), hashProvider_);
+        if (!snapshot.ok()) return Result<std::unique_ptr<IPreparedGameRestore>>::failure(snapshot.status());
+        prepared = TacticsPersistence::prepareRestore(*battle_, snapshot.value(), hashProvider_);
+        if (!prepared.ok()) return Result<std::unique_ptr<IPreparedGameRestore>>::failure(prepared.status());
+    }
     std::unique_ptr<IPreparedGameRestore> result =
         std::make_unique<PreparedTacticsGameRestore>(std::move(prepared).takeValue());
     return Result<std::unique_ptr<IPreparedGameRestore>>::success(std::move(result));

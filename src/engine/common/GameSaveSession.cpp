@@ -247,7 +247,10 @@ Result<void> GameSaveSession::restoreBinary(std::string_view wire, const Snapsho
         if (saved == states.end())
             return Result<void>::failure(
                 Diagnostic::error(DiagnosticCode::Unsupported, "game-save participant is absent", key));
-        if (saved->second.typeUrl != "type.googleapis.com/" + std::string(participant->messageType()))
+        constexpr std::string_view prefix = "type.googleapis.com/";
+        if (!saved->second.typeUrl.starts_with(prefix) ||
+            participant->matchMessageType(std::string_view(saved->second.typeUrl).substr(prefix.size())) ==
+                GameSaveMessageTypeMatch::Unsupported)
             return Result<void>::failure(
                 Diagnostic::error(DiagnosticCode::UnknownVersion, "game-save participant type differs", key));
         auto candidate = participant->prepareBinary(saved->second.wireBytes);

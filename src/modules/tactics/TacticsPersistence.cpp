@@ -1,4 +1,8 @@
 #include "tactics/TacticsPersistence.h"
+#include "tactics_battle.pb.h"
+
+#include <google/protobuf/io/coded_stream.h>
+#include <google/protobuf/io/zero_copy_stream_impl_lite.h>
 
 #include <algorithm>
 #include <charconv>
@@ -273,6 +277,463 @@ Result<Value> unitValue(TacticalUnit& unit) {
         {"side", subjectValue(side->identity()->subject)},
         {"subject", subjectValue(unit.identity()->subject)},
     }));
+}
+
+void encodeCell(Cell cell, proto::Cell* output) {
+    output->set_x(cell.x);
+    output->set_y(cell.y);
+    output->set_layer(cell.layer);
+}
+
+void encodeReactionCandidate(const ReactionCandidate& candidate, proto::ReactionCandidate* output) {
+    output->set_reactor(candidate.reactor.format());
+    output->set_action(candidate.action.format());
+    output->set_priority(candidate.priority);
+    output->set_initiative(candidate.initiative);
+}
+
+bool serializeDeterministic(const google::protobuf::MessageLite& message, std::string& bytes) {
+    google::protobuf::io::StringOutputStream output(&bytes);
+    google::protobuf::io::CodedOutputStream  coded(&output);
+    coded.SetSerializationDeterministic(true);
+    return message.SerializeToCodedStream(&coded) && !coded.HadError();
+}
+
+Result<proto::BattlePayload> captureBattlePayload(Battle& battle) {
+    proto::BattlePayload payload;
+    payload.set_seed(battle.identity()->seed);
+    payload.set_status(static_cast<int>(battle.turn()->status));
+    payload.set_phase(static_cast<int>(battle.turn()->phase));
+    payload.set_policy(battle.turn()->policyId);
+    payload.set_round(battle.turn()->round);
+    payload.set_cursor(battle.turn()->cursor);
+
+    auto* board = payload.mutable_board();
+    board->set_topology(static_cast<int>(battle.board()->value.topology()));
+    for (const auto& record : battle.board()->value.records()) {
+        auto* cell = board->add_cells();
+        encodeCell(record.cell, cell->mutable_cell());
+        cell->set_height(record.state.height);
+        cell->set_move_cost(record.state.moveCost);
+        cell->set_passable(record.state.passable);
+        for (const auto& tag : record.state.tags) cell->add_tags(tag);
+    }
+    for (const auto& record : battle.board()->value.edgeRecords()) {
+        auto* edge = board->add_edges();
+        encodeCell(record.from, edge->mutable_from());
+        encodeCell(record.to, edge->mutable_to());
+        edge->set_passable(record.state.passable);
+        edge->set_extra_cost(record.state.extraCost);
+        for (const auto& tag : record.state.tags) edge->add_tags(tag);
+    }
+    for (const auto& handle : battle.turn()->sides) {
+        auto* side = resolve<TacticalSide>(handle);
+        if (!side)
+            return Result<proto::BattlePayload>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle, "battle contains a stale side", "sides"));
+        payload.add_sides(side->identity()->subject.format());
+    }
+    for (const auto& handle : battle.turn()->units) {
+        auto* unit = resolve<TacticalUnit>(handle);
+        if (!unit)
+            return Result<proto::BattlePayload>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle, "battle contains a stale unit", "units"));
+        auto* side = resolve<TacticalSide>(unit->membership()->side);
+        if (!side)
+            return Result<proto::BattlePayload>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle, "unit belongs to a stale side", "units.side"));
+        auto* saved = payload.add_units();
+        saved->set_subject(unit->identity()->subject.format());
+        saved->set_side(side->identity()->subject.format());
+        saved->set_definition(unit->identity()->definition.isValid() ? unit->identity()->definition.format()
+                                                                     : std::string{});
+        encodeCell(unit->position()->cell, saved->mutable_cell());
+        saved->set_facing(unit->position()->facing);
+        saved->set_placed(unit->position()->placed);
+        const auto& turn = *unit->turn();
+        saved->set_alive(turn.alive);
+        saved->set_acted(turn.acted);
+        saved->set_action_points(turn.actionPoints);
+        saved->set_move_points(turn.movePoints);
+        saved->set_reaction_points(turn.reactionPoints);
+        saved->set_round_action_points(turn.roundActionPoints);
+        saved->set_round_move_points(turn.roundMovePoints);
+        saved->set_round_reaction_points(turn.roundReactionPoints);
+        saved->set_initiative(turn.initiative);
+        saved->set_charge(turn.charge);
+    }
+    if (battle.turn()->activeUnit) {
+        auto* active = resolve<TacticalUnit>(*battle.turn()->activeUnit);
+        if (!active)
+            return Result<proto::BattlePayload>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle, "battle active unit is stale", "activeUnit"));
+        payload.set_active_unit(active->identity()->subject.format());
+    } else {
+        payload.set_active_unit("");
+    }
+    for (const auto& handle : battle.turn()->schedule) {
+        auto* unit = resolve<TacticalUnit>(handle);
+        if (!unit)
+            return Result<proto::BattlePayload>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle, "battle schedule is stale", "schedule"));
+        payload.add_schedule(unit->identity()->subject.format());
+    }
+
+    auto* events = payload.mutable_events();
+    events->set_next_sequence(battle.events()->nextSequence);
+    for (const auto& event : battle.events()->values) {
+        auto* saved = events->add_values();
+        saved->set_sequence(event.sequence);
+        saved->set_causation_command(event.causationCommand);
+        saved->set_correlation_command(event.correlationCommand);
+        saved->set_from(static_cast<int>(event.from));
+        saved->set_to(static_cast<int>(event.to));
+        saved->set_tick(event.tick.value());
+        saved->set_type(event.type);
+        saved->set_subject(event.subject.isValid() ? event.subject.format() : std::string{});
+    }
+    auto* reactions = payload.mutable_reactions();
+    reactions->set_max_depth(battle.reactions()->maxDepth);
+    for (const auto& seen : battle.reactions()->seen) reactions->add_seen(seen);
+    for (const auto& window : battle.reactions()->stack) {
+        auto* saved = reactions->add_stack();
+        saved->set_trigger_sequence(window.triggerSequence);
+        saved->set_depth(window.depth);
+        for (const auto& candidate : window.candidates) encodeReactionCandidate(candidate, saved->add_candidates());
+    }
+    auto* commands = payload.mutable_commands();
+    commands->set_next_sequence(battle.commands()->nextSequence);
+    for (const auto& command : battle.commands()->values) {
+        auto* saved = commands->add_values();
+        saved->set_sequence(command.sequence);
+        saved->set_kind(static_cast<int>(command.kind));
+        saved->set_expected_revision(command.expectedRevision.value());
+        saved->set_resulting_revision(command.resultingRevision.value());
+        saved->set_tick(command.step.tick.value());
+        saved->set_delta_nanoseconds(command.step.delta.nanoseconds());
+        saved->set_actor(command.actor.isValid() ? command.actor.format() : std::string{});
+        encodeCell(command.cell, saved->mutable_cell());
+        saved->set_target_unit(command.targetUnit.isValid() ? command.targetUnit.format() : std::string{});
+        saved->set_payload(command.payload);
+        saved->set_facing(command.facing);
+        saved->set_policy(command.policyId);
+        saved->set_trigger_sequence(command.triggerSequence);
+        saved->set_action(command.action.isValid() ? command.action.format() : std::string{});
+        for (const auto& candidate : command.candidates) encodeReactionCandidate(candidate, saved->add_candidates());
+    }
+    for (const auto& objective : battle.objectives()->values) {
+        auto* saved = payload.add_objectives();
+        saved->set_id(objective.spec.id.format());
+        saved->set_kind(static_cast<int>(objective.spec.kind));
+        saved->set_beneficiary_side(objective.spec.beneficiarySide.format());
+        saved->set_target_side(objective.spec.targetSide.isValid() ? objective.spec.targetSide.format()
+                                                                   : std::string{});
+        saved->set_required_round(objective.spec.requiredRound);
+        for (const auto& cell : objective.spec.requiredCells) encodeCell(cell, saved->add_required_cells());
+        saved->set_ends_battle(objective.spec.endsBattle);
+        saved->set_status(static_cast<int>(objective.status));
+        saved->set_completed_revision(objective.completedRevision.value());
+    }
+    for (const auto& [name, state] : battle.random()->streams) {
+        auto& saved = (*payload.mutable_random())[name];
+        saved.set_state(state.state);
+        saved.set_roll_index(state.rollIndex);
+    }
+    return Result<proto::BattlePayload>::success(std::move(payload));
+}
+
+bool hasUnknownProtoFields(const google::protobuf::Message& message) {
+    const auto* reflection = message.GetReflection();
+    if (!reflection->GetUnknownFields(message).empty()) return true;
+    std::vector<const google::protobuf::FieldDescriptor*> fields;
+    reflection->ListFields(message, &fields);
+    for (const auto* field : fields) {
+        if (field->cpp_type() != google::protobuf::FieldDescriptor::CPPTYPE_MESSAGE) continue;
+        if (field->is_repeated()) {
+            for (int index = 0; index < reflection->FieldSize(message, field); ++index)
+                if (hasUnknownProtoFields(reflection->GetRepeatedMessage(message, field, index))) return true;
+        } else if (hasUnknownProtoFields(reflection->GetMessage(message, field))) {
+            return true;
+        }
+    }
+    return false;
+}
+
+Result<SubjectRef> parseProtoSubject(std::string_view text, std::string path, bool allowNil = false) {
+    if (allowNil && text.empty()) return Result<SubjectRef>::success(SubjectRef::nil());
+    const auto id = PersistentId::parse(text);
+    if (!id || id->isNil())
+        return Result<SubjectRef>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid subject UUID", std::move(path)));
+    return Result<SubjectRef>::success(SubjectRef::fromPersistentId(*id));
+}
+
+Result<LogicalId> parseProtoLogicalId(std::string_view text, std::string path) {
+    const auto id = LogicalId::parse(text);
+    if (!id)
+        return Result<LogicalId>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid logical ID", std::move(path)));
+    return Result<LogicalId>::success(*id);
+}
+
+Result<Cell> parseProtoCell(const proto::Cell& value, std::string path) {
+    if (!value.has_x() || !value.has_y() || !value.has_layer())
+        return Result<Cell>::failure(Diagnostic::error(DiagnosticCode::ParseError, "incomplete cell", std::move(path)));
+    return Result<Cell>::success(Cell{value.x(), value.y(), value.layer()});
+}
+
+Result<ReactionCandidate> parseProtoReactionCandidate(const proto::ReactionCandidate& value, std::string path) {
+    if (!value.has_reactor() || !value.has_action() || !value.has_priority() || !value.has_initiative())
+        return Result<ReactionCandidate>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "incomplete reaction candidate", path));
+    auto reactor = parseProtoSubject(value.reactor(), path + ".reactor");
+    auto action  = parseProtoLogicalId(value.action(), path + ".action");
+    if (!reactor.ok()) {
+        action.ok();
+        return Result<ReactionCandidate>::failure(reactor.status());
+    }
+    if (!action.ok()) return Result<ReactionCandidate>::failure(action.status());
+    return Result<ReactionCandidate>::success({reactor.value(), action.value(), value.priority(), value.initiative()});
+}
+
+Result<Battle::Events> parseProtoEvents(const proto::EventStream& source) {
+    if (!source.has_next_sequence() || source.next_sequence() == 0)
+        return Result<Battle::Events>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid event sequence", "payload.events"));
+    Battle::Events result;
+    result.nextSequence    = source.next_sequence();
+    std::uint64_t previous = 0;
+    for (int i = 0; i < source.values_size(); ++i) {
+        const auto&       event = source.values(i);
+        const std::string path  = "payload.events.values[" + std::to_string(i) + "]";
+        if (!event.has_sequence() || !event.has_causation_command() || !event.has_correlation_command() ||
+            !event.has_from() || !event.has_to() || !event.has_tick() || !event.has_type() || !event.has_subject() ||
+            event.type().empty() || event.sequence() <= previous || event.sequence() >= result.nextSequence ||
+            event.causation_command() == 0 || event.correlation_command() == 0 || event.from() < 0 ||
+            event.from() > static_cast<int>(BattlePhase::BattleEnd) || event.to() < 0 ||
+            event.to() > static_cast<int>(BattlePhase::BattleEnd))
+            return Result<Battle::Events>::failure(
+                Diagnostic::error(DiagnosticCode::InvariantViolation, "invalid event record", path));
+        auto subject = parseProtoSubject(event.subject(), path + ".subject", true);
+        if (!subject.ok()) return Result<Battle::Events>::failure(subject.status());
+        result.values.push_back({event.sequence(), event.causation_command(), event.correlation_command(),
+                                 static_cast<BattlePhase>(event.from()), static_cast<BattlePhase>(event.to()),
+                                 SimulationTick(event.tick()), event.type(), subject.value()});
+        previous = event.sequence();
+    }
+    return Result<Battle::Events>::success(std::move(result));
+}
+
+Result<Battle::Reactions> parseProtoReactions(const proto::Reactions& source, BattlePhase phase) {
+    if (!source.has_max_depth() || source.max_depth() == 0 || source.max_depth() > SIZE_MAX ||
+        static_cast<std::uint64_t>(source.stack_size()) > source.max_depth())
+        return Result<Battle::Reactions>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid reaction limits", "payload.reactions"));
+    Battle::Reactions result;
+    result.maxDepth = static_cast<std::size_t>(source.max_depth());
+    std::set<std::string> seen;
+    for (const auto& key : source.seen()) {
+        if (key.empty() || !seen.insert(key).second)
+            return Result<Battle::Reactions>::failure(Diagnostic::error(
+                DiagnosticCode::InvariantViolation, "invalid reaction cycle guard", "payload.reactions.seen"));
+        result.seen.push_back(key);
+    }
+    for (int i = 0; i < source.stack_size(); ++i) {
+        const auto&       sourceWindow = source.stack(i);
+        const std::string path         = "payload.reactions.stack[" + std::to_string(i) + "]";
+        if (!sourceWindow.has_trigger_sequence() || sourceWindow.trigger_sequence() == 0 || !sourceWindow.has_depth() ||
+            sourceWindow.depth() != static_cast<std::uint64_t>(i + 1) || sourceWindow.candidates_size() == 0)
+            return Result<Battle::Reactions>::failure(
+                Diagnostic::error(DiagnosticCode::InvariantViolation, "invalid reaction window", path));
+        ReactionWindow window{sourceWindow.trigger_sequence(), static_cast<std::size_t>(sourceWindow.depth()), {}};
+        std::set<std::string> unique;
+        for (int j = 0; j < sourceWindow.candidates_size(); ++j) {
+            auto candidate = parseProtoReactionCandidate(sourceWindow.candidates(j),
+                                                         path + ".candidates[" + std::to_string(j) + "]");
+            if (!candidate.ok()) return Result<Battle::Reactions>::failure(candidate.status());
+            const auto key = candidate.value().reactor.format() + ":" + candidate.value().action.format();
+            if (!unique.insert(key).second)
+                return Result<Battle::Reactions>::failure(
+                    Diagnostic::error(DiagnosticCode::Conflict, "duplicate reaction candidate", path));
+            window.candidates.push_back(std::move(candidate).takeValue());
+        }
+        result.stack.push_back(std::move(window));
+    }
+    if ((phase == BattlePhase::Reaction) != !result.stack.empty())
+        return Result<Battle::Reactions>::failure(Diagnostic::error(
+            DiagnosticCode::InvariantViolation, "reaction phase and stack disagree", "payload.reactions.stack"));
+    return Result<Battle::Reactions>::success(std::move(result));
+}
+
+Result<Battle::Commands> parseProtoCommands(const proto::CommandStream& source, Revision revision) {
+    if (!source.has_next_sequence() || source.next_sequence() == 0)
+        return Result<Battle::Commands>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid command sequence", "payload.commands"));
+    Battle::Commands result;
+    result.nextSequence            = source.next_sequence();
+    std::uint64_t previousSequence = 0;
+    Revision      previousRevision;
+    for (int i = 0; i < source.values_size(); ++i) {
+        const auto&       value = source.values(i);
+        const std::string path  = "payload.commands.values[" + std::to_string(i) + "]";
+        if (!value.has_sequence() || !value.has_kind() || !value.has_expected_revision() ||
+            !value.has_resulting_revision() || !value.has_tick() || !value.has_delta_nanoseconds() ||
+            !value.has_actor() || !value.has_cell() || !value.has_target_unit() || !value.has_facing() ||
+            !value.has_policy() || !value.has_trigger_sequence() || !value.has_action() || value.kind() < 0 ||
+            value.kind() > static_cast<int>(BattleCommandKind::UseAbility) || value.policy().empty() ||
+            value.payload().size() > kMaxAbilityPayloadBytes || value.sequence() <= previousSequence ||
+            value.sequence() >= result.nextSequence ||
+            value.expected_revision() == std::numeric_limits<std::uint64_t>::max() ||
+            value.resulting_revision() != value.expected_revision() + 1 ||
+            (i > 0 && value.expected_revision() != previousRevision.value()))
+            return Result<Battle::Commands>::failure(
+                Diagnostic::error(DiagnosticCode::InvariantViolation, "invalid command record", path));
+        auto       actor    = parseProtoSubject(value.actor(), path + ".actor", true);
+        auto       target   = parseProtoSubject(value.target_unit(), path + ".target_unit", true);
+        auto       cell     = parseProtoCell(value.cell(), path + ".cell");
+        const bool actorOk  = actor.ok();
+        const bool targetOk = target.ok();
+        const bool cellOk   = cell.ok();
+        if (!actorOk) return Result<Battle::Commands>::failure(actor.status());
+        if (!targetOk) return Result<Battle::Commands>::failure(target.status());
+        if (!cellOk) return Result<Battle::Commands>::failure(cell.status());
+        BattleCommand command;
+        command.sequence          = value.sequence();
+        command.kind              = static_cast<BattleCommandKind>(value.kind());
+        command.expectedRevision  = Revision(value.expected_revision());
+        command.resultingRevision = Revision(value.resulting_revision());
+        command.step            = {SimulationTick(value.tick()), Duration::fromNanoseconds(value.delta_nanoseconds())};
+        command.actor           = actor.value();
+        command.cell            = cell.value();
+        command.targetUnit      = target.value();
+        command.payload         = value.payload();
+        command.facing          = value.facing();
+        command.policyId        = value.policy();
+        command.triggerSequence = value.trigger_sequence();
+        if (!value.action().empty()) {
+            auto action = parseProtoLogicalId(value.action(), path + ".action");
+            if (!action.ok()) return Result<Battle::Commands>::failure(action.status());
+            command.action = action.value();
+        }
+        for (int j = 0; j < value.candidates_size(); ++j) {
+            auto candidate =
+                parseProtoReactionCandidate(value.candidates(j), path + ".candidates[" + std::to_string(j) + "]");
+            if (!candidate.ok()) return Result<Battle::Commands>::failure(candidate.status());
+            command.candidates.push_back(std::move(candidate).takeValue());
+        }
+        const bool invalid = [&] {
+            switch (command.kind) {
+                case BattleCommandKind::Start:
+                case BattleCommandKind::Finish: return false;
+                case BattleCommandKind::Advance:
+                    return command.step.tick.isZero() || command.step.delta.nanoseconds() < 0;
+                case BattleCommandKind::Move:
+                case BattleCommandKind::Face:
+                case BattleCommandKind::Wait:
+                case BattleCommandKind::EndTurn:
+                case BattleCommandKind::DefeatUnit: return !command.actor.isValid();
+                case BattleCommandKind::OpenReaction: return command.triggerSequence == 0 || command.candidates.empty();
+                case BattleCommandKind::AcceptReaction:
+                    return command.triggerSequence == 0 || !command.actor.isValid() || !command.action.isValid();
+                case BattleCommandKind::DeclineReaction: return command.triggerSequence == 0;
+                case BattleCommandKind::RollRandom: return !command.action.isValid();
+                case BattleCommandKind::UseAbility:
+                    return command.triggerSequence != 0 || !command.actor.isValid() || !command.action.isValid();
+            }
+            return true;
+        }();
+        if (invalid)
+            return Result<Battle::Commands>::failure(Diagnostic::error(
+                DiagnosticCode::InvariantViolation, "command fields disagree with command kind", path));
+        previousSequence = command.sequence;
+        previousRevision = command.resultingRevision;
+        result.values.push_back(std::move(command));
+    }
+    if (!result.values.empty() && result.values.back().resultingRevision != revision)
+        return Result<Battle::Commands>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "command log revision differs from snapshot revision", "payload.commands"));
+    return Result<Battle::Commands>::success(std::move(result));
+}
+
+Result<Battle::Random> parseProtoRandom(const proto::BattlePayload& source) {
+    Battle::Random result;
+    for (const auto& [name, state] : source.random()) {
+        if (!LogicalId::parse(name) || !state.has_state() || !state.has_roll_index() || state.roll_index() == 0)
+            return Result<Battle::Random>::failure(Diagnostic::error(
+                DiagnosticCode::InvariantViolation, "invalid random stream", "payload.random." + name));
+        result.streams.emplace(name, Battle::RandomStreamState{state.state(), state.roll_index()});
+    }
+    return Result<Battle::Random>::success(std::move(result));
+}
+
+Result<Battle::Objectives> parseProtoObjectives(Battle& battle, const BoardState& board,
+                                                const proto::BattlePayload& source, Revision revision) {
+    std::set<std::string> sides;
+    for (const auto& handle : battle.turn()->sides) {
+        auto* side = resolve<TacticalSide>(handle);
+        if (!side)
+            return Result<Battle::Objectives>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle, "target battle contains a stale side"));
+        sides.insert(side->identity()->subject.format());
+    }
+    Battle::Objectives    result;
+    std::set<std::string> ids;
+    for (int i = 0; i < source.objectives_size(); ++i) {
+        const auto&       value = source.objectives(i);
+        const std::string path  = "payload.objectives[" + std::to_string(i) + "]";
+        if (!value.has_id() || !value.has_kind() || !value.has_beneficiary_side() || !value.has_target_side() ||
+            !value.has_required_round() || !value.has_ends_battle() || !value.has_status() ||
+            !value.has_completed_revision() || value.kind() < 0 ||
+            value.kind() > static_cast<int>(ObjectiveKind::OccupyCells) || value.status() < 0 ||
+            value.status() > static_cast<int>(ObjectiveStatus::Completed) ||
+            value.completed_revision() > revision.value())
+            return Result<Battle::Objectives>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "invalid objective record", path));
+        auto       id            = parseProtoLogicalId(value.id(), path + ".id");
+        auto       beneficiary   = parseProtoSubject(value.beneficiary_side(), path + ".beneficiary_side");
+        auto       target        = parseProtoSubject(value.target_side(), path + ".target_side", true);
+        const bool idOk          = id.ok();
+        const bool beneficiaryOk = beneficiary.ok();
+        const bool targetOk      = target.ok();
+        if (!idOk) return Result<Battle::Objectives>::failure(id.status());
+        if (!beneficiaryOk) return Result<Battle::Objectives>::failure(beneficiary.status());
+        if (!targetOk) return Result<Battle::Objectives>::failure(target.status());
+        if (!ids.insert(id.value().format()).second || !sides.contains(beneficiary.value().format()) ||
+            (target.value().isValid() && !sides.contains(target.value().format())))
+            return Result<Battle::Objectives>::failure(
+                Diagnostic::error(DiagnosticCode::InvariantViolation, "invalid objective identity", path));
+        ObjectiveState objective;
+        objective.spec.id              = id.value();
+        objective.spec.kind            = static_cast<ObjectiveKind>(value.kind());
+        objective.spec.beneficiarySide = beneficiary.value();
+        objective.spec.targetSide      = target.value();
+        objective.spec.requiredRound   = value.required_round();
+        objective.spec.endsBattle      = value.ends_battle();
+        objective.status               = static_cast<ObjectiveStatus>(value.status());
+        objective.completedRevision    = Revision(value.completed_revision());
+        for (int j = 0; j < value.required_cells_size(); ++j) {
+            auto cell = parseProtoCell(value.required_cells(j), path + ".required_cells[" + std::to_string(j) + "]");
+            if (!cell.ok()) return Result<Battle::Objectives>::failure(cell.status());
+            if (!board.contains(cell.value()))
+                return Result<Battle::Objectives>::failure(
+                    Diagnostic::error(DiagnosticCode::InvariantViolation, "invalid objective cell", path));
+            objective.spec.requiredCells.push_back(cell.value());
+        }
+        if ((objective.status == ObjectiveStatus::Pending && !objective.completedRevision.isZero()) ||
+            (objective.status == ObjectiveStatus::Completed && objective.completedRevision.isZero()) ||
+            (objective.spec.kind == ObjectiveKind::EliminateSide && !objective.spec.targetSide.isValid()) ||
+            (objective.spec.kind == ObjectiveKind::SurviveRounds && objective.spec.requiredRound == 0) ||
+            (objective.spec.kind == ObjectiveKind::OccupyCells && objective.spec.requiredCells.empty()))
+            return Result<Battle::Objectives>::failure(
+                Diagnostic::error(DiagnosticCode::InvariantViolation, "inconsistent objective state", path));
+        std::sort(objective.spec.requiredCells.begin(), objective.spec.requiredCells.end());
+        if (std::adjacent_find(objective.spec.requiredCells.begin(), objective.spec.requiredCells.end()) !=
+            objective.spec.requiredCells.end())
+            return Result<Battle::Objectives>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "duplicate objective cell", path));
+        result.values.push_back(std::move(objective));
+    }
+    return Result<Battle::Objectives>::success(std::move(result));
 }
 
 Result<int> intField(const Value::Object& value, std::string_view name, const std::string& path) {
@@ -1163,6 +1624,226 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
     return Result<Candidate>::success(std::move(result));
 }
 
+Result<Candidate> parseProtoCandidate(Battle& battle, const proto::BattlePayload& source, Revision revision) {
+    if (!source.has_seed() || !source.has_status() || !source.has_phase() || !source.has_policy() ||
+        !source.has_round() || !source.has_cursor() || !source.has_active_unit() || !source.has_board() ||
+        !source.has_events() || !source.has_reactions() || !source.has_commands() || source.status() < 0 ||
+        source.status() > static_cast<int>(BattleStatus::Ended) || source.phase() < 0 ||
+        source.phase() > static_cast<int>(BattlePhase::BattleEnd) || source.policy().empty() ||
+        source.cursor() > SIZE_MAX)
+        return Result<Candidate>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "incomplete battle payload", "payload"));
+    Candidate result;
+    result.seed       = source.seed();
+    result.status     = static_cast<BattleStatus>(source.status());
+    result.phase      = static_cast<BattlePhase>(source.phase());
+    result.policyId   = source.policy();
+    result.round      = source.round();
+    result.cursor     = static_cast<std::size_t>(source.cursor());
+    const auto& board = source.board();
+    if (!board.has_topology() || board.topology() < 0 ||
+        board.topology() > static_cast<int>(BoardTopology::ExplicitGraph))
+        return Result<Candidate>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid board topology", "payload.board.topology"));
+    result.board.setTopology(static_cast<BoardTopology>(board.topology()));
+    for (int i = 0; i < board.cells_size(); ++i) {
+        const auto&       value = board.cells(i);
+        const std::string path  = "payload.board.cells[" + std::to_string(i) + "]";
+        if (!value.has_cell() || !value.has_height() || !value.has_move_cost() || !value.has_passable())
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "incomplete board cell", path));
+        auto cell = parseProtoCell(value.cell(), path + ".cell");
+        if (!cell.ok()) return Result<Candidate>::failure(cell.status());
+        CellState state{value.move_cost(), value.height(), value.passable(), {}};
+        for (const auto& tag : value.tags()) state.tags.push_back(tag);
+        auto added = result.board.addCell(cell.value(), std::move(state));
+        if (!added.ok()) return Result<Candidate>::failure(added.status());
+    }
+    for (int i = 0; i < board.edges_size(); ++i) {
+        const auto&       value = board.edges(i);
+        const std::string path  = "payload.board.edges[" + std::to_string(i) + "]";
+        if (!value.has_from() || !value.has_to() || !value.has_passable() || !value.has_extra_cost())
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "incomplete board edge", path));
+        auto       from   = parseProtoCell(value.from(), path + ".from");
+        auto       to     = parseProtoCell(value.to(), path + ".to");
+        const bool fromOk = from.ok();
+        const bool toOk   = to.ok();
+        if (!fromOk) return Result<Candidate>::failure(from.status());
+        if (!toOk) return Result<Candidate>::failure(to.status());
+        EdgeState state;
+        state.passable  = value.passable();
+        state.extraCost = value.extra_cost();
+        for (const auto& tag : value.tags()) state.tags.push_back(tag);
+        auto added = result.board.addEdge(from.value(), to.value(), std::move(state));
+        if (!added.ok()) return Result<Candidate>::failure(added.status());
+    }
+    std::map<std::string, TacticalSide*> sides;
+    for (const auto& handle : battle.turn()->sides) {
+        auto* side = resolve<TacticalSide>(handle);
+        if (!side)
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle, "target battle contains a stale side"));
+        sides.emplace(side->identity()->subject.format(), side);
+    }
+    if (static_cast<std::size_t>(source.sides_size()) != sides.size())
+        return Result<Candidate>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "snapshot side set differs from target battle", "payload.sides"));
+    std::set<std::string> restoredSides;
+    for (const auto& text : source.sides()) {
+        auto id = parseProtoSubject(text, "payload.sides");
+        if (!id.ok()) return Result<Candidate>::failure(id.status());
+        const auto found = sides.find(id.value().format());
+        if (found == sides.end() || !restoredSides.insert(found->first).second)
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "snapshot side cannot resolve uniquely", "payload.sides"));
+        result.sides.push_back(found->second->identity()->self);
+    }
+    std::map<std::string, TacticalUnit*> units;
+    for (const auto& handle : battle.turn()->units) {
+        auto* unit = resolve<TacticalUnit>(handle);
+        if (!unit)
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle, "target battle contains a stale unit"));
+        units.emplace(unit->identity()->subject.format(), unit);
+    }
+    if (static_cast<std::size_t>(source.units_size()) != units.size())
+        return Result<Candidate>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "snapshot unit set differs from target battle", "payload.units"));
+    std::set<std::string> restoredUnits;
+    for (int i = 0; i < source.units_size(); ++i) {
+        const auto&       value = source.units(i);
+        const std::string path  = "payload.units[" + std::to_string(i) + "]";
+        if (!value.has_subject() || !value.has_side() || !value.has_definition() || !value.has_cell() ||
+            !value.has_facing() || !value.has_placed() || !value.has_alive() || !value.has_acted() ||
+            !value.has_action_points() || !value.has_move_points() || !value.has_reaction_points() ||
+            !value.has_round_action_points() || !value.has_round_move_points() || !value.has_round_reaction_points() ||
+            !value.has_initiative() || !value.has_charge() || value.charge() < 0 || value.alive() != value.placed())
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "invalid unit record", path));
+        auto       id     = parseProtoSubject(value.subject(), path + ".subject");
+        auto       side   = parseProtoSubject(value.side(), path + ".side");
+        auto       cell   = parseProtoCell(value.cell(), path + ".cell");
+        const bool idOk   = id.ok();
+        const bool sideOk = side.ok();
+        const bool cellOk = cell.ok();
+        if (!idOk) return Result<Candidate>::failure(id.status());
+        if (!sideOk) return Result<Candidate>::failure(side.status());
+        if (!cellOk) return Result<Candidate>::failure(cell.status());
+        const auto found     = units.find(id.value().format());
+        const auto foundSide = sides.find(side.value().format());
+        if (found == units.end() || !restoredUnits.insert(found->first).second || foundSide == sides.end())
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "unit cannot resolve uniquely", path));
+        LogicalId definition;
+        if (!value.definition().empty()) {
+            auto parsed = parseProtoLogicalId(value.definition(), path + ".definition");
+            if (!parsed.ok()) return Result<Candidate>::failure(parsed.status());
+            definition = parsed.value();
+        }
+        const int facingCount = result.board.topology() == BoardTopology::Square4   ? 4
+                                : result.board.topology() == BoardTopology::Square8 ? 8
+                                                                                    : 6;
+        if (value.facing() < 0 || value.facing() >= facingCount ||
+            (result.board.topology() == BoardTopology::ExplicitGraph && value.facing() != 0))
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::InvariantViolation, "unit facing is invalid", path));
+        TacticalUnit::TurnResources turn;
+        turn.alive               = value.alive();
+        turn.acted               = value.acted();
+        turn.actionPoints        = value.action_points();
+        turn.movePoints          = value.move_points();
+        turn.reactionPoints      = value.reaction_points();
+        turn.roundActionPoints   = value.round_action_points();
+        turn.roundMovePoints     = value.round_move_points();
+        turn.roundReactionPoints = value.round_reaction_points();
+        turn.initiative          = value.initiative();
+        turn.charge              = value.charge();
+        if (value.placed()) {
+            auto placed = result.board.place(id.value(), cell.value());
+            if (!placed.ok()) return Result<Candidate>::failure(placed.status());
+        }
+        result.units.push_back({found->second, foundSide->second->identity()->self, definition, cell.value(),
+                                value.facing(), value.placed(), turn});
+    }
+    auto active = parseProtoSubject(source.active_unit(), "payload.active_unit", true);
+    if (!active.ok()) return Result<Candidate>::failure(active.status());
+    if (active.value().isValid()) {
+        const auto found = units.find(active.value().format());
+        if (found == units.end())
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "active unit is absent", "payload.active_unit"));
+        result.activeUnit = found->second->identity()->self;
+        result.activeSide = found->second->membership()->side;
+    }
+    if (result.cursor >= result.units.size() && !result.units.empty())
+        return Result<Candidate>::failure(
+            Diagnostic::error(DiagnosticCode::InvariantViolation, "turn cursor is outside unit roster"));
+    std::set<std::string> scheduled;
+    for (const auto& text : source.schedule()) {
+        auto id = parseProtoSubject(text, "payload.schedule");
+        if (!id.ok()) return Result<Candidate>::failure(id.status());
+        const auto found = units.find(id.value().format());
+        if (found == units.end() || !scheduled.insert(found->first).second)
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "invalid scheduled unit", "payload.schedule"));
+        result.schedule.push_back(found->second->identity()->self);
+    }
+    const bool activationPhase = result.phase == BattlePhase::TurnStart || result.phase == BattlePhase::Acting ||
+                                 result.phase == BattlePhase::TurnEnd;
+    if (activationPhase && result.cursor >= result.schedule.size())
+        return Result<Candidate>::failure(
+            Diagnostic::error(DiagnosticCode::InvariantViolation, "turn cursor is outside schedule"));
+    auto       events       = parseProtoEvents(source.events());
+    auto       reactions    = parseProtoReactions(source.reactions(), result.phase);
+    auto       commands     = parseProtoCommands(source.commands(), revision);
+    auto       objectives   = parseProtoObjectives(battle, result.board, source, revision);
+    auto       random       = parseProtoRandom(source);
+    const bool eventsOk     = events.ok();
+    const bool reactionsOk  = reactions.ok();
+    const bool commandsOk   = commands.ok();
+    const bool objectivesOk = objectives.ok();
+    const bool randomOk     = random.ok();
+    if (!eventsOk) return Result<Candidate>::failure(events.status());
+    if (!reactionsOk) return Result<Candidate>::failure(reactions.status());
+    if (!commandsOk) return Result<Candidate>::failure(commands.status());
+    if (!objectivesOk) return Result<Candidate>::failure(objectives.status());
+    if (!randomOk) return Result<Candidate>::failure(random.status());
+    result.events     = std::move(events).takeValue();
+    result.reactions  = std::move(reactions).takeValue();
+    result.commands   = std::move(commands).takeValue();
+    result.objectives = std::move(objectives).takeValue();
+    result.random     = std::move(random).takeValue();
+    std::set<std::uint64_t>              commandSequences;
+    std::map<std::string, std::uint64_t> randomCommandCounts;
+    for (const auto& command : result.commands.values) {
+        commandSequences.insert(command.sequence);
+        if (command.kind == BattleCommandKind::RollRandom) ++randomCommandCounts[command.action.format()];
+    }
+    for (const auto& [stream, state] : result.random.streams)
+        if (randomCommandCounts[stream] != state.rollIndex)
+            return Result<Candidate>::failure(Diagnostic::error(
+                DiagnosticCode::InvariantViolation, "random roll index differs from command log", "payload.random"));
+    for (const auto& event : result.events.values)
+        if (!commandSequences.contains(event.causationCommand) || !commandSequences.contains(event.correlationCommand))
+            return Result<Candidate>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                                "event references absent command", "payload.events"));
+    std::set<std::uint64_t> eventSequences;
+    for (const auto& event : result.events.values) eventSequences.insert(event.sequence);
+    for (const auto& window : result.reactions.stack) {
+        if (!eventSequences.contains(window.triggerSequence))
+            return Result<Candidate>::failure(Diagnostic::error(
+                DiagnosticCode::InvariantViolation, "reaction references absent event", "payload.reactions"));
+        for (const auto& candidate : window.candidates)
+            if (!units.contains(candidate.reactor.format()))
+                return Result<Candidate>::failure(
+                    Diagnostic::error(DiagnosticCode::Conflict, "reaction candidate is absent", "payload.reactions"));
+    }
+    auto valid = result.board.validateInvariants();
+    if (!valid.ok()) return Result<Candidate>::failure(valid.status());
+    return Result<Candidate>::success(std::move(result));
+}
+
 }  // namespace
 
 struct TacticsPersistence::PreparedRestore::Impl {
@@ -1277,6 +1958,82 @@ Result<SnapshotEnvelope> TacticsPersistence::snapshot(Battle& battle, const Snap
     return makeSnapshotEnvelope(std::string(kType), schema(), SchemaVersion(version),
                                 battle.identity()->subject.persistentId(), battle.turn()->revision, battle.turn()->tick,
                                 std::move(payload), hashProvider);
+}
+
+Result<std::string> TacticsPersistence::snapshotBinary(Battle& battle, const SnapshotHashProvider& hashProvider) {
+    if (!hashProvider)
+        return Result<std::string>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "tactics snapshot requires a hash provider"));
+    auto captured = captureBattlePayload(battle);
+    if (!captured.ok()) return Result<std::string>::failure(captured.status());
+    std::string payloadWire;
+    if (!serializeDeterministic(captured.value(), payloadWire))
+        return Result<std::string>::failure(
+            Diagnostic::error(DiagnosticCode::SerializationError, "tactics payload serialization failed"));
+    auto digest = hashProvider(payloadWire);
+    if (!digest.ok()) return Result<std::string>::failure(digest.status());
+    const auto                digestBytes = digest.value().bytes();
+    proto::BattleSaveEnvelope envelope;
+    envelope.set_type(std::string(kType));
+    envelope.set_schema(schema().format());
+    envelope.set_version(8);
+    envelope.set_instance_id(battle.identity()->subject.format());
+    envelope.set_revision(battle.turn()->revision.value());
+    envelope.set_tick(battle.turn()->tick.value());
+    envelope.set_payload_wire(std::move(payloadWire));
+    envelope.set_digest(std::string(reinterpret_cast<const char*>(digestBytes.data()), digestBytes.size()));
+    std::string wire;
+    if (!serializeDeterministic(envelope, wire))
+        return Result<std::string>::failure(
+            Diagnostic::error(DiagnosticCode::SerializationError, "tactics envelope serialization failed"));
+    return Result<std::string>::success(std::move(wire));
+}
+
+Result<TacticsPersistence::PreparedRestore> TacticsPersistence::prepareRestoreBinary(
+    Battle& battle, std::string_view wire, const SnapshotHashProvider& hashProvider) {
+    if (!hashProvider)
+        return Result<PreparedRestore>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "tactics restore requires a hash provider"));
+    if (wire.size() > static_cast<std::size_t>(std::numeric_limits<int>::max()))
+        return Result<PreparedRestore>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "tactics envelope exceeds parser limit"));
+    proto::BattleSaveEnvelope envelope;
+    if (!envelope.ParseFromArray(wire.data(), static_cast<int>(wire.size())) || hasUnknownProtoFields(envelope))
+        return Result<PreparedRestore>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid tactics Protobuf envelope"));
+    if (!envelope.has_type() || !envelope.has_schema() || !envelope.has_version() || !envelope.has_instance_id() ||
+        !envelope.has_revision() || !envelope.has_tick() || envelope.type() != kType ||
+        envelope.schema() != schema().format())
+        return Result<PreparedRestore>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "snapshot does not belong to tactics battle"));
+    if (envelope.version() != 8)
+        return Result<PreparedRestore>::failure(
+            Diagnostic::error(DiagnosticCode::UnknownVersion, "unsupported tactics battle snapshot version"));
+    if (envelope.instance_id() != battle.identity()->subject.format())
+        return Result<PreparedRestore>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "snapshot battle identity differs from target"));
+    if (envelope.payload_wire().empty() || envelope.digest().size() != ContentId::Bytes{}.size())
+        return Result<PreparedRestore>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "incomplete tactics snapshot envelope"));
+    auto digest = hashProvider(envelope.payload_wire());
+    if (!digest.ok()) return Result<PreparedRestore>::failure(digest.status());
+    const auto digestBytes = digest.value().bytes();
+    if (envelope.digest() != std::string(reinterpret_cast<const char*>(digestBytes.data()), digestBytes.size()))
+        return Result<PreparedRestore>::failure(
+            Diagnostic::error(DiagnosticCode::HashMismatch, "tactics snapshot digest differs from payload"));
+    if (envelope.payload_wire().size() > static_cast<std::size_t>(std::numeric_limits<int>::max()))
+        return Result<PreparedRestore>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "tactics payload exceeds parser limit"));
+    proto::BattlePayload payload;
+    if (!payload.ParseFromArray(envelope.payload_wire().data(), static_cast<int>(envelope.payload_wire().size())) ||
+        hasUnknownProtoFields(payload))
+        return Result<PreparedRestore>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid tactics Protobuf payload"));
+    auto candidate = parseProtoCandidate(battle, payload, Revision(envelope.revision()));
+    if (!candidate.ok()) return Result<PreparedRestore>::failure(candidate.status());
+    auto state = std::make_unique<PreparedRestore::Impl>(
+        battle, std::move(candidate).takeValue(), Revision(envelope.revision()), SimulationTick(envelope.tick()));
+    return Result<PreparedRestore>::success(PreparedRestore(std::move(state)));
 }
 
 Result<Value> TacticsPersistence::commandLogValue(Battle& battle, Revision fromRevision) {

@@ -21,6 +21,7 @@ PROTO_GROUPS = {
     "rpg_party_checkpoint.proto": "PLATFORM",
     "rpg_save_session.proto": "PLATFORM",
     "rpg_tracker.proto": "PLATFORM",
+    "tactics_battle.proto": "DOMAINS",
 }
 
 

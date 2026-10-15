@@ -331,6 +331,12 @@ if(TARGET EVRPG)
 endif()
 
 if(TARGET EVTactics)
+  target_sources(EVTactics PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/tactics_battle.pb.cc)
+  target_include_directories(EVTactics SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  if(MSVC)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/tactics_battle.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+  endif()
   target_link_libraries(EVTactics PUBLIC protobuf::libprotobuf)
 endif()
 

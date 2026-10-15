@@ -23,6 +23,9 @@ public:
     virtual void commit() noexcept = 0;
 };
 
+/** @brief Domain classification of a saved participant's Protobuf message type. */
+enum class GameSaveMessageTypeMatch { Unsupported, Current, Legacy };
+
 /**
  * @brief One authoritative domain participating in a game save.
  * @lifetime The participant and its live domain owner must outlive the GameSaveSession.
@@ -36,6 +39,10 @@ public:
     virtual std::string_view saveKey() const noexcept = 0;
     /** @brief Full Protobuf message name owned by this domain, without the type URL prefix. */
     virtual std::string_view messageType() const noexcept = 0;
+    /** @brief Classify the current message type or a domain-owned read-only legacy type. */
+    virtual GameSaveMessageTypeMatch matchMessageType(std::string_view type) const noexcept {
+        return type == messageType() ? GameSaveMessageTypeMatch::Current : GameSaveMessageTypeMatch::Unsupported;
+    }
     /** @brief Capture an owning, versioned Protobuf message as wire bytes. */
     [[nodiscard]] virtual Result<std::string> captureBinary() const = 0;
     /** @brief Validate wire bytes and prepare a no-fail commit without changing live state. */

@@ -13,7 +13,9 @@ public:
     TacticsGameSaveParticipant(Battle& battle, SnapshotHashProvider hashProvider);
     std::string_view                                            saveKey() const noexcept override;
     std::string_view                                            messageType() const noexcept override;
-    [[nodiscard]] Result<std::string>                           captureBinary() const override;
+    /** @brief Also classify the retired JSON-in-BytesValue wire type for read-only migration. */
+    GameSaveMessageTypeMatch          matchMessageType(std::string_view type) const noexcept override;
+    [[nodiscard]] Result<std::string> captureBinary() const override;
     [[nodiscard]] Result<std::unique_ptr<IPreparedGameRestore>> prepareBinary(std::string_view wire) override;
     [[nodiscard]] Result<std::unique_ptr<IPreparedGameRestore>> prepare(const Value& state) override;
 
