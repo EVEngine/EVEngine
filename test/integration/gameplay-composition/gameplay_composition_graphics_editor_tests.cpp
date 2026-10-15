@@ -198,11 +198,11 @@ TEST_CASE("dialogueState.usesSharedConditionExplanation") {
 
     const auto result = context.evaluate(specification);
     CHECK(!result.passed());
-    CHECK(static_cast<int>(result.reasonCode()) == static_cast<int>(eve::decision::ConditionReasonCode::TagMissing));
-    CHECK(std::string(eve::decision::conditionReasonCodeName(result.reasonCode())) == "tag_missing");
-    const Value* tag = result.details().find("tag");
-    REQUIRE(tag != nullptr);
-    CHECK(tag->asString() == "unlocked");
+    CHECK(static_cast<int>(result.reasonCode()) == static_cast<int>(eve::decision::ConditionReasonCode::ValueMismatch));
+    CHECK(std::string(eve::decision::conditionReasonCodeName(result.reasonCode())) == "value_mismatch");
+    const Value* key = result.details().find("key");
+    REQUIRE(key != nullptr);
+    CHECK(key->asString() == "tag:unlocked");
 
     const Value comparison =
         Value::Object{{"attribute", Value("reputation")}, {"op", Value("gte")}, {"value", Value(10.0)}};

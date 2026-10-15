@@ -10,6 +10,7 @@
 #include "common/IEmergenceActionHandler.h"
 #include "common/Value.h"
 #include "decision/Condition.h"
+#include "decision/ConditionKeys.h"
 #include "emergence/RuleEngine.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -108,13 +109,13 @@ TEST_CASE("emergence.ruleEngine.factSetCascadesWithinDrain") {
     RuleEngine     engine;
     RuleDefinition unlock;
     unlock.id        = "unlock.door";
-    unlock.condition = Condition::hasTag("key.found");
+    unlock.condition = eve::decision::tagPresent("key.found");
     unlock.actions.push_back(EmergenceAction{
         "fact.set", eve::Value::Object{
                         {"domain", eve::Value("state")}, {"key", eve::Value("door")}, {"value", eve::Value("open")}}});
     RuleDefinition celebrate;
     celebrate.id        = "celebrate";
-    celebrate.condition = Condition::stateEquals("door", eve::Value("open"));
+    celebrate.condition = eve::decision::stateEquals("door", eve::Value("open"));
     celebrate.actions.push_back(EmergenceAction{"emit", eve::Value::Object{{"type", eve::Value("fanfare")}}});
     REQUIRE(engine.replaceCatalogue({unlock, celebrate}).ok());
 
@@ -135,7 +136,7 @@ TEST_CASE("emergence.ruleEngine.questHandlerConsumesNotifyAction") {
     RuleEngine     engine;
     RuleDefinition rule;
     rule.id        = "intro.done";
-    rule.condition = Condition::hasTag("intro.complete");
+    rule.condition = eve::decision::tagPresent("intro.complete");
     rule.actions.push_back(EmergenceAction{
         "quest.notify",
         eve::Value::Object{{"topic", eve::Value("intro")}, {"target", eve::Value("")}, {"amount", eve::Value(1)}}});
@@ -198,7 +199,7 @@ TEST_CASE("emergence.ruleEngine.failedActionDoesNotCommitLatches") {
     RuleDefinition rule;
     rule.id        = "once.fail";
     rule.once      = true;
-    rule.condition = Condition::hasTag("go");
+    rule.condition = eve::decision::tagPresent("go");
     rule.actions.push_back(EmergenceAction{"fail.always", eve::Value::Object{}});
     REQUIRE(engine.replaceCatalogue({rule}).ok());
     REQUIRE(engine.setTag("go", true).ok());
@@ -269,7 +270,7 @@ TEST_CASE("emergence.ruleEngine.rejectsBadPolicyDependencyAndLooseNumbers") {
     eve::cap::provide<eve::economy::IEconomy>(&economy);
     RuleDefinition pay;
     pay.id        = "pay";
-    pay.condition = Condition::hasTag("bill");
+    pay.condition = eve::decision::tagPresent("bill");
     pay.actions.push_back(EmergenceAction{
         "economy.credit",
         eve::Value::Object{{"player", eve::Value("0")}, {"type", eve::Value("gold")}, {"amount", eve::Value(5)}}});

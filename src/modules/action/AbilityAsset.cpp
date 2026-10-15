@@ -1,5 +1,7 @@
 #include "action/AbilityAsset.h"
 
+#include "decision/ConditionCodec.h"
+
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -112,131 +114,16 @@ Result<TargetingMode> parseTargetingMode(std::string_view value) {
 }
 
 Value encodeCondition(const decision::Condition& condition) {
-    Value::Object object{{"kind", std::string(decision::conditionKindName(condition.kind()))}};
-    if (condition.kind() == decision::ConditionKind::All ||
-        condition.kind() == decision::ConditionKind::Any ||
-        condition.kind() == decision::ConditionKind::Not) {
-        Value::Array children;
-        for (const auto& child : condition.children()) children.push_back(encodeCondition(child));
-        object["children"] = std::move(children);
-    }
-    switch (condition.kind()) {
-        case decision::ConditionKind::Compare:
-            object["key"]      = condition.key();
-            object["operator"] = std::string(decision::compareOperatorName(condition.compareOperator()));
-            object["expected"] = condition.expected();
-            break;
-        case decision::ConditionKind::StateEquals:
-            object["key"]      = condition.key();
-            object["expected"] = condition.expected();
-            break;
-        case decision::ConditionKind::HasTag:
-        case decision::ConditionKind::HasAttribute:
-        case decision::ConditionKind::HasResource:
-        case decision::ConditionKind::AuthorityCheck: object["key"] = condition.key(); break;
-        case decision::ConditionKind::PolicyCall: {
-            object["key"]       = condition.key();
-            object["arguments"] = condition.arguments();
-            if (condition.scriptDeclaration()) {
-                Value::Array dependencies;
-                for (const auto& dependency : condition.scriptDeclaration()->dependencies)
-                    dependencies.emplace_back(dependency);
-                object["script"] = Value::Object{
-                    {"name", condition.scriptDeclaration()->name},
-                    {"dependencies", std::move(dependencies)},
-                    {"determinism", static_cast<std::int64_t>(condition.scriptDeclaration()->determinism)}};
-            }
-            break;
-        }
-        case decision::ConditionKind::All:
-        case decision::ConditionKind::Any:
-        case decision::ConditionKind::Not: break;
-    }
-    return Value(std::move(object));
+    auto encoded = eve::decision::encodeCondition(condition);
+    if (!encoded) return Value::Object{{"kind", Value("invalid")}};
+    return std::move(encoded).takeValue();
 }
 
 Result<std::vector<std::string>> decodeStrings(const Value& parent, std::string_view name, std::string path);
 
 Result<decision::Condition> decodeCondition(const Value& value, const std::string& path) {
-    auto kind = text(value, "kind", path + ".kind");
-    if (!kind) return Result<decision::Condition>::failure(kind.status());
-    auto children = [&]() -> Result<std::vector<decision::Condition>> {
-        const auto* source = field(value, "children");
-        if (!source || !source->isArray())
-            return invalid<std::vector<decision::Condition>>("expected children array", path + ".children");
-        std::vector<decision::Condition> result;
-        const auto& array = *source->getIf<Value::Array>();
-        result.reserve(array.size());
-        for (std::size_t index = 0; index < array.size(); ++index) {
-            auto child = decodeCondition(array[index], path + ".children[" + std::to_string(index) + "]");
-            if (!child) return Result<std::vector<decision::Condition>>::failure(child.status());
-            result.push_back(std::move(child).takeValue());
-        }
-        return Result<std::vector<decision::Condition>>::success(std::move(result));
-    };
-    if (kind.value() == "all" || kind.value() == "any" || kind.value() == "not") {
-        auto decoded = children();
-        if (!decoded) return Result<decision::Condition>::failure(decoded.status());
-        if (kind.value() == "all")
-            return Result<decision::Condition>::success(decision::Condition::all(std::move(decoded).takeValue()));
-        if (kind.value() == "any")
-            return Result<decision::Condition>::success(decision::Condition::any(std::move(decoded).takeValue()));
-        if (decoded.value().size() != 1)
-            return invalid<decision::Condition>("not condition requires one child", path + ".children");
-        return Result<decision::Condition>::success(decision::Condition::not_(std::move(decoded.value().front())));
-    }
-    auto key = text(value, "key", path + ".key");
-    if (!key) return Result<decision::Condition>::failure(key.status());
-    if (kind.value() == "compare") {
-        auto op = text(value, "operator", path + ".operator");
-        const auto* expected = field(value, "expected");
-        if (!op || !expected) return invalid<decision::Condition>("compare condition is incomplete", path);
-        const std::pair<std::string_view, decision::CompareOperator> operators[] = {
-            {"eq", decision::CompareOperator::Equal}, {"ne", decision::CompareOperator::NotEqual},
-            {"lt", decision::CompareOperator::Less}, {"le", decision::CompareOperator::LessEqual},
-            {"gt", decision::CompareOperator::Greater}, {"ge", decision::CompareOperator::GreaterEqual}};
-        for (const auto& [name, parsed] : operators)
-            if (op.value() == name)
-                return Result<decision::Condition>::success(
-                    decision::Condition::compare(key.value(), parsed, *expected));
-        return invalid<decision::Condition>("unknown comparison operator", path + ".operator");
-    }
-    if (kind.value() == "state_equals") {
-        const auto* expected = field(value, "expected");
-        if (!expected) return invalid<decision::Condition>("state condition is incomplete", path);
-        return Result<decision::Condition>::success(decision::Condition::stateEquals(key.value(), *expected));
-    }
-    if (kind.value() == "has_tag")
-        return Result<decision::Condition>::success(decision::Condition::hasTag(key.value()));
-    if (kind.value() == "has_attribute")
-        return Result<decision::Condition>::success(decision::Condition::hasAttribute(key.value()));
-    if (kind.value() == "has_resource")
-        return Result<decision::Condition>::success(decision::Condition::hasResource(key.value()));
-    if (kind.value() == "authority_check")
-        return Result<decision::Condition>::success(decision::Condition::authorityCheck(key.value()));
-    if (kind.value() == "policy_call") {
-        const auto* arguments = field(value, "arguments");
-        if (!arguments) return invalid<decision::Condition>("policy arguments are missing", path + ".arguments");
-        std::optional<decision::ScriptConditionDeclaration> declaration;
-        if (const auto* script = field(value, "script")) {
-            auto name = text(*script, "name", path + ".script.name");
-            if (!name) return Result<decision::Condition>::failure(name.status());
-            auto dependencies = decodeStrings(*script, "dependencies", path + ".script.dependencies");
-            if (!dependencies) return Result<decision::Condition>::failure(dependencies.status());
-            auto determinism = integer(*script, "determinism", path + ".script.determinism");
-            if (!determinism) return Result<decision::Condition>::failure(determinism.status());
-            if (determinism.value() < 0 || determinism.value() >
-                                               static_cast<std::int64_t>(
-                                                   decision::DeterminismLevel::ExplicitlyNondeterministic))
-                return invalid<decision::Condition>("script condition declaration is invalid", path + ".script");
-            declaration = decision::ScriptConditionDeclaration{
-                name.value(), std::move(dependencies).takeValue(),
-                static_cast<decision::DeterminismLevel>(determinism.value())};
-        }
-        return Result<decision::Condition>::success(
-            decision::Condition::policyCall(key.value(), *arguments, std::move(declaration)));
-    }
-    return invalid<decision::Condition>("unknown condition kind", path + ".kind");
+    (void)path;
+    return eve::decision::decodeCondition(value);
 }
 
 Value::Array strings(const std::vector<std::string>& values) {

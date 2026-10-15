@@ -1,6 +1,7 @@
 #include "dialogue/DialogueState.h"
 
 #include "common/Capability.h"
+#include "decision/ConditionKeys.h"
 
 #include <algorithm>
 #include <string>
@@ -62,8 +63,12 @@ bool readOperator(std::string_view spelling, eve::decision::CompareOperator& out
         out = eve::decision::CompareOperator::Greater;
         return true;
     }
-    if (spelling == "ge" || spelling == ">=") {
+    if (spelling == "ge" || spelling == "gte" || spelling == ">=") {
         out = eve::decision::CompareOperator::GreaterEqual;
+        return true;
+    }
+    if (spelling == "lte") {
+        out = eve::decision::CompareOperator::LessEqual;
         return true;
     }
     return false;
@@ -115,14 +120,14 @@ eve::Result<eve::decision::Condition> compileCondition(const eve::Value& specifi
     if (!tag) tag = specification.find("hasTag");
     if (tag) {
         if (!tag->isString()) return conditionError("tag condition requires a string tag", "tag");
-        return eve::Result<eve::decision::Condition>::success(eve::decision::Condition::hasTag(tag->asString()));
+        return eve::Result<eve::decision::Condition>::success(eve::decision::tagPresent(tag->asString()));
     }
 
     const eve::Value* authority = specification.find("authority");
     if (authority) {
         if (!authority->isString()) return conditionError("authority condition requires a string scope", "authority");
         return eve::Result<eve::decision::Condition>::success(
-            eve::decision::Condition::authorityCheck(authority->asString()));
+            eve::decision::authorityAllow(authority->asString()));
     }
 
     const eve::Value* policy = specification.find("policy");
@@ -141,9 +146,9 @@ eve::Result<eve::decision::Condition> compileCondition(const eve::Value& specifi
         if (!expected) expected = specification.find("value");
         if (!expected)
             return eve::Result<eve::decision::Condition>::success(
-                eve::decision::Condition::hasAttribute(state->asString()));
+                eve::decision::attributeExists(state->asString()));
         return eve::Result<eve::decision::Condition>::success(
-            eve::decision::Condition::stateEquals(state->asString(), *expected));
+            eve::decision::stateEquals(state->asString(), *expected));
     }
 
     const eve::Value* attribute = specification.find("attribute");
@@ -158,10 +163,10 @@ eve::Result<eve::decision::Condition> compileCondition(const eve::Value& specifi
         const std::string key = nameValue->asString();
         const std::string op  = operation->asString();
         if (op == "has")
-            return eve::Result<eve::decision::Condition>::success(eve::decision::Condition::hasAttribute(key));
+            return eve::Result<eve::decision::Condition>::success(eve::decision::attributeExists(key));
         if (op == "missing")
             return eve::Result<eve::decision::Condition>::success(
-                eve::decision::Condition::not_(eve::decision::Condition::hasAttribute(key)));
+                eve::decision::Condition::not_(eve::decision::attributeExists(key)));
         eve::decision::CompareOperator parsed;
         if (!readOperator(op, parsed)) return conditionError("unknown condition operator: " + op, "op");
         const eve::Value* expected = specification.find("value");
@@ -172,7 +177,7 @@ eve::Result<eve::decision::Condition> compileCondition(const eve::Value& specifi
 
     if (attribute && attribute->isString())
         return eve::Result<eve::decision::Condition>::success(
-            eve::decision::Condition::hasAttribute(attribute->asString()));
+            eve::decision::attributeExists(attribute->asString()));
 
     if (state && state->isObject()) {
         std::string key;
@@ -181,7 +186,7 @@ eve::Result<eve::decision::Condition> compileCondition(const eve::Value& specifi
         if (!expected) expected = state->find("value");
         if (!expected) return conditionError("state condition is missing value", "state.value");
         return eve::Result<eve::decision::Condition>::success(
-            eve::decision::Condition::stateEquals(std::move(key), *expected));
+            eve::decision::stateEquals(std::move(key), *expected));
     }
 
     if (const eve::Value* compare = specification.find("compare")) {
@@ -249,47 +254,50 @@ StateEvaluationContext::StateEvaluationContext(std::string subject, eve::IStateQ
 void StateEvaluationContext::setSubject(std::string subject) { subject_ = std::move(subject); }
 
 std::optional<eve::Value> StateEvaluationContext::value(std::string_view key) const {
+    if (auto tag = eve::decision::stripPrefix(key, eve::decision::kTagPrefix)) {
+        auto result = queryProviders<bool>(
+            subject_, provider_,
+            [&](eve::IStateQuery* provider, const std::string& subject) { return provider->hasTag(subject, *tag); });
+        return result.has_value() ? std::optional<eve::Value>(eve::Value(*result)) : std::nullopt;
+    }
+    if (auto attr = eve::decision::stripPrefix(key, eve::decision::kAttrPrefix)) {
+        auto result = queryProviders<eve::Value>(
+            subject_, provider_,
+            [&](eve::IStateQuery* provider, const std::string& subject) { return provider->attribute(subject, *attr); });
+        if (result.has_value()) return result;
+        return queryProviders<eve::Value>(
+            subject_, provider_,
+            [&](eve::IStateQuery* provider, const std::string& subject) { return provider->value(subject, *attr); });
+    }
+    if (auto resource = eve::decision::stripPrefix(key, eve::decision::kResourcePrefix)) {
+        return queryProviders<eve::Value>(subject_, provider_,
+                                          [&](eve::IStateQuery* provider, const std::string& subject) {
+                                              return provider->resource(subject, *resource);
+                                          });
+    }
+    if (auto state = eve::decision::stripPrefix(key, eve::decision::kStatePrefix)) {
+        auto result = queryProviders<eve::Value>(
+            subject_, provider_,
+            [&](eve::IStateQuery* provider, const std::string& subject) { return provider->state(subject, *state); });
+        if (result.has_value()) return result;
+        return queryProviders<eve::Value>(
+            subject_, provider_,
+            [&](eve::IStateQuery* provider, const std::string& subject) { return provider->value(subject, *state); });
+    }
     return queryProviders<eve::Value>(subject_, provider_, [&](eve::IStateQuery* provider, const std::string& subject) {
         return provider->value(subject, key);
     });
 }
 
-std::optional<bool> StateEvaluationContext::hasTag(std::string_view tag) const {
-    return queryProviders<bool>(subject_, provider_, [&](eve::IStateQuery* provider, const std::string& subject) {
-        return provider->hasTag(subject, tag);
-    });
-}
-
-std::optional<eve::Value> StateEvaluationContext::attribute(std::string_view key) const {
-    auto result = queryProviders<eve::Value>(
-        subject_, provider_,
-        [&](eve::IStateQuery* provider, const std::string& subject) { return provider->attribute(subject, key); });
-    if (result.has_value()) return result;
-    return value(key);
-}
-
-std::optional<eve::Value> StateEvaluationContext::resource(std::string_view key) const {
-    return queryProviders<eve::Value>(subject_, provider_, [&](eve::IStateQuery* provider, const std::string& subject) {
-        return provider->resource(subject, key);
-    });
-}
-
-std::optional<eve::Value> StateEvaluationContext::state(std::string_view key) const {
-    auto result = queryProviders<eve::Value>(
-        subject_, provider_,
-        [&](eve::IStateQuery* provider, const std::string& subject) { return provider->state(subject, key); });
-    if (result.has_value()) return result;
-    return value(key);
-}
-
-std::optional<bool> StateEvaluationContext::authority(std::string_view scope) const {
-    return queryProviders<bool>(subject_, provider_, [&](eve::IStateQuery* provider, const std::string& subject) {
-        return provider->authority(subject, scope);
-    });
-}
-
 std::optional<eve::decision::ConditionResult> StateEvaluationContext::policy(std::string_view  name,
                                                                              const eve::Value& arguments) const {
+    if (auto authority = eve::decision::resolveAuthorityAllow(name, arguments, [this](std::string_view scope) {
+            return queryProviders<bool>(
+                subject_, provider_,
+                [&](eve::IStateQuery* provider, const std::string& subject) { return provider->authority(subject, scope); });
+        })) {
+        return authority;
+    }
     if (!policyEvaluator_) return std::nullopt;
     return policyEvaluator_(name, arguments);
 }
@@ -310,23 +318,25 @@ std::optional<eve::Value> DialogueStateContext::value(std::string_view key) cons
 }
 
 std::optional<bool> DialogueStateContext::hasTag(std::string_view tag) const {
-    auto context = evaluationContext();
-    return context.hasTag(tag);
+    auto result = evaluationContext().value(eve::decision::tagKey(tag));
+    if (!result || !result->isBool()) return std::nullopt;
+    return result->asBool();
 }
 
 std::optional<eve::Value> DialogueStateContext::attribute(std::string_view key) const {
     auto context = evaluationContext();
-    return context.attribute(key);
+    if (auto prefixed = context.value(eve::decision::attrKey(key))) return prefixed;
+    return context.value(key);
 }
 
 std::optional<eve::Value> DialogueStateContext::resource(std::string_view key) const {
-    auto context = evaluationContext();
-    return context.resource(key);
+    return evaluationContext().value(eve::decision::resourceKey(key));
 }
 
 std::optional<eve::Value> DialogueStateContext::state(std::string_view key) const {
     auto context = evaluationContext();
-    return context.state(key);
+    if (auto prefixed = context.value(eve::decision::stateKey(key))) return prefixed;
+    return context.value(key);
 }
 
 eve::Result<eve::decision::Condition> DialogueStateContext::compileCondition(const eve::Value& specification) const {

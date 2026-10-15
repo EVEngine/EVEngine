@@ -7,6 +7,7 @@
 #include "action/AbilityController.h"
 #include "action/AbilitySystem.h"
 #include "common/Diagnostic.h"
+#include "decision/ConditionKeys.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // Responsibility: action_abilities
@@ -29,7 +30,7 @@ eve::action::AbilityDefinition complexAbility() {
     result.action.timing    = {eve::Duration::fromNanoseconds(100'000'000), eve::Duration::fromNanoseconds(200'000'000),
                                eve::Duration::fromNanoseconds(300'000'000)};
     result.action.condition = eve::decision::Condition::all(
-        {eve::decision::Condition::hasTag("State.Combat.Ready"),
+        {eve::decision::tagPresent("State.Combat.Ready"),
          eve::decision::Condition::compare("mana", eve::decision::CompareOperator::GreaterEqual, 12),
          eve::decision::Condition::policyCall(
              "can_cast", eve::Value::Object{{"school", "fire"}},

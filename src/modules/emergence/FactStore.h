@@ -89,11 +89,6 @@ public:
     [[nodiscard]] FactChange clearTag(std::string_view tag);
 
     [[nodiscard]] std::optional<eve::Value>                value(std::string_view key) const override;
-    [[nodiscard]] std::optional<bool>                      hasTag(std::string_view tag) const override;
-    [[nodiscard]] std::optional<eve::Value>                attribute(std::string_view key) const override;
-    [[nodiscard]] std::optional<eve::Value>                resource(std::string_view key) const override;
-    [[nodiscard]] std::optional<eve::Value>                state(std::string_view key) const override;
-    [[nodiscard]] std::optional<bool>                      authority(std::string_view scope) const override;
     [[nodiscard]] std::optional<decision::ConditionResult> policy(std::string_view  name,
                                                                   const eve::Value& arguments) const override;
 

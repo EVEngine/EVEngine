@@ -4,6 +4,10 @@
 owned proxy；context 的权威状态在模块 handle pool，脚本代理不保留临时裸指针。
 本模块不自动读取输入、模拟时间或玩家坐标，由游戏提供事实。
 
+共享条件树 `decision::Condition` 只保留 `All`/`Any`/`Not`/`Compare`/`PolicyCall`。
+tag / attribute / resource / state / authority 通过 `ConditionKeys.h` 的 key 前缀与
+`authority.allow` 策略约定表达；作者面旧叶子（`has_tag` 等）由统一 codec 展开。
+
 ## 任务一：巡逻状态机
 
 放在初始化或关卡加载阶段；项目需 `decision`。

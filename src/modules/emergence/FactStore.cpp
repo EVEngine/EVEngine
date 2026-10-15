@@ -1,6 +1,7 @@
 #include "emergence/FactStore.h"
 
 #include "common/Diagnostic.h"
+#include "decision/ConditionKeys.h"
 
 #include <set>
 #include <utility>
@@ -216,36 +217,33 @@ FactChange FactStore::clearTag(std::string_view tag) {
 }
 
 std::optional<eve::Value> FactStore::value(std::string_view key) const {
+    if (auto tag = decision::stripPrefix(key, decision::kTagPrefix)) {
+        auto it = tags_.find(std::string(*tag));
+        return it == tags_.end() ? std::nullopt : std::optional<eve::Value>(eve::Value(it->second));
+    }
+    if (auto attr = decision::stripPrefix(key, decision::kAttrPrefix)) {
+        auto it = attributes_.find(std::string(*attr));
+        return it == attributes_.end() ? std::nullopt : std::optional<eve::Value>(it->second);
+    }
+    if (auto resource = decision::stripPrefix(key, decision::kResourcePrefix)) {
+        auto it = resources_.find(std::string(*resource));
+        return it == resources_.end() ? std::nullopt : std::optional<eve::Value>(it->second);
+    }
+    if (auto state = decision::stripPrefix(key, decision::kStatePrefix)) {
+        auto it = states_.find(std::string(*state));
+        return it == states_.end() ? std::nullopt : std::optional<eve::Value>(it->second);
+    }
     auto it = values_.find(std::string(key));
     return it == values_.end() ? std::nullopt : std::optional<eve::Value>(it->second);
 }
 
-std::optional<bool> FactStore::hasTag(std::string_view tag) const {
-    auto it = tags_.find(std::string(tag));
-    return it == tags_.end() ? std::nullopt : std::optional<bool>(it->second);
-}
-
-std::optional<eve::Value> FactStore::attribute(std::string_view key) const {
-    auto it = attributes_.find(std::string(key));
-    return it == attributes_.end() ? std::nullopt : std::optional<eve::Value>(it->second);
-}
-
-std::optional<eve::Value> FactStore::resource(std::string_view key) const {
-    auto it = resources_.find(std::string(key));
-    return it == resources_.end() ? std::nullopt : std::optional<eve::Value>(it->second);
-}
-
-std::optional<eve::Value> FactStore::state(std::string_view key) const {
-    auto it = states_.find(std::string(key));
-    return it == states_.end() ? std::nullopt : std::optional<eve::Value>(it->second);
-}
-
-std::optional<bool> FactStore::authority(std::string_view scope) const {
-    auto it = authorities_.find(std::string(scope));
-    return it == authorities_.end() ? std::nullopt : std::optional<bool>(it->second);
-}
-
-std::optional<decision::ConditionResult> FactStore::policy(std::string_view name, const eve::Value&) const {
+std::optional<decision::ConditionResult> FactStore::policy(std::string_view name, const eve::Value& arguments) const {
+    if (auto authority = decision::resolveAuthorityAllow(name, arguments, [this](std::string_view scope) {
+            auto it = authorities_.find(std::string(scope));
+            return it == authorities_.end() ? std::nullopt : std::optional<bool>(it->second);
+        })) {
+        return authority;
+    }
     auto it = policies_.find(std::string(name));
     return it == policies_.end() ? std::nullopt : std::optional<decision::ConditionResult>(it->second);
 }

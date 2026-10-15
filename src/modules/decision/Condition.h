@@ -5,12 +5,16 @@
 /**
  * @file Condition.h
  * @brief Pure, explainable condition trees shared by gameplay domains.
+ *
+ * The AST is intentionally thin: boolean combinators, Compare over a keyed
+ * value space, and PolicyCall for named read-only policies. Tag / attribute /
+ * resource / state / authority checks are key and policy conventions documented
+ * in ConditionKeys.h — they are not ConditionKind variants.
  */
 
 #include "common/Value.h"
 
 #include <cstdint>
-#include <functional>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -24,11 +28,6 @@ enum class ConditionKind : std::uint8_t {
     Any,
     Not,
     Compare,
-    HasTag,
-    HasAttribute,
-    HasResource,
-    StateEquals,
-    AuthorityCheck,
     PolicyCall,
 };
 
@@ -40,6 +39,8 @@ enum class CompareOperator : std::uint8_t {
     LessEqual,
     Greater,
     GreaterEqual,
+    /** @brief Passes when the keyed value is present; expected is ignored. */
+    Exists,
 };
 
 /** @brief Determinism contract declared by a script-backed condition policy. */
@@ -70,7 +71,14 @@ struct ScriptConditionDeclaration {
     DeterminismLevel determinism = DeterminismLevel::BitExact;
 };
 
-/** @brief Stable machine-readable explanation code for a condition outcome. */
+/**
+ * @brief Stable machine-readable explanation code for a condition outcome.
+ *
+ * Active evaluation paths emit Passed, ChildFailed, NoChildPassed, Negated,
+ * MissingValue, ValueMismatch, PolicyRejected, PolicyUnavailable,
+ * AuthorityDenied, AuthorityUnavailable, and InvalidCondition. The remaining
+ * codes are retained for snapshot compatibility with older fact stores.
+ */
 enum class ConditionReasonCode : std::uint32_t {
     Passed               = 0,
     ChildFailed          = 1,
@@ -161,25 +169,21 @@ private:
  * called on the caller's thread; implementations must not retain the caller's
  * query keys or invoke unknown callbacks while holding a lock. `nullopt`
  * means the requested capability/value is unavailable, which is distinct from
- * a known false value.
+ * a known false value. Domain axes (tag/attr/resource/state) are addressed as
+ * prefixed keys through `value`; authority uses PolicyCall `authority.allow`.
  */
 class EvaluationContext {
 public:
     /** @brief Releases EvaluationContext resources. */
     virtual ~EvaluationContext() = default;
 
-    /** @brief Query a named scalar or structured value for Compare nodes. */
+    /**
+     * @brief Query a named scalar or structured value for Compare nodes.
+     *
+     * Canonical keys may use domain prefixes from ConditionKeys.h
+     * (`tag:`, `attr:`, `resource:`, `state:`). Bare keys are domain-defined.
+     */
     [[nodiscard]] virtual std::optional<Value> value(std::string_view key) const = 0;
-    /** @brief Query tag membership; nullopt means the tag source is unavailable. */
-    [[nodiscard]] virtual std::optional<bool> hasTag(std::string_view tag) const = 0;
-    /** @brief Query an attribute value; nullopt means the attribute is absent. */
-    [[nodiscard]] virtual std::optional<Value> attribute(std::string_view key) const = 0;
-    /** @brief Query a resource amount or resource marker. */
-    [[nodiscard]] virtual std::optional<Value> resource(std::string_view key) const = 0;
-    /** @brief Query a state value for StateEquals nodes. */
-    [[nodiscard]] virtual std::optional<Value> state(std::string_view key) const = 0;
-    /** @brief Query authority without changing grants, leases, or state. */
-    [[nodiscard]] virtual std::optional<bool> authority(std::string_view scope) const = 0;
     /** @brief Evaluate a named read-only policy with owned arguments. */
     [[nodiscard]] virtual std::optional<ConditionResult> policy(std::string_view name,
                                                                 const Value&     arguments) const = 0;
@@ -203,18 +207,13 @@ public:
     static Condition any(std::vector<Condition> children);
     /** @brief Construct a logical negation of one child condition. */
     static Condition not_(Condition child);
-    /** @brief Compare a context value against an expected scalar value. */
-    static Condition compare(std::string key, CompareOperator op, Value expected);
-    /** @brief Require a tag to be present. */
-    static Condition hasTag(std::string tag);
-    /** @brief Require an attribute to exist. */
-    static Condition hasAttribute(std::string attribute);
-    /** @brief Require a resource to exist. */
-    static Condition hasResource(std::string resource);
-    /** @brief Require a named state value to equal the expected value. */
-    static Condition stateEquals(std::string key, Value expected);
-    /** @brief Require read-only authority for a scope. */
-    static Condition authorityCheck(std::string scope);
+    /**
+     * @brief Compare a context value against an expected scalar value.
+     * @param key Compare key; may use ConditionKeys prefixes.
+     * @param op Comparison operator; Exists ignores `expected`.
+     * @param expected Expected value for relational operators.
+     */
+    static Condition compare(std::string key, CompareOperator op, Value expected = {});
     /**
      * @brief Call a named read-only policy and use its ConditionResult.
      * @param name Stable policy/script name.
@@ -229,11 +228,11 @@ public:
     ConditionKind kind() const noexcept { return kind_; }
     /** @brief Return owned children; empty for a leaf node. */
     const std::vector<Condition>& children() const noexcept { return children_; }
-    /** @brief Return the key/tag/scope/name used by a leaf, if applicable. */
+    /** @brief Return the key/name used by a leaf, if applicable. */
     const std::string& key() const noexcept { return key_; }
     /** @brief Return the comparison operator used by Compare. */
     CompareOperator compareOperator() const noexcept { return compare_; }
-    /** @brief Return the expected value owned by Compare/StateEquals. */
+    /** @brief Return the expected value owned by Compare. */
     const Value& expected() const noexcept { return expected_; }
     /** @brief Return owned PolicyCall arguments. */
     const Value& arguments() const noexcept { return arguments_; }

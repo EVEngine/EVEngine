@@ -3937,6 +3937,7 @@ TEST_CASE("rpg.state.restoreRejectsMalformed") {
 #include "rpg/RPGActor.h"
 #include "rpg/Skill.h"
 #include "rpg/SkillCondition.h"
+#include "decision/ConditionKeys.h"
 #include "rpg/SkillSystem.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -3954,11 +3955,11 @@ TEST_CASE("rpg.skillConditionAdapterReadsCanonicalSkillState") {
     definition.tags = {"fire"};
 
     const auto condition = Condition::all({
-        Condition::hasTag("fire"),
-        Condition::hasAttribute("mana"),
-        Condition::hasResource("mana"),
+        eve::decision::tagPresent("fire"),
+        eve::decision::attributeExists("mana"),
+        eve::decision::resourceExists("mana"),
         Condition::compare("skill.cooldown", CompareOperator::Equal, 0.0),
-        Condition::stateEquals("skill.phase", "idle"),
+        eve::decision::stateEquals("skill.phase", "idle"),
     });
     const auto result    = SkillConditionAdapter::evaluate(actor, definition, condition);
     REQUIRE(result.passed());
@@ -3978,13 +3979,13 @@ TEST_CASE("rpg.skillSystemUsesConditionResultAsCompatibilityReason") {
 
     SkillDefinition definition;
     definition.id            = "skill.guard";
-    definition.castCondition = Condition::hasTag("silenced");
+    definition.castCondition = eve::decision::tagPresent("silenced");
     SkillRegistry::registerSkill(definition);
     RPGActor *actor = RPGActor::createActor();
     actor->learnSkill(definition.id);
 
     CHECK(!actor->canCastSkill(definition.id));
-    CHECK_EQ(actor->canCastSkillReason(definition.id), "tag_missing");
+    CHECK_EQ(actor->canCastSkillReason(definition.id), "value_mismatch");
     actor->release();
     SkillRegistry::remove(definition.id);
 }
@@ -4008,7 +4009,7 @@ TEST_CASE("rpg.skillConditionPolicyAndAuthorityAreReadOnlyProviders") {
         return name == "safe" ? std::optional<ConditionResult>(ConditionResult::success()) : std::nullopt;
     };
     const auto result = SkillConditionAdapter::evaluate(
-        actor, definition, Condition::all({Condition::authorityCheck("cast"), Condition::policyCall("safe")}), queries);
+        actor, definition, Condition::all({eve::decision::authorityAllow("cast"), Condition::policyCall("safe")}), queries);
     REQUIRE(result.passed());
     CHECK_EQ(authorityCalls, 1);
     CHECK_EQ(policyCalls, 1);

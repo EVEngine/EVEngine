@@ -6,6 +6,8 @@
 #include <optional>
 #include <string>
 #include "decision/Condition.h"
+#include "decision/ConditionCodec.h"
+#include "decision/ConditionKeys.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // condition.cpp
@@ -15,36 +17,11 @@ namespace {
 class TestContext final : public eve::decision::EvaluationContext {
 public:
     std::map<std::string, eve::Value>                     values;
-    std::map<std::string, bool>                           tags;
-    std::map<std::string, eve::Value>                     attributes;
-    std::map<std::string, eve::Value>                     resources;
-    std::map<std::string, eve::Value>                     states;
-    std::map<std::string, bool>                           authorities;
     std::map<std::string, eve::decision::ConditionResult> policies;
 
     [[nodiscard]] std::optional<eve::Value> value(std::string_view key) const override {
         auto it = values.find(std::string(key));
         return it == values.end() ? std::nullopt : std::optional<eve::Value>(it->second);
-    }
-    [[nodiscard]] std::optional<bool> hasTag(std::string_view tag) const override {
-        auto it = tags.find(std::string(tag));
-        return it == tags.end() ? std::nullopt : std::optional<bool>(it->second);
-    }
-    [[nodiscard]] std::optional<eve::Value> attribute(std::string_view key) const override {
-        auto it = attributes.find(std::string(key));
-        return it == attributes.end() ? std::nullopt : std::optional<eve::Value>(it->second);
-    }
-    [[nodiscard]] std::optional<eve::Value> resource(std::string_view key) const override {
-        auto it = resources.find(std::string(key));
-        return it == resources.end() ? std::nullopt : std::optional<eve::Value>(it->second);
-    }
-    [[nodiscard]] std::optional<eve::Value> state(std::string_view key) const override {
-        auto it = states.find(std::string(key));
-        return it == states.end() ? std::nullopt : std::optional<eve::Value>(it->second);
-    }
-    [[nodiscard]] std::optional<bool> authority(std::string_view scope) const override {
-        auto it = authorities.find(std::string(scope));
-        return it == authorities.end() ? std::nullopt : std::optional<bool>(it->second);
     }
     [[nodiscard]] std::optional<eve::decision::ConditionResult> policy(std::string_view name,
                                                                        const eve::Value&) const override {
@@ -59,23 +36,37 @@ TEST_CASE("decision.condition.supportsAllLeafNodes") {
     using namespace eve::decision;
     TestContext context;
     context.values.emplace("level", 7);
-    context.tags.emplace("fire", true);
-    context.attributes.emplace("power", 12.0);
-    context.resources.emplace("mana", 20.0);
-    context.states.emplace("phase", "ready");
-    context.authorities.emplace("cast", true);
+    context.values.emplace(tagKey("fire"), true);
+    context.values.emplace(attrKey("power"), 12.0);
+    context.values.emplace(resourceKey("mana"), 20.0);
+    context.values.emplace(stateKey("phase"), "ready");
     context.policies.emplace("safe", ConditionResult::success(eve::Value(true)));
 
     const Condition condition = Condition::all({
         Condition::compare("level", CompareOperator::GreaterEqual, 7),
-        Condition::hasTag("fire"),
-        Condition::hasAttribute("power"),
-        Condition::hasResource("mana"),
-        Condition::stateEquals("phase", "ready"),
-        Condition::authorityCheck("cast"),
+        tagPresent("fire"),
+        attributeExists("power"),
+        resourceExists("mana"),
+        stateEquals("phase", "ready"),
+        authorityAllow("cast"),
         Condition::policyCall("safe"),
     });
-    const auto      result    = condition.evaluate(context);
+    class AuthorityContext final : public TestContext {
+    public:
+        [[nodiscard]] std::optional<ConditionResult> policy(std::string_view  name,
+                                                            const eve::Value& arguments) const override {
+            if (auto resolved = resolveAuthorityAllow(name, arguments, [](std::string_view scope) {
+                    return scope == "cast" ? std::optional<bool>(true) : std::nullopt;
+                })) {
+                return resolved;
+            }
+            return TestContext::policy(name, arguments);
+        }
+    };
+    AuthorityContext authContext;
+    authContext.values   = context.values;
+    authContext.policies = context.policies;
+    const auto result    = condition.evaluate(authContext);
     REQUIRE(result.passed());
     CHECK_EQ(static_cast<int>(result.reasonCode()), static_cast<int>(ConditionReasonCode::Passed));
     CHECK(result.details().isObject());
@@ -85,18 +76,18 @@ TEST_CASE("decision.condition.compoundsExplainFailureWithoutMutation") {
     using namespace eve::decision;
     TestContext context;
     context.values.emplace("level", 2);
-    context.tags.emplace("fire", false);
-    context.states.emplace("phase", "ready");
+    context.values.emplace(tagKey("fire"), false);
+    context.values.emplace(stateKey("phase"), "ready");
     const auto before = context.values;
 
     const auto any =
-        Condition::any({Condition::compare("level", CompareOperator::Greater, 9), Condition::hasTag("fire")});
+        Condition::any({Condition::compare("level", CompareOperator::Greater, 9), tagPresent("fire")});
     const auto anyResult = any.evaluate(context);
     REQUIRE(!anyResult.passed());
     CHECK_EQ(static_cast<int>(anyResult.reasonCode()), static_cast<int>(ConditionReasonCode::NoChildPassed));
     CHECK(anyResult.details().isObject());
 
-    const auto negated   = Condition::not_(Condition::stateEquals("phase", "ready"));
+    const auto negated   = Condition::not_(stateEquals("phase", "ready"));
     const auto notResult = negated.evaluate(context);
     REQUIRE(!notResult.passed());
     CHECK_EQ(static_cast<int>(notResult.reasonCode()), static_cast<int>(ConditionReasonCode::Negated));
@@ -121,12 +112,24 @@ TEST_CASE("decision.condition.scriptDeclarationIsExplicit") {
 TEST_CASE("decision.conditionUnavailableIsDifferentFromFalse") {
     using namespace eve::decision;
     TestContext context;
-    const auto  tag     = Condition::hasTag("missing").evaluate(context);
+    const auto  tag     = tagPresent("missing").evaluate(context);
     const auto  compare = Condition::compare("missing", CompareOperator::Equal, 1).evaluate(context);
     REQUIRE(!tag.passed());
     REQUIRE(!compare.passed());
-    CHECK_EQ(static_cast<int>(tag.reasonCode()), static_cast<int>(ConditionReasonCode::TagUnavailable));
+    CHECK_EQ(static_cast<int>(tag.reasonCode()), static_cast<int>(ConditionReasonCode::MissingValue));
     CHECK_EQ(static_cast<int>(compare.reasonCode()), static_cast<int>(ConditionReasonCode::MissingValue));
+}
+
+TEST_CASE("decision.condition.legacyCodecExpandsDomainLeaves") {
+    using namespace eve::decision;
+    auto decoded = decodeCondition(eve::Value::Object{{"kind", "has_tag"}, {"key", "fire"}});
+    REQUIRE(decoded.ok());
+    CHECK_EQ(static_cast<int>(decoded.value().kind()), static_cast<int>(ConditionKind::Compare));
+    CHECK_EQ(decoded.value().key(), std::string("tag:fire"));
+    auto authority = decodeCondition(eve::Value::Object{{"kind", "authority_check"}, {"key", "cast"}});
+    REQUIRE(authority.ok());
+    CHECK_EQ(static_cast<int>(authority.value().kind()), static_cast<int>(ConditionKind::PolicyCall));
+    CHECK_EQ(authority.value().key(), std::string(kAuthorityAllowPolicy));
 }
 }  // namespace test_condition
 #endif

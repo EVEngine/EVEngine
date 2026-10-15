@@ -3310,6 +3310,7 @@ TEST_CASE("gameSave.rpgAndTacticsRestoreTogether") {
 #include <string_view>
 #include <utility>
 #include "action/Action.h"
+#include "decision/ConditionKeys.h"
 #include "common/Identity.h"
 #include "rpg/SkillAction.h"
 #include "weapon/WeaponAction.h"
@@ -3611,7 +3612,7 @@ TEST_CASE("gameplayAction.phasePipelineUsesInjectedSimulationTime") {
 
 TEST_CASE("gameplayAction.conditionFailureOwnsFailedTransition") {
     ActionDefinition def = definition("condition");
-    def.condition        = Condition::hasTag("silenced");
+    def.condition        = eve::decision::tagPresent("silenced");
     TestConditionEvaluator conditions;
     conditions.pass = false;
     ActionRuntime runtime(ActionServices{&conditions, nullptr, nullptr, nullptr});
