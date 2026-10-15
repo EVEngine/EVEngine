@@ -69,7 +69,7 @@ struct EVENGINE_API_WORLD PhysicsLink {
  * This link is stale when the shape is destroyed or its owning world is gone;
  * it never stores a raw pointer and is not persistent data.
  */
-struct PhysicsShapeLink {
+struct EVENGINE_API_WORLD PhysicsShapeLink {
     PhysicsWorldHandle world = PhysicsWorldHandle::invalid();
     PhysicsShapeHandle shape = PhysicsShapeHandle::invalid();
 
@@ -92,7 +92,7 @@ struct PhysicsShapeLink {
  * Joint links are invalidated before either attached body or the world is
  * destroyed, so both destruction orders resolve as StaleHandle.
  */
-struct PhysicsJointLink {
+struct EVENGINE_API_WORLD PhysicsJointLink {
     PhysicsWorldHandle world = PhysicsWorldHandle::invalid();
     PhysicsJointHandle joint = PhysicsJointHandle::invalid();
 
