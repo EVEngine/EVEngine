@@ -297,7 +297,7 @@ namespace {
 
 
 static const char *kScriptComponentContent = R"SQ(
-[[maybe_unused]] function testScriptComponent() {
+function testScriptComponent() {
     local u = eve.UI()
     class PriceLabel extends eve.UIComponent {
         unmounted = false
@@ -431,7 +431,7 @@ TEST_CASE("UI.layout.measureNestedFlexAndWindowContent") {
 
 
 static const char *kScriptCallbackContent = R"SQ(
-[[maybe_unused]] function testScriptCallbacks() {
+function testScriptCallbacks() {
     local u = eve.UI()
     u.beginBuild()
     u.beginWindow("W", "root")
@@ -447,7 +447,7 @@ static const char *kScriptCallbackContent = R"SQ(
     u.onChange("s", function(kind, value) { changeKind = kind; changeValue = value })
     return true
 }
-[[maybe_unused]] function fireTestEvents() {
+function fireTestEvents() {
     cbui.dispatchEvents()
     return true
 }

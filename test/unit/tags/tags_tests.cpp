@@ -232,7 +232,7 @@ TEST_CASE("tags.clearResetsStateEventsAndSequence") {
 }
 
 static const char* kTagsScript = R"SQ(
-[[maybe_unused]] function testTagsBindings() {
+function testTagsBindings() {
     local tags = eve.Tags();
     if (!tags.add("subject:b", "zeta")) return false;
     if (!tags.add("subject:b", "alpha")) return false;

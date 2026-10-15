@@ -144,6 +144,18 @@ No local full graphics/window suite is run; the repository directs that lane to
 CI. Asset downloads are disabled for the link checks, and third-party binaries
 are read-only at the matching pinned aggregate revision.
 
+## Merge verification against dev 10f6faa75
+
+The conflict repair preserves all 6563 expected literal identities and follows
+the upstream removal of empty editor aliases and the JSON architecture catalogue.
+The final source-only gate passes 360 script tests. Twelve affected Windows
+SHARED test domains compile and link under strict warnings; all 281 selected
+runtime cases pass, including 280 with `EVENGINE_TEST_NO_RENDER=1` and the separate
+window case. Strict assertion evidence follows origin sections, and existing
+warning-only baseline identities relocate without adding baseline entries.
+Invalid C++ unused annotations inside embedded Squirrel text are removed without
+changing C++ annotations or test assertions.
+
 ## Architecture rules applied
 
 Module declarations, boot composition and link-group policy remain manifest-owned.

@@ -937,7 +937,7 @@ TEST_CASE("weapon.mount.aimsWithoutWeapon") {
 }
 
 static const char* kViewScript = R"SQ(
-[[maybe_unused]] function testWeaponCppView() {
+function testWeaponCppView() {
     local weapon = eve.Weapon()
     weapon.registerWeaponsFromJson("[{\"id\":\"pistol\",\"ammo\":{\"mag\":12}}]")
     local w = weapon.newWeapon("pistol")

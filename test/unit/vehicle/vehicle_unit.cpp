@@ -301,7 +301,7 @@ TEST_CASE("vehicle.damage.modifiers") {
 }
 
 static const char* kViewScript = R"SQ(
-[[maybe_unused]] function testVehicleCppView() {
+function testVehicleCppView() {
     local vehicle = eve.Vehicle()
     vehicle.registerVehiclesFromJson("[{\"id\":\"jeep\"}]")
     local v = vehicle.newVehicle("jeep", 5.0, 6.0)
@@ -318,7 +318,7 @@ UnitSciptTest(VehicleViewScriptTest, kViewScript);
 
 
 static const char* kRtsFlowScript = R"SQ(
-[[maybe_unused]] function testVehicleRtsFlow() {
+function testVehicleRtsFlow() {
     local weapon = eve.Weapon()
     weapon.registerWeaponsFromJson("[{\"id\":\"cannon\",\"logic\":\"hitscan\",\"cooldown\":1.0,\"ammo\":{\"mag\":5,\"reserve\":20,\"reload\":2.0}}]")
     local vehicle = eve.Vehicle()

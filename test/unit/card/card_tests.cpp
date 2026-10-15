@@ -656,7 +656,7 @@ TEST_CASE("card.drawCardMovesDeckToHand") {
 }
 
 static const char* kCardViewScript = R"SQ(
-[[maybe_unused]] function testCardCppView() {
+function testCardCppView() {
     local card = eve.Card()
     card.registerCardsFromJson("[{\"id\":\"flame\",\"name\":\"Flame\"}]")
     local c = card.newCard("flame")

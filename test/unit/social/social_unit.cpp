@@ -126,7 +126,7 @@ TEST_CASE("social.integerAndStringIdsCannotCollide") {
 }
 
 static const char* kSocialScript = R"SQ(
-[[maybe_unused]] function testSocialBindings() {
+function testSocialBindings() {
     local social = eve.Social();
     social.clear();
     if (!social.setOwner("asset:b", "org")) return false;

@@ -909,7 +909,7 @@ TEST_CASE("Scene.link.body3DPullRoundTripsEuler") {
 // ---------------------------------------------------------------------------
 
 static const char* kSceneEcsScriptContent = R"SQ(
-[[maybe_unused]] function testSceneEntityLifecycle() {
+function testSceneEntityLifecycle() {
     class MoveComp extends eve.Component { speed = 2.0 }
     class EnemyAI extends eve.SceneEntity {
         move = MoveComp
@@ -978,7 +978,7 @@ static const char* kSceneEcsScriptContent = R"SQ(
     return true
 }
 
-[[maybe_unused]] function testSceneEntityViewCacheAfterDetach() {
+function testSceneEntityViewCacheAfterDetach() {
     class Marker extends eve.Component { v = 1 }
     class Unit extends eve.SceneEntity { mark = Marker }
 
@@ -1004,7 +1004,7 @@ static const char* kSceneEcsScriptContent = R"SQ(
     return true
 }
 
-[[maybe_unused]] function testSceneEntityEnableAndDelayedDetach() {
+function testSceneEntityEnableAndDelayedDetach() {
     class ToggleAI extends eve.SceneEntity {
         ticks = 0
         enables = 0
@@ -1052,7 +1052,7 @@ static const char* kSceneEcsScriptContent = R"SQ(
     return true
 }
 
-[[maybe_unused]] function testSceneLinkPhysics2D() {
+function testSceneLinkPhysics2D() {
     local scene = eve.Scene()
     scene.beginBuild()
     scene.beginNode("root", "")
@@ -1086,7 +1086,7 @@ static const char* kSceneEcsScriptContent = R"SQ(
     return true
 }
 
-[[maybe_unused]] function testSceneApiCompleteness() {
+function testSceneApiCompleteness() {
     local scene = eve.Scene()
     scene.beginBuild()
     scene.beginNode("root", "")
@@ -1164,7 +1164,7 @@ static const char* kSceneEcsScriptContent = R"SQ(
     return true
 }
 
-[[maybe_unused]] function testSceneNodeEvents() {
+function testSceneNodeEvents() {
     local scene = eve.Scene()
     scene.beginBuild()
     scene.beginNode("root", "")
@@ -1210,7 +1210,7 @@ static const char* kSceneEcsScriptContent = R"SQ(
     return true
 }
 
-[[maybe_unused]] function testSceneComponentOnMount() {
+function testSceneComponentOnMount() {
     local mounted = 0
     scene <- eve.Scene()
     class MyComp extends eve.SceneComponent {
@@ -1234,7 +1234,7 @@ static const char* kSceneEcsScriptContent = R"SQ(
     return true
 }
 
-[[maybe_unused]] function testSceneErrorSemantics() {
+function testSceneErrorSemantics() {
     local scene = eve.Scene()
     scene.beginBuild()
     scene.beginNode("root", "")
@@ -1251,7 +1251,7 @@ static const char* kSceneEcsScriptContent = R"SQ(
     return true
 }
 
-[[maybe_unused]] function testSceneSerializeAndPick() {
+function testSceneSerializeAndPick() {
     local scene = eve.Scene()
     scene.beginBuild()
     scene.beginNode("root", "")
@@ -3709,7 +3709,7 @@ using eve::social::SocialGraph;
 
 
 static const char* kSocialScript = R"SQ(
-[[maybe_unused]] function testSocialBindings() {
+function testSocialBindings() {
     local social = eve.Social();
     social.clear();
     if (!social.setOwner("asset:b", "org")) return false;
@@ -4741,7 +4741,7 @@ using eve::tags::TagStore;
 
 
 static const char* kTagsScript = R"SQ(
-[[maybe_unused]] function testTagsBindings() {
+function testTagsBindings() {
     local tags = eve.Tags();
     if (!tags.add("subject:b", "zeta")) return false;
     if (!tags.add("subject:b", "alpha")) return false;

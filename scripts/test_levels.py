@@ -336,18 +336,25 @@ def cmake_quote(text: str) -> str:
     return '"' + text.replace("\\", "/").replace('"', '\\"').replace("$", "\\$") + '"'
 
 
-def origin_case_policies(text: str, policy: dict) -> dict[str, dict[str, str]]:
-    """Derive legacy selections from the C++ origin guards, never another list."""
-    declared = classified_cases(policy)
+def origin_source_sections(text: str, policy: dict) -> dict[str, str]:
+    """Select relocated responsibilities while retaining physical source line numbers."""
     result = {}
     guards = list(re.finditer(r"^#if !defined\(EVE_TEST_FILTER_ORIGINS\)(?:[^\n]*\\\n)*[^\n]*\n", text, re.MULTILINE))
     for index, guard in enumerate(guards):
         end = guards[index + 1].start() if index + 1 < len(guards) else len(text)
-        names = cases_in(text[guard.end():end])
         for origin in re.findall(r"defined\(EVE_TEST_ORIGIN_(\w+)\)", guard[0].replace("\\\n", " ")):
-            result[origin + ".cpp"] = {name: declared[name] for name in names if name in declared}
+            result[origin + ".cpp"] = "\n" * text.count("\n", 0, guard.end()) + text[guard.end():end]
     for origin in policy.get("origins", []):
-        result.setdefault(origin, declared)
+        result.setdefault(origin, text)
+    return result
+
+
+def origin_case_policies(text: str, policy: dict) -> dict[str, dict[str, str]]:
+    """Derive legacy selections from the C++ origin guards, never another list."""
+    declared = classified_cases(policy)
+    result = {}
+    for origin, section in origin_source_sections(text, policy).items():
+        result[origin] = {name: declared[name] for name in cases_in(section) if name in declared}
     return result
 
 

@@ -2951,7 +2951,7 @@ public:
 
 
 static const char* kViewScript = R"SQ(
-[[maybe_unused]] function testVehicleCppView() {
+function testVehicleCppView() {
     local vehicle = eve.Vehicle()
     vehicle.registerVehiclesFromJson("[{\"id\":\"jeep\"}]")
     local v = vehicle.newVehicle("jeep", 5.0, 6.0, 0.0, "")
@@ -3088,7 +3088,7 @@ TEST_CASE_FIXTURE(VehicleScriptDamageTest, "vehicle.script.damageRule.failureKee
 }
 
 static const char* kRtsFlowScript = R"SQ(
-[[maybe_unused]] function testVehicleRtsFlow() {
+function testVehicleRtsFlow() {
     local weapon = eve.Weapon()
     weapon.registerWeaponsFromJson("[{\"id\":\"cannon\",\"logic\":\"hitscan\",\"cooldown\":1.0,\"ammo\":{\"mag\":5,\"reserve\":20,\"reload\":2.0}}]")
     local vehicle = eve.Vehicle()
@@ -3260,7 +3260,7 @@ public:
 
 
 static const char* kViewScript = R"SQ(
-[[maybe_unused]] function testWeaponCppView() {
+function testWeaponCppView() {
     local weapon = eve.Weapon()
     weapon.registerWeaponsFromJson("[{\"id\":\"pistol\",\"ammo\":{\"mag\":12}}]")
     local w = weapon.newWeapon("pistol")

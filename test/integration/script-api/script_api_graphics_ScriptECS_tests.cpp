@@ -224,7 +224,7 @@ public:
 // ---------------------------------------------------------------------------
 
 static const char* kEcsScriptBridgeContent = R"SQ(
-[[maybe_unused]] function testInheritCppEntityAndAccess() {
+function testInheritCppEntityAndAccess() {
     class Enemy extends eve.Node {}
     local e = Enemy()
     if (e == null) return false
@@ -242,7 +242,7 @@ static const char* kEcsScriptBridgeContent = R"SQ(
     return true
 }
 
-[[maybe_unused]] function testSystemOverCppEntities() {
+function testSystemOverCppEntities() {
     class Enemy extends eve.Movable {}
     class MoveSys extends eve.System {
         constructor() { base.constructor(Enemy) }
@@ -268,7 +268,7 @@ static const char* kEcsScriptBridgeContent = R"SQ(
     return true
 }
 
-[[maybe_unused]] function testCppCreatedEntitiesVisible() {
+function testCppCreatedEntitiesVisible() {
     class Enemy extends eve.Node {}
     local all = eve.view(Enemy)
     if (all.len() < 2) return false
@@ -281,7 +281,7 @@ static const char* kEcsScriptBridgeContent = R"SQ(
     return true
 }
 
-[[maybe_unused]] function testDestroyFromScript() {
+function testDestroyFromScript() {
     class Enemy extends eve.Node {}
     local e = Enemy()
     if (!e.isAlive()) return false
@@ -3345,7 +3345,7 @@ TEST_CASE("card.ecs.removeKeepsEntityInView") {
 
 
 static const char* kCardViewScript = R"SQ(
-[[maybe_unused]] function testCardCppView() {
+function testCardCppView() {
     local card = eve.Card()
     card.registerCardsFromJson("[{\"id\":\"flame\",\"name\":\"Flame\"}]")
     local c = card.newCard("flame")
