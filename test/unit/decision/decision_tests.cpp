@@ -191,6 +191,7 @@ TEST_CASE("decision.influenceAndSnapshotRoundTrip") {
 TEST_CASE("decision.protobufSnapshotRejectsInvalidWithoutMutation") {
     DecisionContext source;
     REQUIRE(source.set("ai", "target", "\"tank\"").ok());
+    REQUIRE_EQ(source.get("ai", "target", "null"), std::string("\"tank\""));
     REQUIRE(source.setState("unit", "idle").ok());
     REQUIRE(source.addTransition("unit", "idle", "seen", "attack").ok());
     REQUIRE(source.newGrid("threat", 2, 1, 4, 0, 0).ok());
@@ -213,9 +214,12 @@ TEST_CASE("decision.protobufSnapshotRejectsInvalidWithoutMutation") {
     REQUIRE_EQ(invalid.boards_size(), 1);
     REQUIRE_EQ(invalid.boards(0).name(), "ai");
     CHECK(invalid.boards(0).scalar_json().empty());
-    const auto scalar = invalid.boards(0).scalar_values().find("target");
-    REQUIRE(scalar != invalid.boards(0).scalar_values().end());
-    CHECK_EQ(scalar->second.string_value(), "tank");
+    const auto& scalars = invalid.boards(0).scalar_values();
+    REQUIRE_EQ(scalars.size(), 1u);
+    for (const auto& [key, scalar] : scalars) {
+        CHECK_EQ(key, "target");
+        CHECK_EQ(scalar.string_value(), "tank");
+    }
     invalid.set_version(4);
     std::string future;
     REQUIRE(invalid.SerializeToString(&future));

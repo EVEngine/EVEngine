@@ -962,6 +962,19 @@
         "tensor_llm.cpp"
       ]
     },
+    "integration/gameplay-composition/emergence_protobuf.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "emergence.factStoreTypedProtobufRoundTripAndLegacyImport",
+          "emergence.ruleEngineTypedProtobufRestoresAtomically"
+        ]
+      },
+      "module": "emergence",
+      "modules": ["emergence"],
+      "task": "gameplay-composition"
+    },
     "integration/gameplay-composition/gameplay_composition_graphics_animation_inertializer_tests.cpp": {
       "role": "tests",
       "default": "module-composition",

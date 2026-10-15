@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "emergence-runtime-protobuf-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/emergence/**",
+      "owner": "emergence::FactStore and emergence::RuleEngine",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "Facts, policy outcomes and rule latches persist as typed Protobuf records rather than hand-written Value JSON trees.",
+      "expiry": "2027-12-31",
+      "evidence": ["proto/emergence_runtime.proto", "src/modules/emergence/EmergenceProtobuf.cpp"],
+      "tests": ["test/integration/gameplay-composition/emergence_protobuf.cpp"],
+      "schema": "eve.emergence.proto.FactStoreSave and RuleEngineSave contain typed fact maps, policy results and rule latches.",
+      "version": "Both binary roots write version 2; version-1 JSON remains readable only at the compatibility import boundary.",
+      "migration": "restoreJson accepts previous version-1 fact and runtime documents, then publishes a fully validated candidate.",
+      "unknown_fields": "Binary restore rejects unknown Protobuf fields recursively; Protobuf JSON parsing is strict and dynamic payloads are validated.",
+      "restore_atomicity": "FactStore builds detached maps, and RuleEngine builds detached facts and latches before replacing authoritative state."
+    },
+    {
+      "id": "emergence-runtime-protobuf-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/emergence/**",
+      "owner": "emergence::FactStore and emergence::RuleEngine",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "Binary snapshot and restore are the canonical persistence face; existing script JSON calls remain compatibility entry points.",
+      "expiry": "2027-12-31",
+      "evidence": ["src/modules/emergence/FactStore.h", "src/modules/emergence/RuleEngine.h"],
+      "tests": ["test/integration/gameplay-composition/emergence_protobuf.cpp"],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {"absent_profile": "No L1-L4 trim claim is made for the persistence format change."},
+      "thread_affinity": "All capture and restore calls run on the owning simulation thread without callbacks during publication.",
+      "cost_notes": ["Snapshot and restore cost linear time in fact payload bytes and rule count."],
+      "hot_path": []
+    }
+  ]
+}

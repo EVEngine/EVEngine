@@ -7,6 +7,9 @@
 #include "common/Diagnostic.h"
 #include "common/IEconomy.h"
 #include "common/IEmergenceActionHandler.h"
+#include "emergence_runtime.pb.h"
+
+#include <google/protobuf/util/json_util.h>
 
 #include <algorithm>
 #include <limits>
@@ -538,28 +541,11 @@ eve::Result<void> RuleEngine::resetRule(std::string_view ruleId) {
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-std::string RuleEngine::snapshotJson() const {
-    eve::Value::Object root;
-    root.emplace("schema", eve::Value("eve.emergence.runtime"));
-    root.emplace("version", eve::Value(std::int64_t{1}));
-    auto factsJson = eve::Value::fromJson(facts_.snapshotJson());
-    if (factsJson) root.emplace("facts", std::move(factsJson).takeValue());
-    eve::Value::Array rules;
-    for (std::size_t i = 0; i < rules_.size(); ++i) {
-        eve::Value::Object row;
-        row.emplace("id", eve::Value(rules_[i].id));
-        row.emplace("passed", eve::Value(runtime_[i].passed));
-        row.emplace("fired", eve::Value(runtime_[i].fired));
-        row.emplace("disabled", eve::Value(runtime_[i].disabled));
-        row.emplace("cooldownUntil", eve::Value(static_cast<std::int64_t>(runtime_[i].cooldownUntil)));
-        rules.push_back(eve::Value(std::move(row)));
-    }
-    root.emplace("rules", eve::Value(std::move(rules)));
-    auto encoded = eve::Value(std::move(root)).toJson();
-    return encoded ? std::move(encoded).takeValue() : std::string("{}");
-}
-
 eve::Result<void> RuleEngine::restoreJson(std::string_view json) {
+    proto::RuleEngineSave typed;
+    if (google::protobuf::util::JsonStringToMessage(std::string(json), &typed).ok() && typed.has_schema() &&
+        typed.schema() == "eve.emergence.runtime" && typed.has_version() && typed.version() == 2)
+        return restoreMessage(typed);
     auto parsed = eve::Value::fromJson(json);
     if (!parsed) return eve::Result<void>::failure(parsed.status());
     const auto* root = parsed.value().getIf<eve::Value::Object>();

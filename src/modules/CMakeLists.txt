@@ -368,6 +368,16 @@ if(TARGET EVDecision)
   target_link_libraries(EVDecision PUBLIC protobuf::libprotobuf)
 endif()
 
+if(TARGET EVEmergence)
+  target_sources(EVEmergence PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/emergence_runtime.pb.cc)
+  target_include_directories(EVEmergence SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  if(MSVC)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/emergence_runtime.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+  endif()
+  target_link_libraries(EVEmergence PUBLIC protobuf::libprotobuf)
+endif()
+
 if(TARGET EVInventory)
   # Generated with the pinned third-party protoc from proto/inventory_save.proto.
   # Checked in so Android, iOS and WebAssembly only need the target runtime.

@@ -21,6 +21,10 @@
 
 namespace eve::emergence {
 
+namespace proto {
+class RuleEngineSave;
+}
+
 /** @brief Handle domain for module-owned rule engines. */
 struct RuleEngineHandleTag {};
 /** @brief Generation-qualified reference to a module-owned RuleEngine. */
@@ -150,15 +154,28 @@ public:
     /** @brief Diagnostic: distinct keys that woke at least one rule since construction/clear. */
     [[nodiscard]] std::uint64_t wakeKeyEvents() const noexcept { return wakeKeyEvents_; }
 
-    /** @brief Export runtime state (facts + rule latches) as deterministic JSON. */
+    /** @brief Serialize facts and rule latches to typed Protobuf bytes.
+     * @return Deterministic binary bytes, or a structured failure.
+     * @cost Linear in fact payloads and catalogue size per capture.
+     * @thread Owning simulation thread only. */
+    [[nodiscard]] eve::Result<std::string> snapshotBinary() const;
+    /** @brief Atomically restore a typed runtime snapshot against the current catalogue.
+     * @return Success, or a diagnostic leaving the runtime unchanged.
+     * @cost Linear in snapshot bytes and catalogue size per restore.
+     * @thread Owning simulation thread only. */
+    [[nodiscard]] eve::Result<void> restoreBinary(std::string_view bytes);
+
+    /** @brief Compatibility-only Protobuf JSON export; use snapshotBinary for persistence. */
     [[nodiscard]] std::string snapshotJson() const;
     /**
-     * @brief Transactionally restore runtime state; catalogue must already match rule ids.
+     * @brief Restore Protobuf JSON or legacy version-1 JSON; catalogue must match rule ids.
      * @return Success, or structured failure leaving the engine unchanged.
      */
     [[nodiscard]] eve::Result<void> restoreJson(std::string_view json);
 
 private:
+    [[nodiscard]] eve::Result<void> captureMessage(proto::RuleEngineSave& save) const;
+    [[nodiscard]] eve::Result<void> restoreMessage(const proto::RuleEngineSave& save);
     struct RuleRuntime {
         bool          passed        = false;
         bool          fired         = false;

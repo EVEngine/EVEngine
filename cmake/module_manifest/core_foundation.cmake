@@ -119,6 +119,7 @@ eve_declare_module(NAME decision LAYER 0 SCRIPT Decision SLOT decision
 # Reuses decision::Condition; economy actions go through IEconomy capability.
 eve_declare_module(NAME emergence LAYER 0 SCRIPT Emergence SLOT emergence
                    DEPS decision
+                   THIRDPARTY protobuf
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME definitions LAYER 0 SCRIPT Definitions SLOT definitions
                    DEPS schema
