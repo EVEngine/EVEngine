@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "statepatch-store-protobuf-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/statepatch/StatePatch.*",
+      "owner": "statepatch::Store",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "Store metadata and entries now use typed Protobuf binary and JSON snapshots while values remain open-ended runtime data.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "proto/statepatch_store.proto",
+        "src/modules/statepatch/StatePatch.cpp"
+      ],
+      "tests": [
+        "test/statepatch_protobuf.cpp",
+        "test/statepatch.cpp"
+      ],
+      "schema": "statepatch:store version 2 stores revision, next sequence, entries and dirty keys in StatePatchStoreSave; each open-ended value uses eve.persistence.proto.DynamicValue.",
+      "version": "Binary and Protobuf JSON writers emit version 2; legacy version 1 JSON and common envelopes remain readable.",
+      "migration": "The version 1 to 2 envelope migration validates legacy JSON in a detached Store and recaptures its typed payload.",
+      "unknown_fields": "Binary restore rejects unknown Protobuf fields recursively; typed Protobuf JSON rejects unknown names, and the legacy parser retains its strict required-field checks.",
+      "restore_atomicity": "Restore validates every entry and dirty key into detached containers, then replaces the live Store and invalidates old handles only after success."
+    },
+    {
+      "id": "statepatch-store-protobuf-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/statepatch/**",
+      "owner": "statepatch::Store",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "The Store exposes typed Protobuf binary persistence beside its compatibility JSON and script interfaces.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/statepatch/StatePatch.h",
+        "src/modules/statepatch/StatePatch.cpp",
+        "proto/statepatch_store.proto"
+      ],
+      "tests": [
+        "test/statepatch_protobuf.cpp",
+        "test/statepatch.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        { "script_class": "StateStore", "methods": [ "snapshotJson", "restoreJson" ] }
+      ],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "No L1-L4 trim claim is made for this persistence change."
+      },
+      "thread_affinity": "Store capture and restore run on the owning thread; restore invokes no callbacks.",
+      "cost_notes": [
+        "Binary capture and restore cost linear time in the stored keys and recursively owned values per operation."
+      ],
+      "hot_path": []
+    }
+  ]
+}

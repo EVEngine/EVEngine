@@ -19,6 +19,7 @@ PROTO_GROUPS = {
     "game_save_session.proto": "FOUNDATION",
     "inventory_save.proto": "FOUNDATION",
     "policy_registry.proto": "FOUNDATION",
+    "statepatch_store.proto": "FOUNDATION",
     "transaction_ledger.proto": "FOUNDATION",
     "rpg_actor_checkpoint.proto": "PLATFORM",
     "rpg_game_state.proto": "PLATFORM",

@@ -2,9 +2,13 @@
 
 #include "common/Capability.h"
 #include "common/Json.h"
-#include "common/StateAccess.h"
+#include "common/ProtobufDynamicValue.h"
 #include "common/SquirrelBinding.h"
+#include "common/StateAccess.h"
 #include "statepatch/StateAccessAdapter.h"
+#include "statepatch_store.pb.h"
+
+#include <google/protobuf/util/json_util.h>
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -17,6 +21,23 @@
 
 namespace eve::statepatch {
 namespace {
+
+bool hasUnknownProtoFields(const google::protobuf::Message& message) {
+    const auto* reflection = message.GetReflection();
+    if (!reflection->GetUnknownFields(message).empty()) return true;
+    std::vector<const google::protobuf::FieldDescriptor*> fields;
+    reflection->ListFields(message, &fields);
+    for (const auto* field : fields) {
+        if (field->cpp_type() != google::protobuf::FieldDescriptor::CPPTYPE_MESSAGE) continue;
+        if (field->is_repeated()) {
+            for (int index = 0; index < reflection->FieldSize(message, field); ++index)
+                if (hasUnknownProtoFields(reflection->GetRepeatedMessage(message, field, index))) return true;
+        } else if (hasUnknownProtoFields(reflection->GetMessage(message, field))) {
+            return true;
+        }
+    }
+    return false;
+}
 
 /** @brief Script-owned handle proxy; the state store remains module-owned. */
 struct ScriptStateStore {
@@ -143,6 +164,19 @@ const eve::SnapshotMigrationChain& statePatchMigrations() {
                            return eve::Result<eve::Value>::success(eve::Value(std::move(migrated)));
                        });
         if (!registration.ok()) std::terminate();
+        const auto typedRegistration = result.add(statePatchSchema(), eve::SchemaVersion(1), eve::SchemaVersion(2),
+                                                  [](const eve::Value& payload) -> eve::Result<eve::Value> {
+                                                      auto legacyJson = payload.toJson();
+                                                      if (!legacyJson.ok())
+                                                          return eve::Result<eve::Value>::failure(legacyJson.status());
+                                                      Store candidate;
+                                                      auto  restored =
+                                                          candidate.restoreJson(std::move(legacyJson).takeValue());
+                                                      if (!restored.ok())
+                                                          return eve::Result<eve::Value>::failure(restored.status());
+                                                      return eve::Value::fromJson(candidate.snapshotJson());
+                                                  });
+        if (!typedRegistration.ok()) std::terminate();
         return result;
     }();
     return chain;
@@ -394,28 +428,92 @@ const ChangeEvent* Store::eventAt(int index) const {
 void Store::clearEvents() { events_.clear(); }
 
 std::string Store::snapshotJson() const {
-    std::ostringstream out;
-    out << "{\"version\":1,\"revision\":" << quote(std::to_string(revision_))
-        << ",\"nextSequence\":" << quote(std::to_string(nextSequence_)) << ",\"values\":[";
-    bool first = true;
+    auto binary = snapshotBinary();
+    if (!binary.ok()) return {};
+    proto::StatePatchStoreSave saved;
+    if (!saved.ParseFromString(binary.value())) return {};
+    std::string json;
+    return google::protobuf::util::MessageToJsonString(saved, &json).ok() ? json : std::string{};
+}
+
+eve::Result<std::string> Store::snapshotBinary() const {
+    proto::StatePatchStoreSave saved;
+    saved.set_schema("statepatch:store");
+    saved.set_version(2);
+    saved.set_revision(revision_);
+    saved.set_next_sequence(nextSequence_);
     for (const auto& [subject, entries] : values_)
         for (const auto& [key, value] : entries) {
-            if (!first) out << ',';
-            first = false;
-            out << "{\"subject\":" << quote(subject) << ",\"key\":" << quote(key)
-                << ",\"revision\":" << quote(std::to_string(value.revision)) << ",\"value\":" << value.json << '}';
+            auto parsed = eve::Value::fromJson(value.json);
+            if (!parsed.ok()) return eve::Result<std::string>::failure(parsed.status());
+            auto* entry = saved.add_values();
+            entry->set_subject(subject);
+            entry->set_key(key);
+            entry->set_revision(value.revision);
+            auto encoded = eve::proto_support::encodeDynamicValue(parsed.value(), *entry->mutable_value());
+            if (!encoded.ok()) return eve::Result<std::string>::failure(encoded.status());
         }
-    out << "],\"dirty\":[";
-    first = true;
     for (const auto& [subject, key] : dirty_) {
-        if (!first) out << ',';
-        first = false;
-        out << "[" << quote(subject) << ',' << quote(key) << ']';
+        auto* entry = saved.add_dirty();
+        entry->set_subject(subject);
+        entry->set_key(key);
     }
-    return out.str() + "]}";
+    std::string binary;
+    if (!saved.SerializeToString(&binary))
+        return eve::Result<std::string>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, "state patch Protobuf encoding failed"));
+    return eve::Result<std::string>::success(std::move(binary));
+}
+
+eve::Result<void> Store::restoreBinary(std::string_view bytes) {
+    proto::StatePatchStoreSave saved;
+    if (bytes.size() > static_cast<size_t>(std::numeric_limits<int>::max()) ||
+        !saved.ParseFromArray(bytes.data(), static_cast<int>(bytes.size())) || hasUnknownProtoFields(saved) ||
+        !saved.has_schema() || saved.schema() != "statepatch:store" || !saved.has_version() || saved.version() != 2 ||
+        !saved.has_revision() || !saved.has_next_sequence() || saved.next_sequence() == 0)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid state patch Protobuf snapshot"));
+
+    Values                                        restoredValues;
+    std::set<std::pair<std::string, std::string>> restoredDirty;
+    for (const auto& entry : saved.values()) {
+        if (!entry.has_subject() || entry.subject().empty() || !entry.has_key() || entry.key().empty() ||
+            !entry.has_revision() || entry.revision() > saved.revision() || !entry.has_value() ||
+            restoredValues[entry.subject()].contains(entry.key()))
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid state patch Protobuf value"));
+        auto decoded = eve::proto_support::decodeDynamicValue(entry.value());
+        if (!decoded.ok()) return eve::Result<void>::failure(decoded.status());
+        auto json = decoded.value().toJson();
+        if (!json.ok()) return eve::Result<void>::failure(json.status());
+        restoredValues[entry.subject()][entry.key()] = {std::move(json).takeValue(), entry.revision()};
+    }
+    for (const auto& entry : saved.dirty()) {
+        if (!entry.has_subject() || entry.subject().empty() || !entry.has_key() || entry.key().empty() ||
+            !restoredDirty.emplace(entry.subject(), entry.key()).second)
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid state patch Protobuf dirty key"));
+    }
+    values_       = std::move(restoredValues);
+    dirty_        = std::move(restoredDirty);
+    revision_     = saved.revision();
+    nextSequence_ = saved.next_sequence();
+    events_.clear();
+    query_.clear();
+    dirtyQuery_.clear();
+    batches_.clear();
+    return eve::Result<void>::success();
 }
 
 eve::Result<void> Store::restoreJson(const std::string& json) {
+    proto::StatePatchStoreSave typed;
+    if (google::protobuf::util::JsonStringToMessage(json, &typed).ok() && typed.has_schema()) {
+        std::string binary;
+        if (!typed.SerializeToString(&binary))
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid state patch Protobuf JSON"));
+        return restoreBinary(binary);
+    }
     std::string parseError;
     auto        document = eve::json::Document::parse(json, &parseError);
     if (!document.valid())
@@ -484,7 +582,7 @@ eve::Result<void> Store::restoreJson(const std::string& json) {
 eve::Result<eve::SnapshotEnvelope> Store::snapshot(const eve::SnapshotHashProvider& hashProvider) const {
     auto payload = eve::Value::fromJson(snapshotJson());
     if (!payload.ok()) return eve::Result<eve::SnapshotEnvelope>::failure(payload.status());
-    return eve::makeSnapshotEnvelope("statepatch.store", statePatchSchema(), eve::SchemaVersion(1), instanceId_,
+    return eve::makeSnapshotEnvelope("statepatch.store", statePatchSchema(), eve::SchemaVersion(2), instanceId_,
                                      eve::Revision(revision_), tick_, std::move(payload).takeValue(), hashProvider);
 }
 
@@ -496,7 +594,7 @@ eve::Result<void> Store::restoreSnapshot(const eve::SnapshotEnvelope&     source
     if (!instanceId_.isNil() && source.instanceId != instanceId_)
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Conflict, "snapshot instanceId does not match statepatch::Store"));
-    auto migrated = statePatchMigrations().migrate(source, eve::SchemaVersion(1), hashProvider);
+    auto migrated = statePatchMigrations().migrate(source, eve::SchemaVersion(2), hashProvider);
     if (!migrated.ok()) return eve::Result<void>::failure(migrated.status());
     const auto& candidateEnvelope = migrated.value();
     auto        metadata = eve::validateSnapshotPayloadMetadata(candidateEnvelope.payload, candidateEnvelope.revision,
@@ -554,7 +652,21 @@ void Store::swapTransactionState(Store& other) noexcept {
 }
 
 bool Store::transactionStateEquals(const Store& other) const {
-    if (snapshotJson() != other.snapshotJson() || events_.size() != other.events_.size()) return false;
+    if (revision_ != other.revision_ || nextSequence_ != other.nextSequence_ || dirty_ != other.dirty_ ||
+        values_.size() != other.values_.size() || events_.size() != other.events_.size())
+        return false;
+    auto leftSubject  = values_.begin();
+    auto rightSubject = other.values_.begin();
+    for (; leftSubject != values_.end(); ++leftSubject, ++rightSubject) {
+        if (leftSubject->first != rightSubject->first || leftSubject->second.size() != rightSubject->second.size())
+            return false;
+        auto leftValue  = leftSubject->second.begin();
+        auto rightValue = rightSubject->second.begin();
+        for (; leftValue != leftSubject->second.end(); ++leftValue, ++rightValue)
+            if (leftValue->first != rightValue->first || leftValue->second.json != rightValue->second.json ||
+                leftValue->second.revision != rightValue->second.revision)
+                return false;
+    }
     for (size_t i = 0; i < events_.size(); ++i) {
         const auto& left  = events_[i];
         const auto& right = other.events_[i];

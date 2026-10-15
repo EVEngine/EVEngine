@@ -192,13 +192,33 @@ public:
     const ChangeEvent* eventAt(int index) const;
     /** @brief Removes retained change events without resetting sequence allocation. */
     void clearEvents();
-    /** @brief Exports all persistent store state as deterministic compact JSON. */
+    /**
+     * @brief Compatibility JSON projection of the typed Protobuf snapshot.
+     * @return Protobuf JSON, or an empty string if encoding fails.
+     * @compatibility Prefer snapshotBinary() for persistent C++ storage.
+     */
     std::string snapshotJson() const;
     /**
-     * @brief Transactionally restores a snapshot produced by snapshotJson().
+     * @brief Exports the typed versioned store snapshot as Protobuf binary.
+     * @return Encoded snapshot, or a conversion failure without changing the Store.
+     * @cost Linear in the stored key and recursively owned value count per capture.
+     * @thread Call on the Store's owning thread; no callbacks are invoked.
+     */
+    [[nodiscard]] eve::Result<std::string> snapshotBinary() const;
+    /**
+     * @brief Validates and atomically restores a typed Protobuf binary snapshot.
+     * @param bytes Complete StatePatchStoreSave message.
+     * @return Success, or a failure leaving all Store state unchanged.
+     * @cost Linear in the encoded snapshot size per restore.
+     * @thread Call on the Store's owning thread; no callbacks are invoked.
+     */
+    [[nodiscard]] eve::Result<void> restoreBinary(std::string_view bytes);
+    /**
+     * @brief Transactionally restores Protobuf JSON or a legacy version 1 JSON snapshot.
      * @param json Snapshot JSON to parse and validate.
      * @return Success, or a parse/validation diagnostic; on failure the Store
      *         remains unchanged.
+     * @compatibility Prefer restoreBinary() for persistent C++ storage.
      */
     [[nodiscard]] eve::Result<void> restoreJson(const std::string& json);
 
