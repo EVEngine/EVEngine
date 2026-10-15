@@ -2,6 +2,7 @@
 #include "zeroerr/unittest.h"
 
 #include "common/Module.h"
+#include "common/SquirrelBinding.h"
 #include "platform_event/PlatformEvent.h"
 #include "rx/Rx.h"
 
@@ -397,4 +398,17 @@ TEST_CASE("rx.script.fromEvent.pump") {
         rx.pump(ev2);
     )");
     CHECK_EQ(out, std::string("AB"));
+}
+
+TEST_CASE("rx.script.throwingSubscriberIsReported") {
+    eve::script::resetReportedScriptCallFailures();
+    runRxSnippet(R"(
+        local s = rx.newSubject();
+        s.subscribe(function(v) { throw "subscriber exploded"; });
+        s.onNext(1);
+    )");
+    // The subscriber runs from native code. Before rx routed it through the shared
+    // reporter, a subscriber that threw was indistinguishable from one that returned
+    // nothing: the stream just stopped producing, with nothing on stderr.
+    REQUIRE(eve::script::reportedScriptCallFailures() >= 1);
 }

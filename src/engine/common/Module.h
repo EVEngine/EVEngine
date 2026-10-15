@@ -2,9 +2,8 @@
 #include "common/Export.h"
 #include "common/Result.h"
 
+#include <memory>
 #include <string>
-#include <unordered_map>
-#include <vector>
 
 namespace ssq {
 class VM;
@@ -47,13 +46,17 @@ namespace eve {
 
 class Runtime;
 
-class EVENGINE_API Module {
+/** @brief EVENGINE_API_FOUNDATION public API. */
+class EVENGINE_API_FOUNDATION Module {
 public:
+    /** @brief Module. */
     virtual ~Module() {}
+    /** @brief Returns the name. */
     virtual std::string getName() const = 0;
 };
 
-class EVENGINE_API ModuleManager {
+/** @brief EVENGINE_API_FOUNDATION public API. */
+class EVENGINE_API_FOUNDATION ModuleManager {
 public:
     typedef Module* (*creator_t)();
     typedef void    (*exposer_t)(ssq::Table&);
@@ -96,8 +99,10 @@ public:
      */
     static void expose(Runtime& runtime);
     // Compatibility for embedders that still own their ssq::VM directly.
+    /** @brief Expose. */
     static void expose(ssq::VM& vm);
     // Expose modules registered after the initial expose() (e.g. plugins).
+    /** @brief Expose pending. */
     static int  expose_pending();
     /**
      * @brief Active runtime associated with the last expose() call, or nullptr.
@@ -156,6 +161,7 @@ public:
     static void requireAll();
 
 protected:
+    /** @brief Expose vm. */
     static void exposeVM(ssq::VM& vm);
 
 private:
@@ -178,27 +184,26 @@ private:
      */
     static Module* requireInstanceRaw(const char* name);
 
-protected:
-    struct ModuleInfo {
-        creator_t creator = nullptr;
-        exposer_t exposer = nullptr;
-        Module*   instance = nullptr;
-        bool      exposed  = false;
-    };
+private:
+    // The singleton owns its registry; only its implementation sees container types.
+    struct State;
+    std::unique_ptr<State> state_;
 
-    std::unordered_map<std::string, ModuleInfo> registered_modules;
-    bool plugin_registration_active_ = false;
-    std::vector<std::string> plugin_registration_added_;
-    std::string plugin_registration_error_;
-    Runtime* active_runtime_ = nullptr;
+    ModuleManager();
+    ~ModuleManager();
+    ModuleManager(const ModuleManager&)            = delete;
+    ModuleManager& operator=(const ModuleManager&) = delete;
+    ModuleManager(ModuleManager&&)                 = delete;
+    ModuleManager& operator=(ModuleManager&&)      = delete;
 
     friend struct ModuleBindAccess;
 };
 
-struct EVENGINE_API ModuleRegister {
+/** @brief EVENGINE_API_FOUNDATION public API. */
+struct EVENGINE_API_FOUNDATION ModuleRegister {
+    /** @brief Module register. */
     ModuleRegister(const char* name, ModuleManager::creator_t c, ModuleManager::exposer_t e);
 };
-
 
 
 }  // namespace eve

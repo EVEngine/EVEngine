@@ -1,16 +1,88 @@
 #include "common/SquirrelBinding.h"
 
 #include "common/Assert.h"
+#include "common/ScriptError.h"
+#include "common/ScriptProvider.h"
 
 #include <algorithm>
 #include <cctype>
 #include <cmath>
 #include <cstdint>
+#include <cstdio>
+#include <cstring>
 #include <limits>
+#include <mutex>
 #include <string_view>
 #include <vector>
 
 namespace eve::script {
+
+/**
+ * @brief Failure bookkeeping for reportScriptCallFailure().
+ *
+ * `lastMessage` deduplicates the printed line: a callback that breaks every frame would
+ * otherwise flood stderr. `count` still increments for every failure, so a test or a
+ * diagnostic can observe the condition even while the text repeats.
+ */
+namespace {
+struct ScriptCallFailureLog {
+    std::mutex  mutex;
+    std::string lastMessage;
+    int         count = 0;
+};
+
+ScriptCallFailureLog& scriptCallFailureLog() {
+    static ScriptCallFailureLog log;
+    return log;
+}
+
+/** @brief Record and (when the text changed) print one failure. */
+void reportFailureText(const char* what, const std::string& text) {
+    ScriptCallFailureLog&       log = scriptCallFailureLog();
+    std::lock_guard<std::mutex> lock(log.mutex);
+    ++log.count;
+    if (text == log.lastMessage) return;
+    log.lastMessage = text;
+    std::fprintf(stderr, "EVEngine: script call failed (%s): %s\n", what ? what : "?", text.c_str());
+}
+}  // namespace
+
+std::string reportScriptCallFailure(HSQUIRRELVM vm, const char* what) {
+    const ScriptErrorContext context = takeLastScriptError(vm);
+    const std::string        text = context.empty() ? std::string("unknown script error") : formatScriptError(context);
+    reportFailureText(what, text);
+    return text;
+}
+
+SQRESULT compileAndRunChunk(HSQUIRRELVM vm, const char* name, const char* source) {
+    if (!vm || !source) return SQ_ERROR;
+    const SQInteger top = sq_gettop(vm);
+    if (SQ_FAILED(sq_compilebuffer(vm, source, static_cast<SQInteger>(std::strlen(source)), name, SQTrue))) {
+        const ScriptErrorContext context = captureCompileError(vm);
+        reportFailureText(name, context.empty() ? std::string("unknown compile error") : formatScriptError(context));
+        sq_settop(vm, top);
+        return SQ_ERROR;
+    }
+    HSQOBJECT chunk;
+    sq_getstackobj(vm, -1, &chunk);  // borrowed: still rooted by `top` until the call ends
+    const SQRESULT result = callFunction(vm, chunk, rootTable);
+    sq_settop(vm, top);
+    return result;
+}
+
+int reportedScriptCallFailures() {
+    ScriptCallFailureLog&       log = scriptCallFailureLog();
+    std::lock_guard<std::mutex> lock(log.mutex);
+    return log.count;
+}
+
+void resetReportedScriptCallFailures() {
+    ScriptCallFailureLog&       log = scriptCallFailureLog();
+    std::lock_guard<std::mutex> lock(log.mutex);
+    log.count = 0;
+    log.lastMessage.clear();
+}
+
 namespace {
 
 struct ConversionContext {
@@ -21,7 +93,7 @@ struct ConversionContext {
 
 Diagnostic conversionError(const ConversionContext& context, DiagnosticCode code, std::string message,
                            std::string path) {
-    return Diagnostic::error(code, std::move(message), std::move(path), {}, context.options.source);
+    return Diagnostic::error(code, message, path, {}, context.options.source);
 }
 
 std::string childPath(std::string_view parent, std::size_t index) {
@@ -404,41 +476,72 @@ ssq::Table projectDiagnostic(HSQUIRRELVM vm, const Diagnostic& diagnostic) {
     return result;
 }
 
-ssq::Table projectStatus(HSQUIRRELVM vm, const Status& status) {
+namespace {
+
+/** @brief Project every diagnostic of one status exactly once. */
+ssq::Array projectDiagnostics(HSQUIRRELVM vm, const Status& status) {
+    ssq::Array diagnostics(vm);
+    for (const Diagnostic& diagnostic : status.diagnostics()) diagnostics.push(projectDiagnostic(vm, diagnostic));
+    return diagnostics;
+}
+
+/** @brief Nested `status` sub-table; reuses an already-projected diagnostics array. */
+ssq::Table buildStatusTable(HSQUIRRELVM vm, const Status& status, const ssq::Array& diagnostics) {
     ssq::Table result(vm);
     result.set("ok", status.isSuccess());
     result.set("code", std::string(statusCodeName(status.code())));
     result.set("summary", status.describe());
-    ssq::Array diagnostics(vm);
-    for (const Diagnostic& diagnostic : status.diagnostics()) diagnostics.push(projectDiagnostic(vm, diagnostic));
     result.set("diagnostics", diagnostics);
     result.set("diagnosticCount", static_cast<std::int64_t>(status.diagnostics().size()));
     return result;
 }
 
-ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status& status, bool ok, bool hasValue, const Value& value) {
+/**
+ * @brief Result table without a payload.
+ *
+ * `ok` is derived from the status and the diagnostics are projected once for both
+ * the top-level array and the nested `status` sub-table (they share one ssq::Array).
+ */
+ssq::Table buildResultTable(HSQUIRRELVM vm, const Status& status, bool hasValue) {
     ssq::Table result(vm);
-    result.set("ok", ok);
+    result.set("ok", status.isSuccess());
     result.set("code", std::string(statusCodeName(status.code())));
     result.set("hasValue", hasValue);
     result.set("checked", true);
     result.set("ignored", false);
     result.set("ignoreReason", std::string{});
-    result.set("status", projectStatus(vm, status));
-    ssq::Array diagnostics(vm);
-    for (const Diagnostic& diagnostic : status.diagnostics()) diagnostics.push(projectDiagnostic(vm, diagnostic));
+    ssq::Array diagnostics = projectDiagnostics(vm, status);
+    result.set("status", buildStatusTable(vm, status, diagnostics));
     result.set("diagnostics", diagnostics);
-    if (hasValue)
-        result.set("value", projectValueObject(vm, value));
-    else
-        result.set("value", ssq::Object(vm));
+    if (!hasValue) result.set("value", ssq::Object(vm));
     return result;
 }
 
+}  // namespace
+
+ssq::Table projectStatus(HSQUIRRELVM vm, const Status& status) {
+    return buildStatusTable(vm, status, projectDiagnostics(vm, status));
+}
+
+ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status& status) { return buildResultTable(vm, status, false); }
+
+ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status& status, const Value& value) {
+    ssq::Table result = buildResultTable(vm, status, true);
+    result.set("value", projectValueObject(vm, value));
+    return result;
+}
+
+ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status& status, ssq::Object value) {
+    ssq::Table result = buildResultTable(vm, status, true);
+    result.set("value", std::move(value));
+    return result;
+}
+
+void markResultHasValue(ssq::Table& result) { result.set("hasValue", true); }
+
 ssq::Table projectResult(HSQUIRRELVM vm, Result<void>&& result) {
-    const bool   ok     = result.ok();
     const Status status = result.status();
-    return projectStatusResult(vm, status, ok, false);
+    return projectStatusResult(vm, status);
 }
 
 bool ignoreResult(const ssq::Object& result, const std::string& reason) {
@@ -471,11 +574,75 @@ bool ignoreResult(const ssq::Object& result, const std::string& reason) {
     return true;
 }
 
+namespace {
+
+/** Projects one provider handle into the Value payload of a result table. */
+Value providerHandleValue(ScriptProviderHandle handle) {
+    return Value::object({{"name", Value::string(std::move(handle.name))},
+                          {"generation", Value::integer(static_cast<std::int64_t>(handle.generation))}});
+}
+
+}  // namespace
+
 void exposeResultBindings(ssq::Table& eveTable) {
     ssq::Table result = eveTable.addTable("result");
     result.addFunc("ignore", [](ssq::Object value, const std::string& reason) { return ignoreResult(value, reason); });
     result.addFunc("isChecked", [](ssq::Object value) { return readBoolField(value, "checked"); });
     result.addFunc("isIgnored", [](ssq::Object value) { return readBoolField(value, "ignored"); });
+}
+
+void exposeProviderBindings(ssq::Table& eveTable) {
+    ssq::Table  provider = eveTable.addTable("provider");
+    HSQUIRRELVM vm       = eveTable.getHandle();
+
+    provider.addFunc("publish", [vm](const std::string& name, const ssq::Object& instance) {
+        return projectResult(vm, ScriptProviderRegistry::instance().publish(name, instance), providerHandleValue);
+    });
+
+    provider.addFunc("publishFor", [vm](const std::string& capability, const std::string& name,
+                                        const ssq::Object& instance) {
+        return projectResult(vm, ScriptProviderRegistry::instance().publishForCapability(capability, name, instance),
+                             providerHandleValue);
+    });
+
+    // Script addresses a provider by name: the registry keeps exactly one live
+    // generation per name, so a script-held numeric generation would add no safety
+    // over the registry's own check. Native callers keep the generation-qualified
+    // handle, which is what protects them across a supersede.
+    provider.addFunc("unload", [vm](const std::string& name) {
+        ScriptProviderRegistry& registry = ScriptProviderRegistry::instance();
+        return projectResult(vm, registry.unload(ScriptProviderHandle{name, registry.generationOf(name)}));
+    });
+
+    provider.addFunc("contains",
+                     [](const std::string& name) { return ScriptProviderRegistry::instance().contains(name); });
+
+    provider.addFunc("generationOf", [](const std::string& name) {
+        return static_cast<std::int64_t>(ScriptProviderRegistry::instance().generationOf(name));
+    });
+
+    // Zero-argument lambdas spell out `()`: the binding-contract generator reads a
+    // binding's parameters from the lambda's own parameter list, so `[] { ... }` is
+    // reported as an unresolved binding (and fails the strict generation step).
+    provider.addFunc("size", []() { return static_cast<std::int64_t>(ScriptProviderRegistry::instance().size()); });
+
+    provider.addFunc("capabilities", [vm]() {
+        ssq::Array out(vm);
+        for (const std::string& name : ScriptProviderRegistry::instance().capabilities()) out.push(name);
+        return out;
+    });
+
+    provider.addFunc("published", [vm]() {
+        ssq::Array out(vm);
+        for (const ScriptProviderInfo& info : ScriptProviderRegistry::instance().published()) {
+            ssq::Table entry(vm);
+            entry.set("name", info.name);
+            entry.set("generation", static_cast<std::int64_t>(info.generation));
+            entry.set("capability", info.capability);
+            out.push(entry);
+        }
+        return out;
+    });
 }
 
 }  // namespace eve::script

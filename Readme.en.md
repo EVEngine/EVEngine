@@ -8,10 +8,13 @@ Evolutionary Vision Engine
 
 ## Documentation
 
-- Want to see what the engine renders before running anything? Browse the [example render gallery](docs/images/examples/README.md) — every screenshot is a real presented frame written by the engine itself.
-- [Game developer docs](docs/usr/README.md): download the engine, create and run a game, debug, and publish; the [module handbook](docs/usr/MODULES.md) covers the script APIs and examples one by one.
+English user guides are maintained by hand; Chinese is the authoritative source. Guides not yet translated are marked Chinese in the English handbook.
+
+- Want to see what the engine renders before running anything? Browse the [example render gallery](docs/images/examples/README.en.md) — every screenshot is a real presented frame written by the engine itself.
+- [Game developer docs](docs/en/usr/README.md): download the engine, create and run a game, debug, and publish; the [module handbook](docs/en/usr/MODULES.md) covers the script APIs and examples one by one.
 - [Online API reference (Doxygen)](https://evengine.github.io/EVEngine/): published continuously to GitHub Pages; includes the C++ API and the user manual.
-- [Engine developer docs](docs/dev/README.md): for engine maintainers and contributors — architecture, module design, testing strategy, and implementation notes.
+- [Example walkthroughs](examples/README.en.md), [AI and MCP setup](docs/en/usr/AI-MCP.md), and [user FAQ](docs/en/usr/FAQ.md).
+- [Engine developer docs](docs/en/dev/README.md): for engine maintainers and contributors — architecture, module design, testing strategy, and implementation notes.
 
 > **For game developers:** you do **not** need to compile EVEngine. Download the prebuilt SDK for your platform from the [official release page](https://github.com/EVEngine/EVEngine/releases), unzip it, and start creating — no Git, CMake, C++ compiler, or Vulkan SDK required. Only developers who want to modify the engine itself need to read "Building from source" below.
 
@@ -29,7 +32,7 @@ Design goals:
 4. ✅ Built-in asset management and hot reload—no separate pipeline required
 5. 🛠 Class scanning with auto-generated editing GUIs (property reflection not landed yet; `editor.Inspector` currently registers fields manually—see roadmap)
 6. 🟡 GUIs that create and sync live from scripts (declarative `ui` module + hot reload; reflective two-way binding is on the roadmap)
-7. ✅ Pause the game loop for debugging (`eve run --debug`, F-keys / DAP / snapshots, see `examples/devlab`)
+7. ✅ Pause the game loop for debugging (`eve run --debug`, F-keys / DAP / snapshots, see [DevLab](examples/devlab/README.en.md))
 8. 🟡 Independent state-machine models (e.g. animation) exist; systematic "edit code → affected state machines hot-update" support is on the roadmap
 9. ✅ Mixed 3D and 2D rendering
 
@@ -99,11 +102,11 @@ bin\eve.exe create mygame     # Windows (macOS / Linux: bin/eve create mygame)
 bin\eve.exe run mygame
 ```
 
-`eve create` generates a minimal game template: `config.nut` (window and dev options) and `main.nut` (game logic). Edit `main.nut`, save, and watch the hot reload in action. For game directory layout, lifecycle callbacks (`eve_init` / `eve_update` / `eve_render`), modules, debugging, and publishing, see the [user guide](docs/usr/README.md).
+`eve create` generates a minimal game template: `config.nut` (window and dev options) and `main.nut` (game logic). Edit `main.nut`, save, and watch the hot reload in action. For game directory layout, lifecycle callbacks (`eve_init` / `eve_update` / `eve_render`), modules, debugging, and publishing, see the [user guide](docs/en/usr/README.md).
 
 ### What you can do with the engine
 
-- **Make 2D / third-person 3D / mixed 2D+3D games**: 40+ modules — tilemap, cameras, Box2D/Box3D physics, particles, animation, RPG, inventory, UI, procedural generation, and more — all driven by EveScript (Squirrel-compatible). Start with the [EveScript tutorial](docs/usr/EVESCRIPT.md), then use the [module handbook](docs/usr/MODULES.md).
+- **Make 2D / third-person 3D / mixed 2D+3D games**: 40+ modules — tilemap, cameras, Box2D/Box3D physics, particles, animation, RPG, inventory, UI, procedural generation, and more — all driven by EveScript (Squirrel-compatible). Start with the [EveScript tutorial](docs/en/usr/EVESCRIPT.md), then use the [module handbook](docs/en/usr/MODULES.md).
 - **Hot reload for scripts and assets**: on desktop, edits take effect immediately; on mobile, push changes to the device with the `eve dev` dev server — no reinstall.
 - **Debug**: pause the game loop, breakpoints, watches, snapshots; VS Code debug adapter and AI (MCP) assisted development.
 - **Package and publish**: `eve zip` compresses a game into a `.eve` archive; `eve package --sdk <sdk>` produces a distributable folder containing the runtime and your game; Android/iOS use the SDK's bundled templates to assemble APK / .app.
@@ -139,11 +142,11 @@ Third-party libraries (SDL2, Box2D, Squirrel, Poco, ImGui, OpenAL Soft, FreeType
 |-----------|-------------|
 | OS | Windows 10 / 11 (x64) |
 | IDE / toolchain | **Visual Studio 2026** (with the “Desktop development with C++” workload) |
-| CMake generator | `Visual Studio 18 2026` (matches the root `Makefile`) |
+| CMake generator | Ninja + MSVC for the root Makefile Windows targets; `Visual Studio 18 2026` for manually configured VS projects |
 | Vulkan SDK | Install from [LunarG](https://vulkan.lunarg.com/). Confirm user env `VULKAN_SDK` (e.g. `C:\VulkanSDK\1.4.357.0`) and add `%VULKAN_SDK%\Bin` to `PATH` (includes `glslc`). **Open a new terminal / restart Cursor** before running cmake |
 | Optional | Git for Windows; add CMake / Ninja to `PATH` |
 
-> If you use Visual Studio 2022, change the generator in `Makefile` to `"Visual Studio 17 2022"`.
+> With Visual Studio 2022, Ninja targets locate MSVC through `cmake/with-msvc.cmd`; choose `"Visual Studio 17 2022"` when configuring a VS project manually.
 
 #### Linux
 
@@ -325,7 +328,7 @@ make release
 
 # Windows only
 make build/win32
-make build/win32-debug
+make build/win32-debug   # same warning-as-error gate as CI windows debug
 
 # Linux only
 make build/linux
@@ -346,6 +349,12 @@ make log/android
 
 If `sccache` is installed and available on `PATH`, CMake detects it by default
 and caches each C/C++ translation unit. Nothing changes when it is unavailable.
+
+Windows worktrees can explicitly opt into ccache hardlinks with
+`-DEVENGINE_COMPILER_CACHE=CCACHE_HARDLINK`. This requires a shared cache on the
+same volume and debugger source mappings; see the
+[Windows worktree setup and verification guide](docs/dev/windows-ccache-hardlinks.md).
+
 Use `sccache --show-stats` to inspect local hits, or configure explicitly with:
 
 ```sh
@@ -366,8 +375,27 @@ make build/win32-debug \
   CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE -DEVENGINE_PROFILE=2d"
 ```
 
-See [module trimming](docs/usr/TRIMMING.md) for the `minimal`, `2d`, `3d`,
+See [module trimming](docs/en/usr/TRIMMING.md) for the `minimal`, `2d`, `3d`,
 `full`, and per-module options.
+
+### Match CI locally
+
+CI's **Source quality** job is `make check` (no compiler, a few minutes). It
+needs `python3`, `ruff`, `pillow`, and clang-format 18 plus `git clang-format`:
+
+```sh
+python3 -m pip install ruff pillow
+make check                 # vs origin/dev
+make check CI_BASE=<sha>   # vs a specific PR base
+```
+
+The Windows/Linux debug compile lane also treats warnings as errors. After
+`make check`:
+
+```sh
+make build/win32-debug     # /W4 /WX, same as CI windows debug
+make test/win32-debug FILTER=<prefix>
+```
 
 Inspect object-file growth and expensive public-header fanout after a local
 build with:
@@ -380,15 +408,13 @@ make stats/build BUILD_STATS_DIR=build/linux # another build tree
 The report lists the largest `.o`/`.obj` files, high-impact directly included
 project headers, and template-bearing headers. It is an explicit target rather
 than part of every incremental build, so collecting diagnostics does not slow
-normal development builds. The current top-20 review and the rationale for
-dependencies that remain are recorded in
-[`docs/dev/高引用头文件编译成本审计.md`](docs/dev/高引用头文件编译成本审计.md).
+normal development builds.
 
 Output layout:
 
 | Target | Build dir | Notes |
 |--------|-----------|-------|
-| Win32 Release | `build/win32` | VS project + Release binaries |
+| Win32 Release | `build/win32` | Ninja + MSVC Release binaries |
 | Win32 Debug | `build/win32-debug` | Ninja + MSVC Debug binaries |
 | Linux Release | `build/linux` | Unix Makefiles |
 | Linux Debug | `build/linux-debug` | Unix Makefiles |
@@ -437,8 +463,11 @@ Optional CMake variables:
 | `CMAKE_BUILD_TYPE` | `Debug` (if unset) | `Debug` or `Release`; affects third-party install path suffixes (e.g. `win32-debug`) |
 | `BUILD_PLATFORM` | Auto from host | `win32` / `linux` / `macosx`, etc. |
 | `BUILD_TESTING` | `ON` | Build unit tests |
-| `EVENGINE_COMPILER_CACHE` | `AUTO` | `AUTO` uses `sccache` when found; `SCCACHE` requires it; `OFF` disables auto-detection |
+| `EVENGINE_COMPILER_CACHE` | `AUTO` | `AUTO` uses `sccache` when found; `SCCACHE` requires it; `CCACHE_HARDLINK` opts into Windows/Ninja/MSVC object sharing; `OFF` disables auto-detection |
 | `EVENGINE_SCCACHE_EXECUTABLE` | Auto from `PATH` | Optional explicit path to `sccache` |
+| `EVENGINE_CCACHE_EXECUTABLE` | Auto from `PATH` | `ccache` >= 4.14.1, required by `CCACHE_HARDLINK` |
+| `EVENGINE_CCACHE_DIR` | `%LOCALAPPDATA%/EVEngine/ccache` | Shared local cache on the same volume as build outputs |
+| `EVENGINE_CCACHE_TRIM_FILE_PATHS` | `OFF` | Opt into behavior-probed, undocumented MSVC `/d1trimfile` to share objects containing header `__FILE__` expansions; requires debugger source mappings |
 
 #### 2. Build third-party (deps)
 
@@ -507,7 +536,7 @@ Inside the container, configure and build with the Linux flow. You still need to
    Confirm the Vulkan SDK is installed and `VULKAN_SDK` points at the right path; on macOS, `source ~/VulkanSDK/<version>/setup-env.sh` before configure. Open a new terminal, then re-run cmake.
 
 2. **Windows generator name mismatch**  
-   The `Makefile` uses `Visual Studio 18 2026`. For VS 2022, change the generator string or upgrade the IDE.
+   The Windows Makefile targets use Ninja. For a manually configured VS project, choose the installed generator (VS 2026 or VS 2022); do not reuse a build directory configured with another generator.
 
 3. **First `deps` is slow or network fails**  
    `third-party` is fetched from GitHub. You can manually `git clone https://github.com/EVEngine/third-party` into the repo-root `third-party/`, then reconfigure.
@@ -544,7 +573,7 @@ EVEngine/
 └── docs/               # User docs (usr) and developer docs (dev)
 ```
 
-Usage docs: `docs/usr/`. Design notes: `docs/dev/`.
+User guides: [`docs/en/usr/`](docs/en/usr/README.md); authoritative Chinese guides: `docs/usr/`. Design notes: `docs/dev/` (Chinese).
 
 ## License
 

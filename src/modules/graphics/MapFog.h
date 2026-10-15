@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 namespace eve::graphics {
 
@@ -13,10 +15,11 @@ class Texture;
  * Presentation only: gameplay unlock state should live in map::Fov / game data;
  * upload that state into the mask R channel and call draw() after the map.
  */
-class MapFog {
+class EVENGINE_API_BACKENDS MapFog {
 public:
     /** @brief Create a fog overlay renderer backed by the supplied graphics device. */
     explicit MapFog(Graphics *graphics);
+    /** @brief Map fog. */
     ~MapFog();
 
     MapFog(const MapFog &)            = delete;
@@ -85,14 +88,23 @@ public:
     /** @brief Shape cloud alpha: contrast (soft→hard) and bias (coverage). */
     void setCloudDensity(float contrast, float bias);
 
+    /** @brief Returns the cloud tile a. */
     float getCloudTileA() const { return tileA_; }
+    /** @brief Returns the cloud tile b. */
     float getCloudTileB() const { return tileB_; }
+    /** @brief Returns the cloud speed a. */
     float getCloudSpeedA() const { return speedA_; }
+    /** @brief Returns the cloud speed b. */
     float getCloudSpeedB() const { return speedB_; }
+    /** @brief Returns the distort. */
     float getDistort() const { return distort_; }
+    /** @brief Returns the fog alpha. */
     float getFogAlpha() const { return fogAlpha_; }
+    /** @brief Returns the edge softness. */
     float getEdgeSoftness() const { return edgeSoft_; }
+    /** @brief Returns the shadow enabled. */
     bool  getShadowEnabled() const { return shadowEnabled_; }
+    /** @brief Returns the select strength. */
     float getSelectStrength() const { return selectStrength_; }
 
     /**
@@ -124,27 +136,28 @@ private:
     Texture  *mask_       = nullptr;
 
     float time_            = 0.f;
-    float tileA_           = 0.55f;
-    float tileB_           = 0.95f;
-    float speedA_          = 0.008f;
-    float speedB_          = 0.015f;
-    float distort_         = 0.22f;
+    float tileA_           = 1.10f;
+    float tileB_           = 1.65f;
+    float speedA_          = 0.010f;
+    float speedB_          = 0.016f;
+    float distort_         = 0.085f;
     float fixX_            = 0.f;
     float fixY_            = 0.f;
-    float fogR_            = 0.92f;
-    float fogG_            = 0.94f;
-    float fogB_            = 0.98f;
-    float fogAlpha_        = 0.90f;
-    float edgeSoft_        = 0.14f;
-    bool  shadowEnabled_   = true;
-    float shadowOffX_      = 0.034f;
-    float shadowOffY_      = 0.048f;
-    float shadowStrength_  = 0.78f;
+    float fogR_            = 0.96f;
+    float fogG_            = 0.97f;
+    float fogB_            = 1.00f;
+    float fogAlpha_        = 0.96f;
+    float edgeSoft_        = 0.16f;
+    bool  shadowEnabled_   = false;
+    float shadowOffX_      = 0.018f;
+    float shadowOffY_      = 0.024f;
+    float shadowStrength_  = 0.32f;
     float selectStrength_  = 0.85f;
     float dissolveScale_   = 1.8f;
-    float cloudMix_        = 0.35f;
-    float densityContrast_ = 0.42f;
-    float densityBias_     = 0.16f;
+    float cloudMix_        = 0.30f;
+    // Calm deep sheet; cloud coverage sculpts only the frontier islands.
+    float densityContrast_ = 0.24f;
+    float densityBias_     = 0.10f;
     float drawAspect_      = 1.f;
 };
 

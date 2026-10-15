@@ -3,7 +3,7 @@
   "generated_at": "2026-08-26",
   "counts": {
     "binding-gaps-legacy": 859,
-    "fallback-contract-inventory": 71,
+    "fallback-contract-inventory": 72,
     "soft-skip-contracts": 7,
     "todo-markers-legacy": 5
   }

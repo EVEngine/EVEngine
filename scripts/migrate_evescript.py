@@ -22,6 +22,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import re
 import sys
+import utf8_stdio
 
 
 EXCLUDED_DIRS = {".git", "build", "third-party"}
@@ -224,4 +225,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())

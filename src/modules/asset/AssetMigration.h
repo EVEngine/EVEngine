@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file AssetMigration.h
@@ -10,7 +12,7 @@
 namespace eve::asset {
 
 /** @brief Return the current supported definition version for a canonical asset type. */
-[[nodiscard]] Result<SchemaVersion> currentAssetSchemaVersion(std::string_view type);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<SchemaVersion> currentAssetSchemaVersion(std::string_view type);
 
 /**
  * @brief Migrate every definition in an owning archive to its current schema.
@@ -19,7 +21,7 @@ namespace eve::asset {
  * @remarks Supports the current version and N-1. Unknown newer versions and downgrade
  * requests are rejected. No files or registries are mutated by this operation.
  */
-[[nodiscard]] Result<EvaArchive> migrateEvaArchive(EvaArchive source,
-                                                   const EvaArchiveLimits& limits = {});
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<EvaArchive> migrateEvaArchive(EvaArchive              source,
+                                                                           const EvaArchiveLimits& limits = {});
 
 }  // namespace eve::asset

@@ -20,6 +20,7 @@
 #include "rpg/Skill.h"
 #include "rpg/StatusSystem.h"
 #include "rpg/StoryEvent.h"
+#include "rpg/RpgDialect.h"
 #include "rpg/SkillSystem.h"
 #include "rpg/Settlement.h"
 #include "rpg/ShopCatalogue.h"
@@ -33,6 +34,7 @@
 #include <random>
 
 #include <simplesquirrel/simplesquirrel.hpp>
+#include <squirrel.h>
 
 namespace eve::rpg {
 
@@ -242,6 +244,13 @@ bool RPG::hasStoryEvent(const std::string &eventId) const {
     return StoryEventCatalogue::contains(eventId);
 }
 StoryEventSession *RPG::newStoryEventSession() { return new StoryEventSession(); }
+eve::Result<int> RPG::replaceStoriesFromDnut(const std::string &source, const std::string &path) {
+    return RpgStoryCatalogue::replaceFromDnutStrict(source, path);
+}
+void RPG::clearStories() { RpgStoryCatalogue::clear(); }
+int RPG::getStoryCount() const { return RpgStoryCatalogue::count(); }
+bool RPG::hasStory(const std::string &storyId) const { return RpgStoryCatalogue::contains(storyId); }
+RpgStorySession *RPG::newStorySession() { return new RpgStorySession(); }
 eve::Result<BattleVictoryReceipt>
 RPG::settleEncounterVictory(RPGActor *actor, Tracker *tracker, GameState *gameState,
                             const std::string &encounterId, const std::string &mapId,
@@ -545,6 +554,41 @@ void RPG::clearSettlementPipeline(const std::string &pipeline) {
     SettlementPipeline::clearPipeline(pipeline);
 }
 
+namespace {
+
+void bindNative(ssq::Class &cls, const char *name, SQFUNCTION func, SQInteger minParams,
+                const SQChar *typemask) {
+    HSQUIRRELVM vm = cls.getHandle();
+    sq_pushobject(vm, cls.getRaw());
+    sq_pushstring(vm, name, -1);
+    sq_newclosure(vm, func, 0);
+    sq_setparamscheck(vm, -minParams, typemask);
+    sq_newslot(vm, -3, SQFalse);
+    sq_poptop(vm);
+}
+
+SQInteger sqActorBeginCastSkill(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 2 || n > 3)
+        return sq_throwerror(vm, "RPGActor.beginCastSkill expects (skillId [, target])");
+    RPGActor *self = nullptr;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, reinterpret_cast<SQUserPointer *>(&self), nullptr)) || !self)
+        return sq_throwerror(vm, "invalid RPGActor");
+    const SQChar *skillId = nullptr;
+    if (SQ_FAILED(sq_getstring(vm, 2, &skillId)))
+        return sq_throwerror(vm, "RPGActor.beginCastSkill skillId must be a string");
+    RPGActor *target = nullptr;
+    if (n >= 3 && sq_gettype(vm, 3) != OT_NULL) {
+        if (sq_gettype(vm, 3) != OT_INSTANCE ||
+            SQ_FAILED(sq_getinstanceup(vm, 3, reinterpret_cast<SQUserPointer *>(&target), nullptr)))
+            return sq_throwerror(vm, "RPGActor.beginCastSkill target must be RPGActor or null");
+    }
+    sq_pushbool(vm, self->beginCastSkill(skillId ? skillId : "", target) ? SQTrue : SQFalse);
+    return 1;
+}
+
+}  // namespace
+
 void RPG::expose(ssq::Table &table) {
     const HSQUIRRELVM vm = table.getHandle();
     auto cls = table.addClass(name, RPG::create, false);
@@ -622,7 +666,9 @@ void RPG::expose(ssq::Table &table) {
     actor.addFunc("setSkillCooldown", &RPGActor::setSkillCooldown);
     actor.addFunc("canCastSkill", &RPGActor::canCastSkill);
     actor.addFunc("canCastSkillReason", &RPGActor::canCastSkillReason);
-    actor.addFunc("beginCastSkill", &RPGActor::beginCastSkill);
+    // SimpleSquirrel 把 RPGActor* 当成必填 INSTANCE；脚本传 null（无目标 buff）
+    // 会抛 "bad cast expected INSTANCE got NULLPTR"。C++ 侧 target 本就可空。
+    bindNative(actor, "beginCastSkill", sqActorBeginCastSkill, 2, _SC("xs."));
     actor.addFunc("cancelCastSkill", &RPGActor::cancelCastSkill);
     actor.addFunc("isCastingSkill", &RPGActor::isCastingSkill);
     actor.addFunc("getCastingSkillId", &RPGActor::getCastingSkillId);
@@ -774,6 +820,17 @@ void RPG::expose(ssq::Table &table) {
     auto battle = table.addClass<Battle>(
         "Battle", std::function<Battle *()>([]() { return new Battle(); }), true);
     battle.addFunc("addActor", &Battle::addActor);
+    battle.addFunc("configureSettlementRulesJson", [vm](Battle* value, const std::string& json) {
+        if (!value)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "Battle receiver must not be null", "battle", {},
+                        "rpg.squirrel")));
+        auto rules = settlement::SettlementRuleSet::fromJson(json);
+        if (!rules)
+            return eve::script::projectResult(vm, eve::Result<void>::failure(rules.status()));
+        return eve::script::projectResult(vm, value->configureSettlementRules(rules.value()));
+    });
     battle.addFunc("setAction", &Battle::setAction);
     battle.addFunc("setActionChecked",
                    [vm](Battle *value, RPGActor *actor, const std::string &skillId,
@@ -897,6 +954,10 @@ void RPG::expose(ssq::Table &table) {
     gs.addFunc("setSelfVariable", [](GameState *g, const std::string &s, const std::string &n, float v) { if (g) g->setSelfVariable(s, n, double(v)); });
     gs.addFunc("getSelfVariable", [](GameState *g, const std::string &s, const std::string &n) -> float { return g ? float(g->getSelfVariable(s, n)) : 0.f; });
     gs.addFunc("hasSelfVariable", &GameState::hasSelfVariable);
+    gs.addFunc("setSelfString", &GameState::setSelfString);
+    gs.addFunc("getSelfString", &GameState::getSelfString);
+    gs.addFunc("hasSelfString", &GameState::hasSelfString);
+    gs.addFunc("clearSelfString", &GameState::clearSelfString);
     gs.addFunc("clear", &GameState::clear);
     gs.addFunc("snapshotJson", [](GameState *g) -> std::string {
         if (!g) return {};
@@ -911,7 +972,10 @@ void RPG::expose(ssq::Table &table) {
 
     auto worldState = table.addClass<WorldState>(
         "RPGWorldState", std::function<WorldState *()>([]() { return nullptr; }), true);
-    worldState.addFunc("isObjectConsumed", &WorldState::isObjectConsumed);
+    worldState.addFunc("isObjectConsumed",
+                       [](WorldState *state, const std::string &mapId, const std::string &objectId) {
+                           return state && state->isObjectConsumed(mapId, objectId);
+                       });
     worldState.addFunc("consumeObject", [vm](WorldState *state, const std::string &mapId,
                                                const std::string &objectId) {
         if (!state)
@@ -971,6 +1035,74 @@ void RPG::expose(ssq::Table &table) {
     });
     storyEvent.addFunc("getDuration", [](StoryEventSession *session) -> float {
         return session ? static_cast<float>(session->getDuration()) : 0.0F;
+    });
+
+    auto storySession = table.addClass<RpgStorySession>(
+        "RPGStorySession", std::function<RpgStorySession *()>([]() { return new RpgStorySession(); }), true);
+    // `party` / `bag` / `equipment` are optional collaborators: a story that only
+    // walks actors and shows messages needs none of them, and the C++ entry point
+    // documents them as nullable. ssq's default pointer binding rejects Squirrel
+    // `null`, so accept ssq::Object and translate null -> nullptr (the same idiom
+    // as avatar/Avatar.cpp's addLayer). `gameState` stays typed and required: it
+    // owns the story completion fact, so a story always has one.
+    storySession.addFunc("begin", [vm](RpgStorySession *session, const std::string &storyId, GameState *gameState,
+                                       ssq::Object partyObject, ssq::Object bagObject, ssq::Object equipmentObject) {
+        if (!session)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "RPGStorySession receiver must not be null",
+                        "session", {}, "rpg.squirrel")));
+        Party                   *party = partyObject.isNull() ? nullptr : partyObject.toPtrUnsafe<Party *>();
+        inventory::Bag          *bag   = bagObject.isNull() ? nullptr : bagObject.toPtrUnsafe<inventory::Bag *>();
+        inventory::EquipmentSet *equipment =
+            equipmentObject.isNull() ? nullptr : equipmentObject.toPtrUnsafe<inventory::EquipmentSet *>();
+        return eve::script::projectResult(vm, session->begin(storyId, gameState, party, bag, equipment));
+    });
+    storySession.addFunc("advance", [vm](RpgStorySession *session) {
+        if (!session)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "RPGStorySession receiver must not be null",
+                        "session", {}, "rpg.squirrel")));
+        return eve::script::projectResult(vm, session->advance());
+    });
+    storySession.addFunc("select", [vm](RpgStorySession *session, const std::string &routeLabel) {
+        if (!session)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "RPGStorySession receiver must not be null",
+                        "session", {}, "rpg.squirrel")));
+        return eve::script::projectResult(vm, session->select(routeLabel));
+    });
+    storySession.addFunc("stop", &RpgStorySession::stop);
+    storySession.addFunc("isActive", &RpgStorySession::isActive);
+    storySession.addFunc("isBlocked", &RpgStorySession::isBlocked);
+    storySession.addFunc("getStoryId", &RpgStorySession::getStoryId);
+    storySession.addFunc("getStepKind", &RpgStorySession::getStepKind);
+    storySession.addFunc("getChoiceLabelCount", [](RpgStorySession *session) -> int {
+        return session ? static_cast<int>(session->getChoiceLabels().size()) : 0;
+    });
+    storySession.addFunc("getChoiceLabel", [](RpgStorySession *session, int index) -> std::string {
+        if (!session) return {};
+        const auto labels = session->getChoiceLabels();
+        if (index < 0 || static_cast<std::size_t>(index) >= labels.size()) return {};
+        return labels[static_cast<std::size_t>(index)];
+    });
+    storySession.addFunc("getStepString", [](RpgStorySession *session, const std::string &fieldName) -> std::string {
+        if (!session) return {};
+        const eve::Value* value = session->getStepPayload().find(fieldName);
+        return value && value->isString() ? value->asString() : std::string{};
+    });
+    storySession.addFunc("getStepNumber", [](RpgStorySession *session, const std::string &fieldName) -> float {
+        if (!session) return 0.0F;
+        const eve::Value* value = session->getStepPayload().find(fieldName);
+        if (!value || !value->isNumeric()) return 0.0F;
+        return value->isInt64() ? static_cast<float>(value->asInt()) : static_cast<float>(value->asDouble());
+    });
+    storySession.addFunc("getStepBool", [](RpgStorySession *session, const std::string &fieldName) -> bool {
+        if (!session) return false;
+        const eve::Value* value = session->getStepPayload().find(fieldName);
+        return value && value->isBool() && value->asBool();
     });
 
     auto saveSession = table.addClass<RPGSaveSession>(
@@ -1246,6 +1378,20 @@ void RPG::expose(ssq::Class &cls) {
     cls.addFunc("getStoryEventCount", &RPG::getStoryEventCount);
     cls.addFunc("hasStoryEvent", &RPG::hasStoryEvent);
     cls.addFunc("newStoryEventSession", &RPG::newStoryEventSession);
+    cls.addFunc("replaceStoriesFromDnut", [vm](RPG *rpg, const std::string &source, const std::string &path) {
+        if (!rpg)
+            return eve::script::projectResult(
+                vm, eve::Result<int>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument,
+                        "replaceStoriesFromDnut requires an RPG module", "rpg")),
+                [](int count) { return eve::Value(count); });
+        return eve::script::projectResult(vm, rpg->replaceStoriesFromDnut(source, path),
+                                          [](int count) { return eve::Value(count); });
+    });
+    cls.addFunc("clearStories", &RPG::clearStories);
+    cls.addFunc("getStoryCount", &RPG::getStoryCount);
+    cls.addFunc("hasStory", &RPG::hasStory);
+    cls.addFunc("newStorySession", &RPG::newStorySession);
     cls.addFunc("settleEncounterVictory",
                 [vm](RPG *rpg, RPGActor *actor, Tracker *tracker, GameState *gameState,
                      const std::string &encounterId, const std::string &mapId,

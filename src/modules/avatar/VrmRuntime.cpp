@@ -10,6 +10,7 @@
 #include "avatar/AvatarInstance.h"
 #include "avatar/VrmSurface.h"
 #include "common/Module.h"
+#include "common/TransformEuler.h"
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
 #include "graphics/Graphics.h"
@@ -133,11 +134,12 @@ void VrmRuntime::sync(AvatarInstance&, const glm::mat4& matrix, bool visible) {
         glm::quat rotation;
         glm::vec4 perspective;
         glm::decompose(partWorld, scale, rotation, translation, skew, perspective);
-        const glm::vec3 angles = glm::eulerAngles(rotation);
+        float yaw = 0.f, pitch = 0.f, roll = 0.f;
+        eve::eulerYxzFromQuat(rotation, yaw, pitch, roll);
         for (auto handle : {part.entity, part.outline})
             if (auto* entity = dynamic_cast<graphics::Renderable3D*>(ecs::try_get(handle))) {
                 entity->setPosition(translation.x, translation.y, translation.z);
-                entity->setRotation(angles.y, angles.x, angles.z);
+                entity->setRotation(yaw, pitch, roll);
                 entity->setScale(scale.x, scale.y, scale.z);
                 entity->setVisible(visible);
             }

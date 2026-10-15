@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file RuntimeDefinition.h @brief JSON-free versioned runtime metadata codec. */
 
@@ -24,7 +26,7 @@ struct RuntimeDefinitionLimits {
  * @return Canonical little-endian bytes; object keys use Value's sorted order.
  * @thread Worker-safe when value is not concurrently mutated.
  */
-[[nodiscard]] Result<std::vector<std::uint8_t>> encodeRuntimeDefinition(
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::vector<std::uint8_t>> encodeRuntimeDefinition(
     const Value& value, const RuntimeDefinitionLimits& limits = {});
 
 /**
@@ -32,7 +34,7 @@ struct RuntimeDefinitionLimits {
  * @return Owning Value after exact-length, canonical-key and finite-number validation.
  * @thread Worker-safe; no shared mutable state.
  */
-[[nodiscard]] Result<Value> decodeRuntimeDefinition(
-    std::span<const std::uint8_t> bytes, const RuntimeDefinitionLimits& limits = {});
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<Value> decodeRuntimeDefinition(std::span<const std::uint8_t>  bytes,
+                                                                            const RuntimeDefinitionLimits& limits = {});
 
 }  // namespace eve::asset

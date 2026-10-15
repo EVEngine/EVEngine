@@ -1,4 +1,5 @@
 import importlib.util
+import hashlib
 import json
 import struct
 import subprocess
@@ -21,6 +22,28 @@ assert SPEC.loader is not None
 sys.modules[SPEC.name] = converter
 SPEC.loader.exec_module(converter)
 
+PARITY_PATH = MODULE_PATH.with_name("audit_static_mesh_parity.py")
+PARITY_SPEC = importlib.util.spec_from_file_location("audit_static_mesh_parity", PARITY_PATH)
+parity = importlib.util.module_from_spec(PARITY_SPEC)
+assert PARITY_SPEC.loader is not None
+PARITY_SPEC.loader.exec_module(parity)
+
+MATERIAL_PARITY_PATH = MODULE_PATH.with_name("audit_material_parity.py")
+MATERIAL_PARITY_SPEC = importlib.util.spec_from_file_location(
+    "audit_material_parity", MATERIAL_PARITY_PATH
+)
+material_parity = importlib.util.module_from_spec(MATERIAL_PARITY_SPEC)
+assert MATERIAL_PARITY_SPEC.loader is not None
+MATERIAL_PARITY_SPEC.loader.exec_module(material_parity)
+
+MATERIAL_REPAIR_PATH = MODULE_PATH.with_name("repair_gltf_material_parity.py")
+MATERIAL_REPAIR_SPEC = importlib.util.spec_from_file_location(
+    "repair_gltf_material_parity", MATERIAL_REPAIR_PATH
+)
+material_repair = importlib.util.module_from_spec(MATERIAL_REPAIR_SPEC)
+assert MATERIAL_REPAIR_SPEC.loader is not None
+MATERIAL_REPAIR_SPEC.loader.exec_module(material_repair)
+
 
 def write_glb(path: Path) -> None:
     document = json.dumps(
@@ -38,7 +61,88 @@ def write_glb(path: Path) -> None:
     path.write_bytes(data)
 
 
+def write_static_glb(path: Path) -> None:
+    document = json.dumps(
+        {"asset": {"version": "2.0"}, "meshes": [{}]}, separators=(",", ":")
+    ).encode("utf-8")
+    document += b" " * ((4 - len(document) % 4) % 4)
+    chunk = struct.pack("<I4s", len(document), b"JSON") + document
+    path.write_bytes(b"glTF" + struct.pack("<II", 2, 12 + len(chunk)) + chunk)
+
+
+def write_material_glb(path: Path, material_name: str) -> None:
+    document = json.dumps(
+        {
+            "asset": {"version": "2.0"},
+            "materials": [{"name": material_name}],
+            "meshes": [{"primitives": [{"material": 0}]}],
+        },
+        separators=(",", ":"),
+    ).encode("utf-8")
+    document += b" " * ((4 - len(document) % 4) % 4)
+    chunk = struct.pack("<I4s", len(document), b"JSON") + document
+    path.write_bytes(b"glTF" + struct.pack("<II", 2, 12 + len(chunk)) + chunk)
+
+
 class UnrealUassetConverterTests(unittest.TestCase):
+    def test_material_parity_repair_restores_ue_core_flags_and_manifest_hash(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            glb = root / "mesh.glb"
+            write_material_glb(glb, "MI_Leaves_SM_Tree")
+            audit = {"assets": [{
+                "class": "StaticMesh", "package": "/Game/SM_Tree",
+                "materialSlots": [{"material": "/Game/MI_Leaves.MI_Leaves"}],
+            }]}
+            material_audit = {"materials": [{
+                "asset": "/Game/MI_Leaves.MI_Leaves",
+                "blend_mode": "<BlendMode.BLEND_MASKED: 1>",
+                "shading_model": "<MaterialShadingModel.MSM_FROM_MATERIAL_EXPRESSION: 14>",
+                "two_sided": True,
+                "opacity_mask_clip_value": 0.33329999446868896,
+            }]}
+            manifest = {"artifacts": [{
+                "assetClass": "StaticMesh", "sourceAsset": "/Game/SM_Tree",
+                "path": "mesh.glb", "bytes": glb.stat().st_size,
+                "sha256": hashlib.sha256(glb.read_bytes()).hexdigest(),
+            }]}
+            before = material_parity.build_report(audit, material_audit, manifest, root)
+            self.assertEqual(before["semanticMismatchCount"], 1)
+            self.assertEqual(material_repair.repair(before, manifest, root), 1)
+            after = material_parity.build_report(audit, material_audit, manifest, root)
+            self.assertEqual(after["mappingFailureCount"], 0)
+            self.assertEqual(after["semanticMismatchCount"], 0)
+            self.assertEqual(manifest["artifacts"][0]["bytes"], glb.stat().st_size)
+            self.assertEqual(
+                manifest["artifacts"][0]["sha256"],
+                hashlib.sha256(glb.read_bytes()).hexdigest(),
+            )
+
+    def test_static_mesh_parity_accepts_exporter_suffix_and_unused_ue_slots(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            glb = root / "mesh.glb"
+            write_material_glb(glb, "MI_Wood_SM_Wall")
+            digest = parity._sha256(glb)
+            audit = {"assets": [{
+                "class": "StaticMesh", "package": "/Game/SM_Wall", "lodCount": 1,
+                "materialSlots": [
+                    {"material": "/Game/Materials/MI_Wood.MI_Wood"},
+                    {"material": "/Game/Materials/MI_Unused.MI_Unused"},
+                ],
+            }]}
+            manifest = {"artifacts": [{
+                "assetClass": "StaticMesh", "sourceAsset": "/Game/SM_Wall",
+                "outputFile": "mesh.glb", "bytes": glb.stat().st_size, "sha256": digest,
+                "content": {"meshCount": 1, "primitiveCount": 1,
+                            "primitivesWithoutMaterial": 0, "referencedMaterialCount": 1,
+                            "materialCount": 1, "materialTextureUsage": {"baseColor": 1}},
+            }]}
+            report = parity.build_report(audit, manifest, root)
+            self.assertEqual(report["counts"]["invalid"], 0)
+            self.assertEqual(report["counts"]["materialSlotMismatch"], 0)
+            self.assertEqual(report["assets"][0]["glb"]["unusedAssignedMaterialCount"], 1)
+
     def test_publication_staging_inherits_destination_access_and_cleans_up(self):
         with tempfile.TemporaryDirectory() as temporary:
             parent = Path(temporary)
@@ -91,6 +195,13 @@ class UnrealUassetConverterTests(unittest.TestCase):
             command = converter.build_command(self.make_config(Path(temporary)), MODULE_PATH)
             self.assertNotIn("-nullrhi", command)
             self.assertIn("-AllowCommandletRendering", command)
+
+    def test_request_carries_bounded_texture_size(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            config = self.make_config(root, texture_size=512)
+            request = converter.build_request(config, root / "result.json", root / "payload")
+            self.assertEqual(request["textureSize"], 512)
 
     def make_config(self, root: Path, **overrides):
         project = root / "Owned.uproject"
@@ -178,6 +289,37 @@ class UnrealUassetConverterTests(unittest.TestCase):
             self.assertEqual(len(manifest["artifacts"][0]["sha256"]), 64)
             self.assertTrue((config.output / "Vault.glb").is_file())
 
+    def test_static_mesh_uses_general_asset_manifest_without_skin(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            config = self.make_config(root, assets=("/Game/Architecture/Wall",))
+
+            def runner(command, **kwargs):
+                request = json.loads(
+                    Path(kwargs["env"]["EVENGINE_UE_EXPORT_REQUEST"]).read_text(encoding="utf-8")
+                )
+                write_static_glb(Path(request["outputDirectory"]) / "Wall.glb")
+                result = {
+                    "schema": converter.RESULT_SCHEMA,
+                    "status": "success",
+                    "engineVersion": "5.8.0",
+                    "artifacts": [{
+                        "sourceAsset": "/Game/Architecture/Wall",
+                        "outputFile": "Wall.glb",
+                        "assetClass": "StaticMesh",
+                    }],
+                    "diagnostics": [],
+                }
+                Path(request["resultFile"]).write_text(json.dumps(result), encoding="utf-8")
+                return subprocess.CompletedProcess(command, 0, "", "")
+
+            manifest_path = converter.convert(config, runner)
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            self.assertEqual(manifest["schema"], converter.ASSET_MANIFEST_SCHEMA)
+            self.assertEqual(manifest["artifacts"][0]["content"]["skinCount"], 0)
+            self.assertEqual(manifest["artifacts"][0]["content"]["primitiveCount"], 0)
+            self.assertEqual(manifest["artifacts"][0]["content"]["materialCount"], 0)
+
     def test_failed_batch_never_publishes_partial_output(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -228,6 +370,83 @@ class UnrealUassetConverterTests(unittest.TestCase):
             )
             with self.assertRaisesRegex(converter.ConversionError, "colliding"):
                 converter.build_request(config, root / "result.json", root / "payload")
+
+    def test_preserve_path_names_disambiguates_colliding_assets(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            config = self.make_config(
+                root,
+                assets=("/Game/A/Vault", "/Game/B/Vault"),
+                preserve_path_names=True,
+            )
+            request = converter.build_request(config, root / "result.json", root / "payload")
+            names = [entry["outputFile"] for entry in request["assets"]]
+            self.assertEqual(names, ["Game__A__Vault.glb", "Game__B__Vault.glb"])
+
+    def test_asset_list_supports_comments_and_utf8(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            project = root / "Owned.uproject"
+            project.write_text("{}", encoding="utf-8")
+            editor = root / "UnrealEditor-Cmd.exe"
+            editor.write_bytes(b"fixture")
+            asset_list = root / "assets.txt"
+            asset_list.write_text("# selected assets\n/Game/Town/Wall\n\n/Game/Town/Roof\n", encoding="utf-8")
+            args = converter.build_parser().parse_args([
+                "--project", str(project), "--asset-list", str(asset_list),
+                "--output", str(root / "out"), "--unreal-editor", str(editor),
+                "--rights-confirmed",
+            ])
+            config = converter._config_from_args(args)
+            self.assertEqual(config.assets, ("/Game/Town/Wall", "/Game/Town/Roof"))
+
+    def test_asset_audit_selects_every_static_mesh(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            project = root / "Owned.uproject"
+            project.write_text("{}", encoding="utf-8")
+            editor = root / "UnrealEditor-Cmd.exe"
+            editor.write_bytes(b"fixture")
+            audit = root / "audit.json"
+            audit.write_text(json.dumps({
+                "schema": "eve.unreal-asset-audit/1",
+                "assets": [
+                    {"class": "StaticMesh", "package": "/Game/Town/Wall"},
+                    {"class": "Texture2D", "package": "/Game/Town/Wall_D"},
+                    {"class": "StaticMesh", "package": "/Game/Town/Roof"},
+                ],
+            }), encoding="utf-8")
+            args = converter.build_parser().parse_args([
+                "--project", str(project), "--asset-audit", str(audit),
+                "--output", str(root / "out"), "--unreal-editor", str(editor),
+                "--rights-confirmed",
+            ])
+            config = converter._config_from_args(args)
+            self.assertEqual(config.assets, ("/Game/Town/Wall", "/Game/Town/Roof"))
+
+    def test_exclude_asset_filters_audited_failure(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            project = root / "Owned.uproject"
+            project.write_text("{}", encoding="utf-8")
+            editor = root / "UnrealEditor-Cmd.exe"
+            editor.write_bytes(b"fixture")
+            audit = root / "audit.json"
+            audit.write_text(json.dumps({
+                "schema": "eve.unreal-asset-audit/1",
+                "assets": [
+                    {"class": "StaticMesh", "package": "/Game/Town/Wall"},
+                    {"class": "StaticMesh", "package": "/Game/Town/Broken"},
+                ],
+            }), encoding="utf-8")
+            args = converter.build_parser().parse_args([
+                "--project", str(project), "--asset-audit", str(audit),
+                "--exclude-asset", "/Game/Town/Broken",
+                "--output", str(root / "out"), "--unreal-editor", str(editor),
+                "--rights-confirmed",
+            ])
+            config = converter._config_from_args(args)
+            self.assertEqual(config.assets, ("/Game/Town/Wall",))
 
     def test_gltf_sidecars_are_validated_and_hashed(self):
         with tempfile.TemporaryDirectory() as temporary:

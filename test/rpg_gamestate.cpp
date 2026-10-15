@@ -35,6 +35,12 @@ TEST_CASE("rpg.gameState.selfVariablesScoped") {
     // 不同 scope 隔离
     CHECK(!gs.hasSelfVariable("map:1:event:4", "switchA"));
     CHECK_EQ(gs.getSelfVariable("map:1:event:3", "missing"), 0.0);
+
+    gs.setSelfString("story.forest.arrival", "cursor", "{\"active\":true}");
+    CHECK(gs.hasSelfString("story.forest.arrival", "cursor"));
+    CHECK_EQ(gs.getSelfString("story.forest.arrival", "cursor"), std::string("{\"active\":true}"));
+    gs.clearSelfString("story.forest.arrival", "cursor");
+    CHECK(!gs.hasSelfString("story.forest.arrival", "cursor"));
 }
 
 TEST_CASE("rpg.gameState.facadeAndGlobal") {
@@ -60,6 +66,7 @@ TEST_CASE("rpg.gameState.versionedSnapshotRoundTripAndAtomicFailure") {
     source.switchOn("door.open");
     source.setVariable("gold", 125.5);
     source.setSelfVariable("map:1:event:3", "visits", 2.0);
+    source.setSelfString("story.forest.arrival", "cursor", "{\"blocked\":true}");
 
     auto encoded = source.snapshotJson();
     REQUIRE(encoded.ok());
@@ -71,15 +78,22 @@ TEST_CASE("rpg.gameState.versionedSnapshotRoundTripAndAtomicFailure") {
     CHECK(restored.isSwitchOn("door.open"));
     CHECK_EQ(restored.getVariable("gold"), 125.5);
     CHECK_EQ(restored.getSelfVariable("map:1:event:3", "visits"), 2.0);
+    CHECK_EQ(restored.getSelfString("story.forest.arrival", "cursor"), std::string("{\"blocked\":true}"));
     CHECK_EQ(restored.getVariable("sentinel"), 0.0);
+
+    auto withoutStrings = restored.restoreSnapshotJson(
+        R"({"schema":"eve.rpg.game-state","version":1,"switches":{},"variables":{"gold":3},"selfVariables":{}})");
+    REQUIRE(withoutStrings.ok());
+    CHECK_EQ(restored.getVariable("gold"), 3.0);
+    CHECK(!restored.hasSelfString("story.forest.arrival", "cursor"));
 
     auto malformed = restored.restoreSnapshotJson(
         R"({"schema":"eve.rpg.game-state","version":1,"switches":{},"variables":{"gold":"bad"},"selfVariables":{}})");
     CHECK(!malformed.ok());
-    CHECK_EQ(restored.getVariable("gold"), 125.5);
+    CHECK_EQ(restored.getVariable("gold"), 3.0);
 
     auto future = restored.restoreSnapshotJson(
         R"({"schema":"eve.rpg.game-state","version":2,"switches":{},"variables":{},"selfVariables":{}})");
     CHECK(!future.ok());
-    CHECK_EQ(restored.getVariable("gold"), 125.5);
+    CHECK_EQ(restored.getVariable("gold"), 3.0);
 }

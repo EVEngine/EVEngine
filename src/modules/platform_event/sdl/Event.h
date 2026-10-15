@@ -11,9 +11,12 @@
 
 namespace eve::platform_event::sdl {
 
+/** @brief Event public API. */
 class Event final : public eve::platform_event::PlatformEvent {
 public:
+    /** @brief Constructs a Event. */
     Event();
+    /** @brief Releases Event resources. */
     virtual ~Event();
 
     /**

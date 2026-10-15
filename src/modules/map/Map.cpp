@@ -12,6 +12,7 @@
 #include "map/MapObjectContract.h"
 #include "map/Path.h"
 #include "map/Pathfinder.h"
+#include "map/TileCollisionScriptSink.h"
 #include "map/TileConfig.h"
 #include "map/TileSystem.h"
 
@@ -44,7 +45,12 @@ void discardCandidateLayers(const std::vector<TileLayer *> &layers) {
 
 }  // namespace
 
-Map::Map() { registerMapArtifactProvider(); }
+Map::Map() {
+    registerMapArtifactProvider();
+    declareScriptTileCollisionSinkSeam();
+}
+
+Map::~Map() { withdrawScriptTileCollisionSinkSeam(); }
 
 Module_IMPL(Map, new Map());
 
@@ -165,7 +171,7 @@ int Map::publishCollision(TileLayer *layer) {
         }
     }
     cap::forEach<ITileCollisionSink>([&](ITileCollisionSink *sink) {
-        sink->replaceTileCollision(layer, collisionRects_.data(), collisionRects_.size());
+        sink->replaceTileCollision(layer->layerRef(), collisionRects_.data(), collisionRects_.size());
     });
     return int(collisionRects_.size());
 }
@@ -377,6 +383,10 @@ void Map::expose(ssq::Table &table) {
     auto layer = table.addClass<TileLayer>(
         "TileLayer", std::function<TileLayer *()>([]() -> TileLayer * { return nullptr; }), true);
     layer.addFunc("setOrigin", &TileLayer::setOrigin);
+    // 稳定身份（`TileLayerRef` 的槽位 + 换代号）：脚本实现 `ITileCollisionSink` 时用这两个数
+    // 认出"这批矩形是哪一层的"，与原生侧 `layerRef()` 是同一个数。
+    layer.addFunc("getEntityId", [](TileLayer* self) { return int(self->layerRef().slot); });
+    layer.addFunc("getEntityGeneration", [](TileLayer* self) { return int(self->layerRef().generation); });
     layer.addFunc("getX", &TileLayer::getX);
     layer.addFunc("getY", &TileLayer::getY);
     layer.addFunc("getMapWidth", &TileLayer::getMapWidth);
@@ -390,6 +400,9 @@ void Map::expose(ssq::Table &table) {
     layer.addFunc("getCellGapY", &TileLayer::getCellGapY);
     layer.addFunc("getRenderSpacingX", &TileLayer::getRenderSpacingX);
     layer.addFunc("getRenderSpacingY", &TileLayer::getRenderSpacingY);
+    layer.addFunc("setVisualScale", &TileLayer::setVisualScale);
+    layer.addFunc("getVisualScaleX", &TileLayer::getVisualScaleX);
+    layer.addFunc("getVisualScaleY", &TileLayer::getVisualScaleY);
     layer.addFunc("resize", &TileLayer::resize);
     layer.addFunc("setTile", &TileLayer::setTile);
     layer.addFunc("getTile", &TileLayer::getTile);
@@ -436,6 +449,8 @@ void Map::expose(ssq::Table &table) {
     layer.addFunc("getLayer", &TileLayer::getLayer);
     layer.addFunc("setVisible", &TileLayer::setVisible);
     layer.addFunc("isVisible", &TileLayer::isVisible);
+    layer.addFunc("setReceiveLight", &TileLayer::setReceiveLight);
+    layer.addFunc("getReceiveLight", &TileLayer::getReceiveLight);
     layer.addFunc("setTint", &TileLayer::setTint);
     layer.addFunc("applyConfig", &TileLayer::applyConfig);
     layer.addFunc("loadConfig", &TileLayer::loadConfig);

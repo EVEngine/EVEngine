@@ -16,12 +16,6 @@ std::unordered_map<std::string, StoryEventDefinition>& definitions() {
     return value;
 }
 
-template <typename T>
-eve::Result<T> storyFailure(eve::DiagnosticCode code, std::string message, std::string path) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "rpg.story-event"));
-}
-
 bool validText(const std::string& value, bool allowEmpty = false) {
     if (value.empty()) return allowEmpty;
     if (value.size() > 1024) return false;
@@ -65,28 +59,35 @@ eve::Result<int> StoryEventCatalogue::replaceFromJsonStrict(const std::string& j
     std::string parseError;
     const auto  document = eve::json::Document::parse(json, &parseError);
     if (!document.valid())
-        return storyFailure<int>(eve::DiagnosticCode::ParseError, parseError.empty() ? "invalid JSON" : parseError,
-                                 "$");
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                parseError.empty() ? "invalid JSON" : parseError, "$",
+                                                                {}, "rpg.story-event"));
     const auto root = document.root();
     if (!root.isObject())
-        return storyFailure<int>(eve::DiagnosticCode::InvalidArgument, "story-event document root must be an object",
-                                 "$");
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                "story-event document root must be an object", "$", {},
+                                                                "rpg.story-event"));
     const std::unordered_set<std::string> rootFields = {"schema", "version", "events"};
     for (const auto& key : root.keys())
         if (!rootFields.contains(key))
-            return storyFailure<int>(eve::DiagnosticCode::InvalidArgument,
-                                     "story-event document contains an unknown field", "$." + key);
+            return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                    "story-event document contains an unknown field",
+                                                                    "$." + key, {}, "rpg.story-event"));
     const auto schema  = root.get("schema");
     const auto version = root.get("version");
     const auto events  = root.get("events");
     if (!schema.isString() || schema.asString() != "eve.rpg.story-events")
-        return storyFailure<int>(eve::DiagnosticCode::InvalidArgument, "story-event schema id is invalid", "$.schema");
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                "story-event schema id is invalid", "$.schema", {},
+                                                                "rpg.story-event"));
     if (!version.isInt64() || version.asInt64() != 1)
-        return storyFailure<int>(eve::DiagnosticCode::UnknownVersion, "unsupported story-event schema version",
-                                 "$.version");
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::UnknownVersion,
+                                                                "unsupported story-event schema version", "$.version",
+                                                                {}, "rpg.story-event"));
     if (!events.isArray() || events.size() == 0 || events.size() > 256)
-        return storyFailure<int>(eve::DiagnosticCode::InvalidArgument, "events must contain between 1 and 256 entries",
-                                 "$.events");
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                "events must contain between 1 and 256 entries",
+                                                                "$.events", {}, "rpg.story-event"));
 
     const std::unordered_set<std::string> eventFields = {"id", "repeatable", "steps"};
     const std::unordered_set<std::string> stepFields  = {"kind", "reference", "actorId", "x", "y", "duration"};
@@ -95,25 +96,31 @@ eve::Result<int> StoryEventCatalogue::replaceFromJsonStrict(const std::string& j
         const auto        object = events.at(index);
         const std::string path   = "$.events[" + std::to_string(index) + "]";
         if (!object.isObject())
-            return storyFailure<int>(eve::DiagnosticCode::InvalidArgument, "story event must be an object", path);
+            return eve::Result<int>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "story event must be an object", path, {}, "rpg.story-event"));
         for (const auto& key : object.keys())
             if (!eventFields.contains(key))
-                return storyFailure<int>(eve::DiagnosticCode::InvalidArgument, "story event contains an unknown field",
-                                         path + "." + key);
+                return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                        "story event contains an unknown field",
+                                                                        path + "." + key, {}, "rpg.story-event"));
         const auto id         = object.get("id");
         const auto repeatable = object.get("repeatable");
         const auto steps      = object.get("steps");
         if (!id.isString() || !validText(id.asString()))
-            return storyFailure<int>(eve::DiagnosticCode::InvalidArgument,
-                                     "story event id must be a stable non-empty id", path + ".id");
+            return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                    "story event id must be a stable non-empty id",
+                                                                    path + ".id", {}, "rpg.story-event"));
         if (proposed.contains(id.asString()))
-            return storyFailure<int>(eve::DiagnosticCode::AlreadyExists, "duplicate story event id", path + ".id");
+            return eve::Result<int>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::AlreadyExists, "duplicate story event id", path + ".id", {}, "rpg.story-event"));
         if (!repeatable.isBool())
-            return storyFailure<int>(eve::DiagnosticCode::InvalidArgument, "repeatable must be boolean",
-                                     path + ".repeatable");
+            return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                    "repeatable must be boolean", path + ".repeatable",
+                                                                    {}, "rpg.story-event"));
         if (!steps.isArray() || steps.size() == 0 || steps.size() > 128)
-            return storyFailure<int>(eve::DiagnosticCode::InvalidArgument,
-                                     "steps must contain between 1 and 128 entries", path + ".steps");
+            return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                    "steps must contain between 1 and 128 entries",
+                                                                    path + ".steps", {}, "rpg.story-event"));
         StoryEventDefinition definition;
         definition.id         = id.asString();
         definition.repeatable = repeatable.asBool();
@@ -121,12 +128,14 @@ eve::Result<int> StoryEventCatalogue::replaceFromJsonStrict(const std::string& j
             const auto        value    = steps.at(stepIndex);
             const std::string stepPath = path + ".steps[" + std::to_string(stepIndex) + "]";
             if (!value.isObject())
-                return storyFailure<int>(eve::DiagnosticCode::InvalidArgument, "story-event step must be an object",
-                                         stepPath);
+                return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                        "story-event step must be an object", stepPath,
+                                                                        {}, "rpg.story-event"));
             for (const auto& key : value.keys())
                 if (!stepFields.contains(key))
-                    return storyFailure<int>(eve::DiagnosticCode::InvalidArgument,
-                                             "story-event step contains an unknown field", stepPath + "." + key);
+                    return eve::Result<int>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "story-event step contains an unknown field",
+                        stepPath + "." + key, {}, "rpg.story-event"));
             const auto     kindValue = value.get("kind");
             const auto     reference = value.get("reference");
             const auto     actorId   = value.get("actorId");
@@ -135,27 +144,32 @@ eve::Result<int> StoryEventCatalogue::replaceFromJsonStrict(const std::string& j
             const auto     duration  = value.get("duration");
             StoryEventStep parsed;
             if (!kindValue.isString() || !parseKind(kindValue.asString(), parsed.kind))
-                return storyFailure<int>(eve::DiagnosticCode::InvalidArgument, "story-event step kind is invalid",
-                                         stepPath + ".kind");
+                return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                        "story-event step kind is invalid",
+                                                                        stepPath + ".kind", {}, "rpg.story-event"));
             if (!reference.isString() || !actorId.isString() || !validText(reference.asString(), true) ||
                 !validText(actorId.asString(), true) || !x.isNumber() || !y.isNumber() || !duration.isNumber() ||
                 !std::isfinite(x.asDouble()) || !std::isfinite(y.asDouble()) || !std::isfinite(duration.asDouble()) ||
                 duration.asDouble() < 0.0)
-                return storyFailure<int>(eve::DiagnosticCode::InvalidArgument, "story-event step fields are invalid",
-                                         stepPath);
+                return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                        "story-event step fields are invalid", stepPath,
+                                                                        {}, "rpg.story-event"));
             const bool needsReference =
                 parsed.kind == StoryEventStepKind::Dialogue || parsed.kind == StoryEventStepKind::Message;
             const bool needsActor    = parsed.kind == StoryEventStepKind::Move;
             const bool needsDuration = parsed.kind == StoryEventStepKind::Wait;
             if (needsReference != !reference.asString().empty())
-                return storyFailure<int>(eve::DiagnosticCode::InvalidArgument,
-                                         "reference presence does not match step kind", stepPath + ".reference");
+                return eve::Result<int>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "reference presence does not match step kind",
+                    stepPath + ".reference", {}, "rpg.story-event"));
             if (needsActor != !actorId.asString().empty())
-                return storyFailure<int>(eve::DiagnosticCode::InvalidArgument,
-                                         "actorId presence does not match step kind", stepPath + ".actorId");
+                return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                        "actorId presence does not match step kind",
+                                                                        stepPath + ".actorId", {}, "rpg.story-event"));
             if (needsDuration && duration.asDouble() <= 0.0)
-                return storyFailure<int>(eve::DiagnosticCode::InvalidArgument, "wait duration must be positive",
-                                         stepPath + ".duration");
+                return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                        "wait duration must be positive",
+                                                                        stepPath + ".duration", {}, "rpg.story-event"));
             parsed.reference = reference.asString();
             parsed.actorId   = actorId.asString();
             parsed.x         = x.asDouble();
@@ -179,28 +193,33 @@ const StoryEventDefinition* StoryEventCatalogue::find(const std::string& eventId
 
 eve::Result<void> StoryEventSession::begin(const std::string& eventId, GameState* gameState) {
     if (!gameState)
-        return storyFailure<void>(eve::DiagnosticCode::InvalidArgument, "begin requires a GameState owner",
-                                  "gameState");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "begin requires a GameState owner", "gameState", {},
+                                                                 "rpg.story-event"));
     const auto* definition = StoryEventCatalogue::find(eventId);
     if (!definition)
-        return storyFailure<void>(eve::DiagnosticCode::NotFound, "story event is not registered", "eventId");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "story event is not registered", "eventId", {}, "rpg.story-event"));
     const std::string scope          = eventScope(eventId);
     const bool        hasCompleted   = gameState->hasSelfVariable(scope, "completed");
     const double      completedValue = hasCompleted ? gameState->getSelfVariable(scope, "completed") : 0.0;
     if (hasCompleted && completedValue != 0.0 && completedValue != 1.0)
-        return storyFailure<void>(eve::DiagnosticCode::InvariantViolation,
-                                  "persisted story-event completion flag is invalid", scope + ".completed");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                                                 "persisted story-event completion flag is invalid",
+                                                                 scope + ".completed", {}, "rpg.story-event"));
     const bool completed = completedValue == 1.0;
     if (completed && !definition->repeatable)
-        return storyFailure<void>(eve::DiagnosticCode::Conflict, "non-repeatable story event is already complete",
-                                  "eventId");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                                                 "non-repeatable story event is already complete",
+                                                                 "eventId", {}, "rpg.story-event"));
     double storedCursor =
         gameState->hasSelfVariable(scope, "cursor") ? gameState->getSelfVariable(scope, "cursor") : 0.0;
     if (completed && definition->repeatable) storedCursor = 0.0;
     if (!std::isfinite(storedCursor) || std::floor(storedCursor) != storedCursor || storedCursor < 0.0 ||
         storedCursor >= static_cast<double>(definition->steps.size()))
-        return storyFailure<void>(eve::DiagnosticCode::InvariantViolation, "persisted story-event cursor is invalid",
-                                  scope + ".cursor");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                                                 "persisted story-event cursor is invalid",
+                                                                 scope + ".cursor", {}, "rpg.story-event"));
 
     StoryEventDefinition candidate = *definition;
     definition_                    = std::move(candidate);
@@ -216,19 +235,22 @@ eve::Result<void> StoryEventSession::begin(const std::string& eventId, GameState
 
 eve::Result<int> StoryEventSession::advance(GameState* gameState) {
     if (!gameState)
-        return storyFailure<int>(eve::DiagnosticCode::InvalidArgument, "advance requires a GameState owner",
-                                 "gameState");
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                "advance requires a GameState owner", "gameState", {},
+                                                                "rpg.story-event"));
     if (!active_ || !current())
-        return storyFailure<int>(eve::DiagnosticCode::PreconditionViolation, "story event has no active step",
-                                 "session");
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                "story event has no active step", "session", {},
+                                                                "rpg.story-event"));
     const std::string scope = eventScope(definition_.id);
     const double      persistedCursor =
         gameState->hasSelfVariable(scope, "cursor") ? gameState->getSelfVariable(scope, "cursor") : 0.0;
     const double persistedCompleted =
         gameState->hasSelfVariable(scope, "completed") ? gameState->getSelfVariable(scope, "completed") : 0.0;
     if (!std::isfinite(persistedCursor) || persistedCursor != static_cast<double>(cursor_) || persistedCompleted != 0.0)
-        return storyFailure<int>(eve::DiagnosticCode::Conflict,
-                                 "story-event cursor changed since this step was presented", scope + ".cursor");
+        return eve::Result<int>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "story-event cursor changed since this step was presented",
+            scope + ".cursor", {}, "rpg.story-event"));
     const int next = cursor_ + 1;
     gameState->setSelfVariable(scope, "cursor", static_cast<double>(next));
     if (next == static_cast<int>(definition_.steps.size())) {

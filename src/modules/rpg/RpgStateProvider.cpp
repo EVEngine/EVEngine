@@ -13,16 +13,16 @@
 namespace eve::rpg {
 namespace {
 
-double toNumber(const StateValue& v) { return v.isInt() ? double(v.asInt()) : v.asDouble(); }
+double toNumber(const Value& v) { return v.isInt64() ? double(v.asInt()) : v.asDouble(); }
 
 /** @brief IStateProvider over every live RPGActor (cooldowns + casting). */
 class RpgStateProvider : public eve::caps::IStateProvider {
 public:
     const char* stateKind() const override { return "rpg"; }
 
-    bool captureState(StateValue& out) override { return captureRpgState(out); }
-    bool restoreState(const StateValue& in, std::string* err) override { return restoreRpgState(in, err); }
-    bool resetToDefaults() override { return resetRpgState(); }
+    Result<Value> capture() override { return captureRpgState(); }
+    Result<void>  restore(const Value& in) override { return restoreRpgState(in); }
+    Result<void>  resetToDefaults() override { return resetRpgStateResult(); }
 };
 
 struct Register {
@@ -34,82 +34,103 @@ struct Register {
 
 }  // namespace
 
-bool captureRpgState(StateValue& out) {
-    StateValue actors = StateValue::array();
+Result<Value> captureRpgState() {
+    Value::Array actors;
     for (RPGActor* actor : RPGActor::liveActors()) {
-        StateValue entry = StateValue::object();
-
-        StateValue skills = StateValue::object();
+        Value::Object skills;
         for (const auto& kv : actor->skills()->known) {
-            skills.set(kv.first, StateValue::number(kv.second.cooldownRemaining));
+            skills.emplace(kv.first, Value::number(kv.second.cooldownRemaining));
         }
-        entry.set("skills", std::move(skills));
-
-        StateValue          casting = StateValue::object();
+        Value::Object       casting;
         const CastingState& c       = actor->skills()->casting;
-        casting.set("active", StateValue::boolean(c.active));
-        casting.set("skillId", StateValue::string(c.skillId));
-        casting.set("remaining", StateValue::number(c.remaining));
-        casting.set("totalCastTime", StateValue::number(c.totalCastTime));
-        entry.set("casting", std::move(casting));
-
-        actors.pushBack(std::move(entry));
+        casting.emplace("active", Value::boolean(c.active));
+        casting.emplace("skillId", Value::string(c.skillId));
+        casting.emplace("remaining", Value::number(c.remaining));
+        casting.emplace("totalCastTime", Value::number(c.totalCastTime));
+        actors.emplace_back(
+            Value::Object{{"skills", Value(std::move(skills))}, {"casting", Value(std::move(casting))}});
     }
-    out = std::move(actors);
+    return Result<Value>::success(Value(std::move(actors)));
+}
+
+Result<void> restoreRpgState(const Value& in) {
+    if (!in.isArray()) {
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "rpg: expected array of actors"));
+    }
+    const std::vector<RPGActor*>& actors = RPGActor::liveActors();
+    if (in.arraySize() != actors.size())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "rpg: actor count changed during reload"));
+    struct Pending {
+        std::vector<std::pair<std::string, float>> cooldowns;
+        CastingState                               casting;
+    };
+    std::vector<Pending> pending(in.arraySize());
+    for (size_t i = 0; i < in.arraySize(); ++i) {
+        const Value& entry = in.at(i);
+        if (!entry.isObject()) {
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "rpg: actor state is not an object"));
+        }
+        RPGActor* actor = actors[i];
+        if (const Value* skills = entry.find("skills"); skills && skills->isObject()) {
+            for (const auto& key : skills->keys()) {
+                const Value* v = skills->find(key);
+                if (!v || !v->isNumeric()) continue;
+                if (SkillSystem::knows(actor, key)) {
+                    pending[i].cooldowns.emplace_back(key, static_cast<float>(toNumber(*v)));
+                }
+            }
+        }
+        if (const Value* c = entry.find("casting"); c && c->isObject()) {
+            const Value* active = c->find("active");
+            if (active && active->isBool() && active->asBool()) {
+                const Value*      skillId = c->find("skillId");
+                const std::string id      = skillId && skillId->isString() ? skillId->asString() : "";
+                if (!id.empty() && SkillSystem::knows(actor, id)) {
+                    pending[i].casting.active  = true;
+                    pending[i].casting.skillId = id;
+                    if (const Value* r = c->find("remaining"); r && r->isNumeric())
+                        pending[i].casting.remaining = static_cast<float>(toNumber(*r));
+                    if (const Value* t = c->find("totalCastTime"); t && t->isNumeric())
+                        pending[i].casting.totalCastTime = static_cast<float>(toNumber(*t));
+                }
+            }
+        }
+    }
+    for (size_t i = 0; i < actors.size(); ++i) {
+        for (const auto& [skillId, cooldown] : pending[i].cooldowns)
+            SkillSystem::setCooldownRemaining(actors[i], skillId, cooldown);
+        actors[i]->skills()->casting = std::move(pending[i].casting);
+    }
+    return Result<void>::success();
+}
+
+Result<void> resetRpgStateResult() {
+    for (RPGActor* actor : RPGActor::liveActors()) SkillSystem::cancelCast(actor);
+    return Result<void>::success();
+}
+
+bool captureRpgState(StateValue& out) {
+    auto captured = captureRpgState();
+    if (!captured.ok()) return false;
+    out = toLegacyStateValue(std::move(captured).takeValue());
     return true;
 }
 
 bool restoreRpgState(const StateValue& in, std::string* err) {
-    if (!in.isArray()) {
-        if (err) *err = "rpg: expected array of actors";
+    auto result = restoreRpgState(toCanonicalStateValue(in));
+    if (!result.ok()) {
+        if (err) *err = result.diagnostics().front().message();
         return false;
-    }
-    const std::vector<RPGActor*>& actors = RPGActor::liveActors();
-    const size_t                  n      = std::min(in.arraySize(), actors.size());
-    for (size_t i = 0; i < n; ++i) {
-        const StateValue& entry = in.at(i);
-        if (!entry.isObject()) {
-            if (err) *err = "rpg: actor state is not an object";
-            return false;
-        }
-        RPGActor* actor = actors[i];
-
-        if (const StateValue* skills = entry.find("skills"); skills && skills->isObject()) {
-            for (const auto& key : skills->keys()) {
-                const StateValue* v = skills->find(key);
-                if (!v || !(v->isInt() || v->isFloat())) continue;
-                if (SkillSystem::knows(actor, key)) {
-                    SkillSystem::setCooldownRemaining(actor, key, static_cast<float>(toNumber(*v)));
-                }
-            }
-        }
-
-        CastingState& casting = actor->skills()->casting;
-        casting               = CastingState();
-        if (const StateValue* c = entry.find("casting"); c && c->isObject()) {
-            const StateValue* active = c->find("active");
-            if (active && active->isBool() && active->asBool()) {
-                const StateValue* skillId = c->find("skillId");
-                const std::string id      = skillId && skillId->isString() ? skillId->asString() : "";
-                if (!id.empty() && SkillSystem::knows(actor, id)) {
-                    casting.active        = true;
-                    casting.skillId       = id;
-                    casting.remaining     = 0.f;
-                    casting.totalCastTime = 0.f;
-                    if (const StateValue* r = c->find("remaining"); r && (r->isInt() || r->isFloat()))
-                        casting.remaining = static_cast<float>(toNumber(*r));
-                    if (const StateValue* t = c->find("totalCastTime"); t && (t->isInt() || t->isFloat()))
-                        casting.totalCastTime = static_cast<float>(toNumber(*t));
-                    casting.target = nullptr;  // pointers are not serializable
-                }
-            }
-        }
     }
     return true;
 }
 
 bool resetRpgState() {
-    for (RPGActor* actor : RPGActor::liveActors()) SkillSystem::cancelCast(actor);
+    auto result = resetRpgStateResult();
+    if (!result.ok()) return false;
     return true;
 }
 

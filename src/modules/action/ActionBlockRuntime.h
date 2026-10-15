@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ActionBlockRuntime.h @brief Deterministic notify-state lifecycle routing. */
 
@@ -18,7 +20,7 @@ namespace eve::action {
  * synchronous, run without locks, and may reenter unrelated systems but must
  * not reenter this instance.
  */
-class ActionBlockRuntime {
+class EVENGINE_API_PLATFORM ActionBlockRuntime {
 public:
     /**
      * @brief Bind the canonical registry used for all synchronous callbacks.

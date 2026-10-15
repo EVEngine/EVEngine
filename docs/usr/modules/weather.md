@@ -85,6 +85,15 @@ GLSL/WGSL 采用相同公式，但浮点三角函数及覆盖率采样不保证�
 
 修改 GLSL 后运行 `python scripts/compile_weather_shaders.py` 更新嵌入式 SPIR-V。
 WGSL 对应源码位于 `src/modules/weather/shaders/WeatherWgsl.h`，需同步维护并运行后端验证。
+
+## 可交互积雪服务
+
+`weather` 模块同时注册兼容脚本入口 `snow <- eve.Snow()` 与 `SnowField`。它们不再属于
+独立的 `snow` 模块。完整示例与算法说明见[可交互积雪](snow.md)。公开脚本面包括：
+
+- `newField`、`resize`、`getWidth`、`getHeight`、`fill`、`setHeight`、`height`
+- `stampFootprint`、`stampImpact`、`addSnowfall`、`isDirty`、`clearDirty`
+- `applyToHeightmap`、`uploadTexture`、`updateTexture`
 ### Pcg 雷击状态
 
 `ThunderStrikeSettings` 提供 `intensity`、`radius`、`volume` 和 `audioClipCount`；
@@ -145,3 +154,7 @@ Weather 模块会在自身生命周期内注册照片模式字段提供者。m_p
 ### Pcg PhotoMode 环境光适配器
 
 `PcgLightingAmbientPhotoMode` 接管环境强度、天空/地平线/地面三色与全局直射光倍率。三色按半球梯度合成进入 DayNight ambient，倍率同步作用于方向光、雾散射与其他 `getSunRGB` 消费者。authority 启用时保存原状态，撤销或析构时恢复。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](weather/api-reference.md)，使用前先确认本章的前置条件与生命周期。

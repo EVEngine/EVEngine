@@ -16,7 +16,7 @@ const { spawn } = require('child_process');
 
 const repoRoot = path.resolve(__dirname, '../../..');
 
-const { resolveEvePath, findProjectRoot } = require('../lib/evePath');
+const { resolveEvePath, findWorkspaceEvePath, findProjectRoot } = require('../lib/evePath');
 const { LspClient } = require('../lib/lspClient');
 const { pathToFileURL } = require('url');
 
@@ -139,12 +139,14 @@ class DapClient {
 
 async function testResolveEvePath() {
   const resolved = resolveEvePath('eve', repoRoot);
-  assert.ok(resolved, 'resolved path');
-  if (resolved !== 'eve') {
-    assert.ok(fs.existsSync(resolved), `eve binary exists: ${resolved}`);
-    console.log('  resolveEvePath →', resolved);
+  assert.equal(resolved, 'eve', 'bare eve stays on PATH (does not lock build/eve.exe)');
+  const fromBuild = findWorkspaceEvePath(repoRoot);
+  if (fromBuild) {
+    assert.ok(fs.existsSync(fromBuild), `workspace eve exists: ${fromBuild}`);
+    assert.equal(resolveEvePath(fromBuild, repoRoot), fromBuild);
+    console.log('  resolveEvePath → eve (PATH); workspace build at', fromBuild);
   } else {
-    console.log('  resolveEvePath → eve (on PATH; build tree not found)');
+    console.log('  resolveEvePath → eve (PATH); no workspace build tree');
   }
 }
 
@@ -158,8 +160,8 @@ async function testWaitForPort() {
 }
 
 async function testLiveEveDap() {
-  const eve = resolveEvePath('eve', repoRoot);
-  if (eve === 'eve' || !fs.existsSync(eve)) {
+  const eve = findWorkspaceEvePath(repoRoot);
+  if (!eve || !fs.existsSync(eve)) {
     console.log('  SKIP live eve DAP (binary not found)');
     return;
   }
@@ -449,8 +451,8 @@ async function testFindProjectRoot() {
 }
 
 async function testLiveEveLsp() {
-  const eve = resolveEvePath('eve', repoRoot);
-  if (eve === 'eve' || !fs.existsSync(eve)) {
+  const eve = findWorkspaceEvePath(repoRoot);
+  if (!eve || !fs.existsSync(eve)) {
     console.log('  SKIP live eve LSP (binary not found)');
     return;
   }

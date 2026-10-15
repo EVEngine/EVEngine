@@ -11,6 +11,7 @@ from pathlib import Path
 import struct
 import subprocess
 import tempfile
+import utf8_stdio
 
 
 def main():
@@ -47,4 +48,5 @@ def main():
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     main()

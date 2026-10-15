@@ -16,6 +16,7 @@ class VehicleEntity;
 /** @brief 移动模型：读输入、更新运动状态。 */
 class IVehicleMobility {
 public:
+    /** @brief Releases IVehicleMobility resources. */
     virtual ~IVehicleMobility() = default;
 
     /**

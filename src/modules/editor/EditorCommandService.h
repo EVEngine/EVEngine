@@ -1,7 +1,10 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorCommandTypes.h"
 #include "editor/EditorHostProfile.h"
+#include "editor/EditorProperty.h"
 #include "editor/EditorProtocol.h"
 #include "editor/EditorResult.h"
 #include "editor/EditorValue.h"
@@ -32,12 +35,20 @@ struct CommandDescriptor {
     HostFeature requiredFeatures   = HostFeature::None;
     bool        createsTransaction = true;
     bool        automationAllowed  = true;
+    /** @brief Target type names this command may bind. */
+    std::vector<std::string> targetKinds;
+    /** @brief Payload schema projected to MCP inputSchema / Inspector. */
+    PropertySchema payloadSchema;
+    /** @brief Bound workspace panel capability (panel-before-automation). */
+    std::string panelCapability;
+    /** @brief Bound workspace panel context. */
+    std::string panelContext;
 };
 
-using EditorCommandHandler = std::function<EditorResult<EditorValue>(const CommandContext&, const EditorValue&)>;
-using EditorCommandPlanner = std::function<EditorResult<CommandPlan>(const CommandRequest&)>;
+using EditorCommandHandler = std::function<Result<EditorValue>(const CommandContext&, const EditorValue&)>;
+using EditorCommandPlanner = std::function<Result<CommandPlan>(const CommandRequest&)>;
 using EditorCommandPlanExecutor =
-    std::function<EditorResult<TransactionReceipt>(const CommandRequest&, const CommandPlan&)>;
+    std::function<Result<TransactionReceipt>(const CommandRequest&, const CommandPlan&)>;
 
 /**
  * @brief Registry and execution gate for UI-, script- and automation-neutral commands.
@@ -46,7 +57,7 @@ using EditorCommandPlanExecutor =
  * is synchronous in this first slice; asynchronous work should return a stable
  * task handle as its EditorValue.
  */
-class EditorCommandService {
+class EVENGINE_API_ORCHESTRATION EditorCommandService {
 public:
     /**
      * @brief Register one command.
@@ -55,7 +66,7 @@ public:
      * @param replace True to replace an existing command owned by the same module.
      * @return Applied on success, Rejected for invalid or duplicate registration.
      */
-    EditorResult<EditorValue> registerCommand(CommandDescriptor descriptor, EditorCommandHandler handler,
+    Result<EditorValue> registerCommand(CommandDescriptor descriptor, EditorCommandHandler handler,
                                               bool replace = false);
     /**
      * @brief Register a side-effect-free planner and explicit plan executor.
@@ -65,7 +76,7 @@ public:
      * @param replace True to replace the same owner's registration.
      * @return Applied on success, otherwise a structured registration error.
      */
-    EditorResult<EditorValue> registerPlannedCommand(CommandDescriptor descriptor, EditorCommandPlanner planner,
+    Result<EditorValue> registerPlannedCommand(CommandDescriptor descriptor, EditorCommandPlanner planner,
                                                      EditorCommandPlanExecutor executor, bool replace = false);
     /** @brief Remove one command, optionally requiring a matching owner. */
     bool unregisterCommand(const CommandId& id, const std::string& ownerModule = {});
@@ -90,12 +101,12 @@ public:
      * @param payload Structured input value.
      * @return Handler result or a structured rejection/failure.
      */
-    EditorResult<EditorValue> execute(const CommandId& id, const CommandContext& context,
+    Result<EditorValue> execute(const CommandId& id, const CommandContext& context,
                                       const EditorValue& payload) const;
     /** @brief Produce a side-effect-free plan bound to the target, command generation, payload and source. */
-    EditorResult<CommandPlan> plan(const CommandRequest& request, const HostProfile& profile) const;
+    Result<CommandPlan> plan(const CommandRequest& request, const HostProfile& profile) const;
     /** @brief Execute a plan only when its lifetime, registration, policy and input bindings remain valid. */
-    EditorResult<TransactionReceipt> executePlan(const CommandRequest& request, const CommandPlan& plan,
+    Result<TransactionReceipt> executePlan(const CommandRequest& request, const CommandPlan& plan,
                                                  const HostProfile& profile) const;
 
 private:
@@ -107,8 +118,8 @@ private:
         uint64_t                  generation = 0;
     };
 
-    static EditorResult<EditorValue> error(EditorStatus status, const char* rule, std::string message);
-    [[nodiscard]] EditorResult<void> checkExecutionPolicy(const CommandDescriptor& descriptor, const CommandId& id,
+    static Result<EditorValue> error(EditorStatus status, const char* rule, std::string message);
+    [[nodiscard]] Result<void> checkExecutionPolicy(const CommandDescriptor& descriptor, const CommandId& id,
                                                             CommandSource source, const EditorValue& payload,
                                                             const HostProfile& profile) const;
     std::vector<Registration>        commands_;

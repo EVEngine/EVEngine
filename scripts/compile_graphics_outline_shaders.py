@@ -7,6 +7,7 @@ import struct
 import subprocess
 import sys
 from pathlib import Path
+import utf8_stdio
 
 ROOT = Path(__file__).resolve().parents[1]
 SHADER_DIR = ROOT / "src" / "modules" / "graphics" / "shaders"
@@ -66,4 +67,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())

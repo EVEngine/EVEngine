@@ -9,7 +9,7 @@ double component(const EditorValue::Array& values, size_t index) { return *value
 
 }  // namespace
 
-EditorResult<void> EnvironmentRuntimeApplier::applyWeather(const EnvironmentDocumentTarget& document,
+Result<void> EnvironmentRuntimeApplier::applyWeather(const EnvironmentDocumentTarget& document,
                                                            weather::Weather*                environment) const {
     if (!environment)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.environment.weather-required"),
@@ -21,7 +21,7 @@ EditorResult<void> EnvironmentRuntimeApplier::applyWeather(const EnvironmentDocu
     const auto diagnostics = document.validate();
     for (const EditorDiagnostic& diagnostic : diagnostics)
         if (diagnostic.severity() == DiagnosticSeverity::Error)
-            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
+            return Result<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
     const auto& sky = *document.value("environment.sky-color")->getIf<EditorValue::Array>();
     const auto& fog = *document.value("weather.fog-color")->getIf<EditorValue::Array>();
     environment->setPreset(*document.value("weather.preset")->getIf<std::string>());

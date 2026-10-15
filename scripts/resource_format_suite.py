@@ -13,6 +13,7 @@ import subprocess
 import sys
 import tempfile
 import xml.etree.ElementTree as ET
+import utf8_stdio
 
 ROOT = Path(__file__).resolve().parent.parent
 FAMILIES = {
@@ -24,6 +25,24 @@ FAMILIES = {
     "asset": [p.name for p in sorted((ROOT / "test").glob("asset_*.cpp"))],
     "resource": ["filesystem_cpp.cpp", "resource.cpp", "resource_uri.cpp", "resource_lifetime.cpp"],
 }
+CONSOLIDATED_SOURCES = {
+    "resource_format_image.cpp": "resource.cpp",
+    "editor_audio_import_diagnostics.cpp": "editor_audio_editor.cpp",
+    "resource_uri.cpp": "resource.cpp",
+}
+
+
+def source_section(root, name):
+    physical = CONSOLIDATED_SOURCES.get(name, name)
+    source = (root / "test" / physical).read_text(encoding="utf-8-sig")
+    marker = f"// {name}"
+    start = source.find(marker)
+    if start >= 0:
+        source = source[start + len(marker):]
+        next_section = re.search(r"^// [A-Za-z0-9_]+\.cpp\s*$", source, re.MULTILINE)
+        if next_section:
+            source = source[:next_section.start()]
+    return physical, source
 
 
 def inventory(root=ROOT):
@@ -31,22 +50,23 @@ def inventory(root=ROOT):
     for family, files in FAMILIES.items():
         cases = {}
         for name in files:
-            path = root / "test" / name
-            for case in re.findall(r'TEST_CASE\(\s*"([^"\n]+)"', path.read_text(encoding="utf-8-sig")):
+            physical, source = source_section(root, name)
+            for case in re.findall(r'TEST_CASE\(\s*"([^"\n]+)"', source):
                 if case in cases:
                     raise ValueError("duplicate test: " + case)
-                cases[case] = "test/" + name
+                cases[case] = "test/" + physical
         extensions = []
         loader = {"image": "image/ImageLoader.cpp", "sound": "sound/SoundLoader.cpp", "model": "model3d/ModelLoader.cpp"}.get(family)
         if loader:
-            extensions = sorted(set(re.findall(r'ext == "(\.[^"]+)"', (root / "src/modules" / loader).read_text())))
+            source = (root / "src/modules" / loader).read_text(encoding="utf-8")
+            extensions = sorted(set(re.findall(r'ext == "(\.[^"]+)"', source)))
         result[family] = {"advertised_resource_extensions": extensions, "tests": cases}
     return result
 
 
 def fixture_errors(root=ROOT):
     directory = root / "test/fixtures/resource_formats"
-    manifest = json.loads((directory / "manifest.json").read_text())
+    manifest = json.loads((directory / "manifest.json").read_text(encoding="utf-8"))
     if manifest.get("schema") != "evengine.resource-format-fixtures" or manifest.get("version") != 1:
         raise ValueError("unsupported fixture manifest schema/version")
     errors = []
@@ -60,7 +80,8 @@ def fixture_errors(root=ROOT):
 
 
 def format_coverage(groups, results, root=ROOT):
-    contract = json.loads((root / "scripts/resource_format_contracts.json").read_text())
+    contracts_path = root / "scripts/resource_format_contracts.json"
+    contract = json.loads(contracts_path.read_text(encoding="utf-8"))
     if (set(contract) != {"schema", "version", "unknownFields", "formats"}
             or contract["schema"] != "evengine.resource-format-contracts"
             or contract["version"] != 1 or contract["unknownFields"] != "reject"):
@@ -127,7 +148,7 @@ def run_cases(build_dir, selected):
                 name = case.attrib["name"]
                 status = "passed"
                 if (case.find("failure") is not None or case.find("error") is not None
-                        or "Assertion Failed" in case.findtext("system-out", "")):
+                        or "ERROR Assertion Failed:" in case.findtext("system-out", "")):
                     status = "failed"
                 elif case.find("skipped") is not None or case.get("status") in ("notrun", "disabled"):
                     status = "skipped"
@@ -179,7 +200,9 @@ def main():
         report.update(status="failed", error=str(error))
         code = 1
     args.report.parent.mkdir(parents=True, exist_ok=True)
-    args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
+    args.report.write_text(
+        json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
     print(f"{report['status']}: {sum(len(g['tests']) for g in groups.values())} source tests; {args.report}")
     if report.get("error"):
         print(report["error"], file=sys.stderr)
@@ -189,4 +212,5 @@ def main():
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())

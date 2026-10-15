@@ -2,6 +2,7 @@
 
 #include "common/Capability.h"
 #include "common/ServiceInterfaces.h"
+#include "common/SquirrelBinding.h"
 
 #include <squirrel.h>
 
@@ -125,7 +126,7 @@ struct ScriptModuleResolver::Impl {
         }
     }
 
-    static SQRESULT importCallback(HSQUIRRELVM, const SQChar* importer, const SQChar* specifier, SQUserPointer user,
+    static SQRESULT importCallback(HSQUIRRELVM vm, const SQChar* importer, const SQChar* specifier, SQUserPointer user,
                                    HSQOBJECT* exports) {
         auto& self = *static_cast<Impl*>(user);
         try {
@@ -137,7 +138,7 @@ struct ScriptModuleResolver::Impl {
             return SQ_OK;
         } catch (const std::exception& error) {
             self.recordCompilationFailure(error.what());
-            return SQ_ERROR;
+            return sq_throwerror(vm, error.what());
         }
     }
 
@@ -233,16 +234,24 @@ struct ScriptModuleResolver::Impl {
         sq_getstackobj(vm, -1, &module.exports);
         sq_addref(vm, &module.exports);
         sq_newslot(vm, -3, SQFalse);        // env
+        // The derivable count only works when the callable is the first value above the
+        // recorded height: the `env` table below stays, so `top` is not the right base.
+        const SQInteger callTop = sq_gettop(vm);
         sq_pushobject(vm, module.closure);  // env, closure
         sq_push(vm, -2);                    // env, closure, env
         sq_setclosureroot(vm, -2);          // env, closure
         sq_push(vm, -2);                    // env, closure, env(this)
-        if (SQ_FAILED(sq_call(vm, 1, SQFalse, SQTrue))) {
+        // The parameter count is derived from the pushes (R-FACE-7), and the failure now
+        // carries the script error: a module body that threw used to reach the caller as
+        // "failed to instantiate" with no way to tell why.
+        const SQInteger params = sq_gettop(vm) - callTop - 1;  // receiver + arguments
+        if (SQ_FAILED(sq_call(vm, params, SQFalse, SQTrue))) {
+            const std::string detail = reportScriptCallFailure(vm, "script.instantiate");
             sq_settop(vm, top);
             module.state = Module::State::Compiled;
             sq_release(vm, &module.exports);
             sq_resetobject(&module.exports);
-            throw std::runtime_error("failed to instantiate script module: " + canonical);
+            throw std::runtime_error("failed to instantiate script module: " + canonical + ": " + detail);
         }
         sq_settop(vm, top);
         module.state = Module::State::Ready;

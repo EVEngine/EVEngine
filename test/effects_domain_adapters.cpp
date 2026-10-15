@@ -231,3 +231,196 @@ TEST_CASE("effects.domainAdapters.keepDomainStrategies") {
     CHECK(weapon.target().jammed);
     CHECK_EQ(weapon.target().blockedShots, 1u);
 }
+
+TEST_CASE("effects.card.immediateDamageAndHealUseSettlementWithoutAdvancingPeriodicEffects") {
+    eve::card::CardEffectAdapter card;
+    REQUIRE(card.initializeTarget({50, 100, 0, 0}).ok());
+
+    eve::settlement::SettlementRule resistance;
+    resistance.id                  = "card.immediate.resistance";
+    resistance.stage               = eve::settlement::StageKind::TargetMitigation;
+    resistance.operation           = eve::settlement::RuleOperation::ResistPercent;
+    resistance.value               = 0.5;
+    resistance.filter.kinds        = {"damage"};
+    resistance.filter.requiredTags = {"card:damage"};
+    eve::settlement::SettlementRuleSet rules;
+    REQUIRE(rules.configure({resistance}).ok());
+    REQUIRE(card.configureSettlementRules(rules).ok());
+
+    eve::card::CardEffectDefinition damage;
+    damage.id        = "card.immediate.damage";
+    damage.magnitude = 20.0;
+    damage.policy    = oncePolicy();
+    REQUIRE(card.apply(damage, subject()).ok());
+    CHECK_EQ(card.target().health, 40);
+
+    eve::card::CardEffectDefinition heal;
+    heal.id        = "card.immediate.heal";
+    heal.kind      = eve::card::CardEffectKind::Heal;
+    heal.magnitude = 10.0;
+    heal.policy    = oncePolicy();
+    REQUIRE(card.apply(heal, subject()).ok());
+    CHECK_EQ(card.target().health, 50);
+
+    damage.id       = "card.periodic.not-immediate";
+    damage.duration = 2.0;
+    damage.period   = 1.0;
+    REQUIRE(card.apply(damage, subject()).ok());
+    CHECK_EQ(card.target().health, 50);
+    auto advanced = card.advance(step(1, 1.0));
+    REQUIRE(advanced.ok());
+    CHECK_EQ(card.target().health, 40);
+}
+
+TEST_CASE("effects.card.periodicDamageUsesSharedSettlementRules") {
+    eve::card::CardEffectAdapter card;
+    eve::settlement::SettlementRule resistance;
+    resistance.id = "card.ward";
+    resistance.source = "card:ward";
+    resistance.stage = eve::settlement::StageKind::TargetMitigation;
+    resistance.operation = eve::settlement::RuleOperation::ResistPercent;
+    resistance.value = 0.5;
+    resistance.filter.kinds = {"damage"};
+    resistance.filter.requiredTags = {"card:damage"};
+    eve::settlement::SettlementRuleSet rules;
+    REQUIRE(rules.configure({resistance}).ok());
+    REQUIRE(card.configureSettlementRules(rules).ok());
+
+    eve::card::CardEffectDefinition damage;
+    damage.id = "card.burn";
+    damage.period = 1.0;
+    damage.magnitude = 20.0;
+    damage.policy = oncePolicy();
+    REQUIRE(card.apply(damage, subject()).ok());
+    auto update = card.advance(step(1, 1.0));
+    REQUIRE(update.ok());
+    CHECK_EQ(card.target().health, 90);
+}
+
+TEST_CASE("effects.card.deathTransitionFiresOnlyOnTheAliveToDeadEdge") {
+    eve::card::CardEffectAdapter card;
+    REQUIRE(card.initializeTarget({10, 10, 0, 0}).ok());
+
+    eve::card::CardEffectDefinition damage;
+    damage.id        = "card.lethal-dot";
+    damage.duration  = 3.0;
+    damage.period    = 1.0;
+    damage.magnitude = 20.0;
+    damage.policy    = oncePolicy();
+    REQUIRE(card.apply(damage, subject()).ok());
+
+    auto lethal = card.advance(step(1, 1.0));
+    REQUIRE(lethal.ok());
+    CHECK(lethal.value().deathTriggered);
+    CHECK_EQ(card.target().deathTriggers, 1u);
+
+    auto afterDeath = card.advance(step(2, 1.0));
+    REQUIRE(afterDeath.ok());
+    CHECK(!afterDeath.value().deathTriggered);
+    CHECK_EQ(card.target().deathTriggers, 1u);
+}
+
+TEST_CASE("effects.card.activeRuleProjectionTracksRemoveAndRestore") {
+    eve::card::CardEffectAdapter card;
+
+    eve::card::CardEffectDefinition ward;
+    ward.id       = "card.ward.active";
+    ward.duration = 10.0;
+    ward.kind     = eve::card::CardEffectKind::Heal;
+    ward.policy   = oncePolicy();
+    REQUIRE(ward.payload
+                .setJson("settlement.rule",
+                         R"({"stage":"target_mitigation","operation":"resist_percent","value":0.5,"kinds":["damage"]})")
+                .ok());
+    auto wardHandle = card.apply(ward, subject());
+    REQUIRE(wardHandle.ok());
+
+    eve::card::CardEffectDefinition burn;
+    burn.id        = "card.burn.projected";
+    burn.duration  = 10.0;
+    burn.period    = 1.0;
+    burn.magnitude = 20.0;
+    burn.policy    = oncePolicy();
+    REQUIRE(card.apply(burn, subject()).ok());
+
+    REQUIRE(card.advance(step(1, 1.0)).ok());
+    CHECK_EQ(card.target().health, 90);
+    const auto snapshot = card.snapshot();
+
+    REQUIRE(card.remove(wardHandle.value()).ok());
+    REQUIRE(card.advance(step(2, 1.0)).ok());
+    CHECK_EQ(card.target().health, 70);
+
+    REQUIRE(card.restore(snapshot).ok());
+    CHECK(!card.resolve(wardHandle.value()).ok());
+    REQUIRE(card.advance(step(2, 1.0)).ok());
+    CHECK_EQ(card.target().health, 80);
+}
+
+TEST_CASE("effects.card.activeRuleProjectionTracksStacksAndExpiry") {
+    eve::card::CardEffectAdapter card;
+
+    eve::card::CardEffectDefinition ward;
+    ward.id                         = "card.ward.stacking";
+    ward.duration                   = 5.0;
+    ward.kind                       = eve::card::CardEffectKind::Heal;
+    ward.policy.stackMode           = eve::effects::StackMode::Accumulate;
+    ward.policy.stackCount          = eve::effects::StackCountPolicy::Increment;
+    ward.policy.duration            = eve::effects::DurationPolicy::Replace;
+    ward.policy.magnitude           = eve::effects::MagnitudePolicy::Keep;
+    ward.policy.maxStacks           = 3;
+    REQUIRE(ward.payload
+                .setJson("settlement.rule",
+                         R"({"stage":"target_mitigation","operation":"resist_percent","value":0.1,"value_per_extra_stack":0.1,"kinds":["damage"]})")
+                .ok());
+    REQUIRE(card.apply(ward, subject()).ok());
+    REQUIRE(card.apply(ward, subject()).ok());
+
+    eve::card::CardEffectDefinition burn;
+    burn.id        = "card.burn.stacking";
+    burn.duration  = 5.0;
+    burn.period    = 1.0;
+    burn.magnitude = 20.0;
+    burn.policy    = oncePolicy();
+    REQUIRE(card.apply(burn, subject()).ok());
+    REQUIRE(card.advance(step(1, 1.0)).ok());
+    CHECK_EQ(card.target().health, 84);
+
+    eve::card::CardEffectAdapter expiring;
+    ward.id               = "card.ward.expiring";
+    ward.duration         = 1.0;
+    ward.policy.stackMode = eve::effects::StackMode::NewInstance;
+    REQUIRE(expiring.apply(ward, subject()).ok());
+    burn.id = "card.burn.expiring";
+    REQUIRE(expiring.apply(burn, subject()).ok());
+    REQUIRE(expiring.advance(step(1, 1.0)).ok());
+    CHECK_EQ(expiring.target().health, 80);
+}
+
+TEST_CASE("effects.card.finiteDecisionRuleProvidesImmunityWindow") {
+    eve::card::CardEffectAdapter card;
+
+    eve::card::CardEffectDefinition immunity;
+    immunity.id       = "card.fire-immunity";
+    immunity.duration = 2.0;
+    immunity.kind     = eve::card::CardEffectKind::Heal;
+    immunity.policy   = oncePolicy();
+    REQUIRE(immunity.payload
+                .setJson("settlement.rule",
+                         R"({"stage":"decision","operation":"immune","kinds":["damage"],"required_tags":["card:damage"]})")
+                .ok());
+    REQUIRE(card.apply(immunity, subject()).ok());
+
+    eve::card::CardEffectDefinition burn;
+    burn.id        = "card.burn.immunity-window";
+    burn.duration  = 3.0;
+    burn.period    = 1.0;
+    burn.magnitude = 20.0;
+    burn.policy    = oncePolicy();
+    REQUIRE(card.apply(burn, subject()).ok());
+
+    REQUIRE(card.advance(step(1, 1.0)).ok());
+    CHECK_EQ(card.target().health, 100);
+    REQUIRE(card.advance(step(2, 1.0)).ok());
+    CHECK_EQ(card.target().health, 80);
+}

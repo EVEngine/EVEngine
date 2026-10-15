@@ -37,6 +37,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import check_module_manifest as manifest  # noqa: E402
+import utf8_stdio  # noqa: E402
 
 
 PROFILES = (
@@ -83,7 +84,6 @@ CORE_SEEDS = {
         "schema",
         "social",
         "statepatch",
-        "steering",
         "tags",
         "transaction",
         "economy",
@@ -100,12 +100,27 @@ PHYSICS_CORE_SOURCES = (
     "physics/Body3D.cpp",
     "physics/Fixture.cpp",
     "physics/Joint3D.cpp",
+    "physics/box3d/Box3DJoint.cpp",
+    "physics/box3d/Box3DBody.cpp",
+    "physics/box3d/Box3DShape.cpp",
+    "physics/box3d/Box3DShapeCook.cpp",
+    "physics/box3d/Box3DWorld.cpp",
+    "physics/box3d/Box3DWorldJoints.cpp",
+    "physics/box3d/Box3DWorldQueries.cpp",
+    "physics/box3d/Box3DWorldMover.cpp",
+    "physics/box3d/Box3DWorldContacts.cpp",
     "physics/PhysicsHandles.cpp",
     "physics/PhysicsLink.cpp",
     "physics/Shape3D.cpp",
     "physics/backend/SimulationBackend.cpp",
     "physics/World.cpp",
     "physics/World3D.cpp",
+    "physics/World3DJoints.cpp",
+    "physics/World3DQueries.cpp",
+    "physics/World3DMover.cpp",
+    "physics/World3DContacts.cpp",
+    "physics/WorldSnapshot.cpp",
+    "physics/WorldSnapshotParsing.cpp",
 )
 
 
@@ -466,4 +481,5 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())

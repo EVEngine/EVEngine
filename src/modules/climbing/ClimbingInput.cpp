@@ -1,17 +1,23 @@
 #include "climbing/ClimbingInput.h"
-
 #include <algorithm>
+#include <charconv>
+#include <cmath>
 #include <limits>
+#include <string_view>
+#include <type_traits>
+#include <unordered_set>
 #include <utility>
+#include "animation/AnimConstraintStack.h"
+#include "animation/AnimPose.h"
+#include "animation/AnimSkeleton.h"
+#include "climbing/Climbing.h"
+#include "climbing/ClimbingCodec.h"
+#include "climbing/ClimbingPose.h"
+#include "physics/World3D.h"
 
+// ClimbingInput.cpp
 namespace eve::climbing {
 namespace {
-
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "climbing.input"));
-}
 
 bool commandLess(const BufferedClimbingCommand& lhs, const BufferedClimbingCommand& rhs) {
     if (lhs.pressedTick != rhs.pressedTick) return lhs.pressedTick < rhs.pressedTick;
@@ -23,16 +29,23 @@ bool commandLess(const BufferedClimbingCommand& lhs, const BufferedClimbingComma
 eve::Result<void> ClimbingInputSystem::submit(ClimbingIntent& intent, ClimbingCommand command,
                                               eve::SimulationTick pressedTick, std::uint64_t bufferTicks) {
     if (bufferTicks == 0)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "input buffer must contain at least one tick",
-                             "bufferTicks");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "input buffer must contain at least one tick",
+                                                                 "bufferTicks", {}, "climbing.input"));
     if (pressedTick.value() > std::numeric_limits<std::uint64_t>::max() - bufferTicks)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "input expiry tick would overflow", "pressedTick");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "input expiry tick would overflow", "pressedTick", {},
+                                                                 "climbing.input"));
     (void)prune(intent, pressedTick);
     if (std::any_of(intent.commands.begin(), intent.commands.end(),
                     [&](const auto& entry) { return entry.command == command && entry.pressedTick == pressedTick; }))
-        return failure<void>(eve::DiagnosticCode::Conflict, "duplicate edge command for the same tick", "command");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                                                 "duplicate edge command for the same tick", "command",
+                                                                 {}, "climbing.input"));
     if (intent.commands.size() >= MaxBufferedCommands)
-        return failure<void>(eve::DiagnosticCode::PreconditionViolation, "climbing input buffer is full", "commands");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                 "climbing input buffer is full", "commands", {},
+                                                                 "climbing.input"));
     intent.commands.push_back(
         {command, pressedTick, eve::SimulationTick(pressedTick.value() + bufferTicks), ClimbingExecutionId::zero()});
     std::stable_sort(intent.commands.begin(), intent.commands.end(), commandLess);
@@ -58,8 +71,9 @@ eve::Result<std::optional<BufferedClimbingCommand>> ClimbingInputSystem::consume
                                                                                  eve::SimulationTick currentTick,
                                                                                  ClimbingExecutionId executionId) {
     if (executionId.isZero())
-        return failure<std::optional<BufferedClimbingCommand>>(
-            eve::DiagnosticCode::InvalidArgument, "consuming execution id must be non-zero", "executionId");
+        return eve::Result<std::optional<BufferedClimbingCommand>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "consuming execution id must be non-zero",
+                                   "executionId", {}, "climbing.input"));
     (void)prune(intent, currentTick);
     const auto found = std::find_if(intent.commands.begin(), intent.commands.end(), [&](const auto& entry) {
         return entry.command == command && entry.pressedTick <= currentTick && currentTick <= entry.expiryTick &&
@@ -83,11 +97,520 @@ std::optional<BufferedClimbingCommand> ClimbingInputSystem::peek(const ClimbingI
 }
 
 ClimbingCoyoteState ClimbingInputSystem::coyoteWindowState(eve::SimulationTick currentTick,
-                                                            eve::SimulationTick lastGroundedTick,
-                                                            std::uint64_t coyoteTicks) noexcept {
+                                                           eve::SimulationTick lastGroundedTick,
+                                                           std::uint64_t       coyoteTicks) noexcept {
     if (currentTick < lastGroundedTick) return ClimbingCoyoteState::Outside;
     return currentTick.value() - lastGroundedTick.value() <= coyoteTicks ? ClimbingCoyoteState::Eligible
                                                                          : ClimbingCoyoteState::Outside;
+}
+
+}  // namespace eve::climbing
+
+// ClimbingPersistence.cpp
+namespace eve::climbing {
+
+eve::Result<void> ClimbingRuntime::reloadProfile(ClimbingProfile profile) {
+    return publishProfile(std::move(profile), true);
+}
+
+eve::Result<void> ClimbingRuntime::setProfileJson(std::string_view json) {
+    auto value = eve::Value::fromJson(json);
+    if (!value) return eve::Result<void>::failure(value.status());
+    auto profile = decodeClimbingProfileDefinition(value.value());
+    if (!profile) return eve::Result<void>::failure(profile.status());
+    return setProfile(std::move(profile).takeValue());
+}
+
+eve::Result<void> ClimbingRuntime::reloadProfileJson(std::string_view json) {
+    auto value = eve::Value::fromJson(json);
+    if (!value) return eve::Result<void>::failure(value.status());
+    auto profile = decodeClimbingProfileDefinition(value.value());
+    if (!profile) return eve::Result<void>::failure(profile.status());
+    return reloadProfile(std::move(profile).takeValue());
+}
+
+eve::Result<std::string> ClimbingRuntime::snapshotJson() const {
+    auto value = snapshot();
+    if (!value) return eve::Result<std::string>::failure(value.status());
+    return value.value().toJson();
+}
+
+eve::Result<void> ClimbingRuntime::restoreJson(std::string_view json, physics::World3D& world) {
+    auto value = eve::Value::fromJson(json);
+    if (!value) return eve::Result<void>::failure(value.status());
+    return restore(value.value(), world);
+}
+
+}  // namespace eve::climbing
+
+// ClimbingPose.cpp
+namespace eve::climbing {
+namespace {
+
+eve::Result<ClimbingPoseResult> poseFailure(std::string message, std::string path) {
+    return eve::Result<ClimbingPoseResult>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message, path, {}, "climbing"));
+}
+
+bool validChain(const ClimbingLimbChain& chain, int boneCount) {
+    return chain.root >= 0 && chain.mid >= 0 && chain.tip >= 0 && chain.root < boneCount && chain.mid < boneCount &&
+           chain.tip < boneCount;
+}
+
+Vec3 toModelSpace(Vec3 world, const ClimbingPoseBinding& binding) {
+    const float x      = world.x - binding.modelWorldOrigin.x;
+    const float y      = world.y - binding.modelWorldOrigin.y;
+    const float z      = world.z - binding.modelWorldOrigin.z;
+    const float cosine = std::cos(binding.modelYawRadians);
+    const float sine   = std::sin(binding.modelYawRadians);
+    return {cosine * x - sine * z, y, sine * x + cosine * z};
+}
+
+}  // namespace
+
+eve::Result<ClimbingPoseResult> applyClimbingPose(animation::AnimSkeleton& skeleton, animation::AnimPose& pose,
+                                                  const ClimbingAdvance& advance, const ClimbingPoseBinding& binding) {
+    if (!std::isfinite(binding.modelYawRadians))
+        return poseFailure("model yaw must be finite", "binding.modelYawRadians");
+    const int boneCount = skeleton.getBoneCount();
+    if (binding.enableLeftHand && !validChain(binding.leftArm, boneCount))
+        return poseFailure("left arm chain contains an invalid bone", "binding.leftArm");
+    if (binding.enableRightHand && !validChain(binding.rightArm, boneCount))
+        return poseFailure("right arm chain contains an invalid bone", "binding.rightArm");
+
+    ClimbingPoseResult result;
+    const float        legacyWeight      = std::clamp(advance.contactWeight, 0.f, 1.f);
+    const float        authoredLeft      = std::clamp(advance.leftHandWeight, 0.f, 1.f);
+    const float        authoredRight     = std::clamp(advance.rightHandWeight, 0.f, 1.f);
+    const bool         hasPerHandWeights = authoredLeft > 0.f || authoredRight > 0.f;
+    const float        leftWeight        = hasPerHandWeights ? authoredLeft : legacyWeight;
+    const float        rightWeight       = hasPerHandWeights ? authoredRight : legacyWeight;
+    result.weight                        = std::max(leftWeight, rightWeight);
+    if (result.weight <= 0.f)
+        return eve::Result<ClimbingPoseResult>::success(std::move(result), eve::Status::success(eve::StatusCode::NoOp));
+
+    animation::AnimConstraintStack constraints(&skeleton);
+    if (binding.enableLeftHand && leftWeight > 0.f) {
+        const Vec3 target = toModelSpace(advance.leftHandAnchor, binding);
+        constraints.addTwoBoneIK(binding.leftArm.root, binding.leftArm.mid, binding.leftArm.tip, target.x, target.y,
+                                 target.z, leftWeight);
+        result.leftHandApplied = true;
+    }
+    if (binding.enableRightHand && rightWeight > 0.f) {
+        const Vec3 target = toModelSpace(advance.rightHandAnchor, binding);
+        constraints.addTwoBoneIK(binding.rightArm.root, binding.rightArm.mid, binding.rightArm.tip, target.x, target.y,
+                                 target.z, rightWeight);
+        result.rightHandApplied = true;
+    }
+    constraints.apply(&pose);
+    return eve::Result<ClimbingPoseResult>::success(std::move(result), eve::Status::success(eve::StatusCode::Applied));
+}
+
+}  // namespace eve::climbing
+
+// ClimbingPrediction.cpp
+namespace eve::climbing {
+namespace {
+
+constexpr std::uint64_t fnvOffset = 14695981039346656037ull;
+constexpr std::uint64_t fnvPrime  = 1099511628211ull;
+
+void appendByte(std::uint64_t& hash, std::uint8_t value) noexcept {
+    hash ^= value;
+    hash *= fnvPrime;
+}
+
+template <class T>
+void appendInteger(std::uint64_t& hash, T value) noexcept {
+    using Unsigned      = std::make_unsigned_t<T>;
+    const Unsigned bits = static_cast<Unsigned>(value);
+    for (std::size_t index = 0; index < sizeof(T); ++index)
+        appendByte(hash, static_cast<std::uint8_t>((bits >> (index * 8)) & static_cast<Unsigned>(0xff)));
+}
+
+void appendString(std::uint64_t& hash, std::string_view value) noexcept {
+    appendInteger(hash, static_cast<std::uint64_t>(value.size()));
+    for (const unsigned char character : value) appendByte(hash, character);
+}
+
+std::int64_t quantize(float value) noexcept {
+    if (!std::isfinite(value)) return std::numeric_limits<std::int64_t>::min();
+    const double scaled = std::round(static_cast<double>(value) * 1000.0);
+    if (scaled <= static_cast<double>(std::numeric_limits<std::int64_t>::min()))
+        return std::numeric_limits<std::int64_t>::min();
+    if (scaled >= static_cast<double>(std::numeric_limits<std::int64_t>::max()))
+        return std::numeric_limits<std::int64_t>::max();
+    return static_cast<std::int64_t>(scaled);
+}
+
+void appendVec(std::uint64_t& hash, Vec3 value) noexcept {
+    appendInteger(hash, quantize(value.x));
+    appendInteger(hash, quantize(value.y));
+    appendInteger(hash, quantize(value.z));
+}
+
+const eve::Value* field(const eve::Value::Object& object, std::string_view name) {
+    const auto found = object.find(std::string(name));
+    return found == object.end() ? nullptr : &found->second;
+}
+
+bool readString(const eve::Value::Object& object, std::string_view name, std::string& output) {
+    const auto* value = field(object, name);
+    const auto* text  = value ? value->getIf<std::string>() : nullptr;
+    if (!text) return false;
+    output = *text;
+    return true;
+}
+
+bool parseUint64(std::string_view text, std::uint64_t& output, int base = 10) {
+    if (text.empty()) return false;
+    const char* first  = text.data();
+    const char* last   = first + text.size();
+    const auto  parsed = std::from_chars(first, last, output, base);
+    return parsed.ec == std::errc{} && parsed.ptr == last;
+}
+
+bool readUint64String(const eve::Value::Object& object, std::string_view name, std::uint64_t& output, int base = 10) {
+    std::string text;
+    return readString(object, name, text) && parseUint64(text, output, base);
+}
+
+bool readInt64(const eve::Value::Object& object, std::string_view name, std::int64_t& output) {
+    const auto* value   = field(object, name);
+    const auto* integer = value ? value->getIf<std::int64_t>() : nullptr;
+    if (!integer) return false;
+    output = *integer;
+    return true;
+}
+
+eve::Value::Object unknownFields(const eve::Value::Object& object, std::initializer_list<std::string_view> known) {
+    const std::unordered_set<std::string_view> names(known.begin(), known.end());
+    eve::Value::Object                         result;
+    for (const auto& [name, value] : object)
+        if (!names.contains(name)) result.emplace(name, value);
+    return result;
+}
+
+std::string_view dispositionName(ClimbingPredictionDisposition value) {
+    switch (value) {
+        case ClimbingPredictionDisposition::Accepted: return "accepted";
+        case ClimbingPredictionDisposition::Corrected: return "corrected";
+        case ClimbingPredictionDisposition::Rejected: return "rejected";
+    }
+    return "rejected";
+}
+
+bool readDisposition(std::string_view text, ClimbingPredictionDisposition& output) {
+    if (text == "accepted")
+        output = ClimbingPredictionDisposition::Accepted;
+    else if (text == "corrected")
+        output = ClimbingPredictionDisposition::Corrected;
+    else if (text == "rejected")
+        output = ClimbingPredictionDisposition::Rejected;
+    else
+        return false;
+    return true;
+}
+
+std::string_view reasonName(ClimbingPredictionReason value) {
+    switch (value) {
+        case ClimbingPredictionReason::None: return "none";
+        case ClimbingPredictionReason::CandidateMismatch: return "candidate_mismatch";
+        case ClimbingPredictionReason::NoCandidate: return "no_candidate";
+        case ClimbingPredictionReason::TickTooFarAhead: return "tick_too_far_ahead";
+        case ClimbingPredictionReason::RuntimeBusy: return "runtime_busy";
+        case ClimbingPredictionReason::InvalidRequest: return "invalid_request";
+    }
+    return "invalid_request";
+}
+
+bool readReason(std::string_view text, ClimbingPredictionReason& output) {
+    if (text == "none")
+        output = ClimbingPredictionReason::None;
+    else if (text == "candidate_mismatch")
+        output = ClimbingPredictionReason::CandidateMismatch;
+    else if (text == "no_candidate")
+        output = ClimbingPredictionReason::NoCandidate;
+    else if (text == "tick_too_far_ahead")
+        output = ClimbingPredictionReason::TickTooFarAhead;
+    else if (text == "runtime_busy")
+        output = ClimbingPredictionReason::RuntimeBusy;
+    else if (text == "invalid_request")
+        output = ClimbingPredictionReason::InvalidRequest;
+    else
+        return false;
+    return true;
+}
+
+eve::Value encodeKey(const ClimbingCandidateKey& key) {
+    return eve::Value::object({
+        {"actionId", key.actionId},
+        {"kind", static_cast<std::int64_t>(key.kind)},
+        {"definitionGeneration", std::to_string(key.definitionGeneration)},
+        {"sortedRank", static_cast<std::int64_t>(key.sortedRank)},
+        {"fingerprintHex",
+         [&key] {
+             char       buffer[17]{};
+             const auto converted = std::to_chars(buffer, buffer + 16, key.fingerprint, 16);
+             return std::string(buffer, converted.ptr);
+         }()},
+    });
+}
+
+bool decodeKey(const eve::Value& value, ClimbingCandidateKey& key) {
+    const auto*  object = value.getIf<eve::Value::Object>();
+    std::int64_t kind   = 0;
+    std::int64_t rank   = 0;
+    if (!object || !readString(*object, "actionId", key.actionId) || !readInt64(*object, "kind", kind) || kind < 0 ||
+        kind > static_cast<std::int64_t>(ClimbingActionKind::BarSwing) ||
+        !readUint64String(*object, "definitionGeneration", key.definitionGeneration) ||
+        !readInt64(*object, "sortedRank", rank) || rank < 0 || rank > std::numeric_limits<std::uint32_t>::max() ||
+        !readUint64String(*object, "fingerprintHex", key.fingerprint, 16))
+        return false;
+    key.kind       = static_cast<ClimbingActionKind>(kind);
+    key.sortedRank = static_cast<std::uint32_t>(rank);
+    return true;
+}
+
+bool validKey(const ClimbingCandidateKey& key) {
+    return !key.actionId.empty() && key.definitionGeneration != 0 && key.fingerprint != 0;
+}
+
+eve::Result<void> validateSnapshotEnvelope(const eve::Value& value) {
+    const auto*  object = value.getIf<eve::Value::Object>();
+    std::string  schemaId;
+    std::int64_t schemaVersion = -1;
+    if (!object || !readString(*object, "schemaId", schemaId) || schemaId != ClimbingRuntime::SnapshotSchemaId ||
+        !readInt64(*object, "schemaVersion", schemaVersion) || schemaVersion < 0)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "authoritative snapshot has an invalid climbing runtime envelope",
+            "authoritativeSnapshot", {}, "climbing.prediction"));
+    if (schemaVersion > ClimbingRuntime::SnapshotSchemaVersion)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::UnknownVersion, "authoritative snapshot version is newer than this runtime",
+            "authoritativeSnapshot.schemaVersion", {}, "climbing.prediction"));
+    return eve::Result<void>::success();
+}
+
+bool consistentDecision(const ClimbingPredictionDecision& decision) {
+    if (decision.sequence.isZero()) return false;
+    if (decision.disposition == ClimbingPredictionDisposition::Accepted)
+        return validKey(decision.authoritativeCandidate) && decision.reason == ClimbingPredictionReason::None;
+    if (decision.reason == ClimbingPredictionReason::None) return false;
+    return decision.disposition != ClimbingPredictionDisposition::Corrected ||
+           validKey(decision.authoritativeCandidate);
+}
+
+eve::Result<eve::Value::Object> readEnvelope(const eve::Value& value, std::string_view schemaId) {
+    const auto* object = value.getIf<eve::Value::Object>();
+    if (!object)
+        return eve::Result<eve::Value::Object>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "prediction payload must be an object", {}, {}, "climbing.prediction"));
+    std::string  actualSchema;
+    std::int64_t version = 0;
+    if (!readString(*object, "schemaId", actualSchema) || actualSchema != schemaId)
+        return eve::Result<eve::Value::Object>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "prediction schemaId is missing or mismatched",
+                                   "schemaId", {}, "climbing.prediction"));
+    if (!readInt64(*object, "schemaVersion", version))
+        return eve::Result<eve::Value::Object>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "prediction schemaVersion must be an integer",
+                                   "schemaVersion", {}, "climbing.prediction"));
+    if (version != 1)
+        return eve::Result<eve::Value::Object>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::UnknownVersion, "prediction schema version is unsupported",
+                                   "schemaVersion", {}, "climbing.prediction"));
+    return eve::Result<eve::Value::Object>::success(*object);
+}
+
+bool activePhase(ClimbingPhase phase) {
+    return phase != ClimbingPhase::Idle && phase != ClimbingPhase::Completed && phase != ClimbingPhase::Cancelled &&
+           phase != ClimbingPhase::Failed;
+}
+
+}  // namespace
+
+ClimbingCandidateKey makeClimbingCandidateKey(const ClimbingCandidate& candidate, std::uint32_t sortedRank) noexcept {
+    std::uint64_t hash = fnvOffset;
+    appendString(hash, candidate.actionId);
+    appendInteger(hash, static_cast<std::uint8_t>(candidate.kind));
+    appendInteger(hash, candidate.definitionGeneration);
+    appendInteger(hash, sortedRank);
+    appendInteger(hash, candidate.obstacleBodyId);
+    appendInteger(hash, candidate.obstacleShapeId);
+    appendVec(hash, candidate.frontPoint);
+    appendVec(hash, candidate.bodyLocalTop);
+    appendVec(hash, candidate.bodyLocalLanding);
+    appendVec(hash, candidate.surfaceNormal);
+    appendVec(hash, candidate.surfaceTangent);
+    appendInteger(hash, quantize(candidate.obstacleHeight));
+    appendInteger(hash, quantize(candidate.obstacleDepth));
+    appendInteger(hash, quantize(candidate.gapDistance));
+    appendInteger(hash, quantize(candidate.clearanceHeight));
+    appendInteger(hash, quantize(candidate.slopeRadians));
+    appendInteger(hash, quantize(candidate.curvature));
+    appendInteger(hash, candidate.supportShapeTag);
+    appendInteger(hash, candidate.supportMaterialId);
+    appendInteger(hash, static_cast<std::uint8_t>(candidate.probeRecipe));
+    appendInteger(hash, candidate.score);
+    appendInteger(hash, static_cast<std::uint8_t>(candidate.support));
+    if (hash == 0) hash = 1;
+    return {candidate.actionId, candidate.kind, candidate.definitionGeneration, sortedRank, hash};
+}
+
+eve::Result<eve::Value> encodeClimbingPredictionRequest(const ClimbingPredictionRequest& request) {
+    if (request.sequence.isZero() || !validKey(request.candidate))
+        return eve::Result<eve::Value>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "prediction request requires a non-zero sequence and candidate key",
+            "request", {}, "climbing.prediction"));
+    eve::Value::Object object = request.extensionMetadata;
+    object["schemaId"]        = eve::Value(std::string(ClimbingPredictionRequest::SchemaId));
+    object["schemaVersion"]   = eve::Value(ClimbingPredictionRequest::SchemaVersion);
+    object["sequence"]        = eve::Value(std::to_string(request.sequence.value()));
+    object["clientTick"]      = eve::Value(std::to_string(request.clientTick.value()));
+    object["candidate"]       = encodeKey(request.candidate);
+    return eve::Result<eve::Value>::success(eve::Value(std::move(object)));
+}
+
+eve::Result<ClimbingPredictionRequest> decodeClimbingPredictionRequest(const eve::Value& value) {
+    auto root = readEnvelope(value, ClimbingPredictionRequest::SchemaId);
+    if (!root) return eve::Result<ClimbingPredictionRequest>::failure(root.status());
+    std::uint64_t             sequence   = 0;
+    std::uint64_t             clientTick = 0;
+    ClimbingPredictionRequest request;
+    const eve::Value*         candidate = field(root.value(), "candidate");
+    if (!readUint64String(root.value(), "sequence", sequence) || sequence == 0 ||
+        !readUint64String(root.value(), "clientTick", clientTick) || !candidate ||
+        !decodeKey(*candidate, request.candidate) || !validKey(request.candidate))
+        return eve::Result<ClimbingPredictionRequest>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "prediction request has missing or invalid fields",
+                                   "request", {}, "climbing.prediction"));
+    request.sequence   = ClimbingPredictionSequence(sequence);
+    request.clientTick = eve::SimulationTick(clientTick);
+    request.extensionMetadata =
+        unknownFields(root.value(), {"schemaId", "schemaVersion", "sequence", "clientTick", "candidate"});
+    return eve::Result<ClimbingPredictionRequest>::success(std::move(request));
+}
+
+eve::Result<eve::Value> encodeClimbingPredictionDecision(const ClimbingPredictionDecision& decision) {
+    if (!consistentDecision(decision))
+        return eve::Result<eve::Value>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                       "prediction decision fields are inconsistent",
+                                                                       "decision", {}, "climbing.prediction"));
+    auto snapshotEnvelope = validateSnapshotEnvelope(decision.authoritativeSnapshot);
+    if (!snapshotEnvelope) return eve::Result<eve::Value>::failure(snapshotEnvelope.status());
+    eve::Value::Object object        = decision.extensionMetadata;
+    object["schemaId"]               = eve::Value(std::string(ClimbingPredictionDecision::SchemaId));
+    object["schemaVersion"]          = eve::Value(ClimbingPredictionDecision::SchemaVersion);
+    object["sequence"]               = eve::Value(std::to_string(decision.sequence.value()));
+    object["clientTick"]             = eve::Value(std::to_string(decision.clientTick.value()));
+    object["serverTick"]             = eve::Value(std::to_string(decision.serverTick.value()));
+    object["disposition"]            = eve::Value(std::string(dispositionName(decision.disposition)));
+    object["reason"]                 = eve::Value(std::string(reasonName(decision.reason)));
+    object["authoritativeCandidate"] = encodeKey(decision.authoritativeCandidate);
+    object["authoritativeSnapshot"]  = decision.authoritativeSnapshot;
+    return eve::Result<eve::Value>::success(eve::Value(std::move(object)));
+}
+
+eve::Result<ClimbingPredictionDecision> decodeClimbingPredictionDecision(const eve::Value& value) {
+    auto root = readEnvelope(value, ClimbingPredictionDecision::SchemaId);
+    if (!root) return eve::Result<ClimbingPredictionDecision>::failure(root.status());
+    std::uint64_t              sequence   = 0;
+    std::uint64_t              clientTick = 0;
+    std::uint64_t              serverTick = 0;
+    std::string                disposition;
+    std::string                reason;
+    ClimbingPredictionDecision decision;
+    const eve::Value*          key      = field(root.value(), "authoritativeCandidate");
+    const eve::Value*          snapshot = field(root.value(), "authoritativeSnapshot");
+    if (!readUint64String(root.value(), "sequence", sequence) || sequence == 0 ||
+        !readUint64String(root.value(), "clientTick", clientTick) ||
+        !readUint64String(root.value(), "serverTick", serverTick) ||
+        !readString(root.value(), "disposition", disposition) || !readDisposition(disposition, decision.disposition) ||
+        !readString(root.value(), "reason", reason) || !readReason(reason, decision.reason) || !key ||
+        !decodeKey(*key, decision.authoritativeCandidate) || !snapshot)
+        return eve::Result<ClimbingPredictionDecision>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "prediction decision has missing or invalid fields",
+                                   "decision", {}, "climbing.prediction"));
+    decision.sequence   = ClimbingPredictionSequence(sequence);
+    decision.clientTick = eve::SimulationTick(clientTick);
+    decision.serverTick = eve::SimulationTick(serverTick);
+    if (!consistentDecision(decision))
+        return eve::Result<ClimbingPredictionDecision>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "prediction decision fields are inconsistent",
+                                   "decision", {}, "climbing.prediction"));
+    decision.authoritativeSnapshot = *snapshot;
+    auto snapshotEnvelope          = validateSnapshotEnvelope(decision.authoritativeSnapshot);
+    if (!snapshotEnvelope) return eve::Result<ClimbingPredictionDecision>::failure(snapshotEnvelope.status());
+    decision.extensionMetadata =
+        unknownFields(root.value(), {"schemaId", "schemaVersion", "sequence", "clientTick", "serverTick", "disposition",
+                                     "reason", "authoritativeCandidate", "authoritativeSnapshot"});
+    return eve::Result<ClimbingPredictionDecision>::success(std::move(decision));
+}
+
+eve::Result<ClimbingPredictionDecision> ClimbingRuntime::tryBeginPredicted(physics::World3D&                world,
+                                                                           const ClimbingPose&              pose,
+                                                                           const ClimbingPredictionRequest& request,
+                                                                           eve::SimulationTick              serverTick,
+                                                                           std::uint64_t maxClientTickLead) {
+    ClimbingPredictionDecision decision;
+    decision.sequence   = request.sequence;
+    decision.clientTick = request.clientTick;
+    decision.serverTick = serverTick;
+    const auto finish   = [this](ClimbingPredictionDecision value) -> eve::Result<ClimbingPredictionDecision> {
+        auto state = snapshot();
+        if (!state) return eve::Result<ClimbingPredictionDecision>::failure(state.status());
+        value.authoritativeSnapshot = std::move(state).takeValue();
+        return eve::Result<ClimbingPredictionDecision>::success(std::move(value));
+    };
+
+    if (request.sequence.isZero() || !validKey(request.candidate)) {
+        decision.disposition = ClimbingPredictionDisposition::Rejected;
+        decision.reason      = ClimbingPredictionReason::InvalidRequest;
+        return finish(std::move(decision));
+    }
+    if (request.clientTick > serverTick && request.clientTick.value() - serverTick.value() > maxClientTickLead) {
+        decision.disposition = ClimbingPredictionDisposition::Rejected;
+        decision.reason      = ClimbingPredictionReason::TickTooFarAhead;
+        return finish(std::move(decision));
+    }
+    if (activePhase(phase_)) {
+        decision.disposition = ClimbingPredictionDisposition::Rejected;
+        decision.reason      = ClimbingPredictionReason::RuntimeBusy;
+        return finish(std::move(decision));
+    }
+
+    auto candidates = probe(world, pose);
+    if (!candidates) return eve::Result<ClimbingPredictionDecision>::failure(candidates.status());
+    if (candidates.value().empty()) {
+        decision.disposition = ClimbingPredictionDisposition::Rejected;
+        decision.reason      = ClimbingPredictionReason::NoCandidate;
+        return finish(std::move(decision));
+    }
+    decision.authoritativeCandidate = makeClimbingCandidateKey(candidates.value().front(), 0);
+    std::size_t match               = candidates.value().size();
+    for (std::size_t index = 0; index < candidates.value().size(); ++index) {
+        if (index > std::numeric_limits<std::uint32_t>::max()) break;
+        if (makeClimbingCandidateKey(candidates.value()[index], static_cast<std::uint32_t>(index)) ==
+            request.candidate) {
+            match = index;
+            break;
+        }
+    }
+    if (match == candidates.value().size()) {
+        decision.disposition = ClimbingPredictionDisposition::Corrected;
+        decision.reason      = ClimbingPredictionReason::CandidateMismatch;
+        return finish(std::move(decision));
+    }
+
+    decision.authoritativeCandidate = request.candidate;
+    auto prepared                   = prepareBeginCandidate(world, pose, serverTick, candidates.value()[match]);
+    if (!prepared) return eve::Result<ClimbingPredictionDecision>::failure(prepared.status());
+    auto committed = commitBegin(std::move(prepared).takeValue());
+    if (!committed) return eve::Result<ClimbingPredictionDecision>::failure(committed.status());
+    decision.disposition = ClimbingPredictionDisposition::Accepted;
+    decision.reason      = ClimbingPredictionReason::None;
+    return finish(std::move(decision));
 }
 
 }  // namespace eve::climbing

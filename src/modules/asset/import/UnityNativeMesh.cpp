@@ -46,23 +46,27 @@ void put(std::vector<std::uint8_t>& data, std::uint32_t value) {
 Result<PreparedAssetImport> prepareUnityNativeMesh(const UnityProjectImportRequest& request,
                                                    const UnitySourceAsset&          source) {
     const auto&       bytes = request.files.at(source.path);
-    const std::string text(bytes.begin(), bytes.end());
+    std::string       text(bytes.begin(), bytes.end());
+    std::erase(text, '\r');
     if (text.find("\nMesh:") == std::string::npos && text.find("\nMesh:\r") == std::string::npos)
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::Unsupported, "native asset is not a text Mesh",
-                                                    source.path);
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "native asset is not a text Mesh", source.path, {}, "asset.import"));
     try {
         const auto id = capture(text, R"(--- !u!43 &(-?[0-9]+))");
-        if (number(text, "serializedVersion") != 9 || number(text, "m_MeshCompression") != 0 ||
+        const auto version = number(text, "serializedVersion");
+        if ((version != 9 && version != 11) || number(text, "m_MeshCompression") != 0 ||
             text.find("m_BindPose: []") == std::string::npos)
-            return detail::failure<PreparedAssetImport>(DiagnosticCode::Unsupported,
-                                                        "requires uncompressed static Mesh version 9", source.path);
+            return Result<PreparedAssetImport>::failure(
+                Diagnostic::error(DiagnosticCode::Unsupported, "requires uncompressed static Mesh version 9 or 11",
+                                  source.path, {}, "asset.import"));
         const auto shapes = text.find("m_Shapes:");
         if (shapes != std::string::npos) {
             const auto end     = text.find("m_BindPose:", shapes);
             const auto section = text.substr(shapes, end - shapes);
             if (section.find("vertices: []") == std::string::npos || section.find("shapes: []") == std::string::npos)
-                return detail::failure<PreparedAssetImport>(
-                    DiagnosticCode::Unsupported, "Mesh blend shapes require animation conversion", source.path);
+                return Result<PreparedAssetImport>::failure(
+                    Diagnostic::error(DiagnosticCode::Unsupported, "Mesh blend shapes require animation conversion",
+                                      source.path, {}, "asset.import"));
         }
         const auto count = number(text, "m_VertexCount");
         if (!count || count > request.limits.maximumVerticesPerPrimitive)
@@ -77,14 +81,25 @@ Result<PreparedAssetImport> prepareUnityNativeMesh(const UnityProjectImportReque
         for (std::sregex_iterator it(text.begin(), text.end(), channel), end; it != end; ++it) {
             Channel c{std::stoull((*it)[1]), std::stoull((*it)[2]), std::stoull((*it)[3]), std::stoull((*it)[4])};
             if (c.dimension && (c.stream != 0 || c.format != 0 || c.dimension > 4 || c.offset > 256))
-                return detail::failure<PreparedAssetImport>(
-                    DiagnosticCode::Unsupported, "Mesh requires interleaved float32 vertex channels", source.path);
+                return Result<PreparedAssetImport>::failure(
+                    Diagnostic::error(DiagnosticCode::Unsupported, "Mesh requires interleaved float32 vertex channels",
+                                      source.path, {}, "asset.import"));
             if (c.dimension) stride = std::max(stride, c.offset + c.dimension * 4);
             channels.push_back(c);
         }
         if (channels.size() != 14 || channels[0].dimension != 3 || channels[1].dimension != 3 ||
-            channels[4].dimension != 2 || !stride)
+            channels[4].dimension < 2 || !stride)
             throw std::runtime_error("Mesh position, normal or UV0 channel missing");
+        if (channels[12].dimension || channels[13].dimension)
+            return Result<PreparedAssetImport>::failure(
+                Diagnostic::error(DiagnosticCode::Unsupported, "Mesh skin channels require animation conversion",
+                                  source.path, {}, "asset.import"));
+        for (size_t a = 0; a < channels.size(); ++a)
+            for (size_t b = a + 1; b < channels.size(); ++b)
+                if (channels[a].dimension && channels[b].dimension &&
+                    channels[a].offset < channels[b].offset + channels[b].dimension * 4 &&
+                    channels[b].offset < channels[a].offset + channels[a].dimension * 4)
+                    throw std::runtime_error("overlapping Mesh channels");
         auto vertices = hex(capture(text, R"(_typelessdata: ([0-9a-fA-F]*))"), request.limits.maximumDecodedBytes);
         if (vertices.size() != number(text, "m_DataSize") || vertices.size() != stride * count)
             throw std::runtime_error("Mesh vertex buffer size mismatch");
@@ -95,8 +110,8 @@ Result<PreparedAssetImport> prepareUnityNativeMesh(const UnityProjectImportReque
         if (indices.size() % indexSize || indices.size() / indexSize > request.limits.maximumIndicesPerPrimitive)
             throw std::runtime_error("Mesh index budget exceeded");
         if (number(text, "size") != 0)
-            return detail::failure<PreparedAssetImport>(DiagnosticCode::Unsupported, "external Mesh stream unsupported",
-                                                        source.path);
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                DiagnosticCode::Unsupported, "external Mesh stream unsupported", source.path, {}, "asset.import"));
         std::vector<std::uint8_t> buffer;
         Value::Array              views, accessors, primitives;
         auto                      view = [&](std::size_t start, std::uint64_t n, const char* type, int component) {
@@ -110,19 +125,36 @@ Result<PreparedAssetImport> prepareUnityNativeMesh(const UnityProjectImportReque
                                                                       {"type", Value(type)}});
             return index;
         };
-        for (unsigned c : {0u, 1u, 4u}) {
+        Value::Object attributes;
+        auto          emit = [&](unsigned c, unsigned dimension, const std::string& semantic, bool raw) {
             const auto start = buffer.size();
             for (std::uint64_t i = 0; i < count; ++i)
-                for (unsigned j = 0; j < channels[c].dimension; ++j) {
+                for (unsigned j = 0; j < dimension; ++j) {
                     float value =
                         std::bit_cast<float>(read(vertices, std::size_t(i * stride + channels[c].offset + j * 4), 4));
                     if (!std::isfinite(value)) throw std::runtime_error("nonfinite Mesh vertex");
-                    if (c != 4 && j == 2) value = -value;
-                    if (c == 4 && j == 1) value = 1.f - value;
+                    if (!raw && c <= 2 && j == 2) value = -value;
+                    if (!raw && c == 2 && j == 3) value = -value;
+                    if (!raw && c >= 4 && j == 1) value = 1.f - value;
                     put(buffer, std::bit_cast<std::uint32_t>(value));
                 }
-            view(start, count, c == 4 ? "VEC2" : "VEC3", 5126);
+            const char* types[] = {"SCALAR", "SCALAR", "VEC2", "VEC3", "VEC4"};
+            attributes.emplace(semantic, Value(view(start, count, types[dimension], 5126)));
+        };
+        emit(0, 3, "POSITION", false);
+        emit(1, 3, "NORMAL", false);
+        if (channels[2].dimension) {
+            if (channels[2].dimension != 4) throw std::runtime_error("Mesh tangent must have four components");
+            emit(2, 4, "TANGENT", false);
         }
+        if (channels[3].dimension) emit(3, unsigned(channels[3].dimension), "COLOR_0", true);
+        for (unsigned c = 4; c < 12; ++c) {
+            if (!channels[c].dimension) continue;
+            if (channels[c].dimension >= 2) emit(c, 2, "TEXCOORD_" + std::to_string(c - 4), false);
+            // Authoring coordinates retain all source bits, including packed masks and pivot axes.
+            emit(c, unsigned(channels[c].dimension), "_UNITY_UV" + std::to_string(c - 4), true);
+        }
+        const auto       canonicalVertexBytes = buffer.size();
         const std::regex sub(
             R"(    firstByte: ([0-9]+)\r?\n    indexCount: ([0-9]+)\r?\n    topology: ([0-9]+)\r?\n    baseVertex: ([0-9]+))");
         std::uint64_t            consumed = 0;
@@ -132,8 +164,8 @@ Result<PreparedAssetImport> prepareUnityNativeMesh(const UnityProjectImportReque
             const auto first = std::stoull((*it)[1]), n = std::stoull((*it)[2]), topology = std::stoull((*it)[3]),
                        base = std::stoull((*it)[4]);
             if (topology != 0)
-                return detail::failure<PreparedAssetImport>(DiagnosticCode::Unsupported, "non-triangle Mesh topology",
-                                                            source.path);
+                return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                    DiagnosticCode::Unsupported, "non-triangle Mesh topology", source.path, {}, "asset.import"));
             if (n % 3 || first != consumed || first > indices.size() || n > (indices.size() - first) / indexSize ||
                 primitives.size() >= request.limits.maximumAssets)
                 throw std::runtime_error("invalid Mesh submesh range");
@@ -149,16 +181,12 @@ Result<PreparedAssetImport> prepareUnityNativeMesh(const UnityProjectImportReque
                     put(buffer, std::uint32_t(value));
                 }
             const auto accessor = view(start, n, "SCALAR", 5125);
-            primitives.emplace_back(
-                Value::Object{{"attributes", Value(Value::Object{{"POSITION", Value(std::int64_t(0))},
-                                                                 {"NORMAL", Value(std::int64_t(1))},
-                                                                 {"TEXCOORD_0", Value(std::int64_t(2))}})},
-                              {"indices", Value(accessor)}});
+            primitives.emplace_back(Value::Object{{"attributes", Value(attributes)}, {"indices", Value(accessor)}});
             consumed = first + n * indexSize;
         }
         if (primitives.empty() || consumed != indices.size() || buffer.size() > request.limits.maximumDecodedBytes)
             throw std::runtime_error("Mesh submesh coverage or output budget invalid");
-        if (count * 32 * slots.size() + indices.size() * 2 > request.limits.maximumDecodedBytes)
+        if (canonicalVertexBytes * slots.size() + indices.size() * 2 > request.limits.maximumDecodedBytes)
             throw std::runtime_error("aggregate canonical submesh byte budget exceeded");
         Value document(Value::Object{
             {"asset", Value(Value::Object{{"version", Value("2.0")}})},
@@ -213,13 +241,15 @@ Result<PreparedAssetImport> prepareUnityNativeMesh(const UnityProjectImportReque
         }
         std::erase_if(result.value().entries, [](const auto& entry) { return entry.path == "reports/import.json"; });
         result.value().findings.push_back(
-            {source.path, "Mesh.extraChannels", ImportDisposition::Unsupported,
-             "tangent, vertex color and secondary UV source channels are preserved but not applied"});
-        auto report = detail::finalizeImportReport(result.value(), identity, "unity", "mesh-v9");
+            {source.path, "Mesh.authoringChannels", ImportDisposition::Translated,
+             "float tangent, color and complete source UV channels retained in canonical mesh attributes"});
+        auto report =
+            detail::finalizeImportReport(result.value(), identity, "unity", "mesh-v" + std::to_string(version));
         if (!report) return Result<PreparedAssetImport>::failure(report.status());
         return result;
     } catch (const std::exception& e) {
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError, e.what(), source.path);
+        return Result<PreparedAssetImport>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, e.what(), source.path, {}, "asset.import"));
     }
 }
 }  // namespace eve::asset_import

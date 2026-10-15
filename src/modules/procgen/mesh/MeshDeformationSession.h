@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "procgen/MeshBuild.h"
@@ -20,7 +22,7 @@ struct MeshVertexSelectionCenter {
  * The session owns original, current, and bounded undo mesh snapshots. Calls are synchronous,
  * graph-owning-thread only, and never retain caller memory. Failed edits preserve current state.
  */
-class MeshDeformationSession {
+class EVENGINE_API_DOMAINS MeshDeformationSession {
 public:
     /** @brief Replace the session with an owning copy of a valid source mesh. */
     [[nodiscard]] Result<void> initializeResult(const MeshBuild& mesh);

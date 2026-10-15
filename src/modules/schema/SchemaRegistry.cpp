@@ -39,11 +39,6 @@ std::map<MigrationKey, MigrationStep>& migrationSteps() {
     return value;
 }
 
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 void addError(std::vector<ValidationError>& out, std::string path, std::string code, std::string message) {
     out.push_back({std::move(path), std::move(code), std::move(message)});
 }
@@ -838,12 +833,12 @@ static eve::Result<SchemaRegistrationStatus> registrationResult(SchemaRegistrati
                                                                 std::string path = {}) {
     if (status == SchemaRegistrationStatus::Conflict)
         return eve::Result<SchemaRegistrationStatus>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Conflict, error.empty() ? "schema version is already registered" : std::move(error),
-            std::move(path), {}, "schema"));
+            eve::DiagnosticCode::Conflict, error.empty() ? "schema version is already registered" : error,
+            path, {}, "schema"));
     if (status == SchemaRegistrationStatus::Invalid)
         return eve::Result<SchemaRegistrationStatus>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, error.empty() ? "invalid schema definition" : std::move(error),
-            std::move(path), {}, "schema"));
+            eve::DiagnosticCode::InvalidArgument, error.empty() ? "invalid schema definition" : error,
+            path, {}, "schema"));
     return eve::Result<SchemaRegistrationStatus>::success(status, eve::Status::success(eve::StatusCode::Applied));
 }
 
@@ -877,7 +872,7 @@ eve::Result<SchemaRegistrationStatus> SchemaRegistry::registerFromJsonVersioned(
     if (!parseDefinition(json, definition, &error))
         return eve::Result<SchemaRegistrationStatus>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
-                                   error.empty() ? "invalid schema JSON" : std::move(error), {}, {}, "schema"));
+                                   error.empty() ? "invalid schema JSON" : error, {}, {}, "schema"));
     return registerVersioned(definition);
 }
 
@@ -992,28 +987,33 @@ std::vector<ValidationError> SchemaRegistry::validate(const std::string& schemaI
 eve::Result<void> SchemaRegistry::registerMigration(const std::string& schemaId, int fromVersion, int toVersion,
                                                     MigrationFunction migration) {
     if (schemaId.empty() || fromVersion <= 0 || toVersion <= 0 || !migration)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "migration id, versions, and function are required");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "migration id, versions, and function are required", {}));
     if (fromVersion == toVersion)
-        return failure<void>(eve::DiagnosticCode::Conflict, "a self migration edge is a cycle", "schemaVersion");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "a self migration edge is a cycle", "schemaVersion"));
     if (fromVersion > toVersion)
-        return failure<void>(eve::DiagnosticCode::Unsupported, "schema downgrade migrations are not supported",
-                             "schemaVersion");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "schema downgrade migrations are not supported", "schemaVersion"));
 
     const MigrationKey key{schemaId, fromVersion};
     if (migrationSteps().contains(key))
-        return failure<void>(eve::DiagnosticCode::Conflict, "a migration edge already exists", "schemaVersion");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "a migration edge already exists", "schemaVersion"));
     if (migrationReaches(schemaId, toVersion, fromVersion))
-        return failure<void>(eve::DiagnosticCode::Conflict, "migration edge would create a cycle", "schemaVersion");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "migration edge would create a cycle", "schemaVersion"));
 
     try {
         auto candidate = migrationSteps();
         candidate.emplace(key, MigrationStep{toVersion, std::move(migration)});
         migrationSteps().swap(candidate);
     } catch (const std::exception& exception) {
-        return failure<void>(eve::DiagnosticCode::Failed,
-                             std::string("migration registration failed: ") + exception.what());
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, std::string("migration registration failed: ") + exception.what(), {}));
     } catch (...) {
-        return failure<void>(eve::DiagnosticCode::Failed, "migration registration failed");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "migration registration failed", {}));
     }
     return eve::Result<void>::success();
 }
@@ -1021,14 +1021,14 @@ eve::Result<void> SchemaRegistry::registerMigration(const std::string& schemaId,
 eve::Result<SchemaCompatibility> SchemaRegistry::queryCompatibility(const std::string& schemaId, int fromVersion,
                                                                     int toVersion) {
     if (schemaId.empty() || fromVersion <= 0 || toVersion <= 0)
-        return failure<SchemaCompatibility>(eve::DiagnosticCode::InvalidArgument,
-                                            "schema id and versions must be positive", "schemaVersion");
+        return eve::Result<SchemaCompatibility>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "schema id and versions must be positive", "schemaVersion"));
     if (!resolve(schemaId, fromVersion) || !resolve(schemaId, toVersion))
-        return failure<SchemaCompatibility>(eve::DiagnosticCode::UnknownVersion,
-                                            "source or target schema version is not registered", "schemaVersion");
+        return eve::Result<SchemaCompatibility>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::UnknownVersion, "source or target schema version is not registered", "schemaVersion"));
     if (fromVersion > toVersion)
-        return failure<SchemaCompatibility>(eve::DiagnosticCode::Unsupported,
-                                            "schema downgrade compatibility is not supported", "schemaVersion");
+        return eve::Result<SchemaCompatibility>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "schema downgrade compatibility is not supported", "schemaVersion"));
 
     SchemaCompatibility result;
     result.schemaId    = schemaId;
@@ -1041,26 +1041,26 @@ eve::Result<SchemaCompatibility> SchemaRegistry::queryCompatibility(const std::s
     int           current = fromVersion;
     while (current != toVersion) {
         if (current > toVersion)
-            return failure<SchemaCompatibility>(eve::DiagnosticCode::Unsupported,
-                                                "migration chain would downgrade the payload", "schemaVersion");
+            return eve::Result<SchemaCompatibility>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Unsupported, "migration chain would downgrade the payload", "schemaVersion"));
         if (!visited.insert(current).second)
-            return failure<SchemaCompatibility>(eve::DiagnosticCode::Conflict, "migration chain contains a cycle",
-                                                "schemaVersion");
+            return eve::Result<SchemaCompatibility>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "migration chain contains a cycle", "schemaVersion"));
         const auto it = migrationSteps().find(MigrationKey{schemaId, current});
         if (it == migrationSteps().end())
-            return failure<SchemaCompatibility>(eve::DiagnosticCode::Unsupported,
-                                                "migration chain is missing an explicit edge", "schemaVersion");
+            return eve::Result<SchemaCompatibility>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Unsupported, "migration chain is missing an explicit edge", "schemaVersion"));
         if (it->second.toVersion <= current)
-            return failure<SchemaCompatibility>(eve::DiagnosticCode::Conflict,
-                                                "migration chain contains a non-forward edge", "schemaVersion");
+            return eve::Result<SchemaCompatibility>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "migration chain contains a non-forward edge", "schemaVersion"));
         if (it->second.toVersion > toVersion)
-            return failure<SchemaCompatibility>(eve::DiagnosticCode::Unsupported,
-                                                "migration edge overshoots the requested target", "schemaVersion");
+            return eve::Result<SchemaCompatibility>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Unsupported, "migration edge overshoots the requested target", "schemaVersion"));
         current = it->second.toVersion;
         if (!resolve(schemaId, current))
-            return failure<SchemaCompatibility>(eve::DiagnosticCode::UnknownVersion,
-                                                "migration chain reaches an unregistered schema version",
-                                                "schemaVersion");
+            return eve::Result<SchemaCompatibility>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::UnknownVersion,
+                                       "migration chain reaches an unregistered schema version", "schemaVersion"));
         result.versions.push_back(current);
     }
     return eve::Result<SchemaCompatibility>::success(std::move(result));
@@ -1075,8 +1075,9 @@ eve::Result<eve::Value> SchemaRegistry::migrate(const std::string& schemaId, int
     if (!inputJson.ok()) return eve::Result<eve::Value>::failure(inputJson.status());
     const auto sourceErrors = validate(schemaId, fromVersion, inputJson.value());
     if (!sourceErrors.empty())
-        return failure<eve::Value>(eve::DiagnosticCode::ParseError,
-                                   "migration input does not satisfy its source schema", sourceErrors.front().path);
+        return eve::Result<eve::Value>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                   "migration input does not satisfy its source schema", sourceErrors.front().path));
 
     eve::Value current;
     try {
@@ -1087,8 +1088,9 @@ eve::Result<eve::Value> SchemaRegistry::migrate(const std::string& schemaId, int
         for (size_t index = 1; index < path.size(); ++index) {
             const auto step = migrationSteps().find(MigrationKey{schemaId, path[index - 1]});
             if (step == migrationSteps().end())
-                return failure<eve::Value>(eve::DiagnosticCode::Unsupported,
-                                           "migration chain changed while it was being evaluated", "schemaVersion");
+                return eve::Result<eve::Value>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::Unsupported,
+                                           "migration chain changed while it was being evaluated", "schemaVersion"));
             chain.push_back(step->second.function);
         }
         for (size_t index = 1; index < path.size(); ++index) {
@@ -1099,15 +1101,17 @@ eve::Result<eve::Value> SchemaRegistry::migrate(const std::string& schemaId, int
             if (!candidateJson.ok()) return eve::Result<eve::Value>::failure(candidateJson.status());
             const auto errors = validate(schemaId, path[index], candidateJson.value());
             if (!errors.empty())
-                return failure<eve::Value>(eve::DiagnosticCode::ParseError,
-                                           "migration output does not satisfy its target schema", errors.front().path);
+                return eve::Result<eve::Value>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                           "migration output does not satisfy its target schema", errors.front().path));
             current = std::move(candidate);
         }
     } catch (const std::exception& exception) {
-        return failure<eve::Value>(eve::DiagnosticCode::Failed,
-                                   std::string("migration execution failed: ") + exception.what());
+        return eve::Result<eve::Value>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, std::string("migration execution failed: ") + exception.what(), {}));
     } catch (...) {
-        return failure<eve::Value>(eve::DiagnosticCode::Failed, "migration execution failed");
+        return eve::Result<eve::Value>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "migration execution failed", {}));
     }
     return eve::Result<eve::Value>::success(std::move(current));
 }

@@ -183,9 +183,7 @@ function testCardCppView() {
 
 UnitSciptTest(CardViewScriptTest, kCardViewScript);
 
-TEST_CASE_FIXTURE(CardViewScriptTest, "card.script.viewSeesNewCard") {
-    CHECK(vm.callFunc(vm.findFunc("testCardCppView"), vm).toBool());
-}
+TEST_CASE_FIXTURE(CardViewScriptTest, "card.script.viewSeesNewCard") { REQUIRE(callScript("testCardCppView")); }
 
 TEST_CASE("card.cardStateName") {
     CHECK_EQ(std::string(cardStateName(CardState::Deck)), std::string("deck"));

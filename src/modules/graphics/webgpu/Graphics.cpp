@@ -29,9 +29,15 @@
 #include "image/Image.h"
 #include "image/ImageData.h"
 
-#include <assimp/scene.h>
+// Header-only Assimp mesh types for newMeshFromAssimp. The Assimp library is
+// not linked on Emscripten; only these POD headers are required here.
+#include <assimp/matrix3x3.h>
+#include <assimp/matrix4x4.h>
+#include <assimp/mesh.h>
+#include <assimp/vector3.h>
 
 #include <algorithm>
+#include <bit>
 #include <cmath>
 #include <cstring>
 #include <fstream>
@@ -95,6 +101,7 @@ Graphics::Graphics() {
 }
 
 Graphics::~Graphics() {
+    destroyDeferredLightingResources();
     retireResourceLifetime();
     detachGraphicsArtifactProvider(this);
 }
@@ -356,7 +363,7 @@ void Graphics::createDefaultTextures() {
         flatDepthTexture3D = gpu;
     }
 
-    // 1x1x3 depth-array placeholder for the mesh3d shadow bindings (5/8).
+    // 1x1xN depth-array placeholder for the mesh3d shadow bindings (5/8).
     // sampleShadowPCF() early-outs (bias.y < 0.5) when shadows are disabled,
     // so the texture is never actually sampled.
     {
@@ -364,7 +371,7 @@ void Graphics::createDefaultTextures() {
         WGPUTextureDescriptor td{};
         td.label         = sv("eve_default_shadow_depth");
         td.dimension     = WGPUTextureDimension_2D;
-        td.size          = {1, 1, 3};
+        td.size          = {1, 1, static_cast<uint32_t>(ShadowConfig::kTotalLayers)};
         td.sampleCount   = 1;
         td.format        = WGPUTextureFormat_Depth32Float;
         td.mipLevelCount = 1;
@@ -376,7 +383,7 @@ void Graphics::createDefaultTextures() {
         vd.baseMipLevel    = 0;
         vd.mipLevelCount   = 1;
         vd.baseArrayLayer  = 0;
-        vd.arrayLayerCount = 3;
+        vd.arrayLayerCount = static_cast<uint32_t>(ShadowConfig::kTotalLayers);
         gpu->view          = gpu->texture.CreateView(reinterpret_cast<const wgpu::TextureViewDescriptor*>(&vd));
         WGPUSamplerDescriptor sd{};
         sd.label         = sv("eve_default_shadow_sampler");
@@ -520,7 +527,7 @@ wgpu::BindGroupLayout Graphics::makeGbufferBindGroupLayout() {
 
 wgpu::BindGroupLayout Graphics::makeDecalBindGroupLayout() {
     BindGroupLayoutBuilder b;
-    b.buffer(0, wgpu::ShaderStage::Fragment, wgpu::BufferBindingType::Uniform, true, 240);
+    b.buffer(0, wgpu::ShaderStage::Fragment, wgpu::BufferBindingType::Uniform, true, 256);
     for (uint32_t i = 1; i <= 3; ++i) {
         b.texture(i, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float, wgpu::TextureViewDimension::e2D);
     }
@@ -910,7 +917,7 @@ fn fs_main(in: FSIn) -> @location(0) vec4f {
 }
 
 wgpu::RenderPipeline make2DLitPipeline(wgpu::Device& dev, wgpu::PipelineLayout layout, WGPUTextureFormat format,
-                                       bool blend) {
+                                       BlendMode blend) {
     wgpu::VertexAttribute attrs[3] = {};
     attrs[0].format                = wgpu::VertexFormat::Float32x2;
     attrs[0].offset                = 0;
@@ -926,9 +933,7 @@ wgpu::RenderPipeline make2DLitPipeline(wgpu::Device& dev, wgpu::PipelineLayout l
     b.vertexLayout(32, wgpu::VertexStepMode::Vertex, attrs, 3);
     b.shader(makeWgslModule(dev, kLit2DVertWgsl), "vs_main", makeWgslModule(dev, kLit2DFragWgsl), "fs_main");
     b.layout(layout);
-    // Lit pipeline always uses alpha blending; `blend` currently true in all
-    // call sites, so map to Alpha (or Opaque when disabled).
-    b.colorTarget(format, blend ? BlendMode::Alpha : BlendMode::Opaque);
+    b.colorTarget(format, blend);
     return b.build(dev);
 }
 
@@ -950,7 +955,12 @@ void Graphics::create2DPipelines() {
     colorOpaquePipeline      = make2DColorPipeline(device, surfaceFormat, BlendMode::Opaque);
     texturedOpaquePipeline   = make2DTexturedPipeline(device, tex2DPipelineLayout, surfaceFormat, BlendMode::Opaque);
     sceneTonemapPipeline = make2DTexturedPipeline(device, tex2DPipelineLayout, surfaceFormat, BlendMode::Opaque, true);
-    lit2dPipeline        = make2DLitPipeline(device, tex2DPipelineLayout, surfaceFormat, true);
+    lit2dPipeline            = make2DLitPipeline(device, tex2DPipelineLayout, surfaceFormat, BlendMode::Alpha);
+    lit2dAdditivePipeline    = make2DLitPipeline(device, tex2DPipelineLayout, surfaceFormat, BlendMode::Additive);
+    lit2dPremultipliedPipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, surfaceFormat, BlendMode::Premultiplied);
+    lit2dMultiplyPipeline = make2DLitPipeline(device, tex2DPipelineLayout, surfaceFormat, BlendMode::Multiply);
+    lit2dOpaquePipeline   = make2DLitPipeline(device, tex2DPipelineLayout, surfaceFormat, BlendMode::Opaque);
 
     offscreenColorPipeline = make2DColorPipeline(device, WGPUTextureFormat_RGBA8Unorm, BlendMode::Alpha);
     offscreenTexturedPipeline =
@@ -972,7 +982,26 @@ void Graphics::create2DPipelines() {
         make2DTexturedPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float, BlendMode::Alpha);
     hdrOffscreenTexturedOpaquePipeline =
         make2DTexturedPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float, BlendMode::Opaque);
-    offscreenLitPipeline = make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm, true);
+    offscreenLitPipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm, BlendMode::Alpha);
+    offscreenLitAdditivePipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm, BlendMode::Additive);
+    offscreenLitPremultipliedPipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm, BlendMode::Premultiplied);
+    offscreenLitMultiplyPipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm, BlendMode::Multiply);
+    offscreenLitOpaquePipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm, BlendMode::Opaque);
+    hdrOffscreenLitPipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float, BlendMode::Alpha);
+    hdrOffscreenLitAdditivePipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float, BlendMode::Additive);
+    hdrOffscreenLitPremultipliedPipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float, BlendMode::Premultiplied);
+    hdrOffscreenLitMultiplyPipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float, BlendMode::Multiply);
+    hdrOffscreenLitOpaquePipeline =
+        make2DLitPipeline(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float, BlendMode::Opaque);
 }
 
 wgpu::RenderPipeline Graphics::get2DColorPipeline(BlendMode blend, bool offscreen) {
@@ -999,8 +1028,32 @@ wgpu::RenderPipeline Graphics::get2DTexturedPipeline(BlendMode blend, bool offsc
     }
 }
 
-wgpu::RenderPipeline Graphics::get2DLitPipeline(bool offscreen) {
-    return offscreen ? offscreenLitPipeline : lit2dPipeline;
+wgpu::RenderPipeline Graphics::get2DLitPipeline(BlendMode blend, WGPUTextureFormat format) {
+    const bool hdr       = format == WGPUTextureFormat_RGBA16Float;
+    const bool offscreen = hdr || uint32_t(format) != uint32_t(surfaceFormat);
+    auto       pick      = [](BlendMode mode, wgpu::RenderPipeline alpha, wgpu::RenderPipeline additive,
+                   wgpu::RenderPipeline premultiplied, wgpu::RenderPipeline multiply,
+                   wgpu::RenderPipeline opaque) -> wgpu::RenderPipeline {
+        switch (mode) {
+            case BlendMode::Additive: return additive;
+            case BlendMode::Premultiplied: return premultiplied;
+            case BlendMode::Multiply: return multiply;
+            case BlendMode::Opaque: return opaque;
+            case BlendMode::Alpha:
+            default: return alpha;
+        }
+    };
+    if (hdr) {
+        return pick(blend, hdrOffscreenLitPipeline, hdrOffscreenLitAdditivePipeline,
+                    hdrOffscreenLitPremultipliedPipeline, hdrOffscreenLitMultiplyPipeline,
+                    hdrOffscreenLitOpaquePipeline);
+    }
+    if (offscreen) {
+        return pick(blend, offscreenLitPipeline, offscreenLitAdditivePipeline, offscreenLitPremultipliedPipeline,
+                    offscreenLitMultiplyPipeline, offscreenLitOpaquePipeline);
+    }
+    return pick(blend, lit2dPipeline, lit2dAdditivePipeline, lit2dPremultipliedPipeline, lit2dMultiplyPipeline,
+                lit2dOpaquePipeline);
 }
 
 void Graphics::createMesh3DPipelines() {
@@ -1212,8 +1265,8 @@ void Graphics::createGbufferPipelines() {
     ds.stencilReadMask   = 0;
     ds.stencilWriteMask  = 0;
 
-    WGPUColorTargetState targets[3] = {};
-    for (int i = 0; i < 3; ++i) {
+    WGPUColorTargetState targets[5] = {};
+    for (int i = 0; i < 5; ++i) {
         targets[i].format    = WGPUTextureFormat_RGBA8Unorm;
         targets[i].blend     = nullptr;
         targets[i].writeMask = WGPUColorWriteMask_All;
@@ -1231,7 +1284,7 @@ void Graphics::createGbufferPipelines() {
     WGPUFragmentState fs{};
     fs.module                     = fragModule.Get();
     fs.entryPoint                 = sv("fs_main");
-    fs.targetCount                = 3;
+    fs.targetCount                = 5;
     fs.targets                    = targets;
     pd.fragment                   = &fs;
     pd.primitive.topology         = WGPUPrimitiveTopology_TriangleList;
@@ -1507,6 +1560,24 @@ Texture* Graphics::newTexture(image::ImageData* data, const TextureCreateInfo& i
     if (!data) throw Exception("newTexture: null ImageData");
     if (data->getFormat() != "RGBA8") throw Exception("newTexture: only RGBA8 supported");
     return newTexture(data->getWidth(), data->getHeight(), static_cast<const uint8_t*>(data->getData()), info);
+}
+
+ResultRef<Texture> Graphics::newSharedTexture(image::ImageData* data, const std::string& contentKey) {
+    if (!data || contentKey.empty() || data->getFormat() != "RGBA8")
+        return ResultRef<Texture>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                             "RGBA8 image and nonempty content key are required", {},
+                                                             {}, "graphics.texture.shared"));
+    if (auto found = sharedTexturesByContent.find(contentKey); found != sharedTexturesByContent.end())
+        return ResultRef<Texture>::success(std::ref(*found->second));
+    try {
+        Texture* texture = newTexture(data);
+        if (!texture) throw Exception("shared texture upload produced no texture");
+        sharedTexturesByContent.emplace(contentKey, texture);
+        return ResultRef<Texture>::success(std::ref(*texture));
+    } catch (const std::exception& error) {
+        return ResultRef<Texture>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, error.what(), {}, {}, "graphics.texture.shared"));
+    }
 }
 
 Texture* Graphics::newTexture(int width, int height, const uint8_t* rgba, const TextureCreateInfo& rawInfo) {
@@ -1967,87 +2038,9 @@ bool Graphics::filterHDRReflectionCubemap(Texture* cubemap, int sampleCount) {
     return true;
 }
 
-void Graphics::setTextureSampler(Texture* texture, const TextureSampler& sampler) {
-    if (!texture) return;
-    auto* gpu = gpuForTexture(texture);
-    if (!gpu) return;
-    gpu->samplerState = sampler;
-    gpu->sampler      = makeSampler(sampler, gpu->mipLevels);
-    texture->sampler  = sampler;
-}
 
 float Graphics::getMaxAnisotropy() const { return maxSamplerAnisotropy; }
 
-Texture* Graphics::newTextureFromFile(const std::string& filename) {
-    if (filename.empty()) throw Exception("newTextureFromFile: empty filename");
-    if (!fileTextureSourceExists(filename)) throw Exception("Could not load image file: %s", filename.c_str());
-
-    auto it = texturesByPath.find(filename);
-    if (it != texturesByPath.end() && it->second) {
-        requestFileImageDecode(filename);
-        if (it->second->hasDeferredFilePixels()) return it->second;
-        auto waited = eve::ResourceManager::getInstance().waitFor(filename);
-        if (!waited.ok()) throw Exception("%s", waited.status().describe().c_str());
-        auto* data = dynamic_cast<image::ImageData*>(&waited.value().get());
-        if (!data || !updateTexture(it->second, data->getWidth(), data->getHeight(),
-                                    static_cast<const uint8_t*>(data->getData())))
-            throw Exception("newTextureFromFile: reload failed '%s'", filename.c_str());
-        return it->second;
-    }
-
-    requestFileImageDecode(filename);
-    auto tex = std::make_unique<Texture>();
-    tex->markDeferredFilePixels(this);
-    Texture* raw = tex.get();
-    ownedTextures.push_back(std::move(tex));
-    texturesByPath[filename] = raw;
-    deferredFileTextures_.push_back({filename, raw});
-    return raw;
-}
-
-bool Graphics::uploadDeferredFileTexture(Texture* texture, image::ImageData* data) {
-    if (!texture || !data) return false;
-    if (texture->gpuHandle)
-        return updateTexture(texture, data->getWidth(), data->getHeight(),
-                             static_cast<const uint8_t*>(data->getData()));
-    Texture* fresh = newTexture(data);
-    if (!fresh || !fresh->gpuHandle) return false;
-    texture->gpuHandle   = fresh->gpuHandle;
-    texture->width       = fresh->width;
-    texture->height      = fresh->height;
-    texture->pixelWidth  = fresh->pixelWidth;
-    texture->pixelHeight = fresh->pixelHeight;
-    texture->mipmapCount = fresh->mipmapCount;
-    texture->sampler     = fresh->sampler;
-    fresh->gpuHandle     = nullptr;
-    auto texIt           = std::find_if(ownedTextures.begin(), ownedTextures.end(),
-                                        [&](const std::unique_ptr<Texture>& t) { return t.get() == fresh; });
-    if (texIt == ownedTextures.end()) return false;
-    (void)texIt->release();
-    ownedTextures.erase(texIt);
-    delete fresh;
-    return true;
-}
-
-bool Graphics::reloadTextureFromFile(const std::string& filename) {
-    auto it = texturesByPath.find(filename);
-    if (it == texturesByPath.end()) return false;
-
-    ensureFileTexturesReady();
-
-    image::ImageData* data = nullptr;
-    try {
-        auto*                      imgMod = image::Image::create();
-        eve::ref<image::ImageData> cached(imgMod->newImageDataFromFile(filename));
-        data = cached.get();
-    } catch (...) {
-        return false;
-    }
-    if (!data) return false;
-
-    Texture* tex = it->second;
-    return updateTexture(tex, data->getWidth(), data->getHeight(), static_cast<const uint8_t*>(data->getData()));
-}
 
 bool Graphics::releaseTexture(Texture* texture) {
     if (!texture) return false;
@@ -2059,6 +2052,12 @@ bool Graphics::releaseTexture(Texture* texture) {
         for (auto it = texturesByPath.begin(); it != texturesByPath.end();) {
             if (it->second == texture)
                 it = texturesByPath.erase(it);
+            else
+                ++it;
+        }
+        for (auto it = sharedTexturesByContent.begin(); it != sharedTexturesByContent.end();) {
+            if (it->second == texture)
+                it = sharedTexturesByContent.erase(it);
             else
                 ++it;
         }
@@ -2084,6 +2083,12 @@ bool Graphics::releaseTexture(Texture* texture) {
     for (auto it = texturesByPath.begin(); it != texturesByPath.end();) {
         if (it->second == texture)
             it = texturesByPath.erase(it);
+        else
+            ++it;
+    }
+    for (auto it = sharedTexturesByContent.begin(); it != sharedTexturesByContent.end();) {
+        if (it->second == texture)
+            it = sharedTexturesByContent.erase(it);
         else
             ++it;
     }
@@ -2600,75 +2605,6 @@ bool Graphics::bakeMeshMorph(Mesh* mesh) {
     return true;
 }
 
-bool Graphics::updateMeshVertices(Mesh* mesh, const float* posXYZ, const float* nrmXYZ, const float* uvST,
-                                  int vertexCount, const uint32_t* indices, int indexCount) {
-    if (!mesh || !mesh->gpuHandle || !posXYZ || vertexCount <= 0 || indexCount < 0) return false;
-    if (indexCount > 0 && (!indices || indexCount % 3 != 0)) return false;
-    for (int i = 0; i < indexCount; ++i) {
-        if (indices[i] >= uint32_t(vertexCount)) return false;
-    }
-    auto*      gpu = static_cast<GpuMesh*>(mesh->gpuHandle);
-    const auto owned =
-        std::find_if(ownedGpuMeshes.begin(), ownedGpuMeshes.end(),
-                     [gpu](const std::unique_ptr<GpuMesh>& candidate) { return candidate.get() == gpu; });
-    if (owned == ownedGpuMeshes.end()) return false;
-
-    std::vector<float> verts;
-    verts.reserve(size_t(vertexCount) * 8u);
-    for (int i = 0; i < vertexCount; ++i) {
-        verts.insert(verts.end(), posXYZ + size_t(i) * 3u, posXYZ + size_t(i) * 3u + 3u);
-        if (nrmXYZ)
-            verts.insert(verts.end(), nrmXYZ + size_t(i) * 3u, nrmXYZ + size_t(i) * 3u + 3u);
-        else
-            verts.insert(verts.end(), {0.f, 0.f, 1.f});
-        if (uvST)
-            verts.insert(verts.end(), uvST + size_t(i) * 2u, uvST + size_t(i) * 2u + 2u);
-        else
-            verts.insert(verts.end(), {0.f, 0.f});
-    }
-
-    const uint64_t vertexBytes = verts.size() * sizeof(float);
-    if (vertexBytes > gpu->vertexCapacity) {
-        WGPUBufferDescriptor desc{};
-        desc.label          = sv("eve_mesh_dynamic_vb");
-        desc.size           = vertexBytes;
-        desc.usage          = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex | WGPUBufferUsage_Storage;
-        gpu->vertexBuffer   = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&desc));
-        gpu->vertexCapacity = vertexBytes;
-    }
-    queue.WriteBuffer(gpu->vertexBuffer, 0, verts.data(), vertexBytes);
-    gpu->vertexCount = uint32_t(vertexCount);
-
-    if (indexCount > 0) {
-        const wgpu::IndexFormat format = vertexCount <= 65535 ? wgpu::IndexFormat::Uint16 : wgpu::IndexFormat::Uint32;
-        std::vector<uint16_t>   idx16;
-        const void*             indexData  = indices;
-        uint64_t                indexBytes = uint64_t(indexCount) * sizeof(uint32_t);
-        if (format == wgpu::IndexFormat::Uint16) {
-            idx16.reserve(size_t(indexCount) + 1u);
-            for (int i = 0; i < indexCount; ++i) idx16.push_back(uint16_t(indices[i]));
-            if (idx16.size() % 2 != 0) idx16.push_back(0);
-            indexData  = idx16.data();
-            indexBytes = idx16.size() * sizeof(uint16_t);
-        }
-        if (format != gpu->indexFormat || indexBytes > gpu->indexCapacity) {
-            WGPUBufferDescriptor desc{};
-            desc.label         = sv("eve_mesh_dynamic_ib");
-            desc.size          = indexBytes;
-            desc.usage         = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index | WGPUBufferUsage_Storage;
-            gpu->indexBuffer   = device.CreateBuffer(reinterpret_cast<const wgpu::BufferDescriptor*>(&desc));
-            gpu->indexCapacity = indexBytes;
-        }
-        queue.WriteBuffer(gpu->indexBuffer, 0, indexData, indexBytes);
-        gpu->indexFormat = format;
-        gpu->indexCount  = uint32_t(indexCount);
-    }
-
-    mesh->computeBounds(posXYZ, vertexCount);
-    mesh->gpuVertexCount = int(gpu->vertexCount);
-    mesh->indexCount     = int(gpu->indexCount);
-    return true;
-}
 
 void fillMeshAttributes(WGPUVertexAttribute (&attrs)[6]) {
     attrs[0].format         = WGPUVertexFormat_Float32x3;
@@ -3072,15 +3008,31 @@ void Graphics::drawTexturedRectShader5(Texture* color, Texture* depth, Texture* 
 }
 
 void Graphics::drawTexturedRectLitUV(Texture* albedo, Texture* normal, float x, float y, float w, float h, float u0,
-                                     float v0, float u1, float v1, const Color& color) {
+                                     float v0, float u1, float v1, const Color& color, BlendMode blend) {
     if (!albedo) {
-        drawSolidRect(x, y, w, h, color);
+        drawSolidRect(x, y, w, h, color, blend);
         return;
     }
-    if (litBatches.empty() || litBatches.back().albedo != albedo || litBatches.back().normal != normal) {
-        litBatches.push_back(LitBatch{albedo, normal, Batcher{}});
+    if (litBatches.empty() || litBatches.back().albedo != albedo || litBatches.back().normal != normal ||
+        litBatches.back().blend != blend) {
+        litBatches.push_back(LitBatch{albedo, normal, blend, Batcher{}});
     }
     litBatches.back().batch.addTexturedRect(x, y, w, h, color, u0, v0, u1, v1, false);
+    noteLitOverlay(uint32_t(litBatches.size() - 1));
+}
+
+void Graphics::drawTexturedRectLitUVRotated(Texture* albedo, Texture* normal, float cx, float cy, float w, float h,
+                                            float degrees, float u0, float v0, float u1, float v1, const Color& color,
+                                            BlendMode blend) {
+    if (!albedo) {
+        drawSolidRectRotated(cx, cy, w, h, degrees, color, blend);
+        return;
+    }
+    if (litBatches.empty() || litBatches.back().albedo != albedo || litBatches.back().normal != normal ||
+        litBatches.back().blend != blend) {
+        litBatches.push_back(LitBatch{albedo, normal, blend, Batcher{}});
+    }
+    litBatches.back().batch.addTexturedRectRotated(cx, cy, w, h, degrees, color, u0, v0, u1, v1, false);
     noteLitOverlay(uint32_t(litBatches.size() - 1));
 }
 
@@ -3091,6 +3043,7 @@ void Graphics::setLighting2D(const Lighting2DUBO& ubo) {
 
 void Graphics::flush2D(wgpu::RenderPassEncoder pass, int viewW, int viewH, WGPUTextureFormat format) {
     ensureFileTexturesReady();
+    applyPendingResourceChanges();
     auto       spans     = std::move(overlaySpans);
     const bool offscreen = uint32_t(format) != uint32_t(surfaceFormat);
 
@@ -3278,7 +3231,10 @@ void Graphics::drawLitBatch(wgpu::RenderPassEncoder pass, LitBatch& lb, int view
     queue.WriteBuffer(arena.buffer, vtxOffset, data.data(), bytes);
 
     GpuTexture* albedoGpu = gpuForTextureOrWhite(lb.albedo);
-    GpuTexture* normalGpu = gpuForTextureOrWhite(lb.normal);
+    // Null / missing normal → flat +Z (128,128,255), not white (which is a
+    // bright wrong normal and washes out lit sprites without a map).
+    GpuTexture* normalGpu = gpuForTexture(lb.normal);
+    if (!normalGpu) normalGpu = flatNormalTexture ? flatNormalTexture : whiteTexture;
 
     auto& uboArena = currentUboArena();
     ensureUboArena(uboArena, uboArena.used + 512);
@@ -3287,7 +3243,7 @@ void Graphics::drawLitBatch(wgpu::RenderPassEncoder pass, LitBatch& lb, int view
 
     wgpu::BindGroup      bg         = makeTex2DBindGroup(albedoGpu, normalGpu);
     uint32_t             offsets[1] = {uboOffset};
-    wgpu::RenderPipeline pipe       = get2DLitPipeline(uint32_t(format) != uint32_t(surfaceFormat));
+    wgpu::RenderPipeline pipe       = get2DLitPipeline(lb.blend, format);
     if (!pipe) return;
     pass.SetPipeline(pipe);
     pass.SetBindGroup(0, bg, 1, offsets);
@@ -3301,6 +3257,8 @@ void Graphics::drawLitBatch(wgpu::RenderPassEncoder pass, LitBatch& lb, int view
 
 void Graphics::begin3DFrame() {
     if (!initialized || !device) return;
+    ensureFileTexturesReady();
+    applyPendingResourceChanges();
     frame3DStarted = true;
     frameHad3DThisFrame = true;
     // Match the desktop (Vulkan) backend: had3DThisFrame() must return true
@@ -3452,10 +3410,20 @@ void Graphics::drawMeshShader(Mesh* mesh, const glm::mat4& model, Texture* textu
     d.depthWrite     = mesh3dSurfaceDepthWrite;
     d.doubleSided    = mesh3dSurfaceDoubleSided;
     d.shadowReceive  = mesh3dShadowReceive;
+    d.metallic       = mesh3dMetallic;
+    d.roughness      = mesh3dRoughness;
+    d.viewProj       = mesh3dViewProj;
+    d.view           = mesh3dView;
+    d.cameraPos      = mesh3dCameraPos;
+    d.lighting       = mesh3dLighting;
+    d.shadows        = mesh3dShadows;
+    d.environment    = mesh3dEnvTexture;
+    d.environmentIntensity = mesh3dEnvIntensity;
     d.skinInfluenceLimit = mesh3dSkinInfluenceLimit;
     d.alphaCutoff    = mesh3dAlphaCutoff;
     d.alphaTechnique = mesh3dAlphaTechnique;
     d.lodFade       = mesh3dLodFade;
+    d.pbrSurface    = mesh3dPbrSurface;
     mesh3dDraws.push_back(d);
 }
 
@@ -3610,7 +3578,7 @@ void Graphics::drawMeshShadowAlpha(Mesh* mesh, const glm::mat4& lightMVP, Textur
 }
 
 void Graphics::endShadowPass() {
-    if (shadowPassCascade < 0 || shadowPassCascade >= ShadowConfig::kCascades) {
+    if (shadowPassCascade < 0 || shadowPassCascade >= ShadowConfig::kTotalLayers) {
         shadowPassCascade = -1;
         shadowPassDraws.clear();
         return;
@@ -3673,12 +3641,13 @@ void Graphics::drawMeshGBufferAlpha(Mesh* mesh, const glm::mat4& mvp, const glm:
 
 void Graphics::endGBufferPass() {
     gbufferPassActive = false;
-    // Expose the G-buffer textures (depth/normal/albedo/hwDepth) to RenderControl
-    // so post passes (AO, X-ray scene depth) can sample them this frame.
-    if (renderControl_ && !gbufferSlots.empty()) {
+    // Expose the G-buffer textures (depth/normal/albedo/hwDepth/pbr/emissive) to
+    // RenderControl so post passes (AO, X-ray scene depth) can sample them this frame.
+    if (!gbufferSlots.empty()) {
         GbufferSlot& slot = gbufferSlots[currentFrameSlot()];
-        renderControl_->getGBuffer()->setTargets(gbufferWidth, gbufferHeight, &slot.depthColorTex, &slot.normalTex,
-                                                 &slot.albedoTex, &slot.depthTex);
+        getRenderControl()->getGBuffer()->setTargets(gbufferWidth, gbufferHeight, &slot.depthColorTex, &slot.normalTex,
+                                                     &slot.albedoTex, &slot.depthTex, &slot.pbrParamsTex,
+                                                     &slot.emissiveTex);
     }
 }
 
@@ -3708,7 +3677,8 @@ void Graphics::drawDecal(const glm::mat4 &model, Texture *albedo, Texture *norma
                          Texture *params, const float uvRect[4], float fade,
                          float normalStrength, float roughnessStrength, float metalStrength,
                          float emissiveStrength, int blendMode, int projectionMode,
-                         float blendSharpness) {
+                         float blendSharpness, float parallaxScale, float parallaxMinLayers,
+                         float parallaxMaxLayers, float edgeFadeWidth) {
     if (!decalPassActive) return;
     DecalDraw draw;
     draw.model  = model;
@@ -3717,9 +3687,13 @@ void Graphics::drawDecal(const glm::mat4 &model, Texture *albedo, Texture *norma
     draw.params = params ? params : decalFlatParams;
     if (uvRect) draw.uvRect = glm::vec4(uvRect[0], uvRect[1], uvRect[2], uvRect[3]);
     draw.fadeParams = glm::vec4(fade, normalStrength, roughnessStrength, metalStrength);
-    draw.extraParams =
-        glm::vec4(emissiveStrength, float(blendMode == 1), float(projectionMode == 1),
-                  blendSharpness > 0.f ? blendSharpness : 4.f);
+    draw.extraParams = glm::vec4(emissiveStrength, float(blendMode == 1),
+                                 float(std::clamp(projectionMode, 0, 3)),
+                                 blendSharpness > 0.f ? blendSharpness : 4.f);
+    const float minLayers = std::clamp(parallaxMinLayers, 1.f, 64.f);
+    draw.surfaceParams = glm::vec4(std::clamp(parallaxScale, 0.f, 1.f), minLayers,
+                                   std::clamp(parallaxMaxLayers, minLayers, 64.f),
+                                   std::clamp(edgeFadeWidth, 0.f, 0.49f));
     decalPassDraws.push_back(draw);
 }
 
@@ -3821,6 +3795,8 @@ void Graphics::createSceneColorResources(int width, int height) {
         mesh3dTransparentPipeline = {};
         mesh3dClusteredPipeline   = {};
         voxelRectPipeline         = {};
+        // Deferred lighting is 1x-only; recreate when scene sample count changes.
+        destroyDeferredLightingResources();
     }
     if (samplesChanged && gpuDrivenCullPipeline_) {
         // The forward indirect pipeline inherits the scene target sample
@@ -3863,7 +3839,8 @@ void Graphics::createShadowResources() {
     WGPUTextureDescriptor td{};
     td.label         = sv("eve_shadow_depth");
     td.dimension     = WGPUTextureDimension_2D;
-    td.size          = {static_cast<uint32_t>(shadowMapSize), static_cast<uint32_t>(shadowMapSize), 3};
+    td.size          = {static_cast<uint32_t>(shadowMapSize), static_cast<uint32_t>(shadowMapSize),
+                        static_cast<uint32_t>(ShadowConfig::kTotalLayers)};
     td.sampleCount   = 1;
     td.format        = WGPUTextureFormat_Depth32Float;
     td.mipLevelCount = 1;
@@ -3939,6 +3916,10 @@ void Graphics::createGbufferResources(int width, int height) {
         slot.depthColorView = slot.depthColor.CreateView();
         slot.albedo         = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&td));
         slot.albedoView     = slot.albedo.CreateView();
+        slot.pbrParams      = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&td));
+        slot.pbrParamsView  = slot.pbrParams.CreateView();
+        slot.emissive       = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&td));
+        slot.emissiveView   = slot.emissive.CreateView();
         slot.depth          = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&dd));
         slot.depthView      = slot.depth.CreateView();
         slot.visID          = device.CreateTexture(reinterpret_cast<const wgpu::TextureDescriptor*>(&visIdDesc));
@@ -3955,6 +3936,12 @@ void Graphics::createGbufferResources(int width, int height) {
         slot.albedoGpu.texture     = slot.albedo;
         slot.albedoGpu.view        = slot.albedoView;
         slot.albedoGpu.sampler     = createLinearSampler(device);
+        slot.pbrParamsGpu.texture  = slot.pbrParams;
+        slot.pbrParamsGpu.view     = slot.pbrParamsView;
+        slot.pbrParamsGpu.sampler  = createLinearSampler(device);
+        slot.emissiveGpu.texture   = slot.emissive;
+        slot.emissiveGpu.view      = slot.emissiveView;
+        slot.emissiveGpu.sampler   = createLinearSampler(device);
         slot.depthGpu.texture      = slot.depth;
         slot.depthGpu.view         = slot.depthView;
         slot.depthGpu.sampler      = createLinearSampler(device);
@@ -3968,6 +3955,12 @@ void Graphics::createGbufferResources(int width, int height) {
         slot.albedoTex.gpuHandle     = &slot.albedoGpu;
         slot.albedoTex.width         = width;
         slot.albedoTex.height        = height;
+        slot.pbrParamsTex.gpuHandle  = &slot.pbrParamsGpu;
+        slot.pbrParamsTex.width      = width;
+        slot.pbrParamsTex.height     = height;
+        slot.emissiveTex.gpuHandle   = &slot.emissiveGpu;
+        slot.emissiveTex.width       = width;
+        slot.emissiveTex.height      = height;
         slot.depthTex.gpuHandle      = &slot.depthGpu;
         slot.depthTex.width          = width;
         slot.depthTex.height         = height;
@@ -4165,6 +4158,9 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
         // Canvas targets are 1-sample; scene pipelines follow the active MSAA
         // count. Both sets preserve the per-draw material raster state.
         const bool           customShader = d.shader && d.shader->gpuHandle;
+        if (d.pbrSurface && !customShader &&
+            drawPbrMesh(pass, format, canvasTarget, d, *gpuMesh))
+            continue;
         wgpu::RenderPipeline pipe;
         if (d.shader && d.shader->gpuHandle) {
             auto* gs = static_cast<GpuShader*>(d.shader->gpuHandle);
@@ -4227,7 +4223,7 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
 
 void Graphics::flushShadowPass(wgpu::RenderPassEncoder pass, int cascade) {
     auto& uboArena = currentUboArena();
-    if (cascade < 0 || cascade >= ShadowConfig::kCascades) return;
+    if (cascade < 0 || cascade >= ShadowConfig::kTotalLayers) return;
     if (!mesh3dShadowPipeline) createShadowPipelines();
     ensureUboArena(uboArena, uboArena.used + shadowCascadeDraws[cascade].size() * 256);
     for (auto& d : shadowCascadeDraws[cascade]) {
@@ -4296,15 +4292,16 @@ void Graphics::flushGbufferPass(wgpu::RenderPassEncoder pass) {
         ubo.mvp               = d.mvp;
         ubo.model             = d.model;
         auto           u6     = [](float value) { return uint32_t(std::lround(std::clamp(value, 0.f, 1.f) * 63.f)); };
-        const uint32_t rough3 = uint32_t(std::lround(std::clamp(d.roughness, 0.f, 1.f) * 7.f));
-        const uint32_t metal3 = uint32_t(std::lround(std::clamp(d.metallic, 0.f, 1.f) * 7.f));
+        // Phase B: tint RGB6 | rough7 | metal7 — bit-cast (exceeds float's 24-bit exact ints).
+        const uint32_t rough7 = uint32_t(std::lround(std::clamp(d.roughness, 0.f, 1.f) * 127.f));
+        const uint32_t metal7 = uint32_t(std::lround(std::clamp(d.metallic, 0.f, 1.f) * 127.f));
         const uint32_t packedTint =
-            u6(d.tint.r) | (u6(d.tint.g) << 6) | (u6(d.tint.b) << 12) | (rough3 << 18) | (metal3 << 21);
+            u6(d.tint.r) | (u6(d.tint.g) << 6) | (u6(d.tint.b) << 12) | (rough7 << 18) | (metal7 << 25);
         auto motion12 = [](float value) {
             return uint32_t(std::lround(std::clamp(value, -1.f, 1.f) * 2047.f)) + 2047u;
         };
         const uint32_t packedMotion = motion12(d.motion.x) | (motion12(d.motion.y) << 12);
-        ubo.clip                    = glm::vec4(d.nearZ, d.farZ, float(packedTint), float(packedMotion));
+        ubo.clip                    = glm::vec4(d.nearZ, d.farZ, std::bit_cast<float>(packedTint), float(packedMotion));
         if (d.mesh->hasGpuSkinning()) ubo.skinInfo.x = static_cast<float>(d.mesh->getSkinPaletteCount());
         ubo.skinInfo.y = static_cast<float>(d.skinInfluenceLimit);
         const auto skinBuffer = uploadSkinPalette(d.mesh);
@@ -4366,9 +4363,10 @@ void Graphics::flushDecalPass(wgpu::RenderPassEncoder pass) {
         glm::vec4 uvRect;
         glm::vec4 fadeParams;
         glm::vec4 extraParams;
+        glm::vec4 surfaceParams;
         glm::vec4 texel;
     };
-    static_assert(sizeof(DecalUniforms) == 240);
+    static_assert(sizeof(DecalUniforms) == 256);
     for (const auto& draw : decalPassDraws) {
         DecalUniforms uniforms{};
         uniforms.invViewProj = glm::inverse(decalViewProj);
@@ -4379,6 +4377,7 @@ void Graphics::flushDecalPass(wgpu::RenderPassEncoder pass) {
         uniforms.uvRect      = draw.uvRect;
         uniforms.fadeParams  = draw.fadeParams;
         uniforms.extraParams = draw.extraParams;
+        uniforms.surfaceParams = draw.surfaceParams;
         uniforms.texel       = glm::vec4(1.f / float(decalWidth), 1.f / float(decalHeight), 0.f, 0.f);
         uint32_t offset      = uboArena.alloc(256, 256);
         queue.WriteBuffer(uboArena.buffer, offset, &uniforms, sizeof(uniforms));
@@ -4416,6 +4415,85 @@ void Graphics::flushDecalPass(wgpu::RenderPassEncoder pass) {
     clearMeshBindGroupCache();
 }
 
+bool Graphics::flushGBufferPassInto(wgpu::CommandEncoder& encoder, bool runAo) {
+    if (!gbufferPassPending || gbufferSlots.empty()) return false;
+    lastGbufferSlot                    = currentFrameSlot();
+    GbufferSlot&                  slot = gbufferSlots[lastGbufferSlot];
+    WGPURenderPassColorAttachment colorAtts[5]{};
+    for (int i = 0; i < 5; ++i) {
+        colorAtts[i].depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
+        colorAtts[i].loadOp     = WGPULoadOp_Clear;
+        colorAtts[i].storeOp    = WGPUStoreOp_Store;
+        colorAtts[i].clearValue = {0.f, 0.f, 0.f, 1.f};
+    }
+    // Match Vulkan GBuffer clears: depthColor=1, pbrParams=(0,1,1,1).
+    colorAtts[1].clearValue = {1.f, 1.f, 1.f, 1.f};
+    colorAtts[3].clearValue = {0.f, 1.f, 1.f, 1.f};
+    colorAtts[0].view       = slot.normalView.Get();
+    colorAtts[1].view       = slot.depthColorView.Get();
+    colorAtts[2].view       = slot.albedoView.Get();
+    colorAtts[3].view       = slot.pbrParamsView.Get();
+    colorAtts[4].view       = slot.emissiveView.Get();
+    WGPURenderPassDepthStencilAttachment ds{};
+    ds.view              = slot.depthView.Get();
+    ds.depthClearValue   = 1.f;
+    ds.depthLoadOp       = WGPULoadOp_Clear;
+    ds.depthStoreOp      = WGPUStoreOp_Store;
+    ds.stencilClearValue = 0;
+    ds.stencilLoadOp     = WGPULoadOp_Undefined;
+    ds.stencilStoreOp    = WGPUStoreOp_Undefined;
+    WGPURenderPassDescriptor rp{};
+    rp.colorAttachmentCount      = 5;
+    rp.colorAttachments          = colorAtts;
+    rp.depthStencilAttachment    = &ds;
+    wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor*>(&rp));
+    flushGbufferPass(pass);
+    pass.End();
+    gbufferPassPending = false;
+    gbufferDepthValid_ = true;
+
+    if (runAo) {
+        ensureAOResources(sceneColorWidth, sceneColorHeight);
+        if (aoPipeline && aoTex[0]) {
+            pushValidationScope();
+            GbufferSlot& gslot = gbufferSlots[currentFrameSlot()];
+            struct AOUbo {
+                glm::vec4 params;  // radius, power, nearZ, farZ
+                float     intensity;
+                float     invScale;  // AO target size / depth size
+                float     pad;
+            } aou;
+            aou.params    = glm::vec4(0.05f, 1.1f, mesh3dNear, mesh3dFar);
+            aou.intensity = 1.0f;
+            aou.invScale  = 0.5f;
+            aou.pad       = 0.f;
+            queue.WriteBuffer(aoUbo, 0, &aou, sizeof(aou));
+            wgpu::BindGroup aoBg = makeAOBindGroup(gslot.depthView);
+
+            WGPURenderPassColorAttachment colorAtt{};
+            colorAtt.view       = aoView[aoWriteIndex].Get();
+            colorAtt.depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
+            colorAtt.loadOp     = WGPULoadOp_Clear;
+            colorAtt.storeOp    = WGPUStoreOp_Store;
+            colorAtt.clearValue = {1.f, 1.f, 1.f, 1.f};
+            WGPURenderPassDescriptor aoRp{};
+            aoRp.colorAttachmentCount = 1;
+            aoRp.colorAttachments     = &colorAtt;
+            wgpu::RenderPassEncoder apass =
+                encoder.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor*>(&aoRp));
+            apass.SetPipeline(aoPipeline);
+            apass.SetBindGroup(0, aoBg, 0, nullptr);
+            apass.SetVertexBuffer(0, fullscreenQuadVb, 0, 4 * 32);
+            apass.SetIndexBuffer(fullscreenQuadIb, wgpu::IndexFormat::Uint32, 0, 24);
+            apass.DrawIndexed(6, 1, 0, 0, 0);
+            apass.End();
+            popValidationScope();
+            aoWriteIndex ^= 1;
+        }
+    }
+    return true;
+}
+
 void Graphics::submitPendingDeferredPasses() {
     if ((!gbufferPassPending || gbufferSlots.empty()) && (!decalPassPending || decalSlots.empty())) return;
     auto& uboArena = currentUboArena();
@@ -4425,7 +4503,7 @@ void Graphics::submitPendingDeferredPasses() {
     if (gbufferPassPending && !gbufferSlots.empty()) {
         lastGbufferSlot                    = currentFrameSlot();
         GbufferSlot&                  slot = gbufferSlots[lastGbufferSlot];
-        WGPURenderPassColorAttachment colors[3]{};
+        WGPURenderPassColorAttachment colors[5]{};
         for (auto& color : colors) {
             color.depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
             color.loadOp     = WGPULoadOp_Clear;
@@ -4433,9 +4511,12 @@ void Graphics::submitPendingDeferredPasses() {
             color.clearValue = {0.f, 0.f, 0.f, 0.f};
         }
         colors[1].clearValue = {1.f, 1.f, 1.f, 1.f};
+        colors[3].clearValue = {0.f, 1.f, 1.f, 1.f};  // metal=0, rough/ao/spec=1
         colors[0].view       = slot.normalView.Get();
         colors[1].view       = slot.depthColorView.Get();
         colors[2].view       = slot.albedoView.Get();
+        colors[3].view       = slot.pbrParamsView.Get();
+        colors[4].view       = slot.emissiveView.Get();
         WGPURenderPassDepthStencilAttachment depth{};
         depth.view            = slot.depthView.Get();
         depth.depthClearValue = 1.f;
@@ -4444,7 +4525,7 @@ void Graphics::submitPendingDeferredPasses() {
         depth.stencilLoadOp   = WGPULoadOp_Undefined;
         depth.stencilStoreOp  = WGPUStoreOp_Undefined;
         WGPURenderPassDescriptor descriptor{};
-        descriptor.colorAttachmentCount   = 3;
+        descriptor.colorAttachmentCount   = 5;
         descriptor.colorAttachments       = colors;
         descriptor.depthStencilAttachment = &depth;
         wgpu::RenderPassEncoder pass =
@@ -4520,6 +4601,8 @@ void Graphics::popValidationScope() {
 
 void Graphics::present() {
     ensureFileTexturesReady();
+    applyPendingResourceChanges();
+    if (!isActive()) return;
     if (!device || !surface || !swapchainConfigured) return;
     pumpReadback();
     rebuildSwapchainIfNeeded();
@@ -4592,6 +4675,11 @@ void Graphics::present() {
     // Stage-3 visibility pass consumes the compute-compacted instance table
     // before the scene pass resolves material shading.
     recordGpuDrivenVisibility(encoder);
+
+    // Hybrid: GBuffer must be written before deferred lighting samples it into
+    // scene color. Forward+ keeps the historical order (GBuffer after scene).
+    const bool wantDeferredLighting = deferredLightingPending_;
+    if (wantDeferredLighting) flushGBufferPassInto(encoder, aoActive);
 
     // 2. Scene color pass (3D) into the offscreen target.
     wgpu::TextureView sceneView;
@@ -4668,6 +4756,9 @@ void Graphics::present() {
             rp.depthStencilAttachment = &ds;
             wgpu::RenderPassEncoder pass =
                 encoder.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor*>(&rp));
+            // Phase D Hybrid: clustered deferred lighting fills opaque scene
+            // color + depth before transparent Forward+ mesh draws.
+            if (wantDeferredLighting) flushDeferredLighting(pass);
             flushVoxelDraws(pass, sceneColorFormat);
             flushGpuDrivenResolve(pass);
             flushMesh3D(pass, sceneColorFormat);
@@ -4716,82 +4807,8 @@ void Graphics::present() {
         }
     }
 
-    // 3. GBuffer pass.
-    if (gbufferPassPending && !gbufferSlots.empty()) {
-        lastGbufferSlot                    = currentFrameSlot();
-        GbufferSlot&                  slot = gbufferSlots[lastGbufferSlot];
-        WGPURenderPassColorAttachment colorAtts[3]{};
-        for (int i = 0; i < 3; ++i) {
-            colorAtts[i].depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
-            colorAtts[i].loadOp     = WGPULoadOp_Clear;
-            colorAtts[i].storeOp    = WGPUStoreOp_Store;
-            colorAtts[i].clearValue = {0.f, 0.f, 0.f, 1.f};
-        }
-        colorAtts[0].view = slot.normalView.Get();
-        colorAtts[1].view = slot.depthColorView.Get();
-        colorAtts[2].view = slot.albedoView.Get();
-        WGPURenderPassDepthStencilAttachment ds{};
-        ds.view              = slot.depthView.Get();
-        ds.depthClearValue   = 1.f;
-        ds.depthLoadOp       = WGPULoadOp_Clear;
-        ds.depthStoreOp      = WGPUStoreOp_Store;
-        ds.stencilClearValue = 0;
-        ds.stencilLoadOp     = WGPULoadOp_Undefined;
-        ds.stencilStoreOp    = WGPUStoreOp_Undefined;
-        WGPURenderPassDescriptor rp{};
-        rp.colorAttachmentCount   = 3;
-        rp.colorAttachments       = colorAtts;
-        rp.depthStencilAttachment = &ds;
-        wgpu::RenderPassEncoder pass =
-            encoder.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor*>(&rp));
-        flushGbufferPass(pass);
-        pass.End();
-
-        // 3b. SSAO pass: derive a screen-space occlusion texture from the
-        // G-buffer linear depth; the forward mesh pass samples the previous
-        // slot (one frame of latency).
-        if (aoActive) {
-            ensureAOResources(sceneColorWidth, sceneColorHeight);
-            if (aoPipeline && aoTex[0]) {
-                pushValidationScope();
-                GbufferSlot& gslot = gbufferSlots[currentFrameSlot()];
-                struct AOUbo {
-                    glm::vec4 params;  // radius, power, nearZ, farZ
-                    float     intensity;
-                    float     invScale;  // AO target size / depth size
-                    float     pad;
-                } aou;
-                // Near/far are passed so the shader can linearize the
-                // hardware depth into world units for the occlusion delta.
-                aou.params    = glm::vec4(0.05f, 1.1f, mesh3dNear, mesh3dFar);
-                aou.intensity = 1.0f;
-                aou.invScale  = 0.5f;
-                aou.pad       = 0.f;
-                queue.WriteBuffer(aoUbo, 0, &aou, sizeof(aou));
-                wgpu::BindGroup aoBg = makeAOBindGroup(gslot.depthView);
-
-                WGPURenderPassColorAttachment colorAtt{};
-                colorAtt.view       = aoView[aoWriteIndex].Get();
-                colorAtt.depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
-                colorAtt.loadOp     = WGPULoadOp_Clear;
-                colorAtt.storeOp    = WGPUStoreOp_Store;
-                colorAtt.clearValue = {1.f, 1.f, 1.f, 1.f};
-                WGPURenderPassDescriptor rp{};
-                rp.colorAttachmentCount = 1;
-                rp.colorAttachments     = &colorAtt;
-                wgpu::RenderPassEncoder apass =
-                    encoder.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor*>(&rp));
-                apass.SetPipeline(aoPipeline);
-                apass.SetBindGroup(0, aoBg, 0, nullptr);
-                apass.SetVertexBuffer(0, fullscreenQuadVb, 0, 4 * 32);
-                apass.SetIndexBuffer(fullscreenQuadIb, wgpu::IndexFormat::Uint32, 0, 24);
-                apass.DrawIndexed(6, 1, 0, 0, 0);
-                apass.End();
-                popValidationScope();
-                aoWriteIndex ^= 1;
-            }
-        }
-    }
+    // 3. GBuffer pass (Forward+ / post-only path). Hybrid already flushed above.
+    if (!wantDeferredLighting) flushGBufferPassInto(encoder, aoActive);
 
     // 3c. Screen-space decals consume the freshly written GBuffer depth and
     // world normal, then write three transparent layer attachments.
@@ -4910,6 +4927,7 @@ void Graphics::present() {
     sceneColorPassOpen  = false;
     active3DCanvas      = nullptr;
     gbufferPassPending  = false;
+    deferredLightingPending_ = false;
 }
 
 // ---------------------------------------------------------------------------

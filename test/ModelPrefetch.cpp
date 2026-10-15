@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <future>
 #include <thread>
 #include <vector>
@@ -49,6 +50,13 @@ TEST_CASE("model3d.prefetch rejects missing executor and empty paths") {
 TEST_CASE("model3d.prefetch decodes on worker and joins the canonical cache") {
     auto* fs = eve::filesystem::Filesystem::create();
     REQUIRE(fs->setIdentity("eve_model_prefetch_contract", true));
+    // Other isolated tests create the shared application-data parent concurrently.
+    // Prepare this fixture with an idempotent OS operation before mounting it.
+    const std::string           saveDirectory = fs->getSaveDirectory();
+    const std::filesystem::path savePath(std::u8string(saveDirectory.begin(), saveDirectory.end()));
+    std::error_code             directoryError;
+    std::filesystem::create_directories(savePath, directoryError);
+    REQUIRE(!directoryError);
     REQUIRE(fs->setupWriteDirectory());
     const std::string obj = "v 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 3\n";
     fs->write("prefetch.obj", obj.data(), obj.size());

@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include "common/Result.h"
 
 namespace eve::asset {
@@ -13,5 +15,5 @@ namespace eve::asset_graphics {
  * @remarks Version one permits one fragment sampler (albedo), fixed vertex attributes, a mesh Frame UBO,
  * and optional float data[32] push constants. Other descriptor layouts are explicitly unsupported.
  */
-[[nodiscard]] Result<void> validateShaderAssetGpu(const asset::ShaderAsset& shader);
+[[nodiscard]] EVENGINE_API_WORLD Result<void> validateShaderAssetGpu(const asset::ShaderAsset& shader);
 }  // namespace eve::asset_graphics

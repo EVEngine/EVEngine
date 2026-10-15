@@ -120,6 +120,16 @@ rpg.registerSkillDamage("mana_drain", "mana", "a.attack", "", 0.0, 100); // 打�
 local battle = rpg.newBattle();
 battle.addActor(hero, 0); battle.addActor(slime, 1);   // 阵营是任意整数 id
 battle.setPlayerSide(0);                                // 玩家侧（默认 0）
+// 原子替换本场战斗使用的通用 Settlement 规则；失败时保留旧规则。
+local configured = battle.configureSettlementRulesJson(@"{
+  ""schema"":""settlement.rules"",""version"":1,
+  ""rules"":[{
+    ""id"":""fire_guard"",""source"":""status:guard"",
+    ""stage"":""target_mitigation"",""operation"":""resist_percent"",
+    ""value"":0.25,""kinds"": [""damage""],""requiredTags"": [""element:fire""]
+  }]
+}");
+if (!configured.ok) throw configured.status.summary;
 battle.setAction(hero, "fireball", slime);
 battle.autoEnemyActions();
 battle.startRound();
@@ -145,6 +155,216 @@ if (world.isObjectConsumed("village", "old_chest")) { /* 不再生成宝箱 */ }
 缺失括号、尾随文本、非法 token 与非有限数值会拒绝注册；C++
 `evaluateFormulaChecked()` 在运行时除零返回结构化失败，兼容求值入口投影为 `0`。
 
+## `.dnut` 剧情脚本（RPG 方言）
+
+`.dnut` 是引擎的作者序列语言。**RPG 方言**由 `rpg` 模块注册词表，用一份文本描述
+剧情事件的移动、动画、选取、技能、属性、物品与装备。语言核心（词法、编译、
+跨帧解释器）在 L1 模块 `dnut_interpreter`，RPG 只贡献**词表**与领域 handler。
+
+### 最小例子
+
+```
+story village.arrival {
+    move actor=hero x=10 y=4 duration=0.5
+    animation target=hero clip=emote.wave hold=true
+    skill actor=hero learn=fireball
+    attribute actor=hero name=attack op=add value=5
+    item add=potion count=2
+    equipment actor=hero equip=iron-sword slot=weapon
+    flag name=village.visited state=true
+    message text=Arrived
+}
+```
+
+### 步骤词表
+
+| 步骤 | 字段 | 形状 | 谁执行 |
+| --- | --- | --- | --- |
+| `move` | `actor` `x` `y` `[duration]` | 宿主呈现 / 移动控制器 | `RpgStoryBinding::moveActor`；未装控制器时由呈现层执行，脚本确认 |
+| `animation` | `target` `clip` `[loop]` `[hold]` | 宿主呈现 / 播放控制器 | `RpgStoryBinding::playAnimation`；未装控制器时由呈现层执行，脚本确认 |
+| `select` | `object` `[prompt]` | 宿主呈现 | 交互层 |
+| `camera` | `x` `y` `[duration]` | 宿主呈现 | 相机 |
+| `dialogue` | `id` | 宿主呈现 | dialogue 模块 |
+| `message` | `text` | 宿主呈现 | UI |
+| `skill` | `actor` + (`learn` \| `forget`) | 立即 | `RPGActor::learnSkill` / `forgetSkill` |
+| `attribute` | `actor` `name` `op(set\|add\|sub\|mul)` `value` | 立即 | `RPGActor` 基础属性 |
+| `item` | (`add` \| `remove`) `[count=1]` | 立即 | `inventory::Bag` |
+| `equipment` | `actor` + (`equip` `slot` \| `unequip`) | 立即 | `inventory::EquipmentSet` |
+| `flag` | `name` `state` | 立即 | `GameState` 开关 |
+| `variable` | `name` `op(set\|add)` `value` | 立即 | `GameState` 变量 |
+
+控制流：`if <条件> { … } else { … }`、`choice { option "标签" [when <条件>] { … } }`、
+`call <storyId>`、`wait <秒>`、`end`。
+
+条件是 `变量 运算符 字面量`，可用 `&&`、`||`、`!` 和括号组合。变量名用点号寻址
+`GameState`：`switch.<名>`、`variable.<名>`、`self.<scope>.<名>`。
+
+### 角色移动（跨游戏模式）
+
+`.dnut` 只声明「谁去哪里、用多久」，**不声明怎么走**。`x` / `y` 的含义由宿主定义：
+格子 RPG 当作格坐标，战棋当作棋盘格，连续世界当作世界单位，横版当作车道。引擎
+既不解释也不取整，更不假设任何寻路模型，所以同一份剧情脚本可以同时服务不同玩法。
+
+宿主在 binding 上装一个 `moveActor`，`move` 步骤就自动交给它，不必再在宿主循环里
+写 `if (kind == "move")` 分支：
+
+```cpp
+eve::rpg::RpgStoryBinding binding;
+binding.party     = &party;
+binding.gameState = &gameState;
+binding.moveActor = [](const eve::rpg::StoryMoveRequest& request) {
+    // 你的移动模型：格子 / 战棋 / 连续世界都在这里决定。
+    return navigator.request(request.actorId, request.x, request.y,
+                             request.hasDuration, request.duration);
+};
+```
+
+三种返回值决定剧情如何继续：
+
+| 返回值 | 效果 |
+| --- | --- |
+| `StoryMoveStatus::Arrived` | 步骤**立即完成**，剧情继续，不挂起（瞬移，或角色已在目标点） |
+| `StoryMoveStatus::Travelling` | 剧情挂起，宿主在角色**真正到达后**调用 `session.advance()` |
+| `StoryMoveStatus::Unreachable` | 步骤失败，返回结构化诊断，游标停在原地 |
+
+控制器返回失败 `Result` 时诊断原样上报，因此「寻路服务没加载」这类原因不会被吞掉。
+
+**不装控制器时行为完全不变**：`move` 仍是宿主呈现步骤，脚本读 payload 后 `advance()`。
+这是给「移动必须走自己的命令队列」这类宿主留的出口，也是既有内容的兼容路径。
+
+`StoryMoveRequest::actor` 只是便利投影：仅当 binding 能解析该 id（`party` 或
+`resolveActor`）时才非空。地图物件、相机、编队等非队伍主体会让它为 null，而步骤
+照样执行——用 `actorId` 在自己的主体空间里解析即可。
+
+### 动画播放（跨游戏模式）
+
+`.dnut` 只声明「谁播哪个 clip、要不要循环、结束后是否定格」，**不声明怎么播**。
+`clip` 对引擎是**不透明字符串**：骨骼动画 clip id、Sprite 序列名、Spine 动画、
+montage 段都可以。引擎既不解析也不加载它，更不假设任何骨骼或动画栈，所以同一份
+剧情脚本可以同时服务不同玩法。
+
+宿主在 binding 上装一个 `playAnimation`，`animation` 步骤就自动交给它，不必再在
+宿主循环里写 `if (kind == "animation")` 分支：
+
+```cpp
+eve::rpg::RpgStoryBinding binding;
+binding.party         = &party;
+binding.gameState     = &gameState;
+binding.playAnimation = [](const eve::rpg::StoryAnimationRequest& request) {
+    // 你的播放模型：骨骼 / Sprite / Spine / montage 都在这里决定。
+    return player.play(request.targetId, request.clip, request.loop, request.hold);
+};
+```
+
+三种返回值决定剧情如何继续：
+
+| 返回值 | 效果 |
+| --- | --- |
+| `StoryAnimationStatus::Finished` | 步骤**立即完成**，剧情继续，不挂起（瞬发、零长 clip、纯表现性闪烁） |
+| `StoryAnimationStatus::Playing` | 剧情挂起，宿主在 clip **真正播完后**调用 `session.advance()` |
+| `StoryAnimationStatus::Unavailable` | 步骤失败，返回「谁播不了哪个 clip」的结构化诊断，游标停在原地 |
+
+控制器返回失败 `Result` 时诊断原样上报，因此「clip 库还在流式加载」这类原因不会被吞掉。
+
+`loop` 与 `hold` 按作者书写的原样透传，引擎不解释：`loop` 表示无限重复，`hold` 表示
+clip 结束后停在最后一帧。宿主如果没有对应概念，忽略自己没实现的标志即可——省略这两个
+字段时它们都是 `false`，不会替宿主做任何猜测。
+
+**不装控制器时行为完全不变**：`animation` 仍是宿主呈现步骤，脚本读 payload 后
+`advance()`。这是给「播放必须走自己的状态机 / 混合调度」这类宿主留的出口。
+
+`StoryAnimationRequest::actor` 与移动的 `actor` 一样只是便利投影：仅当 binding 能解析
+该 id（`party` 或 `resolveActor`）时才非空。特效挂点、地图道具、UI 元素等非队伍主体会让
+它为 null，而步骤照样执行——用 `targetId` 在自己的主体空间里解析即可。
+
+### 使用
+
+下面的脚本走的是**未装 C++ 移动控制器**的宿主呈现路径：`move` 怎么做完全由脚本
+决定，这正是「脚本控制角色移动」的推荐写法，也是跨玩法最灵活的一条路。
+
+```squirrel
+local rpg = getModInst("rpg");
+rpg.replaceStoriesFromDnut(fileContent, "village.dnut");   // 严格校验 + 原子替换
+
+local session = rpg.newStorySession();
+local result  = session.begin("village.arrival", gs, party, bag, equipment);
+if (!result.ok) { print(result.status.summary + "\n"); return; }
+
+while (session.isActive()) {
+    local kind = session.getStepKind();
+    if (kind == "move") {
+        // 呈现层负责移动；完成后确认
+        moveActor(session.getStepString("actor"), session.getStepNumber("x"), session.getStepNumber("y"));
+        session.advance();
+    } else if (kind == "choice") {
+        session.select(session.getChoiceLabel(0));
+    } else if (kind == "message") {
+        showMessage(session.getStepString("text"));
+        session.advance();
+    } else {
+        session.advance();
+    }
+}
+```
+
+### 脚本面（Squirrel）
+
+`eve.rpg` 上的方法：
+
+| 方法 | 作用 |
+| --- | --- |
+| `replaceStoriesFromDnut` | 严格编译并原子替换 `.dnut` 故事目录 |
+| `clearStories` | 清空已发布的故事 |
+| `getStoryCount` | 已发布故事数量 |
+| `hasStory` | 某个 story id 是否存在 |
+| `newStorySession` | 新建一个 `RPGStorySession` |
+
+`RPGStorySession` 上的方法：
+
+| 方法 | 作用 |
+| --- | --- |
+| `begin` | 启动一个 story，运行到第一个挂起点；`party` / `bag` / `equipment` 可传 `null`（纯演出 story 不需要它们） |
+| `advance` | 确认当前宿主呈现的步骤并继续 |
+| `select` | 按标签回答 `choice` 步骤 |
+| `stop` | 停止并清空会话 |
+| `isActive` | 是否有 story 正在运行 |
+| `isBlocked` | 是否挂起等待确认 |
+| `getStoryId` | 当前 story id |
+| `getStepKind` | 当前步骤类型 |
+| `getChoiceLabelCount` | 当前 `choice` 的选项数 |
+| `getChoiceLabel` | 按序号取选项标签 |
+| `getStepString` | 取当前步骤的字符串字段 |
+| `getStepNumber` | 取当前步骤的数值字段 |
+| `getStepBool` | 取当前步骤的布尔字段 |
+
+### 语义要点
+
+- **严格编译**：字段名、字段类型、跨字段规则（`learn` 与 `forget` 恰有其一）在
+  `replaceStoriesFromDnut` 时报错；含错误的文档**不替换**上一份目录。
+- **宿主呈现的步骤**没有 C++ handler：运行时会挂起，脚本必须 `advance()`；
+  `choice` 必须用 `select(标签)` 回答，`advance()` 会被拒绝。
+  `move` 在装了移动控制器时由 handler 派发，但**确认方式相同**——角色到达后
+  调用 `advance()`；控制器返回 `Arrived` 时根本不会挂起。
+- **领域步骤**在运行时立即执行；失败（例如袋中不足）会让 `begin`/`advance` 返回
+  结构化失败并保持游标，不会静默跳过。
+- **完成事实**：不可重复的 story 完成后把 `story.<id>.completed` 写进 `GameState`，
+  再次 `begin` 会失败；`repeatable` story 每次重新开始。
+- **中断游标**：每次挂起后，会话把 `captureState` JSON 写入
+  `GameState` 的 scoped string `story.<id>.cursor`。下次 `begin` 若发现该字符串，
+  会恢复到同一挂起点（含 `blocked`/`waitingStep`），因此 F5 存档可续播对话或 `wait`。
+  故事完成后清除 `cursor`。显式 `captureState` / `restoreState` 仍留给需要自管 blob 的宿主。
+- **快照**：`begin` 时快照整份目录，热替换不会让活动会话悬空。
+- **与对话方言共存**：对话前端会跳过顶层 `story` 块；RPG 编译器会跳过
+  `pool`/`conversation`。同一 `.dnut` 文件可混写两种方言，但装载仍走两个入口
+  （`replaceStoriesFromDnut` 与 `DialogueFlow.loadFromDnut`）。conversation/pool
+  尚未迁入 L1 词法/运行时——那是后续增量，不是第二套 story 语法。
+
+### 产品示例
+
+`examples/rpg-classic` 已用 `data/stories.dnut` + `RpgStorySession` 驱动雾林抵达剧情，
+宿主循环见 `presentStoryStep()`（dialogue / wait / message / move / camera）。
+JSON `StoryEvent` API 仍保留为兼容面，新产品应优先写 `.dnut` story。
+
 ## 常见问题
 
 - 只注册 Skill 未注册其引用的 Effect。
@@ -153,23 +373,14 @@ if (world.isObjectConsumed("village", "old_chest")) { /* 不再生成宝箱 */ }
 - 追踪器读完事件前先 `pollEvents()`；两个 Tracker 要各自 `notify`；`completePolicy=claim` 时满进度是 `ready`，要 `claim`。
 - 掉落物品需先在 `inventory` 模块注册物品定义，否则 `bag.addItem` 拒绝加入。
 
-## API 快查
+## 绑定与行为说明
 
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
+`newSettlementContext()`、`runSettlement()` 及 stage 管理方法是兼容旧项目的开放数值袋接口；内部调度已
+委托通用 Settlement，但它不提供正式 Battle 的规则、原子提交、Trace 与回放语义。新玩法应使用
+`newBattle()` 及 Battle 的统一结算配置入口。
 
-- `addAttributeModifier()`、`addTag()`、`applyEffect()`、`beginCastSkill()`、`canCastSkill()`、`canCastSkillReason()`、`cancelCastSkill()`、`clearEffectDefinitions()`
-- `clearAllItemStats()`、`clearClassDefinitions()`、`clearItemStats()`、`clearLootTables()`、`clearQuestDefinitions()`、`clearSettlementPipeline()`、`clearSkillDamage()`、`clearSkillDefinitions()`、`forgetSkill()`、`gainXp()`
-- `get()`、`getBaseAttribute()`、`getCastEventCaster()`、`getCastEventCount()`、`getCastEventSkillId()`、`getCastEventTarget()`、`getCastProgress()`、`getCastingSkillId()`
-- `getCurrent()`、`getEffectDefinitionCount()`、`getFinalAttribute()`、`getItemStatCount()`、`getLevel()`、`getLevelUpEventActor()`、`getLevelUpEventCount()`、`getLevelUpEventNewLevel()`
-- `getLevelUpEventPreviousLevel()`、`getLootTableCount()`、`getMax()`、`getName()`、`getQuestDefinitionCount()`、`hasQuestDefinition()`、`getSettlementStageCount()`、`getSkillCooldown()`、`getSkillDefinitionCount()`
-- `getStatusCount()`、`getStatusEffectId()`、`getStatusInstanceId()`、`getStatusRemaining()`、`getStatusStacks()`、`getTickEventActor()`、`getTickEventCount()`、`getTickEventEffectId()`
-- `getTickEventInstanceId()`、`getTickEventSource()`、`getTickEventStacks()`、`getVitalsEventAction()`、`getVitalsEventActor()`、`getVitalsEventAmount()`、`getVitalsEventCount()`、`getVitalsEventCurrent()`
-- `getVitalsEventMax()`、`getVitalsEventResource()`、`getVitalsEventSource()`、`getXp()`、`getXpToNext()`、`has()`、`hasAttribute()`、`hasEffect()`
-- `hasSettlementStage()`、`hasTag()`、`heal()`、`isCastingSkill()`、`isDead()`、`knowsSkill()`、`learnSkill()`、`modifyBaseAttribute()`
-- `newActor()`、`newBattle()`、`newGameState()`、`newWorldState()`、`newSettlementContext()`、`newTracker()`、`registerClassesFromJson()`、`registerEffectsFromJson()`、`globalGameState()`
-- `removeAllAttributeModifiersBySource()`、`removeAttributeModifier()`、`removeAttributeModifiersBySource()`、`removeSettlementStage()`、`removeStatus()`、`removeStatusByEffect()`、`removeStatusBySource()`、`removeStatusByTag()`
+
 - `release()`（销毁 ECS actor）、`revive()`、`rollLoot()`、`runSettlement()`、`set()`、`setBaseAttribute()`、`setCurrent()`、`setSettlementStageEnabled()`、`setSettlementStagePriority()`
-- `setSkillCooldown()`、`setXpToNext()`、`syncEquipModifiers()`、`takeDamage()`、`registerItemStatsFromJson()`、`registerLootTablesFromJson()`、`registerQuestsFromJson()`、`replaceQuestsFromJson()`、`registerSkillDamage()`、`registerSkillsFromJson()`、`registerTraitsFromJson()`、`clearTraitDefinitions()`、`getTraitDefinitionCount()`、`getClassDefinitionCount()`、`update()`
 - `claimQuestRewards(tracker, gameState, bag, questId)` 原子领取任务声明的全部 `item` / `attribute` 奖励；返回结构化 Result。
 - `collectWorldLoot(...)` 原子提交一次持久化 loot 交互的世界消费、任务通知、属性与物品效果。
 - `settleBattleVictory(...)` 原子结算战斗胜利带来的经验、升级技能、任务进度、世界遭遇消费和 GameState 奖励。
@@ -220,7 +431,11 @@ if (world.isObjectConsumed("village", "old_chest")) { /* 不再生成宝箱 */ }
 显式目标属于本场战斗且阵营符合 `self` / `enemySingle` 规则。失败返回结构化 Result 且不会污染待行动队列。
 `setAction()` 是保留旧调用形状的兼容门面。
 
-**GameState：** `addVariable()`、`clear()`、`getSelfVariable()`、`getVariable()`、`hasSelfVariable()`、`isSwitchOn()`、`restoreSnapshotJson()`、`setSelfVariable()`、`setSwitch()`、`setVariable()`、`snapshotJson()`、`switchOff()`、`switchOn()`
+**GameState：** `addVariable()`、`clear()`、`clearSelfString()`、`getSelfString()`、`getSelfVariable()`、`getVariable()`、`hasSelfString()`、`hasSelfVariable()`、`isSwitchOn()`、`restoreSnapshotJson()`、`setSelfString()`、`setSelfVariable()`、`setSwitch()`、`setVariable()`、`snapshotJson()`、`switchOff()`、`switchOn()`
+
+`GameState.snapshotJson()` 生成 schema 为 `eve.rpg.game-state`、版本为 1 的确定性 JSON；
+除开关、数值变量与 scoped 数值外，还可选序列化 `selfStrings`（scoped 字符串事实，供
+`.dnut` story 游标等非数值载荷使用）。缺失的 `selfStrings` 在恢复时视为空。
 
 **RPGWorldState：** `consumeObject()`、`isObjectConsumed()`、`resetObject()`。这是借用 `GameState` 的
 类型化适配器，不是第二份状态；map/object ID 必须非空、至多 256 字节且不含控制字符。consume/reset
@@ -228,7 +443,6 @@ if (world.isObjectConsumed("village", "old_chest")) { /* 不再生成宝箱 */ }
 
 **成长读档：** `RPGActor.restoreProgression()` 会校验等级、当前经验与升级阈值，并在失败时保持原成长状态不变；它不会伪造升级事件。
 
-`GameState.snapshotJson()` 生成 schema 为 `eve.rpg.game-state`、版本为 1 的确定性 JSON；
 `restoreSnapshotJson()` 会先校验完整候选再原子替换，未知版本或字段类型错误不会清空当前状态。
 版本 1 忽略未知字段，为后续兼容扩展保留空间。
 
@@ -260,7 +474,8 @@ if (world.isObjectConsumed("village", "old_chest")) { /* 不再生成宝箱 */ }
 `clearBattleTactics()` 用于显式卸载目录。
 
 剧情事件使用 `replaceStoryEventsFromJson(json)` 严格发布 schema 为 `eve.rpg.story-events`、版本为 1
-的内容文档。每个事件包含稳定 ID、`repeatable` 策略和 1–128 个有序展示步骤；步骤类型为
+的内容文档。**这是兼容旧线性 JSON 路径的门面**；新产品与 `examples/rpg-classic` 应使用
+`.dnut` RPG 方言（`replaceStoriesFromDnut` / `newStorySession`）。每个事件包含稳定 ID、`repeatable` 策略和 1–128 个有序展示步骤；步骤类型为
 `dialogue`、`message`、`wait`、`move`、`camera`，统一携带 `reference`、`actorId`、`x/y` 和
 `duration` 字段，并按类型严格校验字段组合。未知 schema/version、未知字段、重复 ID、非有限坐标或
 非法时长会拒绝整批替换并保留旧目录。`getStoryEventCount()` / `hasStoryEvent(id)` 查询已提交内容，
@@ -276,7 +491,6 @@ if (world.isObjectConsumed("village", "old_chest")) { /* 不再生成宝箱 */ }
 因此游戏可在步骤确认边界保存，并在读档后用新 session 精确重放尚未确认的展示步骤。
 
 **RPGStoryEventSession 方法：** `advance()`、`begin()`、`getActorId()`、`getDuration()`、
-`getEventId()`、`getReference()`、`getStepCount()`、`getStepIndex()`、`getStepKind()`、`getX()`、
 `getY()`、`isActive()`、`isFinished()`。
 
 `eve.RPGSaveSession()` 是 non-owning 的存档协调器。调用
@@ -312,7 +526,10 @@ owning payload 副本，随后仍执行全部 participant codec；磁盘原文�
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/rpg/`](../../../src/modules/rpg/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `rpg`。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](rpg/api-reference.md)，使用前先确认本章的前置条件与生命周期。

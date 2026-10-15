@@ -4,6 +4,7 @@
 #include "animation/AnimPlayer.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
+#include "animation/RootMotionPolicy.h"
 
 #include <algorithm>
 #include <cmath>
@@ -42,15 +43,21 @@ Result<T> invalid(std::string message, std::string path) {
     return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
 }
 
-TransformTRS filtered(TransformTRS delta, MontageRootMotionMask mask) {
-    if (!mask.translationX) delta.px = 0.0f;
-    if (!mask.translationY) delta.py = 0.0f;
-    if (!mask.translationZ) delta.pz = 0.0f;
-    if (!mask.rotation) {
-        delta.qx = delta.qy = delta.qz = 0.0f;
-        delta.qw                       = 1.0f;
-    }
-    return delta;
+RootMotionLockAxes locksFromMask(MontageRootMotionMask mask) noexcept {
+    RootMotionLockAxes locks = RootMotionLockAxes::None;
+    if (!mask.translationX) locks = locks | RootMotionLockAxes::X;
+    if (!mask.translationY) locks = locks | RootMotionLockAxes::Y;
+    if (!mask.translationZ) locks = locks | RootMotionLockAxes::Z;
+    return locks;
+}
+
+MontageRootMotionMask maskFromPolicy(const RootMotionPolicy& policy) noexcept {
+    MontageRootMotionMask mask;
+    mask.translationX = !hasLock(policy.lockAxes, RootMotionLockAxes::X);
+    mask.translationY = !hasLock(policy.lockAxes, RootMotionLockAxes::Y);
+    mask.translationZ = !hasLock(policy.lockAxes, RootMotionLockAxes::Z);
+    mask.rotation     = !policy.lockRotation;
+    return mask;
 }
 
 void multiplyRotation(TransformTRS& total, float x, float y, float z, float w) {
@@ -99,7 +106,9 @@ Result<std::unique_ptr<PreparedMontage>> buildPreparedMontage(const action::Acti
 }  // namespace
 
 MontagePlayer::MontagePlayer(AnimSkeleton& skeleton)
-    : skeleton_(skeleton), player_(std::make_unique<AnimPlayer>(&skeleton)) {}
+    : skeleton_(skeleton), player_(std::make_unique<AnimPlayer>(&skeleton)) {
+    pushRootMotionPolicyToPlayer();
+}
 
 MontagePlayer::~MontagePlayer() = default;
 
@@ -124,17 +133,24 @@ Result<void> MontagePlayer::prepare(action::ActionTimeline timeline, std::vector
     std::set<std::string> uris;
     for (std::size_t index = 0; index < clips.size(); ++index) {
         if (clips[index].uri.empty() || !clips[index].clip)
-            return invalid<void>("montage clip asset is incomplete", "clips[" + std::to_string(index) + "]");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "montage clip asset is incomplete",
+                                                           "clips[" + std::to_string(index) + "]"));
         if (!std::isfinite(clips[index].clip->getDuration()) || clips[index].clip->getDuration() <= 0.0f)
-            return invalid<void>("montage clip duration must be positive", "clips[" + std::to_string(index) + "]");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "montage clip duration must be positive",
+                                                           "clips[" + std::to_string(index) + "]"));
         if (!uris.insert(clips[index].uri).second)
-            return invalid<void>("montage clip URI is duplicated", "clips[" + std::to_string(index) + "].uri");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "montage clip URI is duplicated",
+                                                           "clips[" + std::to_string(index) + "].uri"));
     }
     for (std::size_t index = 0; index < timeline.animationSections.size(); ++index) {
         const auto& section = timeline.animationSections[index];
         if (!uris.contains(section.animationUri))
-            return invalid<void>("animation section clip was not supplied",
-                                 "animationSections[" + std::to_string(index) + "].animationUri");
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "animation section clip was not supplied",
+                                  "animationSections[" + std::to_string(index) + "].animationUri"));
         AnimClip*  clip  = nullptr;
         const auto asset = std::find_if(clips.begin(), clips.end(),
                                         [&](const auto& candidate) { return candidate.uri == section.animationUri; });
@@ -142,8 +158,9 @@ Result<void> MontagePlayer::prepare(action::ActionTimeline timeline, std::vector
         const double sourceStart = section.sourceStart.seconds();
         const double sourceEnd   = section.sourceEnd.isZero() ? clip->getDuration() : section.sourceEnd.seconds();
         if (sourceStart >= clip->getDuration() || sourceEnd > clip->getDuration() || sourceEnd <= sourceStart)
-            return invalid<void>("animation section trim is outside the supplied clip",
-                                 "animationSections[" + std::to_string(index) + "].sourceStartNs");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "animation section trim is outside the supplied clip",
+                "animationSections[" + std::to_string(index) + "].sourceStartNs"));
     }
 
     auto prepared = buildPreparedMontage(timeline, clips);
@@ -154,23 +171,22 @@ Result<void> MontagePlayer::prepare(action::ActionTimeline timeline, std::vector
     prepared_      = std::move(prepared).takeValue();
     activeSection_ = nullptr;
     player_->stop();
-    time_                        = Duration::zero();
-    lastTick_                    = SimulationTick::zero();
-    hasLastTick_                 = false;
-    started_                     = false;
-    playing_                     = false;
-    blendingOut_                 = false;
-    weight_                      = 1.0;
-    executionId_                 = {};
-    rootMotionMask_.translationX = timeline_->montage.rootMotionHorizontal;
-    rootMotionMask_.translationZ = timeline_->montage.rootMotionHorizontal;
-    rootMotionMask_.translationY = timeline_->montage.rootMotionVertical;
-    rootMotionMask_.rotation     = timeline_->montage.rootMotionRotation;
+    time_        = Duration::zero();
+    lastTick_    = SimulationTick::zero();
+    hasLastTick_ = false;
+    started_     = false;
+    playing_     = false;
+    blendingOut_ = false;
+    weight_      = 1.0;
+    executionId_ = {};
+    applyTimelineRootMotionChannels();
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
 Result<void> MontagePlayer::reloadClips(IMontageClipProvider& provider) {
-    if (!timeline_) return invalid<void>("montage has not been prepared", "montage");
+    if (!timeline_)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage has not been prepared", "montage"));
 
     std::set<std::string>         seen;
     std::vector<MontageClipAsset> replacements;
@@ -197,21 +213,22 @@ Result<void> MontagePlayer::reloadClips(IMontageClipProvider& provider) {
 }
 
 Result<void> MontagePlayer::setSettings(action::ActionMontageSettings settings) {
-    if (!timeline_) return invalid<void>("montage has not been prepared", "montage");
+    if (!timeline_)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage has not been prepared", "montage"));
     auto candidate    = *timeline_;
     candidate.montage = settings;
     auto valid        = candidate.validate();
     if (!valid) return Result<void>::failure(valid.status());
-    timeline_->montage           = std::move(settings);
-    rootMotionMask_.translationX = timeline_->montage.rootMotionHorizontal;
-    rootMotionMask_.translationZ = timeline_->montage.rootMotionHorizontal;
-    rootMotionMask_.translationY = timeline_->montage.rootMotionVertical;
-    rootMotionMask_.rotation     = timeline_->montage.rootMotionRotation;
+    timeline_->montage = std::move(settings);
+    applyTimelineRootMotionChannels();
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
 Result<void> MontagePlayer::setSectionSplits(std::vector<Duration> splitTimestamps) {
-    if (!timeline_) return invalid<void>("montage has not been prepared", "montage");
+    if (!timeline_)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage has not been prepared", "montage"));
     auto candidate            = *timeline_;
     candidate.splitTimestamps = std::move(splitTimestamps);
     auto valid                = candidate.validate();
@@ -224,20 +241,28 @@ Result<void> MontagePlayer::setSectionSplits(std::vector<Duration> splitTimestam
 }
 
 Result<void> MontagePlayer::replaceClip(std::string_view uri, std::unique_ptr<AnimClip> clip) {
-    if (!timeline_) return invalid<void>("montage has not been prepared", "montage");
-    if (uri.empty() || !clip) return invalid<void>("replacement montage clip is incomplete", "clip");
+    if (!timeline_)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage has not been prepared", "montage"));
+    if (uri.empty() || !clip)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "replacement montage clip is incomplete", "clip"));
     if (!std::isfinite(clip->getDuration()) || clip->getDuration() <= 0.0f)
-        return invalid<void>("replacement montage clip duration must be positive", "clip.duration");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "replacement montage clip duration must be positive", "clip.duration"));
     const auto asset = std::find_if(clips_.begin(), clips_.end(), [&](const auto& value) { return value.uri == uri; });
-    if (asset == clips_.end()) return invalid<void>("replacement URI is not referenced by the montage", "uri");
+    if (asset == clips_.end())
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "replacement URI is not referenced by the montage", "uri"));
     for (std::size_t index = 0; index < timeline_->animationSections.size(); ++index) {
         const auto& section = timeline_->animationSections[index];
         if (section.animationUri != uri) continue;
         const double sourceStart = section.sourceStart.seconds();
         const double sourceEnd   = section.sourceEnd.isZero() ? clip->getDuration() : section.sourceEnd.seconds();
         if (sourceStart >= clip->getDuration() || sourceEnd > clip->getDuration() || sourceEnd <= sourceStart)
-            return invalid<void>("animation section trim is outside the replacement clip",
-                                 "animationSections[" + std::to_string(index) + "].sourceStartNs");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "animation section trim is outside the replacement clip",
+                "animationSections[" + std::to_string(index) + "].sourceStartNs"));
     }
 
     asset->clip = std::move(clip);
@@ -251,8 +276,12 @@ Result<void> MontagePlayer::replaceClip(std::string_view uri, std::unique_ptr<An
 }
 
 Result<void> MontagePlayer::play(action::ActionExecutionId executionId) {
-    if (!timeline_) return invalid<void>("montage has not been prepared", "montage");
-    if (executionId.isZero()) return invalid<void>("action execution id must not be zero", "executionId");
+    if (!timeline_)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage has not been prepared", "montage"));
+    if (executionId.isZero())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "action execution id must not be zero", "executionId"));
     player_->stop();
     activeSection_ = nullptr;
     time_          = Duration::zero();
@@ -267,8 +296,11 @@ Result<void> MontagePlayer::play(action::ActionExecutionId executionId) {
 
 Result<void> MontagePlayer::rebindExecution(action::ActionExecutionId executionId) {
     if (!timeline_ || !playing_)
-        return invalid<void>("montage must be prepared and playing before rebinding", "montage");
-    if (executionId.isZero()) return invalid<void>("action execution id must not be zero", "executionId");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "montage must be prepared and playing before rebinding", "montage"));
+    if (executionId.isZero())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "action execution id must not be zero", "executionId"));
     executionId_ = executionId;
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -368,6 +400,47 @@ void MontagePlayer::accumulateRootMotion(TransformTRS& total) const {
                      player_->getRootMotionRotationZ(), player_->getRootMotionRotationW());
 }
 
+void MontagePlayer::pushRootMotionPolicyToPlayer() noexcept {
+    player_->setRootMotionPolicy(rootMotionPolicy_)
+        .ignore("montage root-motion policy sync uses an already-validated policy snapshot");
+}
+
+void MontagePlayer::applyTimelineRootMotionChannels() noexcept {
+    MontageRootMotionMask mask;
+    mask.translationX = timeline_->montage.rootMotionHorizontal;
+    mask.translationZ = timeline_->montage.rootMotionHorizontal;
+    mask.translationY = timeline_->montage.rootMotionVertical;
+    mask.rotation     = timeline_->montage.rootMotionRotation;
+    rootMotionMask_                 = mask;
+    rootMotionPolicy_.lockAxes      = locksFromMask(mask);
+    rootMotionPolicy_.lockRotation  = !mask.rotation;
+    pushRootMotionPolicyToPlayer();
+}
+
+void MontagePlayer::setRootMotionMask(MontageRootMotionMask mask) noexcept {
+    rootMotionMask_                = mask;
+    rootMotionPolicy_.lockAxes     = locksFromMask(mask);
+    rootMotionPolicy_.lockRotation = !mask.rotation;
+    pushRootMotionPolicyToPlayer();
+}
+
+Result<void> MontagePlayer::setRootMotionPolicy(const RootMotionPolicy& policy) {
+    auto validated = validateRootMotionPolicy(policy);
+    if (!validated) return validated;
+    rootMotionPolicy_ = policy;
+    rootMotionMask_   = maskFromPolicy(policy);
+    auto pushed       = player_->setRootMotionPolicy(policy);
+    if (!pushed) return pushed;
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<void> MontagePlayer::setRootMotionCharacterYaw(float yawRadians) {
+    auto applied = player_->setRootMotionCharacterYaw(yawRadians);
+    if (!applied) return applied;
+    rootMotionPolicy_.characterYaw = yawRadians;
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
 Result<MontageAdvance> MontagePlayer::present(const action::ActionAdvance& advance, SimulationTick tick) {
     return presentImpl(advance, advance.timelineEvents, advance.activeBlocks, tick);
 }
@@ -384,10 +457,12 @@ MontagePlayer::presentImpl(const action::ActionAdvance& advance, std::vector<act
     if (!timeline_) return invalid<MontageAdvance>("montage has not been prepared", "montage");
     if (!playing_) return invalid<MontageAdvance>("montage is not playing", "montage");
     if (advance.id != executionId_)
-        return invalid<MontageAdvance>("action advance belongs to another execution", "advance.id");
+        return Result<MontageAdvance>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "action advance belongs to another execution", "advance.id"));
     if (advance.totalElapsed < time_ || advance.totalElapsed > timeline_->duration)
-        return invalid<MontageAdvance>("action advance time is outside the presentation cursor",
-                                       "advance.totalElapsed");
+        return Result<MontageAdvance>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "action advance time is outside the presentation cursor",
+                              "advance.totalElapsed"));
     if (hasLastTick_ && tick <= lastTick_)
         return Result<MontageAdvance>::failure(
             Diagnostic::error(DiagnosticCode::Conflict, "montage tick must advance monotonically", "tick"));
@@ -441,8 +516,8 @@ MontagePlayer::presentImpl(const action::ActionAdvance& advance, std::vector<act
         }
     }
     weight_ *= sectionEnvelopeAt(result.current);
-    result.weight     = weight_;
-    result.rootMotion = filtered(result.rootMotion, rootMotionMask_);
+    result.weight = weight_;
+    // Root motion is already policy-filtered (locks / facing / rotation) by the owned AnimPlayer.
     if (receiver_) receiver_->applyMontageRootMotion(result.rootMotion);
 
     time_        = result.current;
@@ -476,11 +551,18 @@ Result<std::vector<MontageActiveBlock>> MontagePlayer::activeBlocksAt(Duration t
 
 Result<MontageAdvance> MontagePlayer::jumpToTime(action::ActionExecutionId executionId, Duration target,
                                                  SimulationTick tick) {
-    if (!timeline_) return invalid<MontageAdvance>("montage has not been prepared", "montage");
-    if (!playing_) return invalid<MontageAdvance>("montage is not playing", "montage");
-    if (executionId != executionId_) return invalid<MontageAdvance>("jump belongs to another execution", "executionId");
+    if (!timeline_)
+        return Result<MontageAdvance>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage has not been prepared", "montage"));
+    if (!playing_)
+        return Result<MontageAdvance>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage is not playing", "montage"));
+    if (executionId != executionId_)
+        return Result<MontageAdvance>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "jump belongs to another execution", "executionId"));
     if (target < Duration::zero() || target > timeline_->duration)
-        return invalid<MontageAdvance>("montage jump is outside the timeline", "target");
+        return Result<MontageAdvance>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage jump is outside the timeline", "target"));
     if (hasLastTick_ && tick <= lastTick_)
         return Result<MontageAdvance>::failure(
             Diagnostic::error(DiagnosticCode::Conflict, "montage tick must advance monotonically", "tick"));
@@ -549,7 +631,9 @@ Result<double> MontagePlayer::physicalSectionProgress(std::size_t sectionIndex) 
 }
 
 Result<MontageAdvance> MontagePlayer::interrupt(SimulationTick tick) {
-    if (!timeline_) return invalid<MontageAdvance>("montage has not been prepared", "montage");
+    if (!timeline_)
+        return Result<MontageAdvance>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage has not been prepared", "montage"));
     if (!playing_) return Result<MontageAdvance>::success(MontageAdvance{}, Status::success(StatusCode::NoOp));
     if (hasLastTick_ && tick <= lastTick_)
         return Result<MontageAdvance>::failure(
@@ -579,8 +663,11 @@ Result<MontageAdvance> MontagePlayer::interrupt(SimulationTick tick) {
 
 Result<MontageAdvance> MontagePlayer::beginBlendOut(Duration duration, SimulationTick tick) {
     if (duration < Duration::zero())
-        return invalid<MontageAdvance>("montage blend-out duration must be non-negative", "duration");
-    if (!timeline_) return invalid<MontageAdvance>("montage has not been prepared", "montage");
+        return Result<MontageAdvance>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "montage blend-out duration must be non-negative", "duration"));
+    if (!timeline_)
+        return Result<MontageAdvance>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage has not been prepared", "montage"));
     if (duration.isZero() && playing_) return interrupt(tick);
     if (!playing_ && weight_ <= 0.0)
         return Result<MontageAdvance>::success(MontageAdvance{}, Status::success(StatusCode::NoOp));
@@ -619,9 +706,12 @@ Result<MontageAdvance> MontagePlayer::beginBlendOut(Duration duration, Simulatio
 }
 
 Result<MontageAdvance> MontagePlayer::advanceBlendOut(Duration delta, SimulationTick tick) {
-    if (!blendingOut_) return invalid<MontageAdvance>("montage is not blending out", "montage");
+    if (!blendingOut_)
+        return Result<MontageAdvance>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage is not blending out", "montage"));
     if (delta < Duration::zero())
-        return invalid<MontageAdvance>("montage blend-out delta must be non-negative", "delta");
+        return Result<MontageAdvance>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "montage blend-out delta must be non-negative", "delta"));
     if (tick <= lastTick_)
         return Result<MontageAdvance>::failure(
             Diagnostic::error(DiagnosticCode::Conflict, "montage tick must advance monotonically", "tick"));

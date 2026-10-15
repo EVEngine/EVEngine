@@ -14,8 +14,11 @@
 #include "stylize/shaders/ink_mesh_frag_spv.inc"
 #include "stylize/shaders/ink_post_frag_spv.inc"
 #include "stylize/shaders/pixel_post_frag_spv.inc"
+#include "stylize/shaders/stylize_mesh_vert_spv.inc"
 #include "stylize/shaders/watercolor_post_frag_spv.inc"
 #include "stylize/shaders/xray_mesh_frag_spv.inc"
+#include "stylize/shaders/ysa_mesh_frag_spv.inc"
+#include "stylize/shaders/ysa_mesh_wgsl.inc"
 
 #include <algorithm>
 #include <array>
@@ -25,13 +28,14 @@
 namespace eve::stylize {
 namespace {
 
-const std::array<StyleDefinition, 6> kStyles = {{
+const std::array<StyleDefinition, 7> kStyles = {{
     {"cartoon", true, true, true, false, false, graphics::PostEffectStage::BeforeTonemap, 100},
     {"watercolor", true, false, true, false, false, graphics::PostEffectStage::AfterTonemap, 200},
     {"ink", true, true, true, false, false, graphics::PostEffectStage::BeforeTonemap, 110},
     {"pixel", true, false, true, false, false, graphics::PostEffectStage::AfterTonemap, 300},
     {"xray", false, true, false, true, false, graphics::PostEffectStage::AfterOpaque, 50},
     {"anime", false, true, false, false, false, graphics::PostEffectStage::AfterOpaque, 40},
+    {"ysa", false, true, false, false, false, graphics::PostEffectStage::AfterOpaque, 40},
 }};
 
 std::vector<uint32_t> copySpv(const uint32_t *data, size_t count) {
@@ -196,6 +200,31 @@ bool styleSupports(const std::string &style, const std::string &feature) {
 
 namespace {
 // Order is the shared GLSL/WGSL parameter ABI. Seed shader uniforms from this table.
+const StyleParameterDesc kYsaParams[] = {
+    {"lightMidpoint", 0.f, -1.f, 1.f},
+    {"lightSmoothness", 0.1f, 0.00001f, 1.f},
+    {"ambientR", 0.254717f, 0.f, 1.f},
+    {"ambientG", 0.254717f, 0.f, 1.f},
+    {"ambientB", 0.254717f, 0.f, 1.f},
+    {"shadowPower", 0.5f, 0.f, 1.f},
+    {"shadowSmoothness", 1.f, 0.00001f, 1.f},
+    {"specularStrength", 0.f, 0.f, 4.f},
+    {"specularMidpoint", 0.9f, -1.f, 1.f},
+    {"specularSmoothness", 0.1f, 0.00001f, 1.f},
+    {"specularR", 1.f, 0.f, 4.f},
+    {"specularG", 1.f, 0.f, 4.f},
+    {"specularB", 1.f, 0.f, 4.f},
+    {"rimStrength", 0.f, 0.f, 4.f},
+    {"rimMidpoint", 0.6f, 0.f, 1.f},
+    {"rimSmoothness", 0.1f, 0.00001f, 1.f},
+    {"rimDynamic", 0.5f, 0.f, 1.f},
+    {"rimR", 1.f, 0.f, 4.f},
+    {"rimG", 0.f, 0.f, 4.f},
+    {"rimB", 0.f, 0.f, 4.f},
+    {"alphaClip", 0.f, 0.f, 1.f},
+    {"rimHideOnShadow", 1.f, 0.f, 1.f},
+    {"linearLighting", 0.f, 0.f, 1.f},
+};
 const StyleParameterDesc kAnimeParams[] = {
     {"shadowThreshold", -0.08f, -1.f, 1.f},
     {"shadowSoftness", 0.035f, 0.001f, 0.5f},
@@ -254,6 +283,7 @@ const StyleParameterDesc *paramAt(const StyleParameterDesc (&params)[N], int ind
 }  // namespace
 
 int styleParamCount(const std::string &style) {
+    if (style == "ysa") return int(std::size(kYsaParams));
     if (style == "anime") return int(std::size(kAnimeParams));
     if (style == "cartoon") return int(sizeof(kCartoonParams) / sizeof(kCartoonParams[0]));
     if (style == "watercolor") return int(sizeof(kWatercolorParams) / sizeof(kWatercolorParams[0]));
@@ -269,6 +299,7 @@ std::string styleParamName(const std::string &style, int index) {
 }
 
 const StyleParameterDesc *styleParameterAt(const std::string &style, int index) {
+    if (style == "ysa") return paramAt(kYsaParams, index);
     if (style == "anime") return paramAt(kAnimeParams, index);
     if (style == "cartoon") return paramAt(kCartoonParams, index);
     if (style == "watercolor") return paramAt(kWatercolorParams, index);
@@ -398,6 +429,13 @@ void bindPostUniforms(graphics::Shader *shader, const std::string &style) {
 
 void bindMeshUniforms(graphics::Shader *shader, const std::string &style) {
     if (!shader) throw eve::Exception("bindMeshUniforms: null shader");
+    if (style == "ysa") {
+        for (const auto &param : kYsaParams) {
+            shader->declareFloat(param.id);
+            shader->sendFloat(param.id, param.defaultValue);
+        }
+        return;
+    }
     if (style == "anime") {
         for (const auto &param : kAnimeParams) {
             shader->declareFloat(param.id);
@@ -506,11 +544,24 @@ graphics::Shader *createMeshShader(graphics::Graphics *gfx, const std::string &s
     if (!gfx) throw eve::Exception("createMeshShader: null graphics");
     if (isEffectStyle(style)) return createEffectMeshShader(gfx, style);
 
+    if (style == "ysa") {
+        // Vulkan stylize meshes share the skinning and vertex-color contract
+        // of the backend's standard WebGPU mesh vertex shader.
+        graphics::Shader *shader =
+            gfx->getBackendName() == "webgpu"
+                ? gfx->newMeshShaderFromWgsl({}, std::string(shaders::kMeshCommon) + shaders::kYsaMesh)
+                : gfx->newMeshShaderFromSpv(copySpv(stylize_mesh_vert_spv, stylize_mesh_vert_spv_count),
+                                            copySpv(ysa_mesh_frag_spv, ysa_mesh_frag_spv_count));
+        if (!shader || !shader->gpuHandle) throw eve::Exception("createMeshShader: failed to create ysa mesh shader");
+        bindMeshUniforms(shader, style);
+        return shader;
+    }
+
     if (style == "anime") {
         graphics::Shader *shader =
             gfx->getBackendName() == "webgpu"
                 ? gfx->newMeshShaderFromWgsl({}, std::string(shaders::kMeshCommon) + shaders::kAnimeMesh)
-                : gfx->newMeshShaderFromSpv(copySpv(mesh3d_toon_vert_spv, mesh3d_toon_vert_spv_count),
+                : gfx->newMeshShaderFromSpv(copySpv(stylize_mesh_vert_spv, stylize_mesh_vert_spv_count),
                                             copySpv(anime_mesh_frag_spv, anime_mesh_frag_spv_count));
         if (!shader || !shader->gpuHandle) throw eve::Exception("createMeshShader: failed to create anime mesh shader");
         bindMeshUniforms(shader, style);
@@ -519,18 +570,16 @@ graphics::Shader *createMeshShader(graphics::Graphics *gfx, const std::string &s
 
     if (style == "cartoon") {
         if (gfx->getBackendName() == "webgpu") {
-            graphics::Shader *sh = gfx->newMeshShaderFromWgsl(
-                {}, std::string(shaders::kMeshCommon) + shaders::kCartoonMesh);
-            if (!sh || !sh->gpuHandle)
-                throw eve::Exception("createMeshShader: failed to create cartoon WGSL");
+            graphics::Shader *sh =
+                gfx->newMeshShaderFromWgsl({}, std::string(shaders::kMeshCommon) + shaders::kCartoonMesh);
+            if (!sh || !sh->gpuHandle) throw eve::Exception("createMeshShader: failed to create cartoon WGSL");
             bindMeshUniforms(sh, style);
             return sh;
         }
-        auto vert = copySpv(mesh3d_toon_vert_spv, mesh3d_toon_vert_spv_count);
-        auto frag = copySpv(mesh3d_toon_frag_spv, mesh3d_toon_frag_spv_count);
-        graphics::Shader *sh = gfx->newMeshShaderFromSpv(vert, frag);
-        if (!sh || !sh->gpuHandle)
-            throw eve::Exception("createMeshShader: failed to create cartoon mesh shader");
+        auto              vert = copySpv(stylize_mesh_vert_spv, stylize_mesh_vert_spv_count);
+        auto              frag = copySpv(mesh3d_toon_frag_spv, mesh3d_toon_frag_spv_count);
+        graphics::Shader *sh   = gfx->newMeshShaderFromSpv(vert, frag);
+        if (!sh || !sh->gpuHandle) throw eve::Exception("createMeshShader: failed to create cartoon mesh shader");
         bindMeshUniforms(sh, style);
         return sh;
     }

@@ -32,7 +32,7 @@ struct TerrainDetailSettings {
  * This layer covers one complete aligned terrain and owns independent density rasters keyed by stable resource
  * namespace. Multi-terrain windows and renderer instancing remain in their existing domain owners.
  */
-class TerrainDetailLayer {
+class EVENGINE_API_DOMAINS TerrainDetailLayer {
 public:
     /** @brief Construct an empty layer. */
     TerrainDetailLayer();
@@ -72,7 +72,7 @@ public:
 private:
     friend class TerrainWorldWorkspace;
     friend class TerrainMultiDetailWorkspace;
-    friend Result<TerrainMultiTileReport> applyTerrainDetailMultiTile(
+    friend EVENGINE_API_DOMAINS Result<TerrainMultiTileReport> applyTerrainDetailMultiTile(
         const std::vector<TerrainDetailTile>&, const Heightmap&, const TerrainDetailSettings&,
         const TerrainStampSettings&, std::int32_t, bool, const std::vector<std::string>&);
     struct Impl;

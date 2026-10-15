@@ -16,6 +16,7 @@ import struct
 import subprocess
 import sys
 from pathlib import Path
+import utf8_stdio
 
 ROOT = Path(__file__).resolve().parents[1]
 SHADER_DIR = ROOT / "src" / "modules" / "graphics" / "shaders"
@@ -51,6 +52,8 @@ SHADERS = [
     ("resolve_vis.vert", "vert"),
     ("resolve_vis.frag", "frag"),
     ("mesh3d_toon.vert", "vert"),
+    ("deferred_lighting.vert", "vert"),
+    ("deferred_lighting.frag", "frag"),
 ]
 
 
@@ -133,4 +136,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())

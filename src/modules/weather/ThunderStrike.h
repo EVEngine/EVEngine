@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 
@@ -37,10 +39,11 @@ struct ThunderStrikeReceipt {
  * @param seed Explicit seed for the named thunder-strike RNG stream.
  * @return Position/light/audio command. Pcg deliberately excludes audio clip zero when two or more clips exist.
  */
-[[nodiscard]] Result<ThunderStrikeReceipt> triggerThunderStrike(ThunderStrikeState& state,
-    const ThunderStrikeSettings& settings, float playerX, float playerY, float playerZ, std::uint32_t seed);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION Result<ThunderStrikeReceipt> triggerThunderStrike(
+    ThunderStrikeState& state, const ThunderStrikeSettings& settings, float playerX, float playerY, float playerZ,
+    std::uint32_t seed);
 
 /** @brief Apply Pcg's clamped Lerp(intensity,0,dt*2) decay and 0.15 stop threshold. */
-[[nodiscard]] Result<void> advanceThunderStrike(ThunderStrikeState& state, float dt);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION Result<void> advanceThunderStrike(ThunderStrikeState& state, float dt);
 
 }  // namespace eve::weather

@@ -1,13 +1,12 @@
+#include "weather/Snow.h"
+#include <cmath>
+#include "procgen/heightmap/Heightmap.h"
+#include "weather/SnowField.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include <cmath>
-
-#include "procgen/heightmap/Heightmap.h"
-#include "snow/Snow.h"
-#include "snow/SnowField.h"
-
-using eve::snow::SnowField;
+// snow.cpp
+using eve::weather::SnowField;
 
 TEST_CASE("SnowField.basicGrid") {
     SnowField f(8, 6);
@@ -41,11 +40,11 @@ TEST_CASE("SnowField.footprintDepressesAndRaisesRim") {
     f.stampFootprint(8.f, 8.f, 1.f, 0.f, 3.f, 0.5f);
     CHECK(f.isDirty());
 
-    CHECK(f.height(8, 8) < 0.4f);          // center pressed down
-    CHECK(f.height(10, 8) < 0.75f);        // inner footprint lowered
-    CHECK(f.height(8, 10) == 0.8f);        // narrower across: untouched
-    CHECK(f.height(11, 8) > 0.85f);        // pushed-up rim at the edge
-    CHECK(f.height(2, 2) == 0.8f);         // far away untouched
+    CHECK(f.height(8, 8) < 0.4f);    // center pressed down
+    CHECK(f.height(10, 8) < 0.75f);  // inner footprint lowered
+    CHECK(f.height(8, 10) == 0.8f);  // narrower across: untouched
+    CHECK(f.height(11, 8) > 0.85f);  // pushed-up rim at the edge
+    CHECK(f.height(2, 2) == 0.8f);   // far away untouched
 
     f.clearDirty();
     CHECK(!f.isDirty());
@@ -56,8 +55,8 @@ TEST_CASE("SnowField.footprintFollowsTravelDirection") {
     f.fill(0.8f);
     f.stampFootprint(8.f, 8.f, 0.f, 1.f, 3.f, 0.5f);
 
-    CHECK(f.height(8, 10) < 0.75f);        // elongated along +Z
-    CHECK(f.height(10, 8) == 0.8f);        // across direction untouched
+    CHECK(f.height(8, 10) < 0.75f);  // elongated along +Z
+    CHECK(f.height(10, 8) == 0.8f);  // across direction untouched
 }
 
 TEST_CASE("SnowField.impactCraterBowlAndRim") {
@@ -65,10 +64,10 @@ TEST_CASE("SnowField.impactCraterBowlAndRim") {
     f.fill(0.8f);
     f.stampImpact(10.f, 10.f, 4.f, 0.6f);
 
-    CHECK(f.height(10, 10) < 0.21f);       // deep bowl center
-    CHECK(f.height(13, 10) < 0.78f);       // shallow bowl near the edge
-    CHECK(f.height(14, 10) > 0.85f);       // raised ejecta ring outside the bowl
-    CHECK(f.height(16, 10) == 0.8f);       // outside the rim band
+    CHECK(f.height(10, 10) < 0.21f);  // deep bowl center
+    CHECK(f.height(13, 10) < 0.78f);  // shallow bowl near the edge
+    CHECK(f.height(14, 10) > 0.85f);  // raised ejecta ring outside the bowl
+    CHECK(f.height(16, 10) == 0.8f);  // outside the rim band
 
     // Ejecta is intentionally lumpy: ring heights vary per cell instead of
     // forming a perfect smooth ring.
@@ -77,7 +76,7 @@ TEST_CASE("SnowField.impactCraterBowlAndRim") {
         for (int x = 5; x <= 15; ++x) {
             const float dx = float(x) - 10.f;
             const float dz = float(z) - 10.f;
-            const float n = std::sqrt(dx * dx + dz * dz) / 4.f;
+            const float n  = std::sqrt(dx * dx + dz * dz) / 4.f;
             if (n < 0.95f || n > 1.4f) continue;
             lo = std::min(lo, f.height(x, z));
             hi = std::max(hi, f.height(x, z));
@@ -115,14 +114,14 @@ TEST_CASE("SnowField.heightTexture") {
     rgba = f.toHeightRGBA();
     CHECK(int(rgba[0]) >= 126);
     CHECK(int(rgba[0]) <= 130);
-    CHECK_EQ(int(rgba[3]), 255);   // alpha always opaque
+    CHECK_EQ(int(rgba[3]), 255);  // alpha always opaque
 }
 
 TEST_CASE("SnowField.albedoBlendsSnowToGround") {
     SnowField f(4, 4);
     f.fill(0.f);
     std::vector<uint8_t> rgba = f.toAlbedoRGBA();
-    CHECK(int(rgba[0]) >= 85);   // dark soil
+    CHECK(int(rgba[0]) >= 85);  // dark soil
     CHECK(int(rgba[0]) <= 100);
     CHECK(int(rgba[1]) >= 70);
     CHECK(int(rgba[1]) <= 85);
@@ -161,7 +160,7 @@ TEST_CASE("SnowField.normalMapFromGradient") {
         }
     }
     std::vector<uint8_t> slope = f.toNormalRGBA();
-    const size_t i = (8 * 16 + 8) * 4;
+    const size_t         i     = (8 * 16 + 8) * 4;
     CHECK(int(slope[i + 0]) < 120);  // nx < 0 -> R below mid gray
     CHECK(int(slope[i + 1]) >= 126);
     CHECK(int(slope[i + 1]) <= 130);
@@ -179,16 +178,32 @@ TEST_CASE("SnowField.applyToHeightmapAddsSnow") {
     SnowField f(8, 8);
     f.fill(0.5f);
     eve::procgen::Heightmap out;
-    eve::snow::applySnowToHeightmap(f, terrain, out, 0.2f);
+    eve::weather::applySnowToHeightmap(f, terrain, out, 0.2f);
     CHECK_EQ(out.getWidth(), 8);
     CHECK(std::fabs(out.height(3, 3) - 0.6f) < 1e-5f);  // 0.5 + 0.5 * 0.2
 
     f.setHeight(2, 2, 0.f);
-    eve::snow::applySnowToHeightmap(f, terrain, out, 0.2f);
+    eve::weather::applySnowToHeightmap(f, terrain, out, 0.2f);
     CHECK(std::fabs(out.height(2, 2) - 0.5f) < 1e-5f);  // bare ground
 
     SnowField small(4, 4);
     small.fill(1.f);
-    eve::snow::applySnowToHeightmap(small, terrain, out, 0.2f);
+    eve::weather::applySnowToHeightmap(small, terrain, out, 0.2f);
     CHECK(std::fabs(out.height(6, 6) - 0.5f) < 1e-5f);  // outside field: terrain only
+}
+
+// snow_appearance.cpp
+TEST_CASE("SnowField.compressedSnowRemainsSnow") {
+    eve::weather::SnowField field(8, 8);
+    field.fill(0.4f);
+    const auto compressed = field.toAlbedoRGBA();
+    REQUIRE(compressed[0] > 180);
+    REQUIRE(compressed[2] > compressed[0]);
+    field.fill(0.f);
+    const auto exposed = field.toAlbedoRGBA();
+    REQUIRE(exposed[0] < 110);
+    REQUIRE(exposed[2] < exposed[0]);
+    field.fill(0.85f);
+    const auto fresh = field.toAlbedoRGBA();
+    REQUIRE(fresh[0] > compressed[0]);
 }

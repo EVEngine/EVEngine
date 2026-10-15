@@ -7,41 +7,35 @@ namespace eve::fluids {
 void exposeVolumeFluidFactory(ssq::Class& cls) {
     const auto vm = cls.getHandle();
     cls.addFunc("volumeThermalRuleDefaults", [vm](Fluids*) {
-        return script::projectStatusResult(vm, Status::success(), true, true,
+        return script::projectStatusResult(vm, Status::success(),
                                            encodeVolumeFluidThermalRule(VolumeFluidThermalRule{}));
     });
     cls.addFunc("volumeWindZoneDefaults", [vm](Fluids*) {
-        return script::projectStatusResult(vm, Status::success(), true, true,
-                                           encodeVolumeFluidWindZone(VolumeFluidWindZone{}));
+        return script::projectStatusResult(vm, Status::success(), encodeVolumeFluidWindZone(VolumeFluidWindZone{}));
     });
     cls.addFunc("volumeColliderDefaults", [vm](Fluids*) {
-        return script::projectStatusResult(vm, Status::success(), true, true,
-                                           encodeVolumeFluidCollider(VolumeFluidCollider{}));
+        return script::projectStatusResult(vm, Status::success(), encodeVolumeFluidCollider(VolumeFluidCollider{}));
     });
     cls.addFunc("volumeSdfColliderDefaults", [vm](Fluids*) {
         VolumeFluidSdfCollider collider;
         collider.sdf = MeshSdf::makeSphere(glm::vec3(0.f), .5f, {16, 16, 16});
-        return script::projectStatusResult(vm, Status::success(), true, true, encodeVolumeFluidSdfCollider(collider));
+        return script::projectStatusResult(vm, Status::success(), encodeVolumeFluidSdfCollider(collider));
     });
     cls.addFunc("volumeHeightFieldColliderDefaults", [vm](Fluids*) {
         VolumeFluidHeightFieldCollider collider;
         collider.heights.assign(4, 0.f);
-        return script::projectStatusResult(vm, Status::success(), true, true,
-                                           encodeVolumeFluidHeightFieldCollider(collider));
+        return script::projectStatusResult(vm, Status::success(), encodeVolumeFluidHeightFieldCollider(collider));
     });
     cls.addFunc("volumeSdfPoseDefaults", [vm](Fluids*) {
-        return script::projectStatusResult(vm, Status::success(), true, true,
-                                           encodeVolumeFluidSdfPose(VolumeFluidSdfPose{}));
+        return script::projectStatusResult(vm, Status::success(), encodeVolumeFluidSdfPose(VolumeFluidSdfPose{}));
     });
 #if defined(EVE_FLUIDS_HAS_MODEL3D)
     cls.addFunc("volumeSdfColliderFromModel", [vm](Fluids*, model3d::ModelData* model, int meshIndex, float sx,
                                                    float sy, float sz, int resolution) {
         const auto failure = [&](const char* message) {
             return script::projectStatusResult(
-                vm,
-                Status::failure(
-                    Diagnostic::error(DiagnosticCode::InvalidArgument, message, "fluids.volume.sdfColliderFromModel")),
-                false, false);
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message,
+                                                      "fluids.volume.sdfColliderFromModel")));
         };
         if (!model || meshIndex < 0 || meshIndex >= model->getMeshCount() || resolution < 8 || resolution > 128)
             return failure("Invalid model mesh slot or SDF resolution");
@@ -76,16 +70,14 @@ void exposeVolumeFluidFactory(ssq::Class& cls) {
         }
         VolumeFluidSdfCollider collider;
         collider.sdf = MeshSdf::makeFromTriangles(vertices, indices, {resolution, resolution, resolution});
-        return script::projectStatusResult(vm, Status::success(), true, true, encodeVolumeFluidSdfCollider(collider));
+        return script::projectStatusResult(vm, Status::success(), encodeVolumeFluidSdfCollider(collider));
     });
     cls.addFunc("volumeEmissionFromModel", [vm](Fluids*, model3d::ModelData* model, int meshIndex, float sx, float sy,
                                                 float sz, float spacing) {
         const auto failure = [&](const char* message) {
             return script::projectStatusResult(
-                vm,
-                Status::failure(
-                    Diagnostic::error(DiagnosticCode::InvalidArgument, message, "fluids.volume.meshDistribution")),
-                false, false);
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::InvalidArgument, message, "fluids.volume.meshDistribution")));
         };
         if (!model || meshIndex < 0 || meshIndex >= model->getMeshCount()) return failure("Invalid model mesh slot");
         const int vertexCount = model->getVertexCount(meshIndex), faceCount = model->getFaceCount(meshIndex);
@@ -107,11 +99,11 @@ void exposeVolumeFluidFactory(ssq::Class& cls) {
             return failure(error.what());
         }
         auto points = buildVolumeFluidMeshDistribution(vertices, indices, {sx, sy, sz}, spacing);
-        if (!points) return script::projectStatusResult(vm, points.status(), false, false);
+        if (!points) return script::projectStatusResult(vm, points.status());
         VolumeFluidEmission emission;
         emission.shape        = VolumeFluidEmissionShape::Distribution;
         emission.distribution = std::move(points).takeValue();
-        return script::projectStatusResult(vm, Status::success(), true, true, encodeVolumeFluidEmission(emission));
+        return script::projectStatusResult(vm, Status::success(), encodeVolumeFluidEmission(emission));
     });
 #endif
     cls.addFunc("volumeEmissionFromImage", [vm](Fluids*, image::ImageData* image, float pixelScale, float maximumSize,
@@ -120,11 +112,9 @@ void exposeVolumeFluidFactory(ssq::Class& cls) {
             uint64_t(image->getWidth()) * image->getHeight() > 16777216 ||
             uint64_t(image->getWidth()) * image->getHeight() * 4 != image->getSize() || !image->getData())
             return script::projectStatusResult(
-                vm,
-                Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                  "Expected a valid RGBA8 image of at most 16M pixels",
-                                                  "fluids.volume.imageDistribution")),
-                false, false);
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "Expected a valid RGBA8 image of at most 16M pixels",
+                                                      "fluids.volume.imageDistribution")));
         const unsigned         width = unsigned(image->getWidth()), height = unsigned(image->getHeight());
         const auto*            bytes = static_cast<const uint8_t*>(image->getData());
         std::vector<glm::vec4> pixels(size_t(width) * height);
@@ -142,68 +132,65 @@ void exposeVolumeFluidFactory(ssq::Class& cls) {
             }
         auto points =
             buildVolumeFluidImageDistribution(pixels, width, height, pixelScale, maximumSize, spacing, threshold);
-        if (!points) return script::projectStatusResult(vm, points.status(), false, false);
+        if (!points) return script::projectStatusResult(vm, points.status());
         VolumeFluidEmission emission;
         emission.shape           = VolumeFluidEmissionShape::Distribution;
         emission.distribution    = std::move(points).takeValue();
         emission.prototype.color = glm::vec4(1.f);
-        return script::projectStatusResult(vm, Status::success(), true, true, encodeVolumeFluidEmission(emission));
+        return script::projectStatusResult(vm, Status::success(), encodeVolumeFluidEmission(emission));
     });
     cls.addFunc("volumeEmissionFromSphere", [vm](Fluids*, float radius, float spacing, bool surface) {
         auto points = buildVolumeFluidSphereDistribution(radius, spacing, surface);
-        if (!points) return script::projectStatusResult(vm, points.status(), false, false);
+        if (!points) return script::projectStatusResult(vm, points.status());
         VolumeFluidEmission emission;
         emission.shape        = VolumeFluidEmissionShape::Distribution;
         emission.distribution = std::move(points).takeValue();
-        return script::projectStatusResult(vm, Status::success(), true, true, encodeVolumeFluidEmission(emission));
+        return script::projectStatusResult(vm, Status::success(), encodeVolumeFluidEmission(emission));
     });
     cls.addFunc("volumeEmissionFromCube", [vm](Fluids*, float sx, float sy, float sz, float spacing, bool surface) {
         auto points = buildVolumeFluidCubeDistribution({sx, sy, sz}, spacing, surface);
-        if (!points) return script::projectStatusResult(vm, points.status(), false, false);
+        if (!points) return script::projectStatusResult(vm, points.status());
         VolumeFluidEmission emission;
         emission.shape        = VolumeFluidEmissionShape::Distribution;
         emission.distribution = std::move(points).takeValue();
-        return script::projectStatusResult(vm, Status::success(), true, true, encodeVolumeFluidEmission(emission));
+        return script::projectStatusResult(vm, Status::success(), encodeVolumeFluidEmission(emission));
     });
     cls.addFunc("volumeEmissionFromEdge", [vm](Fluids*, float length, float spacing, float radialVelocityDegrees) {
         auto points = buildVolumeFluidEdgeDistribution(length, spacing, radialVelocityDegrees);
-        if (!points) return script::projectStatusResult(vm, points.status(), false, false);
+        if (!points) return script::projectStatusResult(vm, points.status());
         VolumeFluidEmission emission;
         emission.shape        = VolumeFluidEmissionShape::Distribution;
         emission.distribution = std::move(points).takeValue();
-        return script::projectStatusResult(vm, Status::success(), true, true, encodeVolumeFluidEmission(emission));
+        return script::projectStatusResult(vm, Status::success(), encodeVolumeFluidEmission(emission));
     });
     cls.addFunc("volumeEmissionFromDisk", [vm](Fluids*, float radius, float spacing, bool edgeEmission) {
         auto points = buildVolumeFluidDiskDistribution(radius, spacing, edgeEmission);
-        if (!points) return script::projectStatusResult(vm, points.status(), false, false);
+        if (!points) return script::projectStatusResult(vm, points.status());
         VolumeFluidEmission emission;
         emission.shape        = VolumeFluidEmissionShape::Distribution;
         emission.distribution = std::move(points).takeValue();
-        return script::projectStatusResult(vm, Status::success(), true, true, encodeVolumeFluidEmission(emission));
+        return script::projectStatusResult(vm, Status::success(), encodeVolumeFluidEmission(emission));
     });
     cls.addFunc("volumeEmissionDefaults", [vm](Fluids*) {
-        return script::projectStatusResult(vm, Status::success(), true, true,
-                                           encodeVolumeFluidEmission(VolumeFluidEmission{}));
+        return script::projectStatusResult(vm, Status::success(), encodeVolumeFluidEmission(VolumeFluidEmission{}));
     });
     cls.addFunc("composeVolumeEmitterShapes", [vm](Fluids*, ssq::Object baseObject, ssq::Object shapesObject) {
         auto baseValue = script::valueFromSquirrel(baseObject);
-        if (!baseValue) return script::projectStatusResult(vm, baseValue.status(), false, false);
+        if (!baseValue) return script::projectStatusResult(vm, baseValue.status());
         auto base = decodeVolumeFluidEmission(baseValue.value());
-        if (!base) return script::projectStatusResult(vm, base.status(), false, false);
+        if (!base) return script::projectStatusResult(vm, base.status());
         auto shapeValues = script::valueFromSquirrel(shapesObject);
-        if (!shapeValues) return script::projectStatusResult(vm, shapeValues.status(), false, false);
+        if (!shapeValues) return script::projectStatusResult(vm, shapeValues.status());
         if (!shapeValues.value().isArray() || shapeValues.value().arraySize() > 64)
             return script::projectStatusResult(
-                vm,
-                Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                  "Emitter shapes must be an array of at most 64 descriptions",
-                                                  "fluids.volume.emitterShapes")),
-                false, false);
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "Emitter shapes must be an array of at most 64 descriptions",
+                                                      "fluids.volume.emitterShapes")));
         std::vector<VolumeFluidEmission> shapes;
         shapes.reserve(shapeValues.value().arraySize());
         for (size_t i = 0; i < shapeValues.value().arraySize(); ++i) {
             auto shape = decodeVolumeFluidEmission(shapeValues.value().at(i));
-            if (!shape) return script::projectStatusResult(vm, shape.status(), false, false);
+            if (!shape) return script::projectStatusResult(vm, shape.status());
             shapes.push_back(std::move(shape).takeValue());
         }
         return script::projectResult(
@@ -211,57 +198,56 @@ void exposeVolumeFluidFactory(ssq::Class& cls) {
             [](const VolumeFluidEmission& emission) { return encodeVolumeFluidEmission(emission); });
     });
     cls.addFunc("volumeFluidEmitterBlueprintDefaults", [vm](Fluids*) {
-        return script::projectStatusResult(vm, Status::success(), true, true,
+        return script::projectStatusResult(vm, Status::success(),
                                            encodeVolumeFluidEmitterBlueprint3D(VolumeFluidEmitterBlueprint3D{}));
     });
     cls.addFunc("prepareVolumeFluidEmitterBlueprint3D", [vm](Fluids*, ssq::Object object) {
         auto value = script::valueFromSquirrel(object);
-        if (!value) return script::projectStatusResult(vm, value.status(), false, false);
+        if (!value) return script::projectStatusResult(vm, value.status());
         auto blueprint = decodeVolumeFluidEmitterBlueprint3D(value.value());
-        if (!blueprint) return script::projectStatusResult(vm, blueprint.status(), false, false);
+        if (!blueprint) return script::projectStatusResult(vm, blueprint.status());
         auto prepared = prepareVolumeFluidEmitterBlueprint3D(blueprint.value());
-        if (!prepared) return script::projectStatusResult(vm, prepared.status(), false, false);
-        return script::projectStatusResult(vm, Status::success(), true, true,
+        if (!prepared) return script::projectStatusResult(vm, prepared.status());
+        return script::projectStatusResult(vm, Status::success(),
                                            encodeVolumeFluidEmitterBlueprintApplication3D(prepared.value()));
     });
     cls.addFunc("volumeGranularEmitterBlueprintDefaults", [vm](Fluids*) {
-        return script::projectStatusResult(vm, Status::success(), true, true,
+        return script::projectStatusResult(vm, Status::success(),
                                            encodeVolumeGranularEmitterBlueprint3D(VolumeGranularEmitterBlueprint3D{}));
     });
     cls.addFunc("prepareVolumeGranularEmitterBlueprint3D", [vm](Fluids*, ssq::Object object) {
         auto value = script::valueFromSquirrel(object);
-        if (!value) return script::projectStatusResult(vm, value.status(), false, false);
+        if (!value) return script::projectStatusResult(vm, value.status());
         auto blueprint = decodeVolumeGranularEmitterBlueprint3D(value.value());
-        if (!blueprint) return script::projectStatusResult(vm, blueprint.status(), false, false);
+        if (!blueprint) return script::projectStatusResult(vm, blueprint.status());
         auto prepared = prepareVolumeGranularEmitterBlueprint3D(blueprint.value());
-        if (!prepared) return script::projectStatusResult(vm, prepared.status(), false, false);
-        return script::projectStatusResult(vm, Status::success(), true, true,
+        if (!prepared) return script::projectStatusResult(vm, prepared.status());
+        return script::projectStatusResult(vm, Status::success(),
                                            encodeVolumeFluidEmitterBlueprintApplication3D(prepared.value()));
     });
     cls.addFunc("volumeEmitterBlueprintMetrics", [vm](Fluids*, float resolution, float restDensity, float smoothing) {
         auto evaluated = evaluateVolumeFluidEmitterBlueprint3D(resolution, restDensity, smoothing);
-        if (!evaluated) return script::projectStatusResult(vm, evaluated.status(), false, false);
+        if (!evaluated) return script::projectStatusResult(vm, evaluated.status());
         Value metrics(Value::Object{});
         metrics.set("particleSize", double(evaluated.value().particleSize));
         metrics.set("particleMass", double(evaluated.value().particleMass));
         metrics.set("smoothingRadius", double(evaluated.value().smoothingRadius));
-        return script::projectStatusResult(vm, Status::success(), true, true, std::move(metrics));
+        return script::projectStatusResult(vm, Status::success(), std::move(metrics));
     });
     cls.addFunc("volumeDefaults", [vm](Fluids*) {
-        return script::projectStatusResult(vm, Status::success(), true, true, encodeVolumeFluid(VolumeFluidSnapshot{}));
+        return script::projectStatusResult(vm, Status::success(), encodeVolumeFluid(VolumeFluidSnapshot{}));
     });
     cls.addFunc("newVolumeSimulator", [vm](Fluids*, ssq::Object object) {
         auto decoded = read(object);
-        if (!decoded) return script::projectStatusResult(vm, decoded.status(), false, false);
+        if (!decoded) return script::projectStatusResult(vm, decoded.status());
         auto created = VolumeFluid::create(decoded.value().settings);
-        if (!created) return script::projectStatusResult(vm, created.status(), false, false);
+        if (!created) return script::projectStatusResult(vm, created.status());
         auto owned    = std::move(created).takeValue();
         auto restored = owned->restore(decoded.value());
-        if (!restored) return script::projectStatusResult(vm, restored.status(), false, false);
+        if (!restored) return script::projectStatusResult(vm, restored.status());
         auto instance = script::makeOwnedSquirrelInstance<VolumeFluid>(vm, std::move(owned));
-        if (!instance) return script::projectStatusResult(vm, instance.status(), false, false);
-        auto result = script::projectStatusResult(vm, Status::success(), true, true);
-        result.set("value", std::move(instance).takeValue());
+        if (!instance) return script::projectStatusResult(vm, instance.status());
+        auto result = script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
         result.set("ownership", std::string("owned"));
         return result;
     });

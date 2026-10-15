@@ -1,5 +1,7 @@
 #include "procgen/Procgen.h"
 
+#include "procgen/GridGraph.h"
+#include "procgen/MeshGraph.h"
 #include "procgen/PointGraph.h"
 #include "procgen/mesh/MeshModifierGraph.h"
 
@@ -23,6 +25,14 @@ eve::Result<ProcgenDynamicMeshUvPaintSessionHandleRef> Procgen::newDynamicMeshUv
 
 eve::Result<ProcgenSplinePathHandleRef> Procgen::newSplinePathHandle() {
     return splinePaths_.emplace(std::make_unique<SplinePath>());
+}
+
+eve::Result<ProcgenGridGraphHandleRef> Procgen::newGridGraphHandle() {
+    return gridGraphs_.emplace(std::make_unique<GridGraph>());
+}
+
+eve::Result<ProcgenMeshGraphHandleRef> Procgen::newMeshGraphHandle() {
+    return meshGraphs_.emplace(std::make_unique<MeshGraph>());
 }
 
 }  // namespace eve::procgen

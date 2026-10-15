@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "map/editing/MapEditingTypes.h"
 
@@ -68,12 +70,13 @@ struct MapRoadPreviewResult {
 /** @brief Runtime-neutral sink receiving revision-tagged generated road meshes. */
 class IMapRoadMeshSink {
 public:
+    /** @brief Releases IMapRoadMeshSink resources. */
     virtual ~IMapRoadMeshSink() = default;
     /** @brief Atomically publish or replace one generated road mesh. */
-    virtual EditorResult<void> publishRoad(const std::string& document, const StableId& road, Revision revision,
+    virtual Result<void> publishRoad(const std::string& document, const StableId& road, Revision revision,
                                            const EditorValue& mesh) = 0;
     /** @brief Remove a previously published road mesh. */
-    virtual EditorResult<void> removeRoad(const std::string& document, const StableId& road) = 0;
+    virtual Result<void> removeRoad(const std::string& document, const StableId& road) = 0;
 };
 
 /** @brief Imported object record before stable placement ids are assigned. */
@@ -96,6 +99,7 @@ struct MapObjectImportPlan {
 /** @brief Layer, spline and placement editing capability for map presenters. */
 class IMapStructureEditTarget {
 public:
+    /** @brief Releases IMapStructureEditTarget resources. */
     virtual ~IMapStructureEditTarget() = default;
     /** @brief Stable capability id for map structure operations. */
     static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.map-structure"); }
@@ -106,50 +110,64 @@ public:
     /** @brief Enumerate placements in stable id order. */
     virtual std::vector<MapPlacementRecord> mapPlacements() const = 0;
     /** @brief Plan reversible layer creation. */
-    virtual EditorResult<DomainOperation> makeCreateLayer(const MapLayerRecord& layer) const = 0;
+    virtual Result<DomainOperation> makeCreateLayer(const MapLayerRecord& layer) const = 0;
     /** @brief Plan deletion of an empty layer. */
-    virtual EditorResult<DomainOperation> makeDeleteLayer(const StableId& layer) const = 0;
+    virtual Result<DomainOperation> makeDeleteLayer(const StableId& layer) const = 0;
     /** @brief Plan reversible layer metadata replacement. */
-    virtual EditorResult<DomainOperation> makeSetLayer(const MapLayerRecord& layer) const = 0;
+    virtual Result<DomainOperation> makeSetLayer(const MapLayerRecord& layer) const = 0;
     /** @brief Plan reversible road creation or replacement. */
-    virtual EditorResult<DomainOperation> makeSetRoad(const MapRoadRecord& road) const = 0;
+    virtual Result<DomainOperation> makeSetRoad(const MapRoadRecord& road) const = 0;
     /** @brief Plan reversible road deletion. */
-    virtual EditorResult<DomainOperation> makeDeleteRoad(const StableId& road) const = 0;
+    virtual Result<DomainOperation> makeDeleteRoad(const StableId& road) const = 0;
     /** @brief Plan reversible placement creation or replacement. */
-    virtual EditorResult<DomainOperation> makeSetPlacement(const MapPlacementRecord& placement) const = 0;
+    virtual Result<DomainOperation> makeSetPlacement(const MapPlacementRecord& placement) const = 0;
     /** @brief Plan reversible placement deletion. */
-    virtual EditorResult<DomainOperation> makeDeletePlacement(const StableId& placement) const = 0;
+    virtual Result<DomainOperation> makeDeletePlacement(const StableId& placement) const = 0;
 };
 
 /** @brief UI-neutral map structure document with reversible domain operations. */
-class MapDocumentTarget final : public virtual IEditableTarget,
-                                public IDomainOperationTarget,
-                                public IDomainOperationTargetStaging,
-                                public IMapStructureEditTarget {
+class EVENGINE_API_WORLD MapDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                                   public virtual IEditableTarget,
+                                                   public IDomainOperationTarget,
+                                                   public IDomainOperationTargetStaging,
+                                                   public IMapStructureEditTarget {
 public:
+    /** @brief Map document target. */
     explicit MapDocumentTarget(std::string id);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
-    std::uint64_t    revision() const override { return revision_; }
-    EditRegion       dirtyRegion() const override { return dirty_; }
-    void             clearDirtyRegion() override { dirty_.clear(); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
     void*              queryCapability(const CapabilityId& capability) override;
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Applies domain operation. */
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     [[nodiscard]] std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    [[nodiscard]] EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    /** @brief Commits domain state. */
+    [[nodiscard]] Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
 
+    /** @brief Map layers. */
     std::vector<MapLayerRecord>     mapLayers() const override;
+    /** @brief Map roads. */
     std::vector<MapRoadRecord>      mapRoads() const override;
+    /** @brief Map placements. */
     std::vector<MapPlacementRecord> mapPlacements() const override;
-    EditorResult<DomainOperation>   makeCreateLayer(const MapLayerRecord& layer) const override;
-    EditorResult<DomainOperation>   makeDeleteLayer(const StableId& layer) const override;
-    EditorResult<DomainOperation>   makeSetLayer(const MapLayerRecord& layer) const override;
-    EditorResult<DomainOperation>   makeSetRoad(const MapRoadRecord& road) const override;
-    EditorResult<DomainOperation>   makeDeleteRoad(const StableId& road) const override;
-    EditorResult<DomainOperation>   makeSetPlacement(const MapPlacementRecord& placement) const override;
-    EditorResult<DomainOperation>   makeDeletePlacement(const StableId& placement) const override;
+    /** @brief Make create layer. */
+    Result<DomainOperation>   makeCreateLayer(const MapLayerRecord& layer) const override;
+    /** @brief Make delete layer. */
+    Result<DomainOperation>   makeDeleteLayer(const StableId& layer) const override;
+    /** @brief Make set layer. */
+    Result<DomainOperation>   makeSetLayer(const MapLayerRecord& layer) const override;
+    /** @brief Make set road. */
+    Result<DomainOperation>   makeSetRoad(const MapRoadRecord& road) const override;
+    /** @brief Make delete road. */
+    Result<DomainOperation>   makeDeleteRoad(const StableId& road) const override;
+    /** @brief Make set placement. */
+    Result<DomainOperation>   makeSetPlacement(const MapPlacementRecord& placement) const override;
+    /** @brief Make delete placement. */
+    Result<DomainOperation>   makeDeletePlacement(const StableId& placement) const override;
 
     /** @brief Validate layers, spline geometry and placement references. */
     std::vector<EditorDiagnostic> validate() const;
@@ -158,27 +176,25 @@ public:
     /** @brief Capture deterministic map structure data. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load schema-version-one map structure data. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
     std::string                            id_;
-    unsigned long long                     revision_ = 1;
-    EditRegion                             dirty_;
     std::map<StableId, MapLayerRecord>     layers_;
     std::map<StableId, MapRoadRecord>      roads_;
     std::map<StableId, MapPlacementRecord> placements_;
 };
 
 /** @brief Publishes validated road previews while rejecting stale document revisions. */
-class MapRoadMeshPublisher {
+class EVENGINE_API_WORLD MapRoadMeshPublisher {
 public:
     /** @brief Generate and publish one road mesh to the supplied host sink. */
-    EditorResult<void> publish(const MapDocumentTarget& document, const StableId& road, Revision expectedRevision,
+    Result<void> publish(const MapDocumentTarget& document, const StableId& road, Revision expectedRevision,
                                IMapRoadMeshSink& sink, int triangleBudget = 10000) const;
 };
 
 /** @brief Converts external object records into one atomic placement transaction plan. */
-class MapObjectImporter {
+class EVENGINE_API_WORLD MapObjectImporter {
 public:
     /** @brief Plan stable-id placement creation without mutating the map document. */
     MapObjectImportPlan plan(const MapDocumentTarget& document, const StableId& layer,

@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "editing/EditingGizmo.h"
 
@@ -11,7 +12,7 @@ namespace eve::animation_editing {
 struct ProceduralBoneOverlayOptions { bool showParticles=true,showColliders=true,showFootIK=true; std::size_t maximumPrimitives=8192; };
 
 /** @brief Builds renderer-neutral dynamic-bone and Foot IK debug primitives. */
-class ProceduralBoneOverlayBuilder {
+class EVENGINE_API_DOMAINS ProceduralBoneOverlayBuilder {
 public:
     /** @brief Build an owning immutable overlay from optional borrowed solvers. */
     editing::GizmoSnapshot build(std::string target,editing::Revision revision,

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file CardPlay.h
@@ -14,6 +16,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 namespace eve::card {
 
@@ -54,18 +57,25 @@ public:
                              CardPlayConditionQueries queries = {});
 
     /** @copydoc decision::EvaluationContext::value */
+    /** @brief Value. */
     [[nodiscard]] std::optional<eve::Value> value(std::string_view key) const override;
     /** @copydoc decision::EvaluationContext::hasTag */
+    /** @brief True when tag. */
     [[nodiscard]] std::optional<bool> hasTag(std::string_view tag) const override;
     /** @copydoc decision::EvaluationContext::attribute */
+    /** @brief Attribute. */
     [[nodiscard]] std::optional<eve::Value> attribute(std::string_view key) const override;
     /** @copydoc decision::EvaluationContext::resource */
+    /** @brief Resource. */
     [[nodiscard]] std::optional<eve::Value> resource(std::string_view key) const override;
     /** @copydoc decision::EvaluationContext::state */
+    /** @brief State. */
     [[nodiscard]] std::optional<eve::Value> state(std::string_view key) const override;
     /** @copydoc decision::EvaluationContext::authority */
+    /** @brief Authority. */
     [[nodiscard]] std::optional<bool> authority(std::string_view scope) const override;
     /** @copydoc decision::EvaluationContext::policy */
+    /** @brief Policy. */
     [[nodiscard]] std::optional<decision::ConditionResult> policy(std::string_view  name,
                                                                   const eve::Value& arguments) const override;
 
@@ -76,7 +86,7 @@ private:
 };
 
 /** @brief Evaluates one card play condition without moving or mutating a card. */
-class CardPlayConditionAdapter {
+class EVENGINE_API_WORLD CardPlayConditionAdapter {
 public:
     /**
      * @brief Evaluate a card definition's play condition against one instance.
@@ -99,24 +109,39 @@ public:
  * card or an account.  The card is borrowed for the synchronous transaction
  * call and must remain live on the owner thread.
  */
-class CardPlayParticipant final : public eve::transaction::ITransactionParticipant {
+class EVENGINE_API_WORLD CardPlayParticipant final : public eve::transaction::ITransactionParticipant {
 public:
     /** @brief Bind one card effect whose state transition is played. */
     explicit CardPlayParticipant(CardData& card);
+    CardPlayParticipant(const CardPlayParticipant&)            = delete;
+    CardPlayParticipant& operator=(const CardPlayParticipant&) = delete;
+    CardPlayParticipant(CardPlayParticipant&&)                 = delete;
+    CardPlayParticipant& operator=(CardPlayParticipant&&)      = delete;
 
     /** @brief Stable transaction diagnostic name. */
     [[nodiscard]] std::string_view name() const noexcept override { return "card-play-effect"; }
     /** @copydoc eve::transaction::ITransactionParticipant::prepare */
+    /** @brief Prepare. */
     [[nodiscard]] eve::Result<void> prepare(const eve::transaction::TransactionContext& context) override;
     /** @copydoc eve::transaction::ITransactionParticipant::commit */
+    /** @brief Commits . */
     [[nodiscard]] eve::Result<void> commit(const eve::transaction::TransactionContext& context) override;
     /** @copydoc eve::transaction::ITransactionParticipant::rollback */
+    /** @brief Rollback. */
     [[nodiscard]] eve::Result<void> rollback(const eve::transaction::TransactionContext& context) override;
     /** @copydoc eve::transaction::ITransactionParticipant::compensate */
+    /** @brief Compensate. */
     [[nodiscard]] eve::Result<void> compensate(const eve::transaction::TransactionContext& context) override;
 
 private:
-    CardData& card_;
+    ecs::EntityHandle card_;
+    /** @brief Resolve the generation handle before a lifecycle mutation.
+     * @ownership Borrowed entity owned by its Card facade/ECS table.
+     * @lifetime Valid only through the synchronous lifecycle call.
+     * @nullable Returns null after entity destruction or table replacement.
+     * @thread Simulation owner thread; no callbacks or reentry.
+     */
+    CardData* resolve() const;
     CardState previousState_ = CardState::Hand;
     bool      prepared_      = false;
     bool      committed_     = false;
@@ -138,6 +163,18 @@ struct CardPlayComposition {
     std::optional<eve::container::SlotIndex>   sourceSlot;
     std::optional<eve::container::SlotIndex>   destinationSlot;
     eve::transaction::ITransactionParticipant* effect = nullptr;
+    /**
+     * @brief Optional owning ruleset cost replacing definition Mana; empty uses Mana.
+     * @remarks An engaged invalid CostSpec is rejected, never treated as free.
+     * This is a per-play input and does not change the registered definition.
+     */
+    std::optional<eve::resource::CostSpec> paymentCost;
+    /**
+     * @brief Additional borrowed effects committed after effect in listed order.
+     * @remarks Participants must be unique, non-null and live for the synchronous
+     * owner-thread call. Callbacks must not reenter play on the same card/account.
+     */
+    std::vector<eve::transaction::ITransactionParticipant*> additionalEffects;
 };
 
 /**
@@ -162,7 +199,7 @@ struct CardPlayRequest {
  * account is supplied by the composition root, and the payment is routed
  * through AtomicResourcePayment, so card state and mana are one transaction.
  */
-class CardPlayPaymentAdapter final {
+class EVENGINE_API_WORLD CardPlayPaymentAdapter final {
 public:
     /**
      * @brief Execute condition, movement, card effect and Mana as one transaction.

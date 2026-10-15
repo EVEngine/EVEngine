@@ -1,18 +1,21 @@
 #include "cmdline.h"
-#include "scripts.h"
+#include "common/BootWarmup.h"
+#include "common/Capability.h"
+#include "common/CrashLog.h"
+#include "common/ECS.h"
+#include "common/EditorHost.h"
 #include "common/Module.h"
 #include "common/Runtime.h"
 #include "common/ScriptCompiler.h"
 #include "common/ScriptModule.h"
-#include "common/config.h"
-#include "common/ECS.h"
-#include "common/BootWarmup.h"
-#include "common/CrashLog.h"
+#include "common/SquirrelBinding.h"
 #include "common/StartupTiming.h"
+#include "common/config.h"
 #include "filesystem/Filesystem.h"
 #include "filesystem/physfs/FileApi.h"
 #include "graphics/Light.h"
 #include "graphics/RenderSystem3D.h"
+#include "scripts.h"
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
 #include "devtools/DevTool.hpp"
 #include "devtools/McpServer.hpp"
@@ -109,11 +112,11 @@ void playgroundApply(const char* source) {
     sq_pushstring(vm, _SC("handle_change"), -1);
     if (SQ_SUCCEEDED(sq_get(vm, -2))) {          // [root, fn]
         sq_remove(vm, -2);                       // [fn]
-        sq_pushroottable(vm);                    // [fn, root] (env/this param)
-        sq_pushstring(vm, _SC("main.nut"), -1);
-        // UI.cpp callScriptHandler convention: the roottable is the first
-        // parameter, so 2 params = [root, "main.nut"].
-        sq_call(vm, 2, SQFalse, SQTrue);
+        HSQOBJECT handleChange;
+        sq_getstackobj(vm, -1, &handleChange);  // borrowed: still rooted by `top`
+        // The roottable is the receiver ("this"), "main.nut" the single argument. The
+        // result used to be dropped, so a failing reload left the page with no trace.
+        eve::script::callFunction(vm, handleChange, eve::script::rootTable, "main.nut");
     }
     sq_settop(vm, top);
 }
@@ -488,6 +491,15 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
                     throw std::runtime_error(error);
                 return !runtime.scriptModules().reloadAffected(canonical).empty();
             });
+            // Editor apps (`config.editorHost=true`) start the same MVVM host
+            // `eve mcp` uses, then C++ pumps EditorHost::frame after load.nut.
+            eve.addFunc("startEditorHost", [&runtime, gameDir]() {
+                auto* host = eve::cap::query<eve::IEditorHost>();
+                if (!host) return std::string("error: editor host unavailable");
+                host->start(runtime.vm(), gameDir, /*allowWindow=*/true);
+                host->exposeScriptApi(runtime.vm());
+                return std::string("ok");
+            });
             // Scene-director authoring kit (src/scripts/scene_director.nut). Host
             // games load it via `compilestring(eve.sceneDirectorScript)()`; the
             // MCP tools auto-install it on demand.
@@ -518,6 +530,27 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
         std::fprintf(stderr, "[startup] load.nut begins at process clock %.1f ms\n",
                      (double) std::clock() * 1000.0 / (double) CLOCKS_PER_SEC);
         runtime.runSource(root, "load.nut");
+#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
+        bool editorHostDrive = false;
+        try {
+            editorHostDrive = runtime.root().find("config").toTable().find("editorHost").toBool();
+        } catch (...) {
+        }
+        if (editorHostDrive) {
+            auto* host = eve::cap::query<eve::IEditorHost>();
+            if (!host) {
+                std::cerr << "config.editorHost=true but the editor host is unavailable\n";
+                return 3;
+            }
+            if (!host->isWindowOpen()) {
+                std::cerr << "editor host did not open a window "
+                             "(eve_init should call eve.host.applyEditor)\n";
+                return 3;
+            }
+            while (!host->exitRequested() && host->isWindowOpen()) host->frame();
+            host->stop();
+        }
+#endif
 #if defined(__EMSCRIPTEN__)
         // Instead of a blocking while(running) Squirrel loop (which the browser
         // never composites), drive the global eve_frame() function from an

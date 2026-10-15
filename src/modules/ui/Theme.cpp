@@ -4,6 +4,8 @@
 
 #include <algorithm>
 #include <cctype>
+#include <unordered_map>
+#include <unordered_set>
 
 namespace eve::ui {
 namespace {
@@ -12,6 +14,7 @@ Theme g_theme = Theme::dark();
 std::string g_themeName = "dark";
 float g_uiScale = 1.f;
 float g_dpiScale = 1.f;
+std::unordered_map<std::string, StyleClass> g_styleClasses;
 
 void copy4(float dst[4], const float src[4]) {
     dst[0] = src[0];
@@ -29,7 +32,144 @@ std::string toLower(std::string s) {
     return s;
 }
 
+void overlayStyle(StyleClass &dst, const StyleClass &src) {
+    if (src.hasTextColor) {
+        dst.hasTextColor = true;
+        copy4(dst.textColor, src.textColor);
+    }
+    if (src.hasBackgroundColor) {
+        dst.hasBackgroundColor = true;
+        copy4(dst.backgroundColor, src.backgroundColor);
+    }
+    if (src.hasBorderColor) {
+        dst.hasBorderColor = true;
+        copy4(dst.borderColor, src.borderColor);
+    }
+    if (src.hasAccentColor) {
+        dst.hasAccentColor = true;
+        copy4(dst.accentColor, src.accentColor);
+    }
+    if (src.hasPadding) {
+        dst.hasPadding = true;
+        dst.paddingX = src.paddingX;
+        dst.paddingY = src.paddingY;
+    }
+    if (src.hasRounding) {
+        dst.hasRounding = true;
+        dst.rounding = src.rounding;
+    }
+    if (src.hasAlpha) {
+        dst.hasAlpha = true;
+        dst.alpha = src.alpha;
+    }
+}
+
+bool resolveStyle(const std::string &name, StyleClass &out,
+                  std::unordered_set<std::string> &visiting) {
+    const auto it = g_styleClasses.find(name);
+    if (it == g_styleClasses.end() || !visiting.insert(name).second) return false;
+    const StyleClass &source = it->second;
+    if (!source.parent.empty() && !resolveStyle(source.parent, out, visiting)) return false;
+    overlayStyle(out, source);
+    out.name = source.name;
+    out.parent = source.parent;
+    visiting.erase(name);
+    return true;
+}
+
 }  // namespace
+
+StyleClassStatus defineStyleClass(const std::string &name, const std::string &parent) {
+    if (name.empty()) return StyleClassStatus::InvalidName;
+    if (!parent.empty() && g_styleClasses.find(parent) == g_styleClasses.end())
+        return StyleClassStatus::UnknownParent;
+    for (std::string current = parent; !current.empty();) {
+        if (current == name) return StyleClassStatus::InheritanceCycle;
+        const auto it = g_styleClasses.find(current);
+        if (it == g_styleClasses.end()) return StyleClassStatus::UnknownParent;
+        current = it->second.parent;
+    }
+    StyleClass replacement;
+    replacement.name = name;
+    replacement.parent = parent;
+    g_styleClasses[name] = std::move(replacement);
+    return StyleClassStatus::Applied;
+}
+
+StyleClassStatus setStyleClassColor(const std::string &name, const std::string &property, float r,
+                                   float g, float b, float a) {
+    const auto it = g_styleClasses.find(name);
+    if (it == g_styleClasses.end()) return StyleClassStatus::UnknownClass;
+    StyleClass &style = it->second;
+    float *color = nullptr;
+    const std::string key = toLower(property);
+    if (key == "text") {
+        style.hasTextColor = true;
+        color = style.textColor;
+    } else if (key == "background") {
+        style.hasBackgroundColor = true;
+        color = style.backgroundColor;
+    } else if (key == "border") {
+        style.hasBorderColor = true;
+        color = style.borderColor;
+    } else if (key == "accent") {
+        style.hasAccentColor = true;
+        color = style.accentColor;
+    } else {
+        return StyleClassStatus::UnknownProperty;
+    }
+    color[0] = std::clamp(r, 0.f, 1.f);
+    color[1] = std::clamp(g, 0.f, 1.f);
+    color[2] = std::clamp(b, 0.f, 1.f);
+    color[3] = std::clamp(a, 0.f, 1.f);
+    return StyleClassStatus::Applied;
+}
+
+StyleClassStatus setStyleClassMetric(const std::string &name, const std::string &property, float x,
+                                    float y) {
+    const auto it = g_styleClasses.find(name);
+    if (it == g_styleClasses.end()) return StyleClassStatus::UnknownClass;
+    StyleClass &style = it->second;
+    const std::string key = toLower(property);
+    if (key == "padding") {
+        style.hasPadding = true;
+        style.paddingX = std::max(0.f, x);
+        style.paddingY = std::max(0.f, y);
+    } else if (key == "rounding") {
+        style.hasRounding = true;
+        style.rounding = std::max(0.f, x);
+    } else if (key == "alpha") {
+        style.hasAlpha = true;
+        style.alpha = std::clamp(x, 0.f, 1.f);
+    } else {
+        return StyleClassStatus::UnknownProperty;
+    }
+    return StyleClassStatus::Applied;
+}
+
+StyleClassStatus resolveStyleClass(const std::string &name, StyleClass *out) {
+    if (!out || name.empty()) return StyleClassStatus::InvalidName;
+    if (g_styleClasses.find(name) == g_styleClasses.end()) return StyleClassStatus::UnknownClass;
+    StyleClass resolved;
+    std::unordered_set<std::string> visiting;
+    if (!resolveStyle(name, resolved, visiting)) return StyleClassStatus::InheritanceCycle;
+    *out = std::move(resolved);
+    return StyleClassStatus::Applied;
+}
+
+void clearStyleClasses() { g_styleClasses.clear(); }
+
+const char *styleClassStatusName(StyleClassStatus status) {
+    switch (status) {
+    case StyleClassStatus::Applied: return "applied";
+    case StyleClassStatus::InvalidName: return "invalid-name";
+    case StyleClassStatus::UnknownParent: return "unknown-parent";
+    case StyleClassStatus::UnknownClass: return "unknown-class";
+    case StyleClassStatus::UnknownProperty: return "unknown-property";
+    case StyleClassStatus::InheritanceCycle: return "inheritance-cycle";
+    }
+    return "unknown";
+}
 
 Theme Theme::dark() {
     Theme t;

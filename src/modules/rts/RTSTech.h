@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file RTSTech.h @brief Research settlement over canonical Definitions and Production. */
 
@@ -10,7 +12,7 @@
 namespace eve::rts {
 
 /** @brief Settles completed research tasks and projects unlocked upgrades idempotently. */
-class TechnologySystem {
+class EVENGINE_API_DOMAINS TechnologySystem {
 public:
     /** @brief Consume completed `research` tasks and apply their canonical upgrade definitions. */
     [[nodiscard]] static Result<std::size_t> step(definitions::DefinitionRegistry& registry);

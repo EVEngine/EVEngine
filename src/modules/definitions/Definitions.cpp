@@ -96,12 +96,6 @@ eve::Result<void> validateDefinitionsSnapshot(const std::string& json) {
         "definitions.snapshot.schema"));
 }
 
-template <class T>
-eve::Result<T> definitionsBindingFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "definitions.squirrel"));
-}
-
 eve::Value definitionHandleProjection(const DefinitionHandle& handle) {
     const auto& logical = handle.reference.id();
     return eve::Value(eve::Value::Object{
@@ -120,11 +114,6 @@ eve::Value definitionProjection(const Definition& definition) {
         {"generation", eve::Value(static_cast<std::int64_t>(definition.generation.value()))},
         {"json", eve::Value(definition.json)},
     });
-}
-
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message)));
 }
 
 const eve::Value* field(const eve::Value::Object& object, std::string_view name) {
@@ -202,12 +191,14 @@ const eve::SnapshotMigrationChain& definitionsMigrations() {
 eve::Result<Definition> makeDefinition(const std::string& type, const std::string& id, int version,
                                        const std::string& json) {
     if (type.empty() || id.empty())
-        return failure<Definition>(eve::DiagnosticCode::InvalidArgument, "definition type and id must not be empty");
+        return eve::Result<Definition>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "definition type and id must not be empty"));
     if (!eve::LogicalId::fromParts(type, id))
-        return failure<Definition>(eve::DiagnosticCode::InvalidArgument,
-                                   "definition type and id must form a valid namespace:name reference");
+        return eve::Result<Definition>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "definition type and id must form a valid namespace:name reference"));
     if (version <= 0)
-        return failure<Definition>(eve::DiagnosticCode::InvalidArgument, "definition schema version must be positive");
+        return eve::Result<Definition>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "definition schema version must be positive"));
 
     auto parsed = eve::Value::fromJson(json);
     if (!parsed.ok()) return eve::Result<Definition>::failure(parsed.status());
@@ -461,7 +452,8 @@ eve::Result<void> DefinitionRegistry::restoreJson(const std::string& json) {
     const eve::Value value = std::move(parsed).takeValue();
     const auto*      root  = value.getIf<eve::Value::Object>();
     if (!root) {
-        return failure<void>(eve::DiagnosticCode::ParseError, "definitions snapshot must be an object");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "definitions snapshot must be an object"));
     }
     const auto*   snapshotVersion   = field(*root, "version");
     const auto*   versionNumber     = snapshotVersion ? snapshotVersion->getIf<std::int64_t>() : nullptr;
@@ -475,7 +467,8 @@ eve::Result<void> DefinitionRegistry::restoreJson(const std::string& json) {
     std::uint64_t nextSequence      = 0;
     if (!versionNumber || *versionNumber != 1 || !definitionArray || !generationArray || !eventArray ||
         !nextSequenceValue || !readUint64String(*nextSequenceValue, nextSequence) || nextSequence == 0) {
-        return failure<void>(eve::DiagnosticCode::ParseError, "invalid definitions snapshot fields");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid definitions snapshot fields"));
     }
 
     Storage::State candidate;
@@ -489,8 +482,8 @@ eve::Result<void> DefinitionRegistry::restoreJson(const std::string& json) {
             !generationValue || !readUint64String(*generationValue, generation) || generation == 0 ||
             !candidate.entries.emplace(Key{type, id}, Storage::Entry{eve::Generation(generation), std::nullopt})
                  .second) {
-            return failure<void>(eve::DiagnosticCode::ParseError,
-                                 "invalid definition generation at index " + std::to_string(index));
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "invalid definition generation at index " + std::to_string(index)));
         }
     }
 
@@ -506,15 +499,16 @@ eve::Result<void> DefinitionRegistry::restoreJson(const std::string& json) {
         if (!item || !readString(*item, "type", type) || !readString(*item, "id", id) || type.empty() || id.empty() ||
             !versionField || !readPositiveSchemaVersion(*versionField, versionValue) || !generationField ||
             !readUint64String(*generationField, generation) || generation == 0 || !jsonValue) {
-            return failure<void>(eve::DiagnosticCode::ParseError,
-                                 "invalid definition at index " + std::to_string(index));
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "invalid definition at index " + std::to_string(index)));
         }
         const Key key{type, id};
         auto      entry = candidate.entries.find(key);
         if (entry == candidate.entries.end() || entry->second.generation != eve::Generation(generation) ||
             entry->second.value.has_value()) {
-            return failure<void>(eve::DiagnosticCode::InvariantViolation,
-                                 "inconsistent definition generation at index " + std::to_string(index));
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                       "inconsistent definition generation at index " + std::to_string(index)));
         }
         auto canonical = jsonValue->toJson();
         if (!canonical.ok()) {
@@ -547,8 +541,8 @@ eve::Result<void> DefinitionRegistry::restoreJson(const std::string& json) {
             !sequenceField || !readUint64String(*sequenceField, sequence) || sequence == 0 ||
             (!previousSequence.isZero() && eve::EventSequence(sequence) <= previousSequence) || !generationField ||
             !readUint64String(*generationField, generation) || generation == 0) {
-            return failure<void>(eve::DiagnosticCode::ParseError,
-                                 "invalid definition event at index " + std::to_string(index));
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "invalid definition event at index " + std::to_string(index)));
         }
         const bool     removed = name == "definition_removed";
         Storage::Event event;
@@ -564,8 +558,8 @@ eve::Result<void> DefinitionRegistry::restoreJson(const std::string& json) {
         previousSequence = eve::EventSequence(sequence);
     }
     if (!previousSequence.isZero() && eve::EventSequence(nextSequence) <= previousSequence) {
-        return failure<void>(eve::DiagnosticCode::InvariantViolation,
-                             "next event sequence must exceed retained events");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                                                 "next event sequence must exceed retained events"));
     }
     candidate.nextEventSequence = eve::EventSequence(nextSequence);
 
@@ -589,11 +583,11 @@ eve::Result<eve::SnapshotEnvelope> DefinitionRegistry::snapshot(const eve::Snaps
 eve::Result<void> DefinitionRegistry::restoreSnapshot(const eve::SnapshotEnvelope&     source,
                                                       const eve::SnapshotHashProvider& hashProvider) {
     if (source.type != "definitions.registry" || source.schema != definitionsSchema())
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "snapshot does not belong to definitions::DefinitionRegistry");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "snapshot does not belong to definitions::DefinitionRegistry"));
     if (!instanceId_.isNil() && source.instanceId != instanceId_)
-        return failure<void>(eve::DiagnosticCode::Conflict,
-                             "snapshot instanceId does not match definitions::DefinitionRegistry");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "snapshot instanceId does not match definitions::DefinitionRegistry"));
 
     auto migrated = definitionsMigrations().migrate(source, eve::SchemaVersion(1), hashProvider);
     if (!migrated.ok()) return eve::Result<void>::failure(migrated.status());
@@ -680,8 +674,9 @@ void Definitions::expose(ssq::Table& table) {
         if (!value)
             return eve::script::projectResult(
                 vm,
-                definitionsBindingFailure<DefinitionHandle>(eve::DiagnosticCode::InvalidArgument,
-                                                            "definition registry must not be null", "registry"),
+                eve::Result<DefinitionHandle>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                              "definition registry must not be null",
+                                                                              "registry", {}, "definitions.squirrel")),
                 [](DefinitionHandle&& handle) { return definitionHandleProjection(handle); });
         return eve::script::projectResult(vm, value->insert(type, id, version, json),
                                           [](DefinitionHandle&& handle) { return definitionHandleProjection(handle); });
@@ -691,8 +686,9 @@ void Definitions::expose(ssq::Table& table) {
         if (!value)
             return eve::script::projectResult(
                 vm,
-                definitionsBindingFailure<DefinitionHandle>(eve::DiagnosticCode::InvalidArgument,
-                                                            "definition registry must not be null", "registry"),
+                eve::Result<DefinitionHandle>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                              "definition registry must not be null",
+                                                                              "registry", {}, "definitions.squirrel")),
                 [](DefinitionHandle&& handle) { return definitionHandleProjection(handle); });
         return eve::script::projectResult(vm, value->replace(type, id, version, json),
                                           [](DefinitionHandle&& handle) { return definitionHandleProjection(handle); });
@@ -701,8 +697,9 @@ void Definitions::expose(ssq::Table& table) {
         if (!value)
             return eve::script::projectResult(
                 vm,
-                definitionsBindingFailure<DefinitionHandle>(eve::DiagnosticCode::InvalidArgument,
-                                                            "definition registry must not be null", "registry"),
+                eve::Result<DefinitionHandle>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                              "definition registry must not be null",
+                                                                              "registry", {}, "definitions.squirrel")),
                 [](DefinitionHandle&& handle) { return definitionHandleProjection(handle); });
         return eve::script::projectResult(vm, value->remove(type, id),
                                           [](DefinitionHandle&& handle) { return definitionHandleProjection(handle); });
@@ -711,8 +708,9 @@ void Definitions::expose(ssq::Table& table) {
         if (!value)
             return eve::script::projectResult(
                 vm,
-                definitionsBindingFailure<std::reference_wrapper<const Definition>>(
-                    eve::DiagnosticCode::InvalidArgument, "definition registry must not be null", "registry"),
+                eve::Result<std::reference_wrapper<const Definition>>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "definition registry must not be null",
+                                           "registry", {}, "definitions.squirrel")),
                 [](std::reference_wrapper<const Definition>&& definition) {
                     return definitionProjection(definition.get());
                 });
@@ -726,16 +724,18 @@ void Definitions::expose(ssq::Table& table) {
         if (!value)
             return eve::script::projectResult(
                 vm,
-                definitionsBindingFailure<std::reference_wrapper<const Definition>>(
-                    eve::DiagnosticCode::InvalidArgument, "definition registry must not be null", "registry"),
+                eve::Result<std::reference_wrapper<const Definition>>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "definition registry must not be null",
+                                           "registry", {}, "definitions.squirrel")),
                 [](std::reference_wrapper<const Definition>&& definition) {
                     return definitionProjection(definition.get());
                 });
         if (generation <= 0)
             return eve::script::projectResult(
                 vm,
-                definitionsBindingFailure<std::reference_wrapper<const Definition>>(
-                    eve::DiagnosticCode::InvalidArgument, "definition generation must be positive", "generation"),
+                eve::Result<std::reference_wrapper<const Definition>>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "definition generation must be positive", "generation", {},
+                    "definitions.squirrel")),
                 [](std::reference_wrapper<const Definition>&& definition) {
                     return definitionProjection(definition.get());
                 });
@@ -764,16 +764,18 @@ void Definitions::expose(ssq::Table& table) {
     registry.addFunc("restoreJson", [vm](DefinitionRegistry* value, const std::string& json) {
         if (!value)
             return eve::script::projectResult(
-                vm, definitionsBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                    "definition registry must not be null", "registry"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "definition registry must not be null",
+                                                                      "registry", {}, "definitions.squirrel")));
         return eve::script::projectResult(vm, value->restoreJson(json));
     });
     registry.addFunc("handle", [vm](DefinitionRegistry* value, const std::string& type, const std::string& id) {
         if (!value)
             return eve::script::projectResult(
                 vm,
-                definitionsBindingFailure<DefinitionHandle>(eve::DiagnosticCode::InvalidArgument,
-                                                            "definition registry must not be null", "registry"),
+                eve::Result<DefinitionHandle>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                              "definition registry must not be null",
+                                                                              "registry", {}, "definitions.squirrel")),
                 [](DefinitionHandle&& handle) { return definitionHandleProjection(handle); });
         return eve::script::projectResult(vm, value->handle(type, id),
                                           [](DefinitionHandle&& handle) { return definitionHandleProjection(handle); });
@@ -782,8 +784,9 @@ void Definitions::expose(ssq::Table& table) {
         if (!value)
             return eve::script::projectResult(
                 vm,
-                definitionsBindingFailure<eve::Generation>(eve::DiagnosticCode::InvalidArgument,
-                                                           "definition registry must not be null", "registry"),
+                eve::Result<eve::Generation>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                             "definition registry must not be null",
+                                                                             "registry", {}, "definitions.squirrel")),
                 [](eve::Generation generation) { return eve::Value(static_cast<std::int64_t>(generation.value())); });
         return eve::script::projectResult(vm, value->generationOf(type, id), [](eve::Generation generation) {
             return eve::Value(static_cast<std::int64_t>(generation.value()));

@@ -1,6 +1,7 @@
 #include "common/config.h"
 #include "common/CrashHandler.h"
 #include "common/CrashLog.h"
+#include "common/SnapshotHash.h"
 #include "cmdline/cmdline.h"
 #include <CLI11.hpp>
 #include <rang.hpp>
@@ -55,6 +56,12 @@ int main(int argc, char **argv)
     // and uncaught exceptions are persisted (see common/CrashLog.h).
     eve::initSystemLogging();
 
+    // Host registration point for the default snapshot content hasher. Script and tooling
+    // paths cannot inject a SnapshotHashProvider, so without this they would have no digest
+    // at all; a module that registered a stronger hasher first is left untouched (NoOp).
+    // See common/SnapshotHash.h for why the built-in one is named non-cryptographic.
+    (void)eve::registerBuiltinSnapshotHasher().status();
+
 #if defined(EVENGINE_WINDOWS) || defined(_WIN32)
     eve::installCrashHandler();
     // Diagnostic hook: EVE_TEST_CRASH=1 forces an access violation right after
@@ -100,5 +107,9 @@ int main(int argc, char **argv)
         argv = injected.data();
     }
 #endif
-    return requireModInst(eve::cmd,Cmdline)->runArgs(argc, argv);
+    const int exitCode = requireModInst(eve::cmd, Cmdline)->runArgs(argc, argv);
+    // An unattended reader tells "the run finished" from "the run died" by
+    // whether a session-end marker follows the session-start marker in eve.log.
+    eve::recordSessionEnd(exitCode);
+    return exitCode;
 }

@@ -87,8 +87,7 @@ TEST_CASE("asset.sceneBindingsRejectDanglingDuplicateAndUnversionedBindings") {
     REQUIRE(!unversioned.ok());
     root.erase("renderers");
     auto legacy = load(root, 1);
-    REQUIRE(legacy.ok());
-    REQUIRE(legacy.value().renderers.empty());
+    REQUIRE(!legacy.ok());
 }
 
 TEST_CASE("asset.sceneBindingsPreserveCombinedAndGimbalRotations") {

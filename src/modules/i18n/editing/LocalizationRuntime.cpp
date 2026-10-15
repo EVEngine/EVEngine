@@ -9,13 +9,13 @@
 namespace eve::localization_editing {
 namespace {
 
-EditorResult<void> auditionError(EditorStatus status, const char* rule, std::string message) {
+Result<void> auditionError(EditorStatus status, const char* rule, std::string message) {
     return eve::editing::failed<void>(status, RuleId(rule), std::move(message));
 }
 
 }  // namespace
 
-EditorResult<void> LocalizationVoiceAudition::play(const LocalizationDocument& document,
+Result<void> LocalizationVoiceAudition::play(const LocalizationDocument& document,
                                                     const std::string& key,
                                                     const std::string& locale,
                                                     dialogue::DialogueVoice* voice,

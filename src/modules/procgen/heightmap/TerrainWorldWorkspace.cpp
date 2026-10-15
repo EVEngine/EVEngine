@@ -22,10 +22,6 @@
 
 namespace eve::procgen {
 namespace {
-template <class T>
-Result<T> invalidWorld(const char* message) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message));
-}
 bool powerOfTwo(int value) { return value > 0 && (value & (value - 1)) == 0; }
 bool finitePositive(double value) { return std::isfinite(value) && value > 0; }
 }  // namespace
@@ -110,21 +106,24 @@ Result<int> TerrainWorldWorkspace::create(const TerrainWorldCreationSettings& s)
         s.treeResolution <= 0 || s.objectResolution <= 0 || s.splatLayers <= 0 ||
         s.defaultSplatLayer < 0 || s.defaultSplatLayer >= s.splatLayers || s.defaultDetailDensity < 0 ||
         s.namePrefix.empty())
-        return invalidWorld<int>("terrain.world.create: valid Pcg tile topology and resolutions required");
+        return Result<int>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "terrain.world.create: valid Pcg tile topology and resolutions required"));
     auto candidate = std::make_unique<Impl>();
     candidate->settings = s;
     candidate->tiles.reserve(static_cast<std::size_t>(s.tilesX * s.tilesZ));
     const double baseX = s.centerX - s.tileSize * s.tilesX * 0.5;
     const double baseZ = s.centerZ - s.tileSize * s.tilesZ * 0.5;
     if (!std::isfinite(baseX) || !std::isfinite(baseZ))
-        return invalidWorld<int>("terrain.world.create: world origin is not representable");
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "terrain.world.create: world origin is not representable"));
     for (int x = 0; x < s.tilesX; ++x) for (int z = 0; z < s.tilesZ; ++z) {
         Impl::Tile tile;
         tile.name = (s.worldMap ? "World Map" : s.namePrefix) + "_" + std::to_string(x) + "_" +
                     std::to_string(z) + (s.nameSuffix.empty() ? "" : "-" + s.nameSuffix);
         tile.originX = baseX + s.tileSize * x; tile.originZ = baseZ + s.tileSize * z;
         if (!std::isfinite(tile.originX) || !std::isfinite(tile.originZ))
-            return invalidWorld<int>("terrain.world.create: tile origin is not representable");
+            return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                          "terrain.world.create: tile origin is not representable"));
         tile.heights = Heightmap(s.heightmapResolution, s.heightmapResolution);
         auto splat = tile.splat.initialize(s.controlTextureResolution, s.controlTextureResolution,
                                            s.splatLayers, s.defaultSplatLayer);
@@ -142,7 +141,8 @@ namespace {
 template <class Apply>
 Result<int> mutateWorld(std::unique_ptr<TerrainWorldWorkspace::Impl>& owner, Apply&& apply) {
     if (!owner || owner->tiles.empty() || owner->runStatus == TerrainWorldRunStatus::Pending)
-        return invalidWorld<int>("terrain.world: created workspace without pending spawn required");
+        return Result<int>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "terrain.world: created workspace without pending spawn required"));
     auto candidate = std::make_unique<TerrainWorldWorkspace::Impl>(*owner);
     auto result = apply(*candidate);
     if (!result.ok()) return Result<int>::failure(result.status());
@@ -289,11 +289,15 @@ Result<int> TerrainWorldWorkspace::applyProbes(const Heightmap& fitness,
 }
 
 Result<int> TerrainWorldWorkspace::spawn(const TerrainSpawnPlan& plan) {
-    if (plan.rules().empty()) return invalidWorld<int>("terrain.world.spawn: nonempty spawn plan required");
+    if (plan.rules().empty())
+        return Result<int>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.world.spawn: nonempty spawn plan required"));
     bool hasEnabled = false;
     for (const auto& rule : plan.rules())
         std::visit([&](const auto& value) { hasEnabled = hasEnabled || value.enabled; }, rule);
-    if (!hasEnabled) return invalidWorld<int>("terrain.world.spawn: at least one enabled rule required");
+    if (!hasEnabled)
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "terrain.world.spawn: at least one enabled rule required"));
     return mutateWorld(impl_, [&](Impl& world) -> Result<TerrainMultiTileReport> {
         TerrainMultiTileReport combined;
         std::unordered_set<std::string> affectedNames;
@@ -434,7 +438,9 @@ Result<int> TerrainWorldWorkspace::flatten() {
 
 Result<int> TerrainWorldWorkspace::setHeightWorldUnits(float heightWorldUnits, float worldHeightSpan) {
     if (!std::isfinite(heightWorldUnits) || !std::isfinite(worldHeightSpan) || worldHeightSpan <= 0)
-        return invalidWorld<int>("terrain.world.setHeightWorldUnits: finite elevation and positive span required");
+        return Result<int>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "terrain.world.setHeightWorldUnits: finite elevation and positive span required"));
     const float normalized = std::clamp(heightWorldUnits / worldHeightSpan, 0.f, 1.f);
     return mutateWorld(impl_, [normalized](Impl& world) {
         TerrainMultiTileReport report;
@@ -455,7 +461,8 @@ Result<int> TerrainWorldWorkspace::setHeightWorldUnits(float heightWorldUnits, f
 
 Result<int> TerrainWorldWorkspace::clearSpawns(const TerrainWorldClearSettings& settings) {
     if (!settings.details && !settings.trees && !settings.objects && !settings.probes)
-        return invalidWorld<int>("terrain.world.clearSpawns: at least one domain must be selected");
+        return Result<int>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "terrain.world.clearSpawns: at least one domain must be selected"));
     return mutateWorld(impl_, [&](Impl& world) {
         TerrainMultiTileReport report;
         const std::string source = std::to_string(settings.sourceNamespace);
@@ -521,7 +528,8 @@ template <class T>
 Result<const TerrainWorldWorkspace::Impl::Tile*> worldTile(const std::unique_ptr<TerrainWorldWorkspace::Impl>& impl,
                                                             int index) {
     if (!impl || index < 0 || index >= static_cast<int>(impl->tiles.size()))
-        return invalidWorld<const TerrainWorldWorkspace::Impl::Tile*>("terrain.world: tile index out of range");
+        return Result<const TerrainWorldWorkspace::Impl::Tile*>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.world: tile index out of range"));
     return Result<const TerrainWorldWorkspace::Impl::Tile*>::success(&impl->tiles[static_cast<std::size_t>(index)]);
 }
 }  // namespace
@@ -536,7 +544,8 @@ Result<double> TerrainWorldWorkspace::getTileOriginX(int index) const { auto til
 Result<double> TerrainWorldWorkspace::getTileOriginZ(int index) const { auto tile = worldTile<int>(impl_, index); if (!tile.ok()) return Result<double>::failure(tile.status()); return Result<double>::success(tile.value()->originZ); }
 Result<int> TerrainWorldWorkspace::undo() {
     if (!impl_ || impl_->runStatus == TerrainWorldRunStatus::Pending || impl_->cursor <= 0)
-        return invalidWorld<int>("terrain.world: no undo snapshot");
+        return Result<int>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.world: no undo snapshot"));
     auto candidate = std::make_unique<Impl>(*impl_);
     --candidate->cursor;
     candidate->restore(candidate->history[static_cast<std::size_t>(candidate->cursor)]);
@@ -548,7 +557,8 @@ Result<int> TerrainWorldWorkspace::undo() {
 Result<int> TerrainWorldWorkspace::redo() {
     if (!impl_ || impl_->runStatus == TerrainWorldRunStatus::Pending ||
         impl_->cursor + 1 >= static_cast<int>(impl_->history.size()))
-        return invalidWorld<int>("terrain.world: no redo snapshot");
+        return Result<int>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain.world: no redo snapshot"));
     auto candidate = std::make_unique<Impl>(*impl_);
     ++candidate->cursor;
     candidate->restore(candidate->history[static_cast<std::size_t>(candidate->cursor)]);

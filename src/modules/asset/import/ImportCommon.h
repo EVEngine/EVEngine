@@ -2,6 +2,7 @@
 
 #include "asset/import/AssetImporter.h"
 
+#include "common/Export.h"
 #include "data/HashFunction.h"
 
 #include <algorithm>
@@ -9,13 +10,10 @@
 
 namespace eve::asset_import::detail {
 
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, "asset.import"));
-}
-
+/** @brief Sha 256. */
 inline std::string sha256(std::span<const std::uint8_t> bytes) {
     data::HashFunction::Value digest{};
+    /** @brief Returns the hash function. */
     data::HashFunction::getHashFunction("sha256")
         ->hash("sha256", reinterpret_cast<const char*>(bytes.data()), bytes.size(), digest);
     static constexpr char digits[] = "0123456789abcdef";
@@ -29,11 +27,14 @@ inline std::string sha256(std::span<const std::uint8_t> bytes) {
     return result;
 }
 
+/** @brief Base manifest. */
 inline Result<asset::EvaManifest> baseManifest(const ImportPackageIdentity& package,
                                                 std::string_view importer) {
     if (package.packageId.isNil() || package.packageName.empty() || package.packageVersion.empty())
-        return failure<asset::EvaManifest>(DiagnosticCode::InvalidArgument,
-                                           "package identity, name and version are required");
+        /** @brief Failure. */
+        return Result<asset::EvaManifest>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                     "package identity, name and version are required",
+                                                                     {}, {}, "asset.import"));
     asset::EvaManifest manifest;
     manifest.packageId = package.packageId;
     manifest.packageName = package.packageName;
@@ -41,19 +42,25 @@ inline Result<asset::EvaManifest> baseManifest(const ImportPackageIdentity& pack
     manifest.provenance = package.provenance;
     manifest.provenance["importer"] = Value(std::string(importer));
     manifest.provenance["importerVersion"] = Value(std::int64_t(1));
+    /** @brief Success. */
     return Result<asset::EvaManifest>::success(std::move(manifest));
 }
 
+/** @brief Asset ref. */
 inline Result<AssetRef> assetRef(PersistentId id) {
     auto reference = AssetRef::fromId(id);
     if (!reference) return Result<AssetRef>::failure(reference.status());
+    /** @brief Success. */
     return Result<AssetRef>::success(std::move(reference).takeValue());
 }
 
+/** @brief Extension. */
 inline std::string extension(std::string_view name) {
     const auto dot = name.find_last_of('.');
     if (dot == std::string_view::npos) return {};
+    /** @brief Result. */
     std::string result(name.substr(dot + 1));
+    /** @brief Transform. */
     std::transform(result.begin(), result.end(), result.begin(), [](unsigned char value) {
         return static_cast<char>(std::tolower(value));
     });
@@ -61,10 +68,10 @@ inline std::string extension(std::string_view name) {
 }
 
 /** @brief Append the deterministic mandatory import report and bind it from provenance. */
-[[nodiscard]] Result<void> finalizeImportReport(PreparedAssetImport& prepared,
-                                                const ImportPackageIdentity& package,
-                                                std::string_view sourceEngine,
-                                                std::string_view sourceVersion,
-                                                Value::Object options = {});
+[[nodiscard]] EVENGINE_API_PLATFORM Result<void> finalizeImportReport(PreparedAssetImport&         prepared,
+                                                                      const ImportPackageIdentity& package,
+                                                                      std::string_view             sourceEngine,
+                                                                      std::string_view             sourceVersion,
+                                                                      Value::Object                options = {});
 
 }  // namespace eve::asset_import::detail

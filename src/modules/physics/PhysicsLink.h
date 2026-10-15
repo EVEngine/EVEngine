@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file PhysicsLink.h
@@ -28,7 +30,7 @@ class World3D;
  * identity and occupancy, so it is the required stale-handle check after body
  * destruction, world destruction, restore, or hot reload.
  */
-struct PhysicsLink {
+struct EVENGINE_API_WORLD PhysicsLink {
     /** @brief Process-local owning-world handle. */
     PhysicsWorldHandle world = PhysicsWorldHandle::invalid();
     /** @brief Process-local solver-body handle. */

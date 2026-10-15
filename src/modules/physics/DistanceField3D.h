@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <algorithm>
 #include <cstddef>
@@ -11,8 +13,9 @@ namespace eve::physics {
  * Negative samples are solid, positive samples are empty. Samples are stored at
  * grid vertices and queried with trilinear interpolation.
  */
-class DistanceField3D {
+class EVENGINE_API_WORLD DistanceField3D {
 public:
+    /** @brief Distance field 3 d. */
     DistanceField3D(int width, int height, int depth, float cellSize, float originX,
                     float originY, float originZ, float outsideDistance);
 

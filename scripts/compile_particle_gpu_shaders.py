@@ -8,11 +8,13 @@ import struct
 import subprocess
 import sys
 from pathlib import Path
+import utf8_stdio
 
 ROOT = Path(__file__).resolve().parents[1]
 SHADER_DIR = ROOT / "src" / "modules" / "graphics" / "shaders"
 SHADERS = [
     ("particle_resident.comp", "comp", "particle_resident_comp_spv"),
+    ("particle_resident_sort.comp", "comp", "particle_resident_sort_comp_spv"),
     ("particle_resident.vert", "vert", "particle_resident_vert_spv"),
     ("particle_resident.frag", "frag", "particle_resident_frag_spv"),
     ("particle_distortion.frag", "frag", "particle_distortion_frag_spv"),
@@ -63,4 +65,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())

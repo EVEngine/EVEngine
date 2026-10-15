@@ -91,6 +91,17 @@ TEST_CASE("gameplay.control.climbingReprobesAuthorityForPlayerAndAutomation") {
         player, instance, command("climb-begin-1", "climbing:begin-best", character, before));
     REQUIRE(begun.ok());
     CHECK(!runtime.executionId().isZero());
+    // 目录能力：该适配器服务的就是这一个实例，`instances` 因此能列出它。
+    const auto catalogInstances = control.gameplayInstances();
+    REQUIRE_EQ(catalogInstances.size(), std::size_t{1});
+    CHECK_EQ(catalogInstances[0].format(), instance.format());
+    eve::IGameplayInstanceCatalog* catalog = nullptr;
+    eve::cap::forEach<eve::IGameplayInstanceCatalog>([&](auto* candidate) {
+        if (candidate != nullptr && candidate->gameplayDomain() == "climbing") catalog = candidate;
+    });
+    REQUIRE(catalog != nullptr);
+    CHECK_EQ(catalog->gameplayInstances().size(), std::size_t{1});
+
     auto events = control.gameplayEvents(player, instance, 0);
     REQUIRE(events.ok());
     REQUIRE_EQ(events.value().size(), std::size_t{1});

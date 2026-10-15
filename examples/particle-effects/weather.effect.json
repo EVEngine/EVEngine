@@ -1,0 +1,59 @@
+{
+  "type": "eve.particle-effect",
+  "version": 2,
+  "parameters": { "intensity": 1.0 },
+  "emitters": [
+    {
+      "name": "rain",
+      "emitter": {
+        "buffer": 1200,
+        "emitterLife": -1,
+        "emissionRate": 220.0,
+        "particleLifetime": [0.7, 1.1],
+        "particleSize": [2.0, 10.0],
+        "sizes": [1.0, 1.0],
+        "speed": [180.0, 260.0],
+        "direction": 1.2,
+        "spread": 0.08,
+        "gravity": [0.0, 80.0],
+        "emissionArea": { "type": "rect", "x": 960.0, "y": 40.0 },
+        "renderMode": "velocity",
+        "stretch": 0.04,
+        "blendMode": "alpha",
+        "colorStart": [0.65, 0.75, 0.95, 0.55],
+        "colorEnd": [0.45, 0.55, 0.8, 0.0],
+        "collision": { "mode": "kill", "radius": 1.0, "lifetimeLoss": 1.0 },
+        "collisionBounds": { "enabled": true, "minX": 0.0, "minY": 0.0, "maxX": 960.0, "maxY": 540.0 },
+        "maxSpawnPerFrame": 96,
+        "priority": -5,
+        "cullingMode": "pause",
+        "parameterBindings": [
+          { "parameter": "intensity", "target": "emission", "scale": 1.0 }
+        ]
+      }
+    },
+    {
+      "name": "mist",
+      "emitter": {
+        "buffer": 160,
+        "emitterLife": -1,
+        "emissionRate": 8.0,
+        "particleLifetime": [2.0, 3.5],
+        "particleSize": [40.0, 70.0],
+        "sizes": [0.8, 1.4],
+        "speed": [5.0, 18.0],
+        "direction": 3.14159265,
+        "spread": 0.4,
+        "emissionArea": { "type": "rect", "x": 960.0, "y": 120.0 },
+        "blendMode": "alpha",
+        "colorStart": [0.55, 0.6, 0.7, 0.08],
+        "colorEnd": [0.4, 0.45, 0.55, 0.0],
+        "priority": -10,
+        "minimumQuality": 2,
+        "parameterBindings": [
+          { "parameter": "intensity", "target": "size", "scale": 1.0 }
+        ]
+      }
+    }
+  ]
+}

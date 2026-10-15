@@ -1,6 +1,7 @@
 #include "common/Capability.h"
 #include "common/ECS.h"
 #include "common/GameplayControl.h"
+#include "common/GameplayInstanceCatalog.h"
 #include "rpg/Battle.h"
 #include "rpg/BattleControl.h"
 #include "rpg/RPGActor.h"
@@ -85,6 +86,17 @@ TEST_CASE("gameplay.control.rpgBattleUsesTheSameCheckedActionForPlayerAndAutomat
         {eve::SimulationTick(1), eve::Duration::fromNanoseconds(1)});
     REQUIRE(advanced.ok());
     CHECK(battle.isVictory());
+
+    // 目录能力：该适配器服务的就是这一个实例，`instances` 因此能列出它。
+    const auto catalogInstances = control.gameplayInstances();
+    REQUIRE_EQ(catalogInstances.size(), std::size_t{1});
+    CHECK_EQ(catalogInstances[0].format(), battleSubject.format());
+    eve::IGameplayInstanceCatalog* catalog = nullptr;
+    eve::cap::forEach<eve::IGameplayInstanceCatalog>([&](auto* candidate) {
+        if (candidate != nullptr && candidate->gameplayDomain() == "rpg.battle") catalog = candidate;
+    });
+    REQUIRE(catalog != nullptr);
+    CHECK_EQ(catalog->gameplayInstances().size(), std::size_t{1});
 
     auto events = control.gameplayEvents(player, battleSubject, 0);
     REQUIRE(events.ok());

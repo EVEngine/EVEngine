@@ -72,6 +72,7 @@ struct ActionPreviewFrame {
  */
 class IActionPreviewSink {
 public:
+    /** @brief Releases IActionPreviewSink resources. */
     virtual ~IActionPreviewSink() = default;
     /** @brief Validate and stage every resource required by a frame. */
     [[nodiscard]] virtual Result<void> prepare(const ActionPreviewFrame& frame) = 0;
@@ -91,6 +92,7 @@ public:
 class IActionPreviewSinkProvider {
 public:
     static constexpr const char* capabilityName = "eve.action.preview-sink-provider";
+    /** @brief Releases IActionPreviewSinkProvider resources. */
     virtual ~IActionPreviewSinkProvider() = default;
     /** @brief Create one isolated preview sink owned by the caller. */
     [[nodiscard]] virtual Result<std::unique_ptr<IActionPreviewSink>> createActionPreviewSink() = 0;
@@ -99,6 +101,7 @@ public:
 /** @brief Optional animation provider that samples an owning root-motion polyline. */
 class IActionRootMotionSource {
 public:
+    /** @brief Releases IActionRootMotionSource resources. */
     virtual ~IActionRootMotionSource() = default;
     /** @brief Sample animation root motion from zero through duration, including both endpoints. */
     [[nodiscard]] virtual Result<std::vector<ActionPreviewPoint3>> sampleRootMotion(

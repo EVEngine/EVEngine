@@ -78,18 +78,14 @@ local nmap = md.bakeNormalMap(0, 512, 512, 0, "tangent");
 - 模型无 normals 仍启用光照：先检查 `hasNormals()`。
 - 每个实例重复加载同一文件：共享 ModelData 和 GPU 资源。
 
-## API 快查
+## 绑定与行为说明
 
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
-
-- `empty()`、`getFaceCount()`、`getMaterialCount()`、`getMeshCount()`、`getName()`、`getVertexCount()`、`hasNormals()`、`hasTexCoords()`
 - 表面拓扑与 UV 反查：`getVertexPosition()`、`getFaceVertexIndex()`、`mapSurfacePointToUv()`；`SurfaceUv.getU()`、`getV()`、`getBarycentricA()`、`getBarycentricB()`、`getBarycentricC()`、`getTriangleIndex()`、`getUvChannel()`
 - 顶点流：`getTexCoordChannelCount()`、`hasTexCoordChannel()`、`getTexCoord()`、`hasTangents()`、`getTangent()`、`getBitangent()`、`getVertexColorChannelCount()`、`hasVertexColorChannel()`、`getVertexColor()`、`getVertexNormal()`、`setVertexNormal()`、`applyVertexNormals()`、`applyVertexNormalsFrom()`、`bakeNormalMap()`
 - 材质：`getMaterialIndex()`、`getMaterialName()`、`getMaterialBaseColorR/G/B/A()`、`getMaterialMetallicFactor()`、`getMaterialRoughnessFactor()`、`getMaterialOpacity()`、`getMaterialTwoSided()`、`getMaterialAlphaMode()`、`getMaterialAlphaCutoff()`、`getMaterialTextureSlotCount()`、`getMaterialTexturePath()`、`getMaterialTextureEmbeddedIndex()`
 - 内嵌贴图：`getEmbeddedTextureCount()`、`getEmbeddedTextureName()`、`getEmbeddedTextureWidth()`、`getEmbeddedTextureHeight()`、`getEmbeddedTextureImageData()`
 - 蒙皮：`hasBones()`、`getBoneCount()`、`getBoneName()`、`getInverseBindMatrixElement()`、`getBoneWeightCount()`、`getBoneWeightVertex()`、`getBoneWeightValue()`
 - 动画剪辑：`getAnimationCount()`、`getAnimationName()`
-- `newModelData()`、`newModelDataFromFile()`、`createRenderable()`
 - 离线封装：`bakeModel(sourcePath, destinationPath)` 将自包含 GLB/FBX 打包为 `.evmodel`；部署时仍用 `newModelDataFromFile()` 透明加载。
 
 `.evmodel` 是稳定的单文件传输封装，记录原始格式并避免部署时扩展名猜测；它不会自动收集 OBJ/MTL 的外部 sidecar，因此离线生产优先以 GLB 或内嵌贴图 FBX 为输入。GPU Mesh 会保留所有导入 UV、顶点色及 tangent/bitangent 流供自定义管线和后续烘焙使用；内置 PBR shader 当前仍以 UV0 采样。
@@ -105,7 +101,6 @@ albedo、normal、height 贴图自动应用，内嵌/外部贴图均可解析）
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/model3d/`](../../../src/modules/model3d/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `model3d`。
@@ -126,3 +121,16 @@ options 是严格的布尔值表，可包含 `triangulate`、`generateNormalsIfM
 未知字段和非布尔值均拒绝。选项参与缓存键，预加载和读取必须传相同选项。
 对已经建立索引的导出网格，可显式关闭 joinIdenticalVertices 和 improveCacheLocality，
 保留导出器的顶点/三角形顺序；这不会改变普通模型加载的默认选项。
+
+## 静态植被变形
+
+`model3d.prepareFoliageDeformation(modelData, meshIndex, renderable)` 返回 Result，
+为由同一模型/网格创建的未蒙皮 Renderable 生成拥有自身存储的静止形态变形数据。
+检查索引、顶点数量、有限坐标和正高度后一次提交；失败不替换原数据。
+调用成本随顶点数线性增长，只在准备资产时执行，不能每帧重复。
+在 main/render 线程同步调用，不保留 modelData 借用，不执行回调。
+配合 Graphics 的 configureFoliageWind 与显式时间使用，保留导入 PBR 纹理。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](model3d/api-reference.md)，使用前先确认本章的前置条件与生命周期。

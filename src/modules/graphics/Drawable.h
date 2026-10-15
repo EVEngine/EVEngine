@@ -16,6 +16,7 @@ class Graphics;
  */
 class Drawable {
 public:
+    /** @brief Releases Drawable resources. */
     virtual ~Drawable() {}
 
     /**
@@ -25,6 +26,7 @@ public:
 
     /** @brief When false, skipped by Graphics::drawOcclusion / volumetric occluder passes. */
     bool getCastOcclusion() const { return castOcclusion_; }
+    /** @brief Sets the cast occlusion. */
     void setCastOcclusion(bool cast) { castOcclusion_ = cast; }
 
     /**

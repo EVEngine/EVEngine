@@ -1,23 +1,48 @@
 #include "common/Runtime.h"
 
 #include "common/Assert.h"
+#include "common/Capability.h"
 #include "common/Module.h"
 #include "common/ReflectScript.h"
 #include "common/ScriptCompiler.h"
 #include "common/ScriptError.h"
 #include "common/ScriptModule.h"
+#include "common/ScriptProvider.h"
+#include "common/SquirrelOwnership.h"
+#include "common/config.h"
 
 #include <squirrel.h>
 
 #include <algorithm>
+#include <cstdarg>
 #include <cstdlib>
 #include <sstream>
 #include <utility>
+
+#if defined(EVENGINE_ANDROID)
+#include <android/log.h>
+#endif
 
 namespace eve {
 namespace {
 
 thread_local std::vector<Runtime*> runtime_stack;
+
+#if defined(EVENGINE_ANDROID)
+void androidScriptPrint(HSQUIRRELVM, const SQChar* format, ...) {
+    va_list args;
+    va_start(args, format);
+    __android_log_vprint(ANDROID_LOG_INFO, "EVEngine", format, args);
+    va_end(args);
+}
+
+void androidScriptError(HSQUIRRELVM, const SQChar* format, ...) {
+    va_list args;
+    va_start(args, format);
+    __android_log_vprint(ANDROID_LOG_ERROR, "EVEngine", format, args);
+    va_end(args);
+}
+#endif
 
 const char* stageName(ScriptStage stage) {
     switch (stage) {
@@ -271,7 +296,14 @@ std::unique_ptr<ssq::VM> createVm(size_t stackSize, ssq::Libs::Flag libraries) {
     // check must not be the only thing standing between a bad stack size and a
     // half-constructed runtime.
     EV_PARAM_CHECK(stackSize > 0, "Runtime stack size must be positive");
-    return std::make_unique<ssq::VM>(stackSize, libraries);
+    auto vm = std::make_unique<ssq::VM>(stackSize, libraries);
+#if defined(EVENGINE_ANDROID)
+    // Android has no terminal attached to the app process. Route Squirrel's
+    // print/error callbacks to logcat so application diagnostics and CI startup
+    // markers remain observable.
+    vm->setPrintFunc(&androidScriptPrint, &androidScriptError);
+#endif
+    return vm;
 }
 
 /** Runtime error hook: captures message + full stack before it unwinds. */
@@ -282,6 +314,21 @@ SQInteger scriptErrorHook(HSQUIRRELVM vm) {
 }
 
 }  // namespace
+
+namespace script {
+
+void installScriptErrorHook(HSQUIRRELVM vm) {
+    if (!vm) return;
+    // Line numbers in sq_stackinfos require debug info at compile time.
+    sq_enabledebuginfo(vm, SQTrue);
+    // Call the hook for try/catch as well, while the throw-site stack is live.
+    // load.nut's eve_frame catch would otherwise print only the error string.
+    sq_notifyallexceptions(vm, SQTrue);
+    sq_newclosure(vm, &scriptErrorHook, 0);  // pushes the closure
+    sq_seterrorhandler(vm);                  // pops the closure
+}
+
+}  // namespace script
 
 struct Runtime::ScriptRecord {
     ScriptInfo info;
@@ -435,20 +482,19 @@ void Runtime::initialize() {
 
 void Runtime::installErrorHandler() {
     if (!vm_) return;
-    HSQUIRRELVM vm = handle();
-    // Line numbers in sq_stackinfos require debug info at compile time.
-    sq_enabledebuginfo(vm, SQTrue);
-    // Call the hook for try/catch as well, while the throw-site stack is live.
-    // load.nut's eve_frame catch would otherwise print only the error string.
-    sq_notifyallexceptions(vm, SQTrue);
-    sq_newclosure(vm, &scriptErrorHook, 0);  // pushes the closure
-    sq_seterrorhandler(vm);  // pops the closure
+    script::installScriptErrorHook(handle());
 }
 
 void Runtime::shutdown() noexcept {
     if (shutting_down_ || stopped_) return;
     shutting_down_ = true;
     unloadAll();
+    try {
+        cap::forEach<script::ISquirrelRootReleaser>([](script::ISquirrelRootReleaser* owner) {
+            if (owner) owner->releaseSquirrelRoots();
+        });
+    } catch (...) {
+    }
     ModuleManager::detach(this);
     script::clearLastScriptError(handle());
     while (true) {
@@ -462,6 +508,9 @@ void Runtime::shutdown() noexcept {
     initialized_ = false;
     script_compiler_.reset();
     script_modules_.reset();
+    // A published script provider holds a rooted ssq::Object, which must not outlive
+    // its VM: release every one before the VM goes away.
+    ScriptProviderRegistry::instance().clearAll();
     vm_.reset();
     stopped_ = true;
     shutting_down_ = false;

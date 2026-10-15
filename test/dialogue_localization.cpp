@@ -7,18 +7,18 @@
 using namespace eve::dialogue;
 
 TEST_CASE("dialogueLocalization.roundtripMissingAndVoiceManifest") {
-    ConversationAsset asset;
+    eve::dnut::SequenceAsset asset;
     asset.id    = "intro";
     asset.entry = "welcome";
-    ConversationAsset::Node line;
+    eve::dnut::SequenceNode line;
     line.id      = "welcome";
-    line.kind    = ConversationAsset::Node::Kind::Line;
-    line.text    = "Welcome";
-    line.speaker = "Guide";
-    line.i18nKey = "intro.welcome";
-    line.voice   = "voice/default";
+    line.type    = "line";
+    line.payload.set("text", eve::Value("Welcome"));
+    line.payload.set("speaker", eve::Value("Guide"));
+    line.payload.set("i18n", eve::Value("intro.welcome"));
+    line.payload.set("voice", eve::Value("voice/default"));
     line.next    = "end";
-    asset.nodes  = {line, {"end", ConversationAsset::Node::Kind::End}};
+    asset.nodes  = {line, {"end", "end"}};
 
     ConversationLocalizationCatalog     catalog;
     std::vector<ConversationDiagnostic> diagnostics;
@@ -64,22 +64,20 @@ TEST_CASE("dialogueLocalization.validatesExactRuntimeLocaleCoverage") {
       }
     })");
     REQUIRE(bundle.ok());
-    REQUIRE_EQ(flow->loadFromDnut("conversation intro version=1 entry=welcome\n"
+    REQUIRE(flow->loadDnutChecked("schema \"eve.dnut\"\nversion 1\nconversation intro version=1 entry=welcome {\n"
                                   "node welcome line speaker=guide i18n=intro.welcome next=end\n"
-                                  "node end end\nendconversation\n",
-                                  "localized.dnut"),
-               1);
+                                  "node end end\n}\n",
+                                  "localized.dnut").ok());
     auto validated = flow->validateLocalization(*localization, "zh-CN");
     REQUIRE(validated.ok());
     CHECK_EQ(validated.value(), 1);
     auto missingLocale = flow->validateLocalization(*localization, "fr");
     CHECK(!missingLocale.ok());
 
-    REQUIRE_EQ(flow->loadFromDnut("conversation broken version=1 entry=line\n"
+    REQUIRE(flow->loadDnutChecked("schema \"eve.dnut\"\nversion 1\nconversation broken version=1 entry=line {\n"
                                   "node line line speaker=guide i18n=intro.missing next=end\n"
-                                  "node end end\nendconversation\n",
-                                  "missing.dnut"),
-               1);
+                                  "node end end\n}\n",
+                                  "missing.dnut").ok());
     auto missingKey = flow->validateLocalization(*localization, "en");
     CHECK(!missingKey.ok());
     flow->clear();

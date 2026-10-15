@@ -119,10 +119,14 @@ public:
 class FluidSimulationAdapter final : public ISurfaceFluidSimulation {
 public:
     /** @param solver Borrowed CPU solver; it must outlive this adapter. */
+    /** @brief Constructs a FluidSimulationAdapter. */
     explicit FluidSimulationAdapter(FluidSimulation& solver) noexcept : solver_(&solver) {}
 
+    /** @brief Step. */
     [[nodiscard]] eve::Result<void>              step(const eve::SimulationStep& step) override;
+    /** @brief Particle count. */
     [[nodiscard]] int                            particleCount() const noexcept override;
+    /** @brief Particles. */
     [[nodiscard]] std::span<const FluidParticle> particles() const noexcept override;
 
 private:
@@ -134,18 +138,26 @@ private:
 class FluidSurfaceConstraintAdapter final : public ISurfaceConstraint {
 public:
     /** @param binding Borrowed surface binding; it must outlive this adapter. */
+    /** @brief Constructs a FluidSurfaceConstraintAdapter. */
     explicit FluidSurfaceConstraintAdapter(FluidSurfaceBinding& binding) noexcept : binding_(&binding) {}
 
+    /** @brief Builds . */
     [[nodiscard]] eve::Result<void> build(const std::vector<glm::vec3>&     positions,
                                           const std::vector<std::uint32_t>& indices,
                                           const std::vector<glm::vec2>&     uvs = {}) override;
+    /** @brief Sets the transform. */
     [[nodiscard]] eve::Result<void> setTransform(const glm::mat4& transform) override;
+    /** @brief Sets the deformed positions. */
     [[nodiscard]] eve::Result<void> setDeformedPositions(const std::vector<glm::vec3>& worldPositions) override;
+    /** @brief True when valid. */
     [[nodiscard]] bool              isValid() const noexcept override;
+    /** @brief Evaluate. */
     [[nodiscard]] eve::Result<SurfaceSample>     evaluate(const SurfaceLocation& location,
                                                           eve::Duration          poseDelta) const override;
+    /** @brief Project. */
     [[nodiscard]] eve::Result<SurfaceLocation>   project(const glm::vec3& worldPosition,
                                                          float            maxDistance) const override;
+    /** @brief Walk. */
     [[nodiscard]] eve::Result<SurfaceWalkResult> walk(const SurfaceLocation& start, const glm::vec3& displacement,
                                                       int maxCrossings = 16) const override;
 
@@ -166,20 +178,31 @@ public:
      * @param preferGpu Requests the optional compute path.
      * @throws eve::Exception for non-positive output dimensions.
      */
+    /** @brief Constructs a ScreenSpaceSurfaceReconstructionAdapter. */
     ScreenSpaceSurfaceReconstructionAdapter(const FluidSurfaceParams& params, bool preferGpu);
+    /** @brief Releases ScreenSpaceSurfaceReconstructionAdapter resources. */
     ~ScreenSpaceSurfaceReconstructionAdapter() override;
 
     ScreenSpaceSurfaceReconstructionAdapter(const ScreenSpaceSurfaceReconstructionAdapter&)            = delete;
     ScreenSpaceSurfaceReconstructionAdapter& operator=(const ScreenSpaceSurfaceReconstructionAdapter&) = delete;
 
+    /** @brief Reconstruct. */
     [[nodiscard]] eve::Result<void> reconstruct(std::span<const glm::vec3> positions, float particleRadius) override;
+    /** @brief Occlude. */
     [[nodiscard]] eve::Result<void> occlude(std::span<const float> sceneDepth, float depthBias = 0.001f) override;
+    /** @brief Width. */
     [[nodiscard]] int               width() const noexcept override;
+    /** @brief Height. */
     [[nodiscard]] int               height() const noexcept override;
+    /** @brief Depth. */
     [[nodiscard]] std::span<const float>        depth() const noexcept override;
+    /** @brief Normals. */
     [[nodiscard]] std::span<const glm::vec3>    normals() const noexcept override;
+    /** @brief Thickness. */
     [[nodiscard]] std::span<const float>        thickness() const noexcept override;
+    /** @brief Color. */
     [[nodiscard]] std::span<const std::uint8_t> color() const noexcept override;
+    /** @brief Using gpu. */
     [[nodiscard]] bool                          usingGpu() const noexcept override;
 
 private:

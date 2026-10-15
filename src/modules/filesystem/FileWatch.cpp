@@ -1,4 +1,5 @@
 #include "filesystem/FileWatch.h"
+#include "common/StringMapInstances.h"
 #include "common/config.h"
 
 #include <algorithm>

@@ -57,18 +57,39 @@ remain owned by the selected `Graphics` backend, consistent with ordinary engine
 
 Given identical RGBA8 sources, configuration, layer order, and page coordinate, CPU page pixels are
 deterministic. Backend sampling is tolerance-bounded because texture filtering and sRGB conversion
-can vary. The initial implementation accepts at most 16 layers and supports RGBA8 inputs. It does not
-yet implement GPU feedback, asynchronous I/O, persistent cooked-page schemas, sparse binding, or
-runtime writer primitives. GPU-driven visibility currently reports an explicit unsupported result
+can vary. The implementation accepts at most 16 layers and supports RGBA8 inputs. Physical residency
+is currently mip-zero only (higher-mip feedback collapses onto the parent mip-zero page). It does
+not yet implement a GPU-written feedback append buffer, asynchronous disk I/O, persistent cooked-page
+schemas, or sparse binding. GPU-driven visibility currently reports an explicit unsupported result
 for virtual-texture materials and falls back to the standard PBR draw path.
 
-## Intended renderer evolution
+## Runtime streaming (UE5 RVT correspondence)
 
-1. Add generation-qualified incremental page-table updates over the existing atomic resident set.
-2. Collect GPU feedback, compact and deduplicate requests, then schedule bounded worker decoding.
-3. Atomically publish page-table changes only after upload completion; retain the previous mapping on
-   failure.
-4. Add runtime material-attribute writers for terrain decals and mesh/terrain intersections.
+`graphics/VirtualTextureStreaming` is an **internal** Material-owned session (not a script type).
+`Material::enableVirtualTexture` / `addVirtualTextureLayer` author layers; `Material::bind` advances
+the feedback → decode → publish loop once per `Graphics::mesh3dDrawEpoch()`:
+
+1. **Feedback** — the engine records a full mip-zero page grid (and can ingest packed GPU IDs later).
+   Packed IDs use the same 32-bit layout as `packVirtualTextureFeedback` in `virtual_texture.glsl`.
+2. **Compact + decode** — `update()` deduplicates feedback, allocates physical slots with LRU
+   eviction, and decodes at most `maxDecodesPerUpdate` pages through `VirtualTextureBlend`.
+3. **Atomic publish** — staged upload batches apply page-table clears, then atlas rectangles, then
+   page-table sets. `commitPublish` bumps the generation only after GPU uploads succeed;
+   `abandonPublish` restores the previous CPU mapping. Failed mid-batch uploads roll GPU atlases
+   back to the published snapshot.
+4. **Writers** — C++ `invalidatePage` / `invalidateRect` on the session mark resident pages dirty
+   so the next bind tick re-decodes them (terrain paint / decal-style attribute edits).
+
+Script surface is authoring-only: `material.enableVirtualTexture(...)` and
+`material.addVirtualTextureLayer(...)` (optional `addVirtualTextureLayerWeighted`).
+
+## Remaining renderer evolution
+
+1. GPU feedback append/readback pass that writes `packVirtualTextureFeedback` into a buffer instead of
+   CPU grid recording.
+2. Optional JobSystem-backed page decode for large budgets (producer receipts stay immutable).
+3. Persistent cooked-page schemas and asynchronous I/O for SVT-style producers.
+4. Richer runtime writers (mesh/terrain intersections, RVT volume bounds).
 
 The software producer and full-bake path remain the reference oracle and unsupported-platform
 fallback throughout these stages.

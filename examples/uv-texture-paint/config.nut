@@ -1,3 +1,7 @@
-window_title <- "UV Texture Paint";
-window_width <- 960;
-window_height <- 640;
+config <- {
+    width = 960
+    height = 640
+    title = "UV Texture Paint"
+    debug = false
+    hotReload = true
+};

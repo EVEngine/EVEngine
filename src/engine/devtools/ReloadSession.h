@@ -25,8 +25,9 @@ namespace eve::dev {
  *    providers are restored (falling back to resetToDefaults() on failure).
  * 4. abort(): restore the captured state unchanged and clear the session.
  */
-class EVENGINE_API ReloadSession {
+class EVENGINE_API_FOUNDATION ReloadSession {
 public:
+    /** @brief Instance. */
     static ReloadSession& instance();
 
     ReloadSession(const ReloadSession&)            = delete;

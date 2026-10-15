@@ -45,7 +45,7 @@ struct ArtifactSnapshotContext {
  * @note Main/simulation thread only. Adapter callbacks must not re-enter this
  *       publisher for the same ArtifactStore.
  */
-class ArtifactPublisher {
+class EVENGINE_API_DOMAINS ArtifactPublisher {
 public:
     /** @brief Bind a publisher to a store it does not own. */
     explicit ArtifactPublisher(ArtifactStore& store) noexcept : store_(store) {}

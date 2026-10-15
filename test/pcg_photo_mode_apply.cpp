@@ -1,30 +1,34 @@
-#include "zeroerr/unittest.h"
-#include "common/Capability.h"
-#include "common/AudioQuery.h"
-#include "common/FramePresentation.h"
-#include "ui/PcgPhotoModeApplyPlan.h"
-#include "ui/PcgPhotoModePhoto.h"
-#include "weather/Weather.h"
+#include <chrono>
+#include <vector>
+#include "GraphicsParitySupport.h"
+#include "ScriptTest.h"
 #include "camera/CameraController.h"
+#include "common/AudioQuery.h"
+#include "common/Capability.h"
+#include "common/FramePresentation.h"
+#include "common/ScriptProvider.h"
+#include "common/Status.h"
 #include "daynight/DayNight.h"
-#include "daynight/PcgLightingTimePhotoMode.h"
-#include "daynight/PcgLightingSunPhotoMode.h"
-#include "daynight/PcgLightingSkyboxPhotoMode.h"
-#include "daynight/PcgLightingFogPhotoMode.h"
 #include "daynight/PcgLightingAmbientPhotoMode.h"
-#include "graphics/Volumetric.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/PcgGraphicsPhotoMode.h"
+#include "daynight/PcgLightingFogPhotoMode.h"
+#include "daynight/PcgLightingSkyboxPhotoMode.h"
+#include "daynight/PcgLightingSunPhotoMode.h"
+#include "daynight/PcgLightingTimePhotoMode.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/Graphics.h"
+#include "graphics/PcgGraphicsPhotoMode.h"
 #include "graphics/RenderControl.h"
-#include "GraphicsParitySupport.h"
+#include "graphics/RenderSystem3D.h"
+#include "graphics/Volumetric.h"
 #include "procgen/heightmap/PcgTerrainPhotoMode.h"
 #include "procgen/heightmap/PcgTerrainStreaming.h"
 #include "procgen/heightmap/TerrainPipeline.h"
-#include "system/System.h"
-#include <chrono>
-#include <vector>
+#include "os/OS.h"
+#include "ui/PcgPhotoModeApplyPlan.h"
+#include "ui/PcgPhotoModeApplySeam.h"
+#include "ui/PcgPhotoModePhoto.h"
+#include "weather/Weather.h"
+#include "zeroerr/unittest.h"
 using namespace eve;
 using namespace eve::ui;
 namespace {
@@ -198,15 +202,21 @@ TEST_CASE("ui.pcgPhotoModeApply.lightingShadowMultiplierUsesGraphicsShadowAuthor
   "m_globalShadowDistanceMultiplier",PhotoModeDomain::Lighting,5.1f};CHECK(!authority.applyPhotoModeField(invalid).ok());
  CHECK_EQ(camera->getShadowLayerCullDistance(7),500.f);
 }
-TEST_CASE("ui.pcgPhotoModeApply.systemAuthorityAppliesVSyncAndRealFrameCap"){
+TEST_CASE("ui.pcgPhotoModeApply.framePacingAuthorityAppliesVSyncAndRealFrameCap"){
  cap::detail::clearAllRaw();PresentationMock presentation;cap::provide<IFramePresentation>(&presentation);
- system::System system;PcgPhotoModeValues before,after;after.setInt("m_vSync",2).value();after.setInt("m_targetFPS",120).value();
+ os::OS os;PcgPhotoModeValues before,after;after.setInt("m_vSync",2).value();after.setInt("m_targetFPS",120).value();
  PcgPhotoModeApplyPlan plan;REQUIRE(plan.compile(before,after).ok());REQUIRE_EQ(plan.getCommandCount(),2u);
- REQUIRE(plan.executeRegistered().ok());CHECK_EQ(presentation.count,2);CHECK_EQ(system.getPhotoModeVSync(),2);
- CHECK_EQ(system.getPhotoModeTargetFPS(),120);PhotoModeAssignment disable{"m_vSync",PhotoModeDomain::System,int64_t{0}};
- REQUIRE(system.applyPhotoModeField(disable).ok());system.limitFrame();const auto start=std::chrono::steady_clock::now();
- system.limitFrame();const auto elapsed=std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now()-start).count();
+ auto domain=plan.getCommandDomain(0);REQUIRE(domain.ok());CHECK_EQ(domain.value(),static_cast<int>(PhotoModeDomain::FramePacing));
+ REQUIRE(plan.executeRegistered().ok());CHECK_EQ(presentation.count,2);CHECK_EQ(os.getTargetFramesPerSecond(),120);
+ os.limitFrame();const auto start=std::chrono::steady_clock::now();
+ os.limitFrame();const auto elapsed=std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now()-start).count();
  CHECK_GE(elapsed,1);cap::revoke<IFramePresentation>(&presentation);
+}
+TEST_CASE("ui.pcgPhotoModeApply.framePacingAbsenceFailsBeforePresentationMutation"){
+ cap::detail::clearAllRaw();PresentationMock presentation;cap::provide<IFramePresentation>(&presentation);
+ PcgPhotoModeValues before,after;after.setInt("m_vSync",2).value();PcgPhotoModeApplyPlan plan;
+ REQUIRE(plan.compile(before,after).ok());CHECK(!plan.executeRegistered().ok());CHECK_EQ(presentation.count,0);
+ cap::revoke<IFramePresentation>(&presentation);
 }
 TEST_CASE("ui.pcgPhotoModeApply.streamingAuthorityDrivesRealChunkResidencyAndImpostorTier"){
  cap::detail::clearAllRaw();procgen::Heightmap heightmap(24,24);
@@ -348,12 +358,164 @@ TEST_CASE("ui.pcgPhotoModeApply.lightingAmbientAuthorityDrivesGradientAndSunMult
  after.setColor("m_ambientGroundColor",0.f,0.f,1.f,1.f).value();
  after.setFloat("m_globalLightIntensityMultiplier",3.f).value();PcgPhotoModeApplyPlan plan;
  REQUIRE(plan.compile(before,after).ok());REQUIRE_EQ(plan.getCommandCount(),5u);REQUIRE(plan.executeRegistered().ok());
- CHECK(std::abs(clock.getAmbientR()-1.f)<0.0001f);CHECK(std::abs(clock.getAmbientG()-0.7f)<0.0001f);
- CHECK(std::abs(clock.getAmbientB()-0.3f)<0.0001f);auto* graphics=graphics::parity_test::headlessGraphics();
- clock.setTimeOfDay(12.f);clock.setPaused(true);clock.update(0.f,graphics);
- CHECK(clock.getSunR()>2.9f);const auto state=clock.getPcgAmbientLight();CHECK(state.active);
- CHECK_EQ(state.globalLightMultiplier,3.f);PhotoModeAssignment invalid{
-  "m_globalLightIntensityMultiplier",PhotoModeDomain::Lighting,5.1f};
- CHECK(!authority.applyPhotoModeField(invalid).ok());CHECK_EQ(clock.getPcgAmbientLight().globalLightMultiplier,3.f);
- authority.setAuthority(false);CHECK(!clock.getPcgAmbientLight().active);CHECK(clock.getAmbientR()<1.f);
+ CHECK(std::abs(clock.getAmbientR() - 1.f) < 0.0001f);
+ CHECK(std::abs(clock.getAmbientG() - 0.7f) < 0.0001f);
+ CHECK(std::abs(clock.getAmbientB() - 0.3f) < 0.0001f);
+ auto* graphics = graphics::parity_test::headlessGraphics();
+ clock.setTimeOfDay(12.f);
+ clock.setPaused(true);
+ clock.update(0.f, graphics);
+ CHECK(clock.getSunR() > 2.9f);
+ const auto state = clock.getPcgAmbientLight();
+ CHECK(state.active);
+ CHECK_EQ(state.globalLightMultiplier, 3.f);
+ PhotoModeAssignment invalid{"m_globalLightIntensityMultiplier", PhotoModeDomain::Lighting, 5.1f};
+ CHECK(!authority.applyPhotoModeField(invalid).ok());
+ CHECK_EQ(clock.getPcgAmbientLight().globalLightMultiplier, 3.f);
+ authority.setAuthority(false);
+ CHECK(!clock.getPcgAmbientLight().active);
+ CHECK(clock.getAmbientR() < 1.f);
+}
+
+// ---------------------------------------------------------------------------
+// 决定③第一个落地的插座：`IPhotoModeApplySink` 可以由脚本提供。
+//
+// 这个插座要的正是"对象参数"：每条赋值是一个记录（field / domain / value，值本身还可能是颜色
+// 那张表）。测试同时是 present/absent 双探针（J-4 的形态）。
+// ---------------------------------------------------------------------------
+
+namespace {
+
+const char* kScriptPhotoModeApplyContent = R"SQ(
+// 观察用的根表槽位：先声明再在方法里赋值（`<-` 只在第一次能用）。
+lastField <- ""
+lastDomain <- ""
+lastValue <- null
+lastValueIsColor <- false
+appliedCount <- 0
+
+class Applier {
+    function applyPhotoModeAssignment(assignment) {
+        appliedCount = appliedCount + 1
+        lastField = assignment.field
+        lastDomain = assignment.domain
+        lastValue = assignment.value
+        lastValueIsColor = typeof assignment.value == "table"
+    }
+}
+
+// 第 3 条赋值拒绝：计划必须失败、按逆序回滚前两条，并报告回滚结果。
+class FailingApplier {
+    function applyPhotoModeAssignment(assignment) {
+        appliedCount = appliedCount + 1
+        if (appliedCount == 3) throw "script refused the third assignment"
+    }
+}
+
+provider <- Applier()
+failingProvider <- FailingApplier()
+)SQ";
+
+eve::DiagnosticCode firstCode(const eve::Status& status) {
+    return status.diagnostics().empty() ? eve::DiagnosticCode::None : status.diagnostics().front().code();
+}
+
+}  // namespace
+
+/** 脚本提供方要一个真 VM；接缝由用例显式声明，所以不依赖 UI 模块是否被构造。 */
+class ScriptPhotoModeApplyTest : public ScriptTest {
+public:
+    ScriptPhotoModeApplyTest() : ScriptTest(kScriptPhotoModeApplyContent) {
+        auto& registry = eve::ScriptProviderRegistry::instance();
+        registry.clearAll();
+        declaredBefore_ = registry.capabilities();
+        eve::cap::detail::clearAllRaw();
+    }
+
+    ~ScriptPhotoModeApplyTest() {
+        eve::ui::withdrawScriptPhotoModeApplySeam();
+        eve::cap::detail::clearAllRaw();
+        auto& registry = eve::ScriptProviderRegistry::instance();
+        registry.clearAll();
+        for (const std::string& capability : registry.capabilities()) {
+            if (std::find(declaredBefore_.begin(), declaredBefore_.end(), capability) != declaredBefore_.end())
+                continue;
+            registry.removeCapability(capability).ignore("fixture teardown withdraws only this case's seams");
+        }
+    }
+
+private:
+    std::vector<std::string> declaredBefore_;
+};
+
+TEST_CASE_FIXTURE(ScriptPhotoModeApplyTest, "ui.pcgPhotoModeApply.scriptProviderAnswersTheSinkThroughTheSeam") {
+    using namespace eve;
+
+    // ① 缺席：接缝没声明时，发布直接被拒——不是"发布成功但永远不会被调用"。
+    auto refused = ScriptProviderRegistry::instance().publishForCapability(IPhotoModeApplySink::capabilityName,
+                                                                           "test.photoapply", vm.find("provider"));
+    REQUIRE(!refused.ok());
+    REQUIRE_EQ(firstCode(refused.status()), DiagnosticCode::NotFound);
+    REQUIRE(cap::query<IPhotoModeApplySink>() == nullptr);
+
+    // ② 声明 + 发布：适配器进能力槽位。
+    ui::declareScriptPhotoModeApplySeam();
+    auto published = ScriptProviderRegistry::instance().publishForCapability(IPhotoModeApplySink::capabilityName,
+                                                                             "test.photoapply", vm.find("provider"));
+    REQUIRE(published.ok());
+    REQUIRE(cap::query<IPhotoModeApplySink>() != nullptr);
+
+    // ③ 标量赋值：脚本收到一张表（field/domain/value），域是**名字**而不是枚举数字。
+    PcgPhotoModeValues before, after;
+    after.setFloat("m_fieldOfView", 75).value();
+    ui::PcgPhotoModeApplyPlan scalarPlan;
+    REQUIRE(scalarPlan.compile(before, after).ok());
+    REQUIRE_EQ(scalarPlan.getCommandCount(), 1u);
+    REQUIRE(scalarPlan.executeRegistered().ok());
+    REQUIRE_EQ(vm.find("appliedCount").toInt(), 1);
+    REQUIRE_EQ(vm.find("lastField").toString(), std::string("m_fieldOfView"));
+    REQUIRE_EQ(vm.find("lastDomain").toString(), std::string("camera"));
+    REQUIRE(!vm.find("lastValueIsColor").toBool());
+    REQUIRE_EQ(vm.find("lastValue").toFloat(), 75.0);
+
+    // ④ 颜色赋值：值本身又是一张表（r/g/b/a）。
+    PcgPhotoModeValues colorBefore, colorAfter;
+    colorAfter.setColor("m_ambientSkyColor", 1.f, 0.25f, 0.f, 1.f).value();
+    ui::PcgPhotoModeApplyPlan colorPlan;
+    REQUIRE(colorPlan.compile(colorBefore, colorAfter).ok());
+    REQUIRE_EQ(colorPlan.getCommandCount(), 1u);
+    REQUIRE(colorPlan.executeRegistered().ok());
+    REQUIRE_EQ(vm.find("lastField").toString(), std::string("m_ambientSkyColor"));
+    REQUIRE_EQ(vm.find("lastDomain").toString(), std::string("lighting"));
+    REQUIRE(vm.find("lastValueIsColor").toBool());
+    REQUIRE_EQ(vm.find("lastValue").find("r").toFloat(), 1.0);
+    REQUIRE_EQ(vm.find("lastValue").find("g").toFloat(), 0.25);
+
+    // ⑤ 撤回后能力槽位重新为空：缺席是可观测的，不是"绑着但不会响"。
+    REQUIRE(ScriptProviderRegistry::instance().unload(published.value()).ok());
+    REQUIRE(cap::query<IPhotoModeApplySink>() == nullptr);
+    CHECK(!scalarPlan.executeRegistered().ok());
+}
+
+TEST_CASE_FIXTURE(ScriptPhotoModeApplyTest, "ui.pcgPhotoModeApply.scriptRefusalDrivesThePlanRollback") {
+    using namespace eve;
+
+    ui::declareScriptPhotoModeApplySeam();
+    auto published = ScriptProviderRegistry::instance().publishForCapability(
+        IPhotoModeApplySink::capabilityName, "test.photoapply", vm.find("failingProvider"));
+    REQUIRE(published.ok());
+
+    PcgPhotoModeValues before, after;
+    after.setFloat("m_fieldOfView", 72).value();
+    after.setFloat("m_cameraRoll", 30).value();
+    after.setFloat("m_pcgCullinDistance", 25).value();
+    ui::PcgPhotoModeApplyPlan plan;
+    REQUIRE(plan.compile(before, after).ok());
+    REQUIRE_EQ(plan.getCommandCount(), 3u);
+
+    // 脚本在第 3 条抛错：计划必须失败、逆序回滚前两条（共 5 次调用），并报告回滚结果。
+    CHECK(!plan.executeRegistered().ok());
+    REQUIRE_EQ(vm.find("appliedCount").toInt(), 5);
+    CHECK_EQ(plan.getAppliedCount(), 2u);
+    CHECK(plan.getRollbackComplete());
 }

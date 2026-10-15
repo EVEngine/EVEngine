@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/ECS.h"
 #include "common/Identity.h"
@@ -69,7 +71,7 @@ struct SceneNode {
     /** @brief Generic links (renderable / physics / camera / audio). Target owned elsewhere. */
     std::vector<SceneLink> links;
 
-    /** @brief Lazy companion SceneObject ECS runtime id; 0 = none. Never a persisted identity. */
+    /** @brief Lazy companion SceneObject ECS slot plus one; 0 = none. Never a persisted identity. */
     uint32_t objectId = 0;
 
     int firstChild = -1;
@@ -84,12 +86,15 @@ using GameObject = SceneNode;
  * @brief ECS mount point for one scene graph (full scene or nested subtree root).
  * Isomorphic to eve::ui::UIHost.
  */
-class SceneHost : public ecs::Entity {
+class EVENGINE_API_PLATFORM SceneHost : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(SceneHost, ecs::Entity)
 
+    /** @brief Release. */
     void release() override {}
 
+    /** @brief Meta public API. */
     struct Meta {
         bool visible = true;
         int layer = 0;

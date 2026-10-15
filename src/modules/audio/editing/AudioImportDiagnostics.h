@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "audio/editing/AudioWaveform.h"
 
@@ -43,8 +45,9 @@ struct AudioImportInspectionResult {
 };
 
 /** @brief Codec-neutral signal and import-budget diagnostics for decoded PCM. */
-class AudioImportDiagnosticsService {
+class EVENGINE_API_BACKENDS AudioImportDiagnosticsService {
 public:
+    /** @brief Inspect. */
     AudioImportInspectionResult inspect(const AudioImportInspectionRequest& request,
                                         const EditorAudioPcm& pcm) const;
 };

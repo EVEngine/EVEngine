@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <unordered_map>
@@ -18,9 +20,11 @@ namespace eve::animation {
  * Does not own a Texture — pair with Graphics textures in script.
  * Script type: `SpriteSheet`.
  */
-class SpriteSheet {
+class EVENGINE_API_WORLD SpriteSheet {
 public:
+    /** @brief Sprite sheet. */
     SpriteSheet() = default;
+    /** @brief Sprite sheet. */
     ~SpriteSheet() = default;
 
     SpriteSheet(const SpriteSheet &)            = delete;
@@ -40,6 +44,7 @@ public:
     int setGrid(int columns, int rows, int frameW, int frameH, int margin = 0, int spacing = 0,
                 int originX = 0, int originY = 0);
 
+    /** @brief Clears . */
     void clear();
 
     /** @brief Optional atlas texture produced by a sequence loader or assigned by the user. */
@@ -47,16 +52,27 @@ public:
     /** @brief Return the optional atlas texture without transferring ownership. */
     graphics::Texture *getTexture() const { return texture_; }
 
+    /** @brief Returns the frame count. */
     int         getFrameCount() const { return static_cast<int>(frames_.size()); }
+    /** @brief Finds frame. */
     int         findFrame(const std::string &name) const;
+    /** @brief Returns the frame name. */
     std::string getFrameName(int index) const;
+    /** @brief Returns the frame x. */
     int         getFrameX(int index) const;
+    /** @brief Returns the frame y. */
     int         getFrameY(int index) const;
+    /** @brief Returns the frame width. */
     int         getFrameWidth(int index) const;
+    /** @brief Returns the frame height. */
     int         getFrameHeight(int index) const;
+    /** @brief Returns the frame source width. */
     int getFrameSourceWidth(int index) const;
+    /** @brief Returns the frame source height. */
     int getFrameSourceHeight(int index) const;
+    /** @brief Returns the frame offset x. */
     int getFrameOffsetX(int index) const;
+    /** @brief Returns the frame offset y. */
     int getFrameOffsetY(int index) const;
 
     /** @brief Write pixel viewport into an existing Quad (does not allocate). */

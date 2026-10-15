@@ -3,8 +3,8 @@
 //   R = unlocked (1 clear / 0 fogged) — presentation coverage
 //   G = selected cell blink
 //   B = dissolve threshold while unlocking
-// Gameplay data unlocks immediately; the visual mask keeps R fogged until
-// dissolve finishes (so B can actually burn the cloud away).
+// Gameplay data unlocks immediately; presentation R advances with an eased
+// reveal while B contracts and fades whole cloud clusters.
 //
 // Controls:
 //   LMB  select a fogged cell
@@ -29,7 +29,7 @@ persist mapW = 0.0
 persist mapH = 0.0
 persist cellW = 0.0
 persist cellH = 0.0
-persist fogAlpha = 0.90
+persist fogAlpha = 0.96
 persist prevLeft = false
 persist status = "LMB select · Space unlock · R reset"
 
@@ -45,9 +45,13 @@ function ensureGrid() {
         unlocked.push(false);
         dissolving.push(-1.0);
     }
-    // Starting cleared patch so the dual-cloud sheet + soft hole are visible.
-    for (local y = 6; y <= 9; ++y) {
-        for (local x = 10; x <= 13; ++x) {
+    // Start with a discovered western region so the important silhouette is a
+    // long, irregular exploration front (matching an actual strategy map),
+    // rather than a synthetic rounded rectangle punched through the fog.
+    for (local y = 0; y < gridH; ++y) {
+        local frontierX = 8 + ((y * 7 + 3) % 3);
+        if (y == 3 || y == 4 || y == 11) frontierX++;
+        for (local x = 0; x <= frontierX; ++x) {
             unlocked[cellIndex(x, y)] = true;
         }
     }
@@ -62,21 +66,16 @@ function clearMask() {
 }
 
 function softWeight(dist, radius) {
-    // Hard core to ~60% radius, then smooth falloff — merges adjacent cells into one hole.
+    // Firm core (clearCore stays solid) + wide soft penumbra for gradual rim.
     if (dist >= radius) return 0.0;
-    local core = radius * 0.60;
+    local core = radius * 0.50;
     if (dist <= core) return 1.0;
     local t = (radius - dist) / (radius - core);
     return t * t * (3.0 - 2.0 * t);
 }
 
-function stampSoft(gx, gy, r, g, b, radiusScale) {
-    // Local brush only (fast). Hard-core soft disc in mask-pixel space.
-    local cellPx = maskW.tofloat() / gridW.tofloat();
-    local cellPy = maskH.tofloat() / gridH.tofloat();
-    local px = (gx.tofloat() + 0.5) * cellPx;
-    local py = (gy.tofloat() + 0.5) * cellPy;
-    local radius = radiusScale * cellPx;
+function stampSoftAt(px, py, r, g, b, radius) {
+    // Local brush in mask-pixel space (fast).
     if (radius < 2.0) radius = 2.0;
     local x0 = (px - radius).tointeger();
     local y0 = (py - radius).tointeger();
@@ -106,6 +105,13 @@ function stampSoft(gx, gy, r, g, b, radiusScale) {
     }
 }
 
+function stampSoft(gx, gy, r, g, b, radiusScale) {
+    local cellPx = maskW.tofloat() / gridW.tofloat();
+    local px = (gx.tofloat() + 0.5) * cellPx;
+    local py = (gy.tofloat() + 0.5) * (maskH.tofloat() / gridH.tofloat());
+    stampSoftAt(px, py, r, g, b, radiusScale * cellPx);
+}
+
 function rebuildMask() {
     ensureGrid();
     clearMask();
@@ -114,12 +120,17 @@ function rebuildMask() {
             local idx = cellIndex(x, y);
             local sel = (x == selectedX && y == selectedY) ? 1.0 : 0.0;
             if (dissolving[idx] >= 0.0) {
-                // Stay fogged visually (R=0) while B dissolves the cloud.
-                stampSoft(x, y, 0.0, sel, dissolving[idx], 1.95);
+                // Advance reveal and dissolve together. Keeping R at zero until
+                // the last frame leaves an opaque sheet that vanishes abruptly.
+                local t = dissolving[idx];
+                local reveal = t * t * (3.0 - 2.0 * t);
+                stampSoft(x, y, reveal, sel, t, 2.15);
             } else if (unlocked[idx]) {
-                stampSoft(x, y, 1.0, sel, 0.0, 1.95);
+                // Soft unlock disc — solid core clears the hole; soft ring
+                // feeds the shader frontier (dense → clumps → islands).
+                stampSoft(x, y, 1.0, sel, 0.0, 2.15);
             } else if (sel > 0.0) {
-                stampSoft(x, y, 0.0, sel, 0.0, 0.95);
+                stampSoft(x, y, 0.0, sel, 0.0, 0.90);
             }
         }
     }
@@ -136,18 +147,10 @@ function screenToCell(mx, my) {
     return [cx, cy];
 }
 
-function terrainColor(x, y) {
-    // Slightly richer underlay so the unlock hole reads against real map tones.
-    local h = ((x * 13 + y * 7) % 5).tofloat() / 5.0;
-    local road = ((x + y * 3) % 17 == 0) || ((x * 2 + y) % 19 == 0);
-    if (road) return [0.62, 0.58, 0.42];
-    if ((x + y) % 7 == 0) return [0.42, 0.72, 0.38];
-    if ((x * 3 + y) % 11 == 0) return [0.78, 0.68, 0.34];
-    return [0.38 + h * 0.22, 0.58 + h * 0.20, 0.30 + h * 0.12];
-}
-
 eve_init = function() {
-    gfx.setBackgroundColor(0.05, 0.07, 0.10, 1.0);
+    // Neutral stand-in only: MapFog remains an overlay and does not own the
+    // revealed scene. Avoid a black clear color that reads as a second mask.
+    gfx.setBackgroundColor(0.55, 0.60, 0.66, 1.0);
     mapW = (config.width - 80).tofloat();
     mapH = (config.height - 120).tofloat();
     cellW = mapW / gridW.tofloat();
@@ -162,21 +165,26 @@ eve_init = function() {
     fog = gfx.newMapFog();
     fog.setCloudTexture(fog.makeCloudTexture(512));
     fog.setMaskTexture(maskTex);
-    // Distinct dual-layer tiling/speed (article): large soft billows, living scroll.
-    fog.setCloudTiling(0.55, 0.95);
-    fog.setCloudSpeed(0.008, 0.015);
-    fog.setCloudMix(0.35);
-    fog.setDistort(0.22);
-    fog.setDistortFix(-0.012, 0.008);
-    fog.setFogColor(0.92, 0.94, 0.98);
+    // Large cotton puffs + dual reverse scroll (reference FoW billows).
+    // More than one repeat is essential: sub-1.0 tiling magnifies one texture
+    // quadrant into the broad defocused blobs seen in the old result.
+    fog.setCloudTiling(1.10, 1.65);
+    fog.setCloudSpeed(0.010, 0.016);
+    fog.setCloudMix(0.30);
+    fog.setDistort(0.085);
+    fog.setDistortFix(-0.006, 0.004);
+    fog.setFogColor(0.98, 0.99, 1.00);
     fog.setFogAlpha(fogAlpha);
-    // Soft-stamped mask + UV warp => wispy cloudy unlock rim.
-    fog.setEdgeSoftness(0.14);
-    fog.setShadow(0.034, 0.048, 0.78);
+    // Soft approach for gradual rim sparseness; clearCore keeps hole clean.
+    fog.setEdgeSoftness(0.16);
+    // The reference shapes volume inside each cloud; an offset ground shadow
+    // creates a second clipped silhouette and makes intact puffs look bitten.
+    fog.setShadowEnabled(false);
     fog.setSelectStrength(0.90);
     fog.setDissolveScale(1.5);
-    // Thickness from lit cloud luminance; mask still owns the hole.
-    fog.setCloudDensity(0.42, 0.16);
+    // Dense deep sheet; frontier raises cover gate → sparse islands at rim.
+    fog.setCloudDensity(0.24, 0.10);
+    // Wider soft frontier so density thins gradually into islands.
     rebuildMask();
     print("Map fog: LMB select, Space unlock, R reset, [/] opacity\n");
 };
@@ -232,7 +240,7 @@ eve_update = function(dt) {
     local dirty = false;
     for (local i = 0; i < dissolving.len(); ++i) {
         if (dissolving[i] < 0.0) continue;
-        dissolving[i] = dissolving[i] + dt * 0.65;
+        dissolving[i] = dissolving[i] + dt * 0.32;
         if (dissolving[i] >= 1.0) dissolving[i] = -1.0;
         dirty = true;
     }
@@ -241,15 +249,7 @@ eve_update = function(dt) {
 
 eve_render = function() {
     gfx.clear();
-
-    gfx.drawSolidRect(mapX, mapY, mapW, mapH, 0.18, 0.28, 0.16, 1.0);
-    for (local y = 0; y < gridH; ++y) {
-        for (local x = 0; x < gridW; ++x) {
-            local c = terrainColor(x, y);
-            gfx.drawSolidRect(mapX + x.tofloat() * cellW, mapY + y.tofloat() * cellH,
-                              cellW, cellH, c[0], c[1], c[2], 1.0);
-        }
-    }
-
+    // MapFog is overlay-only.  A real game draws its map/scene before this
+    // call; the example deliberately does not invent a green "revealed" layer.
     fog.draw(mapX, mapY, mapW, mapH);
 };

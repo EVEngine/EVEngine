@@ -65,7 +65,7 @@ UnityProjectImportRequest fixture() {
         "1}\n  m_Father: {fileID: 0}\n  m_LocalPosition: {x: 0, y: 0, z: 0}\n  m_LocalRotation: {x: 0, y: 0, z: 0, w: "
         "1}\n  m_LocalScale: {x: 1, y: 1, z: 1}\n--- !u!33 &33\nMeshFilter:\n  m_GameObject: {fileID: 1}\n  m_Mesh: "
         "{fileID: 4300000, guid: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, type: 3}\n--- !u!23 &23\nMeshRenderer:\n  "
-        "m_GameObject: {fileID: 1}\n  m_Enabled: 1\n  m_Materials:\n";
+        "m_GameObject: {fileID: 1}\n  m_Enabled: 1\n  m_CastShadows: 0\n  m_ReceiveShadows: 0\n  m_Materials:\n";
     for (int i = 0; i < 3; ++i)
         prefab +=
             i == 1 ? "  - {fileID: 0}\n" : "  - {fileID: 2100000, guid: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, type: 2}\n";
@@ -90,6 +90,18 @@ TEST_CASE("asset.import.unityNativeMeshPreservesEmptySlotsAndCanonicalCoordinate
     auto prepared = prepareUnityProjectImport(r);
     REQUIRE(prepared.ok());
     REQUIRE_EQ(prepared.value().manifest.assets.size(), std::size_t(4));
+    const auto materialRef = prepared.value().manifest.entrypoints.at("Assets/material.mat");
+    const auto material = std::find_if(prepared.value().manifest.assets.begin(), prepared.value().manifest.assets.end(),
+                                       [&](const auto& asset) { return asset.asset == materialRef; });
+    REQUIRE(material != prepared.value().manifest.assets.end());
+    REQUIRE_EQ(material->schemaVersion, SchemaVersion(15));
+    std::size_t materialLinks = 0;
+    for (const auto& dependency : prepared.value().manifest.dependencies) {
+        if (dependency.to != materialRef) continue;
+        REQUIRE_EQ(dependency.expectedType, std::string("eve.material/15"));
+        ++materialLinks;
+    }
+    REQUIRE_EQ(materialLinks, std::size_t(2));
     auto eva = asset::buildEvaArchive(prepared.value().manifest, prepared.value().entries);
     REQUIRE(eva.ok());
     auto archive = asset::parseEvaArchive(eva.value());
@@ -106,6 +118,10 @@ TEST_CASE("asset.import.unityNativeMeshPreservesEmptySlotsAndCanonicalCoordinate
         prepared.value().manifest.entrypoints.at("Assets/child.prefab"), caps);
     REQUIRE(scene.ok());
     REQUIRE_EQ(scene.value().renderers.size(), std::size_t(2));
+    REQUIRE(!scene.value().renderers[0].castShadows);
+    REQUIRE(!scene.value().renderers[0].receiveShadows);
+    REQUIRE(!scene.value().renderers[1].castShadows);
+    REQUIRE(!scene.value().renderers[1].receiveShadows);
     class Factory final : public graphics::IMeshResourceFactory {
     public:
         int                        token = 0;
@@ -141,6 +157,30 @@ TEST_CASE("asset.import.unityNativeMeshPreservesEmptySlotsAndCanonicalCoordinate
     REQUIRE_EQ(drawable.value()->drawCount(), std::size_t(2));
     auto released = factory.releaseMesh(mesh.value().mesh);
     REQUIRE(released.ok());
+}
+TEST_CASE("asset.import.unityVegetationPrefabDependenciesUseCurrentMaterialSchema") {
+    auto request = fixture();
+    put(request, "Assets/material.mat",
+        "--- !u!21 &2100000\nMaterial:\n  m_Shader: {fileID: 4800000, guid: 7befaa6f41d00a6478d5f4af21d66518, type: "
+        "3}\n");
+    auto imported = prepareUnityProjectImport(request);
+    REQUIRE(imported.ok());
+    const auto  material = imported.value().manifest.entrypoints.at("Assets/material.mat");
+    std::size_t count    = 0;
+    for (const auto& dependency : imported.value().manifest.dependencies) {
+        if (dependency.to != material) continue;
+        REQUIRE_EQ(dependency.expectedType, std::string("eve.material/15"));
+        ++count;
+    }
+    REQUIRE_EQ(count, std::size_t(2));
+    auto bytes = asset::buildEvaArchive(imported.value().manifest, imported.value().entries);
+    REQUIRE(bytes.ok());
+    auto archive = asset::parseEvaArchive(bytes.value());
+    REQUIRE(archive.ok());
+    auto profile = asset::assetCookProfileForTarget("windows-x86_64-vulkan");
+    REQUIRE(profile.ok());
+    auto cooked = asset::cookEvaToEvpack(archive.value(), profile.value());
+    REQUIRE(cooked.ok());
 }
 TEST_CASE("asset.import.unityNativeMeshRejectsTruncatedAndOutOfRangeBuffers") {
     auto        r     = fixture();

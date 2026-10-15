@@ -20,6 +20,7 @@ struct ClusteredLightConfig {
 
 using ClusteredLightGpu = Light3DGpu;
 
+/** @brief ClusterTableEntry public API. */
 struct ClusterTableEntry {
     uint32_t offset = 0;
     uint32_t count = 0;
@@ -32,6 +33,7 @@ struct ClusterTableEntry {
 struct ClusteredLightingUpload {
     glm::vec4 ambient{0.12f, 0.12f, 0.14f, 0.f};
     glm::vec4 gridInfo{float(ClusteredLightConfig::kTilesX), float(ClusteredLightConfig::kTilesY),
+                       /** @brief Float. */
                        float(ClusteredLightConfig::kSlices), 0.f};  // w = point light count
     glm::vec4 clipInfo{0.1f, 100.f, 1.f, 1.f};  // near, far, screenW, screenH
     glm::mat4 view{1.f};
@@ -54,10 +56,10 @@ struct ClusteredLightingUpload {
  * @param points  world-space point lights (posRadius.w = radius > 0)
  * @param dirs    world-space directional lights (optional; first becomes primary)
  */
-ClusteredLightingUpload buildClusteredLighting(const std::vector<ClusteredLightGpu> &points,
-                                               const std::vector<ClusteredLightGpu> &dirs,
-                                               const glm::mat4 &view, float nearZ, float farZ,
-                                               int screenW, int screenH, float fovYRad,
-                                               const glm::vec4 &ambient);
+EVENGINE_API_BACKENDS ClusteredLightingUpload buildClusteredLighting(const std::vector<ClusteredLightGpu> &points,
+                                                                     const std::vector<ClusteredLightGpu> &dirs,
+                                                                     const glm::mat4 &view, float nearZ, float farZ,
+                                                                     int screenW, int screenH, float fovYRad,
+                                                                     const glm::vec4 &ambient);
 
 }  // namespace eve::graphics

@@ -143,13 +143,22 @@ GAME ?=
 	reinstall/third-party/android reinstall/third-party/android-debug \
 	reinstall/third-party/ios reinstall/third-party/ios-debug \
 	link-compile-commands download-classic-scenes download-skinned-character \
-	check/test-manifest check/module-layers check/bindings check/nodiscard check/quality-metadata \
-	check/profile-matrix check/architecture-contracts check/quality \
+	check/test-manifest check/module-layers check/bindings check/nodiscard check/adhoc-result-tables \
+	check/quality-metadata check/profile-matrix check/architecture-contracts check/quality \
+	check/examples check \
+	check/format check/depgraph check/binding-gaps check/versions check/scripts check/scripts-test \
+	check/test-case-lines check/sq-call-sites check/test-assert-level check/test-case-names \
 	profile profile/configure profile/build profile/smoke profile/dry-run \
 	ensure-built/win32 ensure-built/win32-debug ensure-built/linux ensure-built/linux-debug \
 	ensure-built/macosx ensure-built/macosx-debug \
 	init/submodules \
 	docs
+
+# Local source-quality checks compare the worktree against this git base.
+# CI passes the pull-request base SHA; locally this is origin/dev so a branch
+# is linted the same way the PR will be.
+CI_BASE ?= origin/dev
+ARCHITECTURE_BASE ?= $(CI_BASE)
 
 # Default: every debug target this machine can build (host + optional ios/android/wsl).
 all: $(ALL_DEBUG_TARGETS)
@@ -166,6 +175,7 @@ show-targets:
 	@echo "release -> build/$(PLATFORM)"
 	@echo "sdk -> sdk/$(PLATFORM) (Release) or sdk/$(PLATFORM)-debug"
 	@echo "run -> run/$(PLATFORM)-debug (GAME=$(GAME), empty = embedded demo)"
+	@echo "check -> source-quality gate (same commands as CI; CI_BASE=$(CI_BASE))"
 	@echo "profile -> PROFILE=$(PROFILE) in $(PROFILE_BUILD_ROOT)"
 	@echo "profile stages -> profile/configure profile/build profile/smoke"
 
@@ -173,14 +183,19 @@ show-targets:
 check/test-manifest:
 	python3 scripts/check_test_manifest.py
 
+# Verify the examples/ layout contract: runnable vs reviewed non-runnable
+# directories, config.nut assigning the engine config table, README.md presence
+# and registration in examples/README.md. Source-only; the runtime half of the
+# contract is scripts/smoke_examples.sh (MIN_RUN_SECONDS).
+check/examples:
+	python3 scripts/check_examples.py
+
 # Verify module includes never climb above the declared manifest LAYER.
 check/module-layers:
 	python3 scripts/module_depgraph.py --check-layers
 
-# Verify every script-facing addFunc is actually documented (see
-# docs/usr/REVIEW.md). Pre-existing debt is registered in
-# scripts/check_bindings_gaps.txt (regenerate with --write-gaps); new gaps
-# fail, so docs cannot silently drift from the bindings.
+# Verify script-facing bindings have a guide explanation or generated SDK
+# signature. Unresolved signatures and new unreferenced bindings fail CI.
 check/bindings:
 	python3 scripts/check_bindings.py --strict
 
@@ -189,16 +204,49 @@ check/bindings:
 check/quality-metadata:
 	python3 scripts/check_quality_metadata.py
 
+# Verify no source line declares two test cases. zeroerr registers cases into a
+# std::set ordered only by (file, line), so the second case on a line is dropped
+# silently and never runs (see scripts/check_test_case_lines.py).
+check/test-case-lines:
+	python3 scripts/check_test_case_lines.py
+
+# Keep hand-written sq_call sites at their reviewed baseline. sq_call's parameter
+# count includes the receiver slot; counting it by hand caused five silent defects.
+# New call sites go through eve::script::callFunction, which derives the count.
+check/sq-call-sites:
+	python3 scripts/check_sq_call_sites.py
+
+# A test case whose assertions are all CHECK reports "PASSED / WARNING" and exits 0, so it
+# can never fail (zeroerr maps CHECK* to ZEROERR_WARN). Two cases asserting opposite
+# behaviour of the same code both reported green this way. Existing offenders are frozen in
+# scripts/test_assert_level_baseline.json; new ones must state the decisive assertion with
+# REQUIRE (or use an in-file helper that does).
+check/test-assert-level:
+	python3 scripts/check_test_assert_level.py
+
+# CTest is keyed by test name, so two cases sharing a name turn every name-based filter
+# ("ctest -R ...", unit_test --testcase=X) into one ambiguous entry and make a "N/N passed"
+# count stop meaning what it looks like. zeroerr registers by (file, line) and does not
+# object, so only a check catches it. No baseline: a duplicate is always an error.
+check/test-case-names:
+	python3 scripts/check_test_case_names.py
+
 # Compile-fail diagnostics for critical Result/ID/Subscription returns. This
 # is a source-only check and does not configure or build the engine.
 check/nodiscard:
 	python3 scripts/check_nodiscard.py
 
-# Validate the ten top-level architecture contracts and lint changed C/C++
+# Forbid new hand-built `{ok,...}` Squirrel Result tables; allowlist is shrink-only.
+check/adhoc-result-tables:
+	python3 scripts/check_adhoc_result_tables.py
+
+# Validate the top-level architecture contracts and lint changed C/C++
 # lines. The source-only gate never configures or builds the engine.
+# The unit test runs with -X utf8: its own stdout/stderr would otherwise follow
+# the host ANSI code page (cp936 on a Chinese Windows) and mangle test output.
 check/architecture-contracts:
 	python3 scripts/check_architecture_contracts.py $(if $(ARCHITECTURE_BASE),--base "$(ARCHITECTURE_BASE)")
-	python3 -m unittest scripts.tests.test_architecture_contracts -v
+	python3 -X utf8 -m unittest scripts.tests.test_architecture_contracts -v
 
 # Focused CPU tests for format round trips and live tile editing; no GPU host.
 AGENT_TEST_BUILD ?= build/agent
@@ -222,7 +270,33 @@ check/profile-matrix:
 	python3 scripts/profile_matrix.py --check
 
 # Fast local quality gate for the profile and debt contracts.
-check/quality: check/quality-metadata check/profile-matrix check/nodiscard check/architecture-contracts
+check/quality: check/quality-metadata check/profile-matrix check/nodiscard \
+	check/adhoc-result-tables check/architecture-contracts check/test-case-lines \
+	check/sq-call-sites check/test-assert-level check/test-case-names
+
+# Individual source-quality pieces that CI also runs (see scripts/check_source_quality.sh).
+check/format:
+	bash .github/scripts/check-format.sh "$(CI_BASE)"
+
+check/depgraph:
+	python3 scripts/module_depgraph.py --check
+
+check/binding-gaps:
+	python3 scripts/check_binding_gap_metadata.py
+
+check/versions:
+	python3 scripts/release.py check-versions
+
+check/scripts:
+	python3 -m ruff check scripts
+
+check/scripts-test:
+	python3 -X utf8 -m unittest discover -s scripts/tests -p "test_*.py" -v
+
+# Source-only gate matching CI job `source-quality`. Does not build the engine.
+# Host compile/test is a separate lane: make build/$(PLATFORM)-debug && make test
+check:
+	bash scripts/check_source_quality.sh "$(CI_BASE)"
 
 # Profile stages are separate so CI can report configure, build, and
 # independent capability smoke failures independently. The default build root
@@ -283,6 +357,14 @@ WITH_MSVC = : && cmake/with-msvc.cmd
 VS_GENERATOR ?= Visual Studio 18 2026
 # Extra cmake -D... flags (CI: CMAKE_EXTRA_ARGS=-DBUILD_TESTING=OFF)
 CMAKE_EXTRA_ARGS ?=
+# Match CI debug jobs in .github/workflows/ci.yml (windows + linux):
+# -DEVENGINE_ENABLE_STRICT_WARNINGS=ON → MSVC /W4 /WX, GCC/Clang -Wall -Wextra -Werror.
+# CMAKE_EXTRA_ARGS is appended after this, so an explicit
+#   CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_STRICT_WARNINGS=OFF
+# still wins. Release, macOS debug, Android, and iOS stay off, matching CI.
+# `sdk/win32-debug` / `sdk/linux-debug` package the same debug trees, so they
+# inherit the gate; `sdk/win32` / `sdk/linux` (Release) do not.
+DEBUG_STRICT_WARNINGS_FLAG = -DEVENGINE_ENABLE_STRICT_WARNINGS=ON
 JOBS ?= 32
 ANDROID_JOBS ?= 8
 CTEST_JOBS ?= 4
@@ -303,30 +385,39 @@ PROFILE_MATRIX_ARGS = --profile "$(PROFILE)" \
 	$(if $(PROFILE_PLATFORM),--platform "$(PROFILE_PLATFORM)") \
 	--cmake-command "$(PROFILE_CMAKE_COMMAND)"
 
-# Local checks inspect the current worktree diff; CI supplies the PR base SHA.
-ARCHITECTURE_BASE ?= HEAD
-
 # Reusable configure command lines: used both by the first-configure rules and
 # by the on-change reconfigure inside the build recipes below.
 MSVC_COMPILER_WRAPPER   := $(abspath cmake/msvc-cl.cmd)
-WIN32_CMAKE_ARGS        = -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(CMAKE_EXTRA_ARGS) -B build/win32 -S .
-WIN32_DEBUG_CMAKE_ARGS  = -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(CMAKE_EXTRA_ARGS) -B build/win32-debug -S .
-LINUX_CMAKE_ARGS        = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=linux $(CMAKE_EXTRA_ARGS) -B build/linux -S .
-LINUX_DEBUG_CMAKE_ARGS  = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux $(CMAKE_EXTRA_ARGS) -B build/linux-debug -S .
+# Module linkage policy: development wants the dynamic route so iterating on a
+# domain test does not relink the whole engine; the release build and the SDK it
+# installs (`make sdk/win32`) must ship one self-contained exe with no engine
+# DLLs beside it, so they pin OBJECT here rather than inheriting a default that
+# will flip to SHARED for development. Opt into the dynamic route locally with
+# `CMAKE_EXTRA_ARGS="-DEVENGINE_MODULE_LINKAGE=SHARED"` (tracked by
+# reconfigure-if-args-changed, so switching it reconfigures).
+WIN32_CMAKE_ARGS        = -G Ninja -DCMAKE_BUILD_TYPE=Release -DEVENGINE_MODULE_LINKAGE=OBJECT -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(CMAKE_EXTRA_ARGS) -B build/win32 -S .
+WIN32_DEBUG_CMAKE_ARGS  = -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_ARGS) -B build/win32-debug -S .
+LINUX_CMAKE_ARGS        = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=linux -DEVENGINE_MODULE_LINKAGE=OBJECT $(CMAKE_EXTRA_ARGS) -B build/linux -S .
+LINUX_DEBUG_CMAKE_ARGS  = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_ARGS) -B build/linux-debug -S .
 MACOSX_CMAKE_ARGS       = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=macosx $(CMAKE_EXTRA_ARGS) -B build/macosx -S .
 MACOSX_DEBUG_CMAKE_ARGS = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=macosx $(CMAKE_EXTRA_ARGS) -B build/macosx-debug -S .
+WIN32_DEBUG_CONFIG_STAMP = $(strip $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_ARGS))
+LINUX_DEBUG_CONFIG_STAMP = $(strip $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_ARGS))
 
-# $(call reconfigure-if-args-changed,<build-dir>,<cmake-command>)
-# Re-runs cmake when the recorded CMAKE_EXTRA_ARGS stamp differs from the
-# current make-level value. build/<plat> targets are phony, so this check runs
-# on every invocation but costs only one cat when nothing changed.
+# $(call reconfigure-if-args-changed,<build-dir>,<cmake-command>[,<stamp>])
+# Re-runs cmake when the recorded stamp differs from the current make-level
+# value. A missing stamp is recorded without a second configure: the generated-
+# file prerequisite has just configured. The optional third argument defaults
+# to CMAKE_EXTRA_ARGS. build/<plat> targets are phony, so this check runs on
+# every invocation but costs only one cat when nothing changed.
 define reconfigure-if-args-changed
-	@if [ ! -f $(1)/.eve-config-args ]; then \
-	  printf '%s\n' "$(CMAKE_EXTRA_ARGS)" > $(1)/.eve-config-args; \
-	elif [ "$$(cat $(1)/.eve-config-args)" != "$(CMAKE_EXTRA_ARGS)" ]; then \
-	  echo "CMAKE_EXTRA_ARGS changed; reconfiguring $(1)"; \
+	@stamp="$(if $(3),$(3),$(CMAKE_EXTRA_ARGS))"; \
+	if [ ! -f $(1)/.eve-config-args ]; then \
+	  printf '%s\n' "$$stamp" > $(1)/.eve-config-args; \
+	elif [ "$$(cat $(1)/.eve-config-args)" != "$$stamp" ]; then \
+	  echo "cmake config args changed; reconfiguring $(1)"; \
 	  $(2); \
-	  printf '%s\n' "$(CMAKE_EXTRA_ARGS)" > $(1)/.eve-config-args; \
+	  printf '%s\n' "$$stamp" > $(1)/.eve-config-args; \
 	fi
 endef
 
@@ -424,7 +515,7 @@ build/android/build.ninja:
 		-B build/android -S .
 
 build/win32-debug: build/win32-debug/build.ninja
-	$(call reconfigure-if-args-changed,build/win32-debug,$(WITH_MSVC) cmake.exe $(WIN32_DEBUG_CMAKE_ARGS))
+	$(call reconfigure-if-args-changed,build/win32-debug,$(WITH_MSVC) cmake.exe $(WIN32_DEBUG_CMAKE_ARGS),$(WIN32_DEBUG_CONFIG_STAMP))
 	$(WITH_MSVC) cmake.exe --build $@ -j $(JOBS)
 
 build/win32-debug/build.ninja:
@@ -455,7 +546,7 @@ ensure-built/win32-debug:
 	  $(WITH_MSVC) cmake.exe $(WIN32_DEBUG_CMAKE_ARGS); \
 	fi; \
 	if [ -f build/win32-debug/build.ninja ] \
-	   && [ "$$(cat build/win32-debug/.eve-config-args 2>/dev/null)" = "$(CMAKE_EXTRA_ARGS)" ] \
+	   && [ "$$(cat build/win32-debug/.eve-config-args 2>/dev/null)" = "$(WIN32_DEBUG_CONFIG_STAMP)" ] \
 	   && [ "$$stale" = 0 ] \
 	   && ! ninja -C build/win32-debug -n 2>&1 \
 	        | grep -v 'Entering directory' \
@@ -468,7 +559,7 @@ ensure-built/win32-debug:
 	fi
 
 build/linux-debug: build/linux-debug/Makefile
-	$(call reconfigure-if-args-changed,build/linux-debug,cmake $(LINUX_DEBUG_CMAKE_ARGS))
+	$(call reconfigure-if-args-changed,build/linux-debug,cmake $(LINUX_DEBUG_CMAKE_ARGS),$(LINUX_DEBUG_CONFIG_STAMP))
 	cmake --build $@ --target deps -j $(JOBS)
 	cmake --build $@ -j $(JOBS)
 
@@ -760,21 +851,7 @@ reinstall/third-party/ios-debug:
 # In Android test-app mode the runner lives in test/libmain.so (zeroerr suite);
 # otherwise it is the engine's src/engine/libmain.so.
 sync/android-libs:
-	mkdir -p $(JNI_LIBS)
-	@if [ -f $(BUILD_DIR)/test/libmain.so ]; then \
-	  echo "syncing test runner libmain.so"; \
-	  cp -f $(BUILD_DIR)/test/libmain.so $(JNI_LIBS)/; \
-	else \
-	  cp -f $(BUILD_DIR)/src/engine/libmain.so $(JNI_LIBS)/; \
-	fi
-	@TP_DIR=build/third-party-binary/$$(basename $(BUILD_DIR)); \
-	  if [ ! -d "$$TP_DIR/lib" ]; then TP_DIR=build/third-party-binary/android-debug; fi; \
-	  if [ ! -d "$$TP_DIR/lib" ]; then TP_DIR=build/third-party-binary/android; fi; \
-	  cp -f "$$TP_DIR/lib/libSDL2.so" $(JNI_LIBS)/; \
-	  if [ -f "$$TP_DIR/lib/libhidapi.so" ]; then cp -f "$$TP_DIR/lib/libhidapi.so" $(JNI_LIBS)/; fi
-	cp -f "$(ANDROID_NDK)/toolchains/llvm/prebuilt/"*"/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so" $(JNI_LIBS)/
-	@echo "Synced native libs -> $(JNI_LIBS)"
-	ls -la $(JNI_LIBS)
+	cmake -DBUILD_DIR="$(BUILD_DIR)" -DJNI_LIBS="$(JNI_LIBS)" -DANDROID_ABI="$(ANDROID_ABI)" -DANDROID_NDK="$(ANDROID_NDK)" -P cmake/sync_android_libs.cmake
 
 # Populate APK assets/game from a source tree (do not hand-edit assets/game).
 #   make sync/android-assets                 # default: demo shell
@@ -1031,6 +1108,20 @@ docs:
 # (per-case run; use FILTER=bundle/<file> for a single-file bundle, e.g.
 #  FILTER=bundle/ClassicScenes.cpp).
 CTEST_FILTER = $(if $(FILTER),-R '^$(subst .,\.,$(FILTER))')
+LABEL_FILTER ?=
+CTEST_LABEL_FILTER = $(if $(LABEL_FILTER),-L '$(LABEL_FILTER)')
+
+# Restrict a run to one test link unit (see test/test_domains.cmake):
+#   make test/win32-debug DOMAIN=physics
+# Each domain executable labels its own cases with its target name, so this is a
+# plain ctest -L; the alternative (test/<domain> targets) would shadow the
+# test/<name-prefix> pattern rule below.
+# Only meaningful when the suite is split (EVENGINE_TEST_DOMAIN_SPLIT, on by
+# default for the SHARED route and off for the archive route, where the suite is
+# one monolithic unit_test to keep its debug info small). A monolithic build
+# carries only the `unit_test` label, so DOMAIN= there would silently select zero
+# cases and exit 0; --no-tests=error turns that into a failure instead.
+CTEST_DOMAIN_SEL = $(if $(DOMAIN),-L '^unit_test_$(DOMAIN)$$' --no-tests=error,)
 
 # Default: run tests per case (process-isolated; this is the fast path on CI —
 # main runs 1526 cases in ~2-11 min).  "bundle/<file>" entries stay registered
@@ -1058,39 +1149,81 @@ CTEST_ENV = EVENGINE_VIEW_SECONDS=$(VIEW_SECONDS) EVENGINE_PERF_FRAMES=$(PERF_FR
 
 # Run discovered zeroerr cases via CTest (see cmake/ZeroErrDiscoverTests.cmake).
 test/win32: ensure-built/win32
-	$(CTEST_ENV) ctest --test-dir build/win32 -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_REPEAT)
+	$(CTEST_ENV) ctest --test-dir build/win32 -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_DOMAIN_SEL) $(CTEST_LABEL_FILTER) $(CTEST_FILTER) $(CTEST_REPEAT)
 
 test/win32-debug: ensure-built/win32-debug
-	$(CTEST_ENV) ctest --test-dir build/win32-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_REPEAT)
+	$(CTEST_ENV) ctest --test-dir build/win32-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_DOMAIN_SEL) $(CTEST_LABEL_FILTER) $(CTEST_FILTER) $(CTEST_REPEAT)
 
 test/linux: ensure-built/linux
-	$(CTEST_ENV) ctest --test-dir build/linux -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_REPEAT)
+	$(CTEST_ENV) ctest --test-dir build/linux -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_DOMAIN_SEL) $(CTEST_LABEL_FILTER) $(CTEST_FILTER) $(CTEST_REPEAT)
 
 test/linux-debug: ensure-built/linux-debug
-	$(CTEST_ENV) ctest --test-dir build/linux-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_REPEAT)
+	$(CTEST_ENV) ctest --test-dir build/linux-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_DOMAIN_SEL) $(CTEST_LABEL_FILTER) $(CTEST_FILTER) $(CTEST_REPEAT)
 
 # Sanitizer (ASan+UBSan) and coverage builds are opt-in Linux variants; CI
 # uses them for the quality-gate jobs. Runtime env for tests:
 #   ASAN_OPTIONS=detect_leaks=0:halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1
 test/linux-asan:
-	$(CTEST_ENV) ctest --test-dir build/linux-asan --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_REPEAT)
+	$(CTEST_ENV) ctest --test-dir build/linux-asan --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_DOMAIN_SEL) $(CTEST_LABEL_FILTER) $(CTEST_FILTER) $(CTEST_REPEAT)
 
 test/linux-coverage:
-	$(CTEST_ENV) ctest --test-dir build/linux-coverage --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_REPEAT)
+	$(CTEST_ENV) ctest --test-dir build/linux-coverage --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_DOMAIN_SEL) $(CTEST_LABEL_FILTER) $(CTEST_FILTER) $(CTEST_REPEAT)
 
 test/macosx: ensure-built/macosx
-	$(CTEST_ENV) ctest --test-dir build/macosx -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_REPEAT)
+	$(CTEST_ENV) ctest --test-dir build/macosx -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_DOMAIN_SEL) $(CTEST_LABEL_FILTER) $(CTEST_FILTER) $(CTEST_REPEAT)
 
 test/macosx-debug: ensure-built/macosx-debug
-	$(CTEST_ENV) ctest --test-dir build/macosx-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_FILTER) $(CTEST_REPEAT)
+	$(CTEST_ENV) ctest --test-dir build/macosx-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_DOMAIN_SEL) $(CTEST_LABEL_FILTER) $(CTEST_FILTER) $(CTEST_REPEAT)
 
 # Host-debug shortcut by test-name prefix, e.g. `make test/graphics.print`
 # (explicit test/<platform> rules above take precedence over this pattern).
 test/%: ensure-built/$(PLATFORM)-debug
 	$(CTEST_ENV) ctest --test-dir build/$(PLATFORM)-debug --output-on-failure -j $(CTEST_JOBS) -R '^$(subst .,\.,$*)' $(CTEST_REPEAT)
 
+# Build only one domain link unit. With EVENGINE_TEST_DOMAIN_SPLIT (on by
+# default for the SHARED route; the archive route builds one monolithic unit_test
+# instead, see test/CMakeLists.txt), an agent working on a single module compiles
+# and links only that unit instead of every test translation unit at once.
+# The build directory must already be configured (any earlier `make build/<platform>`
+# or `make test/<platform>`):
+#   make unit-test/win32-debug DOMAIN=physics
+#   make test/win32-debug DOMAIN=physics
+unit-test/%:
+	@test -n "$(DOMAIN)" || { \
+	  echo "usage: make unit-test/<platform> DOMAIN=<domain>"; \
+	  echo "domains are declared in test/test_domains.cmake"; exit 2; }
+	@if [ ! -f build/$*/build.ninja ] && [ ! -f build/$*/Makefile ]; then \
+	  echo "build/$* is not configured; run: make build/$*"; exit 2; fi
+	@if ! ctest --test-dir build/$* -N -L '^unit_test_$(DOMAIN)$$' 2>/dev/null | grep -q 'Total Tests: [1-9]'; then \
+	  echo "build/$* has no unit_test_$(DOMAIN): the suite is monolithic there"; \
+	  echo "(EVENGINE_TEST_DOMAIN_SPLIT=OFF). Reconfigure with"; \
+	  echo "-DEVENGINE_TEST_DOMAIN_SPLIT=ON for per-domain units, or build the whole"; \
+	  echo "suite with: cmake --build build/$* --target unit_test"; exit 2; fi
+	$(if $(findstring win32,$*),$(WITH_MSVC) cmake.exe,cmake) --build build/$* --target unit_test_$(DOMAIN) -j $(JOBS)
+
 # Host platform debug shortcut (same as run/$(PLATFORM)-debug).
 run: run/$(PLATFORM)-debug
+
+# PATH prefix for running a built binary from its build tree.
+# SHARED module-linkage builds (cmake/link_groups.cmake) write the link-group
+# DLLs to the CMake binary dir -> build/<plat>, while eve.exe lives in
+# build/<plat>/src/engine. Windows resolves DLLs through PATH (there is no
+# rpath), so a local run needs build/<plat> on PATH -- the same directory the
+# generated CTest entries prepend (cmake/ZeroErrDiscoverTestsImpl.cmake).
+# The build tree is probed instead of adding a flag: the static/one-exe route
+# (release passes -DEVENGINE_MODULE_LINKAGE=OBJECT) produces no group DLL, so the
+# prefix is empty and the recipe is byte-for-byte what it was before.
+# `cd ... && pwd` rather than $(CURDIR)/... because this recipe runs under Git
+# bash, which does not accept a "C:/..." element inside PATH (MSYS then rewrites
+# it relative to its own root and the DLL directory is silently lost); pwd
+# yields the "/c/evt/..." form the loader conversion understands.
+# PATH is the Win32 loader's search path. The ELF/Mach-O equivalent is
+# LD_LIBRARY_PATH / DYLD_LIBRARY_PATH, which eve-dll-path-so prefixes for the
+# linux/macosx recipes below; both macros probe the build tree, so a
+# static/one-exe build (release passes -DEVENGINE_MODULE_LINKAGE=OBJECT) yields
+# an empty prefix and the recipe is byte-for-byte what it was before.
+eve-dll-path = $(if $(wildcard $(CURDIR)/$(1)/EVFoundation.dll),$$(cd '$(CURDIR)/$(1)' && pwd):,)
+eve-dll-path-so = $(if $(wildcard $(CURDIR)/$(1)/libEVFoundation.so $(CURDIR)/$(1)/libEVFoundation.dylib),$(CURDIR)/$(1):,)
 
 # Desktop: run built eve. With GAME unset, run with no args from the repo
 # root so eve finds no main.nut and falls back to the embedded release demo.
@@ -1103,40 +1236,40 @@ run: run/$(PLATFORM)-debug
 #   make run/macosx-debug GAME=examples/rpg
 #   make run              # current host platform, debug, embedded demo
 run/win32-debug: ensure-built/win32-debug
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/win32-debug/src/engine/eve.exe" run $(RUN_ARGS); \
-	else build/win32-debug/src/engine/eve.exe $(RUN_ARGS); fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && PATH="$(call eve-dll-path,build/win32-debug)$$PATH" "$(CURDIR)/build/win32-debug/src/engine/eve.exe" run $(RUN_ARGS); \
+	else PATH="$(call eve-dll-path,build/win32-debug)$$PATH" build/win32-debug/src/engine/eve.exe $(RUN_ARGS); fi
 
 run/linux-debug: ensure-built/linux-debug
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux-debug/src/engine/eve" run $(RUN_ARGS); \
-	else build/linux-debug/src/engine/eve $(RUN_ARGS); fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && LD_LIBRARY_PATH="$(call eve-dll-path-so,build/linux-debug)$$LD_LIBRARY_PATH" "$(CURDIR)/build/linux-debug/src/engine/eve" run $(RUN_ARGS); \
+	else LD_LIBRARY_PATH="$(call eve-dll-path-so,build/linux-debug)$$LD_LIBRARY_PATH" build/linux-debug/src/engine/eve $(RUN_ARGS); fi
 
 run/macosx-debug: ensure-built/macosx-debug
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx-debug/src/engine/eve" run $(RUN_ARGS); \
-	else build/macosx-debug/src/engine/eve $(RUN_ARGS); fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && DYLD_LIBRARY_PATH="$(call eve-dll-path-so,build/macosx-debug)$$DYLD_LIBRARY_PATH" "$(CURDIR)/build/macosx-debug/src/engine/eve" run $(RUN_ARGS); \
+	else DYLD_LIBRARY_PATH="$(call eve-dll-path-so,build/macosx-debug)$$DYLD_LIBRARY_PATH" build/macosx-debug/src/engine/eve $(RUN_ARGS); fi
 
 run/win32: ensure-built/win32
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/win32/src/engine/eve.exe" run $(RUN_ARGS); \
-	else build/win32/src/engine/eve.exe $(RUN_ARGS); fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && PATH="$(call eve-dll-path,build/win32)$$PATH" "$(CURDIR)/build/win32/src/engine/eve.exe" run $(RUN_ARGS); \
+	else PATH="$(call eve-dll-path,build/win32)$$PATH" build/win32/src/engine/eve.exe $(RUN_ARGS); fi
 
 run/linux: ensure-built/linux
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux/src/engine/eve" run $(RUN_ARGS); \
-	else build/linux/src/engine/eve $(RUN_ARGS); fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && LD_LIBRARY_PATH="$(call eve-dll-path-so,build/linux)$$LD_LIBRARY_PATH" "$(CURDIR)/build/linux/src/engine/eve" run $(RUN_ARGS); \
+	else LD_LIBRARY_PATH="$(call eve-dll-path-so,build/linux)$$LD_LIBRARY_PATH" build/linux/src/engine/eve $(RUN_ARGS); fi
 
 run/macosx: ensure-built/macosx
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx/src/engine/eve" run $(RUN_ARGS); \
-	else build/macosx/src/engine/eve $(RUN_ARGS); fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && DYLD_LIBRARY_PATH="$(call eve-dll-path-so,build/macosx)$$DYLD_LIBRARY_PATH" "$(CURDIR)/build/macosx/src/engine/eve" run $(RUN_ARGS); \
+	else DYLD_LIBRARY_PATH="$(call eve-dll-path-so,build/macosx)$$DYLD_LIBRARY_PATH" build/macosx/src/engine/eve $(RUN_ARGS); fi
 
 debug/win32:
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/win32-debug/src/engine/eve.exe" run $(RUN_ARGS); \
-	else build/win32-debug/src/engine/eve.exe $(RUN_ARGS); fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && PATH="$(call eve-dll-path,build/win32-debug)$$PATH" "$(CURDIR)/build/win32-debug/src/engine/eve.exe" run $(RUN_ARGS); \
+	else PATH="$(call eve-dll-path,build/win32-debug)$$PATH" build/win32-debug/src/engine/eve.exe $(RUN_ARGS); fi
 
 debug/linux:
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux-debug/src/engine/eve" run $(RUN_ARGS); \
-	else build/linux-debug/src/engine/eve $(RUN_ARGS); fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && LD_LIBRARY_PATH="$(call eve-dll-path-so,build/linux-debug)$$LD_LIBRARY_PATH" "$(CURDIR)/build/linux-debug/src/engine/eve" run $(RUN_ARGS); \
+	else LD_LIBRARY_PATH="$(call eve-dll-path-so,build/linux-debug)$$LD_LIBRARY_PATH" build/linux-debug/src/engine/eve $(RUN_ARGS); fi
 
 debug/macosx:
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx-debug/src/engine/eve" run $(RUN_ARGS); \
-	else build/macosx-debug/src/engine/eve $(RUN_ARGS); fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && DYLD_LIBRARY_PATH="$(call eve-dll-path-so,build/macosx-debug)$$DYLD_LIBRARY_PATH" "$(CURDIR)/build/macosx-debug/src/engine/eve" run $(RUN_ARGS); \
+	else DYLD_LIBRARY_PATH="$(call eve-dll-path-so,build/macosx-debug)$$DYLD_LIBRARY_PATH" build/macosx-debug/src/engine/eve $(RUN_ARGS); fi
 
 tools/debug:
 	cd tools/vscode-eve-debug && npx @vscode/vsce package 
@@ -1145,6 +1278,7 @@ tools/debug:
 # Target-platform SDK install (independent prefix per plat; for publishing games TO that plat).
 # Release: make sdk/macosx  → builds build/macosx then dist/eve-sdk/macosx
 # Debug:   make sdk/macosx-debug
+# win32/linux debug SDK trees reuse build/*-debug, including the CI warning gate.
 sdk/win32: build/win32
 sdk/linux: build/linux
 sdk/macosx: build/macosx
@@ -1179,6 +1313,19 @@ building:
 
 ecs:
 	@$(MAKE) run/$(PLATFORM)-debug GAME=examples/ecs
+
+rpg-classic:
+	@echo rpg-classic is a standalone game: https://github.com/EVEngine/rpg-classic
+	@echo Clone it next to EVEngine, then: eve run .   or   make run/$(PLATFORM)-debug GAME=../rpg-classic
+
+rpg-classic/tilemap:
+	@echo Use the rpg-classic repo: eve run apps/tilemap
+
+rpg-classic/event:
+	@echo Use the rpg-classic repo: eve run apps/event
+
+rpg-classic/skill:
+	@echo Use the rpg-classic repo: eve run apps/skill
 
 # make: build/.build-docker
 # 	$(DOCKER) /bin/bash -c "cmake -H./src -B./src/build && cmake --build src/build --parallel 8"

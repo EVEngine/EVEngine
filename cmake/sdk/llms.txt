@@ -1,0 +1,17 @@
+# EVEngine SDK
+
+> C++20 Vulkan game engine. Games are EveScript (`.nut`, Squirrel-compatible). Agents must not invent Unity/Godot APIs.
+
+## For coding agents
+
+- [share/eve/ai/SKILL.md](share/eve/ai/SKILL.md): short EveScript + conventions + concept map
+- [share/eve/ai/eve-api.json](share/eve/ai/eve-api.json): this SDK build's Binding Contracts (`eve.binding-api`)
+- [share/eve/ai/eve-api.d.ts](share/eve/ai/eve-api.d.ts): TypeScript-shaped signatures (not a second runtime)
+- [share/eve/examples/basic/main.nut](share/eve/examples/basic/main.nut): gold example
+
+## For runtime agents
+
+- `bin/eve run --debug --mcp-port=7529 share/eve/examples/basic`
+- MCP stdio bridge: `share/eve/ai/eve-mcp/` (see its README)
+- Tools: `eve_api_search` / `eve_api_get` (lookup), `eve_play` (observe/act), `eve_screenshot` (engine PNG)
+- Do not use `eve_eval` as the official gameplay path

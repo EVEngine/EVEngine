@@ -11,6 +11,7 @@ import struct
 import subprocess
 
 from PIL import Image
+import utf8_stdio
 
 
 def verify(directory):
@@ -55,10 +56,11 @@ def main():
     except (OSError, ValueError, subprocess.SubprocessError) as error:
         result = {'status': 'failed', 'error': str(error)}
     args.report.parent.mkdir(parents=True, exist_ok=True)
-    args.report.write_text(json.dumps(result, indent=2) + '\n')
+    args.report.write_text(json.dumps(result, indent=2) + '\n', encoding="utf-8")
     print(json.dumps(result))
     return 0 if result['status'] == 'passed' else 1
 
 
 if __name__ == '__main__':
+    utf8_stdio.enable_utf8_stdio()
     raise SystemExit(main())

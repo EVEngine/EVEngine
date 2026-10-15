@@ -13,7 +13,7 @@ namespace {
 using Color = image::ImageData::Colorf;
 
 eve::Diagnostic invalid(std::string message) {
-    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message));
+    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message);
 }
 
 float wrap01(float value) {

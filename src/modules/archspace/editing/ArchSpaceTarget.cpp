@@ -7,11 +7,6 @@
 namespace eve::archspace_editing {
 namespace {
 
-template <class T>
-EditorResult<T> fail(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 const EditorValue* field(const EditorValue& value, const char* key) {
     const auto* object = value.getIf<EditorValue::Object>();
     if (!object) return nullptr;
@@ -77,7 +72,7 @@ EditorValue nodeValue(const archspace::Node& node) {
     };
 }
 
-EditorResult<archspace::Node> parseNode(const EditorValue& value) {
+Result<archspace::Node> parseNode(const EditorValue& value) {
     archspace::Node node;
     const auto*     id       = field(value, "id");
     const auto*     kind     = field(value, "kind");
@@ -88,11 +83,12 @@ EditorResult<archspace::Node> parseNode(const EditorValue& value) {
     const auto*     parents  = parentId ? parentId->getIf<std::string>() : nullptr;
     const auto*     names    = name ? name->getIf<std::string>() : nullptr;
     if (!ids || ids->empty() || !kinds || !parents || !names)
-        return fail<archspace::Node>(EditorStatus::Rejected, "editor.archspace.node",
-                                     "ArchSpace node identity is invalid");
+        return eve::editing::failed<archspace::Node>(EditorStatus::Rejected, RuleId("editor.archspace.node"),
+                                                     "ArchSpace node identity is invalid");
     auto parsedKind = archspace::parseNodeKind(*kinds);
     if (!parsedKind.ok())
-        return fail<archspace::Node>(EditorStatus::Rejected, "editor.archspace.kind", "ArchSpace node kind is unknown");
+        return eve::editing::failed<archspace::Node>(EditorStatus::Rejected, RuleId("editor.archspace.kind"),
+                                                     "ArchSpace node kind is unknown");
     node.kind     = parsedKind.value();
     node.id       = *ids;
     node.parentId = *parents;
@@ -100,58 +96,59 @@ EditorResult<archspace::Node> parseNode(const EditorValue& value) {
     if (const auto* children = field(value, "children")) {
         const auto* array = children->getIf<EditorValue::Array>();
         if (!array)
-            return fail<archspace::Node>(EditorStatus::Rejected, "editor.archspace.children",
-                                         "ArchSpace children must be an array");
+            return eve::editing::failed<archspace::Node>(EditorStatus::Rejected, RuleId("editor.archspace.children"),
+                                                         "ArchSpace children must be an array");
         for (const auto& child : *array) {
             const auto* text = child.getIf<std::string>();
             if (!text)
-                return fail<archspace::Node>(EditorStatus::Rejected, "editor.archspace.children",
-                                             "ArchSpace child id must be a string");
+                return eve::editing::failed<archspace::Node>(
+                    EditorStatus::Rejected, RuleId("editor.archspace.children"), "ArchSpace child id must be a string");
             node.children.push_back(*text);
         }
     }
     readNumber(field(value, "elevation"), node.elevation);
     readNumber(field(value, "height"), node.height);
     if (const auto* start = field(value, "start"); start && !parseVec2(*start, node.start))
-        return fail<archspace::Node>(EditorStatus::Rejected, "editor.archspace.wall",
-                                     "ArchSpace wall start is invalid");
+        return eve::editing::failed<archspace::Node>(EditorStatus::Rejected, RuleId("editor.archspace.wall"),
+                                                     "ArchSpace wall start is invalid");
     if (const auto* end = field(value, "end"); end && !parseVec2(*end, node.end))
-        return fail<archspace::Node>(EditorStatus::Rejected, "editor.archspace.wall", "ArchSpace wall end is invalid");
+        return eve::editing::failed<archspace::Node>(EditorStatus::Rejected, RuleId("editor.archspace.wall"),
+                                                     "ArchSpace wall end is invalid");
     readNumber(field(value, "thickness"), node.thickness);
     if (const auto* polygon = field(value, "polygon")) {
         const auto* array = polygon->getIf<EditorValue::Array>();
         if (!array)
-            return fail<archspace::Node>(EditorStatus::Rejected, "editor.archspace.polygon",
-                                         "ArchSpace polygon must be an array");
+            return eve::editing::failed<archspace::Node>(EditorStatus::Rejected, RuleId("editor.archspace.polygon"),
+                                                         "ArchSpace polygon must be an array");
         for (const auto& point : *array) {
             archspace::Vec2 v;
             if (!parseVec2(point, v))
-                return fail<archspace::Node>(EditorStatus::Rejected, "editor.archspace.polygon",
-                                             "ArchSpace polygon point is invalid");
+                return eve::editing::failed<archspace::Node>(EditorStatus::Rejected, RuleId("editor.archspace.polygon"),
+                                                             "ArchSpace polygon point is invalid");
             node.polygon.push_back(v);
         }
     }
     readNumber(field(value, "slabThickness"), node.slabThickness);
     if (const auto* position = field(value, "position"); position && !parseVec3(*position, node.position))
-        return fail<archspace::Node>(EditorStatus::Rejected, "editor.archspace.item",
-                                     "ArchSpace item position is invalid");
+        return eve::editing::failed<archspace::Node>(EditorStatus::Rejected, RuleId("editor.archspace.item"),
+                                                     "ArchSpace item position is invalid");
     readNumber(field(value, "yawDegrees"), node.yawDegrees);
     if (const auto* catalog = field(value, "catalogId")) {
         const auto* text = catalog->getIf<std::string>();
         if (!text)
-            return fail<archspace::Node>(EditorStatus::Rejected, "editor.archspace.item",
-                                         "ArchSpace catalog id must be a string");
+            return eve::editing::failed<archspace::Node>(EditorStatus::Rejected, RuleId("editor.archspace.item"),
+                                                         "ArchSpace catalog id must be a string");
         node.catalogId = *text;
     }
     if (const auto* opening = field(value, "openingKind")) {
         const auto* text = opening->getIf<std::string>();
         if (!text)
-            return fail<archspace::Node>(EditorStatus::Rejected, "editor.archspace.opening",
-                                         "ArchSpace opening kind must be a string");
+            return eve::editing::failed<archspace::Node>(EditorStatus::Rejected, RuleId("editor.archspace.opening"),
+                                                         "ArchSpace opening kind must be a string");
         auto kind = archspace::parseOpeningKind(*text);
         if (!kind.ok())
-            return fail<archspace::Node>(EditorStatus::Rejected, "editor.archspace.opening",
-                                         "ArchSpace opening kind is invalid");
+            return eve::editing::failed<archspace::Node>(EditorStatus::Rejected, RuleId("editor.archspace.opening"),
+                                                         "ArchSpace opening kind is invalid");
         node.openingKind = kind.value();
     }
     readNumber(field(value, "t"), node.t);
@@ -187,7 +184,7 @@ ArchSpaceDocumentTarget::ArchSpaceDocumentTarget(std::string id) : id_(std::move
 TargetDescriptor ArchSpaceDocumentTarget::describe() const {
     return {TargetId(id_),
             "archspace-document",
-            revision_,
+            revisionValue(),
             false,
             {propertyCapabilityId(), IEditingSnapshotProvider::editingCapabilityId()}};
 }
@@ -222,7 +219,7 @@ eve::Result<eve::Revision> ArchSpaceDocumentTarget::currentRevision(const Select
     if (!matches(selection))
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "ArchSpace selection mismatch", "editor.archspace.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema ArchSpaceDocumentTarget::schema(const SelectionSnapshot& selection) const {
@@ -281,7 +278,7 @@ EditorValue ArchSpaceDocumentTarget::contentValue() const {
     return EditorValue::Object{{"rootId", document_.rootId()}, {"nodes", std::move(nodes)}};
 }
 
-EditorResult<DomainOperation> ArchSpaceDocumentTarget::replacement(EditorValue content, std::string property) const {
+Result<DomainOperation> ArchSpaceDocumentTarget::replacement(EditorValue content, std::string property) const {
     DomainOperation op;
     op.type        = "archspace.document.replace.v1";
     op.inverseType = op.type;
@@ -294,16 +291,17 @@ EditorResult<DomainOperation> ArchSpaceDocumentTarget::replacement(EditorValue c
     return eve::editing::applied<DomainOperation>(std::move(op));
 }
 
-EditorResult<void> ArchSpaceDocumentTarget::installContent(const EditorValue& content) {
+Result<void> ArchSpaceDocumentTarget::installContent(const EditorValue& content) {
     const auto* rootIdValue = field(content, "rootId");
     const auto* nodesValue  = field(content, "nodes");
     const auto* rootId      = rootIdValue ? rootIdValue->getIf<std::string>() : nullptr;
     const auto* nodes       = nodesValue ? nodesValue->getIf<EditorValue::Array>() : nullptr;
     if (!rootId || !nodes || !content.isWithinLimits(12, 250000, 32 * 1024 * 1024))
-        return fail<void>(EditorStatus::Rejected, "editor.archspace.payload",
-                          "ArchSpace document payload is invalid or exceeds limits");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.archspace.payload"),
+                                          "ArchSpace document payload is invalid or exceeds limits");
     if (nodes->size() > 100000)
-        return fail<void>(EditorStatus::Rejected, "editor.archspace.budget", "ArchSpace document exceeds 100000 nodes");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.archspace.budget"),
+                                          "ArchSpace document exceeds 100000 nodes");
 
     archspace::Document candidate;
     if (rootId->empty() && nodes->empty()) {
@@ -316,8 +314,8 @@ EditorResult<void> ArchSpaceDocumentTarget::installContent(const EditorValue& co
     for (const auto& value : *nodes) {
         auto node = parseNode(value);
         if (!node.ok())
-            return fail<void>(EditorStatus::Rejected, "editor.archspace.node",
-                              "ArchSpace document contains an invalid node");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.archspace.node"),
+                                              "ArchSpace document contains an invalid node");
         parsed.push_back(std::move(node.value()));
     }
     std::sort(parsed.begin(), parsed.end(), [](const archspace::Node& a, const archspace::Node& b) {
@@ -327,14 +325,15 @@ EditorResult<void> ArchSpaceDocumentTarget::installContent(const EditorValue& co
         node.children.clear();  // re-linked by insert()
         auto inserted = candidate.insert(std::move(node));
         if (!inserted.ok())
-            return fail<void>(EditorStatus::Rejected, "editor.archspace.insert",
-                              "ArchSpace document failed hierarchical insert");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.archspace.insert"),
+                                              "ArchSpace document failed hierarchical insert");
     }
     if (candidate.rootId() != *rootId)
-        return fail<void>(EditorStatus::Rejected, "editor.archspace.root",
-                          "ArchSpace root id does not match document content");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.archspace.root"),
+                                          "ArchSpace root id does not match document content");
     if (!candidate.diagnostics().empty())
-        return fail<void>(EditorStatus::Rejected, "editor.archspace.invalid", "ArchSpace document validation failed");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.archspace.invalid"),
+                                          "ArchSpace document validation failed");
     document_ = std::move(candidate);
     return eve::editing::applied<void>();
 }
@@ -354,38 +353,41 @@ std::vector<EditorDiagnostic> ArchSpaceDocumentTarget::validate() const {
     return out;
 }
 
-EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeSet(const SelectionSnapshot& selection,
+Result<DomainOperation> ArchSpaceDocumentTarget::makeSet(const SelectionSnapshot& selection,
                                                                const PropertyPath& path, const EditorValue& value,
                                                                PropertySetMode mode) const {
     if (mode == PropertySetMode::Reset) return makeReset(selection, path);
     const auto             descriptor = schema(selection).find(path);
     const archspace::Node* node       = selectedNode(selection);
     if (!descriptor || !node || mode != PropertySetMode::Absolute)
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.archspace.set",
-                                     "ArchSpace property requires a matching absolute edit");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.archspace.set"),
+                                                     "ArchSpace property requires a matching absolute edit");
     auto checked = validatePropertyValue(*descriptor, value);
     if (!checked.ok())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.archspace.value",
-                                     "ArchSpace property value is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.archspace.value"),
+                                                     "ArchSpace property value is invalid");
     archspace::Document candidate = document_;
     archspace::Node*    editable  = candidate.findMutable(node->id);
     if (!editable)
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.archspace.node", "ArchSpace node is missing");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.archspace.node"),
+                                                     "ArchSpace node is missing");
     if (path == PropertyPath("name")) {
         const auto* text = value.getIf<std::string>();
-        if (!text) return fail<DomainOperation>(EditorStatus::Rejected, "editor.archspace.name", "Name must be string");
+        if (!text)
+            return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.archspace.name"),
+                                                         "Name must be string");
         editable->name = *text;
     } else if (path == PropertyPath("catalogId")) {
         const auto* text = value.getIf<std::string>();
         if (!text)
-            return fail<DomainOperation>(EditorStatus::Rejected, "editor.archspace.catalog",
-                                         "Catalog id must be string");
+            return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.archspace.catalog"),
+                                                         "Catalog id must be string");
         editable->catalogId = *text;
     } else {
         double number = 0.0;
         if (!readNumber(&value, number))
-            return fail<DomainOperation>(EditorStatus::Rejected, "editor.archspace.number",
-                                         "ArchSpace property requires a number");
+            return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.archspace.number"),
+                                                         "ArchSpace property requires a number");
         if (path == PropertyPath("elevation"))
             editable->elevation = number;
         else if (path == PropertyPath("height"))
@@ -403,51 +405,51 @@ EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeSet(const SelectionSn
         else if (path == PropertyPath("sill"))
             editable->sill = number;
         else
-            return fail<DomainOperation>(EditorStatus::Unsupported, "editor.archspace.property",
-                                         "Unsupported ArchSpace property");
+            return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.archspace.property"),
+                                                         "Unsupported ArchSpace property");
     }
     auto replaced = candidate.replace(*editable);
     if (!replaced.ok())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.archspace.invalid",
-                                     "ArchSpace property update failed validation");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.archspace.invalid"),
+                                                     "ArchSpace property update failed validation");
     ArchSpaceDocumentTarget staged(id_);
     staged.document_ = std::move(candidate);
     if (hasErrors(staged.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.archspace.invalid",
-                                     "ArchSpace property update failed validation");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.archspace.invalid"),
+                                                     "ArchSpace property update failed validation");
     return replacement(staged.contentValue(), path.value());
 }
 
-EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeReset(const SelectionSnapshot& selection,
+Result<DomainOperation> ArchSpaceDocumentTarget::makeReset(const SelectionSnapshot& selection,
                                                                  const PropertyPath&      path) const {
     const auto descriptor = schema(selection).find(path);
     if (!descriptor)
-        return fail<DomainOperation>(EditorStatus::Unsupported, "editor.archspace.property",
-                                     "Unknown ArchSpace property");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.archspace.property"),
+                                                     "Unknown ArchSpace property");
     return makeSet(selection, path, descriptor->defaultValue, PropertySetMode::Absolute);
 }
 
-EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeBootstrap(const std::string& siteId,
+Result<DomainOperation> ArchSpaceDocumentTarget::makeBootstrap(const std::string& siteId,
                                                                      const std::string& buildingId,
                                                                      const std::string& levelId,
                                                                      double             levelHeight) const {
     archspace::Document candidate = document_;
     auto                boot      = candidate.bootstrap(siteId, buildingId, levelId, levelHeight);
     if (!boot.ok())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.archspace.bootstrap",
-                                     "ArchSpace bootstrap requires an empty document and unique ids");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.archspace.bootstrap"),
+                                                     "ArchSpace bootstrap requires an empty document and unique ids");
     ArchSpaceDocumentTarget staged(id_);
     staged.document_ = std::move(candidate);
     return replacement(staged.contentValue());
 }
 
-EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeCreateRectRoom(
+Result<DomainOperation> ArchSpaceDocumentTarget::makeCreateRectRoom(
     const std::string& levelId, const std::string& roomId, std::string roomName, double originX, double originZ,
     double sizeX, double sizeZ, double wallHeight, double wallThickness, double slabThickness) const {
     if (!(std::isfinite(originX) && std::isfinite(originZ) && std::isfinite(sizeX) && std::isfinite(sizeZ)) ||
         sizeX <= 1e-6 || sizeZ <= 1e-6)
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.archspace.room",
-                                     "ArchSpace room size must be finite and positive");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.archspace.room"),
+                                                     "ArchSpace room size must be finite and positive");
     std::vector<archspace::Vec2> polygon = {
         {originX, originZ},
         {originX + sizeX, originZ},
@@ -458,28 +460,28 @@ EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeCreateRectRoom(
     auto created = candidate.createRoom(levelId, roomId, std::move(roomName), std::move(polygon), wallHeight,
                                         wallThickness, slabThickness);
     if (!created.ok())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.archspace.room",
-                                     "ArchSpace room could not be created under the given level");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.archspace.room"),
+                                                     "ArchSpace room could not be created under the given level");
     ArchSpaceDocumentTarget staged(id_);
     staged.document_ = std::move(candidate);
     return replacement(staged.contentValue());
 }
 
-EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeCreateWall(const std::string& levelId,
+Result<DomainOperation> ArchSpaceDocumentTarget::makeCreateWall(const std::string& levelId,
                                                                       const std::string& wallId, std::string wallName,
                                                                       archspace::Vec2 start, archspace::Vec2 end,
                                                                       double height, double thickness) const {
     archspace::Document candidate = document_;
     auto created = candidate.createWall(levelId, wallId, std::move(wallName), start, end, height, thickness);
     if (!created.ok())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.archspace.wall",
-                                     "ArchSpace wall could not be created under the given level");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.archspace.wall"),
+                                                     "ArchSpace wall could not be created under the given level");
     ArchSpaceDocumentTarget staged(id_);
     staged.document_ = std::move(candidate);
     return replacement(staged.contentValue());
 }
 
-EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeCreateOpening(const std::string&     wallId,
+Result<DomainOperation> ArchSpaceDocumentTarget::makeCreateOpening(const std::string&     wallId,
                                                                          const std::string&     openingId,
                                                                          archspace::OpeningKind kind, double t,
                                                                          double width, double height,
@@ -487,14 +489,14 @@ EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeCreateOpening(const s
     archspace::Document candidate = document_;
     auto created = candidate.createOpening(wallId, openingId, openingId, kind, t, width, height, sill);
     if (!created.ok())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.archspace.opening",
-                                     "ArchSpace opening insert failed validation");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.archspace.opening"),
+                                                     "ArchSpace opening insert failed validation");
     ArchSpaceDocumentTarget staged(id_);
     staged.document_ = std::move(candidate);
     return replacement(staged.contentValue());
 }
 
-EditorResult<DomainOperation> ArchSpaceDocumentTarget::makePlaceItem(const std::string& levelId,
+Result<DomainOperation> ArchSpaceDocumentTarget::makePlaceItem(const std::string& levelId,
                                                                      const std::string& itemId, std::string catalogId,
                                                                      archspace::Vec3 position,
                                                                      double          yawDegrees) const {
@@ -502,34 +504,37 @@ EditorResult<DomainOperation> ArchSpaceDocumentTarget::makePlaceItem(const std::
     auto placed =
         candidate.placeItem(levelId, itemId, itemId, std::move(catalogId), position, yawDegrees);
     if (!placed.ok())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.archspace.item",
-                                     "ArchSpace item insert failed validation");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.archspace.item"),
+                                                     "ArchSpace item insert failed validation");
     ArchSpaceDocumentTarget staged(id_);
     staged.document_ = std::move(candidate);
     return replacement(staged.contentValue());
 }
 
-EditorResult<DomainOperation> ArchSpaceDocumentTarget::makeDeleteNode(const ObjectId& id) const {
+Result<DomainOperation> ArchSpaceDocumentTarget::makeDeleteNode(const ObjectId& id) const {
     archspace::Document candidate = document_;
     auto                erased    = candidate.eraseCascade(id.value());
     if (!erased.ok())
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.archspace.delete", "ArchSpace node was not found");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.archspace.delete"),
+                                                     "ArchSpace node was not found");
     ArchSpaceDocumentTarget staged(id_);
     staged.document_ = std::move(candidate);
     return replacement(staged.contentValue());
 }
 
-EditorResult<void> ArchSpaceDocumentTarget::applyDomainOperation(const DomainOperation& operation) {
+Result<void> ArchSpaceDocumentTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_) || operation.type != "archspace.document.replace.v1")
-        return fail<void>(EditorStatus::Rejected, "editor.archspace.operation", "ArchSpace operation mismatch");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.archspace.operation"),
+                                          "ArchSpace operation mismatch");
     ArchSpaceDocumentTarget candidate(id_);
     auto                    installed = candidate.installContent(operation.payload);
     if (!installed.ok()) return installed;
     if (hasErrors(candidate.validate()))
-        return fail<void>(EditorStatus::Rejected, "editor.archspace.invalid", "ArchSpace document validation failed");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.archspace.invalid"),
+                                          "ArchSpace document validation failed");
     document_ = std::move(candidate.document_);
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -537,36 +542,38 @@ std::unique_ptr<IDomainOperationTarget> ArchSpaceDocumentTarget::cloneDomainStat
     return std::make_unique<ArchSpaceDocumentTarget>(*this);
 }
 
-EditorResult<void> ArchSpaceDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
+Result<void> ArchSpaceDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<ArchSpaceDocumentTarget*>(candidate.get());
     if (!typed || typed->id_ != id_)
-        return fail<void>(EditorStatus::Conflict, "editor.archspace.candidate", "ArchSpace candidate mismatch");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.archspace.candidate"),
+                                          "ArchSpace candidate mismatch");
     *this = *typed;
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> ArchSpaceDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> ArchSpaceDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
     const auto* schemaIdValue = field(snapshot, "schemaId");
     const auto* versionValue  = field(snapshot, "schemaVersion");
     const auto* content       = field(snapshot, "content");
     const auto* schemaId      = schemaIdValue ? schemaIdValue->getIf<std::string>() : nullptr;
     const auto* version       = versionValue ? versionValue->getIf<std::int64_t>() : nullptr;
     if (!schemaId || *schemaId != "eve.archspace.document" || !version || *version != 1 || !content)
-        return fail<void>(EditorStatus::Unsupported, "editor.archspace.snapshot", "Unsupported ArchSpace snapshot");
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.archspace.snapshot"),
+                                          "Unsupported ArchSpace snapshot");
     DomainOperation op;
     op.target   = TargetId(id_);
     op.type     = "archspace.document.replace.v1";
     op.payload  = *content;
     auto result = applyDomainOperation(op);
-    if (result.ok()) dirty_.clear();
+    if (result.ok()) clearDirtyRegion();
     return result;
 }
 
-EditorResult<EditorGizmoSnapshot> ArchSpaceDocumentTarget::gizmo() const {
+Result<EditorGizmoSnapshot> ArchSpaceDocumentTarget::gizmo() const {
     EditorGizmoSnapshot snapshot;
     snapshot.status         = EditorStatus::Applied;
     snapshot.target         = id_;
-    snapshot.targetRevision = revision_;
+    snapshot.targetRevision = revisionValue();
     for (const auto& [id, node] : document_.nodes()) {
         (void)id;
         if (node.kind == archspace::NodeKind::Wall) {

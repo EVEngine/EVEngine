@@ -1,5 +1,6 @@
 #include "common/Capability.h"
 #include "common/GameplayControl.h"
+#include "common/GameplayInstanceCatalog.h"
 #include "inventory/Bag.h"
 #include "inventory/InventorySystem.h"
 #include "inventory/Item.h"
@@ -166,6 +167,17 @@ TEST_CASE("gameplay.control.rpgProductRunsShopLootAndQuestThroughCanonicalTransa
     CHECK_EQ(tracker.getState("quest.cache"), std::string("completed"));
     CHECK_EQ(state.getVariable("gold"), 82.0);
     CHECK_EQ(bag.countItem("cache_item"), 4);
+
+    // 目录能力：该适配器服务的就是这一个实例，`instances` 因此能列出它。
+    const auto catalogInstances = control.gameplayInstances();
+    REQUIRE_EQ(catalogInstances.size(), std::size_t{1});
+    CHECK_EQ(catalogInstances[0].format(), instance.format());
+    eve::IGameplayInstanceCatalog* catalog = nullptr;
+    eve::cap::forEach<eve::IGameplayInstanceCatalog>([&](auto* candidate) {
+        if (candidate != nullptr && candidate->gameplayDomain() == "rpg.product") catalog = candidate;
+    });
+    REQUIRE(catalog != nullptr);
+    CHECK_EQ(catalog->gameplayInstances().size(), std::size_t{1});
 
     auto events = control.gameplayEvents(player, instance, 0);
     REQUIRE(events.ok());

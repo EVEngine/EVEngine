@@ -6,11 +6,6 @@
 namespace eve::lighting_editing {
 namespace {
 
-template <class T>
-EditorResult<T> lightingError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 PropertyDescriptor property(const char* path, const char* label, const char* category, PropertyType type,
                             EditorValue defaultValue) {
     PropertyDescriptor result;
@@ -36,7 +31,7 @@ PropertySchema lightSchema() {
     PropertySchema schema;
     schema.typeId  = "graphics.light3d";
     auto type      = property("light.type", "editor.light.type", "light", PropertyType::Enum, "point");
-    type.enumItems = {"point", "dir"};
+    type.enumItems = {"point", "dir", "spot"};
     schema.properties.push_back(std::move(type));
     schema.properties.push_back(property("light.enabled", "editor.light.enabled", "light", PropertyType::Bool, true));
     schema.properties.push_back(property("transform.position", "editor.light.position", "transform", PropertyType::Vec3,
@@ -47,13 +42,21 @@ PropertySchema lightSchema() {
                                          EditorValue::Array{1.0, 1.0, 1.0, 1.0}));
     numeric(schema, "light.intensity", "editor.light.intensity", "light", 1.0, 0.0, 100000.0);
     numeric(schema, "light.radius", "editor.light.radius", "light", 8.0, 0.001, 100000.0);
+    numeric(schema, "light.spot-angle", "editor.light.spot-angle", "light", 30.0, 0.1, 89.0);
+    numeric(schema, "light.spot-softness", "editor.light.spot-softness", "light", 0.35, 0.0, 1.0);
     schema.properties.push_back(
         property("shadow.cast", "editor.light.cast-shadow", "shadow", PropertyType::Bool, false));
+    auto shadowMethod =
+        property("shadow.method", "editor.light.shadow-method", "shadow", PropertyType::Enum, "auto");
+    shadowMethod.enumItems = {"auto", "none", "csm", "perspective", "cube"};
+    schema.properties.push_back(std::move(shadowMethod));
     numeric(schema, "shadow.bias", "editor.light.shadow-bias", "shadow", 0.0, 0.0, 1.0, 0.0001);
     numeric(schema, "shadow.strength", "editor.light.shadow-strength", "shadow", 1.0, 0.0, 1.0);
     schema.properties.push_back(
         property("volumetric.enabled", "editor.light.volumetric", "volumetric", PropertyType::Bool, false));
     numeric(schema, "volumetric.intensity", "editor.light.volumetric-intensity", "volumetric", 1.0, 0.0, 100.0);
+    schema.properties.push_back(property("volumetric.only", "editor.light.volumetric-only", "volumetric",
+                                         PropertyType::Bool, false));
     return schema;
 }
 
@@ -112,7 +115,7 @@ TargetDescriptor LightingPropertyTargetBase::describe() const {
     TargetDescriptor result;
     result.id           = TargetId(id_);
     result.type         = targetType_;
-    result.revision     = revision_;
+    result.revision     = revisionValue();
     result.capabilities = {CapabilityId("eve.editor.target.lighting-properties")};
     return result;
 }
@@ -122,25 +125,25 @@ void* LightingPropertyTargetBase::queryCapability(const CapabilityId& capability
                                                                                : nullptr;
 }
 
-EditorResult<void> LightingPropertyTargetBase::applyDomainOperation(const DomainOperation& operation) {
+Result<void> LightingPropertyTargetBase::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_))
-        return lightingError<void>(EditorStatus::Rejected, "editor.lighting.target-mismatch",
-                                   "Lighting operation targets another document");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.lighting.target-mismatch"),
+                                          "Lighting operation targets another document");
     if (operation.type != "lighting.property.set.v1")
-        return lightingError<void>(EditorStatus::Unsupported, "editor.lighting.operation-unsupported",
-                                   "Lighting operation is unsupported: " + operation.type);
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.lighting.operation-unsupported"),
+                                          "Lighting operation is unsupported: " + operation.type);
     const EditorValue* pathValue  = field(operation.payload, "path");
     const EditorValue* assigned   = field(operation.payload, "value");
     const auto*        path       = pathValue ? pathValue->getIf<std::string>() : nullptr;
     auto               descriptor = path ? schema_.find(PropertyPath(*path)) : PropertyDescriptorLookup{};
     if (!descriptor || !assigned)
-        return lightingError<void>(EditorStatus::Rejected, "editor.lighting.invalid-operation",
-                                   "Lighting operation requires a known path and value");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.lighting.invalid-operation"),
+                                          "Lighting operation requires a known path and value");
     auto valid = validatePropertyValue(*descriptor, *assigned);
     if (!valid.ok()) return valid;
     values_[*path] = *assigned;
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -149,7 +152,7 @@ eve::Result<eve::Revision> LightingPropertyTargetBase::currentRevision(const Sel
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "Selection does not belong to this lighting target",
             "editor.lighting.selection", {}, "editor.LightingPropertyTargetBase"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema LightingPropertyTargetBase::schema(const SelectionSnapshot&) const { return schema_; }
@@ -162,22 +165,23 @@ PropertyReadResult LightingPropertyTargetBase::read(const SelectionSnapshot& sel
                                   : PropertyReadResult{PropertyReadState::Value, found->second, {}};
 }
 
-EditorResult<DomainOperation> LightingPropertyTargetBase::makeSet(const SelectionSnapshot& selection,
+Result<DomainOperation> LightingPropertyTargetBase::makeSet(const SelectionSnapshot& selection,
                                                                   const PropertyPath& path, const EditorValue& assigned,
                                                                   PropertySetMode mode) const {
     if (!selectionMatches(selection))
-        return lightingError<DomainOperation>(EditorStatus::Rejected, "editor.lighting.selection",
-                                              "Selection does not belong to this lighting target");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.lighting.selection"),
+                                                     "Selection does not belong to this lighting target");
     if (mode == PropertySetMode::Reset) return makeReset(selection, path);
     if (mode != PropertySetMode::Absolute)
-        return lightingError<DomainOperation>(EditorStatus::Unsupported, "editor.lighting.set-mode",
-                                              "Lighting properties require absolute assignment");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.lighting.set-mode"),
+                                                     "Lighting properties require absolute assignment");
     auto descriptor = schema_.find(path);
     if (!descriptor)
-        return lightingError<DomainOperation>(EditorStatus::Unsupported, "editor.lighting.property-unsupported",
-                                              "Lighting property is unknown: " + path.value());
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported,
+                                                     RuleId("editor.lighting.property-unsupported"),
+                                                     "Lighting property is unknown: " + path.value());
     auto valid = validatePropertyValue(*descriptor, assigned);
-    if (!valid.ok()) return EditorResult<DomainOperation>::failure(valid.status());
+    if (!valid.ok()) return Result<DomainOperation>::failure(valid.status());
     const auto          previous = values_.find(path.value());
     EditorValue::Object payload{{"path", path.value()}, {"value", assigned}};
     EditorValue::Object inverse{{"path", path.value()}, {"value", previous->second}};
@@ -192,12 +196,13 @@ EditorResult<DomainOperation> LightingPropertyTargetBase::makeSet(const Selectio
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<DomainOperation> LightingPropertyTargetBase::makeReset(const SelectionSnapshot& selection,
+Result<DomainOperation> LightingPropertyTargetBase::makeReset(const SelectionSnapshot& selection,
                                                                     const PropertyPath&      path) const {
     auto descriptor = schema_.find(path);
     if (!descriptor)
-        return lightingError<DomainOperation>(EditorStatus::Unsupported, "editor.lighting.property-unsupported",
-                                              "Lighting property is unknown: " + path.value());
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported,
+                                                     RuleId("editor.lighting.property-unsupported"),
+                                                     "Lighting property is unknown: " + path.value());
     return makeSet(selection, path, descriptor->defaultValue, PropertySetMode::Absolute);
 }
 
@@ -207,29 +212,29 @@ EditorValue LightingPropertyTargetBase::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"properties", std::move(properties)}};
 }
 
-EditorResult<void> LightingPropertyTargetBase::loadSnapshot(const EditorValue& snapshot) {
+Result<void> LightingPropertyTargetBase::loadSnapshot(const EditorValue& snapshot) {
     const EditorValue* versionValue    = field(snapshot, "schemaVersion");
     const EditorValue* propertiesValue = field(snapshot, "properties");
     const auto*        version         = versionValue ? versionValue->getIf<int64_t>() : nullptr;
     const auto*        properties      = propertiesValue ? propertiesValue->getIf<EditorValue::Object>() : nullptr;
     if (!version || *version != 1 || !properties)
-        return lightingError<void>(EditorStatus::Rejected, "editor.lighting.invalid-snapshot",
-                                   "Lighting snapshot requires schema version one and properties");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.lighting.invalid-snapshot"),
+                                          "Lighting snapshot requires schema version one and properties");
     std::map<std::string, EditorValue> candidate;
     for (const PropertyDescriptor& descriptor : schema_.properties)
         candidate[descriptor.path.value()] = descriptor.defaultValue;
     for (const auto& [path, assigned] : *properties) {
         auto descriptor = schema_.find(PropertyPath(path));
         if (!descriptor)
-            return lightingError<void>(EditorStatus::Unsupported, "editor.lighting.snapshot-property",
-                                       "Lighting snapshot contains an unknown property: " + path);
+            return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.lighting.snapshot-property"),
+                                              "Lighting snapshot contains an unknown property: " + path);
         auto valid = validatePropertyValue(*descriptor, assigned);
         if (!valid.ok()) return valid;
         candidate[path] = assigned;
     }
     values_ = std::move(candidate);
-    ++revision_;
-    dirty_.clear();
+    bumpRevision();
+    clearDirtyRegion();
     return eve::editing::applied<void>();
 }
 
@@ -250,6 +255,8 @@ std::vector<EditorDiagnostic> Light3DDocumentTarget::validate() const {
     const auto*                   type       = value("light.type")->getIf<std::string>();
     const auto*                   direction  = value("transform.direction")->getIf<EditorValue::Array>();
     const auto*                   castShadow = value("shadow.cast")->getIf<bool>();
+    const auto*                   methodName = value("shadow.method") ? value("shadow.method")->getIf<std::string>()
+                                                                      : nullptr;
     if (direction && direction->size() == 3) {
         double lengthSquared = 0.0;
         for (const EditorValue& component : *direction) {
@@ -260,10 +267,25 @@ std::vector<EditorDiagnostic> Light3DDocumentTarget::validate() const {
             diagnostics.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::InvalidArgument,
                 RuleId("editor.light.zero-direction"), DiagnosticSeverity::Error, "Light direction cannot be zero"));
     }
-    if (type && *type == "point" && castShadow && *castShadow)
-        diagnostics.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::Unsupported,
-            RuleId("editor.light.point-shadow-unsupported"), DiagnosticSeverity::Warning,
-            "The current renderer only selects directional shadow casters"));
+    const std::string method = methodName ? *methodName : "auto";
+    if (type && castShadow && *castShadow) {
+        if (*type == "point" && (method == "auto" || method == "cube"))
+            diagnostics.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::Unsupported,
+                RuleId("editor.light.point-shadow-reserved"), DiagnosticSeverity::Warning,
+                "Point cube shadows are reserved; enable via gfx.setShadowSchemePointEnabled when the atlas path ships"));
+        if (*type == "dir" && method != "auto" && method != "none" && method != "csm")
+            diagnostics.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::Unsupported,
+                RuleId("editor.light.dir-shadow-method"), DiagnosticSeverity::Warning,
+                "Directional lights only support csm (or auto/none) shadow methods"));
+        if (*type == "spot" && method != "auto" && method != "none" && method != "perspective")
+            diagnostics.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::Unsupported,
+                RuleId("editor.light.spot-shadow-method"), DiagnosticSeverity::Warning,
+                "Spot lights only support perspective (or auto/none) shadow methods"));
+        if (*type == "point" && method != "auto" && method != "none" && method != "cube")
+            diagnostics.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::Unsupported,
+                RuleId("editor.light.point-shadow-method"), DiagnosticSeverity::Warning,
+                "Point lights only support cube (or auto/none) shadow methods"));
+    }
     return diagnostics;
 }
 

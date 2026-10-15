@@ -9,6 +9,7 @@
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleEffect.h"
 #include "particles/Particles.h"
+#include "particles/ParticlesCapabilities.h"
 
 #include <algorithm>
 #include <cmath>
@@ -49,11 +50,6 @@ public:
 
 using ActiveKey = std::pair<eve::action::ActionExecutionId, std::string>;
 
-template <typename T>
-eve::Result<T> actionFailure(eve::DiagnosticCode code, std::string message, std::string path) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 class ParticleActionHandler final : public eve::action::IActionNotifyHandler {
 public:
     eve::Result<void> handle(const eve::action::ActionTimelineEvent& event,
@@ -69,10 +65,12 @@ public:
         }
         const bool instant = event.kind == eve::action::ActionTimelineEventKind::Notify;
         if (!instant && event.kind != eve::action::ActionTimelineEventKind::StateEnter)
-            return actionFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                       "VFX state handler requires enter or exit boundary", "event.kind");
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                       "VFX state handler requires enter or exit boundary", "event.kind"));
         if (!instant && active_.contains(key))
-            return actionFailure<void>(eve::DiagnosticCode::Conflict, "VFX state is already active", "itemId");
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "VFX state is already active", "itemId"));
         const auto shape = instant ? eve::action::ActionVfxShape::Instant : eve::action::ActionVfxShape::State;
         auto binding = eve::action::ActionVfxBinding::fromPayload(event.payload, shape);
         if (!binding) return eve::Result<void>::failure(binding.status());
@@ -80,13 +78,15 @@ public:
         if (!pose) return eve::Result<void>::failure(pose.status());
         auto* particles = eve::ModuleManager::getInstance<Particles>("Particles");
         if (!particles)
-            return actionFailure<void>(eve::DiagnosticCode::NotFound, "Particles module is unavailable", "particles");
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "Particles module is unavailable", "particles"));
         std::unique_ptr<ParticleEffect> effect(particles->newEffectFromFile(binding.value().uri));
         if (!effect)
-            return actionFailure<void>(eve::DiagnosticCode::Failed,
-                                       particles->getLastEffectError().empty() ? "VFX asset could not be loaded"
-                                                                              : particles->getLastEffectError(),
-                                       "uri");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                                                     particles->getLastEffectError().empty()
+                                                                         ? "VFX asset could not be loaded"
+                                                                         : particles->getLastEffectError(),
+                                                                     "uri"));
         applyWorldTransform(*effect, binding.value().spatial, pose.value());
         effect->start();
         ActiveEffect owned{std::move(effect), binding.value(), std::move(pose).takeValue()};
@@ -106,7 +106,8 @@ public:
                              const eve::action::ActionNotifyContext& context) override {
         const auto found = active_.find({context.executionId, block.itemId.format()});
         if (found == active_.end())
-            return actionFailure<void>(eve::DiagnosticCode::NotFound, "Active VFX state has no instance", "itemId");
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "Active VFX state has no instance", "itemId"));
         if (found->second.binding.spatial.mode != eve::action::ActionSpatialAttachmentMode::WorldTransformAtStart) {
             auto pose = resolvePose(found->second.binding.spatial, context);
             if (!pose) return eve::Result<void>::failure(pose.status());
@@ -122,8 +123,9 @@ public:
         const double duration = block.duration.seconds();
         if (duration > 0.0) {
             if (!std::isfinite(context.playbackRate) || context.playbackRate <= 0.0)
-                return actionFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                           "VFX playback rate must be positive and finite", "playbackRate");
+                return eve::Result<void>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                           "VFX playback rate must be positive and finite", "playbackRate"));
             const double externalRate = found->second.binding.playbackRateSynced ? context.playbackRate : 1.0;
             const float  stretch      = static_cast<float>(
                 (found->second.binding.clipEndTime - found->second.binding.clipStartTime) /
@@ -184,8 +186,8 @@ private:
             attachments = context.sourceAttachment;
         } else {
             if (spatial.targetIndex >= context.targets.size())
-                return actionFailure<eve::EntitySpatialPose>(eve::DiagnosticCode::NotFound,
-                                                             "VFX target index is unavailable", "targetIndex");
+                return eve::Result<eve::EntitySpatialPose>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::NotFound, "VFX target index is unavailable", "targetIndex"));
             handle = context.targets[spatial.targetIndex];
             if (spatial.targetIndex < context.targetAttachments.size())
                 attachments = context.targetAttachments[spatial.targetIndex];
@@ -198,8 +200,8 @@ private:
         }
         if (spatial.bone.empty()) return eve::Result<eve::EntitySpatialPose>::success(std::move(pose));
         if (!attachments)
-            return actionFailure<eve::EntitySpatialPose>(eve::DiagnosticCode::Unsupported,
-                                                         "VFX bone requires an attachment source", "bone");
+            return eve::Result<eve::EntitySpatialPose>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Unsupported, "VFX bone requires an attachment source", "bone"));
         auto point = attachments->get().sampleAttachmentPoint(
             spatial.bone, {static_cast<float>(spatial.positionOffset.x),
                            static_cast<float>(spatial.positionOffset.y),
@@ -372,6 +374,7 @@ private:
         constexpr float fixedStep = 1.0f / 60.0f;
         while (remaining > kTimeEpsilon) {
             const float step = static_cast<float>(std::min<double>(remaining, fixedStep));
+            effect.updateTimeline(step);
             for (int i = 0; i < effect.getEmitterCount(); ++i) {
                 auto* emitter = effect.getEmitter(i);
                 if (!emitter) continue;
@@ -389,15 +392,15 @@ private:
         const eve::action::ActionVfxBinding& binding, double targetTime) {
         auto* particles = eve::ModuleManager::getInstance<Particles>("Particles");
         if (!particles)
-            return actionFailure<std::unique_ptr<ParticleEffect>>(
-                eve::DiagnosticCode::NotFound, "VFX preview requires the Particles module", "particles");
+            return eve::Result<std::unique_ptr<ParticleEffect>>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::NotFound, "VFX preview requires the Particles module", "particles"));
         std::unique_ptr<ParticleEffect> effect(particles->newEffectFromFile(binding.uri));
         if (!effect)
-            return actionFailure<std::unique_ptr<ParticleEffect>>(
-                eve::DiagnosticCode::Failed,
-                particles->getLastEffectError().empty() ? "VFX preview asset could not be loaded"
-                                                        : particles->getLastEffectError(),
-                "uri");
+            return eve::Result<std::unique_ptr<ParticleEffect>>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                       particles->getLastEffectError().empty() ? "VFX preview asset could not be loaded"
+                                                                               : particles->getLastEffectError(),
+                                       "uri"));
         effect->setVisible(false);
         effect->setPosition(static_cast<float>(binding.spatial.positionOffset.x),
                             static_cast<float>(binding.spatial.positionOffset.y));
@@ -444,19 +447,19 @@ class ActionVfxDurationProvider final : public eve::action::IActionVfxDurationPr
 public:
     eve::Result<eve::Duration> naturalDuration(std::string_view uri) const override {
         if (uri.empty())
-            return actionFailure<eve::Duration>(eve::DiagnosticCode::InvalidArgument,
-                                                "VFX duration URI must be non-empty", "uri");
+            return eve::Result<eve::Duration>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "VFX duration URI must be non-empty", "uri"));
         auto* particles = eve::ModuleManager::getInstance<Particles>("Particles");
         if (!particles)
-            return actionFailure<eve::Duration>(eve::DiagnosticCode::NotFound,
-                                                "VFX duration requires the Particles module", "particles");
+            return eve::Result<eve::Duration>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::NotFound, "VFX duration requires the Particles module", "particles"));
         std::unique_ptr<ParticleEffect> effect(particles->newEffectFromFile(std::string(uri)));
         if (!effect)
-            return actionFailure<eve::Duration>(
+            return eve::Result<eve::Duration>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::NotFound,
                 particles->getLastEffectError().empty() ? "VFX duration resource could not be loaded"
                                                         : particles->getLastEffectError(),
-                "uri");
+                "uri"));
         return effect->naturalDuration();
     }
 };
@@ -471,6 +474,7 @@ void registerParticlesCapabilities() {
     eve::cap::provide<eve::action::IActionVfxDurationProvider>(&durationProvider);
     eve::cap::addListener<eve::action::IActionNotifyProvider>(&actionProvider);
     eve::cap::addListener<eve::action::IActionPreviewSinkProvider>(&actionProvider);
+    registerParticlesAttackVfxExecutor();
 }
 
 }  // namespace eve::particles

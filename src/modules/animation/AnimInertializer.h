@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include <memory>
 #include <span>
@@ -14,7 +15,7 @@ class AnimPose;
  * @thread Owner thread only; no callbacks or reentrancy. Explicit elapsed simulation
  * time makes repeated evaluation deterministic within floating-point tolerance.
  */
-class AnimInertializer {
+class EVENGINE_API_WORLD AnimInertializer {
 public:
     /** @brief Construct an empty, independently owned transition. */
     AnimInertializer();

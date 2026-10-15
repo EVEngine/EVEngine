@@ -12,7 +12,7 @@ namespace {
 template <typename T>
 Result<T> invalid(std::string message, std::string path) {
     return Result<T>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, message, path));
 }
 
 const Value* field(const Value& value, std::string_view name) {

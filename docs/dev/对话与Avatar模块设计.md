@@ -218,7 +218,7 @@ test/dialogue.cpp
 - `getLastPoolsError()` 返回首次错误；`clearPools / getPoolCount / getPoolId / hasPool` 用于池管理。
 
 ### .dnut 内容格式（增强 nut）
-- C++ 解析器 `src/modules/dialogue/DnutParser.cpp`：`dlg.loadPoolsFromDnut(source, path)` / `dlg.loadPoolsFromDnutFile(path)` 直接解析为池表并注册；错误经 `getLastPoolsError()` 读取（形如 `path:行: 信息`）。
+- C++ 解析器 `src/modules/dialogue/DnutParser.cpp`：pool 与 conversation 进入同一个 `DnutDocument`；产品只调用 `dialogueFlow.loadDnutChecked/loadDnutFileChecked`，任一编译、全库引用或 pool 校验失败都会回滚完整工作区。
 - 语法：`pool` 块、`when <条件> { ... }` 分组、`speaker: "文本"` / `- "文本"`（旁白）、属性 `weight / i18n / id / meta(...) / tags=[...]`（属性与台词同行）。
 - 条件语法糖 `mood == "happy" && hour >= 18` 编译为结构化 when 表；不引入第二套运行时。
 - 示例：`examples/dialogue/pools.dnut`；热重载走 `eve_asset_reload`（.dnut 变更时重新 runFile）。

@@ -14,12 +14,6 @@
 namespace eve::pixelworld_physics {
 namespace {
 
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(
-        code, std::move(message), std::move(path), {}, "pixelworld_physics"));
-}
-
 std::vector<FragmentCollisionRect> decompose(const eve::pixelworld::PixelFragment& fragment) {
     const int width = fragment.width, height = fragment.height;
     std::vector<std::uint8_t> consumed(std::size_t(width) * std::size_t(height));
@@ -125,9 +119,9 @@ eve::Result<std::vector<TerrainCollisionContour>> extractTerrainContours(
     const eve::pixelworld::PixelWorld& pixelWorld, int chunkX, int chunkY,
     std::uint32_t maximumVertices) {
     if (maximumVertices < 2)
-        return failure<std::vector<TerrainCollisionContour>>(
-            eve::DiagnosticCode::InvalidArgument, "maximumVertices must be at least two",
-            "maximumVertices");
+        return eve::Result<std::vector<TerrainCollisionContour>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "maximumVertices must be at least two",
+                                   "maximumVertices", {}, "pixelworld_physics"));
     constexpr int size = eve::pixelworld::kPixelChunkSize;
     const std::int64_t wideOriginX = std::int64_t(chunkX) * size;
     const std::int64_t wideOriginY = std::int64_t(chunkY) * size;
@@ -135,9 +129,9 @@ eve::Result<std::vector<TerrainCollisionContour>> extractTerrainContours(
         wideOriginX + size > std::numeric_limits<int>::max() ||
         wideOriginY < std::numeric_limits<int>::min() ||
         wideOriginY + size > std::numeric_limits<int>::max())
-        return failure<std::vector<TerrainCollisionContour>>(
-            eve::DiagnosticCode::InvalidArgument, "Chunk coordinates exceed world coordinate range",
-            "chunk");
+        return eve::Result<std::vector<TerrainCollisionContour>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "Chunk coordinates exceed world coordinate range", "chunk", {},
+            "pixelworld_physics"));
     const int originX = int(wideOriginX), originY = int(wideOriginY);
     const auto solid = [&](int localX, int localY) {
         return pixelWorld.isSolidMaterial(
@@ -204,9 +198,9 @@ eve::Result<std::vector<TerrainCollisionContour>> extractTerrainContours(
         if (points.size() < (loop ? 3U : 2U)) continue;
         vertexCount += points.size();
         if (vertexCount > maximumVertices)
-            return failure<std::vector<TerrainCollisionContour>>(
-                eve::DiagnosticCode::PreconditionViolation,
-                "terrain contour exceeds maximumVertices", "maximumVertices");
+            return eve::Result<std::vector<TerrainCollisionContour>>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::PreconditionViolation, "terrain contour exceeds maximumVertices",
+                "maximumVertices", {}, "pixelworld_physics"));
         TerrainCollisionContour contour;
         contour.loop = loop;
         contour.vertices.reserve(points.size() * 2);
@@ -224,12 +218,14 @@ eve::Result<PixelTerrainContact> probeTerrainCircle(
     std::uint32_t maximumCells) {
     if (!std::isfinite(centerX) || !std::isfinite(centerY) || !std::isfinite(radius) ||
         radius <= 0.f || maximumCells == 0)
-        return failure<PixelTerrainContact>(eve::DiagnosticCode::InvalidArgument,
-                                            "circle probe parameters are invalid", "probe");
+        return eve::Result<PixelTerrainContact>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                "circle probe parameters are invalid",
+                                                                                "probe", {}, "pixelworld_physics"));
     if (!validCellBounds(centerX - radius, centerX + radius) ||
         !validCellBounds(centerY - radius, centerY + radius))
-        return failure<PixelTerrainContact>(eve::DiagnosticCode::InvalidArgument,
-                                            "circle probe exceeds world coordinate range", "probe");
+        return eve::Result<PixelTerrainContact>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "circle probe exceeds world coordinate range",
+                                   "probe", {}, "pixelworld_physics"));
     const int minX = int(std::floor(centerX - radius));
     const int maxX = int(std::floor(centerX + radius));
     const int minY = int(std::floor(centerY - radius));
@@ -237,8 +233,9 @@ eve::Result<PixelTerrainContact> probeTerrainCircle(
     const std::uint64_t width = std::uint64_t(std::int64_t(maxX) - minX + 1);
     const std::uint64_t height = std::uint64_t(std::int64_t(maxY) - minY + 1);
     if (width > maximumCells || height > maximumCells || width * height > maximumCells)
-        return failure<PixelTerrainContact>(eve::DiagnosticCode::PreconditionViolation,
-                                            "circle probe exceeds maximumCells", "maximumCells");
+        return eve::Result<PixelTerrainContact>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "circle probe exceeds maximumCells",
+                                   "maximumCells", {}, "pixelworld_physics"));
     PixelTerrainContact best;
     for (int y = minY; y <= maxY; ++y)
         for (int x = minX; x <= maxX; ++x) {
@@ -282,14 +279,16 @@ eve::Result<PixelTerrainContact> sweepTerrainCircle(
     float endY, float radius, std::uint32_t maximumCells) {
     if (!std::isfinite(startX) || !std::isfinite(startY) || !std::isfinite(endX) ||
         !std::isfinite(endY) || !std::isfinite(radius) || radius <= 0.f || maximumCells == 0)
-        return failure<PixelTerrainContact>(eve::DiagnosticCode::InvalidArgument,
-                                            "circle sweep parameters are invalid", "sweep");
+        return eve::Result<PixelTerrainContact>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                "circle sweep parameters are invalid",
+                                                                                "sweep", {}, "pixelworld_physics"));
     if (!validCellBounds(std::min(startX, endX) - radius,
                          std::max(startX, endX) + radius) ||
         !validCellBounds(std::min(startY, endY) - radius,
                          std::max(startY, endY) + radius))
-        return failure<PixelTerrainContact>(eve::DiagnosticCode::InvalidArgument,
-                                            "circle sweep exceeds world coordinate range", "sweep");
+        return eve::Result<PixelTerrainContact>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "circle sweep exceeds world coordinate range",
+                                   "sweep", {}, "pixelworld_physics"));
     auto initial = probeTerrainCircle(pixelWorld, startX, startY, radius, maximumCells);
     if (!initial.ok()) return initial;
     if (initial.value().hit) return initial;
@@ -300,8 +299,9 @@ eve::Result<PixelTerrainContact> sweepTerrainCircle(
     const std::uint64_t width = std::uint64_t(std::int64_t(maxX) - minX + 1);
     const std::uint64_t height = std::uint64_t(std::int64_t(maxY) - minY + 1);
     if (width > maximumCells || height > maximumCells || width * height > maximumCells)
-        return failure<PixelTerrainContact>(eve::DiagnosticCode::PreconditionViolation,
-                                            "circle sweep exceeds maximumCells", "maximumCells");
+        return eve::Result<PixelTerrainContact>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "circle sweep exceeds maximumCells",
+                                   "maximumCells", {}, "pixelworld_physics"));
     const float deltaX = endX - startX, deltaY = endY - startY;
     PixelTerrainContact best;
     best.fraction = 1.f;
@@ -398,18 +398,21 @@ eve::Result<std::unique_ptr<PixelFragmentBody>> PixelFragmentBody::create(
     eve::physics::World& world, eve::pixelworld::PixelFragment fragment, FragmentBodyConfig config) {
     if (fragment.width <= 0 || fragment.height <= 0 || fragment.id == 0 ||
         std::uint64_t(fragment.width) * std::uint64_t(fragment.height) != fragment.cells.size())
-        return failure<std::unique_ptr<PixelFragmentBody>>(
-            eve::DiagnosticCode::InvalidArgument, "fragment bitmap metadata is invalid", "fragment");
+        return eve::Result<std::unique_ptr<PixelFragmentBody>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "fragment bitmap metadata is invalid",
+                                   "fragment", {}, "pixelworld_physics"));
     if (!std::isfinite(config.density) || config.density <= 0.f ||
         !std::isfinite(config.friction) || config.friction < 0.f ||
         !std::isfinite(config.restitution) || config.restitution < 0.f || config.maximumFixtures == 0)
-        return failure<std::unique_ptr<PixelFragmentBody>>(
-            eve::DiagnosticCode::InvalidArgument, "fragment body config is invalid", "config");
+        return eve::Result<std::unique_ptr<PixelFragmentBody>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "fragment body config is invalid", "config",
+                                   {}, "pixelworld_physics"));
     auto rectangles = decompose(fragment);
     if (rectangles.empty() || rectangles.size() > config.maximumFixtures)
-        return failure<std::unique_ptr<PixelFragmentBody>>(
-            eve::DiagnosticCode::PreconditionViolation,
-            "fragment collision decomposition is empty or exceeds maximumFixtures", "maximumFixtures");
+        return eve::Result<std::unique_ptr<PixelFragmentBody>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                   "fragment collision decomposition is empty or exceeds maximumFixtures",
+                                   "maximumFixtures", {}, "pixelworld_physics"));
 
     eve::physics::Body* body = nullptr;
     try {
@@ -432,9 +435,9 @@ eve::Result<std::unique_ptr<PixelFragmentBody>> PixelFragmentBody::create(
                 std::move(fragment), std::move(link).takeValue(), std::move(rectangles))));
     } catch (const std::exception& error) {
         if (body && body->isValid()) body->destroy();
-        return failure<std::unique_ptr<PixelFragmentBody>>(
-            eve::DiagnosticCode::Failed, std::string("failed to create fragment fixtures: ") + error.what(),
-            "physics");
+        return eve::Result<std::unique_ptr<PixelFragmentBody>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, std::string("failed to create fragment fixtures: ") + error.what(), "physics",
+            {}, "pixelworld_physics"));
     }
 }
 
@@ -449,8 +452,9 @@ bool PixelFragmentBody::isRasterized() const noexcept { return rasterized_; }
 eve::Result<FragmentSettleReceipt> PixelFragmentBody::settleIfSleeping(
     eve::physics::World& physicsWorld, eve::pixelworld::PixelWorld& pixelWorld) {
     if (rasterized_ || physicsReleased_)
-        return failure<FragmentSettleReceipt>(eve::DiagnosticCode::PreconditionViolation,
-                                              "fragment body is no longer active", "state");
+        return eve::Result<FragmentSettleReceipt>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "fragment body is no longer active",
+                                   "state", {}, "pixelworld_physics"));
     auto resolved = link_.resolve(physicsWorld);
     if (!resolved.ok()) return eve::Result<FragmentSettleReceipt>::failure(resolved.status());
     eve::physics::Body* body = resolved.value();
@@ -500,16 +504,16 @@ eve::Result<TerrainCollisionSyncReceipt> PixelTerrainCollisionCache::sync(
     eve::physics::World& physicsWorld, const eve::pixelworld::PixelWorld& pixelWorld,
     std::uint32_t maximumFixturesPerChunk) {
     if (maximumFixturesPerChunk == 0)
-        return failure<TerrainCollisionSyncReceipt>(eve::DiagnosticCode::InvalidArgument,
-                                                    "maximumFixturesPerChunk must be positive",
-                                                    "maximumFixturesPerChunk");
+        return eve::Result<TerrainCollisionSyncReceipt>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "maximumFixturesPerChunk must be positive",
+                                   "maximumFixturesPerChunk", {}, "pixelworld_physics"));
     const bool samePixelWorld = impl_->pixelWorld == pixelWorld.worldLink();
     const bool samePhysicsWorld = impl_->physicsWorld == physicsWorld.runtimeHandle();
     if (!samePhysicsWorld && !impl_->bodies.empty() && !impl_->physicsLifetime.expired())
-        return failure<TerrainCollisionSyncReceipt>(
+        return eve::Result<TerrainCollisionSyncReceipt>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Conflict,
-            "terrain collision cache must be cleared from its live physics world before rebinding",
-            "physicsWorld");
+            "terrain collision cache must be cleared from its live physics world before rebinding", "physicsWorld", {},
+            "pixelworld_physics"));
     const std::uint64_t since = (samePixelWorld && samePhysicsWorld) ? impl_->revision : 0;
     const auto changed = pixelWorld.snapshotChangedChunks(since);
     std::set<Impl::Coord> rebuildCoords;
@@ -546,9 +550,9 @@ eve::Result<TerrainCollisionSyncReceipt> PixelTerrainCollisionCache::sync(
         auto contours = std::move(extracted).takeValue();
         if (contours.size() > maximumFixturesPerChunk) {
             destroyStaged();
-            return failure<TerrainCollisionSyncReceipt>(
-                eve::DiagnosticCode::PreconditionViolation,
-                "terrain Chunk contours exceed maximumFixturesPerChunk", "chunk");
+            return eve::Result<TerrainCollisionSyncReceipt>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::PreconditionViolation, "terrain Chunk contours exceed maximumFixturesPerChunk",
+                "chunk", {}, "pixelworld_physics"));
         }
         if (contours.empty()) {
             staged.push_back({coord, {}, 0});
@@ -572,9 +576,9 @@ eve::Result<TerrainCollisionSyncReceipt> PixelTerrainCollisionCache::sync(
         } catch (const std::exception& error) {
             if (body && body->isValid()) body->destroy();
             destroyStaged();
-            return failure<TerrainCollisionSyncReceipt>(
-                eve::DiagnosticCode::Failed,
-                std::string("failed to stage terrain collision body: ") + error.what(), "physics");
+            return eve::Result<TerrainCollisionSyncReceipt>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, std::string("failed to stage terrain collision body: ") + error.what(),
+                "physics", {}, "pixelworld_physics"));
         }
     }
 
@@ -614,8 +618,9 @@ eve::Result<TerrainCollisionSyncReceipt> PixelTerrainCollisionCache::sync(
 
 eve::Result<void> PixelTerrainCollisionCache::clearPhysics(eve::physics::World& physicsWorld) {
     if (impl_->physicsWorld.isValid() && impl_->physicsWorld != physicsWorld.runtimeHandle())
-        return failure<void>(eve::DiagnosticCode::StaleHandle,
-                             "terrain collision cache belongs to another physics world", "physicsWorld");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "terrain collision cache belongs to another physics world",
+            "physicsWorld", {}, "pixelworld_physics"));
     for (const auto& [coord, link] : impl_->bodies) {
         (void)coord;
         auto resolved = link.resolve(physicsWorld);

@@ -32,11 +32,13 @@ struct ScriptErrorContext;
  */
 inline std::string reflectedFloatString(double value) {
     char buf[64];
+    /** @brief Snprintf. */
     std::snprintf(buf, sizeof(buf), "%.*g",
                   std::numeric_limits<double>::max_digits10, value);
     return buf;
 }
 
+/** @brief ScriptState public API. */
 enum class ScriptState {
     Compiled,
     Running,
@@ -46,6 +48,7 @@ enum class ScriptState {
     Failed,
 };
 
+/** @brief ScriptStage public API. */
 enum class ScriptStage {
     Compile,
     Execute,
@@ -55,8 +58,9 @@ enum class ScriptStage {
 };
 
 /** @brief Exception raised at the public Runtime boundary. */
-class EVENGINE_API ScriptException : public std::runtime_error {
+class EVENGINE_API_FOUNDATION ScriptException : public std::runtime_error {
 public:
+    /** @brief Script exception. */
     ScriptException(ScriptStage stage, std::string source, uint64_t scriptId,
                     const std::string& message);
     /**
@@ -69,8 +73,11 @@ public:
     ScriptException(ScriptStage stage, std::string source, uint64_t scriptId,
                     const script::ScriptErrorContext& context);
 
+    /** @brief Stage. */
     ScriptStage stage() const noexcept { return stage_; }
+    /** @brief Source. */
     const std::string& source() const noexcept { return source_; }
+    /** @brief Script id. */
     uint64_t scriptId() const noexcept { return script_id_; }
     /** @brief True when the exception carries a script source line. */
     bool hasLocation() const noexcept { return line_ > 0; }
@@ -96,23 +103,24 @@ private:
     bool reported_ = false;
 };
 
-struct EVENGINE_API ReflectedAttribute {
+/** @brief EVENGINE_API_FOUNDATION_INLINE public API. */
+struct EVENGINE_API_FOUNDATION_INLINE ReflectedAttribute {
     std::string name;
     ssq::Type type = ssq::Type::NULLPTR;
     std::string value;
 };
 
 /** @brief Runtime value kind read from a live script instance slot. */
-enum class EVENGINE_API ReflectedValueKind : uint8_t {
-    None = 0,     /**< @brief Missing / null slot. */
-    Bool = 1,     /**< @brief OT_BOOL. */
-    Integer = 2,  /**< @brief OT_INTEGER. */
-    Float = 3,    /**< @brief OT_FLOAT. */
-    String = 4,   /**< @brief OT_STRING. */
-    Array = 5,    /**< @brief OT_ARRAY (not yet editable). */
-    Table = 6,    /**< @brief OT_TABLE (not yet editable). */
-    Instance = 7, /**< @brief Nested script instance (not yet editable). */
-    Other = 8,    /**< @brief Any other slot kind. */
+enum class EVENGINE_API_FOUNDATION ReflectedValueKind : uint8_t {
+    None     = 0, /**< @brief Missing / null slot. */
+    Bool     = 1, /**< @brief OT_BOOL. */
+    Integer  = 2, /**< @brief OT_INTEGER. */
+    Float    = 3, /**< @brief OT_FLOAT. */
+    String   = 4, /**< @brief OT_STRING. */
+    Array    = 5, /**< @brief OT_ARRAY (editable via Runtime array APIs / ReflectedPropertyModel). */
+    Table    = 6, /**< @brief OT_TABLE (editable via Runtime table APIs / ReflectedPropertyModel). */
+    Instance = 7, /**< @brief Nested script instance (navigate; ObjectRef in property schema). */
+    Other    = 8, /**< @brief Any other slot kind. */
 };
 
 /**
@@ -121,7 +129,7 @@ enum class EVENGINE_API ReflectedValueKind : uint8_t {
  * `writeProperty()` keeps the script slot's own type, so the numeric member
  * used to build the value only matters when the slot is null.
  */
-struct EVENGINE_API ReflectedValue {
+struct EVENGINE_API_FOUNDATION_INLINE ReflectedValue {
     ReflectedValueKind kind = ReflectedValueKind::None;
     bool boolean = false;
     int64_t integer = 0;
@@ -130,13 +138,18 @@ struct EVENGINE_API ReflectedValue {
 
     /** @brief True when the slot exists and is non-null. */
     bool empty() const noexcept { return kind == ReflectedValueKind::None; }
+    /** @brief As bool. */
     bool asBool() const noexcept { return boolean; }
+    /** @brief As int. */
     int64_t asInt() const noexcept { return integer; }
+    /** @brief As float. */
     double asFloat() const noexcept { return floating; }
+    /** @brief As string. */
     const std::string& asString() const noexcept { return text; }
 };
 
-struct EVENGINE_API ReflectedMember {
+/** @brief EVENGINE_API_FOUNDATION public API. */
+struct EVENGINE_API_FOUNDATION ReflectedMember {
     std::string name;
     ssq::Type type = ssq::Type::NULLPTR;
     bool method = false;
@@ -155,14 +168,16 @@ struct EVENGINE_API ReflectedMember {
     std::vector<std::string> attrOptions(const std::string& name) const;
 };
 
-struct EVENGINE_API ReflectedClass {
+/** @brief EVENGINE_API_FOUNDATION_INLINE public API. */
+struct EVENGINE_API_FOUNDATION_INLINE ReflectedClass {
     std::string name;
     std::string source;
     std::string base;
     std::vector<ReflectedMember> members;
 };
 
-struct EVENGINE_API ScriptInfo {
+/** @brief EVENGINE_API_FOUNDATION_INLINE public API. */
+struct EVENGINE_API_FOUNDATION_INLINE ScriptInfo {
     uint64_t id = 0;
     std::string source;
     ScriptState state = ScriptState::Compiled;
@@ -170,23 +185,30 @@ struct EVENGINE_API ScriptInfo {
     std::string error;
 };
 
-class EVENGINE_API Runtime {
+/** @brief EVENGINE_API_FOUNDATION public API. */
+class EVENGINE_API_FOUNDATION Runtime {
 public:
     using ScriptId = uint64_t;
     using ErrorHandler = std::function<void(const ScriptException&)>;
     using LifecycleHandler = std::function<void(const ScriptInfo&)>;
 
     /** @brief Restores the native Squirrel stack when a binding operation leaves scope. */
-    class EVENGINE_API StackGuard {
+    class EVENGINE_API_FOUNDATION StackGuard {
     public:
+        /** @brief Stack guard. */
         explicit StackGuard(Runtime& runtime) noexcept;
+        /** @brief Stack guard. */
         ~StackGuard();
+        /** @brief Stack guard. */
         StackGuard(StackGuard&& other) noexcept;
+        /** @brief Operator =. */
         StackGuard& operator=(StackGuard&& other) noexcept;
         StackGuard(const StackGuard&) = delete;
         StackGuard& operator=(const StackGuard&) = delete;
 
+        /** @brief Top. */
         int top() const noexcept { return static_cast<int>(top_); }
+        /** @brief Dismiss. */
         void dismiss() noexcept { vm_ = nullptr; }
 
     private:
@@ -195,10 +217,13 @@ public:
     };
 
     /** @brief Pushes this Runtime on the current thread's runtime stack. */
-    class EVENGINE_API Scope {
+    class EVENGINE_API_FOUNDATION Scope {
     public:
+        /** @brief Scope. */
         explicit Scope(Runtime& runtime);
+        /** @brief Scope. */
         ~Scope();
+        /** @brief Scope. */
         Scope(Scope&& other) noexcept;
         Scope& operator=(Scope&& other) = delete;
         Scope(const Scope&) = delete;

@@ -1,5 +1,7 @@
 # Result 检查与不得丢弃返回值规范
 
+[English](../en/dev/RESULT-CONTRACTS.md)
+
 日期：2026-08-26
 状态：已确认的架构要求
 
@@ -121,6 +123,32 @@ Result(Result&& other) noexcept {
 如果未来确实需要可复制 Result，不能给每个副本独立 `observed_`，否则会产生误报；应让 Debug 副本共享 observation token，或显式 `cloneValue()` 生成不带检查责任的普通数据。默认不要为便利开放复制。
 
 移动赋值前必须处理目标对象尚未消费的责任；Debug 下若目标 `mustObserve_ && !observed_`，应立即断言，不能用另一个 Result 覆盖并静默丢失。
+
+## 多个 Result 的组合条件（短路陷阱）
+
+把多个 Result 写进同一个 `||` 条件里会**漏掉检查**，因为 `||` 在第一个为真的操作数处停止求值：
+
+```cpp
+// 反例：a 失败时 b、c 从未被观察
+if (!a || !b || !c) return fail<T>(DiagnosticCode::ParseError, "invalid fields", path);
+```
+
+未观察的 Result 在析构时会断言；如果一次作用域退出里有**两个**未观察的 Result，第二个析构断言发生在第一个异常的栈展开过程中，于是 `std::terminate` → `abort`（Windows 退出码 3），**既没有断言输出也没有诊断**，看上去像无解释崩溃。只有一个时也会把本应返回的结构化失败变成一个内部断言。
+
+正确写法是**先观察全部，再决定返回哪个**：
+
+```cpp
+// 正例 A：引擎提供的折叠，观察所有实参且不短路
+if (!eve::everyResultValid(a, b, c)) return fail<T>(DiagnosticCode::ParseError, "invalid fields", path);
+
+// 正例 B：需要保留"第一个失败者的 status"时，逐个观察再逐个返回
+const bool aOk = a.ok();
+const bool bOk = b.ok();
+if (!aOk) return Result<T>::failure(a.status());
+if (!bOk) return Result<T>::failure(b.status());
+```
+
+原始指针/`std::optional`/`size()` 等非 Result 操作数可以继续留在 `||` 链里，但**不能**与未观察的 Result 混在同一个短路链中。
 
 ## API 返回值分级
 
@@ -270,6 +298,7 @@ stage/create API。Procgen 不再提供 `buildArtifactChecked`、
 - [ ] 从函数多层返回/转发后最终消费者承担责任。
 - [ ] Release 构建不包含 observation 字段和分支。
 - [ ] 绑定层投影后 C++ Result 不产生未检查断言。
+- [ ] 组合条件用 `everyResultValid` 或逐个观察，不用 `!a || !b` 短路链（见“多个 Result 的组合条件”）。
 
 ## 迁移顺序
 
@@ -288,10 +317,12 @@ stage/create API。Procgen 不再提供 `buildArtifactChecked`、
 
 Result 类型本身使用 class-level `[[nodiscard]]`，因此所有返回以下类型的 API 自动受约束：
 
-- 未来公共 `Result<T>` / `Result<void>`
-- 迁移后的 `EditorResult<T>`
-- `presentation::WriteResult`
-- `statepatch::PatchResult` 或其公共 Result 替代
+- 公共 `Result<T>` / `Result<void>`（含 `IPropertyAccess::write` / `validatePropertyValue`）
+- 迁移后的 `EditorResult<T>`（`editing::Result` 别名）
+- `Store::commit` → `Result<PatchCommitInfo>`（`PatchResult` 仅脚本兼容投影）
+- `IRenderCapture::savePng` → `Result<CaptureImageInfo>`；`entityIdMaskPng` / `gbufferPng` → `Result<void>`
+- `ISceneQuery::getNode` / `getNodeIn` → `Result<SceneNodeInfo>`；`setNodeTransform` / `setNodeVisible` → `Result<void>`
+- `IProcgenQuery::generateMap` / `buildMesh` → `Result<std::string>`
 - ConditionResult、SettlementResult、TransferResult、CompileResult 等包含状态/诊断的结果
 
 现有 Editor API 全部属于这一类，包括但不限于：
@@ -309,7 +340,7 @@ Result 类型本身使用 class-level `[[nodiscard]]`，因此所有返回以下
 
 ### 必须标记：事务、异步、订阅和生命周期 token
 
-- `presentation::IPropertyModel::subscribe`
+- `property_access::IPropertyAccess::subscribe`
 - `rx::Observable::subscribe` 的全部重载
 - 后续所有 GameEvent、Capability、Asset reload listener 的 Subscription 返回值
 - `EditorTaskService::submit` 返回的 TaskId/TaskHandle

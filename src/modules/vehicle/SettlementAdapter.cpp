@@ -11,16 +11,6 @@
 namespace eve::vehicle {
 namespace {
 
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
-template <class T>
-eve::Result<T> failure(eve::Status status) {
-    return eve::Result<T>::failure(std::move(status));
-}
-
 eve::Result<void> success(eve::StatusCode code = eve::StatusCode::Ok) {
     return eve::Result<void>::success(eve::Status::success(code));
 }
@@ -71,23 +61,26 @@ bool VehicleSettlementAdapter::isHealing(const settlement::SettlementContext& co
 
 eve::Result<void> VehicleSettlementAdapter::validate(settlement::SettlementContext& context) {
     if (!(context.request().target == targetRef_))
-        return failure<void>(eve::DiagnosticCode::Conflict,
-                             "Vehicle settlement request target does not match adapter target", "target");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                   "Vehicle settlement request target does not match adapter target", "target"));
     if (!isDamage(context) && !isHealing(context))
-        return failure<void>(eve::DiagnosticCode::Unsupported,
-                             "Vehicle settlement adapter supports damage and healing kinds only", "kind");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Unsupported,
+                                   "Vehicle settlement adapter supports damage and healing kinds only", "kind"));
     if (vehicle_.health().operator->() == nullptr || vehicle_.stateFlags().operator->() == nullptr)
-        return failure<void>(eve::DiagnosticCode::InvariantViolation,
-                             "Vehicle settlement requires health and state components", "vehicle");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                   "Vehicle settlement requires health and state components", "vehicle"));
     auto hpResult = VehicleAttributeAdapter::read(vehicle_, VehicleAttributeAdapter::healthAttribute);
-    if (!hpResult) return failure<void>(hpResult.status());
+    if (!hpResult) return eve::Result<void>::failure(hpResult.status());
     auto maxHpResult = VehicleAttributeAdapter::read(vehicle_, VehicleAttributeAdapter::maxHealthAttribute);
-    if (!maxHpResult) return failure<void>(maxHpResult.status());
+    if (!maxHpResult) return eve::Result<void>::failure(maxHpResult.status());
     const double hp    = hpResult.value();
     const double maxHp = maxHpResult.value();
     if (!std::isfinite(hp) || !std::isfinite(maxHp) || hp < 0.0 || maxHp < 0.0 || hp > maxHp)
-        return failure<void>(eve::DiagnosticCode::InvariantViolation,
-                             "Vehicle health component is outside validated bounds", "health");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvariantViolation, "Vehicle health component is outside validated bounds", "health"));
     context.setStageDetail("policy", "vehicle");
     context.setStageDetail("health_component", "VehicleAttributeAdapter::health");
     return eve::Result<void>::success();
@@ -96,26 +89,28 @@ eve::Result<void> VehicleSettlementAdapter::validate(settlement::SettlementConte
 eve::Result<void> VehicleSettlementAdapter::sourceModifiers(settlement::SettlementContext& context) {
     double multiplier = numberValue(contextValue(context, "source_multiplier")).value_or(1.0);
     if (!std::isfinite(multiplier) || multiplier < 0.0)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "Vehicle source multiplier must be finite and non-negative", "source_multiplier");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "Vehicle source multiplier must be finite and non-negative", "source_multiplier"));
     auto       scaled   = context.setMagnitude(context.magnitude() * multiplier);
     const bool scaledOk = scaled.ok();
     if (!scaledOk) {
         const auto status = scaled.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
 
     const bool   critical           = boolValue(contextValue(context, "critical")).value_or(false);
     const double criticalMultiplier = numberValue(contextValue(context, "critical_multiplier")).value_or(1.0);
     if (!std::isfinite(criticalMultiplier) || criticalMultiplier < 1.0)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "Vehicle critical multiplier must be finite and at least one", "critical_multiplier");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "Vehicle critical multiplier must be finite and at least one",
+            "critical_multiplier"));
     if (critical) {
         auto       criticalScaled   = context.setMagnitude(context.magnitude() * criticalMultiplier);
         const bool criticalScaledOk = criticalScaled.ok();
         if (!criticalScaledOk) {
             const auto status = criticalScaled.status();
-            return failure<void>(status);
+            return eve::Result<void>::failure(status);
         }
     }
     context.setCritical(critical);
@@ -141,8 +136,8 @@ eve::Result<void> VehicleSettlementAdapter::armorShield(settlement::SettlementCo
         for (const auto& armor : vehicle_.definition()->def->armorZones) {
             if (armor.name != zone) continue;
             if (!std::isfinite(armor.mult) || armor.mult < 0.0)
-                return failure<void>(eve::DiagnosticCode::InvariantViolation,
-                                     "Vehicle armor-zone multiplier is invalid", "armor_zone");
+                return eve::Result<void>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvariantViolation, "Vehicle armor-zone multiplier is invalid", "armor_zone"));
             zoneMultiplier = armor.mult;
             break;
         }
@@ -157,11 +152,11 @@ eve::Result<void> VehicleSettlementAdapter::armorShield(settlement::SettlementCo
     zoneMultiplier *= 0.5 + 0.5 * incidence;
 
     auto armorResult = VehicleAttributeAdapter::read(vehicle_, VehicleAttributeAdapter::armorAttribute);
-    if (!armorResult) return failure<void>(armorResult.status());
+    if (!armorResult) return eve::Result<void>::failure(armorResult.status());
     const double armor = armorResult.value();
     if (!std::isfinite(armor) || armor < 0.0)
-        return failure<void>(eve::DiagnosticCode::InvariantViolation,
-                             "Vehicle armor attribute is outside validated bounds", "armor");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvariantViolation, "Vehicle armor attribute is outside validated bounds", "armor"));
     const double armorFactor = armor == 0.0 ? 1.0 : 100.0 / (100.0 + armor);
     zoneMultiplier *= armorFactor;
 
@@ -170,13 +165,13 @@ eve::Result<void> VehicleSettlementAdapter::armorShield(settlement::SettlementCo
     const bool   changedOk = changed.ok();
     if (!changedOk) {
         const auto status = changed.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     auto       resisted   = context.addResisted(before - context.magnitude());
     const bool resistedOk = resisted.ok();
     if (!resistedOk) {
         const auto status = resisted.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     context.setStageDetail("armor_zone", zone);
     context.setStageDetail("zone_multiplier", zoneMultiplier);
@@ -190,9 +185,9 @@ eve::Result<void> VehicleSettlementAdapter::armorShield(settlement::SettlementCo
 
 eve::Result<void> VehicleSettlementAdapter::clamp(settlement::SettlementContext& context) {
     auto hpResult = VehicleAttributeAdapter::read(vehicle_, VehicleAttributeAdapter::healthAttribute);
-    if (!hpResult) return failure<void>(hpResult.status());
+    if (!hpResult) return eve::Result<void>::failure(hpResult.status());
     auto maxHpResult = VehicleAttributeAdapter::read(vehicle_, VehicleAttributeAdapter::maxHealthAttribute);
-    if (!maxHpResult) return failure<void>(maxHpResult.status());
+    if (!maxHpResult) return eve::Result<void>::failure(maxHpResult.status());
     const double hp           = hpResult.value();
     const double maxHp        = maxHpResult.value();
     const double bound        = isDamage(context) ? hp : maxHp - hp;
@@ -200,7 +195,7 @@ eve::Result<void> VehicleSettlementAdapter::clamp(settlement::SettlementContext&
     const bool   configuredOk = configured.ok();
     if (!configuredOk) {
         const auto status = configured.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     context.setStageDetail("maximum", bound);
     return eve::Result<void>::success();
@@ -209,19 +204,19 @@ eve::Result<void> VehicleSettlementAdapter::clamp(settlement::SettlementContext&
 eve::Result<settlement::PreparedApply> VehicleSettlementAdapter::prepareApply(
     const settlement::SettlementContext& context) {
     auto hpResult = VehicleAttributeAdapter::read(vehicle_, VehicleAttributeAdapter::healthAttribute);
-    if (!hpResult) return failure<settlement::PreparedApply>(hpResult.status());
+    if (!hpResult) return eve::Result<settlement::PreparedApply>::failure(hpResult.status());
     auto maxHpResult = VehicleAttributeAdapter::read(vehicle_, VehicleAttributeAdapter::maxHealthAttribute);
-    if (!maxHpResult) return failure<settlement::PreparedApply>(maxHpResult.status());
+    if (!maxHpResult) return eve::Result<settlement::PreparedApply>::failure(maxHpResult.status());
     const double hp     = hpResult.value();
     const double maxHp  = maxHpResult.value();
     const double nextHp = isDamage(context) ? hp - context.magnitude() : hp + context.magnitude();
     if (!std::isfinite(nextHp) || nextHp < 0.0 || nextHp > maxHp)
-        return failure<settlement::PreparedApply>(eve::DiagnosticCode::InvariantViolation,
-                                                  "Vehicle settlement candidate health is outside its validated bounds",
-                                                  "health");
+        return eve::Result<settlement::PreparedApply>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                   "Vehicle settlement candidate health is outside its validated bounds", "health"));
 
     auto beforeSnapshotResult = VehicleAttributeAdapter::snapshot(vehicle_);
-    if (!beforeSnapshotResult) return failure<settlement::PreparedApply>(beforeSnapshotResult.status());
+    if (!beforeSnapshotResult) return eve::Result<settlement::PreparedApply>::failure(beforeSnapshotResult.status());
     auto beforeSnapshot = std::move(beforeSnapshotResult).takeValue();
 
     struct Pending {

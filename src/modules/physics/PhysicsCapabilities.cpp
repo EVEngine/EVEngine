@@ -6,6 +6,7 @@
 #include "physics/Physics.h"
 #include "physics/TargetingLineOfSightAdapter.h"
 #include "physics/World.h"
+#include "sensing/LineOfSightRouter.h"
 #include "physics/World3D.h"
 
 #include <algorithm>
@@ -160,7 +161,16 @@ void registerPhysicsCapabilities() {
     eve::cap::provide<eve::IPhysicsQuery>(&impl);
     eve::cap::provide<eve::IProcgenWorldQuery>(&procgenWorldQuery);
     eve::cap::provide<eve::ICameraObstructionQuery>(&cameraObstructionQuery());
-    eve::cap::provide<eve::sensing::ILineOfSightQuery>(&targetingLineOfSightAdapter());
+    // Claim World3D through the sensing router rather than owning the single-slot
+    // `ILineOfSightQuery` capability: a grid board can then claim its own space without the two
+    // providers replacing each other by load order. `ensureLineOfSightRouter` reports Conflict
+    // when some other provider already holds the capability; that registration is left alone on
+    // purpose, so this adapter simply does not take part and the project keeps its own provider.
+    auto router = eve::sensing::ensureLineOfSightRouter();
+    if (router)
+        router.value()
+            ->addProvider(eve::sensing::CoordinateSpace::World3D, &targetingLineOfSightAdapter())
+            .ignore("physics line-of-sight space claim was refused");
     registerPhysicsArtifactProvider();
 }
 

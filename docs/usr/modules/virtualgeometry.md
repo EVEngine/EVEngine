@@ -40,7 +40,7 @@ function eve_render() {
 `resolve()` 返回 `ByteData`（簇三角形数据），可经 `gpgpu` 或 `graphics` 管线
 上传绘制；`isReady()` 为 true 时才可 resolve。
 
-## API 快查
+## 绑定与行为说明
 
 ### `VirtualGeometry`（模块）
 
@@ -50,7 +50,6 @@ function eve_render() {
 ### `VirtualGeometryRenderer`
 
 - `buildIcosphere(subdivision)`。
-- `setViewport(w, h)`、`setCameraSimple(ex,ey,ez, tx,ty,tz, fovDeg)`、
   `setModelYaw(radians)`。
 - `update()`、`resolve()` → ByteData、`isReady()`。
 - 统计：`getViewWidth` / `getViewHeight` / `getClusterCount` / `getVisibleCount` /
@@ -58,6 +57,7 @@ function eve_render() {
 
 ## 生命周期
 
-- Vulkan 与 WebGPU 后端均可用；WebGPU 使用 WGSL compute 和 storage buffer。
+- Vulkan 与 WebGPU（含浏览器 `web` 档）后端均可用；WebGPU 使用 WGSL compute
+  和 storage buffer。
 - `resolve()` 返回的 ByteData 归调用方；每次相机/模型变化后需重新 `update()`
   再 resolve。

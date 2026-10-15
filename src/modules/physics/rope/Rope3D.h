@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "physics/backend/SimulationBackend.h"
 
@@ -16,7 +18,9 @@ enum class RopeTopologyChange { Changed, Unchanged };
 /** @brief Stable identifier for a rope-owned analytic collider. */
 struct RopeColliderId {
     std::uint64_t          value = 0;
+    /** @brief Bool. */
     [[nodiscard]] explicit operator bool() const { return value != 0; }
+    /** @brief Operator ==. */
     friend bool            operator==(RopeColliderId, RopeColliderId) = default;
 };
 
@@ -31,7 +35,7 @@ enum class RopeColliderChange { Changed, Unchanged };
  * callbacks and owns no graphics or rigid-body resources. Floating-point replay is
  * tolerance-bounded for identical fixed steps and inputs.
  */
-class Rope3D final : public ISimulationBackend {
+class EVENGINE_API_DOMAINS Rope3D final : public ISimulationBackend {
 public:
     /** @brief Compact solver vector exposed only as a value type. */
     struct Vec3 {

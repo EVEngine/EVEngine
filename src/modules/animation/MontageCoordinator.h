@@ -1,14 +1,18 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file MontageCoordinator.h @brief Layered dual-slot montage ownership and stable handles. */
 
 #include "animation/MontagePlayer.h"
+#include "animation/RootMotionPolicy.h"
 #include "animation/UpperBodyOrientationCompensator.h"
 #include "common/RuntimeHandle.h"
 
 #include <cstddef>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <vector>
 
 namespace eve::animation {
@@ -24,6 +28,7 @@ enum class MontageBoneMaskSource { None, ProceduralUpperBody, Custom };
 /** @brief Observable outcome of the most recent upper-body orientation evaluation. */
 enum class UpperBodyOrientationStatus { Unconfigured, Inactive, Applied, BypassedCustomMask, BypassedFullBody };
 
+/** @brief MontageHandleTag public API. */
 struct MontageHandleTag {};
 /** @brief Generation-qualified identity owned by one MontageCoordinator. */
 using MontageHandle = RuntimeHandle<MontageHandleTag>;
@@ -35,7 +40,7 @@ using MontageHandle = RuntimeHandle<MontageHandleTag>;
  * lifetime. Reusing a slot bumps its generation, so old handles resolve as
  * stale instead of targeting a different montage.
  */
-class MontageCoordinator {
+class EVENGINE_API_WORLD MontageCoordinator {
 public:
     /** @brief Construct over a skeleton that must outlive this coordinator. */
     explicit MontageCoordinator(AnimSkeleton& skeleton);
@@ -140,6 +145,16 @@ public:
                                                           IMontageRootMotionReceiver& receiver);
     /** @brief Clear the borrowed root-motion receiver from current and future slots of a layer. */
     [[nodiscard]] Result<void> clearLayerRootMotionReceiver(std::size_t layer);
+    /**
+     * @brief Install a root-motion policy for current and future slots of a layer.
+     * @details Future play() calls apply this policy before prepare(); prepare then overlays
+     * authored montage channel locks while preserving bake / apply-space / yaw. Live slots
+     * receive the full policy immediately (including lock axes).
+     * @return Applied on success; InvalidArgument leaves previous layer policy unchanged.
+     */
+    [[nodiscard]] Result<void> setLayerRootMotionPolicy(std::size_t layer, const RootMotionPolicy& policy);
+    /** @brief Clear a layer-owned root-motion policy so future slots use MontagePlayer defaults. */
+    [[nodiscard]] Result<void> clearLayerRootMotionPolicy(std::size_t layer);
     /** @brief Borrow the normalized full layer pose; invalid layers return a structured failure. */
     [[nodiscard]] Result<std::reference_wrapper<AnimPose>> pose(std::size_t layer);
     /**
@@ -170,9 +185,10 @@ private:
         std::vector<float>        boneMask;
         MontageBoneMaskSource     boneMaskSource     = MontageBoneMaskSource::None;
         MontageLayerRole          role               = MontageLayerRole::Generic;
-        float                       weight             = 1.0f;
-        bool                        additive           = false;
-        IMontageRootMotionReceiver* rootMotionReceiver = nullptr;
+        float                           weight             = 1.0f;
+        bool                            additive           = false;
+        IMontageRootMotionReceiver*     rootMotionReceiver = nullptr;
+        std::optional<RootMotionPolicy> rootMotionPolicy;
     };
 
     [[nodiscard]] static std::size_t handleIndex(std::size_t layer, std::size_t slot) noexcept {

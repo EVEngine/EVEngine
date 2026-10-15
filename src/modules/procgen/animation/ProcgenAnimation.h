@@ -5,7 +5,7 @@
 namespace eve::procgen_animation {
 
 /** @brief Optional script composition for procedural meshes and skeletal animation. */
-class ProcgenAnimation : public Module {
+class EVENGINE_API_ORCHESTRATION ProcgenAnimation : public Module {
 public:
     Module_REG(ProcgenAnimation);
 };

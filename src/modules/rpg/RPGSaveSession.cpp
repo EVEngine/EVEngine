@@ -1,6 +1,7 @@
 #include "rpg/RPGSaveSession.h"
 #include "rpg/Party.h"
 
+#include "common/Assert.h"
 #include "common/Snapshot.h"
 #include "common/Value.h"
 #include "inventory/InventorySaveSession.h"
@@ -17,11 +18,6 @@
 namespace eve::rpg {
 
 namespace {
-
-template <typename T>
-eve::Result<T> saveFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-}
 
 bool validContentVersion(std::string_view contentVersion) {
     return !contentVersion.empty() && contentVersion.size() <= 256 &&
@@ -128,9 +124,9 @@ eve::Result<void> applyQuestAdditions(eve::Value &payload, const std::set<std::s
     eve::Value *tracker = payload.find("questTracker");
     eve::Value *entries = tracker ? tracker->find("entries") : nullptr;
     if (!tracker || !tracker->isObject() || !entries || !entries->isArray())
-        return saveFailure<void>(eve::DiagnosticCode::ParseError,
-                                 "quest-addition migration requires a tracker entries array",
-                                 "payload.questTracker.entries");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "quest-addition migration requires a tracker entries array",
+            "payload.questTracker.entries"));
 
     Tracker baseline;
     auto baselineJson = baseline.snapshotJson();
@@ -140,27 +136,28 @@ eve::Result<void> applyQuestAdditions(eve::Value &payload, const std::set<std::s
     eve::Value baselineRoot = std::move(parsedBaseline).takeValue();
     eve::Value *baselineEntries = baselineRoot.find("entries");
     if (!baselineEntries || !baselineEntries->isArray())
-        return saveFailure<void>(eve::DiagnosticCode::InvariantViolation,
-                                 "current tracker did not produce an entries array", "questTracker.entries");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                                                 "current tracker did not produce an entries array",
+                                                                 "questTracker.entries"));
 
     std::unordered_map<std::string, eve::Value> oldEntries;
     for (std::size_t index = 0; index < entries->arraySize(); ++index) {
         const eve::Value &entry = entries->at(index);
         const eve::Value *id = entry.isObject() ? entry.find("id") : nullptr;
         if (!id || !id->isString())
-            return saveFailure<void>(eve::DiagnosticCode::ParseError,
-                                     "quest-addition migration found an invalid old tracker entry",
-                                     "payload.questTracker.entries[" + std::to_string(index) + "].id");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "quest-addition migration found an invalid old tracker entry",
+                "payload.questTracker.entries[" + std::to_string(index) + "].id"));
         if (!oldEntries.emplace(id->asString(), entry).second)
-            return saveFailure<void>(eve::DiagnosticCode::Conflict,
-                                     "quest-addition migration found a duplicate old quest id",
-                                     "payload.questTracker.entries[" + std::to_string(index) + "].id");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "quest-addition migration found a duplicate old quest id",
+                "payload.questTracker.entries[" + std::to_string(index) + "].id"));
     }
     for (const auto &questId : questIds) {
         if (oldEntries.contains(questId))
-            return saveFailure<void>(eve::DiagnosticCode::Conflict,
-                                     "quest-addition migration target already exists in the old tracker",
-                                     "payload.questTracker.entries." + questId);
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "quest-addition migration target already exists in the old tracker",
+                "payload.questTracker.entries." + questId));
     }
 
     eve::Value::Array rebuilt;
@@ -170,8 +167,9 @@ eve::Result<void> applyQuestAdditions(eve::Value &payload, const std::set<std::s
         const eve::Value &initial = baselineEntries->at(index);
         const eve::Value *id = initial.find("id");
         if (!id || !id->isString())
-            return saveFailure<void>(eve::DiagnosticCode::InvariantViolation,
-                                     "current tracker produced an invalid quest id", "questTracker.entries");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                                                     "current tracker produced an invalid quest id",
+                                                                     "questTracker.entries"));
         auto old = oldEntries.find(id->asString());
         if (old != oldEntries.end()) {
             rebuilt.push_back(std::move(old->second));
@@ -180,24 +178,49 @@ eve::Result<void> applyQuestAdditions(eve::Value &payload, const std::set<std::s
             rebuilt.push_back(initial);
             appliedAdditions.emplace(id->asString());
         } else {
-            return saveFailure<void>(eve::DiagnosticCode::Conflict,
-                                     "old tracker is missing a quest without an additive migration",
-                                     "payload.questTracker.entries." + id->asString());
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "old tracker is missing a quest without an additive migration",
+                "payload.questTracker.entries." + id->asString()));
         }
     }
     if (!oldEntries.empty())
-        return saveFailure<void>(eve::DiagnosticCode::Conflict,
-                                 "old tracker contains a quest absent from the current registry",
-                                 "payload.questTracker.entries." + oldEntries.begin()->first);
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "old tracker contains a quest absent from the current registry",
+            "payload.questTracker.entries." + oldEntries.begin()->first));
     if (appliedAdditions != questIds)
-        return saveFailure<void>(eve::DiagnosticCode::NotFound,
-                                 "quest-addition migration target is absent from the current registry",
-                                 "questTracker.entries");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "quest-addition migration target is absent from the current registry",
+            "questTracker.entries"));
     entries->operator=(eve::Value(std::move(rebuilt)));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 }  // namespace
+
+struct RPGSaveSession::PreparedRestore::Impl {
+    RPGSaveSession                                  *owner = nullptr;
+    GameState                                        gameState;
+    Tracker                                          tracker;
+    inventory::InventorySaveSession::PreparedRestore inventory;
+    std::optional<RPGActor::CheckpointCandidate>     actor;
+    std::optional<Party::CheckpointCandidate>        party;
+
+    Impl(RPGSaveSession *session, GameState &&gameStateCandidate, Tracker &&trackerCandidate,
+         inventory::InventorySaveSession::PreparedRestore &&inventoryCandidate,
+         std::optional<RPGActor::CheckpointCandidate>     &&actorCandidate,
+         std::optional<Party::CheckpointCandidate>        &&partyCandidate)
+        : owner(session),
+          gameState(std::move(gameStateCandidate)),
+          tracker(std::move(trackerCandidate)),
+          inventory(std::move(inventoryCandidate)),
+          actor(std::move(actorCandidate)),
+          party(std::move(partyCandidate)) {}
+};
+
+RPGSaveSession::PreparedRestore::PreparedRestore(std::unique_ptr<Impl> state) : state_(std::move(state)) {}
+RPGSaveSession::PreparedRestore::~PreparedRestore()                                                      = default;
+RPGSaveSession::PreparedRestore::PreparedRestore(PreparedRestore &&) noexcept                            = default;
+RPGSaveSession::PreparedRestore &RPGSaveSession::PreparedRestore::operator=(PreparedRestore &&) noexcept = default;
 
 void RPGSaveSession::bind(GameState &gameState, Tracker &tracker, RPGActor &actor, inventory::Bag &bag,
                           inventory::EquipmentSet &equipment) noexcept {
@@ -221,15 +244,15 @@ void RPGSaveSession::bindParty(GameState &gameState, Tracker &tracker, Party &pa
 
 eve::Result<void> RPGSaveSession::setContentVersion(std::string_view contentVersion) {
     if (!validContentVersion(contentVersion))
-        return saveFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                 "RPG save content version must be a non-empty identifier without controls",
-                                 "contentVersion");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument,
+            "RPG save content version must be a non-empty identifier without controls", "contentVersion"));
     if (!contentVersion_.empty() && contentVersion_ != contentVersion &&
         (!compatibleContentVersions_.empty() || !idRenameMigrations_.empty() ||
          !questAdditionMigrations_.empty() || !singleActorPartyMigrations_.empty()))
-        return saveFailure<void>(eve::DiagnosticCode::Conflict,
-                                 "RPG content version cannot change after migration routes are registered",
-                                 "contentVersion");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "RPG content version cannot change after migration routes are registered",
+            "contentVersion"));
     contentVersion_ = std::string(contentVersion);
     compatibleContentVersions_.erase(contentVersion_);
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -237,13 +260,13 @@ eve::Result<void> RPGSaveSession::setContentVersion(std::string_view contentVers
 
 eve::Result<void> RPGSaveSession::allowCompatibleContentVersion(std::string_view contentVersion) {
     if (!validContentVersion(contentVersion))
-        return saveFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                 "compatible RPG content version must be a non-empty identifier without controls",
-                                 "contentVersion");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument,
+            "compatible RPG content version must be a non-empty identifier without controls", "contentVersion"));
     if (contentVersion == contentVersion_)
-        return saveFailure<void>(eve::DiagnosticCode::Conflict,
-                                 "current RPG content version must not be registered as an older version",
-                                 "contentVersion");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "current RPG content version must not be registered as an older version",
+            "contentVersion"));
     const bool hasMigration = std::any_of(idRenameMigrations_.begin(), idRenameMigrations_.end(),
                                           [&](const auto &entry) {
                                               return entry.first.fromContentVersion == contentVersion;
@@ -251,11 +274,12 @@ eve::Result<void> RPGSaveSession::allowCompatibleContentVersion(std::string_view
                               questAdditionMigrations_.contains(std::string(contentVersion)) ||
                               singleActorPartyMigrations_.contains(std::string(contentVersion));
     if (hasMigration)
-        return saveFailure<void>(eve::DiagnosticCode::Conflict,
-                                 "RPG content version already has an ID migration route", "contentVersion");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "RPG content version already has an ID migration route", "contentVersion"));
     if (!compatibleContentVersions_.emplace(contentVersion).second)
-        return saveFailure<void>(eve::DiagnosticCode::AlreadyExists,
-                                 "compatible RPG content version is already registered", "contentVersion");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::AlreadyExists,
+                                                                 "compatible RPG content version is already registered",
+                                                                 "contentVersion"));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
@@ -263,85 +287,85 @@ eve::Result<void> RPGSaveSession::addIdRenameMigration(std::string_view fromCont
                                                         RPGSaveIdDomain domain, std::string_view oldId,
                                                         std::string_view newId) {
     if (contentVersion_.empty())
-        return saveFailure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                 "current RPG content version must be configured before migration rules",
-                                 "contentVersion");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation,
+            "current RPG content version must be configured before migration rules", "contentVersion"));
     if (!validContentVersion(fromContentVersion) || !validContentVersion(oldId) ||
         !validContentVersion(newId) || oldId == newId)
-        return saveFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                 "RPG ID migration requires distinct valid source and destination identifiers",
-                                 "migration");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument,
+            "RPG ID migration requires distinct valid source and destination identifiers", "migration"));
     if (fromContentVersion == contentVersion_)
-        return saveFailure<void>(eve::DiagnosticCode::Conflict,
-                                 "RPG ID migration source must differ from the current content version",
-                                 "fromContentVersion");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "RPG ID migration source must differ from the current content version",
+            "fromContentVersion"));
     if (compatibleContentVersions_.contains(std::string(fromContentVersion)))
-        return saveFailure<void>(eve::DiagnosticCode::Conflict,
-                                 "RPG content version is already admitted as directly compatible",
-                                 "fromContentVersion");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "RPG content version is already admitted as directly compatible",
+            "fromContentVersion"));
     MigrationKey key{std::string(fromContentVersion), domain, std::string(oldId)};
     if (!idRenameMigrations_.emplace(std::move(key), std::string(newId)).second)
-        return saveFailure<void>(eve::DiagnosticCode::AlreadyExists,
-                                 "RPG ID migration source is already registered", "migration");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::AlreadyExists, "RPG ID migration source is already registered", "migration"));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> RPGSaveSession::addQuestAdditionMigration(std::string_view fromContentVersion,
                                                              std::string_view questId) {
     if (contentVersion_.empty())
-        return saveFailure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                 "current RPG content version must be configured before migration rules",
-                                 "contentVersion");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation,
+            "current RPG content version must be configured before migration rules", "contentVersion"));
     if (!validContentVersion(fromContentVersion) || !validContentVersion(questId))
-        return saveFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                 "quest-addition migration requires valid source and quest identifiers",
-                                 "migration");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument,
+            "quest-addition migration requires valid source and quest identifiers", "migration"));
     if (fromContentVersion == contentVersion_)
-        return saveFailure<void>(eve::DiagnosticCode::Conflict,
-                                 "quest-addition migration source must differ from the current content version",
-                                 "fromContentVersion");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict,
+            "quest-addition migration source must differ from the current content version", "fromContentVersion"));
     if (compatibleContentVersions_.contains(std::string(fromContentVersion)))
-        return saveFailure<void>(eve::DiagnosticCode::Conflict,
-                                 "RPG content version is already admitted as directly compatible",
-                                 "fromContentVersion");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "RPG content version is already admitted as directly compatible",
+            "fromContentVersion"));
     if (!QuestRegistry::find(std::string(questId)))
-        return saveFailure<void>(eve::DiagnosticCode::NotFound,
-                                 "quest-addition migration target is not registered", "questId");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "quest-addition migration target is not registered", "questId"));
     auto &quests = questAdditionMigrations_[std::string(fromContentVersion)];
     if (!quests.emplace(questId).second)
-        return saveFailure<void>(eve::DiagnosticCode::AlreadyExists,
-                                 "quest-addition migration is already registered", "migration");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::AlreadyExists, "quest-addition migration is already registered", "migration"));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> RPGSaveSession::allowSingleActorPartyMigration(
     std::string_view fromContentVersion) {
     if (contentVersion_.empty())
-        return saveFailure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                 "current RPG content version must be configured before migration rules",
-                                 "contentVersion");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation,
+            "current RPG content version must be configured before migration rules", "contentVersion"));
     if (!validContentVersion(fromContentVersion) || fromContentVersion == contentVersion_)
-        return saveFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                 "single-actor party migration requires a distinct valid source version",
-                                 "fromContentVersion");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument,
+            "single-actor party migration requires a distinct valid source version", "fromContentVersion"));
     if (compatibleContentVersions_.contains(std::string(fromContentVersion)))
-        return saveFailure<void>(eve::DiagnosticCode::Conflict,
-                                 "RPG content version is already admitted as directly compatible",
-                                 "fromContentVersion");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "RPG content version is already admitted as directly compatible",
+            "fromContentVersion"));
     if (!singleActorPartyMigrations_.emplace(fromContentVersion).second)
-        return saveFailure<void>(eve::DiagnosticCode::AlreadyExists,
-                                 "single-actor party migration is already registered",
-                                 "fromContentVersion");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::AlreadyExists,
+                                                                 "single-actor party migration is already registered",
+                                                                 "fromContentVersion"));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<std::string> RPGSaveSession::snapshotJson() const {
     if (!gameState_ || !tracker_ || (!actor_ && !party_) || !bag_ || !equipment_)
-        return saveFailure<std::string>(eve::DiagnosticCode::PreconditionViolation,
-                                        "RPG save session requires bound participants");
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "RPG save session requires bound participants", {}));
     if (contentVersion_.empty())
-        return saveFailure<std::string>(eve::DiagnosticCode::PreconditionViolation,
-                                        "RPG save session requires a content version");
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "RPG save session requires a content version", {}));
     auto gameStateJson = gameState_->snapshotJson();
     if (!gameStateJson.ok()) return eve::Result<std::string>::failure(gameStateJson.status());
     auto trackerJson = tracker_->snapshotJson();
@@ -375,59 +399,65 @@ eve::Result<std::string> RPGSaveSession::snapshotJson() const {
 }
 
 eve::Result<void> RPGSaveSession::validateSnapshotJson(std::string_view json) {
-    return restoreSnapshotJsonImpl(json, false);
+    auto prepared = prepareRestoreSnapshotJson(json);
+    if (!prepared.ok()) return eve::Result<void>::failure(prepared.status());
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> RPGSaveSession::restoreSnapshotJson(std::string_view json) {
-    return restoreSnapshotJsonImpl(json, true);
+    auto prepared = prepareRestoreSnapshotJson(json);
+    if (!prepared.ok()) return eve::Result<void>::failure(prepared.status());
+    commitPrepared(std::move(prepared).takeValue());
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-eve::Result<void> RPGSaveSession::restoreSnapshotJsonImpl(std::string_view json, bool publish) {
+eve::Result<RPGSaveSession::PreparedRestore> RPGSaveSession::prepareRestoreSnapshotJson(std::string_view json) {
     if (!gameState_ || !tracker_ || (!actor_ && !party_) || !bag_ || !equipment_)
-        return saveFailure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                 "RPG save session requires bound participants");
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "RPG save session requires bound participants", {}));
     if (contentVersion_.empty())
-        return saveFailure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                 "RPG save session requires a content version");
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "RPG save session requires a content version", {}));
     auto parsed = eve::parseSnapshotEnvelope(json, saveIntegrityProvider());
-    if (!parsed.ok()) return eve::Result<void>::failure(parsed.status());
+    if (!parsed.ok()) return eve::Result<PreparedRestore>::failure(parsed.status());
     const eve::SnapshotEnvelope &envelope = parsed.value();
     if (envelope.type != "rpg.save-session")
-        return saveFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                 "snapshot does not belong to RPGSaveSession", "type");
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "snapshot does not belong to RPGSaveSession", "type"));
     if (envelope.schema != saveSchema())
-        return saveFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                 "snapshot does not belong to RPGSaveSession", "schema");
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "snapshot does not belong to RPGSaveSession", "schema"));
     eve::Value root = envelope.payload;
     if (!root.isObject())
-        return saveFailure<void>(eve::DiagnosticCode::ParseError, "RPG save session payload must be an object",
-                                 "payload");
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "RPG save session payload must be an object", "payload"));
     eve::Value *contentVersion = root.find("contentVersion");
     if (!contentVersion || !contentVersion->isString())
-        return saveFailure<void>(eve::DiagnosticCode::ParseError,
-                                 "RPG save-session content version is missing or invalid",
-                                 "payload.contentVersion");
+        return eve::Result<PreparedRestore>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                   "RPG save-session content version is missing or invalid", "payload.contentVersion"));
     const std::string sourceContentVersion = contentVersion->asString();
     const bool migrateSingleActor = party_ && envelope.schemaVersion == eve::SchemaVersion(1) &&
                                     singleActorPartyMigrations_.contains(sourceContentVersion);
     const eve::SchemaVersion expectedVersion(actor_ ? 1 : 2);
     if (envelope.schemaVersion != expectedVersion && !migrateSingleActor)
-        return saveFailure<void>(eve::DiagnosticCode::UnknownVersion,
-                                 "unsupported RPG save-session snapshot version", "schemaVersion");
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::UnknownVersion, "unsupported RPG save-session snapshot version", "schemaVersion"));
     if (migrateSingleActor) {
         const eve::Value *oldActor = root.find("actor");
         if (!oldActor || !oldActor->isObject())
-            return saveFailure<void>(eve::DiagnosticCode::ParseError,
-                                     "single-actor migration requires an actor payload", "payload.actor");
+            return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "single-actor migration requires an actor payload", "payload.actor"));
         auto baselineJson = party_->checkpointJson();
-        if (!baselineJson.ok()) return eve::Result<void>::failure(baselineJson.status());
+        if (!baselineJson.ok()) return eve::Result<PreparedRestore>::failure(baselineJson.status());
         auto baseline = eve::Value::fromJson(baselineJson.value());
-        if (!baseline.ok()) return eve::Result<void>::failure(baseline.status());
+        if (!baseline.ok()) return eve::Result<PreparedRestore>::failure(baseline.status());
         eve::Value migratedParty = std::move(baseline).takeValue();
         eve::Value *members = migratedParty.find("members");
         if (!members || !members->isArray() || members->arraySize() == 0)
-            return saveFailure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                     "single-actor migration requires a non-empty live party", "party");
+            return eve::Result<PreparedRestore>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                       "single-actor migration requires a non-empty live party", "party"));
         members->at(0).set("actor", *oldActor);
         root.set("party", std::move(migratedParty));
     }
@@ -443,13 +473,13 @@ eve::Result<void> RPGSaveSession::restoreSnapshotJsonImpl(std::string_view json,
         if (questAdditions != questAdditionMigrations_.end()) {
             hasMigration = true;
             auto added = applyQuestAdditions(root, questAdditions->second);
-            if (!added.ok()) return added;
+            if (!added.ok()) return eve::Result<PreparedRestore>::failure(added.status());
         }
         if (migrateSingleActor) hasMigration = true;
         if (!hasMigration)
-            return saveFailure<void>(eve::DiagnosticCode::Conflict,
-                                     "RPG save-session content version has no compatible or migration route",
-                                     "payload.contentVersion");
+            return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "RPG save-session content version has no compatible or migration route",
+                "payload.contentVersion"));
         root.set("contentVersion", eve::Value(contentVersion_));
     }
     const eve::Value *gameStateValue = root.find("gameState");
@@ -458,55 +488,64 @@ eve::Result<void> RPGSaveSession::restoreSnapshotJsonImpl(std::string_view json,
     const eve::Value *inventoryValue = root.find("inventory");
     if (!gameStateValue || !gameStateValue->isObject() || !trackerValue || !trackerValue->isObject() ||
         !actorValue || !actorValue->isObject() || !inventoryValue || !inventoryValue->isObject())
-        return saveFailure<void>(eve::DiagnosticCode::ParseError,
-                                 "RPG save-session participants must be objects", "payload");
+        return eve::Result<PreparedRestore>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "RPG save-session participants must be objects", "payload"));
     auto gameStateJson = gameStateValue->toJson();
-    if (!gameStateJson.ok()) return eve::Result<void>::failure(gameStateJson.status());
+    if (!gameStateJson.ok()) return eve::Result<PreparedRestore>::failure(gameStateJson.status());
     auto trackerJson = trackerValue->toJson();
-    if (!trackerJson.ok()) return eve::Result<void>::failure(trackerJson.status());
+    if (!trackerJson.ok()) return eve::Result<PreparedRestore>::failure(trackerJson.status());
     auto actorJson = actorValue->toJson();
-    if (!actorJson.ok()) return eve::Result<void>::failure(actorJson.status());
+    if (!actorJson.ok()) return eve::Result<PreparedRestore>::failure(actorJson.status());
     auto inventoryJson = inventoryValue->toJson();
-    if (!inventoryJson.ok()) return eve::Result<void>::failure(inventoryJson.status());
+    if (!inventoryJson.ok()) return eve::Result<PreparedRestore>::failure(inventoryJson.status());
 
     GameState candidateGameState = *gameState_;
     Tracker candidateTracker = *tracker_;
     auto gameStateRestore = candidateGameState.restoreSnapshotJson(gameStateJson.value());
-    if (!gameStateRestore.ok()) return gameStateRestore;
+    if (!gameStateRestore.ok()) return eve::Result<PreparedRestore>::failure(gameStateRestore.status());
     auto trackerRestore = candidateTracker.restoreSnapshotJson(trackerJson.value());
-    if (!trackerRestore.ok()) return trackerRestore;
+    if (!trackerRestore.ok()) return eve::Result<PreparedRestore>::failure(trackerRestore.status());
     inventory::InventorySaveSession inventorySession;
     inventorySession.bind(*bag_, *equipment_);
     auto inventoryCandidate = inventorySession.prepareRestoreSnapshotJson(inventoryJson.value());
-    if (!inventoryCandidate.ok()) return eve::Result<void>::failure(inventoryCandidate.status());
+    if (!inventoryCandidate.ok()) return eve::Result<PreparedRestore>::failure(inventoryCandidate.status());
 
     std::optional<RPGActor::CheckpointCandidate> actorCandidate;
     std::optional<Party::CheckpointCandidate> partyCandidate;
     if (actor_) {
         auto prepared = actor_->prepareCheckpointJson(actorJson.value());
-        if (!prepared.ok()) return eve::Result<void>::failure(prepared.status());
+        if (!prepared.ok()) return eve::Result<PreparedRestore>::failure(prepared.status());
         actorCandidate.emplace(std::move(prepared).takeValue());
     } else {
         auto prepared = party_->prepareCheckpointJson(actorJson.value());
-        if (!prepared.ok()) return eve::Result<void>::failure(prepared.status());
+        if (!prepared.ok()) return eve::Result<PreparedRestore>::failure(prepared.status());
         partyCandidate.emplace(std::move(prepared).takeValue());
     }
 
-    if (!publish) return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+    auto state = std::make_unique<PreparedRestore::Impl>(
+        this, std::move(candidateGameState), std::move(candidateTracker), std::move(inventoryCandidate).takeValue(),
+        std::move(actorCandidate), std::move(partyCandidate));
+    return eve::Result<PreparedRestore>::success(PreparedRestore(std::move(state)));
+}
 
-    gameState_->switches_.swap(candidateGameState.switches_);
-    gameState_->variables_.swap(candidateGameState.variables_);
-    gameState_->selfVariables_.swap(candidateGameState.selfVariables_);
-    tracker_->entries.swap(candidateTracker.entries);
-    tracker_->order.swap(candidateTracker.order);
-    tracker_->pending.swap(candidateTracker.pending);
-    tracker_->polled.swap(candidateTracker.polled);
+void RPGSaveSession::commitPrepared(PreparedRestore prepared) noexcept {
+    auto &state = *prepared.state_;
+    EV_ASSERT(state.owner == this, "RPG prepared restore belongs to another session");
+    gameState_->switches_.swap(state.gameState.switches_);
+    gameState_->variables_.swap(state.gameState.variables_);
+    gameState_->selfVariables_.swap(state.gameState.selfVariables_);
+    gameState_->selfStrings_.swap(state.gameState.selfStrings_);
+    tracker_->entries.swap(state.tracker.entries);
+    tracker_->order.swap(state.tracker.order);
+    tracker_->pending.swap(state.tracker.pending);
+    tracker_->polled.swap(state.tracker.polled);
     if (actor_)
-        actor_->commitCheckpoint(std::move(*actorCandidate));
+        actor_->commitCheckpoint(std::move(*state.actor));
     else
-        party_->commitCheckpoint(std::move(*partyCandidate));
-    inventorySession.commitPrepared(std::move(inventoryCandidate).takeValue());
-    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+        party_->commitCheckpoint(std::move(*state.party));
+    inventory::InventorySaveSession inventorySession;
+    inventorySession.bind(*bag_, *equipment_);
+    inventorySession.commitPrepared(std::move(state.inventory));
 }
 
 }  // namespace eve::rpg

@@ -6,7 +6,7 @@ local waterShader = null;
 local elapsed = 0.0;
 local renderedFrames = 0;
 local saved = false;
-local detailSaved = false;
+local closeupSaved = false;
 local terrainOnlySaved = false;
 local hydrologySaved = false;
 local camera = null;
@@ -129,15 +129,15 @@ eve_render = function() {
             renderedFrames = 0;
         }
     }
-    if (saved && !detailSaved && elapsed > 2.3 && renderedFrames >= 8) {
-        if (gfx.saveFramePng("/private/tmp/evengine-terrain-gallery-detail.png")) {
-            print("terrain detail saved: /private/tmp/evengine-terrain-gallery-detail.png\n");
-            detailSaved = true;
+    if (saved && !closeupSaved && elapsed > 2.3 && renderedFrames >= 8) {
+        if (gfx.saveFramePng("/private/tmp/evengine-terrain-gallery-closeup.png")) {
+            print("terrain closeup saved: /private/tmp/evengine-terrain-gallery-closeup.png\n");
+            closeupSaved = true;
             foreach (water in waterEntities) water.setVisible(false);
             renderedFrames = 0;
         }
     }
-    if (detailSaved && !terrainOnlySaved && elapsed > 3.0 && renderedFrames >= 8) {
+    if (closeupSaved && !terrainOnlySaved && elapsed > 3.0 && renderedFrames >= 8) {
         if (gfx.saveFramePng("/private/tmp/evengine-terrain-gallery-geometry.png")) {
             print("terrain geometry saved: /private/tmp/evengine-terrain-gallery-geometry.png\n");
             terrainOnlySaved = true;

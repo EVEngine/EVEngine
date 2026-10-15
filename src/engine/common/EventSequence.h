@@ -6,6 +6,7 @@
 
 namespace eve {
 namespace detail {
+/** @brief EventSequenceTag public API. */
 struct EventSequenceTag {};
 }  // namespace detail
 /** @brief Stream-local event ordering value; it is not a global event identity. */

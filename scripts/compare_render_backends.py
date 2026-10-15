@@ -17,6 +17,7 @@ try:
     from scripts.ci_result import CIResult, FailureKind
 except ModuleNotFoundError:  # Direct execution sets sys.path to scripts/.
     from ci_result import CIResult, FailureKind
+import utf8_stdio
 
 
 class ArtifactContractError(ValueError):
@@ -227,4 +228,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     raise SystemExit(main())

@@ -10,11 +10,6 @@
 namespace eve::sensing {
 namespace {
 
-template <class T>
-Result<T> pipelineFailure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, "sensing"));
-}
-
 bool finite(float v) noexcept { return std::isfinite(v); }
 
 bool insideCone(float px, float py, float apexX, float apexY, float dirX, float dirY, float halfAngle,
@@ -64,8 +59,9 @@ public:
     [[nodiscard]] Result<void> execute(TargetingSourceContext& context, std::vector<RankedCandidate>& inout,
                                        const TargetingTaskStep& step) const override {
         if (context.world == nullptr) {
-            return pipelineFailure<void>(DiagnosticCode::InvalidArgument, "sensing.select.world requires a SensingWorld",
-                                         "pipeline.world");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "sensing.select.world requires a SensingWorld",
+                                                           "pipeline.world", {}, "sensing"));
         }
         QuerySpec spec       = step.querySpec;
         spec.countPolicy     = CountPolicy::TruncateToMax;
@@ -86,8 +82,9 @@ public:
     [[nodiscard]] Result<void> execute(TargetingSourceContext& context, std::vector<RankedCandidate>& inout,
                                        const TargetingTaskStep& step) const override {
         if (context.world == nullptr) {
-            return pipelineFailure<void>(DiagnosticCode::InvalidArgument, "sensing.filter.spec requires a SensingWorld",
-                                         "pipeline.world");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "sensing.filter.spec requires a SensingWorld",
+                                                           "pipeline.world", {}, "sensing"));
         }
         auto valid = step.querySpec.validate();
         if (!valid) return Result<void>::failure(valid.status());
@@ -114,9 +111,10 @@ public:
         if (!finite(step.coneHalfAngle) || step.coneHalfAngle < 0.f || step.coneHalfAngle > 3.14159265f ||
             !finite(step.coneRange) || step.coneRange < 0.f || !finite(context.dirX) || !finite(context.dirY) ||
             !(std::hypot(context.dirX, context.dirY) > 0.f)) {
-            return pipelineFailure<void>(DiagnosticCode::InvalidArgument,
-                                         "sensing.filter.cone requires finite facing, halfAngle in [0,pi], range >= 0",
-                                         "pipeline.cone");
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                  "sensing.filter.cone requires finite facing, halfAngle in [0,pi], range >= 0",
+                                  "pipeline.cone", {}, "sensing"));
         }
         std::vector<RankedCandidate> kept;
         kept.reserve(inout.size());
@@ -140,8 +138,9 @@ public:
                                        const TargetingTaskStep& /*step*/) const override {
         auto* los = cap::query<ILineOfSightQuery>();
         if (los == nullptr) {
-            return pipelineFailure<void>(DiagnosticCode::Unsupported,
-                                         "sensing.filter.los requires ILineOfSightQuery capability", "pipeline.los");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                           "sensing.filter.los requires ILineOfSightQuery capability",
+                                                           "pipeline.los", {}, "sensing"));
         }
         auto from = WorldPoint::world2D(context.origin.x, context.origin.y);
         if (!from) return Result<void>::failure(from.status());
@@ -241,14 +240,17 @@ TargetingPipeline& TargetingPipeline::sharedBuiltins() {
 
 Result<void> TargetingPipeline::registerTask(std::unique_ptr<ITargetingTask> task) {
     if (!task) {
-        return pipelineFailure<void>(DiagnosticCode::InvalidArgument, "targeting task must not be null", "task");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "targeting task must not be null", "task", {}, "sensing"));
     }
     const std::string id{task->id()};
     if (id.empty()) {
-        return pipelineFailure<void>(DiagnosticCode::InvalidArgument, "targeting task id must not be empty", "task.id");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "targeting task id must not be empty", "task.id", {}, "sensing"));
     }
     if (tasks_.count(id) != 0) {
-        return pipelineFailure<void>(DiagnosticCode::AlreadyExists, "targeting task id already registered", "task.id");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::AlreadyExists, "targeting task id already registered", "task.id", {}, "sensing"));
     }
     tasks_.emplace(id, std::move(task));
     return Result<void>::success(Status::success(StatusCode::Applied));
@@ -256,17 +258,19 @@ Result<void> TargetingPipeline::registerTask(std::unique_ptr<ITargetingTask> tas
 
 Result<void> TargetingPipeline::registerPreset(TargetingPreset preset) {
     if (preset.id.empty()) {
-        return pipelineFailure<void>(DiagnosticCode::InvalidArgument, "targeting preset id must not be empty",
-                                     "preset.id");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "targeting preset id must not be empty", "preset.id", {}, "sensing"));
     }
     if (preset.steps.empty()) {
-        return pipelineFailure<void>(DiagnosticCode::InvalidArgument, "targeting preset must contain at least one step",
-                                     "preset.steps");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "targeting preset must contain at least one step",
+                                                       "preset.steps", {}, "sensing"));
     }
     for (const auto& step : preset.steps) {
         if (step.taskId.empty() || tasks_.count(step.taskId) == 0) {
-            return pipelineFailure<void>(DiagnosticCode::NotFound, "targeting preset references unknown task id",
-                                         "preset.steps.taskId");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                           "targeting preset references unknown task id",
+                                                           "preset.steps.taskId", {}, "sensing"));
         }
     }
     presets_.insert_or_assign(preset.id, std::move(preset));
@@ -280,25 +284,28 @@ bool TargetingPipeline::hasPreset(std::string_view presetId) const noexcept {
 Result<CandidateQueryResult> TargetingPipeline::execute(TargetingSourceContext& context,
                                                         const TargetingPreset&  preset) const {
     if (context.world == nullptr) {
-        return pipelineFailure<CandidateQueryResult>(DiagnosticCode::InvalidArgument,
-                                                     "TargetingPipeline requires a SensingWorld", "pipeline.world");
+        return Result<CandidateQueryResult>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                       "TargetingPipeline requires a SensingWorld",
+                                                                       "pipeline.world", {}, "sensing"));
     }
     if (!finite(context.origin.x) || !finite(context.origin.y)) {
-        return pipelineFailure<CandidateQueryResult>(DiagnosticCode::InvalidArgument,
-                                                     "TargetingSourceContext origin must be finite", "pipeline.origin");
+        return Result<CandidateQueryResult>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                       "TargetingSourceContext origin must be finite",
+                                                                       "pipeline.origin", {}, "sensing"));
     }
     if (preset.steps.empty()) {
-        return pipelineFailure<CandidateQueryResult>(DiagnosticCode::InvalidArgument,
-                                                     "TargetingPreset must contain at least one step", "preset.steps");
+        return Result<CandidateQueryResult>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                       "TargetingPreset must contain at least one step",
+                                                                       "preset.steps", {}, "sensing"));
     }
 
     std::vector<RankedCandidate> working;
     for (const auto& step : preset.steps) {
         const auto found = tasks_.find(step.taskId);
         if (found == tasks_.end() || !found->second) {
-            return pipelineFailure<CandidateQueryResult>(DiagnosticCode::NotFound,
-                                                         "TargetingPreset step task is not registered",
-                                                         "preset.steps.taskId");
+            return Result<CandidateQueryResult>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "TargetingPreset step task is not registered",
+                                  "preset.steps.taskId", {}, "sensing"));
         }
         auto ran = found->second->execute(context, working, step);
         if (!ran) return Result<CandidateQueryResult>::failure(ran.status());
@@ -310,8 +317,8 @@ Result<CandidateQueryResult> TargetingPipeline::executePreset(TargetingSourceCon
                                                               std::string_view         presetId) const {
     const auto found = presets_.find(std::string(presetId));
     if (found == presets_.end()) {
-        return pipelineFailure<CandidateQueryResult>(DiagnosticCode::NotFound, "targeting preset is not registered",
-                                                     "preset.id");
+        return Result<CandidateQueryResult>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "targeting preset is not registered", "preset.id", {}, "sensing"));
     }
     return execute(context, found->second);
 }

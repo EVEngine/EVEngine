@@ -15,6 +15,7 @@ import os
 import subprocess
 import sys
 import struct
+import utf8_stdio
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SHADERS = os.path.join(ROOT, "src", "modules", "virtualgeometry", "shaders")
@@ -58,7 +59,7 @@ def emit_inc(spv, inc, symbol):
         lines.append("    " + ", ".join("0x%08x" % w for w in chunk) + ",")
     lines.append("};")
     lines.append("static const size_t %s_count = sizeof(%s) / sizeof(%s[0]);" % (symbol, symbol, symbol))
-    with open(inc, "w") as f:
+    with open(inc, "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
 
 
@@ -87,4 +88,5 @@ def main():
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())

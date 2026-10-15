@@ -207,6 +207,26 @@ if (!("hotReload" in config)) {
     config.hotReload <- !("hostDrivesFrames" in eve && eve.hostDrivesFrames);
 }
 
+function hot_reload_watch_roots() {
+    if (!("hotReloadWatch" in config) || config.hotReloadWatch == null)
+        return ["."];
+    local w = config.hotReloadWatch;
+    if (typeof w == "string") {
+        if (w == "") return ["."];
+        return [w];
+    }
+    if (typeof w != "array")
+        throw "config.hotReloadWatch must be a string or an array of strings";
+    local out = [];
+    foreach (item in w) {
+        if (typeof item != "string")
+            throw "config.hotReloadWatch entries must be strings";
+        if (item != "") out.append(item);
+    }
+    if (out.len() == 0) return ["."];
+    return out;
+}
+
 // `eve run --dev-server <url>` overrides config.devServer (useful on mobile
 // builds where config.nut is baked into a read-only bundle).
 if ("devServerArg" in eve && eve.devServerArg != null && eve.devServerArg != "")
@@ -267,20 +287,35 @@ if (!has_module("win") || !has_module("gfx")) {
     print("engine build is missing the window or graphics module\n");
     return;
 }
-local s = eve.WindowSettings();
-s.width = config.width;
-s.height = config.height;
-s.centered = true;
-if (!win.setWindowSettings(s)) {
-    print("setWindowSettings failed\n");
-    return;
+
+local editor_host = ("editorHost" in config) && config.editorHost;
+
+function boot_create_window() {
+    local s = eve.WindowSettings();
+    s.width = config.width;
+    s.height = config.height;
+    s.centered = true;
+    if (!win.setWindowSettings(s)) {
+        print("setWindowSettings failed\n");
+        return false;
+    }
+    // Keep script layout in sync with the real window (mobile may ignore 800x600).
+    config.width = win.getWidth();
+    config.height = win.getHeight();
+    _startup_ms("window created + vulkan initialized");
+    _log("boot: window + vulkan initialized (" + config.width + "x" + config.height + ")");
+    return true;
 }
 
-// Keep script layout in sync with the real window (mobile may ignore 800x600).
-config.width = win.getWidth();
-config.height = win.getHeight();
-_startup_ms("window created + vulkan initialized");
-_log("boot: window + vulkan initialized (" + config.width + "x" + config.height + ")");
+// Editor apps: do not CreateWindow here. EditorHost::openWindow used to call
+// setWindowSettings() which always close()+SDL_CreateWindow, so the user saw
+// the OS window flash twice. Defer creation until the host is started.
+if (!editor_host) {
+    if (!boot_create_window()) return;
+} else {
+    _startup_ms("window deferred to editor host");
+    _log("boot: editorHost=true, OS window deferred to EditorHost");
+}
 
 // Node-style async (Promise / nextTick / setTimeout). Embedded via eve.asyncScript.
 if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {
@@ -302,12 +337,12 @@ if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {
 }
 _startup_ms("async runtime loaded");
 
+// The Scene binding replaces this hook when exposed. Trimmed/optional builds
+// keep a callable no-op, avoiding a per-frame string-keyed provider lookup.
+if (!("eve_scene_flush_components" in getroottable()))
+    eve_scene_flush_components <- function() {};
 eve_init <- function() {};
-eve_update <- function(dt) {
-    // Keep scene node world transforms fresh for games that mutate nodes from
-    // scripts. Clean trees skip the pass entirely (incremental transform).
-    if (has_module("scene")) scene.updateTransformsAll();
-};
+eve_update <- function(dt) {};
 eve_render <- function() {
     gfx.clear();
 };
@@ -337,14 +372,39 @@ function track_script(path) {
 
 // Copy the enumerable fields of an old instance/table into a fresh instance
 // of NewClass; fields missing on the new class keep their defaults.
+//
+// Two Squirrel facts this depends on (probed; see
+// docs/dev/2026-09-19-脚本定义组件与引擎扩展性方案.md 9.21):
+//   * `n[k] <- v` throws "class instances do not support the new slot operator"
+//     whenever the key is dynamic. The catch below therefore swallowed *every*
+//     field and migration silently copied nothing -- old state was replaced by
+//     the new class's defaults. `n[k] = v` assigns a member the new class
+//     declares and throws for one it does not, which is the case the catch is
+//     meant to handle.
+//   * Instances are not enumerable: `foreach (k, v in instance)` raises
+//     "_nexti failed". `getclass()` is an instance method (there is no global
+//     getclass) and a class object *is* enumerable, so enumerate that.
 function migrate_instance(old, NewClass) {
     local n = NewClass();
     if (old == null) return n;
-    foreach (k, v in old) {
+    local kind = typeof old;
+    if (kind == "table") {
+        foreach (k, v in old) {
+            try {
+                n[k] = v;
+            } catch (e) {
+                // Not declared on the new class; keep the default.
+            }
+        }
+        return n;
+    }
+    if (kind != "instance") return n;
+    foreach (k, v in old.getclass()) {
+        if (typeof v == "function") continue;  // methods stay as the new class defines them
         try {
-            n[k] <- v;
+            n[k] = old[k];
         } catch (e) {
-            // Not assignable on the new class; keep the default.
+            // Not declared on the new class; keep the default.
         }
     }
     return n;
@@ -422,6 +482,97 @@ function reset_transient_state() {
     eve.dev.clearStateRoots();
 }
 
+// Soft-restart the running game without unloading ResourceManager / GPU /
+// MCP. Opposite of soft_reload_scripts: state is reset, not migrated. Optional
+// parameters arrive as `eve.restartArgs` (set by the MCP eve_restart tool or
+// eve.dev.softRestart). Games may hook eve_before_restart / eve_after_restart.
+function soft_restart_game(reload_scripts = true) {
+    local args = ("restartArgs" in eve && eve.restartArgs != null) ? eve.restartArgs : {};
+
+    if ("async_cancel_continuations" in getroottable())
+        async_cancel_continuations("soft restart");
+
+    if ("eve_before_restart" in getroottable()) {
+        try {
+            eve_before_restart(args);
+        } catch (e) {
+            report_reload_failure("eve_before_restart failed: " + format_script_error(e));
+            return false;
+        }
+    }
+
+    // Snapshot the binding surface so a failed re-dofile can roll definitions
+    // back. Mutable state is intentionally NOT captured — restart means reset.
+    local oldBindings = capture_reload_bindings();
+
+    if (reload_scripts) {
+        local root = getroottable();
+        if ("dev" in eve) {
+            local names = [];
+            foreach (name in eve.dev.stateRoots()) names.append(name);
+            foreach (name in eve.dev.transientStateRoots()) names.append(name);
+            foreach (name in names) {
+                if (name in root) delete root[name];
+            }
+            eve.dev.clearStateRoots();
+            if ("clearWorldContext" in eve.dev) eve.dev.clearWorldContext();
+            eve.dev.resetNativeState();
+        }
+
+        local candidates = null;
+        try {
+            candidates = compile_reload_candidates();
+        } catch (e) {
+            restore_reload_bindings(oldBindings);
+            report_reload_failure("soft-restart compile failed: " + format_script_error(e));
+            return false;
+        }
+        foreach (candidate in candidates) {
+            try {
+                candidate.closure.call(getroottable());
+                print("soft-restart script: " + candidate.path + "\n");
+            } catch (e) {
+                restore_reload_bindings(oldBindings);
+                report_reload_failure(
+                    "soft-restart script failed: " + candidate.path + ": " + format_script_error(e));
+                return false;
+            }
+        }
+
+        try {
+            eve_init();
+        } catch (e) {
+            restore_reload_bindings(oldBindings);
+            report_reload_failure("soft-restart eve_init failed: " + format_script_error(e));
+            return false;
+        }
+    } else {
+        // Keep script definitions and persist roots; only reset native providers
+        // and re-enter the game's restart/init path (for param-only retries).
+        if ("dev" in eve) eve.dev.resetNativeState();
+        try {
+            if ("eve_restart" in getroottable())
+                eve_restart(args);
+            else
+                eve_init();
+        } catch (e) {
+            report_reload_failure("soft-restart (no script reload) failed: " + format_script_error(e));
+            return false;
+        }
+    }
+
+    if ("eve_after_restart" in getroottable()) {
+        try {
+            eve_after_restart(args);
+        } catch (e) {
+            if ("dev" in eve) eve.dev.reportError("" + e);
+            print("eve_after_restart failed: " + format_script_error(e) + "\n");
+        }
+    }
+    print("soft-restart: game restarted (resource cache kept)\n");
+    return true;
+}
+
 function soft_reload_scripts() {
     // Stage ①: compile the complete candidate set before cancelling work or
     // invoking lifecycle hooks.  A broken edit leaves the running game alone.
@@ -488,6 +639,25 @@ function soft_reload_scripts() {
         }
     }
     // Stage ⑤: post-commit hooks rebuild instances derived from restored data.
+    //
+    // ⑤a 先跑脚本 ECS 的迁移：重定义同名类不许把已存在的实体变成孤儿（方案文档决定①）。
+    // 判据是"同一个全局名字前后都是类"，也就是上面那份 `oldBindings` 快照——重载前抓的类对象
+    // 与重载后的同名绑定指向同一个定义的两代。迁移不了时把条数报出来，不静默吞掉。
+    if ("_ecsMigrateAfterReload" in eve) {
+        try {
+            local migration = eve._ecsMigrateAfterReload(oldBindings, getroottable());
+            if (migration.components > 0)
+                print("hot-reload ECS migration: " + migration.entities + " entities, "
+                      + migration.components + " component instance(s)\n");
+            if (migration.unresolved > 0)
+                report_reload_failure(
+                    "hot-reload ECS migration left " + migration.unresolved
+                    + " component slot(s) on a replaced class; the entity class declaring them was not "
+                    + "redefined in this reload (rename or drop those entities explicitly)");
+        } catch (e) {
+            report_reload_failure("hot-reload ECS migration failed: " + format_script_error(e));
+        }
+    }
     if ("eve_after_reload" in getroottable()) {
         try {
             eve_after_reload();
@@ -630,7 +800,9 @@ if (config.hotReload && has_module("fs") && has_module("hot")) {
     try {
         // Ensure VFS source is set when Run did not mount (e.g. custom root).
         try { fs.setSource("."); } catch (e) {}
-        local n = hot.watchTree(".");
+        local n = 0;
+        foreach (root in hot_reload_watch_roots())
+            n += hot.watchTree(root);
         // Explicit file watch as a second registration (same OS dir, basename filter).
         if (file_exists("main.nut"))
             fs.watch("main.nut");
@@ -641,6 +813,24 @@ if (config.hotReload && has_module("fs") && has_module("hot")) {
     }
 }
 _startup_ms("hot reload watch registered");
+
+if (editor_host) {
+    if (!("startEditorHost" in eve))
+        throw "config.editorHost requires eve.startEditorHost";
+    local started = eve.startEditorHost();
+    if (started != "ok")
+        throw "startEditorHost failed: " + started;
+    if (!("host" in eve) || eve.host == null)
+        throw "startEditorHost did not expose eve.host";
+    local title = ("title" in config) ? config.title : "EVEngine";
+    local opened = eve.host.openWindow(title, config.width, config.height);
+    if (opened != "ok")
+        throw "editor host openWindow failed: " + opened;
+    config.width = win.getWidth();
+    config.height = win.getHeight();
+    _startup_ms("window created + vulkan initialized");
+    _log("boot: window + vulkan initialized (" + config.width + "x" + config.height + ")");
+}
 
 _startup_ms("eve_init start");
 try {
@@ -736,6 +926,12 @@ function handle_dev_key(key, scancode) {
     if (key == "F4") {
         eve.dev.console.toggleVisible();
         print("dev: console " + (eve.dev.console.isVisible() ? "shown" : "hidden") + "\n");
+        return;
+    }
+    // F3 = toggle DevTools FPS / frame-time overlay.
+    if (key == "F3") {
+        eve.dev.stats.toggleVisible();
+        print("dev: frame stats " + (eve.dev.stats.isVisible() ? "shown" : "hidden") + "\n");
     }
 }
 
@@ -747,6 +943,16 @@ function dev_draw_ai() {
 function dev_draw_console() {
     if (has_dev())
         eve.dev.console.draw();
+}
+
+function dev_draw_stats() {
+    if (has_dev())
+        eve.dev.stats.draw();
+}
+
+function dev_sample_stats(dt) {
+    if (has_dev())
+        eve.dev.stats.sample(dt);
 }
 
 // ---------------------------------------------------------------------------
@@ -818,10 +1024,20 @@ eve_frame <- function() {
             }
             dev_notify_frame_done();
         }
+        // Prepare scene components independently of a game's eve_update override.
+        eve_scene_flush_components();
+        if (has_module("scene")) scene.updateTransformsAll();
+        // Coalesce dirty declarative UI components after game logic and before
+        // rendering. State changes made by dispatched UI events are therefore
+        // applied at the start of the following frame.
+        if ("eve_ui_flush_components" in getroottable())
+            eve_ui_flush_components();
         eve_render();
-        // ImGui AI/MCP panel (requires ui.beginFrameAndRender in eve_render).
+        // ImGui AI/MCP / console / frame-stats panels (need ui.beginFrameAndRender).
+        dev_sample_stats(dt);
         dev_draw_ai();
         dev_draw_console();
+        dev_draw_stats();
         clear_loop_error("frame");
     } catch (e) {
         emit_loop_error("frame", "frame error: ", e);
@@ -831,8 +1047,8 @@ eve_frame <- function() {
     // later frame fails with "begin3DFrame: swapchain pass already open".
     try {
         gfx.present();
-        if (has_module("system") && (!("hostDrivesFrames" in eve) || !eve.hostDrivesFrames)) {
-            system.limitFrame();
+        if (has_module("os") && (!("hostDrivesFrames" in eve) || !eve.hostDrivesFrames)) {
+            os.limitFrame();
         }
         if (has_module("ui")) ui.dispatchEvents();
         clear_loop_error("present");
@@ -852,8 +1068,11 @@ eve_frame <- function() {
 // The browser build has no blocking loop: C++ picks eve_frame up from the root
 // table and hands it to emscripten_set_main_loop.
 if (!("hostDrivesFrames" in eve) || !eve.hostDrivesFrames) {
-    while (eve_frame()) {
+    local editorHost = ("editorHost" in config) && config.editorHost;
+    if (!editorHost) {
+        while (eve_frame()) {
+        }
+        eve_quit();
+        win.close();
     }
-    eve_quit();
-    win.close();
 }

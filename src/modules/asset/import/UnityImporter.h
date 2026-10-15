@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file UnityImporter.h
@@ -11,11 +13,16 @@ namespace eve::asset_import {
 
 /** @brief In-memory Unity project slice; keys are normalized project-relative paths. */
 struct UnityProjectImportRequest {
-    ImportPackageIdentity                  package;
+    ImportPackageIdentity                            package;
     std::map<std::string, std::vector<std::uint8_t>> files;
-    std::string                            terrainDataPath;
-    std::string                            prefabPath;
-    AssetImportLimits                      limits;
+    std::string                                      terrainDataPath;
+    std::string       prefabPath;
+    AssetImportLimits limits;
+    /** @brief Optional `eve.unity-terrain-details/1`, /2 or /3 JSON exported through Unity's public TerrainData API.
+     * When empty and terrainDataPath is set, the importer discovers
+     * `<terrainDataPath>.eve-details.json` from files.
+     */
+    std::string terrainDetailsPath;
 };
 
 /**
@@ -29,6 +36,7 @@ struct UnityProjectImportRequest {
  * @thread Worker-safe while the request remains immutable.
  * @reentrancy No callbacks, Unity execution or filesystem mutation.
  */
-[[nodiscard]] Result<PreparedAssetImport> prepareUnityProjectImport(const UnityProjectImportRequest& request);
+[[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareUnityProjectImport(
+    const UnityProjectImportRequest& request);
 
 }  // namespace eve::asset_import

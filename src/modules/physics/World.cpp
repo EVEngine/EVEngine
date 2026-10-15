@@ -1,6 +1,8 @@
 ﻿#include "physics/World.h"
 #include "physics/Body.h"
 #include "physics/Fixture.h"
+#include "physics/Joint2D.h"
+#include "physics/Mechanism2D.h"
 #include "physics/backend/SimulationBackend.h"
 
 #include "common/Exception.h"
@@ -259,7 +261,20 @@ void World::destroy() {
     destroyed_ = true;
     lifetime_.reset();
 
-    // Copy sets 鈥?Body/Fixture destructors erase from them.
+    std::vector<Mechanism2D *> mechanisms(mechanisms_.begin(), mechanisms_.end());
+    for (Mechanism2D *mechanism : mechanisms) {
+        if (mechanism) mechanism->invalidate();
+    }
+    mechanisms_.clear();
+
+    std::vector<Joint2D *> joints(joints_.begin(), joints_.end());
+    for (Joint2D *joint : joints) {
+        if (joint) joint->invalidate();
+    }
+    joints_.clear();
+    jointHandles_.clear();
+
+    // Copy sets — Body/Fixture destructors erase from them.
     std::vector<Body *> bodies(bodies_.begin(), bodies_.end());
     for (Body *b : bodies) {
         if (b) {
@@ -358,6 +373,9 @@ eve::Result<void> World::step(const eve::SimulationStep &stepValue, const Simula
     }
     auto valid = detail::validateSimulationStep(stepValue, settings, simulation_->observation());
     if (!valid) return valid;
+    for (Mechanism2D *mechanism : mechanisms_) {
+        if (mechanism) mechanism->syncBeforeStep();
+    }
     auto result = simulation_->step(stepValue, settings);
     if (!result) return result;
     simulationTick_ = stepValue.tick;
@@ -429,6 +447,14 @@ Body *World::findBody(PhysicsBodyHandle handle) const {
     if (!isValid() || handle.isInvalid()) return nullptr;
     for (Body *body : bodies_) {
         if (body && body->isValid() && body->runtimeHandle() == handle) return body;
+    }
+    return nullptr;
+}
+
+Body *World::findBodyById(int bodyId) const {
+    if (!isValid() || bodyId < 0) return nullptr;
+    for (Body *body : bodies_) {
+        if (body && body->isValid() && body->getId() == bodyId) return body;
     }
     return nullptr;
 }

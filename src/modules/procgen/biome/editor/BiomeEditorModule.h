@@ -14,10 +14,12 @@ namespace eve::biome_editor {
  * @threadaffinity Owner/composition thread only.
  * @reentrancy Do not construct or destroy while a command planner is running.
  */
-class BiomeEditorModule final : public Module {
+class EVENGINE_API_EDITORS BiomeEditorModule final : public Module {
 public:
     Module_REG(BiomeEditorModule);
+    /** @brief Biome editor module. */
     BiomeEditorModule();
+    /** @brief Biome editor module. */
     ~BiomeEditorModule() override;
 
 private:

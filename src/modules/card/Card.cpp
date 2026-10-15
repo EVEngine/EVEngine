@@ -1,9 +1,13 @@
 #include "card/Card.h"
 #include "card/CardAttributes.h"
+#include "card/CardControl.h"
+#include "card/CardOwnerInternal.h"
 
 #include <cmath>
 
 #include "common/Json.h"
+#include "common/SubjectRef.h"
+#include "common/SquirrelBinding.h"
 #include "graphics/Graphics.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -66,6 +70,7 @@ bool CardPlaneMapper::mapLayout(float x, float y) {
 }
 
 namespace {
+using card_internal::ownsCard;
 
 using eve::json::Value;
 
@@ -89,14 +94,6 @@ bool parseDefinition(Value o, std::unordered_map<std::string, CardDefinition> &d
 template <typename T>
 T *resolve(const ecs::EntityHandle &h) {
     return static_cast<T *>(ecs::try_get(h));
-}
-
-bool ownsCard(const std::vector<ecs::EntityHandle> &handles, const CardData &card) {
-    const auto live = ecs::handle_of(const_cast<CardData *>(&card));
-    return std::any_of(handles.begin(), handles.end(), [&live](const auto &handle) {
-        return handle.table == live.table && handle.type == live.type && handle.id == live.id &&
-               handle.generation == live.generation;
-    });
 }
 
 void destroyHandles(std::vector<ecs::EntityHandle> &hs) {
@@ -142,13 +139,60 @@ void registerCppEntityClassForScript(const ssq::Class &cls) {
 
 }  // namespace
 
+Card::Card() = default;
+
+Card::Card(Card &&) noexcept            = default;
+Card &Card::operator=(Card &&) noexcept = default;
+
 Card::~Card() {
+    clearGameplayControls();
     destroyHandles(hands_);
     destroyHandles(decks_);
     destroyHandles(zones_);
     destroyHandles(cards_);
     activeDeck_ = nullptr;
     activeConfig_ = nullptr;
+}
+
+eve::Result<void> Card::publishGameplay(const std::string &instanceId, const std::string &ownerId, Hand *hand,
+                                        eve::resource::IResourceAccount *account) {
+    if (instanceId.empty() || ownerId.empty() || hand == nullptr)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "publishGameplay needs an instance id, an owner id and a hand", "instanceId"));
+    const auto instance = eve::PersistentId::parse(instanceId);
+    const auto owner    = eve::PersistentId::parse(ownerId);
+    if (!instance.has_value() || !owner.has_value())
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "instance and owner ids must be canonical persistent ids", "instanceId"));
+    if (!gameplay_) gameplay_ = std::make_unique<CardControl>(*this);
+    return gameplay_->publish(eve::SubjectRef::fromPersistentId(*instance), eve::SubjectRef::fromPersistentId(*owner),
+                              *hand, account);
+}
+
+eve::Result<void> Card::unpublishGameplay(const std::string &instanceId) {
+    if (!gameplay_)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "no card instance is published", "instanceId"));
+    const auto instance = eve::PersistentId::parse(instanceId);
+    if (!instance.has_value())
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "the instance id must be a canonical persistent id", "instanceId"));
+    return gameplay_->unpublish(eve::SubjectRef::fromPersistentId(*instance));
+}
+
+void Card::clearGameplayControls() {
+    if (gameplay_) gameplay_->clear();
+}
+
+int Card::gameplayControlCount() const { return gameplay_ ? gameplay_->count() : 0; }
+
+std::vector<std::string> Card::gameplayInstances() const {
+    std::vector<std::string> result;
+    if (!gameplay_) return result;
+    for (const auto &instance : gameplay_->instances()) result.push_back(instance.format());
+    return result;
 }
 
 // ---------------------------------------------------------------------------
@@ -279,26 +323,6 @@ eve::Result<std::size_t> Card::step(const eve::SimulationStep &simulationStep) {
     }
     return eve::Result<std::size_t>::success(
         settled, eve::Status::success(settled == 0 ? eve::StatusCode::NoOp : eve::StatusCode::Applied));
-}
-
-eve::Result<eve::transaction::TransactionReceipt> Card::play(CardData                        &card,
-                                                             eve::resource::IResourceAccount &playerAccount,
-                                                             CardPlayComposition              composition,
-                                                             std::string                      transactionId) {
-    if (!ownsCard(cards_, card))
-        return eve::Result<eve::transaction::TransactionReceipt>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::StaleHandle, "card does not belong to this Card facade", "card"));
-    const auto *definition = findDef(card.identity()->definitionId);
-    if (definition == nullptr)
-        return eve::Result<eve::transaction::TransactionReceipt>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "card definition was not found", "definition"));
-    CardPlayRequest request;
-    request.card          = &card;
-    request.definition    = definition;
-    request.playerAccount = &playerAccount;
-    request.composition   = std::move(composition);
-    request.transactionId = std::move(transactionId);
-    return CardPlayPaymentAdapter::play(std::move(request));
 }
 
 std::string Card::getCardDefinitionName(const std::string &id) {
@@ -629,7 +653,8 @@ std::string Card::getEventReason(int index) const {
 // ---------------------------------------------------------------------------
 
 void Card::expose(ssq::Table &table) {
-    auto cls = table.addClass(name, Card::create, false);
+    const auto vm = table.getHandle();
+    auto       cls = table.addClass(name, ssq::Class::Ctor<Card()>(), true);
     expose(cls);
 
     // LayoutConfig —— 全部布局参数（UiCard Configs）
@@ -706,6 +731,18 @@ void Card::expose(ssq::Table &table) {
     cardCls.addFunc("setAttack", [](CardData *c, int v) { if (c) c->stats()->attack = v; });
     cardCls.addFunc("getHealth", [](CardData *c) -> int { return c ? c->stats()->health : 0; });
     cardCls.addFunc("setHealth", [](CardData *c, int v) { if (c) c->stats()->health = v; });
+    cardCls.addFunc("configureSettlementRulesJson", [vm](CardData* value, const std::string& json) {
+        if (!value)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "CardData receiver must not be null", "card", {},
+                        "card.squirrel")));
+        auto rules = settlement::SettlementRuleSet::fromJson(json);
+        if (!rules)
+            return eve::script::projectResult(vm, eve::Result<void>::failure(rules.status()));
+        return eve::script::projectResult(vm,
+                                          value->effects()->values.configureSettlementRules(rules.value()));
+    });
     cardCls.addFunc("isFaceUp", [](CardData *c) -> bool { return c ? c->visual()->faceUp : true; });
     cardCls.addFunc("setFaceUp", [](CardData *c, bool v) { if (c) c->visual()->faceUp = v; });
     cardCls.addFunc("isDisabled", [](CardData *c) -> bool { return c ? c->visual()->disabled : false; });
@@ -838,6 +875,7 @@ void Card::expose(ssq::Table &table) {
 }
 
 void Card::expose(ssq::Class &cls) {
+    card_internal::exposeStageBindings(cls);
     cls.addFunc("registerCardsFromJson", &Card::registerCardsFromJson);
     cls.addFunc("clearCardDefinitions", &Card::clearCardDefinitions);
     cls.addFunc("getCardDefinitionCount", &Card::getCardDefinitionCount);
@@ -891,6 +929,34 @@ void Card::expose(ssq::Class &cls) {
     cls.addFunc("getEventZone", &Card::getEventZone);
     cls.addFunc("getEventCardId", &Card::getEventCardId);
     cls.addFunc("getEventReason", &Card::getEventReason);
+
+    // 把手牌发布到共享玩法协议（`eve_gameplay` / MCP）。返回 {ok, message}：
+    // 失败原因（非规范持久 id、重复实例、空 hand）不被丢弃。account 可为 null，
+    // 此时 `card:play` 走"未绑定支付"边界：零费卡照常出牌，收费卡得到明确诊断。
+    cls.addFunc("publishGameplay", [vm = cls.getHandle()](Card *self, const std::string &instanceId,
+                                                          const std::string &ownerId, Hand *hand) {
+        ssq::Table result(vm);
+        if (self == nullptr || hand == nullptr) {
+            result.set("ok", false);
+            result.set("message", std::string("publishGameplay needs the card module and a hand"));
+            return result;
+        }
+        const auto published = self->publishGameplay(instanceId, ownerId, hand, nullptr);
+        result.set("ok", published.ok());
+        result.set("message", published.ok() ? std::string("published") : published.status().describe());
+        return result;
+    });
+    cls.addFunc("unpublishGameplay", [vm = cls.getHandle()](Card *self, const std::string &instanceId) {
+        ssq::Table result(vm);
+        const auto unpublished = self == nullptr ? eve::Result<void>::failure(eve::Diagnostic::error(
+                                                       eve::DiagnosticCode::Failed, "card module unavailable", "self"))
+                                                 : self->unpublishGameplay(instanceId);
+        result.set("ok", unpublished.ok());
+        result.set("message", unpublished.ok() ? std::string("unpublished") : unpublished.status().describe());
+        return result;
+    });
+    cls.addFunc("clearGameplayControls", &Card::clearGameplayControls);
+    cls.addFunc("getGameplayControlCount", &Card::gameplayControlCount);
 }
 
 }  // namespace eve::card

@@ -12,7 +12,7 @@ import unreal
 
 REQUEST_SCHEMA = "eve.unreal-asset-export-request/1"
 RESULT_SCHEMA = "eve.unreal-asset-export-result/1"
-_TOP_LEVEL_FIELDS = {"schema", "outputDirectory", "resultFile", "format", "assets"}
+_TOP_LEVEL_FIELDS = {"schema", "outputDirectory", "resultFile", "format", "textureSize", "assets"}
 _ASSET_FIELDS = {"sourceAsset", "outputFile"}
 
 
@@ -31,6 +31,8 @@ def _load_request(path: Path) -> dict:
         raise ValueError(f"unsupported request schema: {request.get('schema')!r}")
     if request.get("format") not in ("glb", "gltf"):
         raise ValueError("format must be glb or gltf")
+    if type(request.get("textureSize")) is not int or not 64 <= request["textureSize"] <= 4096:
+        raise ValueError("textureSize must be an integer from 64 to 4096")
     request_root = path.parent.resolve()
     if Path(request.get("outputDirectory", "")).resolve() != request_root / "payload":
         raise ValueError("outputDirectory must be the request's sibling payload directory")
@@ -66,6 +68,11 @@ def _export(request: dict) -> dict:
     options = unreal.GLTFExportOptions()
     options.set_editor_property("texture_image_format", unreal.GLTFTextureImageFormat.PNG)
     options.set_editor_property("bake_material_inputs", unreal.GLTFMaterialBakeMode.USE_MESH_DATA)
+    texture_size = request["textureSize"]
+    options.set_editor_property(
+        "default_material_bake_size",
+        unreal.GLTFMaterialBakeSize(x=texture_size, y=texture_size, auto_detect=False),
+    )
     options.set_editor_property("export_vertex_skin_weights", True)
     options.set_editor_property("export_preview_mesh", True)
     options.set_editor_property("export_animation_sequences", True)
@@ -77,10 +84,10 @@ def _export(request: dict) -> dict:
         if asset is None:
             raise ValueError(f"asset does not exist or could not be loaded: {source_asset}")
         asset_class = asset.get_class().get_name()
-        if asset_class not in ("AnimSequence", "SkeletalMesh"):
+        if asset_class not in ("AnimSequence", "SkeletalMesh", "StaticMesh"):
             raise ValueError(
                 f"unsupported asset class {asset_class} for {source_asset}; "
-                "expected AnimSequence or SkeletalMesh"
+                "expected AnimSequence, SkeletalMesh, or StaticMesh"
             )
         output_path = output_directory / entry["outputFile"]
         messages = unreal.GLTFExporter.export_to_gltf(asset, str(output_path), options, set())

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file TacticsTypes.h
@@ -19,6 +21,7 @@
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 namespace eve::tactics {
@@ -29,14 +32,17 @@ struct Cell {
     int y     = 0;
     int layer = 0;
 
+    /** @brief Operator ==. */
     friend bool operator==(const Cell&, const Cell&) noexcept = default;
+    /** @brief Operator <=>. */
     friend auto operator<=>(const Cell& left, const Cell& right) noexcept {
+        /** @brief Tie. */
         return std::tie(left.y, left.x, left.layer) <=> std::tie(right.y, right.x, right.layer);
     }
 };
 
 /** @brief Supported deterministic board-neighbour topologies. */
-enum class BoardTopology : std::uint8_t { Square4, Square8, HexAxial };
+enum class BoardTopology : std::uint8_t { Square4, Square8, HexAxial, ExplicitGraph };
 
 /** @brief Tactical battle lifecycle. */
 enum class BattleStatus : std::uint8_t { Setup, Running, Ended };
@@ -54,8 +60,40 @@ enum class BattlePhase : std::uint8_t {
     BattleEnd,
 };
 
-/** @brief Built-in deterministic turn scheduling policy. */
-enum class TurnPolicyKind : std::uint8_t { SideAlternating, Initiative };
+/** @brief Stable id of the built-in side-alternating turn policy. */
+inline constexpr std::string_view kSideAlternatingPolicyId = "side_alternating";
+/** @brief Stable id of the built-in per-unit initiative turn policy. */
+inline constexpr std::string_view kInitiativePolicyId = "initiative";
+/**
+ * @brief Stable id of the built-in charge-time (CTB/ATB) turn policy.
+ *
+ * This policy schedules by accumulated charge instead of "one activation per unit
+ * per round", so a unit with higher initiative really does act more often. See
+ * `ChargeTimeBattlePolicy` for the exact gain/ready/consume rule.
+ */
+inline constexpr std::string_view kChargeTimeBattlePolicyId = "charge_time_battle";
+/**
+ * @brief Charge a unit must accumulate before it may activate under CTB scheduling.
+ *
+ * Part of the policy's behaviour rather than of persisted data, but it is a named
+ * constant because the charge values stored in a snapshot are only meaningful
+ * relative to it.
+ */
+inline constexpr int kChargeTimeBattleThreshold = 100;
+
+/**
+ * @brief Typed spelling of the built-in turn-policy ids.
+ *
+ * These are **ids, not an enum**. A battle stores the id string and resolves its
+ * behaviour from `TurnPolicyRegistry`, so a project policy is added by registering
+ * an `ITurnPolicy` and needs no change here. The spelling stays stable because
+ * persisted payloads, replay commands and scripts carry these exact strings.
+ */
+struct TurnPolicyKind {
+    static constexpr std::string_view SideAlternating = kSideAlternatingPolicyId;
+    static constexpr std::string_view Initiative      = kInitiativePolicyId;
+    static constexpr std::string_view ChargeTimeBattle = kChargeTimeBattlePolicyId;
+};
 
 /** @brief One authoritative board cell fact. */
 struct CellState {
@@ -65,11 +103,36 @@ struct CellState {
     std::vector<std::string> tags;
 };
 
+/**
+ * @brief One authoritative **directed** edge fact between two adjacent cells.
+ *
+ * Edges exist in addition to cells, not instead of them: a cell keeps the cost of
+ * entering it from anywhere, while an edge refines one specific direction. That
+ * separation is what lets a board express a one-way drop, a door that only opens
+ * one way, or a diagonal that costs more than its orthogonal neighbours, without
+ * duplicating cell facts or inventing a second board.
+ */
+struct EdgeState {
+    /** @brief Whether travel is allowed in this exact direction. */
+    bool                     passable  = true;
+    /** @brief Additional cost charged only when crossing this direction. */
+    int                      extraCost = 0;
+    /** @brief Stable tags for game rules (for example `door`, `one_way`). */
+    std::vector<std::string> tags;
+};
+
 /** @brief Owning persistent board record used by snapshots and replay inspection. */
 struct BoardCellRecord {
     Cell                      cell;
     CellState                 state;
     std::optional<SubjectRef> occupant;
+};
+
+/** @brief Owning persistent edge record used by snapshots and replay inspection. */
+struct BoardEdgeRecord {
+    Cell      from;
+    Cell      to;
+    EdgeState state;
 };
 
 /** @brief Initial and per-round tactical resource values for one unit. */
@@ -89,7 +152,7 @@ struct TurnResourceSpec {
  * This value is owner-thread-affine. It invokes no callbacks. Every mutation
  * preserves the cell-to-subject and subject-to-cell indexes atomically.
  */
-class BoardState {
+class EVENGINE_API_DOMAINS BoardState {
 public:
     /** @brief Construct an empty board with square-four topology. */
     BoardState() = default;
@@ -133,8 +196,32 @@ public:
     [[nodiscard]] std::vector<Cell> cells() const;
     /** @brief Return all cell facts and occupants in deterministic coordinate order. */
     [[nodiscard]] std::vector<BoardCellRecord> records() const;
-    /** @brief Return deterministic neighbouring cells that exist on this board. */
+    /** @brief Return deterministic neighbouring cells; ExplicitGraph uses declared outgoing edges only. */
     [[nodiscard]] std::vector<Cell> neighbours(Cell origin) const;
+
+    /**
+     * @brief Declare a directed edge between existing cells.
+     * @param from Existing source cell.
+     * @param to Existing destination distinct from source; grids require adjacency.
+     * @param state Directed traversal facts copied into this board.
+     * @return Applied, NotFound for missing cells, InvalidArgument for invalid
+     *         adjacency or costs, or Conflict for an already declared direction.
+     * @remarks ExplicitGraph creates adjacency; the reverse edge is independent.
+     *          Grid edges refine existing adjacency and do not remove reverse travel.
+     *          Simulation-thread-only; retains no borrowed data and calls no callbacks.
+     */
+    [[nodiscard]] Result<void> addEdge(Cell from, Cell to, EdgeState state = {});
+    /** @brief Return a declared directed edge, or NotFound when none is declared. */
+    [[nodiscard]] Result<EdgeState> edge(Cell from, Cell to) const;
+    /**
+     * @brief Return a declared directed edge, or empty when none is declared.
+     *
+     * This is the query path-search uses: an undeclared direction is the common
+     * case, so it must not build a diagnostic on every relaxed neighbour.
+     */
+    [[nodiscard]] std::optional<EdgeState> tryEdge(Cell from, Cell to) const;
+    /** @brief Return every declared directed edge in deterministic order. */
+    [[nodiscard]] std::vector<BoardEdgeRecord> edgeRecords() const;
     /** @brief Validate the two occupancy indexes and all referenced cells. */
     [[nodiscard]] Result<void> validateInvariants() const;
 
@@ -145,11 +232,13 @@ private:
     std::map<Cell, CellState>        cells_;
     std::map<Cell, SubjectRef>       occupantByCell_;
     std::map<std::string, Cell>      cellBySubject_;
+    std::map<std::pair<Cell, Cell>, EdgeState> edges_;
 };
 
 /** @brief Tactical side short-root entity. */
 class TacticalSide : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(TacticalSide, ecs::Entity)
 
     /** @brief Release through the ECS generation boundary. */
@@ -168,6 +257,7 @@ public:
 /** @brief Tactical unit short-root entity. */
 class TacticalUnit : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(TacticalUnit, ecs::Entity)
 
     /** @brief Release through the ECS generation boundary. */
@@ -199,6 +289,15 @@ public:
         int  roundMovePoints      = 0;
         int  roundReactionPoints  = 0;
         int  initiative           = 0;
+        /**
+         * @brief Accumulated scheduling charge for charge-time policies.
+         *
+         * Stays zero under every policy whose `ChargeModel` declares no charge, so
+         * the field is inert unless the battle actually uses CTB scheduling. It is
+         * persisted at schema version 5, because it is exactly the state that makes
+         * "the fast unit acts more often" survive a save/restore.
+         */
+        int  charge               = 0;
         bool alive                = true;
         bool acted                = false;
     };
@@ -244,6 +343,15 @@ struct ReactionReceipt {
     int          remainingReactionPoints = 0;
 };
 
+/**
+ * @brief Upper bound on the opaque ability payload a declaration may carry.
+ *
+ * The payload is caller-owned effect data that tactics stores and replays verbatim, so
+ * the only rule tactics can enforce without reading it is a bound: a persisted snapshot
+ * must not grow without limit.
+ */
+inline constexpr std::size_t kMaxAbilityPayloadBytes = 4096;
+
 /** @brief Accepted deterministic command kinds recorded for replay. */
 enum class BattleCommandKind : std::uint8_t {
     Start,
@@ -258,6 +366,15 @@ enum class BattleCommandKind : std::uint8_t {
     DeclineReaction,
     DefeatUnit,
     RollRandom,
+    /**
+     * @brief Declare a unit ability activation against a target cell.
+     *
+     * Appended last on purpose: the numeric value is persisted in the command log,
+     * so inserting a kind anywhere else would renumber every later kind and
+     * silently reinterpret existing payloads. Its legal range is version-gated
+     * (schema v4), not widened unconditionally.
+     */
+    UseAbility,
 };
 
 /**
@@ -274,8 +391,26 @@ struct BattleCommand {
     SimulationStep                step;
     SubjectRef                    actor;
     Cell                          cell;
+    /**
+     * @brief The unit this command targeted, when the command targets one.
+     *
+     * Independent of @ref cell on purpose: an ability may name a primary unit *and* a
+     * centre cell (a single-target effect inside an area), and the framework must not
+     * silently pick one of the two for the effect owner.
+     */
+    SubjectRef                    targetUnit;
+    /**
+     * @brief Opaque caller-owned effect parameters, as declared by the caller.
+     *
+     * Tactics stores and replays this verbatim and never interprets it: the ability's
+     * parameters belong to whoever owns the effect (`rpg`/`combat` or the game), and a
+     * second interpretation here would be a second source of truth. The schema and
+     * version of this blob are the caller's contract; tactics only enforces a size
+     * bound so a persisted payload stays bounded.
+     */
+    std::string                   payload;
     int                           facing = 0;
-    TurnPolicyKind                policy = TurnPolicyKind::SideAlternating;
+    std::string                   policyId{kSideAlternatingPolicyId};
     std::uint64_t                 triggerSequence = 0;
     LogicalId                     action;
     std::vector<ReactionCandidate> candidates;
@@ -308,6 +443,7 @@ struct ObjectiveState {
 /** @brief Battle short-root and authoritative owner of board and turn state. */
 class Battle : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Battle, ecs::Entity)
 
     /** @brief Release through the ECS generation boundary. */
@@ -328,14 +464,30 @@ public:
         Revision                     revision;
         BattleStatus                 status = BattleStatus::Setup;
         BattlePhase                  phase  = BattlePhase::Setup;
-        TurnPolicyKind               policy = TurnPolicyKind::SideAlternating;
+        std::string                  policyId{kSideAlternatingPolicyId};
         SimulationTick               tick   = SimulationTick::zero();
         std::uint64_t                round  = 0;
         std::size_t                  cursor = 0;
         std::optional<ecs::EntityHandle> activeSide;
         std::optional<ecs::EntityHandle> activeUnit;
         std::vector<ecs::EntityHandle>   sides;
+        /**
+         * @brief Every unit of this battle, as declared by `newUnit`.
+         *
+         * This is the membership roster and the authority for "which units exist".
+         * It is not an activation queue: see @ref schedule.
+         */
         std::vector<ecs::EntityHandle>   units;
+        /**
+         * @brief The current round's activation queue, in activation order.
+         *
+         * @ref cursor indexes this list. It is a subset of @ref units: a policy with
+         * a charge model leaves units out of the queue until they have accumulated
+         * enough charge, so the queue can be shorter than the roster and it changes
+         * from round to round. Persisted (snapshot v5) because a round may be
+         * suspended by a save at any activation.
+         */
+        std::vector<ecs::EntityHandle>   schedule;
     };
     /** @brief Transient deterministic event projection; not a second state authority. */
     struct Events {
@@ -381,5 +533,13 @@ public:
 [[nodiscard]] std::string_view phaseName(BattlePhase phase) noexcept;
 /** @brief Return the stable protocol spelling of a battle status. */
 [[nodiscard]] std::string_view statusName(BattleStatus status) noexcept;
+/**
+ * @brief Return the stable protocol spelling of an accepted command kind.
+ *
+ * The command log is persisted and replayed, so its kind spelling is protocol:
+ * scripts, diagnostics and tests branch on these strings, never on the numeric
+ * enum value, which is free to change with the schema version.
+ */
+[[nodiscard]] std::string_view commandKindName(BattleCommandKind kind) noexcept;
 
 }  // namespace eve::tactics

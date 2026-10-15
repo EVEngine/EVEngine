@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 namespace eve::animation {
 class AnimPose;
@@ -10,6 +12,7 @@ enum class FootIKGroundQueryStatus { Unavailable, NoHit, Hit };
 /** @brief Physics-neutral downward ground-query provider for Foot IK. */
 class FootIKGroundProvider {
 public:
+    /** @brief Releases FootIKGroundProvider resources. */
     virtual ~FootIKGroundProvider() = default;
     /** @brief Query ground below an origin and return model-space contact data. */
     virtual FootIKGroundQueryStatus queryGround(float originX, float originY, float originZ, float maxDistance,
@@ -26,12 +29,15 @@ struct FootIKDebugSnapshot { FootIKDebugFoot left,right; };
  * @brief Paired-foot IK with contact smoothing and pelvis compensation.
  * @note Main-thread only. The borrowed skeleton must outlive this object.
  */
-class FootIKSolver {
+class EVENGINE_API_WORLD FootIKSolver {
 public:
     /** @brief Construct for a non-null borrowed skeleton. */
     explicit FootIKSolver(AnimSkeleton* skeleton);
+    /** @brief Foot ik solver. */
     ~FootIKSolver();
+    /** @brief Foot ik solver. */
     FootIKSolver(const FootIKSolver&) = default;
+    /** @brief Operator =. */
     FootIKSolver& operator=(const FootIKSolver&) = default;
     /** @brief Rebind; changing skeleton clears all bone-index configuration. */
     void setSkeleton(AnimSkeleton* skeleton);

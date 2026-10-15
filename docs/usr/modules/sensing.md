@@ -82,7 +82,28 @@ auto ranked = pipeline.executePreset(ctx, "sensing.builtin.coneSelect");
 - 期望 Preset 选出“最佳目标”——sensing 只排序；primary 由消费者显式 `setPrimary`。
 - 在非 World2D 事实上跑 2D QuerySpec——World 事实面目前是 2D。
 
-## API 快查
+## 视线 provider 的路由（`LineOfSightRouter`）
+
+`eve.sensing.ILineOfSightQuery` 是**单槽位** capability，但一个项目通常有多套互不相关的视线实现
+（世界坐标 3D 探针、战棋棋盘上的格线行走）。各自直接注册会变成"最后注册者生效"，实际行为取决于
+模块加载顺序。
+
+`LineOfSightRouter`（`sensing/LineOfSightRouter.h`）就是那个**唯一被注册的 provider**：每个后端声明
+自己能解释的坐标空间，查询按空间分发。
+
+- 某个空间**没有后端**时返回 `Unsupported`，诊断里带上空间名——不会静默返回"看不见"
+  （那会被 `LineOfSightMode::Required` 当成"没有视线"而悄悄丢掉动作）。
+- 两端点**空间不同**时返回 `InvalidArgument`：接口本来就禁止在空间之间隐式换算。
+- 同一空间**重复认领**返回 `Conflict`；释放只能由认领者自己发起（否则 `NoOp`），因此一个模块
+  不会误释放另一个模块的后端，重复释放也安全。
+- 路由器**不拥有**后端：它只持有借用指针，认领方必须保证其后端在认领期间存活。
+
+后端不该自己去 `cap::provide<ILineOfSightQuery>`，而是调用 `sensing::ensureLineOfSightRouter()`：
+首次调用由 `sensing` 把路由器注册为该 capability（`Applied`），之后是 `NoOp`；**如果槽位已经被
+别的 provider 占用，则返回 `Conflict` 并把那个 provider 原样保留**——项目自己注册的实现不会被
+静默顶掉。`physics` 就是这么做的：它认领 `World3D`，而不是独占整个 capability。
+
+## 绑定与行为说明
 
 | 对象 | API | 说明 |
 |---|---|---|
@@ -114,3 +135,43 @@ auto ranked = pipeline.executePreset(ctx, "sensing.builtin.coneSelect");
 ## Zone 成员
 
 `setZones(id, "ns:name,...")` 写入主体的逻辑 Zone 成员（`LogicalId` 文本）。`SensingWorldCandidateProvider` 将其投影为 `TargetCandidate.zones`，并支持 `TargetingSpec.zone` 过滤。几何 Zone 文档仍由 crowd/editor 等模块拥有；sensing 只镜像成员关系。
+
+## 用脚本提供候选（不用写 C++）
+
+`ISensingCandidateProvider` 这条插座可以由脚本实现：脚本发布一个对象、实现 `queryCandidates(query)`，
+`eve.sensing.TargetingResolver` 式的消费者就会用它来粗筛候选。
+
+```squirrel
+class MyCandidates {
+    function queryCandidates(query) {
+        // query.space         → "world2d" | "world3d" | "grid2d" | "grid3d"
+        // query.origin        → 发起查询的主体 uuid
+        // query.originLocation→ { space, x, y, z }
+        // query.domain        → "any" | "self" | "ally" | "enemy" | "neutral"
+        // query.minRange / query.maxRange（null = 无界）
+        // query.requiredTags / query.excludedTags / query.zone / query.area
+        local out = []
+        foreach (id in myEnemyIds()) {
+            out.append({ subject = id,
+                         location = { space = query.space, x = 3.0, y = 4.0 },
+                         domain = "enemy", tags = ["unit"], zones = ["arena:central"] })
+        }
+        return out
+    }
+}
+
+eve.provider.publishFor("eve.sensing.ISensingCandidateProvider", "game.candidates", MyCandidates())
+```
+
+要点：
+
+- **位置一律自带 `space`，且必须与 `query.space` 一致**。格子与世界单位不可互换，不一致时本次查询
+  返回 `Unsupported`（提示显式换算），而不是猜一个单位。格子坐标必须是整数。
+- `domain` 缺省 `neutral`，`tags`/`zones` 缺省为空；`zones` 用 `LogicalId` 文本（如 `arena:central`）。
+- **可见性与数量策略不由提供方负责**：`lineOfSight` / `minCount` / `maxCount` / `countPolicy` 是
+  消费者的策略，不会下发；脚本只返回粗筛候选，过滤与排序由消费者完成。
+- `query.area` 是可选的空间约束，形状有 `circle2d` / `box2d` / `sphere3d` / `box3d` / `cone2d` /
+  `gridBox2d` / `gridBox3d`；字段见 `SensingScriptCandidateSeam.h`。
+- 失败不静默：脚本没实现该方法 → `Unsupported`；脚本抛错 → 查询失败（`Failed`）；答案形状不对
+  （不是数组、主体不是规范 uuid、坐标不是数）→ `Rejected`。发布脚本 sink 会顶掉原生提供方，并在
+  `eve.log` 里留一行 `warn`。

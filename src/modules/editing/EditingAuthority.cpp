@@ -6,11 +6,6 @@
 namespace eve::editing {
 namespace {
 
-template <class T>
-Result<T> authorityError(Status status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 void appendAffected(TransactionReceipt& receipt, const DomainOperation& operation) {
     for (const ObjectRefValue& object : operation.affectedObjects) {
         if (std::find(receipt.affectedObjects.begin(), receipt.affectedObjects.end(), object) ==
@@ -24,27 +19,27 @@ void appendAffected(TransactionReceipt& receipt, const DomainOperation& operatio
 Result<AuthorityPlan> LocalWorldAuthority::preflight(const TransactionSpec&           transaction,
                                                            std::span<const DomainOperation> operations) {
     if (!target_)
-        return authorityError<AuthorityPlan>(Status::Failed, "editor.authority.missing-target",
-                                             "Local authority has no target");
+        return eve::editing::failed<AuthorityPlan>(Status::Failed, RuleId("editor.authority.missing-target"),
+                                                   "Local authority has no target");
     if (transaction.id.empty() || transaction.target.empty())
-        return authorityError<AuthorityPlan>(Status::Rejected, "editor.authority.invalid-transaction",
-                                             "Transaction id and target are required");
+        return eve::editing::failed<AuthorityPlan>(Status::Rejected, RuleId("editor.authority.invalid-transaction"),
+                                                   "Transaction id and target are required");
     if (transaction.target != target_->targetId())
-        return authorityError<AuthorityPlan>(Status::Rejected, "editor.authority.target-mismatch",
-                                             "Transaction target does not match the authority target");
+        return eve::editing::failed<AuthorityPlan>(Status::Rejected, RuleId("editor.authority.target-mismatch"),
+                                                   "Transaction target does not match the authority target");
     if (transaction.baseRevision != target_->revision())
-        return authorityError<AuthorityPlan>(Status::Conflict, "editor.authority.revision-conflict",
-                                             "Target changed since the transaction was planned");
+        return eve::editing::failed<AuthorityPlan>(Status::Conflict, RuleId("editor.authority.revision-conflict"),
+                                                   "Target changed since the transaction was planned");
     if (committed_.contains(transaction.id))
-        return authorityError<AuthorityPlan>(Status::Conflict, "editor.authority.duplicate-transaction",
-                                             "Transaction id was already committed");
+        return eve::editing::failed<AuthorityPlan>(Status::Conflict, RuleId("editor.authority.duplicate-transaction"),
+                                                   "Transaction id was already committed");
     for (const DomainOperation& operation : operations) {
         if (operation.type.empty())
-            return authorityError<AuthorityPlan>(Status::Rejected, "editor.operation.missing-type",
-                                                 "Domain operation type is required");
+            return eve::editing::failed<AuthorityPlan>(Status::Rejected, RuleId("editor.operation.missing-type"),
+                                                       "Domain operation type is required");
         if (operation.target != transaction.target)
-            return authorityError<AuthorityPlan>(Status::Rejected, "editor.operation.target-mismatch",
-                                                 "Domain operation target does not match the transaction");
+            return eve::editing::failed<AuthorityPlan>(Status::Rejected, RuleId("editor.operation.target-mismatch"),
+                                                       "Domain operation target does not match the transaction");
     }
 
     AuthorityPlan plan;
@@ -56,11 +51,11 @@ Result<AuthorityPlan> LocalWorldAuthority::preflight(const TransactionSpec&     
 
 Result<TransactionReceipt> LocalWorldAuthority::commit(const AuthorityPlan& plan) {
     if (!target_)
-        return authorityError<TransactionReceipt>(Status::Failed, "editor.authority.missing-target",
-                                                  "Local authority has no target");
+        return eve::editing::failed<TransactionReceipt>(Status::Failed, RuleId("editor.authority.missing-target"),
+                                                        "Local authority has no target");
     if (plan.validatedRevision != target_->revision())
-        return authorityError<TransactionReceipt>(Status::Conflict, "editor.authority.revision-conflict",
-                                                  "Target changed after authority preflight");
+        return eve::editing::failed<TransactionReceipt>(Status::Conflict, RuleId("editor.authority.revision-conflict"),
+                                                        "Target changed after authority preflight");
 
     TransactionReceipt receipt;
     receipt.id             = plan.transaction.id;
@@ -87,13 +82,13 @@ Result<TransactionReceipt> LocalWorldAuthority::commit(const AuthorityPlan& plan
         }
     } catch (const std::exception& exception) {
         Result<void> rollback = rollbackApplied(plan.operations, appliedCount);
-        return authorityError<TransactionReceipt>(Status::Failed, "editor.authority.target-exception",
-                                                  exception.what());
+        return eve::editing::failed<TransactionReceipt>(Status::Failed, RuleId("editor.authority.target-exception"),
+                                                        exception.what());
     } catch (...) {
         Result<void> rollback = rollbackApplied(plan.operations, appliedCount);
         (void)rollback;
-        return authorityError<TransactionReceipt>(Status::Failed, "editor.authority.target-exception",
-                                                  "Domain operation target threw an unknown exception");
+        return eve::editing::failed<TransactionReceipt>(Status::Failed, RuleId("editor.authority.target-exception"),
+                                                        "Domain operation target threw an unknown exception");
     }
 
     receipt.state            = TransactionState::Committed;
@@ -106,30 +101,31 @@ Result<TransactionReceipt> LocalWorldAuthority::commit(const AuthorityPlan& plan
 
 Result<TransactionReceipt> LocalWorldAuthority::compensate(const TransactionReceipt& receipt) {
     if (!target_)
-        return authorityError<TransactionReceipt>(Status::Failed, "editor.authority.missing-target",
-                                                  "Local authority has no target");
+        return eve::editing::failed<TransactionReceipt>(Status::Failed, RuleId("editor.authority.missing-target"),
+                                                        "Local authority has no target");
     auto entry = committed_.find(receipt.id);
     if (entry == committed_.end())
-        return authorityError<TransactionReceipt>(Status::NotFound, "editor.authority.receipt-not-found",
-                                                  "Committed transaction is not available for compensation");
+        return eve::editing::failed<TransactionReceipt>(Status::NotFound, RuleId("editor.authority.receipt-not-found"),
+                                                        "Committed transaction is not available for compensation");
     if (commitOrder_.empty() || commitOrder_.back() != receipt.id)
-        return authorityError<TransactionReceipt>(Status::Conflict, "editor.authority.compensation-order",
-                                                  "Only the latest committed transaction can be compensated");
+        return eve::editing::failed<TransactionReceipt>(Status::Conflict, RuleId("editor.authority.compensation-order"),
+                                                        "Only the latest committed transaction can be compensated");
     for (const DomainOperation& operation : entry->second.operations) {
         if (!operation.hasInverse)
-            return authorityError<TransactionReceipt>(Status::Unsupported,
-                                                      "editor.authority.operation-not-reversible",
-                                                      "Transaction contains an operation without an inverse");
+            return eve::editing::failed<TransactionReceipt>(Status::Unsupported,
+                                                            RuleId("editor.authority.operation-not-reversible"),
+                                                            "Transaction contains an operation without an inverse");
     }
 
     if (entry->second.receipt.afterRevision != target_->revision())
-        return authorityError<TransactionReceipt>(Status::Conflict, "editor.authority.revision-conflict",
-                                                  "Target changed after the committed transaction");
+        return eve::editing::failed<TransactionReceipt>(Status::Conflict, RuleId("editor.authority.revision-conflict"),
+                                                        "Target changed after the committed transaction");
 
     auto* staging = dynamic_cast<IDomainOperationTargetStaging*>(target_);
     if (!staging)
-        return authorityError<TransactionReceipt>(Status::Unsupported, "editor.authority.staging-unavailable",
-                                                  "Target cannot stage a complete compensation candidate");
+        return eve::editing::failed<TransactionReceipt>(Status::Unsupported,
+                                                        RuleId("editor.authority.staging-unavailable"),
+                                                        "Target cannot stage a complete compensation candidate");
 
     TransactionReceipt compensation;
     compensation.id             = TransactionId(receipt.id.value() + ".undo." + std::to_string(++receiptSequence_));
@@ -237,20 +233,20 @@ Result<AuthorityPlan> ReadOnlyAuthority::preflight(const TransactionSpec&       
                                                          std::span<const DomainOperation> operations) {
     (void)transaction;
     (void)operations;
-    return authorityError<AuthorityPlan>(Status::Rejected, "editor.authority.read-only",
-                                         "The current editor authority is read-only");
+    return eve::editing::failed<AuthorityPlan>(Status::Rejected, RuleId("editor.authority.read-only"),
+                                               "The current editor authority is read-only");
 }
 
 Result<TransactionReceipt> ReadOnlyAuthority::commit(const AuthorityPlan& plan) {
     (void)plan;
-    return authorityError<TransactionReceipt>(Status::Rejected, "editor.authority.read-only",
-                                              "The current editor authority is read-only");
+    return eve::editing::failed<TransactionReceipt>(Status::Rejected, RuleId("editor.authority.read-only"),
+                                                    "The current editor authority is read-only");
 }
 
 Result<TransactionReceipt> ReadOnlyAuthority::compensate(const TransactionReceipt& receipt) {
     (void)receipt;
-    return authorityError<TransactionReceipt>(Status::Rejected, "editor.authority.read-only",
-                                              "The current editor authority is read-only");
+    return eve::editing::failed<TransactionReceipt>(Status::Rejected, RuleId("editor.authority.read-only"),
+                                                    "The current editor authority is read-only");
 }
 
 }  // namespace eve::editing

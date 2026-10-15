@@ -10,7 +10,7 @@
 namespace eve::procgen {
 
 /** @brief Backend-neutral GPU kernels used by PointGraph with deterministic CPU fallback. */
-class PointCompute {
+class EVENGINE_API_DOMAINS PointCompute {
 public:
     /** @brief One transform operation in a fused point-compute dispatch. */
     struct Transform {

@@ -7,11 +7,6 @@
 namespace eve::schema {
 namespace {
 
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 eve::Value nodeContract(const SchemaNode& node);
 
 eve::Value fieldContract(const FieldDefinition& field) {
@@ -114,8 +109,8 @@ void appendFieldDocumentation(std::ostringstream& output, const FieldDefinition&
 eve::Result<std::string> SchemaRegistry::generateDocumentation(const std::string& schemaId, int schemaVersion) {
     const auto* schema = resolve(schemaId, schemaVersion);
     if (!schema)
-        return failure<std::string>(eve::DiagnosticCode::UnknownVersion, "schema version is not registered",
-                                    "schemaVersion");
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::UnknownVersion, "schema version is not registered", "schemaVersion"));
 
     std::ostringstream output;
     output << "# " << markdownEscape(schema->id) << " (v" << schema->version << ")\n\n";
@@ -133,8 +128,8 @@ eve::Result<std::string> SchemaRegistry::generateDocumentation(const std::string
 eve::Result<std::string> SchemaRegistry::generateBindingContract(const std::string& schemaId, int schemaVersion) {
     const auto* schema = resolve(schemaId, schemaVersion);
     if (!schema)
-        return failure<std::string>(eve::DiagnosticCode::UnknownVersion, "schema version is not registered",
-                                    "schemaVersion");
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::UnknownVersion, "schema version is not registered", "schemaVersion"));
     eve::Value::Object result;
     result.emplace("language", eve::Value("eve-schema-v1"));
     result.emplace("schemaId", eve::Value(schema->id));

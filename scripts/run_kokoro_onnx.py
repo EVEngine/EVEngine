@@ -16,6 +16,7 @@ import wave
 
 import numpy as np
 import onnx
+import utf8_stdio
 
 
 def main():
@@ -93,4 +94,5 @@ def main():
 
 
 if __name__ == '__main__':
+    utf8_stdio.enable_utf8_stdio()
     main()

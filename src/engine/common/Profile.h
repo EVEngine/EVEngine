@@ -32,7 +32,7 @@ namespace eve::prof {
 /**
  * @brief One completed profiling zone (pre-order, parent-linked within a thread).
  */
-struct EVENGINE_API ZoneRecord {
+struct EVENGINE_API_FOUNDATION_INLINE ZoneRecord {
     const char* name      = nullptr;   // pointer is static storage, never freed
     uint32_t    module    = 0;         // interned module id (0 = default)
     uint32_t    threadId  = 0;
@@ -46,7 +46,7 @@ struct EVENGINE_API ZoneRecord {
 /**
  * @brief Per-module/per-zone aggregate of the last completed frame.
  */
-struct EVENGINE_API ZoneSample {
+struct EVENGINE_API_FOUNDATION_INLINE ZoneSample {
     std::string module;
     std::string name;
     std::string thread;
@@ -62,14 +62,22 @@ struct EVENGINE_API ZoneSample {
  * All methods are cheap when disabled. Most methods are called from the main
  * thread; the collector also snapshots off-main-thread buffers at frameMark().
  */
-class EVENGINE_API Profiler {
+class EVENGINE_API_FOUNDATION Profiler {
 public:
     /** @brief Turns collection on/off globally (off = single-branch no-op). */
     static void setEnabled(bool on);
     /** @brief True when collection is active. */
     static bool enabled();
 
-    /** @brief Opens a scoped zone on the current thread. */
+    /**
+     * @brief Opens a scoped zone on the current thread.
+     * @param name Zone name, which must stay readable until frameMark().
+     * @param module Module label, same lifetime requirement.
+     * @note Ownership/lifetime: only the pointers are stored (`ZoneRecord::name`), and
+     *       `frameMark()` reads them a whole frame later, so both must be static storage
+     *       (string literals). Passing a pointer into a scope-local buffer is a dangling
+     *       read that no sanitizer in this build reports.
+     */
     static void zoneBegin(const char* name, const char* module = nullptr);
     /** @brief Closes the innermost open zone on the current thread. */
     static void zoneEnd();
@@ -110,11 +118,14 @@ private:
 /**
  * @brief RAII scoped zone (used via the EV_PROFILE_* macros).
  */
-class EVENGINE_API ZoneScope {
+class EVENGINE_API_FOUNDATION_INLINE ZoneScope {
 public:
+    /** @brief Zone scope. */
     ZoneScope(const char* name, const char* module = nullptr) {
+        /** @brief Zone begin. */
         Profiler::zoneBegin(name, module);
     }
+    /** @brief Zone scope. */
     ~ZoneScope() { Profiler::zoneEnd(); }
     ZoneScope(const ZoneScope&)            = delete;
     ZoneScope& operator=(const ZoneScope&) = delete;

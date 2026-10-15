@@ -153,3 +153,16 @@ TEST_CASE("database.registryHandlesRejectStaleAndReuseSlots") {
     CHECK_EQ(static_cast<int>(registry.unregister(first).code()), static_cast<int>(eve::StatusCode::Rejected));
     CHECK_EQ(static_cast<int>(registry.unregister(second).code()), static_cast<int>(eve::StatusCode::Applied));
 }
+
+TEST_CASE("database.registryReleasesRootsBeforeRuntimeShutdown") {
+    ObjectRegistry& registry = ObjectRegistry::instance();
+    registry.clearAll();
+    {
+        Runtime runtime(512, ssq::Libs::ALL);
+        runtime.initialize();
+        runtime.runSource(kDatabaseScript, "database_shutdown.nut");
+        REQUIRE(registry.create("CharacterData").ok());
+        CHECK_EQ(registry.count("CharacterData"), size_t(1));
+    }
+    CHECK_EQ(registry.count("CharacterData"), size_t(0));
+}

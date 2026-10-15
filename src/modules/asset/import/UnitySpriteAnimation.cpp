@@ -80,22 +80,24 @@ Result<PreparedAssetImport> prepareUnitySpriteAnimation(const UnityProjectImport
                                                         const UnitySourceAsset&          source) try {
     const auto text = contents(request, source.path);
     if (text.find("m_PPtrCurves:") == std::string::npos)
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::Unsupported,
-                                                    "animation has no supported sprite track", source.path);
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "animation has no supported sprite track", source.path, {}, "asset.import"));
     const auto curves = capture(text, R"(\n  m_PPtrCurves:([\s\S]*?)\n  m_SampleRate:)");
     if (!std::regex_search(curves,
                            std::regex(R"(\n    attribute: m_Sprite\r?\n    path: *\r?\n    classID: 212\r?\n)")))
-        return detail::failure<PreparedAssetImport>(
-            DiagnosticCode::Unsupported, "only root SpriteRenderer sprite curves are supported", source.path);
+        return Result<PreparedAssetImport>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "only root SpriteRenderer sprite curves are supported",
+                              source.path, {}, "asset.import"));
     for (const auto field : {"m_RotationCurves", "m_CompressedRotationCurves", "m_EulerCurves", "m_PositionCurves",
                              "m_ScaleCurves", "m_FloatCurves", "m_Events"})
         if (!std::regex_search(text, std::regex(std::string("\\n  ") + field + ": \\[\\]")))
-            return detail::failure<PreparedAssetImport>(DiagnosticCode::Unsupported,
-                                                        "clip contains non-sprite curves or events", source.path);
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                                          "clip contains non-sprite curves or events",
+                                                                          source.path, {}, "asset.import"));
     const std::regex curveStart(R"(\n  - curve:)");
     if (std::distance(std::sregex_iterator(curves.begin(), curves.end(), curveStart), std::sregex_iterator{}) != 1)
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::Unsupported,
-                                                    "multiple sprite tracks are unsupported", source.path);
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "multiple sprite tracks are unsupported", source.path, {}, "asset.import"));
     const double fps      = scalar(text, R"(\n  m_SampleRate: ([^\r\n]+))");
     const double duration = scalar(text, R"(\n    m_StopTime: ([^\r\n]+))");
     const double loop     = scalar(text, R"(\n    m_LoopTime: ([^\r\n]+))");
@@ -165,13 +167,14 @@ Result<PreparedAssetImport> prepareUnitySpriteAnimation(const UnityProjectImport
                                              asset::EvaDependencyKind::RuntimeRequired,
                                              "spriteFrame",
                                              {},
-                                             "eve.image/2",
+                                             "eve.image/3",
                                              {}});
     }
     out.findings.push_back({source.path, "AnimationClip.sprite", ImportDisposition::Translated,
                             "explicit sprite keys, rectangles, pivots, pixel scale, filter and looping preserved"});
     return Result<PreparedAssetImport>::success(std::move(out));
 } catch (const std::exception& error) {
-    return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError, error.what(), source.path);
+    return Result<PreparedAssetImport>::failure(
+        Diagnostic::error(DiagnosticCode::ParseError, error.what(), source.path, {}, "asset.import"));
 }
 }  // namespace eve::asset_import

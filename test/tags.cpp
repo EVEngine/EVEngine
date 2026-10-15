@@ -2,9 +2,12 @@
 #include "zeroerr/unittest.h"
 
 #include "ScriptTest.h"
+#include "common/Capability.h"
+#include "common/StateAccess.h"
 #include "tags/TagStore.h"
 #include "tags/Tags.h"
 
+using eve::tags::Tags;
 using eve::tags::TagStore;
 
 TEST_CASE("tags.tagsAreSetsWithDeterministicOrdering") {
@@ -140,6 +143,20 @@ function testTagsBindings() {
 
 UnitSciptTest(TagsScriptTest, kTagsScript);
 
-TEST_CASE_FIXTURE(TagsScriptTest, "tags.script.bindings") {
-    CHECK(vm.callFunc(vm.findFunc("testTagsBindings"), vm).toBool());
+TEST_CASE_FIXTURE(TagsScriptTest, "tags.script.bindings") { REQUIRE(callScript("testTagsBindings")); }
+
+TEST_CASE("tags.modulePublishesWorldStateListeners") {
+    eve::cap::detail::clearAllRaw();
+    int listeners = 0;
+    {
+        Tags tags;
+        eve::cap::forEach<eve::IStateQuery>([&](eve::IStateQuery*) { ++listeners; });
+        CHECK_EQ(listeners, 1);
+        listeners = 0;
+        eve::cap::forEach<eve::IStateMutation>([&](eve::IStateMutation*) { ++listeners; });
+        CHECK_EQ(listeners, 1);
+    }
+    listeners = 0;
+    eve::cap::forEach<eve::IStateQuery>([&](eve::IStateQuery*) { ++listeners; });
+    CHECK_EQ(listeners, 0);
 }

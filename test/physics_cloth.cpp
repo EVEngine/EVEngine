@@ -8,9 +8,7 @@
 extern const char* physics_cloth_content;
 UnitSciptTest(PhysicsClothScriptTest, physics_cloth_content);
 
-TEST_CASE_FIXTURE(PhysicsClothScriptTest, "PhysicsCloth.scriptBindings") {
-    CHECK(vm.callFunc(vm.findFunc("basic"), vm).toBool());
-}
+TEST_CASE_FIXTURE(PhysicsClothScriptTest, "PhysicsCloth.scriptBindings") { REQUIRE(callScript("basic")); }
 
 TEST_CASE("PhysicsCloth.modelGridCreatesReusableRuntime") {
     auto baked = eve::physics::ClothModel::grid(4, 3, 0.5f, -1.f, 2.f, 3.f);
