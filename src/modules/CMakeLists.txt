@@ -280,6 +280,10 @@ foreach(_mod IN LISTS EVE_ENABLED_MODULES)
   create_module(${EVE_MODULE_${_mod}_LIB} ${_mod})
 endforeach()
 
+if(TARGET EVSchema)
+  target_link_libraries(EVSchema PUBLIC protobuf::libprotobuf)
+endif()
+
 if(TARGET EVInventory)
   # Generated with the pinned third-party protoc from proto/inventory_save.proto.
   # Checked in so Android, iOS and WebAssembly only need the target runtime.

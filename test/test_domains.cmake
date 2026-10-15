@@ -32,6 +32,7 @@
 
 set(EVE_TEST_DOMAINS
     core
+    schema
     scripts
     graphics
     ui
@@ -72,7 +73,7 @@ set(EVE_TEST_MODULE_DOMAIN
     "math;core"
     "data;core"
     "filesystem;core"
-    "schema;core"
+    "schema;schema"
     "tags;core"
     "transaction;core"
     "spatial;core"

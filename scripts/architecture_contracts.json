@@ -1228,6 +1228,27 @@
       "restore_atomicity": "Validate complete candidate and prepare owning copies before swapping hierarchy and payloads. Source preparation occurs before Director command publication; projection failures restore the old document."
     },
     {
+      "id": "schema-protobuf-dynamic-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/schema/ProtobufSchema.*",
+      "owner": "schema::ProtobufSchema",
+      "issue": "EVENGINE-ARCH-SCHEMA-PROTOBUF",
+      "reason": "A runtime FileDescriptorSet is the single field contract for a registered schema id and version.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/schema/ProtobufSchema.h",
+        "src/modules/schema/ProtobufSchema.cpp"
+      ],
+      "tests": [
+        "test/schema_protobuf_dynamic.cpp"
+      ],
+      "schema": "The caller supplies a stable schema id, positive version, FileDescriptorSet and full message name; registration rejects duplicate legacy or Protobuf ownership of the same pair.",
+      "version": "Exact registered version only; no implicit nearest-version fallback.",
+      "migration": "Migration is explicit at the owning domain boundary; unknown schema versions are rejected.",
+      "unknown_fields": "Strict protobuf JSON parsing rejects unknown fields; binary-to-JSON projection rejects unknown wire fields recursively.",
+      "restore_atomicity": "Descriptor registration builds a private pool and publishes it only after every file and message resolves. Encoding and decoding do not mutate domain state."
+    },
+    {
       "id": "sky-profile-persistence-contract",
       "rule": "persistence",
       "scope": "src/modules/daynight/sky/SkyProfile.*",
@@ -3768,6 +3789,37 @@
           "why": "One weak registration per dirty component; flush before TransformSystem traversal, preserving edits raised by build and cancelling destroyed owners."
         }
       ]
+    },
+    {
+      "id": "schema-protobuf-dynamic-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/schema/**",
+      "owner": "schema::ProtobufSchema",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Runtime descriptor sets provide a typed binary and JSON projection boundary for dynamically generated proto messages.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/schema/ProtobufSchema.h",
+        "src/modules/schema/ProtobufSchema.cpp",
+        "cmake/module_manifest/core_foundation.cmake"
+      ],
+      "tests": [
+        "test/schema_protobuf_dynamic.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "No L1-L4 trim claim is made for this change."
+      },
+      "thread_affinity": "Register, clear, encode and decode run on the schema registry thread; registration does not overlap serialization.",
+      "cost_notes": [
+        "Descriptor pools are built once per schema version; encoding and decoding cost O(message size) at serialization boundaries."
+      ],
+      "hot_path": []
     },
     {
       "id": "script-structure-reflection-interface",

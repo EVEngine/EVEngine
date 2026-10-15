@@ -186,6 +186,7 @@ eve_declare_module(NAME physics_softbody DIR physics/softbody LAYER 3
                    GROUP 3d web)
 # L0 -- foundation (continued)
 eve_declare_module(NAME schema LAYER 0 SCRIPT Schema SLOT schema
+                   THIRDPARTY protobuf
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME social LAYER 0 SCRIPT Social SLOT social
                    GROUP minimal 2d 3d web)
