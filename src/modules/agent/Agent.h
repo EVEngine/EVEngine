@@ -82,7 +82,7 @@ struct TraceStep {
 /**
  * @brief In-memory versioned replay evidence, independent of learned model state.
  * @remarks Version 1 is the initial format. Replay rejects unknown schema/version;
- * the canonical Value/JSON codec rejects unknown fields. Adapters retain their
+ * the script Value compatibility codec rejects unknown fields. Adapters retain their
  * domain version separately and must reject incompatible domain builds. No older
  * released schema exists; future migrations must be explicit.
  */
@@ -140,6 +140,9 @@ public:
 
 /** @brief Validate the complete owning policy before inference/import, with no mutation or callbacks. */
 [[nodiscard]] EVENGINE_API_FOUNDATION Result<void> validatePolicy(const Policy& policy);
+
+/** @brief Validate owning replay evidence before import or environment reset; invokes no callbacks. */
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<void> validateTrace(const Trace& trace);
 
 /** @brief Return an owning backend label, or Unsupported if Tensor is unavailable; owner thread only. */
 [[nodiscard]] EVENGINE_API_FOUNDATION Result<std::string> backendName(Backend backend);

@@ -5468,6 +5468,18 @@
         "agent.cpp"
       ]
     },
+    "integration/agent-persistence/agent_protobuf.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "agent.protobuf.policyRoundTripsAndRejectsFutureFields",
+          "agent.protobuf.traceRoundTripsAndRejectsNestedUnknownFields"
+        ]
+      },
+      "module": "agent",
+      "task": "agent-persistence"
+    },
     "unit/animation/animation_tests.cpp": {
       "role": "tests",
       "default": "local-logic",

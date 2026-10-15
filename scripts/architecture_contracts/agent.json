@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "agent-evidence-protobuf-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/agent/AgentPersistence.*",
+      "owner": "agent::Policy and agent::Trace",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "Known policy weights and replay observations are stored directly in typed Protobuf without a Value tree.",
+      "expiry": "2027-12-31",
+      "evidence": ["proto/agent_evidence.proto", "src/modules/agent/AgentPersistence.cpp"],
+      "tests": ["test/integration/agent-persistence/agent_protobuf.cpp"],
+      "schema": "PolicyDocument and TraceDocument declare all persisted fields, including nested observations and steps.",
+      "version": "Typed wire and ProtoJSON write version 2; the version-1 script Value codec remains a compatibility boundary.",
+      "migration": "Version-1 script Value documents remain importable by the existing codec; unknown typed wire versions are refused until an explicit migration exists.",
+      "unknown_fields": "Binary imports reject unknown Protobuf fields recursively; ProtoJSON rejects unknown names.",
+      "restore_atomicity": "Decoders validate complete owning Policy or Trace values before returning them and never mutate an environment."
+    },
+    {
+      "id": "agent-evidence-protobuf-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/agent/**",
+      "owner": "agent::Policy and agent::Trace",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "Typed persistence is the canonical policy and trace storage face; Value remains the script projection.",
+      "expiry": "2027-12-31",
+      "evidence": ["src/modules/agent/AgentPersistence.h", "src/modules/agent/Codec.h"],
+      "tests": ["test/integration/agent-persistence/agent_protobuf.cpp", "test/unit/agent/agent.cpp"],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": ["Agent"],
+      "protocol": [],
+      "trim": {"absent_profile": "No L1-L4 trim claim is made for this persistence format change."},
+      "thread_affinity": "Serialization borrows owning values synchronously; parsing has no shared state or callbacks.",
+      "cost_notes": ["Every persistence call is linear in weight or replay length and belongs at save/load boundaries."],
+      "hot_path": []
+    }
+  ]
+}

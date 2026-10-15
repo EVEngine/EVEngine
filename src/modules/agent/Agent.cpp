@@ -256,13 +256,12 @@ Result<Report> run(const Config& c, IEnvironment& environment) {
     return Result<Report>::success(std::move(report));
 }
 
-Result<void> replay(const Trace& trace, IEnvironment& environment, double tolerance) {
+Result<void> validateTrace(const Trace& trace) {
     if (trace.schemaId != "evengine.agent.trace" || trace.schemaVersion != 1 || !std::isfinite(trace.dt) ||
-        trace.dt <= 0 || trace.dt > 60 || !std::isfinite(tolerance) || tolerance < 0 || trace.steps.size() > 1024 ||
-        trace.initial.features.empty() || trace.initial.features.size() > 1024 || trace.initial.reward != 0)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                       "Unsupported trace schema/version, time, length or tolerance",
-                                                       {}, {}, "agent"));
+        trace.dt <= 0 || trace.dt > 60 || trace.steps.size() > 1024 || trace.initial.features.empty() ||
+        trace.initial.features.size() > 1024 || trace.initial.reward != 0)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "Unsupported trace schema/version, time or length", {}, {}, "agent"));
     const Observation* previous = &trace.initial;
     if (!validObservation(*previous, trace.initial.features.size(), 1024))
         return Result<void>::failure(
@@ -276,6 +275,15 @@ Result<void> replay(const Trace& trace, IEnvironment& environment, double tolera
                                                            "Invalid trace action or observation", {}, {}, "agent"));
         previous = &step.observation;
     }
+    return Result<void>::success();
+}
+
+Result<void> replay(const Trace& trace, IEnvironment& environment, double tolerance) {
+    if (!std::isfinite(tolerance) || tolerance < 0)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid replay tolerance", {}, {}, "agent"));
+    auto valid = validateTrace(trace);
+    if (!valid.ok()) return valid;
     auto reset = environment.reset(trace.environmentSeed);
     if (!reset) return Result<void>::failure(reset.status());
     if (!matches(trace.initial, reset.value(), tolerance)) return Result<void>::failure(
