@@ -9,8 +9,11 @@
 #include "graphics/Shader.h"
 #include "graphics/SurfaceMode.h"
 #include "graphics/Texture.h"
+#include "graphics/VirtualTextureStreaming.h"
 
+#include <cstdint>
 #include <map>
+#include <memory>
 #include <string>
 
 namespace eve::graphics {
@@ -133,7 +136,22 @@ public:
     Texture* getHeightTexture() const { return height_; }
 
     /**
+     * @brief Author a layered virtual texture; residency is driven automatically on bind.
+     * @param config Producer + streaming budgets owned by this material.
+     * @return Success after replacing any previous virtual-texture session, or a validation failure.
+     * @thread Render/authoring thread; no callbacks.
+     */
+    [[nodiscard]] eve::Result<void> enableVirtualTexture(const VirtualTextureStreamingConfig& config);
+
+    /**
+     * @brief Append one immutable source layer to the material-owned virtual texture.
+     * @return Stable zero-based layer index, or a structured validation failure.
+     */
+    [[nodiscard]] eve::Result<std::uint32_t> addVirtualTextureLayer(const VirtualTextureBlendLayer& layer);
+
+    /**
      * @brief Opt this material into physical-atlas virtual-texture sampling.
+     * @ownership Internal Graphics upload path; game code should prefer enableVirtualTexture().
      * @param albedoAtlas Physical albedo pages; borrowed from Graphics.
      * @param normalAtlas Physical tangent-space normal pages; borrowed from Graphics.
      * @param pageTable RGBA8 virtual-to-physical page table; borrowed from Graphics.
@@ -148,7 +166,7 @@ public:
                                                       int pageCountX, int pageCountY, int atlasSlotsX, int atlasSlotsY,
                                                       float borderFraction);
 
-    /** @brief Restore conventional albedo/normal/height interpretation. */
+    /** @brief Restore conventional albedo/normal/height interpretation and drop any owned streaming session. */
     void clearVirtualTexture();
     /** @brief Return the active virtual-texture sampling mode. */
     MaterialVirtualTextureMode virtualTextureMode() const {
@@ -238,7 +256,12 @@ public:
 
     /**
      * @brief Push this material onto Graphics mesh3d state for the next draw.
-     * Does not issue the draw itself.
+     * Does not issue the draw itself. Layer-authored virtual textures tick once per
+     * mesh3d draw epoch during this call.
+     * @param gfx Active Graphics backend that owns GPU textures and receives mesh3d state.
+     * @ownership Caller retains Graphics; this material only borrows it for the call.
+     * @lifetime gfx must outlive this call; virtual-texture GPU atlases remain owned by gfx.
+     * @thread Render-thread affine; may upload atlas/page-table regions when streaming ticks.
      */
     [[nodiscard]] Result<void> bind(Graphics& gfx) const;
 
@@ -287,6 +310,8 @@ public:
     std::string getAlphaTechnique() const { return alphaTechnique_; }
 
 private:
+    [[nodiscard]] Result<void> tickVirtualTexture(Graphics& gfx) const;
+
     PbrSurface                   pbr_;
     bool                         pbrEnabled_   = false;
     std::string                  shadingModel_ = "pbr";
@@ -321,6 +346,9 @@ private:
     int                          virtualAtlasSlotsY_    = 0;
     float                        virtualBorderFraction_ = 0.f;
     std::map<std::string, float> params_;
+    mutable std::unique_ptr<VirtualTextureStreaming> virtualStreaming_;
+    mutable std::uint64_t                            virtualStreamingEpoch_       = 0;
+    mutable bool                                     virtualStreamingInitialized_ = false;
 };
 
 /**
