@@ -437,6 +437,15 @@ struct FSIn {
 @group(0) @binding(13) var decalNormalLayer: texture_2d<f32>;
 @group(0) @binding(14) var decalParamsLayer: texture_2d<f32>;
 
+/** @brief Pack UE-style VT feedback id: pageX (12) | pageY (12) | mip (8). */
+fn packVirtualTextureFeedback(sourceUv: vec2f, mipLevel: f32) -> u32 {
+    let pageCounts = max(ubo.virtualTexture.yz, vec2f(1.0));
+    let virtualCoord = fract(sourceUv) * pageCounts;
+    let page = clamp(vec2i(floor(virtualCoord)), vec2i(0), vec2i(pageCounts) - vec2i(1));
+    let mip = u32(clamp(mipLevel, 0.0, 255.0));
+    return u32(page.x) | (u32(page.y) << 12u) | (mip << 24u);
+}
+
 /** @brief Sample virtual texture. */
 fn sampleVirtualTexture(atlas: texture_2d<f32>, sourceUv: vec2f,
                         uvDx: vec2f, uvDy: vec2f) -> vec4f {

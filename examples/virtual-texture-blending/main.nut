@@ -1,60 +1,43 @@
-// Virtual-texture material blending: two resident pages plus a low-resolution fallback.
-// The page gutters repeat the neighbouring edge color, demonstrating seam-free filtering.
+// Virtual-texture streaming (UE5 RVT-shaped): feedback → bounded decode → atomic publish.
+// Layers are authored into VirtualTextureStreaming; residency follows a low-res feedback grid.
 
 persist vtCamera = null
 persist vtGround = null
 persist vtMaterial = null
-persist vtResources = []
+persist vtStreaming = null
+persist vtAtlasPreview = null
+persist vtTick = 0
 
-function vtFillSlot(image, slot, slotSize, border, pageIndex) {
-    for (local y = 0; y < slotSize; ++y) {
-        for (local x = 0; x < slotSize; ++x) {
-            local localX = x - border;
-            if (localX < 0) localX = 0;
-            if (localX >= slotSize - border * 2) localX = slotSize - border * 2 - 1;
-            local globalU = (pageIndex * (slotSize - border * 2) + localX).tofloat() /
-                            ((slotSize - border * 2) * 2 - 1).tofloat();
-            local blend = globalU * globalU * (3.0 - 2.0 * globalU);
-            local detail = ((localX / 8 + y / 8) % 2 == 0) ? 0.035 : -0.035;
-            local rockR = 0.34 + detail; local rockG = 0.30 + detail; local rockB = 0.25 + detail;
-            local mossR = 0.16 + detail; local mossG = 0.40 + detail; local mossB = 0.18 + detail;
-            image.setPixel(slot * slotSize + x, y,
-                rockR * (1.0 - blend) + mossR * blend,
-                rockG * (1.0 - blend) + mossG * blend,
-                rockB * (1.0 - blend) + mossB * blend, 1.0);
+function vtMakeLayer(r, g, b) {
+    local image = eve.Image().newEmptyImageData(64, 64, "RGBA8");
+    for (local y = 0; y < 64; ++y) {
+        for (local x = 0; x < 64; ++x) {
+            local detail = ((x / 8 + y / 8) % 2 == 0) ? 0.04 : -0.04;
+            image.setPixel(x, y, r + detail, g + detail, b + detail, 1.0);
         }
     }
+    return image;
 }
 
-function vtBuildMaterial() {
-    local tile = 64;
-    local border = 2;
-    local slotSize = tile + border * 2;
-    local atlas = eve.Image().newEmptyImageData(slotSize * 3, slotSize, "RGBA8");
-    // Slot zero is the always-resident fallback; slots one and two are physical pages.
-    vtFillSlot(atlas, 0, slotSize, border, 0);
-    vtFillSlot(atlas, 1, slotSize, border, 0);
-    vtFillSlot(atlas, 2, slotSize, border, 1);
-
-    local normal = eve.Image().newEmptyImageData(slotSize * 3, slotSize, "RGBA8");
-    for (local y = 0; y < slotSize; ++y)
-        for (local x = 0; x < slotSize * 3; ++x)
-            normal.setPixel(x, y, 0.5, 0.5, 1.0, 1.0);
-
-    local pageTable = eve.Image().newEmptyImageData(2, 1, "RGBA8");
-    pageTable.setPixel(0, 0, 0.5, 0.5, 1.0, 1.0);       // physical slot 1 / 3
-    pageTable.setPixel(1, 0, 0.833333, 0.5, 1.0, 1.0);  // physical slot 2 / 3
-
-    local atlasTexture = gfx.newTexture(atlas, false, false);
-    local normalTexture = gfx.newTexture(normal, false, false);
-    local tableTexture = gfx.newTexture(pageTable, false, false);
-    vtResources = [atlas, normal, pageTable, atlasTexture, normalTexture, tableTexture];
+function vtBuildStreaming() {
+    // 128×64 virtual space, 64px tiles → 2×1 pages, capacity 2 physical pages + fallback.
+    vtStreaming = gfx.newVirtualTextureStreaming(128, 64, 64, 2, 2, 2);
+    local rock = vtMakeLayer(0.34, 0.30, 0.25);
+    local moss = vtMakeLayer(0.16, 0.40, 0.18);
+    local flatNormal = eve.Image().newEmptyImageData(64, 64, "RGBA8");
+    for (local y = 0; y < 64; ++y)
+        for (local x = 0; x < 64; ++x)
+            flatNormal.setPixel(x, y, 0.5, 0.5, 1.0, 1.0);
+    vtStreaming.addLayer(rock, flatNormal, 1.0, 1.0, 0.0);
+    vtStreaming.addLayer(moss, flatNormal, 1.0, 1.0, 0.85);
+    vtStreaming.initializePhysicalCache();
 
     vtMaterial = gfx.newMaterial();
-    vtMaterial.setVirtualTexture(atlasTexture, normalTexture, tableTexture,
-                                 2, 1, 3, 1, border.tofloat() / slotSize.tofloat());
     vtMaterial.setRoughness(0.78);
     vtMaterial.setMetallic(0.0);
+    // Bootstrap GPU atlases (fallback only) then stream requested pages.
+    local boot = vtStreaming.syncToMaterial(gfx, vtMaterial);
+    if (!boot.ok) throw("vt bootstrap failed: " + boot.status.summary);
 }
 
 eve_init = function() {
@@ -74,25 +57,38 @@ eve_init = function() {
     rc.disable("atmosphere");
     rc.compile();
 
-    vtBuildMaterial();
+    vtBuildStreaming();
     vtGround = eve.Renderable3D();
     vtGround.setMesh(gfx.newMeshCube(1.0));
     vtGround.setScale(11.0, 0.35, 7.0);
     vtGround.setMaterial(vtMaterial);
     vtGround.setReceiveShadow(true);
-    print("Virtual texture: 2 pages, 2px gutters, fallback slot, derivative-safe sampling\n");
+    print("Virtual texture streaming: feedback grid → decode budget → atomic publish\n");
 };
 
 eve_update = function(dt) {
     if (has_module("scene")) scene.updateTransformsAll();
+    vtTick += 1;
+    // Alternate which half of the surface is requested so eviction / residency is visible.
+    if ((vtTick / 90) % 2 == 0) {
+        vtStreaming.recordFeedback(0, 0, 0);
+        vtStreaming.recordFeedback(1, 0, 0);
+    } else {
+        vtStreaming.recordFeedback(1, 0, 0);
+    }
+    local stats = vtStreaming.update();
+    if (!stats.ok) throw("vt update failed: " + stats.status.summary);
+    local sync = vtStreaming.syncToMaterial(gfx, vtMaterial);
+    if (!sync.ok) throw("vt sync failed: " + sync.status.summary);
+    if (vtTick % 90 == 1) {
+        print("VT gen=" + vtStreaming.generation() +
+              " resident=" + vtStreaming.residentPages() +
+              " pages=" + vtStreaming.pageCountX() + "x" + vtStreaming.pageCountY() + "\n");
+    }
 };
 
 eve_render = function() {
     gfx.clear();
     gfx.render3D();
-    // Resident-atlas inset: fallback + both bordered physical pages. This also
-    // remains visible in readback paths that currently omit the 3D scene color.
-    gfx.drawSolidRect(42.0, 542.0, 842.0, 148.0, 0.015, 0.02, 0.03, 0.94);
-    gfx.drawTexturedRect(vtResources[3], 50.0, 550.0, 826.0, 132.0,
-                         1.0, 1.0, 1.0, 1.0);
+    // Status is printed occasionally from update; keep the frame free of font deps.
 };
