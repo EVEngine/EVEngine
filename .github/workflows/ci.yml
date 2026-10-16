@@ -1326,6 +1326,8 @@ jobs:
       # 20-minute step guard during teardown (PR #586 run 38844868063;
       # run 38775560674). Keep headroom above the ~15+ minute live window.
       - name: Smoke all examples (headless, >=2s alive each)
+        # 151 examples take up to 151 * (6s run + 3s termination grace),
+        # already over 22 minutes before process/display setup overhead.
         timeout-minutes: 30
         env:
           ALSOFT_DRIVERS: "null"
