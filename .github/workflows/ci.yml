@@ -845,6 +845,12 @@ jobs:
             sed -n '/NetHostPeers .*: .* ms/p' "$log"
           fi
 
+      - name: Setup Dawn generator Python
+        if: ${{ needs.change-scope.outputs.dawn_metal == 'true' }}
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+
       - name: Configure native Dawn Metal lane
         if: ${{ needs.change-scope.outputs.dawn_metal == 'true' }}
         # Dawn's DAWN_FETCH_DEPENDENCIES shallow-clones abseil/glfw3 (and friends)
