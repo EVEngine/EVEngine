@@ -3,6 +3,7 @@
 /** @file ActionPreviewProfile.h @brief Versioned action-editor preview settings and skeleton diagnostics. */
 
 #include "action/ActionTimeline.h"
+#include "common/Export.h"
 #include "common/Result.h"
 #include "common/Value.h"
 #include "editor/EditorIds.h"
@@ -36,11 +37,11 @@ struct ActionPreviewProfile {
     ActionPreviewShading shading        = ActionPreviewShading::Lit;
 
     /** @brief Validate stable identity, URI spelling and enum state. */
-    [[nodiscard]] Result<void> validate() const;
+    [[nodiscard]] EVENGINE_API_EDITORS Result<void> validate() const;
     /** @brief Encode the canonical sidecar value. */
-    [[nodiscard]] Result<Value> toValue() const;
+    [[nodiscard]] EVENGINE_API_EDITORS Result<Value> toValue() const;
     /** @brief Decode and validate a sidecar transactionally. */
-    [[nodiscard]] static Result<ActionPreviewProfile> fromValue(const Value& value);
+    [[nodiscard]] static EVENGINE_API_EDITORS Result<ActionPreviewProfile> fromValue(const Value& value);
 
     auto operator<=>(const ActionPreviewProfile&) const = default;
 };
@@ -90,7 +91,7 @@ struct ActionPreviewCompatibilityReport {
     std::vector<Diagnostic>                     profileDiagnostics;
 
     /** @brief True when no section or profile diagnostic prevents preview. */
-    [[nodiscard]] bool canPreview() const noexcept;
+    [[nodiscard]] EVENGINE_API_EDITORS bool canPreview() const noexcept;
 };
 
 /** @brief Stateless deterministic compatibility analysis over owning provider snapshots. */
@@ -100,7 +101,7 @@ public:
      * @brief Analyze every animation section against the selected model or first animation anchor.
      * @param provider Optional authoring provider; absence is reported as Unsupported, never silently accepted.
      */
-    [[nodiscard]] Result<ActionPreviewCompatibilityReport> analyze(
+    [[nodiscard]] EVENGINE_API_EDITORS Result<ActionPreviewCompatibilityReport> analyze(
         const action::ActionTimeline& timeline, const ActionPreviewProfile& profile,
         IActionPreviewAssetProvider* provider) const;
 };
@@ -109,20 +110,20 @@ public:
 class ActionPreviewProfileStore {
 public:
     /** @brief Construct a store rooted at one project directory retained by value. */
-    explicit ActionPreviewProfileStore(std::filesystem::path projectRoot);
+    explicit EVENGINE_API_EDITORS ActionPreviewProfileStore(std::filesystem::path projectRoot);
 
     /** @brief Atomically validate and save one profile under `.eve/action-preview`. */
-    [[nodiscard]] Result<void> save(const ActionPreviewProfile& profile) const;
+    [[nodiscard]] EVENGINE_API_EDITORS Result<void> save(const ActionPreviewProfile& profile) const;
     /** @brief Load and validate one profile without modifying caller state on failure. */
-    [[nodiscard]] Result<ActionPreviewProfile> load(const AssetGuid& actionAsset) const;
+    [[nodiscard]] EVENGINE_API_EDITORS Result<ActionPreviewProfile> load(const AssetGuid& actionAsset) const;
     /** @brief Return the stable sidecar path for diagnostics and file watching. */
-    [[nodiscard]] std::filesystem::path pathFor(const AssetGuid& actionAsset) const;
+    [[nodiscard]] EVENGINE_API_EDITORS std::filesystem::path pathFor(const AssetGuid& actionAsset) const;
 
 private:
     std::filesystem::path projectRoot_;
 };
 
 /** @brief Stable protocol spelling for a shading option. */
-[[nodiscard]] std::string_view actionPreviewShadingName(ActionPreviewShading shading) noexcept;
+[[nodiscard]] EVENGINE_API_EDITORS std::string_view actionPreviewShadingName(ActionPreviewShading shading) noexcept;
 
 }  // namespace eve::editor
