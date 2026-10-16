@@ -1,10 +1,10 @@
-#include "decision/Condition.h"
+#include "common/Condition.h"
 
 #include <cmath>
 #include <initializer_list>
 #include <utility>
 
-namespace eve::decision {
+namespace eve::condition {
 namespace {
 
 Value object(std::initializer_list<std::pair<std::string, Value>> fields) {
@@ -37,10 +37,12 @@ bool compareValues(const Value& left, CompareOperator op, const Value& right) {
             case CompareOperator::LessEqual: return leftNumber <= rightNumber;
             case CompareOperator::Greater: return leftNumber > rightNumber;
             case CompareOperator::GreaterEqual: return leftNumber >= rightNumber;
+            case CompareOperator::Exists: return true;
         }
     }
     if (op == CompareOperator::Equal) return left == right;
     if (op == CompareOperator::NotEqual) return !(left == right);
+    if (op == CompareOperator::Exists) return true;
     if (left.isString() && right.isString()) {
         const auto& l = *left.getIf<std::string>();
         const auto& r = *right.getIf<std::string>();
@@ -108,11 +110,6 @@ const char* conditionKindName(ConditionKind kind) noexcept {
         case ConditionKind::Any: return "any";
         case ConditionKind::Not: return "not";
         case ConditionKind::Compare: return "compare";
-        case ConditionKind::HasTag: return "has_tag";
-        case ConditionKind::HasAttribute: return "has_attribute";
-        case ConditionKind::HasResource: return "has_resource";
-        case ConditionKind::StateEquals: return "state_equals";
-        case ConditionKind::AuthorityCheck: return "authority_check";
         case ConditionKind::PolicyCall: return "policy_call";
     }
     return "unknown";
@@ -126,6 +123,7 @@ const char* compareOperatorName(CompareOperator op) noexcept {
         case CompareOperator::LessEqual: return "le";
         case CompareOperator::Greater: return "gt";
         case CompareOperator::GreaterEqual: return "ge";
+        case CompareOperator::Exists: return "exists";
     }
     return "unknown";
 }
@@ -139,85 +137,46 @@ ConditionResult ConditionResult::failed(ConditionReasonCode reason, Value eviden
 }
 
 Condition Condition::all(std::vector<Condition> children) {
-    Condition result(ConditionKind::All);
-    result.children_ = std::move(children);
-    return result;
+    Condition condition(ConditionKind::All);
+    condition.children_ = std::move(children);
+    return condition;
 }
 
 Condition Condition::any(std::vector<Condition> children) {
-    Condition result(ConditionKind::Any);
-    result.children_ = std::move(children);
-    return result;
+    Condition condition(ConditionKind::Any);
+    condition.children_ = std::move(children);
+    return condition;
 }
 
 Condition Condition::not_(Condition child) {
-    Condition result(ConditionKind::Not);
-    result.children_.push_back(std::move(child));
-    return result;
+    Condition condition(ConditionKind::Not);
+    condition.children_.push_back(std::move(child));
+    return condition;
 }
 
 Condition Condition::compare(std::string key, CompareOperator op, Value expected) {
-    Condition result(ConditionKind::Compare);
-    result.key_      = std::move(key);
-    result.compare_  = op;
-    result.expected_ = std::move(expected);
-    return result;
-}
-
-Condition Condition::hasTag(std::string tag) {
-    Condition result(ConditionKind::HasTag);
-    result.key_ = std::move(tag);
-    return result;
-}
-
-Condition Condition::hasAttribute(std::string attribute) {
-    Condition result(ConditionKind::HasAttribute);
-    result.key_ = std::move(attribute);
-    return result;
-}
-
-Condition Condition::hasResource(std::string resource) {
-    Condition result(ConditionKind::HasResource);
-    result.key_ = std::move(resource);
-    return result;
-}
-
-Condition Condition::stateEquals(std::string key, Value expected) {
-    Condition result(ConditionKind::StateEquals);
-    result.key_      = std::move(key);
-    result.expected_ = std::move(expected);
-    return result;
-}
-
-Condition Condition::authorityCheck(std::string scope) {
-    Condition result(ConditionKind::AuthorityCheck);
-    result.key_ = std::move(scope);
-    return result;
+    Condition condition(ConditionKind::Compare);
+    condition.key_      = std::move(key);
+    condition.compare_  = op;
+    condition.expected_ = std::move(expected);
+    return condition;
 }
 
 Condition Condition::policyCall(std::string name, Value arguments,
                                 std::optional<ScriptConditionDeclaration> scriptDeclaration) {
-    Condition result(ConditionKind::PolicyCall);
-    result.key_               = std::move(name);
-    result.arguments_         = std::move(arguments);
-    result.scriptDeclaration_ = std::move(scriptDeclaration);
-    return result;
+    Condition condition(ConditionKind::PolicyCall);
+    condition.key_               = std::move(name);
+    condition.arguments_         = std::move(arguments);
+    condition.scriptDeclaration_ = std::move(scriptDeclaration);
+    return condition;
 }
 
 bool Condition::isValid() const noexcept {
     switch (kind_) {
         case ConditionKind::All:
-        case ConditionKind::Any:
-            for (const auto& child : children_)
-                if (!child.isValid()) return false;
-            return true;
-        case ConditionKind::Not: return children_.size() == 1 && children_.front().isValid();
-        case ConditionKind::Compare:
-        case ConditionKind::StateEquals: return !key_.empty();
-        case ConditionKind::HasTag:
-        case ConditionKind::HasAttribute:
-        case ConditionKind::HasResource:
-        case ConditionKind::AuthorityCheck: return !key_.empty();
+        case ConditionKind::Any: return true;
+        case ConditionKind::Not: return children_.size() == 1;
+        case ConditionKind::Compare: return !key_.empty();
         case ConditionKind::PolicyCall:
             return !key_.empty() &&
                    (!scriptDeclaration_ || (scriptDeclaration_->name.empty() || scriptDeclaration_->name == key_));
@@ -270,6 +229,10 @@ ConditionResult Condition::evaluate(const EvaluationContext& context) const {
         case ConditionKind::Compare: {
             auto actual = context.value(key_);
             if (!actual) return unavailable(ConditionReasonCode::MissingValue, "compare", key_);
+            if (compare_ == CompareOperator::Exists) {
+                return ConditionResult::success(
+                    *actual, object({{"key", Value(key_)}, {"operator", Value(compareOperatorName(compare_))}}));
+            }
             const bool equal = compareValues(*actual, compare_, expected_);
             return equal ? ConditionResult::success(*actual, object({{"key", Value(key_)},
                                                                      {"operator", Value(compareOperatorName(compare_))},
@@ -278,38 +241,6 @@ ConditionResult Condition::evaluate(const EvaluationContext& context) const {
                                                    object({{"key", Value(key_)},
                                                            {"operator", Value(compareOperatorName(compare_))},
                                                            {"expected", expected_}}));
-        }
-        case ConditionKind::HasTag: {
-            auto actual = context.hasTag(key_);
-            if (!actual) return unavailable(ConditionReasonCode::TagUnavailable, "has_tag", key_);
-            return *actual ? ConditionResult::success(Value(true), object({{"tag", Value(key_)}}))
-                           : ConditionResult::failed(ConditionReasonCode::TagMissing, Value(false),
-                                                     object({{"tag", Value(key_)}}));
-        }
-        case ConditionKind::HasAttribute: {
-            auto actual = context.attribute(key_);
-            if (!actual) return unavailable(ConditionReasonCode::AttributeMissing, "has_attribute", key_);
-            return ConditionResult::success(*actual, object({{"attribute", Value(key_)}}));
-        }
-        case ConditionKind::HasResource: {
-            auto actual = context.resource(key_);
-            if (!actual) return unavailable(ConditionReasonCode::ResourceMissing, "has_resource", key_);
-            return ConditionResult::success(*actual, object({{"resource", Value(key_)}}));
-        }
-        case ConditionKind::StateEquals: {
-            auto actual = context.state(key_);
-            if (!actual) return unavailable(ConditionReasonCode::StateMissing, "state_equals", key_);
-            return compareValues(*actual, CompareOperator::Equal, expected_)
-                       ? ConditionResult::success(*actual, object({{"state", Value(key_)}, {"expected", expected_}}))
-                       : ConditionResult::failed(ConditionReasonCode::StateMismatch, *actual,
-                                                 object({{"state", Value(key_)}, {"expected", expected_}}));
-        }
-        case ConditionKind::AuthorityCheck: {
-            auto allowed = context.authority(key_);
-            if (!allowed) return unavailable(ConditionReasonCode::AuthorityUnavailable, "authority_check", key_);
-            return *allowed ? ConditionResult::success(Value(true), object({{"scope", Value(key_)}}))
-                            : ConditionResult::failed(ConditionReasonCode::AuthorityDenied, Value(false),
-                                                      object({{"scope", Value(key_)}}));
         }
         case ConditionKind::PolicyCall: {
             auto result = context.policy(key_, arguments_);
@@ -322,4 +253,4 @@ ConditionResult Condition::evaluate(const EvaluationContext& context) const {
     return ConditionResult::failed(ConditionReasonCode::InvalidCondition);
 }
 
-}  // namespace eve::decision
+}  // namespace eve::condition

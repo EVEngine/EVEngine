@@ -26,8 +26,8 @@ Result<T> failureFrom(const Status& status) {
     return Result<T>::failure(status);
 }
 
-bool isEmptyCondition(const decision::Condition& condition) {
-    return condition.kind() == decision::ConditionKind::All && condition.children().empty() && condition.isValid();
+bool isEmptyCondition(const condition::Condition& condition) {
+    return condition.kind() == condition::ConditionKind::All && condition.children().empty() && condition.isValid();
 }
 
 bool isTerminal(ActionPhase phase) {
@@ -201,7 +201,7 @@ Result<void> ActionRuntime::validateExecution(ActionExecution& execution) {
         auto checked = std::move(condition).takeValue();
         if (!checked.passed()) {
             DiagnosticDetails details;
-            details.emplace_back("reason", decision::conditionReasonCodeName(checked.reasonCode()));
+            details.emplace_back("reason", condition::conditionReasonCodeName(checked.reasonCode()));
             return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
                                                            "action condition was rejected", "condition",
                                                            details));

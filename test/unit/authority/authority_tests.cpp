@@ -112,7 +112,6 @@ TEST_CASE("authority.input.invalidFactsDoNotMutate") {
 #include <string>
 #include "authority/Authority.h"
 #include "common/SquirrelOwnership.h"
-#include "decision/Decision.h"
 #include "effects/Effects.h"
 #include "orders/CommandQueue.h"
 #include "procgen/Procgen.h"
