@@ -6406,7 +6406,12 @@
           "devtools.gameWorld.configTitleAndModulesWithoutPublish",
           "devtools.gameWorld.parseRejectsUnknownAndEmptyWorld",
           "devtools.gameWorld.publishRuntimeBriefAndClear",
-          "devtools.playHost.statusIncludesRuntimeGameWorld"
+          "devtools.playHost.statusIncludesRuntimeGameWorld",
+          "mcp.frameCapture.atomicPublicationAndLeases",
+          "mcp.frameCapture.timeoutBudgetCancellationAndGeneration",
+          "mcp.frameCapture.rawDepthRetainsMotionAndPreviewIsPng",
+          "mcp.frameCapture.depthProjectionAndBgraSemantics",
+          "mcp.frameCapture.sharedPhysicalStorageAndRetainedLeaseBudget"
         ]
       },
       "module": "devtools",
@@ -6423,7 +6428,8 @@
         "mcp_console.cpp",
         "mcp_tool_filter.cpp",
         "play_trace.cpp",
-        "game_world_context.cpp"
+        "game_world_context.cpp",
+        "mcp_frame_capture.cpp"
       ]
     },
     "unit/dialogue/dialogue_tests.cpp": {
@@ -10335,7 +10341,29 @@
       },
       "module": "graphics"
     },
-    "graphics_frame_capture.cpp": {
+    "integration/module-composition/module_composition_devtools_frame_capture_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "mcp.frameCapture.providerAbsentAndSchemaRoutes"
+        ]
+      },
+      "module": "devtools",
+      "task": "module-composition"
+    },
+    "integration/file-io/file_io_devtools_frame_capture_tests.cpp": {
+      "role": "tests",
+      "default": "platform-file",
+      "cases": {
+        "platform-file": [
+          "mcp.frameCapture.protocolPreviewAndAtomicNativeExport"
+        ]
+      },
+      "module": "devtools",
+      "task": "file-io"
+    },
+    "integration/render-pipeline/render_pipeline_graphics_frame_capture_tests.cpp": {
       "role": "tests",
       "default": "render-window",
       "cases": {
@@ -10343,27 +10371,8 @@
           "graphics.frameCapture.sameFrameNativeAttachmentsAndFrozenSnapshots"
         ]
       },
-      "module": "graphics"
-    },
-    "mcp_frame_capture.cpp": {
-      "role": "tests",
-      "default": "local-logic",
-      "cases": {
-        "local-logic": [
-          "mcp.frameCapture.atomicPublicationAndLeases",
-          "mcp.frameCapture.timeoutBudgetCancellationAndGeneration",
-          "mcp.frameCapture.rawDepthRetainsMotionAndPreviewIsPng",
-          "mcp.frameCapture.depthProjectionAndBgraSemantics",
-          "mcp.frameCapture.sharedPhysicalStorageAndRetainedLeaseBudget"
-        ],
-        "module-composition": [
-          "mcp.frameCapture.providerAbsentAndSchemaRoutes"
-        ],
-        "platform-file": [
-          "mcp.frameCapture.protocolPreviewAndAtomicNativeExport"
-        ]
-      },
-      "module": "devtools"
+      "module": "graphics",
+      "task": "render-pipeline"
     }
   }
 }
