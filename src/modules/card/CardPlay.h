@@ -8,8 +8,8 @@
  */
 
 #include "card/CardTypes.h"
+#include "common/Condition.h"
 #include "common/Container.h"
-#include "decision/Condition.h"
 #include "transaction/AtomicResourcePayment.h"
 
 #include <functional>
@@ -31,7 +31,7 @@ struct CardPlayConditionQueries {
     using Resource  = std::function<std::optional<eve::Value>(std::string_view key)>;
     using Authority = std::function<std::optional<bool>(std::string_view scope)>;
     using Policy =
-        std::function<std::optional<decision::ConditionResult>(std::string_view name, const eve::Value& arguments)>;
+        std::function<std::optional<condition::ConditionResult>(std::string_view name, const eve::Value& arguments)>;
 
     Resource  resource;
     Authority authority;
@@ -45,7 +45,7 @@ struct CardPlayConditionQueries {
  * attributes expose the definition's cost/attack/health, while resource,
  * authority and policy lookups are supplied by the owning game/profile.
  */
-class CardPlayConditionContext final : public decision::EvaluationContext {
+class CardPlayConditionContext final : public condition::EvaluationContext {
 public:
     /**
      * @brief Bind a card instance and definition for one evaluation.
@@ -56,13 +56,13 @@ public:
     CardPlayConditionContext(const CardData* card, const CardDefinition& definition,
                              CardPlayConditionQueries queries = {});
 
-    /** @copydoc decision::EvaluationContext::value */
+    /** @copydoc condition::EvaluationContext::value */
     /** @brief Value. */
     [[nodiscard]] std::optional<eve::Value> value(std::string_view key) const override;
-    /** @copydoc decision::EvaluationContext::policy */
+    /** @copydoc condition::EvaluationContext::policy */
     /** @brief Policy. */
-    [[nodiscard]] std::optional<decision::ConditionResult> policy(std::string_view  name,
-                                                                  const eve::Value& arguments) const override;
+    [[nodiscard]] std::optional<condition::ConditionResult> policy(std::string_view  name,
+                                                                   const eve::Value& arguments) const override;
 
 private:
     const CardData*          card_       = nullptr;
@@ -81,9 +81,9 @@ public:
      * @param queries Optional read-only resource, authority and policy providers.
      * @return A stable explanation suitable for UI rejection text.
      */
-    [[nodiscard]] static decision::ConditionResult evaluate(const CardData* card, const CardDefinition& definition,
-                                                            const decision::Condition& condition,
-                                                            CardPlayConditionQueries   queries = {});
+    [[nodiscard]] static condition::ConditionResult evaluate(const CardData* card, const CardDefinition& definition,
+                                                             const condition::Condition& condition,
+                                                             CardPlayConditionQueries    queries = {});
 };
 
 /**

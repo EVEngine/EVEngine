@@ -4278,9 +4278,9 @@ TEST_CASE("crowd.spawn.scriptTransactionAndMalformedInput") {
 #include "PrivateTestScope.h"
 #include "ScriptTest.h"
 #include "common/Capability.h"
+#include "common/ConditionKeys.h"
 #include "common/ScriptProvider.h"
 #include "common/StateAccess.h"
-#include "decision/ConditionKeys.h"
 #include "dialogue/Dialogue.h"
 #include "dialogue/DialogueState.h"
 #include "dialogue/StateAccessScriptSeam.h"
@@ -4423,7 +4423,7 @@ TEST_CASE_FIXTURE(ScriptStateAccessTest, "dialogue.state.scriptQueryAnswersCondi
 
     // 消费方就是对话的条件求值上下文：它按"单实现 → listener"的顺序问，第一个非空答案赢。
     eve::dialogue::StateEvaluationContext context("npc:blacksmith");
-    const auto                            gold = context.value(eve::decision::stateKey("gold"));
+    const auto                            gold = context.value(eve::condition::stateKey("gold"));
     REQUIRE(gold.has_value());
     REQUIRE(gold->getIf<std::int64_t>() != nullptr);
     REQUIRE_EQ(*gold->getIf<std::int64_t>(), 42);
@@ -4431,20 +4431,20 @@ TEST_CASE_FIXTURE(ScriptStateAccessTest, "dialogue.state.scriptQueryAnswersCondi
     REQUIRE_EQ(vm.find("seenSubject").toString(), std::string("npc:blacksmith"));
     REQUIRE_EQ(vm.find("seenKey").toString(), std::string("gold"));
 
-    const auto wanted = context.value(eve::decision::tagKey("wanted"));
+    const auto wanted = context.value(eve::condition::tagKey("wanted"));
     REQUIRE(wanted.has_value());
     REQUIRE(wanted->isBool());
     REQUIRE(wanted->asBool());
 
     // `null` = 不拥有这一问：已知的 false 与"不拥有"必须分得开。
-    const auto unknown = context.value(eve::decision::stateKey("unknown-key"));
+    const auto unknown = context.value(eve::condition::stateKey("unknown-key"));
     REQUIRE(!unknown.has_value());
-    const auto notTag = context.value(eve::decision::tagKey("not-my-tag"));
+    const auto notTag = context.value(eve::condition::tagKey("not-my-tag"));
     REQUIRE(!notTag.has_value());
 
     unload("test.state.world");
     REQUIRE_EQ(cap::listenerCount<eve::IStateQuery>(), std::size_t{0});
-    REQUIRE(!context.value(eve::decision::stateKey("gold")).has_value());
+    REQUIRE(!context.value(eve::condition::stateKey("gold")).has_value());
 }
 
 TEST_CASE_FIXTURE(ScriptStateAccessTest, "dialogue.state.scriptQueryDoesNotDisplaceANativeProvider") {
@@ -4479,14 +4479,14 @@ TEST_CASE_FIXTURE(ScriptStateAccessTest, "dialogue.state.scriptQueryDoesNotDispl
     REQUIRE(publish(eve::IStateQuery::capabilityName, "test.state.script", "stateProvider").find("ok").toBool());
 
     eve::dialogue::StateEvaluationContext context("npc:blacksmith");
-    const auto                            gold = context.value(eve::decision::stateKey("gold"));
+    const auto                            gold = context.value(eve::condition::stateKey("gold"));
     REQUIRE(gold.has_value());
     REQUIRE(gold->getIf<std::string>() != nullptr);
     REQUIRE_EQ(*gold->getIf<std::string>(), std::string("native"));  // 单实现优先于 listener
 
     // 原生退场后，同一个键就轮到脚本回答——两者确实在同一条链上，不是互相顶掉。
     cap::revoke<eve::IStateQuery>(&native);
-    const auto scriptAnswer = context.value(eve::decision::stateKey("gold"));
+    const auto scriptAnswer = context.value(eve::condition::stateKey("gold"));
     REQUIRE(scriptAnswer.has_value());
     REQUIRE(scriptAnswer->getIf<std::int64_t>() != nullptr);
     REQUIRE_EQ(*scriptAnswer->getIf<std::int64_t>(), 42);
@@ -4508,10 +4508,10 @@ TEST_CASE_FIXTURE(ScriptStateAccessTest,
     REQUIRE_EQ(eve::dialogue::scriptStateQueryFailures(), std::uint64_t{0});
 
     // 抛错 / 答案形状不对：按"不拥有"返回（接口没有失败通道），但**可见**——计数 + 上报。
-    REQUIRE(!context.value(eve::decision::stateKey("gold")).has_value());
+    REQUIRE(!context.value(eve::condition::stateKey("gold")).has_value());
     REQUIRE(eve::dialogue::scriptStateQueryFailures() >= 1);
     const std::uint64_t afterThrow = eve::dialogue::scriptStateQueryFailures();
-    REQUIRE(!context.value(eve::decision::tagKey("wanted")).has_value());
+    REQUIRE(!context.value(eve::condition::tagKey("wanted")).has_value());
     REQUIRE(eve::dialogue::scriptStateQueryFailures() > afterThrow);
 }
 

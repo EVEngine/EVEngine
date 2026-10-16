@@ -3310,8 +3310,8 @@ TEST_CASE("gameSave.rpgAndTacticsRestoreTogether") {
 #include <utility>
 #include "PrivateTestScope.h"
 #include "action/Action.h"
+#include "common/ConditionKeys.h"
 #include "common/Identity.h"
-#include "decision/ConditionKeys.h"
 #include "rpg/SkillAction.h"
 #include "weapon/WeaponAction.h"
 #include "zeroerr/assert.h"
@@ -3332,8 +3332,8 @@ using eve::action::IActionEffectOperation;
 using eve::action::IActionResourceProvider;
 using eve::action::IActionTargetResolver;
 using eve::action::TargetingMode;
-using eve::decision::Condition;
-using eve::decision::ConditionResult;
+using eve::condition::Condition;
+using eve::condition::ConditionResult;
 using eve::resource::AccountNonce;
 using eve::resource::Affordability;
 using eve::resource::CostSpec;
@@ -3367,7 +3367,7 @@ public:
         ++calls;
         if (pass) return eve::Result<ConditionResult>::success(ConditionResult::success());
         return eve::Result<ConditionResult>::success(
-            ConditionResult::failed(eve::decision::ConditionReasonCode::TagMissing));
+            ConditionResult::failed(eve::condition::ConditionReasonCode::TagMissing));
     }
 };
 
@@ -3612,7 +3612,7 @@ TEST_CASE("gameplayAction.phasePipelineUsesInjectedSimulationTime") {
 
 TEST_CASE("gameplayAction.conditionFailureOwnsFailedTransition") {
     ActionDefinition def = definition("condition");
-    def.condition        = eve::decision::tagPresent("silenced");
+    def.condition        = eve::condition::tagPresent("silenced");
     TestConditionEvaluator conditions;
     conditions.pass = false;
     ActionRuntime runtime(ActionServices{&conditions, nullptr, nullptr, nullptr});

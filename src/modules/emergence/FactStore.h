@@ -6,9 +6,9 @@
  * @brief Authoritative, rule-visible world facts implementing EvaluationContext.
  */
 
+#include "common/Condition.h"
 #include "common/Result.h"
 #include "common/Value.h"
-#include "decision/Condition.h"
 
 #include <cstdint>
 #include <optional>
@@ -57,7 +57,7 @@ enum class FactChange : std::uint8_t { Unchanged = 0, Changed = 1 };
  * @thread Owning simulation thread only; no synchronization is performed.
  * @reentrancy Does not invoke callbacks.
  */
-class EVENGINE_API_FOUNDATION FactStore final : public decision::EvaluationContext {
+class EVENGINE_API_FOUNDATION FactStore final : public condition::EvaluationContext {
 public:
     /** @brief Clear every fact without invoking callbacks. */
     void clear();
@@ -81,7 +81,7 @@ public:
      * @brief Register or replace a read-only policy result.
      * @return FactChange::Changed when the stored result differed.
      */
-    [[nodiscard]] FactChange setPolicy(std::string name, decision::ConditionResult result);
+    [[nodiscard]] FactChange setPolicy(std::string name, condition::ConditionResult result);
 
     /** @brief Erase a value fact. */
     [[nodiscard]] FactChange clearValue(std::string_view key);
@@ -89,8 +89,8 @@ public:
     [[nodiscard]] FactChange clearTag(std::string_view tag);
 
     [[nodiscard]] std::optional<eve::Value>                value(std::string_view key) const override;
-    [[nodiscard]] std::optional<decision::ConditionResult> policy(std::string_view  name,
-                                                                  const eve::Value& arguments) const override;
+    [[nodiscard]] std::optional<condition::ConditionResult> policy(std::string_view  name,
+                                                                   const eve::Value& arguments) const override;
 
     /** @brief Export deterministic compact JSON for runtime snapshots. */
     [[nodiscard]] std::string snapshotJson() const;
@@ -113,7 +113,7 @@ private:
     std::unordered_map<std::string, eve::Value>                resources_;
     std::unordered_map<std::string, eve::Value>                states_;
     std::unordered_map<std::string, bool>                      authorities_;
-    std::unordered_map<std::string, decision::ConditionResult> policies_;
+    std::unordered_map<std::string, condition::ConditionResult> policies_;
 };
 
 }  // namespace eve::emergence

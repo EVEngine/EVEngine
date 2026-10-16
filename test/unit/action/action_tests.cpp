@@ -6,8 +6,8 @@
 #include "action/AbilityAsset.h"
 #include "action/AbilityController.h"
 #include "action/AbilitySystem.h"
+#include "common/ConditionKeys.h"
 #include "common/Diagnostic.h"
-#include "decision/ConditionKeys.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // Responsibility: action_abilities
@@ -29,13 +29,13 @@ eve::action::AbilityDefinition complexAbility() {
     result.action.id        = id("action:fire-cone");
     result.action.timing    = {eve::Duration::fromNanoseconds(100'000'000), eve::Duration::fromNanoseconds(200'000'000),
                                eve::Duration::fromNanoseconds(300'000'000)};
-    result.action.condition = eve::decision::Condition::all(
-        {eve::decision::tagPresent("State.Combat.Ready"),
-         eve::decision::Condition::compare("mana", eve::decision::CompareOperator::GreaterEqual, 12),
-         eve::decision::Condition::policyCall(
+    result.action.condition = eve::condition::Condition::all(
+        {eve::condition::tagPresent("State.Combat.Ready"),
+         eve::condition::Condition::compare("mana", eve::condition::CompareOperator::GreaterEqual, 12),
+         eve::condition::Condition::policyCall(
              "can_cast", eve::Value::Object{{"school", "fire"}},
-             eve::decision::ScriptConditionDeclaration{
-                 "can_cast", {"attributes.mana"}, eve::decision::DeterminismLevel::TickDeterministic})});
+             eve::condition::ScriptConditionDeclaration{
+                 "can_cast", {"attributes.mana"}, eve::condition::DeterminismLevel::TickDeterministic})});
     result.action.targetingMode = eve::action::TargetingMode::Query;
     eve::sensing::TargetingSpec targeting;
     targeting.space        = eve::sensing::CoordinateSpace::World2D;
@@ -104,7 +104,7 @@ TEST_CASE("abilityAsset.migratesV1MillisecondsAndRejectsFutureUnknownOrMalformed
     auto source                 = complexAbility();
     source.action.targetingMode = eve::action::TargetingMode::None;
     source.action.targetingSpec.reset();
-    source.action.condition = eve::decision::Condition{};
+    source.action.condition = eve::condition::Condition{};
     source.action.cost.reset();
     source.action.timeline.reset();
     auto encoded = eve::action::encodeAbilityAsset(source);

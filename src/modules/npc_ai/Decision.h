@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace eve::decision {
+namespace eve::npc_ai {
 
 /** @brief Handle domain for module-owned decision contexts. */
 struct DecisionContextHandleTag {};
@@ -20,7 +20,7 @@ struct DecisionContextHandleTag {};
 using DecisionContextHandleRef = eve::script::RuntimeHandleRef<DecisionContextHandleTag>;
 
 /** @brief Data-oriented blackboard, FSM, utility and influence-map workspace. */
-class EVENGINE_API_FOUNDATION DecisionContext {
+class EVENGINE_API_PLATFORM DecisionContext {
 public:
     /**
      * @brief Sets a scalar JSON value on a named blackboard.
@@ -115,4 +115,4 @@ private:
     eve::script::RuntimeObjectRegistry<DecisionContext, DecisionContextHandleTag> contexts_;
 };
 
-}  // namespace eve::decision
+}  // namespace eve::npc_ai

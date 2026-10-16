@@ -636,9 +636,11 @@ jobs:
         with:
           version: "v0.16.0"
 
+      # Explicit start catches GHA/ghac egress flakes before the NDK build.
+      # Retries, then switches to a local disk cache (see start-sccache.sh).
       - name: Start C/C++ compilation cache
         timeout-minutes: 5
-        run: sccache --start-server
+        run: bash .github/scripts/start-sccache.sh
 
       - name: Setup Java 17
         timeout-minutes: 10
@@ -721,9 +723,10 @@ jobs:
         with:
           version: "v0.16.0"
 
+      # Same retry / local-disk path as the Android debug job.
       - name: Start C/C++ compilation cache
         timeout-minutes: 5
-        run: sccache --start-server
+        run: bash .github/scripts/start-sccache.sh
 
       - name: Setup Java 17
         timeout-minutes: 10
@@ -1316,10 +1319,10 @@ jobs:
           ctest --test-dir build/linux-debug --output-on-failure -j 2 \
             -R '^bundle/(graphics_font|TextureSampler|gpgpu|tensor|virtualgeometry_gpu|graphics_headless)\.cpp$'
 
+      # 150 headless Lavapipe smokes have finished green then still hit the old
+      # 20-minute step guard during teardown (PR #586 run 38844868063;
+      # run 38775560674). Keep headroom above the ~15+ minute live window.
       - name: Smoke all examples (headless, >=2s alive each)
-        # Run 38775560674 finished 150/150 smokes then hit the old 20-minute
-        # step guard during teardown (default RUN_SECONDS=6 × ~150 examples is
-        # already ~15 minutes before process start/stop overhead). Keep headroom.
         timeout-minutes: 30
         env:
           ALSOFT_DRIVERS: "null"

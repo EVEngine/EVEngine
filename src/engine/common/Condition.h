@@ -20,7 +20,7 @@
 #include <string_view>
 #include <vector>
 
-namespace eve::decision {
+namespace eve::condition {
 
 /** @brief Node kind in the side-effect-free condition AST. */
 enum class ConditionKind : std::uint8_t {
@@ -133,8 +133,8 @@ enum class ConditionReasonCode : std::uint32_t {
  * `details` contains stable field names and child explanations. Both values
  * own their storage and remain valid after the evaluation context is gone.
  */
-class EVENGINE_API_FOUNDATION
-    [[nodiscard("ConditionResult must be inspected before the decision is used")]] ConditionResult {
+class EVENGINE_API_FOUNDATION [[nodiscard("ConditionResult must be inspected before the decision is used")]]
+ConditionResult {
 public:
     /** @brief Construct a passed result with optional evidence and details. */
     static ConditionResult success(Value evidence = {}, Value details = Value::Object{});
@@ -255,4 +255,4 @@ private:
     std::optional<ScriptConditionDeclaration> scriptDeclaration_;
 };
 
-}  // namespace eve::decision
+}  // namespace eve::condition
