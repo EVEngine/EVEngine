@@ -10334,6 +10334,36 @@
         ]
       },
       "module": "graphics"
+    },
+    "graphics_frame_capture.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "render-window": [
+          "graphics.frameCapture.sameFrameNativeAttachmentsAndFrozenSnapshots"
+        ]
+      },
+      "module": "graphics"
+    },
+    "mcp_frame_capture.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "mcp.frameCapture.atomicPublicationAndLeases",
+          "mcp.frameCapture.timeoutBudgetCancellationAndGeneration",
+          "mcp.frameCapture.rawDepthRetainsMotionAndPreviewIsPng",
+          "mcp.frameCapture.depthProjectionAndBgraSemantics",
+          "mcp.frameCapture.sharedPhysicalStorageAndRetainedLeaseBudget"
+        ],
+        "module-composition": [
+          "mcp.frameCapture.providerAbsentAndSchemaRoutes"
+        ],
+        "platform-file": [
+          "mcp.frameCapture.protocolPreviewAndAtomicNativeExport"
+        ]
+      },
+      "module": "devtools"
     }
   }
 }
