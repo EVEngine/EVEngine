@@ -46,6 +46,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 
 | 示例 | 演示能力 |
 |---|---|
+| [explosion-lab](explosion-lab/README.md) | 3D 爆炸物理、火球、上升烟雾、火星与冲击环 |
 | [game-tutorial](game-tutorial/README.md) | EveScript import、输入与碰撞、程序纹理、HUD、热重载及严格版本化存档 |
 | [physics-force-lab](physics-force-lab/README.md) | 2D/3D 场效果、排水浮力、机翼升阻力与轮胎转动 |
 | [devlab](devlab/README.md) | 运行时即编辑器：`--debug` 下的控制台 / REPL、快照、暂停、热重载、错误切片、AI 面板（**旗舰示例，先跑这个**） |
