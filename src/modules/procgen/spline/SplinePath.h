@@ -219,8 +219,8 @@ private:
     [[nodiscard]] Result<void> validateReady() const;
     [[nodiscard]] SplineSample evaluateUnchecked(float t) const;
     [[nodiscard]] SplineSample evaluateSegmentUnchecked(int segment, float u, float normalized) const;
-    [[nodiscard]] std::vector<std::pair<int, int>>       segmentEndpoints() const;
-    [[nodiscard]] Result<void>                           ensureArcTable(int samplesPerSegment) const;
+    [[nodiscard]] std::vector<std::pair<int, int>> segmentEndpoints() const;
+    [[nodiscard]] Result<void>                     ensureArcTable(int samplesPerSegment) const;
     [[nodiscard]] Result<std::vector<SplineFrameSample>> orientFrameSamplesResult(std::vector<SplineFrameSample> frames,
                                                                                   std::span<const float>         ratios,
                                                                                   float rollDegrees) const;

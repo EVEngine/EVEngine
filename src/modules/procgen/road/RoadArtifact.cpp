@@ -125,9 +125,9 @@ Result<std::map<RoadChunkCoordinate, MeshBuild>> splitRoadMeshIntoChunks(const M
     std::map<RoadChunkCoordinate, RoadChunkAccumulator> accumulators;
     const int                                           triangleCount = source.getIndexCount() / 3;
     for (int triangle = 0; triangle < triangleCount; ++triangle) {
-        const int   ia      = source.getIndex(triangle * 3);
-        const int   ib      = source.getIndex(triangle * 3 + 1);
-        const int   ic      = source.getIndex(triangle * 3 + 2);
+        const int                 ia = source.getIndex(triangle * 3);
+        const int                 ib = source.getIndex(triangle * 3 + 1);
+        const int                 ic = source.getIndex(triangle * 3 + 2);
         const float centerX = (source.getPositionX(ia) + source.getPositionX(ib) + source.getPositionX(ic)) / 3.f;
         const float centerZ = (source.getPositionZ(ia) + source.getPositionZ(ib) + source.getPositionZ(ic)) / 3.f;
         const RoadChunkCoordinate coordinate{static_cast<int>(std::floor(centerX / chunkSize)),
