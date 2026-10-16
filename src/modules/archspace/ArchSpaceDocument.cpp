@@ -108,7 +108,8 @@ bool Document::canParent(NodeKind child, const std::string& parentId) const {
         case NodeKind::Wall:
         case NodeKind::Slab:
         case NodeKind::Zone:
-        case NodeKind::Item: return parent->kind == NodeKind::Level;
+        case NodeKind::Item:
+        case NodeKind::Portal: return parent->kind == NodeKind::Level;
         case NodeKind::Opening: return parent->kind == NodeKind::Wall;
         case NodeKind::Site: return false;
     }
@@ -137,6 +138,9 @@ bool Document::validateNode(const Node& node) const {
         case NodeKind::Opening:
             return isFinite(node.t) && node.t >= 0.0 && node.t <= 1.0 && isFinite(node.width) && node.width > kEps &&
                    isFinite(node.openingHeight) && node.openingHeight > kEps && isFinite(node.sill) && node.sill >= 0.0;
+        case NodeKind::Portal:
+            return !node.regionAId.empty() && node.regionAId.size() <= 128 && node.regionBId.size() <= 128 &&
+                   isFinite(node.portalPosition) && node.passageMask != 0;
     }
     return false;
 }
@@ -220,6 +224,12 @@ eve::Result<void> Document::eraseCascade(const std::string& id) {
 void Document::clear() {
     nodes_.clear();
     rootId_.clear();
+    topology_ = TopologyKind::Architectural;
+}
+
+eve::Result<void> Document::setTopology(TopologyKind topology) {
+    topology_ = topology;
+    return ok();
 }
 
 eve::Result<void> Document::bootstrap(const std::string& siteId, const std::string& buildingId,
@@ -364,6 +374,58 @@ eve::Result<void> Document::placeItem(const std::string& levelId, const std::str
     item.position   = position;
     item.yawDegrees = yawDegrees;
     return insert(std::move(item));
+}
+
+eve::Result<void> Document::createRegion(const std::string& levelId, const std::string& regionId,
+                                         std::string regionName, std::vector<Vec2> polygon) {
+    const Node* level = find(levelId);
+    if (!level || level->kind != NodeKind::Level)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                                                 "ArchSpace region requires an existing level",
+                                                                 "levelId", {}, "archspace.document"));
+    if (regionId.empty() || !polygonValid(polygon))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "ArchSpace region geometry is invalid", "polygon", {},
+                                                                 "archspace.document"));
+    Node zone;
+    zone.id       = regionId;
+    zone.kind     = NodeKind::Zone;
+    zone.parentId = levelId;
+    zone.name     = regionName.empty() ? regionId : std::move(regionName);
+    zone.polygon  = std::move(polygon);
+    return insert(std::move(zone));
+}
+
+eve::Result<void> Document::createPortal(const std::string& levelId, const std::string& portalId,
+                                         std::string portalName, std::string regionAId, std::string regionBId,
+                                         PassageMask passageMask, Vec3 position) {
+    const Node* level = find(levelId);
+    if (!level || level->kind != NodeKind::Level)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                                                 "ArchSpace portal requires an existing level",
+                                                                 "levelId", {}, "archspace.document"));
+    const Node* regionA = find(regionAId);
+    if (!regionA || regionA->kind != NodeKind::Zone || regionA->parentId != levelId)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                                                 "ArchSpace portal regionA must be a zone on the level",
+                                                                 "regionAId", {}, "archspace.document"));
+    if (!regionBId.empty()) {
+        const Node* regionB = find(regionBId);
+        if (!regionB || regionB->kind != NodeKind::Zone || regionB->parentId != levelId)
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::NotFound, "ArchSpace portal regionB must be a zone on the level", "regionBId", {},
+                "archspace.document"));
+    }
+    Node portal;
+    portal.id             = portalId;
+    portal.kind           = NodeKind::Portal;
+    portal.parentId       = levelId;
+    portal.name           = portalName.empty() ? portalId : std::move(portalName);
+    portal.regionAId      = std::move(regionAId);
+    portal.regionBId      = std::move(regionBId);
+    portal.passageMask    = passageMask;
+    portal.portalPosition = position;
+    return insert(std::move(portal));
 }
 
 std::vector<std::string> Document::diagnostics() const {

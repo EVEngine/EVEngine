@@ -259,7 +259,7 @@ function(eve_resolve_modules)
     elseif(EVENGINE_PROFILE STREQUAL "server")
         set(_hostless_profile TRUE)
         set(_profile_seed
-            common data event timer network authority decision definitions effects
+            common data event timer network authority definitions effects
             emergence game_event orders schema social statepatch tags transaction
             economy attributes sensing spatial action settlement tactics pixelworld)
         set(EVENGINE_PROFILE_CORE_KIND server CACHE INTERNAL
