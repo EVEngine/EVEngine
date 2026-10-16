@@ -137,7 +137,7 @@ one cell (including vertical descent), and select the nearer terrain/obstacle
 impact. Exact corner-only touches use navigation's half-open cell convention;
 the terminal endpoint belongs to target impact settlement. These queries read
 the current canonical elevation field without a cache or an additional terrain
-owner. `test/rts_terrain.cpp` covers the geometric boundary cases.
+owner. `test/unit/rts/gameplay_control_rts.cpp` covers the geometric boundary cases.
 Match roots are likewise script-accessible through
 stable identities: setup rules, teams, start, surrender, retained lifecycle
 events and final outcomes all route through `MatchSystem`. The sandbox runs a
