@@ -11,6 +11,7 @@
 #include "devtools/DebugAdapter.hpp"
 #include "devtools/Debugger.hpp"
 #include "devtools/DevTool.hpp"
+#include "devtools/GameWorldContext.hpp"
 #include "devtools/McpArchitectureTools.hpp"
 #include "devtools/McpArgs.hpp"
 #include "devtools/McpDevBridge.hpp"
@@ -18,7 +19,6 @@
 #include "devtools/McpFrameCapture.hpp"
 #include "devtools/McpInputTools.hpp"
 #include "devtools/McpJson.hpp"
-#include "devtools/GameWorldContext.hpp"
 #include "devtools/McpProjectIndexTools.hpp"
 #include "devtools/McpRuntimeTools.hpp"
 #include "devtools/McpSceneDirector.hpp"
@@ -2020,8 +2020,9 @@ std::string handleToolsList(const std::string& idJson) {
         std::string out;
         for (const char* part : kToolsParts) out += part;
         for (std::string_view family :
-             {mcpFrameCaptureSchemas(), agentDevelopmentToolSchemas(), mcpRuntimeToolSchemas(), mcpDomainToolSchemas(), mcpInputToolSchemas(),
-              mcpWhiteboxToolSchemas(), mcpArchitectureToolSchemas(), mcpProjectIndexToolSchemas()}) {
+             {mcpFrameCaptureSchemas(), agentDevelopmentToolSchemas(), mcpRuntimeToolSchemas(), mcpDomainToolSchemas(),
+              mcpInputToolSchemas(), mcpWhiteboxToolSchemas(), mcpArchitectureToolSchemas(),
+              mcpProjectIndexToolSchemas()}) {
             if (family.empty()) continue;
             out += ',';
             out += family;

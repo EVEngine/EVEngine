@@ -3,9 +3,9 @@
 #include "common/Capability.h"
 #include "common/FrameCapture.h"
 #include "common/IStateProvider.h"
-#include "devtools/GameWorldContext.hpp"
 #include "common/Resource.h"
 #include "common/ScriptError.h"
+#include "devtools/GameWorldContext.hpp"
 #include "devtools/McpSquirrelJson.hpp"
 #include "devtools/ReloadSession.h"
 
