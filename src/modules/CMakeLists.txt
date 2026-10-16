@@ -309,6 +309,9 @@ if(_has_vehicle)
     list(FILTER _eve_vehicle_srcs EXCLUDE REGEX "VehiclePhysicsAbsent\\.cpp$")
   else()
     list(FILTER _eve_vehicle_srcs EXCLUDE REGEX "/VehiclePhysics\\.cpp$")
+    list(FILTER _eve_vehicle_srcs EXCLUDE REGEX "/VehicleTires2D\\.cpp$")
+    list(FILTER _eve_vehicle_srcs EXCLUDE REGEX "/VehicleTires3D\\.cpp$")
+    list(FILTER _eve_vehicle_srcs EXCLUDE REGEX "/VehicleTireRuntime\\.cpp$")
   endif()
   set_target_properties(EVVehicle PROPERTIES SOURCES "${_eve_vehicle_srcs}")
 endif()
@@ -497,6 +500,20 @@ if(_has_physics OR _eve_physics_core_profile OR EVENGINE_BUILD_PHYSICS_CORE_CHEC
   # Keep its source list explicit so this check cannot accidentally pull in the
   # graphics debug bridge, ClothGPU, or another presentation/accelerator TU.
   set(_eve_physics_core_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Joint2D.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/WorldJoints2D.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Mechanism2D.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/mechanics/Joint2D.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/forces/ForceFields.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/forces/Aerodynamics.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/forces/TireDynamics.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/forces/ForceApplication.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/forces/ForceBatch.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/forces/ForceReceipt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3DTopology.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/forces/FieldSet.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/forces/BuoyancyGeometry.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/forces/WingAssembly.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/Body.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/Body3D.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/Fixture.cpp
@@ -522,6 +539,16 @@ if(_has_physics OR _eve_physics_core_profile OR EVENGINE_BUILD_PHYSICS_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3DQueries.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3DMover.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3DContacts.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3DSimulation.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/mechanics/Coupling3D.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/mechanics/Coupling3DStep.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/snapshot/JointSnapshotCodec.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/snapshot/Joint3DParameters.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/physics/snapshot/Coupling3DSnapshot.cpp
+ ${CMAKE_CURRENT_SOURCE_DIR}/physics/snapshot/Shape3DContactSnapshot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/snapshot/PlanarMaterialSnapshot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/snapshot/PortableWorldSnapshot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/snapshot/WorldSnapshotCodec.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/WorldSnapshot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/WorldSnapshotParsing.cpp)
   if(TARGET Jolt)
@@ -580,6 +607,7 @@ if(_has_physics OR _eve_physics_core_profile OR EVENGINE_BUILD_PHYSICS_CORE_CHEC
         EVENGINE_ENGINE_EXPORTS EVENGINE_EXPORTS_WORLD EVENGINE_EXPORTS_BACKENDS)
     endif()
     target_include_directories(EVPhysicsCoreCheck PRIVATE
+      ${CMAKE_SOURCE_DIR}/third-party/glm
       ${CMAKE_SOURCE_DIR}/src/modules
       ${CMAKE_SOURCE_DIR}/third-party
       ${CMAKE_SOURCE_DIR}/third-party/box3d/include)

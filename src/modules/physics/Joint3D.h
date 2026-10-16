@@ -13,6 +13,9 @@
 
 namespace eve::physics {
 namespace box3d {
+struct Access;
+}
+namespace box3d {
 class WorldBackend;
 }
 
@@ -213,8 +216,10 @@ public:
     void invalidate();
 
 private:
+    friend struct box3d::Access;
     friend class box3d::WorldBackend;
     friend struct WorldSnapshotAccess;
+    friend struct PortableWorldSnapshotAccess;
     friend class Body3D;
     friend class World3D;
 
