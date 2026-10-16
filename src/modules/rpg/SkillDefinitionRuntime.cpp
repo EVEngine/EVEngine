@@ -448,7 +448,7 @@ bool SkillSystem::canCast(RPGActor *actor, const std::string &skillId, std::stri
         if (!kv.second(actor, *def, r)) return fail(r.empty() ? kv.first : r);
     }
     const auto condition = SkillConditionAdapter::evaluate(actor, *def, def->castCondition);
-    if (!condition.passed()) return fail(decision::conditionReasonCodeName(condition.reasonCode()));
+    if (!condition.passed()) return fail(condition::conditionReasonCodeName(condition.reasonCode()));
     return true;
 }
 
