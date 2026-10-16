@@ -1945,7 +1945,6 @@ TEST_CASE("tactics.reactionDepthIsBounded") {
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_tactics_migration) || \
     defined(EVE_TEST_ORIGIN_tactics_replay) || defined(EVE_TEST_ORIGIN_tactics_snapshot_script)
-#include <google/protobuf/util/json_util.h>
 #include <algorithm>
 #include <memory>
 #include <string>
@@ -1958,7 +1957,6 @@ TEST_CASE("tactics.reactionDepthIsBounded") {
 #include "tactics/Tactics.h"
 #include "tactics/TacticsPersistence.h"
 #include "tactics/TacticsReplay.h"
-#include "tactics_battle.pb.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // Responsibility: tactics_state_formats
@@ -2899,12 +2897,18 @@ TEST_CASE("tactics.snapshotJsonRoundTripRefusesTamperingAndForeignDocuments") {
     CHECK(restored.value().movePoints > spent);
 
     // A tampered document is refused by the digest, and the battle keeps its current state.
-    eve::tactics::proto::BattleJsonDocument typed;
-    REQUIRE(google::protobuf::util::JsonStringToMessage(document, &typed).ok());
-    REQUIRE(typed.payload().board().cells_size() > 0);
-    typed.mutable_payload()->mutable_board()->mutable_cells(0)->set_move_cost(900);
-    std::string tampered;
-    REQUIRE(google::protobuf::util::MessageToJsonString(typed, &tampered).ok());
+    // Keep the JSON codec inside EVTactics: the test executable and the shared
+    // module otherwise use separate copies of the statically linked Protobuf runtime.
+    std::string tampered = document;
+    const auto  field    = tampered.find("\"moveCost\"");
+    REQUIRE(field != std::string::npos);
+    const auto colon = tampered.find(':', field);
+    REQUIRE(colon != std::string::npos);
+    const auto value = tampered.find_first_not_of(" \t\r\n", colon + 1);
+    REQUIRE(value != std::string::npos);
+    const auto end = tampered.find_first_not_of("-0123456789", value);
+    REQUIRE(end != value);
+    tampered.replace(value, end - value, "900");
     auto refused = fixture.tactics.restoreJson(fixture.battle, tampered);
     CHECK(!refused.ok());
     REQUIRE(refused.status().primaryDiagnostic() != nullptr);
