@@ -199,6 +199,77 @@ void accumulateRootMotion(animation::TransformTRS& total, const animation::Trans
     total.qw       = tw * delta.qw - tx * delta.qx - ty * delta.qy - tz * delta.qz;
 }
 
+ActionPreviewSkeleton previewSkeleton(std::string uri, const animation::AnimSkeleton& skeleton) {
+    ActionPreviewSkeleton snapshot;
+    snapshot.sourceUri = std::move(uri);
+    snapshot.bones.reserve(static_cast<std::size_t>(skeleton.getBoneCount()));
+    for (int index = 0; index < skeleton.getBoneCount(); ++index)
+        snapshot.bones.push_back({skeleton.getBoneName(index), skeleton.getParent(index)});
+    return snapshot;
+}
+
+class RegisteredActionPreviewAssets final : public IActionPreviewAssetProvider {
+public:
+    [[nodiscard]] bool empty() const noexcept {
+        return models_.empty() && animations_.empty() && masks_.empty();
+    }
+
+    void registerModel(std::string uri, const animation::AnimSkeleton& skeleton) {
+        auto snapshot = previewSkeleton(uri, skeleton);
+        models_.insert_or_assign(std::move(uri), std::move(snapshot));
+    }
+
+    void registerAnimation(std::string uri, const animation::AnimSkeleton& skeleton) {
+        auto snapshot = previewSkeleton(uri, skeleton);
+        animations_.insert_or_assign(std::move(uri), std::move(snapshot));
+    }
+
+    void registerMask(std::string uri, const animation::AnimSkeleton& skeleton) {
+        auto snapshot = previewSkeleton(uri, skeleton);
+        masks_.insert_or_assign(std::move(uri), std::move(snapshot));
+    }
+
+    Result<ActionPreviewSkeleton> modelSkeleton(std::string_view uri) override {
+        return resolve(models_, uri, "preview model skeleton is not registered");
+    }
+
+    Result<ActionPreviewSkeleton> animationSkeleton(std::string_view uri) override {
+        return resolve(animations_, uri, "preview animation skeleton is not registered");
+    }
+
+    Result<void> validateBoneMask(std::string_view uri, const ActionPreviewSkeleton& target) override {
+        const auto found = masks_.find(std::string(uri));
+        if (found == masks_.end())
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "preview bone mask is not registered", std::string(uri)));
+        const auto& mask = found->second;
+        if (mask.bones.size() != target.bones.size())
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "preview bone mask targets a different skeleton", std::string(uri)));
+        for (std::size_t index = 0; index < target.bones.size(); ++index)
+            if (mask.bones[index] != target.bones[index])
+                return Result<void>::failure(Diagnostic::error(
+                    DiagnosticCode::Conflict, "preview bone mask targets a different skeleton", std::string(uri)));
+        return Result<void>::success();
+    }
+
+private:
+    using SkeletonMap = std::unordered_map<std::string, ActionPreviewSkeleton>;
+
+    static Result<ActionPreviewSkeleton> resolve(const SkeletonMap& snapshots, std::string_view uri,
+                                                  std::string message) {
+        const auto found = snapshots.find(std::string(uri));
+        if (found == snapshots.end())
+            return Result<ActionPreviewSkeleton>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, std::move(message), std::string(uri)));
+        return Result<ActionPreviewSkeleton>::success(found->second);
+    }
+
+    SkeletonMap models_;
+    SkeletonMap animations_;
+    SkeletonMap masks_;
+};
+
 class ScriptActionTimelineEditor {
 public:
     ScriptActionTimelineEditor(std::string targetId, action::ActionTimeline timeline,
