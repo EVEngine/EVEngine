@@ -358,14 +358,14 @@ if(TARGET EVOrders)
   target_link_libraries(EVOrders PUBLIC protobuf::libprotobuf)
 endif()
 
-if(TARGET EVDecision)
-  target_sources(EVDecision PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/decision_context.pb.cc)
-  target_include_directories(EVDecision SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+if(TARGET EVNpc_ai)
+  target_sources(EVNpc_ai PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/decision_context.pb.cc)
+  target_include_directories(EVNpc_ai SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
   if(MSVC)
     set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/decision_context.pb.cc
       PROPERTIES COMPILE_OPTIONS /wd4267)
   endif()
-  target_link_libraries(EVDecision PUBLIC protobuf::libprotobuf)
+  target_link_libraries(EVNpc_ai PUBLIC protobuf::libprotobuf)
 endif()
 
 if(TARGET EVEmergence)

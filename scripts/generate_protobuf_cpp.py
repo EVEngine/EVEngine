@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parent.parent
 PROTO_GROUPS = {
     "dynamic_value.proto": "FOUNDATION",
     "authority_store.proto": "FOUNDATION",
-    "decision_context.proto": "FOUNDATION",
+    "decision_context.proto": "PLATFORM",
     "emergence_runtime.proto": "FOUNDATION",
     "emergence_catalogue.proto": "FOUNDATION",
     "definitions_registry.proto": "FOUNDATION",

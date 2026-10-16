@@ -666,6 +666,11 @@ actionEditor.editAnimationSection("combat-section:strike", 0.30, 0.70, 0.10,
                                   "asset://combat.glb#StrikeHeavy");
 actionEditor.editAnimationSectionSource("combat-section:strike", 0.05, 0.40,
                                         "ease-in-out");
+actionEditor.editAnimationSectionEnvelope("combat-section:strike", 0.10, 0.12,
+                                          "ease-in-out", "ease-out");
+local blendOut = actionEditor.getAnimationSectionBlendOut(0);
+local blendInCurve = actionEditor.getAnimationSectionBlendInCurve(0);
+local blendOutCurve = actionEditor.getAnimationSectionBlendOutCurve(0);
 
 // Montage-wide settings commit atomically and update a prepared preview.
 actionEditor.setMontageSettings(1.25, false, true, 2,
@@ -699,7 +704,11 @@ if (actionEditor.hasPreviewHost())
 三种修改都通过 Timeline 的规范替换事务提交，拒绝 0、末尾、重复或越界时间，并立即更新同一编辑器拥有的
 Montage 运行时副本；Undo/Redo、`jumpRuntimeSection`、`evaluateRuntimeSectionProgress`、
 `syncRuntimeSection`、`syncRuntimeSectionAndJump`、`clearRuntimeSectionSync` 和磁吸目标因此共享一份边界事实。
-归一化求值把 `[0,1]` 映射到物理 Section；同步倍率可以只配置，也可以配置后立即跳到该段起点，并可明确清除。
+归一化求值把 `[0,1]` 映射到物理 Section。Section 同步把正数目标时长配置到当前
+`ActionExecution`；随后由 `ActionRuntime` 把注入 delta 分段映射到唯一权威时间游标，因此生命周期阶段、
+Notify/State、Montage 表现和 Section 进度保持同步，而不是由编辑器单独改变动画速度。运行中修改目标时长
+保持当前游标连续，只影响后续推进；清除后恢复该段 1:1 时间。该覆盖是 execution 瞬态状态，不写回资产，
+重启预览 execution 时编辑器会显式重新应用当前预览配置。
 运行时按资产的 `animationLayer` 选择协调器层，视口读取该层的双槽归一化合成姿态。
 `setRuntimeBoneMask` 会同步复制一个与预览骨架匹配的 `AnimBoneMask` 到当前层，调用方随后可以安全销毁或修改
 原 Mask；`clearRuntimeBoneMask` 恢复全骨骼影响。示例的 Montage Inspector 可从当前选中关节生成 Mask，选择是否
@@ -973,6 +982,15 @@ height scale 和 wall UV。`Hd2dFramePreviewService` 可按时间确定性计算
 - Toolbar：`clear` / `addTool` / `setIcon` / `setShortcut` / `setActive` / `getActive` / `matchShortcut` / `getToolCount` / `getToolId` / `getToolLabel` / `getToolIcon` / `getToolShortcut`
 - Level Editor 模块：`newTileBuffer` / `newBrush` / `newHistory` / `createTarget` / `bind`
 - Action editor adapter：`eve.ActionEditorModule().create`
+- Action 资产预览：`configurePreviewProfile` 接受 `eve.action.preview-profile` v1 对象；
+  `previewProfile` 返回当前 owning snapshot，`savePreviewProfile` / `loadPreviewProfile`
+  以稳定 Action AssetGuid 在项目 `.eve/action-preview/` 下原子保存 sidecar。
+  `canPreviewProfile`、`getPreviewCompatibilityCount`、
+  `getPreviewCompatibilitySectionId`、`getPreviewCompatibilityStatus` 和
+  `getPreviewCompatibilityMessage` 提供逐动画片段的骨架兼容性诊断。
+  `registerPreviewModelSkeleton`、`registerRuntimeClip` 和 `registerPreviewBoneMask`
+  会把已加载资源的 owning 骨架拓扑注册到文档内 Provider；宿主也可提供全局
+  `IActionPreviewAssetProvider`。两者均缺失时状态为 `unsupported`，不会静默使用替代骨架。
 - Heightmap Target 模块：`create` / `bind` / `applyBrush` / `newMesh` / `updateMesh` / `newSmoothMesh` / `updateSmoothMesh` / `encodeDocument` / `decodeDocument`
 - Workspace：`getId` / `getTitle` / `setTitle` / `registerPanel` / `removePanel` / `clearPanels` / `movePanel` / `setPanelCapability` / `setPanelContext` / `setPanelVisible` / `setPanelSingleton` / `activatePanel` / `getActivePanel` / `getPanelCount` / `getPanelId` / `getPanelTitle` / `getPanelRegion` / `getPanelCapability` / `getPanelContext` / `getPanelOrder` / `getPanelVisible` / `getPanelSingleton` / `setRegionSize` / `layout` / `getRegionX` / `getRegionY` / `getRegionW` / `getRegionH` / `setMode` / `getMode` / `select` / `clearSelection` / `getSelectionCount` / `getSelectionItem` / `getSelectionType` / `getPrimarySelection` / `getSelectionSequence` / `focus` / `getFocusedSurface` / `getRevision`
 - 动作时间轴：`configureWorkspace` / `setViewport` / `pointerDown` / `pointerMove` / `pointerUp` / `seekX` / `seekSeconds` / `resizeState` / `undo` / `redo` / `update` / `snapshot` / `play` / `pause` / `isPlaying` / `canUndo` / `canRedo` / `isDragging` / `getDuration` / `getPreviewTime` / `getRevision` / `getAnimationUri` / `getTrackCount` / `getTrackId` / `getTrackLabel` / `getTrackKind` / `getTrackMuted` / `getLayoutWidth` / `getLayoutHeight` / `getPlayheadX` / `getItemCount` / `getItemId` / `getItemType` / `getItemState` / `getItemSelected` / `getItemMinX` / `getItemMaxX` / `getItemMinY` / `getItemMaxY` / `getStateStart` / `getStateEnd` / `getEventCount` / `getEventItemId` / `getEventType` / `getEventTime` / `getEventKind`

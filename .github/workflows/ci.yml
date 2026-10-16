@@ -849,6 +849,12 @@ jobs:
             LC_ALL=C sed -n '/NetHostPeers .*: .* ms/p' "$log"
           fi
 
+      - name: Setup Dawn generator Python
+        if: ${{ needs.change-scope.outputs.dawn_metal == 'true' }}
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+
       - name: Configure native Dawn Metal lane
         if: ${{ needs.change-scope.outputs.dawn_metal == 'true' }}
         # Dawn's DAWN_FETCH_DEPENDENCIES shallow-clones abseil/glfw3/spirv-headers
@@ -1328,6 +1334,8 @@ jobs:
       # 20-minute step guard during teardown (PR #586 run 38844868063;
       # run 38775560674). Keep headroom above the ~15+ minute live window.
       - name: Smoke all examples (headless, >=2s alive each)
+        # 151 examples take up to 151 * (6s run + 3s termination grace),
+        # already over 22 minutes before process/display setup overhead.
         timeout-minutes: 30
         env:
           ALSOFT_DRIVERS: "null"

@@ -42,7 +42,7 @@
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
-#define PROTOBUF_INTERNAL_EXPORT_decision_5fcontext_2eproto EVENGINE_API_FOUNDATION
+#define PROTOBUF_INTERNAL_EXPORT_decision_5fcontext_2eproto EVENGINE_API_PLATFORM
 
 namespace google {
 namespace protobuf {
@@ -54,11 +54,11 @@ template <typename T>
 }  // namespace google
 
 // Internal implementation detail -- do not use these members.
-struct EVENGINE_API_FOUNDATION TableStruct_decision_5fcontext_2eproto {
+struct EVENGINE_API_PLATFORM TableStruct_decision_5fcontext_2eproto {
   static const ::uint32_t offsets[];
 };
 extern "C" {
-EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::DescriptorTable descriptor_table_decision_5fcontext_2eproto;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::DescriptorTable descriptor_table_decision_5fcontext_2eproto;
 }  // extern "C"
 namespace eve {
 namespace decision {
@@ -66,58 +66,58 @@ namespace proto {
 class Blackboard;
 struct BlackboardGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-EVENGINE_API_FOUNDATION extern BlackboardGlobalsTypeInternal Blackboard_globals_;
-EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull Blackboard_class_data_;
+EVENGINE_API_PLATFORM extern BlackboardGlobalsTypeInternal Blackboard_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull Blackboard_class_data_;
 #else
-EVENGINE_API_FOUNDATION extern const BlackboardGlobalsTypeInternal Blackboard_globals_;
+EVENGINE_API_PLATFORM extern const BlackboardGlobalsTypeInternal Blackboard_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class Blackboard_ScalarJsonEntry_DoNotUse;
 struct Blackboard_ScalarJsonEntry_DoNotUseGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-EVENGINE_API_FOUNDATION extern Blackboard_ScalarJsonEntry_DoNotUseGlobalsTypeInternal Blackboard_ScalarJsonEntry_DoNotUse_globals_;
-EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull Blackboard_ScalarJsonEntry_DoNotUse_class_data_;
+EVENGINE_API_PLATFORM extern Blackboard_ScalarJsonEntry_DoNotUseGlobalsTypeInternal Blackboard_ScalarJsonEntry_DoNotUse_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull Blackboard_ScalarJsonEntry_DoNotUse_class_data_;
 #else
-EVENGINE_API_FOUNDATION extern const Blackboard_ScalarJsonEntry_DoNotUseGlobalsTypeInternal Blackboard_ScalarJsonEntry_DoNotUse_globals_;
+EVENGINE_API_PLATFORM extern const Blackboard_ScalarJsonEntry_DoNotUseGlobalsTypeInternal Blackboard_ScalarJsonEntry_DoNotUse_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class Blackboard_ScalarValuesEntry_DoNotUse;
 struct Blackboard_ScalarValuesEntry_DoNotUseGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-EVENGINE_API_FOUNDATION extern Blackboard_ScalarValuesEntry_DoNotUseGlobalsTypeInternal Blackboard_ScalarValuesEntry_DoNotUse_globals_;
-EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull Blackboard_ScalarValuesEntry_DoNotUse_class_data_;
+EVENGINE_API_PLATFORM extern Blackboard_ScalarValuesEntry_DoNotUseGlobalsTypeInternal Blackboard_ScalarValuesEntry_DoNotUse_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull Blackboard_ScalarValuesEntry_DoNotUse_class_data_;
 #else
-EVENGINE_API_FOUNDATION extern const Blackboard_ScalarValuesEntry_DoNotUseGlobalsTypeInternal Blackboard_ScalarValuesEntry_DoNotUse_globals_;
+EVENGINE_API_PLATFORM extern const Blackboard_ScalarValuesEntry_DoNotUseGlobalsTypeInternal Blackboard_ScalarValuesEntry_DoNotUse_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class DecisionContextSave;
 struct DecisionContextSaveGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-EVENGINE_API_FOUNDATION extern DecisionContextSaveGlobalsTypeInternal DecisionContextSave_globals_;
-EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull DecisionContextSave_class_data_;
+EVENGINE_API_PLATFORM extern DecisionContextSaveGlobalsTypeInternal DecisionContextSave_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull DecisionContextSave_class_data_;
 #else
-EVENGINE_API_FOUNDATION extern const DecisionContextSaveGlobalsTypeInternal DecisionContextSave_globals_;
+EVENGINE_API_PLATFORM extern const DecisionContextSaveGlobalsTypeInternal DecisionContextSave_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class DecisionContextSave_StatesEntry_DoNotUse;
 struct DecisionContextSave_StatesEntry_DoNotUseGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-EVENGINE_API_FOUNDATION extern DecisionContextSave_StatesEntry_DoNotUseGlobalsTypeInternal DecisionContextSave_StatesEntry_DoNotUse_globals_;
-EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull DecisionContextSave_StatesEntry_DoNotUse_class_data_;
+EVENGINE_API_PLATFORM extern DecisionContextSave_StatesEntry_DoNotUseGlobalsTypeInternal DecisionContextSave_StatesEntry_DoNotUse_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull DecisionContextSave_StatesEntry_DoNotUse_class_data_;
 #else
-EVENGINE_API_FOUNDATION extern const DecisionContextSave_StatesEntry_DoNotUseGlobalsTypeInternal DecisionContextSave_StatesEntry_DoNotUse_globals_;
+EVENGINE_API_PLATFORM extern const DecisionContextSave_StatesEntry_DoNotUseGlobalsTypeInternal DecisionContextSave_StatesEntry_DoNotUse_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class InfluenceGrid;
 struct InfluenceGridGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-EVENGINE_API_FOUNDATION extern InfluenceGridGlobalsTypeInternal InfluenceGrid_globals_;
-EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull InfluenceGrid_class_data_;
+EVENGINE_API_PLATFORM extern InfluenceGridGlobalsTypeInternal InfluenceGrid_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull InfluenceGrid_class_data_;
 #else
-EVENGINE_API_FOUNDATION extern const InfluenceGridGlobalsTypeInternal InfluenceGrid_globals_;
+EVENGINE_API_PLATFORM extern const InfluenceGridGlobalsTypeInternal InfluenceGrid_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 class Transition;
 struct TransitionGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
-EVENGINE_API_FOUNDATION extern TransitionGlobalsTypeInternal Transition_globals_;
-EVENGINE_API_FOUNDATION extern const ::google::protobuf::internal::ClassDataFull Transition_class_data_;
+EVENGINE_API_PLATFORM extern TransitionGlobalsTypeInternal Transition_globals_;
+EVENGINE_API_PLATFORM extern const ::google::protobuf::internal::ClassDataFull Transition_class_data_;
 #else
-EVENGINE_API_FOUNDATION extern const TransitionGlobalsTypeInternal Transition_globals_;
+EVENGINE_API_PLATFORM extern const TransitionGlobalsTypeInternal Transition_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 }  // namespace proto
 }  // namespace decision
@@ -136,7 +136,7 @@ namespace proto {
 
 // -------------------------------------------------------------------
 
-class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Transition final : public ::google::protobuf::Message
+class EVENGINE_API_PLATFORM  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Transition final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.decision.proto.Transition) */ {
  public:
   inline Transition() : Transition(nullptr) {}
@@ -401,7 +401,7 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Transition 
 };
 // -------------------------------------------------------------------
 
-class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED InfluenceGrid final : public ::google::protobuf::Message
+class EVENGINE_API_PLATFORM  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED InfluenceGrid final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.decision.proto.InfluenceGrid) */ {
  public:
   inline InfluenceGrid() : InfluenceGrid(nullptr) {}
@@ -848,7 +848,7 @@ class PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Blackboard_ScalarValuesEntry_DoNotUs
 };
 // -------------------------------------------------------------------
 
-class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Blackboard final : public ::google::protobuf::Message
+class EVENGINE_API_PLATFORM  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Blackboard final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.decision.proto.Blackboard) */ {
  public:
   inline Blackboard() : Blackboard(nullptr) {}
@@ -1092,7 +1092,7 @@ class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Blackboard 
 };
 // -------------------------------------------------------------------
 
-class EVENGINE_API_FOUNDATION  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED DecisionContextSave final : public ::google::protobuf::Message
+class EVENGINE_API_PLATFORM  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED DecisionContextSave final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:eve.decision.proto.DecisionContextSave) */ {
  public:
   inline DecisionContextSave() : DecisionContextSave(nullptr) {}

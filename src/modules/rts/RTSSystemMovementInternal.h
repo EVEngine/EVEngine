@@ -8,6 +8,9 @@
 
 namespace eve::rts::systems_internal {
 
+/** @brief Observe visible hostile weapon threat at a world point using canonical faction intelligence. */
+float visibleHostileThreatAt(Faction& viewer, WorldPosition point);
+
 // Conservative swept-radius query against the canonical navigation grid.
 // Oversized/invalid queries return false and retain ordinary path steering.
 EVENGINE_API_DOMAINS bool isFormationSegmentClear(const map::Pathfinder& pathfinder, const NavigationGrid& grid,
@@ -25,6 +28,20 @@ inline float distanceSquared(float ax, float ay, float bx, float by) {
     const float dx = ax - bx;
     const float dy = ay - by;
     return dx * dx + dy * dy;
+}
+
+/** @brief Whether planning uses the shared policy, before the current group projection exists. */
+inline bool isSharedFlowNavigationOrder(Unit& unit, const OrderRecord& order) {
+    return unit.crowd()->link.isBound() &&
+           (order.kind == OrderKind::Move || order.kind == OrderKind::AttackMove || order.kind == OrderKind::Attack ||
+            order.kind == OrderKind::Escort || order.kind == OrderKind::Patrol) &&
+           !unit.navigation()->trafficRecoveryTarget;
+}
+
+/** @brief Whether motion uses a shared field instead of a radius-clear moving slot. */
+inline bool isSharedFlowOrder(Unit& unit, const OrderRecord& order) {
+    return isSharedFlowNavigationOrder(unit, order) && !unit.navigation()->formationTarget &&
+           !unit.navigation()->combatSlotTarget;
 }
 
 inline bool isMovementOrder(OrderKind kind) {
@@ -75,6 +92,24 @@ inline std::optional<WorldPosition> entityPosition(const ecs::EntityHandle& hand
     if (auto* building = dynamic_cast<Building*>(ecs::try_get(handle)))
         return WorldPosition{building->placement()->worldX, building->placement()->worldY};
     return std::nullopt;
+}
+
+/** @brief Resolve the current canonical movement goal without retaining entity pointers.
+ * @ownership Returns a world-position value. @thread Owner thread. @reentrancy No callbacks.
+ */
+inline WorldPosition movementGoal(Unit& unit, const OrderRecord& order) {
+    WorldPosition goal = order.target;
+    if (order.kind == OrderKind::Attack || order.kind == OrderKind::Resupply || order.kind == OrderKind::SupplyRelay) {
+        if (auto target = entityPosition(order.targetEntity)) goal = *target;
+        if (order.kind == OrderKind::SupplyRelay && unit.supply()->rendezvousActive)
+            goal = unit.supply()->rendezvousPoint;
+    } else if (order.kind == OrderKind::Escort && unit.tactics()->guardSet) {
+        goal = {unit.tactics()->guardX, unit.tactics()->guardY};
+    } else if (order.kind == OrderKind::Patrol && unit.navigation()->patrolInitialized &&
+               !unit.navigation()->patrolTowardTarget) {
+        goal = unit.navigation()->patrolOrigin;
+    }
+    return goal;
 }
 
 inline Result<std::optional<OrderRecord>> readCurrent(OrderComponent& orders) {

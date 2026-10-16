@@ -243,7 +243,7 @@ public:
 
     SensingWorld() = default;
     /** @brief Sensing world. */
-    ~SensingWorld() = default;
+    ~SensingWorld();
     SensingWorld(const SensingWorld&) = delete;
     SensingWorld& operator=(const SensingWorld&) = delete;
     /** @brief Sensing world. */
@@ -269,8 +269,10 @@ private:
 
     std::unique_ptr<eve::spatial::SpatialHash2D> spatialIndex_;
     std::unordered_map<std::string, int>         subjectSpatialIds_;
-    std::unordered_map<int, std::string>         spatialIdSubjects_;
-    int                                          nextSpatialId_ = 1;
+    // Derived references into owned map nodes: stable across upserts, removed before erase,
+    // and rebuilt after restore. No borrowed external storage or worker access.
+    std::unordered_map<int, const Subject*> spatialIdSubjects_;
+    int                                     nextSpatialId_ = 1;
 
     struct LastQueryDebug {
         bool                         usedSpatial = false;

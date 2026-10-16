@@ -1447,10 +1447,15 @@ TEST_CASE("common.result.expectPreservesFailureAndHeaderLocation") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_value) || defined(EVE_TEST_ORIGIN_value_lifecycle)
-#include "PrivateTestScope.h"
+#include <array>
+#include <bit>
 #include <cmath>
 #include <limits>
+#include <locale>
+#include <random>
+#include <sstream>
 #include <type_traits>
+#include "PrivateTestScope.h"
 #include "common/Json.h"
 #include "common/Value.h"
 #include "zeroerr/assert.h"
@@ -1541,6 +1546,36 @@ TEST_CASE("presentation_value_is_the_common_value_without_a_second_storage") {
     auto parsed = eve::Value::fromJson(encoded.value());
     REQUIRE(parsed.ok());
     CHECK(parsed.value() == value);
+}
+
+TEST_CASE("value.double_json_keeps_existing_canonical_bytes") {
+    const auto matchesLegacy = [&](double number) {
+        std::ostringstream stream;
+        stream.imbue(std::locale::classic());
+        stream.precision(std::numeric_limits<double>::max_digits10);
+        stream << number;
+        std::string expected = stream.str();
+        if (expected.find_first_of(".eE") == std::string::npos) expected += ".0";
+        auto encoded = Value(number).toJson();
+        REQUIRE(encoded.ok());
+        CHECK_EQ(encoded.value(), expected);
+    };
+    constexpr std::array<double, 10> boundaries = {0.0,
+                                                   -0.0,
+                                                   0.1,
+                                                   1.0,
+                                                   -1.0,
+                                                   1e-5,
+                                                   1e20,
+                                                   std::numeric_limits<double>::min(),
+                                                   std::numeric_limits<double>::max(),
+                                                   std::numeric_limits<double>::denorm_min()};
+    for (double number : boundaries) matchesLegacy(number);
+    std::mt19937_64 random(42);
+    for (int index = 0; index < 4096; ++index) {
+        const double number = std::bit_cast<double>(random());
+        if (std::isfinite(number)) matchesLegacy(number);
+    }
 }
 }  // namespace value
 }  // namespace
@@ -2388,6 +2423,18 @@ TEST_CASE("common.result.voidStatusAndBoolCheck") {
     CHECK(!failed);
     REQUIRE(failed.error() != nullptr);
     CHECK(failed.error()->code() == DiagnosticCode::Conflict);
+}
+
+TEST_CASE("common.result.statusCopiesRetainImmutableDiagnosticStorage") {
+    auto original = Status::failure(Diagnostic::error(DiagnosticCode::Failed, "retained diagnostic", "test"));
+    auto copied   = original;
+    original      = Status::success(StatusCode::NoOp);
+    CHECK(original.diagnostics().empty());
+    REQUIRE(copied.primaryDiagnostic() != nullptr);
+    CHECK_EQ(copied.primaryDiagnostic()->message(), "retained diagnostic");
+    auto moved = std::move(copied);
+    CHECK(moved.isFailure());
+    CHECK_EQ(moved.diagnostics().size(), 1u);
 }
 }  // namespace test_result
 #endif

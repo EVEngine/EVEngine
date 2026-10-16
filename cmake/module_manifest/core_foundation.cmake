@@ -90,6 +90,9 @@ eve_declare_module(NAME plugins LAYER 0 SCRIPT Plugins
 eve_declare_module(NAME database LAYER 0 SCRIPT Database
                    THIRDPARTY poco_data poco)
 # L1 -- gameplay domain adapter
+eve_declare_module(NAME crowd_thread LIB EVCrowdThread LAYER 1
+                   DEPS crowd thread
+                   GROUP 2d 3d web)
 eve_declare_module(NAME pixelworld_thread LAYER 1
                    DEPS pixelworld thread
                    GROUP 2d 3d web)

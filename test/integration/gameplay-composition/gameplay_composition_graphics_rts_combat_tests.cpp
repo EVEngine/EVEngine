@@ -2003,6 +2003,9 @@ TEST_CASE("rts.weaponRangeFalloffScalesHitscanDamageAtConfiguredRange") {
     weapon->definition()->owned    = std::make_shared<const eve::weapon::WeaponDefinition>(definition);
     weapon->definition()->def      = weapon->definition()->owned.get();
     weapon->state()->stages        = &weapon->definition()->def->stages;
+    weapon->state()->resource.kind  = eve::weapon::ResourceKind::Ammo;
+    weapon->state()->resource.value = 1.0f;
+    weapon->state()->resource.max   = 1.0f;
     auto weaponLink                = eve::rts::WeaponLink::bind(ecs::handle_of(weapon));
     REQUIRE(weaponLink.ok());
     attacker->weapon()->link = std::move(weaponLink).takeValue();
@@ -2053,6 +2056,9 @@ TEST_CASE("rts.combatWaitsForTurretToTraverseBeforeFiring") {
     weapon->definition()->owned = std::make_shared<const eve::weapon::WeaponDefinition>(definition);
     weapon->definition()->def   = weapon->definition()->owned.get();
     weapon->state()->stages     = &weapon->definition()->def->stages;
+    weapon->state()->resource.kind  = eve::weapon::ResourceKind::Ammo;
+    weapon->state()->resource.value = 1.0f;
+    weapon->state()->resource.max   = 1.0f;
     auto weaponLink             = eve::rts::WeaponLink::bind(ecs::handle_of(weapon));
     REQUIRE(weaponLink.ok());
     attacker->weapon()->link = std::move(weaponLink).takeValue();

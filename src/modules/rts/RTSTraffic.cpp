@@ -1,3 +1,4 @@
+#include "common/Profile.h"
 #include "map/Pathfinder.h"
 #include "rts/RTS.h"
 #include "rts/RTSSystemMovementInternal.h"
@@ -117,6 +118,7 @@ std::optional<WorldPosition> evacuationStep(const map::Pathfinder& pathfinder, c
 }  // namespace
 
 Result<std::size_t> TrafficReservationSystem::step(const map::Pathfinder& pathfinder, const NavigationGrid& grid) {
+    EV_PROFILE_MODULE("rts", "TrafficReservationSystem::step");
     if (!std::isfinite(grid.cellSize) || grid.cellSize <= 0.f || !std::isfinite(grid.originX) ||
         !std::isfinite(grid.originY))
         return Result<std::size_t>::failure(
@@ -168,6 +170,29 @@ Result<std::size_t> TrafficReservationSystem::step(const map::Pathfinder& pathfi
             const auto cell = cellAt(navigation->waypoints[index], grid);
             if (cell && isNarrow(pathfinder, *cell)) seed = cell;
         }
+        if (!seed && navigation->waypoints.empty()) {
+            const int  gx = goal->first - current->first, gy = goal->second - current->second;
+            const bool horizontal = std::abs(gx) >= std::abs(gy);
+            const int  sign       = (horizontal ? gx : gy) >= 0 ? 1 : -1;
+            for (int forward = 1; forward <= 3 && !seed; ++forward) {
+                for (int side = -1; side <= 1 && !seed; ++side) {
+                    const Cell          candidate{current->first + (horizontal ? forward * sign : side),
+                                         current->second + (horizontal ? side : forward * sign)};
+                    const WorldPosition point{grid.originX + float(candidate.first) * grid.cellSize,
+                                              grid.originY + float(candidate.second) * grid.cellSize};
+                    // Pre-reserve a through portal, not an open-map corner or a corridor endpoint.
+                    const int  ax = horizontal ? 1 : 0, ay = horizontal ? 0 : 1;
+                    const bool through = pathfinder.isWalkable(candidate.first - ax, candidate.second - ay) &&
+                                         pathfinder.isWalkable(candidate.first + ax, candidate.second + ay) &&
+                                         !pathfinder.isWalkable(candidate.first - ay, candidate.second - ax) &&
+                                         !pathfinder.isWalkable(candidate.first + ay, candidate.second + ax);
+                    if (through && isNarrow(pathfinder, candidate) &&
+                        systems_internal::isFormationSegmentClear(pathfinder, grid, {motion->x, motion->y}, point,
+                                                                  crowd->radius))
+                        seed = candidate;
+                }
+            }
+        }
         if (!seed) continue;
         auto owner = owners.find(*seed);
         if (owner == owners.end()) {
@@ -192,7 +217,7 @@ Result<std::size_t> TrafficReservationSystem::step(const map::Pathfinder& pathfi
                 return a != b ? a < b : left < right;
             });
         }
-        Cell next = *goal;
+        Cell next = navigation->waypoints.empty() ? (corridor.cells.contains(*current) ? exit : *seed) : *goal;
         if (begin < navigation->waypoints.size()) {
             const auto point = cellAt(navigation->waypoints[begin], grid);
             if (point) next = *point;
@@ -220,6 +245,10 @@ Result<std::size_t> TrafficReservationSystem::step(const map::Pathfinder& pathfi
             const bool sameDirection         = value.exit == direction;
             const bool narrowNext            = isNarrow(pathfinder, value.next);
             value.navigation->trafficWaiting = !sameDirection || (narrowNext && !reserved.insert(value.next).second);
+            if (sameDirection && !value.navigation->trafficWaiting && value.navigation->waypoints.empty())
+                value.navigation->trafficRecoveryTarget =
+                    WorldPosition{grid.originX + float(value.next.first) * grid.cellSize,
+                                  grid.originY + float(value.next.second) * grid.cellSize};
             if (!sameDirection)
                 value.navigation->trafficRecoveryTarget =
                     evacuationStep(pathfinder, grid, corridors.at(key), direction, value.current, value.position,
@@ -236,6 +265,7 @@ Result<std::size_t> TrafficReservationSystem::step(const map::Pathfinder& pathfi
 }
 void RTS::setNavigationProvider(map::Pathfinder* pathfinder, NavigationGrid grid,
                                 NavigationEvent unreachable) noexcept {
+    invalidateCrowdSurfaceSource();
     auto* currentTable = ecs::current();
     for (const auto& handle : units_) {
         if (handle.table != currentTable) continue;

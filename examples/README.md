@@ -46,6 +46,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 
 | 示例 | 演示能力 |
 |---|---|
+| [ember-guard](ember-guard/README.md) | 焰卫：六枚环绕火球自主索敌、命中爆燃、返回护卫的俯视角特效场景 |
 | [game-tutorial](game-tutorial/README.md) | EveScript import、输入与碰撞、程序纹理、HUD、热重载及严格版本化存档 |
 | [physics-force-lab](physics-force-lab/README.md) | 2D/3D 场效果、排水浮力、机翼升阻力与轮胎转动 |
 | [devlab](devlab/README.md) | 运行时即编辑器：`--debug` 下的控制台 / REPL、快照、暂停、热重载、错误切片、AI 面板（**旗舰示例，先跑这个**） |
@@ -94,6 +95,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [sprite-animation-vfx](sprite-animation-vfx/README.md) | 2D 精灵动画与 VFX API 的端到端脚本验证 |
 | [vehicle](vehicle/README.md) | 通用载具系统：`eve.Vehicle()` + `eve.Weapon()` 的 2D 顶视完整链路 |
 | [crowd](crowd/README.md) | 群体行为：2000 个单位在带障碍流场中行军与平滑转向（Boids） |
+| [crowd-battle](crowd-battle/README.md) | Native two-army battle: AttackMove formations, narrow passage, real damage and melee admission |
 | [gpu-agents](gpu-agents/README.md) | GPU Agents：鱼群 / 生命网格 / 花瓣共享 World、SDF 与固定步长 |
 | [composable-rebellion](composable-rebellion/README.md) | 可组合玩法：引擎只存事实、叛乱语义全在脚本（15 个 `eve.*` 模块协作） |
 
@@ -193,6 +195,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [attack-vfx](attack-vfx/README.md) | AttackVfx 综合演示：一份配方覆盖 mesh/trail/particles/camera/distortion/decal/audio/prefab，anticipate→impact→release，三套 elemental skin 自动轮播 |
 | [rendering-chain-lab](rendering-chain-lab/README.md) | 渲染链运行时对比：TAA / SSR / RTGI 与自动反射链开关（Space / R） |
 | [lighting-showcase](lighting-showcase/README.md) | 光照展示：环境光、有向光 CSM、聚光灯 perspective 阴影、彩色发光体，以及可选硬件光追 / 便携反射链 |
+| [modern-balcony](modern-balcony/README.md) | 现代阳台：SCAD 固定建筑、程序化花园、两款骨骼动画猫、大气天空与硬件光追 / 便携反射 |
 | [scad-living-room](scad-living-room/README.md) | SCAD 原创现代客厅：暖光、PBR 家具、CSM / 局部阴影、体积光、AO / SSGI / SSR / TAA 与默认硬件光追探测 |
 | [shader-live-preview](shader-live-preview/README.md) | 实时 GLSL 预览：编辑 `shaders/preview.frag` 保存即热重载 |
 | [virtual-texture-blending](virtual-texture-blending/README.md) | 虚拟纹理材质混合：常驻虚拟页 + fallback 槽与无缝 gutter |

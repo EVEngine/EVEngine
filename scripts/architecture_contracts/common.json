@@ -54,6 +54,94 @@
       "hot_path": []
     },
     {
+      "id": "common-result-observation-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/common/Result.h",
+      "owner": "common-maintainers",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACES",
+      "reason": "Release and assertion-enabled consumers share the same observation and move bookkeeping; only diagnostic checks are conditional.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/Result.h",
+        "docs/dev/Result检查与不得丢弃返回值规范.md",
+        "cmake/crowd_check/CMakeLists.txt"
+      ],
+      "tests": [
+        "test/result.cpp",
+        "test/profile/result_policy_producer.cpp",
+        "test/profile/result_policy_consumer.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [
+        "Native owning Result values retain their public signatures and two-byte observation layout across assertion policies. Observation and move duty updates are identical; moved-from sources are disarmed in both policies. No persistent schema or ECS data is introduced."
+      ],
+      "thread_affinity": "One owner observes or mutates a Result at a time; cross-thread handoff requires synchronization. No callbacks or provider lookup.",
+      "trim": {
+        "absent_profile": "none: required common foundation",
+        "evidence": "Two translation units deliberately use different assertion policies; the same interop executable is linked to OBJECT and SHARED profile checks. Both module consumers rebuild the inline contract."
+      },
+      "cost_notes": [
+        {
+          "api": "Result observation/move",
+          "shape": "owned-value",
+          "why": "Constant-size flag updates per value operation; Release removes assertion checks, not bookkeeping. No allocation or expensive preparation API."
+        }
+      ],
+      "hot_path": [
+        "src/engine/common/Result.h"
+      ]
+    },
+    {
+      "id": "common-status-value-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/common/Status*",
+      "owner": "common-maintainers",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACES",
+      "reason": "Structured result status preserves immutable diagnostics while successful values do not allocate commit-phase workspace.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/Status.h",
+        "src/engine/common/Status.cpp",
+        "src/engine/common/Result.h",
+        "docs/dev/Result检查与不得丢弃返回值规范.md"
+      ],
+      "tests": [
+        "test/result.cpp",
+        "test/profile/crowd_update_allocation.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [
+        "Native by-value Status/Result foundation; no ECS/Link, capabilities, events, script binding class or tool protocol is introduced. Existing projections serialize the same status codes and diagnostic order. No persistent schema changes.",
+        "Successful Status contains no diagnostics container; copying/moving successful values does not allocate. Error diagnostics are immutable shared owning values; borrowed primaryDiagnostic/diagnostics views remain conservatively valid only until their Status is destroyed or replaced.",
+        "Read-only empty diagnostic observation vector is owned by the common library and initialized before simulation commit phases. It is not a mutable alternate status source. Public query shapes are unchanged; all consumers must rebuild because the private shared-library value layout changed.",
+        "OBJECT standalone global-new probe verifies success creation/copy/move and selected Crowd commit after motion have zero allocations; actual one-shot prepare failure returns Result before mutation. Shared mode runs Result/Status and Crowd transaction contracts without pretending executable allocator interception covers DLL allocations."
+      ],
+      "thread_affinity": "Status is an owning value; concurrent mutation/replacement of one value is unsupported. Immutable diagnostic copies retain storage without callbacks.",
+      "trim": {
+        "absent_profile": "none: required common foundation",
+        "evidence": "Current change rebuilds OBJECT composition, SHARED composition and core-only SHARED; runtime Result/Status and Crowd tests plus allocation probe are required. No higher module dependency."
+      },
+      "cost_notes": [
+        {
+          "api": "Status::success/copy/move",
+          "shape": "owned-value",
+          "why": "Code and immutable storage ownership only; success allocates no diagnostics workspace. Error construction owns diagnostics and retains its existing construction cost."
+        }
+      ],
+      "hot_path": [
+        "src/engine/common/Status.h",
+        "src/engine/common/Status.cpp"
+      ]
+    },
+    {
       "id": "common-typed-protobuf-envelope",
       "rule": "persistence",
       "scope": "src/engine/common/ProtobufSnapshot.*",
