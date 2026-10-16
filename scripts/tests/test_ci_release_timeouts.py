@@ -84,6 +84,15 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
                 self.assertGreaterEqual(int(match.group(1)), minimum)
 
     def test_android_jobs_start_sccache_before_the_build(self) -> None:
+        # Android uniquely starts sccache before the NDK build so a GHA/ghac
+        # storage outage is visible early. The helper retries transient errors
+        # and switches to a local disk cache when needed.
+        helper = ROOT / ".github" / "scripts" / "start-sccache.sh"
+        self.assertTrue(helper.is_file(), msg=f"missing {helper}")
+        helper_text = helper.read_text(encoding="utf-8")
+        self.assertIn("sccache --start-server", helper_text)
+        self.assertIn("SCCACHE_GHA_ENABLED=false", helper_text)
+
         for job in ("android", "android-release"):
             with self.subTest(job=job):
                 block = job_block(self.workflow, job)
@@ -91,7 +100,10 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
                 build_name = "android debug" if job == "android" else "android release"
                 build = block.index(f"      - name: Build {build_name}\n")
                 self.assertLess(start, build)
-                self.assertIn("        run: sccache --start-server\n", block[start:build])
+                self.assertIn(
+                    "        run: bash .github/scripts/start-sccache.sh\n",
+                    block[start:build],
+                )
 
     def test_benchmark_filter_is_part_of_the_ctest_command(self) -> None:
         for job in ("windows-release", "macos-release", "linux-release"):
