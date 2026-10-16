@@ -67,6 +67,42 @@ const char* actionPhaseName(ActionPhase phase) noexcept {
     return "unknown";
 }
 
+Result<Duration> ActionTiming::total() const {
+    auto windupAndActive = windup.tryAdd(active);
+    if (!windupAndActive) return Result<Duration>::failure(windupAndActive.status());
+    return windupAndActive.value().tryAdd(recover);
+}
+
+Result<ActionTiming> actionTimingFromPhysicalSections(const ActionTimeline& timeline) {
+    if (timeline.splitTimestamps.size() > 2)
+        return Result<ActionTiming>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "action timing assembly from physical sections supports at most two splits "
+                              "(windup|active|recover); more splits remain montage sections only",
+                              "timeline.splitTimestamps"));
+    ActionTiming timing;
+    const auto&  splits = timeline.splitTimestamps;
+    if (splits.empty()) {
+        timing.active = timeline.duration;
+    } else if (splits.size() == 1) {
+        if (splits[0] > timeline.duration)
+            return Result<ActionTiming>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                   "physical split is outside the timeline duration",
+                                                                   "timeline.splitTimestamps"));
+        timing.windup = splits[0];
+        timing.active = Duration::fromNanoseconds(timeline.duration.nanoseconds() - splits[0].nanoseconds());
+    } else {
+        if (splits[0] > splits[1] || splits[1] > timeline.duration)
+            return Result<ActionTiming>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                   "physical splits are outside the timeline duration",
+                                                                   "timeline.splitTimestamps"));
+        timing.windup  = splits[0];
+        timing.active  = Duration::fromNanoseconds(splits[1].nanoseconds() - splits[0].nanoseconds());
+        timing.recover = Duration::fromNanoseconds(timeline.duration.nanoseconds() - splits[1].nanoseconds());
+    }
+    return Result<ActionTiming>::success(timing);
+}
+
 Result<void> ActionDefinition::validate() const {
     if (!id.isValid()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "action definition id is invalid", "id"));
     if (!condition.isValid())
@@ -101,12 +137,15 @@ Result<void> ActionDefinition::validate() const {
         if (!timelineValid) return failureFrom(timelineValid.status());
         if (timeline->actionId != id)
             return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "action timeline id does not match its definition", "timeline.actionId"));
-        auto windupAndActive = timing.windup.tryAdd(timing.active);
-        if (!windupAndActive) return failureFrom(windupAndActive.status());
-        auto total = windupAndActive.value().tryAdd(timing.recover);
+        // timing remains the phase authority; timeline.duration is a consistency constraint only.
+        // splitTimestamps are physical sections and are not required to match phase boundaries.
+        auto total = timing.total();
         if (!total) return failureFrom(total.status());
         if (timeline->duration != total.value())
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "action timeline duration must equal windup + active + recover", "timeline.durationNs"));
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                  "action timeline duration must equal timing.total() (windup + active + recover)",
+                                  "timeline.durationNs"));
     }
     return Result<void>::success();
 }

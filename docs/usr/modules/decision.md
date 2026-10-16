@@ -7,6 +7,10 @@
 
 共享条件树见 [条件树](condition.md)（`eve::condition::Condition`，位于 `common`，非独立模块）。
 
+共享条件树 `decision::Condition` 只保留 `All`/`Any`/`Not`/`Compare`/`PolicyCall`。
+tag / attribute / resource / state / authority 通过 `ConditionKeys.h` 的 key 前缀与
+`authority.allow` 策略约定表达；作者面旧叶子（`has_tag` 等）由统一 codec 展开。
+
 ## 任务一：巡逻状态机
 
 放在初始化或关卡加载阶段；项目需启用 `npc_ai`（以获得 `decision` 槽位）。

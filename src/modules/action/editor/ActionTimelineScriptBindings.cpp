@@ -1,8 +1,9 @@
 #include "action/editor/ActionTimelineScriptBindings.h"
 
-#include "action/ActionBlockRuntime.h"
+#include "action/ActionNotifyPlayback.h"
 #include "action/ActionNotifyRegistry.h"
 #include "action/ActionParameterCurve.h"
+#include "action/ActionPreviewComposition.h"
 #include "action/editor/ActionEditorModule.h"
 #include "action/editor/ActionPreviewController.h"
 #include "action/editor/ActionTimelineEditor.h"
@@ -198,135 +199,28 @@ void accumulateRootMotion(animation::TransformTRS& total, const animation::Trans
     total.qw       = tw * delta.qw - tx * delta.qx - ty * delta.qy - tz * delta.qz;
 }
 
-class ComposedActionPreviewSink final : public action::IActionPreviewSink {
-public:
-    void add(std::unique_ptr<action::IActionPreviewSink> sink) { sinks_.push_back(std::move(sink)); }
-    [[nodiscard]] bool empty() const noexcept { return sinks_.empty(); }
-
-    Result<void> prepare(const action::ActionPreviewFrame& frame) override {
-        std::size_t prepared = 0;
-        for (; prepared < sinks_.size(); ++prepared) {
-            auto result = sinks_[prepared]->prepare(frame);
-            if (result) continue;
-            for (std::size_t index = 0; index <= prepared; ++index) sinks_[index]->discardPrepared();
-            return Result<void>::failure(result.status());
-        }
-        return Result<void>::success(Status::success(StatusCode::Applied));
-    }
-
-    void present(const action::ActionPreviewFrame& frame) noexcept override {
-        for (auto& sink : sinks_) sink->present(frame);
-    }
-
-    void discardPrepared() noexcept override {
-        for (auto& sink : sinks_) sink->discardPrepared();
-    }
-
-private:
-    std::vector<std::unique_ptr<action::IActionPreviewSink>> sinks_;
-};
-
-ActionPreviewSkeleton previewSkeleton(std::string uri, const animation::AnimSkeleton& skeleton) {
-    ActionPreviewSkeleton snapshot;
-    snapshot.sourceUri = std::move(uri);
-    snapshot.bones.reserve(static_cast<std::size_t>(skeleton.getBoneCount()));
-    for (int index = 0; index < skeleton.getBoneCount(); ++index)
-        snapshot.bones.push_back({skeleton.getBoneName(index), skeleton.getParent(index)});
-    return snapshot;
-}
-
-class RegisteredActionPreviewAssets final : public IActionPreviewAssetProvider {
-public:
-    [[nodiscard]] bool empty() const noexcept {
-        return models_.empty() && animations_.empty() && masks_.empty();
-    }
-
-    void registerModel(std::string uri, const animation::AnimSkeleton& skeleton) {
-        auto snapshot = previewSkeleton(uri, skeleton);
-        models_.insert_or_assign(std::move(uri), std::move(snapshot));
-    }
-
-    void registerAnimation(std::string uri, const animation::AnimSkeleton& skeleton) {
-        auto snapshot = previewSkeleton(uri, skeleton);
-        animations_.insert_or_assign(std::move(uri), std::move(snapshot));
-    }
-
-    void registerMask(std::string uri, const animation::AnimSkeleton& skeleton) {
-        auto snapshot = previewSkeleton(uri, skeleton);
-        masks_.insert_or_assign(std::move(uri), std::move(snapshot));
-    }
-
-    Result<ActionPreviewSkeleton> modelSkeleton(std::string_view uri) override {
-        return resolve(models_, uri, "preview model skeleton is not registered");
-    }
-
-    Result<ActionPreviewSkeleton> animationSkeleton(std::string_view uri) override {
-        return resolve(animations_, uri, "preview animation skeleton is not registered");
-    }
-
-    Result<void> validateBoneMask(std::string_view uri, const ActionPreviewSkeleton& target) override {
-        const auto found = masks_.find(std::string(uri));
-        if (found == masks_.end())
-            return Result<void>::failure(
-                Diagnostic::error(DiagnosticCode::NotFound, "preview bone mask is not registered", std::string(uri)));
-        const auto& mask = found->second;
-        if (mask.bones.size() != target.bones.size())
-            return Result<void>::failure(Diagnostic::error(
-                DiagnosticCode::Conflict, "preview bone mask targets a different skeleton", std::string(uri)));
-        for (std::size_t index = 0; index < target.bones.size(); ++index)
-            if (mask.bones[index] != target.bones[index])
-                return Result<void>::failure(Diagnostic::error(
-                    DiagnosticCode::Conflict, "preview bone mask targets a different skeleton", std::string(uri)));
-        return Result<void>::success();
-    }
-
-private:
-    using SkeletonMap = std::unordered_map<std::string, ActionPreviewSkeleton>;
-
-    static Result<ActionPreviewSkeleton> resolve(const SkeletonMap& snapshots, std::string_view uri,
-                                                  std::string message) {
-        const auto found = snapshots.find(std::string(uri));
-        if (found == snapshots.end())
-            return Result<ActionPreviewSkeleton>::failure(
-                Diagnostic::error(DiagnosticCode::NotFound, std::move(message), std::string(uri)));
-        return Result<ActionPreviewSkeleton>::success(found->second);
-    }
-
-    SkeletonMap models_;
-    SkeletonMap animations_;
-    SkeletonMap masks_;
-};
-
 class ScriptActionTimelineEditor {
 public:
     ScriptActionTimelineEditor(std::string targetId, action::ActionTimeline timeline,
-                               action::ActionNotifyRegistry registry,
+                               action::ActionNotifyRegistry             registry,
                                std::shared_ptr<ActionTimelineClipboard> clipboard)
-        : registry_(std::move(registry)),
-          blockRuntime_(registry_),
+        : playback_(std::move(registry)),
           editor_(std::move(targetId), std::move(timeline), std::move(clipboard)),
-          widget_(editor_, registry_) {
-        auto composed = std::make_unique<ComposedActionPreviewSink>();
-        const auto providerCount = cap::listenerCount<action::IActionPreviewSinkProvider>();
-        for (std::size_t index = 0; index < providerCount; ++index) {
-            auto* provider = cap::listenerAt<action::IActionPreviewSinkProvider>(index);
-            if (!provider) continue;
-            auto sink = provider->createActionPreviewSink();
-            if (!sink) {
-                previewInitializationFailure_ = sink.status();
-                return;
-            }
-            composed->add(std::move(sink).takeValue());
+          widget_(editor_, playback_.registry()) {
+        auto composed = action::composeActionPreviewSinksFromProviders();
+        if (!composed) {
+            previewInitializationFailure_ = composed.status();
+            return;
         }
-        if (composed->empty()) return;
-        previewSink_       = std::move(composed);
+        if (!composed.value()) return;
+        previewSink_       = std::move(composed).takeValue();
         previewController_ = std::make_unique<ActionPreviewController>(editor_, *previewSink_);
     }
 
     ~ScriptActionTimelineEditor() {
         if (executionId_.isZero()) return;
         const auto* montage = activeMontage();
-        auto interrupted = blockRuntime_.interrupt(runtimeContext(montage ? montage->time() : Duration::zero()));
+        auto        interrupted = playback_.interrupt(runtimeContext(montage ? montage->time() : Duration::zero()));
         interrupted.ignore();
     }
 
@@ -335,7 +229,7 @@ public:
 
     const ActionTimelineEditor& editor() const noexcept { return editor_; }
     const ActionTimelineWidget& widget() const noexcept { return widget_; }
-    const action::ActionNotifyRegistry& registry() const noexcept { return registry_; }
+    const action::ActionNotifyRegistry& registry() const noexcept { return playback_.registry(); }
 
     [[nodiscard]] bool hasPreviewHost() const noexcept { return previewController_ != nullptr; }
 
@@ -742,7 +636,7 @@ public:
             return Result<void>::failure(
                 Diagnostic::error(DiagnosticCode::InvalidArgument,
                                   "externally handled runtime block type is invalid", "type"));
-        if (!registry_.hasHandler(type))
+        if (!playback_.registry().hasHandler(type))
             return Result<void>::failure(
                 Diagnostic::error(DiagnosticCode::NotFound,
                                   "runtime block type has no registered handler", type));
@@ -924,7 +818,7 @@ public:
         tick_          = SimulationTick(tick_.value() + 1);
         auto cancelled = runtime_->cancel(executionId_, tick_);
         if (!cancelled) return cancelled;
-        auto interrupted = blockRuntime_.interrupt(runtimeContext(montage->time()));
+        auto interrupted = playback_.interrupt(runtimeContext(montage->time()));
         if (!interrupted) return interrupted;
         montage->stop();
         return Result<void>::success(Status::success(StatusCode::Applied));
@@ -1069,7 +963,7 @@ private:
         const auto previousLayer    = activeLayer_;
         if (!executionId_.isZero()) {
             const auto* montage = activeMontage();
-            auto interrupted = blockRuntime_.interrupt(runtimeContext(montage ? montage->time() : Duration::zero()));
+            auto        interrupted = playback_.interrupt(runtimeContext(montage ? montage->time() : Duration::zero()));
             if (!interrupted) return interrupted;
         }
         auto                  runtime    = std::make_unique<action::ActionRuntime>();
@@ -1118,18 +1012,17 @@ private:
         handled.totalElapsed = advance.totalElapsed;
         handled.inputConsumed = advance.inputConsumed;
         for (const auto& event : advance.timelineEvents)
-            if (registry_.hasHandler(event.type.format()) &&
+            if (playback_.registry().hasHandler(event.type.format()) &&
                 !externallyHandledTypes_.contains(event.type.format()))
                 handled.timelineEvents.push_back(event);
         for (const auto& block : advance.activeBlocks)
-            if (registry_.hasHandler(block.type.format()) &&
+            if (playback_.registry().hasHandler(block.type.format()) &&
                 !externallyHandledTypes_.contains(block.type.format()))
                 handled.activeBlocks.push_back(block);
-        return blockRuntime_.apply(handled, runtimeContext(advance.totalElapsed));
+        return playback_.apply(handled, runtimeContext(advance.totalElapsed));
     }
 
-    action::ActionNotifyRegistry registry_;
-    action::ActionBlockRuntime   blockRuntime_;
+    action::ActionNotifyPlayback                   playback_;
     ActionTimelineEditor         editor_;
     ActionTimelineWidget         widget_;
     std::unique_ptr<action::IActionPreviewSink> previewSink_;

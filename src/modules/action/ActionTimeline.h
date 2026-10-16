@@ -197,7 +197,12 @@ struct EVENGINE_API_PLATFORM ActionTimeline {
     std::string                         animationUri;
     std::vector<ActionAnimationSection> animationSections;
     ActionMontageSettings               montage;
-    /** @brief Sorted objective split timestamps forming N+1 physical sections. */
+    /**
+     * @brief Sorted objective split timestamps forming N+1 physical sections.
+     * @remarks Owned by the timeline for editor/montage sectioning. ActionRuntime
+     *          never reads these as phase boundaries; optional ability/definition
+     *          assembly may project at most two splits via `actionTimingFromPhysicalSections`.
+     */
     std::vector<Duration>    splitTimestamps;
     std::vector<ActionTrack> tracks;
     Value::Object            metadata;

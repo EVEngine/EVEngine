@@ -4397,7 +4397,8 @@
           "timer.simulationClockUsesInjectedFixedSteps",
           "touch.getTouchesEmpty",
           "touch.getTouchInvalidThrows",
-          "devtools.renderflow.passScopeForwardsTheCallersName"
+          "devtools.renderflow.passScopeForwardsTheCallersName",
+          "devtools.playHost.malformedRequestsObserveEveryResult"
         ],
         "concurrency": [
           "event.workerPushWakesWait",
@@ -5402,7 +5403,8 @@
       "cases": {
         "local-format": [
           "abilityAsset.roundTripsCompleteDefinitionAndRegistersDecodedCandidate",
-          "abilityAsset.migratesV1MillisecondsAndRejectsFutureUnknownOrMalformedData"
+          "abilityAsset.migratesV1MillisecondsAndRejectsFutureUnknownOrMalformedData",
+          "abilityAsset.parsePolicySpellingsAndAssembleDefinitionFromTimeline"
         ],
         "local-logic": [
           "abilityController.playerQueueRoutesFifoIntentWithInjectedTick",
@@ -5428,7 +5430,11 @@
           "actionNotifyRegistry.validatesShapeAndRequiredPayload",
           "actionNotifyRegistry.rejectsInvalidAndDuplicateDescriptors",
           "actionNotifyRegistry.handlerLifecycleIsExplicitAndObservable",
-          "actionNotifyRegistry.advancesSharedHandlerOnceAndPropagatesFailure"
+          "actionNotifyRegistry.advancesSharedHandlerOnceAndPropagatesFailure",
+          "actionTiming.physicalSectionsProjectAtMostTwoSplitsAndRemainNonAuthoritative",
+          "abilitySystem.findDefinitionAndActivateByTickUseRegisteredActionId",
+          "abilitySystem.cancelAndStepOwnOrchestrationThroughActionRuntime",
+          "actionNotifyPlayback.composesRegistryAndBlockRuntimeForHosts"
         ]
       },
       "module": "action",
@@ -5764,7 +5770,9 @@
         "local-logic": [
           "authority.decision.priorityThenDenyThenCreationOrder",
           "authority.decision.defaultDenyIsExplainable",
+          "authority.decision.wildcardMatchesAndLosesToExactDeny",
           "authority.lifecycle.durationRevokeAndEvents",
+          "authority.lifecycle.revokeByDimensionAndEventCapacity",
           "authority.query.reverseDimensionsAreDeterministic",
           "authority.snapshot.restoreIsDeterministicAndTransactional",
           "authority.input.invalidFactsDoNotMutate",
@@ -10228,6 +10236,186 @@
       "role": "helper",
       "default": "local-logic",
       "cases": {},
+      "module": "graphics"
+    },
+    "integration/ocean-voyage/ocean_boat.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "physics-backend": [
+          "fluids.ocean.coreWorldQueriesSurviveSplit",
+          "fluids.ocean.boatFloatsAndPropelsRealRigidBody",
+          "fluids.ocean.boatRejectsRepeatedStepAndStaleOwners",
+          "fluids.ocean.dryPropellerAndAdapterFirstDestruction",
+          "fluids.ocean.boatRespondsToSpectralWaves",
+          "fluids.ocean.boatWakeChangesSecondRigidBody"
+        ]
+      },
+      "module": "fluids",
+      "task": "ocean-voyage"
+    },
+    "unit/fluids/ocean_codec.cpp": {
+      "role": "tests",
+      "default": "local-format",
+      "cases": {
+        "local-format": [
+          "fluids.ocean.spectrumDefinitionPreservesSeedAndWaves",
+          "fluids.ocean.spectrumDefinitionRejectsAmbiguousInput",
+          "fluids.ocean.interactionArgumentsAreStrictAndOwning"
+        ]
+      },
+      "module": "fluids"
+    },
+    "integration/ocean-voyage/ocean_gpu.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "render-window": [
+          "fluids.ocean.gpuSpectrumMatchesCpuAndRejectsStaleFrames",
+          "fluids.ocean.gpuSpectrumReportsUnavailableProvider",
+          "fluids.ocean.gpuSpectrumLargeBandParity",
+          "fluids.ocean.gpuSeaTransitionMatchesCpuFieldsAndLevel"
+        ]
+      },
+      "module": "fluids",
+      "task": "ocean-voyage"
+    },
+    "unit/fluids/ocean_hull_mask.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "fluids.ocean.hullMaskPoseBevelAndOrigin",
+          "fluids.ocean.hullMaskRejectsWholeInvalidBatch"
+        ]
+      },
+      "module": "fluids"
+    },
+    "unit/fluids/ocean_mesh.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "fluids.ocean.meshHasNoInteriorBoundary",
+          "fluids.ocean.meshQualityAndValidation",
+          "fluids.ocean.meshFloatingOriginMatchesPhysics"
+        ]
+      },
+      "module": "fluids"
+    },
+    "integration/ocean-voyage/ocean_render.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "render-window": [
+          "fluids.ocean.rendererPublishesSharedSurfaceAndFoam",
+          "fluids.ocean.residentRenderingMatchesCpuWithWakeAndFloatingOrigin",
+          "fluids.ocean.scriptRenderBuildersOwnInputsAcrossGc"
+        ]
+      },
+      "module": "fluids",
+      "task": "ocean-voyage"
+    },
+    "integration/ocean-voyage/ocean_script.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "fluids.ocean.scriptOwnsSpectrumAndFrameBuilders",
+          "fluids.ocean.scriptBoatWakeUsesOneFixedClock"
+        ]
+      },
+      "module": "fluids",
+      "task": "ocean-voyage"
+    },
+    "unit/fluids/ocean_spectrum.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "fluids.ocean.spectrumEnergyPeriodicityAndSeed",
+          "fluids.ocean.spectrumFftMatchesIndependentDft",
+          "fluids.ocean.spectrumVelocityAndValidation",
+          "fluids.ocean.spectrumMultibandCurrentAndBuilderLifetime"
+        ]
+      },
+      "module": "fluids"
+    },
+    "unit/fluids/ocean_spray.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "fluids.ocean.sprayDeterminismAndSourceOrder",
+          "fluids.ocean.sprayBudgetsLifetimeAndReentry",
+          "fluids.ocean.sprayRejectsWholeInvalidBatch",
+          "fluids.ocean.sprayMeshBasisAndFloatingOrigin"
+        ]
+      },
+      "module": "fluids"
+    },
+    "integration/ocean-voyage/ocean_spray_render.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "render-window": [
+          "fluids.ocean.sprayBatchRendersAndRejectsInvalidPublication",
+          "fluids.ocean.sprayRendererObservesProviderRetirement"
+        ],
+        "script-binding": [
+          "fluids.ocean.sprayScriptBuildersSurviveGc"
+        ]
+      },
+      "module": "fluids",
+      "task": "ocean-voyage"
+    },
+    "unit/fluids/ocean_surface.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "fluids.ocean.displacedWorldQueryMatchesGeometry",
+          "fluids.ocean.rejectsFoldedAndNonfiniteInputs",
+          "fluids.ocean.buoyancyVolumeAndDrag"
+        ]
+      },
+      "module": "fluids"
+    },
+    "unit/fluids/ocean_transition.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "fluids.ocean.seaTransitionVelocityAndEndpoints",
+          "fluids.ocean.seaTransitionValidationAndOwningBuilder",
+          "fluids.ocean.seaTransitionCurrentPreservesEndpointVelocityContract"
+        ]
+      },
+      "module": "fluids"
+    },
+    "unit/fluids/ocean_wake.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "fluids.ocean.wakePropagatesAndRejectsAtomically",
+          "fluids.ocean.wakeRecenterAndComposition",
+          "fluids.ocean.wakeDispersionMatchesIndependentDft",
+          "fluids.ocean.foamTransportMatchesCurrentAndDecay",
+          "fluids.ocean.foamTransportFailurePreservesWholeStep",
+          "fluids.ocean.wakePreparedStepIsOwningAndRevisionChecked"
+        ]
+      },
+      "module": "fluids"
+    },
+    "unit/graphics/graphics_shader_parameters.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "graphics.shader.floatBlockIsAtomic"
+        ]
+      },
       "module": "graphics"
     }
   }

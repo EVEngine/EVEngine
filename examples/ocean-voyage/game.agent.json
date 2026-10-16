@@ -1,0 +1,91 @@
+{
+  "schemaId": "evengine.game-agent-contract",
+  "schemaVersion": 1,
+  "id": "examples/ocean-voyage",
+  "entry": "main.nut",
+  "smoke": {
+    "scene": "default",
+    "seed": 3182026,
+    "maxHostFrames": 180,
+    "mustReach": [
+      "ocean-ready"
+    ]
+  },
+  "clock": {
+    "defaultStep": "frame"
+  },
+  "observations": [
+    {
+      "id": "ocean-ready",
+      "kind": "script-root",
+      "path": "voyageTelemetry",
+      "fields": [
+        "tick",
+        "paused",
+        "cruise",
+        "boat.x",
+        "boat.y",
+        "boat.z",
+        "boat.speed",
+        "boat.yaw",
+        "boat.pitch",
+        "boat.roll",
+        "spray.alive",
+        "spray.emitted",
+        "spray.dropped",
+        "sprayVisible"
+      ]
+    }
+  ],
+  "actions": {
+    "source": "script-map",
+    "map": [
+      {
+        "id": "forward",
+        "script": "oceanCommand(\"forward\")"
+      },
+      {
+        "id": "stop",
+        "script": "oceanCommand(\"stop\")"
+      },
+      {
+        "id": "left",
+        "script": "oceanCommand(\"left\")"
+      },
+      {
+        "id": "right",
+        "script": "oceanCommand(\"right\")"
+      },
+      {
+        "id": "straight",
+        "script": "oceanCommand(\"straight\")"
+      },
+      {
+        "id": "pause",
+        "script": "oceanCommand(\"pause\")"
+      },
+      {
+        "id": "resume",
+        "script": "oceanCommand(\"resume\")"
+      },
+      {
+        "id": "spray-on",
+        "script": "oceanCommand(\"spray-on\")"
+      },
+      {
+        "id": "spray-off",
+        "script": "oceanCommand(\"spray-off\")"
+      }
+    ]
+  },
+  "capture": {
+    "requiredFor": [
+      "visual"
+    ],
+    "backend": "engine-readback"
+  },
+  "tolerances": {
+    "screenshot": "human-or-vlm",
+    "numericAbs": 0.0001
+  }
+}
