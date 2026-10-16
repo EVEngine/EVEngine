@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Start sccache with retries; on persistent GHA/ghac storage failures fall back
+# Start sccache with retries; on persistent GHA/ghac storage failures switch
 # to a local disk cache so a transient Actions-cache egress throttle does not
 # fail the whole job. Writes SCCACHE_GHA_ENABLED=false to GITHUB_ENV when the
-# fallback path is taken so later steps keep the local-only configuration.
+# local-only path is taken so later steps keep that configuration.
 set -euo pipefail
 
 MAX_ATTEMPTS="${SCCACHE_START_ATTEMPTS:-3}"
@@ -57,7 +57,7 @@ while [ "$attempt" -le "$MAX_ATTEMPTS" ]; do
   attempt=$((attempt + 1))
 done
 
-echo "::warning::sccache GHA/ghac storage still unavailable after ${MAX_ATTEMPTS} attempts; falling back to local disk cache"
+echo "::warning::sccache GHA/ghac storage still unavailable after ${MAX_ATTEMPTS} attempts; using local disk cache"
 sccache --stop-server >/dev/null 2>&1 || true
 export SCCACHE_GHA_ENABLED=false
 unset SCCACHE_GHA_VERSION SCCACHE_GHA_RW_MODE || true
