@@ -258,6 +258,7 @@ if(EXISTS "${_vkbuilder_header}")
     endif()
     string(REPLACE "${_vkbuilder_original}" "${_vkbuilder_fixed}" _vkbuilder_source
         "${_vkbuilder_source}")
+    include(cmake/vkbuilder_capture.cmake)
     file(MAKE_DIRECTORY "${EVENGINE_VKBUILDER_INCLUDE_DIR}")
     file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include/"
         DESTINATION "${EVENGINE_VKBUILDER_INCLUDE_DIR}")

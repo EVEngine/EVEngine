@@ -1,4 +1,4 @@
-// Placeholder translation unit for the link-group shared libraries.
+// Registration anchor and CRT translation unit for the link-group shared libraries.
 //
 // A link group is built with
 //     add_library(<group> SHARED link_group.cpp)
@@ -18,6 +18,16 @@
 
 #include <cstdlib>
 
-namespace eve::internal {
-void linkGroupAnchor() {}
-}  // namespace eve::internal
+#ifndef EVE_LINK_GROUP_ANCHOR
+#error Link groups must supply their manifest-derived unique anchor name.
+#endif
+
+#if defined(_WIN32)
+#define EVE_LINK_GROUP_EXPORT __declspec(dllexport)
+#else
+#define EVE_LINK_GROUP_EXPORT __attribute__((visibility("default")))
+#endif
+
+// Each DLL needs a distinct imported symbol so a thin host retains the DLL and
+// its module registration initializers even without direct backend API calls.
+extern "C" EVE_LINK_GROUP_EXPORT void EVE_LINK_GROUP_ANCHOR() {}

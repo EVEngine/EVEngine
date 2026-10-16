@@ -129,6 +129,8 @@ foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
     # cmake/patches/sdl2-static-library-crt-entry.patch). link_group.cpp exists
     # only to give the target a source of its own.
     add_library(${_eve_group} SHARED "${CMAKE_SOURCE_DIR}/cmake/link_group.cpp")
+    target_compile_definitions(${_eve_group} PRIVATE
+        EVE_LINK_GROUP_ANCHOR=eve_link_group_${_eve_group})
     target_link_libraries(${_eve_group} PRIVATE ${_eve_group_modules})
     target_link_libraries(${_eve_group} PRIVATE eve_engine_includes)
     if(TARGET eve_imgui)
@@ -214,3 +216,4 @@ foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
     list(LENGTH _eve_group_modules _eve_group_module_count)
     message(STATUS "Link group ${_eve_group}: ${_eve_group_module_count} modules -> one shared library")
 endforeach()
+include("${CMAKE_SOURCE_DIR}/cmake/link_group_imports.cmake")

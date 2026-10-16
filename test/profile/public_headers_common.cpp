@@ -4,6 +4,8 @@
 #include "common/Capability.h"
 #include "common/Diagnostic.h"
 #include "common/EventSequence.h"
+#include "common/FrameCapture.h"
+#include "common/FrameCaptureImage.h"
 #include "common/Generation.h"
 #include "common/Identity.h"
 #include "common/Json.h"

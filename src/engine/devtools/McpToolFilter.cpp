@@ -104,6 +104,11 @@ void mcpToolFilterReloadForTest() {
 std::vector<std::string> mcpToolTags(std::string_view name) {
     std::vector<std::string> tags;
     auto                     add = [&](const char* tag) { tags.emplace_back(tag); };
+    if (startsWith(name, "eve_frame_")) {
+        add("core");
+        add("scene");
+        return tags;
+    }
 
     if (startsWith(name, "eve_host_")) {
         add("host");
@@ -152,6 +157,7 @@ std::vector<std::string> mcpToolTags(std::string_view name) {
 }
 
 bool mcpToolMutates(std::string_view name) {
+    if (name == "eve_frame_capture_export") return true;
     if (startsWith(name, "eve_input_")) return name != "eve_input_poll" && name != "eve_input_status";
     if (name == "eve_eval" || name == "eve_run_script" || name == "eve_restart") return true;
     if (name == "eve_pause" || name == "eve_continue" || startsWith(name, "eve_step_")) return true;

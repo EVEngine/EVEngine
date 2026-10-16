@@ -1,4 +1,5 @@
 #include "graphics/webgpu/Graphics.h"
+#include "common/FrameCapture.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/Batcher.h"
 #include "graphics/ClusteredLight.h"
@@ -94,6 +95,9 @@ int nextPOT(int v) {
 void fillMeshAttributes(WGPUVertexAttribute (&attrs)[6]);
 
 Graphics::Graphics() {
+    FrameCaptureCapabilities caps;
+    caps.backend = "webgpu";
+    frameCaptures().configure(std::move(caps));
     for (uint32_t i = 0; i < kFramesInFlight; ++i) {
         uboArenas.emplace_back();
         vertexArenas.emplace_back();

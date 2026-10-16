@@ -1,4 +1,5 @@
 #include "devtools/McpRuntimeTools.hpp"
+#include "devtools/McpFrameCapture.hpp"
 
 #include "devtools/ConsolePanel.hpp"
 #include "devtools/Debugger.hpp"
@@ -363,11 +364,13 @@ std::string softRestart(Poco::JSON::Object::Ptr args) {
 }  // namespace
 
 bool isMcpRuntimeTool(std::string_view name) {
+    if (isMcpFrameCaptureTool(name)) return true;
     return name == "eve_console_read" || name == "eve_console_write" || name == "eve_console_clear" ||
            name == "eve_screenshot_image" || name == "eve_crash_report" || name == "eve_restart";
 }
 
 std::string callMcpRuntimeTool(std::string_view name, Poco::JSON::Object::Ptr args) {
+    if (isMcpFrameCaptureTool(name)) return callMcpFrameCaptureTool(name, args);
     if (name == "eve_console_read") return consoleRead(args);
     if (name == "eve_console_write") return consoleWrite(args);
     if (name == "eve_console_clear") return consoleClear();

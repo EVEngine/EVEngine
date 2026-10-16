@@ -161,6 +161,46 @@
       "hot_path": [],
       "protocol": [],
       "cost_notes": []
+    },
+    {
+      "id": "devtools-frame-capture-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/devtools/**",
+      "owner": "graphics/devtools-maintainers",
+      "issue": "EVENGINE-MCP-FRAME-CAPTURE",
+      "reason": "Immutable same-frame attachment capture with bounded asynchronous readback and CPU worker previews.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/FrameCapture.h",
+        "docs/dev/mcp-frame-capture.md",
+        "docs/dev/superpowers/specs/2026-10-16-mcp-frame-buffer-capture.md"
+      ],
+      "tests": [
+        "test/mcp_frame_capture.cpp",
+        "test/graphics_frame_capture.cpp"
+      ],
+      "provides": [],
+      "requires": [
+        {
+          "capability": "IRenderFrameCapture",
+          "required": false,
+          "fallback": "ProviderAbsent structured failure; never desktop capture or implicit gameplay advance."
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [
+        "eve.renderCapture schemaVersion=1; frame capture, status, image, pixel, export, release"
+      ],
+      "thread_affinity": "Main thread capability and store; immutable CPU leases on encoding workers; no callbacks.",
+      "hot_path": [],
+      "trim": {
+        "absent_profile": "Provider absent tool test returns ProviderAbsent; no L1/L2/L3/L4 build claim until measured."
+      },
+      "cost_notes": [
+        "Explicit request token reserves readback; image/export jobToken separates encoding from cheap status/pixel queries."
+      ]
     }
   ]
 }

@@ -37,6 +37,7 @@ struct aiMesh;
 
 namespace eve {
 class Subscription;
+class FrameCaptureStore;
 }
 
 namespace eve::graphics {
@@ -129,6 +130,10 @@ public:
     Graphics();
     /** @brief Graphics. */
     ~Graphics() override;
+
+    /** @brief Graphics-owned frame capture authority. @thread Engine main thread only. @lifetime Borrowed until
+     * Graphics destruction. */
+    FrameCaptureStore &frameCaptures();
 
     /**
 	 * @brief Resets the current color, background color, line style, and so forth.
@@ -2235,6 +2240,7 @@ public:
     // &buffers, Texture *texture) = 0;
 
 protected:
+    std::unique_ptr<FrameCaptureStore> frameCaptures_;
     /** @brief DeferredFileTexture public API. */
     struct DeferredFileTexture {
         std::string key;

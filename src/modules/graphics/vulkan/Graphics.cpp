@@ -307,7 +307,12 @@ std::string Graphics::getBackendName() const { return "vulkan"; }
 
 bool Graphics::supportsRuntimeGlslCompilation() const { return glslRuntimeCompilationAvailable(); }
 
-Graphics::Graphics() = default;
+Graphics::Graphics() {
+    FrameCaptureCapabilities caps;
+    caps.backend = "vulkan";
+    for (int i = 0; i < 11; ++i) caps.attachments.push_back(static_cast<FrameAttachment>(i));
+    frameCaptures().configure(std::move(caps));
+}
 
 Graphics::~Graphics() {
     retireResourceLifetime();
@@ -1032,10 +1037,12 @@ bool Graphics::rebuildSwapchainIfNeeded() {
 }
 
 bool Graphics::beginPresentCommandBuffer() {
+    pollFrameCapture();
     for (int attempt = 0; attempt < 3; ++attempt) {
         if (!rebuildSwapchainIfNeeded()) return false;
         presentRecording = presentModel.begin();
         if (presentRecording) {
+            pollFrameCapture();
             writeGpuTimestampBegin();
             return true;
         }
@@ -1129,6 +1136,7 @@ void Graphics::recreateSurfaceForResume() {
 }
 
 void Graphics::present() {
+    pollFrameCapture();
     if (!initialized) return;
     if (headless_) return;
     if (!isActive()) return;

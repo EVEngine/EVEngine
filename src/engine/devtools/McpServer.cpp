@@ -13,12 +13,13 @@
 #include "devtools/McpArgs.hpp"
 #include "devtools/McpDevBridge.hpp"
 #include "devtools/McpDomainTools.hpp"
+#include "devtools/McpFrameCapture.hpp"
 #include "devtools/McpInputTools.hpp"
 #include "devtools/McpJson.hpp"
 #include "devtools/McpRuntimeTools.hpp"
 #include "devtools/McpScriptTools.hpp"
-#include "devtools/McpToolFilter.hpp"
 #include "devtools/McpSquirrelJson.hpp"
+#include "devtools/McpToolFilter.hpp"
 #include "devtools/PlayHost.h"
 #include "devtools/RenderVision.hpp"
 #include "devtools/SceneInspect.hpp"
@@ -2068,8 +2069,8 @@ std::string handleToolsList(const std::string& idJson) {
         // the array (a missing separator makes the whole tools/list unusable).
         std::string out;
         for (const char* part : kToolsParts) out += part;
-        for (std::string_view family : {agentDevelopmentToolSchemas(), mcpRuntimeToolSchemas(),
-                                        mcpDomainToolSchemas(), mcpInputToolSchemas()}) {
+        for (std::string_view family : {mcpFrameCaptureSchemas(), agentDevelopmentToolSchemas(),
+                                        mcpRuntimeToolSchemas(), mcpDomainToolSchemas(), mcpInputToolSchemas()}) {
             if (family.empty()) continue;
             out += ',';
             out += family;
@@ -2402,6 +2403,7 @@ bool McpServer::listenStdio(std::istream& in, std::ostream& out) {
     port_.store(0);
     initialized_ = false;
     stdinClosed_.store(false);
+    resetMcpFrameCapture();
     hasClient_.store(true);
     stdioIn_    = &in;
     stdioOut_   = &out;
@@ -2478,6 +2480,10 @@ void McpServer::poll() {
             batch.swap(stdioQueue_);
         }
         for (const auto& line : batch) handleMessage(line);
+        if (stdinClosed_.load() && batch.empty() && initialized_) {
+            resetMcpFrameCapture();
+            initialized_ = false;
+        }
         pollMcpInputBatches();
         runPendingVisionDump();
         return;
@@ -2497,6 +2503,7 @@ void McpServer::acceptNonBlocking() {
         ss.setReceiveTimeout(Poco::Timespan(0, 1000));
         client_ = std::make_unique<Poco::Net::StreamSocket>(ss);
         hasClient_.store(true);
+        resetMcpFrameCapture();
         recvBuf_.clear();
         initialized_ = false;
         AiPanel::instance().setMcpConnected(true);
@@ -2544,6 +2551,7 @@ void McpServer::readAndDispatch() {
                 hasClient_.store(false);
                 AiPanel::instance().setMcpConnected(false);
                 AiPanel::instance().addLog("system", "mcp.disconnect", "client closed");
+                resetMcpFrameCapture();
             }
             return;
         }
@@ -2551,6 +2559,10 @@ void McpServer::readAndDispatch() {
     } catch (const Poco::TimeoutException&) {
         return;
     } catch (const Poco::Net::NetException&) {
+        client_.reset();
+        hasClient_.store(false);
+        AiPanel::instance().setMcpConnected(false);
+        resetMcpFrameCapture();
         return;
     } catch (...) {
         client_.reset();
