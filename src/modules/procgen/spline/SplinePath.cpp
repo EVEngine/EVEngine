@@ -1,8 +1,11 @@
 #include "procgen/spline/SplinePath.h"
+#include "common/Assert.h"
+#include "procgen/spline/SplineCircularArc.h"
 
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <limits>
 #include <string>
 
 namespace eve::procgen {
@@ -11,9 +14,12 @@ namespace {
 bool finite(const SplinePoint& p) {
     return std::isfinite(p.x) && std::isfinite(p.y) && std::isfinite(p.z) && std::isfinite(p.inX) &&
            std::isfinite(p.inY) && std::isfinite(p.inZ) && std::isfinite(p.outX) && std::isfinite(p.outY) &&
-           std::isfinite(p.outZ) && std::isfinite(p.rollDegrees) && std::isfinite(p.scaleX) &&
-           std::isfinite(p.scaleY) && std::isfinite(p.pitchDegrees) && std::isfinite(p.yawDegrees) && p.scaleX > 0.f &&
-           p.scaleY > 0.f;
+           std::isfinite(p.outZ) && std::isfinite(p.rollDegrees) && std::isfinite(p.rollPivotSide) &&
+           std::isfinite(p.scaleX) && std::isfinite(p.scaleY) && std::isfinite(p.pitchDegrees) &&
+           std::isfinite(p.yawDegrees) && p.scaleX > 0.f && p.scaleY > 0.f &&
+           p.scaleXInterpolation <= SplineScaleInterpolation::CatmullRom &&
+           p.rollInterpolation <= SplineRollInterpolation::SmoothStep && std::isfinite(p.spanStrength) &&
+           p.spanStrength >= .01f && p.spanStrength <= 1.f && p.spanControl <= SplineSpanControl::Circular;
 }
 
 struct V3 {
@@ -35,6 +41,47 @@ V3 rotateAround(V3 value, V3 axis, float angle) {
     return add(add(mul(value, c), mul(cross(axis, value), s)), mul(axis, dot(axis, value) * (1.f - c)));
 }
 V3 position(const SplinePoint& p) { return {p.x, p.y, p.z}; }
+
+Result<detail::CircularArcXZ> circleForSpan(const std::vector<SplinePoint>& points, int aIndex, int bIndex,
+                                            bool closed) {
+    const auto& a        = points[static_cast<std::size_t>(aIndex)];
+    const auto& b        = points[static_cast<std::size_t>(bIndex)];
+    int         previous = aIndex, next = bIndex;
+    if (aIndex > 0 && !a.breakBefore)
+        previous = aIndex - 1;
+    else if (closed && aIndex == 0)
+        previous = static_cast<int>(points.size()) - 1;
+    if (bIndex + 1 < static_cast<int>(points.size()) && !points[static_cast<std::size_t>(bIndex + 1)].breakBefore)
+        next = bIndex + 1;
+    else if (closed && bIndex == static_cast<int>(points.size()) - 1)
+        next = 0;
+    double dx = static_cast<double>(b.x) - a.x, dz = static_cast<double>(b.z) - a.z;
+    if (a.circularFromEnd && next != bIndex) {
+        dx = static_cast<double>(points[static_cast<std::size_t>(next)].x) - b.x;
+        dz = static_cast<double>(points[static_cast<std::size_t>(next)].z) - b.z;
+    }
+    if (!a.circularFromEnd && previous != aIndex) {
+        dx = static_cast<double>(a.x) - points[static_cast<std::size_t>(previous)].x;
+        dz = static_cast<double>(a.z) - points[static_cast<std::size_t>(previous)].z;
+    }
+    if (previous != aIndex && next != bIndex) {
+        const auto& before = points[static_cast<std::size_t>(previous)];
+        const auto& after  = points[static_cast<std::size_t>(next)];
+        if (!a.circularFromEnd)
+            return detail::makeCircularLeadArcXZ(
+                a.x, a.z, b.x, b.z, a.x - static_cast<double>(before.x), a.z - static_cast<double>(before.z),
+                static_cast<double>(after.x) - b.x, static_cast<double>(after.z) - b.z);
+        auto arc = detail::makeCircularLeadArcXZ(
+            b.x, b.z, a.x, a.z, b.x - static_cast<double>(after.x), b.z - static_cast<double>(after.z),
+            static_cast<double>(before.x) - a.x, static_cast<double>(before.z) - a.z);
+        if (!arc.ok()) return arc;
+        arc.value().reversed = true;
+        return arc;
+    }
+    return detail::makeCircularArcXZ(
+        a.x, a.z, b.x, b.z, dx, dz,
+        a.circularFromEnd ? detail::CircularArcReference::End : detail::CircularArcReference::Start);
+}
 
 }  // namespace
 
@@ -198,6 +245,20 @@ Result<void> SplinePath::validateReady() const {
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
                                                        "spline requires at least two points", "points", {},
                                                        "procgen.splinePath"));
+    if (std::any_of(points_.begin(), points_.end(),
+                    [](const auto& point) { return point.spanControl == SplineSpanControl::Circular; }))
+        for (const auto& [a, b] : segmentEndpoints())
+            if (points_[static_cast<std::size_t>(a)].spanControl == SplineSpanControl::Circular) {
+                auto arc = circleForSpan(points_, a, b, closed_);
+                if (!arc.ok()) return Result<void>::failure(arc.status());
+                const auto& start = points_[static_cast<std::size_t>(a)];
+                const auto& end   = points_[static_cast<std::size_t>(b)];
+                auto        ghost = detail::scaleCircularTangentToChord(
+                    detail::sampleCircularArcXZ(arc.value(), 0.), 0.,
+                    {static_cast<double>(end.x) - start.x, static_cast<double>(end.y) - start.y,
+                            static_cast<double>(end.z) - start.z});
+                if (!ghost.ok()) return Result<void>::failure(ghost.status());
+            }
     return Result<void>::success();
 }
 
@@ -219,7 +280,8 @@ SplineSample SplinePath::evaluateSegmentUnchecked(int segment, float u, float no
     int         chunkIndex = 0;
     for (int i = 1; i <= aIndex; ++i)
         if (points_[static_cast<std::size_t>(i)].breakBefore) ++chunkIndex;
-    V3 value{}, tangent{};
+    V3    value{}, tangent{};
+    float scaleX = std::lerp(a.scaleX, b.scaleX, u);
     if (kind_ == "linear") {
         value   = add(position(a), mul(sub(position(b), position(a)), u));
         tangent = sub(position(b), position(a));
@@ -253,6 +315,14 @@ SplineSample SplinePath::evaluateSegmentUnchecked(int segment, float u, float no
         const V3    p1 = position(a), p2 = position(b);
         const V3    p3 = position(points_[static_cast<std::size_t>(next)]);
         const float u2 = u * u, u3 = u2 * u;
+        if (a.scaleXInterpolation == SplineScaleInterpolation::CatmullRom) {
+            const double p0s = points_[static_cast<std::size_t>(previous)].scaleX, p1s = a.scaleX, p2s = b.scaleX,
+                         p3s   = points_[static_cast<std::size_t>(next)].scaleX;
+            const double cubic = .5 * (2.0 * p1s + (-p0s + p2s) * u + (2.0 * p0s - 5.0 * p1s + 4.0 * p2s - p3s) * u2 +
+                                       (-p0s + 3.0 * p1s - 3.0 * p2s + p3s) * u3);
+            scaleX =
+                static_cast<float>(std::clamp(cubic, 1e-4, static_cast<double>(std::numeric_limits<float>::max())));
+        }
         value   = mul(add(add(mul(p1, 2.f), mul(sub(p2, p0), u)),
                           add(mul(add(add(mul(p0, 2.f), mul(p1, -5.f)), add(mul(p2, 4.f), mul(p3, -1.f))), u2),
                               mul(add(add(mul(p0, -1.f), mul(p1, 3.f)), add(mul(p2, -3.f), p3)), u3))),
@@ -261,6 +331,98 @@ SplineSample SplinePath::evaluateSegmentUnchecked(int segment, float u, float no
             add(sub(p2, p0), add(mul(add(add(mul(p0, 2.f), mul(p1, -5.f)), add(mul(p2, 4.f), mul(p3, -1.f))), 2.f * u),
                                  mul(add(add(mul(p0, -1.f), mul(p1, 3.f)), add(mul(p2, -3.f), p3)), 3.f * u2))),
             0.5f);
+        const bool circularStart = previous != aIndex && points_[static_cast<std::size_t>(previous)].spanControl ==
+                                                             SplineSpanControl::Circular;
+        const bool circularEnd = next != bIndex && b.spanControl == SplineSpanControl::Circular;
+        const bool alignStart  = a.spanControl == SplineSpanControl::Inherit &&
+                                (a.alignStraightStart || circularStart) && previous != aIndex &&
+                                points_[static_cast<std::size_t>(previous)].spanControl != SplineSpanControl::Inherit;
+        const bool alignEnd = a.spanControl == SplineSpanControl::Inherit && (a.alignStraightEnd || circularEnd) &&
+                              next != bIndex && b.spanControl != SplineSpanControl::Inherit;
+        const float strength = a.spanControl == SplineSpanControl::Inherit ? a.spanStrength : .5f;
+        if (strength != .5f || alignStart || alignEnd) {
+            V3   d1 = mul(sub(p2, p0), strength), d2 = mul(sub(p3, p1), strength);
+            auto align = [&](V3& derivative, V3 axis) {
+                const double square = static_cast<double>(axis.x) * axis.x + static_cast<double>(axis.z) * axis.z;
+                if (square > 1e-12) {
+                    const double coefficient =
+                        2.0 * strength *
+                        ((static_cast<double>(p2.x) - p1.x) * axis.x + (static_cast<double>(p2.z) - p1.z) * axis.z) /
+                        square;
+                    derivative.x = static_cast<float>(coefficient * axis.x);
+                    derivative.z = static_cast<float>(coefficient * axis.z);
+                }
+            };
+            if (alignStart) {
+                V3 axis = sub(p1, p0);
+                if (points_[static_cast<std::size_t>(previous)].spanControl == SplineSpanControl::Circular) {
+                    auto arc = circleForSpan(points_, previous, aIndex, closed_);
+                    EV_ASSERT(arc.ok(), "validated circular neighbor must remain valid");
+                    auto end = detail::sampleCircularArcXZ(arc.value(), 1.);
+                    if (arc.value().line && points_[static_cast<std::size_t>(previous)].circularFromEnd) {
+                        end.dx = static_cast<double>(p2.x) - p1.x;
+                        end.dz = static_cast<double>(p2.z) - p1.z;
+                    }
+                    auto ghost = detail::scaleCircularTangentToChord(
+                        end, .5 * (static_cast<double>(p2.y) - p0.y),
+                        {static_cast<double>(p1.x) - p0.x, static_cast<double>(p1.y) - p0.y,
+                         static_cast<double>(p1.z) - p0.z});
+                    EV_ASSERT(ghost.ok(), "validated circular neighbor must retain a representable chord");
+                    axis = {ghost.value()[0], ghost.value()[1], ghost.value()[2]};
+                    d1   = mul(add(sub(p2, p1), axis), strength);
+                }
+                if (!circularStart) align(d1, axis);
+                if (!circularStart) d1.y = 0.f;
+            }
+            if (alignEnd) {
+                V3 axis = sub(p3, p2);
+                if (b.spanControl == SplineSpanControl::Circular) {
+                    auto arc = circleForSpan(points_, bIndex, next, closed_);
+                    EV_ASSERT(arc.ok(), "validated circular neighbor must remain valid");
+                    auto start = detail::sampleCircularArcXZ(arc.value(), 0.);
+                    if (arc.value().line && !b.circularFromEnd) {
+                        start.dx = static_cast<double>(p2.x) - p1.x;
+                        start.dz = static_cast<double>(p2.z) - p1.z;
+                    }
+                    auto ghost = detail::scaleCircularTangentToChord(
+                        start, .5 * (static_cast<double>(p3.y) - p1.y),
+                        {static_cast<double>(p3.x) - p2.x, static_cast<double>(p3.y) - p2.y,
+                         static_cast<double>(p3.z) - p2.z});
+                    EV_ASSERT(ghost.ok(), "validated circular neighbor must retain a representable chord");
+                    axis = {ghost.value()[0], ghost.value()[1], ghost.value()[2]};
+                    d2   = mul(add(sub(p2, p1), axis), strength);
+                }
+                if (!circularEnd) align(d2, axis);
+                if (!circularEnd) d2.y = 0.f;
+            }
+            value   = add(add(mul(p1, 2.f * u3 - 3.f * u2 + 1.f), mul(d1, u3 - 2.f * u2 + u)),
+                          add(mul(p2, -2.f * u3 + 3.f * u2), mul(d2, u3 - u2)));
+            tangent = add(add(mul(p1, 6.f * u2 - 6.f * u), mul(d1, 3.f * u2 - 4.f * u + 1.f)),
+                          add(mul(p2, -6.f * u2 + 6.f * u), mul(d2, 3.f * u2 - 2.f * u)));
+        }
+    }
+    if (a.spanControl == SplineSpanControl::StraightXZ || a.spanControl == SplineSpanControl::StraightXYZ) {
+        value.x   = std::lerp(a.x, b.x, u);
+        value.z   = std::lerp(a.z, b.z, u);
+        tangent.x = b.x - a.x;
+        tangent.z = b.z - a.z;
+        if (a.spanControl == SplineSpanControl::StraightXYZ) {
+            value.y   = std::lerp(a.y, b.y, u);
+            tangent.y = b.y - a.y;
+        }
+    }
+    if (a.spanControl == SplineSpanControl::Circular) {
+        auto arc = circleForSpan(points_, aIndex, bIndex, closed_);
+        EV_ASSERT(arc.ok(), "validated circular span must remain valid");
+        const auto evaluated   = detail::sampleCircularArcXZ(arc.value(), u);
+        value.x                = static_cast<float>(evaluated.x);
+        value.z                = static_cast<float>(evaluated.z);
+        tangent.x              = static_cast<float>(evaluated.dx);
+        tangent.z              = static_cast<float>(evaluated.dz);
+        const double magnitude = std::hypot(evaluated.dx, static_cast<double>(tangent.y), evaluated.dz);
+        if (std::isfinite(magnitude) && magnitude > 1e-7)
+            tangent = {static_cast<float>(evaluated.dx / magnitude), static_cast<float>(tangent.y / magnitude),
+                       static_cast<float>(evaluated.dz / magnitude)};
     }
     const float tangentLength = length(tangent);
     if (tangentLength > 1e-7f)
@@ -274,12 +436,16 @@ SplineSample SplinePath::evaluateSegmentUnchecked(int segment, float u, float no
             tangent.y,
             tangent.z,
             normalizedDistance,
-            std::lerp(a.rollDegrees, b.rollDegrees, u),
-            std::lerp(a.scaleX, b.scaleX, u),
+            std::lerp(a.rollDegrees, b.rollDegrees,
+                      a.rollInterpolation == SplineRollInterpolation::SmoothStep ? u * u * (3.f - 2.f * u) : u),
+            scaleX,
             std::lerp(a.scaleY, b.scaleY, u),
             chunkIndex,
             std::lerp(a.pitchDegrees, b.pitchDegrees, u),
-            std::lerp(a.yawDegrees, b.yawDegrees, u)};
+            std::lerp(a.yawDegrees, b.yawDegrees, u),
+            a.worldUpFrame,
+            std::lerp(a.rollPivotSide, b.rollPivotSide,
+                      a.rollInterpolation == SplineRollInterpolation::SmoothStep ? u * u * (3.f - 2.f * u) : u)};
 }
 
 Result<SplineSample> SplinePath::evaluateResult(float t) const {
@@ -300,15 +466,15 @@ Result<void> SplinePath::ensureArcTable(int samplesPerSegment) const {
                                                        "samplesPerSegment", {}, "procgen.splinePath"));
     if (arcSamplesPerSegment_ == samplesPerSegment && !arcTable_.empty()) return Result<void>::success();
     arcTable_.clear();
-    arcTable_.reserve(static_cast<std::size_t>(segmentCount() * samplesPerSegment + chunkCount()));
+    arcTable_.reserve(static_cast<std::size_t>(segmentCount() * (samplesPerSegment + 1)));
     float      distance  = 0.f;
     const auto endpoints = segmentEndpoints();
     for (int segment = 0; segment < segmentCount(); ++segment) {
-        const bool startsChunk = segment == 0 || endpoints[static_cast<std::size_t>(segment - 1)].second !=
-                                                     endpoints[static_cast<std::size_t>(segment)].first;
-        auto       previous =
+        auto previous =
             evaluateSegmentUnchecked(segment, 0.f, static_cast<float>(segment) / static_cast<float>(segmentCount()));
-        if (startsChunk) arcTable_.push_back({segment, 0.f, distance});
+        // Retain both endpoint parameterizations at a connected boundary so the first
+        // interval of the next span interpolates from its own u=0 instead of jumping.
+        arcTable_.push_back({segment, 0.f, distance});
         for (int sample = 1; sample <= samplesPerSegment; ++sample) {
             const float u       = static_cast<float>(sample) / static_cast<float>(samplesPerSegment);
             const auto  current = evaluateSegmentUnchecked(
@@ -389,7 +555,8 @@ Result<SplineSample> SplinePath::closestPointResult(float x, float y, float z, i
 }
 
 Result<std::vector<SplineFrameSample>> SplinePath::sampleFramesResult(int sampleCount, bool uniformByDistance,
-                                                                      float rollDegrees, int samplesPerSegment) const {
+                                                                      float rollDegrees, int samplesPerSegment,
+                                                                      bool preserveMarkers) const {
     if (sampleCount < 1 || sampleCount > 4096)
         return Result<std::vector<SplineFrameSample>>::failure(
             Diagnostic::error(DiagnosticCode::InvalidArgument, "frame sampleCount must be in [1, 4096]", "sampleCount",
@@ -407,19 +574,121 @@ Result<std::vector<SplineFrameSample>> SplinePath::sampleFramesResult(int sample
         if (!ready.ok()) return Result<std::vector<SplineFrameSample>>::failure(ready.status());
     }
 
+    std::vector<std::pair<float, int>> locations;
+    for (int index = 0; index <= sampleCount; ++index)
+        locations.emplace_back(static_cast<float>(index) / static_cast<float>(sampleCount), -1);
+    if (preserveMarkers) {
+        if (chunkCount() != 1 || (uniformByDistance && totalLength <= 1e-7f))
+            return Result<std::vector<SplineFrameSample>>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument,
+                "marker-preserving sampling requires a continuous positive-length path", "preserveMarkers"));
+        if (uniformByDistance) {
+            float previousAnchor = -1.f;
+            for (const auto& entry : arcTable_)
+                if (entry.u == 0.f) {
+                    if (entry.distance <= previousAnchor)
+                        return Result<std::vector<SplineFrameSample>>::failure(Diagnostic::error(
+                            DiagnosticCode::InvalidArgument,
+                            "marker-preserving distance sampling requires positive-length spans", "preserveMarkers"));
+                    locations.emplace_back(entry.distance / totalLength, entry.segment);
+                    previousAnchor = entry.distance;
+                }
+        } else {
+            for (int segment = 0; segment < segmentCount(); ++segment)
+                locations.emplace_back(static_cast<float>(segment) / static_cast<float>(segmentCount()), segment);
+        }
+        locations.emplace_back(1.f, segmentCount() - 1);
+        std::sort(locations.begin(), locations.end(), [](const auto& a, const auto& b) {
+            return a.first < b.first || (a.first == b.first && a.second > b.second);
+        });
+        locations.erase(std::unique(locations.begin(), locations.end(),
+                                    [](const auto& a, const auto& b) { return a.first == b.first; }),
+                        locations.end());
+        if (locations.size() > 4097u)
+            return Result<std::vector<SplineFrameSample>>::failure(
+                Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                  "marker-preserving sampling exceeds the frame budget", "preserveMarkers"));
+    }
     std::vector<SplineFrameSample> frames;
-    frames.reserve(static_cast<std::size_t>(sampleCount + 1));
-    V3 previousTangent{}, previousSide{};
-    for (int index = 0; index <= sampleCount; ++index) {
-        const float ratio = static_cast<float>(index) / static_cast<float>(sampleCount);
+    frames.reserve(locations.size());
+    std::vector<float> ratios;
+    ratios.reserve(locations.size());
+    for (std::size_t index = 0; index < locations.size(); ++index) {
+        const auto [ratio, marker] = locations[index];
         auto        sampled =
             uniformByDistance ? evaluateDistanceResult(totalLength * ratio, samplesPerSegment) : evaluateResult(ratio);
         if (!sampled.ok()) return Result<std::vector<SplineFrameSample>>::failure(sampled.status());
-        const auto sample  = sampled.value();
+        if (marker >= 0)
+            sampled = Result<SplineSample>::success(evaluateSegmentUnchecked(marker, ratio == 1.f ? 1.f : 0.f, ratio));
+        SplineFrameSample frame;
+        frame.sample         = sampled.value();
+        frame.authoredMarker = marker >= 0;
+        frames.push_back(frame);
+        ratios.push_back(ratio);
+    }
+    return orientFrameSamplesResult(std::move(frames), ratios, rollDegrees);
+}
+
+Result<std::vector<SplineFrameSample>> SplinePath::sampleFramesAtParametersResult(std::span<const float> parameters,
+                                                                                  int samplesPerSegment) const {
+    if (parameters.empty() || parameters.size() > 4097u)
+        return Result<std::vector<SplineFrameSample>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "explicit frame parameters require 1..4097 samples", "parameters"));
+    float previous = -1.f;
+    for (float parameter : parameters) {
+        if (!std::isfinite(parameter) || parameter < 0.f || parameter > 1.f || parameter <= previous)
+            return Result<std::vector<SplineFrameSample>>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                  "explicit frame parameters must increase strictly within [0,1]", "parameters"));
+        previous = parameter;
+    }
+    auto ready = ensureArcTable(samplesPerSegment);
+    if (!ready.ok()) return Result<std::vector<SplineFrameSample>>::failure(ready.status());
+    const float total = arcTable_.back().distance;
+    if (!std::isfinite(total) || total <= 1e-7f)
+        return Result<std::vector<SplineFrameSample>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "explicit frame arc distance requires a positive finite path length", "path"));
+    std::vector<SplineFrameSample> frames;
+    frames.reserve(parameters.size());
+    for (float parameter : parameters) {
+        const float scaled  = parameter * static_cast<float>(segmentCount());
+        const int   segment = std::min(static_cast<int>(scaled), segmentCount() - 1);
+        const float u       = parameter == 1.f ? 1.f : scaled - static_cast<float>(segment);
+        const auto  upper   = std::lower_bound(
+            arcTable_.begin(), arcTable_.end(), std::pair{segment, u}, [](const ArcEntry& entry, const auto& target) {
+                return entry.segment < target.first || (entry.segment == target.first && entry.u < target.second);
+            });
+        float distance = total;
+        if (upper != arcTable_.end()) {
+            distance = upper->distance;
+            if (upper != arcTable_.begin()) {
+                const auto& before = *(upper - 1);
+                if (before.segment == segment && upper->u > before.u)
+                    distance = std::lerp(before.distance, upper->distance, (u - before.u) / (upper->u - before.u));
+            }
+        }
+        SplineFrameSample frame;
+        frame.sample         = evaluateSegmentUnchecked(segment, u, distance / total);
+        frame.authoredMarker = u == 0.f || u == 1.f;
+        frames.push_back(frame);
+    }
+    return orientFrameSamplesResult(std::move(frames), parameters, 0.f);
+}
+
+Result<std::vector<SplineFrameSample>> SplinePath::orientFrameSamplesResult(std::vector<SplineFrameSample> frames,
+                                                                            std::span<const float>         ratios,
+                                                                            float rollDegrees) const {
+    EV_ASSERT(frames.size() == ratios.size(), "frame transport ratios must match samples");
+    EV_ASSERT(!frames.empty(), "frame transport requires a sample");
+    V3 previousTangent{}, previousSide{};
+    for (std::size_t index = 0; index < frames.size(); ++index) {
+        const auto sample  = frames[index].sample;
         const V3   tangent = normalized({sample.tangentX, sample.tangentY, sample.tangentZ});
         V3         side;
-        if (index == 0 || sample.chunkIndex != frames.back().sample.chunkIndex) {
-            const V3 reference = std::abs(tangent.y) < 0.9f ? V3{0.f, 1.f, 0.f} : V3{1.f, 0.f, 0.f};
+        if (sample.worldUpFrame || index == 0 || sample.chunkIndex != frames[index - 1].sample.chunkIndex) {
+            const float verticalLimit = sample.worldUpFrame ? .999999f : .9f;
+            const V3    reference     = std::abs(tangent.y) < verticalLimit ? V3{0.f, 1.f, 0.f} : V3{1.f, 0.f, 0.f};
             side               = normalized(cross(reference, tangent));
         } else {
             const V3    axis     = cross(previousTangent, tangent);
@@ -436,21 +705,31 @@ Result<std::vector<SplineFrameSample>> SplinePath::sampleFramesResult(int sample
         }
         V3 up = normalized(cross(tangent, side));
         side  = normalized(cross(up, tangent));
-        frames.push_back({sample, side.x, side.y, side.z, up.x, up.y, up.z, tangent.x, tangent.y, tangent.z});
+        auto& frame     = frames[index];
+        frame.sideX     = side.x;
+        frame.sideY     = side.y;
+        frame.sideZ     = side.z;
+        frame.upX       = up.x;
+        frame.upY       = up.y;
+        frame.upZ       = up.z;
+        frame.forwardX  = tangent.x;
+        frame.forwardY  = tangent.y;
+        frame.forwardZ  = tangent.z;
         previousTangent = tangent;
         previousSide    = side;
     }
 
-    if (closed_ && frames.size() > 1u) {
+    if (closed_ && ratios.front() == 0.f && ratios.back() == 1.f && frames.size() > 1u &&
+        !frames.front().sample.worldUpFrame) {
         const V3    firstSide{frames.front().sideX, frames.front().sideY, frames.front().sideZ};
         const V3    lastSide{frames.back().sideX, frames.back().sideY, frames.back().sideZ};
         const V3    tangent{frames.front().sample.tangentX, frames.front().sample.tangentY,
-                            frames.front().sample.tangentZ};
+                         frames.front().sample.tangentZ};
         const float correction =
             std::atan2(dot(tangent, cross(lastSide, firstSide)), std::clamp(dot(lastSide, firstSide), -1.f, 1.f));
-        for (int index = 1; index <= sampleCount; ++index) {
+        for (std::size_t index = 1; index < frames.size(); ++index) {
             auto&       frame = frames[static_cast<std::size_t>(index)];
-            const float ratio = static_cast<float>(index) / static_cast<float>(sampleCount);
+            const float ratio = ratios[index];
             const V3    currentTangent{frame.sample.tangentX, frame.sample.tangentY, frame.sample.tangentZ};
             V3 side     = rotateAround({frame.sideX, frame.sideY, frame.sideZ}, currentTangent, correction * ratio);
             V3 up       = normalized(cross(currentTangent, side));
@@ -484,6 +763,14 @@ Result<std::vector<SplineFrameSample>> SplinePath::sampleFramesResult(int sample
         if (std::abs(roll) > 1e-7f) {
             const float c = std::cos(roll), s = std::sin(roll);
             const V3    rolledSide = add(mul(side, c), mul(up, s));
+            const V3    shift      = mul(sub(side, rolledSide), frame.sample.rollPivotSide * frame.sample.scaleX);
+            frame.sample.x += shift.x;
+            frame.sample.y += shift.y;
+            frame.sample.z += shift.z;
+            if (!std::isfinite(frame.sample.x) || !std::isfinite(frame.sample.y) || !std::isfinite(frame.sample.z))
+                return Result<std::vector<SplineFrameSample>>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                      "roll-pivot displacement exceeds finite frame coordinates", "rollPivotSide"));
             up                     = add(mul(up, c), mul(side, -s));
             side                   = rolledSide;
         }
@@ -591,8 +878,21 @@ Result<SplineFrameSample> SplinePath::travelFrameResult(float distance, std::str
     side        = normalized(sub(side, mul(forward, dot(side, forward))));
     const V3 up = normalized(cross(forward, side));
     side        = normalized(cross(up, forward));
+    auto projected = sample.value();
+    if (projected.rollPivotSide != 0.f) {
+        const float angle        = projected.rollDegrees * .01745329251994329577f;
+        const V3    unrolledSide = sub(mul(side, std::cos(angle)), mul(up, std::sin(angle)));
+        const V3    shift        = mul(sub(unrolledSide, side), projected.rollPivotSide * projected.scaleX);
+        projected.x += shift.x;
+        projected.y += shift.y;
+        projected.z += shift.z;
+        if (!std::isfinite(projected.x) || !std::isfinite(projected.y) || !std::isfinite(projected.z))
+            return Result<SplineFrameSample>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                  "roll-pivot displacement exceeds finite frame coordinates", "rollPivotSide"));
+    }
     return Result<SplineFrameSample>::success(
-        {sample.value(), side.x, side.y, side.z, up.x, up.y, up.z, forward.x, forward.y, forward.z});
+        {projected, side.x, side.y, side.z, up.x, up.y, up.z, forward.x, forward.y, forward.z});
 }
 
 Result<SplineDistribution> SplinePath::distributeResult(int instanceCount, bool includeEnd,

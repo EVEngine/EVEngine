@@ -1308,6 +1308,18 @@ public:
 
 }  // namespace
 
+TEST_CASE("procgen.sceneSink.reportsUnsupportedCoordinatedReplacement") {
+    MockProcgenSceneSink sink;
+    bool                 called = false;
+    auto                 result = sink.replaceBatchesCoordinated({{"unsupported", 1, {}}}, [&] {
+        called = true;
+        return eve::Result<void>::success();
+    });
+    REQUIRE(!result.ok());
+    REQUIRE(!called);
+    REQUIRE(sink.batchRevision("unsupported") == 0);
+}
+
 TEST_CASE("procgen.sceneSink.publishesStableAttributedInstances") {
     eve::cap::detail::clearAllRaw();
     MockProcgenSceneSink sink;
@@ -1323,8 +1335,12 @@ TEST_CASE("procgen.sceneSink.publishesStableAttributedInstances") {
     REQUIRE(pointsView->trySetPointId(tree, 1001).ok());
     pointsView->setPointSeed(tree, 77);
     pointsView->setYaw(tree, 30.f);
+    pointsView->setRotation(tree, 12.f, 30.f, -15.f);
     pointsView->setScale(tree, 2.f, 3.f, 4.f);
-    pointsView->setStringAttribute(tree, "asset", "oak");
+    const std::string prefabAsset = "asset://018f0b7e-6e50-7a10-8c22-2c8f8e3dd191";
+    const std::string prefabBuild = "018f0b7e-6e50-7a10-8c22-2c8f8e3dd192";
+    pointsView->setStringAttribute(tree, "asset", prefabAsset);
+    pointsView->setStringAttribute(tree, "asset_build_id", prefabBuild);
     const int rock = pointsView->add(8.f, 0.f, 9.f);
     REQUIRE(pointsView->trySetPointId(rock, 1002).ok());
     pointsView->setPointSeed(rock, 88);
@@ -1338,13 +1354,29 @@ TEST_CASE("procgen.sceneSink.publishesStableAttributedInstances") {
     const auto& published = sink.batches.at("forest/main");
     CHECK_EQ(published[0].id, std::string("pcg-id-1001"));
     CHECK_EQ(published[0].sourcePointId, uint64_t(1001));
-    CHECK_EQ(published[0].asset, std::string("oak"));
+    CHECK_EQ(published[0].asset, prefabAsset);
+    REQUIRE(published[0].assetBinding.has_value());
+    CHECK_EQ(published[0].assetBinding->asset.format(), prefabAsset);
+    CHECK_EQ(published[0].assetBinding->buildId.format(), prefabBuild);
     CHECK_EQ(published[0].x, 1.f);
     CHECK_EQ(published[0].yaw, 30.f);
+    CHECK_EQ(published[0].pitch, 12.f);
+    CHECK_EQ(published[0].roll, -15.f);
     CHECK_EQ(published[0].scaleZ, 4.f);
     CHECK_EQ(published[1].asset, std::string("granite"));
     CHECK_EQ(published[1].id, std::string("pcg-id-1002"));
     CHECK_EQ(published[1].sourcePointId, uint64_t(1002));
+    pointsView->setStringAttribute(tree, "asset_build_id", "invalid-build");
+    auto invalidBinding = proc.publishInstances("forest/main", pointsHandle, "asset", "granite");
+    REQUIRE(!invalidBinding.ok());
+    CHECK_EQ(sink.batches.at("forest/main")[0].assetBinding->buildId.format(), prefabBuild);
+    pointsView->setStringAttribute(tree, "asset_build_id", prefabBuild);
+    pointsView->setRotation(tree, std::numeric_limits<float>::quiet_NaN(), 30.f, -15.f);
+    auto invalidRotation = proc.publishInstances("forest/main", pointsHandle, "asset", "granite");
+    REQUIRE(!invalidRotation.ok());
+    CHECK_EQ(sink.batches.at("forest/main")[0].pitch, 12.f);
+    CHECK_EQ(sink.batches.at("forest/main")[0].roll, -15.f);
+    pointsView->setRotation(tree, 12.f, 30.f, -15.f);
 
     auto reorderedResult = proc.newPointSetHandle();
     REQUIRE(reorderedResult.ok());

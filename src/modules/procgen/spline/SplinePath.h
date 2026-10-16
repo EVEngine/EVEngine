@@ -5,21 +5,44 @@
 #include "common/Result.h"
 
 #include <cstdint>
+#include <span>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 namespace eve::procgen {
 
+/** @brief Scale interpolation on the outgoing span of an owning spline point. */
+enum class SplineScaleInterpolation : std::uint8_t { Linear = 0, CatmullRom = 1 };
+
+/** @brief Roll interpolation on one outgoing span; generic splines retain Linear. */
+enum class SplineRollInterpolation : std::uint8_t { Linear = 0, SmoothStep = 1 };
+
+/** @brief Native outgoing overrides; Inherit uses the path kind. */
+enum class SplineSpanControl : std::uint8_t { Inherit = 0, StraightXZ = 1, StraightXYZ = 2, Circular = 3 };
+
 /** @brief One spline anchor with incoming and outgoing handle offsets. */
 struct SplinePoint {
-    float x = 0.f, y = 0.f, z = 0.f;
-    float inX = 0.f, inY = 0.f, inZ = 0.f;
-    float outX = 0.f, outY = 0.f, outZ = 0.f;
-    float rollDegrees = 0.f;
-    float scaleX = 1.f, scaleY = 1.f;
-    bool  breakBefore  = false;
-    float pitchDegrees = 0.f, yawDegrees = 0.f;
+    float                    x = 0.f, y = 0.f, z = 0.f;
+    float                    inX = 0.f, inY = 0.f, inZ = 0.f;
+    float                    outX = 0.f, outY = 0.f, outZ = 0.f;
+    float                    rollDegrees = 0.f;
+    float                    scaleX = 1.f, scaleY = 1.f;
+    bool                     breakBefore  = false;
+    float                    pitchDegrees = 0.f, yawDegrees = 0.f;
+    SplineScaleInterpolation scaleXInterpolation =
+        SplineScaleInterpolation::Linear;  ///< Native-only; cubic scale is floored at 1e-4 to retain a positive frame.
+    bool worldUpFrame =
+        false;  ///< Native-only outgoing frame policy; vertical tangents use a deterministic X reference.
+    SplineRollInterpolation rollInterpolation =
+        SplineRollInterpolation::Linear;         ///< Native-only owning outgoing policy.
+    float             spanStrength       = .5f;  ///< Native-only outgoing Catmull tangent coefficient in [0.01,1].
+    SplineSpanControl spanControl        = SplineSpanControl::Inherit;  ///< Native-only outgoing geometry controller.
+    bool              alignStraightStart = false,
+         alignStraightEnd =
+             false;  ///< Straight-adjacent XZ alignment with zero vertical derivative; reversal swaps ends.
+    bool  circularFromEnd = false;  ///< Derive circular geometry from the following endpoint tangent after reversal.
+    float rollPivotSide   = 0.f;    ///< Local transverse roll-axis offset before scaleX; native owning value, metres.
 };
 
 /** @brief Evaluated spline position and normalized tangent. */
@@ -31,14 +54,18 @@ struct SplineSample {
     float scaleX = 1.f, scaleY = 1.f;
     int   chunkIndex   = 0;
     float pitchDegrees = 0.f, yawDegrees = 0.f;
+    bool  worldUpFrame  = false;  ///< Owning projection of the outgoing point policy.
+    float rollPivotSide = 0.f;    ///< Interpolated local roll-axis offset before scaleX, metres.
 };
 
-/** @brief Evaluated spline sample with an orthonormal transported cross-section frame. */
+/** @brief Owning section frame; sample position includes roll-pivot displacement, unlike the author centerline sample.
+ */
 struct SplineFrameSample {
     SplineSample sample;
     float        sideX = 1.f, sideY = 0.f, sideZ = 0.f;
     float        upX = 0.f, upY = 1.f, upZ = 0.f;
     float        forwardX = 0.f, forwardY = 0.f, forwardZ = 1.f;
+    bool         authoredMarker = false;  ///< Native-only derived tag emitted by marker-preserving frame sampling.
 };
 
 /** @brief Owning uniformly distributed spline samples for instancing. */
@@ -120,16 +147,31 @@ public:
     [[nodiscard]] Result<SplineSample> closestPointResult(float x, float y, float z, int samplesPerSegment = 32) const;
     /**
      * @brief Sample stable parallel-transport frames for extrusion and placement.
-     * @param sampleCount Number of intervals; returns sampleCount plus one frames.
+     * @param sampleCount Number of base intervals; returns sampleCount plus one frames before optional anchors.
      * @param uniformByDistance Use the arc-length table instead of segment parameter spacing.
      * @param rollDegrees Constant roll applied about each tangent after transport.
      * @param samplesPerSegment Arc-table resolution when uniformByDistance is true.
+     * @param preserveMarkers Add exact anchor frames on a continuous path; output remains bounded to 4097 frames.
+     * @cost Output-proportional transport plus bounded sorting for retained markers; cached arc queries amortize
+     * table construction per path revision.
      * @return Owning deterministic frame samples, or a structured validation diagnostic.
      * @note Synchronous, owner-thread-only, non-reentrant; results retain no path references.
      */
     [[nodiscard]] Result<std::vector<SplineFrameSample>> sampleFramesResult(int sampleCount, bool uniformByDistance,
                                                                             float rollDegrees       = 0.f,
-                                                                            int   samplesPerSegment = 24) const;
+                                                                            int   samplesPerSegment = 24,
+                                                                            bool  preserveMarkers   = false) const;
+    /**
+     * @brief Build frames at explicitly ordered curve parameters using the canonical transport and roll pipeline.
+     * @param parameters Borrowed strictly increasing finite values in [0,1], bounded to 1..4097 samples.
+     * @param samplesPerSegment Arc-table resolution for the returned normalized arc distances.
+     * @return Owning frames; partial ranges start transport at their first sample and do not force a closed seam.
+     * @cost Curve queries scale with requested frames and path points; transport is output-linear and cached
+     * arc construction amortizes per path revision.
+     * @note Synchronous, owner-thread-only, non-reentrant; no input span or path pointer is retained.
+     */
+    [[nodiscard]] Result<std::vector<SplineFrameSample>> sampleFramesAtParametersResult(
+        std::span<const float> parameters, int samplesPerSegment = 24) const;
     /** @brief Evaluate distance-driven travel using clamp, loop, or pingPong wrapping without reading wall time. */
     [[nodiscard]] Result<SplineSample> travelResult(float distance, std::string_view wrapMode = "clamp",
                                                     int samplesPerSegment = 24) const;
@@ -179,6 +221,9 @@ private:
     [[nodiscard]] SplineSample evaluateSegmentUnchecked(int segment, float u, float normalized) const;
     [[nodiscard]] std::vector<std::pair<int, int>> segmentEndpoints() const;
     [[nodiscard]] Result<void>                     ensureArcTable(int samplesPerSegment) const;
+    [[nodiscard]] Result<std::vector<SplineFrameSample>> orientFrameSamplesResult(std::vector<SplineFrameSample> frames,
+                                                                                  std::span<const float>         ratios,
+                                                                                  float rollDegrees) const;
     void                                           invalidate();
 
     std::vector<SplinePoint>      points_;

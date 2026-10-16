@@ -488,6 +488,15 @@ else()
       endif()
     endif()
     eve_add_test_executable(unity_graphics_probe EXCLUDE_FROM_ALL asset_import/UnityGraphicsProbe.cpp)
+    if(TARGET EVAsset_import AND TARGET EVProcgen AND TARGET EVScene
+        AND NOT ANDROID AND NOT EVENGINE_ANDROID AND NOT EVENGINE_IOS AND NOT IOS AND NOT EMSCRIPTEN)
+      eve_add_test_executable(road_side_graphics_probe EXCLUDE_FROM_ALL asset_import/RoadSideGraphicsProbe.cpp)
+      target_link_libraries(road_side_graphics_probe eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty}
+        ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+      if(WIN32)
+        target_link_libraries(road_side_graphics_probe EVBacktrace)
+      endif()
+    endif()
     eve_add_test_executable(unity_sprite_graphics_probe EXCLUDE_FROM_ALL asset_import/UnitySpriteGraphicsProbe.cpp)
     target_link_libraries(unity_sprite_graphics_probe eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty}
       ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})

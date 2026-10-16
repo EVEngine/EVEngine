@@ -1,0 +1,176 @@
+#include <cmath>
+#include <limits>
+#include "common/ProcgenWorldQuery.h"
+#include "procgen/editing/RoadPresetDocument.h"
+#include "procgen/road/RoadNetworkCodec.h"
+#include "procgen/road/RoadRecipes.h"
+#include "zeroerr/unittest.h"
+using namespace eve::procgen;
+using namespace eve::procgen::road;
+using namespace eve::procgen_editing;
+namespace {
+RoadNetwork placementNetwork(RoadStyle style) {
+    style.laneWidth           = 3;
+    style.automaticStructures = false;
+    RoadNetwork network;
+    auto        a = network.addNode(0, 0, 0), b = network.addNode(0, 0, 30);
+    REQUIRE(a.ok());
+    REQUIRE(b.ok());
+    REQUIRE(network.addEdge(a.value(), b.value(), {{0, 0, 0}, {0, 0, 15}, {0, 0, 30}}, 1, 1, style).ok());
+    return network;
+}
+}  // namespace
+TEST_CASE("procgen.road.authoring.sidePlacementMatchesMeasuredOffsetsAndSingleCenterBudget") {
+    struct Sample {
+        RoadSideReference reference;
+        bool              left;
+        float             lateral, height, yaw, expectedX;
+    };
+    const Sample samples[] = {{RoadSideReference::Center, true, 0, .02f, 0, 0},
+                              {RoadSideReference::Center, true, 2, .02f, 0, 2},
+                              {RoadSideReference::Center, true, 0, 1.02f, 0, 0},
+                              {RoadSideReference::AsphaltEdges, true, 0, .02f, 0, -3},
+                              {RoadSideReference::AsphaltEdges, false, 0, .02f, 0, 3},
+                              {RoadSideReference::Center, true, 0, .02f, 45, 0}};
+    for (const auto& sample : samples) {
+        RoadStyle style;
+        style.sidePlacement = {sample.reference, sample.lateral, sample.height, sample.yaw};
+        // Center with both streams enabled must remain one stream.
+        style.sideObjectsLeft   = sample.left;
+        style.sideObjectsRight  = !sample.left || sample.reference == RoadSideReference::Center;
+        auto            network = placementNetwork(style);
+        RoadBakeOptions options;
+        options.includeMarkings = options.includeNavigation = false;
+        options.sideObjectSpacing                           = 5;
+        options.sideObjectClearance                         = 0;
+        options.sideObjectOffset                            = 123;  // Explicit placement origin owns lateral position.
+        options.maximumPlacements                           = 9;
+        auto baked                                          = bakeRoadNetwork(network, options);
+        REQUIRE(baked.ok());
+        int count = 0;
+        for (int i = 0; i < baked.value().placements.getCount(); ++i) {
+            const auto& points = baked.value().placements;
+            if (points.getStringAttribute(i, "road_role", "").find("side.") != 0) continue;
+            REQUIRE(std::fabs(points.points()[i].x - sample.expectedX) < 1e-4f);
+            REQUIRE(std::fabs(points.points()[i].y - sample.height) < 1e-4f);
+            REQUIRE(std::fabs(points.points()[i].z - count * 5.005f) < 1e-4f);
+            REQUIRE(std::fabs(points.points()[i].yaw - sample.yaw) < 1e-4f);
+            ++count;
+        }
+        REQUIRE_EQ(count, 7);
+        options.maximumPlacements = 8;
+        REQUIRE(!bakeRoadNetwork(network, options).ok());
+        Params params;
+        params.setBool("navigation", false);
+        params.setBool("markings", false);
+        params.setFloat("sideObjectSpacing", 5);
+        params.setFloat("sideObjectClearance", 0);
+        REQUIRE(setRoadRecipeNetwork(params, network).ok());
+        auto recipe = bakeRoadNetworkRecipe(params);
+        REQUIRE(recipe.ok());
+        REQUIRE_EQ(recipe.value().placements.getCount(), 9);
+        for (int i = 0; i < 9; ++i) {
+            REQUIRE(std::fabs(recipe.value().placements.points()[i].x - baked.value().placements.points()[i].x) <
+                    1e-6f);
+            REQUIRE(std::fabs(recipe.value().placements.points()[i].y - baked.value().placements.points()[i].y) <
+                    1e-6f);
+            REQUIRE(std::fabs(recipe.value().placements.points()[i].yaw - baked.value().placements.points()[i].yaw) <
+                    1e-6f);
+        }
+    }
+}
+TEST_CASE("procgen.road.authoring.sidePlacementPresetHistoryMigrationAndAtomicFailure") {
+    RoadStyle style;
+    style.sidePlacement = {RoadSideReference::Center, 2, 1.02f, 45};
+    auto network        = placementNetwork(style);
+    auto encoded        = captureRoadNetwork(network);
+    REQUIRE(encoded.ok());
+    auto restored = restoreRoadNetwork(encoded.value());
+    REQUIRE(restored.ok());
+    REQUIRE_EQ(restored.value().edges()[0].style.sidePlacement.yawDegrees, 45);
+    auto  legacy = encoded.value();
+    auto& fields = *legacy.getIf<eve::Value::Object>()
+                        ->at("edges")
+                        .getIf<eve::Value::Array>()
+                        ->at(0)
+                        .getIf<eve::Value::Object>()
+                        ->at("style")
+                        .getIf<eve::Value::Object>();
+    fields.erase("sidePlacement");
+    auto migrated = restoreRoadNetwork(legacy);
+    REQUIRE(migrated.ok());
+    REQUIRE(migrated.value().edges()[0].style.sidePlacement.reference == RoadSideReference::LegacyOutside);
+    REQUIRE_EQ(migrated.value().edges()[0].style.sidePlacement.verticalOffset, 0);
+    const auto before = captureRoadNetwork(network).value();
+    for (int variant = 0; variant < 3; ++variant) {
+        auto bad = style;
+        if (variant == 0) bad.sidePlacement.reference = static_cast<RoadSideReference>(3);
+        if (variant == 1) bad.sidePlacement.lateralOffset = std::numeric_limits<float>::infinity();
+        if (variant == 2) bad.sidePlacement.yawDegrees = 361;
+        REQUIRE(!network.setEdgeStyle(network.edges()[0].id, bad).ok());
+        REQUIRE(captureRoadNetwork(network).value() == before);
+    }
+    RoadPresetDraft draft;
+    draft.source                           = network;
+    draft.types                            = {{"root", "", {}}};
+    draft.types[0].overrides.sidePlacement = style.sidePlacement;
+    draft.bindings.push_back({network.edges()[0].id, "root", {}});
+    auto document = RoadPresetDocument::create(draft);
+    REQUIRE(document.ok());
+    auto edit                             = document.value()->beginEdit();
+    edit.types[0].overrides.sidePlacement = RoadSidePlacement{RoadSideReference::AsphaltEdges, -1, .02f, -30};
+    auto prepared                         = document.value()->prepare(std::move(edit));
+    REQUIRE(prepared.ok());
+    REQUIRE(document.value()->commit(std::move(prepared).takeValue()).ok());
+    REQUIRE(document.value()->undo().ok());
+    REQUIRE_EQ(document.value()->network().edges()[0].style.sidePlacement.lateralOffset, 2);
+    auto save = document.value()->capture();
+    REQUIRE(save.ok());
+    auto restore = document.value()->prepareRestore(save.value());
+    REQUIRE(restore.ok());
+    REQUIRE(document.value()->commit(std::move(restore).takeValue()).ok());
+    REQUIRE(document.value()->redo().ok());
+    const auto& result = document.value()->network().edges()[0].style.sidePlacement;
+    REQUIRE(result.reference == RoadSideReference::AsphaltEdges);
+    REQUIRE_EQ(result.lateralOffset, -1);
+    REQUIRE_EQ(result.yawDegrees, -30);
+}
+
+TEST_CASE("procgen.road.authoring.sidePlacementRotatesTerrainFootprintBeforeWorldUpOffset") {
+    struct Plane final : eve::IProcgenWorldQuery {
+        int                                 calls = 0;
+        eve::Result<eve::ProcgenSurfaceHit> projectDown(float x, float z, float, float, std::uint64_t) override {
+            ++calls;
+            eve::ProcgenSurfaceHit hit;
+            hit.hit = true;
+            hit.x   = x;
+            hit.z   = z;
+            hit.y   = x + 2 * z;
+            return eve::Result<eve::ProcgenSurfaceHit>::success(hit);
+        }
+    } query;
+    RoadStyle style;
+    style.sidePlacement     = {RoadSideReference::Center, 2, 1.02f, 90};
+    style.sideTerrain       = {RoadSideTerrainMode::Highest, -1, 1, -2, 2, 3};
+    auto            network = placementNetwork(style);
+    RoadBakeOptions options;
+    options.placementWorldQuery = &query;
+    options.sideObjectClearance = 0;
+    options.sideObjectSpacing   = 5;
+    options.includeNavigation = options.includeMarkings = false;
+    auto baked                                          = bakeRoadNetwork(network, options);
+    REQUIRE(baked.ok());
+    int sides = 0;
+    for (int i = 0; i < baked.value().placements.getCount(); ++i) {
+        const auto& points = baked.value().placements;
+        if (points.getStringAttribute(i, "road_role", "").find("side.") != 0) continue;
+        ++sides;
+        REQUIRE(std::fabs(points.points()[i].yaw - 90) < 1e-4f);
+        REQUIRE(std::fabs(points.points()[i].y - (points.points()[i].x + 2 * points.points()[i].z + 4 + 1.02f)) <
+                1e-4f);
+    }
+    REQUIRE_EQ(sides, 7);
+    REQUIRE_EQ(query.calls, 63);
+    options.maximumPlacementQueries = 62;
+    REQUIRE(!bakeRoadNetwork(network, options).ok());
+}

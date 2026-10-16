@@ -60,6 +60,8 @@ public:
      * @param recipeId Stable recipe identifier.
      * @param params Generation parameters.
      * @return A key containing a versioned hash of canonical recipe inputs.
+     * Built-in road keys also include the producer-owned algorithm revision; caller Params cannot override it.
+     * Historical canonical keys remain readable but do not identify current-revision road cache entries.
      */
     [[nodiscard]] static std::optional<BuildKey> forRecipe(std::string_view recipeId, const Params& params);
 

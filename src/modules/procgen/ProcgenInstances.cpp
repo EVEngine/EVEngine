@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <any>
+#include <cmath>
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -58,6 +59,8 @@ static eve::ProcgenInstanceDesc sceneInstanceDesc(const PointSet& points, size_t
     instance.y      = point.y;
     instance.z      = point.z;
     instance.yaw    = point.yaw;
+    instance.pitch  = point.pitch;
+    instance.roll   = point.roll;
     instance.scaleX = point.scaleX;
     instance.scaleY = point.scaleY;
     instance.scaleZ = point.scaleZ;
@@ -76,6 +79,37 @@ static eve::Result<std::vector<eve::ProcgenInstanceDesc>> sceneInstanceDescs(con
     std::unordered_set<uint64_t>         pointIds;
     for (size_t pointIndex = 0; pointIndex < points.points().size(); ++pointIndex) {
         auto instance = sceneInstanceDesc(points, pointIndex, assetAttribute, defaultAsset, seedOccurrences);
+        if (points.attributes().has(pointIndex, "asset_root_pose") &&
+            !points.attributes().has(pointIndex, "asset_build_id"))
+            return eve::Result<std::vector<eve::ProcgenInstanceDesc>>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                       "prefab root pose requires a typed asset/build binding", "asset_root_pose"));
+        if (points.attributes().has(pointIndex, "asset_build_id")) {
+            const auto buildText = points.attributes().getString(pointIndex, "asset_build_id");
+            if (!buildText)
+                return eve::Result<std::vector<eve::ProcgenInstanceDesc>>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::TypeMismatch, "procedural asset_build_id must be a string", "asset_build_id"));
+            auto asset = eve::AssetRef::parse(instance.asset);
+            if (!asset.ok()) return eve::Result<std::vector<eve::ProcgenInstanceDesc>>::failure(asset.status());
+            auto build = eve::PersistentId::parse(*buildText);
+            if (!build || build->isNil() || build->format() != *buildText || asset.value().format() != instance.asset)
+                return eve::Result<std::vector<eve::ProcgenInstanceDesc>>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument,
+                    "procedural prefab binding must use canonical asset/build identities", "asset_build_id"));
+            instance.assetBinding = eve::ProcgenInstanceAssetBinding{asset.value(), *build};
+            if (points.attributes().has(pointIndex, "asset_root_pose")) {
+                const auto pose = points.attributes().getString(pointIndex, "asset_root_pose");
+                if (!pose || (*pose != "authored" && *pose != "placement"))
+                    return eve::Result<std::vector<eve::ProcgenInstanceDesc>>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                               "unknown procedural prefab root pose", "asset_root_pose"));
+                instance.assetBinding->rootPose = *pose == "authored" ? eve::PrefabRootPose::Authored
+                                                                      : eve::PrefabRootPose::ReplaceTranslationRotation;
+            }
+        }
+        if (!std::isfinite(instance.yaw) || !std::isfinite(instance.pitch) || !std::isfinite(instance.roll))
+            return eve::Result<std::vector<eve::ProcgenInstanceDesc>>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "procedural instance rotation must be finite", "rotation"));
         if (!instanceIds.insert(instance.id).second)
             return eve::Result<std::vector<eve::ProcgenInstanceDesc>>::failure(
                 eve::Diagnostic::error(eve::DiagnosticCode::Conflict,

@@ -1,6 +1,31 @@
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_asset_import_unity_fbx)
+#include <algorithm>
+#include <cmath>
+#include <filesystem>
+#include <fstream>
+#include <limits>
+#include "asset/SourcePng.h"
+#include "asset/graphics/EvpackGraphicsLoader.h"
+#include "asset/graphics/EvpackImageLoader.h"
+#include "asset/graphics/PrefabBoundsCatalog.h"
+#include "asset/graphics/ProcgenPrefabSceneSink.h"
+#include "asset/graphics/StaticPrefabRenderInstance.h"
+#include "asset/scene/EvpackSceneTemplateLoader.h"
+#include "common/Capability.h"
+#include "common/ProcgenWorldQuery.h"
+#include "graphics/Graphics.h"
+#include "graphics/Material.h"
+#include "graphics/RenderControl.h"
+#include "graphics/RenderSystem.h"
+#include "graphics/RenderSystem3D.h"
+#include "procgen/Procgen.h"
+#include "procgen/RuntimeGeneration.h"
+#include "procgen/road/RoadNetworkCodec.h"
+#include "procgen/road/RoadRecipes.h"
+#include "scene/Scene.h"
+#include "window/Window.h"
 #include "PrivateTestScope.h"
 #include <assimp/scene.h>
 #include <assimp/Exporter.hpp>
@@ -74,7 +99,8 @@ UnityProjectImportRequest triangleFbx(bool extendedStreams = true, bool twoSubme
     return request;
 }
 
-TEST_CASE("asset.import.unityStaticPrefabResolvesAndReleasesGpuLeases") {
+namespace {
+UnityProjectImportRequest trianglePrefab() {
     auto request = triangleFbx(false);
     auto put     = [&](const char* path, const std::string& data) { request.files[path] = {data.begin(), data.end()}; };
     put("Assets/tile.mat", R"(--- !u!21 &2100000
@@ -122,6 +148,12 @@ MeshRenderer:
   - {fileID: 2100000, guid: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, type: 2}
 )");
     put("Assets/tile.prefab.meta", "guid: cccccccccccccccccccccccccccccccc\nPrefabImporter:\n");
+    return request;
+}
+}  // namespace
+
+TEST_CASE("asset.import.unityStaticPrefabResolvesAndReleasesGpuLeases") {
+    auto request  = trianglePrefab();
     auto prepared = prepareUnityProjectImport(request);
     REQUIRE(prepared.ok());
     auto encoded = asset::buildEvaArchive(prepared.value().manifest, prepared.value().entries);
@@ -173,27 +205,681 @@ MeshRenderer:
     } images;
     asset::EvpackCapabilities caps{"win32", "x86_64", "vulkan", {"rgba8"}, {"spirv-1.6"}, {"high"}, {}};
     const auto                ref    = prepared.value().manifest.entrypoints.at("Assets/tile.prefab");
+    auto                      templateData = asset_scene::EvpackSceneTemplateLoader(reader).load(ref, caps);
+    REQUIRE(templateData.ok());
+    REQUIRE(templateData.value().root.children.size() == 1u);
+    REQUIRE_EQ(templateData.value().root.children[0].x, 1.f);
+    REQUIRE_EQ(templateData.value().root.children[0].y, 2.f);
+    REQUIRE_EQ(templateData.value().root.children[0].z, -3.f);
     auto                      loaded = asset_graphics::EvpackStaticPrefab::load(reader, meshes, images, ref, caps);
     REQUIRE(loaded.ok());
-    REQUIRE_EQ(loaded.value()->drawCount(), std::size_t(1));
+    auto owner = std::shared_ptr<asset_graphics::EvpackStaticPrefab>(std::move(loaded).takeValue());
+    REQUIRE_EQ(owner->drawCount(), std::size_t(1));
     REQUIRE_EQ(meshes.uploads, 1);
+    auto bounds = owner->localBounds();
+    REQUIRE(bounds.ok());
+    // This FBX export decodes to X/Z in [-1,0], Y in [0,1]; the prefab root retains (1,2,-3).
+    const std::array<float, 6> expectedBounds{0.f, 2.f, -4.f, 1.f, 3.f, -3.f};
+    for (std::size_t axis = 0; axis < expectedBounds.size(); ++axis)
+        REQUIRE(std::fabs(bounds.value()[axis] - expectedBounds[axis]) < 1e-4f);
+    auto packageBuild = reader.buildId();
+    REQUIRE(packageBuild.ok());
+    REQUIRE(owner->sourceAsset() == ref);
+    REQUIRE(owner->sourceBuildId() == packageBuild.value());
+    asset_graphics::PrefabBoundsCatalog catalog;
+    REQUIRE(catalog.add(*owner).ok());
+    REQUIRE(!catalog.add(*owner).ok());
+    auto catalogBounds = catalog.localBounds(ref, packageBuild.value());
+    REQUIRE(catalogBounds.ok());
+    auto placementBounds = catalog.localBounds(ref, packageBuild.value(), PrefabRootPose::ReplaceTranslationRotation);
+    REQUIRE(placementBounds.ok());
+    const std::array<float, 6> expectedPlacementBounds{-1.f, 0.f, -1.f, 0.f, 1.f, 0.f};
+    for (std::size_t axis = 0; axis < expectedPlacementBounds.size(); ++axis)
+        REQUIRE(std::fabs(placementBounds.value()[axis] - expectedPlacementBounds[axis]) < 1e-4f);
+    REQUIRE(!catalog.localBounds(ref, packageBuild.value(), static_cast<PrefabRootPose>(255)).ok());
+    auto staleBuild = PersistentId::parse("00000000-0000-0000-0000-000000000001");
+    REQUIRE(staleBuild.has_value());
+    auto missingAsset = AssetRef::fromId(*staleBuild);
+    REQUIRE(missingAsset.ok());
+    REQUIRE(!catalog.localBounds(ref, *staleBuild).ok());
+    REQUIRE(!catalog.localBounds(missingAsset.value(), packageBuild.value()).ok());
+    class Ground final : public IProcgenWorldQuery {
+        Result<ProcgenSurfaceHit> projectDown(float x, float z, float, float, std::uint64_t) override {
+            ProcgenSurfaceHit hit;
+            hit.hit = true;
+            hit.x   = x;
+            hit.z   = z;
+            hit.y   = x + 2.f * z;
+            return Result<ProcgenSurfaceHit>::success(hit);
+        }
+    } ground;
+    struct RestoreProviders {
+        IProcgenWorldQuery*  world  = eve::cap::query<IProcgenWorldQuery>();
+        IProcgenAssetBounds* assets = eve::cap::query<IProcgenAssetBounds>();
+        ~RestoreProviders() {
+            eve::cap::provide<IProcgenWorldQuery>(world);
+            eve::cap::provide<IProcgenAssetBounds>(assets);
+        }
+    } restoreProviders;
+    eve::cap::provide<IProcgenWorldQuery>(&ground);
+    eve::cap::provide<IProcgenAssetBounds>(&catalog);
+    auto road = procgen::road::RoadNetwork::makeStraight(40.f, 2);
+    REQUIRE(road.ok());
+    auto style              = road.value().edges()[0].style;
+    style.sideObjectsRight  = false;
+    style.sideTerrain.mode  = procgen::road::RoadSideTerrainMode::Average;
+    style.sideTerrain.asset = procgen::road::RoadSideAssetBinding{ref, packageBuild.value()};
+    REQUIRE(road.value().setEdgeStyle(1, style).ok());
+    procgen::Params roadParams;
+    roadParams.setString("placementWorldRevision", "fixture-plane/v1");
+    REQUIRE(procgen::road::setRoadRecipeNetwork(roadParams, road.value()).ok());
+    auto roadBake = procgen::road::bakeRoadNetworkRecipe(roadParams);
+    REQUIRE(roadBake.ok());
+    int sidePoints = 0;
+    for (int i = 0; i < roadBake.value().placements.getCount(); ++i) {
+        const auto& points = roadBake.value().placements;
+        if (points.getStringAttribute(i, "road_role", "") != "side.left") continue;
+        ++sidePoints;
+        const auto& p = points.points()[i];
+        REQUIRE(std::fabs(p.y - (p.x + 2.f * p.z - .5f)) < 1e-4f);
+        REQUIRE(points.getStringAttribute(i, "asset", "") == ref.format());
+        REQUIRE(points.getStringAttribute(i, "asset_build_id", "") == packageBuild.value().format());
+        REQUIRE(points.getStringAttribute(i, "asset_root_pose", "") == "placement");
+    }
+    REQUIRE(sidePoints > 0);
+    auto* sceneGraphics = graphics::Graphics::create();
+    REQUIRE(sceneGraphics != nullptr);
+    auto placedScene = asset_graphics::EvpackStaticPrefab::prepareScene(owner, *sceneGraphics,
+                                                                        PrefabRootPose::ReplaceTranslationRotation);
+    REQUIRE(placedScene.ok());
+    for (unsigned axis = 0; axis < 3; ++axis)
+        REQUIRE(std::fabs(placedScene.value()->parts()[0].localTransform[12 + axis]) < 1e-5f);
+    REQUIRE(placedScene.value()->release().ok());
+    REQUIRE(!asset_graphics::EvpackStaticPrefab::prepareScene(owner, *sceneGraphics, static_cast<PrefabRootPose>(255))
+                 .ok());
+    auto preparedScene = asset_graphics::EvpackStaticPrefab::prepareScene(owner, *sceneGraphics);
+    REQUIRE(preparedScene.ok());
+    REQUIRE(preparedScene.value()->parts().size() == 1u);
+    const auto& scenePart = preparedScene.value()->parts()[0];
+    REQUIRE(scenePart.mesh != nullptr);
+    REQUIRE(scenePart.material != nullptr);
+    REQUIRE(scenePart.material->hasPbrSurface());
+    REQUIRE(std::fabs(scenePart.localTransform[12] - 1.f) < 1e-5f);
+    auto secondScene = asset_graphics::EvpackStaticPrefab::prepareScene(owner, *sceneGraphics);
+    REQUIRE(secondScene.ok());
+    REQUIRE(secondScene.value()->parts()[0].mesh == scenePart.mesh);
+    REQUIRE(secondScene.value()->parts()[0].material != scenePart.material);
+    REQUIRE(!owner->release().ok());
+    REQUIRE(meshes.releases == 0);
+    REQUIRE(images.releases == 0);
+    REQUIRE(owner->drawCount() == 1u);
+    REQUIRE(preparedScene.value()->release().ok());
+    REQUIRE(preparedScene.value()->release().ok());
+    REQUIRE(preparedScene.value()->parts().empty());
+    REQUIRE(!owner->release().ok());
+    REQUIRE(secondScene.value()->parts().size() == 1u);
+    REQUIRE(secondScene.value()->parts()[0].material->hasPbrSurface());
+    REQUIRE(secondScene.value()->release().ok());
+    REQUIRE(!asset_graphics::EvpackStaticPrefab::prepareScene({}, *sceneGraphics).ok());
+    auto renderPreparation = asset_graphics::EvpackStaticPrefab::prepareScene(owner, *sceneGraphics);
+    REQUIRE(renderPreparation.ok());
+    const auto            sourceMatrix = renderPreparation.value()->parts()[0].localTransform;
+    const auto*           sourceMesh   = renderPreparation.value()->parts()[0].mesh;
+    std::array<float, 16> world{-2.f, 0.f, 0.f, 0.f, .5f, 3.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 10.f, 20.f, 30.f, 1.f};
+    auto instance = asset_graphics::StaticPrefabRenderInstance::create(std::move(renderPreparation).takeValue(), world);
+    REQUIRE(instance.ok());
+    REQUIRE(instance.value()->rendererCount() == 1u);
+    auto renderer = instance.value()->renderer(0);
+    REQUIRE(renderer.ok());
+    REQUIRE(renderer.value()->getMesh() == sourceMesh);
+    REQUIRE(renderer.value()->getMaterial()->hasPbrSurface());
+    REQUIRE(renderer.value()->getVisible());
+    REQUIRE(renderer.value()->transform()->hasLinkedWorld);
+    for (unsigned column = 0; column < 4; ++column)
+        for (unsigned row = 0; row < 4; ++row) {
+            float expected = 0.f;
+            for (unsigned k = 0; k < 4; ++k) expected += world[k * 4 + row] * sourceMatrix[column * 4 + k];
+            REQUIRE(std::fabs(renderer.value()->transform()->linkedWorld[column][row] - expected) < 1e-5f);
+        }
+    REQUIRE(!owner->release().ok());
+    world[12] += 5.f;
+    REQUIRE(instance.value()->setWorldTransform(world).ok());
+    const float movedX       = renderer.value()->transform()->x;
+    auto        invalidWorld = world;
+    invalidWorld[12]         = std::numeric_limits<float>::quiet_NaN();
+    REQUIRE(!instance.value()->setWorldTransform(invalidWorld).ok());
+    REQUIRE(renderer.value()->transform()->x == movedX);
+    auto rejectedPreparation = asset_graphics::EvpackStaticPrefab::prepareScene(owner, *sceneGraphics);
+    REQUIRE(rejectedPreparation.ok());
+    REQUIRE(
+        !asset_graphics::StaticPrefabRenderInstance::create(std::move(rejectedPreparation).takeValue(), invalidWorld)
+             .ok());
+    REQUIRE(renderer.value()->transform()->x == movedX);
+    invalidWorld    = world;
+    invalidWorld[0] = std::numeric_limits<float>::max();
+    REQUIRE(!instance.value()->setWorldTransform(invalidWorld).ok());
+    REQUIRE(renderer.value()->transform()->x == movedX);
+    REQUIRE(!instance.value()->renderer(1).ok());
+    {
+        auto deferredPreparation = asset_graphics::EvpackStaticPrefab::prepareScene(owner, *sceneGraphics);
+        REQUIRE(deferredPreparation.ok());
+        ecs::ScopedDefer deferred;
+        REQUIRE(!asset_graphics::StaticPrefabRenderInstance::create(std::move(deferredPreparation).takeValue(), world)
+                     .ok());
+    }
+    REQUIRE(renderer.value()->transform()->x == movedX);
+    ecs::DestroyEntity(renderer.value());
+    auto*      replacement       = graphics::Renderable3D::create();
+    const auto replacementHandle = ecs::handle_of(replacement);
+    REQUIRE(!instance.value()->renderer(0).ok());
+    REQUIRE(!instance.value()->setWorldTransform(world).ok());
+    REQUIRE(instance.value()->release().ok());
+    REQUIRE(ecs::try_get(replacementHandle) == replacement);
+    REQUIRE(instance.value()->release().ok());
+    REQUIRE(instance.value()->rendererCount() == 0u);
+    REQUIRE(!instance.value()->setWorldTransform(world).ok());
+    ecs::DestroyEntity(replacement);
+    auto ownedPreparation = asset_graphics::EvpackStaticPrefab::prepareScene(owner, *sceneGraphics);
+    REQUIRE(ownedPreparation.ok());
+    auto ownedInstance =
+        asset_graphics::StaticPrefabRenderInstance::create(std::move(ownedPreparation).takeValue(), world);
+    REQUIRE(ownedInstance.ok());
+    auto ownedRenderer = ownedInstance.value()->renderer(0);
+    REQUIRE(ownedRenderer.ok());
+    const auto ownedHandle = ecs::handle_of(ownedRenderer.value());
+    REQUIRE(ownedInstance.value()->release().ok());
+    REQUIRE(ecs::try_get(ownedHandle) == nullptr);
+    {
+        auto* sceneHostSystem = eve::scene::Scene::create();
+        auto* baseSink        = cap::query<IProcgenSceneSink>();
+        REQUIRE(baseSink != nullptr);
+        asset_graphics::ProcgenPrefabSceneSink sink(*sceneGraphics, *baseSink);
+        REQUIRE(sink.admit(owner).ok());
+        ProcgenInstanceDesc pose;
+        pose.id            = "posed-facility";
+        pose.sourcePointId = 77;
+        pose.x             = 5.f;
+        pose.pitch         = 30.f;
+        pose.yaw           = 45.f;
+        pose.roll          = -20.f;
+        pose.scaleX        = -2.f;
+        pose.scaleY        = 3.f;
+        pose.scaleZ        = .5f;
+        pose.asset         = owner->sourceAsset().format();
+        pose.assetBinding  = ProcgenInstanceAssetBinding{owner->sourceAsset(), owner->sourceBuildId()};
+        REQUIRE(sink.replaceBatch("posed-facilities", 1, {pose}).ok());
+        auto host = sceneHostSystem->findHost("__pcg/posed-facilities");
+        REQUIRE(host.ok());
+        auto node = host.value()->findById(pose.id);
+        REQUIRE(node.ok());
+        const auto sceneWorld = node.value()->world;
+        int        matched    = 0;
+        {
+            auto view = ecs::View<graphics::Renderable3D, graphics::Renderable3D::Transform3D,
+                                  graphics::Renderable3D::MeshRenderer>();
+            for (auto it = view.begin(); it != view.end(); ++it) {
+                auto [transform, mesh] = *it;
+                if (mesh->mesh != sourceMesh || !mesh->visible) continue;
+                ++matched;
+                for (unsigned column = 0; column < 4; ++column)
+                    for (unsigned row = 0; row < 4; ++row) {
+                        float expected = 0.f;
+                        for (unsigned k = 0; k < 4; ++k) expected += sceneWorld[k][row] * sourceMatrix[column * 4 + k];
+                        REQUIRE(std::fabs(transform->linkedWorld[column][row] - expected) < 1e-4f);
+                    }
+            }
+        }
+        REQUIRE(matched == 1);
+        REQUIRE(!owner->release().ok());
+        struct RestoreRecipeSink {
+            IProcgenSceneSink* previous;
+            ~RestoreRecipeSink() { cap::provide<IProcgenSceneSink>(previous); }
+        } restoreSink{baseSink};
+        cap::provide<IProcgenSceneSink>(&sink);
+        procgen::Procgen proc;
+        auto             generatedHandle = proc.newPointSetHandle();
+        REQUIRE(generatedHandle.ok());
+        auto generatedPoints = proc.resolvePointSet(generatedHandle.value());
+        REQUIRE(generatedPoints.isBound());
+        *generatedPoints.operator->() = roadBake.value().placements;
+        REQUIRE(proc.publishInstances("road-baked-facilities", generatedHandle.value(), "asset", "").ok());
+        REQUIRE(sink.rendererCount("road-baked-facilities") == static_cast<std::size_t>(sidePoints));
+        REQUIRE(sink.instanceCount("road-baked-facilities") == roadBake.value().placements.getCount());
+        REQUIRE(proc.removeInstances("road-baked-facilities").ok());
+        REQUIRE(sink.collectRetired().ok());
+        REQUIRE(proc.releasePointSet(generatedHandle.value()).ok());
+        REQUIRE(sink.release().ok());
+    }
     meshes.reject = true;
     auto failed   = asset_graphics::EvpackStaticPrefab::load(reader, meshes, images, ref, caps);
     REQUIRE(!failed.ok());
-    REQUIRE_EQ(loaded.value()->drawCount(), std::size_t(1));
+    REQUIRE_EQ(owner->drawCount(), std::size_t(1));
     meshes.reject      = false;
     images.reject      = true;
     auto textureFailed = asset_graphics::EvpackStaticPrefab::load(reader, meshes, images, ref, caps);
     REQUIRE(!textureFailed.ok());
     REQUIRE_EQ(meshes.releases, 1);
-    REQUIRE_EQ(loaded.value()->drawCount(), std::size_t(1));
-    auto released = loaded.value()->release();
+    REQUIRE_EQ(owner->drawCount(), std::size_t(1));
+    auto released = owner->release();
     REQUIRE(released.ok());
     REQUIRE_EQ(meshes.releases, 2);
     REQUIRE_EQ(images.releases, 1);
-    REQUIRE_EQ(loaded.value()->drawCount(), std::size_t(0));
+    REQUIRE_EQ(owner->drawCount(), std::size_t(0));
+    auto retainedBounds = owner->localBounds();
+    REQUIRE(retainedBounds.ok());
+    for (std::size_t axis = 0; axis < expectedBounds.size(); ++axis)
+        REQUIRE(retainedBounds.value()[axis] == bounds.value()[axis]);
+    REQUIRE(catalog.localBounds(ref, packageBuild.value()).ok());
+    REQUIRE(!asset_graphics::EvpackStaticPrefab::prepareScene(owner, *sceneGraphics).ok());
+    REQUIRE(!asset_graphics::EvpackStaticPrefab::pinResources(owner).ok());
+    REQUIRE(!asset_graphics::EvpackStaticPrefab::pinResources({}).ok());
+    // A source root is below the decoder's synthetic container. Replacing its
+    // rotation/translation must retain both signed scale and the child's pose.
+    images.reject                      = false;
+    auto              hierarchyRequest = trianglePrefab();
+    auto&             prefabBytes      = hierarchyRequest.files.at("Assets/tile.prefab");
+    std::string       hierarchy(prefabBytes.begin(), prefabBytes.end());
+    const std::string father = "m_Father: {fileID: 0}";
+    hierarchy.replace(hierarchy.find(father), father.size(), "m_Father: {fileID: 400}");
+    hierarchy += R"(--- !u!1 &100
+GameObject:
+  m_Name: PlacementRoot
+  m_IsActive: 1
+--- !u!4 &400
+Transform:
+  m_GameObject: {fileID: 100}
+  m_Father: {fileID: 0}
+  m_LocalPosition: {x: 7, y: 8, z: 9}
+  m_LocalRotation: {x: 0, y: 0.70710678, z: 0, w: 0.70710678}
+  m_LocalScale: {x: -2, y: 3, z: 4}
+)";
+    prefabBytes.assign(hierarchy.begin(), hierarchy.end());
+    auto hierarchyImport = prepareUnityProjectImport(hierarchyRequest);
+    REQUIRE(hierarchyImport.ok());
+    auto hierarchyEva = asset::buildEvaArchive(hierarchyImport.value().manifest, hierarchyImport.value().entries);
+    REQUIRE(hierarchyEva.ok());
+    auto hierarchyArchive = asset::parseEvaArchive(hierarchyEva.value());
+    REQUIRE(hierarchyArchive.ok());
+    auto hierarchyCook = asset::cookEvaToEvpack(hierarchyArchive.value(), profile);
+    REQUIRE(hierarchyCook.ok());
+    auto hierarchyPack = asset::parseEvpack(hierarchyCook.value().bytes);
+    REQUIRE(hierarchyPack.ok());
+    asset::EvpackResourceReader hierarchyReader(
+        std::make_shared<const asset::Evpack>(std::move(hierarchyPack).takeValue()));
+    auto hierarchyLoad = asset_graphics::EvpackStaticPrefab::load(hierarchyReader, meshes, images, ref, caps);
+    REQUIRE(hierarchyLoad.ok());
+    auto hierarchyOwner  = std::shared_ptr<asset_graphics::EvpackStaticPrefab>(std::move(hierarchyLoad).takeValue());
+    auto hierarchyBounds = hierarchyOwner->localBounds(PrefabRootPose::ReplaceTranslationRotation);
+    REQUIRE(hierarchyBounds.ok());
+    const std::array<float, 6> expectedHierarchyBounds{-2, 6, -16, 0, 9, -12};
+    for (unsigned axis = 0; axis < 6; ++axis)
+        REQUIRE(std::fabs(hierarchyBounds.value()[axis] - expectedHierarchyBounds[axis]) < 1e-4f);
+    auto hierarchyScene = asset_graphics::EvpackStaticPrefab::prepareScene(hierarchyOwner, *sceneGraphics,
+                                                                           PrefabRootPose::ReplaceTranslationRotation);
+    REQUIRE(hierarchyScene.ok());
+    const auto& hierarchyMatrix = hierarchyScene.value()->parts()[0].localTransform;
+    REQUIRE(hierarchyMatrix[0] == -2.f);
+    REQUIRE(hierarchyMatrix[5] == 3.f);
+    REQUIRE(hierarchyMatrix[10] == 4.f);
+    REQUIRE(hierarchyMatrix[12] == -2.f);
+    REQUIRE(hierarchyMatrix[13] == 6.f);
+    REQUIRE(hierarchyMatrix[14] == -12.f);
+    REQUIRE(hierarchyScene.value()->release().ok());
+    REQUIRE(hierarchyOwner->release().ok());
 }
 }  // namespace
+
+TEST_CASE("asset.import.unityStaticPrefabRendersOwnedEcsInstances") {
+    auto prepared = prepareUnityProjectImport(trianglePrefab());
+    REQUIRE(prepared.ok());
+    auto encoded = asset::buildEvaArchive(prepared.value().manifest, prepared.value().entries);
+    REQUIRE(encoded.ok());
+    auto archive = asset::parseEvaArchive(encoded.value());
+    REQUIRE(archive.ok());
+    asset::AssetCookProfile profile{
+        {"win32", "x86_64", "vulkan", {"rgba8"}, "spirv-1.6", "high", {}}, asset::CookPublication::LocalInspection, 16};
+    auto cooked = asset::cookEvaToEvpack(archive.value(), profile);
+    REQUIRE(cooked.ok());
+    auto pack = asset::parseEvpack(cooked.value().bytes);
+    REQUIRE(pack.ok());
+    asset::EvpackResourceReader reader(std::make_shared<const asset::Evpack>(std::move(pack).takeValue()));
+    auto*                       testWindow = window::Window::create();
+    auto*                       gfx        = graphics::Graphics::create();
+    window::WindowSettings      settings;
+    settings.width  = 320;
+    settings.height = 240;
+    REQUIRE(testWindow->setWindowSettings(settings));
+    gfx->setScreenReadbackEnabled(true);
+    gfx->setBackgroundColor(graphics::Color(.04f, .06f, .09f, 1.f));
+    auto* camera = graphics::Camera3D::createCamera();
+    camera->setEye(-2.f, 2.f, -3.f);
+    camera->setTarget(0.f, 0.f, 0.f);
+    camera->setAmbient(1.f, 1.f, 1.f);
+    asset_graphics::GraphicsMeshFactoryAdapter  meshes(*gfx);
+    asset_graphics::GraphicsImageFactoryAdapter images(*gfx);
+    const asset::EvpackCapabilities capabilities{"win32", "x86_64", "vulkan", {"rgba8"}, {"spirv-1.6"}, {"high"}, {}};
+    auto                            loaded = asset_graphics::EvpackStaticPrefab::load(
+        reader, meshes, images, prepared.value().manifest.entrypoints.at("Assets/tile.prefab"), capabilities);
+    REQUIRE(loaded.ok());
+    auto owner       = std::shared_ptr<asset_graphics::EvpackStaticPrefab>(std::move(loaded).takeValue());
+    auto preparation = asset_graphics::EvpackStaticPrefab::prepareScene(owner, *gfx);
+    REQUIRE(preparation.ok());
+    std::array<float, 16> world{1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, -.5f, -2.5f, 3.5f, 1.f};
+    auto instance = asset_graphics::StaticPrefabRenderInstance::create(std::move(preparation).takeValue(), world);
+    REQUIRE(instance.ok());
+    for (const char* feature : {"shadow", "gbuffer", "ao", "gi", "aa", "atmosphere", "msaa", "visResolve", "gpuDriven"})
+        gfx->getRenderControl()->disable(feature);
+    auto render = [&] {
+        for (int frame = 0; frame < 4; ++frame) {
+            graphics::RenderSystem3D::render(*gfx);
+            graphics::RenderSystem::render(*gfx);
+        }
+    };
+    render();
+    std::vector<std::uint8_t> pixels;
+    pixels.reserve(settings.width * settings.height * 4);
+    int redPixels = 0;
+    for (int y = 0; y < settings.height; ++y)
+        for (int x = 0; x < settings.width; ++x) {
+            const auto color = gfx->getPixel(x, y);
+            if (color.r > color.g + .15f && color.r > color.b + .15f) ++redPixels;
+            for (float channel : {color.r, color.g, color.b, color.a})
+                pixels.push_back(static_cast<std::uint8_t>(std::lround(std::clamp(channel, 0.f, 1.f) * 255.f)));
+        }
+    REQUIRE(redPixels > 100);
+    auto png = asset::detail::encodeSourcePng(settings.width, settings.height, pixels, 4 * 1024 * 1024);
+    REQUIRE(png.ok());
+    const auto outputPath = std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out" /
+                            ("static-prefab-owned-" + gfx->getBackendName() + ".png");
+    std::filesystem::create_directories(outputPath.parent_path());
+    std::ofstream output(outputPath, std::ios::binary);
+    output.write(reinterpret_cast<const char*>(png.value().data()), std::streamsize(png.value().size()));
+    REQUIRE(output.good());
+    REQUIRE(instance.value()->release().ok());
+    render();
+    int remainingRed = 0;
+    for (int y = 0; y < settings.height; y += 2)
+        for (int x = 0; x < settings.width; x += 2) {
+            const auto color = gfx->getPixel(x, y);
+            if (color.r > color.g + .15f && color.r > color.b + .15f) ++remainingRed;
+        }
+    REQUIRE(remainingRed == 0);
+    {
+        auto* sceneHostSystem = eve::scene::Scene::create();
+        auto* baseSink        = cap::query<IProcgenSceneSink>();
+        REQUIRE(baseSink != nullptr);
+        asset_graphics::ProcgenPrefabSceneSink sink(*gfx, *baseSink);
+        REQUIRE(sink.admit(owner).ok());
+        REQUIRE(!sink.admit(owner).ok());
+        REQUIRE(!owner->release().ok());
+        struct RestoreSceneSink {
+            IProcgenSceneSink* previous;
+            ~RestoreSceneSink() { cap::provide<IProcgenSceneSink>(previous); }
+        } restore{baseSink};
+        cap::provide<IProcgenSceneSink>(&sink);
+        procgen::Procgen proc;
+        auto             pointHandle = proc.newPointSetHandle();
+        REQUIRE(pointHandle.ok());
+        auto points = proc.resolvePointSet(pointHandle.value());
+        REQUIRE(points.isBound());
+        const int point = points->add(-.5f, -2.5f, 3.5f);
+        REQUIRE(points->trySetPointId(point, 1001).ok());
+        points->setStringAttribute(point, "asset", owner->sourceAsset().format());
+        points->setStringAttribute(point, "asset_build_id", owner->sourceBuildId().format());
+        REQUIRE(proc.publishInstances("prefab-facilities", pointHandle.value(), "asset", "").ok());
+        REQUIRE(sink.rendererCount("prefab-facilities") == 1u);
+        const auto           revision = sink.batchRevision("prefab-facilities");
+        ProcgenInstanceDelta oversizedDelta;
+        oversizedDelta.baseRevision   = revision;
+        oversizedDelta.targetRevision = revision + 1;
+        oversizedDelta.targetPointOrder.resize(65537, 1001);
+        auto oversized = sink.applyDelta("prefab-facilities", oversizedDelta);
+        REQUIRE(!oversized.ok());
+        REQUIRE(oversized.error() != nullptr);
+        REQUIRE(oversized.error()->code() == DiagnosticCode::PreconditionViolation);
+        REQUIRE(sink.batchRevision("prefab-facilities") == revision);
+        procgen::RuntimeGeneration savedRuntime(404);
+        REQUIRE(savedRuntime.addLevel(10.f, 6.f, 1.5f) == 0);
+        savedRuntime.updateSource(-5.f, 5.f, 1.f, 0.f);
+        std::unique_ptr<procgen::ProcgenCellRequest> generated(savedRuntime.nextGenerate());
+        REQUIRE(generated != nullptr);
+        REQUIRE(savedRuntime.completeGeneration(generated.get(), points.operator->()));
+        const auto persistedCell =
+            savedRuntime.serializeCell(generated->getLevel(), generated->getX(), generated->getZ());
+        REQUIRE(!persistedCell.empty());
+        auto redMask = [&] {
+            std::vector<bool> mask;
+            for (int y = 0; y < settings.height; y += 2)
+                for (int x = 0; x < settings.width; x += 2) {
+                    const auto color = gfx->getPixel(x, y);
+                    mask.push_back(color.r > color.g + .15f && color.r > color.b + .15f);
+                }
+            return mask;
+        };
+        render();
+        const auto visible = redMask();
+        REQUIRE(std::count(visible.begin(), visible.end(), true) > 25);
+        pixels.clear();
+        for (int y = 0; y < settings.height; ++y)
+            for (int x = 0; x < settings.width; ++x) {
+                const auto color = gfx->getPixel(x, y);
+                for (float channel : {color.r, color.g, color.b, color.a})
+                    pixels.push_back(static_cast<std::uint8_t>(std::lround(std::clamp(channel, 0.f, 1.f) * 255.f)));
+            }
+        auto batchPng = asset::detail::encodeSourcePng(settings.width, settings.height, pixels, 4 * 1024 * 1024);
+        REQUIRE(batchPng.ok());
+        const auto batchPath = std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out" /
+                               ("static-prefab-batch-" + gfx->getBackendName() + ".png");
+        std::ofstream batchOutput(batchPath, std::ios::binary);
+        batchOutput.write(reinterpret_cast<const char*>(batchPng.value().data()),
+                          std::streamsize(batchPng.value().size()));
+        REQUIRE(batchOutput.good());
+        auto staleBuild = owner->sourceBuildId().format();
+        staleBuild[0]   = staleBuild[0] == '0' ? '1' : '0';
+        points->setStringAttribute(point, "asset_build_id", staleBuild);
+        REQUIRE(!proc.publishInstances("prefab-facilities", pointHandle.value(), "asset", "").ok());
+        REQUIRE(sink.batchRevision("prefab-facilities") == revision);
+        render();
+        REQUIRE(redMask() == visible);
+        ProcgenInstanceDesc moved;
+        moved.id              = "pcg-id-1001";
+        moved.sourcePointId   = 1001;
+        moved.x               = 10.f;
+        moved.y               = -2.5f;
+        moved.z               = 3.5f;
+        moved.asset           = owner->sourceAsset().format();
+        moved.assetBinding    = ProcgenInstanceAssetBinding{owner->sourceAsset(), owner->sourceBuildId()};
+        auto missing          = moved;
+        missing.id            = "missing-prefab";
+        missing.sourcePointId = 1002;
+        auto missingAsset     = AssetRef::parse("asset://018f0b7e-6e50-7a10-8c22-2c8f8e3dd191");
+        REQUIRE(missingAsset.ok());
+        missing.asset               = missingAsset.value().format();
+        missing.assetBinding->asset = missingAsset.value();
+        REQUIRE(
+            !sink.replaceBatches({{"prefab-facilities", revision + 1, {moved}}, {"missing-facilities", 1, {missing}}})
+                 .ok());
+        REQUIRE(!sceneHostSystem->findHost("__pcg/missing-facilities").ok());
+        REQUIRE(sink.batchRevision("prefab-facilities") == revision);
+        REQUIRE(sink.pendingRetirements() == 0u);
+        render();
+        REQUIRE(redMask() == visible);
+        REQUIRE(!sink.replaceBatchesCoordinated({{"prefab-facilities", revision + 1, {moved}}},
+                                                [] {
+                                                    return Result<void>::failure(Diagnostic::error(
+                                                        DiagnosticCode::Failed, "injected prepared owner failure"));
+                                                })
+                     .ok());
+        REQUIRE(sink.batchRevision("prefab-facilities") == revision);
+        REQUIRE(sink.pendingRetirements() == 0u);
+        render();
+        REQUIRE(redMask() == visible);
+        ProcgenInstanceDelta delta;
+        delta.baseRevision     = revision;
+        delta.targetRevision   = revision + 1;
+        delta.updated          = {moved};
+        delta.targetPointOrder = {1001};
+        REQUIRE(sink.applyDelta("prefab-facilities", delta).ok());
+        REQUIRE(sink.pendingRetirements() == 1u);
+        REQUIRE(sink.collectRetired().ok());
+        REQUIRE(!owner->release().ok());
+        render();
+        const auto hidden = redMask();
+        REQUIRE(std::count(hidden.begin(), hidden.end(), true) == 0);
+        procgen::RuntimeGeneration restoredRuntime(404);
+        REQUIRE(restoredRuntime.addLevel(10.f, 6.f, 1.5f) == 0);
+        REQUIRE(restoredRuntime.deserializeCell(persistedCell));
+        std::unique_ptr<procgen::PointSet> restoredPoints(
+            restoredRuntime.getCellOutput(generated->getLevel(), generated->getX(), generated->getZ()));
+        REQUIRE(restoredPoints != nullptr);
+        *points.operator->() = *restoredPoints;
+        REQUIRE(proc.publishInstances("prefab-facilities", pointHandle.value(), "asset", "").ok());
+        REQUIRE(sink.collectRetired().ok());
+        render();
+        REQUIRE(redMask() == visible);
+        auto                              reimportRequest = trianglePrefab();
+        const std::array<std::uint8_t, 4> greenPixel{0, 255, 0, 255};
+        auto                              greenImage = asset::detail::encodeSourcePng(1, 1, greenPixel, 4096);
+        REQUIRE(greenImage.ok());
+        reimportRequest.files["Assets/pixel.png"] = std::move(greenImage).takeValue();
+        auto&             prefabBytes             = reimportRequest.files.at("Assets/tile.prefab");
+        std::string       changedPrefab(prefabBytes.begin(), prefabBytes.end());
+        const std::string oldScale      = "m_LocalScale: {x: 1, y: 1, z: 1}";
+        const auto        scalePosition = changedPrefab.find(oldScale);
+        REQUIRE(scalePosition != std::string::npos);
+        changedPrefab.replace(scalePosition, oldScale.size(), "m_LocalScale: {x: 2, y: 1, z: 1}");
+        prefabBytes.assign(changedPrefab.begin(), changedPrefab.end());
+        auto reimported = prepareUnityProjectImport(reimportRequest);
+        REQUIRE(reimported.ok());
+        auto replacementEva = asset::buildEvaArchive(reimported.value().manifest, reimported.value().entries);
+        REQUIRE(replacementEva.ok());
+        auto replacementArchive = asset::parseEvaArchive(replacementEva.value());
+        REQUIRE(replacementArchive.ok());
+        auto replacementCook = asset::cookEvaToEvpack(replacementArchive.value(), profile);
+        REQUIRE(replacementCook.ok());
+        auto replacementPack = asset::parseEvpack(replacementCook.value().bytes);
+        REQUIRE(replacementPack.ok());
+        asset::EvpackResourceReader replacementReader(
+            std::make_shared<const asset::Evpack>(std::move(replacementPack).takeValue()));
+        REQUIRE(reimported.value().manifest.entrypoints.at("Assets/tile.prefab") == owner->sourceAsset());
+        auto replacementLoad = asset_graphics::EvpackStaticPrefab::load(replacementReader, meshes, images,
+                                                                        owner->sourceAsset(), capabilities);
+        REQUIRE(replacementLoad.ok());
+        auto replacementOwner =
+            std::shared_ptr<asset_graphics::EvpackStaticPrefab>(std::move(replacementLoad).takeValue());
+        REQUIRE(replacementOwner->sourceBuildId() != owner->sourceBuildId());
+        asset_graphics::PrefabBoundsCatalog versionBounds;
+        REQUIRE(versionBounds.add(*owner).ok());
+        REQUIRE(versionBounds.add(*replacementOwner).ok());
+        auto oldBounds = versionBounds.localBounds(owner->sourceAsset(), owner->sourceBuildId());
+        auto newBounds = versionBounds.localBounds(owner->sourceAsset(), replacementOwner->sourceBuildId());
+        REQUIRE(oldBounds.ok());
+        REQUIRE(newBounds.ok());
+        REQUIRE(newBounds.value()[0] < oldBounds.value()[0]);
+        REQUIRE(sink.admit(replacementOwner).ok());
+        REQUIRE(!sink.admit(replacementOwner).ok());
+        REQUIRE(!replacementOwner->release().ok());
+        render();
+        REQUIRE(redMask() == visible);
+        points->setStringAttribute(point, "asset_build_id", replacementOwner->sourceBuildId().format());
+        REQUIRE(proc.publishInstances("prefab-facilities", pointHandle.value(), "asset", "").ok());
+        REQUIRE(sink.collectRetired().ok());
+        REQUIRE(!owner->release().ok());
+        render();
+        int greenPixels = 0;
+        pixels.clear();
+        for (int y = 0; y < settings.height; ++y)
+            for (int x = 0; x < settings.width; ++x) {
+                const auto color = gfx->getPixel(x, y);
+                if (color.g > color.r + .15f && color.g > color.b + .15f) ++greenPixels;
+                for (float channel : {color.r, color.g, color.b, color.a})
+                    pixels.push_back(static_cast<std::uint8_t>(std::lround(std::clamp(channel, 0.f, 1.f) * 255.f)));
+            }
+        REQUIRE(greenPixels > 100);
+        const auto reimportMask = redMask();
+        REQUIRE(std::count(reimportMask.begin(), reimportMask.end(), true) == 0);
+        auto reimportPng = asset::detail::encodeSourcePng(settings.width, settings.height, pixels, 4 * 1024 * 1024);
+        REQUIRE(reimportPng.ok());
+        const auto reimportPath = std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out" /
+                                  ("static-prefab-reimport-" + gfx->getBackendName() + ".png");
+        std::ofstream reimportOutput(reimportPath, std::ios::binary);
+        reimportOutput.write(reinterpret_cast<const char*>(reimportPng.value().data()),
+                             std::streamsize(reimportPng.value().size()));
+        REQUIRE(reimportOutput.good());
+        *points.operator->() = *restoredPoints;
+        REQUIRE(proc.publishInstances("prefab-facilities", pointHandle.value(), "asset", "").ok());
+        REQUIRE(sink.collectRetired().ok());
+        render();
+        REQUIRE(redMask() == visible);
+        points->setPosition(point, .5f, -.5f, .5f);
+        points->setStringAttribute(point, "asset_root_pose", "placement");
+        REQUIRE(proc.publishInstances("prefab-facilities", pointHandle.value(), "asset", "").ok());
+        REQUIRE(sink.collectRetired().ok());
+        render();
+        REQUIRE(redMask() == visible);
+        procgen::RuntimeGeneration placedRuntime(404);
+        REQUIRE(placedRuntime.addLevel(10.f, 6.f, 1.5f) == 0);
+        placedRuntime.updateSource(-5.f, 5.f, 1.f, 0.f);
+        std::unique_ptr<procgen::ProcgenCellRequest> placedRequest(placedRuntime.nextGenerate());
+        REQUIRE(placedRequest != nullptr);
+        REQUIRE(placedRuntime.completeGeneration(placedRequest.get(), points.operator->()));
+        const auto placedCell =
+            placedRuntime.serializeCell(placedRequest->getLevel(), placedRequest->getX(), placedRequest->getZ());
+        REQUIRE(!placedCell.empty());
+        REQUIRE(proc.removeInstances("prefab-facilities").ok());
+        REQUIRE(sink.collectRetired().ok());
+        render();
+        const auto removedPlacedMask = redMask();
+        REQUIRE(std::count(removedPlacedMask.begin(), removedPlacedMask.end(), true) == 0);
+        procgen::RuntimeGeneration placedRestore(404);
+        REQUIRE(placedRestore.addLevel(10.f, 6.f, 1.5f) == 0);
+        REQUIRE(placedRestore.deserializeCell(placedCell));
+        std::unique_ptr<procgen::PointSet> placedPoints(
+            placedRestore.getCellOutput(placedRequest->getLevel(), placedRequest->getX(), placedRequest->getZ()));
+        REQUIRE(placedPoints != nullptr);
+        REQUIRE(placedPoints->getStringAttribute(point, "asset_root_pose", "") == "placement");
+        REQUIRE(placedPoints->getStringAttribute(point, "asset_build_id", "") == owner->sourceBuildId().format());
+        REQUIRE(placedPoints->points()[point].id == 1001u);
+        *points.operator->() = *placedPoints;
+        REQUIRE(proc.publishInstances("prefab-facilities", pointHandle.value(), "asset", "").ok());
+        REQUIRE(sink.collectRetired().ok());
+        render();
+        REQUIRE(redMask() == visible);
+        pixels.clear();
+        for (int y = 0; y < settings.height; ++y)
+            for (int x = 0; x < settings.width; ++x) {
+                const auto color = gfx->getPixel(x, y);
+                for (float channel : {color.r, color.g, color.b, color.a})
+                    pixels.push_back(static_cast<std::uint8_t>(std::lround(std::clamp(channel, 0.f, 1.f) * 255.f)));
+            }
+        auto placedPng = asset::detail::encodeSourcePng(settings.width, settings.height, pixels, 4 * 1024 * 1024);
+        REQUIRE(placedPng.ok());
+        const auto placedPath = std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out" /
+                                ("static-prefab-placement-restore-" + gfx->getBackendName() + ".png");
+        std::ofstream placedOutput(placedPath, std::ios::binary);
+        placedOutput.write(reinterpret_cast<const char*>(placedPng.value().data()),
+                           std::streamsize(placedPng.value().size()));
+        REQUIRE(placedOutput.good());
+        const auto placedRevision = sink.batchRevision("prefab-facilities");
+        points->setStringAttribute(point, "asset_root_pose", "unknown");
+        REQUIRE(!proc.publishInstances("prefab-facilities", pointHandle.value(), "asset", "").ok());
+        REQUIRE(sink.batchRevision("prefab-facilities") == placedRevision);
+        render();
+        REQUIRE(redMask() == visible);
+        REQUIRE(proc.removeInstances("prefab-facilities").ok());
+        REQUIRE(sink.rendererCount("prefab-facilities") == 0u);
+        REQUIRE(sink.pendingRetirements() == 1u);
+        REQUIRE(sink.collectRetired().ok());
+        REQUIRE(!owner->release().ok());
+        REQUIRE(!replacementOwner->release().ok());
+        REQUIRE(sink.release().ok());
+        REQUIRE(replacementOwner->release().ok());
+        REQUIRE(versionBounds.localBounds(owner->sourceAsset(), replacementOwner->sourceBuildId()).ok());
+        REQUIRE(proc.releasePointSet(pointHandle.value()).ok());
+    }
+    REQUIRE(owner->release().ok());
+    testWindow->close();
+}
 
 TEST_CASE("asset.import.unityFbxHashesNodeNameAndProducesCanonicalMesh") {
     auto             request = triangleFbx();

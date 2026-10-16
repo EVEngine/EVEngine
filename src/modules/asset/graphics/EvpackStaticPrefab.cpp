@@ -4,6 +4,7 @@
 #include "asset/graphics/EvpackGraphicsLoader.h"
 #include "asset/graphics/EvpackImageLoader.h"
 #include "asset/scene/EvpackSceneTemplateLoader.h"
+#include "common/Assert.h"
 #include "graphics/Graphics.h"
 #include "graphics/Material.h"
 
@@ -13,8 +14,10 @@
 #include <functional>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <limits>
 #include <map>
 #include <numeric>
+#include <optional>
 
 namespace eve::asset_graphics {
 namespace {
@@ -27,9 +30,16 @@ struct EvpackStaticPrefab::Impl {
     // Factory ABI leases: only passed back to the same factories or synchronous draw calls.
     std::map<std::string, graphics::Mesh*>    meshLeases;
     std::map<std::string, std::vector<uint32_t>> meshUvSets;
+    std::map<std::string, std::array<float, 6>>  meshBounds;
+    std::array<float, 6>                         localBounds{};
+    std::array<float, 6>                         placementBounds{};
+    bool                                         hasLocalBounds = false;
+    std::optional<AssetRef>                      sourceAsset;
+    PersistentId                                 sourceBuild;
     std::map<std::string, graphics::Texture*> imageLeases;
     struct Draw {
         glm::mat4          transform;
+        glm::mat4          placementTransform;
         graphics::Mesh*    mesh;
         graphics::Texture* image;
         MaterialData       material;
@@ -40,14 +50,123 @@ struct EvpackStaticPrefab::Impl {
     std::vector<std::unique_ptr<graphics::Material>> gpuMaterials;
     graphics::Graphics* gpuGraphics = nullptr;
     bool              released = false;
+    std::size_t                                      resourcePins = 0;
 };
+StaticPrefabResourcePin::StaticPrefabResourcePin(std::shared_ptr<EvpackStaticPrefab> owner)
+    : owner_(std::move(owner)) {}
+StaticPrefabResourcePin::~StaticPrefabResourcePin() {
+    EV_ASSERT(owner_->impl_->resourcePins > 0, "prefab resource pin must be balanced");
+    --owner_->impl_->resourcePins;
+}
+Result<std::unique_ptr<StaticPrefabResourcePin>> EvpackStaticPrefab::pinResources(
+    const std::shared_ptr<EvpackStaticPrefab>& owner) {
+    using Output = Result<std::unique_ptr<StaticPrefabResourcePin>>;
+    if (!owner || owner->impl_->released || owner->impl_->resourcePins == std::numeric_limits<std::size_t>::max())
+        return Output::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                              "prefab resource pin requires live resources and available pin capacity"));
+    auto pin = std::unique_ptr<StaticPrefabResourcePin>(new StaticPrefabResourcePin(owner));
+    ++owner->impl_->resourcePins;
+    return Output::success(std::move(pin));
+}
+struct PreparedStaticPrefabScene::Impl {
+    std::shared_ptr<EvpackStaticPrefab>              owner;
+    graphics::Graphics&                              graphics;
+    std::vector<std::unique_ptr<graphics::Material>> materials;
+    std::vector<StaticPrefabScenePart>               parts;
+    bool                                             pinned = false;
+};
+PreparedStaticPrefabScene::PreparedStaticPrefabScene(std::unique_ptr<Impl> impl) : impl_(std::move(impl)) {}
+PreparedStaticPrefabScene::~PreparedStaticPrefabScene() {
+    auto released = release();
+    if (!released.ok())
+        std::fprintf(stderr, "prefab scene preparation cleanup failed: %s\n", released.status().describe().c_str());
+}
+const std::vector<StaticPrefabScenePart>& PreparedStaticPrefabScene::parts() const noexcept { return impl_->parts; }
+Result<void>                              PreparedStaticPrefabScene::release() {
+    for (const auto& material : impl_->materials) {
+        auto released = impl_->graphics.gpuDrivenReleaseMaterialRecord(material.get());
+        if (!released.ok()) return released;
+    }
+    impl_->parts.clear();
+    impl_->materials.clear();
+    if (impl_->pinned) {
+        --impl_->owner->impl_->resourcePins;
+        impl_->pinned = false;
+    }
+    impl_->owner.reset();
+    return Result<void>::success();
+}
+Result<std::unique_ptr<PreparedStaticPrefabScene>> EvpackStaticPrefab::prepareScene(
+    const std::shared_ptr<EvpackStaticPrefab>& owner, graphics::Graphics& graphics, PrefabRootPose rootPose) {
+    if (rootPose != PrefabRootPose::Authored && rootPose != PrefabRootPose::ReplaceTranslationRotation)
+        return Result<std::unique_ptr<PreparedStaticPrefabScene>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown prefab root pose"));
+    if (!owner || owner->impl_->released)
+        return Result<std::unique_ptr<PreparedStaticPrefabScene>>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "prefab scene preparation requires live resources"));
+    if (owner->impl_->draws.size() > 65536 || owner->impl_->resourcePins == std::numeric_limits<std::size_t>::max())
+        return Result<std::unique_ptr<PreparedStaticPrefabScene>>::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation, "prefab scene preparation budget exceeded"));
+    auto candidate = std::unique_ptr<PreparedStaticPrefabScene>(new PreparedStaticPrefabScene(
+        std::make_unique<PreparedStaticPrefabScene::Impl>(PreparedStaticPrefabScene::Impl{owner, graphics})));
+    for (const auto& draw : owner->impl_->draws) {
+        if (draw.material.vegetationSurface)
+            return Result<std::unique_ptr<PreparedStaticPrefabScene>>::failure(Diagnostic::error(
+                DiagnosticCode::Unsupported, "TVE prefab scene parts require the vegetation deformation adapter"));
+        auto material = std::make_unique<graphics::Material>();
+        material->setTint(draw.material.color.r, draw.material.color.g, draw.material.color.b, draw.material.color.a);
+        material->setMetallic(draw.material.metallic);
+        material->setRoughness(draw.material.roughness);
+        material->setSurfaceMode(draw.material.transparent ? "transparent"
+                                 : draw.material.masked    ? "masked"
+                                                           : "opaque");
+        material->setDepthWrite(!draw.material.transparent);
+        material->setAlphaCutoff(draw.material.alphaCutoff);
+        material->setDoubleSided(draw.material.doubleSided);
+        material->setBlendMode(draw.material.blend == graphics::BlendMode::Premultiplied ? "premultiplied"
+                               : draw.material.blend == graphics::BlendMode::Additive    ? "additive"
+                               : draw.material.blend == graphics::BlendMode::Multiply    ? "multiply"
+                                                                                         : "alpha");
+        material->setAlbedoTexture(draw.image);
+        auto surface = material->setPbrSurface(draw.material.surface);
+        if (!surface.ok()) return Result<std::unique_ptr<PreparedStaticPrefabScene>>::failure(surface.status());
+        StaticPrefabScenePart part;
+        const auto&           local = rootPose == PrefabRootPose::Authored ? draw.transform : draw.placementTransform;
+        std::copy(glm::value_ptr(local), glm::value_ptr(local) + 16, part.localTransform.begin());
+        part.mesh           = draw.mesh;
+        part.material       = material.get();
+        part.castShadows    = draw.castShadows;
+        part.receiveShadows = draw.receiveShadows;
+        candidate->impl_->materials.push_back(std::move(material));
+        candidate->impl_->parts.push_back(part);
+    }
+    ++owner->impl_->resourcePins;
+    candidate->impl_->pinned = true;
+    return Result<std::unique_ptr<PreparedStaticPrefabScene>>::success(std::move(candidate));
+}
 EvpackStaticPrefab::EvpackStaticPrefab(std::unique_ptr<Impl> impl) : impl_(std::move(impl)) {}
 EvpackStaticPrefab::~EvpackStaticPrefab() {
     auto result = release();
     if (!result) std::fprintf(stderr, "asset prefab release failed: %s\n", result.error()->message().c_str());
 }
 std::size_t  EvpackStaticPrefab::drawCount() const noexcept { return impl_->draws.size(); }
+AssetRef                     EvpackStaticPrefab::sourceAsset() const { return *impl_->sourceAsset; }
+PersistentId                 EvpackStaticPrefab::sourceBuildId() const noexcept { return impl_->sourceBuild; }
+Result<std::array<float, 6>> EvpackStaticPrefab::localBounds(PrefabRootPose rootPose) const {
+    if (rootPose != PrefabRootPose::Authored && rootPose != PrefabRootPose::ReplaceTranslationRotation)
+        return Result<std::array<float, 6>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown prefab root pose"));
+    if (!impl_->hasLocalBounds)
+        return Result<std::array<float, 6>>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "prefab has no enabled renderer bounds", {}, {}, "asset.graphics.prefab"));
+    return Result<std::array<float, 6>>::success(rootPose == PrefabRootPose::Authored ? impl_->localBounds
+                                                                                      : impl_->placementBounds);
+}
 Result<void> EvpackStaticPrefab::release() {
+    if (impl_->resourcePins)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                       "prefab resource pins must be released before GPU resources"));
     impl_->released = true;
     if (impl_->gpuGraphics) {
         for (const auto& material : impl_->gpuMaterials) {
@@ -170,21 +289,38 @@ Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset
                                                                      const asset::EvpackCapabilities&   caps) {
     auto scene = asset_scene::EvpackSceneTemplateLoader(reader).load(ref, caps);
     if (!scene) return Result<std::unique_ptr<EvpackStaticPrefab>>::failure(scene.status());
+    auto build = reader.buildId();
+    if (!build.ok()) return Result<std::unique_ptr<EvpackStaticPrefab>>::failure(build.status());
     auto out =
         std::unique_ptr<EvpackStaticPrefab>(new EvpackStaticPrefab(std::make_unique<Impl>(Impl{meshes, images})));
+    out->impl_->sourceAsset = ref;
+    out->impl_->sourceBuild = build.value();
+    for (unsigned axis = 0; axis < 3; ++axis) {
+        out->impl_->localBounds[axis]         = std::numeric_limits<float>::max();
+        out->impl_->localBounds[axis + 3]     = std::numeric_limits<float>::lowest();
+        out->impl_->placementBounds[axis]     = std::numeric_limits<float>::max();
+        out->impl_->placementBounds[axis + 3] = std::numeric_limits<float>::lowest();
+    }
     std::map<SceneObjectId, glm::mat4>                     transforms;
-    std::function<void(const scene::NodeDesc&, glm::mat4)> walk = [&](const scene::NodeDesc& node, glm::mat4 parent) {
-        if (!node.visible) return;
-        auto local = glm::translate(glm::mat4(1), glm::vec3(node.x, node.y, node.z));
-        local      = glm::rotate(local, glm::radians(node.yaw), glm::vec3(0, 1, 0));
-        local      = glm::rotate(local, glm::radians(node.pitch), glm::vec3(1, 0, 0));
-        local      = glm::rotate(local, glm::radians(node.roll), glm::vec3(0, 0, 1));
-        local      = glm::scale(local, glm::vec3(node.sx, node.sy, node.sz));
-        auto world = parent * local;
-        transforms.emplace(node.persistentId, world);
-        for (const auto& child : node.children) walk(child, world);
-    };
-    walk(scene.value().root, glm::mat4(1));
+    std::map<SceneObjectId, glm::mat4>                                      placementTransforms;
+    std::function<void(const scene::NodeDesc&, glm::mat4, glm::mat4, bool)> walk =
+        [&](const scene::NodeDesc& node, glm::mat4 parent, glm::mat4 placedParent, bool root) {
+            if (!node.visible) return;
+            auto local = glm::translate(glm::mat4(1), glm::vec3(node.x, node.y, node.z));
+            local      = glm::rotate(local, glm::radians(node.yaw), glm::vec3(0, 1, 0));
+            local      = glm::rotate(local, glm::radians(node.pitch), glm::vec3(1, 0, 0));
+            local      = glm::rotate(local, glm::radians(node.roll), glm::vec3(0, 0, 1));
+            local      = glm::scale(local, glm::vec3(node.sx, node.sy, node.sz));
+            auto world = parent * local;
+            auto placed =
+                placedParent * (root ? glm::scale(glm::mat4(1), glm::vec3(node.sx, node.sy, node.sz)) : local);
+            transforms.emplace(node.persistentId, world);
+            placementTransforms.emplace(node.persistentId, placed);
+            for (const auto& child : node.children) walk(child, world, placed, false);
+        };
+    // The template decoder owns an identity-only synthetic container; its children
+    // are the authored source roots whose poses the placement convention replaces.
+    for (const auto& sourceRoot : scene.value().root.children) walk(sourceRoot, glm::mat4(1), glm::mat4(1), true);
     EvpackGraphicsLoader meshLoader(reader, meshes);
     EvpackImageLoader    imageLoader(reader, images);
     for (const auto& binding : scene.value().renderers) {
@@ -197,6 +333,7 @@ Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset
             if (!loaded) return Result<std::unique_ptr<EvpackStaticPrefab>>::failure(loaded.status());
             out->impl_->meshLeases.emplace(meshKey, loaded.value().mesh);
             out->impl_->meshUvSets.emplace(meshKey, loaded.value().availableTexcoordSets);
+            out->impl_->meshBounds.emplace(meshKey, loaded.value().localBounds);
         }
         graphics::Texture* image = nullptr;
         for (size_t role = 0; role < 11; role++) {
@@ -230,9 +367,29 @@ Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset
         auto validatedSurface = graphics::validatePbrSurface(parameters.value().surface);
         if (!validatedSurface) return Result<std::unique_ptr<EvpackStaticPrefab>>::failure(validatedSurface.status());
         image = parameters.value().surface.textures[0].texture;
-        out->impl_->draws.push_back({transforms.at(binding.object), out->impl_->meshLeases.at(meshKey), image,
-                                     std::move(parameters).takeValue(), binding.castShadows,
-                                     binding.receiveShadows});
+        const auto& bounds          = out->impl_->meshBounds.at(meshKey);
+        const auto& matrix          = transforms.at(binding.object);
+        const auto& placementMatrix = placementTransforms.at(binding.object);
+        for (unsigned corner = 0; corner < 8; ++corner) {
+            const auto p      = matrix * glm::vec4(bounds[(corner & 1) ? 3 : 0], bounds[(corner & 2) ? 4 : 1],
+                                                   bounds[(corner & 4) ? 5 : 2], 1.f);
+            const auto placed = placementMatrix * glm::vec4(bounds[(corner & 1) ? 3 : 0], bounds[(corner & 2) ? 4 : 1],
+                                                            bounds[(corner & 4) ? 5 : 2], 1.f);
+            for (unsigned axis = 0; axis < 3; ++axis) {
+                if (!std::isfinite(p[axis]) || !std::isfinite(placed[axis]))
+                    return Result<std::unique_ptr<EvpackStaticPrefab>>::failure(Diagnostic::error(
+                        DiagnosticCode::InvalidArgument, "transformed prefab bounds are not representable", {}, {},
+                        "asset.graphics.prefab"));
+                out->impl_->localBounds[axis]         = std::min(out->impl_->localBounds[axis], p[axis]);
+                out->impl_->localBounds[axis + 3]     = std::max(out->impl_->localBounds[axis + 3], p[axis]);
+                out->impl_->placementBounds[axis]     = std::min(out->impl_->placementBounds[axis], placed[axis]);
+                out->impl_->placementBounds[axis + 3] = std::max(out->impl_->placementBounds[axis + 3], placed[axis]);
+            }
+        }
+        out->impl_->hasLocalBounds = true;
+        out->impl_->draws.push_back({transforms.at(binding.object), placementTransforms.at(binding.object),
+                                     out->impl_->meshLeases.at(meshKey), image, std::move(parameters).takeValue(),
+                                     binding.castShadows, binding.receiveShadows});
     }
     return Result<std::unique_ptr<EvpackStaticPrefab>>::success(std::move(out));
 }

@@ -122,7 +122,8 @@ Result<TerrainMultiTileReport> applyTerrainProbesMultiTile(
     std::vector<TerrainOperationTile> descriptors;
     std::unordered_set<PointSet*> owners;
     for (const auto& tile : tiles) {
-        if (!tile.probes || !tile.heights || !owners.insert(tile.probes).second || !validRaster(*tile.heights))
+        if (!std::isfinite(tile.originY) || !tile.probes || !tile.heights || !owners.insert(tile.probes).second ||
+            !validRaster(*tile.heights))
             return Result<TerrainMultiTileReport>::failure(Diagnostic::error(
                 DiagnosticCode::InvalidArgument, "terrain.probes.multitile: distinct outputs and finite heights required"));
         descriptors.push_back({tile.name, tile.originX, tile.originZ, tile.width, tile.depth,
@@ -185,7 +186,7 @@ Result<TerrainMultiTileReport> applyTerrainProbesMultiTile(
                                                           mapping.operationY + lz - mapping.localY);
                     if (random.next(s.minimumFitness, 1) > strength) continue;
                     const double u = localX / tile->width, v = localZ / tile->depth;
-                    const double sampled = textureSample(*tile->heights, u, v) * s.heightScale;
+                    const double sampled = tile->originY + textureSample(*tile->heights, u, v) * s.heightScale;
                     double y = 0;
                     if (s.type == TerrainProbeType::Light) {
                         if (sampled <= s.seaLevel) continue;
