@@ -29,8 +29,6 @@ eve_declare_module(NAME sceneloader_editing LAYER 6
 eve_declare_module(NAME scene_editor LAYER 7 DEPS editor physics scene_editing OPTIONAL_DEPS scene
                    SCRIPT SceneEditorModule SLOT sceneEditor GROUP 3d web)
 
-eve_declare_module(NAME sceneloader_editor LAYER 7 DEPS editor sceneloader_editing GROUP 3d web)
-
 # L6 -- scene
 eve_declare_module(NAME sceneloader LIB EVSceneLoader LAYER 6 SCRIPT SceneLoader
                    DEPS action animation data filesystem graphics image model3d scene thread

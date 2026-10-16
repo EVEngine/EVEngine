@@ -776,6 +776,10 @@ public:
     image::ImageData *renderEntityIdMask(
         const std::vector<eve::graphics::Graphics::EntityIdDraw> &draws, const glm::mat4 &viewProj,
         int width, int height) override;
+    /** @brief Private-target synchronous opaque ID and float depth readback. */
+    [[nodiscard]] Result<VisibilityPixels> captureVisibilityPixels(const std::vector<EntityIdDraw> &draws,
+                                                                   const glm::mat4 &viewProj, int width,
+                                                                   int height) override;
     /** @brief Reads g buffer to image data. */
     image::ImageData *readGBufferToImageData(const std::string &name) override;
     /** @brief Reads decal layer to image data. */
@@ -1699,8 +1703,13 @@ private:
     vk::UniqueDescriptorSetLayout deferredLightingSetLayoutUnique;
     vk::PipelineLayout            deferredLightingPipelineLayout{};
     vk::Pipeline                  deferredLightingPipeline{};
-    vkb::GenericBuffer            deferredLightingUbo{};
-    vk::DescriptorSet             deferredLightingSet{};
+    // Reused only after the present model has waited for this frame slot.
+    // Graphics owns buffers; descriptor sets belong to descriptorPool.
+    struct DeferredLightingFrame {
+        vkb::GenericBuffer ubo;
+        vk::DescriptorSet  set{};
+    };
+    std::vector<DeferredLightingFrame> deferredLightingFrames;
     vk::Sampler                   deferredLightingSampler{};
     void createMesh3DGpuDrivenPipeline();
     /** @brief Per-frame set0 (dynamic Frame UBO + shadow ring offsets). */

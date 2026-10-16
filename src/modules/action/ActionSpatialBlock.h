@@ -2,7 +2,11 @@
 #include "common/Export.h"
 
 
-/** @file ActionSpatialBlock.h @brief Typed spatial payload shared by presentation action blocks. */
+/** @file ActionSpatialBlock.h
+ *  @brief Typed spatial payload shared by presentation action blocks.
+ *  @remarks L1 typed payload contract only — no domain mutation;
+ *           providers own handlers/sinks (`IActionNotifyProvider` / capabilities).
+ */
 
 #include "common/Result.h"
 #include "common/Value.h"

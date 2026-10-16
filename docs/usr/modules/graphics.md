@@ -2,17 +2,25 @@
 
 [English](../../en/usr/modules/graphics.md)
 
+`Mesh.getLocalBounds()` 返回标准 Result，其 value 为 `[minX,minY,minZ,maxX,maxY,maxZ]`。
+结果由 CPU 顶点计算，CPU morph baking 会更新边界；GPU 蒙皮和着色器位移不包含在内。
+无有限顶点时返回 NotFound。
+`eve.destroyRenderable3D(entityId,generation)` 在 render/owner thread 销毁当前世界的指定实体，
+不存在或 generation 过期返回 NotFound，不销毁 mesh。成功后不得再访问该实体脚本引用。
+场景链接保留完整世界矩阵，直接 TRS setter 切回本地模式；链接下一次推送重新更新派生矩阵。
+
 **脚本入口：** `eve.Graphics()`
 
 清屏、2D 图元、纹理、Canvas、摄像机和 3D 渲染。Camera2D/Camera3D 提供屏幕与世界坐标换算，供 2D/3D 拾取使用；形状命中测试见 [Math](math.md)，物理体查询见 [Physics](physics.md)。
 
 高级光照 / AO / GI / AA / 体积雾等见 [高级渲染与屏幕空间效果](graphics/rendering-effects.md)。实时雾气专册见 [graphics_fog](graphics_fog.md)。
 
-## 0.6 已知边界
+## 当前源码的能力边界
 
-下列能力在 0.6 **可以宣称并写进游戏**；未完成项保持显式 Unsupported / 文档边界，不得静默假实现。
+当前源码提供下列接口；实际可用性取决于构建和设备。此表不是发布版本或画面验收报告，
+未完成项保持显式 Unsupported / 文档边界，不得静默假实现。
 
-| 主题 | 0.6 已支持 | 已知边界（勿当作完成） |
+| 主题 | 当前接口 | 已知边界（勿当作完成） |
 |------|------------|------------------------|
 | 光照模式 | `RenderControl.setLightingMode("forwardPlus"\|"hybrid")`；桌面 preset 可切 Hybrid；半透明仍 Forward+ | ClassicScenes 像素对比与 FrameGraph 录制仍待补；Lavapipe/CI 默认 ForwardPlus |
 | 体积雾 / 体积光 | `Volumetric`、[实时雾气](graphics_fog.md)（MAC / ray march / froxel） | 可选：Froxel 绑真实 CSM shadow map、物体空间 AO / RTAO |
@@ -282,11 +290,17 @@ local effectiveOrder = r.getPartSortPriority(0);
 `Texture.setAlphaConvention("straight" | "premultiplied")` 声明，并通过
 `Texture.getAlphaConvention()` 查询。
 
-虚拟纹理材质通过 `setVirtualTexture(albedoAtlas, normalAtlas, pageTable,
-pageCountX, pageCountY, borderFraction)` 显式启用 atlas/page-table 路径；
-`usesVirtualTexture()` 可查询当前模式，`clearVirtualTexture()` 恢复传统材质贴图路径。
-三个纹理对象必须至少存活到材质停止使用它们为止；
-参数校验失败时 `setVirtualTexture()` 会抛出包含诊断信息的脚本异常。
+虚拟纹理由材质拥有并在绑定时自动流式驻留（对齐 UE5 RVT）。脚本只编写图层：
+
+```squirrel
+material.enableVirtualTexture(width, height, tileSize, borderSize, residentCapacity, maxDecodesPerUpdate);
+material.addVirtualTextureLayer(albedo, normal, uvScale, constantWeight, heightContrast);
+// 可选带权重图：addVirtualTextureLayerWeighted(albedo, normal, weight, ...)
+```
+
+`usesVirtualTexture()` 查询是否已进入 atlas/page-table 采样；`clearVirtualTexture()` 关闭。
+页反馈、解码、上传与页表发布不向外暴露，由 `render3D` → `Material.bind` 驱动。
+详见 `examples/virtual-texture-blending` 与 `docs/dev/virtual-texture-material-blending.md`。
 
 ### 高级渲染与屏幕空间效果
 
@@ -886,3 +900,33 @@ RGBA 模式任一通道命中即启用。`setMask(imageData)` 会复制像素，
 - `updateMeshVertices` 是显式动态上传：每次调用仍有线性转换/上传成本，内部复用转换数组与 GPU 缓冲容量，不扫描全数组判断是否相同。源数据的 owner 应只在数据变化时调用；无需额外 token/commit。
 - Groom 的 `update(dt)` 完整推进模拟；参数与可见性修改只记录变化。视图准备阶段（或直接 `draw` 的准备边界）合并几何刷新并复用同一网格。`getMesh` 等 getter 不触发刷新，返回最后发布结果；`rebuild` 是兼容的显式同步刷新。`Representation::None` 隐藏但保留网格以供再次显示复用。显式可见性掩码属于调用者当前视图，多视图时在各视图绘制前更新，不能跨视图复用最后一次掩码。
 - Groom 必须在其 Graphics owner 销毁前析构；析构移除准备回调。网格、纹理与 shader 仍由 Graphics 统一回收，不产生第二套所有权。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](graphics/api-reference.md)，使用前先确认本章的前置条件与生命周期。
+
+## 集成任务：从资源到一帧
+
+先在 init 解码 CPU 图像并创建 Texture，update 只改角色状态，render 按背景、世界、HUD 顺序提交。窗口 resize 后使用实际视口尺寸，设备重建后重建 GPU 资源。教程使用程序化纹理避免外部文件条件。3D 则先准备 Camera/Light/Renderable，再提交同一场景；曝光、阴影和后处理参数放在创建/设置阶段。昂贵的探针捕获和资源 upload 不混入每实体的 draw。
+
+完整项目：[examples/game-tutorial](../../../examples/game-tutorial/README.md)，
+其 [main.nut](../../../examples/game-tutorial/main.nut) 展示实际生命周期。
+先验证现有资产可加载，再换成自己的资源。测试失败、取消、资源缺失和旧 revision，
+不能只以脚本没有语法错误作为渲染或玩法正确的证据。
+详细流程：[专题](graphics/rendering-effects.md)。
+### AI 候选遮挡测量
+
+`eve.prepareSceneVisibility(request)` 返回 owning 单次查询，`query.measure(gfx)` 返回结构化 Result。
+MCP 可直接调用 `eve_scene_modify(action="visibility", target="object", params={width=256,height=256})`，
+或 `params={preview=true}` 测量现有物理摆放候选，无需提交或移动实时场景。
+结果包含 visibleFraction、fullPixels、visiblePixels、occluders 的 ObjectId/比例和深度歧义。
+只有 Measured 状态可作测量证据；少于四像素为 Unmeasurable，Unsupported 不得替代为包围盒估计。
+支持静态无贴图不透明网格，具体范围、预算和 schema 见 [遮挡接口](../../dev/2026-10-11-scene-visibility-validation.md)。
+
+visibility-request v2 支持对象局部区域 target（v1 字符串 target 仍支持），证据为 v2；
+区域用实际目标 depth 还原局部表面点筛选，多个区域复用对象 full pass。
+参见 [区域协议与验证](../../dev/2026-10-11-scene-regions-validation.md)。
+
+## 投影轮廓重叠
+
+作者文档 v4 支持 projected_overlap(subject, reference, minimum, maximum)，可附 reference 的 local_box region。测量两个对象独立真实投影 mask 的交集/reference 像素数；前后顺序及第三者遮挡不改变该构图指标。visibility-evidence v3 的 projectedOverlaps 返回交集像素、双方像素数及比例；任一 mask 少于 4 像素不可测。关系通过原有 relations/relation_begin/relation_check/relation_commit 正式路径使用，提交重新测量并一次撤销。详见 [契约与验证](../../dev/2026-10-12-scene-projected-overlap-validation.md)。

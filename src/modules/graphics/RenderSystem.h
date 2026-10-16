@@ -2,15 +2,14 @@
 #include "common/Export.h"
 
 
+#include <cstdint>
+#include <string>
+#include <vector>
 #include "common/ECS.h"
 #include "graphics/DrawItem2D.h"
 #include "graphics/Quad.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
-#include "zeroerr/assert.h"
-#include <cstdint>
-#include <string>
-#include <vector>
 
 namespace eve::graphics {
 
@@ -39,14 +38,15 @@ public:
 
     COMPONENT(Data, data)
 
-    static Camera2D *createCamera() {
-        Camera2D *c = Camera2D::create();
-        ASSERT(c != nullptr);
-        c->data()->entity = c;
-        c->data()->active = true;
-        ASSERT(c->data()->entity == c);
-        return c;
-    }
+    /**
+     * @brief Create an active camera in the current ECS table.
+     * @param table ECS table owning the result; defaults to the calling thread's current table.
+     * @return ECS-owned camera with its self reference initialized.
+     * @ownership ECS owns the result. @lifetime Valid until ECS destroys the entity.
+     * @note Call on the current ECS table owner thread; no external callbacks are invoked.
+     * @cost Allocates entity/component storage per camera creation.
+     */
+    static Camera2D *createCamera(ecs::Table &table = *ecs::current());
 
     void setAmbient(float r, float g, float b);
 

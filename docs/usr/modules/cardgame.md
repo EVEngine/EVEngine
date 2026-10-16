@@ -1,5 +1,8 @@
 # 卡牌游戏工具模块
 
+原生游戏可通过 [玩法支付组合](../GAMEPLAY_PAYMENT_COMPOSITION.md)
+替换 mana 费用、组合多个效果，并让卡牌消耗与 RTS 生产共用一次原子支付。
+
 **脚本入口：** `eve.Card()`
 
 面向卡牌游戏（炉石 / MTGA / 杀戮尖塔风格）的通用 UI 工具集：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、敌方手牌背面与偷看、费用不足置灰，以及 UiCard 同款的可实时调节布局参数。参考 [ycarowr/UiCard](https://github.com/ycarowr/UiCard) 的功能面实现，以 C++ 模块提供（布局/交互/渲染均在本模块内完成）。
@@ -129,3 +132,13 @@ Inspector。编辑器和游戏由此直接消费同一份 Card 运行时数据�
 **源码：** [`src/modules/card/`](../../../src/modules/card/)  
 **示例：** [`examples/cardgame/`](../../../examples/cardgame/)  
 **运行：** `make run/<platform>-debug GAME=examples/cardgame`
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](cardgame/api-reference.md)，使用前先确认本章的前置条件与生命周期。
+
+## 脚本事务组合
+
+`cards.stagePlay(batch, card)` 提交本域出牌规则、手牌消费、状态和费用，不依赖 RTS。
+
+生命周期、费用合并与完整示例见 [玩法事务组合](../GAMEPLAY_PAYMENT_COMPOSITION.md#script-composition)。

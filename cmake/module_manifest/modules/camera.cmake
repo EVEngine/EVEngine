@@ -14,4 +14,3 @@ eve_declare_module(NAME camera_editing LAYER 5
                    GROUP 3d web)
 
 # L7 -- camera
-eve_declare_module(NAME camera_editor LAYER 7 DEPS camera_editing domain_gizmo_editor editor GROUP 3d web)

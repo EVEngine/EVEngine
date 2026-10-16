@@ -46,17 +46,21 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 
 | 示例 | 演示能力 |
 |---|---|
+| [game-tutorial](game-tutorial/README.md) | EveScript import、输入与碰撞、程序纹理、HUD、热重载及严格版本化存档 |
+| [physics-force-lab](physics-force-lab/README.md) | 2D/3D 场效果、排水浮力、机翼升阻力与轮胎转动 |
 | [devlab](devlab/README.md) | 运行时即编辑器：`--debug` 下的控制台 / REPL、快照、暂停、热重载、错误切片、AI 面板（**旗舰示例，先跑这个**） |
 | [ai-game](ai-game/README.md) | AI 驾驶真实游戏：Agent 通过 MCP 读状态 / 改数值 / 截图 / 快照复位（含一键复现脚本 `agent_demo.py`） |
 | [ai-editor](ai-editor/README.md) | AI 现场生成项目专属编辑器：`eve mcp` 无头主机 + JSON View + ViewModel 双向绑定（含 `editor_demo.py`） |
 | [inspector-demo](inspector-demo/README.md) | DevTools 属性检视器：自动扫描脚本类及其属性并渲染为可编辑面板（MVVM） |
 | [editor-ui-gallery](editor-ui-gallery/README.md) | 可复用编辑器 UI 套件展示：图标字体、菜单栏、工具栏、搜索侧栏、分屏、卡片、表单控件与游戏内 HUD 共存 |
+| [editor-workspace-shell](editor-workspace-shell/README.md) | 固定 IDE 布局壳：AppFrame / DockArea / PanelFrame / TabContainer + WorkspaceLayoutShell，替代可任意拖动的多 Panel |
+| [editor-host-world](editor-host-world/README.md) | EditorHost 金样例：Action+Voxel Package autoMount + Mode A MCP attach（&lt;30 行胶水） |
 
 ## 入门与基础
 
 | 示例 | 演示能力 |
 |---|---|
-| [basic](basic/README.md) | Tilemap、Box2D 物理、粒子、基础 2D 绘制；另含两个 UI 变体（`ui_demo.nut` / `ui_component.nut`） |
+| [basic](basic/README.md) | 六步 2D 入门：矩形 → 图片 → 移动 → 物理 → 粒子 → 火焰；另含两个 UI 变体 |
 | [ecs](ecs/README.md) | 脚本 ECS（Component / Entity / System）；`gpu_main.nut` 为 compute shader 变体 |
 | [scene-ecs](scene-ecs/README.md) | 场景树与脚本 ECS 打通：SceneEntity 行为、eve.view 批量查询 |
 | [primitive-drawing](primitive-drawing/README.md) | 长期 `Primitive3D` 脚本 API：2D / 3D 基础图形绘制 |
@@ -79,9 +83,11 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [iso-grid-walk](iso-grid-walk/README.md) | 独立 2.5D PNG 经可插拔 pipeline 生成 TileSet，方格移动与 A* |
 | [hd2d-riverside](hd2d-riverside/README.md) | HD2D 河畔验收：真实像素素材、正交地图与 16 种地面图块 |
 | [dynamic-water-grid](dynamic-water-grid/README.md) | 双网格岸线、逐格守恒水量、等距连续水面 Shader 与素材替换契约 |
+| [interactive-shallow-water](interactive-shallow-water/README.md) | GPU 浅水方程交互水面：Saint-Venant 求解 + 角色腿部 Capsule 排水/涌浪 |
 | [metroidvania](metroidvania/README.md) | 物理驱动的横版动作游戏：连击、蹬墙跳、空中冲刺、Boss；脚本 ECS 实体 + System |
 | [commandery-rts](commandery-rts/README.md) | 将领行政 RTS：框选/编队移动、占领经济点、生产、军饷与叛乱；单位/炮弹为脚本 ECS |
 | [rts-sandbox](rts-sandbox/README.md) | RTS 端到端 Squirrel 组合剖面：命令、生产、编队与结算 |
+| [rts-cardfront](rts-cardfront/README.md) | 可玩联动任务：真实采集、工人建造、单位生产与原子卡牌技能 |
 | [hex-levels](hex-levels/README.md) | 六边形引擎功能测试关卡：寻路 / FOV / 光照 / 掉落 / WFC（31 关） |
 | [map-fog](map-fog/README.md) | 大地图迷雾：`MapFog` 双层云 + mask（解锁 / 选中 / 溶解） |
 | [i18n](i18n/README.md) | 本地化：翻译表、占位符、复数规则、热重载 |
@@ -120,6 +126,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [vrm-avatar](vrm-avatar/README.md) | VRM 角色加载与渲染示例 |
 | [voxel](voxel/README.md) | 流式体素地形 + 方块建造：脚本图集、流式 chunk 与 DDA 拾取 |
 | [voxel-terrain](voxel-terrain/README.md) | 体素引擎 + 地形生成：32³ chunk、贪婪矩形合并、视锥/视距裁剪、顶点 AO |
+| [ocean-voyage](ocean-voyage/README.md) | 可驾驶船只、三频段 FFT 广阔海洋、GPU 驻留绘制、浮力与尾浪泡沫 |
 | [fluid3d](fluid3d/README.md) | 体积流体实验室：19 个场景模式（水 / 黏性 / 烟雾 / 颗粒 / 射流 / 网格化 / 多相 / 热耦合 / 泡沫 / 移动 SDF / 重叠查询 / 尾流…）+ 70 余个 opt-in 数值验收脚本 |
 
 ## 程序化生成
@@ -141,6 +148,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [pcg-thunder-strike](pcg-thunder-strike/README.md) | 雷击事件：确定性 seed 决定落点 / 半径 / 音频片段索引，并逐帧驱动点光源衰减 |
 | [pcg-ui-scaler](pcg-ui-scaler/README.md) | UI 父级缩放：按画布高度自适应并夹紧到上限，求值结果直接落地成面板 |
 | [pcg-underwater](pcg-underwater/README.md) | 水下效果全链路：深度雾与颜色梯度、时间驱动后期、水焦散 cookie、水下材质、三路音频、粒子与触发体 |
+| [pcg-solar-planet](pcg-solar-planet/README.md) | SebLague Episode 02 行星实验：UV/Fibonacci/Cube/Icosphere + fBm/山脊/扭曲/陨石坑高度场 + 三平面着色与海洋壳 |
 | [roguelike-generator](roguelike-generator/README.md) | 种子驱动的房间走廊地牢：autotile、装饰、2D ↔ 2.5D |
 | [dungeon-generator-3d](dungeon-generator-3d/README.md) | `procgen.generate("level.roguelike", ...)` 的 3D 可配置呈现 |
 | [tree-generator](tree-generator/README.md) | 确定性树木：Weber-Penn / 空间殖民两种骨架算法 |
@@ -185,11 +193,15 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [attack-vfx](attack-vfx/README.md) | AttackVfx 综合演示：一份配方覆盖 mesh/trail/particles/camera/distortion/decal/audio/prefab，anticipate→impact→release，三套 elemental skin 自动轮播 |
 | [rendering-chain-lab](rendering-chain-lab/README.md) | 渲染链运行时对比：TAA / SSR / RTGI 与自动反射链开关（Space / R） |
 | [lighting-showcase](lighting-showcase/README.md) | 光照展示：环境光、有向光 CSM、聚光灯 perspective 阴影、彩色发光体，以及可选硬件光追 / 便携反射链 |
+| [modern-balcony](modern-balcony/README.md) | 现代阳台：SCAD 固定建筑、程序化花园、两款骨骼动画猫、大气天空与硬件光追 / 便携反射 |
+| [scad-living-room](scad-living-room/README.md) | SCAD 原创现代客厅：暖光、PBR 家具、CSM / 局部阴影、体积光、AO / SSGI / SSR / TAA 与默认硬件光追探测 |
 | [shader-live-preview](shader-live-preview/README.md) | 实时 GLSL 预览：编辑 `shaders/preview.frag` 保存即热重载 |
 | [virtual-texture-blending](virtual-texture-blending/README.md) | 虚拟纹理材质混合：常驻虚拟页 + fallback 槽与无缝 gutter |
 | [ink-arena](ink-arena/README.md) | GPU 表面喷墨：片元着色器向持久 RGBA8 画布绘制 |
 | [uv-texture-paint](uv-texture-paint/README.md) | 点击网格经 Box3D 三角形命中映射回模型 UV 并绘制贴图 |
 | [tensor](tensor/README.md) | 张量编译管线：策略网络 / conv / SDPA / 批量模拟（纯计算） |
+| [gpu-formation](gpu-formation/README.md) | 纯脚本 GPU 阵型：`eve.TF()` 齐次 matmul 部署 + compile 软追逐与阵型 morph |
+| [glass-crystal](glass-crystal/README.md) | 透明光学实验室：同材质水晶立方体、八面体与球体，双界面折射、Fresnel、厚度吸收、全内反射与 RGB 色散 |
 | [interior-mapping](interior-mapping/README.md) | 无室内几何的室内映射：预投影 Atlas、切线空间射线–AABB、伪透视缩放、过程化家具遮挡与掠射菲涅尔 |
 | [triplanar-decal](triplanar-decal/README.md) | 三维投射贴花：局部空间三平面混合解决单轴投射在立面上的拉伸，含混合锐度对照 |
 
@@ -197,6 +209,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 
 | 示例 | 演示能力 |
 |---|---|
+| [script-rule-provider](script-rule-provider/README.md) | 只写脚本接管原生扩展点：`eve.provider.publishFor` 回答 `IVehicleDamageModifier`，启动自检打印 `SCRIPT_RULE_PASS`（判据 J-1） |
 | [composable-editor](composable-editor/README.md) | 可组合编辑器 SDK：C++ Workspace、动态面板、MVVM、ECS，以及游戏/编辑器共享运行时 |
 | [scene-editor](scene-editor/README.md) | 可组合场景编辑：场景树、选择与属性联动 |
 | [scene-builder-game](scene-builder-game/README.md) | 游戏内嵌场景建造：运行时可组合的场景编辑会话 |

@@ -70,7 +70,7 @@ public:
     /** @brief Returns the cast progress. */
     static float getCastProgress(RPGActor *actor);  ///< 0..1，非读条状态返回 0
 
-    /** @brief 遍历 RPGActor::liveActors()：冷却倒计时 + 读条推进/结算。 */
+    /** @brief 遍历存活 RPGActor（liveActors / View）：冷却倒计时 + 读条推进/结算。 */
     static void update(float dt);
 
     /** @brief Polls cast events. */

@@ -18,6 +18,7 @@
 #include "transaction/Transaction.h"
 
 #include <string>
+#include <vector>
 
 namespace eve::rts {
 
@@ -72,6 +73,14 @@ struct RTSBuildRequest {
     Duration actionDelta = Duration::zero();
     /** @brief Optional stable transaction id; empty derives from the product. */
     std::string transactionId;
+    /**
+     * @brief Additional ruleset participants committed after effect and before Action/payment.
+     * @remarks Borrowed for this synchronous owner-thread call; entries must be
+     * non-null, unique and distinct from effect. Each must support compensation.
+     * Use a CardPlayParticipant here to consume a card with production atomically;
+     * evaluate its ruleset condition before admission. Do not nest another payment.
+     */
+    std::vector<transaction::ITransactionParticipant*> additionalEffects;
 };
 
 /** @brief Result of an accepted atomic RTS build/production command. */
@@ -80,6 +89,14 @@ struct RTSBuildReceipt {
     std::string                     orderId;
     std::string                     productionTaskId;
     action::ActionExecutionId       actionExecution;
+};
+
+/** @brief Owning staged build effects plus an owning diagnostic receipt projection.
+ * Queue/Action/account references remain borrowed through synchronous execution.
+ * No payment is performed by staging; the composition root merges costs. */
+struct RTSBuildStage {
+    std::vector<std::unique_ptr<transaction::ITransactionParticipant>> effects;
+    std::shared_ptr<RTSBuildReceipt>                                   output;
 };
 
 /** @brief Caller-owned inputs for atomically cancelling one paid production task. */
@@ -112,6 +129,11 @@ struct RTSCancelProductionReceipt {
  */
 class EVENGINE_API_DOMAINS RTSProductionActionAdapter final {
 public:
+    /** @brief Stage the same canonical build participants used by build.
+     * @cost Linear in queue size at prepare; staging defers commit and payment.
+     * @return Owning effects for one outer Coordinator; no nested transaction. */
+    [[nodiscard]] static Result<RTSBuildStage> stage(RTSBuildRequest request);
+
     /**
      * @brief Run the canonical build transaction against a live RTS Building.
      * @param building Borrowed Building whose Orders and Production components are authoritative.
@@ -126,13 +148,12 @@ public:
      * @param resourceReserves Faction/game-owned floors applied before the canonical transaction.
      * @return Complete build receipt, or a failure without partial queue/payment state.
      */
-    [[nodiscard]] static eve::Result<RTSBuildReceipt> build(Building& building, action::ActionRuntime& action,
-                                                            resource::IResourceAccount& account,
-                                                            resource::CostSpec cost, std::string product,
-                                                            Duration duration, std::string productionKind = "unit",
-                                                            int priority = 0, std::string transactionId = {},
-                                                            std::vector<RTSProductionResourceReserve> resourceReserves = {},
-                                                            eve::definition::DefinitionHandle definition = {});
+    [[nodiscard]] static eve::Result<RTSBuildReceipt> build(
+        Building& building, action::ActionRuntime& action, resource::IResourceAccount& account, resource::CostSpec cost,
+        std::string product, Duration duration, std::string productionKind = "unit", int priority = 0,
+        std::string transactionId = {}, std::vector<RTSProductionResourceReserve> resourceReserves = {},
+        eve::definition::DefinitionHandle                definition = {},
+        std::span<transaction::ITransactionParticipant*> effects    = {});
 
     /**
      * @brief Atomically enqueue an RTS build/production action and charge cost.

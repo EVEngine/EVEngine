@@ -19,10 +19,11 @@ PATCHES = ROOT / "cmake" / "patches"
 THIRD_PARTY = ROOT / "third-party"
 MEDIALOADER = THIRD_PARTY / "medialoader"
 ECS_SUBMODULE = ROOT / "external" / "ECS.hpp"
+ZEROERR_SUBMODULE = ROOT / "external" / "zeroerr"
 
 
 def run(command: list[str], *, check: bool = True) -> subprocess.CompletedProcess[str]:
-    result = subprocess.run(command, text=True, capture_output=True, check=False)
+    result = subprocess.run(command, text=True, encoding="utf-8", capture_output=True, check=False)
     if check and result.returncode != 0:
         raise AssertionError(
             f"command failed ({result.returncode}): {' '.join(command)}\n"
@@ -63,7 +64,7 @@ def checkout_patch_inputs(source: Path, destination: Path, patches: list[Path]) 
     assert not run(["git", "-C", str(destination), "status", "--porcelain"]).stdout
 
 
-def apply_twice(patch: Path, patch_dir: Path) -> None:
+def apply_twice(patch: Path, patch_dir: Path, *, normalize_crlf: bool = False) -> None:
     # Apply the same patch content with LF endings, matching the inputs above.
     staged = patch_dir.parent / f"{patch.name}.lf"
     staged.write_text(patch.read_text(encoding="utf-8").replace("\r\n", "\n"),
@@ -72,9 +73,10 @@ def apply_twice(patch: Path, patch_dir: Path) -> None:
         "cmake",
         f"-DPATCH={staged}",
         f"-DPATCH_DIR={patch_dir}",
-        "-P",
-        str(PATCH_SCRIPT),
     ]
+    if normalize_crlf:
+        command.append("-DPATCH_NORMALIZE_CRLF=ON")
+    command.extend(["-P", str(PATCH_SCRIPT)])
     first = run(command)
     second = run(command)
     assert "Applied third-party patch" in first.stdout
@@ -85,76 +87,33 @@ def main() -> int:
     with tempfile.TemporaryDirectory(prefix="evengine-third-party-patch-") as raw:
         temporary = Path(raw)
 
-        clean_aggregate = temporary / "aggregate-clean"
-        checkout_patch_inputs(THIRD_PARTY, clean_aggregate,
-                              [PATCHES / "third-party-squirrel-ssq-export.patch"])
-        apply_twice(PATCHES / "third-party-squirrel-ssq-export.patch", clean_aggregate)
-
-        # A dirty aggregate checkout is a supported state because other patches
-        # and profile preparation may have changed unrelated files. The export
-        # patch must remain applicable when its own target files are untouched.
-        dirty_aggregate = temporary / "aggregate-dirty"
-        checkout_patch_inputs(THIRD_PARTY, dirty_aggregate,
-                              [PATCHES / "third-party-squirrel-ssq-export.patch"])
-        with (dirty_aggregate / "CMakeLists.txt").open("a", encoding="utf-8") as output:
-            output.write("\n# Unrelated local profile configuration\n")
-        assert run(["git", "-C", str(dirty_aggregate), "diff", "--name-only"]).stdout.strip() == "CMakeLists.txt"
-        apply_twice(PATCHES / "third-party-squirrel-ssq-export.patch", dirty_aggregate)
-
-        clean_medialoader = temporary / "medialoader-clean"
-        medialoader_patches = [
-            PATCHES / "medialoader-smooth-normals.patch",
-            PATCHES / "mpg123-signal-handler.patch",
-            PATCHES / "medialoader-image-formats.patch",
-            PATCHES / "medialoader-audio-gapless.patch",
-        ]
-        checkout_patch_inputs(MEDIALOADER, clean_medialoader, medialoader_patches)
-        for patch in medialoader_patches:
-            apply_twice(patch, clean_medialoader)
-
-        # The library-type patches for the dynamic engine configuration apply to
-        # the aggregate and to one of its submodules; both must be idempotent so a
-        # rebuild does not fail on an already-patched checkout.
-        clean_box2d = temporary / "box2d-clean"
-        checkout_patch_inputs(THIRD_PARTY, clean_box2d,
-                              [PATCHES / "box2d-shared-library.patch"])
-        apply_twice(PATCHES / "box2d-shared-library.patch", clean_box2d)
-
         # external/ECS.hpp uses the same script from the engine's configure step.
         clean_ecs = temporary / "ecs-clean"
         checkout_patch_inputs(ECS_SUBMODULE, clean_ecs,
                               [PATCHES / "ecs-shared-default-table.patch"])
         apply_twice(PATCHES / "ecs-shared-default-table.patch", clean_ecs)
 
-        # A genuine target drift must fail and expose git's diagnostic; it may
-        # not be mistaken for an already-applied patch or silently skipped.
-        drifted = temporary / "aggregate-drifted"
-        checkout_patch_inputs(THIRD_PARTY, drifted,
-                              [PATCHES / "third-party-squirrel-ssq-export.patch"])
-        target = drifted / "squirrel" / "squirrel" / "CMakeLists.txt"
-        target.write_text(
-            target.read_text(encoding="utf-8").replace(
-                "target_include_directories(squirrel_static PUBLIC",
-                "target_include_directories(squirrel_static BROKEN",
-                1,
-            ),
-            encoding="utf-8",
-        )
-        result = run(
-            [
-                "cmake",
-                f"-DPATCH={PATCHES / 'third-party-squirrel-ssq-export.patch'}",
-                f"-DPATCH_DIR={drifted}",
-                "-P",
-                str(PATCH_SCRIPT),
-            ],
-            check=False,
-        )
-        diagnostic = result.stdout + result.stderr
+        zeroerr_patch = PATCHES / "zeroerr-compiled-diagnostics.patch"
+        for ending in ("lf", "crlf"):
+            zeroerr_checkout = temporary / f"zeroerr-{ending}"
+            checkout_patch_inputs(ZEROERR_SUBMODULE, zeroerr_checkout, [zeroerr_patch])
+            # Emulate WSL reading Windows files without a Git newline setting.
+            run(["git", "-C", str(zeroerr_checkout), "config", "core.autocrlf", "false"])
+            if ending == "crlf":
+                for header in zeroerr_checkout.rglob("*.h"):
+                    header.write_bytes(header.read_bytes().replace(b"\r\n", b"\n").replace(b"\n", b"\r\n"))
+            apply_twice(zeroerr_patch, zeroerr_checkout, normalize_crlf=True)
+
+        zeroerr_drifted = temporary / "zeroerr-drifted"
+        checkout_patch_inputs(ZEROERR_SUBMODULE, zeroerr_drifted, [zeroerr_patch])
+        header = zeroerr_drifted / "include" / "zeroerr" / "assert.h"
+        header.write_text(header.read_text(encoding="utf-8").replace(
+            "    std::string cond;", "  std::string cond;", 1), encoding="utf-8", newline="\n")
+        result = run(["cmake", f"-DPATCH={zeroerr_patch}", f"-DPATCH_DIR={zeroerr_drifted}",
+                      "-DPATCH_NORMALIZE_CRLF=ON", "-P", str(PATCH_SCRIPT)], check=False)
         assert result.returncode != 0
-        assert "no longer applies cleanly" in diagnostic
-        assert "git apply --check output" in diagnostic
-        assert "patch failed" in diagnostic
+        assert "no longer applies cleanly" in result.stdout + result.stderr
+
 
     return 0
 

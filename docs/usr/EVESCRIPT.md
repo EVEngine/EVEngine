@@ -15,6 +15,17 @@ EveScript 是 EVEngine 的游戏脚本语言。它以 Squirrel 为基础，保�
 [`.cursor/skills/evescript/SKILL.md`](../../.cursor/skills/evescript/SKILL.md)
 与 [AI 知识补偿](../dev/AI知识补偿.md)；运行时请先 `eve_api_search`，不要从 Unity C# 臆造 API。
 
+## 阅读路线
+
+第一次写游戏：第 1 节跑通工程 → 第 2 节学习值、容器和函数 → 第 3 节拆分文件 →
+第 14 节理解帧循环 → 第 20 节完成可操作的小游戏。已有 Squirrel 经验：重点看第 3–12 节。
+查问题：第 15、18、21 节。示例中的 `load_save()` 等未给出定义的函数用于说明语法；
+第 1 节与第 20 节才是提供全部文件内容的入门工程。
+
+语言、脚本库与引擎 API 是三件不同的事：`local`、table、class 是语言；
+`import` 加载 `.nut` 模块；`gfx`、`keyboard` 是引擎注入的原生对象。
+`import` 不会安装软件包，也不会把缺少的 C++ 模块加入 SDK。
+
 ## 1. 第一个 EveScript 游戏
 
 一个游戏至少包含 `config.nut` 和 `main.nut`：
@@ -245,7 +256,130 @@ function dialogue_lines() {
 `yield` 和 Squirrel generator 仍然保留，适合由调用者主动推进的序列。需要等待 Promise、计时器或
 主线程事件时，优先使用 EveScript 的 `async function`。
 
+### 2.7 数据类型、判断与数值
+
+`typeof value` 返回运行时类型名称，例如 `integer`、`float`、`bool`、`string`、`null`、
+`table`、`array`、`function`、`class`、`instance`。类型标注使用 `int`，运行时名称却是
+`integer`，两者不要混淆。`null` 表示没有值；只有 `null` 和 `false` 在条件中为假，
+`0`、空字符串、空数组也为真。判断容器是否为空要写 `items.len() == 0`。
+
+```squirrel
+local frames = 5 / 2       // 整数除法，结果 2
+local seconds = 5 / 2.0    // 浮点除法，结果 2.5
+local count = "12".tointeger()
+local label = count.tostring()
+if (typeof count == "integer") print(label + "\n")
+```
+
+金币、数量、数组下标通常用整数；位置、速度、`dt` 通常用浮点数。转换文本前应先验证格式或
+处理转换失败；不要依靠浮点数的精确相等来判断角色是否到达目标，使用距离容差。
+
+### 2.8 数组：有顺序的集合
+
+数组从 0 开始索引，合法范围是 `0` 到 `len() - 1`。适合背包列表、路径点和当前敌人集合。
+
+```squirrel
+local items = ["potion", "key"]
+items.append("coin")
+items.insert(1, "map")
+local first = items[0]
+items[0] = "large_potion"
+items.remove(1)                  // 删除下标 1，其后元素前移
+local last = items.pop()         // 删除并返回最后一项；空数组不能 pop
+local index = items.find("key") // 找不到时返回 null，找到下标 0 也不能当假值
+local part = items.slice(0, 1)   // 左闭右开，得到新的数组
+items.clear()
+```
+
+遍历时不要随意增删当前数组。删除满足条件的元素可以从尾到头扫描：
+
+```squirrel
+for (local i = enemies.len() - 1; i >= 0; --i) {
+    if (enemies[i].health <= 0) enemies.remove(i)
+}
+```
+
+### 2.9 表：字段记录与键值映射
+
+表既能表示一条记录，也能按 ID 查找数据；没有固定字段 schema。`in` 检查 slot 是否存在，
+不能用 `record.missing == null` 代替，因为读取不存在的字段会失败。字段存在且值为 `null`
+与字段不存在是两种状态。`?.` 用来处理空接收者，也不应当作任意缺失字段的通用容错方案。
+
+```squirrel
+local stats = { health = 100, target = null }
+stats.health = 90
+stats["armor"] <- 5
+if ("armor" in stats) print(stats.armor + "\n")
+delete stats.armor
+
+local by_id = {}
+by_id["hero"] <- { x = 10.0, y = 20.0 }
+foreach (id, actor in by_id) print(id + "\n")
+```
+
+不要依赖表遍历顺序。排行榜或回放需要稳定顺序时，维护显式数组并排序。`<-` 是创建/设置
+slot 的操作，不是深拷贝；已有字段的普通更新优先写 `=`。
+
+### 2.10 引用、浅拷贝和每实例状态
+
+赋值传递数组、表和实例的引用；函数接收它们后也可以修改同一个对象。`clone` 只做浅拷贝：
+
+```squirrel
+local original = { position = { x = 1.0 }, score = 0 }
+local alias = original
+alias.score = 10                 // original.score 也变成 10
+local copy = clone original
+copy.score = 20                  // 不改变 original.score
+copy.position.x = 5.0            // 嵌套表仍共享，original.position.x 也变成 5
+```
+
+类声明里放可变数组/表默认值会造成共享状态的陷阱；在构造函数中为每个实例创建容器：
+
+```squirrel
+class Inventory {
+    items = null
+    constructor() { items = [] }
+    function add(item) { items.append(item) }
+}
+```
+
+字符串没有可变容器的这种共享修改方式。用 `len()`、`slice()`、`find()`、`tolower()` 和
+`toupper()` 处理字符串；`find()` 找不到返回 `null`。UTF-8 中文的长度和切片不要当作
+用户看到的字符数量/字符边界；界面本地化见[国际化模块](modules/i18n.md)。
+
+### 2.11 作用域、接收者与对象寿命
+
+局部变量由花括号和函数形成词法作用域，闭包可以在函数返回后继续引用被捕获的变量。
+root table 是引擎回调和全局对象的环境，`::name` 显式访问 root 名称；模块的私有变量
+不等于全局变量。尽量通过函数参数传递玩法状态，避免不同模块暗中修改同一个 root slot。
+
+实例方法中的 `this` 是当前接收者，`base` 用于调用基类实现。把方法传给事件或计时器时，
+显式闭包调用 `actor.damage(amount)`，避免脱离原接收者后 `this` 指向错误对象。
+监听器、计时器和 Promise 保存的闭包也会延长捕获对象的寿命：切换场景时按对应 API
+取消订阅/任务。脚本对象仍可访问，并不意味着它引用的原生资源或 Entity 仍有效。
+
+### 2.12 其他控制流与生成器消费
+
+除了 `if`、`for`、`foreach`，还可使用 `while`、`do ... while`、`switch`、`break` 和
+`continue`。`switch` 分支需要 `break` 避免意外穿透；`match` 的规则见第 11 节。
+
+```squirrel
+local remaining = 3
+while (remaining > 0) remaining -= 1
+
+function steps() {
+    yield "start"
+    yield "finish"
+}
+local sequence = steps() // 得到 generator，不是数组
+foreach (step in sequence) print(step + "\n")
+```
+
+generator 由消费方推进；它与 Squirrel thread 协程、EveScript Promise 异步流程、原生
+worker 线程是不同机制。不要把 `yield` 理解为启动后台线程。
+
 ## 3. 脚本模块：`import` 与 `export`
+
 
 新代码使用模块，而不是用 `dofile()` 把多个文件写入同一个全局表。
 
@@ -293,13 +427,44 @@ local third = ids.allocate_actor_id()
 循环导入会在编译依赖图时被拒绝；把共享类型或常量提取到第三个无环模块即可。
 
 模块 URI 与物理文件格式无关，所以同一条 import 在开发目录、`.eve` ZIP、Android APK、iOS
-bundle 和 Web 预加载文件系统中保持一致。打包器会扫描依赖图；动态拼接路径不是合法 import。
+bundle 和 Web 预加载文件系统中保持一致。eve package 会扫描依赖图；动态拼接路径不是合法 import。
+eve zip 只创建归档，不代表静态依赖或运行行为已验证。
 
 ### 3.3 与 `dofile` 的区别
 
 `dofile(path)` 仍为旧 Squirrel 脚本保留，但它表达的是“读取并执行文件”，没有私有命名空间、
 显式导出、单次实例化缓存或静态依赖图。新项目应使用 `import`；只有迁移旧脚本或确实需要传统
 共享 root-table 副作用时才使用 `dofile`。
+
+### 3.4 标准库、引擎模块和第三方脚本库
+
+默认游戏 Runtime 注册 Squirrel 标准库。数学函数如 `sqrt()`、`sin()`、`cos()`、`abs()`、
+`floor()`，字符串格式化 `format()` 等是全局函数；数组和表的 `len()` 等是值自身的
+delegate 方法，不需要写 `import "math"`。嵌入式宿主可以裁剪标准库，不能把默认游戏环境
+当作所有工具宿主的保证。随机函数也不能代替需要种子/命名流的可复现游戏随机服务。
+
+```squirrel
+local dx = 3.0
+local dy = 4.0
+local distance = sqrt(dx * dx + dy * dy)
+print(format("distance = %.1f\n", distance))
+```
+
+原生模块通过 `config.modules` 选择，再调用 `gfx`、`keyboard` 等实例。
+例如需要物理时声明 `modules = ["gfx", "keyboard", "physics"]`，随后使用
+`physics.newWorld(...)`；不是 `import physics from "physics"`。
+`ensure_module()` 只能构造已编进当前运行时的模块，不能下载或动态安装缺少的模块。
+
+第三方纯脚本库可以放进 `scripts/vendor/<库名>/`，核对许可证、EveScript/Squirrel
+兼容性与依赖后，通过相对 URI 导入其实际导出项。传统库若只有 root-table 副作用，
+不能直接假定它支持 `import { ... }`；先改成显式导出或保留隔离清楚的兼容入口。
+EveScript 没有 npm/pip 风格的语言包安装语句，也不支持 JavaScript 的默认导出语法。
+`engine:/` 和 `plugin:<id>/` 是解析命名空间，不代表某个具体库一定随 SDK 提供。
+只有确认文件存在且有对应 `export` 时才写该 import。
+
+脚本 import URI、图片/音频资源路径与操作系统文件路径并不是同一契约。资源使用哪个根、
+是否支持虚拟文件系统以及返回什么对象，请查[文件系统](modules/filesystem.md)与对应模块。
+不要把开发机绝对路径写进游戏；在目录、归档包和目标平台上分别验证资源加载。
 
 ## 4. 渐进类型
 
@@ -908,3 +1073,80 @@ eve_render <- function() {
 实际项目中的绘制和输入函数请以当前 SDK 的[模块使用手册](MODULES.md)为准。学习顺序建议是：
 先掌握 Squirrel 的 table、array、class 和闭包，再使用模块与类型建立代码边界，最后在确有等待流程
 时引入 `async` / `await`。
+
+## 20. 实践：用键盘收集方块
+
+完整、持续维护的工程是 [examples/game-tutorial](../../examples/game-tutorial/README.md)，
+逐步说明见 [从零开发一个完整小游戏](GAME_DEVELOPMENT.md)。复制该目录后运行
+`eve run <游戏目录>`；方向键移动、R 重开、S 保存、L 读取，HUD 按钮走相同玩法函数。
+
+工程包含 config.nut、main.nut 和 scripts/rules.nut；原生模块通过 config.modules 选择，
+规则函数通过 import 加载。规则文件用模块私有 local 闭包保存共享实现，导出的函数显式
+调用该闭包。当前编译器下直接在导出函数内部按名字调用另一个导出函数会出现 root 查找
+失败；不要把 export 当成自动创建模块内的共享全局 slot。
+
+输入 → 状态更新 → 矩形碰撞 → HUD → 绘制由游戏显式组织。屏幕原点在左上角，
+X 向右、Y 向下；速度单位是像素/秒，乘 dt 得到位移。斜向归一化避免移动更快。
+每次命中后目标改变，持续停留不重复计分。纹理由 CPU ImageData 在初始化时创建，
+不在 render 中反复解码或上传。
+
+persist 保留热重载中的位置和分数；磁盘存档保存严格版本化的分数，位置在冷启动/读档
+后回起点。主档损坏尝试备份，全部无效则保留当前状态。完整实现与失败处理见
+[存档指南](SAVE.md)和教程，规则测试直接加载工程的实际 import 文件。
+
+### 20.1 从这个循环扩展成游戏
+
+- **精灵与动画**：将矩形绘制替换为已加载纹理，参考[图形模块](modules/graphics.md)
+  和 [basic 图片课程](../../examples/basic/steps/02-image.nut)。加载放在初始化或关卡加载阶段，渲染只提交绘制。
+- **场景与碰撞**：关卡拥有资源和实体，切换时释放或取消旧场景任务。需要刚体、碰撞过滤或
+  复杂碰撞时使用[物理模块](modules/physics.md)，不要同时让脚本位移和物理模拟争夺同一位置。
+- **UI、音效和存档**：分别查对应模块契约。音效若可选，声明 `optionalModules` 并明确
+  缺失时的无声行为；必需功能缺失则应阻止启动。
+- **较多实体**：学习 [ECS 示例](../../examples/ecs/main.nut)。Component 保存正交数据，
+  Entity 表达领域类型，System 更新符合条件的集合；不是必须把每个小表都变成 Entity。
+  记录 System 的处理范围、读写集合、执行阶段与事件，遍历中结构变更走受支持的延迟机制。
+
+`main.nut` 负责连接生命周期，模块负责规则，资源文档负责内容。每个可变事实只保留一个
+权威来源：例如生命值归战斗状态所有，HUD 读取它；不要再在 UI 中维护另一份生命值。
+跨模块保存对象关系时使用对应 API 的 ID/Handle/Link，并处理对象销毁和重载后的失效。
+
+### 20.2 时间、热重载与交付
+
+`eve_update(dt)` 的 `dt` 来自实际帧间隔，会波动。上面的移动例子是可变步长；需要稳定物理、
+回放或联机时，按模块的步进契约使用固定模拟步长、明确最大补步次数与输入采样规则。
+不要重复推进已经由框架推进的服务。随机种子、事件顺序与浮点容差同样影响可复现性。
+
+初始化创建资源，update 修改玩法，render 读取状态并绘制，reload 迁移持久数据/重建缓存，
+quit 取消订阅和释放游戏拥有的资源。回调默认在游戏线程执行；不要阻塞帧循环等待磁盘或网络。
+热重载不代替冷启动测试，`eve_reload()` 也不是每帧更新入口。
+
+开发交付建议按以下顺序验证：
+
+1. 用当前 SDK 的 API 契约核对调用，编辑器/LSP 消除语法和参数诊断。
+2. 实际 `eve run <目录>`，操作移动、命中、重新开始，检查终端错误与帧行为。
+3. 保存修改验证热重载，再冷启动验证初始化；有可选模块时测试缺失路径。
+4. `eve zip <目录>` 生成 `.eve`，再运行该归档验证 import 和资源路径；归档成功不等于依赖验证。
+5. `eve package <目录> -o <输出目录> --sdk <SDK根目录>` 生成桌面自包含目录，
+   在目标机器验证启动；移动平台另见[用户指南](README.md)与 SDK 的平台模板。
+
+只通过编译不能证明输入、资源、物理或画面正确。自动化截图使用引擎 MCP 的截图能力；
+有 `game.agent.json` 时用 `eve_play` 走游戏动作和观察，保持与真实玩家相同的玩法入口。
+
+## 21. 常见误区速查
+
+- **把 `=` 用来创建任意新字段**：先用表字面量或 `<-` 建立 slot；已有字段用 `=`。
+- **把 0 或空数组当假值**：明确比较数值或 `.len()`；`find()` 的失败值是 `null`。
+- **以为 `clone` 复制所有嵌套状态**：它是浅拷贝；需要隔离时显式构造新的嵌套数据。
+- **以为 `import` 加载原生库**：脚本文件用 import，引擎模块用 config 和原生绑定。
+- **直接照搬 C++ 头文件中的方法**：只有公开绑定的接口可在脚本调用。
+- **以为类型标注检查所有动态行为**：动态边界仍需校验，运行测试仍是必要步骤。
+- **以为 persist 就是存档或新类实例**：它保留状态；磁盘存档、schema 迁移与对象重建另行处理。
+- **用异常或 Result 的单一模板处理所有 API**：查实际返回契约。若返回 Result 表，检查
+  `result.ok`，成功后按该 API 读取 `value` 或其他字段，失败后读取其文档规定的诊断字段；
+  不要静默丢弃关键结果。确实允许忽略的结果使用 `eve.result.ignore(result, "原因")`。
+- **在 render 内读文件/创建世界**：将昂贵工作移到显式加载阶段，避免每帧重复开销。
+
+本文语义核对入口：语言扩展见 [ScriptCompiler](../../src/engine/common/ScriptCompiler.cpp)
+及 [编译器测试](../../test/integration/script-api/script_api_graphics_scene_tests.cpp)，模块见
+[模块测试](../../test/integration/script-api/script_api_graphics_scene_tests.cpp)，全局对象、辅助函数与帧循环见
+[load.nut](../../src/scripts/load.nut)。接口版本以所使用 SDK 的契约为准。

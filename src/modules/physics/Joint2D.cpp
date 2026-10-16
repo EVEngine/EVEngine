@@ -23,55 +23,12 @@ void finite(float value, const char *operation, const char *name) {
 
 }  // namespace
 
-Joint2D::Joint2D(World *world, Body *bodyA, Body *bodyB, b2Joint *joint,
-                 PhysicsJointHandle runtimeHandle, Kind kind, int id)
-    : world_(world),
-      bodyA_(bodyA),
-      bodyB_(bodyB),
-      joint_(joint),
-      runtimeHandle_(runtimeHandle),
-      kind_(kind),
-      id_(id) {}
-
-Joint2D::~Joint2D() { destroy(); }
-
-bool Joint2D::isValid() const { return joint_ != nullptr && world_ != nullptr && world_->raw() != nullptr; }
-
-void Joint2D::invalidate() {
-    if (world_) world_->forgetJoint(this);
-    joint_ = nullptr;
-    world_ = nullptr;
-    bodyA_ = nullptr;
-    bodyB_ = nullptr;
-    runtimeHandle_ = PhysicsJointHandle::invalid();
-    gearJoint1_ = nullptr;
-    gearJoint2_ = nullptr;
-}
-
 void Joint2D::destroy() {
-    if (!isValid()) {
-        invalidate();
-        return;
-    }
-    // Gear joints that depend on this joint must be destroyed first.
-    if (kind_ != Kind::Gear && world_) {
-        std::vector<Joint2D *> gears;
-        for (Joint2D *candidate : world_->joints_) {
-            if (!candidate || candidate->kind_ != Kind::Gear || !candidate->isValid()) continue;
-            if (candidate->gearJoint1_ == this || candidate->gearJoint2_ == this)
-                gears.push_back(candidate);
-        }
-        for (Joint2D *gear : gears) gear->destroy();
-    }
-    world_->raw()->DestroyJoint(joint_);
-    if (world_) world_->forgetJoint(this);
-    invalidate();
+    auto result = destroyChecked();
+    if (!result) throw eve::Exception("%s", result.status().describe().c_str());
 }
-
-void Joint2D::setGearMembers(Joint2D *joint1, Joint2D *joint2) {
-    gearJoint1_ = joint1;
-    gearJoint2_ = joint2;
-}
+Joint2D *Joint2D::getGearJoint1() const { return world_ ? world_->findJoint(firstSource_) : nullptr; }
+Joint2D *Joint2D::getGearJoint2() const { return world_ ? world_->findJoint(secondSource_) : nullptr; }
 
 std::string Joint2D::getKind() const {
     switch (kind_) {
@@ -82,12 +39,17 @@ std::string Joint2D::getKind() const {
         case Kind::Wheel: return "wheel";
         case Kind::Motor: return "motor";
         case Kind::Gear: return "gear";
+        case Kind::Pulley: return "pulley";
     }
     return "distance";
 }
 
-int Joint2D::getBodyAId() const { return bodyA_ ? bodyA_->getId() : -1; }
-int Joint2D::getBodyBId() const { return bodyB_ ? bodyB_->getId() : -1; }
+int Joint2D::getBodyAId() const {
+    return isValid() ? static_cast<Body *>(joint_->GetBodyA()->GetUserData())->getId() : -1;
+}
+int Joint2D::getBodyBId() const {
+    return isValid() ? static_cast<Body *>(joint_->GetBodyB()->GetUserData())->getId() : -1;
+}
 
 void Joint2D::setCollideConnected(bool collide) {
     if (!isValid()) return;

@@ -77,6 +77,12 @@ class Counter extends eve.UIComponent {
 }
 ```
 
+> **陷阱**：在 `eve.UIComponent` 的子类方法里，请写 `this.ui()`（等同 `ui()`），**不要**
+> 裸写 `ui.beginBuild()`。裸名 `ui` 在子类里解析到的是 `ui()` 这个**访问器方法本身**，
+> 而不是它的返回值，于是报 `the index 'beginBuild' does not exist`，错误信息指不到真正
+> 原因。访问器本身已经优先返回你设的全局槽位（`::ui`），所以 `this.ui()` 与你自己的全局
+> `ui` 语义一致——只有"不带调用"的裸名会踩到。
+
 ## `.9.png` 九宫格资源
 
 支持未经 Android 编译的标准 `.9.png`：顶边和左边各一段连续黑色像素定义可拉伸区，
@@ -124,6 +130,13 @@ ui.end();
 稳定 Host ID 自动写入和恢复 ini 布局。无标题 Overlay 的不透明度由
 `setHostOverlayAlpha(0..1)` 控制。
 
+系统化的编辑器壳优先用固定布局组件，而不是为每个面板开一个可任意拖动的 Window host：
+
+- `beginAppFrame` — 工具栏 + 主体 + 状态栏的固定外框
+- `beginDockArea(region)` — left/right/top/bottom/center 填充槽
+- `beginPanelFrame(title)` — 带标题的面板框（不是自由浮动 Window）
+- `beginTabBar` / `addTab` / `beginTabContainer` — 同一区域内多面板页签堆叠
+
 ```squirrel
 ui.beginToolbar("toolbar");
 ui.iconButton("save", "", "save");
@@ -145,6 +158,34 @@ ui.sectionHeader("Inspector", "inspector");
 ui.end();
 ui.end();
 ```
+
+```squirrel
+ui.beginAppFrame("shell");
+ui.beginToolbar("toolbar");
+ui.badge("EDIT", "mode");
+ui.end();
+ui.beginDockArea("center", "center");
+ui.beginTabContainer("viewport", "tabs");
+ui.beginTabBar("tabs/bar");
+ui.addTab("Viewport", "viewport", true);
+ui.addTab("Graph", "graph", false);
+ui.end();
+ui.beginPanelFrame("Viewport", "viewport");
+ui.text("Preview", "preview");
+ui.end();
+ui.beginPanelFrame("Graph", "graph");
+ui.text("Nodes", "nodes");
+ui.end();
+ui.end();
+ui.end();
+ui.beginStatusBar("status");
+ui.text("Ready", "ready");
+ui.end();
+ui.end();
+```
+
+`EditorWorkspace` 描述符可由 `UiEditorModule.mountWorkspaceShell(ui, workspace, hostName)`
+映射到上述固定壳（`WorkspaceLayoutShell`）；见 `examples/editor-workspace-shell`。
 
 ### 使用内置编辑器图标
 

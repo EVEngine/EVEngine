@@ -4606,6 +4606,7 @@ void Graphics::popValidationScope() {
 void Graphics::present() {
     ensureFileTexturesReady();
     applyPendingResourceChanges();
+    if (!isActive()) return;
     if (!device || !surface || !swapchainConfigured) return;
     pumpReadback();
     rebuildSwapchainIfNeeded();

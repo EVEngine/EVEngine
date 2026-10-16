@@ -194,7 +194,7 @@ For ECS, derive data from `eve.Component`, compose it in `eve.Entity`, and query
 | `eve dev [--port 8765]` | Serve game files for remote hot reload |
 | `eve zip <directory>` | Create a `.eve` archive |
 | `eve package <directory> -o <output> --sdk <SDK-directory>` | Package a game with its runtime |
-| `eve test` | Run the game directory's test configuration |
+| `eve test` | Currently an empty implementation; exit 0 is not test evidence |
 | `eve doc <name>` | Look up online documentation |
 | `eve build` | Build from source; requires the source tree and development tools |
 
@@ -289,3 +289,5 @@ To change the engine, contribute native code or produce your own SDK, follow [Bu
 5. Read [saving games](SAVE.md) when you need persistent progress.
 6. Use the SDK's native plugin CMake package only when native code is needed.
 7. Check packaging and licensing before distribution.
+
+The [complete game tutorial (Chinese)](../../usr/GAME_DEVELOPMENT.md) has a runnable collect-and-save game and executable documentation tests.

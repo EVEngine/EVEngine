@@ -1940,6 +1940,7 @@ void Graphics::createShadowResources() {
 
 void Graphics::ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, size_t indicesBytes) {
     auto &st = currentClusteredStorage();
+    bool  reallocated = false;
     auto ensure = [&](vkb::GenericBuffer &buf, size_t &cap, size_t need) {
         if (need == 0) need = 4;
         if (cap >= need && buf.buffer) return;
@@ -1950,13 +1951,14 @@ void Graphics::ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, siz
                      vk::MemoryPropertyFlagBits::eHostVisible |
                          vk::MemoryPropertyFlagBits::eHostCoherent);
         cap = alloc;
+        reallocated = true;
     };
     ensure(st.lightsBuf, st.lightsCap, lightsBytes);
     ensure(st.tableBuf, st.tableCap, tableBytes);
     ensure(st.indicesBuf, st.indicesCap, indicesBytes);
     // Reallocated handles invalidate this frame's cached descriptor sets; drop
     // them so mesh3dClusteredSetFor rebinds against the new buffers.
-    currentMesh3dClusteredFrameSlots().sets.clear();
+    if (reallocated) currentMesh3dClusteredFrameSlots().sets.clear();
 }
 
 void Graphics::uploadClusteredLighting(const ClusteredLightingUpload &upload) {

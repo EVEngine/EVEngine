@@ -9,6 +9,7 @@
 #include "ui/PcgDraggableWindow.h"
 #include "ui/PcgLoadingScreen.h"
 #include "ui/PcgPhotoModeApplyPlan.h"
+#include "ui/PcgPhotoModeApplySeam.h"
 #include "ui/PcgPhotoModeColorPicker.h"
 #include "ui/PcgPhotoModePanels.h"
 #include "ui/PcgPhotoModeRanges.h"
@@ -20,11 +21,11 @@
 #include "ui/UIAutomationCapabilities.h"
 
 #include "ui/Inspector.h"
+#include "ui/ParentScaler.h"
 #include "ui/ScenePanel.h"
 #include "ui/Theme.h"
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
-#include "ui/ParentScaler.h"
 
 #include "common/Capability.h"
 #include "common/Module.h"
@@ -213,20 +214,19 @@ void callScriptHandler(ssq::Function &fn, const std::string &kind, const UIEvent
     const SQInteger top = sq_gettop(vm);
     sq_pushobject(vm, fn.getRaw());
     sq_pushroottable(vm);  // env
-    if (kind == "click") {
-        if (SQ_FAILED(sq_call(vm, 1, SQFalse, SQTrue))) {
-            sq_settop(vm, top);
-            return;
-        }
-    } else {
+    if (kind != "click") {
         sq_pushstring(vm, kind.c_str(), -1);
         if (kind == "toggle") sq_pushbool(vm, ev.toggleValue ? SQTrue : SQFalse);
         else if (kind == "value") sq_pushfloat(vm, ev.floatValue);
         else sq_pushstring(vm, ev.textValue.c_str(), -1);
-        if (SQ_FAILED(sq_call(vm, 3, SQFalse, SQTrue))) {
-            sq_settop(vm, top);
-            return;
-        }
+    }
+    // The payload is a runtime variant (bool / float / string), so the shared helper's
+    // typed-argument form does not fit; the count is derived instead, which is the same
+    // rule (R-FACE-7). A handler that throws used to be dropped without a word -- the
+    // two branches below each turned the failure into a bare `return`.
+    const SQInteger params = sq_gettop(vm) - top - 1;  // receiver + arguments
+    if (SQ_FAILED(sq_call(vm, params, SQFalse, SQTrue))) {
+        script::reportScriptCallFailure(vm, "ui.handler");
     }
     sq_settop(vm, top);
 }
@@ -260,8 +260,10 @@ UI::UI() : backend_(createImGuiBackend()) {
     registerEditorHostCapabilities();
     registerUIAutomationCapabilities();
     bindUIEventSinkOwner(this);
+    declareScriptPhotoModeApplySeam();
 }
 UI::~UI() {
+    withdrawScriptPhotoModeApplySeam();
     bindUIEventSinkOwner(nullptr);
     shutdownBackend();
 }
@@ -531,6 +533,39 @@ void UI::beginSidebar(const std::string &id, float width) {
 }
 
 void UI::beginStatusBar(const std::string &id) { pushOpen(statusBar({}, id)); }
+
+void UI::beginTabBar(const std::string &id) { pushOpen(tabBar({}, id)); }
+
+void UI::beginTabContainer(const std::string &activePageId, const std::string &id) {
+    WidgetDesc d;
+    d.type          = NodeType::TabContainer;
+    d.id            = id;
+    d.key           = id;
+    d.valueText     = activePageId;
+    d.flexDirection = FlexDirection::Column;
+    d.flexGrow      = 1.f;
+    pushOpen(std::move(d));
+}
+
+void UI::beginPanelFrame(const std::string &title, const std::string &id) { pushOpen(panelFrame(title, {}, id)); }
+
+void UI::beginDockArea(const std::string &region, const std::string &id) { pushOpen(dockArea(region, {}, id)); }
+
+void UI::beginAppFrame(const std::string &id) {
+    WidgetDesc d;
+    d.type          = NodeType::AppFrame;
+    d.id            = id;
+    d.key           = id;
+    d.flexDirection = FlexDirection::Column;
+    d.flexGrow      = 1.f;
+    d.percentW      = 1.f;
+    d.percentH      = 1.f;
+    pushOpen(std::move(d));
+}
+
+void UI::addTab(const std::string &label, const std::string &pageId, bool selected, const std::string &id) {
+    currentParent().children.push_back(tab(label, pageId, selected, id));
+}
 
 void UI::beginScrollList(const std::string &id, float height, float itemHeight) {
     pushOpen(scrollList(id, {}, height, itemHeight));
@@ -1848,6 +1883,12 @@ const char *nodeTypeName(NodeType t) {
     case NodeType::Sidebar: return "sidebar";
     case NodeType::StatusBar: return "statusBar";
     case NodeType::SplitPane: return "splitPane";
+    case NodeType::Tab: return "tab";
+    case NodeType::TabBar: return "tabBar";
+    case NodeType::TabContainer: return "tabContainer";
+    case NodeType::PanelFrame: return "panelFrame";
+    case NodeType::DockArea: return "dockArea";
+    case NodeType::AppFrame: return "appFrame";
     }
     return "text";
 }
@@ -1887,6 +1928,12 @@ NodeType nodeTypeFromName(const std::string &s) {
     if (s == "sidebar") return NodeType::Sidebar;
     if (s == "statusBar") return NodeType::StatusBar;
     if (s == "splitPane") return NodeType::SplitPane;
+    if (s == "tab") return NodeType::Tab;
+    if (s == "tabBar") return NodeType::TabBar;
+    if (s == "tabContainer") return NodeType::TabContainer;
+    if (s == "panelFrame") return NodeType::PanelFrame;
+    if (s == "dockArea") return NodeType::DockArea;
+    if (s == "appFrame") return NodeType::AppFrame;
     return NodeType::Text;
 }
 
@@ -2234,8 +2281,11 @@ ssq::Object UI::callPickHandler() {
         sq_settop(squirrel, top);
         return {};
     }
-    sq_pushroottable(squirrel);  // environment
-    if (SQ_FAILED(sq_call(squirrel, 1, SQTrue, SQTrue))) {
+    // The handler is the value we just looked up; call it with the root table as receiver
+    // and keep its return value on top for the instance check below.
+    HSQOBJECT handler;
+    sq_getstackobj(squirrel, -1, &handler);
+    if (SQ_FAILED(script::callFunctionResult(squirrel, handler, script::rootTable))) {
         sq_settop(squirrel, top);
         return {};
     }
@@ -2451,9 +2501,12 @@ void UI::callScenePickHandler(const std::string &nodeId) {
         sq_settop(squirrel, top);
         return;
     }
-    sq_pushroottable(squirrel);                    // environment
-    sq_pushstring(squirrel, nodeId.c_str(), -1);   // node id argument
-    sq_call(squirrel, 2, SQFalse, SQTrue);
+    // Same shape as the inspector handler above: the looked-up closure, called with the
+    // root table as receiver and the node id as its argument. A failed call used to be
+    // discarded here too.
+    HSQOBJECT handler;
+    sq_getstackobj(squirrel, -1, &handler);
+    (void)script::callFunction(squirrel, handler, script::rootTable, nodeId);
     sq_settop(squirrel, top);
 }
 
@@ -2506,6 +2559,12 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("beginSidebar", &UI::beginSidebar);
     cls.addFunc("beginStatusBar", &UI::beginStatusBar);
     cls.addFunc("beginSplitPane", &UI::beginSplitPane);
+    cls.addFunc("beginTabBar", &UI::beginTabBar);
+    cls.addFunc("beginTabContainer", &UI::beginTabContainer);
+    cls.addFunc("beginPanelFrame", &UI::beginPanelFrame);
+    cls.addFunc("beginDockArea", &UI::beginDockArea);
+    cls.addFunc("beginAppFrame", &UI::beginAppFrame);
+    cls.addFunc("addTab", &UI::addTab);
     cls.addFunc("beginScrollList", &UI::beginScrollList);
     cls.addFunc("beginFlex", &UI::beginFlex);
     cls.addFunc("beginRow", &UI::beginRow);

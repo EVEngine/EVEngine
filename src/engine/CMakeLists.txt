@@ -1,4 +1,6 @@
 create_module(EVCommon common)
+# ECS script component reflection uses the pinned VM internal class/instance layouts.
+target_include_directories(EVCommon PRIVATE "${CMAKE_SOURCE_DIR}/third-party/squirrel/squirrel")
 
 eve_configure_file_if_changed(${CMAKE_CURRENT_SOURCE_DIR}/common/config.h.in common/config.h)
 eve_configure_file_if_changed(${CMAKE_CURRENT_SOURCE_DIR}/common/BuildInfo.h.in common/BuildInfo.h)
@@ -25,6 +27,29 @@ add_custom_command(
             --json-output "${_eve_binding_contract_json}"
             --dts-output "${_eve_binding_contract_dts}"
     DEPENDS "${CMAKE_SOURCE_DIR}/scripts/generate_binding_contracts.py"
+            "${CMAKE_SOURCE_DIR}/scripts/binding_architecture.py"
+            "${CMAKE_SOURCE_DIR}/scripts/binding_semantics.py"
+            "${CMAKE_SOURCE_DIR}/src/engine/common/ScriptStructure.hpp"
+            "${CMAKE_SOURCE_DIR}/src/engine/common/ScriptStructure.cpp"
+            "${CMAKE_SOURCE_DIR}/src/engine/devtools/ProjectIndexAutomatic.cpp"
+            "${CMAKE_SOURCE_DIR}/src/engine/devtools/ProjectIndexGraph.cpp"
+            "${CMAKE_SOURCE_DIR}/src/engine/devtools/ProjectIndexScan.cpp"
+            "${CMAKE_SOURCE_DIR}/src/engine/devtools/McpProjectIndexTools.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/binding_semantics.json"
+            "${CMAKE_SOURCE_DIR}/src/modules/game_event/binding_semantics.json"
+            "${CMAKE_SOURCE_DIR}/src/modules/rpg/binding_semantics.json"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/binding_architecture.json"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/Scene.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneCameraQueries.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneNodeRef.h"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneHost.h"
+            "${CMAKE_SOURCE_DIR}/test/integration/script-api/script_api_graphics_scene_tests.cpp" "${CMAKE_SOURCE_DIR}/test/unit/scene/scene_tests.cpp"
+            "${CMAKE_SOURCE_DIR}/test/integration/script-api/script_api_graphics_scene_tests.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/inventory/binding_architecture.json"
+            "${CMAKE_SOURCE_DIR}/src/modules/inventory/Inventory.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/inventory/Bag.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/inventory/Bag.h"
+            "${CMAKE_SOURCE_DIR}/test/integration/script-api/script_api_graphics_dap_tests.cpp"
     COMMENT "Generating strict EveScript Binding Contracts"
     VERBATIM)
 target_sources(EVCommon PRIVATE "${_eve_binding_contract_cpp}")

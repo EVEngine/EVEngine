@@ -563,6 +563,45 @@ void measureNode(UIHost::Tree &tree, int index) {
         }
         break;
     }
+    case NodeType::Tab: {
+        const ImVec2 t = ImGui::CalcTextSize(n.text.c_str());
+        n.measuredW    = t.x + style.FramePadding.x * 4.f;
+        n.measuredH    = ImGui::GetFrameHeight();
+        break;
+    }
+    case NodeType::TabBar: {
+        float w = 0.f, h = 0.f;
+        for (int c = n.firstChild; c >= 0; c = tree.nodes[size_t(c)].nextSibling) {
+            UINode &child = tree.nodes[size_t(c)];
+            if (!child.visible) continue;
+            measureNode(tree, c);
+            w += child.measuredW;
+            h = std::max(h, child.measuredH);
+        }
+        n.measuredW               = w;
+        const float defaultHeight = globalTheme().layout.tabBarHeight * themeUiScale();
+        n.measuredH               = n.sizeY > 0.f ? n.sizeY : defaultHeight;
+        break;
+    }
+    case NodeType::TabContainer:
+    case NodeType::PanelFrame:
+    case NodeType::DockArea:
+    case NodeType::AppFrame: {
+        float w = 0.f, h = 0.f;
+        for (int c = n.firstChild; c >= 0; c = tree.nodes[size_t(c)].nextSibling) {
+            UINode &child = tree.nodes[size_t(c)];
+            if (!child.visible) continue;
+            measureNode(tree, c);
+            w = std::max(w, child.measuredW);
+            h += child.measuredH;
+        }
+        if (n.type == NodeType::PanelFrame) {
+            h += globalTheme().layout.panelHeaderHeight * themeUiScale();
+        }
+        n.measuredW = w + n.paddingL + n.paddingR;
+        n.measuredH = h + n.paddingT + n.paddingB;
+        break;
+    }
     case NodeType::Group:
     case NodeType::Card:
     case NodeType::NinePatchPanel:

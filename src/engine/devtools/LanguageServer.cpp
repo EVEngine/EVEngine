@@ -1,4 +1,5 @@
 #include "devtools/LanguageServer.hpp"
+#include "common/StringMapInstances.h"
 #include "devtools/LanguageText.h"
 
 #include "common/Runtime.h"

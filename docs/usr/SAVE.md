@@ -1,16 +1,16 @@
-# 跨模块存档用法（0.6）
+# 跨模块存档用法
 
 [English](../en/usr/SAVE.md)
 
 游戏存档不是单独的引擎「存档模块」，而是各玩法域用 **JSON 文本 + 严格校验 + 原子发布**
-拼出来的。本页说明 0.6 推荐的拼法，细节仍以各模块手册为准。
+拼出来的。本页按当前源码说明推荐的拼法，细节仍以各模块手册为准。
 
 ## 原则
 
 1. **每个可变事实只有一个权威所有者**（`GameState`、`Tracker`、`Bag`、战局等），存档只序列化权威状态。
-2. **先校验完整候选，再一次发布**；任一 participant 失败则全部保持不变。
+2. **跨域恢复使用 `GameSaveSession` 先校验完整候选，再一次发布**；任一 participant 准备失败则全部保持不变。独立脚本调用各自只保证本域恢复。
 3. **内容定义（物品/任务/技能表）不进玩家存档**；读档前必须先加载同一 `contentVersion` 的定义。
-4. **磁盘写入用 `fs.writeTextAtomic` 并检查返回值**；读档可先 `validate` 再 `restore`，主档坏了再试备份。`fs` 是启动环境提供的文件系统实例。
+4. **磁盘写入用 `fs.writeTextAtomic` 并检查返回值**；`fs` 是启动脚本注入的 Filesystem 实例。读档可先 `validate` 再 `restore`，主档坏了再试备份。
 
 ## 三条竖切里怎么做
 
@@ -24,27 +24,41 @@
 
 ## RPG：推荐主路径
 
+以下是已有 RPG 关卡的存档接线片段，不是独立 `main.nut`。先按
+[rpg-classic](../../examples/rpg-classic/main.nut) 创建并加载 `gameState`、`tracker`、
+`party`、`bag`、`equipment`；这些参与者必须比 session 活得久。定义先加载，随后绑定，
+最后保存或恢复。绑定不创建角色，也不加载物品定义。
+
 ```squirrel
 local session = eve.RPGSaveSession();
-session.setContentVersion("mygame.content.v1");
+if (session.setContentVersion("mygame.content.v1") == 0)
+    throw "invalid content version";
 // 新游戏用队伍 schema v2：
-session.bindParty(gameState, tracker, party, bag, equipment);
+if (session.bindParty(gameState, tracker, party, bag, equipment) == 0)
+    throw "save participants are missing";
 // 旧单角色兼容：session.bind(gameState, tracker, actor, bag, equipment);
 
-local snap = session.snapshotJson();              // 严格 envelope + 摘要
-// 脚本绑定返回字符串，失败时为空；writeTextAtomic 返回 1/0。
-if (snap == "" || fs.writeTextAtomic("slot1.json", snap) == 0) {
-    print("save failed\n");
-}
+local snap = session.snapshotJson(); // JSON string；失败返回空字符串
+if (snap == "" || session.validateSnapshotJson(snap) == 0)
+    throw "cannot snapshot this checkpoint";
+if (fs.writeTextAtomic("slot1.json", snap) == 0)
+    throw "cannot commit slot1.json";
 
 // 读档：先加载同版本物品/任务/技能定义，再：
-// validate / restore 的脚本返回值都是 1/0，不是 Result 表。
-if (session.validateSnapshotJson(json) != 0 && session.restoreSnapshotJson(json) != 0) {
-    rpg.syncEquipModifiers(actor, equipment);     // 装备修饰是可重建投影
-} else {
-    print("restore failed; try a backup\n");
-}
+local json = fs.readText("slot1.json");
+if (json == "" || session.validateSnapshotJson(json) == 0)
+    throw "missing or invalid save";
+if (session.restoreSnapshotJson(json) == 0)
+    throw "restore rejected; participants unchanged";
+// 单角色项目在恢复后调用 rpg.syncEquipModifiers(actor, equipment)。
+// 队伍项目按其装备归属刷新投影，不把单角色 actor 偷换成 party。
 ```
+
+这里 `bindParty`、`setContentVersion`、`validateSnapshotJson`、`restoreSnapshotJson` 和
+`writeTextAtomic` 在脚本边界返回整数 `1/0`，不是 Result 表。不能读取 `.ok`。
+`snapshotJson` 返回字符串。C++ 的同名方法使用 Result，不代表脚本返回形状相同。
+绑定证据见 [RPG.cpp](../../src/modules/rpg/RPG.cpp) 和
+[Filesystem.cpp](../../src/modules/filesystem/Filesystem.cpp)。
 
 更多：contentVersion、兼容版本、ID rename / 任务追加迁移、单角色→队伍迁移，见
 [RPG 模块手册 · RPGSaveSession](modules/rpg.md)。
@@ -52,38 +66,79 @@ if (session.validateSnapshotJson(json) != 0 && session.restoreSnapshotJson(json)
 ## 战棋：快照 + 可选回放日志
 
 ```squirrel
+// 已创建并载入定义的 battle；不要在回放期间继续接收玩家命令。
 local baseline = battle.revision();
 local doc = battle.snapshotJson();                 // Result；value 为 JSON 字符串
-// 游戏继续推进后，再保存从 baseline 之后的命令日志：
-local log = battle.commandLogJson(baseline);
+if (!doc.ok) throw "battle snapshot failed";
+// 在这里正常执行后续命令，之后导出从 baseline 开始的日志。
+local log = battle.commandLogJson(baseline);       // 该 revision 之后的命令
+if (!log.ok) throw "battle command log failed";
 
-if (doc.ok && log.ok) {
-    local restored = battle.restoreJson(doc.value);
-    if (restored.ok) {
-        local replayed = battle.replayJson(log.value);
-        if (!replayed.ok) print(replayed.status.summary + "\n");
-    } else {
-        print(restored.status.summary + "\n");
-    }
-} else {
-    print("snapshot or command log failed\n");
-}
+// 读回权威战局：
+local restored = battle.restoreJson(doc.value);
+if (!restored.ok) throw "battle restore failed";
+// 从快照点续打命令（日志必须锚定 baseline）：
+local replayed = battle.replayJson(log.value);
+if (!replayed.ok) throw "battle replay failed";
 ```
 
-HP / 技能冷却若在脚本 ECS 或 RPG 侧，**不要**指望 tactics 快照自动带上——应另存一份
-（例如再挂 `RPGSaveSession`，或自有 JSON），在 `restore` 之后按同一顺序恢复。组合「棋盘 + RPG」
-的单事务编排是 [0.7 路线图 Theme A/E](../dev/2026-10-08-release-roadmap-0.6-0.7.md) 的目标，
-0.6 要求调用方显式编排。
+战棋的恢复方法名是 `restoreJson`，不是 RPG 的 `restoreSnapshotJson`。
+快照与日志必须来自同一基线、同一内容定义；日志并不是可重复追加的增量补丁。
+快照恢复与日志回放是两个独立调用；要让 RPG 与战棋权威状态一起恢复，使用下面的 C++ 协调器。
+接口及 Result 投影见 [Tactics.cpp](../../src/modules/tactics/Tactics.cpp)，失败、校验和
+回放用例见 [tactics_snapshot_script.cpp](../../test/integration/script-api/script_api_graphics_scene_tests.cpp)。
+
+HP / 技能冷却若在脚本 ECS 或 RPG 侧，**不要**指望 tactics 快照自动带上。
+
+## C++：RPG + 战棋一次恢复
+
+`eve::GameSaveSession` 按稳定 key 注册权威域。将已绑定的 `RPGSaveSession` 包装为
+`RPGGameSaveParticipant`，将已创建的 `Battle` 包装为 `TacticsGameSaveParticipant`，
+再注册到同一个 `GameSaveSession(contentVersion)`。两个适配器和它们借用的游戏状态
+都必须比协调器活得久，保存和恢复在暂停的仿真线程上执行。完整的可编译接线见
+[组合测试](../../test/integration/gameplay-composition/gameplay_composition_graphics_gameplay_action_tests.cpp)。
+
+调用 `snapshotJson(hashProvider)` 得到单份封存的 JSON，然后用已检查结果的
+`fs.writeTextAtomic` 写槽位。读档先加载同版本的内容定义，随后对主档或备份调用
+`restoreJson(json, hashProvider)`。协调器先核对完整性、schema、内容版本及精确的
+参与者集合，再让每个域准备候选；任何一步失败，两个权威域都不变。内容版本升级要
+显式注册 `addContentMigration`，该迁移只操作未发布的 JSON 候选。摘要实现由游戏
+注入，保存与读取必须使用同一算法；摘要检测损坏，不提供防篡改认证。
+
+目前脚本侧仍是 `RPGSaveSession` 与 `battle.restoreJson` 各自调用；需要这个跨域
+事务保证的游戏应从 C++ 接线协调器，不能把两次脚本调用称作原子恢复。
 
 ## 落盘与槽位
 
 ```squirrel
-if (fs.writeTextAtomic("save-slot1.json", jsonText) == 0) print("save failed\n");
+// 在已初始化的游戏内，jsonText 是已通过业务校验的完整文档。
+if (fs.writeTextAtomic("save-slot1.json", jsonText) == 0)
+    throw "save write failed";
 local text = fs.readText("save-slot1.json");
+if (text == "") throw "save absent or unreadable";
 ```
+
+按项目的文件系统初始化流程，用 `setIdentity` / `setupWriteDirectory` 设置独立写目录并
+检查它们的返回值（见 [game-tutorial](../../examples/game-tutorial/main.nut) 的初始化），先确认 `fs.getSaveDirectory()`；
+不要保存到只读的游戏包。原子替换保证的是单文件提交，不保证多个文件一起提交。
+Web 运行时的 `writeTextAtomic` 当前明确失败，不能把缓存写入当作同等级的玩家存档保证。
 
 `rpg-classic` 用三个槽位文件 + `.backup.json` 轮换，并在标题页只展示通过
 `validateSnapshotJson` 的槽；可作产品模板。
+
+备份流程是：校验旧主档 → 原子写备份并检查成功 → 原子写新主档并检查成功。
+坏主档不得覆盖好备份。读取流程是：校验主档 → 校验备份 → 恢复选定候选；两个都坏则
+保留当前游戏并向 UI 报告失败。仅通过校验不能保证稍后恢复成功，仍必须检查恢复返回值。
+
+### 改格式与验证
+
+把游戏 schema/version 与 `contentVersion` 分开管理：前者描述保存数据的形状，后者描述
+参与恢复的物品、任务等定义版本。ID 改名和新增任务通过 session 的显式迁移入口注册，
+不要替换 JSON 文本中的所有同名字符串。不能恢复的未来版本应拒绝，而不是部分读入。
+
+验证至少覆盖：正常冷启动读档、主档截断后使用备份、两个文件都坏、版本不兼容、角色或
+物品定义缺失、写盘失败、参与者拒绝恢复时旧状态保持不变。先检查权威状态，随后重建
+HUD、装备修饰和渲染投影；“标题页显示有存档”不能证明实际恢复成功。
 
 ## 不要做的事
 

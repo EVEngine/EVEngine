@@ -2,6 +2,7 @@
 
 #include "common/Capability.h"
 #include "graphics/Graphics.h"
+#include "graphics/SceneVisibility.h"
 
 #include <algorithm>
 #include <charconv>
@@ -481,10 +482,12 @@ GraphicsArtifactProvider& graphicsArtifactProvider() noexcept {
 
 void registerGraphicsArtifactProvider(Graphics* graphics) {
     graphicsArtifactProvider().bindGraphics(graphics);
+    registerSceneVisibilityProvider(graphics);
     eve::cap::provide<eve::artifact::IGraphicsArtifactAdapter>(&graphicsArtifactProvider());
 }
 
 void detachGraphicsArtifactProvider(Graphics* graphics) noexcept {
+    detachSceneVisibilityProvider(graphics);
     graphicsArtifactProvider().detachGraphics(graphics);
 }
 

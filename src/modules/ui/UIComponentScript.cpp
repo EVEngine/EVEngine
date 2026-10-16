@@ -1,3 +1,5 @@
+#include "common/SquirrelBinding.h"
+
 #include <cstring>
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -282,16 +284,9 @@ eve.UIComponent <- class {
 }  // namespace
 
 void injectUIComponentClass(ssq::Table &eveTable) {
-    HSQUIRRELVM     vm  = eveTable.getHandle();
-    const SQInteger top = sq_gettop(vm);
-    if (SQ_FAILED(sq_compilebuffer(vm, kUIComponentScript, static_cast<SQInteger>(std::strlen(kUIComponentScript)),
-                                   "UIComponent.nut", SQTrue))) {
-        sq_settop(vm, top);
-        return;
-    }
-    sq_pushroottable(vm);
-    sq_call(vm, 1, SQFalse, SQTrue);
-    sq_settop(vm, top);
+    // A failed run used to be discarded, so a broken UIComponent.nut left eve.UIComponent
+    // missing with no signal (the same shape the Scene injections had).
+    (void)script::compileAndRunChunk(eveTable.getHandle(), "UIComponent.nut", kUIComponentScript);
 }
 
 }  // namespace eve::ui::detail

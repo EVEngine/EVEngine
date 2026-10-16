@@ -13,6 +13,11 @@
 首次查阅前请阅读 [API 使用约定](../dev/API-CONVENTIONS.md)，了解模块对象、辅助对象、生命周期与“C++ public 方法不一定是脚本 API”的边界。
 本轮逐章核对的实现、测试证据与结论记录在 [用户模块文档 Review](https://github.com/EVEngine/EVEngine/blob/main/docs/usr/REVIEW.md)。
 
+新项目先读[完整游戏开发流程](GAME_DEVELOPMENT.md)：从配置、输入和状态，到资源、HUD、
+存档、调试和交付。语言基础见 [EveScript](EVESCRIPT.md)。章节中的“接线片段”需要已有
+世界/资源；标注“完整 main.nut”的示例才可直接替换入口。脚本接口以绑定为准，不以 C++
+同名函数的返回类型推断。高级专题与按类分组的参数参考在各章节末尾。
+
 ## 运行环境与输入
 
 - [Agent](modules/agent.md)：通用策略学习、动作决策、tensor 推理、Squirrel 接口与轨迹回放。
@@ -22,7 +27,7 @@
 - [计时器](modules/timer.md)：读取启动后的高精度时间和帧间隔。
 - [OS](modules/os.md)：查询操作系统、CPU、内存、电量、剪贴板和 GPU 信息。
 - [键盘](modules/keyboard.md)：查询按键状态、键盘重复和文本输入。
-- [鼠标](modules/mouse.md)：查询鼠标位置、按键和指针可见状态；当前脚本绑定不含相对模式设置。
+- [鼠标](modules/mouse.md)：查询鼠标位置、按键、相对模式、抓取和指针可见状态。
 - [触摸](modules/touch.md)：按索引读取当前触点数量和归一化/屏幕坐标。
 - [手柄](modules/joystick.md)：查询手柄数量、读取轴/按钮/方向帽、管理 SDL GameController 映射，并支持振动。
 
@@ -30,7 +35,7 @@
 
 - [文件系统与热重载](modules/filesystem.md)：通过统一虚拟文件系统读写、枚举、挂载并监视游戏资源。
 - [数据](modules/data.md)：管理 ByteData/DataView、压缩、哈希以及 JSON/XML 文档。
-- [图像](modules/image.md)：说明图像模块的脚本绑定边界，以及通过字体字形获得 ImageData 的可用路径。
+- [图像](modules/image.md)：加载/缓存图像、创建像素缓冲、旋转和编辑像素，再上传 GPU 纹理。
 - [字体](modules/font.md)：从文件或内存创建 FontData，并读取字形度量和位图。
 - [本地化](modules/i18n.md)：按语言载入 JSON 翻译表、点号键取值、占位符与复数规则、默认语言回退。
 - [声音数据](modules/sound.md)：读取声音数据、解码器和采样信息，供 Audio 创建 Source。
@@ -39,11 +44,37 @@
 - [网络](modules/network.md)：提供 HTTP 请求、TCP 客户端/服务端和基础网络状态。
 - [数据库](modules/database.md)：SQLite 连接、JSON 行接口与轻量 ORM，用于存档与配置表。
 
+## 资源管线与格式
+
+- [资源导入与 Cook](modules/asset.md)：源包、验证、平台 Cook 与运行时加载。
+- [Unity 资源导入](modules/asset-unity-import.md)：扫描与有限转换，明确不能转换的行为。
+- [Schema](modules/schema.md)：注册结构、精确版本校验和失败诊断。
+- [内容定义](modules/definitions.md)：版本化注册、热替换、generation 与 stale handle。
+
 ## 存档
 
 - [跨模块存档用法](SAVE.md)：用 `RPGSaveSession` / `InventorySaveSession` / tactics 快照拼玩家存档（0.6 推荐编排）。
 
 ## 游戏玩法
+
+- [属性](modules/attributes.md)：基础属性与来源可追踪的修饰，避免装备/效果重复应用。
+- [资源经济](modules/economy.md)：玩家账本、容量、消费、溢出与采集边界。
+- [条件树](modules/condition.md)：可解释 Compare / PolicyCall AST（`common`，非独立模块）。
+- [决策](modules/decision.md)：黑板、状态机与空间采样（`eve.Decision()`，由 `npc_ai` 托管）。
+- [标签](modules/tags.md)：主体标签、能力与层级 GameplayTag 的区别。
+- [游戏事件日志](modules/game_event.md)：持久事件、消费者游标与快照。
+- [策略目录](modules/policyregistry.md)：元数据发现与选择，脚本自己管理回调。
+- [事务](modules/transaction.md)：跨参与者准备/提交和失败原子性；C++ 契约章节。
+- [RTS](modules/rts.md)：世界、阵营、单位命令、经济/生产组合与固定步进。
+- [动作战斗](modules/combat.md)：行动协议与命中、伤害、属性结算的组合。
+- [战棋](modules/tactics.md)：棋盘拓扑、回合、命令与快照回放。
+- [群体移动](modules/crowd.md)：流场、拥挤避让与单位移动。
+- [感知](modules/sensing.md)：空间查询与感知记录。
+- [涌现规则](modules/emergence.md)：按脏键触发条件和延迟行动。
+- [绳索](modules/physics_rope.md)、[布料](modules/physics_cloth.md)、[轨迹](modules/physics_trajectory.md)：独立物理运行时的创建/步进/清理。
+- [流体](modules/fluids.md)：二维与三维求解器选择；[Fluid3D](fluid3d.md) 提供 Result 接线示例。
+- [Procgen–Physics](modules/procgen_physics.md)、[Procgen–Animation](modules/procgen_animation.md)：生成结果接入碰撞与动画。
+- [PixelWorld–Graphics](modules/pixelworld_graphics.md)、[PixelWorld–Physics](modules/pixelworld_physics.md)、[PixelWorld–Thread](modules/pixelworld_thread.md)：表现、碰撞和候选调度的可选组合。
 
 - [脚本 ECS](modules/entity.md)：通过 Component、Entity 和 System 声明数据组合与批量更新逻辑。
 - [物理（Box2D / Box3D）](modules/physics.md)：2D World/Body/Fixture（像素坐标 + meter）与 3D World3D/Body3D/Shape3D（米）；接触事件与 `rayCast` / `queryAABB` / `testPoint` 拾取查询。
@@ -79,6 +110,10 @@
 
 ## 表现与场景
 
+- [HD2D](modules/hd2d.md)：像素角色与三维舞台组合。
+- [贴花](modules/decal.md)：投影、纹理与烘焙工作流。
+- [Scene–Physics](modules/scene_physics.md)：生成碰撞体接入游戏拥有的物理世界。
+
 - [图形渲染](modules/graphics.md)：清屏、2D 图元、纹理、Canvas、摄像机和 3D 渲染；Camera2D/3D 提供屏幕↔世界与拾取射线。
 - [实时雾气](modules/graphics_fog.md)：MAC 流体、世界空间光线步进、Froxel 积分与解析体积光；艺术层不回写密度。
 - [体素](modules/voxel.md)：32³ chunk 体素世界，贪婪矩形合并 + 实例化渲染、跨 chunk 接缝消隐、顶点 AO、DDA 射线拾取、自动流式地形生成与存档。
@@ -95,6 +130,10 @@
 
 ## 高级能力
 
+- [性能分析](modules/profiler.md)：捕获 CPU/GPU 帧成本并比较同场景结果。
+- [GPU Agents](modules/gpuagents.md)：GPU 群体模拟与渲染接线。
+- [Agent–Tensor](modules/agent_tensor.md)：CPU/GPU 学习与推理提供者，无隐式回退。
+
 - [数学](modules/math.md)：提供向量、矩阵、2D/3D 拾取与重叠几何测试、噪声、随机数、插值和缓动工具。
 - [空间索引](modules/spatial.md)：四叉树 / 八叉树 / 空间哈希 / 空间二分树，用于地图与场景的快速裁剪与邻近查询。
 - [编辑器构件](modules/editor.md)：3D 变换 gizmo、地图笔刷、Toolbar/Inspector/Dock/History；用于组装自定义编辑器，而非内置完整编辑器。
@@ -107,3 +146,26 @@
 - [统一网格](modules/grid.md)：格子 ↔ 世界坐标换算与拓扑（纯 C++，被 map/building 消费）。
 - [原生插件](modules/plugins.md)：从动态库加载用 EVEngine SDK 编译的原生模块。
 - [内置演示](modules/demo.md)：查询或运行随宿主编译的演示能力，用于验证引擎安装。
+
+## 编辑器与可编辑目标卫星
+
+游戏运行时与内容制作工具分别选择模块；目标借用的资源需比会话活得更久。
+
+- [动作时间线编辑：action_editor](modules/action_editor.md)
+- [动画片段编辑：animation_editor](modules/animation_editor.md)
+- [神经重定向提供者：animation_tensor](modules/animation_tensor.md)
+- [声音资源与试听编辑：audio_editor](modules/audio_editor.md)
+- [角色文档编辑：avatar_editor](modules/avatar_editor.md)
+- [反射探针可视化：graphics_editor](modules/graphics_editor.md)
+- [关卡瓦片笔刷：level_editor](modules/level_editor.md)
+- [瓦片层可编辑目标：tilelayer_target](modules/tilelayer_target.md)
+- [生态规则编辑：biome_editor](modules/biome_editor.md)
+- [程序化脚本与网格编辑：procgen_editor](modules/procgen_editor.md)
+- [高度场可编辑目标：heightmap_target](modules/heightmap_target.md)
+- [场景文档与实时编辑：scene_editor](modules/scene_editor.md)
+- [UI 主题与预览编辑：ui_editor](modules/ui_editor.md)
+- [体素模型目录编辑：voxel_editor](modules/voxel_editor.md)
+- [体素世界可编辑目标：voxelworld_target](modules/voxelworld_target.md)
+- [平台事件：帧循环拥有输入泵](modules/platform_event.md)
+- [光线追踪能力与降级路径](modules/graphics_raytracing.md)
+- [动作驱动的风格化特效](modules/stylize_action.md)
