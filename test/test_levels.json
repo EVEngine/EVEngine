@@ -5681,7 +5681,9 @@
         "local-logic": [
           "authority.decision.priorityThenDenyThenCreationOrder",
           "authority.decision.defaultDenyIsExplainable",
+          "authority.decision.wildcardMatchesAndLosesToExactDeny",
           "authority.lifecycle.durationRevokeAndEvents",
+          "authority.lifecycle.revokeByDimensionAndEventCapacity",
           "authority.query.reverseDimensionsAreDeterministic",
           "authority.snapshot.restoreIsDeterministicAndTransactional",
           "authority.input.invalidFactsDoNotMutate",

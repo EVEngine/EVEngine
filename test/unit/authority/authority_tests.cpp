@@ -12,14 +12,23 @@
 namespace test_authority_unit {
 using namespace eve::authority;
 
+namespace {
+
+std::string requireId(eve::Result<std::string>&& result) {
+    REQUIRE(result.ok());
+    return std::move(result).takeValue();
+}
+
+}  // namespace
+
 TEST_CASE("authority.decision.priorityThenDenyThenCreationOrder") {
     Store      store;
-    const auto grant = store.grant("actor:1", "scope:1", "edit", "role:a", 10);
-    const auto deny  = store.deny("actor:1", "scope:1", "edit", "policy:a", 10);
+    const auto grant = requireId(store.grant("actor:1", "scope:1", "edit", "role:a", 10));
+    const auto deny  = requireId(store.deny("actor:1", "scope:1", "edit", "policy:a", 10));
     CHECK(!store.can("actor:1", "scope:1", "edit"));
     CHECK_EQ(store.explain("actor:1", "scope:1", "edit").winningRuleId, deny);
 
-    const auto elevated = store.grant("actor:1", "scope:1", "edit", "override", 11);
+    const auto elevated = requireId(store.grant("actor:1", "scope:1", "edit", "override", 11));
     const auto decision = store.explain("actor:1", "scope:1", "edit");
     CHECK(decision.allowed);
     CHECK_EQ(decision.winningRuleId, elevated);
@@ -35,10 +44,23 @@ TEST_CASE("authority.decision.defaultDenyIsExplainable") {
     CHECK(result.winningRuleId.empty());
 }
 
+TEST_CASE("authority.decision.wildcardMatchesAndLosesToExactDeny") {
+    Store store;
+    requireId(store.grant(std::string(kWildcard), std::string(kWildcard), "read", "role:global", 1));
+    CHECK(store.can("actor:1", "scope:1", "read"));
+    CHECK(store.can("actor:2", "scope:9", "read"));
+    CHECK(!store.can("actor:1", "scope:1", "write"));
+
+    const auto deny = requireId(store.deny("actor:1", "scope:1", "read", "policy:local", 1));
+    CHECK(!store.can("actor:1", "scope:1", "read"));
+    CHECK_EQ(store.explain("actor:1", "scope:1", "read").winningRuleId, deny);
+    CHECK(store.can("actor:2", "scope:1", "read"));
+}
+
 TEST_CASE("authority.lifecycle.durationRevokeAndEvents") {
     Store      store;
-    const auto temporary = store.grant("a", "s", "c", "temporary", 1, 0.5);
-    store.deny("b", "s", "c", "policy", 1);
+    const auto temporary = requireId(store.grant("a", "s", "c", "temporary", 1, 0.5));
+    requireId(store.deny("b", "s", "c", "policy", 1));
     store.update(0.5);
     CHECK(store.find(temporary) == nullptr);
     REQUIRE(store.eventCount() == 3);
@@ -48,11 +70,33 @@ TEST_CASE("authority.lifecycle.durationRevokeAndEvents") {
     CHECK_EQ(eventKindName(store.eventAt(3)->kind), std::string("revoked"));
 }
 
+TEST_CASE("authority.lifecycle.revokeByDimensionAndEventCapacity") {
+    Store store;
+    requireId(store.grant("actor:a", "scope:1", "read", "src", 1));
+    requireId(store.grant("actor:a", "scope:2", "write", "src", 1));
+    requireId(store.grant("actor:b", "scope:1", "read", "other", 1));
+    CHECK_EQ(store.revokeByActor("actor:a", "actor_gone"), 2);
+    CHECK(!store.can("actor:a", "scope:1", "read"));
+    CHECK(store.can("actor:b", "scope:1", "read"));
+    CHECK_EQ(store.revokeByScope("scope:1", "scope_gone"), 1);
+    CHECK(!store.can("actor:b", "scope:1", "read"));
+
+    requireId(store.grant("x", "y", "z", "cap-src", 1));
+    requireId(store.deny("x", "y", "z", "cap-src", 2));
+    CHECK_EQ(store.revokeByCapability("z", "capability_retired"), 2);
+
+    auto capacity = store.setEventCapacity(2);
+    REQUIRE(capacity.ok());
+    CHECK_EQ(store.eventCapacity(), 2);
+    CHECK_EQ(store.eventCount(), 2);
+    CHECK(!store.setEventCapacity(-1).ok());
+}
+
 TEST_CASE("authority.query.reverseDimensionsAreDeterministic") {
     Store      store;
-    const auto first  = store.grant("a", "s2", "read", "x");
-    const auto second = store.grant("a", "s1", "write", "y");
-    const auto third  = store.deny("b", "s1", "read", "z");
+    const auto first  = requireId(store.grant("a", "s2", "read", "x"));
+    const auto second = requireId(store.grant("a", "s1", "write", "y"));
+    const auto third  = requireId(store.deny("b", "s1", "read", "z"));
     REQUIRE(store.queryActor("a") == 2);
     CHECK_EQ(store.queryAt(0)->id, first);
     CHECK_EQ(store.queryAt(1)->id, second);
@@ -66,8 +110,9 @@ TEST_CASE("authority.query.reverseDimensionsAreDeterministic") {
 
 TEST_CASE("authority.snapshot.restoreIsDeterministicAndTransactional") {
     Store original;
-    original.grant("a", "s", "read", "role", 3);
-    original.deny("a", "s", "write", "policy", 4, 5.0);
+    requireId(original.grant("a", "s", "read", "role", 3));
+    requireId(original.deny("a", "s", "write", "policy", 4, 5.0));
+    requireId(original.grant(std::string(kWildcard), "s", "inspect", "role", 1));
     original.update(1.0);
     const auto snapshot = original.snapshotJson();
 
@@ -77,6 +122,7 @@ TEST_CASE("authority.snapshot.restoreIsDeterministicAndTransactional") {
     CHECK_EQ(restored.snapshotJson(), snapshot);
     CHECK(restored.can("a", "s", "read"));
     CHECK(!restored.can("a", "s", "write"));
+    CHECK(restored.can("other", "s", "inspect"));
     const auto before   = restored.snapshotJson();
     auto       rejected = restored.restoreJson("{\"version\":1}");
     CHECK(!rejected.ok());
@@ -96,9 +142,10 @@ TEST_CASE("authority.snapshot.restoreIsDeterministicAndTransactional") {
 
 TEST_CASE("authority.input.invalidFactsDoNotMutate") {
     Store store;
-    CHECK(store.grant("", "scope", "read", "source").empty());
-    CHECK(store.deny("actor", "", "read", "source").empty());
-    CHECK(store.grant("actor", "scope", "", "source").empty());
+    CHECK(!store.grant("", "scope", "read", "source").ok());
+    CHECK(!store.deny("actor", "", "read", "source").ok());
+    CHECK(!store.grant("actor", "scope", "", "source").ok());
+    CHECK(!store.revoke("missing", "gone").ok());
     CHECK_EQ(store.query("", "", ""), 0);
     CHECK_EQ(store.eventCount(), 0);
 }

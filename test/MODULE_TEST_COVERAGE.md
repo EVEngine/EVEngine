@@ -317,7 +317,7 @@ Source directory: `src/modules/audio/editor`. Status: **referenced-by-other-test
 
 ### authority
 
-Source directory: `src/modules/authority`. Status: **local-rules-recorded**. Local cases: **9**.
+Source directory: `src/modules/authority`. Status: **local-rules-recorded**. Local cases: **11**.
 
 - Unit: [unit/authority/authority_tests.cpp](unit/authority/authority_tests.cpp)
 - Integration task `gameplay-composition`: [gameplay_composition_graphics_rts_script_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_rts_script_tests.cpp)
