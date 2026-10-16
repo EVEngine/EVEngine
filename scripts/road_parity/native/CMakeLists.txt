@@ -13,6 +13,7 @@ set(_road_sources
     ${EVE_ROOT}/src/engine/common/Status.cpp
     ${EVE_ROOT}/src/engine/common/Result.cpp
     ${EVE_ROOT}/src/modules/editing/EditingResult.cpp
+    ${EVE_ROOT}/src/modules/editing/EditingIdInstances.cpp
     ${EVE_ROOT}/src/engine/common/Identity.cpp
     ${EVE_ROOT}/src/engine/common/Uri.cpp
     ${EVE_ROOT}/src/engine/common/ResourceRef.cpp
