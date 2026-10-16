@@ -51,7 +51,7 @@ TEST_CASE("rts.crowd.holdOrderResistsPushAndReplacementReleasesIt") {
     CommandSpec hold;
     hold.kind = OrderKind::HoldPosition;
     REQUIRE(held->orders()->values.enqueue(hold).ok());
-    const eve::SimulationStep step{eve::SimulationTick{1}, eve::Duration::fromSeconds(0.1).expect("test dt")};
+    eve::SimulationStep step{eve::SimulationTick{1}, eve::Duration::fromSeconds(0.1).expect("test dt")};
     REQUIRE(eve::rts::CrowdMotionSystem::step(step, crowd).ok());
     CHECK_EQ(held->motion()->x, 0.f);
     CHECK(neighbor->motion()->x >= 1.999f);
@@ -62,6 +62,7 @@ TEST_CASE("rts.crowd.holdOrderResistsPushAndReplacementReleasesIt") {
     move.kind   = OrderKind::Move;
     move.target = {-10.f, 0.f};
     REQUIRE(held->orders()->values.enqueue(move).ok());
+    step.tick = eve::SimulationTick{2};
     REQUIRE(eve::rts::CrowdMotionSystem::step(step, crowd).ok());
     CHECK(held->motion()->x < 0.f);
     auto policy = crowd.getAgentInteraction(crowd.getNamedAgentIndex("held"));
@@ -94,7 +95,7 @@ TEST_CASE("rts.crowd.predictiveCrossingSurvivesEcsProjection") {
     }
     float minimum = 100.f;
     for (std::uint64_t tick = 0; tick < 600; ++tick) {
-        const eve::SimulationStep step{eve::SimulationTick{tick},
+        const eve::SimulationStep step{eve::SimulationTick{tick + 1},
                                        eve::Duration::fromSeconds(1.0 / 60.0).expect("test dt")};
         REQUIRE(eve::rts::CrowdMotionSystem::step(step, crowd).ok());
         minimum = std::min(minimum, std::hypot(units[0]->motion()->x - units[1]->motion()->x,
@@ -127,17 +128,19 @@ TEST_CASE("rts.crowd.containmentRemovesFootprintAndDisembarkRebuildsIt") {
     passenger->crowd()->link    = eve::rts::CrowdLink::bind("passenger").takeValue();
     passenger->motion()->x      = 2.f;
     passenger->motion()->y      = 3.f;
-    const eve::SimulationStep step{eve::SimulationTick{1}, eve::Duration::fromSeconds(0.01).expect("test dt")};
+    eve::SimulationStep       step{eve::SimulationTick{1}, eve::Duration::fromSeconds(0.01).expect("test dt")};
     auto                      projected = eve::rts::CrowdMotionSystem::step(step, crowd);
     REQUIRE(projected.ok());
     CHECK(crowd.getNamedAgentIndex("passenger") >= 0);
     passenger->containment()->container = eve::rts::ContainerLink::bind(ecs::handle_of(transport)).takeValue();
+    step.tick                           = eve::SimulationTick{2};
     projected                           = eve::rts::CrowdMotionSystem::step(step, crowd);
     REQUIRE(projected.ok());
     CHECK_EQ(crowd.getNamedAgentIndex("passenger"), -1);
     passenger->containment()->container = {};
     passenger->motion()->x              = 7.f;
     passenger->motion()->y              = 8.f;
+    step.tick                           = eve::SimulationTick{3};
     projected                           = eve::rts::CrowdMotionSystem::step(step, crowd);
     REQUIRE(projected.ok());
     const auto index = crowd.getNamedAgentIndex("passenger");
@@ -165,13 +168,14 @@ TEST_CASE("rts.crowd.convoyWaitDefersArrivalAndResumesExistingOrder") {
     auto ordered = unit->orders()->values.replace(move);
     REQUIRE(ordered.ok());
     const auto                orderId = ordered.value();
-    const eve::SimulationStep step{eve::SimulationTick{1}, eve::Duration::fromSeconds(0.1).expect("test dt")};
+    eve::SimulationStep       step{eve::SimulationTick{1}, eve::Duration::fromSeconds(0.1).expect("test dt")};
     auto                      advanced = eve::rts::CrowdMotionSystem::step(step, crowd);
     REQUIRE(advanced.ok());
     CHECK_EQ(unit->motion()->x, 0.f);
     CHECK(!unit->motion()->arrived);
     unit->supply()->convoyWaiting = false;
     unit->motion()->arrivalRadius = 0.1f;
+    step.tick                     = eve::SimulationTick{2};
     advanced                      = eve::rts::CrowdMotionSystem::step(step, crowd);
     REQUIRE(advanced.ok());
     CHECK(unit->motion()->x > 0.f);
@@ -289,7 +293,7 @@ TEST_CASE("rts.crowd.blockedProductionRetainsPaymentAndIdentityForRetry") {
     const auto heldSubject     = held->identity()->subject;
     auto       checkpoint      = rts.captureScriptCheckpoint("blocked-spawn");
     REQUIRE(checkpoint.ok());
-    held->motion()->x = 20.f;
+    REQUIRE(rts.relocateUnits({{{heldSubject, {20.f, 10.f}}}, 1000}).ok());
     auto stepped      = rts.stepScript(0.1);
     REQUIRE(stepped.ok());
     CHECK(rts.findUnit(born) != nullptr);
@@ -320,8 +324,8 @@ TEST_CASE("rts.crowd.blockedProductionRetainsPaymentAndIdentityForRetry") {
     CHECK_EQ(rts.unitCount(), 1u);
     auto stillReserved = rts.newUnit(born, definition);
     CHECK(!stillReserved.ok());
-    held->motion()->x = 20.f;
-    stepped           = rts.stepScript(0.1);
+    REQUIRE(rts.relocateUnits({{{heldSubject, {20.f, 10.f}}}, 1000}).ok());
+    stepped = rts.stepScript(0.1);
     REQUIRE(stepped.ok());
     CHECK(rts.findUnit(born) != nullptr);
     CHECK_EQ(producer->rally()->settledProductionTasks.size(), 1u);
@@ -702,11 +706,11 @@ TEST_CASE("rts.groups.movingSlotsAssembleBeforeArrival") {
         REQUIRE(first->navigation()->formationTarget.has_value());
         auto saved = rts.snapshotState().takeValue();
         for (const auto& unit : saved.units) CHECK(!unit.navigation.formationTarget.has_value());
-        REQUIRE(rts.step({eve::SimulationTick{101}, eve::Duration::zero()}, executor).ok());
+        REQUIRE(rts.step({eve::SimulationTick{100}, eve::Duration::zero()}, executor).ok());
         const auto before = *first->navigation()->formationTarget;
         REQUIRE(rts.restoreState(saved).ok());
         CHECK(!first->navigation()->formationTarget.has_value());
-        REQUIRE(rts.step({eve::SimulationTick{101}, eve::Duration::zero()}, executor).ok());
+        REQUIRE(rts.step({eve::SimulationTick{100}, eve::Duration::zero()}, executor).ok());
         REQUIRE(first->navigation()->formationTarget.has_value());
         CHECK(std::isfinite(first->navigation()->formationTarget->x));
         CHECK(std::abs(first->navigation()->formationTarget->x - before.x) < 1e-5f);
@@ -715,20 +719,20 @@ TEST_CASE("rts.groups.movingSlotsAssembleBeforeArrival") {
         pathfinder.setBlocked(50, 19, true);
         pathfinder.setBlocked(50, 21, true);
         rts.setNavigationProvider(&pathfinder);
-        REQUIRE(rts.step({eve::SimulationTick{102}, eve::Duration::zero()}, executor).ok());
+        REQUIRE(rts.step({eve::SimulationTick{100}, eve::Duration::zero()}, executor).ok());
         CHECK(!first->navigation()->formationTarget.has_value());
         CHECK(!second->navigation()->formationTarget.has_value());
         CHECK(!first->navigation()->waypoints.empty());
         pathfinder.setBlocked(50, 19, false);
         pathfinder.setBlocked(50, 21, false);
-        REQUIRE(rts.step({eve::SimulationTick{103}, eve::Duration::zero()}, executor).ok());
+        REQUIRE(rts.step({eve::SimulationTick{100}, eve::Duration::zero()}, executor).ok());
         CHECK(first->navigation()->formationTarget.has_value());
         CHECK(second->navigation()->formationTarget.has_value());
         rts.setNavigationProvider(nullptr);
         CommandSpec replacement;
         replacement.target = {10.f, 40.f};
         REQUIRE(first->orders()->values.replace(replacement).ok());
-        REQUIRE(rts.step({eve::SimulationTick{104}, eve::Duration::zero()}, executor).ok());
+        REQUIRE(rts.step({eve::SimulationTick{100}, eve::Duration::zero()}, executor).ok());
         CHECK(!first->navigation()->formationTarget.has_value());
         CHECK(!second->navigation()->formationTarget.has_value());
     }

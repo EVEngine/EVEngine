@@ -2,6 +2,583 @@
   "schema": "evengine.test-levels",
   "version": 1,
   "sources": {
+    "integration/crowd-runtime/crowd_advance.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "crowd.advance.nonfiniteLegacySteeringRejectsBeforeIndexing",
+          "crowd.advance.externalClockRejectsDuplicateSkippedAndMixedTicks",
+          "crowd.advance.workBudgetFailureRollsBackMotionAndClock",
+          "crowd.advance.emptyWorldConsumesTimeAndRejectsOverflow",
+          "crowd.advance.residualBudgetFailureRestoresAlreadyIntegratedMotion"
+        ],
+        "script-binding": [
+          "crowd.advance.scriptClockHasLosslessMetadataAndStrictIntegerInputs"
+        ]
+      },
+      "module": "crowd",
+      "origins": [
+        "crowd_advance.cpp"
+      ],
+      "task": "crowd-runtime"
+    },
+    "integration/crowd-runtime/crowd_avoidance.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "crowd.avoidance.finalArrivalAllowsPushableSettledUnitToYield",
+          "crowd.avoidance.finalArrivalDoesNotPushHeldUnit",
+          "crowd.navigation.radiusAwareFlowPassesSingleCellPortal",
+          "crowd.avoidance.finalArrivalCanPassPushableIdleBody",
+          "crowd.avoidance.seekPushesIdleBodyThroughLaneWithoutPassingSideways",
+          "crowd.avoidance.pacedZeroSpeedSeekBodyRemainsPushable"
+        ]
+      },
+      "module": "crowd",
+      "task": "crowd-runtime"
+    },
+    "integration/crowd-runtime/crowd_budget.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "crowd.budget.observationsResetAndRejectedStepsPreserveState",
+          "crowd.budget.neighborLimitDoesNotBoundBroadphaseWork",
+          "crowd.budget.contactWorkExcludesNonInteractingPairs"
+        ]
+      },
+      "module": "crowd",
+      "origins": [
+        "crowd_budget.cpp"
+      ],
+      "task": "crowd-runtime"
+    },
+    "integration/crowd-runtime/crowd_contact_pairs.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "crowd.contactPairs.namedClusterIsBitExactAcrossCreationOrderAndRestore",
+          "crowd.contactPairs.capacityAndConstructionBudgetRejectAtomically",
+          "crowd.contactPairs.filteredPairsDoNotUsePairBufferCapacity"
+        ],
+        "script-binding": [
+          "crowd.contactPairs.scriptExtensionsAreOptionalAndStrictInteger"
+        ]
+      },
+      "module": "crowd",
+      "origins": [
+        "crowd_contact_pairs.cpp"
+      ],
+      "task": "crowd-runtime"
+    },
+    "integration/crowd-runtime/crowd_flow_cache.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "crowd.cache.fullGoalKeysReuseGenerationAndPressurePreservesPlan",
+          "crowd.cache.equalAccessTicksEvictByStableKeyIndependentOfCreationOrder",
+          "crowd.cache.agentSelectionAndSnapshotRebindingKeepLatestTerrainAuthoritative",
+          "crowd.cache.leaseOutlivesProviderButCannotBindOtherOwner",
+          "crowd.cache.unleasedSnapshotRecordsDoNotPinCurrentEviction",
+          "crowd.cache.interpolationDoesNotMakeBlockedContainingCellReachable",
+          "crowd.cache.moreThan64PinnedFieldsRespectByteBudget"
+        ]
+      },
+      "module": "crowd",
+      "origins": [
+        "crowd_flow_cache.cpp"
+      ],
+      "task": "crowd-runtime"
+    },
+    "integration/crowd-runtime/crowd_navigation_script.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "script-binding": [
+          "crowd.navigation.scriptTokensBoundWorkAndRejectWrongKindsOwnersAndGenerations",
+          "crowd.navigation.scriptRegistryCapacityIsRecoverableAfterRelease",
+          "crowd.navigation.scriptRequestsRemainValidAcrossOtherGoalPublications",
+          "crowd.navigation.scriptRequestOwnedLeaseSamplesAndReleasesSafely",
+          "crowd.navigation.scriptAgentsKeepLeaseAfterRequestReleaseAndRejectAtomicBadBindings"
+        ],
+        "module-composition": [
+          "crowd.navigation.restoreInvalidatesTransientScriptRequests"
+        ]
+      },
+      "module": "crowd",
+      "origins": [
+        "crowd_navigation_script.cpp"
+      ],
+      "task": "crowd-runtime"
+    },
+    "integration/crowd-runtime/crowd_navigation.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "crowd.navigation.blockedGoalCompletesAsUnreachable",
+          "crowd.navigation.largeFiniteCostsRetainUnitDirections",
+          "crowd.navigation.workPartitionsMatchSynchronousKernel",
+          "crowd.navigation.preparedFieldPublishesOnceAndRejectsForeignOrStalePlans",
+          "crowd.navigation.cancelAndInvalidGoalNeverPublish",
+          "crowd.navigation.multiGoalCanonicalizationAndMixedBlockedGoals",
+          "crowd.navigation.independentGoalsDoNotInvalidateEachOthersInputEpoch"
+        ]
+      },
+      "module": "crowd",
+      "origins": [
+        "crowd_navigation.cpp"
+      ],
+      "task": "crowd-runtime"
+    },
+    "integration/crowd-runtime/crowd_policy.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "crowd.policy.noPredictiveAvoidanceStillResolvesBodyContact",
+          "crowd.policy.contactFilteringDoesNotDisablePredictiveSteering",
+          "crowd.policy.spawnAndRelocationRespectContactInsteadOfAvoidanceMasks",
+          "crowd.policy.legacyFacadeAndHoldUpdatesHaveExplicitSemantics"
+        ],
+        "script-binding": [
+          "crowd.policy.scriptCanonicalPolicyAndAtomicBatchBoundary"
+        ]
+      },
+      "module": "crowd",
+      "origins": [
+        "crowd_policy.cpp"
+      ],
+      "task": "crowd-runtime"
+    },
+    "integration/crowd-runtime/crowd_registry.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "crowd.batch.relocationChecksWholeDestinationBatchAndPreservesIdentity",
+          "crowd.batch.relocationResetsVelocityButKeepsSteering",
+          "crowd.registry.swapPopKeepsIdentityAndReuseRejectsOldGeneration",
+          "crowd.registry.clearAndWrongOwnerCannotResolve",
+          "crowd.registry.spawnTransactionPreservesOwnerAndLiveReferences",
+          "crowd.batch.updateAdmissionIsAtomicAndDuplicateReferencesReject",
+          "crowd.batch.removalReResolvesAfterSwapAndInvalidBatchDoesNothing",
+          "crowd.batch.selectedFrameOwnsValuesAndRejectPreservesOutput",
+          "crowd.registry.updatePlanOwnsValuesAndRejectsMaskBeforeMutation",
+          "crowd.registry.updatePlanResolvesCompactionAndRejectsStaleUnselectedIdentity",
+          "crowd.registry.updatePlanRestoreAndProviderDestructionAreSafe"
+        ],
+        "script-binding": [
+          "crowd.registry.scriptReferencesAndBatchesHaveCheckedBoundary",
+          "crowd.registry.scriptMovementBindingRejectsCoercionAndPartialUpdates"
+        ]
+      },
+      "module": "crowd",
+      "origins": [
+        "crowd_registry.cpp"
+      ],
+      "task": "crowd-runtime"
+    },
+    "integration/crowd-runtime/crowd_revision.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "crowd.revision.resizeRejectsInvalidGeometryWithoutPublishingState",
+          "crowd.revision.terrainAndGoalsInvalidateSamplingUntilRebuild",
+          "crowd.revision.staleFlowStopsDrivingButLatestWallStillConstrains"
+        ],
+        "script-binding": [
+          "crowd.revision.scriptStatusAndStepReportExposeStaleField"
+        ]
+      },
+      "module": "crowd",
+      "origins": [
+        "crowd_revision.cpp"
+      ],
+      "task": "crowd-runtime"
+    },
+    "integration/crowd-runtime/crowd_scheduler.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "crowd.scheduler.parallelWithoutProviderRejectsAndSerialRemainsAvailable",
+          "crowd.scheduler.joinedFailureRollsBackAndSnapshotPreservesCurrentConfiguration",
+          "crowd.scheduler.predictionBudgetPreflightIsExactAndRetryable",
+          "crowd.scheduler.preferredCapacityAndWorkBudgetRejectAtomically",
+          "crowd.scheduler.preferredScriptBudgetsAreOptionalStrictIntegers",
+          "crowd.scheduler.preferredRetainsFloatForceBoundarySemantics"
+        ]
+      },
+      "module": "crowd",
+      "origins": [
+        "crowd_scheduler.cpp"
+      ],
+      "task": "crowd-runtime"
+    },
+    "integration/crowd-runtime/crowd_snapshot.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "crowd.snapshot.providerWitnessSurvivesRestoreAndExpiresOnDestruction",
+          "crowd.snapshot.restoreRecoversMotionPolicyClockAndInvalidatesRefs",
+          "crowd.snapshot.foreignEmptyAndStalePlansPreserveLiveState"
+        ]
+      },
+      "module": "crowd",
+      "origins": [
+        "crowd_snapshot.cpp"
+      ],
+      "task": "crowd-runtime"
+    },
+    "integration/crowd-runtime/crowd_spatial.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "crowd.spatial.sparseQueriesMatchBruteForceAcrossNegativeAndFarCoordinates",
+          "crowd.spatial.farGroupsUseOccupiedCellsAndLookupBudgetRollsBackClock",
+          "crowd.spatial.cellLimitAndUnsupportedCoordinateRejectWithoutMotion"
+        ],
+        "script-binding": [
+          "crowd.spatial.scriptBudgetExtensionIsOptionalAndStrictInteger"
+        ]
+      },
+      "module": "crowd",
+      "origins": [
+        "crowd_spatial.cpp"
+      ],
+      "task": "crowd-runtime"
+    },
+    "integration/crowd-runtime/crowd_surface.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "crowd.surface.atomicPublicationRejectsConflictsAndSeparatesPhysicalWalls",
+          "crowd.surface.oversizedFootprintDoesNotUseImportedNavigation",
+          "crowd.surface.perAgentMovementBindingsSurviveSwapAndRestore",
+          "crowd.surface.explicitMovementRequiresImportedProviderAndAtomicCreation"
+        ]
+      },
+      "module": "crowd",
+      "origins": [
+        "crowd_surface.cpp"
+      ],
+      "task": "crowd-runtime"
+    },
+    "integration/crowd-runtime/crowd_ties.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "crowd.ties.anonymousContactDirectionSurvivesDenseCompaction",
+          "crowd.ties.namedWanderIsIndependentOfCreationOrder"
+        ]
+      },
+      "module": "crowd",
+      "origins": [
+        "crowd_ties.cpp"
+      ],
+      "task": "crowd-runtime"
+    },
+    "integration/crowd-runtime/CrowdThread.cpp": {
+      "role": "tests",
+      "default": "concurrency",
+      "cases": {
+        "concurrency": [
+          "crowd.thread.serialParallelContactAndReportsAreBitExact",
+          "crowd.thread.predictiveAvoidanceMatchesSerialWithFourWorkers",
+          "crowd.thread.workerFailureJoinsAndInFlightOwnerSurvivesRelease",
+          "crowd.thread.partialGatherFailureRollsBackWithoutSerialRetry",
+          "crowd.thread.predictiveVelocityAndBudgetAreBitExact",
+          "crowd.thread.partialVelocityFailureRollsBackClockAndMotion",
+          "crowd.thread.preferredBoidsSeekFlowAndHoldAreBitExact"
+        ]
+      },
+      "module": "crowd",
+      "origins": [
+        "CrowdThread.cpp"
+      ],
+      "task": "crowd-runtime"
+    },
+    "integration/map-navigation/map_navigation_snapshot.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "map.navigation.snapshotOwnsInputsAndOnlyVersionsChangedContent",
+          "map.navigation.snapshotRejectsAbsentAndMalformedSources",
+          "map.navigation.changeHintObservesLayerEditsWithoutCapturing"
+        ]
+      },
+      "module": "map",
+      "origins": [
+        "map_navigation_snapshot.cpp"
+      ],
+      "task": "map-navigation"
+    },
+    "profile/crowd_benchmark.cpp": {
+      "role": "compile-contract",
+      "default": "performance",
+      "cases": {},
+      "module": "crowd"
+    },
+    "profile/crowd_update_allocation.cpp": {
+      "role": "compile-contract",
+      "default": "module-composition",
+      "cases": {},
+      "module": "crowd"
+    },
+    "profile/result_policy_consumer.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "result.assertionPolicyInteropPreservesObservationAndMoveDuty"
+        ]
+      },
+      "module": "common"
+    },
+    "profile/result_policy_producer.cpp": {
+      "role": "compile-contract",
+      "default": "module-composition",
+      "cases": {},
+      "module": "common"
+    },
+    "profile/rts_battle_benchmark.cpp": {
+      "role": "compile-contract",
+      "default": "performance",
+      "cases": {},
+      "module": "crowd"
+    },
+    "integration/rts-crowd/rts_attack_slots.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "rts.attackSlots.frontPositionsAreUniqueAndRearCannotFire",
+          "rts.attackSlots.targetDestructionAndReplacementOrderExpireReservations",
+          "rts.attackSlots.waitingMembersNeverProduceRealWeaponFire",
+          "rts.attackSlots.mixedRadiiAndRangesKeepSmallUnitEligible"
+        ]
+      },
+      "module": "rts",
+      "origins": [
+        "rts_attack_slots.cpp"
+      ],
+      "task": "rts-crowd"
+    },
+    "integration/rts-crowd/rts_combat_suppression_aura.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "rts.combat.suppressionAuraUsesLiveProviderState"
+        ]
+      },
+      "module": "rts",
+      "origins": [
+        "rts_combat_suppression_aura.cpp"
+      ],
+      "task": "rts-crowd"
+    },
+    "integration/rts-crowd/rts_crowd_flow_groups.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "rts.crowd.groupWrongSlotStartsBoundedTerminalRouteAndKeepsItAcrossRefresh",
+          "rts.crowd.groupProjectionRejectsDuplicatesAtomicallyAndOldRouteEpoch",
+          "rts.crowd.movementGroupSharesBarrierRouteAndArrivesAtDistinctSlots",
+          "rts.crowd.groupDisconnectedAssignedSlotStopsAfterNearestSlotInsteadOfCompleting",
+          "rts.crowd.groupOldOrderAndReusedEntitySlotCannotReuseMemberProjection"
+        ]
+      },
+      "module": "rts",
+      "origins": [
+        "rts_crowd_flow_groups.cpp"
+      ],
+      "task": "rts-crowd"
+    },
+    "integration/rts-crowd/rts_crowd_flow_navigation.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "rts.crowd.sharedFlowStartsOldestRequestBeforeNewLowerKey",
+          "rts.crowd.failedPumpAndSameOwnerInputRepairDoNotRefundTickQuota",
+          "rts.crowd.sharedFlowWorkServesPersistentGoalsWhileLowerKeysChurn",
+          "rts.crowd.reconfigureAndClearReenableCannotRefundFailedTickWork",
+          "rts.crowd.disabledRetainedServiceDoesNotRequireCrowdProvider",
+          "rts.crowd.sharedStaticGoalsSpendOneQuotaAndReuseOneField",
+          "rts.crowd.sharedFlowUnreachableRetainsOrderAndNeverArrives",
+          "rts.crowd.sharedFlowMissingProjectionRejectsWithoutConsumingTick",
+          "rts.crowd.sharedFlowCheckpointRenewsOwnerAndRebindsCachedField",
+          "rts.crowd.sharedFlowCallbacksCanDestroyRecipientsWithoutStaleAccess",
+          "rts.crowd.sharedFlowCachePressurePreservesPreparedWorkAndOrder",
+          "rts.crowd.sharedFlowProviderReconstructionUsesFreshOwnerAndCachedState",
+          "rts.crowd.dynamicAttackGoalsReuseWithinCellAndRebuildAcrossCells",
+          "rts.crowd.sharedGoalResolverPreservesPatrolEscortAndThreatOverlayPolicy",
+          "rts.crowd.sharedSlotGoalSetsCanonicalizeAndKeepExactUnitDestinations",
+          "rts.crowd.sharedFlowQueuesMoreThan64GoalsWithoutRejectingTick",
+          "rts.crowd.sharedFlowWaitingGoalsKeep64BuilderLimit"
+        ],
+        "script-binding": [
+          "rts.crowd.scriptSharedFlowConfigurationHasExactQuotas"
+        ]
+      },
+      "module": "rts",
+      "origins": [
+        "rts_crowd_flow_navigation.cpp"
+      ],
+      "task": "rts-crowd"
+    },
+    "integration/rts-crowd/rts_crowd_registry.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "rts.crowd.providerDestructionIsObservableAndSafeInBothOrders",
+          "rts.crowd.invalidClockRejectsBeforeBindingOrIntentMutation",
+          "rts.crowd.cachedProjectionUsesCanonicalStateAfterSwapPop",
+          "rts.crowd.rebindingAndUnlinkInvalidateOldProjection",
+          "rts.crowd.duplicateBindingNamesRejectBeforeCreation"
+        ],
+        "script-binding": [
+          "rts.crowd.scriptRelocationUsesCheckedOwnerPlacement"
+        ]
+      },
+      "module": "rts",
+      "origins": [
+        "rts_crowd_registry.cpp"
+      ],
+      "task": "rts-crowd"
+    },
+    "integration/rts-crowd/rts_crowd_surface_adapter.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "rts.crowd.mapAdapterPreservesAdjacencyAndDestinationEntryCosts",
+          "rts.crowd.mapAdapterInflatesNavigationAndPublishesRawPhysicalGeometry",
+          "rts.crowd.surfaceTrackingPublishesOnlyOnChangedInputsAndRejectsBeforeSimulation",
+          "rts.crowd.surfaceTrackingRequiresProvidersAndRetainsSettingsAfterRejectedConfiguration"
+        ],
+        "script-binding": [
+          "rts.crowd.scriptTrackingSupportsWorldSetupAndCheckedConfiguration"
+        ]
+      },
+      "module": "rts",
+      "origins": [
+        "rts_crowd_surface_adapter.cpp"
+      ],
+      "task": "rts-crowd"
+    },
+    "integration/rts-crowd/rts_crowd_zero_delta.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "rts.crowd.zeroDeltaReconcilesOnlyReachedGoals"
+        ]
+      },
+      "module": "rts",
+      "origins": [
+        "rts_crowd_zero_delta.cpp"
+      ],
+      "task": "rts-crowd"
+    },
+    "integration/rts-crowd/rts_formation.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "rts.formation.largeTranslatedGridDoesNotReverseMarchingRows"
+        ]
+      },
+      "module": "rts",
+      "task": "rts-crowd"
+    },
+    "integration/rts-crowd/rts_group_attack_move.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "rts.groups.attackMoveAdmissionAndRestorePreserveOrders",
+          "rts.groups.attackMoveReplayV6RoundTripsAndRejectsV5CombinationAtomically",
+          "rts.groups.attackMoveEngagedMemberDoesNotHoldBackAdvancingMember",
+          "rts.groups.attackMoveArrivalRetiresMovingGroupAndKeepsCombatStance"
+        ]
+      },
+      "module": "rts",
+      "origins": [
+        "rts_group_attack_move.cpp"
+      ],
+      "task": "rts-crowd"
+    },
+    "integration/rts-crowd/rts_performance_semantics.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "rts.performanceSpatialQueriesMatchBruteForceAcrossNegativeAndRepeatedBuckets",
+          "rts.performanceFovIndexSurvivesOrderedRemovalMoveAndClear",
+          "rts.performanceOrderProjectionInvalidatesOnLifecycleAndSameIdRestore",
+          "rts.performanceSensingNodeIndexSurvivesUpsertEraseRestoreAndMove",
+          "rts.performanceOpenHeightmapMatchesHeightRayPathAndInvalidatesOnEdits",
+          "rts.performanceCasualtyBatchRepairsOwnedReferencesWithoutCrowdProvider",
+          "rts.performanceCasualtyBatchCrowdFailureLeavesReferencesAndRootsIntact",
+          "rts.performanceNestedPassengerCleanupKeepsRecursiveLifecycle"
+        ]
+      },
+      "module": "rts",
+      "origins": [
+        "rts_performance_semantics.cpp"
+      ],
+      "task": "rts-crowd"
+    },
+    "integration/rts-crowd/CrowdMotion.cpp": {
+      "role": "tests",
+      "default": "concurrency",
+      "cases": {
+        "script-binding": [
+          "rts.thread.scriptCrowdExecutionRequiresConfiguredWorldAndScheduler"
+        ],
+        "concurrency": [
+          "rts.crowd.parallelConsumerMatchesSerialMotionAndArrival",
+          "rts.crowd.parallelConsumerRejectsExpiredProviderWithoutPublishingMotion",
+          "rts.crowd.partialParallelGatherRollsBackBothConsumerPoses",
+          "rts.crowd.pendingSharedFlowFailurePreservesArrivalUntilPoseCommit",
+          "rts.crowd.dynamicArrivalObservesCompleteNewPoseSnapshot"
+        ]
+      },
+      "module": "rts",
+      "origins": [
+        "CrowdMotion.cpp"
+      ],
+      "task": "rts-crowd"
+    },
+    "integration/sensing/sensing_spatial_cells.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "sensing.spatialCellCandidatesMatchColdQueries"
+        ]
+      },
+      "module": "sensing",
+      "origins": [
+        "sensing_spatial_cells.cpp"
+      ],
+      "task": "sensing"
+    },
     "GraphicsWindowFixtures.cpp": {
       "role": "helper",
       "default": "render-window",
@@ -31,6 +608,24 @@
       "default": "render-offscreen",
       "cases": {},
       "module": "asset_graphics"
+    },
+    "unit/graphics/virtual_texture_streaming.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "graphics.virtual_texture_streaming.pack_feedback_roundtrip",
+          "graphics.virtual_texture_streaming.feedback_decode_publish_and_abandon",
+          "graphics.virtual_texture_streaming.evicts_lru_and_clears_page_table_first",
+          "graphics.virtual_texture_streaming.writer_invalidates_dirty_pages",
+          "graphics.virtual_texture_streaming.ingest_packed_feedback_collapses_mips"
+        ]
+      },
+      "module": "graphics",
+      "task": "gameplay-composition",
+      "origins": [
+        "virtual_texture_streaming.cpp"
+      ]
     },
     "asset_import/UnityFbxUnavailable.cpp": {
       "role": "compile-contract",
@@ -962,6 +1557,47 @@
         "tensor_llm.cpp"
       ]
     },
+    "integration/gameplay-composition/gameplay_composition_action_preview_profile_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "actionPreviewProfile.versionedSidecarRoundTripsAndRejectsUnknownVersion",
+          "actionPreviewProfile.compatibilityIsExplicitForExactRetargetedAndUnavailableProviders",
+          "actionPreviewProfile.sidecarStoreRoundTripsAndRejectsIdentityMismatch"
+        ]
+      },
+      "module": "action_editor",
+      "modules": [
+        "action",
+        "action_editor",
+        "animation"
+      ],
+      "task": "gameplay-composition",
+      "origins": [
+        "action_preview_profile.cpp"
+      ]
+    },
+    "integration/gameplay-composition/gameplay_composition_action_upper_body_orientation_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "actionMontage.upperBodyProfileReplacementIsTransactional",
+          "actionMontage.upperBodyCompensationObservesProviderMaskAndFullBodyPolicy",
+          "actionMontage.upperBodyCompensationRunsBeforeAdditiveLayersDeterministically"
+        ]
+      },
+      "module": "animation",
+      "modules": [
+        "action",
+        "animation"
+      ],
+      "task": "gameplay-composition",
+      "origins": [
+        "action_upper_body_orientation.cpp"
+      ]
+    },
     "integration/gameplay-composition/gameplay_composition_graphics_animation_inertializer_tests.cpp": {
       "role": "tests",
       "default": "module-composition",
@@ -970,10 +1606,12 @@
           "actionEditor.seedTargetExposesCanonicalProperties",
           "actionEditor.module_registers_automation_target_and_property_command",
           "actionGameEvent.validatesAndAppendsToPersistentLog",
-          "actionMontage.schemaV4RoundTripAndLegacyMigration",
+          "actionMontage.schemaV5RoundTripAndLegacyMigration",
           "actionMontage.settingsUpdateIsValidatedAndPreservesPreparedPlayback",
           "actionMontage.sectionSplitUpdateIsAtomicAndPreservesPreparedPlayback",
           "actionMontage.clipTrimAndBlendCurveUseAuthoredSectionDuration",
+          "actionMontage.sectionEnvelopesFadeAcrossGapsWithoutDippingAtContiguousBoundaries",
+          "actionMontage.blendCurvesAreStableAndClamped",
           "actionMontage.lowFrameRateSweepCrossesEveryBoundaryAndSection",
           "actionMontage.jumpSectionProgressAndInterruptedBlendOutKeepBlockPairs",
           "actionMontage.editorSectionsUseCanonicalUndoableTransactions",
@@ -995,6 +1633,8 @@
           "actionTimeline.versionedRoundTripAndDeterministicSampling",
           "actionTimeline.disabledItemsPersistAndDoNotProjectRuntimeState",
           "gameplayAction.advanceProjectsAuthoredTimelineBoundaries",
+          "gameplayAction.sectionTimingOverrideKeepsLifecycleEventsAndPresentationOnOneCursor",
+          "gameplayAction.sectionTimingOverrideChangesMidSectionWithoutCursorDiscontinuity",
           "actionTimelineEditor.editsPreviewAndUndoThroughCanonicalTarget",
           "actionTimelineEditor.editsPhysicalSectionSplitsAtomically",
           "actionTimelineEditor.movesAlignsAndScalesSelectionAtomically",
@@ -2656,6 +3296,26 @@
       ],
       "task": "offscreen-authoring",
       "origins": []
+    },
+    "integration/performance/performance_action_montage_tests.cpp": {
+      "role": "tests",
+      "default": "performance",
+      "cases": {
+        "performance": [
+          "actionMontage.preparedTopologyHandlesDenseSectionSweepsAndJumps",
+          "actionMontage.rvaluePresentTransfersOwningTimelineProjectionStorage",
+          "actionMontage.benchmarkPreparedPresentReportsP50P95AndMeasuredAllocationBoundary"
+        ]
+      },
+      "module": "animation",
+      "modules": [
+        "action",
+        "animation"
+      ],
+      "task": "performance",
+      "origins": [
+        "action_montage_performance.cpp"
+      ]
     },
     "integration/performance/performance_graphics_tests.cpp": {
       "role": "tests",
@@ -6030,6 +6690,7 @@
           "common.result.expectPreservesFailureAndHeaderLocation",
           "value.json_round_trip_preserves_all_supported_kinds",
           "value.object_order_and_numeric_kinds_are_deterministic",
+          "value.double_json_keeps_existing_canonical_bytes",
           "value_uses_the_common_json_parser_and_serializer",
           "value.rejects_duplicate_keys_invalid_json_and_non_finite_numbers",
           "presentation_value_is_the_common_value_without_a_second_storage",
@@ -6061,6 +6722,7 @@
           "common.result.compositionPreservesFailureStatus",
           "common.result.constConversionConstrainsValue",
           "common.result.voidStatusAndBoolCheck",
+          "common.result.statusCopiesRetainImmutableDiagnosticStorage",
           "common.runtimeHandle.invalidAndPackedBoundary",
           "common.runtimeHandle.bumpRejectsOverflow",
           "common.runtimeHandle.hashAndTypeIsolation",

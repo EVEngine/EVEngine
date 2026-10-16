@@ -13,6 +13,7 @@
 #include "animation/AnimImporter.h"
 #include "animation/AnimLayerMixer.h"
 #include "animation/AnimPose.h"
+#include "animation/AnimSkeleton.h"
 #include "animation/MontageCoordinator.h"
 #include "animation/MontagePlayer.h"
 #include "common/Capability.h"
@@ -197,6 +198,77 @@ void accumulateRootMotion(animation::TransformTRS& total, const animation::Trans
     total.qz       = tw * delta.qz + tx * delta.qy - ty * delta.qx + tz * delta.qw;
     total.qw       = tw * delta.qw - tx * delta.qx - ty * delta.qy - tz * delta.qz;
 }
+
+ActionPreviewSkeleton previewSkeleton(std::string uri, const animation::AnimSkeleton& skeleton) {
+    ActionPreviewSkeleton snapshot;
+    snapshot.sourceUri = std::move(uri);
+    snapshot.bones.reserve(static_cast<std::size_t>(skeleton.getBoneCount()));
+    for (int index = 0; index < skeleton.getBoneCount(); ++index)
+        snapshot.bones.push_back({skeleton.getBoneName(index), skeleton.getParent(index)});
+    return snapshot;
+}
+
+class RegisteredActionPreviewAssets final : public IActionPreviewAssetProvider {
+public:
+    [[nodiscard]] bool empty() const noexcept {
+        return models_.empty() && animations_.empty() && masks_.empty();
+    }
+
+    void registerModel(std::string uri, const animation::AnimSkeleton& skeleton) {
+        auto snapshot = previewSkeleton(uri, skeleton);
+        models_.insert_or_assign(std::move(uri), std::move(snapshot));
+    }
+
+    void registerAnimation(std::string uri, const animation::AnimSkeleton& skeleton) {
+        auto snapshot = previewSkeleton(uri, skeleton);
+        animations_.insert_or_assign(std::move(uri), std::move(snapshot));
+    }
+
+    void registerMask(std::string uri, const animation::AnimSkeleton& skeleton) {
+        auto snapshot = previewSkeleton(uri, skeleton);
+        masks_.insert_or_assign(std::move(uri), std::move(snapshot));
+    }
+
+    Result<ActionPreviewSkeleton> modelSkeleton(std::string_view uri) override {
+        return resolve(models_, uri, "preview model skeleton is not registered");
+    }
+
+    Result<ActionPreviewSkeleton> animationSkeleton(std::string_view uri) override {
+        return resolve(animations_, uri, "preview animation skeleton is not registered");
+    }
+
+    Result<void> validateBoneMask(std::string_view uri, const ActionPreviewSkeleton& target) override {
+        const auto found = masks_.find(std::string(uri));
+        if (found == masks_.end())
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "preview bone mask is not registered", std::string(uri)));
+        const auto& mask = found->second;
+        if (mask.bones.size() != target.bones.size())
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "preview bone mask targets a different skeleton", std::string(uri)));
+        for (std::size_t index = 0; index < target.bones.size(); ++index)
+            if (mask.bones[index] != target.bones[index])
+                return Result<void>::failure(Diagnostic::error(
+                    DiagnosticCode::Conflict, "preview bone mask targets a different skeleton", std::string(uri)));
+        return Result<void>::success();
+    }
+
+private:
+    using SkeletonMap = std::unordered_map<std::string, ActionPreviewSkeleton>;
+
+    static Result<ActionPreviewSkeleton> resolve(const SkeletonMap& snapshots, std::string_view uri,
+                                                  std::string message) {
+        const auto found = snapshots.find(std::string(uri));
+        if (found == snapshots.end())
+            return Result<ActionPreviewSkeleton>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, std::move(message), std::string(uri)));
+        return Result<ActionPreviewSkeleton>::success(found->second);
+    }
+
+    SkeletonMap models_;
+    SkeletonMap animations_;
+    SkeletonMap masks_;
+};
 
 class ScriptActionTimelineEditor {
 public:
@@ -427,6 +499,72 @@ public:
         return previewController_ ? previewController_->refresh() : eve::editing::noOp();
     }
 
+    [[nodiscard]] Result<void> configurePreviewProfile(ActionPreviewProfile profile) {
+        ActionPreviewCompatibilityAnalyzer analyzer;
+        auto* provider = previewAssetProvider();
+        auto report = analyzer.analyze(editor_.target().timeline(), profile, provider);
+        if (!report) return Result<void>::failure(report.status());
+        if (previewController_) {
+            auto configured = previewController_->configureProfile(profile);
+            if (!configured) return configured;
+        }
+        previewProfile_       = std::move(profile);
+        previewCompatibility_ = std::move(report).takeValue();
+        return eve::editing::applied<void>();
+    }
+
+    [[nodiscard]] Result<void> registerPreviewModelSkeleton(std::string uri,
+                                                            const animation::AnimSkeleton& skeleton) {
+        if (uri.empty())
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "preview model URI must not be empty", "previewModelUri"));
+        auto candidate = previewAssets_;
+        candidate.registerModel(std::move(uri), skeleton);
+        auto report = compatibilityFor(candidate);
+        if (!report) return Result<void>::failure(report.status());
+        previewAssets_ = std::move(candidate);
+        if (report.value()) previewCompatibility_ = std::move(*report.value());
+        return Result<void>::success(Status::success(StatusCode::Applied));
+    }
+
+    [[nodiscard]] Result<void> registerPreviewBoneMask(std::string uri, const animation::AnimBoneMask& mask) {
+        if (uri.empty() || !mask.getSkeleton())
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "preview mask URI and skeleton are required", "boneMaskUri"));
+        auto candidate = previewAssets_;
+        candidate.registerMask(std::move(uri), *mask.getSkeleton());
+        auto report = compatibilityFor(candidate);
+        if (!report) return Result<void>::failure(report.status());
+        previewAssets_ = std::move(candidate);
+        if (report.value()) previewCompatibility_ = std::move(*report.value());
+        return Result<void>::success(Status::success(StatusCode::Applied));
+    }
+
+    [[nodiscard]] Result<Value> previewProfileSnapshot() const {
+        if (!previewProfile_)
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "no action preview profile is configured", "previewProfile"));
+        return previewProfile_->toValue();
+    }
+
+    [[nodiscard]] Result<void> savePreviewProfile(const std::filesystem::path& projectRoot) const {
+        if (!previewProfile_)
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "no action preview profile is configured", "previewProfile"));
+        return ActionPreviewProfileStore(projectRoot).save(*previewProfile_);
+    }
+
+    [[nodiscard]] Result<void> loadPreviewProfile(const std::filesystem::path& projectRoot,
+                                                  const AssetGuid& actionAsset) {
+        auto loaded = ActionPreviewProfileStore(projectRoot).load(actionAsset);
+        if (!loaded) return Result<void>::failure(loaded.status());
+        return configurePreviewProfile(std::move(loaded).takeValue());
+    }
+
+    [[nodiscard]] const std::optional<ActionPreviewCompatibilityReport>& previewCompatibility() const noexcept {
+        return previewCompatibility_;
+    }
+
     [[nodiscard]] Result<void> registerRuntimeClip(std::string uri, model3d::ModelData& model,
                                                    animation::AnimSkeleton& skeleton, int animationIndex) {
         if (uri.empty())
@@ -440,6 +578,10 @@ public:
         if (!clip)
             return Result<void>::failure(
                 Diagnostic::error(DiagnosticCode::Failed, "montage clip import produced no animation", uri));
+        auto previewCandidate = previewAssets_;
+        previewCandidate.registerAnimation(uri, skeleton);
+        auto previewReport = compatibilityFor(previewCandidate);
+        if (!previewReport) return Result<void>::failure(previewReport.status());
         const auto found = std::find_if(runtimeClips_.begin(), runtimeClips_.end(),
                                         [&](const auto& asset) { return asset.uri == uri; });
         if (auto* montage = activeMontage()) {
@@ -448,6 +590,8 @@ public:
         }
         if (found == runtimeClips_.end()) runtimeClips_.push_back({std::move(uri), std::move(clip)});
         else found->clip = std::move(clip);
+        previewAssets_ = std::move(previewCandidate);
+        if (previewReport.value()) previewCompatibility_ = std::move(*previewReport.value());
         return Result<void>::success(Status::success(StatusCode::Applied));
     }
 
@@ -477,7 +621,7 @@ public:
         runtimeAdvance_.reset();
         runtimeRate_   = timeline.montage.basePlayRate;
         runtimePaused_ = false;
-        sectionRates_.clear();
+        sectionTargetDurations_.clear();
         return restartExecution();
     }
 
@@ -498,37 +642,23 @@ public:
             paused.weight                    = montage->weight();
             return Result<animation::MontageAdvance>::success(std::move(paused), Status::success(StatusCode::NoOp));
         }
-        double sectionRate  = 1.0;
-        auto   sectionIndex = montage->physicalSectionIndex();
-        if (sectionIndex) {
-            const auto found = sectionRates_.find(sectionIndex.value());
-            if (found != sectionRates_.end()) sectionRate = found->second;
-        }
-        auto scaledDelta = Duration::fromSeconds(delta.seconds() * runtimeRate_ * sectionRate);
+        auto scaledDelta = Duration::fromSeconds(delta.seconds() * runtimeRate_);
         if (!scaledDelta) return Result<animation::MontageAdvance>::failure(scaledDelta.status());
         Duration                  remainingDelta = std::move(scaledDelta).takeValue();
         animation::MontageAdvance combined;
         combined.previous = montage->time();
         bool firstSlice   = true;
         while (true) {
-            Duration remainingTimeline =
-                Duration::fromNanoseconds(runtimeTimeline_->duration.nanoseconds() - montage->time().nanoseconds());
-            if (runtimeTimeline_->montage.looping && remainingTimeline.isZero()) {
-                auto restarted = restartExecution();
-                if (!restarted) return Result<animation::MontageAdvance>::failure(restarted.status());
-                montage = activeMontage();
-                remainingTimeline = runtimeTimeline_->duration;
-            }
-            const Duration slice =
-                runtimeTimeline_->montage.looping ? std::min(remainingDelta, remainingTimeline) : remainingDelta;
             tick_              = SimulationTick(tick_.value() + 1);
-            auto actionAdvance = runtime_->advance(executionId_, tick_, slice);
+            auto actionAdvance = runtime_->advance(executionId_, tick_, remainingDelta);
             if (!actionAdvance) return Result<animation::MontageAdvance>::failure(actionAdvance.status());
             auto routed = routeAvailableBlocks(actionAdvance.value());
             if (!routed) return Result<animation::MontageAdvance>::failure(routed.status());
-            auto presented = coordinator_->present(montageHandle_, actionAdvance.value(), tick_);
+            const Duration inputConsumed = actionAdvance.value().inputConsumed;
+            const auto     phase         = actionAdvance.value().phase;
+            auto presented = coordinator_->present(montageHandle_, std::move(actionAdvance).takeValue(), tick_);
             if (!presented) return Result<animation::MontageAdvance>::failure(presented.status());
-            auto faded = coordinator_->advanceBlendOuts(slice, tick_, montageHandle_);
+            auto faded = coordinator_->advanceBlendOuts(inputConsumed, tick_, montageHandle_);
             if (!faded) return Result<animation::MontageAdvance>::failure(faded.status());
             auto value = std::move(presented).takeValue();
             if (firstSlice) {
@@ -544,11 +674,18 @@ public:
                 combined.weight    = value.weight;
                 combined.completed = value.completed;
             }
-            if (!runtimeTimeline_->montage.looping || remainingDelta <= slice) break;
-
-            remainingDelta = Duration::fromNanoseconds(remainingDelta.nanoseconds() - slice.nanoseconds());
+            if (!runtimeTimeline_->montage.looping || phase != action::ActionPhase::Completed ||
+                remainingDelta <= inputConsumed)
+                break;
+            if (inputConsumed.isZero())
+                return Result<animation::MontageAdvance>::failure(
+                    Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                      "looping action completed without consuming simulation time", "runtime"));
+            remainingDelta = Duration::fromNanoseconds(
+                remainingDelta.nanoseconds() - inputConsumed.nanoseconds());
             auto restarted = restartExecution();
             if (!restarted) return Result<animation::MontageAdvance>::failure(restarted.status());
+            montage = activeMontage();
         }
         if (runtimeTimeline_->montage.looping && combined.completed) {
             auto restarted = restartExecution();
@@ -590,9 +727,21 @@ public:
         if (!restarted) return Result<animation::MontageAdvance>::failure(restarted.status());
         auto rebound = montage->rebindExecution(executionId_);
         if (!rebound) return Result<animation::MontageAdvance>::failure(rebound.status());
+        // A jump target is an authored cursor, not elapsed simulation time.
+        // Temporarily remove retiming so replaying the fresh execution lands
+        // on the exact requested timeline position, then restore overrides.
+        for (const auto& [sectionIndex, ignored] : sectionTargetDurations_) {
+            (void)ignored;
+            auto cleared = runtime_->clearSectionTimingOverride(executionId_, sectionIndex);
+            if (!cleared) return Result<animation::MontageAdvance>::failure(cleared.status());
+        }
         tick_         = SimulationTick(tick_.value() + 1);
         auto advanced = runtime_->advance(executionId_, tick_, target);
         if (!advanced) return Result<animation::MontageAdvance>::failure(advanced.status());
+        for (const auto& [sectionIndex, targetDuration] : sectionTargetDurations_) {
+            auto restored = runtime_->setSectionTimingOverride(executionId_, sectionIndex, targetDuration);
+            if (!restored) return Result<animation::MontageAdvance>::failure(restored.status());
+        }
         auto routed = routeAvailableBlocks(advanced.value());
         if (!routed) return Result<animation::MontageAdvance>::failure(routed.status());
         auto jumped = montage->jumpToTime(executionId_, target, tick_);
@@ -636,31 +785,33 @@ public:
         if (!runtimeTimeline_)
             return Result<void>::failure(
                 Diagnostic::error(DiagnosticCode::Conflict, "montage runtime has not been started", "runtime"));
-        if (targetDuration <= Duration::zero())
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                           "target section duration must be positive", "duration"));
-        auto range = runtimeTimeline_->sectionRange(index);
-        if (!range) return Result<void>::failure(range.status());
-        const double raw     = (range.value().second.seconds() - range.value().first.seconds());
-        sectionRates_[index] = raw / targetDuration.seconds();
-        return Result<void>::success(Status::success(StatusCode::Applied));
+        if (!runtime_ || executionId_.isZero())
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "montage runtime has not been started", "runtime"));
+        auto synchronized = runtime_->setSectionTimingOverride(executionId_, index, targetDuration);
+        if (synchronized) sectionTargetDurations_[index] = targetDuration;
+        return synchronized;
     }
 
     [[nodiscard]] Result<animation::MontageAdvance> syncRuntimeSectionAndJump(std::size_t index,
                                                                               Duration targetDuration) {
+        auto jumped = jumpRuntimeSection(index);
+        if (!jumped) return jumped;
         auto synchronized = syncRuntimeSection(index, targetDuration);
         if (!synchronized) return Result<animation::MontageAdvance>::failure(synchronized.status());
-        return jumpRuntimeSection(index);
+        return jumped;
     }
 
     [[nodiscard]] Result<void> clearRuntimeSectionSync(std::size_t index) {
         if (!runtimeTimeline_)
             return Result<void>::failure(
                 Diagnostic::error(DiagnosticCode::Conflict, "montage runtime has not been started", "runtime"));
-        auto range = runtimeTimeline_->sectionRange(index);
-        if (!range) return Result<void>::failure(range.status());
-        return Result<void>::success(Status::success(sectionRates_.erase(index) > 0 ? StatusCode::Applied
-                                                                                   : StatusCode::NoOp));
+        if (!runtime_ || executionId_.isZero())
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "montage runtime has not been started", "runtime"));
+        auto cleared = runtime_->clearSectionTimingOverride(executionId_, index);
+        if (cleared) sectionTargetDurations_.erase(index);
+        return cleared;
     }
 
     [[nodiscard]] Result<void> setRuntimeBoneMask(const animation::AnimBoneMask& mask) {
@@ -799,14 +950,32 @@ public:
     }
 
     [[nodiscard]] Result<double> runtimeSectionProgress(std::size_t index) const {
-        const auto* montage = activeMontage();
-        if (!montage)
+        if (!runtime_ || executionId_.isZero())
             return Result<double>::failure(
                 Diagnostic::error(DiagnosticCode::Conflict, "montage runtime has not been started", "runtime"));
-        return montage->physicalSectionProgress(index);
+        return runtime_->sectionProgress(executionId_, index);
     }
 
 private:
+    [[nodiscard]] IActionPreviewAssetProvider* previewAssetProvider() noexcept {
+        if (auto* provider = cap::query<IActionPreviewAssetProvider>()) return provider;
+        return previewAssets_.empty() ? nullptr : &previewAssets_;
+    }
+
+    [[nodiscard]] Result<std::optional<ActionPreviewCompatibilityReport>> compatibilityFor(
+        RegisteredActionPreviewAssets& candidate) {
+        if (!previewProfile_)
+            return Result<std::optional<ActionPreviewCompatibilityReport>>::success(std::nullopt);
+        ActionPreviewCompatibilityAnalyzer analyzer;
+        auto* provider = cap::query<IActionPreviewAssetProvider>();
+        if (!provider) provider = &candidate;
+        auto report = analyzer.analyze(editor_.target().timeline(), *previewProfile_, provider);
+        if (!report)
+            return Result<std::optional<ActionPreviewCompatibilityReport>>::failure(report.status());
+        return Result<std::optional<ActionPreviewCompatibilityReport>>::success(
+            std::move(report).takeValue());
+    }
+
     [[nodiscard]] animation::MontagePlayer* activeMontage() noexcept {
         if (!coordinator_ || !montageHandle_.isValid()) return nullptr;
         auto resolved = coordinator_->resolve(montageHandle_);
@@ -892,6 +1061,10 @@ private:
         }
         runtime_     = std::move(runtime);
         executionId_ = submitted.value();
+        for (const auto& [sectionIndex, targetDuration] : sectionTargetDurations_) {
+            auto restored = runtime_->setSectionTimingOverride(executionId_, sectionIndex, targetDuration);
+            if (!restored) return Result<void>::failure(restored.status());
+        }
         return Result<void>::success(Status::success(StatusCode::Applied));
     }
 
@@ -908,6 +1081,7 @@ private:
         handled.phase        = advance.phase;
         handled.phaseElapsed = advance.phaseElapsed;
         handled.totalElapsed = advance.totalElapsed;
+        handled.inputConsumed = advance.inputConsumed;
         for (const auto& event : advance.timelineEvents)
             if (playback_.registry().hasHandler(event.type.format()) &&
                 !externallyHandledTypes_.contains(event.type.format()))
@@ -925,6 +1099,9 @@ private:
     std::unique_ptr<action::IActionPreviewSink> previewSink_;
     std::unique_ptr<ActionPreviewController>    previewController_;
     std::optional<Status>                       previewInitializationFailure_;
+    std::optional<ActionPreviewProfile>         previewProfile_;
+    std::optional<ActionPreviewCompatibilityReport> previewCompatibility_;
+    RegisteredActionPreviewAssets             previewAssets_;
     std::vector<animation::MontageClipAsset>  runtimeClips_;
     std::unique_ptr<action::ActionRuntime>    runtime_;
     std::unique_ptr<animation::MontageCoordinator> coordinator_;
@@ -934,7 +1111,7 @@ private:
     SimulationTick                            tick_ = SimulationTick::zero();
     std::optional<animation::MontageAdvance>  runtimeAdvance_;
     std::optional<action::ActionTimeline>     runtimeTimeline_;
-    std::unordered_map<std::size_t, double>   sectionRates_;
+    std::unordered_map<std::size_t, Duration> sectionTargetDurations_;
     std::set<std::string, std::less<>>        externallyHandledTypes_;
     double                                    runtimeRate_   = 1.0;
     bool                                      runtimePaused_ = false;
@@ -1378,6 +1555,74 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
     actionEditor.addFunc("hasPreviewHost", [](ScriptActionTimelineEditor* self) {
         return self && self->hasPreviewHost();
     });
+    actionEditor.addFunc("configurePreviewProfile",
+                         [vm](ScriptActionTimelineEditor* self, const ssq::Object& profileObject) {
+        if (!self)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                  "action timeline editor must not be null");
+        script::SquirrelValueOptions options;
+        options.source = kBindingSource;
+        auto value = script::valueFromSquirrel(profileObject, options);
+        if (!value) return script::projectStatusResult(vm, value.status());
+        auto profile = ActionPreviewProfile::fromValue(value.value());
+        if (!profile) return script::projectStatusResult(vm, profile.status());
+        return project(vm, self->configurePreviewProfile(std::move(profile).takeValue()));
+    });
+    actionEditor.addFunc("previewProfile", [vm](ScriptActionTimelineEditor* self) {
+        if (!self)
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                  "action timeline editor must not be null");
+        return script::projectResult(vm, self->previewProfileSnapshot(), [](Value value) { return value; });
+    });
+    actionEditor.addFunc("savePreviewProfile",
+                         [vm](ScriptActionTimelineEditor* self, const std::string& projectRoot) {
+        if (!self || projectRoot.empty())
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                  "editor and project root are required", "projectRoot");
+        return project(vm, self->savePreviewProfile(std::filesystem::path(projectRoot)));
+    });
+    actionEditor.addFunc("loadPreviewProfile",
+                         [vm](ScriptActionTimelineEditor* self, const std::string& projectRoot,
+                              const std::string& actionAssetGuid) {
+        if (!self || projectRoot.empty() || actionAssetGuid.empty())
+            return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                  "editor, project root and action asset guid are required", "previewProfile");
+        return project(vm, self->loadPreviewProfile(std::filesystem::path(projectRoot),
+                                                    AssetGuid(actionAssetGuid)));
+    });
+    actionEditor.addFunc("canPreviewProfile", [](ScriptActionTimelineEditor* self) {
+        return self && self->previewCompatibility() && self->previewCompatibility()->canPreview();
+    });
+    actionEditor.addFunc("getPreviewCompatibilityCount", [](ScriptActionTimelineEditor* self) {
+        return self && self->previewCompatibility()
+                   ? static_cast<int>(self->previewCompatibility()->sections.size())
+                   : 0;
+    });
+    actionEditor.addFunc("getPreviewCompatibilitySectionId", [](ScriptActionTimelineEditor* self, int index) {
+        if (!self || !self->previewCompatibility() || index < 0 ||
+            static_cast<std::size_t>(index) >= self->previewCompatibility()->sections.size())
+            return std::string{};
+        return self->previewCompatibility()->sections[static_cast<std::size_t>(index)].sectionId.format();
+    });
+    actionEditor.addFunc("getPreviewCompatibilityStatus", [](ScriptActionTimelineEditor* self, int index) {
+        if (!self || !self->previewCompatibility() || index < 0 ||
+            static_cast<std::size_t>(index) >= self->previewCompatibility()->sections.size())
+            return std::string("unavailable");
+        switch (self->previewCompatibility()->sections[static_cast<std::size_t>(index)].compatibility) {
+            case ActionPreviewCompatibility::Compatible: return std::string("compatible");
+            case ActionPreviewCompatibility::Retargetable: return std::string("retargetable");
+            case ActionPreviewCompatibility::Incompatible: return std::string("incompatible");
+            case ActionPreviewCompatibility::Unsupported: return std::string("unsupported");
+        }
+        return std::string("unsupported");
+    });
+    actionEditor.addFunc("getPreviewCompatibilityMessage", [](ScriptActionTimelineEditor* self, int index) {
+        if (!self || !self->previewCompatibility() || index < 0 ||
+            static_cast<std::size_t>(index) >= self->previewCompatibility()->sections.size())
+            return std::string{};
+        const auto& diagnostics = self->previewCompatibility()->sections[static_cast<std::size_t>(index)].diagnostics;
+        return diagnostics.empty() ? std::string{} : diagnostics.front().message();
+    });
     actionEditor.addFunc("snapshot", [vm](ScriptActionTimelineEditor* self) {
         if (!self)
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "action timeline editor must not be null");
@@ -1394,6 +1639,22 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         return script::projectResult(vm, std::move(encoded),
                                      [](std::string value) { return Value(std::move(value)); });
     });
+    actionEditor.addFunc(
+        "registerPreviewModelSkeleton",
+        [vm](ScriptActionTimelineEditor* self, const std::string& uri, animation::AnimSkeleton* skeleton) {
+            if (!self || !skeleton)
+                return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                      "editor and skeleton must not be null", "previewModel");
+            return script::projectResult(vm, self->registerPreviewModelSkeleton(uri, *skeleton));
+        });
+    actionEditor.addFunc(
+        "registerPreviewBoneMask",
+        [vm](ScriptActionTimelineEditor* self, const std::string& uri, animation::AnimBoneMask* mask) {
+            if (!self || !mask)
+                return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                      "editor and bone mask must not be null", "boneMask");
+            return script::projectResult(vm, self->registerPreviewBoneMask(uri, *mask));
+        });
     actionEditor.addFunc(
         "registerRuntimeClip", [vm](ScriptActionTimelineEditor* self, const std::string& uri, model3d::ModelData* model,
                                     animation::AnimSkeleton* skeleton, int animationIndex) {
@@ -1811,6 +2072,10 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         const auto* section = self ? sectionAt(self->editor().target().timeline(), index) : nullptr;
         return section ? static_cast<float>(section->blendIn.seconds()) : 0.0f;
     });
+    actionEditor.addFunc("getAnimationSectionBlendOut", [](ScriptActionTimelineEditor* self, int index) {
+        const auto* section = self ? sectionAt(self->editor().target().timeline(), index) : nullptr;
+        return section ? static_cast<float>(section->blendOut.seconds()) : 0.0f;
+    });
     actionEditor.addFunc("getAnimationSectionSourceStart", [](ScriptActionTimelineEditor* self, int index) {
         const auto* section = self ? sectionAt(self->editor().target().timeline(), index) : nullptr;
         return section ? static_cast<float>(section->sourceStart.seconds()) : 0.0f;
@@ -1821,7 +2086,15 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
     });
     actionEditor.addFunc("getAnimationSectionBlendCurve", [](ScriptActionTimelineEditor* self, int index) {
         const auto* section = self ? sectionAt(self->editor().target().timeline(), index) : nullptr;
-        return section ? std::string(action::actionBlendCurveName(section->blendCurve)) : std::string{};
+        return section ? std::string(action::actionBlendCurveName(section->blendInCurve)) : std::string{};
+    });
+    actionEditor.addFunc("getAnimationSectionBlendInCurve", [](ScriptActionTimelineEditor* self, int index) {
+        const auto* section = self ? sectionAt(self->editor().target().timeline(), index) : nullptr;
+        return section ? std::string(action::actionBlendCurveName(section->blendInCurve)) : std::string{};
+    });
+    actionEditor.addFunc("getAnimationSectionBlendOutCurve", [](ScriptActionTimelineEditor* self, int index) {
+        const auto* section = self ? sectionAt(self->editor().target().timeline(), index) : nullptr;
+        return section ? std::string(action::actionBlendCurveName(section->blendOutCurve)) : std::string{};
     });
     actionEditor.addFunc("addAnimationSection", [vm](ScriptActionTimelineEditor* self, const std::string& sectionId,
                                                      const std::string& animationUri, float startSeconds,
@@ -1886,6 +2159,26 @@ void exposeActionTimelineScriptBindings(ssq::Table& table, ssq::Class& moduleCla
         return project(
             vm, self->editor().editAnimationSectionSource(*parsed, sourceStart.value(), sourceEnd.value(), *curve));
     });
+    actionEditor.addFunc(
+        "editAnimationSectionEnvelope",
+        [vm](ScriptActionTimelineEditor* self, const std::string& sectionId, float blendInSeconds,
+             float blendOutSeconds, const std::string& blendInCurve, const std::string& blendOutCurve) {
+            if (!self)
+                return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                      "action timeline editor must not be null");
+            auto parsed    = LogicalId::parse(sectionId);
+            auto inCurve   = action::actionBlendCurveFromName(blendInCurve);
+            auto outCurve  = action::actionBlendCurveFromName(blendOutCurve);
+            auto blendIn   = seconds(blendInSeconds);
+            auto blendOut  = seconds(blendOutSeconds);
+            if (!parsed || !inCurve || !outCurve)
+                return bindingFailure(vm, DiagnosticCode::InvalidArgument,
+                                      "section id or envelope curve is invalid", "sectionEnvelope");
+            if (!blendIn) return script::projectStatusResult(vm, blendIn.status());
+            if (!blendOut) return script::projectStatusResult(vm, blendOut.status());
+            return project(vm, self->editor().editAnimationSectionEnvelope(*parsed, blendIn.value(), blendOut.value(),
+                                                                           *inCurve, *outCurve));
+        });
     actionEditor.addFunc("getTrackCount", [](ScriptActionTimelineEditor* self) {
         return self ? static_cast<int>(self->editor().target().timeline().tracks.size()) : 0;
     });

@@ -6,6 +6,7 @@
 
 #include "animation/MontagePlayer.h"
 #include "animation/RootMotionPolicy.h"
+#include "animation/UpperBodyOrientationCompensator.h"
 #include "common/RuntimeHandle.h"
 
 #include <cstddef>
@@ -17,6 +18,15 @@
 namespace eve::animation {
 
 class AnimBoneMask;
+
+/** @brief Semantic composition role used by upper-body orientation policy. */
+enum class MontageLayerRole { Generic, UpperBody, FullBody, Additive };
+
+/** @brief Origin of a layer mask; procedural upper-body masks permit orientation compensation. */
+enum class MontageBoneMaskSource { None, ProceduralUpperBody, Custom };
+
+/** @brief Observable outcome of the most recent upper-body orientation evaluation. */
+enum class UpperBodyOrientationStatus { Unconfigured, Inactive, Applied, BypassedCustomMask, BypassedFullBody };
 
 /** @brief MontageHandleTag public API. */
 struct MontageHandleTag {};
@@ -49,6 +59,14 @@ public:
     /** @brief Present one authoritative action advance through a live slot. */
     [[nodiscard]] Result<MontageAdvance> present(MontageHandle handle, const action::ActionAdvance& advance,
                                                  SimulationTick tick);
+    /**
+     * @brief Present one authoritative action advance and transfer its owning timeline projections.
+     * @param handle Live generation-qualified montage identity.
+     * @param advance Consumed observation whose event and active-block vectors move into the result.
+     * @param tick Strictly increasing simulation tick.
+     */
+    [[nodiscard]] Result<MontageAdvance> present(MontageHandle handle, action::ActionAdvance&& advance,
+                                                 SimulationTick tick);
     /** @brief Advance every fading slot except an optional slot already advanced by its owner. */
     [[nodiscard]] Result<void> advanceBlendOuts(Duration delta, SimulationTick tick,
                                                 MontageHandle except = MontageHandle::invalid());
@@ -70,6 +88,35 @@ public:
     [[nodiscard]] Result<void> clearLayerBoneMask(std::size_t layer);
     /** @brief Return an owning copy of one configured layer mask. */
     [[nodiscard]] Result<std::vector<float>> layerBoneMask(std::size_t layer) const;
+    /**
+     * @brief Snapshot a standard procedural upper-body mask and permit orientation compensation on this layer.
+     * @param layer Layer index, created on demand.
+     * @param mask Immediate borrowed mask targeting the coordinator skeleton; no reference is retained.
+     * @return Applied, or InvalidArgument without changing mask provenance.
+     */
+    [[nodiscard]] Result<void> setLayerProceduralUpperBodyMask(std::size_t layer, const AnimBoneMask& mask);
+    /** @brief Return the observable origin of a configured layer mask, or NotFound for an absent layer. */
+    [[nodiscard]] Result<MontageBoneMaskSource> layerBoneMaskSource(std::size_t layer) const;
+    /**
+     * @brief Assign semantic composition policy to a layer without changing its animation data.
+     * @param layer Layer index, created on demand.
+     * @param role Role controlling override/additive order and orientation policy; UpperBody and FullBody are unique.
+     * @return Applied/NoOp, Conflict for a duplicate unique role, or InvalidArgument for an invalid layer.
+     */
+    [[nodiscard]] Result<void> setLayerRole(std::size_t layer, MontageLayerRole role);
+    /** @brief Return one layer's semantic composition role, or NotFound for an absent layer. */
+    [[nodiscard]] Result<MontageLayerRole> layerRole(std::size_t layer) const;
+    /**
+     * @brief Transactionally resolve and publish the skeleton profile used for upper-body orientation correction.
+     * @details Profile strings are borrowed only during this call. No provider or profile reference is retained.
+     */
+    [[nodiscard]] Result<void> configureUpperBodyOrientation(const UpperBodyOrientationProfile& profile);
+    /** @brief Remove the optional orientation profile; subsequent composition remains valid and reports Unconfigured. */
+    void clearUpperBodyOrientation() noexcept;
+    /** @brief Return the result of the most recent compose-time orientation policy evaluation. */
+    [[nodiscard]] UpperBodyOrientationStatus upperBodyOrientationStatus() const noexcept {
+        return upperBodyOrientationStatus_;
+    }
     /**
      * @brief Set one layer's finite global influence.
      * @param layer Layer index, created on demand.
@@ -126,6 +173,7 @@ private:
     struct Slot {
         std::unique_ptr<MontagePlayer> player;
         MontageHandle::generation_type generation = 1;
+        bool                           live       = false;
         bool                           retired    = false;
     };
     struct Layer {
@@ -135,6 +183,8 @@ private:
         std::unique_ptr<AnimPose>   rawPose;
         std::unique_ptr<AnimPose>   blendScratch;
         std::vector<float>        boneMask;
+        MontageBoneMaskSource     boneMaskSource     = MontageBoneMaskSource::None;
+        MontageLayerRole          role               = MontageLayerRole::Generic;
         float                           weight             = 1.0f;
         bool                            additive           = false;
         IMontageRootMotionReceiver*     rootMotionReceiver = nullptr;
@@ -155,6 +205,8 @@ private:
     AnimSkeleton&      skeleton_;
     std::vector<Layer> layers_;
     std::unique_ptr<AnimPose> composedPose_;
+    UpperBodyOrientationCompensator upperBodyOrientation_;
+    UpperBodyOrientationStatus upperBodyOrientationStatus_ = UpperBodyOrientationStatus::Unconfigured;
 };
 
 }  // namespace eve::animation
