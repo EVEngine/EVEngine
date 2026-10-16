@@ -10325,7 +10325,8 @@
       },
       "origins": [
         "procgen_road_authoring.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "unit/procgen/procgen_road_bundled_circular.cpp": {
       "module": "procgen",
@@ -10357,7 +10358,8 @@
       },
       "origins": [
         "procgen_road_circular.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "unit/procgen/procgen_road_circular_ghost.cpp": {
       "module": "procgen",
@@ -10392,7 +10394,8 @@
       },
       "origins": [
         "procgen_road_connections.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "integration/gameplay-composition/procgen_road_controllers.cpp": {
       "modules": [
@@ -10410,7 +10413,8 @@
       },
       "origins": [
         "procgen_road_controllers.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "integration/gameplay-composition/procgen_road_extensions.cpp": {
       "modules": [
@@ -10433,7 +10437,8 @@
       },
       "origins": [
         "procgen_road_extensions.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "integration/gameplay-composition/procgen_road_full_roll.cpp": {
       "modules": [
@@ -10451,7 +10456,8 @@
       },
       "origins": [
         "procgen_road_full_roll.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "unit/procgen/procgen_road_geometry_artifact.cpp": {
       "module": "procgen",
@@ -10519,7 +10525,8 @@
       },
       "origins": [
         "procgen_road_junction_style.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "integration/gameplay-composition/procgen_road_noop.cpp": {
       "modules": [
@@ -10540,7 +10547,8 @@
       },
       "origins": [
         "procgen_road_noop.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "integration/gameplay-composition/procgen_road_parameter_sampling.cpp": {
       "modules": [
@@ -10559,7 +10567,8 @@
       },
       "origins": [
         "procgen_road_parameter_sampling.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "unit/procgen/procgen_road_placement_anchors.cpp": {
       "module": "procgen",
@@ -10597,7 +10606,8 @@
       },
       "origins": [
         "procgen_road_position_split.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "integration/gameplay-composition/procgen_road_presets.cpp": {
       "modules": [
@@ -10620,7 +10630,8 @@
       },
       "origins": [
         "procgen_road_presets.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "integration/gameplay-composition/procgen_road_profile_editing.cpp": {
       "modules": [
@@ -10638,7 +10649,8 @@
       },
       "origins": [
         "procgen_road_profile_editing.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "unit/procgen/procgen_road_profiles.cpp": {
       "module": "procgen",
@@ -10684,7 +10696,8 @@
       },
       "origins": [
         "procgen_road_recipe_snapshot.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "integration/gameplay-composition/procgen_road_reference.cpp": {
       "modules": [
@@ -10712,7 +10725,8 @@
       },
       "origins": [
         "procgen_road_reference.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "integration/gameplay-composition/procgen_road_roll_pivot.cpp": {
       "modules": [
@@ -10730,7 +10744,8 @@
       },
       "origins": [
         "procgen_road_roll_pivot.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "unit/procgen/procgen_road_roll_policy.cpp": {
       "module": "procgen",
@@ -10776,7 +10791,8 @@
       },
       "origins": [
         "procgen_road_sampling.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "integration/gameplay-composition/procgen_road_sampling_defaults.cpp": {
       "modules": [
@@ -10795,7 +10811,8 @@
       },
       "origins": [
         "procgen_road_sampling_defaults.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "integration/gameplay-composition/procgen_road_side_placement.cpp": {
       "modules": [
@@ -10814,7 +10831,8 @@
       },
       "origins": [
         "procgen_road_side_placement.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "integration/gameplay-composition/procgen_road_side_terrain.cpp": {
       "modules": [
@@ -10836,7 +10854,8 @@
       },
       "origins": [
         "procgen_road_side_terrain.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "integration/gameplay-composition/procgen_road_spacing_portals.cpp": {
       "modules": [
@@ -10859,7 +10878,8 @@
       },
       "origins": [
         "procgen_road_spacing_portals.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "integration/gameplay-composition/procgen_road_strength.cpp": {
       "modules": [
@@ -10877,7 +10897,8 @@
       },
       "origins": [
         "procgen_road_strength.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "integration/gameplay-composition/procgen_road_surface_path.cpp": {
       "modules": [
@@ -10898,7 +10919,8 @@
       },
       "origins": [
         "procgen_road_surface_path.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "integration/gameplay-composition/procgen_road_terrain_author_policy.cpp": {
       "modules": [
@@ -10919,7 +10941,8 @@
       },
       "origins": [
         "procgen_road_terrain_author_policy.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "unit/procgen/procgen_road_terrain_batch.cpp": {
       "module": "procgen",
@@ -11011,7 +11034,8 @@
       },
       "origins": [
         "scene_procgen_rotation.cpp"
-      ]
+      ],
+      "module": "scene"
     },
     "unit/procgen/terrain_object_collision.cpp": {
       "module": "procgen",
@@ -11041,7 +11065,8 @@
       },
       "origins": [
         "terrain_road_batch_vm.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "integration/script-api/terrain_road_write_vm.cpp": {
       "modules": [
@@ -11057,7 +11082,8 @@
       },
       "origins": [
         "terrain_road_write_vm.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "integration/script-api/terrain_world_origin_vm.cpp": {
       "modules": [
@@ -11073,7 +11099,8 @@
       },
       "origins": [
         "terrain_world_origin_vm.cpp"
-      ]
+      ],
+      "module": "procgen"
     },
     "unit/procgen/procgen_spline_path.cpp": {
       "role": "tests",
