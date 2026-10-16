@@ -5769,7 +5769,10 @@
       "modules": [
         "procgen"
       ],
-      "task": "script-api"
+      "task": "script-api",
+      "origins": [
+        "procgen_generation_stages.cpp"
+      ]
     },
     "integration/script-rendering/script_rendering_graphics_tests.cpp": {
       "role": "tests",
@@ -6255,7 +6258,9 @@
         "local-logic": [
           "authority.decision.priorityThenDenyThenCreationOrder",
           "authority.decision.defaultDenyIsExplainable",
+          "authority.decision.wildcardMatchesAndLosesToExactDeny",
           "authority.lifecycle.durationRevokeAndEvents",
+          "authority.lifecycle.revokeByDimensionAndEventCapacity",
           "authority.query.reverseDimensionsAreDeterministic",
           "authority.snapshot.restoreIsDeterministicAndTransactional",
           "authority.input.invalidFactsDoNotMutate",
@@ -6681,7 +6686,12 @@
           "Capability.ownedRejectsNullProvider",
           "Capability.ownedRepublishAfterUnloadAdvancesGeneration",
           "Capability.providerRefBindsCallerOwnedProvider",
-          "Capability.providerRefIsBindOnceAndMoveOnly"
+          "Capability.providerRefIsBindOnceAndMoveOnly",
+          "decision.condition.supportsAllLeafNodes",
+          "decision.condition.compoundsExplainFailureWithoutMutation",
+          "decision.condition.scriptDeclarationIsExplicit",
+          "decision.conditionUnavailableIsDifferentFromFalse",
+          "decision.condition.legacyCodecExpandsDomainLeaves"
         ],
         "test-framework": [
           "common.zeroerr.preservesExpressionAndSource",
@@ -6725,7 +6735,8 @@
         "time_contract.cpp",
         "versioned_registry.cpp",
         "xml.cpp",
-        "capability_owned.cpp"
+        "capability_owned.cpp",
+        "condition.cpp"
       ]
     },
     "unit/crowd/crowd_tests.cpp": {
@@ -6878,26 +6889,6 @@
       "module": "decal",
       "origins": [
         "decal.cpp"
-      ]
-    },
-    "unit/decision/decision_tests.cpp": {
-      "role": "tests",
-      "default": "local-logic",
-      "cases": {
-        "local-logic": [
-          "decision.condition.supportsAllLeafNodes",
-          "decision.condition.compoundsExplainFailureWithoutMutation",
-          "decision.condition.scriptDeclarationIsExplicit",
-          "decision.conditionUnavailableIsDifferentFromFalse",
-          "decision.blackboardsAndFsmAreExplicit",
-          "decision.utilityIsDeterministic",
-          "decision.influenceAndSnapshotRoundTrip"
-        ]
-      },
-      "module": "decision",
-      "origins": [
-        "condition.cpp",
-        "decision.cpp"
       ]
     },
     "unit/definitions/definitions_unit.cpp": {
@@ -8257,14 +8248,18 @@
           "npc_ai.ecsCompositionPublishesDerivedProjection",
           "npc_ai.ecsLinkDefinesAgentFirstAndEntityFirstCleanup",
           "npc_ai.smartObjectQueryAndLeaseAreDeterministic",
-          "npc_ai.smartObjectDefinesBothDestructionOrders"
+          "npc_ai.smartObjectDefinesBothDestructionOrders",
+          "decision.blackboardsAndFsmAreExplicit",
+          "decision.utilityIsDeterministic",
+          "decision.influenceAndSnapshotRoundTrip"
         ]
       },
       "module": "npc_ai",
       "origins": [
         "npc_ai.cpp",
         "npc_ai_ecs.cpp",
-        "npc_ai_smart_object.cpp"
+        "npc_ai_smart_object.cpp",
+        "decision_context.cpp"
       ]
     },
     "unit/orders/orders_unit.cpp": {
@@ -9011,7 +9006,10 @@
           "procgen.stages.caveSkeletonAndSurfacePoliciesAreEditable"
         ]
       },
-      "module": "procgen"
+      "module": "procgen",
+      "origins": [
+        "procgen_generation_stages.cpp"
+      ]
     },
     "unit/procgen/procgen_mesh_tests.cpp": {
       "role": "tests",

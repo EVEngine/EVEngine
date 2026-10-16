@@ -81,7 +81,7 @@ native generation before replacing their displayed result and rebuild from impor
 
 ## Verification contract
 
-`test/procgen_generation_stages.cpp` covers default recipe composition, owning field copies,
+`test/unit/procgen/procgen_generation_stages.cpp` covers default recipe composition, owning field copies,
 floor-graph edits, invalid stage transitions, failed extraction/retry, library destruction and script
 composition without graphics startup. Existing house/cave tests continue to cover geometry and
 geological operators. Runtime acceptance additionally requires both examples to survive their smoke

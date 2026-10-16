@@ -46,8 +46,6 @@
     "src/modules/animation/AnimationClipBindings.cpp|setEvent|AnimClip::setEvent",
     "src/modules/animation/AnimationModelImport.cpp|newClipFromModel|Animation::newClipFromModel",
     "src/modules/animation/AnimationModelImport.cpp|newLatticeFromModel|Animation::newLatticeFromModel",
-    "src/modules/authority/Authority.cpp|revokeBySource|Store::revokeBySource",
-    "src/modules/authority/Authority.cpp|revoke|Store::revoke",
     "src/modules/avatar/Avatar.cpp|attachToBone|AvatarInstance::attachToBone",
     "src/modules/avatar/Avatar.cpp|loadMorphNamesFromModel|AvatarInstance::loadMorphNamesFromModel",
     "src/modules/building/Building.cpp|canPlaceReason|PlacementWorld::canPlaceReason",

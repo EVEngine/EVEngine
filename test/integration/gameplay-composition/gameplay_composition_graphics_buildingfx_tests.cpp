@@ -3313,7 +3313,7 @@ TEST_CASE("definitionRuntime.skillAdapterUsesCanonicalRegistryAndAtomicSnapshot"
     definition.targetType = "single";
     definition.tags       = {"fire"};
     definition.castCondition =
-        eve::decision::Condition::compare("skill.cooldown", eve::decision::CompareOperator::Equal, eve::Value(0));
+        eve::condition::Condition::compare("skill.cooldown", eve::condition::CompareOperator::Equal, eve::Value(0));
     eve::rpg::SkillRegistry::registerSkill(definition);
 
     auto runtimeResult = eve::rpg::SkillDefinitionRuntime::create(testId(), "fireball");
@@ -3324,7 +3324,7 @@ TEST_CASE("definitionRuntime.skillAdapterUsesCanonicalRegistryAndAtomicSnapshot"
     REQUIRE(typed.ok());
     CHECK_EQ(typed.value().targetType, std::string("single"));
     CHECK_EQ(static_cast<int>(typed.value().castCondition.kind()),
-             static_cast<int>(eve::decision::ConditionKind::Compare));
+             static_cast<int>(eve::condition::ConditionKind::Compare));
     runtime.state().cooldownRemaining = 4.f;
 
     auto snapshot = runtime.snapshot(eve::Revision(3), eve::SimulationTick(12), testHash());

@@ -3932,8 +3932,9 @@ TEST_CASE("rpg.state.restoreRejectsMalformed") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_skill_condition)
-#include "PrivateTestScope.h"
 #include <optional>
+#include "PrivateTestScope.h"
+#include "common/ConditionKeys.h"
 #include "rpg/RPGActor.h"
 #include "rpg/Skill.h"
 #include "rpg/SkillCondition.h"
@@ -3943,7 +3944,7 @@ TEST_CASE("rpg.state.restoreRejectsMalformed") {
 // rpg_skill_condition.cpp
 namespace test_rpg_skill_condition {
 TEST_CASE("rpg.skillConditionAdapterReadsCanonicalSkillState") {
-    using namespace eve::decision;
+    using namespace eve::condition;
     using namespace eve::rpg;
 
     RPGActor *actor = RPGActor::createActor();
@@ -3954,11 +3955,11 @@ TEST_CASE("rpg.skillConditionAdapterReadsCanonicalSkillState") {
     definition.tags = {"fire"};
 
     const auto condition = Condition::all({
-        Condition::hasTag("fire"),
-        Condition::hasAttribute("mana"),
-        Condition::hasResource("mana"),
+        eve::condition::tagPresent("fire"),
+        eve::condition::attributeExists("mana"),
+        eve::condition::resourceExists("mana"),
         Condition::compare("skill.cooldown", CompareOperator::Equal, 0.0),
-        Condition::stateEquals("skill.phase", "idle"),
+        eve::condition::stateEquals("skill.phase", "idle"),
     });
     const auto result    = SkillConditionAdapter::evaluate(actor, definition, condition);
     REQUIRE(result.passed());
@@ -3973,24 +3974,24 @@ TEST_CASE("rpg.skillConditionAdapterReadsCanonicalSkillState") {
 }
 
 TEST_CASE("rpg.skillSystemUsesConditionResultAsCompatibilityReason") {
-    using namespace eve::decision;
+    using namespace eve::condition;
     using namespace eve::rpg;
 
     SkillDefinition definition;
     definition.id            = "skill.guard";
-    definition.castCondition = Condition::hasTag("silenced");
+    definition.castCondition = eve::condition::tagPresent("silenced");
     SkillRegistry::registerSkill(definition);
     RPGActor *actor = RPGActor::createActor();
     actor->learnSkill(definition.id);
 
     CHECK(!actor->canCastSkill(definition.id));
-    CHECK_EQ(actor->canCastSkillReason(definition.id), "tag_missing");
+    CHECK_EQ(actor->canCastSkillReason(definition.id), "value_mismatch");
     actor->release();
     SkillRegistry::remove(definition.id);
 }
 
 TEST_CASE("rpg.skillConditionPolicyAndAuthorityAreReadOnlyProviders") {
-    using namespace eve::decision;
+    using namespace eve::condition;
     using namespace eve::rpg;
 
     RPGActor       *actor = RPGActor::createActor();
@@ -4008,7 +4009,8 @@ TEST_CASE("rpg.skillConditionPolicyAndAuthorityAreReadOnlyProviders") {
         return name == "safe" ? std::optional<ConditionResult>(ConditionResult::success()) : std::nullopt;
     };
     const auto result = SkillConditionAdapter::evaluate(
-        actor, definition, Condition::all({Condition::authorityCheck("cast"), Condition::policyCall("safe")}), queries);
+        actor, definition, Condition::all({eve::condition::authorityAllow("cast"), Condition::policyCall("safe")}),
+        queries);
     REQUIRE(result.passed());
     CHECK_EQ(authorityCalls, 1);
     CHECK_EQ(policyCalls, 1);
