@@ -10,10 +10,41 @@
 namespace eve::archspace {
 
 /** @brief Stable node kind discriminator for the architectural document. */
-enum class NodeKind : std::uint8_t { Site = 0, Building, Level, Wall, Slab, Zone, Item, Opening };
+enum class NodeKind : std::uint8_t {
+    Site = 0,
+    Building,
+    Level,
+    Wall,
+    Slab,
+    Zone,
+    Item,
+    Opening,
+    /** @brief Level-hosted portal connecting two regions (dungeon/cave or free openings). */
+    Portal
+};
 
 /** @brief Opening semantic used by doors and windows hosted on walls. */
 enum class OpeningKind : std::uint8_t { Door = 0, Window };
+
+/**
+ * @brief Document topology dialect. Storage stays one node graph; semantics and
+ *        authoring helpers differ by dialect.
+ */
+enum class TopologyKind : std::uint8_t { Architectural = 0, Dungeon, Cave };
+
+/** @brief Passage capability bits for portals (walk/crawl/fly/swim). */
+enum class PassageMode : std::uint8_t {
+    Walk  = 1,
+    Crawl = 2,
+    Fly   = 4,
+    Swim  = 8,
+};
+
+/** @brief Bitmask of PassageMode values. */
+using PassageMask = std::uint8_t;
+
+/** @brief Default walkable mask. */
+inline constexpr PassageMask kPassageWalk = static_cast<PassageMask>(PassageMode::Walk);
 
 /** @brief Metres on the level XZ plane. */
 struct Vec2 {
@@ -54,12 +85,48 @@ struct Node {
     double      yawDegrees = 0.0;
     std::string catalogId;
 
-    // opening
+    // opening (wall-hosted)
     OpeningKind openingKind   = OpeningKind::Door;
     double      t             = 0.5;
     double      width         = 0.9;
     double      openingHeight = 2.1;
     double      sill          = 0.0;
+
+    // portal (level-hosted region connector)
+    std::string regionAId;
+    std::string regionBId;
+    PassageMask passageMask = kPassageWalk;
+    Vec3        portalPosition{};
+};
+
+/** @brief Read-only region view projected from Zone nodes. */
+struct SpaceRegion {
+    std::string       id;
+    std::string       levelId;
+    std::string       name;
+    std::vector<Vec2> polygon;
+};
+
+/** @brief Read-only portal view from Opening or Portal nodes. */
+struct SpacePortal {
+    std::string id;
+    std::string levelId;
+    std::string name;
+    std::string regionAId;
+    std::string regionBId;
+    PassageMask passageMask = kPassageWalk;
+    Vec3        position{};
+    bool        wallHosted = false;
+};
+
+/** @brief Read-only item/anchor view. */
+struct SpaceAnchor {
+    std::string id;
+    std::string levelId;
+    std::string name;
+    std::string catalogId;
+    Vec3        position{};
+    double      yawDegrees = 0.0;
 };
 
 /** @brief Renderer-neutral triangle mesh rebuilt from the document. */
@@ -113,9 +180,9 @@ struct MeshArrays {
         const Vec3& a = bake.positions[i0];
         const Vec3& b = bake.positions[i1];
         const Vec3& c = bake.positions[i2];
-        Vec3        n{ (b.y - a.y) * (c.z - a.z) - (b.z - a.z) * (c.y - a.y),
-                       (b.z - a.z) * (c.x - a.x) - (b.x - a.x) * (c.z - a.z),
-                       (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x) };
+        Vec3         n{(b.y - a.y) * (c.z - a.z) - (b.z - a.z) * (c.y - a.y),
+               (b.z - a.z) * (c.x - a.x) - (b.x - a.x) * (c.z - a.z),
+               (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)};
         const double len = std::sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
         if (len > 1e-8) {
             n.x /= len;
@@ -148,6 +215,7 @@ struct MeshArrays {
         case NodeKind::Zone: return "zone";
         case NodeKind::Item: return "item";
         case NodeKind::Opening: return "opening";
+        case NodeKind::Portal: return "portal";
     }
     return "site";
 }
@@ -165,7 +233,7 @@ struct MeshArrays {
     if (text == "zone") return eve::Result<NodeKind>::success(NodeKind::Zone);
     if (text == "item") return eve::Result<NodeKind>::success(NodeKind::Item);
     if (text == "opening") return eve::Result<NodeKind>::success(NodeKind::Opening);
-    /** @brief Failure. */
+    if (text == "portal") return eve::Result<NodeKind>::success(NodeKind::Portal);
     return eve::Result<NodeKind>::failure(eve::Diagnostic::error(
         eve::DiagnosticCode::InvalidArgument, "unknown ArchSpace node kind", "kind", {}, "archspace.kind"));
 }
@@ -186,10 +254,35 @@ struct MeshArrays {
 [[nodiscard]] inline eve::Result<OpeningKind> parseOpeningKind(const std::string& text) noexcept {
     if (text == "door") return eve::Result<OpeningKind>::success(OpeningKind::Door);
     if (text == "window") return eve::Result<OpeningKind>::success(OpeningKind::Window);
-    /** @brief Failure. */
     return eve::Result<OpeningKind>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                     "unknown ArchSpace opening kind", "openingKind", {},
                                                                     "archspace.opening"));
+}
+
+/**
+ * @brief Stable wire name for a topology kind.
+ * @ownership Non-owning pointer to a static string literal; do not free.
+ * @lifetime Valid for the process lifetime.
+ */
+[[nodiscard]] inline const char* topologyKindName(TopologyKind kind) noexcept {
+    switch (kind) {
+        case TopologyKind::Architectural: return "architectural";
+        case TopologyKind::Dungeon: return "dungeon";
+        case TopologyKind::Cave: return "cave";
+    }
+    return "architectural";
+}
+
+/**
+ * @brief Parse a topology kind wire name.
+ * @return Parsed kind, or InvalidArgument when the text is unknown.
+ */
+[[nodiscard]] inline eve::Result<TopologyKind> parseTopologyKind(const std::string& text) noexcept {
+    if (text == "architectural") return eve::Result<TopologyKind>::success(TopologyKind::Architectural);
+    if (text == "dungeon") return eve::Result<TopologyKind>::success(TopologyKind::Dungeon);
+    if (text == "cave") return eve::Result<TopologyKind>::success(TopologyKind::Cave);
+    return eve::Result<TopologyKind>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "unknown ArchSpace topology", "topology", {}, "archspace.topology"));
 }
 
 }  // namespace eve::archspace

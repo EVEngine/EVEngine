@@ -3230,24 +3230,6 @@
       "module": "physics",
       "task": "physics-simulation"
     },
-    "integration/procedural-generation/procgen_generation_stages.cpp": {
-      "role": "tests",
-      "default": "module-composition",
-      "cases": {
-        "module-composition": [
-          "procgen.stages.scalarFieldIsOwningBoundedAndTransactional",
-          "procgen.stages.scalarFieldProducesReusableParametricGeometry",
-          "procgen.stages.houseDefaultScheduleMatchesCompatibilityAndOwnsKit",
-          "procgen.stages.houseGraphControlsGenerationAndFailuresPreserveStage",
-          "procgen.stages.caveDefaultScheduleMatchesRecipe",
-          "procgen.stages.caveFieldEditsAffectOutputAndFailedExtractionKeepsInput",
-          "procgen.stages.caveSkeletonAndSurfacePoliciesAreEditable",
-          "procgen.stages.scriptOwnsFieldsAndComposesCaveWithoutGraphics"
-        ]
-      },
-      "module": "procgen",
-      "task": "procedural-generation"
-    },
     "integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp": {
       "role": "tests",
       "default": "render-offscreen",
@@ -5198,6 +5180,20 @@
         "weapon.cpp"
       ]
     },
+    "integration/script-api/script_api_procgen_cave_generation_stages_tests.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "procgen.stages.scriptOwnsFieldsAndComposesCaveWithoutGraphics"
+        ]
+      },
+      "module": "procgen",
+      "modules": [
+        "procgen"
+      ],
+      "task": "script-api"
+    },
     "integration/script-rendering/script_rendering_graphics_tests.cpp": {
       "role": "tests",
       "default": "script-render",
@@ -5554,6 +5550,43 @@
         "animation_skinned.cpp",
         "animation_smr_retarget.cpp"
       ]
+    },
+    "unit/archspace/archspace_space_query.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "archspace.query.architectural_region_and_door_portal",
+          "archspace.query.dungeon_regions_connected_through_portal",
+          "archspace.query.cave_chamber_topology_and_grid_bake",
+          "archspace.projector.mesh_scene_sync_and_clear",
+          "archspace.import.cell_grid_splits_regions_at_portal",
+          "archspace.import.rejects_bad_grid_and_missing_level"
+        ]
+      },
+      "module": "archspace"
+    },
+    "unit/archspace_hd2d/archspace_hd2d_projector.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "archspace.hd2d.sync_builds_tile_layer_without_graphics"
+        ]
+      },
+      "module": "archspace_hd2d"
+    },
+    "unit/archspace_map/archspace_map_projector.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "archspace.map.tile_ortho_sync_writes_gids",
+          "archspace.map.tile_iso_orientation_and_reject",
+          "archspace.map.tile_requires_level_id"
+        ]
+      },
+      "module": "archspace_map"
     },
     "unit/asset/asset_tests.cpp": {
       "role": "tests",
@@ -8383,6 +8416,22 @@
         "procgen_rng_contract.cpp",
         "procgen.cpp"
       ]
+    },
+    "unit/procgen/procgen_generation_stages.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.stages.scalarFieldIsOwningBoundedAndTransactional",
+          "procgen.stages.scalarFieldProducesReusableParametricGeometry",
+          "procgen.stages.houseDefaultScheduleMatchesCompatibilityAndOwnsKit",
+          "procgen.stages.houseGraphControlsGenerationAndFailuresPreserveStage",
+          "procgen.stages.caveDefaultScheduleMatchesRecipe",
+          "procgen.stages.caveFieldEditsAffectOutputAndFailedExtractionKeepsInput",
+          "procgen.stages.caveSkeletonAndSurfacePoliciesAreEditable"
+        ]
+      },
+      "module": "procgen"
     },
     "unit/procgen/procgen_mesh_tests.cpp": {
       "role": "tests",
