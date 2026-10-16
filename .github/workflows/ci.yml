@@ -636,9 +636,11 @@ jobs:
         with:
           version: "v0.16.0"
 
+      # Explicit start catches GHA/ghac egress flakes before the NDK build.
+      # Retries, then falls back to a local disk cache (see start-sccache.sh).
       - name: Start C/C++ compilation cache
         timeout-minutes: 5
-        run: sccache --start-server
+        run: bash .github/scripts/start-sccache.sh
 
       - name: Setup Java 17
         timeout-minutes: 10
@@ -721,9 +723,10 @@ jobs:
         with:
           version: "v0.16.0"
 
+      # Same retry/local-fallback path as the Android debug job.
       - name: Start C/C++ compilation cache
         timeout-minutes: 5
-        run: sccache --start-server
+        run: bash .github/scripts/start-sccache.sh
 
       - name: Setup Java 17
         timeout-minutes: 10
