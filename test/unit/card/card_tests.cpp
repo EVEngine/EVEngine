@@ -425,17 +425,18 @@ TEST_CASE("card.state.restoreRejectsMalformed") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_card_play_condition)
-#include "PrivateTestScope.h"
 #include <optional>
+#include "PrivateTestScope.h"
 #include "card/Card.h"
 #include "card/CardPlay.h"
+#include "common/ConditionKeys.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // card_play_condition.cpp
 namespace test_card_play_condition {
 TEST_CASE("card.playConditionAdapterReadsCardAndExternalCapabilities") {
     using namespace eve::card;
-    using namespace eve::decision;
+    using namespace eve::condition;
 
     Card mod;
     REQUIRE_EQ(mod.registerCardsFromJson(
@@ -462,11 +463,11 @@ TEST_CASE("card.playConditionAdapterReadsCardAndExternalCapabilities") {
     };
 
     const auto condition = Condition::all({
-        Condition::hasTag("fire"),
+        eve::condition::tagPresent("fire"),
         Condition::compare("card.cost", CompareOperator::LessEqual, 3),
-        Condition::hasResource("mana"),
-        Condition::stateEquals("card.phase", "hand"),
-        Condition::authorityCheck("play"),
+        eve::condition::resourceExists("mana"),
+        eve::condition::stateEquals("card.phase", "hand"),
+        eve::condition::authorityAllow("play"),
         Condition::policyCall("card.safe"),
     });
     const auto result    = CardPlayConditionAdapter::evaluate(card, local, condition, queries);
@@ -475,27 +476,27 @@ TEST_CASE("card.playConditionAdapterReadsCardAndExternalCapabilities") {
 
     card->state()->phase = CardState::Played;
     const auto blocked =
-        CardPlayConditionAdapter::evaluate(card, local, Condition::stateEquals("card.phase", "hand"), queries);
+        CardPlayConditionAdapter::evaluate(card, local, eve::condition::stateEquals("card.phase", "hand"), queries);
     REQUIRE(!blocked.passed());
-    CHECK_EQ(static_cast<int>(blocked.reasonCode()), static_cast<int>(ConditionReasonCode::StateMismatch));
+    CHECK_EQ(static_cast<int>(blocked.reasonCode()), static_cast<int>(ConditionReasonCode::ValueMismatch));
 }
 
 TEST_CASE("card.playConditionIsStoredOnDefinitionAndEvaluatedByCardFacade") {
     using namespace eve::card;
-    using namespace eve::decision;
+    using namespace eve::condition;
 
     Card mod;
     REQUIRE_EQ(mod.registerCardsFromJson(R"JSON([{"id":"ward","kind":"spell","cost":2,"tags":["ward"]}])JSON"), 1);
     CardData* card = mod.newCard("ward");
     REQUIRE(card != nullptr);
     card->state()->phase = CardState::Hand;
-    auto stored          = mod.setCardPlayCondition("ward", Condition::hasTag("missing"));
+    auto stored          = mod.setCardPlayCondition("ward", eve::condition::tagPresent("missing"));
     REQUIRE(stored.ok());
     const auto rejected = mod.evaluatePlay(card);
     REQUIRE(!rejected.passed());
-    CHECK_EQ(static_cast<int>(rejected.reasonCode()), static_cast<int>(ConditionReasonCode::TagMissing));
+    CHECK_EQ(static_cast<int>(rejected.reasonCode()), static_cast<int>(ConditionReasonCode::ValueMismatch));
 
-    auto resourceStored = mod.setCardPlayCondition("ward", Condition::hasResource("mana"));
+    auto resourceStored = mod.setCardPlayCondition("ward", eve::condition::resourceExists("mana"));
     REQUIRE(resourceStored.ok());
     CardPlayConditionQueries queries;
     queries.resource = [](std::string_view key) -> std::optional<eve::Value> {

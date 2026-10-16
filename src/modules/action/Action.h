@@ -16,6 +16,7 @@
  */
 
 #include "action/ActionTimeline.h"
+#include "common/Condition.h"
 #include "common/ECS.h"
 #include "common/Identity.h"
 #include "common/ResourceAccount.h"
@@ -23,7 +24,6 @@
 #include "common/StrongUint64.h"
 #include "common/Time.h"
 #include "common/Value.h"
-#include "decision/Condition.h"
 #include "sensing/Targeting.h"
 #include "transaction/Transaction.h"
 
@@ -93,7 +93,7 @@ struct EVENGINE_API_PLATFORM ActionDefinition {
     /** @brief Timed phase policy in simulation durations. */
     ActionTiming timing;
     /** @brief Side-effect-free precondition tree. */
-    decision::Condition condition;
+    condition::Condition condition;
     /** @brief Target acquisition policy for this action. */
     TargetingMode targetingMode = TargetingMode::None;
     /** @brief Constraints used when targetingMode is Query. */
@@ -206,8 +206,8 @@ public:
      * @brief Evaluate one action condition.
      * @return ConditionResult or a structured provider failure.
      */
-    [[nodiscard]] virtual Result<decision::ConditionResult> evaluate(const ActionDefinition& definition,
-                                                                     const ActionRequest&    request) const = 0;
+    [[nodiscard]] virtual Result<condition::ConditionResult> evaluate(const ActionDefinition& definition,
+                                                                      const ActionRequest&    request) const = 0;
 };
 
 /**

@@ -140,9 +140,88 @@ std::string eventKindName(EventKind kind) {
     return "unknown";
 }
 
-std::string Store::add(RuleEffect effect, const std::string& actor, const std::string& scope,
-                       const std::string& capability, const std::string& source, int priority, double duration) {
-    if (actor.empty() || scope.empty() || capability.empty() || !std::isfinite(duration)) return {};
+namespace {
+
+eve::Result<std::string> rejectedRule(std::string message) {
+    return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                    std::move(message), "rule", {}, "authority.store"));
+}
+
+eve::Result<void> notFoundRule(std::string message) {
+    return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, std::move(message), "rule", {}, "authority.store"));
+}
+
+eve::Value projectRuleId(std::string&& id) { return eve::Value(std::move(id)); }
+
+}  // namespace
+
+std::string Store::exactKey(const std::string& actor, const std::string& scope, const std::string& capability) {
+    std::string key;
+    key.reserve(actor.size() + scope.size() + capability.size() + 2);
+    key.append(actor);
+    key.push_back('\x1f');
+    key.append(scope);
+    key.push_back('\x1f');
+    key.append(capability);
+    return key;
+}
+
+bool Store::hasWildcard(const Rule& rule) {
+    return rule.actor == kWildcard || rule.scope == kWildcard || rule.capability == kWildcard;
+}
+
+bool Store::ruleMatches(const Rule& rule, const std::string& actor, const std::string& scope,
+                        const std::string& capability) {
+    const bool actorOk = rule.actor == kWildcard || rule.actor == actor;
+    const bool scopeOk = rule.scope == kWildcard || rule.scope == scope;
+    const bool capOk   = rule.capability == kWildcard || rule.capability == capability;
+    return actorOk && scopeOk && capOk;
+}
+
+void Store::indexInsert(const Rule& rule) {
+    if (hasWildcard(rule)) {
+        wildcardIds_.push_back(rule.id);
+        return;
+    }
+    exactIndex_[exactKey(rule.actor, rule.scope, rule.capability)].push_back(rule.id);
+}
+
+void Store::indexErase(const Rule& rule) {
+    if (hasWildcard(rule)) {
+        wildcardIds_.erase(std::remove(wildcardIds_.begin(), wildcardIds_.end(), rule.id), wildcardIds_.end());
+        return;
+    }
+    const auto key = exactKey(rule.actor, rule.scope, rule.capability);
+    const auto it  = exactIndex_.find(key);
+    if (it == exactIndex_.end()) return;
+    auto& ids = it->second;
+    ids.erase(std::remove(ids.begin(), ids.end(), rule.id), ids.end());
+    if (ids.empty()) exactIndex_.erase(it);
+}
+
+void Store::rebuildIndex() {
+    exactIndex_.clear();
+    wildcardIds_.clear();
+    for (const auto& rule : rules_) indexInsert(rule);
+}
+
+void Store::trimEvents() {
+    if (eventCapacity_ <= 0) return;
+    while (static_cast<int>(events_.size()) > eventCapacity_) events_.pop_front();
+}
+
+void Store::emit(EventKind kind, const Rule& rule, const std::string& reason) {
+    events_.push_back({nextSequence_++, kind, rule.id, rule.actor, rule.scope, rule.capability, rule.source, reason});
+    trimEvents();
+}
+
+eve::Result<std::string> Store::add(RuleEffect effect, const std::string& actor, const std::string& scope,
+                                    const std::string& capability, const std::string& source, int priority,
+                                    double duration) {
+    if (actor.empty() || scope.empty() || capability.empty())
+        return rejectedRule("authority actor, scope, and capability must be non-empty");
+    if (!std::isfinite(duration)) return rejectedRule("authority rule duration must be finite");
     std::ostringstream id;
     id << "authority-" << std::setw(16) << std::setfill('0') << nextId_++;
     Rule rule;
@@ -157,39 +236,39 @@ std::string Store::add(RuleEffect effect, const std::string& actor, const std::s
     rule.remaining  = duration > 0.0 ? duration : -1.0;
     rule.order      = nextOrder_++;
     rules_.push_back(std::move(rule));
+    indexInsert(rules_.back());
     emit(effect == RuleEffect::Grant ? EventKind::Granted : EventKind::Denied, rules_.back());
     advanceRevision(revision_);
-    return rules_.back().id;
+    query_.clear();
+    return eve::Result<std::string>::success(rules_.back().id, eve::Status::success(eve::StatusCode::Applied));
 }
 
-std::string Store::grant(const std::string& actor, const std::string& scope, const std::string& capability,
-                         const std::string& source, int priority, double duration) {
+eve::Result<std::string> Store::grant(const std::string& actor, const std::string& scope, const std::string& capability,
+                                      const std::string& source, int priority, double duration) {
     return add(RuleEffect::Grant, actor, scope, capability, source, priority, duration);
 }
-std::string Store::deny(const std::string& actor, const std::string& scope, const std::string& capability,
-                        const std::string& source, int priority, double duration) {
+eve::Result<std::string> Store::deny(const std::string& actor, const std::string& scope, const std::string& capability,
+                                     const std::string& source, int priority, double duration) {
     return add(RuleEffect::Deny, actor, scope, capability, source, priority, duration);
 }
 
-void Store::emit(EventKind kind, const Rule& rule, const std::string& reason) {
-    events_.push_back({nextSequence_++, kind, rule.id, rule.actor, rule.scope, rule.capability, rule.source, reason});
-}
-
-bool Store::revoke(const std::string& id, const std::string& reason) {
+eve::Result<void> Store::revoke(const std::string& id, const std::string& reason) {
     const auto it = std::find_if(rules_.begin(), rules_.end(), [&id](const Rule& rule) { return rule.id == id; });
-    if (it == rules_.end()) return false;
+    if (it == rules_.end()) return notFoundRule("authority rule is not active");
     emit(EventKind::Revoked, *it, reason);
+    indexErase(*it);
     rules_.erase(it);
     query_.clear();
     advanceRevision(revision_);
-    return true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-int Store::revokeBySource(const std::string& source, const std::string& reason) {
+int Store::revokeMatching(const std::string& reason, const std::function<bool(const Rule&)>& predicate) {
     int removed = 0;
     for (auto it = rules_.begin(); it != rules_.end();) {
-        if (it->source == source) {
+        if (predicate(*it)) {
             emit(EventKind::Revoked, *it, reason);
+            indexErase(*it);
             it = rules_.erase(it);
             ++removed;
         } else {
@@ -199,6 +278,22 @@ int Store::revokeBySource(const std::string& source, const std::string& reason) 
     query_.clear();
     if (removed > 0) advanceRevision(revision_);
     return removed;
+}
+
+int Store::revokeBySource(const std::string& source, const std::string& reason) {
+    return revokeMatching(reason, [&](const Rule& rule) { return rule.source == source; });
+}
+
+int Store::revokeByActor(const std::string& actor, const std::string& reason) {
+    return revokeMatching(reason, [&](const Rule& rule) { return rule.actor == actor; });
+}
+
+int Store::revokeByScope(const std::string& scope, const std::string& reason) {
+    return revokeMatching(reason, [&](const Rule& rule) { return rule.scope == scope; });
+}
+
+int Store::revokeByCapability(const std::string& capability, const std::string& reason) {
+    return revokeMatching(reason, [&](const Rule& rule) { return rule.capability == capability; });
 }
 
 void Store::update(double dtSeconds) {
@@ -213,6 +308,7 @@ void Store::update(double dtSeconds) {
         changed       = true;
         if (it->remaining == 0.0) {
             emit(EventKind::Expired, *it, "duration_elapsed");
+            indexErase(*it);
             it = rules_.erase(it);
         } else {
             ++it;
@@ -223,11 +319,16 @@ void Store::update(double dtSeconds) {
 }
 
 Decision Store::explain(const std::string& actor, const std::string& scope, const std::string& capability) const {
-    const Rule* winner = nullptr;
-    for (const auto& rule : rules_)
-        if (rule.actor == actor && rule.scope == scope && rule.capability == capability &&
-            (!winner || wins(rule, *winner)))
-            winner = &rule;
+    const Rule*              winner = nullptr;
+    std::vector<std::string> candidateIds;
+    if (const auto it = exactIndex_.find(exactKey(actor, scope, capability)); it != exactIndex_.end())
+        candidateIds.insert(candidateIds.end(), it->second.begin(), it->second.end());
+    candidateIds.insert(candidateIds.end(), wildcardIds_.begin(), wildcardIds_.end());
+    for (const auto& id : candidateIds) {
+        const Rule* rule = find(id);
+        if (!rule || !ruleMatches(*rule, actor, scope, capability)) continue;
+        if (!winner || wins(*rule, *winner)) winner = rule;
+    }
     if (!winner) return {false, "no_matching_rule", {}, {}, 0};
     return {winner->effect == RuleEffect::Grant, winner->effect == RuleEffect::Grant ? "granted" : "denied", winner->id,
             winner->source, winner->priority};
@@ -242,10 +343,12 @@ const Rule* Store::find(const std::string& id) const {
 
 int Store::query(const std::string& actor, const std::string& scope, const std::string& capability) {
     query_.clear();
-    for (const auto& rule : rules_)
-        if ((actor.empty() || rule.actor == actor) && (scope.empty() || rule.scope == scope) &&
-            (capability.empty() || rule.capability == capability))
-            query_.push_back(&rule);
+    for (const auto& rule : rules_) {
+        const bool actorOk = actor.empty() || rule.actor == actor || rule.actor == kWildcard;
+        const bool scopeOk = scope.empty() || rule.scope == scope || rule.scope == kWildcard;
+        const bool capOk   = capability.empty() || rule.capability == capability || rule.capability == kWildcard;
+        if (actorOk && scopeOk && capOk) query_.push_back(&rule);
+    }
     return static_cast<int>(query_.size());
 }
 int         Store::queryActor(const std::string& actor) { return query(actor, {}, {}); }
@@ -254,6 +357,18 @@ int         Store::queryCapability(const std::string& capability) { return query
 const Rule* Store::queryAt(int index) const {
     return index >= 0 && static_cast<size_t>(index) < query_.size() ? query_[static_cast<size_t>(index)] : nullptr;
 }
+
+eve::Result<void> Store::setEventCapacity(int capacity) {
+    if (capacity < 0)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "authority event capacity must be non-negative",
+                                                                 "eventCapacity", {}, "authority.store"));
+    eventCapacity_ = capacity;
+    trimEvents();
+    advanceRevision(revision_);
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
 int          Store::eventCount() const { return static_cast<int>(events_.size()); }
 const Event* Store::eventAt(int index) const {
     return index >= 0 && static_cast<size_t>(index) < events_.size() ? &events_[static_cast<size_t>(index)] : nullptr;
@@ -338,6 +453,7 @@ eve::Result<void> Store::restoreJson(const std::string& json) {
     nextSequence_ = nextSequence;
     events_.clear();
     query_.clear();
+    rebuildIndex();
     revision_ = eve::Revision(nextSequence > 0 ? nextSequence - 1 : 0);
     tick_     = eve::SimulationTick{};
     return eve::Result<void>::success();
@@ -447,16 +563,51 @@ void Authority::expose(ssq::Table& table) {
     event.addFunc("getReason", [](Event* e) { return e ? e->reason : std::string{}; });
 
     auto store = table.addClass<Store>("AuthorityStore", std::function<Store*()>([] { return nullptr; }), false);
-    store.addFunc("grant", [](Store* s, const std::string& actor, const std::string& scope,
-                              const std::string& capability, const std::string& source, int priority, float duration) {
-        return s ? s->grant(actor, scope, capability, source, priority, duration) : std::string{};
+    store.addFunc(
+        "grant", [vm](Store* s, const std::string& actor, const std::string& scope, const std::string& capability,
+                      const std::string& source, int priority, float duration) {
+            if (!s)
+                return eve::script::projectResult(
+                    vm,
+                    eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                             "authority store must not be null",
+                                                                             "store", {}, "authority.squirrel")),
+                    projectRuleId);
+            return eve::script::projectResult(vm, s->grant(actor, scope, capability, source, priority, duration),
+                                              projectRuleId);
+        });
+    store.addFunc("deny", [vm](Store* s, const std::string& actor, const std::string& scope,
+                               const std::string& capability, const std::string& source, int priority, float duration) {
+        if (!s)
+            return eve::script::projectResult(
+                vm,
+                eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                         "authority store must not be null", "store",
+                                                                         {}, "authority.squirrel")),
+                projectRuleId);
+        return eve::script::projectResult(vm, s->deny(actor, scope, capability, source, priority, duration),
+                                          projectRuleId);
     });
-    store.addFunc("deny", [](Store* s, const std::string& actor, const std::string& scope,
-                             const std::string& capability, const std::string& source, int priority, float duration) {
-        return s ? s->deny(actor, scope, capability, source, priority, duration) : std::string{};
+    store.addFunc("revoke", [vm](Store* s, const std::string& id, const std::string& reason) {
+        if (!s)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "authority store must not be null", "store", {},
+                                                                      "authority.squirrel")));
+        return eve::script::projectResult(vm, s->revoke(id, reason));
     });
-    store.addFunc("revoke", &Store::revoke);
-    store.addFunc("revokeBySource", &Store::revokeBySource);
+    store.addFunc("revokeBySource", [](Store* s, const std::string& source, const std::string& reason) {
+        return s ? s->revokeBySource(source, reason) : 0;
+    });
+    store.addFunc("revokeByActor", [](Store* s, const std::string& actor, const std::string& reason) {
+        return s ? s->revokeByActor(actor, reason) : 0;
+    });
+    store.addFunc("revokeByScope", [](Store* s, const std::string& scope, const std::string& reason) {
+        return s ? s->revokeByScope(scope, reason) : 0;
+    });
+    store.addFunc("revokeByCapability", [](Store* s, const std::string& capability, const std::string& reason) {
+        return s ? s->revokeByCapability(capability, reason) : 0;
+    });
     store.addFunc("update", [](Store* s, float dt) {
         if (s) s->update(dt);
     });
@@ -470,6 +621,15 @@ void Authority::expose(ssq::Table& table) {
     store.addFunc("query", &Store::query);
     store.addFunc("queryAt",
                   [](Store* s, int index) -> Rule* { return s ? const_cast<Rule*>(s->queryAt(index)) : nullptr; });
+    store.addFunc("setEventCapacity", [vm](Store* s, int capacity) {
+        if (!s)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "authority store must not be null", "store", {},
+                                                                      "authority.squirrel")));
+        return eve::script::projectResult(vm, s->setEventCapacity(capacity));
+    });
+    store.addFunc("eventCapacity", [](Store* s) { return s ? s->eventCapacity() : 0; });
     store.addFunc("eventCount", &Store::eventCount);
     store.addFunc("eventAt",
                   [](Store* s, int index) -> Event* { return s ? const_cast<Event*>(s->eventAt(index)) : nullptr; });
@@ -507,59 +667,77 @@ void Authority::expose(ssq::Table& table) {
         "grant", [vm](ScriptAuthorityStore* value, const std::string& actor, const std::string& scope,
                       const std::string& capability, const std::string& source, int priority, float duration) {
             if (!value)
-                return eve::script::projectStatusResult(
+                return eve::script::projectResult(
                     vm,
-                    eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                      "owned authority store proxy must not be null",
-                                                                      "store", {}, "authority.squirrel"))
-                        .status());
+                    eve::Result<std::string>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "owned authority store proxy must not be null", "store",
+                        {}, "authority.squirrel")),
+                    projectRuleId);
             auto view = Authority::resolve(value->reference);
             if (!view.isBound())
-                return eve::script::projectStatusResult(
-                    vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
-                                                                          "owned authority store handle is stale",
-                                                                          "store", {}, "authority.squirrel"))
-                            .status());
-            const std::string id     = view->grant(actor, scope, capability, source, priority, duration);
-            const auto        status = id.empty() ? eve::Status::failure(eve::Diagnostic::error(
-                                                 eve::DiagnosticCode::InvalidArgument, "authority rule was rejected",
-                                                 "store", {}, "authority.squirrel"))
-                                                  : eve::Status::success(eve::StatusCode::Applied);
-            return id.empty() ? eve::script::projectStatusResult(vm, status)
-                              : eve::script::projectStatusResult(vm, status, eve::Value(id));
+                return eve::script::projectResult(
+                    vm,
+                    eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                             "owned authority store handle is stale",
+                                                                             "store", {}, "authority.squirrel")),
+                    projectRuleId);
+            return eve::script::projectResult(vm, view->grant(actor, scope, capability, source, priority, duration),
+                                              projectRuleId);
         });
     ownedStore.addFunc(
         "deny", [vm](ScriptAuthorityStore* value, const std::string& actor, const std::string& scope,
                      const std::string& capability, const std::string& source, int priority, float duration) {
             if (!value)
-                return eve::script::projectStatusResult(
-                    vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                          "authority store proxy must not be null",
-                                                                          "store", {}, "authority.squirrel"))
-                            .status());
+                return eve::script::projectResult(
+                    vm,
+                    eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                             "authority store proxy must not be null",
+                                                                             "store", {}, "authority.squirrel")),
+                    projectRuleId);
             auto view = Authority::resolve(value->reference);
             if (!view.isBound())
-                return eve::script::projectStatusResult(
-                    vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
-                                                                          "authority store handle is stale", "store",
-                                                                          {}, "authority.squirrel"))
-                            .status());
-            const std::string id     = view->deny(actor, scope, capability, source, priority, duration);
-            const auto        status = id.empty() ? eve::Status::failure(eve::Diagnostic::error(
-                                                 eve::DiagnosticCode::InvalidArgument, "authority rule was rejected",
-                                                 "store", {}, "authority.squirrel"))
-                                                  : eve::Status::success(eve::StatusCode::Applied);
-            return id.empty() ? eve::script::projectStatusResult(vm, status)
-                              : eve::script::projectStatusResult(vm, status, eve::Value(id));
+                return eve::script::projectResult(
+                    vm,
+                    eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                             "authority store handle is stale", "store",
+                                                                             {}, "authority.squirrel")),
+                    projectRuleId);
+            return eve::script::projectResult(vm, view->deny(actor, scope, capability, source, priority, duration),
+                                              projectRuleId);
         });
-    ownedStore.addFunc("revoke", [](ScriptAuthorityStore* value, const std::string& id, const std::string& reason) {
-        auto view = value ? Authority::resolve(value->reference) : eve::script::Borrowed<Store>();
-        return view.isBound() && view->revoke(id, reason);
+    ownedStore.addFunc("revoke", [vm](ScriptAuthorityStore* value, const std::string& id, const std::string& reason) {
+        if (!value)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "owned authority store proxy must not be null",
+                                                                      "store", {}, "authority.squirrel")));
+        auto view = Authority::resolve(value->reference);
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                      "owned authority store handle is stale", "store",
+                                                                      {}, "authority.squirrel")));
+        return eve::script::projectResult(vm, view->revoke(id, reason));
     });
     ownedStore.addFunc("revokeBySource",
                        [](ScriptAuthorityStore* value, const std::string& source, const std::string& reason) {
                            auto view = value ? Authority::resolve(value->reference) : eve::script::Borrowed<Store>();
                            return view.isBound() ? view->revokeBySource(source, reason) : 0;
+                       });
+    ownedStore.addFunc("revokeByActor",
+                       [](ScriptAuthorityStore* value, const std::string& actor, const std::string& reason) {
+                           auto view = value ? Authority::resolve(value->reference) : eve::script::Borrowed<Store>();
+                           return view.isBound() ? view->revokeByActor(actor, reason) : 0;
+                       });
+    ownedStore.addFunc("revokeByScope",
+                       [](ScriptAuthorityStore* value, const std::string& scope, const std::string& reason) {
+                           auto view = value ? Authority::resolve(value->reference) : eve::script::Borrowed<Store>();
+                           return view.isBound() ? view->revokeByScope(scope, reason) : 0;
+                       });
+    ownedStore.addFunc("revokeByCapability",
+                       [](ScriptAuthorityStore* value, const std::string& capability, const std::string& reason) {
+                           auto view = value ? Authority::resolve(value->reference) : eve::script::Borrowed<Store>();
+                           return view.isBound() ? view->revokeByCapability(capability, reason) : 0;
                        });
     ownedStore.addFunc("update", [](ScriptAuthorityStore* value, float dt) {
         auto view = value ? Authority::resolve(value->reference) : eve::script::Borrowed<Store>();
@@ -599,6 +777,24 @@ void Authority::expose(ssq::Table& table) {
     ownedStore.addFunc("queryAt", [](ScriptAuthorityStore* value, int index) -> Rule* {
         auto view = value ? Authority::resolve(value->reference) : eve::script::Borrowed<Store>();
         return view.isBound() ? const_cast<Rule*>(view->queryAt(index)) : nullptr;
+    });
+    ownedStore.addFunc("setEventCapacity", [vm](ScriptAuthorityStore* value, int capacity) {
+        if (!value)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "owned authority store proxy must not be null",
+                                                                      "store", {}, "authority.squirrel")));
+        auto view = Authority::resolve(value->reference);
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                      "owned authority store handle is stale", "store",
+                                                                      {}, "authority.squirrel")));
+        return eve::script::projectResult(vm, view->setEventCapacity(capacity));
+    });
+    ownedStore.addFunc("eventCapacity", [](ScriptAuthorityStore* value) {
+        auto view = value ? Authority::resolve(value->reference) : eve::script::Borrowed<Store>();
+        return view.isBound() ? view->eventCapacity() : 0;
     });
     ownedStore.addFunc("eventCount", [](ScriptAuthorityStore* value) {
         auto view = value ? Authority::resolve(value->reference) : eve::script::Borrowed<Store>();
