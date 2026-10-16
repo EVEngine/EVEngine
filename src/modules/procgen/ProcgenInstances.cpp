@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "procgen/Procgen.h"
 #include "procgen/ProcgenLive.h"
 #include "procgen/ProcgenScriptSupport.h"
