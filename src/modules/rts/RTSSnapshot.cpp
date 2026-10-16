@@ -188,6 +188,8 @@ Result<RTSStateSnapshot> RTS::snapshotState() const {
         value.navigation                      = *unit->navigation();
         value.navigation.formationSpeedFactor = 1.f;
         value.navigation.formationTarget.reset();
+        value.navigation.combatSlotTarget.reset();
+        value.navigation.combatSlotWaiting = false;
         if (value.navigation.trafficRecoveryTarget) value.navigation.plannedOrderId.clear();
         value.navigation.trafficRecoveryTarget.reset();
         value.vision         = *unit->vision();
@@ -1063,6 +1065,8 @@ Result<void> RTS::restoreState(const RTSStateSnapshot& snapshot) {
         *unit->navigation()                      = value.navigation;
         unit->navigation()->formationSpeedFactor = 1.f;
         unit->navigation()->formationTarget.reset();
+        unit->navigation()->combatSlotTarget.reset();
+        unit->navigation()->combatSlotWaiting = false;
         unit->navigation()->trafficRecoveryTarget.reset();
         *unit->vision()              = value.vision;
         unit->worker()->resourceType = value.worker.resourceType;

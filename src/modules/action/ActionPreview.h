@@ -41,6 +41,20 @@ struct ActionPreviewCue {
 struct ActionPreviewFrame {
     ActionPreviewReason              reason = ActionPreviewReason::Refresh;
     std::string                      animationUri;
+    /** @brief Editor-selected model URI; empty delegates model choice to the host. */
+    std::string                      previewModelUri;
+    /** @brief Optional locomotion/base-motion URI evaluated beneath the action layer. */
+    std::string                      baseMotionUri;
+    /** @brief Optional animation profile used for retargeting and named-bone policies. */
+    std::string                      animationProfileUri;
+    /** @brief Optional per-asset bone-mask URI. */
+    std::string                      boneMaskUri;
+    bool                             footIk         = false;
+    bool                             showRootMotion = true;
+    bool                             showGrid       = true;
+    bool                             showSkeleton   = false;
+    bool                             showJointNames = false;
+    bool                             litShading     = true;
     Duration                         previous;
     Duration                         current;
     std::vector<ActionPreviewCue>    cues;

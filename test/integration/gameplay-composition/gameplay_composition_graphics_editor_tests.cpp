@@ -1699,7 +1699,20 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         clearSectionSyncBeforeStart <- actionEditor.clearRuntimeSectionSync(0);
         testAnimation <- eve.Animation();
         testSkeleton <- testAnimation.newSkeleton();
+        testSkeleton.addBone("root", -1);
+        previewModelRegistration <- actionEditor.registerPreviewModelSkeleton(
+            "project://test/preview.glb", testSkeleton);
+        previewProfileConfiguration <- actionEditor.configurePreviewProfile({
+            schema="eve.action.preview-profile", schemaVersion=1,
+            actionAssetGuid="test.asset.light-attack", previewModelUri="project://test/preview.glb",
+            baseMotionUri="", animationProfileUri="", boneMaskUri="",
+            showRootMotion=true, footIk=false, showGrid=true,
+            showSkeleton=false, showJointNames=false, shading="lit"
+        });
+        previewProfileCanPreview <- actionEditor.canPreviewProfile();
         testBoneMask <- testAnimation.newBoneMask(testSkeleton);
+        previewMaskRegistration <- actionEditor.registerPreviewBoneMask(
+            "project://test/upper.mask", testBoneMask);
         testPose <- testAnimation.newPose(testSkeleton.getBoneCount());
         setBoneMaskBeforeStart <- actionEditor.setRuntimeBoneMask(testBoneMask);
         clearBoneMaskBeforeStart <- actionEditor.clearRuntimeBoneMask();
@@ -1838,11 +1851,16 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
             "test-section:attack", 0.05, 0.45, 0.08, "asset://test/attack.glb#AttackEdited");
         editSectionSourceResult <- actionEditor.editAnimationSectionSource(
             "test-section:attack", 0.1, 0.3, "linear");
+        editSectionEnvelopeResult <- actionEditor.editAnimationSectionEnvelope(
+            "test-section:attack", 0.06, 0.12, "ease-in", "ease-out");
         sectionUri <- actionEditor.getAnimationSectionUri(0);
         sectionStart <- actionEditor.getAnimationSectionStart(0);
         sectionBlend <- actionEditor.getAnimationSectionBlendIn(0);
+        sectionBlendOut <- actionEditor.getAnimationSectionBlendOut(0);
         sectionSourceStart <- actionEditor.getAnimationSectionSourceStart(0);
         sectionCurve <- actionEditor.getAnimationSectionBlendCurve(0);
+        sectionInCurve <- actionEditor.getAnimationSectionBlendInCurve(0);
+        sectionOutCurve <- actionEditor.getAnimationSectionBlendOutCurve(0);
         removeSectionResult <- actionEditor.removeAnimationSection("test-section:attack");
         sectionCountAfterCleanup <- actionEditor.getAnimationSectionCount();
         montageSettingsResult <- actionEditor.setMontageSettings(
@@ -1878,6 +1896,10 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
     CHECK(!vm.find("externalUnknown").toTable().get<bool>("ok"));
     CHECK(!vm.find("previewHostAvailable").toBool());
     CHECK(vm.find("previewRefresh").toTable().get<bool>("ok"));
+    CHECK(vm.find("previewModelRegistration").toTable().get<bool>("ok"));
+    CHECK(vm.find("previewProfileConfiguration").toTable().get<bool>("ok"));
+    CHECK(vm.find("previewProfileCanPreview").toBool());
+    CHECK(vm.find("previewMaskRegistration").toTable().get<bool>("ok"));
     CHECK(!vm.find("runtimeRateBeforeStart").toTable().get<bool>("ok"));
     CHECK(!vm.find("sectionProgressBeforeStart").toTable().get<bool>("ok"));
     CHECK(!vm.find("sectionSyncJumpBeforeStart").toTable().get<bool>("ok"));
@@ -1970,11 +1992,15 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
     CHECK(vm.find("addSectionResult").toTable().get<bool>("ok"));
     CHECK(vm.find("editSectionResult").toTable().get<bool>("ok"));
     CHECK(vm.find("editSectionSourceResult").toTable().get<bool>("ok"));
+    CHECK(vm.find("editSectionEnvelopeResult").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("sectionUri").toString(), std::string("asset://test/attack.glb#AttackEdited"));
     CHECK(std::fabs(vm.find("sectionStart").toFloat() - 0.05f) < 1e-5f);
-    CHECK(std::fabs(vm.find("sectionBlend").toFloat() - 0.08f) < 1e-5f);
+    CHECK(std::fabs(vm.find("sectionBlend").toFloat() - 0.06f) < 1e-5f);
+    CHECK(std::fabs(vm.find("sectionBlendOut").toFloat() - 0.12f) < 1e-5f);
     CHECK(std::fabs(vm.find("sectionSourceStart").toFloat() - 0.1f) < 1e-5f);
-    CHECK_EQ(vm.find("sectionCurve").toString(), std::string("linear"));
+    CHECK_EQ(vm.find("sectionCurve").toString(), std::string("ease-in"));
+    CHECK_EQ(vm.find("sectionInCurve").toString(), std::string("ease-in"));
+    CHECK_EQ(vm.find("sectionOutCurve").toString(), std::string("ease-out"));
     CHECK(vm.find("removeSectionResult").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("sectionCountAfterCleanup").toInt(), 0);
     CHECK(vm.find("montageSettingsResult").toTable().get<bool>("ok"));
