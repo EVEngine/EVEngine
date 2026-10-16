@@ -130,7 +130,15 @@ is script-readable, writable, and restored with named checkpoints. Linear and
 ballistic projectiles launch at those absolute heights, expose both endpoint
 heights to swept collision adapters, and perform three-dimensional target
 impact tests; their vertical position and launch target height survive snapshot
-restore. Match roots are likewise script-accessible through
+restore. Terrain fire lines traverse every crossed cell, so even a short
+crossing of a ridge blocks a low shot. Elevated firing positions can clear
+lower ridges. Swept projectile segments also detect ground intersection inside
+one cell (including vertical descent), and select the nearer terrain/obstacle
+impact. Exact corner-only touches use navigation's half-open cell convention;
+the terminal endpoint belongs to target impact settlement. These queries read
+the current canonical elevation field without a cache or an additional terrain
+owner. `test/rts_terrain.cpp` covers the geometric boundary cases.
+Match roots are likewise script-accessible through
 stable identities: setup rules, teams, start, surrender, retained lifecycle
 events and final outcomes all route through `MatchSystem`. The sandbox runs a
 headquarters-destruction match rather than maintaining a parallel win condition.
