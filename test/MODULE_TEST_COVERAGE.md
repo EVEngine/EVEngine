@@ -124,7 +124,7 @@ Declared modules: **194**. Task groups: **19**.
 
 ### action
 
-Source directory: `src/modules/action`. Status: **local-rules-recorded**. Local cases: **26**.
+Source directory: `src/modules/action`. Status: **local-rules-recorded**. Local cases: **31**.
 
 - Unit: [unit/action/action_tests.cpp](unit/action/action_tests.cpp)
 - Integration task `gameplay-composition`: [gameplay_composition_graphics_gameplay_action_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_gameplay_action_tests.cpp), [gameplay_composition_graphics_rts_script_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_rts_script_tests.cpp)

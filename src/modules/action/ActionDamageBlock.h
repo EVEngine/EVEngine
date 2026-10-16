@@ -2,7 +2,11 @@
 #include "common/Export.h"
 
 
-/** @file ActionDamageBlock.h @brief Typed instantaneous combat-damage action contract. */
+/** @file ActionDamageBlock.h
+ *  @brief Typed instantaneous combat-damage action contract.
+ *  @remarks L1 typed payload contract only — no domain mutation;
+ *           providers own handlers/sinks (`IActionNotifyProvider` / capabilities).
+ */
 
 #include "action/ActionNotifyRegistry.h"
 
