@@ -1,10 +1,12 @@
 #include <algorithm>
 #include <cmath>
+#include "common/Profile.h"
 #include "rts/RTSSystemMovementInternal.h"
 namespace eve::rts {
 using systems_internal::isSameHandle;
 using systems_internal::readCurrent;
 Result<std::size_t> ConstructionSystem::step(const SimulationStep& step, const LifecycleEventSink& events) {
+    EV_PROFILE_MODULE("rts", "ConstructionSystem::step");
     if (step.delta.nanoseconds() < 0)
         return Result<std::size_t>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "RTS construction step delta must be non-negative", "step.delta"));

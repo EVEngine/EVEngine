@@ -49,6 +49,10 @@ Result<std::unique_ptr<transaction::ITransactionParticipant>> stageAbility(Unit&
 
 // Private binding registration; the owning RTS class controls lifetime and VM.
 void exposeFormationBindings(ssq::Class& cls);
+/** @brief Compose explicit, atomic placement operations at the movement binding boundary. */
+void exposeRelocationBindings(ssq::Class& cls);
+/** @brief Compose checked automatic surface tracking bindings. */
+void exposeCrowdSurfaceBindings(ssq::Class& cls);
 void exposeEconomyBindings(ssq::Class& cls);
 void exposeStageBindings(ssq::Class& cls);
 }  // namespace eve::rts::script_internal
