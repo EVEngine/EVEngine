@@ -20,6 +20,13 @@ VehiclePhysicsStatus VehiclePhysics::tryWheelMove(VehicleEntity&, float) {
     return VehiclePhysicsStatus::Unavailable;
 }
 
+Result<VehiclePhysicsStatus> VehiclePhysics::submitWheelStep(VehicleEntity&, const SimulationStep&) {
+    return Result<VehiclePhysicsStatus>::success(VehiclePhysicsStatus::Unavailable);
+}
+Result<VehiclePhysicsStatus> VehiclePhysics::synchronizeWheelState(VehicleEntity&) {
+    return Result<VehiclePhysicsStatus>::success(VehiclePhysicsStatus::Unavailable);
+}
+
 void VehiclePhysics::syncTrackFromBody(VehicleEntity&) {}
 
 VehiclePhysicsStatus VehiclePhysics::tryTrackApply(VehicleEntity&, float, float) {
