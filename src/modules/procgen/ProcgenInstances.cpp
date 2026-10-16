@@ -17,16 +17,17 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <algorithm>
 #include <any>
 #include <cstdint>
 #include <functional>
 #include <memory>
 #include <mutex>
 #include <optional>
-#include <unordered_map>
-#include <utility>
 #include <string>
+#include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 #include "procgen/RuntimeGeneration.h"
 

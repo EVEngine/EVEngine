@@ -2519,10 +2519,10 @@ TEST_CASE_FIXTURE(ComponentStoreTest, "ScriptECS.toolJsonReportsEngineSideCompon
 }  // namespace test_ScriptECS
 #endif
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_action_ability_script)
-#include "PrivateTestScope.h"
 #include <simplesquirrel/simplesquirrel.hpp>
+#include "PrivateTestScope.h"
 #include "action/AbilityAsset.h"
-#include "action/AbilitySystem.h"
+#include "action/AbilityRuntime.h"
 #include "action/ActionModule.h"
 #include "common/Module.h"
 #include "common/SquirrelBinding.h"

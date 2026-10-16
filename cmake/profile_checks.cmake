@@ -157,6 +157,35 @@ endif()
 
 message(STATUS "Independent profile checks enabled for '${EVENGINE_PROFILE}'")
 
+# Prove the ocean/body composition without the graphics, gpgpu or fluids facade.
+# Physics retains its own core source authority; the ocean adapter only submits forces.
+if(EVENGINE_PROFILE STREQUAL "physics-core-only" AND TARGET EVPhysicsCoreCheck)
+    add_executable(eve_ocean_boat_check
+        "${CMAKE_SOURCE_DIR}/test/profile/gltf_animation_main.cpp"
+        "${CMAKE_SOURCE_DIR}/test/integration/ocean-voyage/ocean_boat.cpp"
+        "${CMAKE_SOURCE_DIR}/src/modules/fluids/OceanSurface.cpp"
+        "${CMAKE_SOURCE_DIR}/src/modules/fluids/OceanSpectrum.cpp"
+        "${CMAKE_SOURCE_DIR}/src/modules/fluids/OceanSpectrumFrame.cpp"
+        "${CMAKE_SOURCE_DIR}/src/modules/fluids/OceanWake.cpp"
+        "${CMAKE_SOURCE_DIR}/src/modules/fluids/OceanWaterView.cpp"
+        "${CMAKE_SOURCE_DIR}/src/modules/fluids/OceanBoatWake.cpp"
+        "${CMAKE_SOURCE_DIR}/src/modules/fluids/OceanBoat.cpp")
+    target_compile_features(eve_ocean_boat_check PRIVATE cxx_std_20)
+    eve_thirdparty_libs(_eve_ocean_libraries squirrel sdl2 box2d box3d)
+    eve_append_system_libraries(_eve_ocean_system_libraries)
+    target_link_libraries(eve_ocean_boat_check PRIVATE EVPhysicsCoreCheck EVPlatform_event EVCommon
+        zeroerr eve_engine_includes ${_eve_ocean_libraries} ${_eve_ocean_system_libraries})
+    foreach(_eve_ocean_case boatFloatsAndPropelsRealRigidBody boatRejectsRepeatedStepAndStaleOwners
+            boatRespondsToSpectralWaves dryPropellerAndAdapterFirstDestruction coreWorldQueriesSurviveSplit
+            boatWakeChangesSecondRigidBody)
+        add_test(NAME "fluids.ocean.${_eve_ocean_case}"
+            COMMAND eve_ocean_boat_check "--testcase=^fluids.ocean.${_eve_ocean_case}$" --no-color)
+        set_tests_properties("fluids.ocean.${_eve_ocean_case}" PROPERTIES
+            PASS_REGULAR_EXPRESSION "TEST CASE: +1 +0 +0 +0"
+            FAIL_REGULAR_EXPRESSION "Assertion Failed")
+    endforeach()
+endif()
+
 # The glTF admission boundary is data-only even when the CLI/import module is
 # excluded. Exercise the real importer and archive/Cook path in that profile.
 if(TARGET EVAsset)

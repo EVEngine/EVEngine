@@ -529,6 +529,8 @@ if(_has_physics OR _eve_physics_core_profile OR EVENGINE_BUILD_PHYSICS_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DWorldContacts.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsHandles.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsLink.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsWorldQueries.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/TargetingLineOfSightAdapter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/Shape3D.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/SimulationBackend.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World.cpp
