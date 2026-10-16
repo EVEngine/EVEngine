@@ -1317,7 +1317,10 @@ jobs:
             -R '^bundle/(graphics_font|TextureSampler|gpgpu|tensor|virtualgeometry_gpu|graphics_headless)\.cpp$'
 
       - name: Smoke all examples (headless, >=2s alive each)
-        timeout-minutes: 20
+        # Run 38775560674 finished 150/150 smokes then hit the old 20-minute
+        # step guard during teardown (default RUN_SECONDS=6 × ~150 examples is
+        # already ~15 minutes before process start/stop overhead). Keep headroom.
+        timeout-minutes: 30
         env:
           ALSOFT_DRIVERS: "null"
           # Contract for examples/README.md "示例规范": every runnable example
