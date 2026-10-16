@@ -11132,6 +11132,20 @@
       "default": "render-window",
       "module": "asset_graphics",
       "cases": {}
+    },
+    "integration/script-api/procgen_native_proxy_reuse.cpp": {
+      "module": "procgen",
+      "modules": [
+        "procgen"
+      ],
+      "task": "script-api",
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "procgen.script.nativeProxyAddressReuseInvalidatesOldInstance"
+        ]
+      }
     }
   }
 }
