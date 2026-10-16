@@ -2,7 +2,11 @@
 #include "common/Export.h"
 
 
-/** @file ActionParameterCurve.h @brief Typed continuous parameter-curve action block. */
+/** @file ActionParameterCurve.h
+ *  @brief Typed continuous parameter-curve action block.
+ *  @remarks L1 typed payload contract only — no domain mutation;
+ *           providers own handlers/sinks (`IActionNotifyProvider` / capabilities).
+ */
 
 #include "action/ActionNotifyRegistry.h"
 

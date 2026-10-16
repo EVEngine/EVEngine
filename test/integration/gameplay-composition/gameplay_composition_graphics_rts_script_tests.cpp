@@ -3669,7 +3669,7 @@ TEST_CASE("snapshot.consumers.authorityAndDefinitionsRejectDuplicateMetadataAtom
 
     const auto            authorityId = persistentId("11111111-2222-4333-8444-555555555555");
     eve::authority::Store authority(authorityId);
-    REQUIRE(!authority.grant("actor", "scope", "read", "test").empty());
+    REQUIRE(authority.grant("actor", "scope", "read", "test").ok());
     auto authoritySnapshot = authority.snapshot(hash);
     REQUIRE(authoritySnapshot.ok());
     eve::authority::Store authorityRestored(authorityId);
@@ -3845,7 +3845,9 @@ TEST_CASE("snapshot.consumers.authorityAndDefinitionsRoundTripAndMetadata") {
     const auto            hash        = testHashProvider();
     const auto            authorityId = persistentId("11111111-2222-4333-8444-555555555555");
     eve::authority::Store authority(authorityId);
-    const auto            ruleId = authority.grant("actor", "scope", "read", "test", 3);
+    auto                  grantResult = authority.grant("actor", "scope", "read", "test", 3);
+    REQUIRE(grantResult.ok());
+    const auto ruleId = std::move(grantResult).takeValue();
     REQUIRE(!ruleId.empty());
     auto authoritySnapshot = authority.snapshot(hash);
     REQUIRE(authoritySnapshot.ok());
@@ -3877,7 +3879,7 @@ TEST_CASE("snapshot.consumers.malformedPayloadAndUnknownVersionLeaveStateUnchang
     const auto            hash        = testHashProvider();
     const auto            authorityId = persistentId("99999999-8888-4777-8666-555555555555");
     eve::authority::Store authority(authorityId);
-    REQUIRE(!authority.grant("actor", "scope", "read", "before").empty());
+    REQUIRE(authority.grant("actor", "scope", "read", "before").ok());
     const std::string authorityBefore = authority.snapshotJson();
 
     Value::Object malformedAuthority;

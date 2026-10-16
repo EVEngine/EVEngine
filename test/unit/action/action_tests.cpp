@@ -5,7 +5,8 @@
 #include "PrivateTestScope.h"
 #include "action/AbilityAsset.h"
 #include "action/AbilityController.h"
-#include "action/AbilitySystem.h"
+#include "action/AbilityRuntime.h"
+#include "common/ConditionKeys.h"
 #include "common/Diagnostic.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -28,13 +29,13 @@ eve::action::AbilityDefinition complexAbility() {
     result.action.id        = id("action:fire-cone");
     result.action.timing    = {eve::Duration::fromNanoseconds(100'000'000), eve::Duration::fromNanoseconds(200'000'000),
                                eve::Duration::fromNanoseconds(300'000'000)};
-    result.action.condition = eve::decision::Condition::all(
-        {eve::decision::Condition::hasTag("State.Combat.Ready"),
-         eve::decision::Condition::compare("mana", eve::decision::CompareOperator::GreaterEqual, 12),
-         eve::decision::Condition::policyCall(
+    result.action.condition = eve::condition::Condition::all(
+        {eve::condition::tagPresent("State.Combat.Ready"),
+         eve::condition::Condition::compare("mana", eve::condition::CompareOperator::GreaterEqual, 12),
+         eve::condition::Condition::policyCall(
              "can_cast", eve::Value::Object{{"school", "fire"}},
-             eve::decision::ScriptConditionDeclaration{
-                 "can_cast", {"attributes.mana"}, eve::decision::DeterminismLevel::TickDeterministic})});
+             eve::condition::ScriptConditionDeclaration{
+                 "can_cast", {"attributes.mana"}, eve::condition::DeterminismLevel::TickDeterministic})});
     result.action.targetingMode = eve::action::TargetingMode::Query;
     eve::sensing::TargetingSpec targeting;
     targeting.space        = eve::sensing::CoordinateSpace::World2D;
@@ -103,7 +104,7 @@ TEST_CASE("abilityAsset.migratesV1MillisecondsAndRejectsFutureUnknownOrMalformed
     auto source                 = complexAbility();
     source.action.targetingMode = eve::action::TargetingMode::None;
     source.action.targetingSpec.reset();
-    source.action.condition = eve::decision::Condition{};
+    source.action.condition = eve::condition::Condition{};
     source.action.cost.reset();
     source.action.timeline.reset();
     auto encoded = eve::action::encodeAbilityAsset(source);
@@ -159,6 +160,66 @@ TEST_CASE("abilityAsset.migratesV1MillisecondsAndRejectsFutureUnknownOrMalformed
                                                            {"minimum", eve::Value::Array{0.5, 0, 0}},
                                                            {"maximum", eve::Value::Array{2, 2, 0}}}}};
     CHECK(!eve::action::decodeAbilityAsset(fractionalGrid).ok());
+}
+
+TEST_CASE("actionTiming.physicalSectionsProjectAtMostTwoSplitsAndRemainNonAuthoritative") {
+    eve::action::ActionTimeline timeline;
+    timeline.actionId = id("action:slash");
+    timeline.duration = eve::Duration::fromNanoseconds(600);
+    auto none         = eve::action::actionTimingFromPhysicalSections(timeline);
+    REQUIRE(none.ok());
+    CHECK_EQ(none.value().active.nanoseconds(), 600);
+    CHECK_EQ(none.value().windup.nanoseconds(), 0);
+    CHECK_EQ(none.value().recover.nanoseconds(), 0);
+
+    timeline.splitTimestamps = {eve::Duration::fromNanoseconds(100), eve::Duration::fromNanoseconds(350)};
+    auto two                 = eve::action::actionTimingFromPhysicalSections(timeline);
+    REQUIRE(two.ok());
+    CHECK_EQ(two.value().windup.nanoseconds(), 100);
+    CHECK_EQ(two.value().active.nanoseconds(), 250);
+    CHECK_EQ(two.value().recover.nanoseconds(), 250);
+    auto total = two.value().total();
+    REQUIRE(total.ok());
+    CHECK_EQ(total.value(), timeline.duration);
+
+    timeline.splitTimestamps.push_back(eve::Duration::fromNanoseconds(500));
+    CHECK(!eve::action::actionTimingFromPhysicalSections(timeline).ok());
+}
+
+TEST_CASE("abilityAsset.parsePolicySpellingsAndAssembleDefinitionFromTimeline") {
+    auto instancing = eve::action::parseAbilityInstancingPolicy("per-execution");
+    REQUIRE(instancing.ok());
+    CHECK(instancing.value() == eve::action::AbilityInstancingPolicy::PerExecution);
+    CHECK(!eve::action::parseAbilityInstancingPolicy("per-owner-typo").ok());
+
+    auto group = eve::action::parseAbilityActivationGroup("exclusive-replaceable");
+    REQUIRE(group.ok());
+    CHECK(group.value() == eve::action::AbilityActivationGroup::ExclusiveReplaceable);
+    CHECK(!eve::action::parseAbilityActivationGroup("exclusive").ok());
+
+    eve::action::ActionTimeline timeline;
+    timeline.actionId        = id("action:slash");
+    timeline.duration        = eve::Duration::fromNanoseconds(600);
+    timeline.splitTimestamps = {eve::Duration::fromNanoseconds(100), eve::Duration::fromNanoseconds(350)};
+    auto cooldown            = eve::Duration::fromNanoseconds(1'000);
+    auto definition          = eve::action::abilityDefinitionFromTimeline(
+        id("ability:slash"), timeline, cooldown, eve::action::AbilityInstancingPolicy::PerOwner,
+        eve::action::AbilityActivationGroup::Independent, "Event.Combat.Slash");
+    REQUIRE(definition.ok());
+    CHECK_EQ(definition.value().id, id("ability:slash"));
+    CHECK_EQ(definition.value().action.id, id("action:slash"));
+    CHECK_EQ(definition.value().action.timing.windup.nanoseconds(), 100);
+    CHECK_EQ(definition.value().action.timing.active.nanoseconds(), 250);
+    CHECK_EQ(definition.value().action.timing.recover.nanoseconds(), 250);
+    REQUIRE(definition.value().action.timeline.has_value());
+    CHECK_EQ(definition.value().action.timeline->duration.nanoseconds(), 600);
+    REQUIRE(definition.value().triggers.size() == 1);
+    CHECK_EQ(definition.value().triggers[0].gameplayTag, std::string("Event.Combat.Slash"));
+
+    CHECK(!eve::action::abilityDefinitionFromTimeline(id("ability:bad"), timeline, cooldown,
+                                                      eve::action::AbilityInstancingPolicy::PerOwner,
+                                                      eve::action::AbilityActivationGroup::Independent, "not a tag")
+               .ok());
 }
 }  // namespace ability_asset
 }  // namespace
@@ -473,18 +534,73 @@ TEST_CASE("abilitySystem.revokeRejectsActiveGrantAndSucceedsAfterSynchronization
     REQUIRE(abilities.revoke(grant.value()).ok());
     CHECK(!abilities.findGrant(grant.value()).ok());
 }
+
+TEST_CASE("abilitySystem.findDefinitionAndActivateByTickUseRegisteredActionId") {
+    eve::action::ActionRuntime  runtime;
+    eve::action::AbilityRuntime abilities(runtime);
+    auto                        definition = ability("slash", eve::action::AbilityInstancingPolicy::PerOwner,
+                                                     eve::action::AbilityActivationGroup::Independent);
+    definition.action.timing.active        = eve::Duration::fromNanoseconds(100);
+    REQUIRE(abilities.registerDefinition(definition).ok());
+    auto found = abilities.findDefinition(definition.id);
+    REQUIRE(found.ok());
+    CHECK(found.value().action.id == definition.action.id);
+    CHECK(!abilities.findDefinition(logicalId("ability", "missing")).ok());
+
+    auto grant = abilities.grant("fighter", definition.id);
+    REQUIRE(grant.ok());
+    auto activation = abilities.activate(grant.value(), eve::SimulationTick(1));
+    REQUIRE(activation.ok());
+    REQUIRE(runtime.find(activation.value().executionId) != nullptr);
+    CHECK(runtime.find(activation.value().executionId)->definition().id == definition.action.id);
+}
+
+TEST_CASE("abilitySystem.cancelAndStepOwnOrchestrationThroughActionRuntime") {
+    eve::action::ActionRuntime  runtime;
+    eve::action::AbilityRuntime abilities(runtime);
+    auto                        definition = ability("combo", eve::action::AbilityInstancingPolicy::PerExecution,
+                                                     eve::action::AbilityActivationGroup::Independent);
+    definition.action.timing.active        = eve::Duration::fromNanoseconds(200);
+    REQUIRE(abilities.registerDefinition(definition).ok());
+    auto grant = abilities.grant("fighter", definition.id);
+    REQUIRE(grant.ok());
+    auto first = abilities.activate(grant.value(), eve::SimulationTick(1));
+    REQUIRE(first.ok());
+
+    auto half    = eve::Duration::fromNanoseconds(100);
+    auto stepped = abilities.step(eve::SimulationTick(2), half);
+    REQUIRE(stepped.ok());
+    REQUIRE(stepped.value().advances.size() == 1);
+    CHECK(stepped.value().advances[0].activationId == first.value().id);
+    CHECK(stepped.value().activeCount == 1);
+    CHECK(stepped.value().completedCount == 0);
+
+    REQUIRE(abilities.cancel(first.value().id, eve::SimulationTick(3)).ok());
+    CHECK(abilities.activeActivations().empty());
+    CHECK(!abilities.cancel(first.value().id, eve::SimulationTick(4)).ok());
+
+    auto second = abilities.activate(grant.value(), eve::SimulationTick(5));
+    REQUIRE(second.ok());
+    auto finished = abilities.step(eve::SimulationTick(6), eve::Duration::fromNanoseconds(200));
+    REQUIRE(finished.ok());
+    CHECK(finished.value().completedCount == 1);
+    CHECK(finished.value().activeCount == 0);
+    CHECK(abilities.activeActivations().empty());
+    CHECK(!abilities.step(eve::SimulationTick(7), eve::Duration::fromNanoseconds(-1)).ok());
+}
 }  // namespace ability_system
 }  // namespace
 }  // namespace test_action_abilities
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_action_notify_registry)
-#include "PrivateTestScope.h"
 #include <memory>
 #include <string_view>
+#include "PrivateTestScope.h"
 #include "action/ActionAudioBlock.h"
 #include "action/ActionBlockRuntime.h"
 #include "action/ActionCameraBlock.h"
+#include "action/ActionNotifyPlayback.h"
 #include "action/ActionNotifyRegistry.h"
 #include "action/ActionParameterCurve.h"
 #include "action/ActionPrefabBlock.h"
@@ -997,6 +1113,14 @@ TEST_CASE("actionNotifyRegistry.advancesSharedHandlerOnceAndPropagatesFailure") 
     CHECK(!failed.ok());
     CHECK_EQ(failed.status().diagnostics().front().path(), "handler");
     CHECK_EQ(handler->advances, 2);
+}
+
+TEST_CASE("actionNotifyPlayback.composesRegistryAndBlockRuntimeForHosts") {
+    auto playback = eve::action::ActionNotifyPlayback::withBuiltins();
+    REQUIRE(playback.ok());
+    REQUIRE(playback.value());
+    CHECK(!playback.value()->registry().descriptors().empty());
+    CHECK_EQ(playback.value()->executionCount(), 0u);
 }
 }  // namespace test_action_notify_registry_unit
 #endif

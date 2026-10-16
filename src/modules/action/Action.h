@@ -16,6 +16,7 @@
  */
 
 #include "action/ActionTimeline.h"
+#include "common/Condition.h"
 #include "common/ECS.h"
 #include "common/Identity.h"
 #include "common/ResourceAccount.h"
@@ -23,7 +24,6 @@
 #include "common/StrongUint64.h"
 #include "common/Time.h"
 #include "common/Value.h"
-#include "decision/Condition.h"
 #include "sensing/Targeting.h"
 #include "transaction/Transaction.h"
 
@@ -68,8 +68,12 @@ enum class TargetingMode : std::uint8_t {
 /**
  * @brief Deterministic simulation durations for the three timed action phases.
  *
- * Durations are injected values. No action code reads a wall or monotonic
- * clock; the caller advances an execution with a SimulationTick and Duration.
+ * This is the sole phase-machine authority read by ActionRuntime. Durations are
+ * injected values; no action code reads a wall or monotonic clock. When an
+ * ActionTimeline is attached, `timing.total()` must equal `timeline.duration`.
+ * Timeline `splitTimestamps` are physical section markers and are never read by
+ * ActionRuntime — see `actionTimingFromPhysicalSections` for the optional
+ * assembly projection used when authoring timing from those sections.
  */
 struct ActionTiming {
     /** @brief Time spent in Windup before Active. */
@@ -78,7 +82,27 @@ struct ActionTiming {
     Duration active = Duration::zero();
     /** @brief Time spent in Recover before completion. */
     Duration recover = Duration::zero();
+
+    /**
+     * @brief Sum of windup + active + recover.
+     * @return Owning total duration, or a structured overflow failure.
+     */
+    [[nodiscard]] EVENGINE_API_PLATFORM Result<Duration> total() const;
 };
+
+/**
+ * @brief Assemble ActionTiming from a timeline duration and at most two physical splits.
+ *
+ * @param timeline Borrowed timeline; only `duration` and `splitTimestamps` are read.
+ * @return Owning phase timing, or a structured rejection when more than two splits
+ *         make the windup/active/recover mapping ambiguous.
+ * @remarks ActionRuntime never reads `splitTimestamps`. This helper is an assembly
+ *          convention for timeline-authored definitions (e.g. ability registration)
+ *          when no separate ActionTiming was supplied: 0 splits → all active;
+ *          1 split → windup|active; 2 splits → windup|active|recover.
+ */
+[[nodiscard]] EVENGINE_API_PLATFORM Result<ActionTiming> actionTimingFromPhysicalSections(
+    const ActionTimeline& timeline);
 
 /**
  * @brief Immutable-by-convention definition of one action kind.
@@ -86,14 +110,19 @@ struct ActionTiming {
  * The definition owns condition and metadata values. A cost is the canonical
  * common `CostSpec`; effectIds are references resolved by the injected active
  * executor. No RPG, RTS, Weapon or Card type is included here.
+ *
+ * Authority split when both timing and timeline are present:
+ * - `timing` — ActionRuntime phase transitions (sole phase authority)
+ * - `timeline` — choreography (tracks/notifies); `duration` must equal `timing.total()`
+ * - `timeline->splitTimestamps` — physical sections for editor/montage only
  */
 struct EVENGINE_API_PLATFORM ActionDefinition {
     /** @brief Scoped logical definition identity, not a runtime execution id. */
     LogicalId id;
-    /** @brief Timed phase policy in simulation durations. */
+    /** @brief Timed phase policy; sole ActionRuntime phase authority. */
     ActionTiming timing;
     /** @brief Side-effect-free precondition tree. */
-    decision::Condition condition;
+    condition::Condition condition;
     /** @brief Target acquisition policy for this action. */
     TargetingMode targetingMode = TargetingMode::None;
     /** @brief Constraints used when targetingMode is Query. */
@@ -106,7 +135,7 @@ struct EVENGINE_API_PLATFORM ActionDefinition {
     bool activeExecutionRequired = false;
     /** @brief Deterministic extension data owned by this definition. */
     Value::Object metadata;
-    /** @brief Optional versioned choreography authored by the action editor. */
+    /** @brief Optional versioned choreography; duration must match timing.total(). */
     std::optional<ActionTimeline> timeline;
 
     /**
@@ -206,8 +235,8 @@ public:
      * @brief Evaluate one action condition.
      * @return ConditionResult or a structured provider failure.
      */
-    [[nodiscard]] virtual Result<decision::ConditionResult> evaluate(const ActionDefinition& definition,
-                                                                     const ActionRequest&    request) const = 0;
+    [[nodiscard]] virtual Result<condition::ConditionResult> evaluate(const ActionDefinition& definition,
+                                                                      const ActionRequest&    request) const = 0;
 };
 
 /**

@@ -3230,24 +3230,6 @@
       "module": "physics",
       "task": "physics-simulation"
     },
-    "integration/procedural-generation/procgen_generation_stages.cpp": {
-      "role": "tests",
-      "default": "module-composition",
-      "cases": {
-        "module-composition": [
-          "procgen.stages.scalarFieldIsOwningBoundedAndTransactional",
-          "procgen.stages.scalarFieldProducesReusableParametricGeometry",
-          "procgen.stages.houseDefaultScheduleMatchesCompatibilityAndOwnsKit",
-          "procgen.stages.houseGraphControlsGenerationAndFailuresPreserveStage",
-          "procgen.stages.caveDefaultScheduleMatchesRecipe",
-          "procgen.stages.caveFieldEditsAffectOutputAndFailedExtractionKeepsInput",
-          "procgen.stages.caveSkeletonAndSurfacePoliciesAreEditable",
-          "procgen.stages.scriptOwnsFieldsAndComposesCaveWithoutGraphics"
-        ]
-      },
-      "module": "procgen",
-      "task": "procedural-generation"
-    },
     "integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp": {
       "role": "tests",
       "default": "render-offscreen",
@@ -4332,7 +4314,8 @@
           "timer.simulationClockUsesInjectedFixedSteps",
           "touch.getTouchesEmpty",
           "touch.getTouchInvalidThrows",
-          "devtools.renderflow.passScopeForwardsTheCallersName"
+          "devtools.renderflow.passScopeForwardsTheCallersName",
+          "devtools.playHost.malformedRequestsObserveEveryResult"
         ],
         "concurrency": [
           "event.workerPushWakesWait",
@@ -5198,6 +5181,23 @@
         "weapon.cpp"
       ]
     },
+    "integration/script-api/script_api_procgen_cave_generation_stages_tests.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "procgen.stages.scriptOwnsFieldsAndComposesCaveWithoutGraphics"
+        ]
+      },
+      "module": "procgen",
+      "modules": [
+        "procgen"
+      ],
+      "task": "script-api",
+      "origins": [
+        "procgen_generation_stages.cpp"
+      ]
+    },
     "integration/script-rendering/script_rendering_graphics_tests.cpp": {
       "role": "tests",
       "default": "script-render",
@@ -5320,7 +5320,8 @@
       "cases": {
         "local-format": [
           "abilityAsset.roundTripsCompleteDefinitionAndRegistersDecodedCandidate",
-          "abilityAsset.migratesV1MillisecondsAndRejectsFutureUnknownOrMalformedData"
+          "abilityAsset.migratesV1MillisecondsAndRejectsFutureUnknownOrMalformedData",
+          "abilityAsset.parsePolicySpellingsAndAssembleDefinitionFromTimeline"
         ],
         "local-logic": [
           "abilityController.playerQueueRoutesFifoIntentWithInjectedTick",
@@ -5346,7 +5347,11 @@
           "actionNotifyRegistry.validatesShapeAndRequiredPayload",
           "actionNotifyRegistry.rejectsInvalidAndDuplicateDescriptors",
           "actionNotifyRegistry.handlerLifecycleIsExplicitAndObservable",
-          "actionNotifyRegistry.advancesSharedHandlerOnceAndPropagatesFailure"
+          "actionNotifyRegistry.advancesSharedHandlerOnceAndPropagatesFailure",
+          "actionTiming.physicalSectionsProjectAtMostTwoSplitsAndRemainNonAuthoritative",
+          "abilitySystem.findDefinitionAndActivateByTickUseRegisteredActionId",
+          "abilitySystem.cancelAndStepOwnOrchestrationThroughActionRuntime",
+          "actionNotifyPlayback.composesRegistryAndBlockRuntimeForHosts"
         ]
       },
       "module": "action",
@@ -5555,6 +5560,43 @@
         "animation_smr_retarget.cpp"
       ]
     },
+    "unit/archspace/archspace_space_query.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "archspace.query.architectural_region_and_door_portal",
+          "archspace.query.dungeon_regions_connected_through_portal",
+          "archspace.query.cave_chamber_topology_and_grid_bake",
+          "archspace.projector.mesh_scene_sync_and_clear",
+          "archspace.import.cell_grid_splits_regions_at_portal",
+          "archspace.import.rejects_bad_grid_and_missing_level"
+        ]
+      },
+      "module": "archspace"
+    },
+    "unit/archspace_hd2d/archspace_hd2d_projector.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "archspace.hd2d.sync_builds_tile_layer_without_graphics"
+        ]
+      },
+      "module": "archspace_hd2d"
+    },
+    "unit/archspace_map/archspace_map_projector.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "archspace.map.tile_ortho_sync_writes_gids",
+          "archspace.map.tile_iso_orientation_and_reject",
+          "archspace.map.tile_requires_level_id"
+        ]
+      },
+      "module": "archspace_map"
+    },
     "unit/asset/asset_tests.cpp": {
       "role": "tests",
       "default": "local-logic",
@@ -5645,7 +5687,9 @@
         "local-logic": [
           "authority.decision.priorityThenDenyThenCreationOrder",
           "authority.decision.defaultDenyIsExplainable",
+          "authority.decision.wildcardMatchesAndLosesToExactDeny",
           "authority.lifecycle.durationRevokeAndEvents",
+          "authority.lifecycle.revokeByDimensionAndEventCapacity",
           "authority.query.reverseDimensionsAreDeterministic",
           "authority.snapshot.restoreIsDeterministicAndTransactional",
           "authority.input.invalidFactsDoNotMutate",
@@ -6069,7 +6113,12 @@
           "Capability.ownedRejectsNullProvider",
           "Capability.ownedRepublishAfterUnloadAdvancesGeneration",
           "Capability.providerRefBindsCallerOwnedProvider",
-          "Capability.providerRefIsBindOnceAndMoveOnly"
+          "Capability.providerRefIsBindOnceAndMoveOnly",
+          "decision.condition.supportsAllLeafNodes",
+          "decision.condition.compoundsExplainFailureWithoutMutation",
+          "decision.condition.scriptDeclarationIsExplicit",
+          "decision.conditionUnavailableIsDifferentFromFalse",
+          "decision.condition.legacyCodecExpandsDomainLeaves"
         ],
         "test-framework": [
           "common.zeroerr.preservesExpressionAndSource",
@@ -6113,7 +6162,8 @@
         "time_contract.cpp",
         "versioned_registry.cpp",
         "xml.cpp",
-        "capability_owned.cpp"
+        "capability_owned.cpp",
+        "condition.cpp"
       ]
     },
     "unit/crowd/crowd_tests.cpp": {
@@ -6266,26 +6316,6 @@
       "module": "decal",
       "origins": [
         "decal.cpp"
-      ]
-    },
-    "unit/decision/decision_tests.cpp": {
-      "role": "tests",
-      "default": "local-logic",
-      "cases": {
-        "local-logic": [
-          "decision.condition.supportsAllLeafNodes",
-          "decision.condition.compoundsExplainFailureWithoutMutation",
-          "decision.condition.scriptDeclarationIsExplicit",
-          "decision.conditionUnavailableIsDifferentFromFalse",
-          "decision.blackboardsAndFsmAreExplicit",
-          "decision.utilityIsDeterministic",
-          "decision.influenceAndSnapshotRoundTrip"
-        ]
-      },
-      "module": "decision",
-      "origins": [
-        "condition.cpp",
-        "decision.cpp"
       ]
     },
     "unit/definitions/definitions_unit.cpp": {
@@ -7182,7 +7212,10 @@
           "graphics.virtual_texture_streaming.ingest_packed_feedback_collapses_mips"
         ]
       },
-      "module": "graphics"
+      "module": "graphics",
+      "origins": [
+        "virtual_texture_streaming.cpp"
+      ]
     },
     "unit/graphics_fog/graphics_fog_unit.cpp": {
       "role": "tests",
@@ -7642,14 +7675,18 @@
           "npc_ai.ecsCompositionPublishesDerivedProjection",
           "npc_ai.ecsLinkDefinesAgentFirstAndEntityFirstCleanup",
           "npc_ai.smartObjectQueryAndLeaseAreDeterministic",
-          "npc_ai.smartObjectDefinesBothDestructionOrders"
+          "npc_ai.smartObjectDefinesBothDestructionOrders",
+          "decision.blackboardsAndFsmAreExplicit",
+          "decision.utilityIsDeterministic",
+          "decision.influenceAndSnapshotRoundTrip"
         ]
       },
       "module": "npc_ai",
       "origins": [
         "npc_ai.cpp",
         "npc_ai_ecs.cpp",
-        "npc_ai_smart_object.cpp"
+        "npc_ai_smart_object.cpp",
+        "decision_context.cpp"
       ]
     },
     "unit/orders/orders_unit.cpp": {
@@ -8380,6 +8417,25 @@
         "procgen_result_contract.cpp",
         "procgen_rng_contract.cpp",
         "procgen.cpp"
+      ]
+    },
+    "unit/procgen/procgen_generation_stages.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.stages.scalarFieldIsOwningBoundedAndTransactional",
+          "procgen.stages.scalarFieldProducesReusableParametricGeometry",
+          "procgen.stages.houseDefaultScheduleMatchesCompatibilityAndOwnsKit",
+          "procgen.stages.houseGraphControlsGenerationAndFailuresPreserveStage",
+          "procgen.stages.caveDefaultScheduleMatchesRecipe",
+          "procgen.stages.caveFieldEditsAffectOutputAndFailedExtractionKeepsInput",
+          "procgen.stages.caveSkeletonAndSurfacePoliciesAreEditable"
+        ]
+      },
+      "module": "procgen",
+      "origins": [
+        "procgen_generation_stages.cpp"
       ]
     },
     "unit/procgen/procgen_mesh_tests.cpp": {
@@ -10097,6 +10153,186 @@
       "role": "helper",
       "default": "local-logic",
       "cases": {},
+      "module": "graphics"
+    },
+    "integration/ocean-voyage/ocean_boat.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "physics-backend": [
+          "fluids.ocean.coreWorldQueriesSurviveSplit",
+          "fluids.ocean.boatFloatsAndPropelsRealRigidBody",
+          "fluids.ocean.boatRejectsRepeatedStepAndStaleOwners",
+          "fluids.ocean.dryPropellerAndAdapterFirstDestruction",
+          "fluids.ocean.boatRespondsToSpectralWaves",
+          "fluids.ocean.boatWakeChangesSecondRigidBody"
+        ]
+      },
+      "module": "fluids",
+      "task": "ocean-voyage"
+    },
+    "unit/fluids/ocean_codec.cpp": {
+      "role": "tests",
+      "default": "local-format",
+      "cases": {
+        "local-format": [
+          "fluids.ocean.spectrumDefinitionPreservesSeedAndWaves",
+          "fluids.ocean.spectrumDefinitionRejectsAmbiguousInput",
+          "fluids.ocean.interactionArgumentsAreStrictAndOwning"
+        ]
+      },
+      "module": "fluids"
+    },
+    "integration/ocean-voyage/ocean_gpu.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "render-window": [
+          "fluids.ocean.gpuSpectrumMatchesCpuAndRejectsStaleFrames",
+          "fluids.ocean.gpuSpectrumReportsUnavailableProvider",
+          "fluids.ocean.gpuSpectrumLargeBandParity",
+          "fluids.ocean.gpuSeaTransitionMatchesCpuFieldsAndLevel"
+        ]
+      },
+      "module": "fluids",
+      "task": "ocean-voyage"
+    },
+    "unit/fluids/ocean_hull_mask.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "fluids.ocean.hullMaskPoseBevelAndOrigin",
+          "fluids.ocean.hullMaskRejectsWholeInvalidBatch"
+        ]
+      },
+      "module": "fluids"
+    },
+    "unit/fluids/ocean_mesh.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "fluids.ocean.meshHasNoInteriorBoundary",
+          "fluids.ocean.meshQualityAndValidation",
+          "fluids.ocean.meshFloatingOriginMatchesPhysics"
+        ]
+      },
+      "module": "fluids"
+    },
+    "integration/ocean-voyage/ocean_render.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "render-window": [
+          "fluids.ocean.rendererPublishesSharedSurfaceAndFoam",
+          "fluids.ocean.residentRenderingMatchesCpuWithWakeAndFloatingOrigin",
+          "fluids.ocean.scriptRenderBuildersOwnInputsAcrossGc"
+        ]
+      },
+      "module": "fluids",
+      "task": "ocean-voyage"
+    },
+    "integration/ocean-voyage/ocean_script.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "fluids.ocean.scriptOwnsSpectrumAndFrameBuilders",
+          "fluids.ocean.scriptBoatWakeUsesOneFixedClock"
+        ]
+      },
+      "module": "fluids",
+      "task": "ocean-voyage"
+    },
+    "unit/fluids/ocean_spectrum.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "fluids.ocean.spectrumEnergyPeriodicityAndSeed",
+          "fluids.ocean.spectrumFftMatchesIndependentDft",
+          "fluids.ocean.spectrumVelocityAndValidation",
+          "fluids.ocean.spectrumMultibandCurrentAndBuilderLifetime"
+        ]
+      },
+      "module": "fluids"
+    },
+    "unit/fluids/ocean_spray.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "fluids.ocean.sprayDeterminismAndSourceOrder",
+          "fluids.ocean.sprayBudgetsLifetimeAndReentry",
+          "fluids.ocean.sprayRejectsWholeInvalidBatch",
+          "fluids.ocean.sprayMeshBasisAndFloatingOrigin"
+        ]
+      },
+      "module": "fluids"
+    },
+    "integration/ocean-voyage/ocean_spray_render.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "render-window": [
+          "fluids.ocean.sprayBatchRendersAndRejectsInvalidPublication",
+          "fluids.ocean.sprayRendererObservesProviderRetirement"
+        ],
+        "script-binding": [
+          "fluids.ocean.sprayScriptBuildersSurviveGc"
+        ]
+      },
+      "module": "fluids",
+      "task": "ocean-voyage"
+    },
+    "unit/fluids/ocean_surface.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "fluids.ocean.displacedWorldQueryMatchesGeometry",
+          "fluids.ocean.rejectsFoldedAndNonfiniteInputs",
+          "fluids.ocean.buoyancyVolumeAndDrag"
+        ]
+      },
+      "module": "fluids"
+    },
+    "unit/fluids/ocean_transition.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "fluids.ocean.seaTransitionVelocityAndEndpoints",
+          "fluids.ocean.seaTransitionValidationAndOwningBuilder",
+          "fluids.ocean.seaTransitionCurrentPreservesEndpointVelocityContract"
+        ]
+      },
+      "module": "fluids"
+    },
+    "unit/fluids/ocean_wake.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "fluids.ocean.wakePropagatesAndRejectsAtomically",
+          "fluids.ocean.wakeRecenterAndComposition",
+          "fluids.ocean.wakeDispersionMatchesIndependentDft",
+          "fluids.ocean.foamTransportMatchesCurrentAndDecay",
+          "fluids.ocean.foamTransportFailurePreservesWholeStep",
+          "fluids.ocean.wakePreparedStepIsOwningAndRevisionChecked"
+        ]
+      },
+      "module": "fluids"
+    },
+    "unit/graphics/graphics_shader_parameters.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "graphics.shader.floatBlockIsAtomic"
+        ]
+      },
       "module": "graphics"
     }
   }

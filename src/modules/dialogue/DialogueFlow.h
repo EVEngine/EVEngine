@@ -60,7 +60,7 @@ public:
         /** @brief Borrowed all-or-nothing world mutation provider. */
         eve::IStateMutation* stateMutation = nullptr;
         /** @brief Optional custom condition evaluator; empty uses the shared adapter. */
-        std::function<eve::decision::ConditionResult(const eve::Value&)> conditionEvaluator;
+        std::function<eve::condition::ConditionResult(const eve::Value&)> conditionEvaluator;
         /** @brief Handler for requests whose kind is Operation. */
         CommandRequestHandler operationHandler;
         /** @brief Handler for requests whose kind is GameplayAction. */
@@ -293,8 +293,8 @@ private:
     eve::dnut::StepKindRegistry                                      stepRegistry_;
     eve::dnut::SequenceRuntime                                       runner_;
     DialogueStateContext                                      stateContext_;
-    std::function<eve::decision::ConditionResult(const eve::Value&)> configuredConditionEvaluator_;
-    std::optional<eve::decision::ConditionResult>                    lastConditionResult_;
+    std::function<eve::condition::ConditionResult(const eve::Value&)> configuredConditionEvaluator_;
+    std::optional<eve::condition::ConditionResult>                    lastConditionResult_;
     CommandRequestHandler                                     operationRequestHandler_;
     CommandRequestHandler                                     gameplayActionHandler_;
     IntegrationConfig::CommandParticipantFactory              commandParticipantFactory_;
