@@ -55,12 +55,14 @@ Result<void> RTSCommandLog::queue(RTSReplayCommand command, SimulationTick curre
         std::sort(command.units.begin(), command.units.end(), normalizedLess);
         command.units.erase(std::unique(command.units.begin(), command.units.end()), command.units.end());
         if (command.operation == RTSReplayOperation::MovementGroup &&
-            (command.units.size() < 2 || command.command.kind != OrderKind::Move || command.command.append ||
-             command.command.priority != 0 || command.command.timeoutSeconds != 0.0 ||
+            (command.units.size() < 2 ||
+             (command.command.kind != OrderKind::Move && command.command.kind != OrderKind::AttackMove) ||
+             command.command.append || command.command.priority != 0 || command.command.timeoutSeconds != 0.0 ||
              !command.command.definitionId.empty() || command.targetEntity.isValid() || command.command.radius != 0.f ||
              command.command.secondaryTarget.x != 0.f || command.command.secondaryTarget.y != 0.f))
-            return replayFailure("Movement-group replay requires two units, immediate Move and positive lead distance",
-                                 "command.group");
+            return replayFailure(
+                "Movement-group replay requires two units, immediate Move/AttackMove and positive lead distance",
+                "command.group");
     } else if (command.operation == RTSReplayOperation::Construction) {
         if (command.units.size() != 1 || !command.faction.isValid() || !command.resultSubject.isValid() ||
             !command.definition.isValid())
@@ -242,6 +244,7 @@ Result<std::size_t> RTSCommandLog::apply(SimulationTick tick, RTS& world) {
             batch.target       = replay.command.target;
             batch.formation    = replay.formation;
             batch.leadDistance = replay.groupLeadDistance;
+            batch.kind         = replay.command.kind;
             auto receipt       = world.submitMovementGroup(batch);
             if (!receipt) return Result<std::size_t>::failure(receipt.status());
             applied += receipt.value().accepted;
@@ -289,7 +292,12 @@ std::string RTSCommandLog::exportText() const {
         return value.operation == RTSReplayOperation::RequestFireSupport ||
                value.operation == RTSReplayOperation::CancelFireSupport;
     });
-    const unsigned version     = grouped ? 5u : (oriented ? 4u : (fireSupport ? 3u : (extended ? 2u : 1u)));
+    const bool     attackGrouped = std::any_of(history_.begin(), history_.end(), [](const auto& value) {
+        return value.operation == RTSReplayOperation::MovementGroup && value.command.kind == OrderKind::AttackMove;
+    });
+    const unsigned version       = attackGrouped ? 6u
+                                   : grouped     ? 5u
+                                                 : (oriented ? 4u : (fireSupport ? 3u : (extended ? 2u : 1u)));
     out << "EVERTS_COMMANDS " << version << '\n'
         << std::setprecision(std::numeric_limits<double>::max_digits10);
     for (const auto& value : history_) {
@@ -324,7 +332,7 @@ Result<void> RTSCommandLog::importText(std::string_view text, SimulationTick cur
     in.imbue(std::locale::classic());
     std::string magic;
     unsigned version = 0;
-    if (!(in >> magic >> version) || magic != "EVERTS_COMMANDS" || (version < 1 || version > 5))
+    if (!(in >> magic >> version) || magic != "EVERTS_COMMANDS" || (version < 1 || version > 6))
         return replayFailure("invalid RTS command log header", "commandLog.header");
     std::vector<RTSReplayCommand> parsed;
     while (in >> std::ws && !in.eof()) {
@@ -378,6 +386,9 @@ Result<void> RTSCommandLog::importText(std::string_view text, SimulationTick cur
         tick = commandTick;
         value.tick = SimulationTick{tick};
         value.command.kind = static_cast<OrderKind>(kind);
+        if (version < 6 && value.operation == RTSReplayOperation::MovementGroup &&
+            value.command.kind != OrderKind::Move)
+            return replayFailure("AttackMove groups require command log version 6", "commandLog.version");
         value.formation.kind = static_cast<FormationKind>(formation);
         if (!target.empty()) {
             value.targetEntity = parseSubject(target);

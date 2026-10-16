@@ -28,6 +28,14 @@ set_tests_properties(cmake.third_party_patch_idempotence PROPERTIES LABELS "qual
 file(GLOB all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 file(GLOB_RECURSE organized_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/unit/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/integration/*.cpp")
 set(all_test_cpp ${EVE_TEST_DESKTOP_ORIGINS})
+list(REMOVE_ITEM all_test_cpp
+  "${CMAKE_CURRENT_SOURCE_DIR}/integration/crowd-runtime/CrowdThread.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/integration/rts-crowd/CrowdMotion.cpp")
+# These updated legacy sources run in cmake/crowd_check's process-isolated
+# Crowd/RTS executables. Their pre-reorganization cases also live in the
+# consolidated unit/integration files, so the main suite must not register
+# the same case names twice.
+list(FILTER all_test_cpp EXCLUDE REGEX "/(crowd_avoidance|result|rts_crowd|rts_crowd_production|rts_formation|rts_groups|value)\\.cpp$")
 eve_test_source_properties(physics_jolt.cpp physics_jolt_cooking.cpp physics_jolt_contacts.cpp PROPERTIES COMPILE_DEFINITIONS "EVENGINE_TEST_HAS_JOLT=$<BOOL:${EVENGINE_BUILD_JOLT}>")
 # Resource sharing must test the same optional validation provider as EVGraphics.
 get_target_property(_eve_graphics_definitions EVGraphics COMPILE_DEFINITIONS)
@@ -39,6 +47,14 @@ endif()
 # The legacy RNG oracle uses the same pinned DTL compatibility headers as procgen.
 eve_test_source_properties(procgen_rng_contract.cpp PROPERTIES INCLUDE_DIRECTORIES
   "${CMAKE_SOURCE_DIR}/src/modules/procgen/dtl_compat")
+eve_module_enabled(crowd_thread _eve_test_has_crowd_thread)
+if(_eve_test_has_crowd_thread)
+  list(APPEND all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/integration/crowd-runtime/CrowdThread.cpp")
+  eve_module_enabled(rts _eve_test_parallel_rts)
+  if(_eve_test_parallel_rts)
+    list(APPEND all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/integration/rts-crowd/CrowdMotion.cpp")
+  endif()
+endif()
 list(SORT all_test_cpp)
 set(_eve_test_src_txt "${CMAKE_CURRENT_BINARY_DIR}/test_src.txt")
 set(_eve_test_src_text "")

@@ -6,6 +6,7 @@
 #include <limits>
 #include <memory>
 #include <utility>
+#include "common/Profile.h"
 
 namespace eve::settlement {
 namespace {
@@ -203,20 +204,26 @@ eve::Result<game_event::GameEvent> makeEvent(const SettlementContext& context) {
     payload["trace_level"] = traceLevelName(request.trace);
 
     eve::Value::Array stages;
-    stages.reserve(result.stages.size());
-    for (const auto& stage : result.stages) {
-        eve::Value::Object stageValue;
-        stageValue["name"]    = stage.name;
-        stageValue["kind"]    = stageKindName(stage.kind);
-        stageValue["status"]  = std::string(eve::statusCodeName(stage.status));
-        stageValue["before"]  = stage.before;
-        stageValue["after"]   = stage.after;
-        stageValue["details"] = stage.details;
-        stages.emplace_back(eve::Value(std::move(stageValue)));
+    {
+        EV_PROFILE_MODULE("settlement", "SettlementPipeline::encodeStages");
+        stages.reserve(result.stages.size());
+        for (const auto& stage : result.stages) {
+            eve::Value::Object stageValue;
+            stageValue["name"]    = stage.name;
+            stageValue["kind"]    = stageKindName(stage.kind);
+            stageValue["status"]  = std::string(eve::statusCodeName(stage.status));
+            stageValue["before"]  = stage.before;
+            stageValue["after"]   = stage.after;
+            stageValue["details"] = stage.details;
+            stages.emplace_back(eve::Value(std::move(stageValue)));
+        }
     }
     payload["stages"] = eve::Value(std::move(stages));
 
-    auto encoded = eve::Value(std::move(payload)).toJson();
+    auto encoded = [&] {
+        EV_PROFILE_MODULE("settlement", "SettlementPipeline::serializeEvent");
+        return eve::Value(std::move(payload)).toJson();
+    }();
     if (!encoded) {
         const auto status = encoded.status();
         return eve::Result<game_event::GameEvent>::failure(status);
@@ -667,23 +674,28 @@ eve::Result<void> SettlementPipeline::addStage(StageKind kind, std::string name,
 }
 
 eve::Result<void> SettlementPipeline::prepare(SettlementContext& context, SettlementResult& result) const {
+    EV_PROFILE_MODULE("settlement", "SettlementPipeline::prepare");
+    if (context.request().trace != SettlementTraceLevel::Off) result.stages.reserve(stages_.size());
     std::vector<const StageEntry*> ordered;
-    ordered.reserve(stages_.size());
-    for (const auto& stage : stages_) ordered.push_back(&stage);
-    std::sort(ordered.begin(), ordered.end(), [](const auto* left, const auto* right) {
-        const auto leftKind  = static_cast<std::uint8_t>(left->kind);
-        const auto rightKind = static_cast<std::uint8_t>(right->kind);
-        if (leftKind != rightKind) return leftKind < rightKind;
-        // Terminal preparation is an unregistrable phase boundary.  It must
-        // sort after every custom stage in the same phase, even when a custom
-        // stage deliberately uses a larger priority or a lexicographically
-        // later name.
-        if (left->terminal != right->terminal) return !left->terminal && right->terminal;
-        if (left->canonical != right->canonical) return left->canonical && !right->canonical;
-        if (left->priority != right->priority) return left->priority < right->priority;
-        if (left->name != right->name) return left->name < right->name;
-        return left->registration < right->registration;
-    });
+    {
+        EV_PROFILE_MODULE("settlement", "SettlementPipeline::orderStages");
+        ordered.reserve(stages_.size());
+        for (const auto& stage : stages_) ordered.push_back(&stage);
+        std::sort(ordered.begin(), ordered.end(), [](const auto* left, const auto* right) {
+            const auto leftKind  = static_cast<std::uint8_t>(left->kind);
+            const auto rightKind = static_cast<std::uint8_t>(right->kind);
+            if (leftKind != rightKind) return leftKind < rightKind;
+            // Terminal preparation is an unregistrable phase boundary.  It must
+            // sort after every custom stage in the same phase, even when a custom
+            // stage deliberately uses a larger priority or a lexicographically
+            // later name.
+            if (left->terminal != right->terminal) return !left->terminal && right->terminal;
+            if (left->canonical != right->canonical) return left->canonical && !right->canonical;
+            if (left->priority != right->priority) return left->priority < right->priority;
+            if (left->name != right->name) return left->name < right->name;
+            return left->registration < right->registration;
+        });
+    }
 
     auto rollback = [&]() noexcept {
         if (auto* pending = context.pendingApply()) pending->rollback();
@@ -706,6 +718,7 @@ eve::Result<void> SettlementPipeline::prepare(SettlementContext& context, Settle
             violationPresent ? eve::Status::failure(*violation) : eve::Status::success();
 
         if (context.request().trace != SettlementTraceLevel::Off) {
+            EV_PROFILE_MODULE("settlement", "SettlementPipeline::recordStage");
             SettlementStageResult stageResult;
             stageResult.kind    = entry->kind;
             stageResult.name    = entry->name;

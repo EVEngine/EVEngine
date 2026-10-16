@@ -83,24 +83,48 @@ bool SpatialHash2D::remove(int id) {
 }
 
 bool SpatialHash2D::update(int id, float minX, float minY, float maxX, float maxY) {
-    if (!contains(id)) return false;
-    return insert(id, minX, minY, maxX, maxY);
+    auto it = items_.find(id);
+    if (it == items_.end()) return false;
+    const AABB2 next = makeAABB2(minX, minY, maxX, maxY);
+    if (!next.valid()) return false;
+    int oldMinX, oldMinY, oldMaxX, oldMaxY, nextMinX, nextMinY, nextMaxX, nextMaxY;
+    cellRange(it->second, oldMinX, oldMinY, oldMaxX, oldMaxY);
+    cellRange(next, nextMinX, nextMinY, nextMaxX, nextMaxY);
+    if (oldMinX == nextMinX && oldMinY == nextMinY && oldMaxX == nextMaxX && oldMaxY == nextMaxY) {
+        // Retain the legacy update-to-end order without rebuilding occupied buckets.
+        for (int y = oldMinY; y <= oldMaxY; ++y) {
+            for (int x = oldMinX; x <= oldMaxX; ++x) {
+                auto      &bucket   = cells_.at(cellKey2(x, y));
+                const auto position = std::find(bucket.begin(), bucket.end(), id);
+                std::rotate(position, position + 1, bucket.end());
+            }
+        }
+        it->second = next;
+        return true;
+    }
+    eraseCells(id, it->second);
+    it->second = next;
+    insertCells(id, next);
+    return true;
 }
 
 void SpatialHash2D::queryCells(int minCX, int minCY, int maxCX, int maxCY, const AABB2 *rect, float cx, float cy,
                                float radius, bool useCircle, bool usePoint) {
     results_.clear();
-    std::unordered_set<int> seen;
     for (int y = minCY; y <= maxCY; ++y) {
         for (int x = minCX; x <= maxCX; ++x) {
             auto it = cells_.find(cellKey2(x, y));
             if (it == cells_.end()) continue;
             for (int id : it->second) {
-                if (!seen.insert(id).second) continue;
                 auto item = items_.find(id);
                 if (item == items_.end()) continue;
-                const AABB2 &b   = item->second;
-                bool         hit = false;
+                const AABB2 &b = item->second;
+                // Visit an item only in its first bucket intersecting this query.
+                // This preserves traversal order without allocating a set for every query.
+                const int firstX = std::max(minCX, static_cast<int>(std::floor(b.minX / cellSize_)));
+                const int firstY = std::max(minCY, static_cast<int>(std::floor(b.minY / cellSize_)));
+                if (x != firstX || y != firstY) continue;
+                bool hit = false;
                 if (rect) {
                     hit = b.intersectsAABB(*rect);
                 } else if (useCircle) {
