@@ -1,4 +1,6 @@
+#include "common/Profile.h"
 #include "rts/RTS.h"
+#include "rts/RTSCrowdFlowNavigationInternal.h"
 #include "rts/RTSSystemMovementInternal.h"
 
 #include <algorithm>
@@ -30,9 +32,12 @@ double remainingRoute(Unit& unit, const OrderRecord& order) {
 }  // namespace
 
 Result<FanOutReceipt> RTS::submitMovementGroup(const MovementGroupBatch& batch) {
-    if (batch.units.size() < 2 || !std::isfinite(batch.leadDistance) || batch.leadDistance <= 0.f)
-        return Result<FanOutReceipt>::failure(
-            groupFailure("Movement group requires two units and positive finite lead distance").status());
+    if (batch.units.size() < 2 || batch.units.size() > 1024 || movementGroups_.size() >= 64 ||
+        (batch.kind != OrderKind::Move && batch.kind != OrderKind::AttackMove) || !std::isfinite(batch.leadDistance) ||
+        batch.leadDistance <= 0.f)
+        return Result<FanOutReceipt>::failure(groupFailure("Movement group requires 2..1024 units, Move/AttackMove, "
+                                                           "available group capacity and positive lead distance")
+                                                  .status());
     MovementGroup group;
     group.state.leadDistance = batch.leadDistance;
     group.handles.reserve(batch.units.size());
@@ -48,7 +53,7 @@ Result<FanOutReceipt> RTS::submitMovementGroup(const MovementGroupBatch& batch) 
     }
     movementGroups_.reserve(movementGroups_.size() + 1);
     CommandSpec command;
-    command.kind   = OrderKind::Move;
+    command.kind   = batch.kind;
     command.target = batch.target;
     auto admitted  = CommandFanOutSystem::fanOut(group.handles, command, batch.formation);
     if (!admitted) return admitted;
@@ -59,6 +64,7 @@ Result<FanOutReceipt> RTS::submitMovementGroup(const MovementGroupBatch& batch) 
 }
 
 Result<std::size_t> RTS::stepMovementGroups() {
+    EV_PROFILE_MODULE("rts", "RTS::stepMovementGroups");
     // Derived factors are refreshed even when the last group dissolved. Native
     // and Crowd motion consume the same projection after navigation/convoy.
     {
@@ -69,7 +75,8 @@ Result<std::size_t> RTS::stepMovementGroups() {
             navigation->formationTarget.reset();
         }
     }
-    std::size_t processed = 0;
+    std::size_t                                  processed = 0;
+    std::vector<CrowdFlowNavigation::GroupInput> flowGroups;
     for (auto& group : movementGroups_) {
         MovementGroup active;
         active.state.leadDistance = group.state.leadDistance;
@@ -86,7 +93,7 @@ Result<std::size_t> RTS::stepMovementGroups() {
             auto current = systems_internal::readCurrent(unit->orders()->values);
             if (!current) return Result<std::size_t>::failure(current.status());
             if (!current.value() || current.value()->id != group.state.members[i].orderId ||
-                current.value()->kind != OrderKind::Move)
+                (current.value()->kind != OrderKind::Move && current.value()->kind != OrderKind::AttackMove))
                 continue;
             auto navigation = unit->navigation();
             if (pathfinder_ && navigation->plannedOrderId == current.value()->id && !navigation->unreachable &&
@@ -109,10 +116,17 @@ Result<std::size_t> RTS::stepMovementGroups() {
                     groupFailure("Movement group route distance must be finite").status());
             // A traffic loser must not stop the winner from clearing its route.
             // Keep membership so ordinary pacing resumes after the wait ends.
-            const bool yielding = unit->navigation()->trafficWaiting || unit->supply()->convoyWaiting ||
+            const auto engagedPosition = systems_internal::entityPosition(unit->combat()->target);
+            const bool engaged =
+                current.value()->kind == OrderKind::AttackMove && engagedPosition &&
+                unit->combat()->engagementRange > 0.f &&
+                std::hypot(double(unit->motion()->x) - engagedPosition->x,
+                           double(unit->motion()->y) - engagedPosition->y) <= unit->combat()->engagementRange;
+            const bool yielding = engaged || unit->navigation()->trafficWaiting || unit->supply()->convoyWaiting ||
                                   (unit->morale()->retreating && unit->tactics()->retreatCovering);
             if (!yielding) furthest = std::max(furthest, remaining);
-            openTravel = openTravel && !yielding;
+            // Keep the formation compressed until the winning unit has cleared its reserved portal.
+            openTravel = openTravel && !yielding && !navigation->trafficRecoveryTarget;
             targets.push_back(current.value()->target);
             offsetX += static_cast<double>(unit->motion()->x) - current.value()->target.x;
             offsetY += static_cast<double>(unit->motion()->y) - current.value()->target.y;
@@ -123,6 +137,20 @@ Result<std::size_t> RTS::stepMovementGroups() {
         }
         group = std::move(active);
         if (group.handles.size() < 2) continue;
+        bool allArrived = true;
+        for (std::size_t i = 0; i < group.handles.size(); ++i) {
+            auto* unit = static_cast<Unit*>(ecs::try_get(group.handles[i]));
+            allArrived = allArrived && unit->motion()->arrived &&
+                         std::hypot(double(unit->motion()->x) - targets[i].x,
+                                    double(unit->motion()->y) - targets[i].y) <= unit->motion()->arrivalRadius;
+        }
+        if (allArrived) {
+            // The moving formation is complete; AttackMove may retain its combat stance.
+            group.handles.clear();
+            group.epochs.clear();
+            group.state.members.clear();
+            continue;
+        }
         offsetX /= static_cast<double>(group.handles.size());
         offsetY /= static_cast<double>(group.handles.size());
         const double offsetLength = std::hypot(offsetX, offsetY);
@@ -158,11 +186,34 @@ Result<std::size_t> RTS::stepMovementGroups() {
                 // A radius-clear direct route supersedes intermediate grid
                 // waypoints; retaining them would send the unit back afterward.
                 if (pathfinder_) unit->navigation()->waypointIndex = unit->navigation()->waypoints.size();
+            } else if (pathfinder_ && !unit->navigation()->trafficRecoveryTarget &&
+                       !unit->navigation()->trafficWaiting &&
+                       systems_internal::isFormationSegmentClear(*pathfinder_, navigationGrid_,
+                                                                 {unit->motion()->x, unit->motion()->y}, targets[i],
+                                                                 unit->crowd()->radius)) {
+                // Other members may still be fighting or crossing. A checked direct final leg
+                // does not need another full-map field and keeps this member's original slot.
+                unit->navigation()->formationTarget = targets[i];
+                unit->navigation()->waypointIndex   = unit->navigation()->waypoints.size();
             }
             ++processed;
         }
+        if (crowdFlowNavigation_ && crowdFlowNavigation_->enabled() && !openTravel) {
+            CrowdFlowNavigation::GroupInput projection;
+            projection.targets = targets;
+            for (std::size_t i = 0; i < group.handles.size(); ++i) {
+                auto* unit = static_cast<Unit*>(ecs::try_get(group.handles[i]));
+                if (unit->crowd()->link.isBound())
+                    projection.members.push_back({group.handles[i], group.state.members[i].orderId});
+            }
+            if (!projection.members.empty()) flowGroups.push_back(std::move(projection));
+        }
     }
     std::erase_if(movementGroups_, [](const auto& group) { return group.handles.size() < 2; });
+    if (crowdFlowNavigation_ && crowdFlowNavigation_->enabled()) {
+        auto published = crowdFlowNavigation_->replaceGroups(*crowd_, std::move(flowGroups));
+        if (!published) return Result<std::size_t>::failure(published.status());
+    }
     return Result<std::size_t>::success(processed);
 }
 
@@ -178,7 +229,8 @@ Result<std::vector<RTSMovementGroupSnapshot>> RTS::captureMovementGroups() const
                 continue;
             auto current = systems_internal::readCurrent(unit->orders()->values);
             if (!current) return Result<std::vector<RTSMovementGroupSnapshot>>::failure(current.status());
-            if (current.value() && current.value()->kind == OrderKind::Move &&
+            if (current.value() &&
+                (current.value()->kind == OrderKind::Move || current.value()->kind == OrderKind::AttackMove) &&
                 current.value()->id == group.state.members[i].orderId)
                 active.members.push_back(group.state.members[i]);
         }
@@ -217,7 +269,8 @@ Result<std::vector<RTS::MovementGroup>> RTS::prepareMovementGroups(const RTSStat
             auto           restored = validator.restoreState(saved->orders);
             if (!restored) return Output::failure(restored.status());
             auto current = validator.current();
-            if (!current || current.value().id != member.orderId || current.value().kind != OrderKind::Move)
+            if (!current || current.value().id != member.orderId ||
+                (current.value().kind != OrderKind::Move && current.value().kind != OrderKind::AttackMove))
                 return Output::failure(
                     groupFailure("Movement-group membership does not match its active order").status());
             group.handles.push_back(ecs::handle_of(unit));

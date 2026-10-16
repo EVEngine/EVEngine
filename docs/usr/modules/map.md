@@ -1,5 +1,11 @@
 # Tilemap模块
 
+原生 `Pathfinder::captureNavigationGrid()` 显式捕获不可变拥有型导航输入，保留尺寸、拓扑、
+hex 布局、成本与方向掩码。捕获在暂存 Grid 上同步 Layer，失败不改 live Grid 或旧捕获。
+内容相同复用捕获及其版本；数据在 Pathfinder 销毁后仍有效。span 借用捕获数据，
+须保持至少一个持有该捕获的 snapshot 存活；重新赋值会释放原捕获。
+此接口为上层组合适配器服务，未引入 map 到 crowd 的依赖或持久格式。
+
 **脚本入口：** `eve.Map()`
 
 创建或载入 TileLayer，设置瓦片、投影、图层并提交渲染；可用 Pathfinder 做格子寻路与群体 Flow Field，用 Fov 做动态视野与探索记忆。
@@ -362,3 +368,9 @@ Fov：`getWidth`、`getHeight`、`getDepth`、`setMode`、`getMode`、`setAlgori
 ## 补充绑定参考
 
 参数与接收者见 [源码生成参考](map/api-reference.md)，使用前先确认本章的前置条件与生命周期。
+
+
+原生 `getNavigationChangeStamp()` 返回 O(1) 失效提示：配置编辑计数和已绑定 TileLayer 的
+tile revision。它不复制/同步网格；计数不同只说明需要重新捕获，不承诺内容变化。
+`captureNavigationGrid()` 的内容版本仍是拥有型快照权威。RTS 表面跟踪使用前者跳过未变化帧，
+用后者识别同值编辑。两种版本均是进程内状态，不可作为跨进程持久身份。

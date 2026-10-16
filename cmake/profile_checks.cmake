@@ -106,6 +106,11 @@ foreach(_eve_capability_target IN ITEMS
         eve_capability_present_check eve_capability_absent_check)
     target_compile_features(${_eve_capability_target} PRIVATE cxx_std_20)
     target_link_libraries(${_eve_capability_target} PRIVATE eve_engine_includes)
+    if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+        # These isolated executables own their registry sources rather than importing an engine group.
+        target_compile_definitions(${_eve_capability_target} PRIVATE
+            EVENGINE_ENGINE_EXPORTS EVENGINE_EXPORTS_FOUNDATION)
+    endif()
     set_target_properties(${_eve_capability_target} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/profile")
 endforeach()
@@ -114,6 +119,9 @@ set(_eve_profile_smoke_dependencies
     eve_public_header_checks
     eve_capability_present_check
     eve_capability_absent_check)
+if(TARGET eve_crowd_check)
+    list(APPEND _eve_profile_smoke_dependencies eve_crowd_check)
+endif()
 foreach(_eve_profile_module_lib IN LISTS EVE_MODULE_LIBS)
     if(TARGET ${_eve_profile_module_lib})
         list(APPEND _eve_profile_smoke_dependencies ${_eve_profile_module_lib})

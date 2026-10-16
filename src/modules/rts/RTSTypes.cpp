@@ -344,6 +344,9 @@ Result<void> AttributeComponent::restore(const eve::attributes::AttributeProject
 struct OrderComponent::Impl {
     orders::CommandQueue queue;
     std::map<std::string, CommandSpec> extended;
+    // Derived immutable projection; the generic queue remains authoritative.
+    mutable std::optional<OrderRecord> projection;
+    bool                               cacheProjection = true;
 };
 
 OrderComponent::OrderComponent() : impl_(std::make_unique<Impl>()) {}
@@ -421,8 +424,13 @@ Result<OrderRecord> OrderComponent::current() const {
         return Result<OrderRecord>::failure(
             Diagnostic::error(DiagnosticCode::NotFound, "RTS order queue is idle", "order"));
     const auto& order = impl_->queue.current()->get();
-    const auto  found = impl_->extended.find(order.id);
-    return projectOrder(order, found == impl_->extended.end() ? nullptr : &found->second);
+    if (impl_->cacheProjection && impl_->projection && impl_->projection->id == order.id)
+        return Result<OrderRecord>::success(*impl_->projection);
+    const auto found     = impl_->extended.find(order.id);
+    auto       projected = projectOrder(order, found == impl_->extended.end() ? nullptr : &found->second);
+    if (!projected) return projected;
+    if (impl_->cacheProjection) impl_->projection = projected.value();
+    return projected;
 }
 
 Result<void> OrderComponent::complete(std::string_view orderId) {
@@ -462,6 +470,7 @@ bool OrderComponent::empty() const noexcept { return !impl_ || !impl_->queue.cur
 void OrderComponent::clear() noexcept {
     ++membershipEpoch_;
     if (!impl_) return;
+    impl_->projection.reset();
     impl_->queue.clear();
     impl_->extended.clear();
 }
@@ -482,6 +491,7 @@ Result<void> OrderComponent::restore(std::string_view json) {
     orders::CommandQueue candidate;
     auto restored = candidate.restore(json);
     if (!restored) return restored;
+    impl_->projection.reset();
     impl_->queue = std::move(candidate);
     impl_->extended.clear();
     ++membershipEpoch_;
@@ -518,6 +528,9 @@ Result<void> OrderComponent::restoreState(const Snapshot& snapshotValue) {
 
 orders::CommandQueue* OrderComponent::queueForComposition() noexcept {
     if (!impl_) impl_ = std::make_unique<Impl>();
+    // The composition borrower may retain and mutate the queue; never cache after escape.
+    impl_->cacheProjection = false;
+    impl_->projection.reset();
     return &impl_->queue;
 }
 

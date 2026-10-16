@@ -212,6 +212,11 @@ struct ActionAdvance {
     Duration phaseElapsed = Duration::zero();
     /** @brief Total simulation duration consumed by the execution. */
     Duration totalElapsed = Duration::zero();
+    /**
+     * @brief Caller-supplied delta accepted by the authoritative timeline mapping.
+     * @remarks For executions without a timeline this equals the supplied delta.
+     */
+    Duration inputConsumed = Duration::zero();
     /** @brief Owning timeline boundaries crossed by this advance. */
     std::vector<ActionTimelineEvent> timelineEvents;
     /** @brief Owning samples of timeline states active after this advance. */
@@ -460,8 +465,28 @@ public:
         return transactionReceipt_ ? &*transactionReceipt_ : nullptr;
     }
 
+    /**
+     * @brief Query a transient target duration for one physical timeline section.
+     * @param sectionIndex Zero-based physical section index.
+     * @return Target duration when overridden, otherwise no value.
+     * @remarks The returned value is an owning snapshot. Overrides belong to
+     *          this execution, are never persisted into the timeline asset,
+     *          and are discarded with the execution.
+     */
+    [[nodiscard]] std::optional<Duration> sectionTimingOverride(std::size_t sectionIndex) const noexcept {
+        const auto found = sectionTimingOverrides_.find(sectionIndex);
+        return found == sectionTimingOverrides_.end() ? std::nullopt
+                                                       : std::optional<Duration>(found->second.targetDuration);
+    }
+
 private:
     friend class ActionRuntime;
+
+    struct SectionTimingOverride {
+        Duration targetDuration = Duration::zero();
+        Duration authoredAnchor = Duration::zero();
+        Duration simulationElapsed = Duration::zero();
+    };
 
     ActionExecution(ActionExecutionId id, ActionDefinition definition, ActionRequest request)
         : id_(id),
@@ -483,6 +508,7 @@ private:
     std::optional<transaction::TransactionReceipt> transactionReceipt_;
     bool                                           activeExecuted_  = false;
     bool                                           timelineStarted_ = false;
+    std::map<std::size_t, SectionTimingOverride>    sectionTimingOverrides_;
 };
 
 /**
@@ -548,6 +574,36 @@ public:
     [[nodiscard]] Result<ActionAdvance> advance(ActionExecutionId id, SimulationTick tick, Duration delta);
 
     /**
+     * @brief Retarget one physical section's simulation duration for an execution.
+     * @param id Execution identity returned by submit.
+     * @param sectionIndex Zero-based physical section index in the execution's timeline.
+     * @param targetDuration Positive simulation duration used to traverse the authored section.
+     * @return Applied/NoOp, or a structured failure without changing the execution.
+     * @remarks Main simulation thread only; callbacks are not invoked. The
+     *          authored cursor remains continuous when changed mid-section.
+     *          Notify/state boundaries, lifecycle phases and presentation all
+     *          consume the resulting authoritative cursor from advance().
+     */
+    [[nodiscard]] Result<void> setSectionTimingOverride(ActionExecutionId id, std::size_t sectionIndex,
+                                                        Duration targetDuration);
+
+    /**
+     * @brief Remove one transient section-duration override.
+     * @param id Execution identity returned by submit.
+     * @param sectionIndex Zero-based physical section index.
+     * @return Applied when removed, NoOp when already absent, or a structured failure.
+     * @remarks Main simulation thread only. The current authored cursor is not changed.
+     */
+    [[nodiscard]] Result<void> clearSectionTimingOverride(ActionExecutionId id, std::size_t sectionIndex);
+
+    /**
+     * @brief Query authoritative normalized progress within a physical section.
+     * @return Progress in [0,1], or a structured execution/section failure.
+     * @remarks This is an owning value and remains valid after later advances.
+     */
+    [[nodiscard]] Result<double> sectionProgress(ActionExecutionId id, std::size_t sectionIndex) const;
+
+    /**
      * @brief Cancel a non-terminal execution before its Active transaction.
      * @param id Execution identity returned by submit.
      * @param tick Deterministic simulation tick at cancellation.
@@ -582,6 +638,8 @@ private:
     [[nodiscard]] Result<void> validateExecution(ActionExecution& execution);
     [[nodiscard]] Result<void> enterActive(ActionExecution& execution, SimulationTick tick);
     [[nodiscard]] Result<void> addElapsed(ActionExecution& execution, Duration amount);
+    [[nodiscard]] Result<std::pair<Duration, Duration>> mapSimulationDelta(ActionExecution& execution,
+                                                                           Duration delta) const;
     void                       transition(ActionExecution& execution, ActionPhase next, SimulationTick tick,
                                           std::vector<ActionTransition>& transitions);
     void                       failExecution(ActionExecution& execution, Status status, SimulationTick tick,
