@@ -1,5 +1,6 @@
 #include "emergence/RuleEngine.h"
 
+#include "common/ConditionKeys.h"
 #include "common/Diagnostic.h"
 #include "common/ProtobufDynamicValue.h"
 #include "emergence_catalogue.pb.h"
@@ -37,39 +38,37 @@ bool hasUnknownFields(const google::protobuf::Message& message) {
     return false;
 }
 
-eve::Result<void> encodeCondition(const decision::Condition& condition, proto::Condition& record) {
-    if (!condition.isValid() || !proto::ConditionKind_IsValid(static_cast<int>(condition.kind())))
+eve::Result<void> encodeCondition(const condition::Condition& node, proto::Condition& record) {
+    if (!node.isValid())
         return invalid<void>("invalid rule condition", "condition");
-    using K = decision::ConditionKind;
-    record.set_kind(static_cast<proto::ConditionKind>(condition.kind()));
-    switch (condition.kind()) {
+    using K = condition::ConditionKind;
+    switch (node.kind()) {
         case K::All:
         case K::Any:
-        case K::Not:
-            for (const auto& child : condition.children()) {
+        case K::Not: {
+            record.set_kind(node.kind() == K::All ? proto::ALL : node.kind() == K::Any ? proto::ANY : proto::NOT);
+            for (const auto& child : node.children()) {
                 auto encoded = encodeCondition(child, *record.add_children());
                 if (!encoded) return encoded;
             }
             return eve::Result<void>::success();
-        case K::Compare: {
-            if (!proto::CompareOperator_IsValid(static_cast<int>(condition.compareOperator())))
-                return invalid<void>("invalid compare operator", "condition.operator");
-            record.set_key(condition.key());
-            record.set_operator_(static_cast<proto::CompareOperator>(condition.compareOperator()));
-            return eve::proto_support::encodeDynamicValue(condition.expected(), *record.mutable_expected());
         }
-        case K::HasTag:
-        case K::HasAttribute:
-        case K::HasResource:
-        case K::AuthorityCheck: record.set_key(condition.key()); return eve::Result<void>::success();
-        case K::StateEquals:
-            record.set_key(condition.key());
-            return eve::proto_support::encodeDynamicValue(condition.expected(), *record.mutable_expected());
+        case K::Compare: {
+            if (!proto::CompareOperator_IsValid(static_cast<int>(node.compareOperator())))
+                return invalid<void>("invalid compare operator", "condition.operator");
+            record.set_kind(proto::COMPARE);
+            record.set_key(node.key());
+            record.set_operator_(static_cast<proto::CompareOperator>(node.compareOperator()));
+            if (node.compareOperator() == condition::CompareOperator::Exists)
+                return eve::Result<void>::success();
+            return eve::proto_support::encodeDynamicValue(node.expected(), *record.mutable_expected());
+        }
         case K::PolicyCall: {
-            record.set_key(condition.key());
-            auto encoded = eve::proto_support::encodeDynamicValue(condition.arguments(), *record.mutable_arguments());
+            record.set_kind(proto::POLICY_CALL);
+            record.set_key(node.key());
+            auto encoded = eve::proto_support::encodeDynamicValue(node.arguments(), *record.mutable_arguments());
             if (!encoded) return encoded;
-            if (const auto& declaration = condition.scriptDeclaration()) {
+            if (const auto& declaration = node.scriptDeclaration()) {
                 if (!proto::DeterminismLevel_IsValid(static_cast<int>(declaration->determinism)))
                     return invalid<void>("invalid determinism level", "condition.scriptDeclaration.determinism");
                 auto* metadata = record.mutable_script_declaration();
@@ -83,84 +82,88 @@ eve::Result<void> encodeCondition(const decision::Condition& condition, proto::C
     return invalid<void>("unsupported rule condition", "condition.kind");
 }
 
-eve::Result<decision::Condition> decodeCondition(const proto::Condition& record) {
+eve::Result<condition::Condition> decodeCondition(const proto::Condition& record) {
     if (!record.has_kind() || !proto::ConditionKind_IsValid(static_cast<int>(record.kind())))
-        return invalid<decision::Condition>("invalid condition kind", "condition.kind");
-    using K            = decision::ConditionKind;
-    const auto kind    = static_cast<K>(record.kind());
+        return invalid<condition::Condition>("invalid condition kind", "condition.kind");
+    const auto kind    = record.kind();
     const bool hasLeaf = record.has_key() || record.has_operator_() || record.has_expected() ||
                          record.has_arguments() || record.has_script_declaration();
-    if (kind == K::All || kind == K::Any || kind == K::Not) {
-        if (hasLeaf || (kind == K::Not && record.children_size() != 1))
-            return invalid<decision::Condition>("invalid logical condition fields", "condition");
-        std::vector<decision::Condition> children;
+    if (kind == proto::ALL || kind == proto::ANY || kind == proto::NOT) {
+        if (hasLeaf || (kind == proto::NOT && record.children_size() != 1))
+            return invalid<condition::Condition>("invalid logical condition fields", "condition");
+        std::vector<condition::Condition> children;
         children.reserve(record.children_size());
         for (const auto& child : record.children()) {
             auto decoded = decodeCondition(child);
-            if (!decoded) return eve::Result<decision::Condition>::failure(decoded.status());
+            if (!decoded) return eve::Result<condition::Condition>::failure(decoded.status());
             children.push_back(std::move(decoded).takeValue());
         }
-        if (kind == K::All)
-            return eve::Result<decision::Condition>::success(decision::Condition::all(std::move(children)));
-        if (kind == K::Any)
-            return eve::Result<decision::Condition>::success(decision::Condition::any(std::move(children)));
-        return eve::Result<decision::Condition>::success(decision::Condition::not_(std::move(children.front())));
+        if (kind == proto::ALL)
+            return eve::Result<condition::Condition>::success(condition::Condition::all(std::move(children)));
+        if (kind == proto::ANY)
+            return eve::Result<condition::Condition>::success(condition::Condition::any(std::move(children)));
+        return eve::Result<condition::Condition>::success(condition::Condition::not_(std::move(children.front())));
     }
     if (record.children_size() != 0 || !record.has_key() || record.key().empty())
-        return invalid<decision::Condition>("invalid leaf condition fields", "condition");
-    if (kind == K::Compare) {
+        return invalid<condition::Condition>("invalid leaf condition fields", "condition");
+    if (kind == proto::COMPARE) {
         if (!record.has_operator_() || !proto::CompareOperator_IsValid(static_cast<int>(record.operator_())) ||
-            !record.has_expected() || record.has_arguments() || record.has_script_declaration())
-            return invalid<decision::Condition>("invalid compare condition", "condition");
+            record.has_expected() != (record.operator_() != proto::EXISTS) || record.has_arguments() ||
+            record.has_script_declaration())
+            return invalid<condition::Condition>("invalid compare condition", "condition");
+        if (record.operator_() == proto::EXISTS)
+            return eve::Result<condition::Condition>::success(
+                condition::Condition::compare(record.key(), condition::CompareOperator::Exists));
         auto expected = eve::proto_support::decodeDynamicValue(record.expected());
-        if (!expected) return eve::Result<decision::Condition>::failure(expected.status());
-        return eve::Result<decision::Condition>::success(decision::Condition::compare(
-            record.key(), static_cast<decision::CompareOperator>(record.operator_()), std::move(expected).takeValue()));
+        if (!expected) return eve::Result<condition::Condition>::failure(expected.status());
+        return eve::Result<condition::Condition>::success(condition::Condition::compare(
+            record.key(), static_cast<condition::CompareOperator>(record.operator_()), std::move(expected).takeValue()));
     }
-    if (kind == K::StateEquals) {
+    if (kind == proto::STATE_EQUALS) {
         if (record.has_operator_() || !record.has_expected() || record.has_arguments() ||
             record.has_script_declaration())
-            return invalid<decision::Condition>("invalid state condition", "condition");
+            return invalid<condition::Condition>("invalid state condition", "condition");
         auto expected = eve::proto_support::decodeDynamicValue(record.expected());
-        if (!expected) return eve::Result<decision::Condition>::failure(expected.status());
-        return eve::Result<decision::Condition>::success(
-            decision::Condition::stateEquals(record.key(), std::move(expected).takeValue()));
+        if (!expected) return eve::Result<condition::Condition>::failure(expected.status());
+        return eve::Result<condition::Condition>::success(
+            condition::stateEquals(record.key(), std::move(expected).takeValue()));
     }
-    if (kind == K::PolicyCall) {
+    if (kind == proto::POLICY_CALL) {
         if (record.has_operator_() || record.has_expected() || !record.has_arguments())
-            return invalid<decision::Condition>("invalid policy condition", "condition");
+            return invalid<condition::Condition>("invalid policy condition", "condition");
         auto arguments = eve::proto_support::decodeDynamicValue(record.arguments());
-        if (!arguments) return eve::Result<decision::Condition>::failure(arguments.status());
-        std::optional<decision::ScriptConditionDeclaration> declaration;
+        if (!arguments) return eve::Result<condition::Condition>::failure(arguments.status());
+        std::optional<condition::ScriptConditionDeclaration> declaration;
         if (record.has_script_declaration()) {
             const auto& metadata = record.script_declaration();
             if (!metadata.has_name() || !metadata.has_determinism() ||
                 !proto::DeterminismLevel_IsValid(static_cast<int>(metadata.determinism())))
-                return invalid<decision::Condition>("invalid script declaration", "condition.scriptDeclaration");
-            decision::ScriptConditionDeclaration parsed;
+                return invalid<condition::Condition>("invalid script declaration", "condition.scriptDeclaration");
+            condition::ScriptConditionDeclaration parsed;
             parsed.name        = metadata.name();
-            parsed.determinism = static_cast<decision::DeterminismLevel>(metadata.determinism());
+            parsed.determinism = static_cast<condition::DeterminismLevel>(metadata.determinism());
             for (const auto& dependency : metadata.dependencies()) {
                 if (dependency.empty())
-                    return invalid<decision::Condition>("empty script dependency", "condition.scriptDeclaration");
+                    return invalid<condition::Condition>("empty script dependency", "condition.scriptDeclaration");
                 parsed.dependencies.push_back(dependency);
             }
             declaration = std::move(parsed);
         }
-        return eve::Result<decision::Condition>::success(
-            decision::Condition::policyCall(record.key(), std::move(arguments).takeValue(), std::move(declaration)));
+        return eve::Result<condition::Condition>::success(
+            condition::Condition::policyCall(record.key(), std::move(arguments).takeValue(), std::move(declaration)));
     }
     if (record.has_operator_() || record.has_expected() || record.has_arguments() || record.has_script_declaration())
-        return invalid<decision::Condition>("unexpected leaf condition field", "condition");
+        return invalid<condition::Condition>("unexpected leaf condition field", "condition");
     switch (kind) {
-        case K::HasTag: return eve::Result<decision::Condition>::success(decision::Condition::hasTag(record.key()));
-        case K::HasAttribute:
-            return eve::Result<decision::Condition>::success(decision::Condition::hasAttribute(record.key()));
-        case K::HasResource:
-            return eve::Result<decision::Condition>::success(decision::Condition::hasResource(record.key()));
-        case K::AuthorityCheck:
-            return eve::Result<decision::Condition>::success(decision::Condition::authorityCheck(record.key()));
-        default: return invalid<decision::Condition>("unsupported condition kind", "condition.kind");
+        case proto::HAS_TAG:
+            return eve::Result<condition::Condition>::success(condition::tagPresent(record.key()));
+        case proto::HAS_ATTRIBUTE:
+            return eve::Result<condition::Condition>::success(condition::attributeExists(record.key()));
+        case proto::HAS_RESOURCE:
+            return eve::Result<condition::Condition>::success(condition::resourceExists(record.key()));
+        case proto::AUTHORITY_CHECK:
+            return eve::Result<condition::Condition>::success(condition::authorityAllow(record.key()));
+        default: return invalid<condition::Condition>("unsupported condition kind", "condition.kind");
     }
 }
 

@@ -226,6 +226,7 @@ enum CompareOperator : int {
   LESS_EQUAL = 3,
   GREATER = 4,
   GREATER_EQUAL = 5,
+  EXISTS = 6,
   CompareOperator_INT_MIN_SENTINEL_DO_NOT_USE_ =
       ::std::numeric_limits<::int32_t>::min(),
   CompareOperator_INT_MAX_SENTINEL_DO_NOT_USE_ =
@@ -236,11 +237,11 @@ EVENGINE_API_FOUNDATION extern const uint32_t CompareOperator_internal_data_[];
 inline constexpr CompareOperator CompareOperator_MIN =
     static_cast<CompareOperator>(0);
 inline constexpr CompareOperator CompareOperator_MAX =
-    static_cast<CompareOperator>(5);
+    static_cast<CompareOperator>(6);
 [[nodiscard]] inline bool CompareOperator_IsValid(int value) {
-  return 0 <= value && value <= 5;
+  return 0 <= value && value <= 6;
 }
-inline constexpr int CompareOperator_ARRAYSIZE = 5 + 1;
+inline constexpr int CompareOperator_ARRAYSIZE = 6 + 1;
 [[nodiscard]] EVENGINE_API_FOUNDATION const ::google::protobuf::EnumDescriptor* PROTOBUF_NONNULL
 CompareOperator_descriptor();
 [[nodiscard]] inline auto ProtobufInternalGetEnumDescriptor(CompareOperator) {
@@ -255,7 +256,7 @@ template <typename T>
 }
 template <>
 [[nodiscard]] inline const ::std::string& CompareOperator_Name(CompareOperator value) {
-  return ::google::protobuf::internal::NameOfDenseEnum<CompareOperator_descriptor, 0, 5>(
+  return ::google::protobuf::internal::NameOfDenseEnum<CompareOperator_descriptor, 0, 6>(
       static_cast<int>(value));
 }
 [[nodiscard]] inline bool CompareOperator_Parse(

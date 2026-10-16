@@ -1,4 +1,4 @@
-#include "decision/Condition.h"
+#include "common/ConditionKeys.h"
 #include "emergence/FactStore.h"
 #include "emergence/RuleEngine.h"
 #include "emergence_catalogue.pb.h"
@@ -19,7 +19,7 @@ TEST_CASE("emergence.factStoreTypedProtobufRoundTripAndLegacyImport") {
     (void)source.setResource("gold", eve::Value(12));
     (void)source.setState("phase", eve::Value("active"));
     (void)source.setAuthority("village", true);
-    (void)source.setPolicy("safe", eve::decision::ConditionResult::success(
+    (void)source.setPolicy("safe", eve::condition::ConditionResult::success(
                                        eve::Value(true), eve::Value::Object{{"source", eve::Value("policy")}}));
 
     auto bytes = source.snapshotBinary();
@@ -55,7 +55,7 @@ TEST_CASE("emergence.factStoreTypedProtobufRoundTripAndLegacyImport") {
 TEST_CASE("emergence.ruleEngineTypedProtobufRestoresAtomically") {
     eve::emergence::RuleDefinition rule;
     rule.id        = "gate";
-    rule.condition = eve::decision::Condition::hasTag("go");
+    rule.condition = eve::condition::tagPresent("go");
     eve::emergence::RuleEngine source;
     REQUIRE(source.replaceCatalogue({rule}).ok());
     REQUIRE(source.setTag("go", true).ok());
@@ -98,20 +98,20 @@ TEST_CASE("emergence.ruleEngineTypedProtobufRestoresAtomically") {
 }
 
 TEST_CASE("emergence.ruleCatalogueTypedProtobufAndLegacyJson") {
-    eve::decision::ScriptConditionDeclaration declaration;
+    eve::condition::ScriptConditionDeclaration declaration;
     declaration.name         = "safe";
     declaration.dependencies = {"tag:ready"};
-    declaration.determinism  = eve::decision::DeterminismLevel::TickDeterministic;
+    declaration.determinism  = eve::condition::DeterminismLevel::TickDeterministic;
     eve::emergence::RuleDefinition rule;
     rule.id            = "gate";
     rule.priority      = -3;
     rule.fireMode      = eve::emergence::FireMode::Level;
     rule.once          = true;
     rule.cooldownTicks = 42;
-    rule.condition     = eve::decision::Condition::all(
-        {eve::decision::Condition::compare("score", eve::decision::CompareOperator::GreaterEqual, eve::Value(7)),
-             eve::decision::Condition::stateEquals("phase", eve::Value("active")),
-             eve::decision::Condition::policyCall("safe", eve::Value::Object{{"strict", eve::Value(true)}}, declaration)});
+    rule.condition     = eve::condition::Condition::all(
+        {eve::condition::Condition::compare("score", eve::condition::CompareOperator::GreaterEqual, eve::Value(7)),
+             eve::condition::stateEquals("phase", eve::Value("active")),
+             eve::condition::Condition::policyCall("safe", eve::Value::Object{{"strict", eve::Value(true)}}, declaration)});
     rule.actions.push_back({"emit", eve::Value::Object{{"name", eve::Value("opened")}}});
     eve::emergence::RuleEngine source;
     REQUIRE(source.replaceCatalogue({rule}).ok());

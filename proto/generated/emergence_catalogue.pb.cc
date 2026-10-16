@@ -1096,13 +1096,13 @@ const char descriptor_table_protodef_emergence_5fcatalogue_2eproto[] ABSL_ATTRIB
     "\n\003ALL\020\000\022\007\n\003ANY\020\001\022\007\n\003NOT\020\002\022\013\n\007COMPARE\020\003\022\013"
     "\n\007HAS_TAG\020\004\022\021\n\rHAS_ATTRIBUTE\020\005\022\020\n\014HAS_RE"
     "SOURCE\020\006\022\020\n\014STATE_EQUALS\020\007\022\023\n\017AUTHORITY_"
-    "CHECK\020\010\022\017\n\013POLICY_CALL\020\t*e\n\017CompareOpera"
+    "CHECK\020\010\022\017\n\013POLICY_CALL\020\t*q\n\017CompareOpera"
     "tor\022\t\n\005EQUAL\020\000\022\r\n\tNOT_EQUAL\020\001\022\010\n\004LESS\020\002\022"
     "\016\n\nLESS_EQUAL\020\003\022\013\n\007GREATER\020\004\022\021\n\rGREATER_"
-    "EQUAL\020\005*q\n\020DeterminismLevel\022\r\n\tBIT_EXACT"
-    "\020\000\022\026\n\022TICK_DETERMINISTIC\020\001\022\025\n\021TOLERANCE_"
-    "BOUNDED\020\002\022\037\n\033EXPLICITLY_NONDETERMINISTIC"
-    "\020\003b\006proto3"
+    "EQUAL\020\005\022\n\n\006EXISTS\020\006*q\n\020DeterminismLevel\022"
+    "\r\n\tBIT_EXACT\020\000\022\026\n\022TICK_DETERMINISTIC\020\001\022\025"
+    "\n\021TOLERANCE_BOUNDED\020\002\022\037\n\033EXPLICITLY_NOND"
+    "ETERMINISTIC\020\003b\006proto3"
 };
 static const ::_pbi::DescriptorTable* PROTOBUF_NONNULL const
     descriptor_table_emergence_5fcatalogue_2eproto_deps[1] = {
@@ -1112,7 +1112,7 @@ static ::absl::once_flag descriptor_table_emergence_5fcatalogue_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_emergence_5fcatalogue_2eproto = {
     false,
     false,
-    1650,
+    1662,
     descriptor_table_protodef_emergence_5fcatalogue_2eproto,
     "emergence_catalogue.proto",
     &descriptor_table_emergence_5fcatalogue_2eproto_once,
@@ -1148,7 +1148,7 @@ CompareOperator_descriptor() {
   return file_level_enum_descriptors_emergence_5fcatalogue_2eproto[2];
 }
 PROTOBUF_CONSTINIT const uint32_t CompareOperator_internal_data_[] = {
-    393216u, 0u, };
+    458752u, 0u, };
 [[nodiscard]] const ::google::protobuf::EnumDescriptor* PROTOBUF_NONNULL
 DeterminismLevel_descriptor() {
   ::google::protobuf::internal::AssignDescriptors(&descriptor_table_emergence_5fcatalogue_2eproto);

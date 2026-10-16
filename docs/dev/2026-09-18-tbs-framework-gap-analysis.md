@@ -464,7 +464,7 @@ IsReadyChanged}`、`SendMatchState(opCode, IDictionary)`、
 | 4 | 寻路/移动 | `PathQuery::reachable/path/cellsInRange`（确定性 tie-break，整数成本）；hexmap 有相位桶队列 A* | Dijkstra all-paths + 缓存 + 回溯；`AStar`/`Dijkstra` 两种 | ◐ 算法更好·**五套并存**（§5.2） |
 | 5 | 战斗/伤害 | `combat/{CombatAttributes,Damage}` + `rpg::SettlementPipeline` 可注册阶段（**无脚本出口；`combat` 在 src 内只被 rts 消费**） | `ICombatant` 6 个虚方法 + `CalculateDamageDealt/Taken/Total`，无内置公式 | ◐ |
 | 6 | 技能/能力 | `action::{ActionDefinition,AbilityDefinition,AbilityRuntime}`（冷却/实例化策略/激活组/事件触发）+ `combat::standardCombatAbilities()` 20 个（**脚本不可达；生产无调用方，仅测试**） | `IAbility` 12 个钩子 + `ICommand` 四件套；技能全在示例 | ◐ 内核更强·**未接线** |
-| 7 | AI | `npc_ai`（数据驱动层次状态机 + 黑板 + 感知记忆 + tick 预算 + trace + 快照，**但 src/ 内零消费者**）、`decision`（FSM/utility/影响图） | 行为树（**形状是代码**）+ 9 个位置/目标 evaluator，**专为战棋评分设计** | ○ 我们的是壳，它的是战棋专用 |
+| 7 | AI | `npc_ai`（数据驱动层次状态机 + 黑板 + 感知记忆 + tick 预算 + trace + 快照，**但 src/ 内零消费者**）（含原 `decision` 的 FSM/utility/影响图，现 `eve.Decision()`） | 行为树（**形状是代码**）+ 9 个位置/目标 evaluator，**专为战棋评分设计** | ○ 我们的是壳，它的是战棋专用 |
 | 8 | 迷雾/可见性 | hexmap：引用计数 `HexVisibility` + `explored` 单向闩锁 + `HexFogMesh` | **无** | **○**（tactics 无视野；hexmap 全未提交） |
 | 9 | 胜负/目标 | `ObjectiveKind{EliminateSide,SurviveRounds,OccupyCells}` 内置 3 种，`endsBattle` | `GameResult{Winners,Losers}` + 示例 `DominationVictoryCondition` | **●** |
 | 10 | 视线/掩体/高程 | `sensing::ILineOfSightQuery` 接口存在，只有 World3D physics 实现，**引擎内没有 2D/网格 LOS 实现**；候选 provider 只在测试里注册 | **全无** | ○ |
@@ -877,7 +877,7 @@ worktree/CI** 都会同时丢掉模块本体**和它的接线**。
   （`Attributes.h:18`、`Attributes.cpp:9,15-16`）→ 脚本侧泄漏。
 - `AttributeSetStateAdapter` 对 `hasTag`/`resource`/`authority` **故意返回 `nullopt`**
   （`StateAccessAdapter.h:29,33,39`），所以任何用
-  `HasTag`/`HasResource`/`AuthorityCheck` 的 `decision::Condition` 对它都会
+  `HasTag`/`HasResource`/`AuthorityCheck` 的 `condition::Condition` 对它都会
   报"不可用"。
 
 这些不影响 headline 结论，但会影响 Phase 1/2 的实现顺序：
@@ -1509,7 +1509,7 @@ Phase 1.4/1.5 之后曾跑过 `tactics|gameplay` 子集 **91/91**。
 | 唯一 LOS 实现（World3D） | `src/modules/physics/TargetingLineOfSightAdapter.h:25-28` |
 | candidate provider 孤儿 | `docs/dev/2026-09-15-模块边界审查台账.md:61,149` |
 | AI（数据驱动但 src/ 内零消费者） | `src/modules/npc_ai/NpcAi.h:74-140`、`npc_ai/editing/BehaviorGraph.cpp:32-105` |
-| 决策 | `src/modules/decision/Decision.h` |
+| 决策 | `src/modules/npc_ai/Decision.h` |
 | 通用寻路门面 | `src/modules/map/Pathfinder.h:18-68` |
 | 导航 provider 抽象（仅测试替身） | `src/modules/npc_ai/Navigation.h:44-73`、`test/integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp:19` |
 | Timer 脚本面 | `src/modules/timer/Timer.cpp:83-86` |

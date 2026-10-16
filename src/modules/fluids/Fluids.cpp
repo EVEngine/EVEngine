@@ -2,6 +2,7 @@
 
 #include "common/SquirrelBinding.h"
 #include "fluids/FluidGpuKernels.h"
+#include "fluids/OceanBindings.h"
 #include "fluids/VolumeFluid.h"
 #include "fluids/VolumeFluidBindings.h"
 #include "fluids/VolumeFluidCodec.h"
@@ -446,6 +447,7 @@ void Fluids::expose(ssq::Table& table) {
                                                 encodeFluidRendererSettings(FluidRendererSettings{}));
     });
     exposeVolumeFluidType(table);
+    exposeOceanTypes(table);
 
     auto sim = table.addClass<FluidSimulator>(
         "FluidSim", std::function<FluidSimulator*()>([]() -> FluidSimulator* { return nullptr; }), true);

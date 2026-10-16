@@ -52,6 +52,7 @@ enum CompareOperator {
   LESS_EQUAL = 3;
   GREATER = 4;
   GREATER_EQUAL = 5;
+  EXISTS = 6;
 }
 
 enum DeterminismLevel {

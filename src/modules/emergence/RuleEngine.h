@@ -131,7 +131,7 @@ public:
      * @param name Non-empty policy id matching a `policy_call` condition key.
      * @param result Owning ConditionResult snapshot.
      */
-    [[nodiscard]] eve::Result<bool> setPolicy(std::string name, decision::ConditionResult result);
+    [[nodiscard]] eve::Result<bool> setPolicy(std::string name, condition::ConditionResult result);
 
     /**
      * @brief Evaluate dirty rules and resolve activations for one simulation tick.

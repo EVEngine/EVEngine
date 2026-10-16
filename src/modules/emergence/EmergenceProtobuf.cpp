@@ -134,8 +134,8 @@ eve::Result<void> FactStore::restoreMessage(const proto::FactStoreSave& save) {
         if (!details) return eve::Result<void>::failure(details.status());
         auto result =
             value.passed()
-                ? decision::ConditionResult::success(std::move(evidence).takeValue(), std::move(details).takeValue())
-                : decision::ConditionResult::failed(static_cast<decision::ConditionReasonCode>(value.reason()),
+                ? condition::ConditionResult::success(std::move(evidence).takeValue(), std::move(details).takeValue())
+                : condition::ConditionResult::failed(static_cast<condition::ConditionReasonCode>(value.reason()),
                                                     std::move(evidence).takeValue(), std::move(details).takeValue());
         candidate.policies_.emplace(key, std::move(result));
     }
