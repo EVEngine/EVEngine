@@ -1,4 +1,4 @@
-// Registration anchor and CRT translation unit for the link-group shared libraries.
+// Placeholder translation unit for the link-group shared libraries.
 //
 // A link group is built with
 //     add_library(<group> SHARED link_group.cpp)
