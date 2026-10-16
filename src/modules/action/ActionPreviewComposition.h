@@ -20,7 +20,7 @@ namespace eve::action {
  */
 class EVENGINE_API_PLATFORM ComposedActionPreviewSink final : public IActionPreviewSink {
 public:
-    ComposedActionPreviewSink() = default;
+    ComposedActionPreviewSink()           = default;
     ~ComposedActionPreviewSink() override = default;
 
     ComposedActionPreviewSink(const ComposedActionPreviewSink&)            = delete;
@@ -46,6 +46,7 @@ private:
  * @return Empty unique_ptr when no providers are present; otherwise an owning composed sink.
  * @remarks Provider creation failure returns a structured Result failure and publishes no sink.
  */
-[[nodiscard]] EVENGINE_API_PLATFORM Result<std::unique_ptr<IActionPreviewSink>> composeActionPreviewSinksFromProviders();
+[[nodiscard]] EVENGINE_API_PLATFORM Result<std::unique_ptr<IActionPreviewSink>>
+                                    composeActionPreviewSinksFromProviders();
 
 }  // namespace eve::action

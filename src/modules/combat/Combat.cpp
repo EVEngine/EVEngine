@@ -238,7 +238,7 @@ private:
     DamageRuntime                                   damage_;
     std::map<std::string, CombatState, std::less<>> states_;
     /** @brief Shared action/ability script projection; Combat does not reimplement ability rules. */
-    action::ScriptActionRuntime                     actions_;
+    action::ScriptActionRuntime actions_;
 };
 
 ssq::Table project(HSQUIRRELVM vm, Result<Value>&& result) {

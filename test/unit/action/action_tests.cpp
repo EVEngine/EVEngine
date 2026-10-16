@@ -172,7 +172,7 @@ TEST_CASE("actionTiming.physicalSectionsProjectAtMostTwoSplitsAndRemainNonAuthor
     CHECK_EQ(none.value().recover.nanoseconds(), 0);
 
     timeline.splitTimestamps = {eve::Duration::fromNanoseconds(100), eve::Duration::fromNanoseconds(350)};
-    auto two = eve::action::actionTimingFromPhysicalSections(timeline);
+    auto two                 = eve::action::actionTimingFromPhysicalSections(timeline);
     REQUIRE(two.ok());
     CHECK_EQ(two.value().windup.nanoseconds(), 100);
     CHECK_EQ(two.value().active.nanoseconds(), 250);
@@ -593,9 +593,9 @@ TEST_CASE("abilitySystem.cancelAndStepOwnOrchestrationThroughActionRuntime") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_action_notify_registry)
-#include "PrivateTestScope.h"
 #include <memory>
 #include <string_view>
+#include "PrivateTestScope.h"
 #include "action/ActionAudioBlock.h"
 #include "action/ActionBlockRuntime.h"
 #include "action/ActionCameraBlock.h"

@@ -201,7 +201,7 @@ void accumulateRootMotion(animation::TransformTRS& total, const animation::Trans
 class ScriptActionTimelineEditor {
 public:
     ScriptActionTimelineEditor(std::string targetId, action::ActionTimeline timeline,
-                               action::ActionNotifyRegistry registry,
+                               action::ActionNotifyRegistry             registry,
                                std::shared_ptr<ActionTimelineClipboard> clipboard)
         : playback_(std::move(registry)),
           editor_(std::move(targetId), std::move(timeline), std::move(clipboard)),
@@ -219,7 +219,7 @@ public:
     ~ScriptActionTimelineEditor() {
         if (executionId_.isZero()) return;
         const auto* montage = activeMontage();
-        auto interrupted = playback_.interrupt(runtimeContext(montage ? montage->time() : Duration::zero()));
+        auto        interrupted = playback_.interrupt(runtimeContext(montage ? montage->time() : Duration::zero()));
         interrupted.ignore();
     }
 
@@ -865,7 +865,7 @@ private:
         const auto previousLayer    = activeLayer_;
         if (!executionId_.isZero()) {
             const auto* montage = activeMontage();
-            auto interrupted = playback_.interrupt(runtimeContext(montage ? montage->time() : Duration::zero()));
+            auto        interrupted = playback_.interrupt(runtimeContext(montage ? montage->time() : Duration::zero()));
             if (!interrupted) return interrupted;
         }
         auto                  runtime    = std::make_unique<action::ActionRuntime>();
@@ -919,7 +919,7 @@ private:
         return playback_.apply(handled, runtimeContext(advance.totalElapsed));
     }
 
-    action::ActionNotifyPlayback playback_;
+    action::ActionNotifyPlayback                   playback_;
     ActionTimelineEditor         editor_;
     ActionTimelineWidget         widget_;
     std::unique_ptr<action::IActionPreviewSink> previewSink_;

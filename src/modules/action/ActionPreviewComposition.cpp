@@ -4,9 +4,7 @@
 
 namespace eve::action {
 
-void ComposedActionPreviewSink::add(std::unique_ptr<IActionPreviewSink> sink) {
-    sinks_.push_back(std::move(sink));
-}
+void ComposedActionPreviewSink::add(std::unique_ptr<IActionPreviewSink> sink) { sinks_.push_back(std::move(sink)); }
 
 bool ComposedActionPreviewSink::empty() const noexcept { return sinks_.empty(); }
 
@@ -30,7 +28,7 @@ void ComposedActionPreviewSink::discardPrepared() noexcept {
 }
 
 Result<std::unique_ptr<IActionPreviewSink>> composeActionPreviewSinksFromProviders() {
-    auto composed = std::make_unique<ComposedActionPreviewSink>();
+    auto       composed      = std::make_unique<ComposedActionPreviewSink>();
     const auto providerCount = cap::listenerCount<IActionPreviewSinkProvider>();
     for (std::size_t index = 0; index < providerCount; ++index) {
         auto* provider = cap::listenerAt<IActionPreviewSinkProvider>(index);
@@ -39,8 +37,7 @@ Result<std::unique_ptr<IActionPreviewSink>> composeActionPreviewSinksFromProvide
         if (!sink) return Result<std::unique_ptr<IActionPreviewSink>>::failure(sink.status());
         composed->add(std::move(sink).takeValue());
     }
-    if (composed->empty())
-        return Result<std::unique_ptr<IActionPreviewSink>>::success(nullptr);
+    if (composed->empty()) return Result<std::unique_ptr<IActionPreviewSink>>::success(nullptr);
     return Result<std::unique_ptr<IActionPreviewSink>>::success(std::move(composed));
 }
 

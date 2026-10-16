@@ -20,7 +20,7 @@ Result<void> ActionNotifyPlayback::interrupt(ActionNotifyContext context) {
 }
 
 Result<void> ActionNotifyPlayback::sample(const std::vector<ActionActiveBlock>& blocks,
-                                          ActionNotifyContext                  context) const {
+                                          ActionNotifyContext                   context) const {
     return blocks_.sample(blocks, std::move(context));
 }
 

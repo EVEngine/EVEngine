@@ -50,7 +50,7 @@ public:
      */
     [[nodiscard]] Result<void> registerAbilityDefinition(AbilityDefinition definition);
     /** @brief Replace one registered definition for future activations. */
-    [[nodiscard]] Result<void> replaceAbilityDefinition(AbilityDefinition definition);
+    [[nodiscard]] Result<void>  replaceAbilityDefinition(AbilityDefinition definition);
     [[nodiscard]] Result<Value> registerTimelineAbility(const std::string& definitionText,
                                                         const std::string& timelineJson, float cooldownSeconds,
                                                         const std::string& instancingText, const std::string& groupText,
