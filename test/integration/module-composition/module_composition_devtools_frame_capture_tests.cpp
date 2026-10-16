@@ -31,4 +31,3 @@ TEST_CASE("mcp.frameCapture.providerAbsentAndSchemaRoutes") {
         ASSERT(eve::dev::isMcpFrameCaptureTool(tools->getObject(i)->getValue<std::string>("name")));
     if (previous) eve::cap::provide<eve::IRenderFrameCapture>(previous);
 }
-
