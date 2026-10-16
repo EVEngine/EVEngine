@@ -1319,8 +1319,11 @@ jobs:
           ctest --test-dir build/linux-debug --output-on-failure -j 2 \
             -R '^bundle/(graphics_font|TextureSampler|gpgpu|tensor|virtualgeometry_gpu|graphics_headless)\.cpp$'
 
+      # 150 headless examples under Lavapipe routinely need ~18-21 minutes on
+      # ubuntu-24.04; a 20-minute guard raced a completed 150/150 PASS summary
+      # and failed the job on timeout alone (PR #586 run 38844868063).
       - name: Smoke all examples (headless, >=2s alive each)
-        timeout-minutes: 20
+        timeout-minutes: 30
         env:
           ALSOFT_DRIVERS: "null"
           # Contract for examples/README.md "示例规范": every runnable example

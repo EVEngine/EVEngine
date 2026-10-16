@@ -62,6 +62,9 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
             ("android-release", "Build android release"): 120,
             ("profile-matrix", "Build independent profile smoke target"): 60,
             ("linux-asan", "Build linux RelWithDebInfo (ASan+UBSan)"): 180,
+            # Full example smoke under Lavapipe has reached the former 20-minute
+            # guard after a green 150/150 PASS summary; keep margin.
+            ("linux", "Smoke all examples (headless, >=2s alive each)"): 30,
         }
         for (job, step), minimum in minimums.items():
             with self.subTest(job=job, step=step):
