@@ -609,6 +609,24 @@
       "cases": {},
       "module": "asset_graphics"
     },
+    "unit/graphics/virtual_texture_streaming.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "graphics.virtual_texture_streaming.pack_feedback_roundtrip",
+          "graphics.virtual_texture_streaming.feedback_decode_publish_and_abandon",
+          "graphics.virtual_texture_streaming.evicts_lru_and_clears_page_table_first",
+          "graphics.virtual_texture_streaming.writer_invalidates_dirty_pages",
+          "graphics.virtual_texture_streaming.ingest_packed_feedback_collapses_mips"
+        ]
+      },
+      "module": "graphics",
+      "task": "gameplay-composition",
+      "origins": [
+        "virtual_texture_streaming.cpp"
+      ]
+    },
     "asset_import/UnityFbxUnavailable.cpp": {
       "role": "compile-contract",
       "default": "module-composition",
@@ -1539,6 +1557,47 @@
         "tensor_llm.cpp"
       ]
     },
+    "integration/gameplay-composition/gameplay_composition_action_preview_profile_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "actionPreviewProfile.versionedSidecarRoundTripsAndRejectsUnknownVersion",
+          "actionPreviewProfile.compatibilityIsExplicitForExactRetargetedAndUnavailableProviders",
+          "actionPreviewProfile.sidecarStoreRoundTripsAndRejectsIdentityMismatch"
+        ]
+      },
+      "module": "action_editor",
+      "modules": [
+        "action",
+        "action_editor",
+        "animation"
+      ],
+      "task": "gameplay-composition",
+      "origins": [
+        "action_preview_profile.cpp"
+      ]
+    },
+    "integration/gameplay-composition/gameplay_composition_action_upper_body_orientation_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "actionMontage.upperBodyProfileReplacementIsTransactional",
+          "actionMontage.upperBodyCompensationObservesProviderMaskAndFullBodyPolicy",
+          "actionMontage.upperBodyCompensationRunsBeforeAdditiveLayersDeterministically"
+        ]
+      },
+      "module": "animation",
+      "modules": [
+        "action",
+        "animation"
+      ],
+      "task": "gameplay-composition",
+      "origins": [
+        "action_upper_body_orientation.cpp"
+      ]
+    },
     "integration/gameplay-composition/gameplay_composition_graphics_animation_inertializer_tests.cpp": {
       "role": "tests",
       "default": "module-composition",
@@ -1547,10 +1606,12 @@
           "actionEditor.seedTargetExposesCanonicalProperties",
           "actionEditor.module_registers_automation_target_and_property_command",
           "actionGameEvent.validatesAndAppendsToPersistentLog",
-          "actionMontage.schemaV4RoundTripAndLegacyMigration",
+          "actionMontage.schemaV5RoundTripAndLegacyMigration",
           "actionMontage.settingsUpdateIsValidatedAndPreservesPreparedPlayback",
           "actionMontage.sectionSplitUpdateIsAtomicAndPreservesPreparedPlayback",
           "actionMontage.clipTrimAndBlendCurveUseAuthoredSectionDuration",
+          "actionMontage.sectionEnvelopesFadeAcrossGapsWithoutDippingAtContiguousBoundaries",
+          "actionMontage.blendCurvesAreStableAndClamped",
           "actionMontage.lowFrameRateSweepCrossesEveryBoundaryAndSection",
           "actionMontage.jumpSectionProgressAndInterruptedBlendOutKeepBlockPairs",
           "actionMontage.editorSectionsUseCanonicalUndoableTransactions",
@@ -1572,6 +1633,8 @@
           "actionTimeline.versionedRoundTripAndDeterministicSampling",
           "actionTimeline.disabledItemsPersistAndDoNotProjectRuntimeState",
           "gameplayAction.advanceProjectsAuthoredTimelineBoundaries",
+          "gameplayAction.sectionTimingOverrideKeepsLifecycleEventsAndPresentationOnOneCursor",
+          "gameplayAction.sectionTimingOverrideChangesMidSectionWithoutCursorDiscontinuity",
           "actionTimelineEditor.editsPreviewAndUndoThroughCanonicalTarget",
           "actionTimelineEditor.editsPhysicalSectionSplitsAtomically",
           "actionTimelineEditor.movesAlignsAndScalesSelectionAtomically",
@@ -3233,6 +3296,26 @@
       ],
       "task": "offscreen-authoring",
       "origins": []
+    },
+    "integration/performance/performance_action_montage_tests.cpp": {
+      "role": "tests",
+      "default": "performance",
+      "cases": {
+        "performance": [
+          "actionMontage.preparedTopologyHandlesDenseSectionSweepsAndJumps",
+          "actionMontage.rvaluePresentTransfersOwningTimelineProjectionStorage",
+          "actionMontage.benchmarkPreparedPresentReportsP50P95AndMeasuredAllocationBoundary"
+        ]
+      },
+      "module": "animation",
+      "modules": [
+        "action",
+        "animation"
+      ],
+      "task": "performance",
+      "origins": [
+        "action_montage_performance.cpp"
+      ]
     },
     "integration/performance/performance_graphics_tests.cpp": {
       "role": "tests",
