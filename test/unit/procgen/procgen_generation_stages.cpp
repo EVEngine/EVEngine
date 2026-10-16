@@ -1,4 +1,3 @@
-#include "common/Module.h"
 #include "procgen/GridGraph.h"
 #include "procgen/MeshBuild.h"
 #include "procgen/Params.h"
@@ -12,7 +11,6 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include <simplesquirrel/simplesquirrel.hpp>
 
 #include <limits>
 #include <type_traits>
