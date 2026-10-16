@@ -96,7 +96,7 @@ Result/nodiscard、单一 owner、持久化原子性、线程/重入、确定性
 没有新增 ECS System、全局时间、随机源、回调、可选 provider 或跨模块向上 include；无架构例外。
 调用同步且 owner-thread affine。浮点几何是同构建容差契约，不承诺跨编译器位级一致。
 
-test/procgen_road_extensions.cpp 覆盖变形法线/UV、源裁切、分段重复/焊接/反转、保存、
+test/integration/gameplay-composition/procgen_road_extensions.cpp 覆盖变形法线/UV、源裁切、分段重复/焊接/反转、保存、
 多臂路线的拆分身份迁移与事务撤销、地形跨分辨率通道、桥隧保护、JSON 历史往返、
 undo/redo、后一个 tile 失败时回滚和 redo 保留。
 组合用例带真实车道连接和禁止转向，验证拆分撤销后的导航网格 positions/indices 与原值逐项一致；

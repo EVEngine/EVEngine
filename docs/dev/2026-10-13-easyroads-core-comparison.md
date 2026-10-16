@@ -279,7 +279,7 @@ V 编号为当前工作树源码：
 
 证据：RoadTypes.h、RoadBakeEdges/Profiles/Structures/FacilityLinks.cpp、RoadFacilityPrefab.cpp、RoadConnection.cpp、
 RoadTerrainWorkspace*.cpp、heightmap/TerrainWorldRoad.cpp、editing/RoadNetwork*Codec.cpp，
-及 test/procgen_road_authoring.cpp、procgen_road_extensions.cpp、procgen_road_spacing_portals.cpp、procgen_road_reference.cpp。
+及 test/integration/gameplay-composition/procgen_road_authoring.cpp、procgen_road_extensions.cpp、procgen_road_spacing_portals.cpp、procgen_road_reference.cpp。
 
 ### B. 确实尚未实现或仅有部分底座
 
@@ -487,7 +487,7 @@ compare_road_side_orientation.py --run-native ... 固化固定.98/0阈值、参�
 
 同端点的makeReconnectEdgeEndpointAndConnect仍会补充缺失的相关转向：有新增项则返回Applied，使用现有restore/remove-lane-links操作对而非重连逆操作，确保undo只删除本次新增项；无新增项为NoOp。普通端点改变仍保留原重连与旧路口连接恢复规则。未新增持久格式或操作opcode。公共返回语义、所有权/线程及成本说明和六面作者接口目录已更新。
 
-两个原NoOp异常用例从大编辑测试文件移入test/procgen_road_noop.cpp并将CHECK升级为REQUIRE；另三项强契约覆盖成功状态/载荷、revision及完整作者快照不变、直接应用dirtyRegion不变、未知edge错误仍正确、同端点补转向undo/replay，以及注册命令的空计划。最终SHARED与独立STATIC相同五项各95断言，零告警/异常。先前91断言结果是增加直接应用状态/脏区检查之前的中间记录，以95断言最终日志为准。
+两个原NoOp异常用例从大编辑测试文件移入test/integration/gameplay-composition/procgen_road_noop.cpp并将CHECK升级为REQUIRE；另三项强契约覆盖成功状态/载荷、revision及完整作者快照不变、直接应用dirtyRegion不变、未知edge错误仍正确、同端点补转向undo/replay，以及注册命令的空计划。最终SHARED与独立STATIC相同五项各95断言，零告警/异常。先前91断言结果是增加直接应用状态/脏区检查之前的中间记录，以95断言最终日志为准。
 
 完整道路详细复跑172个用例，两个NoOp告警已消除，剩11项；road-noop-warning-audit.json逐项保留，并继续标记cleanRegressionVerified=false。它们包括节点移动退化/拆分精度、路口/环岛/虚线/三角形、车道方向和编辑连接删除等，未通过项没有改基线或软跳过。后续仍要复核原生合同并修复实际行为，不能仅把CHECK改名或放松容差。此前设施帧已按本轮DLL刷新，零yaw/45度/grade保持通过，curve保持different。此轮改变的是作者操作状态及消费/逆操作，未修改道路bake生产算法身份v14。
 
@@ -500,7 +500,7 @@ compare_road_side_orientation.py --run-native ... 固化固定.98/0阈值、参�
 
 `splitEdgeAtPosition` 原先把采样折线上的投影比例直接转换为样条参数；即使几何为直线，Catmull 参数速度也不均匀，因而出现毫米级拆分误差。现在保留有界采样定位区间，再在实际样条上执行最多40步距离细化；距离计算使用double，吸附半径也按实际曲线投影距离判定。端点拒绝、私有候选验证和原子提交路径保留。该局部细化不构成任意自交曲线的全局精确最近点证明，参考端部网格采样规则仍未确认。
 
-四个独立强断言用例位于 `test/procgen_road_position_split.cpp`，SHARED与独立STATIC各66个断言、零告警：直线3D吸附与端点拒绝、曲线吸附半径、拆分撤销重做稳定ID、曲线接入撤销重做。曲线接入旧测试的筛选条件还匹配到原有接入起点，误将其作为插入节点；现明确排除该起点，生产撤销逻辑未因此修改。证据：`build/road-parity/road-position-shared-tests.log`、`road-position-static-tests.log`。
+四个独立强断言用例位于 `test/integration/gameplay-composition/procgen_road_position_split.cpp`，SHARED与独立STATIC各66个断言、零告警：直线3D吸附与端点拒绝、曲线吸附半径、拆分撤销重做稳定ID、曲线接入撤销重做。曲线接入旧测试的筛选条件还匹配到原有接入起点，误将其作为插入节点；现明确排除该起点，生产撤销逻辑未因此修改。证据：`build/road-parity/road-position-shared-tests.log`、`road-position-static-tests.log`。
 
 本次没有增加公共API、持久字段、模块边界或第二权威状态；沿用结构化Result和失败原子性，无架构例外。完整核心对齐、B1–B8及默认渲染路径仍未完成。此后DLL重链接后的历史图像证明不代表当前二进制已重新捕获。
 
@@ -513,7 +513,7 @@ compare_road_side_orientation.py --run-native ... 固化固定.98/0阈值、参�
 
 复核确认两个独立问题：路口开口使用16次弧长采样而道路截面使用24次，现统一为24次；一般路口的贯通道路补面还额外沿平面法线抬高0.01m，导致同一开口处存在约一厘米高差，现保持原始开口截面坐标。仅统一采样后的强断言仍失败（0.00992537m），去除抬升后才通过，不能将精度不一致当作全部根因。算法身份提升为 `road-core-2026-10-15-junction-seam-metric-v15`，BuildKey与artifact消费者强制重编译。
 
-两项测试迁入 `test/procgen_road_junction_seams.cpp` 并改用强断言；平滑拆分进一步检查所有asphalt顶点处于作者平面，而非仅统计恰好0.01m的顶点。最初独立STATIC两项28断言无告警；随后混合截面测试也迁入并更新为生产道路24次采样的位置查询，原1毫米容差不变。最终SHARED/STATIC三项各43断言无告警。该用例名称保留历史身份，不证明所有二臂节点都跳过路口生成：当前activeJunctionNodes仍纳入二臂节点。一般路口补面与基础三角剖分的重叠、轴对齐四路口另有的0.01m抬升、默认渲染及完整B1–B8继续待核验。
+两项测试迁入 `test/unit/procgen/procgen_road_junction_seams.cpp` 并改用强断言；平滑拆分进一步检查所有asphalt顶点处于作者平面，而非仅统计恰好0.01m的顶点。最初独立STATIC两项28断言无告警；随后混合截面测试也迁入并更新为生产道路24次采样的位置查询，原1毫米容差不变。最终SHARED/STATIC三项各43断言无告警。该用例名称保留历史身份，不证明所有二臂节点都跳过路口生成：当前activeJunctionNodes仍纳入二臂节点。一般路口补面与基础三角剖分的重叠、轴对齐四路口另有的0.01m抬升、默认渲染及完整B1–B8继续待核验。
 
 本次无新公共API或持久格式，保留单一作者状态、Result与失败原子性，无架构豁免。当前重链接二进制没有新的Unity画面对照证据。
 
@@ -710,7 +710,7 @@ prefab 重复数、端盖、平滑组和自动间距设置仍需参考校准，�
 
 轴对齐十字路口原来固定生成 0.35m 路缘及至少 0.4m 步道，即使显式两点沥青截面也会多出补面；不同接入口又共用第一条道路的高度。现圆弧分支仅用于统一截面，使用作者路缘/步道宽高并分别遵守宽度关闭；不同截面交给已有逐开口插值分支。此处关闭约束针对路口生成，不额外改变道路默认截面的竖直面语义。没有更改公共 API、持久字段或模块边界；算法身份提升为 `road-core-2026-10-16-junction-author-bands-v20`，BuildKey/artifact 两个身份消费者已强制重编译。单一作者状态、结构化 Result、已有版本化网络恢复与编辑事务继续适用，无架构例外。
 
-新增 `test/procgen_road_junction_style.cpp` 五项强断言测试：纯沥青路口、窄带尺寸、路口路缘/步道独立关闭、不同臂的开口宽高，以及真实编辑事务提交后保存恢复和撤销的网格一致性。最初四项均失败；最终独立 STATIC 五项29断言、生产 SHARED 道路208项267758断言均零失败、零告警。最终独立STATIC道路全回归149项11285断言通过；artifact 三项207断言通过。
+新增 `test/integration/gameplay-composition/procgen_road_junction_style.cpp` 五项强断言测试：纯沥青路口、窄带尺寸、路口路缘/步道独立关闭、不同臂的开口宽高，以及真实编辑事务提交后保存恢复和撤销的网格一致性。最初四项均失败；最终独立 STATIC 五项29断言、生产 SHARED 道路208项267758断言均零失败、零告警。最终独立STATIC道路全回归149项11285断言通过；artifact 三项207断言通过。
 
 参考适配修正了四接入环岛原始端口处于对角方向的问题：旋转候选从90度步进扩充到45度，并移除环岛方向不匹配的特殊豁免。真实公开点列证明默认环岛中心半径8m、内外半径5.5/10.5m；给公开半径/宽度字段赋值后调用 BuildRoadNetwork 或 ResetData 均未改变生成点列，因此未将字段赋值冒充尺寸映射。人行道公开 SetSidewalk 返回成功且左右激活为true，但实例列表为空、最终网格仍仅路面；该配置未合入参考生成器，也未算通过。探索日志 `junction-geometry-probe.log`、`junction-geometry-probe2.log`、`junction-geometry-probe3.log` 保留这些失败的适配证据。
 

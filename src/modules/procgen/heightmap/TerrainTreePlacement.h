@@ -59,9 +59,9 @@ struct TerrainTreeTile {
     std::string name;
     PointSet* trees = nullptr;
     const Heightmap* heights = nullptr;
-    double originX = 0, originZ = 0, width = 1, depth = 1;
-    int treeResolutionX = 0, treeResolutionY = 0;
-    bool worldMap = false;
+    double           originX = 0, originZ = 0, width = 1, depth = 1;
+    int              treeResolutionX = 0, treeResolutionY = 0;
+    bool             worldMap = false;
     double originY = 0;  ///< Added to sampled terrain height; explicit sea/custom height modes remain world absolute.
 };
 

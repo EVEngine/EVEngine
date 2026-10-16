@@ -45,10 +45,11 @@ public:
     int getHeight() const noexcept;
     /** @brief Current layer count, or zero before initialization. */
     int getLayerCount() const noexcept;
+
 private:
     friend class TerrainWorldWorkspace;
     struct Impl;
-    std::unique_ptr<Impl> impl_;
+    std::unique_ptr<Impl>       impl_;
     friend EVENGINE_API_DOMAINS Result<int> paintTerrainSplatLayer(TerrainSplatmap&, const Heightmap&, int);
     friend EVENGINE_API_DOMAINS Result<int> applyGtsHeightBlend(TerrainSplatmap&, const TerrainSplatmap&,
                                                                 const GtsHeightBlendSet&, float);

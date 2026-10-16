@@ -52,24 +52,24 @@ bool isDrivableColliderGroup(std::string_view group) {
 
 template <class IncludeGroup>
 Collider roadCollider(const MeshBuild& mesh, IncludeGroup&& includeGroup) {
-    Collider result;
+    Collider                                         result;
     std::unordered_map<std::uint32_t, std::uint32_t> remap;
-    const int triangleCount = mesh.getIndexCount() / 3;
+    const int                                        triangleCount = mesh.getIndexCount() / 3;
     result.indices.reserve(mesh.indices().size());
     for (int triangle = 0; triangle < triangleCount; ++triangle) {
         const int group = mesh.getTriangleGroup(triangle);
         if (group < 0 || !includeGroup(mesh.getGroupName(group))) continue;
         for (int corner = 0; corner < 3; ++corner) {
-            const auto source = static_cast<std::uint32_t>(mesh.getIndex(triangle * 3 + corner));
-            const auto found  = remap.find(source);
+            const auto    source      = static_cast<std::uint32_t>(mesh.getIndex(triangle * 3 + corner));
+            const auto    found       = remap.find(source);
             std::uint32_t destination = 0;
             if (found == remap.end()) {
                 destination = static_cast<std::uint32_t>(result.vertices.size() / 3u);
                 remap.emplace(source, destination);
-                const int sourceIndex = static_cast<int>(source);
-                const float x = mesh.getPositionX(sourceIndex);
-                const float y = mesh.getPositionY(sourceIndex);
-                const float z = mesh.getPositionZ(sourceIndex);
+                const int   sourceIndex = static_cast<int>(source);
+                const float x           = mesh.getPositionX(sourceIndex);
+                const float y           = mesh.getPositionY(sourceIndex);
+                const float z           = mesh.getPositionZ(sourceIndex);
                 result.vertices.insert(result.vertices.end(), {x, y, z});
                 result.bounds.include(x, y, z);
             } else {
@@ -82,9 +82,9 @@ Collider roadCollider(const MeshBuild& mesh, IncludeGroup&& includeGroup) {
 }
 
 struct RoadChunkCoordinate {
-    int x   = 0;
-    int z   = 0;
-    int lod = 0;
+    int         x   = 0;
+    int         z   = 0;
+    int         lod = 0;
     friend bool operator<(const RoadChunkCoordinate& lhs, const RoadChunkCoordinate& rhs) noexcept {
         if (lhs.lod != rhs.lod) return lhs.lod < rhs.lod;
         if (lhs.z != rhs.z) return lhs.z < rhs.z;
@@ -99,8 +99,8 @@ struct RoadChunkAccumulator {
 };
 
 std::uint64_t hashChunkMesh(const MeshBuild& mesh) {
-    std::uint64_t hash = 14695981039346656037ull;
-    auto append = [&](std::uint32_t value) {
+    std::uint64_t hash   = 14695981039346656037ull;
+    auto          append = [&](std::uint32_t value) {
         for (int byte = 0; byte < 4; ++byte) {
             hash ^= static_cast<std::uint8_t>((value >> (byte * 8)) & 0xffu);
             hash *= 1099511628211ull;
@@ -123,20 +123,20 @@ std::uint64_t hashChunkMesh(const MeshBuild& mesh) {
 Result<std::map<RoadChunkCoordinate, MeshBuild>> splitRoadMeshIntoChunks(const MeshBuild& source, float chunkSize,
                                                                          int lod) {
     std::map<RoadChunkCoordinate, RoadChunkAccumulator> accumulators;
-    const int triangleCount = source.getIndexCount() / 3;
+    const int                                           triangleCount = source.getIndexCount() / 3;
     for (int triangle = 0; triangle < triangleCount; ++triangle) {
-        const int ia = source.getIndex(triangle * 3);
-        const int ib = source.getIndex(triangle * 3 + 1);
-        const int ic = source.getIndex(triangle * 3 + 2);
+        const int   ia      = source.getIndex(triangle * 3);
+        const int   ib      = source.getIndex(triangle * 3 + 1);
+        const int   ic      = source.getIndex(triangle * 3 + 2);
         const float centerX = (source.getPositionX(ia) + source.getPositionX(ib) + source.getPositionX(ic)) / 3.f;
         const float centerZ = (source.getPositionZ(ia) + source.getPositionZ(ib) + source.getPositionZ(ic)) / 3.f;
         const RoadChunkCoordinate coordinate{static_cast<int>(std::floor(centerX / chunkSize)),
                                              static_cast<int>(std::floor(centerZ / chunkSize)), lod};
-        auto& accumulator = accumulators[coordinate];
-        const int sourceGroup = source.getTriangleGroup(triangle);
+        auto&                     accumulator = accumulators[coordinate];
+        const int                 sourceGroup = source.getTriangleGroup(triangle);
         accumulator.mesh.setActiveGroup(sourceGroup >= 0 ? source.getGroupName(sourceGroup) : "default");
         std::uint32_t destination[3]{};
-        const int sourceIndices[3] = {ia, ib, ic};
+        const int     sourceIndices[3] = {ia, ib, ic};
         for (int corner = 0; corner < 3; ++corner) {
             const auto sourceIndex = static_cast<std::uint32_t>(sourceIndices[corner]);
             const auto found       = accumulator.remap.find(sourceIndex);
@@ -148,8 +148,9 @@ Result<std::map<RoadChunkCoordinate, MeshBuild>> splitRoadMeshIntoChunks(const M
             accumulator.remap.emplace(sourceIndex, destination[corner]);
             const int vertex = static_cast<int>(sourceIndex);
             accumulator.mesh.addVertex(source.getPositionX(vertex), source.getPositionY(vertex),
-                                       source.getPositionZ(vertex), source.getNormalX(vertex), source.getNormalY(vertex),
-                                       source.getNormalZ(vertex), source.getUvU(vertex), source.getUvV(vertex));
+                                       source.getPositionZ(vertex), source.getNormalX(vertex),
+                                       source.getNormalY(vertex), source.getNormalZ(vertex), source.getUvU(vertex),
+                                       source.getUvV(vertex));
             if (source.hasVertexColors())
                 for (int component = 0; component < 4; ++component)
                     accumulator.colors.push_back(source.getColor(vertex, component));
@@ -250,16 +251,16 @@ Grid2D roadFootprint(const MeshBuild& mesh, const Bounds& bounds, float requeste
 }
 
 Grid2D roadSurfaceWeights(Grid2D grid, float cellSize, float blendDistance) {
-    const int width = grid.getWidth(), height = grid.getHeight();
-    const float infinity = static_cast<float>(width + height + 1);
+    const int          width = grid.getWidth(), height = grid.getHeight();
+    const float        infinity = static_cast<float>(width + height + 1);
     std::vector<float> distance(static_cast<std::size_t>(width * height), infinity);
-    const auto index = [width](int x, int z) { return static_cast<std::size_t>(z * width + x); };
+    const auto         index = [width](int x, int z) { return static_cast<std::size_t>(z * width + x); };
     for (int z = 0; z < height; ++z)
         for (int x = 0; x < width; ++x)
             if (grid.getCell(x, z) != 0) distance[index(x, z)] = 0.f;
 
     constexpr float diagonal = 1.41421356f;
-    auto relax = [&](int x, int z, int nx, int nz, float cost) {
+    auto            relax    = [&](int x, int z, int nx, int nz, float cost) {
         if (nx < 0 || nz < 0 || nx >= width || nz >= height) return;
         distance[index(x, z)] = std::min(distance[index(x, z)], distance[index(nx, nz)] + cost);
     };
@@ -284,8 +285,7 @@ Grid2D roadSurfaceWeights(Grid2D grid, float cellSize, float blendDistance) {
             const float metres = distance[index(x, z)] * cellSize;
             const float weight = distance[index(x, z)] == 0.f
                                      ? 1.f
-                                     : (blendDistance > 0.f ? std::clamp(1.f - metres / blendDistance, 0.f, 1.f)
-                                                            : 0.f);
+                                     : (blendDistance > 0.f ? std::clamp(1.f - metres / blendDistance, 0.f, 1.f) : 0.f);
             grid.setDetail(x, z, static_cast<int>(std::lround(weight * 255.f)));
         }
     }
@@ -371,15 +371,15 @@ Result<GeneratedArtifact> generateRoadNetworkArtifact(const Params& params, Arti
     auto baked = road::bakeRoadNetworkRecipe(params);
     if (!baked.ok()) return Result<GeneratedArtifact>::failure(baked.status());
 
-    road::RoadBakeResult result = std::move(baked).takeValue();
+    road::RoadBakeResult result          = std::move(baked).takeValue();
     auto                 sourcePartition = road::PreparedRoadGeometrySources::prepare(result.mesh);
     if (!sourcePartition.ok()) return Result<GeneratedArtifact>::failure(sourcePartition.status());
-    const auto           sourceSpanCount  = sourcePartition.value().spans().size();
-    const Bounds         bounds = meshBounds(result.mesh);
-    Collider collider = roadCollider(result.mesh, isStructuralColliderGroup);
-    Collider drivableCollider = roadCollider(result.mesh, isDrivableColliderGroup);
-    const float chunkSize = params.getFloat("chunkSize", 64.f);
-    const int lodCount = params.getInt("lodCount", 3);
+    const auto   sourceSpanCount  = sourcePartition.value().spans().size();
+    const Bounds bounds           = meshBounds(result.mesh);
+    Collider     collider         = roadCollider(result.mesh, isStructuralColliderGroup);
+    Collider     drivableCollider = roadCollider(result.mesh, isDrivableColliderGroup);
+    const float  chunkSize        = params.getFloat("chunkSize", 64.f);
+    const int    lodCount         = params.getInt("lodCount", 3);
     if (!std::isfinite(chunkSize) || chunkSize < 4.f || chunkSize > 1024.f || lodCount < 1 || lodCount > 4)
         return Result<GeneratedArtifact>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "road chunkSize must be in [4,1024] and lodCount in [1,4]", "chunks"));
@@ -389,7 +389,7 @@ Result<GeneratedArtifact> generateRoadNetworkArtifact(const Params& params, Arti
     if (!primaryChunks.ok()) return Result<GeneratedArtifact>::failure(primaryChunks.status());
     lodChunks.push_back(std::move(primaryChunks).takeValue());
     const int basePathSegments = std::max(4, params.getInt("pathSegments", 48));
-    const int baseTurnSamples = std::max(4, params.getInt("turnSamples", 12));
+    const int baseTurnSamples  = std::max(4, params.getInt("turnSamples", 12));
     for (int lod = 1; lod < lodCount; ++lod) {
         Params lodParams = params;
         lodParams.setInt("pathSegments", std::max(4, basePathSegments >> lod));
@@ -405,25 +405,23 @@ Result<GeneratedArtifact> generateRoadNetworkArtifact(const Params& params, Arti
         if (!chunks.ok()) return Result<GeneratedArtifact>::failure(chunks.status());
         lodChunks.push_back(std::move(chunks).takeValue());
     }
-    const float maskCellSize = std::max(0.1f, params.getFloat("maskCellSize", 1.f));
+    const float maskCellSize         = std::max(0.1f, params.getFloat("maskCellSize", 1.f));
     const float terrainBlendDistance = params.getFloat("terrainBlendDistance", 2.f);
     if (!std::isfinite(terrainBlendDistance) || terrainBlendDistance < 0.f || terrainBlendDistance > 64.f)
-        return Result<GeneratedArtifact>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "road terrain blend distance must be finite and in [0,64]",
-            "terrainBlendDistance"));
-    Grid2D footprint = roadFootprint(result.mesh, bounds, maskCellSize);
-    Grid2D surfaceWeights = roadFootprint(result.mesh, bounds, maskCellSize,
-                                          terrainBlendDistance + maskCellSize);
+        return Result<GeneratedArtifact>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "road terrain blend distance must be finite and in [0,64]", "terrainBlendDistance"));
+    Grid2D      footprint       = roadFootprint(result.mesh, bounds, maskCellSize);
+    Grid2D      surfaceWeights  = roadFootprint(result.mesh, bounds, maskCellSize, terrainBlendDistance + maskCellSize);
     const float surfaceCellSize = std::stof(surfaceWeights.getMeta("cellSize", "1"));
-    surfaceWeights = roadSurfaceWeights(std::move(surfaceWeights), surfaceCellSize, terrainBlendDistance);
+    surfaceWeights              = roadSurfaceWeights(std::move(surfaceWeights), surfaceCellSize, terrainBlendDistance);
     if (!bounds.isValid() || !collider.isValid() || !drivableCollider.isValid() || footprint.getWidth() <= 0 ||
-        footprint.getHeight() <= 0 ||
-        surfaceWeights.getWidth() <= 0 || surfaceWeights.getHeight() <= 0)
+        footprint.getHeight() <= 0 || surfaceWeights.getWidth() <= 0 || surfaceWeights.getHeight() <= 0)
         return Result<GeneratedArtifact>::failure(
             Diagnostic::error(DiagnosticCode::InvariantViolation, "road bake produced incomplete artifact data"));
 
     std::vector<ArtifactPart> parts;
-    std::size_t chunkCount = 0;
+    std::size_t               chunkCount = 0;
     for (const auto& chunks : lodChunks) chunkCount += chunks.size();
     parts.reserve(6 + chunkCount + result.overlay.lanes.size() + result.overlay.turns.size());
     auto meshPart = roadPart("mesh", id, *key, ArtifactType::MeshData, bounds, std::move(result.mesh));
@@ -433,8 +431,8 @@ Result<GeneratedArtifact> generateRoadNetworkArtifact(const Params& params, Arti
                                  {id.child("mesh")});
     if (!colliderPart.ok()) return Result<GeneratedArtifact>::failure(colliderPart.status());
     parts.push_back(std::move(colliderPart).takeValue());
-    auto drivableColliderPart = roadPart("collider/drivable", id, *key, ArtifactType::Collider,
-                                        drivableCollider.bounds, std::move(drivableCollider), {id.child("mesh")});
+    auto drivableColliderPart = roadPart("collider/drivable", id, *key, ArtifactType::Collider, drivableCollider.bounds,
+                                         std::move(drivableCollider), {id.child("mesh")});
     if (!drivableColliderPart.ok()) return Result<GeneratedArtifact>::failure(drivableColliderPart.status());
     parts.push_back(std::move(drivableColliderPart).takeValue());
     for (auto& chunks : lodChunks) {
@@ -460,8 +458,8 @@ Result<GeneratedArtifact> generateRoadNetworkArtifact(const Params& params, Arti
     parts.push_back(std::move(surfacePart).takeValue());
     if (!result.placements.empty()) {
         const Bounds placementBounds = pointBounds(result.placements);
-        auto placementPart = roadPart("placements", id, *key, ArtifactType::PointSet, placementBounds,
-                                      std::move(result.placements), {id.child("mesh")});
+        auto         placementPart   = roadPart("placements", id, *key, ArtifactType::PointSet, placementBounds,
+                                                std::move(result.placements), {id.child("mesh")});
         if (!placementPart.ok()) return Result<GeneratedArtifact>::failure(placementPart.status());
         parts.push_back(std::move(placementPart).takeValue());
     }

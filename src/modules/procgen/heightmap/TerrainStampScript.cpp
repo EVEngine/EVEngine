@@ -442,14 +442,13 @@ void exposeHeightmap(ssq::Table& table) {
     multiObject.addFunc("getOperationCount", [](const TerrainMultiObjectWorkspace* workspace) {
         return workspace->getOperationCount();
     });
-    multiObject.addFunc("getAppliedCount", [](const TerrainMultiObjectWorkspace* workspace) {
-        return workspace->getAppliedCount();
-    });
+    multiObject.addFunc("getAppliedCount",
+                        [](const TerrainMultiObjectWorkspace* workspace) { return workspace->getAppliedCount(); });
 
     exposeTerrainWorldCreationBindings(table);
 
-    auto probeSettings = table.addClass("TerrainProbePlacementSettings",
-                                        ssq::Class::Ctor<TerrainProbePlacementSettings()>());
+    auto probeSettings =
+        table.addClass("TerrainProbePlacementSettings", ssq::Class::Ctor<TerrainProbePlacementSettings()>());
     probeSettings.addVar("name", &TerrainProbePlacementSettings::name);
     probeSettings.addVar("originX", &TerrainProbePlacementSettings::originX);
     probeSettings.addVar("originZ", &TerrainProbePlacementSettings::originZ);
@@ -662,8 +661,7 @@ void exposeHeightmap(ssq::Table& table) {
         return eve::script::projectResult(vm, self->snapshotJson(),
                                            [](const std::string& value) { return eve::Value(value); });
     });
-    biomePreset.addFunc("restoreJson", [vm = table.getHandle()](TerrainBiomePreset* self,
-                                                                   const std::string& json) {
+    biomePreset.addFunc("restoreJson", [vm = table.getHandle()](TerrainBiomePreset* self, const std::string& json) {
         return eve::script::projectResult(vm, self->restoreJson(json));
     });
 

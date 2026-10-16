@@ -615,7 +615,7 @@ Result<std::vector<SplineFrameSample>> SplinePath::sampleFramesResult(int sample
     ratios.reserve(locations.size());
     for (std::size_t index = 0; index < locations.size(); ++index) {
         const auto [ratio, marker] = locations[index];
-        auto        sampled =
+        auto sampled =
             uniformByDistance ? evaluateDistanceResult(totalLength * ratio, samplesPerSegment) : evaluateResult(ratio);
         if (!sampled.ok()) return Result<std::vector<SplineFrameSample>>::failure(sampled.status());
         if (marker >= 0)
@@ -689,7 +689,7 @@ Result<std::vector<SplineFrameSample>> SplinePath::orientFrameSamplesResult(std:
         if (sample.worldUpFrame || index == 0 || sample.chunkIndex != frames[index - 1].sample.chunkIndex) {
             const float verticalLimit = sample.worldUpFrame ? .999999f : .9f;
             const V3    reference     = std::abs(tangent.y) < verticalLimit ? V3{0.f, 1.f, 0.f} : V3{1.f, 0.f, 0.f};
-            side               = normalized(cross(reference, tangent));
+            side                      = normalized(cross(reference, tangent));
         } else {
             const V3    axis     = cross(previousTangent, tangent);
             const float axisSize = length(axis);
@@ -703,8 +703,8 @@ Result<std::vector<SplineFrameSample>> SplinePath::orientFrameSamplesResult(std:
             }
             side = normalized(sub(side, mul(tangent, dot(side, tangent))));
         }
-        V3 up = normalized(cross(tangent, side));
-        side  = normalized(cross(up, tangent));
+        V3 up           = normalized(cross(tangent, side));
+        side            = normalized(cross(up, tangent));
         auto& frame     = frames[index];
         frame.sideX     = side.x;
         frame.sideY     = side.y;
@@ -771,8 +771,8 @@ Result<std::vector<SplineFrameSample>> SplinePath::orientFrameSamplesResult(std:
                 return Result<std::vector<SplineFrameSample>>::failure(
                     Diagnostic::error(DiagnosticCode::InvalidArgument,
                                       "roll-pivot displacement exceeds finite frame coordinates", "rollPivotSide"));
-            up                     = add(mul(up, c), mul(side, -s));
-            side                   = rolledSide;
+            up   = add(mul(up, c), mul(side, -s));
+            side = rolledSide;
         }
         frame.sideX    = side.x;
         frame.sideY    = side.y;
@@ -875,9 +875,9 @@ Result<SplineFrameSample> SplinePath::travelFrameResult(float distance, std::str
                     std::lerp(lower.forwardZ, upper.forwardZ, blend)});
     V3 side     = normalized({std::lerp(lower.sideX, upper.sideX, blend), std::lerp(lower.sideY, upper.sideY, blend),
                               std::lerp(lower.sideZ, upper.sideZ, blend)});
-    side        = normalized(sub(side, mul(forward, dot(side, forward))));
-    const V3 up = normalized(cross(forward, side));
-    side        = normalized(cross(up, forward));
+    side           = normalized(sub(side, mul(forward, dot(side, forward))));
+    const V3 up    = normalized(cross(forward, side));
+    side           = normalized(cross(up, forward));
     auto projected = sample.value();
     if (projected.rollPivotSide != 0.f) {
         const float angle        = projected.rollDegrees * .01745329251994329577f;

@@ -28,15 +28,15 @@ struct EVENGINE_API_FOUNDATION_INLINE ProcgenInstanceDesc {
     /** @brief Compatibility asset label; when assetBinding exists, its typed identity is authoritative and must match.
      */
     std::string asset;
-    float       x      = 0.f;
-    float       y      = 0.f;
-    float       z      = 0.f;
+    float       x = 0.f;
+    float       y = 0.f;
+    float       z = 0.f;
     /** @brief Local Y rotation in degrees; the scene provider converts all Euler angles to its native radians. */
-    float       yaw    = 0.f;
-    float       scaleX = 1.f;
-    float       scaleY = 1.f;
-    float       scaleZ = 1.f;
-    uint32_t    seed   = 1;
+    float    yaw    = 0.f;
+    float    scaleX = 1.f;
+    float    scaleY = 1.f;
+    float    scaleZ = 1.f;
+    uint32_t seed   = 1;
     /** @brief Local X rotation in degrees, composed as yaw(Y), pitch(X), roll(Z); zero preserves legacy instances. */
     float pitch = 0.f;
     /** @brief Local Z rotation in degrees; owned value retained by full snapshots and identity-based deltas. */

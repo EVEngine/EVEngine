@@ -33,7 +33,10 @@ float seamNoise(float x, float y) {
 }
 }  // namespace
 struct GtsHeightBlendSet::Impl {
-    struct Layer { Heightmap height; float contrast, brightness, increase; };
+    struct Layer {
+        Heightmap height;
+        float     contrast, brightness, increase;
+    };
     std::vector<Layer> layers;
 };
 GtsHeightBlendSet::GtsHeightBlendSet() : impl_(std::make_unique<Impl>()) {}

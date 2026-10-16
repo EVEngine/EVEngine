@@ -43,8 +43,8 @@ struct TerrainWorldCreationSettings {
     int objectResolution = 1024;
     int splatLayers = 1, defaultSplatLayer = 0;
     int defaultDetailDensity = 0;
-    bool worldMap = false;
-    std::string namePrefix = "Terrain";
+    bool        worldMap             = false;
+    std::string namePrefix           = "Terrain";
     std::string nameSuffix;
     float       originY = 0.f;  ///< Finite world baseline shared by road projection and terrain-relative placements.
 };

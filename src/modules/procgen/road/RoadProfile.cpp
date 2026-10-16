@@ -10,15 +10,14 @@ namespace eve::procgen::road {
 namespace {
 
 Result<void> validateStyle(const RoadStyle& style) {
-    const float values[] = {style.laneWidth,     style.curbWidth,     style.curbHeight,    style.sidewalkWidth,
-                            style.sidewalkHeight, style.deckThickness, style.pierWidth,     style.pierDepth,
-                            style.pierSpacing,    style.pierClearance, style.markingWidth,  style.dashLength,
+    const float values[] = {style.laneWidth,      style.curbWidth,     style.curbHeight,   style.sidewalkWidth,
+                            style.sidewalkHeight, style.deckThickness, style.pierWidth,    style.pierDepth,
+                            style.pierSpacing,    style.pierClearance, style.markingWidth, style.dashLength,
                             style.dashGap,        style.uvMeters};
     for (float v : values) {
         if (!std::isfinite(v) || v < 0.f)
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                          "road style values must be finite and non-negative",
-                                                          "style"));
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "road style values must be finite and non-negative", "style"));
     }
     if (style.laneWidth <= 1e-4f)
         return Result<void>::failure(
@@ -66,8 +65,7 @@ Result<RoadProfile> makeRoadProfile(const RoadStyle& style, int lanesForward, in
         return Result<RoadProfile>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "road must contain at least one directional lane", "lanes"));
 
-    const float asphaltHalf =
-        0.5f * style.laneWidth * static_cast<float>(lanesForward + lanesBackward);
+    const float asphaltHalf = 0.5f * style.laneWidth * static_cast<float>(lanesForward + lanesBackward);
     if (!style.crossSection.empty()) {
         std::vector<std::pair<float, float>> coverage;
         const std::size_t                    segments =

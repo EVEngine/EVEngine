@@ -28,7 +28,7 @@ struct EvpackStaticPrefab::Impl {
     graphics::IMeshResourceFactory&  meshes;
     graphics::IImageResourceFactory& images;
     // Factory ABI leases: only passed back to the same factories or synchronous draw calls.
-    std::map<std::string, graphics::Mesh*>    meshLeases;
+    std::map<std::string, graphics::Mesh*>       meshLeases;
     std::map<std::string, std::vector<uint32_t>> meshUvSets;
     std::map<std::string, std::array<float, 6>>  meshBounds;
     std::array<float, 6>                         localBounds{};
@@ -36,7 +36,7 @@ struct EvpackStaticPrefab::Impl {
     bool                                         hasLocalBounds = false;
     std::optional<AssetRef>                      sourceAsset;
     PersistentId                                 sourceBuild;
-    std::map<std::string, graphics::Texture*> imageLeases;
+    std::map<std::string, graphics::Texture*>    imageLeases;
     struct Draw {
         glm::mat4          transform;
         glm::mat4          placementTransform;
@@ -48,8 +48,8 @@ struct EvpackStaticPrefab::Impl {
     };
     std::vector<Draw> draws;
     std::vector<std::unique_ptr<graphics::Material>> gpuMaterials;
-    graphics::Graphics* gpuGraphics = nullptr;
-    bool              released = false;
+    graphics::Graphics*                              gpuGraphics  = nullptr;
+    bool                                             released     = false;
     std::size_t                                      resourcePins = 0;
 };
 StaticPrefabResourcePin::StaticPrefabResourcePin(std::shared_ptr<EvpackStaticPrefab> owner)
@@ -150,7 +150,7 @@ EvpackStaticPrefab::~EvpackStaticPrefab() {
     auto result = release();
     if (!result) std::fprintf(stderr, "asset prefab release failed: %s\n", result.error()->message().c_str());
 }
-std::size_t  EvpackStaticPrefab::drawCount() const noexcept { return impl_->draws.size(); }
+std::size_t                  EvpackStaticPrefab::drawCount() const noexcept { return impl_->draws.size(); }
 AssetRef                     EvpackStaticPrefab::sourceAsset() const { return *impl_->sourceAsset; }
 PersistentId                 EvpackStaticPrefab::sourceBuildId() const noexcept { return impl_->sourceBuild; }
 Result<std::array<float, 6>> EvpackStaticPrefab::localBounds(PrefabRootPose rootPose) const {
@@ -301,7 +301,7 @@ Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset
         out->impl_->placementBounds[axis]     = std::numeric_limits<float>::max();
         out->impl_->placementBounds[axis + 3] = std::numeric_limits<float>::lowest();
     }
-    std::map<SceneObjectId, glm::mat4>                     transforms;
+    std::map<SceneObjectId, glm::mat4>                                      transforms;
     std::map<SceneObjectId, glm::mat4>                                      placementTransforms;
     std::function<void(const scene::NodeDesc&, glm::mat4, glm::mat4, bool)> walk =
         [&](const scene::NodeDesc& node, glm::mat4 parent, glm::mat4 placedParent, bool root) {
@@ -366,7 +366,7 @@ Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset
         }
         auto validatedSurface = graphics::validatePbrSurface(parameters.value().surface);
         if (!validatedSurface) return Result<std::unique_ptr<EvpackStaticPrefab>>::failure(validatedSurface.status());
-        image = parameters.value().surface.textures[0].texture;
+        image                       = parameters.value().surface.textures[0].texture;
         const auto& bounds          = out->impl_->meshBounds.at(meshKey);
         const auto& matrix          = transforms.at(binding.object);
         const auto& placementMatrix = placementTransforms.at(binding.object);

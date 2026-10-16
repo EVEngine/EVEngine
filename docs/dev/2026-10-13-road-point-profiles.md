@@ -28,8 +28,8 @@ schema `eve.procgen.roadNetwork` version 1 增加可选 edge 字段
 
 ## 验证和范围
 
-`test/procgen_road_profiles.cpp` 检查宽度、车道/侧边锚点、横坡、物理反转、拆分和无效编辑。
-`test/procgen_road_profile_editing.cpp` 检查快照往返、旧数据迁移、损坏数据原子拒绝和事务撤销。
+`test/unit/procgen/procgen_road_profiles.cpp` 检查宽度、车道/侧边锚点、横坡、物理反转、拆分和无效编辑。
+`test/integration/gameplay-composition/procgen_road_profile_editing.cpp` 检查快照往返、旧数据迁移、损坏数据原子拒绝和事务撤销。
 独立 CPU harness 验证 STATIC 与 SHARED 消费者；这只是该源闭包的链接证据，不代表完整引擎或裁剪配置验证。
 
 本批同时将大型 baker 与网络 recipe 按职责拆分，纯拆分阶段六个既有 fixture 输出逐字节相同。

@@ -405,7 +405,6 @@ TEST_CASE("procgen.road.editing.blockedTurnIsUndoableAndSnapshotPersistent") {
 }
 
 
-
 TEST_CASE("procgen.road.editing.snapEndpointChoosesNearestStableNodeAndConnects") {
     RoadNetwork network;
     auto        start     = network.addNode(-10.f, 0.f, 0.f);
@@ -825,7 +824,7 @@ TEST_CASE("procgen.road.editing.commandsDriveRegisteredTargetAndExposeSnapshot")
     REQUIRE((*schema).find("schema") != (*schema).end());
 
     const auto registeredCount = registry.planners.size();
-    auto removed = registry.unregisterOwner("procgen_editing.road");
+    auto       removed         = registry.unregisterOwner("procgen_editing.road");
     REQUIRE(removed.ok());
     CHECK_EQ(removed.value(), registeredCount);
     CHECK(registry.planners.empty());
@@ -942,7 +941,6 @@ TEST_CASE("procgen.road.editing.splitEdgeUndoRestoresOriginalIdentityAndLinks") 
     CHECK_EQ(network.blockedLaneLinks().front().inEdge, continuationId);
     REQUIRE(network.validate().ok());
 }
-
 
 
 TEST_CASE("procgen.road.editing.mergeNodesUndoRestoresEdgesAndLaneLinks") {
@@ -1144,7 +1142,6 @@ TEST_CASE("procgen.road.editing.connectNodeAtPositionIsAtomicAndUndoable") {
     CHECK_EQ(network.edgeResult(branchId).value().to, insertedNodeId);
     REQUIRE(network.validate().ok());
 }
-
 
 
 TEST_CASE("procgen.road.editing.crossingEdgesBecomeOneUndoableJunction") {

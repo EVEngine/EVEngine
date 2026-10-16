@@ -1,21 +1,34 @@
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_asset_import_unity_fbx)
+#include <assimp/scene.h>
 #include <algorithm>
+#include <assimp/Exporter.hpp>
 #include <cmath>
 #include <filesystem>
 #include <fstream>
+#include <iterator>
 #include <limits>
+#include "PathBesideSource.h"
+#include "PrivateTestScope.h"
+#include "asset/AssetCooker.h"
+#include "asset/CanonicalMesh.h"
+#include "asset/EvpackResourceReader.h"
 #include "asset/SourcePng.h"
 #include "asset/graphics/EvpackGraphicsLoader.h"
 #include "asset/graphics/EvpackImageLoader.h"
+#include "asset/graphics/EvpackStaticPrefab.h"
 #include "asset/graphics/PrefabBoundsCatalog.h"
 #include "asset/graphics/ProcgenPrefabSceneSink.h"
 #include "asset/graphics/StaticPrefabRenderInstance.h"
+#include "asset/import/UnityImporter.h"
+#include "asset/import/UnitySourceInternal.h"
 #include "asset/scene/EvpackSceneTemplateLoader.h"
 #include "common/Capability.h"
 #include "common/ProcgenWorldQuery.h"
 #include "graphics/Graphics.h"
+#include "graphics/IImageResourceFactory.h"
+#include "graphics/IMeshResourceFactory.h"
 #include "graphics/Material.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
@@ -26,20 +39,6 @@
 #include "procgen/road/RoadRecipes.h"
 #include "scene/Scene.h"
 #include "window/Window.h"
-#include "PrivateTestScope.h"
-#include <assimp/scene.h>
-#include <assimp/Exporter.hpp>
-#include <fstream>
-#include <iterator>
-#include "PathBesideSource.h"
-#include "asset/AssetCooker.h"
-#include "asset/CanonicalMesh.h"
-#include "asset/EvpackResourceReader.h"
-#include "asset/graphics/EvpackStaticPrefab.h"
-#include "asset/import/UnityImporter.h"
-#include "asset/import/UnitySourceInternal.h"
-#include "graphics/IImageResourceFactory.h"
-#include "graphics/IMeshResourceFactory.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // asset_import_unity_fbx.cpp
@@ -204,14 +203,14 @@ TEST_CASE("asset.import.unityStaticPrefabResolvesAndReleasesGpuLeases") {
         }
     } images;
     asset::EvpackCapabilities caps{"win32", "x86_64", "vulkan", {"rgba8"}, {"spirv-1.6"}, {"high"}, {}};
-    const auto                ref    = prepared.value().manifest.entrypoints.at("Assets/tile.prefab");
+    const auto                ref          = prepared.value().manifest.entrypoints.at("Assets/tile.prefab");
     auto                      templateData = asset_scene::EvpackSceneTemplateLoader(reader).load(ref, caps);
     REQUIRE(templateData.ok());
     REQUIRE(templateData.value().root.children.size() == 1u);
     REQUIRE_EQ(templateData.value().root.children[0].x, 1.f);
     REQUIRE_EQ(templateData.value().root.children[0].y, 2.f);
     REQUIRE_EQ(templateData.value().root.children[0].z, -3.f);
-    auto                      loaded = asset_graphics::EvpackStaticPrefab::load(reader, meshes, images, ref, caps);
+    auto loaded = asset_graphics::EvpackStaticPrefab::load(reader, meshes, images, ref, caps);
     REQUIRE(loaded.ok());
     auto owner = std::shared_ptr<asset_graphics::EvpackStaticPrefab>(std::move(loaded).takeValue());
     REQUIRE_EQ(owner->drawCount(), std::size_t(1));

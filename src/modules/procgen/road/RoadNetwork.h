@@ -217,9 +217,9 @@ public:
      * @cost Linear in edge control points plus topology and lane-link count; authoring only.
      */
     [[nodiscard]] Result<RoadEdgeSplitResult> splitEdgeAtSplineParameter(std::uint32_t edgeId, float parameter,
-                                                                         float junctionRadius = 6.f,
-                                                                         std::uint32_t nodeId = 0,
-                                                                         std::uint32_t secondEdgeId = 0);
+                                                                         float         junctionRadius = 6.f,
+                                                                         std::uint32_t nodeId         = 0,
+                                                                         std::uint32_t secondEdgeId   = 0);
     /**
      * @brief Replace owning style/section/interval authoring atomically.
      * @return Success or structured validation failure; custom socket mismatches leave revision unchanged.
@@ -314,8 +314,8 @@ public:
 private:
     void                       normalizeLaneLinkOrder();
     [[nodiscard]] Result<void> validateStyle(const RoadStyle& style) const;
-    [[nodiscard]] int findNodeIndex(std::uint32_t id) const;
-    [[nodiscard]] int findEdgeIndex(std::uint32_t id) const;
+    [[nodiscard]] int          findNodeIndex(std::uint32_t id) const;
+    [[nodiscard]] int          findEdgeIndex(std::uint32_t id) const;
     [[nodiscard]] Result<void> validateLaneConnection(const RoadLaneConnection& link) const;
 
     std::vector<RoadNode>     nodes_;

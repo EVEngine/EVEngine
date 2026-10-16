@@ -311,7 +311,7 @@ eve::Result<SceneHost::Tree> SceneHost::buildDetachedTree(const Tree* previous, 
                             "detached scene transform must produce a finite world matrix", node.id));
         }
         if (previous) {
-            std::unordered_map<std::string, const SceneNode*> preserved;
+            std::unordered_map<std::string, const SceneNode *> preserved;
             preserved.reserve(previous->nodes.size());
             for (const auto& node : previous->nodes)
                 if (!node.id.empty()) preserved.emplace(node.id, &node);

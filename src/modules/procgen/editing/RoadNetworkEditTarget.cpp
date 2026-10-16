@@ -37,9 +37,9 @@ Result<RoadIntersection> findUniqueInteriorIntersection(const procgen::road::Roa
             splinePoint.spanControl        = static_cast<eve::procgen::SplineSpanControl>(point.pathControl);
             splinePoint.spanStrength       = point.splineStrength;
             splinePoint.x                  = point.x;
-            splinePoint.y = point.y;
-            splinePoint.z = point.z;
-            auto added = path.addPointResult(splinePoint);
+            splinePoint.y                  = point.y;
+            splinePoint.z                  = point.z;
+            auto added                     = path.addPointResult(splinePoint);
             if (!added.ok()) return Result<std::vector<ParameterSample>>::failure(added.status());
         }
         const int intervals = std::min(4096, std::max(32, path.segmentCount() * 24));
@@ -128,7 +128,7 @@ bool decodeNodeControl(const EditorValue& value, std::uint32_t& id,
 
 
 EditorValue encodeBlockedLink(const procgen::road::RoadLaneConnection& link, bool restoreActive) {
-    auto object = *encodeLink(link).getIf<EditorValue::Object>();
+    auto object             = *encodeLink(link).getIf<EditorValue::Object>();
     object["restoreActive"] = restoreActive;
     return object;
 }

@@ -41,7 +41,7 @@ beginEdit 是图大小的 owning builder 拷贝；prepare 是显式昂贵解析�
 API 同步、owner-thread-only，不持锁调用回调。Result/nodiscard、单一事实 owner、两阶段昂贵操作、原子恢复与六面模块目录规则适用；无架构例外。
 作者类属于现有 procgen/editing satellite，runtime procgen-core-only 不引入编辑依赖。独立 STATIC/SHARED CPU 生产源码闭包验证 L2，正式 core-only 编译只提供 L1；不声称完整引擎 L3/L4 裁剪。
 
-test/procgen_road_presets.cpp 覆盖父链传播与实例保护、实际 native bake 变化、JSON 往返与 redo、循环/悬空/非法候选、foreign/stale token、未知版本/字段、明确 false/空数组、清除覆盖和取消绑定。
+test/integration/gameplay-composition/procgen_road_presets.cpp 覆盖父链传播与实例保护、实际 native bake 变化、JSON 往返与 redo、循环/悬空/非法候选、foreign/stale token、未知版本/字段、明确 false/空数组、清除覆盖和取消绑定。
 可运行 shared-presets 夹具经过更新 → undo → JSON 保存/恢复 → redo → native bake，保存 preset_state.json、authoring.json 和 mesh_data.nut。
 实帧位于 build/road-parity/preset-scenes/shared-presets/ev-frame.png，由 EVEngine presented-frame readback 取得；不将它计作 Unity 共享类型更新的对照验收。
 

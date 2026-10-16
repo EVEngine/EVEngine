@@ -275,15 +275,16 @@ Result<TerrainMultiTileReport> applyTerrainTreesMultiTile(
                 DiagnosticCode::InvalidArgument, "terrain.tree.multitile: normalized operation fitness required"));
 
     std::vector<TerrainOperationTile> operationTiles;
-    std::unordered_set<PointSet*> owners;
+    std::unordered_set<PointSet*>     owners;
     operationTiles.reserve(tiles.size());
     for (const auto& tile : tiles) {
         if (!std::isfinite(tile.originY) || !tile.trees || !tile.heights || !owners.insert(tile.trees).second ||
             !validRaster(*tile.heights))
-            return Result<TerrainMultiTileReport>::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "terrain.tree.multitile: distinct outputs and finite heights required"));
-        operationTiles.push_back({tile.name, tile.originX, tile.originZ, tile.width, tile.depth,
-                                  tile.treeResolutionX, tile.treeResolutionY, tile.worldMap});
+            return Result<TerrainMultiTileReport>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                  "terrain.tree.multitile: distinct outputs and finite heights required"));
+        operationTiles.push_back({tile.name, tile.originX, tile.originZ, tile.width, tile.depth, tile.treeResolutionX,
+                                  tile.treeResolutionY, tile.worldMap});
     }
     auto mapped = mapTerrainOperationMultiTile(operationTiles, operationSettings, TerrainOperationDomain::Tree,
                                                 worldMapOperation, validTerrainNames);

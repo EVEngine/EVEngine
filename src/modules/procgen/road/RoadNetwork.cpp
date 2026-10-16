@@ -93,9 +93,8 @@ Result<void> RoadNetwork::validateStyle(const RoadStyle& style) const {
     if (!profile.ok()) return Result<void>::failure(profile.status());
     if (!std::isfinite(style.speedLimitMps) || style.speedLimitMps <= 0.f || style.speedLimitMps > 200.f ||
         style.trafficPriority < 0 || style.trafficPriority > 255)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                       "road traffic settings are outside supported bounds",
-                                                       "style.traffic"));
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "road traffic settings are outside supported bounds", "style.traffic"));
     const auto& placement = style.sidePlacement;
     if (placement.pathSampling > RoadSidePathSampling::SurfaceSegments ||
         placement.reference > RoadSideReference::Center || !std::isfinite(placement.lateralOffset) ||
@@ -153,8 +152,9 @@ Result<void> RoadNetwork::restoreNode(RoadNode node) {
         return Result<void>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "node requires finite position and positive junctionRadius", "node"));
     if (!validJunctionControl(node.junctionControl))
-        return Result<void>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "node junction control is outside supported bounds", "node.junctionControl"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "node junction control is outside supported bounds",
+                                                       "node.junctionControl"));
     auto asset = detail::validateConnectionAsset(node.connection);
     if (!asset.ok()) return asset;
     const auto position = std::lower_bound(nodes_.begin(), nodes_.end(), node.id,
@@ -179,8 +179,8 @@ Result<std::uint32_t> RoadNetwork::addEdge(std::uint32_t from, std::uint32_t to,
             Diagnostic::error(DiagnosticCode::PreconditionViolation,
                               "clear a custom connection before adding a new incident edge", "edge"));
     if (from == to)
-        return Result<std::uint32_t>::failure(Diagnostic::error(
-            DiagnosticCode::PreconditionViolation, "edge endpoints must be distinct", "edge"));
+        return Result<std::uint32_t>::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation, "edge endpoints must be distinct", "edge"));
     if (controlPoints.size() < 2)
         return Result<std::uint32_t>::failure(
             Diagnostic::error(DiagnosticCode::InvalidArgument, "edge needs at least two control points", "edge"));
@@ -197,8 +197,8 @@ Result<std::uint32_t> RoadNetwork::addEdge(std::uint32_t from, std::uint32_t to,
     // A node is the authoritative connection position. Canonicalizing the two
     // endpoint samples prevents authored handles from leaving invisible gaps or
     // sending turn curves toward a stale position.
-    const auto& fromNode  = nodes_[static_cast<std::size_t>(findNodeIndex(from))];
-    const auto& toNode    = nodes_[static_cast<std::size_t>(findNodeIndex(to))];
+    const auto& fromNode = nodes_[static_cast<std::size_t>(findNodeIndex(from))];
+    const auto& toNode   = nodes_[static_cast<std::size_t>(findNodeIndex(to))];
     anchorPoint(controlPoints.front(), fromNode.x, fromNode.y, fromNode.z);
     anchorPoint(controlPoints.back(), toNode.x, toNode.y, toNode.z);
     auto circular = validateCircularPoints(controlPoints);
@@ -244,8 +244,8 @@ Result<void> RoadNetwork::restoreEdge(RoadEdge edge) {
     if (!styleOk.ok()) return styleOk;
     auto profile = makeRoadProfile(edge.style, edge.lanesForward, edge.lanesBackward);
     if (!profile.ok()) return Result<void>::failure(profile.status());
-    const auto& from           = nodes_[static_cast<std::size_t>(findNodeIndex(edge.from))];
-    const auto& to             = nodes_[static_cast<std::size_t>(findNodeIndex(edge.to))];
+    const auto& from = nodes_[static_cast<std::size_t>(findNodeIndex(edge.from))];
+    const auto& to   = nodes_[static_cast<std::size_t>(findNodeIndex(edge.to))];
     anchorPoint(edge.controlPoints.front(), from.x, from.y, from.z);
     anchorPoint(edge.controlPoints.back(), to.x, to.y, to.z);
     auto circular = validateCircularPoints(edge.controlPoints);
@@ -253,10 +253,10 @@ Result<void> RoadNetwork::restoreEdge(RoadEdge edge) {
     if (!hasUsableGeometry(edge.controlPoints))
         return Result<void>::failure(Diagnostic::error(
             DiagnosticCode::PreconditionViolation, "edge centerline must contain a non-degenerate segment", "edge"));
-    nextEdgeId_                = std::max(nextEdgeId_, edge.id + 1);
-    const auto position        = std::lower_bound(edges_.begin(), edges_.end(), edge.id,
-                                                  [](const RoadEdge& item, std::uint32_t id) { return item.id < id; });
-    const auto inserted        = static_cast<std::size_t>(position - edges_.begin());
+    nextEdgeId_         = std::max(nextEdgeId_, edge.id + 1);
+    const auto position = std::lower_bound(edges_.begin(), edges_.end(), edge.id,
+                                           [](const RoadEdge& item, std::uint32_t id) { return item.id < id; });
+    const auto inserted = static_cast<std::size_t>(position - edges_.begin());
     edges_.insert(position, std::move(edge));
     for (std::size_t i = inserted; i < edges_.size(); ++i) edgeIndex_[edges_[i].id] = static_cast<int>(i);
     ++revision_;
@@ -297,8 +297,8 @@ Result<void> RoadNetwork::addLaneLink(RoadLaneConnection link) {
             Diagnostic::error(DiagnosticCode::AlreadyExists, "lane link already exists", "laneLink"));
     if (std::any_of(blockedLaneLinks_.begin(), blockedLaneLinks_.end(),
                     [&](const auto& blocked) { return sameLaneLink(blocked, link); }))
-        return Result<void>::failure(Diagnostic::error(
-            DiagnosticCode::PreconditionViolation, "lane link is persistently blocked", "laneLink"));
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation, "lane link is persistently blocked", "laneLink"));
     laneLinks_.insert(std::lower_bound(laneLinks_.begin(), laneLinks_.end(), link, laneOrderLess), link);
     ++revision_;
     return Result<void>::success();
@@ -312,9 +312,9 @@ Result<bool> RoadNetwork::blockLaneLink(RoadLaneConnection link) {
         return Result<bool>::failure(
             Diagnostic::error(DiagnosticCode::AlreadyExists, "lane link is already blocked", "laneLink"));
     auto candidate = *this;
-    const auto active = std::find_if(candidate.laneLinks_.begin(), candidate.laneLinks_.end(),
-                                     [&](const auto& current) { return sameLaneLink(current, link); });
-    const bool removed = active != candidate.laneLinks_.end();
+    const auto active    = std::find_if(candidate.laneLinks_.begin(), candidate.laneLinks_.end(),
+                                        [&](const auto& current) { return sameLaneLink(current, link); });
+    const bool removed   = active != candidate.laneLinks_.end();
     if (removed) candidate.laneLinks_.erase(active);
     candidate.blockedLaneLinks_.insert(
         std::lower_bound(candidate.blockedLaneLinks_.begin(), candidate.blockedLaneLinks_.end(), link, laneOrderLess),
@@ -405,8 +405,8 @@ Result<void> RoadNetwork::validate() const {
     for (const auto& node : nodes_) {
         if (!finite3(node.x, node.y, node.z) || !std::isfinite(node.junctionRadius) || node.junctionRadius <= 0.f ||
             !validJunctionControl(node.junctionControl))
-            return Result<void>::failure(Diagnostic::error(
-                DiagnosticCode::InvariantViolation, "network contains an invalid junction node", "node"));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                           "network contains an invalid junction node", "node"));
     }
     for (const auto& node : nodes_) {
         auto connection = detail::validateConnectionSeams(*this, node);
@@ -507,8 +507,8 @@ Result<void> RoadNetwork::setNodePosition(std::uint32_t nodeId, float x, float y
     auto candidate = *this;
     auto& candidateNode = candidate.nodes_[static_cast<std::size_t>(index)];
     candidateNode.x = x;
-    candidateNode.y = y;
-    candidateNode.z = z;
+    candidateNode.y     = y;
+    candidateNode.z     = z;
     for (auto& edge : candidate.edges_) {
         if (edge.from == nodeId) anchorPoint(edge.controlPoints.front(), x, y, z);
         if (edge.to == nodeId) anchorPoint(edge.controlPoints.back(), x, y, z);
@@ -585,8 +585,8 @@ Result<int> RoadNetwork::mergeNodes(std::uint32_t keepNodeId, std::uint32_t remo
             return (edge.from == keepNodeId && edge.to == removeNodeId) ||
                    (edge.from == removeNodeId && edge.to == keepNodeId);
         }))
-        return Result<int>::failure(Diagnostic::error(
-            DiagnosticCode::PreconditionViolation, "merging nodes would create a self-loop edge", "removeNodeId"));
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                      "merging nodes would create a self-loop edge", "removeNodeId"));
 
     if (!nodes_[static_cast<std::size_t>(keepIndex)].connection.ports.empty() ||
         !nodes_[static_cast<std::size_t>(removeIndex)].connection.ports.empty() ||
@@ -596,7 +596,7 @@ Result<int> RoadNetwork::mergeNodes(std::uint32_t keepNodeId, std::uint32_t remo
                                                       "clear custom connection assets before merging their nodes",
                                                       "nodeId"));
     auto candidate = *this;
-    int rewired = 0;
+    int  rewired   = 0;
     for (auto& edge : candidate.edges_) {
         if (edge.from == removeNodeId) {
             edge.from = keepNodeId;
@@ -632,9 +632,9 @@ Result<void> RoadNetwork::setEdgeControlPoints(std::uint32_t edgeId, std::vector
                 DiagnosticCode::InvalidArgument, "control point positions and profiles must be valid", "points"));
     }
 
-    auto&       edge      = edges_[static_cast<std::size_t>(index)];
-    const auto& from      = nodes_[static_cast<std::size_t>(findNodeIndex(edge.from))];
-    const auto& to        = nodes_[static_cast<std::size_t>(findNodeIndex(edge.to))];
+    auto&       edge = edges_[static_cast<std::size_t>(index)];
+    const auto& from = nodes_[static_cast<std::size_t>(findNodeIndex(edge.from))];
+    const auto& to   = nodes_[static_cast<std::size_t>(findNodeIndex(edge.to))];
     anchorPoint(controlPoints.front(), from.x, from.y, from.z);
     anchorPoint(controlPoints.back(), to.x, to.y, to.z);
     auto circular = validateCircularPoints(controlPoints);
@@ -651,7 +651,7 @@ Result<void> RoadNetwork::setEdgeControlPoints(std::uint32_t edgeId, std::vector
         *this               = std::move(candidate);
         return Result<void>::success();
     }
-    edge.controlPoints    = std::move(controlPoints);
+    edge.controlPoints = std::move(controlPoints);
     ++revision_;
     return Result<void>::success();
 }
@@ -688,7 +688,7 @@ Result<void> RoadNetwork::reverseEdge(std::uint32_t edgeId) {
     const int index = findEdgeIndex(edgeId);
     if (index < 0) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "unknown edge", "edgeId"));
     auto candidate = *this;
-    auto& edge = candidate.edges_[static_cast<std::size_t>(index)];
+    auto& edge      = candidate.edges_[static_cast<std::size_t>(index)];
     std::swap(edge.from, edge.to);
     std::reverse(edge.controlPoints.begin(), edge.controlPoints.end());
     // Strength belongs to outgoing spans, not the geometric marker after reversal.
@@ -735,7 +735,7 @@ Result<void> RoadNetwork::reverseEdge(std::uint32_t edgeId) {
     auto valid = candidate.validate();
     if (!valid.ok()) return valid;
     candidate.revision_ = revision_ + 1;
-    *this = std::move(candidate);
+    *this               = std::move(candidate);
     return Result<void>::success();
 }
 void RoadNetwork::normalizeLaneLinkOrder() {
@@ -743,8 +743,7 @@ void RoadNetwork::normalizeLaneLinkOrder() {
     std::sort(blockedLaneLinks_.begin(), blockedLaneLinks_.end(), laneOrderLess);
 }
 
-Result<int> RoadNetwork::reconnectEdgeEndpoint(std::uint32_t edgeId, bool fromEndpoint,
-                                               std::uint32_t nodeId) {
+Result<int> RoadNetwork::reconnectEdgeEndpoint(std::uint32_t edgeId, bool fromEndpoint, std::uint32_t nodeId) {
     const int edgeIndex = findEdgeIndex(edgeId);
     const int nodeIndex = findNodeIndex(nodeId);
     if (edgeIndex < 0)
@@ -760,7 +759,7 @@ Result<int> RoadNetwork::reconnectEdgeEndpoint(std::uint32_t edgeId, bool fromEn
 
     auto candidate = *this;
     auto& edge = candidate.edges_[static_cast<std::size_t>(edgeIndex)];
-    const auto& node = candidate.nodes_[static_cast<std::size_t>(nodeIndex)];
+    const auto& node      = candidate.nodes_[static_cast<std::size_t>(nodeIndex)];
     if (fromEndpoint) {
         edge.from = nodeId;
         anchorPoint(edge.controlPoints.front(), node.x, node.y, node.z);

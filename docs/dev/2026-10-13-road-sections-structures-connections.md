@@ -93,8 +93,8 @@ schema 仍为 eve.procgen.roadNetwork version 1，增加可选字段；旧快照
 
 ## 验证入口
 
-- test/procgen_road_authoring.cpp：拱面网格/车道/标线、凹闭合端盖方向、桥隧地形保护与恢复、设施反转、区间拆分、保存迁移、损坏数据与事务撤销。
-- test/procgen_road_connections.cpp：实际 mesh/socket/turn 对齐、损坏资产、stale binding、完整快照、连接撤销、拆分绑定迁移、设施跨自定义接入口无空洞。
+- test/integration/gameplay-composition/procgen_road_authoring.cpp：拱面网格/车道/标线、凹闭合端盖方向、桥隧地形保护与恢复、设施反转、区间拆分、保存迁移、损坏数据与事务撤销。
+- test/integration/gameplay-composition/procgen_road_connections.cpp：实际 mesh/socket/turn 对齐、损坏资产、stale binding、完整快照、连接撤销、拆分绑定迁移、设施跨自定义接入口无空洞。
 - scripts/road_parity/native：STATIC/SHARED 源闭包和 CTest；不会启动 Unity。
 - src/modules/procgen/road/CoreSources.cmake：将道路 CPU 文件加入正式 procgen-core-only 编译边界检查。
 

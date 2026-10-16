@@ -22,8 +22,8 @@ using namespace detail;
 namespace detail {
 
 
-V3 operator+(V3 a, V3 b) { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
-V3 operator-(V3 a, V3 b) { return {a.x - b.x, a.y - b.y, a.z - b.z}; }
+V3    operator+(V3 a, V3 b) { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
+V3    operator-(V3 a, V3 b) { return {a.x - b.x, a.y - b.y, a.z - b.z}; }
 V3 operator*(V3 a, float s) { return {a.x * s, a.y * s, a.z * s}; }
 float dot(V3 a, V3 b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
 V3    cross(V3 a, V3 b) { return {a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x}; }
@@ -71,9 +71,9 @@ Result<SplinePath> edgeToSpline(const RoadEdge& edge) {
         sp.circularFromEnd     = p.circularFromEnd;
         sp.spanControl         = static_cast<eve::procgen::SplineSpanControl>(p.pathControl);
         sp.spanStrength        = p.splineStrength;
-        sp.x = p.x;
-        sp.y = p.y;
-        sp.z = p.z;
+        sp.x                   = p.x;
+        sp.y                   = p.y;
+        sp.z                   = p.z;
         sp.scaleX              = p.widthScale;
         sp.scaleXInterpolation = edge.style.widthInterpolation == RoadWidthInterpolation::CatmullRom
                                      ? SplineScaleInterpolation::CatmullRom
@@ -84,7 +84,7 @@ Result<SplinePath> edgeToSpline(const RoadEdge& edge) {
         sp.rollInterpolation   = edge.style.rollInterpolation == RoadRollInterpolation::SmoothStep
                                      ? SplineRollInterpolation::SmoothStep
                                      : SplineRollInterpolation::Linear;
-        auto added = path.addPointResult(sp);
+        auto added             = path.addPointResult(sp);
         if (!added.ok()) return Result<SplinePath>::failure(added.status());
     }
     return Result<SplinePath>::success(std::move(path));
@@ -282,11 +282,11 @@ Result<void> validateJunctionGeometry(const RoadNetwork& network, const RoadNode
         if (!spline.ok()) return Result<void>::failure(spline.status());
         auto pathLength = spline.value().lengthResult(24);
         if (!pathLength.ok()) return Result<void>::failure(pathLength.status());
-        const float trim = junctionSocketDistance(network, node, *edge, pathLength.value());
+        const float trim     = junctionSocketDistance(network, node, *edge, pathLength.value());
         const float distance = edge->from == node.id ? trim : pathLength.value() - trim;
         auto        frame    = spline.value().travelFrameResult(distance, "clamp", 24);
         if (!frame.ok()) return Result<void>::failure(frame.status());
-        const float expected = planeHeight(plane, frame.value().sample.x, frame.value().sample.z);
+        const float expected  = planeHeight(plane, frame.value().sample.x, frame.value().sample.z);
         const float tolerance = std::max(0.35f, asphaltHalfWidth(*edge) * 0.15f);
         if (std::fabs(frame.value().sample.y - expected) > tolerance)
             return bakeFail<void>(DiagnosticCode::PreconditionViolation,
@@ -561,9 +561,9 @@ Result<void> addLaneMarkings(MeshBuild& mesh, const std::vector<SplineFrameSampl
             const double distanceSpan  = seg;
             traveled += distanceSpan;
             auto emitSpan = [&](float t0, float t1) -> Result<void> {
-                constexpr std::size_t quadElements    = 10u;
-                const std::size_t currentElements = static_cast<std::size_t>(mesh.getVertexCount()) +
-                                                    static_cast<std::size_t>(mesh.getIndexCount());
+                constexpr std::size_t quadElements = 10u;
+                const std::size_t     currentElements =
+                    static_cast<std::size_t>(mesh.getVertexCount()) + static_cast<std::size_t>(mesh.getIndexCount());
                 if (currentElements > options.maximumMeshElements ||
                     options.maximumMeshElements - currentElements < quadElements)
                     return bakeFail<void>(DiagnosticCode::PreconditionViolation,
@@ -573,9 +573,9 @@ Result<void> addLaneMarkings(MeshBuild& mesh, const std::vector<SplineFrameSampl
                 const V3    p1 = pa + (pb - pa) * t1;
                 if (length(p1 - p0) <= 1e-5f) return Result<void>::success();
                 const V3    s0 = normalize(sa + (sb - sa) * t0);
-                const V3    s1 = normalize(sa + (sb - sa) * t1);
-                const V3    u0 = normalize(ua + (ub - ua) * t0);
-                const V3    u1 = normalize(ua + (ub - ua) * t1);
+                const V3    s1       = normalize(sa + (sb - sa) * t1);
+                const V3    u0       = normalize(ua + (ub - ua) * t0);
+                const V3    u1       = normalize(ua + (ub - ua) * t1);
                 const float lateral0 = lateral * std::lerp(a.sample.scaleX, b.sample.scaleX, t0);
                 const float lateral1 = lateral * std::lerp(a.sample.scaleX, b.sample.scaleX, t1);
                 const V3    a0 =
@@ -608,7 +608,7 @@ Result<void> addLaneMarkings(MeshBuild& mesh, const std::vector<SplineFrameSampl
                 const double phase    = std::fmod(startDistance + local, cycle);
                 const bool   draw     = phase < static_cast<double>(style.dashLength);
                 const double boundary = draw ? static_cast<double>(style.dashLength) - phase : cycle - phase;
-                const double next = std::min(distanceSpan, local + boundary);
+                const double next     = std::min(distanceSpan, local + boundary);
                 if (!(next > local))
                     return bakeFail<void>(DiagnosticCode::PreconditionViolation,
                                           "road marking period is too small to advance", "style.dashLength");
@@ -790,9 +790,9 @@ Result<RoadBakeResult> bakeRoadNetwork(const RoadNetwork& network, const RoadBak
         const float start = activeJunctionNodes.contains(edge.from)
                                 ? junctionSocketDistance(network, from.value(), edge, pathLength.value())
                                 : 0.f;
-        const float end = activeJunctionNodes.contains(edge.to)
-                              ? junctionSocketDistance(network, to.value(), edge, pathLength.value())
-                              : 0.f;
+        const float end   = activeJunctionNodes.contains(edge.to)
+                                ? junctionSocketDistance(network, to.value(), edge, pathLength.value())
+                                : 0.f;
         if ((!from.value().connection.ports.empty() || !to.value().connection.ports.empty()) &&
             start + end >= pathLength.value() - .01f)
             return bakeFail<RoadBakeResult>(DiagnosticCode::PreconditionViolation,
@@ -824,7 +824,7 @@ Result<RoadBakeResult> bakeRoadNetwork(const RoadNetwork& network, const RoadBak
         for (const auto& node : network.nodes()) {
             if (!activeJunctionNodes.contains(node.id)) continue;
             const int first    = result.mesh.getIndexCount() / 3;
-            auto junction = bakeJunction(result.mesh, network, node, options);
+            auto      junction = bakeJunction(result.mesh, network, node, options);
             if (!junction.ok()) return Result<RoadBakeResult>::failure(junction.status());
             recordSource(RoadGeometrySourceKind::Junction, node.id, first);
             if (isMeshBudgetExceeded(result.mesh, options))

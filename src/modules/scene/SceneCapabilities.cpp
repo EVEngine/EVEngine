@@ -57,7 +57,7 @@ bool hasConsistentAssetBinding(const eve::ProcgenInstanceDesc& instance) {
 }
 
 template <class T>
-T *borrowSceneResult(eve::Result<T *> result) {
+T* borrowSceneResult(eve::Result<T*> result) {
     if (!result.ok()) return nullptr;
     return std::move(result).takeValue();
 }
@@ -249,8 +249,7 @@ public:
 
 class ProcgenSceneSinkImpl final : public eve::IProcgenSceneSink {
 public:
-    bool applyBatch(const std::string& batchId,
-                    const std::vector<eve::ProcgenInstanceDesc>& instances) override {
+    bool applyBatch(const std::string& batchId, const std::vector<eve::ProcgenInstanceDesc>& instances) override {
         if (publicationActive_) return false;
         if (batchId.empty()) return false;
         for (const auto& instance : instances)
@@ -273,16 +272,16 @@ public:
             child.id   = instance.id;
             child.key  = instance.id;
             child.name = instance.asset;
-            child.x    = instance.x;
-            child.y    = instance.y;
-            child.z    = instance.z;
+            child.x     = instance.x;
+            child.y     = instance.y;
+            child.z     = instance.z;
             child.yaw   = glm::radians(instance.yaw);
             child.pitch = glm::radians(instance.pitch);
             child.roll  = glm::radians(instance.roll);
-            child.sx   = instance.scaleX;
-            child.sy   = instance.scaleY;
-            child.sz   = instance.scaleZ;
-            child.tags = {"pcg", "pcg.instance"};
+            child.sx    = instance.scaleX;
+            child.sy    = instance.scaleY;
+            child.sz    = instance.scaleZ;
+            child.tags  = {"pcg", "pcg.instance"};
             if (!instance.asset.empty()) child.tags.push_back("pcg.asset:" + instance.asset);
             if (instance.assetBinding) {
                 child.tags.push_back("pcg.asset-build:" + instance.assetBinding->buildId.format());
@@ -292,7 +291,7 @@ public:
             }
             root.children.push_back(std::move(child));
         }
-        std::unordered_set<std::string> nextIds;
+        std::unordered_set<std::string>           nextIds;
         std::unordered_map<uint64_t, std::string> nextPointIds;
         nextIds.reserve(instances.size());
         nextPointIds.reserve(instances.size());
@@ -516,8 +515,7 @@ public:
                                               eve::Status(eve::StatusCode::Applied, std::move(notificationWarnings)));
     }
 
-    eve::Result<uint64_t> applyDelta(const std::string& batchId,
-                                     const eve::ProcgenInstanceDelta& delta) override {
+    eve::Result<uint64_t> applyDelta(const std::string& batchId, const eve::ProcgenInstanceDelta& delta) override {
         if (publicationActive_)
             return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::PreconditionViolation, "procedural scene publication cannot be reentered"));
@@ -684,16 +682,16 @@ private:
             child.id   = instance.id;
             child.key  = instance.id;
             child.name = instance.asset;
-            child.x    = instance.x;
-            child.y    = instance.y;
-            child.z    = instance.z;
+            child.x     = instance.x;
+            child.y     = instance.y;
+            child.z     = instance.z;
             child.yaw   = glm::radians(instance.yaw);
             child.pitch = glm::radians(instance.pitch);
             child.roll  = glm::radians(instance.roll);
-            child.sx   = instance.scaleX;
-            child.sy   = instance.scaleY;
-            child.sz   = instance.scaleZ;
-            child.tags = {"pcg", "pcg.instance"};
+            child.sx    = instance.scaleX;
+            child.sy    = instance.scaleY;
+            child.sz    = instance.scaleZ;
+            child.tags  = {"pcg", "pcg.instance"};
             if (!instance.asset.empty()) child.tags.push_back("pcg.asset:" + instance.asset);
             if (instance.assetBinding) {
                 child.tags.push_back("pcg.asset-build:" + instance.assetBinding->buildId.format());

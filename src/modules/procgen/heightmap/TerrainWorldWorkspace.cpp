@@ -29,7 +29,7 @@ bool finitePositive(double value) { return std::isfinite(value) && value > 0; }
 
 
 TerrainWorldWorkspace::TerrainWorldWorkspace() : impl_(std::make_unique<Impl>()) {}
-TerrainWorldWorkspace::~TerrainWorldWorkspace() = default;
+TerrainWorldWorkspace::~TerrainWorldWorkspace()                                           = default;
 TerrainWorldWorkspace::TerrainWorldWorkspace(TerrainWorldWorkspace&&) noexcept = default;
 TerrainWorldWorkspace& TerrainWorldWorkspace::operator=(TerrainWorldWorkspace&&) noexcept = default;
 
@@ -43,7 +43,7 @@ Result<int> TerrainWorldWorkspace::create(const TerrainWorldCreationSettings& s)
         s.defaultSplatLayer >= s.splatLayers || s.defaultDetailDensity < 0 || s.namePrefix.empty())
         return Result<int>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "terrain.world.create: valid Pcg tile topology and resolutions required"));
-    auto candidate = std::make_unique<Impl>();
+    auto candidate      = std::make_unique<Impl>();
     candidate->settings = s;
     candidate->tiles.reserve(static_cast<std::size_t>(s.tilesX * s.tilesZ));
     const double baseX = s.centerX - s.tileSize * s.tilesX * 0.5;
@@ -61,8 +61,8 @@ Result<int> TerrainWorldWorkspace::create(const TerrainWorldCreationSettings& s)
                                                           "terrain.world.create: tile origin is not representable"));
         tile.heights = Heightmap(s.heightmapResolution, s.heightmapResolution);
         tile.holes   = Heightmap(s.heightmapResolution, s.heightmapResolution);
-        auto splat = tile.splat.initialize(s.controlTextureResolution, s.controlTextureResolution,
-                                           s.splatLayers, s.defaultSplatLayer);
+        auto splat   = tile.splat.initialize(s.controlTextureResolution, s.controlTextureResolution, s.splatLayers,
+                                             s.defaultSplatLayer);
         if (!splat.ok()) return Result<int>::failure(splat.status());
         auto detail = tile.detail.reset(s.detailResolution, s.detailResolution, s.defaultDetailDensity);
         if (!detail.ok()) return Result<int>::failure(detail.status());
@@ -180,9 +180,8 @@ Result<int> TerrainWorldWorkspace::applyDetail(const Heightmap& fitness, const T
         return applyTerrainDetailMultiTile(tiles, fitness, configured, operation, seed, world.settings.worldMap);
     });
 }
-Result<int> TerrainWorldWorkspace::applyTrees(const Heightmap& fitness,
-                                               const TerrainTreePlacementSettings& settings,
-                                               const TerrainStampSettings& operation, TerrainTreeOperationMode mode) {
+Result<int> TerrainWorldWorkspace::applyTrees(const Heightmap& fitness, const TerrainTreePlacementSettings& settings,
+                                              const TerrainStampSettings& operation, TerrainTreeOperationMode mode) {
     return mutateWorld(impl_, [&](Impl& world) {
         std::vector<TerrainTreeTile> tiles;
         for (auto& tile : world.tiles)
@@ -192,10 +191,10 @@ Result<int> TerrainWorldWorkspace::applyTrees(const Heightmap& fitness,
         return applyTerrainTreesMultiTile(tiles, fitness, settings, operation, mode, world.settings.worldMap);
     });
 }
-Result<int> TerrainWorldWorkspace::applyObjects(const Heightmap& fitness,
-                                                 const TerrainObjectPlacementSettings& settings,
-                                                 const TerrainStampSettings& operation,
-                                                 TerrainObjectOperationMode mode) {
+Result<int> TerrainWorldWorkspace::applyObjects(const Heightmap&                      fitness,
+                                                const TerrainObjectPlacementSettings& settings,
+                                                const TerrainStampSettings&           operation,
+                                                TerrainObjectOperationMode            mode) {
     return mutateWorld(impl_, [&](Impl& world) {
         std::vector<TerrainObjectTile> tiles;
         for (auto& tile : world.tiles)
@@ -472,9 +471,21 @@ Result<int> TerrainWorldWorkspace::copyDetail(int index, TerrainDetailLayer& out
 Result<int> TerrainWorldWorkspace::copyTrees(int index, PointSet& output) const { auto tile = worldTile<int>(impl_, index); if (!tile.ok()) return Result<int>::failure(tile.status()); output = tile.value()->trees; return Result<int>::success(output.getCount()); }
 Result<int> TerrainWorldWorkspace::copyObjects(int index, PointSet& output) const { auto tile = worldTile<int>(impl_, index); if (!tile.ok()) return Result<int>::failure(tile.status()); output = tile.value()->objects; return Result<int>::success(output.getCount()); }
 Result<int> TerrainWorldWorkspace::copyProbes(int index, PointSet& output) const { auto tile = worldTile<int>(impl_, index); if (!tile.ok()) return Result<int>::failure(tile.status()); output = tile.value()->probes; return Result<int>::success(output.getCount()); }
-Result<std::string> TerrainWorldWorkspace::getTileName(int index) const { auto tile = worldTile<int>(impl_, index); if (!tile.ok()) return Result<std::string>::failure(tile.status()); return Result<std::string>::success(tile.value()->name); }
-Result<double> TerrainWorldWorkspace::getTileOriginX(int index) const { auto tile = worldTile<int>(impl_, index); if (!tile.ok()) return Result<double>::failure(tile.status()); return Result<double>::success(tile.value()->originX); }
-Result<double> TerrainWorldWorkspace::getTileOriginZ(int index) const { auto tile = worldTile<int>(impl_, index); if (!tile.ok()) return Result<double>::failure(tile.status()); return Result<double>::success(tile.value()->originZ); }
+Result<std::string> TerrainWorldWorkspace::getTileName(int index) const {
+    auto tile = worldTile<int>(impl_, index);
+    if (!tile.ok()) return Result<std::string>::failure(tile.status());
+    return Result<std::string>::success(tile.value()->name);
+}
+Result<double> TerrainWorldWorkspace::getTileOriginX(int index) const {
+    auto tile = worldTile<int>(impl_, index);
+    if (!tile.ok()) return Result<double>::failure(tile.status());
+    return Result<double>::success(tile.value()->originX);
+}
+Result<double> TerrainWorldWorkspace::getTileOriginZ(int index) const {
+    auto tile = worldTile<int>(impl_, index);
+    if (!tile.ok()) return Result<double>::failure(tile.status());
+    return Result<double>::success(tile.value()->originZ);
+}
 Result<double> TerrainWorldWorkspace::getTileOriginY(int index) const {
     auto tile = worldTile<int>(impl_, index);
     if (!tile.ok()) return Result<double>::failure(tile.status());

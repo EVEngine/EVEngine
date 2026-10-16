@@ -11,13 +11,13 @@ namespace eve::procgen::road::detail {
 namespace {
 
 struct Approach {
-    const RoadEdge* edge = nullptr;
-    const RoadNode* node = nullptr;
-    SplinePath spline;
-    float      length = 0.f;
-    float      socketDistance = 0.f;
-    float      halfWidth = 0.f;
-    RoadLaneDirection direction = RoadLaneDirection::Forward;
+    const RoadEdge*   edge = nullptr;
+    const RoadNode*   node = nullptr;
+    SplinePath        spline;
+    float             length         = 0.f;
+    float             socketDistance = 0.f;
+    float             halfWidth      = 0.f;
+    RoadLaneDirection direction      = RoadLaneDirection::Forward;
 };
 
 const char* controlRole(RoadJunctionControl control) {
@@ -37,18 +37,17 @@ Result<void> bakeTrafficControlPoints(PointSet& placements, const RoadNetwork& n
     std::vector<Approach> approaches;
     for (const auto& node : network.nodes()) {
         if (node.junctionControl == RoadJunctionControl::Uncontrolled) continue;
-        const auto incidentCount = std::count_if(network.edges().begin(), network.edges().end(),
-                                                 [&](const RoadEdge& edge) {
-                                                     return edge.from == node.id || edge.to == node.id;
-                                                 });
+        const auto incidentCount =
+            std::count_if(network.edges().begin(), network.edges().end(),
+                          [&](const RoadEdge& edge) { return edge.from == node.id || edge.to == node.id; });
         if (incidentCount < 2) continue;
 
-        int maximumPriority = 0;
+        int  maximumPriority = 0;
         bool hasIncidentEdge = false;
         for (const auto& edge : network.edges()) {
             if (edge.from != node.id && edge.to != node.id) continue;
-            maximumPriority = hasIncidentEdge ? std::max(maximumPriority, edge.style.trafficPriority)
-                                              : edge.style.trafficPriority;
+            maximumPriority =
+                hasIncidentEdge ? std::max(maximumPriority, edge.style.trafficPriority) : edge.style.trafficPriority;
             hasIncidentEdge = true;
         }
 
@@ -88,29 +87,28 @@ Result<void> bakeTrafficControlPoints(PointSet& placements, const RoadNetwork& n
                                                        "placements", {}, "procgen.road"));
 
     for (const auto& approach : approaches) {
-        const bool forward = approach.direction == RoadLaneDirection::Forward;
+        const bool  forward  = approach.direction == RoadLaneDirection::Forward;
         const float distance = forward ? approach.length - approach.socketDistance : approach.socketDistance;
-        auto frame = approach.spline.travelFrameResult(distance, "clamp", 32);
+        auto        frame    = approach.spline.travelFrameResult(distance, "clamp", 32);
         if (!frame.ok()) return Result<void>::failure(frame.status());
-        const auto& f = frame.value();
+        const auto& f             = frame.value();
         const float directionSign = forward ? 1.f : -1.f;
         const float lateral =
             scaledProfileSide((forward ? 1.f : -1.f) * (approach.halfWidth + options.sideObjectOffset),
                               asphaltHalfWidth(*approach.edge), f.sample.scaleX);
-        const float dx = f.forwardX * directionSign;
-        const float dy = f.forwardY * directionSign;
-        const float dz = f.forwardZ * directionSign;
-        const int row = placements.add(f.sample.x + f.sideX * lateral, f.sample.y + f.sideY * lateral,
-                                       f.sample.z + f.sideZ * lateral);
+        const float dx  = f.forwardX * directionSign;
+        const float dy  = f.forwardY * directionSign;
+        const float dz  = f.forwardZ * directionSign;
+        const int   row = placements.add(f.sample.x + f.sideX * lateral, f.sample.y + f.sideY * lateral,
+                                         f.sample.z + f.sideZ * lateral);
         placements.setNormal(row, f.upX, f.upY, f.upZ);
         placements.setYaw(row, std::atan2(dx, dz) * 57.2957795f);
         const char* role = controlRole(approach.node->junctionControl);
-        placements.setPointSeed(row, deriveSeed(approach.node->id,
-                                                std::string(role) + std::to_string(approach.edge->id)));
-        const std::uint64_t ordinal = static_cast<std::uint64_t>(approach.edge->id) * 2u +
-                                      static_cast<std::uint64_t>(approach.direction) + 1u;
-        auto status = placements.trySetPointId(
-            row, derivePointId(0x4a43545200000000ull | approach.node->id, ordinal));
+        placements.setPointSeed(row,
+                                deriveSeed(approach.node->id, std::string(role) + std::to_string(approach.edge->id)));
+        const std::uint64_t ordinal =
+            static_cast<std::uint64_t>(approach.edge->id) * 2u + static_cast<std::uint64_t>(approach.direction) + 1u;
+        auto status = placements.trySetPointId(row, derivePointId(0x4a43545200000000ull | approach.node->id, ordinal));
         if (!status.ok()) return status;
         status = placements.trySetStringAttribute(row, "road_role", role);
         if (!status.ok()) return status;

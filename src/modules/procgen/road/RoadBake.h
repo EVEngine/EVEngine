@@ -25,9 +25,9 @@ struct RoadTerrainConformOptions {
     float originZ           = 0.f;
     float cellSize          = 1.f;
     float heightScale       = 1.f;
-    float blendDistance     = 2.f;
-    float maxVerticalDelta  = 2.f;
-    std::size_t maximumWork = 16u * 1024u * 1024u;
+    float       blendDistance     = 2.f;
+    float       maxVerticalDelta  = 2.f;
+    std::size_t maximumWork       = 16u * 1024u * 1024u;
     float originY = 0.f;  ///< World height is originY + sample * heightScale; appended for aggregate compatibility.
 };
 
@@ -36,10 +36,10 @@ struct RoadTerrainConformOptions {
  * @cost Storage, copy and move-destruction work are linear in the number of changed samples.
  */
 struct RoadTerrainConformReceipt {
-    std::size_t workPerformed         = 0;  ///< Raster and blend visits, for a shared multi-tile transaction budget.
-    int                        width  = 0;
-    int                        height = 0;
-    int                        skippedBridgeSamples = 0;  ///< Cells kept below elevated road surfaces.
+    std::size_t workPerformed        = 0;  ///< Raster and blend visits, for a shared multi-tile transaction budget.
+    int         width                = 0;
+    int         height               = 0;
+    int         skippedBridgeSamples = 0;                 ///< Cells kept below elevated road surfaces.
     int                        skippedTunnelSamples = 0;  ///< Cells whose terrain roof was kept above tunnel surfaces.
     std::vector<std::size_t>   sampleIndices;
     std::vector<float>         before;
@@ -57,9 +57,9 @@ struct RoadBakeOptions {
     std::size_t   maximumPlacementQueries =
         65536;                     ///< Shared network-side-anchor query budget; misses/errors fail privately.
     int pathSegmentsPerEdge = 48;  ///< Fixed-count fallback used when the owning style's samplingSpacingMeters is zero.
-    int   turnSamples         = 12;
-    bool  includePiers        = true;
-    bool  includeMarkings     = true;
+    int turnSamples         = 12;
+    bool        includePiers        = true;
+    bool        includeMarkings     = true;
     bool  includeNavigation   = true;
     bool  includeJunctions    = true;
     bool  includePlacements   = true;
@@ -68,8 +68,8 @@ struct RoadBakeOptions {
     float junctionChordError  = 0.10f;  ///< Maximum junction-return tessellation error in world metres.
     float sideObjectSpacing   = 8.f;
     float sideObjectOffset    = 0.5f;
-    float sideObjectClearance = 1.5f;  ///< Minimum 3D clearance from other roads and accepted side anchors.
-    int   maximumPlacements   = 65536;
+    float       sideObjectClearance = 1.5f;  ///< Minimum 3D clearance from other roads and accepted side anchors.
+    int         maximumPlacements   = 65536;
     std::size_t maximumMeshElements = 8u * 1024u * 1024u;  ///< Combined vertex and index output budget.
     float       samplingScale = 1.f;  ///< Metric spacing/angle multiplier in [1,64] for bounded coarser LOD builds.
     std::size_t maximumSamplingEvaluations = 65536;  ///< Shared all-edge parameter-scan work budget; zero is invalid.

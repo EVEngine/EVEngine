@@ -62,7 +62,7 @@ Terrain 的 procgen.road.terrain version=1 保存写回后的完整通道与 und
 
 ## 验证与剩余范围
 
-test/procgen_road_spacing_portals.cpp 覆盖平均/精确重复、余段反转与拆分相位、保存及事务撤销，
+test/integration/gameplay-composition/procgen_road_spacing_portals.cpp 覆盖平均/精确重复、余段反转与拆分相位、保存及事务撤销，
 非法平滑组原子拒绝和旧字段迁移，UV 接缝平滑与不同组硬边，首尾开孔与覆土/植被保护，
 拆分后的洞口栅格、地形历史恢复、真实 native World 写回与失败后 redo 保留。
 FunctionalFixtures.cpp 增加 prefab-auto-spacing、tunnel-portals，完整作者场景共 10 个；

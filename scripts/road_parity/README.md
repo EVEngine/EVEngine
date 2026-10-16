@@ -93,7 +93,7 @@ normal continuity, traversability or material fidelity.
 
 These are remaining acceptance phases, not completed engine capabilities.
 The first width/centerline-roll authoring slice is implemented and covered by
-`test/procgen_road_profiles.cpp` and `test/procgen_road_profile_editing.cpp`.
+`test/unit/procgen/procgen_road_profiles.cpp` and `test/integration/gameplay-composition/procgen_road_profile_editing.cpp`.
 It propagates into mesh, navigation and placements and survives split/reverse,
 snapshot migration and authority undo. Run `ctest --test-dir build/road-parity/native`
 for its CPU checks. This does not complete phase 2 or establish Unity visual parity.
@@ -361,7 +361,7 @@ the test body instead of escaping the test context as helper-only assertions.
 
 ## Road editing NoOp contracts
 
-`test/procgen_road_noop.cpp` holds five strong cases, including the two moved
+`test/integration/gameplay-composition/procgen_road_noop.cpp` holds five strong cases, including the two moved
 legacy reconnect/connect-turn regressions. Both host SHARED and independent
 STATIC `road_noop` execute102 assertions without warnings. Successful NoOp carries
 a canonical idempotent payload; registered command plans omit its operation.

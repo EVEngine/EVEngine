@@ -196,9 +196,9 @@ struct RoadStyle {
         structures;  ///< Explicit normalized arc intervals; nonempty disables legacy automatic structures.
     std::vector<RoadContinuousFacility> facilities;  ///< Continuous swept facilities, clipped by sockets.
 
-    float laneWidth      = 3.5f;
-    float curbWidth      = 0.45f;   ///< Jersey-barrier thickness.
-    float curbHeight     = 0.55f;   ///< Raised barrier height (readable asphalt channel).
+    float                laneWidth       = 3.5f;
+    float                curbWidth       = 0.45f;  ///< Jersey-barrier thickness.
+    float                curbHeight      = 0.55f;  ///< Raised barrier height (readable asphalt channel).
     float sidewalkWidth  = 1.5f;
     float sidewalkHeight = 0.14f;
     float deckThickness  = 0.70f;
@@ -210,14 +210,14 @@ struct RoadStyle {
     float dashLength     = 3.5f;
     float dashGap        = 3.f;
     float uvMeters       = 8.f;  ///< World-space metres per texture repeat.
-    float speedLimitMps  = 13.8889f;  ///< Navigation speed limit in metres per second.
-    int   trafficPriority = 0;        ///< Higher incoming-road values win uncontrolled junction priority.
-    float sideObjectStartOffset = 0.f;  ///< Empty distance before the first side-object anchor.
+    float                speedLimitMps   = 13.8889f;  ///< Navigation speed limit in metres per second.
+    int                  trafficPriority = 0;  ///< Higher incoming-road values win uncontrolled junction priority.
+    float                sideObjectStartOffset = 0.f;  ///< Empty distance before the first side-object anchor.
     RoadSideDistribution sideObjectDistribution =
         RoadSideDistribution::Average;  ///< Explicit rigid-anchor spacing policy.
-    float sideObjectEndOffset   = 0.f;  ///< Empty distance after the last side-object anchor.
-    bool  sideObjectsLeft       = true;  ///< Emit anchors on the authored centerline's left side.
-    bool  sideObjectsRight      = true;  ///< Emit anchors on the authored centerline's right side.
+    float sideObjectEndOffset = 0.f;    ///< Empty distance after the last side-object anchor.
+    bool  sideObjectsLeft     = true;   ///< Emit anchors on the authored centerline's left side.
+    bool  sideObjectsRight    = true;   ///< Emit anchors on the authored centerline's right side.
     float samplingSpacingMeters =
         2.f;  ///< New roads use the measured 2m trigger; explicit zero keeps legacy fixed counts.
     float samplingAngleDegrees     = 45.f;  ///< New roads match the reference 45 degree target; scan requires >=1.
@@ -273,11 +273,11 @@ struct RoadConnection {
 };
 /** @brief Junction node owned by a road network. */
 struct RoadNode {
-    std::uint32_t id             = 0;
+    std::uint32_t       id              = 0;
     float         x              = 0.f;
     float         y              = 0.f;
-    float         z              = 0.f;
-    float         junctionRadius = 6.f;
+    float               z               = 0.f;
+    float               junctionRadius  = 6.f;
     RoadJunctionControl junctionControl = RoadJunctionControl::Uncontrolled;
     RoadConnection      connection;
 };
@@ -346,7 +346,7 @@ struct RoadOverlay {
 /** @brief Owning open profile polyline for one edge style and lane layout. */
 struct RoadProfile {
     std::vector<RoadProfilePoint> points;
-    float                         halfWidth = 0.f;
+    float                         halfWidth         = 0.f;
     bool                          closed            = false;
     bool                          explicitMaterials = false;
 };

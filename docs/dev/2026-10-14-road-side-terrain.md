@@ -10,7 +10,7 @@ EasyRoads 外层包 `side_objects.html` 的 Mesh Bounds Alignment 说明提供�
 
 网络快照与共享类型覆盖使用同一 style codec。缺少新增字段的旧快照恢复为 None；已提供字段必须完整且有效。共享类型编辑、保存、撤销、恢复及重做保留该规则。算法缓存版本同步更新，避免沿用旧放置结果。
 
-`test/procgen_road_side_terrain.cpp` 覆盖四种模式、标准 recipe 消费、服务存在/缺失、查询失败/未命中/非法高度、共享预算和作者数据不变，以及快照、类型覆盖和撤销历史恢复。原生独立 harness 的全部三个 CTest 入口已通过。DLL 路线与正式模块编译仍需当前构建验证；真实 Unity 设施贴地渲染对照尚未完成。
+`test/integration/gameplay-composition/procgen_road_side_terrain.cpp` 覆盖四种模式、标准 recipe 消费、服务存在/缺失、查询失败/未命中/非法高度、共享预算和作者数据不变，以及快照、类型覆盖和撤销历史恢复。原生独立 harness 的全部三个 CTest 入口已通过。DLL 路线与正式模块编译仍需当前构建验证；真实 Unity 设施贴地渲染对照尚未完成。
 
 剩余差异：自动导入资产包围盒、参考采样算法、旋转与法线对齐、刚性 prefab 实例及连续变形设施的贴地消费，以及真实双端设施对照。道路表面 35 类轮廓结果不作为这些项目的完成证据。
 
@@ -20,7 +20,7 @@ EasyRoads 外层包 `side_objects.html` 的 Mesh Bounds Alignment 说明提供�
 
 最终 DLL 运行结果：`ctest --test-dir build/road-parity/shared-verified --output-on-failure` 的道路和样条两个入口均通过，包含 provider 存在/缺失、注入及注册查询、保存撤销和查询预算用例。上述待确认状态已由此结果替代。没有因此宣称完整资产工具链或双端设施渲染已对齐。
 
-朝向对齐的生产前提审查发现：PointSet 已拥有 pitch/roll，但程序化场景描述只传 yaw；Scene 的 NodeDesc/TransformSystem 实际消费弧度，而程序化点集使用度。已补齐拥有值描述的 pitch/roll，两个场景发布入口统一将三轴角度转换为弧度。Scene 的全量快照、原子多批次和 delta 都经过对应入口，不新增持久化格式；现有 SceneNode 保存路径保留其原生弧度语义。新增 `test/scene_procgen_rotation.cpp` 检查全量、增量和过期拒绝，生产者测试检查 pitch/roll 传递。该跨模块改动尚未完成编译/运行验证，不属于上面的道路独立 harness 通过范围。Terrain Normal/Path Forward/Path Normal 作者规则本身仍待接入与真实双端测试。
+朝向对齐的生产前提审查发现：PointSet 已拥有 pitch/roll，但程序化场景描述只传 yaw；Scene 的 NodeDesc/TransformSystem 实际消费弧度，而程序化点集使用度。已补齐拥有值描述的 pitch/roll，两个场景发布入口统一将三轴角度转换为弧度。Scene 的全量快照、原子多批次和 delta 都经过对应入口，不新增持久化格式；现有 SceneNode 保存路径保留其原生弧度语义。新增 `test/integration/gameplay-composition/scene_procgen_rotation.cpp` 检查全量、增量和过期拒绝，生产者测试检查 pitch/roll 传递。该跨模块改动尚未完成编译/运行验证，不属于上面的道路独立 harness 通过范围。Terrain Normal/Path Forward/Path Normal 作者规则本身仍待接入与真实双端测试。
 
 进一步补入场景发布前的有限角度检查：兼容单批次与原子多批次均拒绝非有限旋转，测试检查拒绝后批次版本与已发布旋转不变。正式主机验证配置中，`3d` profile 因 spritestack_editing 在过滤后无源码而失败；改用仓库默认 full profile，未修改该 profile 的模块声明或为道路增加豁免。当前 full 配置仍在执行，不能视作编译或运行通过。旋转改动后的完整源码门禁仍报告相同五项既有架构问题。
 

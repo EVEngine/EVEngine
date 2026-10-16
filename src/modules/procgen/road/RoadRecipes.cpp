@@ -28,8 +28,8 @@ Result<RoadOverlay> generateRoadNetworkOverlay(const Params& params) {
 }
 
 std::unique_ptr<image::ImageData> generateRoadMarkingsTexture(const Params& params, std::string& error) {
-    const int width  = std::clamp(params.getWidth() > 0 ? params.getWidth() : params.getInt("width", 256), 8, 2048);
-    const int height = std::clamp(params.getHeight() > 0 ? params.getHeight() : params.getInt("height", 64), 8, 2048);
+    const int   width  = std::clamp(params.getWidth() > 0 ? params.getWidth() : params.getInt("width", 256), 8, 2048);
+    const int   height = std::clamp(params.getHeight() > 0 ? params.getHeight() : params.getInt("height", 64), 8, 2048);
     const float dashPeriod = std::max(0.05f, params.getFloat("dashPeriod", 0.18f));
     const float dashDuty   = std::clamp(params.getFloat("dashDuty", 0.45f), 0.05f, 0.95f);
     const bool  zebra      = params.getBool("zebra", true);
@@ -39,7 +39,7 @@ std::unique_ptr<image::ImageData> generateRoadMarkingsTexture(const Params& para
         const float v = (static_cast<float>(y) + 0.5f) / static_cast<float>(height);
         for (int x = 0; x < width; ++x) {
             const float u = (static_cast<float>(x) + 0.5f) / static_cast<float>(width);
-            float r = 0.18f, g = 0.18f, b = 0.20f;
+            float       r = 0.18f, g = 0.18f, b = 0.20f;
 
             // White edge lines near v=0 and v=1.
             if (v < 0.08f || v > 0.92f) {
@@ -85,10 +85,10 @@ std::unique_ptr<image::ImageData> generateRoadMarkingsTexture(const Params& para
 void registerRoadMeshRecipes(MeshRecipeRegistry& registry) {
     RecipeDescriptor schema{"mesh.roadNetwork", "Procedural Road Network", "Mesh", {}};
     schema.params.push_back(ParamDescriptor::integer("seed", "Seed", 1, 0, 2147483647));
-    schema.params.push_back(ParamDescriptor::choice("scene", "Scene", "straight",
-                                                    {"straight", "curve", "bridge", "cross", "tee", "y", "fork",
-                                                     "skew", "t-junction", "y-junction", "sloped-t", "curve-uphill",
-                                                     "tight-turn", "roundabout", "interchange"}));
+    schema.params.push_back(
+        ParamDescriptor::choice("scene", "Scene", "straight",
+                                {"straight", "curve", "bridge", "cross", "tee", "y", "fork", "skew", "t-junction",
+                                 "y-junction", "sloped-t", "curve-uphill", "tight-turn", "roundabout", "interchange"}));
     schema.params.push_back(ParamDescriptor::floating("span", "Span", 36.f, 16.f, 256.f, 1.f));
     schema.params.push_back(ParamDescriptor::floating("bridgeHeight", "Bridge Height", 6.f, 1.f, 64.f, 0.5f));
     schema.params.push_back(ParamDescriptor::integer("lanes", "Lanes", 2, 1, 4));
@@ -100,8 +100,7 @@ void registerRoadMeshRecipes(MeshRecipeRegistry& registry) {
     schema.params.push_back(ParamDescriptor::boolean("placements", "Decoration Placements", true));
     schema.params.push_back(
         ParamDescriptor::floating("sideObjectSpacing", "Side Object Spacing", 8.f, 0.25f, 100.f, 0.25f));
-    schema.params.push_back(
-        ParamDescriptor::floating("sideObjectOffset", "Side Object Offset", 0.5f, 0.f, 32.f, 0.1f));
+    schema.params.push_back(ParamDescriptor::floating("sideObjectOffset", "Side Object Offset", 0.5f, 0.f, 32.f, 0.1f));
     schema.params.push_back(
         ParamDescriptor::floating("sideObjectClearance", "Side Object Clearance", 1.5f, 0.f, 32.f, 0.1f));
     schema.params.push_back(

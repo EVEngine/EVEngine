@@ -1368,17 +1368,6 @@ TEST_CASE("procgen.road.network.seedSevenNavigationTerminates") {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
 TEST_CASE("procgen.road.terrainConformFlattensGroundAndRejectsBridgeDeck") {
     auto ground = RoadNetwork::makeStraight(24.f, 1);
     REQUIRE(ground.ok());
@@ -2163,7 +2152,6 @@ TEST_CASE("procgen.road.junctionCurveTessellationHonorsChordError") {
 }
 
 
-
 TEST_CASE("procgen.road.markings.separateBothDirectionsAndOpposingTraffic") {
     RoadNetwork network;
     const auto  from = network.addNode(0.f, 0.f, 0.f, 2.f);
@@ -2603,9 +2591,6 @@ TEST_CASE("procgen.road.scenes.latestCommonAngleFactoriesUseUnifiedBake") {
     CHECK(RoadNetwork::makeScene("fork", 24.f, 4.f, 2, 1).ok());
     CHECK(RoadNetwork::makeScene("skew", 24.f, 4.f, 2, 1).ok());
 }
-
-
-
 
 
 TEST_CASE("procgen.road.scenes.latestYFactoryConnectsBothExits") {

@@ -499,7 +499,8 @@
           "graphics.vegetation.translucency_gpu_backlight_and_ambient"
         ],
         "render-window": [
-          "asset.procgen.terrainDetailSidecarPublishesDecodableRuntimeResource"
+          "asset.procgen.terrainDetailSidecarPublishesDecodableRuntimeResource",
+          "asset.import.unityStaticPrefabRendersOwnedEcsInstances"
         ]
       },
       "module": "asset_import",
@@ -2226,7 +2227,6 @@
           "procgen.road.editing.addEdgeUndoKeepsReservedIdentity",
           "procgen.road.editing.manualLaneLinksUseExistingTransactionUndo",
           "procgen.road.editing.blockedTurnIsUndoableAndSnapshotPersistent",
-          "procgen.road.editing.reconnectEndpointUndoRestoresOldJunctionConnections",
           "procgen.road.editing.snapEndpointChoosesNearestStableNodeAndConnects",
           "procgen.road.editing.detachEndpointCommandUndoRestoresJunctionExactly",
           "procgen.road.editing.gizmoUsesStableIdsAndTracksRevision",
@@ -2235,14 +2235,11 @@
           "procgen.road.editing.snapshotLoadIsAtomicOnSelfLoop",
           "procgen.road.editing.commandsDriveRegisteredTargetAndExposeSnapshot",
           "procgen.road.editing.laneCountShrinkPrunesAndUndoRestoresLinks",
-          "procgen.road.editing.connectAllTurnsIsAtomicAndUndoable",
           "procgen.road.editing.splitEdgeUndoRestoresOriginalIdentityAndLinks",
-          "procgen.road.editing.positionSplitUndoRedoKeepsProjectedPointAndIds",
           "procgen.road.editing.mergeNodesUndoRestoresEdgesAndLaneLinks",
           "procgen.road.editing.mergeNodesAndConnectIsAtomicAndUndoable",
           "procgen.road.editing.addEdgeAndConnectTouchesOnlyNewEdgeRoutes",
           "procgen.road.editing.connectNodeAtPositionIsAtomicAndUndoable",
-          "procgen.road.editing.connectNodeAtPositionSnapsToVisibleCurve",
           "procgen.road.editing.crossingEdgesBecomeOneUndoableJunction",
           "procgen.road.editing.curvedVisualCrossingUsesBakedSpline",
           "procgen.simulation.dungeonDelve",
@@ -8261,19 +8258,6 @@
           "procgen.spatialData.scriptFacingApiFiltersPoints",
           "procgen.spatialData.heightfieldSamplesAndProjectsSurface",
           "procgen.pointOperations.matchCorePcgNodes",
-          "procgen.splinePath.samplesLinearPathByArcLength",
-          "procgen.splinePath.supportsBezierClosedAndClosestQueries",
-          "procgen.splinePath.supportsExplicitQuadraticBezierInterpolation",
-          "procgen.splinePath.rejectsInvalidStateAtomically",
-          "procgen.splinePath.parallelTransportFramesStayOrthonormal",
-          "procgen.splinePath.closedTransportFramesCorrectHolonomy",
-          "procgen.splinePath.interpolatesPointRollAndProfileScale",
-          "procgen.splinePath.pointRotationProducesCompleteLocalOrientation",
-          "procgen.splinePath.travelWrapModesAreDistanceDeterministic",
-          "procgen.splinePath.distributesOwningSamplesWithoutClosedDuplicate",
-          "procgen.splinePath.shapePresetsReplaceAtomically",
-          "procgen.splinePath.buildsRendererNeutralOpenAndClosedPolylines",
-          "procgen.splinePath.disconnectedChunksExcludeGapFromLengthAndPolyline",
           "procgen.worker.rejectsJobsAfterClearAndOwnerDestruction",
           "procgen.worker.rejectsForeignAndReplayedJobs",
           "procgen.prototype.mesh.catalogueBuilds75GroundedPieces",
@@ -8294,7 +8278,8 @@
           "procgen.roguelike.errors",
           "procgen.roguelike.manualFillDetail",
           "procgen.autotileGrid.postProcess",
-          "procgen.randomSeed.nonZeroAndVaries"
+          "procgen.randomSeed.nonZeroAndVaries",
+          "procgen.sceneSink.reportsUnsupportedCoordinatedReplacement"
         ]
       },
       "module": "procgen",
@@ -8691,7 +8676,6 @@
           "procgen.terrainFileRaw.requiresExplicitExactSquareFormat",
           "procgen.heightmapAccess.safeNormalizedAndShapeQueries",
           "procgen.terrainObject.exportsStableAttributedTransformsAndRemoval",
-          "procgen.terrainObject.supportsPrototypeChildrenCollisionAndAtomicFailure",
           "procgen.terrainObject.multiTileSharesRngCollisionAndOwnsHistory",
           "procgen.detail.modesThresholdAndNearestEven",
           "procgen.detail.sourceConditionalRngAndColumnOrder",
@@ -8864,7 +8848,6 @@
           "procgen.road.profile.laneWidths",
           "procgen.road.network.interchangeBakeHasGroupsAndOverlay",
           "procgen.road.network.rejectsInvalidEdge",
-          "procgen.road.network.nodeMoveRejectsDegenerateIncidentEdgeAtomically",
           "procgen.road.network.junctionRadiusIsValidatedAndRevisioned",
           "procgen.road.network.junctionControlIsAuthoritativeValidatedAndRevisioned",
           "procgen.road.network.rejectsSelfLoopWithoutMutation",
@@ -8880,18 +8863,11 @@
           "procgen.road.network.reconnectEndpointReanchorsAndPrunesOldJunctionTurns",
           "procgen.road.network.detachEndpointCreatesCoincidentStableNodeAtomically",
           "procgen.road.network.splitEdgeMigratesEndpointLinksAndConnectsHalves",
-          "procgen.road.network.positionSplitSnapsIn3dAndRejectsEndpoints",
           "procgen.road.network.splineParameterSplitUsesBakedCatmullCenterline",
           "procgen.road.network.mergeNodesReanchorsEndpointsAndEnablesTurns",
           "procgen.road.asphaltPbr.reproducibleAndBounded",
           "procgen.road.overlay.fromParams",
           "procgen.road.network.seedSevenNavigationTerminates",
-          "procgen.road.placements.exposeReusableTransitionAndSideObjectAnchors",
-          "procgen.road.placements.classifyReusableJunctionPrefabAnchors",
-          "procgen.road.placements.bakePriorityAwareJunctionControlAnchors",
-          "procgen.road.placements.respectPerEdgeSideIntervals",
-          "procgen.road.placements.keepSideObjectsOutsideJunctionSockets",
-          "procgen.road.placements.avoidAdjacentRoadsAndEachOther",
           "procgen.road.terrainConformFlattensGroundAndRejectsBridgeDeck",
           "procgen.road.network.seedWobbleStaysBounded",
           "procgen.road.scenes.interchangeGroundCrossAndPiers",
@@ -8902,25 +8878,18 @@
           "procgen.road.scenes.slopedAndCurvedUphillJunctionsStayContinuous",
           "procgen.road.junction.preflightRejectsUnsolvableGeometry",
           "procgen.road.junction.slopedAxisCrossUsesFittedPlane",
-          "procgen.road.junction.slopedArmMouthSharesEdgeElevation",
-          "procgen.road.junction.mixedStylesKeepEachMouthProfile",
           "procgen.road.bake.onlyTrimsActiveJunctions",
-          "procgen.road.bake.smoothSplitIsNotAJunctionAndMarkingToggleIsGlobal",
           "procgen.road.scenarios.useOneGraphModel",
           "procgen.road.uvUsesWorldMetresAndIgnoresTessellation",
           "procgen.road.junctionAsphaltUsesPlanarWorldUvs",
           "procgen.road.junctionCurveTessellationHonorsChordError",
-          "procgen.road.markings.dashesUseWorldDistanceAcrossTessellation",
           "procgen.road.markings.separateBothDirectionsAndOpposingTraffic",
           "procgen.road.artifactReusesCompositePublicationBoundary",
-          "procgen.road.scenes.shortCrossFallsBackToClampedArmHull",
           "procgen.road.scenes.pierUprightFootprint",
           "procgen.road.scenes.crossJunctionCornerSidewalks",
           "procgen.road.scenes.crossJunctionArmApronSeam",
           "procgen.road.scenes.crosswalksFaceUpOnEveryArm",
           "procgen.road.scenes.latestCommonAngleFactoriesUseUnifiedBake",
-          "procgen.road.scenes.commonConnectionsEmitNoDegenerateTriangles",
-          "procgen.road.bidirectional.asymmetricLaneCentersFollowLatestConvention",
           "procgen.road.scenes.latestYFactoryConnectsBothExits",
           "urban.geometry.irregularityMetric",
           "urban.geometry.splitRect",
@@ -10334,6 +10303,808 @@
         ]
       },
       "module": "graphics"
+    },
+    "integration/gameplay-composition/procgen_road_authoring.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.authoring.bridgeTunnelIntervalsKeepTerrainEvenNearItsSurface",
+          "procgen.road.authoring.closingDrivingSegmentControlsNavigationHeight",
+          "procgen.road.authoring.concaveClosedSectionCapsHaveOutwardWinding",
+          "procgen.road.authoring.continuousFacilitiesHaveBoundedCapsAndReversePhysicalSide",
+          "procgen.road.authoring.customCrownMarkingsFollowActualSurfaceHeight",
+          "procgen.road.authoring.customCrownedSectionDrivesMeshAndNavigation",
+          "procgen.road.authoring.intervalsSplitAndSnapshotsUndoWithoutDuplication"
+        ]
+      },
+      "origins": [
+        "procgen_road_authoring.cpp"
+      ]
+    },
+    "unit/procgen/procgen_road_bundled_circular.cpp": {
+      "module": "procgen",
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.road.authoring.bundledCircularLeadMatchesPublicSdkAndRoundTrip",
+          "procgen.road.authoring.bundledNegativeLeadUsesSdkChordAndReversesNeighbors"
+        ]
+      },
+      "origins": [
+        "procgen_road_bundled_circular.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_circular.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.authoring.circularArcLimitsAndPresetUndo",
+          "procgen.road.authoring.circularReferenceArcAndReversePreserveGeometry"
+        ]
+      },
+      "origins": [
+        "procgen_road_circular.cpp"
+      ]
+    },
+    "unit/procgen/procgen_road_circular_ghost.cpp": {
+      "module": "procgen",
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.road.authoring.circularNeighborRejectsUnrepresentableGeometry",
+          "procgen.road.authoring.circularNeighborUsesMeasuredThreeDimensionalChordMagnitude"
+        ]
+      },
+      "origins": [
+        "procgen_road_circular_ghost.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_connections.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.authoring.closedBeamConnectionValidatesTheEntireSeamLoop",
+          "procgen.road.authoring.continuousFacilityCrossesCustomConnectionWithoutSocketGap",
+          "procgen.road.authoring.customConnectionMeshesSocketsAndLaneTurnsSharePorts",
+          "procgen.road.authoring.customConnectionRejectsMalformedGeometryAndStaleBindingsAtomically",
+          "procgen.road.authoring.customConnectionSnapshotUndoAndSplitRebindStableIds"
+        ]
+      },
+      "origins": [
+        "procgen_road_connections.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_controllers.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.authoring.outgoingControllerPresetSaveAndUndo",
+          "procgen.road.authoring.outgoingStraightControllersRetainHeightContractAndReverse"
+        ]
+      },
+      "origins": [
+        "procgen_road_controllers.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_extensions.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.authoring.multiArmFacilityRoutesSaveUndoAndMigrateSplitIdentities",
+          "procgen.road.authoring.nativeTerrainWorldWritesEveryRoadChannelInOneHistoryFrame",
+          "procgen.road.authoring.prefabContinuationRejectsSameLabelWithDifferentOwnedGeometry",
+          "procgen.road.authoring.prefabDeformsSourceTrianglesNormalsUvsAndPersistsCuts",
+          "procgen.road.authoring.prefabStartMiddleEndRepeatsWeldsAndReversesWithoutLosingAssets",
+          "procgen.road.authoring.terrainChannelsPersistUndoRedoAndProtectBridgeTunnelRoofs",
+          "procgen.road.authoring.terrainChannelsRollbackAllTilesAndRetainRedoOnLateFailure"
+        ]
+      },
+      "origins": [
+        "procgen_road_extensions.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_full_roll.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.authoring.fullRollPreservesReferenceRotationAndAtomicHistory",
+          "procgen.road.authoring.twistedProfileUsesMeasuredReferencePhysicalDiagonal"
+        ]
+      },
+      "origins": [
+        "procgen_road_full_roll.cpp"
+      ]
+    },
+    "unit/procgen/procgen_road_geometry_artifact.cpp": {
+      "module": "procgen",
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.road.geometrySources.artifactColorsLegacyAndAtomicRejection",
+          "procgen.road.geometrySources.artifactRootSurvivesStoreRoundtrip"
+        ]
+      },
+      "origins": [
+        "procgen_road_geometry_artifact.cpp"
+      ]
+    },
+    "unit/procgen/procgen_road_geometry_sources.cpp": {
+      "module": "procgen",
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.road.geometrySources.partitionCoversEdgesJunctionAndDerivedTriangles",
+          "procgen.road.geometrySources.recipeMeshPreservesPortableAttribution",
+          "procgen.road.geometrySources.schemaAndPartitionRejectBeforePublication"
+        ]
+      },
+      "origins": [
+        "procgen_road_geometry_sources.cpp"
+      ]
+    },
+    "unit/procgen/procgen_road_junction_seams.cpp": {
+      "module": "procgen",
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.road.bake.smoothSplitIsNotAJunctionAndMarkingToggleIsGlobal",
+          "procgen.road.junction.mixedStylesKeepEachMouthProfile",
+          "procgen.road.junction.nonplanarCrossRejectsWithConstructionPlaneDiagnostic",
+          "procgen.road.junction.planarSlopedCrossApronStaysOnAuthorPlane",
+          "procgen.road.junction.slopedArmMouthSharesEdgeElevation",
+          "procgen.road.scenes.shortCrossFallsBackToClampedArmHull"
+        ]
+      },
+      "origins": [
+        "procgen_road_junction_seams.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_junction_style.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.junctionStyle.bareCustomCrossDoesNotInventCurbsOrWalks",
+          "procgen.road.junctionStyle.independentlyDisabledBandsStayAbsent",
+          "procgen.road.junctionStyle.narrowCornerBandsRespectAuthorWidths",
+          "procgen.road.junctionStyle.saveRestoreAndUndoReproduceGeometry",
+          "procgen.road.junctionStyle.unequalArmsKeepTheirOwnMouthProfile"
+        ]
+      },
+      "origins": [
+        "procgen_road_junction_style.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_noop.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.editing.connectAllTurnsIsAtomicAndUndoable",
+          "procgen.road.editing.reconnectEndpointUndoRestoresOldJunctionConnections",
+          "procgen.road.editingNoOp.buildersReturnSuccessAndPreserveAuthor",
+          "procgen.road.editingNoOp.commandAdaptersOmitNoChangeOperations",
+          "procgen.road.editingNoOp.sameEndpointStillPlansMissingTurnsAndUndo"
+        ]
+      },
+      "origins": [
+        "procgen_road_noop.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_parameter_sampling.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.authoring.parameterScanMatchesCoarseReferenceRetainedCenters",
+          "procgen.road.authoring.parameterScanPolicySaveUndoAndLegacyMigration",
+          "procgen.road.authoring.parameterScanWorkBudgetIsSharedAndFailureAtomic"
+        ]
+      },
+      "origins": [
+        "procgen_road_parameter_sampling.cpp"
+      ]
+    },
+    "unit/procgen/procgen_road_placement_anchors.cpp": {
+      "module": "procgen",
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.road.placements.avoidAdjacentRoadsAndEachOther",
+          "procgen.road.placements.bakePriorityAwareJunctionControlAnchors",
+          "procgen.road.placements.classifyReusableJunctionPrefabAnchors",
+          "procgen.road.placements.exposeReusableTransitionAndSideObjectAnchors",
+          "procgen.road.placements.keepSideObjectsOutsideJunctionSockets",
+          "procgen.road.placements.respectPerEdgeSideIntervals"
+        ]
+      },
+      "origins": [
+        "procgen_road_placement_anchors.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_position_split.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.editing.connectNodeAtPositionSnapsToVisibleCurve",
+          "procgen.road.editing.positionSplitUndoRedoKeepsProjectedPointAndIds",
+          "procgen.road.network.positionSplitRefinesCurvedSnapAndRejectsOutsideRadius",
+          "procgen.road.network.positionSplitSnapsIn3dAndRejectsEndpoints"
+        ]
+      },
+      "origins": [
+        "procgen_road_position_split.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_presets.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.authoring.presetCandidatesRejectCyclesStaleOwnersAndLateFailuresAtomically",
+          "procgen.road.authoring.presetCombinedProfilesValidateFinalCustomPortsAndPreserveTraffic",
+          "procgen.road.authoring.presetExplicitFalseAndEmptyArraysRoundTripAndUnbindingRestoresSource",
+          "procgen.road.authoring.presetMarkerFacilityOverridesAndAuthorLocksPersist",
+          "procgen.road.authoring.presetRestoreRejectsLateHistoryFailureAndMigratesAbsentOverrides",
+          "procgen.road.authoring.presetV1RollDefaultsMigrateWithoutChangingSavedBehavior",
+          "procgen.road.authoring.sharedPresetsPropagateWithExplicitOverridesAndBake"
+        ]
+      },
+      "origins": [
+        "procgen_road_presets.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_profile_editing.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.editing.pointProfilesRoundTripMigrateAndRejectAtomically",
+          "procgen.road.editing.pointProfilesUndoRestoresExactAuthorValues"
+        ]
+      },
+      "origins": [
+        "procgen_road_profile_editing.cpp"
+      ]
+    },
+    "unit/procgen/procgen_road_profiles.cpp": {
+      "module": "procgen",
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.road.pointProfilesBankTheSurfaceAndPreservePhysicalReversal",
+          "procgen.road.pointProfilesDriveWidthNavigationAndPlacements",
+          "procgen.road.pointProfilesSurviveNodeMoveSplitAndInvalidEdit"
+        ]
+      },
+      "origins": [
+        "procgen_road_profiles.cpp"
+      ]
+    },
+    "unit/procgen/procgen_road_recipe_artifact.cpp": {
+      "module": "procgen",
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.road.authoring.recipeArtifactPublishesAuthorGeometryAndAllLODProducts"
+        ]
+      },
+      "origins": [
+        "procgen_road_recipe_artifact.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_recipe_snapshot.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.authoring.recipeSnapshotConsumesEditorAuthorDataAndLOD",
+          "procgen.road.authoring.recipeSnapshotRejectsInvalidWithoutSceneFallback"
+        ]
+      },
+      "origins": [
+        "procgen_road_recipe_snapshot.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_reference.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.authoring.referenceCubicWidthIsExplicitAndLegacySnapshotsRetainLinear",
+          "procgen.road.authoring.referenceTeeConcaveReturnsExcludeStraightMiterWedges",
+          "procgen.road.authoring.referenceWorldUpFramePreservesHorizontalSectionsAndMigrates",
+          "procgen.road.bidirectional.asymmetricLaneCentersFollowLatestConvention",
+          "procgen.road.bidirectional.asymmetricLaneCentersRotateWithAuthoredFrame",
+          "procgen.road.markings.dashesUseWorldDistanceAcrossTessellation",
+          "procgen.road.network.coincidentEndpointPositionsDoNotMergeNodeIdentity",
+          "procgen.road.network.nodeMoveRejectsDegenerateIncidentEdgeAtomically",
+          "procgen.road.scenes.commonConnectionsEmitNoDegenerateTriangles",
+          "procgen.road.sections.noncollinearTerminalCapsSurviveRotationAndTranslation",
+          "procgen.road.terrain.elevatedOriginMapsNormalizedHeightsAndAllChannels",
+          "procgen.road.terrain.originYLegacyMigrationAndDirectHeightmapReceipt"
+        ]
+      },
+      "origins": [
+        "procgen_road_reference.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_roll_pivot.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.authoring.rollPivotHoldsSelectedRailAndTravelFrame",
+          "procgen.road.authoring.rollPivotRecipeSnapshotReverseSplitAndUndo"
+        ]
+      },
+      "origins": [
+        "procgen_road_roll_pivot.cpp"
+      ]
+    },
+    "unit/procgen/procgen_road_roll_policy.cpp": {
+      "module": "procgen",
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.road.authoring.rollEasingMatchesActualEasyRoadsSpanSamples",
+          "procgen.road.authoring.rollPolicySnapshotMigrationAndInvalidRejection"
+        ]
+      },
+      "origins": [
+        "procgen_road_roll_policy.cpp"
+      ]
+    },
+    "unit/procgen/procgen_road_roundabout.cpp": {
+      "module": "procgen",
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.road.roundabout.drivingRingCoveredAndCentralIslandOpen"
+        ]
+      },
+      "origins": [
+        "procgen_road_roundabout.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_sampling.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.authoring.distanceSamplingStaysContinuousAcrossMarkers",
+          "procgen.road.authoring.metricSamplingUsesMetresAnglesAndSectionSubdivisions",
+          "procgen.road.authoring.samplingSettingsSaveUndoMigrateAndRejectBudgets"
+        ]
+      },
+      "origins": [
+        "procgen_road_sampling.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_sampling_defaults.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.authoring.newSamplingDefaultsMatchMeasuredReferenceAndLegacyNetworkRetainsCounts",
+          "procgen.road.authoring.presetV2ExplicitSamplingOverridesRetainPresence",
+          "procgen.road.authoring.presetV2MigratesEveryHistoryRootWithoutChangingChildInheritance"
+        ]
+      },
+      "origins": [
+        "procgen_road_sampling_defaults.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_side_placement.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.authoring.sidePlacementMatchesMeasuredOffsetsAndSingleCenterBudget",
+          "procgen.road.authoring.sidePlacementPresetHistoryMigrationAndAtomicFailure",
+          "procgen.road.authoring.sidePlacementRotatesTerrainFootprintBeforeWorldUpOffset"
+        ]
+      },
+      "origins": [
+        "procgen_road_side_placement.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_side_terrain.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.authoring.assetBoundsDriveFootprintAndRetainAdmittedIdentity",
+          "procgen.road.authoring.sideAlignmentProducesOwnedEulerPoseAndRejectsInvalidNormals",
+          "procgen.road.authoring.sideAlignmentVerticalFramesAndSharedProjectionBudget",
+          "procgen.road.authoring.sideTerrainAbsenceMissFailureAndSharedBudgetPreserveAuthor",
+          "procgen.road.authoring.sideTerrainBoundsModesConsumeProviderAndStandardRecipe",
+          "procgen.road.authoring.sideTerrainSnapshotPresetUndoAndLegacyMigration"
+        ]
+      },
+      "origins": [
+        "procgen_road_side_terrain.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_spacing_portals.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.authoring.automaticPrefabSpacingRetainsPhaseOnSplitSaveAndUndo",
+          "procgen.road.authoring.exactPrefabSpacingClipsRemainderAndMigratesOptionalFields",
+          "procgen.road.authoring.rigidDistributionHonorsExclusionsAndEmptySpans",
+          "procgen.road.authoring.rigidDistributionMatchesMeasuredReferenceAndBudget",
+          "procgen.road.authoring.rigidDistributionPersistsPresetUndoAndLegacyMigration",
+          "procgen.road.authoring.smoothingGroupsCrossUvSeamsButPreserveHardGroups",
+          "procgen.road.authoring.tunnelPortalHolesPreserveRoofAcrossSplitSaveUndoAndNativeWriteback"
+        ]
+      },
+      "origins": [
+        "procgen_road_spacing_portals.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_strength.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.authoring.splineStrengthChangesOnlyItsOutgoingSpanAndSurvivesReverse",
+          "procgen.road.authoring.splineStrengthPresetOverrideSaveAndUndo"
+        ]
+      },
+      "origins": [
+        "procgen_road_strength.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_surface_path.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.surfacePath.asphaltAnchorsFollowLoftedRowOffsets",
+          "procgen.road.surfacePath.clipsVisibleJunctionIntervalsAndSuppressesOmittedStrips",
+          "procgen.road.surfacePath.followsActualMeshCentersAndSegmentDirections",
+          "procgen.road.surfacePath.retainsPresetHistoryAndMigratesMissingPolicy",
+          "procgen.road.surfacePath.sharesScanWorkWithGeometryAndFailsAtomically"
+        ]
+      },
+      "origins": [
+        "procgen_road_surface_path.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_terrain_author_policy.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "procgen.road.terrain.authorPolicyDisabledPlanPreservesHistory",
+          "procgen.road.terrain.authorPolicyMatchesReferenceDisjointSelectionFixture",
+          "procgen.road.terrain.authorPolicyNetworkSaveConsumesOneAtomicPlan",
+          "procgen.road.terrain.authorPolicyPresetInheritanceHistoryAndValidation",
+          "procgen.road.terrain.authorPolicySharedJunctionUsesExplicitWorldPolicy"
+        ]
+      },
+      "origins": [
+        "procgen_road_terrain_author_policy.cpp"
+      ]
+    },
+    "unit/procgen/procgen_road_terrain_batch.cpp": {
+      "module": "procgen",
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.road.terrain.batchLateFailureAndSharedBudgetPreserveRedo",
+          "procgen.road.terrain.batchNativeWorldPublishesOnce",
+          "procgen.road.terrain.batchPoliciesShareOneHistoryAndSave"
+        ]
+      },
+      "origins": [
+        "procgen_road_terrain_batch.cpp"
+      ]
+    },
+    "unit/procgen/procgen_road_terrain_blend.cpp": {
+      "module": "procgen",
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.road.terrainBlendUsesWorldDistance"
+        ]
+      },
+      "origins": [
+        "procgen_road_terrain_blend.cpp"
+      ]
+    },
+    "unit/procgen/procgen_road_terrain_opacity.cpp": {
+      "module": "procgen",
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.road.terrain.opacityNativeWorldConsumer",
+          "procgen.road.terrain.opacityPreservesNormalizationAndHistory",
+          "procgen.road.terrain.opacityZeroAndInvalidAreIndependentAndAtomic"
+        ]
+      },
+      "origins": [
+        "procgen_road_terrain_opacity.cpp"
+      ]
+    },
+    "unit/procgen/procgen_road_world_origin.cpp": {
+      "module": "procgen",
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.road.worldOrigin.explicitAbsoluteHeightModesRemainAbsolute",
+          "procgen.road.worldOrigin.roadAndPlacementsShareBaselineAndUndo",
+          "procgen.road.worldOrigin.stagedSpawnRetainsBaselineAndRejectsInvalidCreate"
+        ]
+      },
+      "origins": [
+        "procgen_road_world_origin.cpp"
+      ]
+    },
+    "unit/procgen/procgen_spline_explicit_frames.cpp": {
+      "module": "procgen",
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.splinePath.explicitFramesKeepPartialClosedRangesOpen",
+          "procgen.splinePath.explicitFramesRejectInvalidInputsWithoutAuthorMutation",
+          "procgen.splinePath.explicitFramesReusePoseAndReportActualArcPhase"
+        ]
+      },
+      "origins": [
+        "procgen_spline_explicit_frames.cpp"
+      ]
+    },
+    "integration/gameplay-composition/scene_procgen_rotation.cpp": {
+      "modules": [
+        "procgen",
+        "scene"
+      ],
+      "task": "gameplay-composition",
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "Scene.procgenSink.coordinatesReplacementWithoutLeakingCandidateHosts",
+          "Scene.procgenSink.deltaSnapshotBuilderPreservesIdentityAndRejectsMalformedOrder",
+          "Scene.procgenSink.preservesDegreeRotationAcrossSnapshotsAndDeltas"
+        ]
+      },
+      "origins": [
+        "scene_procgen_rotation.cpp"
+      ]
+    },
+    "unit/procgen/terrain_object_collision.cpp": {
+      "module": "procgen",
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.terrainObject.emptyCandidatesDoNotReserveCollisionSpace",
+          "procgen.terrainObject.supportsPrototypeChildrenCollisionAndAtomicFailure"
+        ]
+      },
+      "origins": [
+        "terrain_object_collision.cpp"
+      ]
+    },
+    "integration/script-api/terrain_road_batch_vm.cpp": {
+      "modules": [
+        "procgen"
+      ],
+      "task": "script-api",
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "procgen.road.terrain.squirrelBatchProductionPoliciesAndAtomicFailure"
+        ]
+      },
+      "origins": [
+        "terrain_road_batch_vm.cpp"
+      ]
+    },
+    "integration/script-api/terrain_road_write_vm.cpp": {
+      "modules": [
+        "procgen"
+      ],
+      "task": "script-api",
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "procgen.road.terrain.squirrelProductionMeshWriteAndUndo"
+        ]
+      },
+      "origins": [
+        "terrain_road_write_vm.cpp"
+      ]
+    },
+    "integration/script-api/terrain_world_origin_vm.cpp": {
+      "modules": [
+        "procgen"
+      ],
+      "task": "script-api",
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "procgen.road.worldOrigin.squirrelCreationAndWorldHeightUseBaseline"
+        ]
+      },
+      "origins": [
+        "terrain_world_origin_vm.cpp"
+      ]
+    },
+    "unit/procgen/procgen_spline_path.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "module": "procgen",
+      "origins": [
+        "procgen_spline_path.cpp"
+      ],
+      "cases": {
+        "local-logic": [
+          "procgen.splinePath.buildsRendererNeutralOpenAndClosedPolylines",
+          "procgen.splinePath.closedTransportFramesCorrectHolonomy",
+          "procgen.splinePath.disconnectedChunksExcludeGapFromLengthAndPolyline",
+          "procgen.splinePath.distributesOwningSamplesWithoutClosedDuplicate",
+          "procgen.splinePath.interpolatesPointRollAndProfileScale",
+          "procgen.splinePath.parallelTransportFramesStayOrthonormal",
+          "procgen.splinePath.pointRotationProducesCompleteLocalOrientation",
+          "procgen.splinePath.rejectsInvalidStateAtomically",
+          "procgen.splinePath.samplesLinearPathByArcLength",
+          "procgen.splinePath.shapePresetsReplaceAtomically",
+          "procgen.splinePath.supportsBezierClosedAndClosestQueries",
+          "procgen.splinePath.supportsExplicitQuadraticBezierInterpolation",
+          "procgen.splinePath.travelWrapModesAreDistanceDeterministic"
+        ]
+      }
+    },
+    "asset_import/RoadSideGraphicsProbe.cpp": {
+      "role": "probe",
+      "default": "render-window",
+      "module": "asset_graphics",
+      "cases": {}
     }
   }
 }

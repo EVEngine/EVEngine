@@ -233,9 +233,9 @@ Result<RoadEdgeSplitResult> RoadNetwork::splitEdgeAtPosition(std::uint32_t edgeI
     }
     // The chord fraction is not a spline parameter fraction, even on a straight
     // Catmull span. Refine on the actual curve before applying the snap limit.
-    float lower = std::max(0.f, bestParameter - 1.f / static_cast<float>(intervals));
-    float upper = std::min(1.f, bestParameter + 1.f / static_cast<float>(intervals));
-    auto squaredDistance = [&](float parameter) -> Result<double> {
+    float lower           = std::max(0.f, bestParameter - 1.f / static_cast<float>(intervals));
+    float upper           = std::min(1.f, bestParameter + 1.f / static_cast<float>(intervals));
+    auto  squaredDistance = [&](float parameter) -> Result<double> {
         auto point = path.value().evaluateResult(parameter);
         if (!point.ok()) return Result<double>::failure(point.status());
         const double dx = static_cast<double>(point.value().x) - position.x;
@@ -244,17 +244,19 @@ Result<RoadEdgeSplitResult> RoadNetwork::splitEdgeAtPosition(std::uint32_t edgeI
         return Result<double>::success(dx * dx + dy * dy + dz * dz);
     };
     for (int iteration = 0; iteration < 40; ++iteration) {
-        const float left = lower + (upper - lower) / 3.f;
+        const float left  = lower + (upper - lower) / 3.f;
         const float right = upper - (upper - lower) / 3.f;
         if (left == right) break;
         auto leftDistance = squaredDistance(left);
         if (!leftDistance.ok()) return Result<RoadEdgeSplitResult>::failure(leftDistance.status());
         auto rightDistance = squaredDistance(right);
         if (!rightDistance.ok()) return Result<RoadEdgeSplitResult>::failure(rightDistance.status());
-        if (leftDistance.value() <= rightDistance.value()) upper = right;
-        else lower = left;
+        if (leftDistance.value() <= rightDistance.value())
+            upper = right;
+        else
+            lower = left;
     }
-    bestParameter = lower + (upper - lower) * 0.5f;
+    bestParameter       = lower + (upper - lower) * 0.5f;
     auto actualDistance = squaredDistance(bestParameter);
     if (!actualDistance.ok()) return Result<RoadEdgeSplitResult>::failure(actualDistance.status());
     if (actualDistance.value() > static_cast<double>(maxDistance) * maxDistance)

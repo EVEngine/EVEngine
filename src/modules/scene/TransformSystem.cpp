@@ -59,11 +59,11 @@ void pullTargets(SceneHost *host) {
 void pushTarget(const SceneNode &n, const SceneLink &l);
 void updateNodeIncremental(SceneHost::Tree &tree, int nodeIndex,
                            const glm::mat4 &parentWorld, bool force) {
-    SceneNode &n = tree.nodes[size_t(nodeIndex)];
+    SceneNode &n    = tree.nodes[size_t(nodeIndex)];
     const bool need = force || n.subtreeDirty;
     if (need) {
         n.world        = parentWorld * detail::localMatrix(n);
-        n.localDirty = false;
+        n.localDirty   = false;
         n.subtreeDirty = false;
         for (auto &l : n.links) {
             if (l.syncMode == 0) pushTarget(n, l);

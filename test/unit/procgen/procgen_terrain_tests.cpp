@@ -542,8 +542,6 @@ TEST_CASE("procgen.terrainObject.exportsStableAttributedTransformsAndRemoval") {
 }
 
 
-
-
 TEST_CASE("procgen.terrainObject.multiTileSharesRngCollisionAndOwnsHistory") {
     PointSet empty, west, east;
     auto     heights = filled(2, 2, 0.25F), fitness = filled(4, 2, 1);
@@ -2522,23 +2520,23 @@ TEST_CASE("procgen.multitile.detailReplaceUsesSharedWindowAndAtomicPublish") {
 
 
 TEST_CASE("procgen.multitile.treeSharedStreamAddRemoveAndAtomicFailure") {
-    PointSet west, east;
-    Heightmap heights = filled(2, 2, 0.25F);
-    Heightmap fitness = filled(4, 2, 1);
-    std::vector<TerrainTreeTile> tiles = {
+    PointSet                     west, east;
+    Heightmap                    heights = filled(2, 2, 0.25F);
+    Heightmap                    fitness = filled(4, 2, 1);
+    std::vector<TerrainTreeTile> tiles   = {
         {"west", &west, &heights, 0, 0, 2, 2, 2, 2, false},
         {"east", &east, &heights, 2, 0, 2, 2, 2, 2, false},
     };
     TerrainTreePlacementSettings tree;
     tree.spacing = tree.spawnDensity = 1;
     tree.jitterPercent = tree.failureRate = tree.minimumFitness = 0;
-    tree.scaleMode = TerrainTreeScaleMode::Fixed;
+    tree.scaleMode                                              = TerrainTreeScaleMode::Fixed;
     tree.minimumWidth = tree.maximumWidth = tree.minimumHeight = tree.maximumHeight = 1;
-    tree.asset = "oak";
-    tree.namespaceId = 42;
-    tree.maxPoints = 100;
-    tree.seed = 19;
-    auto bounds = setStamp(2, 1, 4, 2);
+    tree.asset                                                                      = "oak";
+    tree.namespaceId                                                                = 42;
+    tree.maxPoints                                                                  = 100;
+    tree.seed                                                                       = 19;
+    auto bounds                                                                     = setStamp(2, 1, 4, 2);
     auto added = applyTerrainTreesMultiTile(tiles, fitness, tree, bounds, TerrainTreeOperationMode::Add);
     REQUIRE(added.ok());
     REQUIRE(added.value().affectedTiles == 2);
@@ -2560,11 +2558,12 @@ TEST_CASE("procgen.multitile.treeSharedStreamAddRemoveAndAtomicFailure") {
     REQUIRE(east.getCount() == 4);
     PointSet existing;
     existing.add(99, 0, 99);
-    PointSet budgetEast        = east;
-    tiles[1].trees             = &budgetEast;
-    tiles[0].trees = &existing;
-    tree.maxPoints = 8;
-    auto budgetIgnoresExisting = applyTerrainTreesMultiTile(tiles, fitness, tree, bounds, TerrainTreeOperationMode::Add);
+    PointSet budgetEast = east;
+    tiles[1].trees      = &budgetEast;
+    tiles[0].trees      = &existing;
+    tree.maxPoints      = 8;
+    auto budgetIgnoresExisting =
+        applyTerrainTreesMultiTile(tiles, fitness, tree, bounds, TerrainTreeOperationMode::Add);
     REQUIRE(budgetIgnoresExisting.ok());
     REQUIRE(existing.getCount() == 5);
     tree.maxPoints = 100;

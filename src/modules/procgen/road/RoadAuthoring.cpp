@@ -108,9 +108,9 @@ Result<void> validateSection(const std::vector<RoadProfilePoint>& points, bool c
 }
 Result<void> validateRoadAuthoring(const RoadStyle& style) {
     const auto& policy = style.terrainPolicy;
-    if (!std::isfinite(policy.blendDistance) || policy.blendDistance < 0.f ||
-        !std::isfinite(policy.maxVerticalDelta) || policy.maxVerticalDelta < 0.f || policy.splatLayer < -1 ||
-        !std::isfinite(policy.splatOpacity) || policy.splatOpacity < 0.f || policy.splatOpacity > 1.f)
+    if (!std::isfinite(policy.blendDistance) || policy.blendDistance < 0.f || !std::isfinite(policy.maxVerticalDelta) ||
+        policy.maxVerticalDelta < 0.f || policy.splatLayer < -1 || !std::isfinite(policy.splatOpacity) ||
+        policy.splatOpacity < 0.f || policy.splatOpacity > 1.f)
         return invalid("invalid road terrain author policy");
     const auto& terrain = style.sideTerrain;
     if (terrain.asset && terrain.asset->rootPose != eve::PrefabRootPose::Authored &&
