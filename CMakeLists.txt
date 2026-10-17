@@ -274,6 +274,7 @@ if(EXISTS "${_vkbuilder_header}")
     endif()
     string(REPLACE "${_vkbuilder_original}" "${_vkbuilder_fixed}" _vkbuilder_source
         "${_vkbuilder_source}")
+    include(cmake/vkbuilder_capture.cmake)
     if(APPLE AND EVENGINE_THIRD_PARTY_BINARY_DIR)
         set(_vkbuilder_vulkan_root "${EVENGINE_THIRD_PARTY_BINARY_DIR}/include/vulkan")
         if(NOT EXISTS "${_vkbuilder_vulkan_root}/vulkan.h" OR

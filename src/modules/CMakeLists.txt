@@ -854,6 +854,7 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainNoiseMask.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSplatmap.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainWorldWorkspace.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainWorldRoad.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainGenerationSession.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/PcgRuntimeStamper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainMask.cpp
@@ -867,6 +868,8 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSurface.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratorRegistry.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratedArtifact.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/BuildKey.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratedArtifactRecipes.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Grid2D.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/JsonExport.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/MeshBuild.cpp
@@ -877,6 +880,7 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshAdhereLive.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshModifierGraph.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshUvProjection.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/spline/SplineCircularArc.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/spline/SplinePath.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Palette.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ParamSchema.cpp
@@ -887,6 +891,7 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/RuntimeGeneration.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/RuntimeGenerationAsset.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Semantic.cpp)
+  include("${CMAKE_CURRENT_SOURCE_DIR}/procgen/road/CoreSources.cmake")
   set(_eve_procgen_core_boundary_files ${_eve_procgen_core_sources}
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ArtifactPublish.h
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratedArtifact.h

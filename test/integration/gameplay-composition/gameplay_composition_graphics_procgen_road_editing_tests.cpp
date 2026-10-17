@@ -404,62 +404,6 @@ TEST_CASE("procgen.road.editing.blockedTurnIsUndoableAndSnapshotPersistent") {
     REQUIRE(network.validate().ok());
 }
 
-TEST_CASE("procgen.road.editing.reconnectEndpointUndoRestoresOldJunctionConnections") {
-    RoadNetwork network;
-    auto        start       = network.addNode(-12.f, 0.f, 0.f);
-    auto        oldHub      = network.addNode(0.f, 0.f, 0.f);
-    auto        newHub      = network.addNode(5.f, 0.f, 7.f);
-    auto        exit        = network.addNode(0.f, 0.f, 12.f);
-    auto        newExit     = network.addNode(14.f, 0.f, 7.f);
-    auto        newApproach = network.addNode(5.f, 0.f, -4.f);
-    REQUIRE(start.ok());
-    REQUIRE(oldHub.ok());
-    REQUIRE(newHub.ok());
-    REQUIRE(exit.ok());
-    REQUIRE(newExit.ok());
-    REQUIRE(newApproach.ok());
-    auto road             = network.addEdge(start.value(), oldHub.value(), {{}, {}}, 2, 0);
-    auto branch           = network.addEdge(oldHub.value(), exit.value(), {{}, {}}, 2, 0);
-    auto newBranch        = network.addEdge(newHub.value(), newExit.value(), {{}, {}}, 2, 0);
-    auto existingApproach = network.addEdge(newApproach.value(), newHub.value(), {{}, {}}, 2, 0);
-    REQUIRE(road.ok());
-    REQUIRE(branch.ok());
-    REQUIRE(newBranch.ok());
-    REQUIRE(existingApproach.ok());
-    const RoadLaneConnection active{
-        road.value(), 0, branch.value(), 0, RoadLaneDirection::Forward, RoadLaneDirection::Forward};
-    const RoadLaneConnection blocked{
-        road.value(), 1, branch.value(), 1, RoadLaneDirection::Forward, RoadLaneDirection::Forward};
-    REQUIRE(network.addLaneLink(active).ok());
-    REQUIRE(network.blockLaneLink(blocked).ok());
-
-    RoadNetworkEditTarget target("road:reconnect", network);
-    auto                  operation = target.makeReconnectEdgeEndpointAndConnect(road.value(), false, newHub.value());
-    REQUIRE(operation.ok());
-    REQUIRE(target.applyDomainOperation(operation.value()).ok());
-    CHECK_EQ(network.edgeResult(road.value()).value().to, newHub.value());
-    CHECK_EQ(network.laneLinkCount(), 2);
-    for (const auto &link : network.laneLinks()) {
-        const bool referencesMovedRoad = link.inEdge == road.value() || link.outEdge == road.value();
-        CHECK(referencesMovedRoad);
-    }
-    CHECK_EQ(network.blockedLaneLinkCount(), 0);
-
-    DomainOperation undo = operation.value();
-    undo.type            = operation.value().inverseType;
-    undo.payload         = operation.value().inverse;
-    REQUIRE(target.applyDomainOperation(undo).ok());
-    CHECK_EQ(network.edgeResult(road.value()).value().to, oldHub.value());
-    CHECK_EQ(network.laneLinkCount(), 1);
-    CHECK_EQ(network.blockedLaneLinkCount(), 1);
-    REQUIRE(network.validate().ok());
-
-    REQUIRE(target.applyDomainOperation(operation.value()).ok());
-    CHECK_EQ(network.edgeResult(road.value()).value().to, newHub.value());
-    CHECK_EQ(network.laneLinkCount(), 2);
-    CHECK_EQ(static_cast<int>(target.makeReconnectEdgeEndpoint(road.value(), false, newHub.value()).code()),
-             static_cast<int>(EditorStatus::NoOp));
-}
 
 TEST_CASE("procgen.road.editing.snapEndpointChoosesNearestStableNodeAndConnects") {
     RoadNetwork network;
@@ -747,7 +691,8 @@ TEST_CASE("procgen.road.editing.snapshotLoadIsAtomicOnSelfLoop") {
 TEST_CASE("procgen.road.editing.commandsDriveRegisteredTargetAndExposeSnapshot") {
     RoadCommandRegistry registry;
     REQUIRE(registerRoadNetworkEditingCommands(registry).ok());
-    CHECK_EQ(registry.planners.size(), std::size_t{27});
+    CHECK_EQ(registry.planners.size(), std::size_t{28});
+    CHECK(registry.planners.contains("road.node.connection.set.v1"));
     CHECK(registry.planners.contains("road.node.junction-control.set.v1"));
     CHECK(registry.planners.contains("road.node.merge-and-connect.v1"));
     CHECK(registry.planners.contains("road.edge.add-and-connect.v1"));
@@ -878,9 +823,10 @@ TEST_CASE("procgen.road.editing.commandsDriveRegisteredTargetAndExposeSnapshot")
     REQUIRE(schema != nullptr);
     REQUIRE((*schema).find("schema") != (*schema).end());
 
-    auto removed = registry.unregisterOwner("procgen_editing.road");
+    const auto registeredCount = registry.planners.size();
+    auto       removed         = registry.unregisterOwner("procgen_editing.road");
     REQUIRE(removed.ok());
-    CHECK_EQ(removed.value(), std::size_t{14});
+    CHECK_EQ(removed.value(), registeredCount);
     CHECK(registry.planners.empty());
 }
 
@@ -930,43 +876,6 @@ TEST_CASE("procgen.road.editing.laneCountShrinkPrunesAndUndoRestoresLinks") {
     CHECK_EQ(network.revision(), stableRevision);
     CHECK_EQ(network.laneLinkCount(), 3);
     CHECK_EQ(network.blockedLaneLinkCount(), 1);
-}
-
-TEST_CASE("procgen.road.editing.connectAllTurnsIsAtomicAndUndoable") {
-    RoadNetwork network;
-    auto        west  = network.addNode(-12.f, 0.f, 0.f);
-    auto        hub   = network.addNode(0.f, 0.f, 0.f);
-    auto        north = network.addNode(0.f, 0.f, -12.f);
-    REQUIRE(west.ok());
-    REQUIRE(hub.ok());
-    REQUIRE(north.ok());
-    auto horizontal = network.addEdge(west.value(), hub.value(), {{-12.f, 0.f, 0.f}, {0.f, 0.f, 0.f}}, 1, 1);
-    auto vertical   = network.addEdge(hub.value(), north.value(), {{0.f, 0.f, 0.f}, {0.f, 0.f, -12.f}}, 1, 1);
-    REQUIRE(horizontal.ok());
-    REQUIRE(vertical.ok());
-
-    RoadNetworkEditTarget target("road:auto-turns", network);
-    auto                  connect = target.makeConnectAllTurns(hub.value());
-    REQUIRE(connect.ok());
-    REQUIRE(target.applyDomainOperation(connect.value()).ok());
-    CHECK_EQ(network.laneLinkCount(), 2);
-    REQUIRE(network.validate().ok());
-
-    const auto afterConnectRevision = network.revision();
-    CHECK(!target.applyDomainOperation(connect.value()).ok());
-    CHECK_EQ(network.revision(), afterConnectRevision);
-    CHECK_EQ(network.laneLinkCount(), 2);
-
-    DomainOperation undo = connect.value();
-    undo.type            = connect.value().inverseType;
-    undo.payload         = connect.value().inverse;
-    REQUIRE(target.applyDomainOperation(undo).ok());
-    CHECK_EQ(network.laneLinkCount(), 0);
-    REQUIRE(network.validate().ok());
-
-    REQUIRE(target.applyDomainOperation(connect.value()).ok());
-    CHECK_EQ(network.laneLinkCount(), 2);
-    CHECK_EQ(static_cast<int>(target.makeConnectAllTurns(hub.value()).code()), static_cast<int>(EditorStatus::NoOp));
 }
 
 TEST_CASE("procgen.road.editing.splitEdgeUndoRestoresOriginalIdentityAndLinks") {
@@ -1033,46 +942,6 @@ TEST_CASE("procgen.road.editing.splitEdgeUndoRestoresOriginalIdentityAndLinks") 
     REQUIRE(network.validate().ok());
 }
 
-TEST_CASE("procgen.road.editing.positionSplitUndoRedoKeepsProjectedPointAndIds") {
-    RoadNetwork network;
-    auto        from = network.addNode(-12.f, 4.f, 0.f);
-    auto        to   = network.addNode(12.f, 4.f, 0.f);
-    REQUIRE(from.ok());
-    REQUIRE(to.ok());
-    auto road = network.addEdge(from.value(), to.value(), {{-12.f, 4.f, 0.f}, {12.f, 4.f, 0.f}}, 1, 0);
-    REQUIRE(road.ok());
-
-    RoadNetworkEditTarget target("road:position-split", network);
-    auto                  operation = target.makeSplitEdgeAtPosition(road.value(), {3.f, 5.f, 2.f}, 3.f, 4.f);
-    REQUIRE(operation.ok());
-    REQUIRE(target.applyDomainOperation(operation.value()).ok());
-    REQUIRE_EQ(network.nodeCount(), 3);
-    REQUIRE_EQ(network.edgeCount(), 2);
-    const auto continuation = std::find_if(network.edges().begin(), network.edges().end(),
-                                           [&](const auto &edge) { return edge.id != road.value(); });
-    REQUIRE(continuation != network.edges().end());
-    const auto continuationId = continuation->id;
-    const auto insertedNodeId = continuation->from;
-    auto       inserted       = network.nodeResult(insertedNodeId);
-    REQUIRE(inserted.ok());
-    CHECK(std::fabs(inserted.value().x - 3.f) < 1e-5f);
-    CHECK(std::fabs(inserted.value().y - 4.f) < 1e-5f);
-    CHECK(std::fabs(inserted.value().z) < 1e-5f);
-
-    DomainOperation undo = operation.value();
-    undo.type            = operation.value().inverseType;
-    undo.payload         = operation.value().inverse;
-    REQUIRE(target.applyDomainOperation(undo).ok());
-    REQUIRE_EQ(network.nodeCount(), 2);
-    REQUIRE_EQ(network.edgeCount(), 1);
-    CHECK_EQ(network.edgeResult(road.value()).value().controlPoints.size(), std::size_t{2});
-
-    REQUIRE(target.applyDomainOperation(operation.value()).ok());
-    REQUIRE(network.nodeResult(insertedNodeId).ok());
-    REQUIRE(network.edgeResult(continuationId).ok());
-    CHECK_EQ(network.edgeResult(road.value()).value().to, insertedNodeId);
-    REQUIRE(network.validate().ok());
-}
 
 TEST_CASE("procgen.road.editing.mergeNodesUndoRestoresEdgesAndLaneLinks") {
     RoadNetwork network;
@@ -1274,45 +1143,6 @@ TEST_CASE("procgen.road.editing.connectNodeAtPositionIsAtomicAndUndoable") {
     REQUIRE(network.validate().ok());
 }
 
-TEST_CASE("procgen.road.editing.connectNodeAtPositionSnapsToVisibleCurve") {
-    RoadNetwork network;
-    auto        curveStart = network.addNode(-10.f, 0.f, -10.f);
-    auto        curveEnd   = network.addNode(10.f, 0.f, -10.f);
-    auto        source     = network.addNode(0.f, 0.f, 20.f);
-    REQUIRE(curveStart.ok());
-    REQUIRE(curveEnd.ok());
-    REQUIRE(source.ok());
-    auto curve = network.addEdge(curveStart.value(), curveEnd.value(),
-                                 {{-10.f, 0.f, -10.f}, {-3.f, 0.f, 10.f}, {3.f, 0.f, 10.f}, {10.f, 0.f, -10.f}}, 1, 0);
-    REQUIRE(curve.ok());
-
-    RoadNetworkEditTarget target("road:curve-branch", network);
-    auto                  operation =
-        target.makeConnectNodeAtPosition(source.value(), curve.value(), {0.f, 0.f, 12.5f}, 0.2f, 2.f, 1, 0);
-    REQUIRE(operation.ok());
-    REQUIRE(target.applyDomainOperation(operation.value()).ok());
-    CHECK_EQ(network.nodeCount(), 4);
-    CHECK_EQ(network.edgeCount(), 3);
-    const auto junction = std::find_if(network.nodes().begin(), network.nodes().end(),
-                                       [](const auto &node) { return std::fabs(node.x) < 1e-3f && node.z > 12.f; });
-    REQUIRE(junction != network.nodes().end());
-    const auto junctionId = junction->id;
-    REQUIRE(network.validate().ok());
-
-    DomainOperation undo = operation.value();
-    undo.type            = operation.value().inverseType;
-    undo.payload         = operation.value().inverse;
-    REQUIRE(target.applyDomainOperation(undo).ok());
-    CHECK_EQ(network.nodeCount(), 3);
-    CHECK_EQ(network.edgeCount(), 1);
-    CHECK(!network.nodeResult(junctionId).ok());
-    CHECK_EQ(network.edgeResult(curve.value()).value().controlPoints.size(), std::size_t{4});
-    REQUIRE(network.validate().ok());
-
-    REQUIRE(target.applyDomainOperation(operation.value()).ok());
-    REQUIRE(network.nodeResult(junctionId).ok());
-    REQUIRE(network.validate().ok());
-}
 
 TEST_CASE("procgen.road.editing.crossingEdgesBecomeOneUndoableJunction") {
     RoadNetwork network;

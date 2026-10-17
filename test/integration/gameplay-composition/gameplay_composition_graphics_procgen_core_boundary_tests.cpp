@@ -3901,7 +3901,8 @@ TEST_CASE("procgen.generatedArtifact.castlePublishesCompositeProductsAndStorePro
     ArtifactStore store;
     auto          published = store.publish(std::move(artifact));
     REQUIRE(published.ok());
-    CHECK_EQ(std::move(published).takeValue(), id);
+    const auto publishedId = std::move(published).takeValue();
+    CHECK_EQ(publishedId, id);
     CHECK_EQ(store.size(), std::size_t(1));
     CHECK(store.find(id) != nullptr);
     CHECK_EQ(store.findByBuildKey(key).size(), std::size_t(1));

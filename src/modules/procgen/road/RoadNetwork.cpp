@@ -1,5 +1,7 @@
 #include "procgen/road/RoadNetwork.h"
 
+#include "procgen/road/RoadAuthoringInternal.h"
+#include "procgen/road/RoadConnectionInternal.h"
 #include "procgen/spline/SplinePath.h"
 
 #include "common/Diagnostic.h"
@@ -8,12 +10,51 @@
 #include <cmath>
 #include <limits>
 #include <string>
+#include <tuple>
 #include <utility>
 
 namespace eve::procgen::road {
 namespace {
+bool laneOrderLess(const RoadLaneConnection& a, const RoadLaneConnection& b) noexcept {
+    return std::tie(a.inEdge, a.inDirection, a.inLane, a.outEdge, a.outDirection, a.outLane) <
+           std::tie(b.inEdge, b.inDirection, b.inLane, b.outEdge, b.outDirection, b.outLane);
+}
 
 bool finite3(float x, float y, float z) { return std::isfinite(x) && std::isfinite(y) && std::isfinite(z); }
+
+bool validPoint(const RoadControlPoint& point) {
+    return finite3(point.x, point.y, point.z) && std::isfinite(point.widthScale) && point.widthScale >= 0.05f &&
+           point.widthScale <= 16.f && std::isfinite(point.rollDegrees) && std::fabs(point.rollDegrees) <= 360.f &&
+           std::isfinite(point.rollCenterOffset) && point.rollCenterOffset >= -.5f && point.rollCenterOffset <= .5f &&
+           std::isfinite(point.splineStrength) && point.splineStrength >= .01f && point.splineStrength <= 1.f &&
+           point.pathControl <= RoadPathControl::Circular;
+}
+
+Result<void> validateCircularPoints(const std::vector<RoadControlPoint>& points) {
+    if (std::none_of(points.begin(), points.end(),
+                     [](const auto& p) { return p.pathControl == RoadPathControl::Circular; }))
+        return Result<void>::success();
+    eve::procgen::SplinePath path;
+    for (const auto& p : points) {
+        eve::procgen::SplinePoint q;
+        q.x               = p.x;
+        q.y               = p.y;
+        q.z               = p.z;
+        q.spanControl     = static_cast<eve::procgen::SplineSpanControl>(p.pathControl);
+        q.circularFromEnd = p.circularFromEnd;
+        auto added        = path.addPointResult(q);
+        if (!added.ok()) return added;
+    }
+    auto evaluated = path.evaluateResult(0.f);
+    if (!evaluated.ok()) return Result<void>::failure(evaluated.status());
+    return Result<void>::success();
+}
+
+void anchorPoint(RoadControlPoint& point, float x, float y, float z) {
+    point.x = x;
+    point.y = y;
+    point.z = z;
+}
 
 bool hasUsableGeometry(const std::vector<RoadControlPoint>& points) {
     constexpr float minimumSegmentLengthSquared = 1e-8f;
@@ -26,23 +67,6 @@ bool hasUsableGeometry(const std::vector<RoadControlPoint>& points) {
     return false;
 }
 
-Result<SplinePath> makeCenterlineSpline(const RoadEdge& edge) {
-    SplinePath path;
-    auto kind = path.setKindResult("catmullRom");
-    if (!kind.ok()) return Result<SplinePath>::failure(kind.status());
-    path.setClosed(false);
-    for (const auto& point : edge.controlPoints) {
-        SplinePoint splinePoint;
-        splinePoint.x = point.x;
-        splinePoint.y = point.y;
-        splinePoint.z = point.z;
-        auto added = path.addPointResult(splinePoint);
-        if (!added.ok()) return Result<SplinePath>::failure(added.status());
-    }
-    return Result<SplinePath>::success(std::move(path));
-}
-
-RoadControlPoint P(float x, float y, float z) { return RoadControlPoint{x, y, z}; }
 
 int laneCount(const RoadEdge& edge, RoadLaneDirection direction) {
     return direction == RoadLaneDirection::Forward ? edge.lanesForward : edge.lanesBackward;
@@ -61,122 +85,6 @@ bool sameLaneLink(const RoadLaneConnection& a, const RoadLaneConnection& b) {
            a.inDirection == b.inDirection && a.outDirection == b.outDirection;
 }
 
-RoadStyle groundStyle() {
-    RoadStyle style;
-    style.deckThickness = 0.35f;
-    style.pierClearance = 100.f;
-    style.curbHeight    = 0.50f;
-    style.curbWidth     = 0.42f;
-    return style;
-}
-
-RoadStyle bridgeStyle() {
-    RoadStyle style     = groundStyle();
-    style.deckThickness = 0.75f;
-    style.pierClearance = 1.25f;
-    style.pierSpacing   = 8.f;
-    style.pierWidth     = 1.3f;
-    style.pierDepth     = 1.3f;
-    style.curbHeight    = 0.55f;
-    return style;
-}
-
-Result<RoadNetwork> makeTightTurnScene(int lanes) {
-    if (lanes < 1 || lanes > 4)
-        return Result<RoadNetwork>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "lanes in [1,4] required", "tight-turn"));
-
-    RoadNetwork network;
-    RoadStyle   style = groundStyle();
-    style.laneWidth   = 1.2f;
-    style.sidewalkWidth = 0.25f;
-
-    auto incomingStart = network.addNode(-9.f, 0.f, -3.f, 1.f);
-    auto hub           = network.addNode(0.f, 0.f, 0.f, 8.f);
-    auto outgoingEnd   = network.addNode(-9.f, 0.f, 3.f, 1.f);
-    for (auto* node : {&incomingStart, &hub, &outgoingEnd}) {
-        if (!node->ok()) return Result<RoadNetwork>::failure(node->status());
-    }
-
-    auto incoming = network.addEdge(incomingStart.value(), hub.value(),
-                                    {P(-9.f, 0.f, -3.f), P(0.f, 0.f, 0.f)}, lanes, 0, style);
-    auto outgoing = network.addEdge(hub.value(), outgoingEnd.value(),
-                                    {P(0.f, 0.f, 0.f), P(-9.f, 0.f, 3.f)}, lanes, 0, style);
-    if (!incoming.ok()) return Result<RoadNetwork>::failure(incoming.status());
-    if (!outgoing.ok()) return Result<RoadNetwork>::failure(outgoing.status());
-    auto turn = network.addLaneLink({incoming.value(), 0, outgoing.value(), 0, RoadLaneDirection::Forward,
-                                     RoadLaneDirection::Forward});
-    if (!turn.ok()) return Result<RoadNetwork>::failure(turn.status());
-    return Result<RoadNetwork>::success(std::move(network));
-}
-
-Result<RoadNetwork> makeThreeArmScene(const std::string& scene, int lanes) {
-    if (lanes < 1 || lanes > 4)
-        return Result<RoadNetwork>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "lanes in [1,4] required", scene));
-
-    RoadNetwork network;
-    RoadStyle   narrow = groundStyle();
-    RoadStyle   wide   = groundStyle();
-    narrow.laneWidth   = 3.f;
-    wide.laneWidth     = 4.2f;
-
-    const bool yJunction = scene == "y-junction";
-    auto hub   = network.addNode(0.f, 0.f, 0.f, yJunction ? 5.f : 6.f);
-    auto stem  = network.addNode(0.f, 0.f, 24.f, 2.f);
-    auto left  = network.addNode(-18.f, 0.f, yJunction ? -18.f : 0.f, 2.f);
-    auto right = network.addNode(18.f, 0.f, yJunction ? -18.f : 0.f, 2.f);
-    for (auto* node : {&hub, &stem, &left, &right}) {
-        if (!node->ok()) return Result<RoadNetwork>::failure(node->status());
-    }
-    auto incoming = network.addEdge(stem.value(), hub.value(), {P(0.f, 0.f, 24.f), P(0.f, 0.f, 0.f)}, lanes,
-                                    yJunction && lanes > 1 ? 1 : 0, yJunction ? wide : narrow);
-    auto west = network.addEdge(hub.value(), left.value(),
-                                {P(0.f, 0.f, 0.f), P(-18.f, 0.f, yJunction ? -18.f : 0.f)}, lanes, 0, narrow);
-    auto east = network.addEdge(hub.value(), right.value(),
-                                {P(0.f, 0.f, 0.f), P(18.f, 0.f, yJunction ? -18.f : 0.f)},
-                                yJunction ? std::min(4, lanes + 1) : lanes, 0, yJunction ? wide : narrow);
-    for (auto* edge : {&incoming, &west, &east}) {
-        if (!edge->ok()) return Result<RoadNetwork>::failure(edge->status());
-    }
-    auto turns = network.connectAllTurns(hub.value());
-    if (!turns.ok()) return Result<RoadNetwork>::failure(turns.status());
-    return Result<RoadNetwork>::success(std::move(network));
-}
-
-Result<RoadNetwork> makeSlopedJunctionScene(int lanes, bool curved) {
-    if (lanes < 1 || lanes > 4)
-        return Result<RoadNetwork>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "lanes in [1,4] required", curved ? "curve-uphill" : "sloped-t"));
-
-    RoadNetwork network;
-    RoadStyle   style = groundStyle();
-    auto hub  = network.addNode(0.f, 4.f, 0.f, 6.f);
-    auto low  = network.addNode(-22.f, 0.f, 12.f, 2.f);
-    auto high = network.addNode(-20.f, 7.f, -14.f, 2.f);
-    auto exit = network.addNode(24.f, 4.f, 0.f, 2.f);
-    for (auto* node : {&hub, &low, &high, &exit}) {
-        if (!node->ok()) return Result<RoadNetwork>::failure(node->status());
-    }
-    const std::vector<RoadControlPoint> lowPoints =
-        curved ? std::vector<RoadControlPoint>{P(-22.f, 0.f, 12.f), P(-13.f, 1.4f, 14.f), P(-6.f, 3.f, 7.f),
-                                               P(0.f, 4.f, 0.f)}
-               : std::vector<RoadControlPoint>{P(-22.f, 0.f, 12.f), P(0.f, 4.f, 0.f)};
-    const std::vector<RoadControlPoint> highPoints =
-        curved ? std::vector<RoadControlPoint>{P(-20.f, 7.f, -14.f), P(-12.f, 6.4f, -16.f), P(-5.f, 5.f, -7.f),
-                                               P(0.f, 4.f, 0.f)}
-               : std::vector<RoadControlPoint>{P(-20.f, 7.f, -14.f), P(0.f, 4.f, 0.f)};
-    auto lowEdge  = network.addEdge(low.value(), hub.value(), lowPoints, lanes, 0, style);
-    auto highEdge = network.addEdge(high.value(), hub.value(), highPoints, lanes, 0, style);
-    auto exitEdge = network.addEdge(hub.value(), exit.value(), {P(0.f, 4.f, 0.f), P(24.f, 4.f, 0.f)},
-                                    std::min(4, lanes + 1), 0, style);
-    for (auto* edge : {&lowEdge, &highEdge, &exitEdge}) {
-        if (!edge->ok()) return Result<RoadNetwork>::failure(edge->status());
-    }
-    auto turns = network.connectAllTurns(hub.value());
-    if (!turns.ok()) return Result<RoadNetwork>::failure(turns.status());
-    return Result<RoadNetwork>::success(std::move(network));
-}
 
 }  // namespace
 
@@ -185,11 +93,20 @@ Result<void> RoadNetwork::validateStyle(const RoadStyle& style) const {
     if (!profile.ok()) return Result<void>::failure(profile.status());
     if (!std::isfinite(style.speedLimitMps) || style.speedLimitMps <= 0.f || style.speedLimitMps > 200.f ||
         style.trafficPriority < 0 || style.trafficPriority > 255)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                       "road traffic settings are outside supported bounds",
-                                                       "style.traffic"));
-    if (!std::isfinite(style.sideObjectStartOffset) || style.sideObjectStartOffset < 0.f ||
-        !std::isfinite(style.sideObjectEndOffset) || style.sideObjectEndOffset < 0.f)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "road traffic settings are outside supported bounds", "style.traffic"));
+    const auto& placement = style.sidePlacement;
+    if (placement.pathSampling > RoadSidePathSampling::SurfaceSegments ||
+        placement.reference > RoadSideReference::Center || !std::isfinite(placement.lateralOffset) ||
+        std::fabs(placement.lateralOffset) > 10000.f || !std::isfinite(placement.verticalOffset) ||
+        std::fabs(placement.verticalOffset) > 10000.f || !std::isfinite(placement.yawDegrees) ||
+        std::fabs(placement.yawDegrees) > 360.f)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "rigid facility reference or offsets are outside supported bounds",
+            "style.sidePlacement"));
+    if (style.sideObjectDistribution > RoadSideDistribution::Average || !std::isfinite(style.sideObjectStartOffset) ||
+        style.sideObjectStartOffset < 0.f || !std::isfinite(style.sideObjectEndOffset) ||
+        style.sideObjectEndOffset < 0.f)
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                        "road side-object offsets must be finite and non-negative",
                                                        "style.sideObjects"));
@@ -235,10 +152,16 @@ Result<void> RoadNetwork::restoreNode(RoadNode node) {
         return Result<void>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "node requires finite position and positive junctionRadius", "node"));
     if (!validJunctionControl(node.junctionControl))
-        return Result<void>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "node junction control is outside supported bounds", "node.junctionControl"));
-    nodeIndex_[node.id] = static_cast<int>(nodes_.size());
-    nodes_.push_back(node);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "node junction control is outside supported bounds",
+                                                       "node.junctionControl"));
+    auto asset = detail::validateConnectionAsset(node.connection);
+    if (!asset.ok()) return asset;
+    const auto position = std::lower_bound(nodes_.begin(), nodes_.end(), node.id,
+                                           [](const RoadNode& item, std::uint32_t id) { return item.id < id; });
+    const auto inserted = static_cast<std::size_t>(position - nodes_.begin());
+    nodes_.insert(position, node);
+    for (std::size_t i = inserted; i < nodes_.size(); ++i) nodeIndex_[nodes_[i].id] = static_cast<int>(i);
     nextNodeId_ = std::max(nextNodeId_, node.id + 1);
     ++revision_;
     return Result<void>::success();
@@ -250,16 +173,21 @@ Result<std::uint32_t> RoadNetwork::addEdge(std::uint32_t from, std::uint32_t to,
     if (findNodeIndex(from) < 0 || findNodeIndex(to) < 0)
         return Result<std::uint32_t>::failure(
             Diagnostic::error(DiagnosticCode::NotFound, "edge endpoints must reference live nodes", "edge"));
+    if (!nodes_[static_cast<std::size_t>(findNodeIndex(from))].connection.ports.empty() ||
+        !nodes_[static_cast<std::size_t>(findNodeIndex(to))].connection.ports.empty())
+        return Result<std::uint32_t>::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                              "clear a custom connection before adding a new incident edge", "edge"));
     if (from == to)
-        return Result<std::uint32_t>::failure(Diagnostic::error(
-            DiagnosticCode::PreconditionViolation, "edge endpoints must be distinct", "edge"));
+        return Result<std::uint32_t>::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation, "edge endpoints must be distinct", "edge"));
     if (controlPoints.size() < 2)
         return Result<std::uint32_t>::failure(
             Diagnostic::error(DiagnosticCode::InvalidArgument, "edge needs at least two control points", "edge"));
     for (const auto& p : controlPoints) {
-        if (!finite3(p.x, p.y, p.z))
-            return Result<std::uint32_t>::failure(
-                Diagnostic::error(DiagnosticCode::InvalidArgument, "control points must be finite", "edge"));
+        if (!validPoint(p))
+            return Result<std::uint32_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "control point positions and profiles must be valid", "edge"));
     }
     auto styleOk = validateStyle(style);
     if (!styleOk.ok()) return Result<std::uint32_t>::failure(styleOk.status());
@@ -269,10 +197,12 @@ Result<std::uint32_t> RoadNetwork::addEdge(std::uint32_t from, std::uint32_t to,
     // A node is the authoritative connection position. Canonicalizing the two
     // endpoint samples prevents authored handles from leaving invisible gaps or
     // sending turn curves toward a stale position.
-    const auto& fromNode  = nodes_[static_cast<std::size_t>(findNodeIndex(from))];
-    const auto& toNode    = nodes_[static_cast<std::size_t>(findNodeIndex(to))];
-    controlPoints.front() = RoadControlPoint{fromNode.x, fromNode.y, fromNode.z};
-    controlPoints.back()  = RoadControlPoint{toNode.x, toNode.y, toNode.z};
+    const auto& fromNode = nodes_[static_cast<std::size_t>(findNodeIndex(from))];
+    const auto& toNode   = nodes_[static_cast<std::size_t>(findNodeIndex(to))];
+    anchorPoint(controlPoints.front(), fromNode.x, fromNode.y, fromNode.z);
+    anchorPoint(controlPoints.back(), toNode.x, toNode.y, toNode.z);
+    auto circular = validateCircularPoints(controlPoints);
+    if (!circular.ok()) return Result<std::uint32_t>::failure(circular.status());
     if (!hasUsableGeometry(controlPoints))
         return Result<std::uint32_t>::failure(Diagnostic::error(
             DiagnosticCode::PreconditionViolation, "edge centerline must contain a non-degenerate segment", "edge"));
@@ -306,24 +236,29 @@ Result<void> RoadNetwork::restoreEdge(RoadEdge edge) {
         return Result<void>::failure(
             Diagnostic::error(DiagnosticCode::InvalidArgument, "edge needs at least two control points", "edge"));
     for (const auto& point : edge.controlPoints) {
-        if (!finite3(point.x, point.y, point.z))
-            return Result<void>::failure(
-                Diagnostic::error(DiagnosticCode::InvalidArgument, "control points must be finite", "edge"));
+        if (!validPoint(point))
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "control point positions and profiles must be valid", "edge"));
     }
     auto styleOk = validateStyle(edge.style);
     if (!styleOk.ok()) return styleOk;
     auto profile = makeRoadProfile(edge.style, edge.lanesForward, edge.lanesBackward);
     if (!profile.ok()) return Result<void>::failure(profile.status());
-    const auto& from           = nodes_[static_cast<std::size_t>(findNodeIndex(edge.from))];
-    const auto& to             = nodes_[static_cast<std::size_t>(findNodeIndex(edge.to))];
-    edge.controlPoints.front() = RoadControlPoint{from.x, from.y, from.z};
-    edge.controlPoints.back()  = RoadControlPoint{to.x, to.y, to.z};
+    const auto& from = nodes_[static_cast<std::size_t>(findNodeIndex(edge.from))];
+    const auto& to   = nodes_[static_cast<std::size_t>(findNodeIndex(edge.to))];
+    anchorPoint(edge.controlPoints.front(), from.x, from.y, from.z);
+    anchorPoint(edge.controlPoints.back(), to.x, to.y, to.z);
+    auto circular = validateCircularPoints(edge.controlPoints);
+    if (!circular.ok()) return circular;
     if (!hasUsableGeometry(edge.controlPoints))
         return Result<void>::failure(Diagnostic::error(
             DiagnosticCode::PreconditionViolation, "edge centerline must contain a non-degenerate segment", "edge"));
-    edgeIndex_[edge.id]        = static_cast<int>(edges_.size());
-    nextEdgeId_                = std::max(nextEdgeId_, edge.id + 1);
-    edges_.push_back(std::move(edge));
+    nextEdgeId_         = std::max(nextEdgeId_, edge.id + 1);
+    const auto position = std::lower_bound(edges_.begin(), edges_.end(), edge.id,
+                                           [](const RoadEdge& item, std::uint32_t id) { return item.id < id; });
+    const auto inserted = static_cast<std::size_t>(position - edges_.begin());
+    edges_.insert(position, std::move(edge));
+    for (std::size_t i = inserted; i < edges_.size(); ++i) edgeIndex_[edges_[i].id] = static_cast<int>(i);
     ++revision_;
     return Result<void>::success();
 }
@@ -362,9 +297,9 @@ Result<void> RoadNetwork::addLaneLink(RoadLaneConnection link) {
             Diagnostic::error(DiagnosticCode::AlreadyExists, "lane link already exists", "laneLink"));
     if (std::any_of(blockedLaneLinks_.begin(), blockedLaneLinks_.end(),
                     [&](const auto& blocked) { return sameLaneLink(blocked, link); }))
-        return Result<void>::failure(Diagnostic::error(
-            DiagnosticCode::PreconditionViolation, "lane link is persistently blocked", "laneLink"));
-    laneLinks_.push_back(link);
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation, "lane link is persistently blocked", "laneLink"));
+    laneLinks_.insert(std::lower_bound(laneLinks_.begin(), laneLinks_.end(), link, laneOrderLess), link);
     ++revision_;
     return Result<void>::success();
 }
@@ -377,11 +312,13 @@ Result<bool> RoadNetwork::blockLaneLink(RoadLaneConnection link) {
         return Result<bool>::failure(
             Diagnostic::error(DiagnosticCode::AlreadyExists, "lane link is already blocked", "laneLink"));
     auto candidate = *this;
-    const auto active = std::find_if(candidate.laneLinks_.begin(), candidate.laneLinks_.end(),
-                                     [&](const auto& current) { return sameLaneLink(current, link); });
-    const bool removed = active != candidate.laneLinks_.end();
+    const auto active    = std::find_if(candidate.laneLinks_.begin(), candidate.laneLinks_.end(),
+                                        [&](const auto& current) { return sameLaneLink(current, link); });
+    const bool removed   = active != candidate.laneLinks_.end();
     if (removed) candidate.laneLinks_.erase(active);
-    candidate.blockedLaneLinks_.push_back(link);
+    candidate.blockedLaneLinks_.insert(
+        std::lower_bound(candidate.blockedLaneLinks_.begin(), candidate.blockedLaneLinks_.end(), link, laneOrderLess),
+        link);
     auto checked = candidate.validate();
     if (!checked.ok()) return Result<bool>::failure(checked.status());
     candidate.revision_ = revision_ + 1;
@@ -468,12 +405,27 @@ Result<void> RoadNetwork::validate() const {
     for (const auto& node : nodes_) {
         if (!finite3(node.x, node.y, node.z) || !std::isfinite(node.junctionRadius) || node.junctionRadius <= 0.f ||
             !validJunctionControl(node.junctionControl))
-            return Result<void>::failure(Diagnostic::error(
-                DiagnosticCode::InvariantViolation, "network contains an invalid junction node", "node"));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                           "network contains an invalid junction node", "node"));
+    }
+    for (const auto& node : nodes_) {
+        auto connection = detail::validateConnectionSeams(*this, node);
+        if (!connection.ok()) return connection;
+        auto routes = detail::validateFacilityRoutes(*this, node);
+        if (!routes.ok()) return routes;
     }
     for (const auto& edge : edges_) {
+        for (const auto& point : edge.controlPoints) {
+            if (!validPoint(point))
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                               "edge contains invalid control-point profiles", "edge"));
+        }
+        auto circular = validateCircularPoints(edge.controlPoints);
+        if (!circular.ok()) return circular;
         auto styleOk = validateStyle(edge.style);
         if (!styleOk.ok()) return styleOk;
+        auto profile = makeRoadProfile(edge.style, edge.lanesForward, edge.lanesBackward);
+        if (!profile.ok()) return Result<void>::failure(profile.status());
         if (findNodeIndex(edge.from) < 0 || findNodeIndex(edge.to) < 0)
             return Result<void>::failure(
                 Diagnostic::error(DiagnosticCode::InvariantViolation, "edge references a missing node", "edge"));
@@ -525,6 +477,19 @@ Result<void> RoadNetwork::setEdgeStyle(std::uint32_t edgeId, RoadStyle style) {
     auto profile = makeRoadProfile(style, edges_[static_cast<std::size_t>(idx)].lanesForward,
                                    edges_[static_cast<std::size_t>(idx)].lanesBackward);
     if (!profile.ok()) return Result<void>::failure(profile.status());
+    const auto& original = edges_[static_cast<std::size_t>(idx)];
+    if (!nodes_[static_cast<std::size_t>(findNodeIndex(original.from))].connection.ports.empty() ||
+        !nodes_[static_cast<std::size_t>(findNodeIndex(original.to))].connection.ports.empty() ||
+        !nodes_[static_cast<std::size_t>(findNodeIndex(original.from))].connection.facilityRoutes.empty() ||
+        !nodes_[static_cast<std::size_t>(findNodeIndex(original.to))].connection.facilityRoutes.empty()) {
+        auto candidate                                        = *this;
+        candidate.edges_[static_cast<std::size_t>(idx)].style = std::move(style);
+        auto valid                                            = candidate.validate();
+        if (!valid.ok()) return valid;
+        candidate.revision_ = revision_ + 1;
+        *this               = std::move(candidate);
+        return Result<void>::success();
+    }
     edges_[static_cast<std::size_t>(idx)].style = style;
     ++revision_;
     return Result<void>::success();
@@ -542,11 +507,11 @@ Result<void> RoadNetwork::setNodePosition(std::uint32_t nodeId, float x, float y
     auto candidate = *this;
     auto& candidateNode = candidate.nodes_[static_cast<std::size_t>(index)];
     candidateNode.x = x;
-    candidateNode.y = y;
-    candidateNode.z = z;
+    candidateNode.y     = y;
+    candidateNode.z     = z;
     for (auto& edge : candidate.edges_) {
-        if (edge.from == nodeId) edge.controlPoints.front() = RoadControlPoint{x, y, z};
-        if (edge.to == nodeId) edge.controlPoints.back() = RoadControlPoint{x, y, z};
+        if (edge.from == nodeId) anchorPoint(edge.controlPoints.front(), x, y, z);
+        if (edge.to == nodeId) anchorPoint(edge.controlPoints.back(), x, y, z);
     }
     for (std::size_t i = 0; i < blockedLaneLinks_.size(); ++i) {
         const auto& blocked = blockedLaneLinks_[i];
@@ -620,20 +585,27 @@ Result<int> RoadNetwork::mergeNodes(std::uint32_t keepNodeId, std::uint32_t remo
             return (edge.from == keepNodeId && edge.to == removeNodeId) ||
                    (edge.from == removeNodeId && edge.to == keepNodeId);
         }))
-        return Result<int>::failure(Diagnostic::error(
-            DiagnosticCode::PreconditionViolation, "merging nodes would create a self-loop edge", "removeNodeId"));
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                      "merging nodes would create a self-loop edge", "removeNodeId"));
 
+    if (!nodes_[static_cast<std::size_t>(keepIndex)].connection.ports.empty() ||
+        !nodes_[static_cast<std::size_t>(removeIndex)].connection.ports.empty() ||
+        !nodes_[static_cast<std::size_t>(keepIndex)].connection.facilityRoutes.empty() ||
+        !nodes_[static_cast<std::size_t>(removeIndex)].connection.facilityRoutes.empty())
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                      "clear custom connection assets before merging their nodes",
+                                                      "nodeId"));
     auto candidate = *this;
-    int rewired = 0;
+    int  rewired   = 0;
     for (auto& edge : candidate.edges_) {
         if (edge.from == removeNodeId) {
             edge.from = keepNodeId;
-            edge.controlPoints.front() = {keep.x, keep.y, keep.z};
+            anchorPoint(edge.controlPoints.front(), keep.x, keep.y, keep.z);
             ++rewired;
         }
         if (edge.to == removeNodeId) {
             edge.to = keepNodeId;
-            edge.controlPoints.back() = {keep.x, keep.y, keep.z};
+            anchorPoint(edge.controlPoints.back(), keep.x, keep.y, keep.z);
             ++rewired;
         }
     }
@@ -655,20 +627,31 @@ Result<void> RoadNetwork::setEdgeControlPoints(std::uint32_t edgeId, std::vector
         return Result<void>::failure(
             Diagnostic::error(DiagnosticCode::InvalidArgument, "edge needs at least two control points", "points"));
     for (const auto& point : controlPoints) {
-        if (!finite3(point.x, point.y, point.z))
-            return Result<void>::failure(
-                Diagnostic::error(DiagnosticCode::InvalidArgument, "control points must be finite", "points"));
+        if (!validPoint(point))
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "control point positions and profiles must be valid", "points"));
     }
 
-    auto&       edge      = edges_[static_cast<std::size_t>(index)];
-    const auto& from      = nodes_[static_cast<std::size_t>(findNodeIndex(edge.from))];
-    const auto& to        = nodes_[static_cast<std::size_t>(findNodeIndex(edge.to))];
-    controlPoints.front() = RoadControlPoint{from.x, from.y, from.z};
-    controlPoints.back()  = RoadControlPoint{to.x, to.y, to.z};
+    auto&       edge = edges_[static_cast<std::size_t>(index)];
+    const auto& from = nodes_[static_cast<std::size_t>(findNodeIndex(edge.from))];
+    const auto& to   = nodes_[static_cast<std::size_t>(findNodeIndex(edge.to))];
+    anchorPoint(controlPoints.front(), from.x, from.y, from.z);
+    anchorPoint(controlPoints.back(), to.x, to.y, to.z);
+    auto circular = validateCircularPoints(controlPoints);
+    if (!circular.ok()) return circular;
     if (!hasUsableGeometry(controlPoints))
         return Result<void>::failure(Diagnostic::error(
             DiagnosticCode::PreconditionViolation, "edge centerline must contain a non-degenerate segment", "points"));
-    edge.controlPoints    = std::move(controlPoints);
+    if (!from.connection.ports.empty() || !to.connection.ports.empty()) {
+        auto candidate                                                  = *this;
+        candidate.edges_[static_cast<std::size_t>(index)].controlPoints = std::move(controlPoints);
+        auto valid                                                      = candidate.validate();
+        if (!valid.ok()) return valid;
+        candidate.revision_ = revision_ + 1;
+        *this               = std::move(candidate);
+        return Result<void>::success();
+    }
+    edge.controlPoints = std::move(controlPoints);
     ++revision_;
     return Result<void>::success();
 }
@@ -705,9 +688,35 @@ Result<void> RoadNetwork::reverseEdge(std::uint32_t edgeId) {
     const int index = findEdgeIndex(edgeId);
     if (index < 0) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "unknown edge", "edgeId"));
     auto candidate = *this;
-    auto& edge = candidate.edges_[static_cast<std::size_t>(index)];
+    auto& edge      = candidate.edges_[static_cast<std::size_t>(index)];
     std::swap(edge.from, edge.to);
     std::reverse(edge.controlPoints.begin(), edge.controlPoints.end());
+    // Strength belongs to outgoing spans, not the geometric marker after reversal.
+    const float terminalStrength = edge.controlPoints.front().splineStrength;
+    const auto  terminalControl  = edge.controlPoints.front().pathControl;
+    const bool  terminalStart    = edge.controlPoints.front().alignStraightStart,
+               terminalEnd       = edge.controlPoints.front().alignStraightEnd;
+    const bool terminalCircle    = edge.controlPoints.front().circularFromEnd;
+    for (std::size_t i = 0; i + 1 < edge.controlPoints.size(); ++i) {
+        edge.controlPoints[i].splineStrength     = edge.controlPoints[i + 1].splineStrength;
+        edge.controlPoints[i].pathControl        = edge.controlPoints[i + 1].pathControl;
+        edge.controlPoints[i].circularFromEnd    = edge.controlPoints[i].pathControl == RoadPathControl::Circular
+                                                       ? !edge.controlPoints[i + 1].circularFromEnd
+                                                       : edge.controlPoints[i + 1].circularFromEnd;
+        edge.controlPoints[i].alignStraightStart = edge.controlPoints[i + 1].alignStraightEnd;
+        edge.controlPoints[i].alignStraightEnd   = edge.controlPoints[i + 1].alignStraightStart;
+    }
+    edge.controlPoints.back().splineStrength = terminalStrength;
+    edge.controlPoints.back().pathControl    = terminalControl;
+    edge.controlPoints.back().circularFromEnd =
+        terminalControl == RoadPathControl::Circular ? !terminalCircle : terminalCircle;
+    edge.controlPoints.back().alignStraightStart = terminalEnd;
+    edge.controlPoints.back().alignStraightEnd   = terminalStart;
+    for (auto& point : edge.controlPoints) {
+        if (point.rollDegrees != 0.f) point.rollDegrees = -point.rollDegrees;
+        if (point.rollCenterOffset != 0.f) point.rollCenterOffset = -point.rollCenterOffset;
+    }
+    detail::reverseRoadAuthoring(edge.style);
     std::swap(edge.lanesForward, edge.lanesBackward);
     std::swap(edge.style.sideObjectStartOffset, edge.style.sideObjectEndOffset);
     std::swap(edge.style.sideObjectsLeft, edge.style.sideObjectsRight);
@@ -722,15 +731,19 @@ Result<void> RoadNetwork::reverseEdge(std::uint32_t edgeId) {
         if (link.inEdge == edgeId) link.inDirection = flip(link.inDirection);
         if (link.outEdge == edgeId) link.outDirection = flip(link.outDirection);
     }
+    candidate.normalizeLaneLinkOrder();
     auto valid = candidate.validate();
     if (!valid.ok()) return valid;
     candidate.revision_ = revision_ + 1;
-    *this = std::move(candidate);
+    *this               = std::move(candidate);
     return Result<void>::success();
 }
+void RoadNetwork::normalizeLaneLinkOrder() {
+    std::sort(laneLinks_.begin(), laneLinks_.end(), laneOrderLess);
+    std::sort(blockedLaneLinks_.begin(), blockedLaneLinks_.end(), laneOrderLess);
+}
 
-Result<int> RoadNetwork::reconnectEdgeEndpoint(std::uint32_t edgeId, bool fromEndpoint,
-                                               std::uint32_t nodeId) {
+Result<int> RoadNetwork::reconnectEdgeEndpoint(std::uint32_t edgeId, bool fromEndpoint, std::uint32_t nodeId) {
     const int edgeIndex = findEdgeIndex(edgeId);
     const int nodeIndex = findNodeIndex(nodeId);
     if (edgeIndex < 0)
@@ -746,13 +759,13 @@ Result<int> RoadNetwork::reconnectEdgeEndpoint(std::uint32_t edgeId, bool fromEn
 
     auto candidate = *this;
     auto& edge = candidate.edges_[static_cast<std::size_t>(edgeIndex)];
-    const auto& node = candidate.nodes_[static_cast<std::size_t>(nodeIndex)];
+    const auto& node      = candidate.nodes_[static_cast<std::size_t>(nodeIndex)];
     if (fromEndpoint) {
         edge.from = nodeId;
-        edge.controlPoints.front() = {node.x, node.y, node.z};
+        anchorPoint(edge.controlPoints.front(), node.x, node.y, node.z);
     } else {
         edge.to = nodeId;
-        edge.controlPoints.back() = {node.x, node.y, node.z};
+        anchorPoint(edge.controlPoints.back(), node.x, node.y, node.z);
     }
     const auto stale = [&](const RoadLaneConnection& link) {
         if (link.inEdge != edgeId && link.outEdge != edgeId) return false;
@@ -818,190 +831,19 @@ Result<std::uint32_t> RoadNetwork::detachEdgeEndpoint(std::uint32_t edgeId, bool
     return Result<std::uint32_t>::success(result);
 }
 
-Result<RoadEdgeSplitResult> RoadNetwork::splitEdge(std::uint32_t edgeId, std::size_t controlPointIndex,
-                                                   float junctionRadius) {
-    return splitEdge(edgeId, controlPointIndex, junctionRadius, 0, 0);
-}
-
-Result<RoadEdgeSplitResult> RoadNetwork::splitEdgeAtSplineParameter(std::uint32_t edgeId, float parameter,
-                                                                    float junctionRadius, std::uint32_t nodeId,
-                                                                    std::uint32_t secondEdgeId) {
-    const int idx = findEdgeIndex(edgeId);
-    if (idx < 0)
-        return Result<RoadEdgeSplitResult>::failure(
-            Diagnostic::error(DiagnosticCode::NotFound, "unknown edge", "edgeId"));
-    if (!std::isfinite(parameter) || parameter <= 0.f || parameter >= 1.f)
-        return Result<RoadEdgeSplitResult>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "spline split parameter must be inside (0,1)", "parameter"));
-
-    const auto& original = edges_[static_cast<std::size_t>(idx)];
-    auto path = makeCenterlineSpline(original);
-    if (!path.ok()) return Result<RoadEdgeSplitResult>::failure(path.status());
-    auto evaluated = path.value().evaluateResult(parameter);
-    if (!evaluated.ok()) return Result<RoadEdgeSplitResult>::failure(evaluated.status());
-
-    const int segmentCount = path.value().segmentCount();
-    const float scaled = parameter * static_cast<float>(segmentCount);
-    const int nearest = static_cast<int>(std::round(scaled));
-    auto candidate = *this;
-    std::size_t splitIndex = 0;
-    if (nearest > 0 && nearest < segmentCount && std::fabs(scaled - static_cast<float>(nearest)) <= 1e-5f) {
-        splitIndex = static_cast<std::size_t>(nearest);
-    } else {
-        const int segment = std::clamp(static_cast<int>(std::floor(scaled)), 0, segmentCount - 1);
-        auto points = original.controlPoints;
-        splitIndex = static_cast<std::size_t>(segment + 1);
-        points.insert(points.begin() + static_cast<std::ptrdiff_t>(splitIndex),
-                      RoadControlPoint{evaluated.value().x, evaluated.value().y, evaluated.value().z});
-        auto changed = candidate.setEdgeControlPoints(edgeId, std::move(points));
-        if (!changed.ok()) return Result<RoadEdgeSplitResult>::failure(changed.status());
-    }
-    auto split = candidate.splitEdge(edgeId, splitIndex, junctionRadius, nodeId, secondEdgeId);
-    if (!split.ok()) return split;
-    const auto result = split.value();
-    candidate.revision_ = revision_ + 1;
-    *this = std::move(candidate);
-    return Result<RoadEdgeSplitResult>::success(result);
-}
-
-Result<RoadEdgeSplitResult> RoadNetwork::splitEdge(std::uint32_t edgeId, std::size_t controlPointIndex,
-                                                   float junctionRadius, std::uint32_t nodeId,
-                                                   std::uint32_t secondEdgeId) {
-    const int idx = findEdgeIndex(edgeId);
-    if (idx < 0)
-        return Result<RoadEdgeSplitResult>::failure(
-            Diagnostic::error(DiagnosticCode::NotFound, "unknown edge", "edgeId"));
-    const RoadEdge original = edges_[static_cast<std::size_t>(idx)];
-    if (controlPointIndex == 0 || controlPointIndex + 1 >= original.controlPoints.size())
-        return Result<RoadEdgeSplitResult>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "edge split requires an interior control point", "controlPointIndex"));
-    if (!std::isfinite(junctionRadius) || junctionRadius <= 0.f)
-        return Result<RoadEdgeSplitResult>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "edge split radius must be positive", "junctionRadius"));
-
-    auto candidate = *this;
-    const auto splitPoint = original.controlPoints[controlPointIndex];
-    std::uint32_t insertedNodeId = nodeId;
-    if (insertedNodeId == 0) {
-        auto node = candidate.addNode(splitPoint.x, splitPoint.y, splitPoint.z, junctionRadius);
-        if (!node.ok()) return Result<RoadEdgeSplitResult>::failure(node.status());
-        insertedNodeId = node.value();
-    } else {
-        auto node = candidate.restoreNode({insertedNodeId, splitPoint.x, splitPoint.y, splitPoint.z, junctionRadius});
-        if (!node.ok()) return Result<RoadEdgeSplitResult>::failure(node.status());
-    }
-
-    auto& first = candidate.edges_[static_cast<std::size_t>(idx)];
-    first.to = insertedNodeId;
-    first.controlPoints.resize(controlPointIndex + 1u);
-    first.controlPoints.back() = splitPoint;
-    std::vector<RoadControlPoint> continuation(original.controlPoints.begin() +
-                                                    static_cast<std::ptrdiff_t>(controlPointIndex),
-                                                original.controlPoints.end());
-    std::uint32_t continuationEdgeId = secondEdgeId;
-    if (continuationEdgeId == 0) {
-        auto second = candidate.addEdge(insertedNodeId, original.to, std::move(continuation), original.lanesForward,
-                                        original.lanesBackward, original.style);
-        if (!second.ok()) return Result<RoadEdgeSplitResult>::failure(second.status());
-        continuationEdgeId = second.value();
-    } else {
-        auto second = candidate.restoreEdge({continuationEdgeId, insertedNodeId, original.to, std::move(continuation),
-                                             original.lanesForward, original.lanesBackward, original.style});
-        if (!second.ok()) return Result<RoadEdgeSplitResult>::failure(second.status());
-    }
-
-    // The original id remains attached to the `from` half. References whose
-    // port lived at the old `to` endpoint migrate to the continuation edge.
-    for (auto& link : candidate.laneLinks_) {
-        if (link.inEdge == edgeId && link.inDirection == RoadLaneDirection::Forward)
-            link.inEdge = continuationEdgeId;
-        if (link.outEdge == edgeId && link.outDirection == RoadLaneDirection::Backward)
-            link.outEdge = continuationEdgeId;
-    }
-    for (auto& link : candidate.blockedLaneLinks_) {
-        if (link.inEdge == edgeId && link.inDirection == RoadLaneDirection::Forward)
-            link.inEdge = continuationEdgeId;
-        if (link.outEdge == edgeId && link.outDirection == RoadLaneDirection::Backward)
-            link.outEdge = continuationEdgeId;
-    }
-    for (int lane = 0; lane < original.lanesForward; ++lane) {
-        auto linked = candidate.addLaneLink(
-            {edgeId, lane, continuationEdgeId, lane, RoadLaneDirection::Forward, RoadLaneDirection::Forward});
-        if (!linked.ok()) return Result<RoadEdgeSplitResult>::failure(linked.status());
-    }
-    for (int lane = 0; lane < original.lanesBackward; ++lane) {
-        auto linked = candidate.addLaneLink(
-            {continuationEdgeId, lane, edgeId, lane, RoadLaneDirection::Backward, RoadLaneDirection::Backward});
-        if (!linked.ok()) return Result<RoadEdgeSplitResult>::failure(linked.status());
-    }
-    auto valid = candidate.validate();
-    if (!valid.ok()) return Result<RoadEdgeSplitResult>::failure(valid.status());
-    candidate.revision_ = revision_ + 1;
-    const RoadEdgeSplitResult result{insertedNodeId, edgeId, continuationEdgeId};
-    *this = std::move(candidate);
-    return Result<RoadEdgeSplitResult>::success(result);
-}
-
-Result<RoadEdgeSplitResult> RoadNetwork::splitEdgeAtPosition(std::uint32_t edgeId, RoadControlPoint position,
-                                                             float maxDistance, float junctionRadius) {
-    return splitEdgeAtPosition(edgeId, position, maxDistance, junctionRadius, 0, 0);
-}
-
-Result<RoadEdgeSplitResult> RoadNetwork::splitEdgeAtPosition(std::uint32_t edgeId, RoadControlPoint position,
-                                                             float maxDistance, float junctionRadius,
-                                                             std::uint32_t nodeId, std::uint32_t secondEdgeId) {
-    const int idx = findEdgeIndex(edgeId);
-    if (idx < 0)
-        return Result<RoadEdgeSplitResult>::failure(
-            Diagnostic::error(DiagnosticCode::NotFound, "unknown edge", "edgeId"));
-    if (!finite3(position.x, position.y, position.z) || !std::isfinite(maxDistance) || maxDistance < 0.f)
-        return Result<RoadEdgeSplitResult>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "split position and snap distance must be finite", "position"));
-
-    const auto& edge = edges_[static_cast<std::size_t>(idx)];
-    auto path = makeCenterlineSpline(edge);
-    if (!path.ok()) return Result<RoadEdgeSplitResult>::failure(path.status());
-    const int intervals = std::min(4096, std::max(32, path.value().segmentCount() * 32));
-    float       bestDistanceSquared = std::numeric_limits<float>::max();
-    float       bestParameter = 0.f;
-    auto previous = path.value().evaluateResult(0.f);
-    if (!previous.ok()) return Result<RoadEdgeSplitResult>::failure(previous.status());
-    for (int i = 0; i < intervals; ++i) {
-        const float nextParameter = static_cast<float>(i + 1) / static_cast<float>(intervals);
-        auto next = path.value().evaluateResult(nextParameter);
-        if (!next.ok()) return Result<RoadEdgeSplitResult>::failure(next.status());
-        const RoadControlPoint a{previous.value().x, previous.value().y, previous.value().z};
-        const RoadControlPoint b{next.value().x, next.value().y, next.value().z};
-        const float dx = b.x - a.x, dy = b.y - a.y, dz = b.z - a.z;
-        const float lengthSquared = dx * dx + dy * dy + dz * dz;
-        if (lengthSquared > 1e-8f) {
-            const float local = std::clamp(((position.x - a.x) * dx + (position.y - a.y) * dy +
-                                            (position.z - a.z) * dz) /
-                                               lengthSquared,
-                                           0.f, 1.f);
-            const RoadControlPoint projected{a.x + dx * local, a.y + dy * local, a.z + dz * local};
-            const float px = position.x - projected.x, py = position.y - projected.y, pz = position.z - projected.z;
-            const float distanceSquared = px * px + py * py + pz * pz;
-            if (distanceSquared < bestDistanceSquared) {
-                bestDistanceSquared = distanceSquared;
-                const float previousParameter = static_cast<float>(i) / static_cast<float>(intervals);
-                bestParameter = previousParameter + (nextParameter - previousParameter) * local;
-            }
-        }
-        previous = std::move(next);
-    }
-    if (bestDistanceSquared > maxDistance * maxDistance)
-        return Result<RoadEdgeSplitResult>::failure(Diagnostic::error(
-            DiagnosticCode::PreconditionViolation, "position is outside the road snap distance", "maxDistance"));
-
-    constexpr float endpointTolerance = 1e-4f;
-    if (bestParameter <= endpointTolerance || bestParameter >= 1.f - endpointTolerance)
-        return Result<RoadEdgeSplitResult>::failure(Diagnostic::error(
-            DiagnosticCode::PreconditionViolation, "position resolves to an edge endpoint", "position"));
-    return splitEdgeAtSplineParameter(edgeId, bestParameter, junctionRadius, nodeId, secondEdgeId);
-}
-
 Result<void> RoadNetwork::removeEdge(std::uint32_t edgeId) {
+    for (const auto& node : nodes_)
+        for (const auto& route : node.connection.facilityRoutes)
+            if (route.firstEdge == edgeId || route.secondEdge == edgeId)
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                               "clear facility routes before removing a bound edge",
+                                                               "edgeId"));
+    for (const auto& node : nodes_)
+        for (const auto& port : node.connection.ports)
+            if (port.edgeId == edgeId)
+                return Result<void>::failure(
+                    Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                      "clear the custom connection before destroying its bound edge", "edgeId"));
     const int index = findEdgeIndex(edgeId);
     if (index < 0) return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "unknown edge", "edgeId"));
     laneLinks_.erase(
@@ -1055,396 +897,6 @@ Result<RoadEdge> RoadNetwork::edgeResult(std::uint32_t id) const {
     const int idx = findEdgeIndex(id);
     if (idx < 0) return Result<RoadEdge>::failure(Diagnostic::error(DiagnosticCode::NotFound, "unknown edge", "id"));
     return Result<RoadEdge>::success(edges_[static_cast<std::size_t>(idx)]);
-}
-
-Result<RoadNetwork> RoadNetwork::makeStraight(float length, int lanes) {
-    if (!std::isfinite(length) || length < 8.f || lanes < 1 || lanes > 4)
-        return Result<RoadNetwork>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "length>=8, lanes in [1,4] required", "straight"));
-    RoadNetwork network;
-    const float half = length * 0.5f;
-    auto a = network.addNode(-half, 0.f, 0.f, 2.f);
-    auto b = network.addNode(half, 0.f, 0.f, 2.f);
-    if (!a.ok()) return Result<RoadNetwork>::failure(a.status());
-    if (!b.ok()) return Result<RoadNetwork>::failure(b.status());
-    auto edge = network.addEdge(a.value(), b.value(), {P(-half, 0.f, 0.f), P(0.f, 0.f, 0.f), P(half, 0.f, 0.f)}, lanes,
-                                0, groundStyle());
-    if (!edge.ok()) return Result<RoadNetwork>::failure(edge.status());
-    return Result<RoadNetwork>::success(std::move(network));
-}
-
-Result<RoadNetwork> RoadNetwork::makeCurve(float radius, int lanes) {
-    if (!std::isfinite(radius) || radius < 8.f || lanes < 1 || lanes > 4)
-        return Result<RoadNetwork>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "radius>=8, lanes in [1,4] required", "curve"));
-    RoadNetwork network;
-    auto a = network.addNode(-radius, 0.f, 0.f, 2.f);
-    auto b = network.addNode(0.f, 0.f, radius, 2.f);
-    if (!a.ok()) return Result<RoadNetwork>::failure(a.status());
-    if (!b.ok()) return Result<RoadNetwork>::failure(b.status());
-    auto edge = network.addEdge(a.value(), b.value(),
-                                {P(-radius, 0.f, 0.f), P(-radius * 0.55f, 0.f, radius * 0.15f),
-                                 P(-radius * 0.15f, 0.f, radius * 0.55f), P(0.f, 0.f, radius)},
-                                lanes, 0, groundStyle());
-    if (!edge.ok()) return Result<RoadNetwork>::failure(edge.status());
-    return Result<RoadNetwork>::success(std::move(network));
-}
-
-Result<RoadNetwork> RoadNetwork::makeBridge(float length, float height, int lanes) {
-    if (!std::isfinite(length) || length < 12.f || !std::isfinite(height) || height < 2.f || lanes < 1 || lanes > 4)
-        return Result<RoadNetwork>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "length>=12, height>=2, lanes in [1,4] required", "bridge"));
-    RoadNetwork network;
-    const float half = length * 0.5f;
-    // Flat elevated deck at constant height (no ramps yet) — isolates pier baking
-    // from Frenet-frame twist that shows up on steep climbs.
-    auto a = network.addNode(-half, height, 0.f, 2.f);
-    auto b = network.addNode(half, height, 0.f, 2.f);
-    if (!a.ok()) return Result<RoadNetwork>::failure(a.status());
-    if (!b.ok()) return Result<RoadNetwork>::failure(b.status());
-    auto edge =
-        network.addEdge(a.value(), b.value(), {P(-half, height, 0.f), P(0.f, height, 0.f), P(half, height, 0.f)}, lanes,
-                        0, bridgeStyle());
-    if (!edge.ok()) return Result<RoadNetwork>::failure(edge.status());
-    return Result<RoadNetwork>::success(std::move(network));
-}
-
-Result<RoadNetwork> RoadNetwork::makeCross(float span, int lanes) {
-    if (!std::isfinite(span) || span < 16.f || lanes < 1 || lanes > 4)
-        return Result<RoadNetwork>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "span>=16, lanes in [1,4] required", "cross"));
-    RoadNetwork network;
-    const float half = span * 0.5f;
-    RoadStyle style     = groundStyle();
-    style.deckThickness = 0.08f;
-    style.sidewalkWidth = 1.2f;
-    style.curbWidth     = 0.35f;
-    style.curbHeight    = 0.45f;
-    // Push arms outward past the asphalt half-width so sidewalks do not overlap;
-    // the leftover ring is filled by quarter-circle curb returns.
-    const float asphaltHalf = 0.5f * style.laneWidth * static_cast<float>(lanes);
-    const float cornerR     = 2.8f;
-    const float jr          = asphaltHalf + cornerR;
-    auto nC = network.addNode(0.f, 0.f, 0.f, jr);
-    auto nN = network.addNode(0.f, 0.f, -half, 2.f);
-    auto nS = network.addNode(0.f, 0.f, half, 2.f);
-    auto nW = network.addNode(-half, 0.f, 0.f, 2.f);
-    auto nE = network.addNode(half, 0.f, 0.f, 2.f);
-    for (auto* r : {&nC, &nN, &nS, &nW, &nE}) {
-        if (!r->ok()) return Result<RoadNetwork>::failure(r->status());
-    }
-    // Arms run into the hub; bake trims each end by junctionRadius so strips
-    // stop outside the corner arcs.
-    auto e1 = network.addEdge(nN.value(), nC.value(), {P(0.f, 0.f, -half), P(0.f, 0.f, 0.f)}, lanes, 0, style);
-    auto e2 = network.addEdge(nC.value(), nS.value(), {P(0.f, 0.f, 0.f), P(0.f, 0.f, half)}, lanes, 0, style);
-    auto e3 = network.addEdge(nW.value(), nC.value(), {P(-half, 0.f, 0.f), P(0.f, 0.f, 0.f)}, lanes, 0, style);
-    auto e4 = network.addEdge(nC.value(), nE.value(), {P(0.f, 0.f, 0.f), P(half, 0.f, 0.f)}, lanes, 0, style);
-    for (auto* e : {&e1, &e2, &e3, &e4}) {
-        if (!e->ok()) return Result<RoadNetwork>::failure(e->status());
-    }
-    auto turns = network.connectAllTurns(nC.value());
-    if (!turns.ok()) return Result<RoadNetwork>::failure(turns.status());
-    return Result<RoadNetwork>::success(std::move(network));
-}
-
-Result<RoadNetwork> RoadNetwork::makeTee(float span, int lanes) {
-    if (!std::isfinite(span) || span < 16.f || lanes < 1 || lanes > 4)
-        return Result<RoadNetwork>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "span>=16, lanes in [1,4] required", "tee"));
-    RoadNetwork network;
-    const float half = span * 0.5f;
-    RoadStyle  style = groundStyle();
-    style.deckThickness = 0.08f;
-    style.sidewalkWidth = 1.2f;
-    style.curbWidth     = 0.35f;
-    style.curbHeight    = 0.45f;
-    const float asphaltHalf = 0.5f * style.laneWidth * static_cast<float>(lanes);
-    const float jr          = asphaltHalf + 2.8f;
-    auto        center      = network.addNode(0.f, 0.f, 0.f, jr);
-    auto        south       = network.addNode(0.f, 0.f, half, 2.f);
-    auto        west        = network.addNode(-half, 0.f, 0.f, 2.f);
-    auto        east        = network.addNode(half, 0.f, 0.f, 2.f);
-    for (auto* node : {&center, &south, &west, &east})
-        if (!node->ok()) return Result<RoadNetwork>::failure(node->status());
-    auto westEdge = network.addEdge(west.value(), center.value(),
-                                    {P(-half, 0.f, 0.f), P(-half * 0.5f, 0.f, 0.f), P(0.f, 0.f, 0.f)}, lanes, 0,
-                                    style);
-    auto eastEdge = network.addEdge(center.value(), east.value(),
-                                    {P(0.f, 0.f, 0.f), P(half * 0.5f, 0.f, 0.f), P(half, 0.f, 0.f)}, lanes, 0,
-                                    style);
-    auto southEdge = network.addEdge(center.value(), south.value(),
-                                     {P(0.f, 0.f, 0.f), P(0.f, 0.f, half * 0.5f), P(0.f, 0.f, half)}, lanes, 0,
-                                     style);
-    for (auto* edge : {&westEdge, &eastEdge, &southEdge})
-        if (!edge->ok()) return Result<RoadNetwork>::failure(edge->status());
-    auto turns = network.connectAllTurns(center.value());
-    if (!turns.ok()) return Result<RoadNetwork>::failure(turns.status());
-    return Result<RoadNetwork>::success(std::move(network));
-}
-
-Result<RoadNetwork> RoadNetwork::makeY(float span, int lanes) {
-    if (!std::isfinite(span) || span < 16.f || lanes < 1 || lanes > 4)
-        return Result<RoadNetwork>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "span>=16, lanes in [1,4] required", "y"));
-    return makeFan(span, lanes, {270.f, 30.f, 150.f}, {true, false, false});
-}
-
-Result<RoadNetwork> RoadNetwork::makeFan(float span, int lanes, std::vector<float> armAnglesDeg,
-                                         std::vector<bool> intoHub) {
-    if (!std::isfinite(span) || span < 16.f || lanes < 1 || lanes > 4)
-        return Result<RoadNetwork>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "span>=16, lanes in [1,4] required", "fan"));
-    if (armAnglesDeg.size() < 2u)
-        return Result<RoadNetwork>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "fan needs at least two arm angles", "fan"));
-    if (!intoHub.empty() && intoHub.size() != armAnglesDeg.size())
-        return Result<RoadNetwork>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "intoHub size must match armAnglesDeg", "fan"));
-
-    struct ArmSpec {
-        float degrees = 0.f;
-        bool  intoHub = true;
-    };
-    std::vector<ArmSpec> specs;
-    specs.reserve(armAnglesDeg.size());
-    for (std::size_t index = 0; index < armAnglesDeg.size(); ++index) {
-        if (!std::isfinite(armAnglesDeg[index]))
-            return Result<RoadNetwork>::failure(
-                Diagnostic::error(DiagnosticCode::InvalidArgument, "arm angles must be finite", "fan"));
-        float degrees = std::fmod(armAnglesDeg[index], 360.f);
-        if (degrees < 0.f) degrees += 360.f;
-        specs.push_back({degrees, intoHub.empty() || intoHub[index]});
-    }
-    std::sort(specs.begin(), specs.end(),
-              [](const ArmSpec& first, const ArmSpec& second) { return first.degrees < second.degrees; });
-    if (intoHub.empty())
-        for (std::size_t index = 0; index < specs.size(); ++index) specs[index].intoHub = index % 2u == 0u;
-    std::vector<ArmSpec> unique;
-    unique.reserve(specs.size());
-    for (const auto& spec : specs)
-        if (unique.empty() || std::fabs(spec.degrees - unique.back().degrees) > 1.f) unique.push_back(spec);
-    if (unique.size() >= 2u && std::fabs(unique.front().degrees + 360.f - unique.back().degrees) <= 1.f)
-        unique.pop_back();
-    if (unique.size() < 2u)
-        return Result<RoadNetwork>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "fan needs at least two distinct arm angles", "fan"));
-
-    RoadNetwork network;
-    const float half = span * 0.5f;
-    RoadStyle  style = groundStyle();
-    style.deckThickness = 0.08f;
-    style.sidewalkWidth = 1.2f;
-    style.curbWidth     = 0.35f;
-    style.curbHeight    = 0.45f;
-    const float asphaltHalf = 0.5f * style.laneWidth * static_cast<float>(lanes);
-    auto        center      = network.addNode(0.f, 0.f, 0.f, asphaltHalf + 2.8f);
-    if (!center.ok()) return Result<RoadNetwork>::failure(center.status());
-    for (const auto& spec : unique) {
-        const float radians = spec.degrees * 0.01745329252f;
-        const float x = half * std::cos(radians), z = half * std::sin(radians);
-        auto leaf = network.addNode(x, 0.f, z, 2.f);
-        if (!leaf.ok()) return Result<RoadNetwork>::failure(leaf.status());
-        auto edge = spec.intoHub
-                        ? network.addEdge(leaf.value(), center.value(),
-                                          {P(x, 0.f, z), P(x * 0.5f, 0.f, z * 0.5f), P(0.f, 0.f, 0.f)}, lanes, 0,
-                                          style)
-                        : network.addEdge(center.value(), leaf.value(),
-                                          {P(0.f, 0.f, 0.f), P(x * 0.5f, 0.f, z * 0.5f), P(x, 0.f, z)}, lanes, 0,
-                                          style);
-        if (!edge.ok()) return Result<RoadNetwork>::failure(edge.status());
-    }
-    auto turns = network.connectAllTurns(center.value());
-    if (!turns.ok()) return Result<RoadNetwork>::failure(turns.status());
-    return Result<RoadNetwork>::success(std::move(network));
-}
-
-Result<RoadNetwork> RoadNetwork::makeFork(float span, int lanes) {
-    return makeFan(span, lanes, {60.f, 120.f, 270.f});
-}
-
-Result<RoadNetwork> RoadNetwork::makeSkew(float span, int lanes) {
-    return makeFan(span, lanes, {0.f, 135.f, 270.f});
-}
-
-Result<RoadNetwork> RoadNetwork::makeRoundabout(float span, int lanes) {
-    if (!std::isfinite(span) || span < 32.f || lanes < 1 || lanes > 3)
-        return Result<RoadNetwork>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "span>=32, lanes in [1,3] required", "roundabout"));
-    RoadNetwork network;
-    const float outerRadius = span * 0.5f;
-    const float ringRadius  = std::clamp(span * 0.25f, 8.f, 16.f);
-    constexpr float pi        = 3.14159265358979323846f;
-    constexpr int   ringCount = 8;
-    constexpr float ringStep  = 2.f * pi / static_cast<float>(ringCount);
-    std::vector<std::uint32_t> ringNodes;
-    ringNodes.reserve(ringCount);
-    for (int i = 0; i < ringCount; ++i) {
-        const float angle = -0.5f * pi + static_cast<float>(i) * ringStep;
-        const float seamRadius = (i % 2 == 0) ? 1.5f : 0.25f;
-        auto node = network.addNode(std::cos(angle) * ringRadius, 0.f, std::sin(angle) * ringRadius, seamRadius);
-        if (!node.ok()) return Result<RoadNetwork>::failure(node.status());
-        ringNodes.push_back(node.value());
-    }
-
-    RoadStyle ringStyle       = groundStyle();
-    ringStyle.laneWidth       = 3.25f;
-    ringStyle.curbWidth       = 0.3f;
-    ringStyle.sidewalkWidth   = 0.75f;
-    ringStyle.trafficPriority = 10;
-    RoadStyle approachStyle       = groundStyle();
-    approachStyle.laneWidth       = 3.f;
-    approachStyle.trafficPriority = 1;
-    for (int i = 0; i < ringCount; ++i) {
-        const float            a0     = -0.5f * pi + static_cast<float>(i) * ringStep;
-        const float            a3     = a0 + ringStep;
-        const float            handle = 2.f * ringRadius * std::sin(ringStep * 0.5f) / 3.f;
-        const RoadControlPoint p0 = P(std::cos(a0) * ringRadius, 0.f, std::sin(a0) * ringRadius);
-        const RoadControlPoint p3 = P(std::cos(a3) * ringRadius, 0.f, std::sin(a3) * ringRadius);
-        const RoadControlPoint p1 = P(p0.x - std::sin(a0) * handle, 0.f, p0.z + std::cos(a0) * handle);
-        const RoadControlPoint p2 = P(p3.x + std::sin(a3) * handle, 0.f, p3.z - std::cos(a3) * handle);
-        auto edge = network.addEdge(ringNodes[static_cast<std::size_t>(i)],
-                                    ringNodes[static_cast<std::size_t>((i + 1) % ringCount)],
-                                    {p0, p1, p2, p3},
-                                    lanes, 0, ringStyle);
-        if (!edge.ok()) return Result<RoadNetwork>::failure(edge.status());
-    }
-    for (int i = 0; i < ringCount; i += 2) {
-        const float angle = -0.5f * pi + static_cast<float>(i) * ringStep;
-        auto outer = network.addNode(std::cos(angle) * outerRadius, 0.f, std::sin(angle) * outerRadius, 2.f);
-        if (!outer.ok()) return Result<RoadNetwork>::failure(outer.status());
-        auto approach = network.addEdge(outer.value(), ringNodes[static_cast<std::size_t>(i)], {{}, {}}, lanes, lanes,
-                                        approachStyle);
-        if (!approach.ok()) return Result<RoadNetwork>::failure(approach.status());
-    }
-    for (int i = 0; i < ringCount; i += 2) {
-        const auto node = ringNodes[static_cast<std::size_t>(i)];
-        auto control = network.setNodeJunctionControl(node, RoadJunctionControl::Yield);
-        if (!control.ok()) return Result<RoadNetwork>::failure(control.status());
-        auto connected = network.connectAllTurns(node);
-        if (!connected.ok()) return Result<RoadNetwork>::failure(connected.status());
-    }
-    return Result<RoadNetwork>::success(std::move(network));
-}
-
-Result<RoadNetwork> RoadNetwork::makeScene(const std::string& scene, float span, float bridgeHeight, int lanes,
-                                           std::uint32_t seed) {
-    if (scene == "straight") return makeStraight(span, lanes);
-    if (scene == "curve") return makeCurve(std::max(8.f, span * 0.5f), lanes);
-    if (scene == "bridge") return makeBridge(span, bridgeHeight, lanes);
-    if (scene == "cross") return makeCross(span, lanes);
-    if (scene == "tee" || scene == "t") return makeTee(span, lanes);
-    if (scene == "y") return makeY(span, lanes);
-    if (scene == "fork") return makeFork(span, lanes);
-    if (scene == "skew") return makeSkew(span, lanes);
-    if (scene == "t-junction" || scene == "y-junction") return makeThreeArmScene(scene, lanes);
-    if (scene == "sloped-t") return makeSlopedJunctionScene(lanes, false);
-    if (scene == "curve-uphill") return makeSlopedJunctionScene(lanes, true);
-    if (scene == "tight-turn") return makeTightTurnScene(lanes);
-    if (scene == "roundabout") return makeRoundabout(span, std::min(lanes, 3));
-    if (scene == "interchange" || scene.empty()) return makeInterchange(span, bridgeHeight, lanes, seed);
-    return Result<RoadNetwork>::failure(Diagnostic::error(
-        DiagnosticCode::InvalidArgument,
-        "scene must be straight|curve|bridge|cross|tee|t|y|fork|skew|t-junction|y-junction|sloped-t|curve-uphill|tight-turn|roundabout|interchange",
-        "scene"));
-}
-
-Result<RoadNetwork> RoadNetwork::makeInterchange(float span, float bridgeHeight, int lanes, std::uint32_t seed) {
-    if (!std::isfinite(span) || span < 16.f || !std::isfinite(bridgeHeight) || bridgeHeight < 1.f || lanes < 1 ||
-        lanes > 4)
-        return Result<RoadNetwork>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "span>=16, bridgeHeight>=1, lanes in [1,4] required", "interchange"));
-
-    RoadNetwork network;
-    const float half = span * 0.5f;
-    const float h    = bridgeHeight;
-    // Tiny seed wobble on elevated mid-handles only — ground cross stays axis-aligned
-    // so bakeJunction keeps the same outward-center curb returns as makeCross.
-    const float wobble = 0.25f * static_cast<float>(static_cast<int>(seed % 7u) - 3);
-
-    RoadStyle   ground      = groundStyle();
-    ground.deckThickness    = 0.08f;
-    ground.sidewalkWidth    = 1.2f;
-    ground.curbWidth        = 0.35f;
-    ground.curbHeight       = 0.45f;
-    const float asphaltHalf = 0.5f * ground.laneWidth * static_cast<float>(lanes);
-    const float cornerR     = 2.8f;
-    const float jr          = asphaltHalf + cornerR;
-
-    RoadStyle bridge     = bridgeStyle();
-    bridge.pierSpacing   = 14.0f;
-    bridge.sidewalkWidth = 1.0f;
-    bridge.curbWidth     = 0.38f;
-    bridge.curbHeight    = 0.50f;
-    RoadStyle ramp       = bridge;
-    ramp.sidewalkWidth   = 0.5f;
-    ramp.pierSpacing     = 10.f;
-
-    auto nGround = network.addNode(0.f, 0.f, 0.f, jr);
-    auto nN      = network.addNode(0.f, 0.f, -half, 2.f);
-    auto nS      = network.addNode(0.f, 0.f, half, 2.f);
-    auto nW      = network.addNode(-half, 0.f, 0.f, 2.f);
-    auto nE      = network.addNode(half, 0.f, 0.f, 2.f);
-
-    // The elevated diagonal crosses the ground graph in XZ but has its own node
-    // at bridge height. Equal planar coordinates never imply connectivity.
-    auto nBridgeNW = network.addNode(-half, h, -half, 2.0f);
-    auto nElev     = network.addNode(0.f, h, 0.f, 2.0f);
-    auto nBridgeSE = network.addNode(half, h, half, 2.0f);
-    for (auto* res : {&nGround, &nN, &nS, &nW, &nE, &nBridgeNW, &nElev, &nBridgeSE}) {
-        if (!res->ok()) return Result<RoadNetwork>::failure(res->status());
-    }
-
-    auto add = [&](std::uint32_t a, std::uint32_t b, std::vector<RoadControlPoint> pts, const RoadStyle& style) {
-        return network.addEdge(a, b, std::move(pts), lanes, 0, style);
-    };
-
-    // Ground cross — same fillet construction as makeCross.
-    const auto g  = nGround.value();
-    auto       e1 = add(nN.value(), g, {P(0.f, 0.f, -half), P(0.f, 0.f, 0.f)}, ground);
-    auto       e2 = add(g, nS.value(), {P(0.f, 0.f, 0.f), P(0.f, 0.f, half)}, ground);
-    auto       e3 = add(nW.value(), g, {P(-half, 0.f, 0.f), P(0.f, 0.f, 0.f)}, ground);
-    auto       e4 = add(g, nE.value(), {P(0.f, 0.f, 0.f), P(half, 0.f, 0.f)}, ground);
-
-    // The central split is a smooth continuation and therefore creates no
-    // junction apron. Seed wobble remains bounded and tangent-continuous.
-    auto e5 = add(nBridgeNW.value(), nElev.value(),
-                  {P(-half, h, -half), P(-half * 0.45f + wobble, h, -half * 0.45f), P(0.f, h, 0.f)}, bridge);
-    auto e6 = add(nElev.value(), nBridgeSE.value(),
-                  {P(0.f, h, 0.f), P(half * 0.45f, h, half * 0.45f + wobble), P(half, h, half)}, bridge);
-
-    // Four outer ramps connect both ground approaches to the elevated diagonal
-    // without inventing planar connectivity at the central grade separation.
-    auto r1 = network.addEdge(nN.value(), nBridgeNW.value(),
-                              {P(0.f, 0.f, -half), P(-half * 0.35f, h * 0.2f, -half),
-                               P(-half * 0.75f, h * 0.75f, -half), P(-half, h, -half)},
-                              1, 1, ramp);
-    auto r2 = network.addEdge(nW.value(), nBridgeNW.value(),
-                              {P(-half, 0.f, 0.f), P(-half, h * 0.2f, -half * 0.35f),
-                               P(-half, h * 0.75f, -half * 0.75f), P(-half, h, -half)},
-                              1, 1, ramp);
-    auto r3 = network.addEdge(nBridgeSE.value(), nS.value(),
-                              {P(half, h, half), P(half * 0.75f, h * 0.75f, half),
-                               P(half * 0.35f, h * 0.2f, half), P(0.f, 0.f, half)},
-                              1, 1, ramp);
-    auto r4 = network.addEdge(nBridgeSE.value(), nE.value(),
-                              {P(half, h, half), P(half, h * 0.75f, half * 0.75f),
-                               P(half, h * 0.2f, half * 0.35f), P(half, 0.f, 0.f)},
-                              1, 1, ramp);
-
-    for (auto* edge : {&e1, &e2, &e3, &e4, &e5, &e6, &r1, &r2, &r3, &r4}) {
-        if (!edge->ok()) return Result<RoadNetwork>::failure(edge->status());
-    }
-
-    // Route links exist only at the ground intersection. The elevated road is
-    // a separate graph despite sharing the same XZ crossing coordinate.
-    auto turns = network.connectAllTurns(g);
-    if (!turns.ok()) return Result<RoadNetwork>::failure(turns.status());
-    for (const auto node : {nN.value(), nW.value(), nBridgeNW.value(), nBridgeSE.value(), nS.value(), nE.value()}) {
-        turns = network.connectAllTurns(node);
-        if (!turns.ok()) return Result<RoadNetwork>::failure(turns.status());
-    }
-
-    return Result<RoadNetwork>::success(std::move(network));
 }
 
 }  // namespace eve::procgen::road

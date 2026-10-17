@@ -133,7 +133,7 @@ jobs:
           sudo apt-get "${apt_sources[@]}" update
           sudo apt-get "${apt_sources[@]}" install -y clang-format-18
           sudo ln -sf /usr/bin/clang-format-18 /usr/local/bin/clang-format
-          python3 -m pip install --user --quiet pillow ruff
+          python3 -m pip install --user --quiet numpy pillow ruff
 
       - name: Run source-quality gate
         # Same entry point as local `make check`. Groups inside
