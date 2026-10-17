@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package eve.statepatch.proto;
+
+import "dynamic_value.proto";
+
+// Version 2 replaces the hand-written JSON store snapshot. Stored values are
+// open-ended runtime data; the store metadata has a fixed typed schema.
+message StatePatchStoreSave {
+  optional string schema = 1;
+  optional uint32 version = 2;
+  optional uint64 revision = 3;
+  optional uint64 next_sequence = 4;
+  repeated StatePatchEntry values = 5;
+  repeated StatePatchDirtyKey dirty = 6;
+}
+
+message StatePatchEntry {
+  optional string subject = 1;
+  optional string key = 2;
+  optional uint64 revision = 3;
+  eve.persistence.proto.DynamicValue value = 4;
+}
+
+message StatePatchDirtyKey {
+  optional string subject = 1;
+  optional string key = 2;
+}

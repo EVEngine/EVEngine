@@ -1,7 +1,11 @@
 #include "definitions/Definitions.h"
 
+#include "common/ProtobufDynamicValue.h"
 #include "common/SquirrelBinding.h"
+#include "definitions_registry.pb.h"
 #include "schema/SchemaRegistry.h"
+
+#include <google/protobuf/util/json_util.h>
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -13,6 +17,23 @@
 
 namespace eve::definitions {
 namespace {
+
+bool hasUnknownProtoFields(const google::protobuf::Message& message) {
+    const auto* reflection = message.GetReflection();
+    if (!reflection->GetUnknownFields(message).empty()) return true;
+    std::vector<const google::protobuf::FieldDescriptor*> fields;
+    reflection->ListFields(message, &fields);
+    for (const auto* field : fields) {
+        if (field->cpp_type() != google::protobuf::FieldDescriptor::CPPTYPE_MESSAGE) continue;
+        if (field->is_repeated()) {
+            for (int index = 0; index < reflection->FieldSize(message, field); ++index)
+                if (hasUnknownProtoFields(reflection->GetRepeatedMessage(message, field, index))) return true;
+        } else if (hasUnknownProtoFields(reflection->GetMessage(message, field))) {
+            return true;
+        }
+    }
+    return false;
+}
 
 eve::schema::FieldDefinition schemaField(std::string name, eve::schema::ValueType type, bool required = true) {
     eve::schema::FieldDefinition result;
@@ -35,7 +56,7 @@ eve::schema::SchemaNode arrayOfObject(std::vector<eve::schema::FieldDefinition> 
     return array;
 }
 
-eve::schema::SchemaDefinition definitionsSnapshotSchema() {
+eve::schema::SchemaDefinition legacyDefinitionsSnapshotSchema() {
     eve::schema::SchemaDefinition schema;
     schema.id                                          = "definitions:registry";
     schema.version                                     = 1;
@@ -84,7 +105,7 @@ eve::schema::SchemaDefinition definitionsSnapshotSchema() {
 eve::Result<void> validateDefinitionsSnapshot(const std::string& json) {
     constexpr auto id = "definitions:registry";
     if (!eve::schema::SchemaRegistry::resolve(id, 1)) {
-        auto registration = eve::schema::SchemaRegistry::registerVersioned(definitionsSnapshotSchema());
+        auto registration = eve::schema::SchemaRegistry::registerVersioned(legacyDefinitionsSnapshotSchema());
         if (!registration.ok()) return eve::Result<void>::failure(registration.status());
     }
     const auto errors = eve::schema::SchemaRegistry::validate(id, 1, json);
@@ -143,17 +164,6 @@ bool readUint64String(const eve::Value& value, std::uint64_t& output) {
     return error == std::errc{} && end == text->data() + text->size();
 }
 
-eve::Value parseStoredJson(std::string_view text) {
-    auto parsed = eve::Value::fromJson(text);
-    if (!parsed.ok()) {
-        // A Definition can enter the registry only after this exact parse
-        // succeeds. Reaching this point means the registry's invariant was
-        // violated, not that a caller supplied recoverable input.
-        std::terminate();
-    }
-    return std::move(parsed).takeValue();
-}
-
 eve::LogicalId definitionsSchema() {
     const auto schema = eve::LogicalId::parse("definitions:registry");
     if (!schema) std::terminate();
@@ -183,6 +193,19 @@ const eve::SnapshotMigrationChain& definitionsMigrations() {
                            return eve::Result<eve::Value>::success(eve::Value(std::move(migrated)));
                        });
         if (!registration.ok()) std::terminate();
+        const auto typedRegistration = result.add(definitionsSchema(), eve::SchemaVersion(1), eve::SchemaVersion(2),
+                                                  [](const eve::Value& payload) -> eve::Result<eve::Value> {
+                                                      auto legacyJson = payload.toJson();
+                                                      if (!legacyJson.ok())
+                                                          return eve::Result<eve::Value>::failure(legacyJson.status());
+                                                      DefinitionRegistry candidate;
+                                                      auto               restored =
+                                                          candidate.restoreJson(std::move(legacyJson).takeValue());
+                                                      if (!restored.ok())
+                                                          return eve::Result<eve::Value>::failure(restored.status());
+                                                      return eve::Value::fromJson(candidate.snapshotJson());
+                                                  });
+        if (!typedRegistration.ok()) std::terminate();
         return result;
     }();
     return chain;
@@ -393,56 +416,146 @@ void DefinitionRegistry::clearEvents() {
 }
 
 std::string DefinitionRegistry::snapshotJson() const {
-    const auto        state = storage_.snapshotState();
-    eve::Value::Array definitions;
-    eve::Value::Array events;
-    eve::Value::Array generations;
-    definitions.reserve(storage_.size());
-    events.reserve(storage_.eventCount());
-    generations.reserve(state.entries.size());
+    auto binary = snapshotBinary();
+    if (!binary.ok()) return {};
+    proto::DefinitionRegistrySave saved;
+    if (!saved.ParseFromString(binary.value())) return {};
+    std::string json;
+    return google::protobuf::util::MessageToJsonString(saved, &json).ok() ? json : std::string{};
+}
 
+eve::Result<std::string> DefinitionRegistry::snapshotBinary() const {
+    const auto                    state = storage_.snapshotState();
+    proto::DefinitionRegistrySave saved;
+    saved.set_schema("definitions:registry");
+    saved.set_version(2);
+    saved.set_next_event_sequence(state.nextEventSequence.value());
     for (const auto& [key, entry] : state.entries) {
-        eve::Value::Object generation;
-        generation.emplace("generation", eve::Value(std::to_string(entry.generation.value())));
-        generation.emplace("id", eve::Value(key.second));
-        generation.emplace("type", eve::Value(key.first));
-        generations.emplace_back(std::move(generation));
-
+        auto* generation = saved.add_generations();
+        generation->set_type(key.first);
+        generation->set_id(key.second);
+        generation->set_generation(entry.generation.value());
         if (!entry.value.has_value()) continue;
-        const auto&        definition = *entry.value;
-        eve::Value::Object item;
-        item.emplace("generation", eve::Value(std::to_string(entry.generation.value())));
-        item.emplace("id", eve::Value(definition.id));
-        item.emplace("json", parseStoredJson(definition.json));
-        item.emplace("type", eve::Value(definition.type));
-        item.emplace("version", eve::Value(static_cast<std::int64_t>(definition.version.value())));
-        definitions.emplace_back(std::move(item));
+        auto parsed = eve::Value::fromJson(entry.value->json);
+        if (!parsed.ok()) return eve::Result<std::string>::failure(parsed.status());
+        auto* definition = saved.add_definitions();
+        definition->set_type(key.first);
+        definition->set_id(key.second);
+        definition->set_version(entry.value->version.value());
+        definition->set_generation(entry.generation.value());
+        auto encoded = eve::proto_support::encodeDynamicValue(parsed.value(), *definition->mutable_body());
+        if (!encoded.ok()) return eve::Result<std::string>::failure(encoded.status());
     }
-
-    for (const auto& raw : state.events) {
-        const auto         event = projectEvent(raw);
-        eve::Value::Object item;
-        item.emplace("generation", eve::Value(std::to_string(event.generation.value())));
-        item.emplace("id", eve::Value(event.id));
-        item.emplace("name", eve::Value(event.name));
-        item.emplace("sequence", eve::Value(std::to_string(event.sequence.value())));
-        item.emplace("type", eve::Value(event.type));
-        item.emplace("version", eve::Value(static_cast<std::int64_t>(event.version.value())));
-        events.emplace_back(std::move(item));
+    for (const auto& event : state.events) {
+        auto* record = saved.add_events();
+        record->set_sequence(event.sequence.value());
+        record->set_type(event.key.first);
+        record->set_id(event.key.second);
+        record->set_version(event.data.version.value());
+        record->set_generation(event.generation.value());
+        switch (event.operation) {
+            case eve::RegistryOperation::Insert: record->set_operation(proto::DefinitionEventRecord::INSERT); break;
+            case eve::RegistryOperation::Replace: record->set_operation(proto::DefinitionEventRecord::REPLACE); break;
+            case eve::RegistryOperation::Remove: record->set_operation(proto::DefinitionEventRecord::REMOVE); break;
+        }
     }
+    std::string binary;
+    if (!saved.SerializeToString(&binary))
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::SerializationError, "definition registry Protobuf encoding failed"));
+    return eve::Result<std::string>::success(std::move(binary));
+}
 
-    eve::Value::Object root;
-    root.emplace("definitions", eve::Value(std::move(definitions)));
-    root.emplace("events", eve::Value(std::move(events)));
-    root.emplace("generations", eve::Value(std::move(generations)));
-    root.emplace("nextEventSequence", eve::Value(std::to_string(state.nextEventSequence.value())));
-    root.emplace("version", eve::Value(std::int64_t(1)));
-    auto encoded = eve::Value(std::move(root)).toJson();
-    if (!encoded.ok()) std::terminate();
-    return std::move(encoded).takeValue();
+eve::Result<void> DefinitionRegistry::restoreBinary(std::string_view bytes) {
+    proto::DefinitionRegistrySave saved;
+    if (bytes.size() > static_cast<std::size_t>(std::numeric_limits<int>::max()) ||
+        !saved.ParseFromArray(bytes.data(), static_cast<int>(bytes.size())) || hasUnknownProtoFields(saved) ||
+        !saved.has_schema() || saved.schema() != "definitions:registry" || !saved.has_version() ||
+        saved.version() != 2 || !saved.has_next_event_sequence() || saved.next_event_sequence() == 0)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid definition registry Protobuf snapshot"));
+
+    Storage::State candidate;
+    for (const auto& generation : saved.generations()) {
+        if (!generation.has_type() || generation.type().empty() || !generation.has_id() || generation.id().empty() ||
+            !generation.has_generation() || generation.generation() == 0 ||
+            !candidate.entries
+                 .emplace(Key{generation.type(), generation.id()},
+                          Storage::Entry{eve::Generation(generation.generation()), std::nullopt})
+                 .second)
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid definition generation"));
+    }
+    for (const auto& record : saved.definitions()) {
+        if (!record.has_type() || record.type().empty() || !record.has_id() || record.id().empty() ||
+            !record.has_version() || record.version() == 0 || !record.has_generation() || record.generation() == 0 ||
+            !record.has_body())
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid definition record"));
+        auto entry = candidate.entries.find(Key{record.type(), record.id()});
+        if (entry == candidate.entries.end() || entry->second.generation != eve::Generation(record.generation()) ||
+            entry->second.value.has_value())
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "inconsistent definition generation"));
+        auto decoded = eve::proto_support::decodeDynamicValue(record.body());
+        if (!decoded.ok()) return eve::Result<void>::failure(decoded.status());
+        auto json = decoded.value().toJson();
+        if (!json.ok()) return eve::Result<void>::failure(json.status());
+        Definition definition;
+        definition.type       = record.type();
+        definition.id         = record.id();
+        definition.version    = eve::SchemaVersion(record.version());
+        definition.generation = eve::Generation(record.generation());
+        definition.json       = std::move(json).takeValue();
+        entry->second.value   = std::move(definition);
+    }
+    eve::EventSequence previousSequence;
+    for (const auto& record : saved.events()) {
+        if (!record.has_sequence() || record.sequence() == 0 ||
+            (!previousSequence.isZero() && eve::EventSequence(record.sequence()) <= previousSequence) ||
+            !record.has_operation() || !record.has_type() || record.type().empty() || !record.has_id() ||
+            record.id().empty() || !record.has_version() || record.version() == 0 || !record.has_generation() ||
+            record.generation() == 0)
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid definition event"));
+        Storage::Event event;
+        event.sequence = eve::EventSequence(record.sequence());
+        switch (record.operation()) {
+            case proto::DefinitionEventRecord::INSERT: event.operation = eve::RegistryOperation::Insert; break;
+            case proto::DefinitionEventRecord::REPLACE: event.operation = eve::RegistryOperation::Replace; break;
+            case proto::DefinitionEventRecord::REMOVE: event.operation = eve::RegistryOperation::Remove; break;
+            default:
+                return eve::Result<void>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid definition event operation"));
+        }
+        event.key          = Key{record.type(), record.id()};
+        event.generation   = eve::Generation(record.generation());
+        event.tombstone    = event.operation == eve::RegistryOperation::Remove;
+        event.data.version = eve::SchemaVersion(record.version());
+        candidate.events.push_back(std::move(event));
+        previousSequence = eve::EventSequence(record.sequence());
+    }
+    if (!previousSequence.isZero() && eve::EventSequence(saved.next_event_sequence()) <= previousSequence)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvariantViolation, "next definition event sequence must exceed retained events"));
+    candidate.nextEventSequence = eve::EventSequence(saved.next_event_sequence());
+    auto restored               = storage_.restoreState(std::move(candidate));
+    if (!restored.ok()) return eve::Result<void>::failure(restored.status());
+    clearEventProjection();
+    revision_ = eve::Revision(saved.next_event_sequence() - 1);
+    tick_     = eve::SimulationTick{};
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> DefinitionRegistry::restoreJson(const std::string& json) {
+    proto::DefinitionRegistrySave typed;
+    if (google::protobuf::util::JsonStringToMessage(json, &typed).ok() && typed.has_schema()) {
+        std::string binary;
+        if (!typed.SerializeToString(&binary))
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid definition registry Protobuf JSON"));
+        return restoreBinary(binary);
+    }
     auto schemaValidation = validateDefinitionsSnapshot(json);
     if (!schemaValidation.ok()) return schemaValidation;
     auto parsed = eve::Value::fromJson(json);
@@ -576,7 +689,7 @@ eve::Result<void> DefinitionRegistry::restoreJson(const std::string& json) {
 eve::Result<eve::SnapshotEnvelope> DefinitionRegistry::snapshot(const eve::SnapshotHashProvider& hashProvider) const {
     auto payload = eve::Value::fromJson(snapshotJson());
     if (!payload.ok()) return eve::Result<eve::SnapshotEnvelope>::failure(payload.status());
-    return eve::makeSnapshotEnvelope("definitions.registry", definitionsSchema(), eve::SchemaVersion(1), instanceId_,
+    return eve::makeSnapshotEnvelope("definitions.registry", definitionsSchema(), eve::SchemaVersion(2), instanceId_,
                                      revision_, tick_, std::move(payload).takeValue(), hashProvider);
 }
 
@@ -589,7 +702,7 @@ eve::Result<void> DefinitionRegistry::restoreSnapshot(const eve::SnapshotEnvelop
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Conflict, "snapshot instanceId does not match definitions::DefinitionRegistry"));
 
-    auto migrated = definitionsMigrations().migrate(source, eve::SchemaVersion(1), hashProvider);
+    auto migrated = definitionsMigrations().migrate(source, eve::SchemaVersion(2), hashProvider);
     if (!migrated.ok()) return eve::Result<void>::failure(migrated.status());
     const auto& candidate = migrated.value();
     auto        metadata  = eve::validateSnapshotPayloadMetadata(candidate.payload, candidate.revision, candidate.tick);

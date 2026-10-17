@@ -3,6 +3,8 @@
 #include "common/SquirrelBinding.h"
 
 #include "common/Json.h"
+#include "common/ProtobufSnapshot.h"
+#include "game_event_stream.pb.h"
 #include "schema/SchemaRegistry.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -11,6 +13,7 @@
 #include <cmath>
 #include <iomanip>
 #include <limits>
+#include <set>
 #include <sstream>
 #include <string_view>
 
@@ -392,6 +395,149 @@ std::string GameEventLog::snapshotJson() const {
             << ",\"payload\":" << event.payload << '}';
     }
     return out.str() + "]}";
+}
+
+eve::Result<std::string> GameEventLog::snapshotBinary() const {
+    eve::game_event::proto::GameEventStreamSave save;
+    save.set_schema("game_event:stream");
+    save.set_version(3);
+    save.set_revision(revision_.value());
+    save.set_next_sequence(nextSequence_.value());
+    for (const auto& event : events_) {
+        auto* record = save.add_events();
+        record->set_event_id(event.eventId.format());
+        record->set_sequence(event.sequence.value());
+        record->set_type(event.type);
+        record->set_source(event.source);
+        record->set_subject(event.subject);
+        record->set_causation_kind(causationKindName(event.causation.kind()));
+        record->set_causation(event.causation.format());
+        record->set_correlation_kind(correlationKindName(event.correlation.kind()));
+        record->set_correlation(event.correlation.format());
+        record->set_schema_id(event.schemaId.format());
+        record->set_schema_version(event.schemaVersion.value());
+        record->set_tick(event.tick.value());
+        record->set_flags(event.flags);
+        record->set_payload_wire(event.payload);
+    }
+    std::string wire;
+    if (!save.SerializeToString(&wire))
+        return eve::Result<std::string>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "event stream Protobuf serialization failed"));
+    return eve::Result<std::string>::success(std::move(wire));
+}
+
+eve::Result<void> GameEventLog::restoreBinary(std::string_view bytes) {
+    const auto invalid = [](std::string message) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move(message)));
+    };
+    eve::game_event::proto::GameEventStreamSave save;
+    if (bytes.size() > static_cast<std::size_t>(std::numeric_limits<int>::max()) ||
+        !save.ParseFromArray(bytes.data(), static_cast<int>(bytes.size())) ||
+        !save.GetReflection()->GetUnknownFields(save).empty() || !save.has_schema() ||
+        save.schema() != "game_event:stream" || !save.has_version() || save.version() != 3 || !save.has_revision() ||
+        !save.has_next_sequence() || save.next_sequence() == 0)
+        return invalid("invalid event stream Protobuf header");
+
+    std::deque<GameEvent> restored;
+    std::set<std::string> restoredIds;
+    std::uint64_t         previous = 0;
+    eve::SimulationTick   maxTick  = eve::SimulationTick::zero();
+    for (const auto& record : save.events()) {
+        if (!record.GetReflection()->GetUnknownFields(record).empty() || !record.has_event_id() ||
+            !record.has_sequence() || record.sequence() <= previous || !record.has_type() || record.type().empty() ||
+            !record.has_source() || !record.has_subject() || !record.has_causation_kind() || !record.has_causation() ||
+            !record.has_correlation_kind() || !record.has_correlation() || !record.has_schema_id() ||
+            !record.has_schema_version() || record.schema_version() == 0 || !record.has_tick() || !record.has_flags() ||
+            !record.has_payload_wire())
+            return invalid("invalid event stream Protobuf record");
+        auto eventId  = EventId::parse(record.event_id());
+        auto schemaId = eve::LogicalId::parse(record.schema_id());
+        if (!eventId || !schemaId || !schemaId->isValid()) return invalid("invalid event stream identity");
+        if (!eventId->isNil() && !restoredIds.insert(eventId->format()).second)
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "duplicate event ID in Protobuf snapshot"));
+        const auto& causationKind   = record.causation_kind();
+        const auto& correlationKind = record.correlation_kind();
+        if ((causationKind != "none" && causationKind != "event" && causationKind != "command" &&
+             causationKind != "legacy") ||
+            (correlationKind != "none" && correlationKind != "id" && correlationKind != "legacy") ||
+            (causationKind == "none") != record.causation().empty() ||
+            (correlationKind == "none") != record.correlation().empty())
+            return invalid("invalid event stream causal reference");
+        auto causation   = causationFromSnapshot(causationKind, record.causation());
+        auto correlation = correlationFromSnapshot(correlationKind, record.correlation());
+        if ((causationKind != "none" && causation.kind() == CausationRef::Kind::None) ||
+            (correlationKind != "none" && correlation.kind() == CorrelationId::Kind::None))
+            return invalid("invalid event stream causal identity");
+        auto payload = eve::json::Document::parse(record.payload_wire());
+        if (!payload.valid()) return invalid("invalid event stream payload");
+
+        GameEvent event;
+        event.eventId       = *eventId;
+        event.sequence      = EventSequence(record.sequence());
+        event.type          = record.type();
+        event.source        = record.source();
+        event.subject       = record.subject();
+        event.causation     = std::move(causation);
+        event.correlation   = std::move(correlation);
+        event.schemaId      = *schemaId;
+        event.schemaVersion = SchemaVersion(record.schema_version());
+        event.tick          = SimulationTick(record.tick());
+        event.flags         = record.flags();
+        event.payload       = record.payload_wire();
+        if (event.tick > maxTick) maxTick = event.tick;
+        previous = record.sequence();
+        restored.push_back(std::move(event));
+    }
+    if (previous >= save.next_sequence()) return invalid("event stream next sequence does not follow retained events");
+    events_       = std::move(restored);
+    nextSequence_ = EventSequence(save.next_sequence());
+    revision_     = eve::Revision(save.revision());
+    snapshotTick_ = maxTick;
+    query_.clear();
+    consumers_.clear();
+    return eve::Result<void>::success();
+}
+
+eve::Result<std::string> GameEventLog::snapshotEnvelopeBinary(const eve::SnapshotHashProvider& hashProvider) const {
+    auto payload = snapshotBinary();
+    if (!payload.ok()) return eve::Result<std::string>::failure(payload.status());
+    return eve::proto_support::serializeBinarySnapshot(
+        {"game_event.stream", eventStreamSchema(), eve::SchemaVersion(3), instanceId_, revision_, snapshotTick_,
+         std::move(payload).takeValue()},
+        hashProvider);
+}
+
+eve::Result<void> GameEventLog::restoreSnapshotBinary(std::string_view                 bytes,
+                                                      const eve::SnapshotHashProvider& hashProvider) {
+    auto parsed = eve::proto_support::parseBinarySnapshot(bytes, hashProvider);
+    if (!parsed.ok()) return eve::Result<void>::failure(parsed.status());
+    auto envelope = std::move(parsed).takeValue();
+    if (envelope.type != "game_event.stream" || envelope.schema != eventStreamSchema() ||
+        envelope.schemaVersion != eve::SchemaVersion(3))
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "snapshot does not belong to game_event::GameEventLog"));
+    if (!instanceId_.isNil() && envelope.instanceId != instanceId_)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "snapshot instanceId does not match game_event::GameEventLog"));
+    GameEventLog candidate(instanceId_);
+    candidate.eventIdGenerator_ = eventIdGenerator_;
+    auto restored               = candidate.restoreBinary(envelope.payloadWire);
+    if (!restored.ok()) return restored;
+    if (candidate.revision_ != envelope.revision || candidate.snapshotTick_ != envelope.tick)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "event stream payload metadata disagrees with envelope"));
+    candidate.instanceId_ = envelope.instanceId;
+    eventIdGenerator_     = std::move(candidate.eventIdGenerator_);
+    instanceId_           = candidate.instanceId_;
+    revision_             = candidate.revision_;
+    snapshotTick_         = candidate.snapshotTick_;
+    nextSequence_         = candidate.nextSequence_;
+    events_               = std::move(candidate.events_);
+    query_.clear();
+    consumers_.clear();
+    return eve::Result<void>::success();
 }
 
 eve::Result<void> GameEventLog::restore(std::string_view json) {

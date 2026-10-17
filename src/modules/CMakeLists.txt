@@ -279,6 +279,165 @@ foreach(_mod IN LISTS EVE_ENABLED_MODULES)
   create_module(${EVE_MODULE_${_mod}_LIB} ${_mod})
 endforeach()
 
+if(TARGET EVSchema)
+  target_link_libraries(EVSchema PUBLIC protobuf::libprotobuf)
+endif()
+
+if(TARGET EVAuthority)
+  target_sources(EVAuthority PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/authority_store.pb.cc)
+  target_include_directories(EVAuthority SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  if(MSVC)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/authority_store.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+  endif()
+  target_link_libraries(EVAuthority PUBLIC protobuf::libprotobuf)
+endif()
+
+if(TARGET EVPolicyregistry)
+  target_sources(EVPolicyregistry PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/policy_registry.pb.cc)
+  target_include_directories(EVPolicyregistry SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  if(MSVC)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/policy_registry.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+  endif()
+  target_link_libraries(EVPolicyregistry PUBLIC protobuf::libprotobuf)
+endif()
+
+if(TARGET EVTransaction)
+  target_sources(EVTransaction PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/transaction_ledger.pb.cc)
+  target_include_directories(EVTransaction SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  if(MSVC)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/transaction_ledger.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+  endif()
+  target_link_libraries(EVTransaction PUBLIC protobuf::libprotobuf)
+endif()
+
+if(TARGET EVStatepatch)
+  target_sources(EVStatepatch PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/statepatch_store.pb.cc)
+  target_include_directories(EVStatepatch SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  if(MSVC)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/statepatch_store.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+  endif()
+  target_link_libraries(EVStatepatch PUBLIC protobuf::libprotobuf)
+endif()
+
+if(TARGET EVDefinitions)
+  target_sources(EVDefinitions PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/definitions_registry.pb.cc)
+  target_include_directories(EVDefinitions SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  if(MSVC)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/definitions_registry.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+  endif()
+  target_link_libraries(EVDefinitions PUBLIC protobuf::libprotobuf)
+endif()
+
+if(TARGET EVGame_event)
+  target_include_directories(EVGame_event SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  target_link_libraries(EVGame_event PUBLIC protobuf::libprotobuf)
+endif()
+
+if(TARGET EVProduction)
+  target_sources(EVProduction PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/production_queue.pb.cc)
+  target_include_directories(EVProduction SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  if(MSVC)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/production_queue.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+  endif()
+  target_link_libraries(EVProduction PUBLIC protobuf::libprotobuf)
+endif()
+
+if(TARGET EVOrders)
+  target_sources(EVOrders PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/orders_command_queue.pb.cc)
+  target_include_directories(EVOrders SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  if(MSVC)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/orders_command_queue.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+  endif()
+  target_link_libraries(EVOrders PUBLIC protobuf::libprotobuf)
+endif()
+
+if(TARGET EVNpc_ai)
+  target_sources(EVNpc_ai PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/decision_context.pb.cc)
+  target_include_directories(EVNpc_ai SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  if(MSVC)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/decision_context.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+  endif()
+  target_link_libraries(EVNpc_ai PUBLIC protobuf::libprotobuf)
+endif()
+
+if(TARGET EVEmergence)
+  target_sources(EVEmergence PRIVATE
+    ${CMAKE_SOURCE_DIR}/proto/generated/emergence_runtime.pb.cc
+    ${CMAKE_SOURCE_DIR}/proto/generated/emergence_catalogue.pb.cc)
+  target_include_directories(EVEmergence SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  if(MSVC)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/emergence_runtime.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/emergence_catalogue.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+  endif()
+  target_link_libraries(EVEmergence PUBLIC protobuf::libprotobuf)
+endif()
+
+if(TARGET EVSensing)
+  target_sources(EVSensing PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/sensing_world.pb.cc)
+  target_include_directories(EVSensing SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  if(MSVC)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/sensing_world.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+  endif()
+  target_link_libraries(EVSensing PUBLIC protobuf::libprotobuf)
+endif()
+
+if(TARGET EVInventory)
+  # Generated with the pinned third-party protoc from proto/inventory_save.proto.
+  # Checked in so Android, iOS and WebAssembly only need the target runtime.
+  target_sources(EVInventory PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/inventory_save.pb.cc)
+  target_include_directories(EVInventory PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  if(MSVC)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/inventory_save.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+  endif()
+  target_link_libraries(EVInventory PUBLIC protobuf::libprotobuf)
+endif()
+
+if(TARGET EVRPG)
+  # Generated with the pinned third-party protoc from module-owned RPG schemas.
+  target_sources(EVRPG PRIVATE
+    ${CMAKE_SOURCE_DIR}/proto/generated/rpg_tracker.pb.cc
+    ${CMAKE_SOURCE_DIR}/proto/generated/rpg_game_state.pb.cc
+    ${CMAKE_SOURCE_DIR}/proto/generated/rpg_actor_checkpoint.pb.cc
+    ${CMAKE_SOURCE_DIR}/proto/generated/rpg_party_checkpoint.pb.cc
+    ${CMAKE_SOURCE_DIR}/proto/generated/rpg_save_session.pb.cc)
+  target_include_directories(EVRPG SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  if(MSVC)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/rpg_tracker.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/rpg_game_state.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/rpg_actor_checkpoint.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/rpg_party_checkpoint.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/rpg_save_session.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+  endif()
+  target_link_libraries(EVRPG PUBLIC protobuf::libprotobuf)
+endif()
+
+if(TARGET EVTactics)
+  target_sources(EVTactics PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated/tactics_battle.pb.cc)
+  target_include_directories(EVTactics SYSTEM PRIVATE ${CMAKE_SOURCE_DIR}/proto/generated)
+  if(MSVC)
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/proto/generated/tactics_battle.pb.cc
+      PROPERTIES COMPILE_OPTIONS /wd4267)
+  endif()
+  target_link_libraries(EVTactics PUBLIC protobuf::libprotobuf)
+endif()
+
 if(TARGET EVPhysics)
   target_compile_definitions(EVPhysics PRIVATE EVENGINE_HAS_JOLT=$<BOOL:${EVENGINE_BUILD_JOLT}>)
   if(TARGET Jolt::Jolt)

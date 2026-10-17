@@ -202,10 +202,50 @@ public:
     const Event* eventAt(int index) const;
     /** @brief Clears retained events without resetting sequence allocation. */
     void clearEvents();
-    /** @brief Exports persistent state as deterministic compact JSON. */
+    /**
+     * @brief Compatibility-only JSON projection of the typed version-2 Protobuf snapshot.
+     * @return Protobuf JSON, or an empty string on serialization failure; use snapshotBinary() for a structured result.
+     */
     std::string snapshotJson() const;
     /**
-     * @brief Transactionally restores a snapshot produced by snapshotJson().
+     * @brief Encodes the typed authority-store schema as Protobuf wire bytes.
+     * @return Versioned bytes or a structured serialization failure.
+     * @cost Linear in retained rules and encoded bytes per save operation.
+     * @thread Call on the store's owning simulation thread.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] eve::Result<std::string> snapshotBinary() const;
+    /**
+     * @brief Validates and transactionally restores a typed Protobuf snapshot.
+     * @param bytes Versioned authority-store wire bytes.
+     * @return Success, or a failure leaving all observable state unchanged.
+     * @cost Linear in encoded bytes and expected rule count per restore operation.
+     * @thread Call on the store's owning simulation thread.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] eve::Result<void> restoreBinary(std::string_view bytes);
+    /**
+     * @brief Seals the typed store payload in a Protobuf envelope.
+     * @param hashProvider Explicit digest provider applied to the stable header and exact payload bytes.
+     * @return Versioned envelope wire bytes or a structured failure.
+     * @cost Linear in retained rules and encoded bytes, plus one digest per save operation.
+     * @thread Call on the store's owning simulation thread.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] eve::Result<std::string> snapshotEnvelopeBinary(const eve::SnapshotHashProvider& hashProvider) const;
+    /**
+     * @brief Verifies a typed Protobuf envelope and restores its payload transactionally.
+     * @param bytes Envelope wire bytes.
+     * @param hashProvider Provider used to verify the payload digest.
+     * @return Success, or a failure leaving all store state unchanged.
+     * @cost Linear in encoded bytes plus rule validation per restore operation.
+     * @thread Call on the store's owning simulation thread.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] eve::Result<void> restoreSnapshotBinary(std::string_view                 bytes,
+                                                          const eve::SnapshotHashProvider& hashProvider);
+    /**
+     * @brief Transactionally restores Protobuf JSON or a legacy version-1 snapshot.
      * @param json Snapshot JSON to parse and validate.
      * @return Success, or a structured parse/invariant diagnostic; failure
      *         leaves every observable store field unchanged.
@@ -215,7 +255,7 @@ public:
     [[nodiscard]] eve::Result<void> restoreJson(const std::string& json);
 
     /**
-     * @brief Captures this store in the common versioned snapshot envelope.
+     * @brief Compatibility-only capture in the common Value snapshot envelope.
      * @param hashProvider Explicit content-digest provider; it is never defaulted silently.
      * @return A sealed snapshot, or a structured serialization/hash failure.
      * @cost Allocates and hashes the full rule set; amortize across save / sync boundaries.
@@ -223,7 +263,7 @@ public:
     [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(const eve::SnapshotHashProvider& hashProvider) const;
 
     /**
-     * @brief Restores a verified or migratable snapshot transactionally.
+     * @brief Restores a verified or migratable common Value snapshot transactionally.
      * @param snapshot Source envelope. Its schema must be `authority:store`.
      * @param hashProvider Explicit provider used to verify and reseal the payload.
      * @return Success, or a failure leaving all store state unchanged.
@@ -232,15 +272,15 @@ public:
                                                     const eve::SnapshotHashProvider& hashProvider);
 
     /**
-     * @brief Serializes the common snapshot envelope as canonical JSON.
+     * @brief Serializes the typed Protobuf envelope as human-readable Protobuf JSON.
      * @param hashProvider Explicit content-digest provider.
      * @return Canonical envelope JSON or a structured failure.
      */
     [[nodiscard]] eve::Result<std::string> snapshotEnvelopeJson(const eve::SnapshotHashProvider& hashProvider) const;
 
     /**
-     * @brief Parses and transactionally restores a common snapshot envelope.
-     * @param json Canonical snapshot envelope JSON.
+     * @brief Parses and transactionally restores Protobuf JSON or a legacy common envelope.
+     * @param json Snapshot envelope JSON.
      * @param hashProvider Explicit provider used to verify contentHash.
      * @return Success, or a failure leaving all store state unchanged.
      */

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "orders-command-queue-protobuf-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/orders/CommandQueue*",
+      "owner": "orders::CommandQueue",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "Known command queue state has one typed Protobuf schema; only open-ended order payload values use DynamicValue.",
+      "expiry": "2027-12-31",
+      "evidence": ["proto/orders_command_queue.proto", "src/modules/orders/CommandQueueProtobuf.cpp"],
+      "tests": ["test/unit/orders/orders_unit.cpp"],
+      "schema": "orders.command_queue version 2 uses CommandQueueSave with typed orders, events, indexes and counters.",
+      "version": "Binary and JSON writers emit version 2; version 1 JSON is read at the compatibility boundary.",
+      "migration": "Version 1 JSON restores into a detached queue and is recaptured as version 2 Protobuf.",
+      "unknown_fields": "Binary restore rejects unknown Protobuf fields recursively and validates enums, IDs, membership and event sequence.",
+      "restore_atomicity": "The live queue is replaced only after a detached candidate passes all checks."
+    },
+    {
+      "id": "orders-command-queue-protobuf-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/orders/**",
+      "owner": "orders::CommandQueue",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "The orders module exposes binary persistence and a compatibility JSON/script boundary.",
+      "expiry": "2027-12-31",
+      "evidence": ["src/modules/orders/CommandQueue.h", "proto/orders_command_queue.proto"],
+      "tests": ["test/unit/orders/orders_unit.cpp"],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {"absent_profile": "No L1-L4 trim claim is made for this change."},
+      "thread_affinity": "The queue owner calls save and restore; no callbacks run while restoring.",
+      "cost_notes": ["Binary save and restore cost linear time in orders, events and dynamic payload bytes per snapshot."],
+      "hot_path": []
+    }
+  ]
+}

@@ -27,6 +27,10 @@
 
 namespace eve::rpg {
 
+namespace proto {
+class ActorCheckpointSave;
+}
+
 class RPGSaveSession;
 class Party;
 
@@ -262,14 +266,21 @@ public:
 
     /**
      * @brief Capture this actor at a persistent safe checkpoint.
-     * @return Deterministic schema `eve.rpg.actor-checkpoint` version 1 JSON, or a structured failure.
+     * @return Protobuf JSON mapping of schema `eve.rpg.actor-checkpoint` version 1, or a structured failure.
      * @remarks The checkpoint stores base attributes, progression, vitals, learned skill ids,
      * class identity and trait identity. Active effects, casts, cooldowns, runtime events and
      * raw targets are transient and excluded. Capture is rejected while an effect or cast is active.
      * @thread Call on the actor's owning ECS simulation thread.
      * @reentrancy No callbacks or registry mutations are performed.
+     * @cost Linear in the actor's persistent fields; amortize across save points.
      */
     [[nodiscard]] eve::Result<std::string> checkpointJson() const;
+
+    /** @brief Capture the versioned actor checkpoint as Protobuf wire bytes.
+     * @return Owning binary snapshot or a structured safe-point failure.
+     * @cost Linear in attributes, skills, traits and vitals; amortize across save points.
+     */
+    [[nodiscard]] eve::Result<std::string> checkpointBinary() const;
 
     /**
      * @brief Validate and atomically restore a safe checkpoint into this preconfigured actor.
@@ -280,8 +291,16 @@ public:
      * Cooldowns and casting restore to defaults. Unknown version-1 fields are ignored.
      * @thread Call on the actor's owning ECS simulation thread.
      * @reentrancy No callbacks or gameplay events are emitted.
+     * @cost Linear in snapshot size and current definitions; use at load boundaries.
      */
     [[nodiscard]] eve::Result<void> restoreCheckpointJson(std::string_view json);
+
+    /** @brief Validate and atomically restore a Protobuf actor checkpoint.
+     * @param bytes Wire bytes from checkpointBinary().
+     * @return Applied state or a structured failure without mutation.
+     * @cost Linear in snapshot size and current actor definitions; use at load boundaries.
+     */
+    [[nodiscard]] eve::Result<void> restoreCheckpointBinary(std::string_view bytes);
 
     /**
      * @brief 返回当前 Table 中所有存活的 RPGActor（含派生类）。
@@ -304,6 +323,9 @@ private:
     };
 
     [[nodiscard]] eve::Result<CheckpointCandidate> prepareCheckpointJson(std::string_view json) const;
+    [[nodiscard]] eve::Result<CheckpointCandidate> prepareCheckpointMessage(
+        const proto::ActorCheckpointSave &message) const;
+    [[nodiscard]] eve::Result<proto::ActorCheckpointSave> captureCheckpointMessage() const;
     void commitCheckpoint(CheckpointCandidate candidate) noexcept;
     friend class RPGSaveSession;
     friend class Party;

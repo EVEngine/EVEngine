@@ -1,13 +1,15 @@
 #include "rpg/Party.h"
 
 #include "rpg/Battle.h"
-#include "rpg/VitalsSystem.h"
 #include "rpg/RPGActor.h"
+#include "rpg/VitalsSystem.h"
+#include "rpg_party_checkpoint.pb.h"
 
-#include "common/Value.h"
+#include <google/protobuf/util/json_util.h>
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <utility>
 
 namespace eve::rpg {
@@ -179,79 +181,94 @@ eve::Result<int> Party::recoverAtCheckpoint(const std::string &healthResource,
     return eve::Result<int>::success(static_cast<int>(actors.size()));
 }
 
-eve::Result<std::string> Party::checkpointJson() const {
+eve::Result<proto::PartyCheckpointSave> Party::captureCheckpointMessage() const {
     if (members_.empty())
-        return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
-                                                                        "party checkpoint requires at least one member",
-                                                                        "party", {}, "rpg.party"));
-    eve::Value::Array memberValues;
-    memberValues.reserve(members_.size());
+        return eve::Result<proto::PartyCheckpointSave>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                   "party checkpoint requires at least one member", "party", {}, "rpg.party"));
+    proto::PartyCheckpointSave message;
+    message.set_schema("eve.rpg.party");
+    message.set_version(1);
     for (std::size_t index = 0; index < members_.size(); ++index) {
         auto *actor = resolve(members_[index].actor);
         if (!actor)
-            return eve::Result<std::string>::failure(
+            return eve::Result<proto::PartyCheckpointSave>::failure(
                 eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "party checkpoint found a stale member",
                                        "members[" + std::to_string(index) + "]", {}, "rpg.party"));
-        auto checkpoint = actor->checkpointJson();
-        if (!checkpoint.ok()) return eve::Result<std::string>::failure(checkpoint.status());
-        auto actorValue = eve::Value::fromJson(checkpoint.value());
-        if (!actorValue.ok()) return eve::Result<std::string>::failure(actorValue.status());
-        eve::Value::Object member;
-        member.emplace("actor", std::move(actorValue).takeValue());
-        member.emplace("id", eve::Value(members_[index].id));
-        memberValues.emplace_back(eve::Value(std::move(member)));
+        auto checkpoint = actor->captureCheckpointMessage();
+        if (!checkpoint.ok()) return eve::Result<proto::PartyCheckpointSave>::failure(checkpoint.status());
+        auto *member = message.add_members();
+        member->set_id(members_[index].id);
+        member->mutable_actor()->CopyFrom(checkpoint.value());
     }
-    eve::Value::Object root;
-    root.emplace("members", eve::Value(std::move(memberValues)));
-    root.emplace("schema", eve::Value("eve.rpg.party"));
-    root.emplace("version", eve::Value(std::int64_t(1)));
-    return eve::Value(std::move(root)).toJson();
+    return eve::Result<proto::PartyCheckpointSave>::success(std::move(message));
 }
 
-eve::Result<Party::CheckpointCandidate> Party::prepareCheckpointJson(std::string_view json) const {
-    auto parsed = eve::Value::fromJson(json);
-    if (!parsed.ok()) return eve::Result<CheckpointCandidate>::failure(parsed.status());
-    const auto &root = parsed.value();
-    const auto *schema = root.isObject() ? root.find("schema") : nullptr;
-    const auto *version = root.isObject() ? root.find("version") : nullptr;
-    const auto *members = root.isObject() ? root.find("members") : nullptr;
-    if (!schema || !schema->isString() || schema->asString() != "eve.rpg.party")
+eve::Result<std::string> Party::checkpointBinary() const {
+    auto captured = captureCheckpointMessage();
+    if (!captured.ok()) return eve::Result<std::string>::failure(captured.status());
+    std::string bytes;
+    if (!captured.value().SerializeToString(&bytes))
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvariantViolation, "party checkpoint protobuf serialization failed"));
+    return eve::Result<std::string>::success(std::move(bytes));
+}
+
+eve::Result<std::string> Party::checkpointJson() const {
+    auto captured = captureCheckpointMessage();
+    if (!captured.ok()) return eve::Result<std::string>::failure(captured.status());
+    std::string json;
+    if (!google::protobuf::util::MessageToJsonString(captured.value(), &json).ok())
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                                                        "party checkpoint JSON serialization failed"));
+    return eve::Result<std::string>::success(std::move(json));
+}
+
+eve::Result<Party::CheckpointCandidate> Party::prepareCheckpointMessage(
+    const proto::PartyCheckpointSave &message) const {
+    if (!message.has_schema() || message.schema() != "eve.rpg.party")
         return eve::Result<CheckpointCandidate>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "checkpoint does not belong to RPG Party",
                                    "schema", {}, "rpg.party"));
-    if (!version || !version->isInt64() || version->asInt() != 1)
+    if (!message.has_version() || message.version() != 1)
         return eve::Result<CheckpointCandidate>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::UnknownVersion, "unsupported party checkpoint version", "version", {}, "rpg.party"));
-    if (!members || !members->isArray() || members->arraySize() != members_.size())
+    if (message.members_size() != static_cast<int>(members_.size()))
         return eve::Result<CheckpointCandidate>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
                                    "checkpoint roster size does not match the live party", "members", {}, "rpg.party"));
     CheckpointCandidate candidate;
     candidate.actors.reserve(members_.size());
     for (std::size_t index = 0; index < members_.size(); ++index) {
-        const auto &member = members->at(index);
-        const auto *id = member.isObject() ? member.find("id") : nullptr;
-        const auto *actorValue = member.isObject() ? member.find("actor") : nullptr;
-        if (!id || !id->isString() || id->asString() != members_[index].id)
+        const auto &member = message.members(static_cast<int>(index));
+        if (!member.has_id() || member.id() != members_[index].id)
             return eve::Result<CheckpointCandidate>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::Conflict, "checkpoint member ID/order does not match the live party",
                 "members[" + std::to_string(index) + "].id", {}, "rpg.party"));
-        if (!actorValue || !actorValue->isObject())
+        if (!member.has_actor())
             return eve::Result<CheckpointCandidate>::failure(
-                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "checkpoint member actor must be an object",
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "checkpoint member actor is missing",
                                        "members[" + std::to_string(index) + "].actor", {}, "rpg.party"));
         auto *actor = resolve(members_[index].actor);
         if (!actor)
             return eve::Result<CheckpointCandidate>::failure(
                 eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "live party contains a stale member",
                                        "members[" + std::to_string(index) + "]", {}, "rpg.party"));
-        auto actorJson = actorValue->toJson();
-        if (!actorJson.ok()) return eve::Result<CheckpointCandidate>::failure(actorJson.status());
-        auto prepared = actor->prepareCheckpointJson(actorJson.value());
+        auto prepared = actor->prepareCheckpointMessage(member.actor());
         if (!prepared.ok()) return eve::Result<CheckpointCandidate>::failure(prepared.status());
         candidate.actors.push_back(std::move(prepared).takeValue());
     }
     return eve::Result<CheckpointCandidate>::success(std::move(candidate));
+}
+
+eve::Result<Party::CheckpointCandidate> Party::prepareCheckpointJson(std::string_view json) const {
+    proto::PartyCheckpointSave               message;
+    google::protobuf::util::JsonParseOptions options;
+    options.ignore_unknown_fields = true;
+    if (!google::protobuf::util::JsonStringToMessage(std::string(json), &message, options).ok())
+        return eve::Result<CheckpointCandidate>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "party checkpoint JSON is malformed", "$", {}, "rpg.party"));
+    return prepareCheckpointMessage(message);
 }
 
 void Party::commitCheckpoint(CheckpointCandidate candidate) noexcept {
@@ -261,11 +278,22 @@ void Party::commitCheckpoint(CheckpointCandidate candidate) noexcept {
     }
 }
 
+eve::Result<void> Party::restoreCheckpointBinary(std::string_view bytes) {
+    proto::PartyCheckpointSave message;
+    if (bytes.size() > static_cast<std::size_t>(std::numeric_limits<int>::max()) ||
+        !message.ParseFromArray(bytes.data(), static_cast<int>(bytes.size())))
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "party checkpoint protobuf is malformed", "$", {}, "rpg.party"));
+    auto prepared = prepareCheckpointMessage(message);
+    if (!prepared.ok()) return eve::Result<void>::failure(prepared.status());
+    commitCheckpoint(std::move(prepared).takeValue());
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
 eve::Result<void> Party::restoreCheckpointJson(std::string_view json) {
     auto prepared = prepareCheckpointJson(json);
     if (!prepared.ok()) return eve::Result<void>::failure(prepared.status());
     commitCheckpoint(std::move(prepared).takeValue());
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
-
 }  // namespace eve::rpg

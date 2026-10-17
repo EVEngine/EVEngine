@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package eve.transaction.proto;
+
+import "dynamic_value.proto";
+
+// Version 2 replaces the fixed ledger and plan JSON shape. Operation payloads
+// remain open-ended by contract and preserve exact Int64 values.
+
+message TransactionLedgerSave {
+  optional string schema = 1;
+  optional uint32 version = 2;
+  optional uint64 next_transaction = 3;
+  repeated TransactionPlan plans = 4;
+}
+
+message TransactionLedgerJsonDocument {
+  optional string type = 1;
+  optional string schema = 2;
+  optional uint32 version = 3;
+  optional string instance_id = 4;
+  optional uint64 revision = 5;
+  optional uint64 tick = 6;
+  optional TransactionLedgerSave payload = 7;
+  optional bytes digest = 8;
+}
+
+message TransactionPlan {
+  optional string id = 1;
+  optional string identity = 2;
+  enum State {
+    STATE_UNSPECIFIED = 0;
+    OPEN = 1;
+    VALIDATED = 2;
+    COMMITTED = 3;
+    ROLLED_BACK = 4;
+    FAILED = 5;
+  }
+  optional State state = 3;
+  optional string correlation = 4;
+  optional string causation = 5;
+  optional string error = 6;
+  optional uint64 next_operation = 7;
+  optional uint64 next_event = 8;
+  repeated TransactionOperation operations = 9;
+  repeated TransactionEvent events = 10;
+}
+
+message TransactionOperation {
+  optional string id = 1;
+  optional string identity = 2;
+  optional string kind = 3;
+  optional string target = 4;
+  eve.persistence.proto.DynamicValue payload = 5;
+  optional bool checked = 6;
+  optional bool valid = 7;
+  optional string error = 8;
+}
+
+message TransactionEvent {
+  optional uint64 sequence = 1;
+  optional string transaction_id = 2;
+  optional string operation_id = 3;
+  optional string type = 4;
+  optional string detail = 5;
+}

@@ -3288,13 +3288,13 @@ TEST_CASE("gameSave.rpgAndTacticsRestoreTogether") {
     eve::GameSaveSession                     gameSave("game-content-v1");
     REQUIRE(gameSave.add(rpgParticipant).ok());
     REQUIRE(gameSave.add(tacticsParticipant).ok());
-    auto saved = gameSave.snapshotJson(testHash());
+    auto saved = gameSave.snapshotBinary(testHash());
     REQUIRE(saved.ok());
 
     state.setVariable("gold", 99.0);
     REQUIRE(tactics.moveUnit(battleHandle, unitSubject, {1, 0, 0}).ok());
     CHECK_EQ(unit->position()->cell, (eve::tactics::Cell{1, 0, 0}));
-    REQUIRE(gameSave.restoreJson(saved.value(), testHash()).ok());
+    REQUIRE(gameSave.restoreBinary(saved.value(), testHash()).ok());
     CHECK_EQ(state.getVariable("gold"), 25.0);
     CHECK_EQ(unit->position()->cell, (eve::tactics::Cell{0, 0, 0}));
     actor->release();

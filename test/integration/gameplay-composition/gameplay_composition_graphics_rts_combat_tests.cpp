@@ -2820,17 +2820,21 @@ TEST_CASE("rts.contentPackPublishesAtomicallyToCanonicalDefinitions") {
     CHECK_EQ(typed.value().preferredTargetBonus, 3.5f);
     CHECK(std::abs(typed.value().projectile.speed) < 1e-5f);
 
-    const std::string before = registry.snapshotJson();
+    auto before = registry.snapshotBinary();
+    REQUIRE(before.ok());
     auto              rejected =
         eve::rts::RTSContentLoader::load(registry, R"JSON({"units":[{"id":"broken","weaponType":"missing"}]})JSON");
     CHECK(!rejected.ok());
     rejected.ignore("expected atomic RTS content rejection");
-    CHECK_EQ(registry.snapshotJson(), before);
+    auto after = registry.snapshotBinary();
+    REQUIRE(after.ok());
+    CHECK_EQ(after.value(), before.value());
 
     auto replaced = eve::rts::RTSContentLoader::load(registry, pack);
     REQUIRE(replaced.ok());
     CHECK_EQ(replaced.value().replaced, 4u);
 }
+
 }  // namespace test_rts_composition
 #endif
 

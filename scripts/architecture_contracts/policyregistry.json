@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "policyregistry-protobuf-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/policyregistry/PolicyRegistry.*",
+      "owner": "policyregistry::PolicyRegistry",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "Fixed registry slots and mutation events use a typed Protobuf contract while open-ended metadata uses Protobuf Struct.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "proto/policy_registry.proto",
+        "src/modules/policyregistry/PolicyRegistry.cpp"
+      ],
+      "tests": [
+        "test/policyregistry.cpp"
+      ],
+      "schema": "policyregistry:registry, version 2, with generation-qualified slots, typed descriptors and ordered mutation events.",
+      "version": "Version 2 is written; version 1 JSON is accepted only for migration, and later versions are rejected.",
+      "migration": "Legacy version 1 JSON is decoded into a detached registry image; new writes use Protobuf binary or Protobuf JSON.",
+      "unknown_fields": "Binary unknown fields are rejected recursively; Protobuf JSON rejects unknown names. Open metadata keys are carried by google.protobuf.Struct.",
+      "restore_atomicity": "All slots and events are validated in a detached VersionedRegistry State; restoreState publishes once and emits no per-item callbacks."
+    },
+    {
+      "id": "policyregistry-protobuf-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/policyregistry/**",
+      "owner": "policyregistry::PolicyRegistry",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "The registry exposes typed Protobuf persistence beside its existing policy query, event and script surfaces.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/policyregistry/PolicyRegistry.h",
+        "src/modules/policyregistry/PolicyRegistry.cpp",
+        "proto/policy_registry.proto",
+        "cmake/module_manifest/core_foundation.cmake"
+      ],
+      "tests": [
+        "test/policyregistry.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [
+        { "event": "PolicyEvent", "ordering": "registry mutation sequence", "dispatch_phase": "after committed mutation" }
+      ],
+      "observes": [],
+      "binds": [
+        { "script_class": "PolicyRegistry", "methods": [ "insert", "replace", "remove", "enable", "resolve", "snapshotJson", "restoreJson" ] },
+        { "script_class": "PolicyRegistryModule", "methods": [ "newRegistry" ] }
+      ],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "No L1-L4 trim claim is made for this change."
+      },
+      "thread_affinity": "All registry mutation and persistence calls run on the owning thread; observer callbacks run after commit.",
+      "cost_notes": [
+        "Binary and JSON snapshots cost linear time in retained slots, events and metadata bytes per save or restore operation."
+      ],
+      "hot_path": []
+    }
+  ]
+}

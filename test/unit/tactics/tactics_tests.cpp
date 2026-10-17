@@ -1945,11 +1945,11 @@ TEST_CASE("tactics.reactionDepthIsBounded") {
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_tactics_migration) || \
     defined(EVE_TEST_ORIGIN_tactics_replay) || defined(EVE_TEST_ORIGIN_tactics_snapshot_script)
-#include "PrivateTestScope.h"
 #include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
+#include "PrivateTestScope.h"
 #include "common/Capability.h"
 #include "common/ECS.h"
 #include "common/Snapshot.h"
@@ -2897,10 +2897,18 @@ TEST_CASE("tactics.snapshotJsonRoundTripRefusesTamperingAndForeignDocuments") {
     CHECK(restored.value().movePoints > spent);
 
     // A tampered document is refused by the digest, and the battle keeps its current state.
+    // Keep the JSON codec inside EVTactics: the test executable and the shared
+    // module otherwise use separate copies of the statically linked Protobuf runtime.
     std::string tampered = document;
-    const auto  position = tampered.find("\"moveCost\":100");
-    REQUIRE(position != std::string::npos);
-    tampered.replace(position, 15, "\"moveCost\":900");
+    const auto  field    = tampered.find("\"moveCost\"");
+    REQUIRE(field != std::string::npos);
+    const auto colon = tampered.find(':', field);
+    REQUIRE(colon != std::string::npos);
+    const auto value = tampered.find_first_not_of(" \t\r\n", colon + 1);
+    REQUIRE(value != std::string::npos);
+    const auto end = tampered.find_first_not_of("-0123456789", value);
+    REQUIRE(end != value);
+    tampered.replace(value, end - value, "900");
     auto refused = fixture.tactics.restoreJson(fixture.battle, tampered);
     CHECK(!refused.ok());
     REQUIRE(refused.status().primaryDiagnostic() != nullptr);
@@ -2914,6 +2922,17 @@ TEST_CASE("tactics.snapshotJsonRoundTripRefusesTamperingAndForeignDocuments") {
     CHECK(!malformed.ok());
     REQUIRE(malformed.status().primaryDiagnostic() != nullptr);
     CHECK(malformed.status().primaryDiagnostic()->code() == eve::DiagnosticCode::ParseError);
+}
+
+TEST_CASE("tactics.restoreJsonReadsLegacySnapshotsForMigration") {
+    Fixture fixture;
+    fixture.build();
+    auto legacy = fixture.tactics.snapshot(fixture.battle, eve::snapshotContentHashProvider());
+    REQUIRE(legacy.ok());
+    auto json = eve::serializeSnapshotEnvelope(legacy.value());
+    REQUIRE(json.ok());
+    REQUIRE(fixture.tactics.moveUnit(fixture.battle, fixture.unitSubject, {1, 0, 0}).ok());
+    CHECK(fixture.tactics.restoreJson(fixture.battle, json.value()).ok());
 }
 
 TEST_CASE("tactics.commandLogJsonReplaysThroughTheSameCodecAsRestore") {

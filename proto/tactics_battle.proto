@@ -1,0 +1,177 @@
+syntax = "proto3";
+
+package eve.tactics.proto;
+
+// Version 8 follows the legacy JSON battle snapshots (versions 1-7).
+// The digest covers the exact payload_wire bytes, without reserialization.
+message BattleSaveEnvelope {
+  optional string type = 1;
+  optional string schema = 2;
+  optional uint32 version = 3;
+  optional string instance_id = 4;
+  optional uint64 revision = 5;
+  optional uint64 tick = 6;
+  bytes payload_wire = 7;
+  bytes digest = 8;
+}
+
+message Cell {
+  optional int32 x = 1;
+  optional int32 y = 2;
+  optional int32 layer = 3;
+}
+
+message BoardCell {
+  optional Cell cell = 1;
+  optional int32 height = 2;
+  optional int32 move_cost = 3;
+  optional bool passable = 4;
+  repeated string tags = 5;
+}
+
+message BoardEdge {
+  optional Cell from = 1;
+  optional Cell to = 2;
+  optional bool passable = 3;
+  optional int32 extra_cost = 4;
+  repeated string tags = 5;
+}
+
+message Board {
+  optional int32 topology = 1;
+  repeated BoardCell cells = 2;
+  repeated BoardEdge edges = 3;
+}
+
+message Unit {
+  optional string subject = 1;
+  optional string side = 2;
+  optional string definition = 3;
+  optional Cell cell = 4;
+  optional int32 facing = 5;
+  optional bool placed = 6;
+  optional bool alive = 7;
+  optional bool acted = 8;
+  optional int32 action_points = 9;
+  optional int32 move_points = 10;
+  optional int32 reaction_points = 11;
+  optional int32 round_action_points = 12;
+  optional int32 round_move_points = 13;
+  optional int32 round_reaction_points = 14;
+  optional int32 initiative = 15;
+  optional int32 charge = 16;
+}
+
+message Event {
+  optional uint64 sequence = 1;
+  optional uint64 causation_command = 2;
+  optional uint64 correlation_command = 3;
+  optional int32 from = 4;
+  optional int32 to = 5;
+  optional uint64 tick = 6;
+  optional string type = 7;
+  optional string subject = 8;
+}
+
+message EventStream {
+  optional uint64 next_sequence = 1;
+  repeated Event values = 2;
+}
+
+message ReactionCandidate {
+  optional string reactor = 1;
+  optional string action = 2;
+  optional int32 priority = 3;
+  optional int32 initiative = 4;
+}
+
+message ReactionWindow {
+  optional uint64 trigger_sequence = 1;
+  optional uint64 depth = 2;
+  repeated ReactionCandidate candidates = 3;
+}
+
+message Reactions {
+  optional uint64 max_depth = 1;
+  repeated string seen = 2;
+  repeated ReactionWindow stack = 3;
+}
+
+message Command {
+  optional uint64 sequence = 1;
+  optional int32 kind = 2;
+  optional uint64 expected_revision = 3;
+  optional uint64 resulting_revision = 4;
+  optional uint64 tick = 5;
+  optional int64 delta_nanoseconds = 6;
+  optional string actor = 7;
+  optional Cell cell = 8;
+  optional string target_unit = 9;
+  bytes payload = 10;  // Opaque effect-owner data; tactics only bounds its size.
+  optional int32 facing = 11;
+  optional string policy = 12;
+  optional uint64 trigger_sequence = 13;
+  optional string action = 14;
+  repeated ReactionCandidate candidates = 15;
+}
+
+message CommandStream {
+  optional uint64 next_sequence = 1;
+  repeated Command values = 2;
+}
+
+message CommandLogDocument {
+  optional string schema = 1;
+  optional uint32 version = 2;
+  optional uint64 from_revision = 3;
+  optional CommandStream commands = 4;
+}
+
+message Objective {
+  optional string id = 1;
+  optional int32 kind = 2;
+  optional string beneficiary_side = 3;
+  optional string target_side = 4;
+  optional uint64 required_round = 5;
+  repeated Cell required_cells = 6;
+  optional bool ends_battle = 7;
+  optional int32 status = 8;
+  optional uint64 completed_revision = 9;
+}
+
+message RandomStream {
+  optional uint64 state = 1;
+  optional uint64 roll_index = 2;
+}
+
+message BattlePayload {
+  optional uint64 seed = 1;
+  optional int32 status = 2;
+  optional int32 phase = 3;
+  optional string policy = 4;
+  optional uint64 round = 5;
+  optional uint64 cursor = 6;
+  optional string active_unit = 7;
+  optional Board board = 8;
+  repeated string sides = 9;
+  repeated Unit units = 10;
+  repeated string schedule = 11;
+  optional EventStream events = 12;
+  optional Reactions reactions = 13;
+  optional CommandStream commands = 14;
+  repeated Objective objectives = 15;
+  map<string, RandomStream> random = 16;
+}
+
+// Human-readable Protobuf JSON view of the same version-8 battle payload.
+// Its digest covers deterministic BattlePayload wire bytes, not JSON spelling.
+message BattleJsonDocument {
+  optional string type = 1;
+  optional string schema = 2;
+  optional uint32 version = 3;
+  optional string instance_id = 4;
+  optional uint64 revision = 5;
+  optional uint64 tick = 6;
+  optional BattlePayload payload = 7;
+  bytes digest = 8;
+}

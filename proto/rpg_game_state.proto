@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package eve.rpg.proto;
+
+message ScopedNumberFacts {
+  optional string scope = 1;
+  map<string, double> values = 2;
+}
+
+message ScopedStringFacts {
+  optional string scope = 1;
+  map<string, string> values = 2;
+}
+
+message GameStateSave {
+  optional string schema = 1;
+  optional uint32 version = 2;
+  map<string, bool> switches = 3;
+  map<string, double> variables = 4;
+  repeated ScopedNumberFacts self_variables = 5;
+  repeated ScopedStringFacts self_strings = 6;
+}

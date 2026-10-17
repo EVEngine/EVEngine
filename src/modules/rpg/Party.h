@@ -14,6 +14,10 @@
 
 namespace eve::rpg {
 
+namespace proto {
+class PartyCheckpointSave;
+}
+
 class Battle;
 
 /**
@@ -80,13 +84,30 @@ public:
                                                         const std::string &secondaryResource = {},
                                                         double secondaryRatio = 0.0);
 
-    /** @brief Capture ordered member IDs and every actor safe checkpoint into one versioned document. */
+    /** @brief Capture ordered member IDs and actor checkpoints in Protobuf JSON mapping.
+     * @return JSON checkpoint or a structured failure.
+     * @cost Linear in the roster and all actor checkpoints; use at save points.
+     */
     [[nodiscard]] eve::Result<std::string> checkpointJson() const;
+    /** @brief Capture the party checkpoint as Protobuf wire bytes.
+     * @return Binary checkpoint or a structured failure.
+     * @cost Linear in the roster and all actor checkpoints; use at save points.
+     */
+    [[nodiscard]] eve::Result<std::string> checkpointBinary() const;
     /**
      * @brief Validate and atomically restore every existing party member actor.
+     * @param json Protobuf JSON mapping of the party checkpoint.
+     * @return Applied state or a structured failure without actor mutations.
      * @remarks Member IDs and order must exactly match the live roster; roster relationships are not recreated.
+     * @cost Linear in snapshot size and the roster; use at load boundaries.
      */
     [[nodiscard]] eve::Result<void> restoreCheckpointJson(std::string_view json);
+    /** @brief Validate and atomically restore a binary party checkpoint.
+     * @param bytes Protobuf wire bytes from checkpointBinary().
+     * @return Applied state or a structured failure without actor mutations.
+     * @cost Linear in snapshot size and the roster; use at load boundaries.
+     */
+    [[nodiscard]] eve::Result<void> restoreCheckpointBinary(std::string_view bytes);
 
 private:
     struct Member {
@@ -97,6 +118,9 @@ private:
         std::vector<RPGActor::CheckpointCandidate> actors;
     };
     [[nodiscard]] eve::Result<CheckpointCandidate> prepareCheckpointJson(std::string_view json) const;
+    [[nodiscard]] eve::Result<CheckpointCandidate> prepareCheckpointMessage(
+        const proto::PartyCheckpointSave &message) const;
+    [[nodiscard]] eve::Result<proto::PartyCheckpointSave> captureCheckpointMessage() const;
     void commitCheckpoint(CheckpointCandidate candidate) noexcept;
     std::vector<Member> members_;
     friend class RPGSaveSession;

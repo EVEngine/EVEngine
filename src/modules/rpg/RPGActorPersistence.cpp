@@ -1,23 +1,27 @@
 #include "rpg/RPGActor.h"
 
-#include "common/Value.h"
 #include "rpg/Skill.h"
+#include "rpg_actor_checkpoint.pb.h"
+
+#include <google/protobuf/util/json_util.h>
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <unordered_set>
 
 namespace eve::rpg {
 
 namespace {
 
-double numericValue(const eve::Value &value) {
-    return value.isInt64() ? static_cast<double>(value.asInt()) : value.asDouble();
+template <typename T>
+eve::Result<T> fail(eve::DiagnosticCode code, std::string message, std::string path = {}) {
+    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
 }
 
 }  // namespace
 
-eve::Result<std::string> RPGActor::checkpointJson() const {
+eve::Result<proto::ActorCheckpointSave> RPGActor::captureCheckpointMessage() const {
     RPGActor *actor = const_cast<RPGActor *>(this);
     auto statusRef = actor->statuses();
     auto skillRef = actor->skills();
@@ -27,27 +31,23 @@ eve::Result<std::string> RPGActor::checkpointJson() const {
     auto traitRef = actor->traits();
     auto classRef = actor->classInfo();
     if (statusRef->container.effectCount() != 0 || skillRef->casting.active)
-        return eve::Result<std::string>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
-                                   "actor checkpoint requires a safe point without active effects or casts", {}));
-
-    eve::Value::Array baseAttributes;
+        return fail<proto::ActorCheckpointSave>(
+            eve::DiagnosticCode::PreconditionViolation,
+            "actor checkpoint requires a safe point without active effects or casts");
+    proto::ActorCheckpointSave message;
+    message.set_schema("eve.rpg.actor-checkpoint");
+    message.set_version(1);
     for (int index = 0; index < attributeRef->values.attributeCount(); ++index) {
         const std::string name = attributeRef->values.attributeAt(index);
-        eve::Value::Object entry;
-        entry.emplace("id", eve::Value(name));
-        entry.emplace("value", eve::Value(attributeRef->values.getBase(name)));
-        baseAttributes.emplace_back(std::move(entry));
+        auto             *entry = message.add_base_attributes();
+        entry->set_id(name);
+        entry->set_value(attributeRef->values.getBase(name));
     }
-
-    eve::Value::Object progressionValue;
-    progressionValue.emplace("level", eve::Value(progressionRef->level));
-    progressionValue.emplace("xp", eve::Value(progressionRef->xp));
-    progressionValue.emplace("xpToNext", eve::Value(progressionRef->xpToNext));
-
-    eve::Value::Object vitalsValue;
-    for (const auto &[name, value] : vitalRef->current) vitalsValue.emplace(name, eve::Value(value));
-
+    auto *progression = message.mutable_progression();
+    progression->set_level(progressionRef->level);
+    progression->set_xp(progressionRef->xp);
+    progression->set_xp_to_next(progressionRef->xpToNext);
+    for (const auto &[name, value] : vitalRef->current) (*message.mutable_vitals())[name] = value;
     std::vector<std::string> skillIds;
     skillIds.reserve(skillRef->known.size());
     for (const auto &[id, runtime] : skillRef->known) {
@@ -55,34 +55,39 @@ eve::Result<std::string> RPGActor::checkpointJson() const {
         skillIds.push_back(id);
     }
     std::sort(skillIds.begin(), skillIds.end());
-    eve::Value::Array learnedSkills;
-    for (const auto &id : skillIds) learnedSkills.emplace_back(id);
-
-    eve::Value::Array traitValues;
+    for (const auto &id : skillIds) message.add_learned_skills(id);
     for (const auto &trait : traitRef->active) {
-        eve::Value::Object encoded;
-        encoded.emplace("source", eve::Value(trait.source));
-        encoded.emplace("traitId", eve::Value(trait.traitId));
-        traitValues.emplace_back(std::move(encoded));
+        auto *entry = message.add_traits();
+        entry->set_source(trait.source);
+        entry->set_trait_id(trait.traitId);
     }
-
-    eve::Value::Object classValue;
-    classValue.emplace("id", eve::Value(classRef->classId));
-    classValue.emplace("skillsSyncedUpTo", eve::Value(classRef->skillsSyncedUpTo));
-
-    eve::Value::Object root;
-    root.emplace("baseAttributes", eve::Value(std::move(baseAttributes)));
-    root.emplace("class", eve::Value(std::move(classValue)));
-    root.emplace("learnedSkills", eve::Value(std::move(learnedSkills)));
-    root.emplace("progression", eve::Value(std::move(progressionValue)));
-    root.emplace("schema", eve::Value("eve.rpg.actor-checkpoint"));
-    root.emplace("traits", eve::Value(std::move(traitValues)));
-    root.emplace("version", eve::Value(1));
-    root.emplace("vitals", eve::Value(std::move(vitalsValue)));
-    return eve::Value(std::move(root)).toJson();
+    auto *classInfo = message.mutable_class_info();
+    classInfo->set_id(classRef->classId);
+    classInfo->set_skills_synced_up_to(classRef->skillsSyncedUpTo);
+    return eve::Result<proto::ActorCheckpointSave>::success(std::move(message));
 }
 
-eve::Result<RPGActor::CheckpointCandidate> RPGActor::prepareCheckpointJson(std::string_view json) const {
+eve::Result<std::string> RPGActor::checkpointBinary() const {
+    auto captured = captureCheckpointMessage();
+    if (!captured.ok()) return eve::Result<std::string>::failure(captured.status());
+    std::string bytes;
+    if (!captured.value().SerializeToString(&bytes))
+        return fail<std::string>(eve::DiagnosticCode::InvariantViolation,
+                                 "actor checkpoint protobuf serialization failed");
+    return eve::Result<std::string>::success(std::move(bytes));
+}
+
+eve::Result<std::string> RPGActor::checkpointJson() const {
+    auto captured = captureCheckpointMessage();
+    if (!captured.ok()) return eve::Result<std::string>::failure(captured.status());
+    std::string json;
+    if (!google::protobuf::util::MessageToJsonString(captured.value(), &json).ok())
+        return fail<std::string>(eve::DiagnosticCode::InvariantViolation, "actor checkpoint JSON serialization failed");
+    return eve::Result<std::string>::success(std::move(json));
+}
+
+eve::Result<RPGActor::CheckpointCandidate> RPGActor::prepareCheckpointMessage(
+    const proto::ActorCheckpointSave &message) const {
     RPGActor *actor = const_cast<RPGActor *>(this);
     auto statusRef = actor->statuses();
     auto skillRef = actor->skills();
@@ -91,106 +96,78 @@ eve::Result<RPGActor::CheckpointCandidate> RPGActor::prepareCheckpointJson(std::
     auto traitRef = actor->traits();
     auto classRef = actor->classInfo();
     if (statusRef->container.effectCount() != 0 || skillRef->casting.active)
-        return eve::Result<CheckpointCandidate>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
-                                   "actor checkpoint restore requires a clean preconfigured destination", {}));
-    auto parsed = eve::Value::fromJson(json);
-    if (!parsed.ok()) return eve::Result<CheckpointCandidate>::failure(parsed.status());
-    const eve::Value &root = parsed.value();
-    if (!root.isObject())
-        return eve::Result<CheckpointCandidate>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "actor checkpoint root must be an object", "$"));
-    const eve::Value *schema = root.find("schema");
-    if (!schema || !schema->isString() || schema->asString() != "eve.rpg.actor-checkpoint")
-        return eve::Result<CheckpointCandidate>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "snapshot does not belong to RPGActor", "$.schema"));
-    const eve::Value *version = root.find("version");
-    if (!version || !version->isInt64() || version->asInt() != 1)
-        return eve::Result<CheckpointCandidate>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::UnknownVersion, "unsupported RPG actor checkpoint version", "$.version"));
-
-    const eve::Value *encodedClass = root.find("class");
-    const eve::Value *encodedTraits = root.find("traits");
-    const eve::Value *encodedAttributes = root.find("baseAttributes");
-    const eve::Value *encodedProgression = root.find("progression");
-    const eve::Value *encodedVitals = root.find("vitals");
-    const eve::Value *encodedSkills = root.find("learnedSkills");
-    if (!encodedClass || !encodedClass->isObject() || !encodedTraits || !encodedTraits->isArray() ||
-        !encodedAttributes || !encodedAttributes->isArray() || !encodedProgression || !encodedProgression->isObject() ||
-        !encodedVitals || !encodedVitals->isObject() || !encodedSkills || !encodedSkills->isArray())
-        return eve::Result<CheckpointCandidate>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::ParseError, "actor checkpoint participant fields have invalid types", "$"));
-
-    const eve::Value *classId = encodedClass->find("id");
-    const eve::Value *skillsSynced = encodedClass->find("skillsSyncedUpTo");
-    if (!classId || !classId->isString() || !skillsSynced || !skillsSynced->isInt64() ||
-        classId->asString() != classRef->classId || skillsSynced->asInt() < 0)
-        return eve::Result<CheckpointCandidate>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Conflict, "actor checkpoint class does not match its destination", "$.class"));
-    if (encodedTraits->arraySize() != traitRef->active.size())
-        return eve::Result<CheckpointCandidate>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Conflict, "actor checkpoint traits do not match its destination", "$.traits"));
-    for (std::size_t index = 0; index < traitRef->active.size(); ++index) {
-        const eve::Value &encoded = encodedTraits->at(index);
-        const eve::Value *traitId = encoded.isObject() ? encoded.find("traitId") : nullptr;
-        const eve::Value *source = encoded.isObject() ? encoded.find("source") : nullptr;
-        if (!traitId || !traitId->isString() || !source || !source->isString() ||
-            traitId->asString() != traitRef->active[index].traitId || source->asString() != traitRef->active[index].source)
-            return eve::Result<CheckpointCandidate>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::Conflict, "actor checkpoint trait identity does not match", "$.traits"));
+        return fail<CheckpointCandidate>(eve::DiagnosticCode::PreconditionViolation,
+                                         "actor checkpoint restore requires a clean preconfigured destination");
+    if (!message.has_schema() || message.schema() != "eve.rpg.actor-checkpoint")
+        return fail<CheckpointCandidate>(eve::DiagnosticCode::InvalidArgument, "snapshot does not belong to RPGActor",
+                                         "$.schema");
+    if (!message.has_version() || message.version() != 1)
+        return fail<CheckpointCandidate>(eve::DiagnosticCode::UnknownVersion,
+                                         "unsupported RPG actor checkpoint version", "$.version");
+    if (!message.has_class_info() || !message.class_info().has_id() ||
+        !message.class_info().has_skills_synced_up_to() || message.class_info().id() != classRef->classId ||
+        message.class_info().skills_synced_up_to() < 0)
+        return fail<CheckpointCandidate>(eve::DiagnosticCode::Conflict,
+                                         "actor checkpoint class does not match its destination", "$.class");
+    if (message.traits_size() != static_cast<int>(traitRef->active.size()))
+        return fail<CheckpointCandidate>(eve::DiagnosticCode::Conflict,
+                                         "actor checkpoint traits do not match its destination", "$.traits");
+    for (int index = 0; index < message.traits_size(); ++index) {
+        const auto &encoded  = message.traits(index);
+        const auto &expected = traitRef->active[static_cast<std::size_t>(index)];
+        if (!encoded.has_trait_id() || !encoded.has_source() || encoded.trait_id() != expected.traitId ||
+            encoded.source() != expected.source)
+            return fail<CheckpointCandidate>(eve::DiagnosticCode::Conflict,
+                                             "actor checkpoint trait identity does not match", "$.traits");
     }
-
     CheckpointCandidate candidate{*attributeRef, {}, *progressionRef, {}, *classRef};
-    candidate.classInfo.skillsSyncedUpTo = static_cast<int>(skillsSynced->asInt());
-    if (encodedAttributes->arraySize() != static_cast<std::size_t>(candidate.attributes.values.attributeCount()))
-        return eve::Result<CheckpointCandidate>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Conflict, "actor checkpoint attribute layout does not match", "$.baseAttributes"));
+    candidate.classInfo.skillsSyncedUpTo = message.class_info().skills_synced_up_to();
+    if (message.base_attributes_size() != candidate.attributes.values.attributeCount())
+        return fail<CheckpointCandidate>(eve::DiagnosticCode::Conflict,
+                                         "actor checkpoint attribute layout does not match", "$.baseAttributes");
     std::unordered_set<std::string> seenAttributes;
-    for (std::size_t index = 0; index < encodedAttributes->arraySize(); ++index) {
-        const eve::Value &encoded = encodedAttributes->at(index);
-        const eve::Value *id = encoded.isObject() ? encoded.find("id") : nullptr;
-        const eve::Value *value = encoded.isObject() ? encoded.find("value") : nullptr;
-        if (!id || !id->isString() || !value || !value->isNumeric() || !std::isfinite(numericValue(*value)))
-            return eve::Result<CheckpointCandidate>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::ParseError, "actor base attribute is invalid", "$.baseAttributes"));
-        if (!seenAttributes.emplace(id->asString()).second || !candidate.attributes.values.has(id->asString()))
-            return eve::Result<CheckpointCandidate>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::Conflict, "actor base attribute layout does not match", "$.baseAttributes"));
-        candidate.attributes.values.setBase(id->asString(), numericValue(*value));
+    for (const auto &encoded : message.base_attributes()) {
+        if (!encoded.has_id() || !encoded.has_value() || !std::isfinite(encoded.value()))
+            return fail<CheckpointCandidate>(eve::DiagnosticCode::ParseError, "actor base attribute is invalid",
+                                             "$.baseAttributes");
+        if (!seenAttributes.emplace(encoded.id()).second || !candidate.attributes.values.has(encoded.id()))
+            return fail<CheckpointCandidate>(eve::DiagnosticCode::Conflict,
+                                             "actor base attribute layout does not match", "$.baseAttributes");
+        candidate.attributes.values.setBase(encoded.id(), encoded.value());
     }
-
-    const eve::Value *level = encodedProgression->find("level");
-    const eve::Value *xp = encodedProgression->find("xp");
-    const eve::Value *xpToNext = encodedProgression->find("xpToNext");
-    if (!level || !level->isInt64() || level->asInt() < 1 || !xp || !xp->isNumeric() ||
-        !xpToNext || !xpToNext->isNumeric() || !std::isfinite(numericValue(*xp)) ||
-        !std::isfinite(numericValue(*xpToNext)) || numericValue(*xp) < 0.0 ||
-        numericValue(*xpToNext) <= numericValue(*xp))
-        return eve::Result<CheckpointCandidate>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "actor checkpoint progression is invalid", "$.progression"));
-    candidate.progression = {static_cast<int>(level->asInt()), numericValue(*xp), numericValue(*xpToNext)};
-
-    for (const auto &name : encodedVitals->keys()) {
-        const eve::Value *value = encodedVitals->find(name);
-        if (!value || !value->isNumeric() || !std::isfinite(numericValue(*value)) || numericValue(*value) < 0.0 ||
-            numericValue(*value) > candidate.attributes.values.getFinal(name))
-            return eve::Result<CheckpointCandidate>::failure(
-                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                       "actor checkpoint vital is outside its attribute bounds", "$.vitals." + name));
-        candidate.vitals.current.emplace(name, numericValue(*value));
+    if (!message.has_progression() || !message.progression().has_level() || !message.progression().has_xp() ||
+        !message.progression().has_xp_to_next() || message.progression().level() < 1 ||
+        !std::isfinite(message.progression().xp()) || !std::isfinite(message.progression().xp_to_next()) ||
+        message.progression().xp() < 0.0 || message.progression().xp_to_next() <= message.progression().xp())
+        return fail<CheckpointCandidate>(eve::DiagnosticCode::InvalidArgument,
+                                         "actor checkpoint progression is invalid", "$.progression");
+    candidate.progression = {message.progression().level(), message.progression().xp(),
+                             message.progression().xp_to_next()};
+    for (const auto &[name, value] : message.vitals()) {
+        if (!std::isfinite(value) || value < 0.0 || value > candidate.attributes.values.getFinal(name))
+            return fail<CheckpointCandidate>(eve::DiagnosticCode::InvalidArgument,
+                                             "actor checkpoint vital is outside its attribute bounds",
+                                             "$.vitals." + name);
+        candidate.vitals.current.emplace(name, value);
     }
-
     std::unordered_set<std::string> seenSkills;
-    for (std::size_t index = 0; index < encodedSkills->arraySize(); ++index) {
-        const eve::Value &id = encodedSkills->at(index);
-        if (!id.isString() || id.asString().empty() || !seenSkills.emplace(id.asString()).second ||
-            !SkillRegistry::find(id.asString()))
-            return eve::Result<CheckpointCandidate>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::NotFound, "actor checkpoint skill is missing or invalid", "$.learnedSkills"));
-        candidate.skills.known.emplace(id.asString(), SkillRuntime{});
+    for (const auto &id : message.learned_skills()) {
+        if (id.empty() || !seenSkills.emplace(id).second || !SkillRegistry::find(id))
+            return fail<CheckpointCandidate>(eve::DiagnosticCode::NotFound,
+                                             "actor checkpoint skill is missing or invalid", "$.learnedSkills");
+        candidate.skills.known.emplace(id, SkillRuntime{});
     }
     candidate.skills.casting = CastingState{};
     return eve::Result<CheckpointCandidate>::success(std::move(candidate));
+}
+
+eve::Result<RPGActor::CheckpointCandidate> RPGActor::prepareCheckpointJson(std::string_view json) const {
+    proto::ActorCheckpointSave               message;
+    google::protobuf::util::JsonParseOptions options;
+    options.ignore_unknown_fields = true;
+    if (!google::protobuf::util::JsonStringToMessage(std::string(json), &message, options).ok())
+        return fail<CheckpointCandidate>(eve::DiagnosticCode::ParseError, "actor checkpoint JSON is malformed", "$");
+    return prepareCheckpointMessage(message);
 }
 
 void RPGActor::commitCheckpoint(CheckpointCandidate candidate) noexcept {
@@ -199,6 +176,17 @@ void RPGActor::commitCheckpoint(CheckpointCandidate candidate) noexcept {
     *progression() = candidate.progression;
     *vitals() = std::move(candidate.vitals);
     *classInfo() = std::move(candidate.classInfo);
+}
+
+eve::Result<void> RPGActor::restoreCheckpointBinary(std::string_view bytes) {
+    proto::ActorCheckpointSave message;
+    if (bytes.size() > static_cast<std::size_t>(std::numeric_limits<int>::max()) ||
+        !message.ParseFromArray(bytes.data(), static_cast<int>(bytes.size())))
+        return fail<void>(eve::DiagnosticCode::ParseError, "actor checkpoint protobuf is malformed");
+    auto prepared = prepareCheckpointMessage(message);
+    if (!prepared.ok()) return eve::Result<void>::failure(prepared.status());
+    commitCheckpoint(std::move(prepared).takeValue());
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> RPGActor::restoreCheckpointJson(std::string_view json) {

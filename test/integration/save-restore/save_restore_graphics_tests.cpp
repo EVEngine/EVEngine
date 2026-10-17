@@ -1,12 +1,13 @@
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_common_game_save_session)
-#include "PrivateTestScope.h"
+#include <google/protobuf/wrappers.pb.h>
 #include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
+#include "PrivateTestScope.h"
 #include "common/GameSaveSession.h"
 #include "zeroerr/unittest.h"
 // common_game_save_session.cpp
@@ -31,7 +32,23 @@ class FakeParticipant final : public eve::IGameSaveParticipant {
 public:
     FakeParticipant(std::string key, int value) : value(value), key_(std::move(key)) {}
     std::string_view        saveKey() const noexcept override { return key_; }
-    eve::Result<eve::Value> capture() const override { return eve::Result<eve::Value>::success(eve::Value(value)); }
+    std::string_view         messageType() const noexcept override { return "google.protobuf.Int64Value"; }
+    eve::Result<std::string> captureBinary() const override {
+        google::protobuf::Int64Value message;
+        message.set_value(value);
+        std::string wire;
+        if (!message.SerializeToString(&wire))
+            return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                                            "test participant serialization failed"));
+        return eve::Result<std::string>::success(std::move(wire));
+    }
+    eve::Result<std::unique_ptr<eve::IPreparedGameRestore>> prepareBinary(std::string_view wire) override {
+        google::protobuf::Int64Value message;
+        if (!message.ParseFromArray(wire.data(), static_cast<int>(wire.size())))
+            return eve::Result<std::unique_ptr<eve::IPreparedGameRestore>>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "test participant wire is malformed"));
+        return prepare(eve::Value(message.value()));
+    }
     eve::Result<std::unique_ptr<eve::IPreparedGameRestore>> prepare(const eve::Value &state) override {
         if (reject || !state.isInt64())
             return eve::Result<std::unique_ptr<eve::IPreparedGameRestore>>::failure(
@@ -109,7 +126,68 @@ TEST_CASE("gameSave.absentProviderAndContentMigrationAreExplicit") {
                 .addContentMigration("game-content-v1",
                                      [](const eve::Value &states) { return eve::Result<eve::Value>::success(states); })
                 .ok());
-    REQUIRE(migrated.restoreJson(saved.value(), testHash()).ok());
+    const auto schema = eve::LogicalId::parse("game:save-session");
+    REQUIRE(schema.has_value());
+    eve::Value::Object legacyStates{{"rpg", eve::Value(25)}, {"tactics", eve::Value(3)}};
+    eve::Value::Object legacyPayload{{"contentVersion", eve::Value("game-content-v1")},
+                                     {"participants", eve::Value(std::move(legacyStates))}};
+    auto               legacyEnvelope = eve::makeSnapshotEnvelope("game.save-session", *schema, eve::SchemaVersion(1),
+                                                                  eve::PersistentId::nil(), eve::Revision(0), eve::SimulationTick(0),
+                                                                  eve::Value(std::move(legacyPayload)), testHash());
+    REQUIRE(legacyEnvelope.ok());
+    auto legacyJson = eve::serializeSnapshotEnvelope(legacyEnvelope.value());
+    REQUIRE(legacyJson.ok());
+    REQUIRE(migrated.restoreJson(legacyJson.value(), testHash()).ok());
+    CHECK_EQ(first.value, 25);
+}
+
+TEST_CASE("gameSave.protobufBinaryRoundTripIsAtomic") {
+    FakeParticipant      first("rpg", 25);
+    FakeParticipant      second("tactics", 3);
+    eve::GameSaveSession session("game-content-v1");
+    REQUIRE(session.add(first).ok());
+    REQUIRE(session.add(second).ok());
+    auto saved = session.snapshotBinary(testHash());
+    REQUIRE(saved.ok());
+    auto repeated = session.snapshotBinary(testHash());
+    REQUIRE(repeated.ok());
+    CHECK_EQ(saved.value(), repeated.value());
+
+    first.value   = 99;
+    second.value  = 9;
+    second.reject = true;
+    CHECK(!session.restoreBinary(saved.value(), testHash()).ok());
+    CHECK_EQ(first.value, 99);
+    CHECK_EQ(second.value, 9);
+    second.reject = false;
+    REQUIRE(session.restoreBinary(saved.value(), testHash()).ok());
+    CHECK_EQ(first.value, 25);
+    CHECK_EQ(second.value, 3);
+
+    std::string corrupted = saved.value();
+    corrupted.back() ^= 0x01;
+    CHECK(!session.restoreBinary(corrupted, testHash()).ok());
+}
+
+TEST_CASE("gameSave.protobufContentMigrationIsExplicit") {
+    FakeParticipant      first("rpg", 25);
+    eve::GameSaveSession source("game-content-v1");
+    REQUIRE(source.add(first).ok());
+    auto saved = source.snapshotBinary(testHash());
+    REQUIRE(saved.ok());
+
+    eve::GameSaveSession destination("game-content-v2");
+    REQUIRE(destination.add(first).ok());
+    first.value = 99;
+    CHECK(!destination.restoreBinary(saved.value(), testHash()).ok());
+    CHECK_EQ(first.value, 99);
+    REQUIRE(destination
+                .addBinaryContentMigration("game-content-v1",
+                                           [](const eve::GameSaveParticipantMessages &states) {
+                                               return eve::Result<eve::GameSaveParticipantMessages>::success(states);
+                                           })
+                .ok());
+    REQUIRE(destination.restoreBinary(saved.value(), testHash()).ok());
     CHECK_EQ(first.value, 25);
 }
 }  // namespace test_common_game_save_session
@@ -252,6 +330,7 @@ TEST_CASE("graphics.canvas.separateSubmissionsPreserveAndClearRGBA8") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_save_session)
+#include <google/protobuf/util/json_util.h>
 #include "PrivateTestScope.h"
 #include "common/Value.h"
 #include "inventory/Bag.h"
@@ -264,6 +343,7 @@ TEST_CASE("graphics.canvas.separateSubmissionsPreserveAndClearRGBA8") {
 #include "rpg/RPGActor.h"
 #include "rpg/RPGSaveSession.h"
 #include "rpg/Tracker.h"
+#include "rpg_save_session.pb.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // rpg_save_session.cpp
@@ -433,33 +513,23 @@ TEST_CASE("rpg.saveSession.roundTripAndCrossParticipantRollback") {
     CHECK_EQ(restoredActor->getCurrent("hp"), 65.0);
     CHECK_EQ(restoredBag.countItem("potion"), 3);
 
-    auto parsed = eve::Value::fromJson(encoded.value());
-    REQUIRE(parsed.ok());
-    eve::Value  corrupted = std::move(parsed).takeValue();
-    eve::Value *payload   = corrupted.find("payload");
-    REQUIRE(payload != nullptr);
-    eve::Value *gameState    = payload->find("gameState");
-    eve::Value *questTracker = payload->find("questTracker");
-    eve::Value *inventory    = payload->find("inventory");
-    REQUIRE(gameState != nullptr);
-    REQUIRE(questTracker != nullptr);
-    REQUIRE(inventory != nullptr);
-    eve::Value *variables = gameState->find("variables");
-    eve::Value *entries   = questTracker->find("entries");
-    REQUIRE(variables != nullptr);
-    REQUIRE(entries != nullptr);
-    variables->set("gold", eve::Value(5.0));
-    entries->at(0).set("state", eve::Value("completed"));
-    inventory->find("bag")->find("slots")->at(0).set("itemId", eve::Value("missing.item"));
-    auto corruptedJson = corrupted.toJson();
-    REQUIRE(corruptedJson.ok());
-    auto invalidPreview = restored.validateSnapshotJson(corruptedJson.value());
+    auto encodedBinary = source.snapshotBinary();
+    REQUIRE(encodedBinary.ok());
+    eve::rpg::proto::RPGSaveEnvelope corrupted;
+    REQUIRE(corrupted.ParseFromString(encodedBinary.value()));
+    std::string damagedPayload = corrupted.payload_wire();
+    REQUIRE(!damagedPayload.empty());
+    damagedPayload[0] = static_cast<char>(damagedPayload[0] ^ 1);
+    corrupted.set_payload_wire(std::move(damagedPayload));
+    std::string corruptedJson;
+    REQUIRE(google::protobuf::util::MessageToJsonString(corrupted, &corruptedJson).ok());
+    auto invalidPreview = restored.validateSnapshotJson(corruptedJson);
     CHECK(!invalidPreview.ok());
     REQUIRE(invalidPreview.error() != nullptr);
     CHECK_EQ(static_cast<int>(invalidPreview.error()->code()), static_cast<int>(eve::DiagnosticCode::HashMismatch));
     CHECK_EQ(restoredState.getVariable("gold"), 40.0);
     CHECK_EQ(restoredBag.countItem("potion"), 3);
-    auto rejected = restored.restoreSnapshotJson(corruptedJson.value());
+    auto rejected = restored.restoreSnapshotJson(corruptedJson);
     CHECK(!rejected.ok());
     REQUIRE(rejected.error() != nullptr);
     CHECK_EQ(static_cast<int>(rejected.error()->code()), static_cast<int>(eve::DiagnosticCode::HashMismatch));
@@ -635,13 +705,13 @@ TEST_CASE("rpg.saveSession.explicitIdMigrationRewritesOwningPayloadBeforeValidat
 
     auto rewritten = migrated.snapshotJson();
     REQUIRE(rewritten.ok());
-    auto rewrittenEnvelope = eve::Value::fromJson(rewritten.value());
-    REQUIRE(rewrittenEnvelope.ok());
-    const eve::Value *payload = rewrittenEnvelope.value().find("payload");
-    REQUIRE(payload != nullptr);
-    const eve::Value *contentVersion = payload->find("contentVersion");
-    REQUIRE(contentVersion != nullptr);
-    CHECK_EQ(contentVersion->asString(), "content.v2");
+    auto rewrittenBytes = migrated.snapshotBinary();
+    REQUIRE(rewrittenBytes.ok());
+    eve::rpg::proto::RPGSaveEnvelope rewrittenEnvelope;
+    REQUIRE(rewrittenEnvelope.ParseFromString(rewrittenBytes.value()));
+    eve::rpg::proto::RPGSavePayload payload;
+    REQUIRE(payload.ParseFromString(rewrittenEnvelope.payload_wire()));
+    CHECK_EQ(payload.content_version(), "content.v2");
 
     sourceActor->release();
     targetActor->release();

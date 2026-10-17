@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package eve.emergence.proto;
+
+import "dynamic_value.proto";
+
+// Version 2 replaces the hand-written version-1 JSON fact snapshot.
+message FactStoreSave {
+  optional string schema = 1;
+  optional uint32 version = 2;
+  map<string, eve.persistence.proto.DynamicValue> values = 3;
+  map<string, bool> tags = 4;
+  map<string, eve.persistence.proto.DynamicValue> attributes = 5;
+  map<string, eve.persistence.proto.DynamicValue> resources = 6;
+  map<string, eve.persistence.proto.DynamicValue> states = 7;
+  map<string, bool> authorities = 8;
+  map<string, PolicyResult> policies = 9;
+}
+
+// Values match decision::ConditionReasonCode's stable numeric contract.
+enum PolicyReason {
+  PASSED = 0;
+  CHILD_FAILED = 1;
+  NO_CHILD_PASSED = 2;
+  NEGATED = 3;
+  MISSING_VALUE = 4;
+  VALUE_MISMATCH = 5;
+  TAG_MISSING = 6;
+  TAG_UNAVAILABLE = 7;
+  ATTRIBUTE_MISSING = 8;
+  RESOURCE_MISSING = 9;
+  STATE_MISSING = 10;
+  STATE_MISMATCH = 11;
+  AUTHORITY_DENIED = 12;
+  AUTHORITY_UNAVAILABLE = 13;
+  POLICY_REJECTED = 14;
+  POLICY_UNAVAILABLE = 15;
+  INVALID_CONDITION = 16;
+}
+
+message PolicyResult {
+  optional bool passed = 1;
+  optional PolicyReason reason = 2;
+  eve.persistence.proto.DynamicValue evidence = 3;
+  eve.persistence.proto.DynamicValue details = 4;
+}
+
+// Version 2 embeds the typed fact snapshot and exact rule latch state.
+message RuleEngineSave {
+  optional string schema = 1;
+  optional uint32 version = 2;
+  FactStoreSave facts = 3;
+  repeated RuleLatch rules = 4;
+}
+
+message RuleLatch {
+  optional string id = 1;
+  optional bool passed = 2;
+  optional bool fired = 3;
+  optional bool disabled = 4;
+  optional uint64 cooldown_until = 5;
+}

@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "game-event-stream-protobuf-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/game_event/GameEvent.*",
+      "owner": "game_event::GameEventLog",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "The stream and event metadata have a typed Protobuf binary representation instead of requiring a Value-mediated JSON snapshot.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "proto/game_event_stream.proto",
+        "src/modules/game_event/GameEvent.cpp"
+      ],
+      "tests": [
+        "test/game_event_protobuf.cpp",
+        "test/eventstream.cpp"
+      ],
+      "schema": "game_event:stream version 3 is GameEventStreamSave with ordered GameEventRecord entries and domain-owned payload_wire bytes.",
+      "version": "Binary writers emit version 3; the existing JSON restore keeps versions 1 and 2 readable.",
+      "migration": "Legacy JSON can be restored before recapturing as version 3 binary; stream identity, sequence and metadata remain typed.",
+      "unknown_fields": "Binary restore rejects unknown root and record fields; all required record fields and causal reference tags are checked.",
+      "restore_atomicity": "Every record is parsed into an independent deque before the live stream and cursors are replaced."
+    },
+    {
+      "id": "game-event-stream-protobuf-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/game_event/**",
+      "owner": "game_event::GameEventLog",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "The event stream exposes typed binary persistence alongside its existing script and compatibility JSON boundary.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/game_event/GameEvent.h",
+        "proto/game_event_stream.proto"
+      ],
+      "tests": [
+        "test/game_event_protobuf.cpp",
+        "test/eventstream.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        { "script_class": "GameEvent", "methods": ["newLog"] },
+        { "script_class": "GameEventLog", "methods": ["append", "find", "newConsumer", "snapshotJson", "restore"] },
+        { "script_class": "GameEventRecord", "methods": ["getEventId", "getType", "getPayload"] },
+        { "script_class": "EventConsumer", "methods": ["read", "batchAt", "seek"] }
+      ],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "No L1-L4 trim claim is made for this change."
+      },
+      "thread_affinity": "Snapshot and restore run on the stream owner thread and invoke no callbacks.",
+      "cost_notes": [
+        "Binary save and restore cost linear time in retained records and payload bytes per snapshot."
+      ],
+      "hot_path": []
+    }
+  ]
+}

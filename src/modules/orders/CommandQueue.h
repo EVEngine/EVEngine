@@ -15,6 +15,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace eve::orders {
@@ -188,21 +189,40 @@ public:
     void clearEvents();
 
     /**
-     * @brief Serializes the complete command queue as deterministic JSON.
-     * @return A canonical JSON snapshot containing schema/version, every order,
-     *         queue membership, active order, event history, and both counters.
+     * @brief Serializes the complete queue with the typed version-2 Protobuf schema.
+     * @return Independent binary snapshot or structured serialization failure.
+     * @cost Linear in retained orders, events, and dynamic payload bytes per snapshot.
+     * @thread Call on the queue's owning simulation thread.
+     */
+    [[nodiscard]] eve::Result<std::string> snapshotBinary() const;
+
+    /**
+     * @brief Restores a typed version-2 Protobuf queue after validating the entire image.
+     * @param bytes Binary snapshot produced by snapshotBinary().
+     * @return Success, or a parse/schema/invariant failure leaving this queue unchanged.
+     * @cost Linear in retained orders, events, and dynamic payload bytes per restore.
+     * @thread Call on the queue's owning simulation thread; no callbacks are invoked.
+     */
+    [[nodiscard]] eve::Result<void> restoreBinary(std::string_view bytes);
+
+    /**
+     * @brief Exports Protobuf JSON for compatibility and inspection.
+     * @return JSON view of the canonical typed snapshot or a structured failure.
+     * @cost Linear in snapshot size plus Protobuf JSON conversion per call.
      */
     [[nodiscard]] eve::Result<std::string> snapshot() const;
 
     /**
-     * @brief Restores a command queue transactionally from a JSON snapshot.
-     * @param json JSON encoded by snapshot().
-     * @return Success, or a parse/schema/invariant failure. On failure this
-     *         queue remains unchanged.
+     * @brief Imports Protobuf JSON or legacy version-1 JSON transactionally.
+     * @param json JSON encoded by snapshot() or a version-1 queue writer.
+     * @return Success, or a parse/schema/invariant failure leaving this queue unchanged.
+     * @cost Linear in snapshot size per compatibility import.
      */
     [[nodiscard]] eve::Result<void> restore(std::string_view json);
 
 private:
+    [[nodiscard]] eve::Result<void> restoreLegacyJson(std::string_view json);
+    static bool                     generatedOrderId(std::string_view id, std::uint64_t& number);
     std::string appendUnchecked(const std::string& kind, int priority, double timeoutSeconds);
     std::string replaceUnchecked(const std::string& kind, int priority, double timeoutSeconds);
     std::string interruptUnchecked(const std::string& kind, int priority, double timeoutSeconds);

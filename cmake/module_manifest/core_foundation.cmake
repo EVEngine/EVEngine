@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------------
 
 eve_declare_module(NAME common CORE REQUIRED LIB EVCommon LAYER -1
-                   THIRDPARTY squirrel)
+                   THIRDPARTY squirrel protobuf)
 eve_declare_module(NAME cmdline CORE REQUIRED LIB EVCmdLine LAYER -1
                    DEPS filesystem
                    THIRDPARTY squirrel poco)
@@ -103,9 +103,11 @@ eve_declare_module(NAME pixelworld_streaming LAYER 1
                    DEPS asset pixelworld
                    GROUP 2d 3d web)
 eve_declare_module(NAME rpg LIB EVRPG LAYER 1 SCRIPT RPG
-                   DEPS action attributes definitions dnut_interpreter effects inventory production settlement transaction)
+                   DEPS action attributes definitions dnut_interpreter effects inventory production settlement transaction
+                   THIRDPARTY protobuf)
 # L0 -- foundation (continued)
 eve_declare_module(NAME inventory LAYER 0 SCRIPT Inventory
+                   THIRDPARTY protobuf
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME economy LAYER 0 SCRIPT Economy SLOT economy
                    DEPS transaction
@@ -117,6 +119,7 @@ eve_declare_module(NAME authority LAYER 0 SCRIPT Authority SLOT authority
 # Indexed emergent rule triggers (watch-key inverted index + deferred activations).
 # Reuses common Condition AST; economy actions go through IEconomy capability.
 eve_declare_module(NAME emergence LAYER 0 SCRIPT Emergence SLOT emergence
+                   THIRDPARTY protobuf
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME definitions LAYER 0 SCRIPT Definitions SLOT definitions
                    DEPS schema
@@ -140,11 +143,13 @@ eve_declare_module(NAME production LAYER 0 SCRIPT Production SLOT production
 # L1 -- sensing/action protocol
 eve_declare_module(NAME sensing LAYER 1 SCRIPT Sensing SLOT sensing
                    DEPS spatial
+                   THIRDPARTY protobuf
                    GROUP minimal 2d 3d web)
 # Data-oriented NPC AI orchestration. Also owns DecisionContext (blackboard /
 # FSM / utility / influence grids) previously in the dissolved decision module.
 # Shared Condition AST lives in engine common (not a separate module).
 eve_declare_module(NAME npc_ai LAYER 1 SCRIPT NpcAi Decision SLOT npc_ai decision
+                   THIRDPARTY protobuf
                    GROUP minimal 2d 3d web)
 # Renderer- and ruleset-neutral gameplay action lifecycle. Domain adapters
 # (RPG Skill, Weapon Attack, Card Play, RTS Command) depend on this protocol;
@@ -184,6 +189,7 @@ eve_declare_module(NAME physics_softbody DIR physics/softbody LAYER 3
                    GROUP 3d web)
 # L0 -- foundation (continued)
 eve_declare_module(NAME schema LAYER 0 SCRIPT Schema SLOT schema
+                   THIRDPARTY protobuf
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME social LAYER 0 SCRIPT Social SLOT social
                    GROUP minimal 2d 3d web)

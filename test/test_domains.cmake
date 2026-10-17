@@ -32,6 +32,8 @@
 
 set(EVE_TEST_DOMAINS
     core
+    game_save
+    schema
     scripts
     graphics
     ui
@@ -45,6 +47,7 @@ set(EVE_TEST_DOMAINS
     map
     voxel
     particles
+    decision
     rpg
     combat
     tactics_rts
@@ -72,7 +75,7 @@ set(EVE_TEST_MODULE_DOMAIN
     "math;core"
     "data;core"
     "filesystem;core"
-    "schema;core"
+    "schema;schema"
     "tags;core"
     "transaction;core"
     "spatial;core"
@@ -220,6 +223,7 @@ set(EVE_TEST_PREFIX_DOMAIN
     "capability;core"
     "cmdline;core"
     "common_;core"
+    "=common_game_save_session;game_save"
     "crashlog;core"
     "diagnostic_value;core"
     "ecs_container_instances;core"
@@ -236,6 +240,7 @@ set(EVE_TEST_PREFIX_DOMAIN
     "module_lazy_bind;core"
     "module_manager_registry;core"
     "profiler_script;core"
+    "protobuf_snapshot;core"
     "resource;core"
     "result;core"
     "runtime_handle;core"
@@ -261,6 +266,7 @@ set(EVE_TEST_PREFIX_DOMAIN
 
     "procgen_cave;procgen"
     "procgen_schema_script;procgen"
+    "=procgen_generation_stages_script;procgen"
 
     "voxel_render;voxel"
 

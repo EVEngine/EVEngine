@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package eve.game_event.proto;
+
+// Version 3 owns the fixed stream and event metadata. Event payload is
+// opaque domain-owned wire data identified by schema_id/schema_version.
+message GameEventStreamSave {
+  optional string schema = 1;
+  optional uint32 version = 2;
+  optional uint64 revision = 3;
+  optional uint64 next_sequence = 4;
+  repeated GameEventRecord events = 5;
+}
+
+message GameEventRecord {
+  optional string event_id = 1;
+  optional uint64 sequence = 2;
+  optional string type = 3;
+  optional string source = 4;
+  optional string subject = 5;
+  optional string causation_kind = 6;
+  optional string causation = 7;
+  optional string correlation_kind = 8;
+  optional string correlation = 9;
+  optional string schema_id = 10;
+  optional uint64 schema_version = 11;
+  optional uint64 tick = 12;
+  optional uint32 flags = 13;
+  optional bytes payload_wire = 14;
+}

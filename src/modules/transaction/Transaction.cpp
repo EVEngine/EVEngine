@@ -2,19 +2,52 @@
 #include "transaction/AtomicBatch.h"
 
 #include "common/Json.h"
+#include "common/ProtobufDynamicValue.h"
+#include "common/ProtobufSnapshot.h"
 #include "common/SquirrelBinding.h"
+#include "snapshot_envelope.pb.h"
+#include "transaction_ledger.pb.h"
 
+#include <google/protobuf/io/coded_stream.h>
+#include <google/protobuf/io/zero_copy_stream_impl_lite.h>
+#include <google/protobuf/util/json_util.h>
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <algorithm>
+#include <charconv>
 #include <exception>
 #include <iomanip>
 #include <limits>
 #include <sstream>
+#include <unordered_set>
 #include <utility>
 
 namespace eve::transaction {
 namespace {
+
+bool serializeDeterministic(const google::protobuf::MessageLite& message, std::string& bytes) {
+    google::protobuf::io::StringOutputStream output(&bytes);
+    google::protobuf::io::CodedOutputStream  coded(&output);
+    coded.SetSerializationDeterministic(true);
+    return message.SerializeToCodedStream(&coded) && !coded.HadError();
+}
+
+bool hasUnknownProtoFields(const google::protobuf::Message& message) {
+    const auto* reflection = message.GetReflection();
+    if (!reflection->GetUnknownFields(message).empty()) return true;
+    std::vector<const google::protobuf::FieldDescriptor*> fields;
+    reflection->ListFields(message, &fields);
+    for (const auto* field : fields) {
+        if (field->cpp_type() != google::protobuf::FieldDescriptor::CPPTYPE_MESSAGE) continue;
+        if (field->is_repeated()) {
+            for (int index = 0; index < reflection->FieldSize(message, field); ++index)
+                if (hasUnknownProtoFields(reflection->GetRepeatedMessage(message, field, index))) return true;
+        } else if (hasUnknownProtoFields(reflection->GetMessage(message, field))) {
+            return true;
+        }
+    }
+    return false;
+}
 
 std::string quote(const std::string& value) {
     std::ostringstream out;
@@ -512,31 +545,52 @@ const Event* Plan::eventAt(int index) const {
 }
 
 std::string Plan::snapshotJson() const {
-    std::ostringstream out;
-    out << "{\"id\":" << quote(id_);
-    if (!identity_.isNil()) out << ",\"identity\":" << quote(identity_.format());
-    out << ",\"state\":" << quote(stateName(state_)) << ",\"correlation\":" << quote(correlation_)
-        << ",\"causation\":" << quote(causation_) << ",\"error\":" << quote(error_)
-        << ",\"nextOperation\":" << quote(std::to_string(nextOperation_))
-        << ",\"nextEvent\":" << quote(std::to_string(nextEvent_)) << ",\"operations\":[";
-    for (size_t i = 0; i < operations_.size(); ++i) {
-        if (i) out << ',';
-        const auto& op = operations_[i];
-        out << "{\"id\":" << quote(op.id);
-        if (!op.identity.isNil()) out << ",\"identity\":" << quote(op.identity.format());
-        out << ",\"kind\":" << quote(op.kind) << ",\"target\":" << quote(op.target) << ",\"payload\":" << op.payload
-            << ",\"checked\":" << (op.checked ? "true" : "false") << ",\"valid\":" << (op.valid ? "true" : "false")
-            << ",\"error\":" << quote(op.error) << '}';
+    proto::TransactionPlan saved;
+    if (!writeProto(saved).ok()) return {};
+    std::string json;
+    return google::protobuf::util::MessageToJsonString(saved, &json).ok() ? json : std::string{};
+}
+
+eve::Result<void> Plan::writeProto(proto::TransactionPlan& item) const {
+    item.set_id(id_);
+    item.set_identity(identity_.isNil() ? std::string{} : identity_.format());
+    switch (state_) {
+        case State::Open: item.set_state(proto::TransactionPlan::OPEN); break;
+        case State::Validated: item.set_state(proto::TransactionPlan::VALIDATED); break;
+        case State::Committed: item.set_state(proto::TransactionPlan::COMMITTED); break;
+        case State::RolledBack: item.set_state(proto::TransactionPlan::ROLLED_BACK); break;
+        case State::Failed: item.set_state(proto::TransactionPlan::FAILED); break;
     }
-    out << "],\"events\":[";
-    for (size_t i = 0; i < events_.size(); ++i) {
-        if (i) out << ',';
-        const auto& event = events_[i];
-        out << "{\"sequence\":" << quote(std::to_string(event.sequence))
-            << ",\"transactionId\":" << quote(event.transactionId) << ",\"operationId\":" << quote(event.operationId)
-            << ",\"type\":" << quote(event.type) << ",\"detail\":" << quote(event.detail) << '}';
+    item.set_correlation(correlation_);
+    item.set_causation(causation_);
+    item.set_error(error_);
+    item.set_next_operation(nextOperation_);
+    item.set_next_event(nextEvent_);
+    for (const auto& op : operations_) {
+        auto* saved = item.add_operations();
+        saved->set_id(op.id);
+        saved->set_identity(op.identity.isNil() ? std::string{} : op.identity.format());
+        saved->set_kind(op.kind);
+        saved->set_target(op.target);
+        auto payload = eve::Value::fromJson(op.payload);
+        if (!payload.ok())
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                                     "invalid retained transaction operation payload"));
+        auto encoded = eve::proto_support::encodeDynamicValue(payload.value(), *saved->mutable_payload());
+        if (!encoded.ok()) return encoded;
+        saved->set_checked(op.checked);
+        saved->set_valid(op.valid);
+        saved->set_error(op.error);
     }
-    return out.str() + "]}";
+    for (const auto& event : events_) {
+        auto* saved = item.add_events();
+        saved->set_sequence(event.sequence);
+        saved->set_transaction_id(event.transactionId);
+        saved->set_operation_id(event.operationId);
+        saved->set_type(event.type);
+        saved->set_detail(event.detail);
+    }
+    return eve::Result<void>::success();
 }
 
 eve::Result<Plan*> Ledger::create(const std::string& correlation, const std::string& causation,
@@ -576,16 +630,182 @@ Plan* Ledger::at(int index) {
 }
 
 std::string Ledger::snapshotJson() const {
-    std::ostringstream out;
-    out << "{\"version\":1,\"nextTransaction\":" << quote(std::to_string(nextTransaction_)) << ",\"plans\":[";
-    for (size_t i = 0; i < plans_.size(); ++i) {
-        if (i) out << ',';
-        out << plans_[i]->snapshotJson();
+    auto bytes = snapshotBinary();
+    if (!bytes.ok()) return {};
+    proto::TransactionLedgerSave save;
+    if (!save.ParseFromString(bytes.value())) return {};
+    std::string json;
+    return google::protobuf::util::MessageToJsonString(save, &json).ok() ? json : std::string{};
+}
+
+eve::Result<std::string> Ledger::snapshotBinary() const {
+    proto::TransactionLedgerSave save;
+    save.set_schema("transaction:ledger");
+    save.set_version(2);
+    save.set_next_transaction(nextTransaction_);
+    for (const auto& plan : plans_) {
+        auto written = plan->writeProto(*save.add_plans());
+        if (!written.ok()) return eve::Result<std::string>::failure(written.status());
     }
-    return out.str() + "]}";
+    std::string bytes;
+    if (!serializeDeterministic(save, bytes))
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                                        "transaction Protobuf serialization failed"));
+    return eve::Result<std::string>::success(std::move(bytes));
+}
+
+eve::Result<void> Ledger::restoreBinary(std::string_view bytes) {
+    const auto invalid = [](std::string message) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move(message)));
+    };
+    proto::TransactionLedgerSave save;
+    if (bytes.size() > static_cast<std::size_t>(std::numeric_limits<int>::max()) ||
+        !save.ParseFromArray(bytes.data(), static_cast<int>(bytes.size())) || hasUnknownProtoFields(save) ||
+        !save.has_schema() || save.schema() != "transaction:ledger" || !save.has_version() || save.version() != 2 ||
+        !save.has_next_transaction() || save.next_transaction() == 0)
+        return invalid("invalid transaction Protobuf snapshot");
+
+    std::vector<std::unique_ptr<Plan>> restored;
+    std::unordered_set<std::string>    planIds;
+    uint64_t                           previousNumeric = 0;
+    for (const auto& item : save.plans()) {
+        if (!item.has_id() || item.id().empty() || !item.has_identity() || !item.has_state() ||
+            !item.has_correlation() || !item.has_causation() || !item.has_error() || !item.has_next_operation() ||
+            item.next_operation() == 0 || !item.has_next_event() || item.next_event() == 0 ||
+            !planIds.insert(item.id()).second)
+            return invalid("invalid transaction plan");
+        State state;
+        switch (item.state()) {
+            case proto::TransactionPlan::OPEN: state = State::Open; break;
+            case proto::TransactionPlan::VALIDATED: state = State::Validated; break;
+            case proto::TransactionPlan::COMMITTED: state = State::Committed; break;
+            case proto::TransactionPlan::ROLLED_BACK: state = State::RolledBack; break;
+            case proto::TransactionPlan::FAILED: state = State::Failed; break;
+            default: return invalid("invalid transaction state");
+        }
+        eve::TransactionId identity;
+        bool               canonicalIdentity = false;
+        if (!item.identity().empty()) {
+            const auto parsed = eve::TransactionId::parse(item.identity());
+            if (!parsed || parsed->isNil() || item.id() != parsed->format())
+                return invalid("invalid canonical transaction identity");
+            identity          = *parsed;
+            canonicalIdentity = true;
+        } else if (const auto parsed = eve::TransactionId::parse(item.id()); parsed && !parsed->isNil()) {
+            identity          = *parsed;
+            canonicalIdentity = true;
+        }
+        if (!canonicalIdentity) {
+            constexpr std::string_view prefix = "transaction-";
+            if (!item.id().starts_with(prefix)) return invalid("invalid legacy transaction id");
+            uint64_t   numeric      = 0;
+            const auto text         = std::string_view(item.id()).substr(prefix.size());
+            const auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), numeric);
+            if (error != std::errc{} || end != text.data() + text.size() || numeric <= previousNumeric ||
+                numeric >= save.next_transaction())
+                return invalid("invalid legacy transaction id");
+            previousNumeric = numeric;
+        }
+        auto plan            = std::unique_ptr<Plan>(new Plan(item.id(), item.correlation(), item.causation(), identity,
+                                                              transactionEntropy_, transactionClock_));
+        plan->state_         = state;
+        plan->error_         = item.error();
+        plan->nextOperation_ = item.next_operation();
+        plan->nextEvent_     = item.next_event();
+        std::unordered_set<std::string> operationIds;
+        for (const auto& saved : item.operations()) {
+            if (!saved.has_id() || saved.id().empty() || !saved.has_identity() || !saved.has_kind() ||
+                saved.kind().empty() || !saved.has_target() || !saved.has_payload() || !saved.has_checked() ||
+                !saved.has_valid() || !saved.has_error() || !operationIds.insert(saved.id()).second)
+                return invalid("invalid transaction operation");
+            Operation op;
+            op.id = saved.id();
+            if (!saved.identity().empty()) {
+                const auto parsed = eve::OperationId::parse(saved.identity());
+                if (!parsed || parsed->isNil() || op.id != parsed->format())
+                    return invalid("invalid canonical operation identity");
+                op.identity = *parsed;
+            } else if (const auto parsed = eve::OperationId::parse(op.id); parsed && !parsed->isNil()) {
+                op.identity = *parsed;
+            }
+            op.kind      = saved.kind();
+            op.target    = saved.target();
+            op.checked   = saved.checked();
+            op.valid     = saved.valid();
+            op.error     = saved.error();
+            auto payload = eve::proto_support::decodeDynamicValue(saved.payload());
+            if (!payload.ok()) return eve::Result<void>::failure(payload.status());
+            auto canonical = payload.value().toJson();
+            if (!canonical.ok()) return eve::Result<void>::failure(canonical.status());
+            op.payload = std::move(canonical).takeValue();
+            plan->operations_.push_back(std::move(op));
+        }
+        uint64_t previousEvent = 0;
+        for (const auto& saved : item.events()) {
+            if (!saved.has_sequence() || saved.sequence() <= previousEvent || !saved.has_transaction_id() ||
+                saved.transaction_id() != item.id() || !saved.has_operation_id() || !saved.has_type() ||
+                saved.type().empty() || !saved.has_detail())
+                return invalid("invalid transaction event");
+            Event event;
+            event.sequence            = saved.sequence();
+            event.transactionId       = item.id();
+            event.operationId         = saved.operation_id();
+            event.type                = saved.type();
+            event.detail              = saved.detail();
+            event.transactionIdentity = identity;
+            if (const auto parsed = eve::OperationId::parse(event.operationId)) event.operationIdentity = *parsed;
+            plan->events_.push_back(std::move(event));
+            previousEvent = saved.sequence();
+        }
+        if (previousEvent >= item.next_event()) return invalid("invalid transaction event allocator");
+        restored.push_back(std::move(plan));
+    }
+    plans_           = std::move(restored);
+    nextTransaction_ = save.next_transaction();
+    return eve::Result<void>::success();
+}
+
+eve::Result<std::string> Ledger::snapshotEnvelopeBinary(const eve::SnapshotHashProvider& hashProvider) const {
+    auto payload = snapshotBinary();
+    if (!payload.ok()) return eve::Result<std::string>::failure(payload.status());
+    return eve::proto_support::serializeBinarySnapshot(
+        {"transaction.ledger", transactionSchema(), eve::SchemaVersion(2), instanceId_, revision_, tick_,
+         std::move(payload).takeValue()},
+        hashProvider);
+}
+
+eve::Result<void> Ledger::restoreSnapshotBinary(std::string_view bytes, const eve::SnapshotHashProvider& hashProvider) {
+    auto parsed = eve::proto_support::parseBinarySnapshot(bytes, hashProvider);
+    if (!parsed.ok()) return eve::Result<void>::failure(parsed.status());
+    const auto& envelope = parsed.value();
+    if (envelope.type != "transaction.ledger" || envelope.schema != transactionSchema())
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "snapshot does not belong to transaction::Ledger"));
+    if (envelope.schemaVersion.value() != 2)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::UnknownVersion, "unsupported transaction envelope version"));
+    if (!instanceId_.isNil() && envelope.instanceId != instanceId_)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "transaction snapshot identity differs from target"));
+    auto restored = restoreBinary(envelope.payloadWire);
+    if (!restored.ok()) return eve::Result<void>::failure(restored.status());
+    instanceId_ = envelope.instanceId;
+    revision_   = envelope.revision;
+    tick_       = envelope.tick;
+    return eve::Result<void>::success();
 }
 
 eve::Result<void> Ledger::restore(std::string_view json) {
+    proto::TransactionLedgerSave save;
+    if (google::protobuf::util::JsonStringToMessage(std::string(json), &save).ok() && save.has_schema()) {
+        std::string bytes;
+        if (!serializeDeterministic(save, bytes))
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                                     "invalid transaction Protobuf JSON snapshot"));
+        return restoreBinary(bytes);
+    }
+
+    // Version 1 JSON is read only for persisted snapshots made before Protobuf.
     const auto failure = [](eve::DiagnosticCode code, std::string message) {
         return eve::Result<void>::failure(eve::Diagnostic::error(code, message, "transaction.ledger"));
     };
@@ -717,7 +937,7 @@ eve::Result<void> Ledger::restore(std::string_view json) {
 eve::Result<eve::SnapshotEnvelope> Ledger::snapshot(const eve::SnapshotHashProvider& hashProvider) const {
     auto payload = eve::Value::fromJson(snapshotJson());
     if (!payload.ok()) return eve::Result<eve::SnapshotEnvelope>::failure(payload.status());
-    return eve::makeSnapshotEnvelope("transaction.ledger", transactionSchema(), eve::SchemaVersion(1), instanceId_,
+    return eve::makeSnapshotEnvelope("transaction.ledger", transactionSchema(), eve::SchemaVersion(2), instanceId_,
                                      revision_, tick_, std::move(payload).takeValue(), hashProvider);
 }
 
@@ -730,7 +950,8 @@ eve::Result<void> Ledger::restoreSnapshot(const eve::SnapshotEnvelope&     sourc
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Conflict, "snapshot instanceId does not match transaction::Ledger"));
 
-    auto migrated = transactionMigrations().migrate(source, eve::SchemaVersion(1), hashProvider);
+    const auto targetVersion = source.schemaVersion.value() == 2 ? eve::SchemaVersion(2) : eve::SchemaVersion(1);
+    auto       migrated      = transactionMigrations().migrate(source, targetVersion, hashProvider);
     if (!migrated.ok()) return eve::Result<void>::failure(migrated.status());
     const auto& candidateEnvelope = migrated.value();
     auto        metadata = eve::validateSnapshotPayloadMetadata(candidateEnvelope.payload, candidateEnvelope.revision,
@@ -750,13 +971,56 @@ eve::Result<void> Ledger::restoreSnapshot(const eve::SnapshotEnvelope&     sourc
 }
 
 eve::Result<std::string> Ledger::snapshotEnvelopeJson(const eve::SnapshotHashProvider& hashProvider) const {
-    auto value = snapshot(hashProvider);
-    if (!value.ok()) return eve::Result<std::string>::failure(value.status());
-    return std::move(value).andThen(
-        [](eve::SnapshotEnvelope&& envelope) { return eve::serializeSnapshotEnvelope(envelope); });
+    auto bytes = snapshotEnvelopeBinary(hashProvider);
+    if (!bytes.ok()) return eve::Result<std::string>::failure(bytes.status());
+    eve::persistence::proto::BinarySnapshotEnvelope envelope;
+    if (!envelope.ParseFromString(bytes.value()))
+        return eve::Result<std::string>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, "transaction envelope decoding failed"));
+    proto::TransactionLedgerJsonDocument document;
+    document.set_type(envelope.type());
+    document.set_schema(envelope.schema());
+    document.set_version(envelope.version());
+    document.set_instance_id(envelope.instance_id());
+    document.set_revision(envelope.revision());
+    document.set_tick(envelope.tick());
+    document.set_digest(envelope.digest());
+    if (!document.mutable_payload()->ParseFromString(envelope.payload_wire()))
+        return eve::Result<std::string>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, "transaction payload decoding failed"));
+    std::string json;
+    if (!google::protobuf::util::MessageToJsonString(document, &json).ok())
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::SerializationError, "transaction envelope JSON serialization failed"));
+    return eve::Result<std::string>::success(std::move(json));
 }
 
 eve::Result<void> Ledger::restoreSnapshotJson(std::string_view json, const eve::SnapshotHashProvider& hashProvider) {
+    proto::TransactionLedgerJsonDocument document;
+    if (google::protobuf::util::JsonStringToMessage(std::string(json), &document).ok() && document.has_type()) {
+        if (hasUnknownProtoFields(document) || !document.has_schema() || !document.has_version() ||
+            !document.has_instance_id() || !document.has_revision() || !document.has_tick() ||
+            !document.has_payload() || !document.has_digest())
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                     "incomplete transaction Protobuf JSON envelope"));
+        eve::persistence::proto::BinarySnapshotEnvelope envelope;
+        envelope.set_type(document.type());
+        envelope.set_schema(document.schema());
+        envelope.set_version(document.version());
+        envelope.set_instance_id(document.instance_id());
+        envelope.set_revision(document.revision());
+        envelope.set_tick(document.tick());
+        envelope.set_digest(document.digest());
+        if (!serializeDeterministic(document.payload(), *envelope.mutable_payload_wire()))
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                                     "transaction payload serialization failed"));
+        std::string wire;
+        if (!serializeDeterministic(envelope, wire))
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                                     "transaction envelope serialization failed"));
+        return restoreSnapshotBinary(wire, hashProvider);
+    }
+    // Common Value envelopes remain readable only for migration.
     auto source = eve::parseSnapshotEnvelope(json, hashProvider);
     if (!source.ok()) return eve::Result<void>::failure(source.status());
     return restoreSnapshot(std::move(source).takeValue(), hashProvider);

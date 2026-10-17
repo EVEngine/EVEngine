@@ -92,16 +92,16 @@ public:
     [[nodiscard]] std::string_view name() const noexcept override { return "rpg-crafting-production"; }
 
     [[nodiscard]] eve::Result<void> prepare(const transaction::TransactionContext&) override {
-        auto snapshot = queue_.snapshot();
+        auto snapshot = queue_.snapshotBinary();
         if (!snapshot) return eve::Result<void>::failure(snapshot.status());
         before_ = std::move(snapshot).takeValue();
         staged_ = std::make_unique<production::WorkQueue>();
-        auto restored = staged_->restore(before_);
+        auto restored = staged_->restoreBinary(before_);
         if (!restored) return restored;
         auto enqueued = staged_->enqueue(request_);
         if (!enqueued) return eve::Result<void>::failure(enqueued.status());
         taskId_ = std::move(enqueued).takeValue();
-        auto after = staged_->snapshot();
+        auto after = staged_->snapshotBinary();
         if (!after) return eve::Result<void>::failure(after.status());
         after_ = std::move(after).takeValue();
         prepared_ = true;
@@ -111,12 +111,12 @@ public:
     [[nodiscard]] eve::Result<void> commit(const transaction::TransactionContext&) override {
         if (!prepared_ || committed_)
             return failure<void>(eve::DiagnosticCode::Conflict, "crafting production is not prepared", "production");
-        auto current = queue_.snapshot();
+        auto current = queue_.snapshotBinary();
         if (!current) return eve::Result<void>::failure(current.status());
         if (current.value() != before_)
             return failure<void>(eve::DiagnosticCode::StaleHandle,
                                  "crafting production queue changed while staged", "production");
-        auto restored = queue_.restore(after_);
+        auto restored = queue_.restoreBinary(after_);
         if (!restored) return restored;
         committed_ = true;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -133,12 +133,12 @@ public:
     [[nodiscard]] eve::Result<void> compensate(const transaction::TransactionContext&) override {
         if (!committed_)
             return failure<void>(eve::DiagnosticCode::Conflict, "crafting task has not committed");
-        auto current = queue_.snapshot();
+        auto current = queue_.snapshotBinary();
         if (!current) return eve::Result<void>::failure(current.status());
         if (current.value() != after_)
             return failure<void>(eve::DiagnosticCode::StaleHandle,
                                  "crafting production queue changed before compensation", "production");
-        auto restored = queue_.restore(before_);
+        auto restored = queue_.restoreBinary(before_);
         if (!restored) return restored;
         staged_.reset();
         prepared_ = false;
@@ -168,11 +168,11 @@ public:
     [[nodiscard]] std::string_view name() const noexcept override { return "rpg-crafting-settlement"; }
 
     [[nodiscard]] eve::Result<void> prepare(const transaction::TransactionContext&) override {
-        auto before = queue_.snapshot();
+        auto before = queue_.snapshotBinary();
         if (!before) return eve::Result<void>::failure(before.status());
         before_ = std::move(before).takeValue();
         production::WorkQueue staged;
-        auto restored = staged.restore(before_);
+        auto                  restored = staged.restoreBinary(before_);
         if (!restored) return restored;
         const auto task = staged.find(taskId_);
         if (!task)
@@ -183,7 +183,7 @@ public:
         }
         auto settled = staged.settle(taskId_, receipt_);
         if (!settled) return settled;
-        auto after = staged.snapshot();
+        auto after = staged.snapshotBinary();
         if (!after) return eve::Result<void>::failure(after.status());
         after_ = std::move(after).takeValue();
         prepared_ = true;
@@ -193,12 +193,12 @@ public:
     [[nodiscard]] eve::Result<void> commit(const transaction::TransactionContext&) override {
         if (!prepared_ || committed_)
             return failure<void>(eve::DiagnosticCode::Conflict, "crafting settlement is not prepared");
-        auto current = queue_.snapshot();
+        auto current = queue_.snapshotBinary();
         if (!current) return eve::Result<void>::failure(current.status());
         if (current.value() != before_)
             return failure<void>(eve::DiagnosticCode::StaleHandle,
                                  "crafting queue changed while settlement was staged", "production");
-        auto restored = queue_.restore(after_);
+        auto restored = queue_.restoreBinary(after_);
         if (!restored) return restored;
         committed_ = true;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -212,12 +212,12 @@ public:
     [[nodiscard]] eve::Result<void> compensate(const transaction::TransactionContext&) override {
         if (!committed_)
             return failure<void>(eve::DiagnosticCode::Conflict, "crafting settlement has not committed");
-        auto current = queue_.snapshot();
+        auto current = queue_.snapshotBinary();
         if (!current) return eve::Result<void>::failure(current.status());
         if (current.value() != after_)
             return failure<void>(eve::DiagnosticCode::StaleHandle,
                                  "crafting queue changed before settlement compensation", "production");
-        auto restored = queue_.restore(before_);
+        auto restored = queue_.restoreBinary(before_);
         if (!restored) return restored;
         committed_ = false;
         prepared_ = false;

@@ -1,15 +1,19 @@
 #include "authority/Authority.h"
 
+#include "authority_store.pb.h"
 #include "common/Json.h"
 #include "common/SquirrelBinding.h"
 
+#include <google/protobuf/util/json_util.h>
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <algorithm>
 #include <cmath>
 #include <functional>
 #include <iomanip>
+#include <limits>
 #include <sstream>
+#include <unordered_set>
 #include <utility>
 
 namespace eve::authority {
@@ -42,26 +46,6 @@ ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&
     result.set("ownerEpoch", static_cast<std::int64_t>(ref.ownerEpoch));
     result.set("handle", static_cast<std::int64_t>(ref.packed()));
     return result;
-}
-
-std::string quote(const std::string& value) {
-    std::ostringstream out;
-    out << '"';
-    for (unsigned char c : value) {
-        switch (c) {
-            case '"': out << "\\\""; break;
-            case '\\': out << "\\\\"; break;
-            case '\n': out << "\\n"; break;
-            case '\r': out << "\\r"; break;
-            case '\t': out << "\\t"; break;
-            default:
-                if (c < 0x20)
-                    out << "\\u" << std::hex << std::setw(4) << std::setfill('0') << int(c) << std::dec;
-                else
-                    out << static_cast<char>(c);
-        }
-    }
-    return out.str() + '"';
 }
 
 bool parseU64(const eve::json::Value& value, uint64_t& output) {
@@ -380,25 +364,180 @@ void Store::clearEvents() {
     }
 }
 
-std::string Store::snapshotJson() const {
-    std::ostringstream out;
-    out << "{\"version\":1,\"nextId\":" << quote(std::to_string(nextId_))
-        << ",\"nextOrder\":" << quote(std::to_string(nextOrder_))
-        << ",\"nextSequence\":" << quote(std::to_string(nextSequence_)) << ",\"rules\":[";
-    bool first = true;
+eve::Result<std::string> Store::snapshotBinary() const {
+    eve::authority::proto::AuthorityStoreSave save;
+    save.set_schema("authority:store");
+    save.set_version(2);
+    save.set_next_id(nextId_);
+    save.set_next_order(nextOrder_);
+    save.set_next_sequence(nextSequence_);
     for (const auto& rule : rules_) {
-        if (!first) out << ',';
-        first = false;
-        out << "{\"id\":" << quote(rule.id) << ",\"actor\":" << quote(rule.actor) << ",\"scope\":" << quote(rule.scope)
-            << ",\"capability\":" << quote(rule.capability) << ",\"source\":" << quote(rule.source)
-            << ",\"effect\":" << quote(effectName(rule.effect)) << ",\"priority\":" << rule.priority
-            << ",\"duration\":" << std::setprecision(17) << rule.duration << ",\"remaining\":" << rule.remaining
-            << ",\"order\":" << quote(std::to_string(rule.order)) << '}';
+        auto* item = save.add_rules();
+        item->set_id(rule.id);
+        item->set_actor(rule.actor);
+        item->set_scope(rule.scope);
+        item->set_capability(rule.capability);
+        item->set_source(rule.source);
+        item->set_effect(rule.effect == RuleEffect::Grant ? eve::authority::proto::AuthorityRule::GRANT
+                                                          : eve::authority::proto::AuthorityRule::DENY);
+        item->set_priority(rule.priority);
+        item->set_duration(rule.duration);
+        item->set_remaining(rule.remaining);
+        item->set_order(rule.order);
     }
-    return out.str() + "]}";
+    std::string bytes;
+    if (!save.SerializeToString(&bytes))
+        return eve::Result<std::string>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "authority Protobuf serialization failed"));
+    return eve::Result<std::string>::success(std::move(bytes));
+}
+
+eve::Result<void> Store::restoreBinary(std::string_view bytes) {
+    eve::authority::proto::AuthorityStoreSave save;
+    if (bytes.size() > static_cast<std::size_t>(std::numeric_limits<int>::max()) ||
+        !save.ParseFromArray(bytes.data(), static_cast<int>(bytes.size())) ||
+        !save.GetReflection()->GetUnknownFields(save).empty() || !save.has_schema() ||
+        save.schema() != "authority:store" || !save.has_version() || save.version() != 2 || !save.has_next_id() ||
+        !save.has_next_order() || !save.has_next_sequence() || save.next_id() == 0 || save.next_order() == 0 ||
+        save.next_sequence() == 0)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid authority Protobuf snapshot"));
+
+    std::deque<Rule>                restored;
+    std::unordered_set<std::string> ids;
+    std::unordered_set<uint64_t>    orders;
+    for (int i = 0; i < save.rules_size(); ++i) {
+        const auto& item = save.rules(i);
+        Rule        rule;
+        uint64_t    numericId = 0;
+        if (!item.GetReflection()->GetUnknownFields(item).empty() || !item.has_id() || !item.has_actor() ||
+            !item.has_scope() || !item.has_capability() || !item.has_source() || !item.has_effect() ||
+            !item.has_priority() || !item.has_duration() || !item.has_remaining() || !item.has_order() ||
+            item.actor().empty() || item.scope().empty() || item.capability().empty() ||
+            (item.effect() != eve::authority::proto::AuthorityRule::GRANT &&
+             item.effect() != eve::authority::proto::AuthorityRule::DENY) ||
+            !parseRuleId(item.id(), numericId) || numericId >= save.next_id() || item.order() == 0 ||
+            item.order() >= save.next_order() || !std::isfinite(item.duration()) || !std::isfinite(item.remaining()) ||
+            item.duration() < 0.0 || item.remaining() == 0.0 || item.remaining() < -1.0 ||
+            !ids.insert(item.id()).second || !orders.insert(item.order()).second)
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "invalid authority rule at index " + std::to_string(i)));
+        rule.id         = item.id();
+        rule.actor      = item.actor();
+        rule.scope      = item.scope();
+        rule.capability = item.capability();
+        rule.source     = item.source();
+        rule.effect =
+            item.effect() == eve::authority::proto::AuthorityRule::GRANT ? RuleEffect::Grant : RuleEffect::Deny;
+        rule.priority  = item.priority();
+        rule.duration  = item.duration();
+        rule.remaining = item.remaining();
+        rule.order     = item.order();
+        restored.push_back(std::move(rule));
+    }
+    rules_        = std::move(restored);
+    nextId_       = save.next_id();
+    nextOrder_    = save.next_order();
+    nextSequence_ = save.next_sequence();
+    events_.clear();
+    query_.clear();
+    revision_ = eve::Revision(nextSequence_ - 1);
+    tick_     = eve::SimulationTick{};
+    return eve::Result<void>::success();
+}
+
+eve::Result<std::string> Store::snapshotEnvelopeBinary(const eve::SnapshotHashProvider& hashProvider) const {
+    if (!hashProvider)
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                        "authority snapshot requires a hash provider"));
+    auto payload = snapshotBinary();
+    if (!payload.ok()) return eve::Result<std::string>::failure(payload.status());
+    eve::authority::proto::AuthorityStoreEnvelope envelope;
+    envelope.set_type("authority.store");
+    envelope.set_schema("authority:store");
+    envelope.set_version(2);
+    envelope.set_instance_id(instanceId_.format());
+    envelope.set_revision(revision_.value());
+    envelope.set_tick(tick_.value());
+    envelope.set_payload_wire(std::move(payload).takeValue());
+    std::string hashInput;
+    if (!envelope.SerializeToString(&hashInput))
+        return eve::Result<std::string>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, "authority envelope serialization failed"));
+    auto digest = hashProvider(hashInput);
+    if (!digest.ok()) return eve::Result<std::string>::failure(digest.status());
+    const auto digestBytes = digest.value().bytes();
+    envelope.set_digest(std::string(reinterpret_cast<const char*>(digestBytes.data()), digestBytes.size()));
+    std::string wire;
+    if (!envelope.SerializeToString(&wire))
+        return eve::Result<std::string>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, "authority envelope serialization failed"));
+    return eve::Result<std::string>::success(std::move(wire));
+}
+
+eve::Result<void> Store::restoreSnapshotBinary(std::string_view bytes, const eve::SnapshotHashProvider& hashProvider) {
+    if (!hashProvider)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "authority restore requires a hash provider"));
+    eve::authority::proto::AuthorityStoreEnvelope envelope;
+    if (bytes.size() > static_cast<std::size_t>(std::numeric_limits<int>::max()) ||
+        !envelope.ParseFromArray(bytes.data(), static_cast<int>(bytes.size())) ||
+        !envelope.GetReflection()->GetUnknownFields(envelope).empty() || !envelope.has_type() ||
+        !envelope.has_schema() || !envelope.has_version() || !envelope.has_instance_id() || !envelope.has_revision() ||
+        !envelope.has_tick() || !envelope.has_payload_wire() || !envelope.has_digest() ||
+        envelope.type() != "authority.store" || envelope.schema() != "authority:store")
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid authority Protobuf envelope"));
+    if (envelope.version() != 2)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::UnknownVersion, "unsupported authority envelope version"));
+    const auto identity = eve::PersistentId::parse(envelope.instance_id());
+    if (!identity || (!instanceId_.isNil() && *identity != instanceId_))
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "authority snapshot identity differs from target"));
+    if (envelope.payload_wire().empty() || envelope.digest().size() != eve::ContentId::Bytes{}.size())
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "incomplete authority Protobuf envelope"));
+    const std::string expectedDigest = envelope.digest();
+    envelope.clear_digest();
+    std::string hashInput;
+    if (!envelope.SerializeToString(&hashInput))
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, "authority envelope serialization failed"));
+    auto digest = hashProvider(hashInput);
+    if (!digest.ok()) return eve::Result<void>::failure(digest.status());
+    const auto digestBytes = digest.value().bytes();
+    if (expectedDigest != std::string(reinterpret_cast<const char*>(digestBytes.data()), digestBytes.size()))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::HashMismatch,
+                                                                 "authority snapshot digest differs from payload"));
+    auto restored = restoreBinary(envelope.payload_wire());
+    if (!restored.ok()) return eve::Result<void>::failure(restored.status());
+    instanceId_ = *identity;
+    revision_   = eve::Revision(envelope.revision());
+    tick_       = eve::SimulationTick(envelope.tick());
+    return eve::Result<void>::success();
+}
+
+std::string Store::snapshotJson() const {
+    auto bytes = snapshotBinary();
+    if (!bytes.ok()) return {};
+    eve::authority::proto::AuthorityStoreSave save;
+    if (!save.ParseFromString(bytes.value())) return {};
+    std::string json;
+    return google::protobuf::util::MessageToJsonString(save, &json).ok() ? json : std::string{};
 }
 
 eve::Result<void> Store::restoreJson(const std::string& json) {
+    eve::authority::proto::AuthorityStoreSave save;
+    if (google::protobuf::util::JsonStringToMessage(json, &save).ok() && save.has_schema()) {
+        std::string bytes;
+        if (!save.SerializeToString(&bytes))
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid authority Protobuf JSON"));
+        return restoreBinary(bytes);
+    }
+
+    // Version 1 is read only. New snapshots are emitted from the Protobuf schema.
     std::string parseError;
     auto        document = eve::json::Document::parse(json, &parseError);
     const auto root     = document.root();
@@ -462,7 +601,7 @@ eve::Result<void> Store::restoreJson(const std::string& json) {
 eve::Result<eve::SnapshotEnvelope> Store::snapshot(const eve::SnapshotHashProvider& hashProvider) const {
     auto payload = eve::Value::fromJson(snapshotJson());
     if (!payload.ok()) return eve::Result<eve::SnapshotEnvelope>::failure(payload.status());
-    return eve::makeSnapshotEnvelope("authority.store", authoritySchema(), eve::SchemaVersion(1), instanceId_,
+    return eve::makeSnapshotEnvelope("authority.store", authoritySchema(), eve::SchemaVersion(2), instanceId_,
                                      revision_, tick_, std::move(payload).takeValue(), hashProvider);
 }
 
@@ -475,7 +614,8 @@ eve::Result<void> Store::restoreSnapshot(const eve::SnapshotEnvelope&     source
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Conflict, "snapshot instanceId does not match authority::Store"));
 
-    auto migrated = authorityMigrations().migrate(source, eve::SchemaVersion(1), hashProvider);
+    auto migrated = authorityMigrations().migrate(source, eve::SchemaVersion(source.schemaVersion.value() == 2 ? 2 : 1),
+                                                  hashProvider);
     if (!migrated.ok()) return eve::Result<void>::failure(migrated.status());
     const auto& candidate = migrated.value();
     auto        metadata  = eve::validateSnapshotPayloadMetadata(candidate.payload, candidate.revision, candidate.tick);
@@ -496,13 +636,56 @@ eve::Result<void> Store::restoreSnapshot(const eve::SnapshotEnvelope&     source
 }
 
 eve::Result<std::string> Store::snapshotEnvelopeJson(const eve::SnapshotHashProvider& hashProvider) const {
-    auto value = snapshot(hashProvider);
-    if (!value.ok()) return eve::Result<std::string>::failure(value.status());
-    return std::move(value).andThen(
-        [](eve::SnapshotEnvelope&& envelope) { return eve::serializeSnapshotEnvelope(envelope); });
+    auto bytes = snapshotEnvelopeBinary(hashProvider);
+    if (!bytes.ok()) return eve::Result<std::string>::failure(bytes.status());
+    eve::authority::proto::AuthorityStoreEnvelope envelope;
+    if (!envelope.ParseFromString(bytes.value()))
+        return eve::Result<std::string>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, "authority envelope decoding failed"));
+    eve::authority::proto::AuthorityStoreJsonDocument document;
+    document.set_type(envelope.type());
+    document.set_schema(envelope.schema());
+    document.set_version(envelope.version());
+    document.set_instance_id(envelope.instance_id());
+    document.set_revision(envelope.revision());
+    document.set_tick(envelope.tick());
+    document.set_digest(envelope.digest());
+    if (!document.mutable_payload()->ParseFromString(envelope.payload_wire()))
+        return eve::Result<std::string>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, "authority payload decoding failed"));
+    std::string json;
+    if (!google::protobuf::util::MessageToJsonString(document, &json).ok())
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::SerializationError, "authority envelope JSON serialization failed"));
+    return eve::Result<std::string>::success(std::move(json));
 }
 
 eve::Result<void> Store::restoreSnapshotJson(std::string_view json, const eve::SnapshotHashProvider& hashProvider) {
+    eve::authority::proto::AuthorityStoreJsonDocument document;
+    if (google::protobuf::util::JsonStringToMessage(std::string(json), &document).ok() && document.has_type()) {
+        if (!document.GetReflection()->GetUnknownFields(document).empty() || !document.has_schema() ||
+            !document.has_version() || !document.has_instance_id() || !document.has_revision() ||
+            !document.has_tick() || !document.has_payload() || !document.has_digest())
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "incomplete authority Protobuf JSON envelope"));
+        eve::authority::proto::AuthorityStoreEnvelope envelope;
+        envelope.set_type(document.type());
+        envelope.set_schema(document.schema());
+        envelope.set_version(document.version());
+        envelope.set_instance_id(document.instance_id());
+        envelope.set_revision(document.revision());
+        envelope.set_tick(document.tick());
+        envelope.set_digest(document.digest());
+        if (!document.payload().SerializeToString(envelope.mutable_payload_wire()))
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                                     "authority payload serialization failed"));
+        std::string wire;
+        if (!envelope.SerializeToString(&wire))
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError,
+                                                                     "authority envelope serialization failed"));
+        return restoreSnapshotBinary(wire, hashProvider);
+    }
+    // The common Value envelope remains readable for migrations only.
     auto source = eve::parseSnapshotEnvelope(json, hashProvider);
     if (!source.ok()) return eve::Result<void>::failure(source.status());
     return restoreSnapshot(std::move(source).takeValue(), hashProvider);

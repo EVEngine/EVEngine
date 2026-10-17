@@ -14,7 +14,9 @@ foreach(_eve_runtime_src_dir IN LISTS SRC_DIRS)
         "${_eve_runtime_src_dir}/SDL2*.dll"
         "${_eve_runtime_src_dir}/box2d*.dll"
         "${_eve_runtime_src_dir}/box3d*.dll"
-        "${_eve_runtime_src_dir}/Box2D*.dll")
+        "${_eve_runtime_src_dir}/Box2D*.dll"
+        "${_eve_runtime_src_dir}/libprotobuf*.dll"
+        "${_eve_runtime_src_dir}/libutf8*.dll")
     foreach(_eve_runtime_dll IN LISTS _eve_runtime_dlls)
         execute_process(COMMAND "${CMAKE_COMMAND}" -E copy_if_different
             "${_eve_runtime_dll}" "${DST}")

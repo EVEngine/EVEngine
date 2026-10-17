@@ -1122,9 +1122,7 @@ Result<std::string> Tactics::snapshotJson(ecs::EntityHandle battleHandle) {
             DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     // The provider is resolved per call, so a module that registers a stronger hasher later is
     // picked up instead of the facade caching a weaker one from an earlier call.
-    auto sealed = TacticsPersistence::snapshot(*battle, snapshotContentHashProvider());
-    if (!sealed) return Result<std::string>::failure(sealed.status());
-    return serializeSnapshotEnvelope(sealed.value());
+    return TacticsPersistence::snapshotJson(*battle, snapshotContentHashProvider());
 }
 
 Result<void> Tactics::restoreJson(ecs::EntityHandle battleHandle, std::string_view json) {
@@ -1134,9 +1132,10 @@ Result<void> Tactics::restoreJson(ecs::EntityHandle battleHandle, std::string_vi
     // Parsing verifies the digest before anything is mutated, and TacticsPersistence::restore
     // validates the whole candidate state before it commits, so a bad document cannot leave a
     // half-restored battle behind.
-    auto parsed = parseSnapshotEnvelope(json, snapshotContentHashProvider());
-    if (!parsed) return Result<void>::failure(parsed.status());
-    return TacticsPersistence::restore(*battle, parsed.value(), snapshotContentHashProvider());
+    auto prepared = TacticsPersistence::prepareRestoreJson(*battle, json, snapshotContentHashProvider());
+    if (!prepared.ok()) return Result<void>::failure(prepared.status());
+    TacticsPersistence::commitPrepared(std::move(prepared).takeValue());
+    return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
 Result<std::string> Tactics::commandLogJson(ecs::EntityHandle battleHandle, Revision revision) {
@@ -1144,20 +1143,17 @@ Result<std::string> Tactics::commandLogJson(ecs::EntityHandle battleHandle, Revi
     if (battle == nullptr)
         return Result<std::string>::failure(Diagnostic::error(
             DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
-    auto log = TacticsPersistence::commandLogValue(*battle, revision);
-    if (!log) return Result<std::string>::failure(log.status());
-    return log.value().toJson();
+    return TacticsPersistence::commandLogJson(*battle, revision);
 }
 
 Result<void> Tactics::replayJson(ecs::EntityHandle battleHandle, std::string_view json) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
-    auto parsedValue = Value::fromJson(json);
-    if (!parsedValue) return Result<void>::failure(parsedValue.status());
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     // The log must describe this battle's current revision: a log captured at a different point
     // holds commands that were accepted against different state.
-    auto parsed = TacticsPersistence::parseCommandLog(parsedValue.value(), battle->turn()->revision);
+    auto parsed = TacticsPersistence::parseCommandLogJson(json, battle->turn()->revision);
     if (!parsed) return Result<void>::failure(parsed.status());
     return BattleReplay::replay(*battle, parsed.value().values);
 }

@@ -3891,8 +3891,8 @@ TEST_CASE("snapshot.consumers.malformedPayloadAndUnknownVersionLeaveStateUnchang
     CHECK_EQ(authority.snapshotJson(), authorityBefore);
 
     Value::Object newerAuthority;
-    newerAuthority.emplace("version", Value(std::int64_t(2)));
-    auto newerAuthorityEnvelope = makeEnvelope("authority.store", logicalId("authority:store"), SchemaVersion(2),
+    newerAuthority.emplace("version", Value(std::int64_t(3)));
+    auto newerAuthorityEnvelope = makeEnvelope("authority.store", logicalId("authority:store"), SchemaVersion(3),
                                                authorityId, Value(std::move(newerAuthority)), hash);
     auto unknownAuthority       = authority.restoreSnapshot(newerAuthorityEnvelope, hash);
     CHECK(!unknownAuthority.ok());

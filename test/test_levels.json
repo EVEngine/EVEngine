@@ -1557,6 +1557,20 @@
         "tensor_llm.cpp"
       ]
     },
+    "integration/gameplay-composition/emergence_protobuf.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "emergence.factStoreTypedProtobufRoundTripAndLegacyImport",
+          "emergence.ruleEngineTypedProtobufRestoresAtomically",
+          "emergence.ruleCatalogueTypedProtobufAndLegacyJson"
+        ]
+      },
+      "module": "emergence",
+      "modules": ["emergence"],
+      "task": "gameplay-composition"
+    },
     "integration/gameplay-composition/gameplay_composition_action_preview_profile_tests.cpp": {
       "role": "tests",
       "default": "module-composition",
@@ -3031,6 +3045,19 @@
         "rts_economy.cpp",
         "rts_economy_2.cpp"
       ]
+    },
+    "integration/gameplay-composition/rts_protobuf_transfer_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "rts.protobufContentImportKeepsRegistryOnRejection",
+          "rts.productionComponentCopyPreservesTypedQueue"
+        ]
+      },
+      "module": "rts",
+      "modules": ["rts"],
+      "task": "gameplay-composition"
     },
     "integration/gameplay-composition/gameplay_composition_graphics_rts_script_tests.cpp": {
       "role": "tests",
@@ -5018,13 +5045,46 @@
         "touch.cpp"
       ]
     },
+    "integration/save-restore/rpg_save_legacy_envelope.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "rpg.saveSessionProtobuf.readsLegacyJsonEnvelopeWithoutRewritingIt"
+        ]
+      },
+      "module": "rpg",
+      "task": "save-restore",
+      "modules": [
+        "rpg",
+        "inventory"
+      ]
+    },
+    "integration/save-restore/rpg_save_session_protobuf.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "rpg.saveSessionProtobuf.binaryIntegrityAndAtomicRestore",
+          "rpg.saveSessionProtobuf.skillMigrationRewritesEveryPartyMember"
+        ]
+      },
+      "module": "rpg",
+      "task": "save-restore",
+      "modules": [
+        "rpg",
+        "inventory"
+      ]
+    },
     "integration/save-restore/save_restore_graphics_tests.cpp": {
       "role": "tests",
       "default": "runtime-lifecycle",
       "cases": {
         "runtime-lifecycle": [
           "gameSave.failedLaterPrepareLeavesEarlierParticipantUnchanged",
-          "gameSave.absentProviderAndContentMigrationAreExplicit"
+          "gameSave.absentProviderAndContentMigrationAreExplicit",
+          "gameSave.protobufBinaryRoundTripIsAtomic",
+          "gameSave.protobufContentMigrationIsExplicit"
         ],
         "module-composition": [
           "dialoguePersistence.jsonRoundtrip",
@@ -5054,6 +5114,21 @@
         "dialogue_persistence.cpp",
         "graphics_canvas_persistence.cpp",
         "rpg_save_session.cpp"
+      ]
+    },
+    "integration/save-restore/tactics_protobuf_capture.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "tactics.protobufCaptureUsesTypedBattleFields"
+        ]
+      },
+      "module": "tactics",
+      "task": "save-restore",
+      "modules": [
+        "tactics",
+        "common"
       ]
     },
     "integration/script-api/script_api_graphics_ScriptECS_tests.cpp": {
@@ -5854,6 +5929,17 @@
         "procgen_generation_stages.cpp"
       ]
     },
+    "integration/script-api/script_component_protobuf.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "ScriptECS.protobufSnapshotRoundTripsAndRejectsCorruptionAtomically"
+        ]
+      },
+      "module": "common",
+      "task": "script-api"
+    },
     "integration/script-rendering/script_rendering_graphics_tests.cpp": {
       "role": "tests",
       "default": "script-render",
@@ -6352,6 +6438,11 @@
           "scriptOwnership.commonSemanticsAndRegistryStaleGeneration",
           "scriptOwnership.pinKeepsErasedPayloadAliveUntilRelease",
           "scriptOwnership.clearDefersPinnedPayloadDestruction"
+        ],
+        "local-format": [
+          "authority.snapshot.legacyJsonIsReadButRewrittenWithProtobufSchema",
+          "authority.snapshot.protobufRoundTripAndFailedRestoreAreTransactional",
+          "authority.snapshot.typedEnvelopeVerifiesDigestAndIdentity"
         ]
       },
       "module": "authority",
@@ -6793,6 +6884,12 @@
           "common.zeroerrRegistration.borrowedNamesBecomeOwned",
           "common.zeroerrRegistration.skippedCase",
           "common.zeroerrRegistration.fixtureFactory"
+        ],
+        "local-format": [
+          "value-protobuf.roundTripsExactDynamicValues",
+          "value-protobuf.rejectsInvalidValuesWithoutChangingDestination",
+          "protobuf-snapshot.roundTripsTypedPayloadAndRejectsTampering",
+          "protobuf-snapshot.scriptComponentEmptyStoreRoundTripAndAtomicRejection"
         ]
       },
       "module": "common",
@@ -6821,6 +6918,8 @@
         "versioned_registry.cpp",
         "xml.cpp",
         "capability_owned.cpp",
+        "value_protobuf.cpp",
+        "protobuf_snapshot.cpp",
         "condition.cpp"
       ]
     },
@@ -6989,11 +7088,16 @@
           "definitions.subscriptionSupportsReentrantReloadObservers",
           "definitions.mutationResultPreservesObserverWarning",
           "definitions.snapshotRoundTripsAndRestoreIsTransactional"
+        ],
+        "local-format": [
+          "definitions-protobuf.binaryJsonAndEnvelopeRoundTrip",
+          "definitions-protobuf.legacyEnvelopeAndInvalidBinaryAreAtomic"
         ]
       },
       "module": "definitions",
       "origins": [
-        "definitions.cpp"
+        "definitions.cpp",
+        "definitions_protobuf.cpp"
       ]
     },
     "unit/devtools/devtools_tests.cpp": {
@@ -7600,12 +7704,30 @@
           "game_event.consumer.cursorReadsBatches",
           "game_event.retention.clearAndResetSemantics",
           "game_event.snapshot.roundTripsDeterministically"
+        ],
+        "local-format": [
+          "game_event.protobuf.roundTripAndAtomicFailure",
+          "game_event.protobuf.binaryRoundTripAndAtomicFailure"
         ]
       },
       "module": "game_event",
       "origins": [
         "event_envelope.cpp",
-        "eventstream.cpp"
+        "eventstream.cpp",
+        "game_event_protobuf.cpp"
+      ]
+    },
+    "unit/gpgpu/gpgpu_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "gpgpu.buffer.readFloat32sCopyClipsToCapacity"
+        ]
+      },
+      "module": "gpgpu",
+      "origins": [
+        "gpgpu.cpp"
       ]
     },
     "unit/gpgpu/gpgpu_tests.cpp": {
@@ -8118,12 +8240,19 @@
           "inventory.extension.customAcceptAndStack",
           "inventory.equipment.equipUnequip",
           "inventory.events.andFacade"
+        ],
+        "local-format": [
+          "inventory.protobufSave.rewritesContentIdsWithoutLiveMutation",
+          "inventory.protobufSave.roundTripAndAtomicFailure",
+          "inventory.protobufSave.readsLegacyJsonAndRejectsFutureVersion"
         ]
       },
       "module": "inventory",
       "origins": [
         "inventory_gameplay_control.cpp",
-        "inventory.cpp"
+        "inventory.cpp",
+        "inventory_save_migration.cpp",
+        "inventory_save_protobuf.cpp"
       ]
     },
     "unit/map/map_tests.cpp": {
@@ -8326,6 +8455,9 @@
           "decision.blackboardsAndFsmAreExplicit",
           "decision.utilityIsDeterministic",
           "decision.influenceAndSnapshotRoundTrip"
+        ],
+        "local-format": [
+          "decision.protobufSnapshotRejectsInvalidWithoutMutation"
         ]
       },
       "module": "npc_ai",
@@ -8347,7 +8479,9 @@
           "orders.lifecycle.completeFailCancel",
           "orders.timeout.failsAndActivatesNext",
           "orders.payload.isDeterministicJsonCompatible",
-          "orders.snapshot.roundTripAndMalformedRestorePreservesState"
+          "orders.snapshot.roundTripAndMalformedRestorePreservesState",
+          "orders.protobuf.binaryRoundTripRejectsInvalidWithoutMutation",
+          "orders.protobuf.legacyJsonImportRewritesTypedSchema"
         ]
       },
       "module": "orders",
@@ -8776,6 +8910,10 @@
           "policyregistry.enumeratesDeterministically",
           "policyregistry.eventsAreOrderedAndDescriptive",
           "policyregistry.snapshotRoundTripsTransactionally"
+        ],
+        "local-format": [
+          "policyregistry.snapshot.typedBinaryPreservesTombstonesAndRejectsUnknownFields",
+          "policyregistry.snapshot.typedEnvelopeChecksMetadataAndReadsLegacyJson"
         ]
       },
       "module": "policyregistry",
@@ -9626,12 +9764,17 @@
           "production.fixedPointWorkRemainderSurvivesSnapshotAndEventuallyProgresses",
           "production.advanceOverflowLeavesTickAndEveryTaskUnchanged",
           "production.longPredictionAndRefundUseOverflowSafeArithmetic"
+        ],
+        "local-format": [
+          "production.protobuf.typedQueueRoundTripAndAtomicFailure",
+          "production.protobuf.settlementAndReservationRelease"
         ]
       },
       "module": "production",
       "origins": [
         "production_time.cpp",
-        "production.cpp"
+        "production.cpp",
+        "production_protobuf.cpp"
       ]
     },
     "unit/profiler/profiler_unit.cpp": {
@@ -9776,6 +9919,12 @@
           "rpg.status.customStackPolicyUsesCandidateAndRollsBackOnFailure",
           "rpg.status.adapterCopyIsIndependentAndLegacyIdsRemainStable",
           "rpg.status.adapterRejectsInvalidModifierWithoutPartialState"
+        ],
+        "local-format": [
+          "rpg.actorProtobuf.binaryRoundTripAndAtomicFailure",
+          "rpg.gameState.protobufRoundTripAndAtomicRejection",
+          "rpg.partyProtobuf.binaryRoundTripAndAtomicFailure",
+          "rpg.tracker.protobufRoundTripAndAtomicRejection"
         ]
       },
       "module": "rpg",
@@ -9797,7 +9946,11 @@
         "rpg_skill_condition.cpp",
         "rpg_story_event.cpp",
         "rpg_trait.cpp",
-        "status_effect_adapter.cpp"
+        "status_effect_adapter.cpp",
+        "rpg_actor_protobuf.cpp",
+        "rpg_game_state_protobuf.cpp",
+        "rpg_party_protobuf.cpp",
+        "rpg_tracker_protobuf.cpp"
       ]
     },
     "unit/rts/gameplay_control_rts.cpp": {
@@ -9940,12 +10093,18 @@
           "schema.registry.legacyFacadeKeepsVersionsAndRemovesExactly",
           "schema.registry.rejectsMalformedDefinitions",
           "schema.validation.returnsStructuredErrors"
+        ],
+        "local-format": [
+          "schema.protobufDynamicDescriptorEncodesWithoutValue",
+          "schema.protobufAndLegacyDefinitionsCannotOwnSameVersion",
+          "schema.protobufDescriptorAcceptsMatchingBuiltInImport"
         ]
       },
       "module": "schema",
       "origins": [
         "schema_contract.cpp",
-        "schema.cpp"
+        "schema.cpp",
+        "schema_protobuf_dynamic.cpp"
       ]
     },
     "unit/sensing/sensing_unit.cpp": {
@@ -9956,6 +10115,7 @@
           "sensing.filtersAndSortsCandidates",
           "sensing.ordersByDistanceThenIdAndLimits",
           "sensing.snapshotIsTransactional",
+          "sensing.typedProtobufSnapshotAndLegacyImport",
           "sensing.querySpecRanksAndHonorsCountPolicy",
           "sensing.queryConeFiltersByFacing",
           "sensing.executePresetRunsBuiltinConeSelect",
@@ -10071,11 +10231,16 @@
           "statepatch.query.dirtyAndEventsAreDeterministic",
           "statepatch.remove.recordsOldValue",
           "statepatch.snapshot.roundTripsAndRestoreIsTransactional"
+        ],
+        "local-format": [
+          "statepatch-protobuf.binaryJsonAndEnvelopeRoundTrip",
+          "statepatch-protobuf.legacyJsonAndRejectedBinaryKeepStateAtomic"
         ]
       },
       "module": "statepatch",
       "origins": [
-        "statepatch.cpp"
+        "statepatch.cpp",
+        "statepatch_protobuf.cpp"
       ]
     },
     "unit/stylize/stylize_tests.cpp": {
@@ -10237,6 +10402,9 @@
           "tactics.turnPolicyRegistryRejectsDuplicatesAndUnknownIds",
           "tactics.unknownTurnPolicyIsRefusedAndLeavesBattleInSetup",
           "tactics.registeredCustomPolicyChangesTheActivationOrder"
+        ],
+        "local-format": [
+          "tactics.restoreJsonReadsLegacySnapshotsForMigration"
         ]
       },
       "module": "tactics",
@@ -10373,6 +10541,10 @@
           "transaction.statepatchParticipantPrepareFailureKeepsOriginalState",
           "transaction.statepatchParticipantRejectsExternalRevisionChangeAfterPrepare",
           "transaction.statepatchParticipantCompensateRestoresBeforeState"
+        ],
+        "local-format": [
+          "transaction.protobuf.jsonAndEnvelopeRoundTrips",
+          "transaction.protobuf.roundTripsAndRejectsInvalidRestore"
         ]
       },
       "module": "transaction",

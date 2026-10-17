@@ -4519,3 +4519,213 @@ TEST_CASE("rpg.status.adapterRejectsInvalidModifierWithoutPartialState") {
 }
 }  // namespace test_status_effect_adapter
 #endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_actor_protobuf)
+#include "PrivateTestScope.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+
+#include "rpg/RPGActor.h"
+namespace test_rpg_actor_protobuf {
+using namespace eve::rpg;
+
+TEST_CASE("rpg.actorProtobuf.binaryRoundTripAndAtomicFailure") {
+    RPGActor *source = RPGActor::createActor();
+    REQUIRE(source != nullptr);
+    source->setBaseAttribute("attack", 18.0);
+    source->setBaseAttribute("hp", 100.0);
+    source->setCurrent("hp", 47.0);
+    REQUIRE(source->restoreProgression(4, 25.0, 120.0).ok());
+    auto bytes = source->checkpointBinary();
+    REQUIRE(bytes.ok());
+
+    RPGActor *destination = RPGActor::createActor();
+    REQUIRE(destination != nullptr);
+    destination->setBaseAttribute("attack", 1.0);
+    destination->setBaseAttribute("hp", 100.0);
+    REQUIRE(destination->restoreCheckpointBinary(bytes.value()).ok());
+    CHECK_EQ(destination->getBaseAttribute("attack"), 18.0);
+    CHECK_EQ(destination->getCurrent("hp"), 47.0);
+    CHECK_EQ(destination->getLevel(), 4);
+
+    CHECK(!destination->restoreCheckpointBinary("malformed protobuf").ok());
+    CHECK(!destination->restoreCheckpointJson(R"({"schema":"eve.rpg.actor-checkpoint","version":2})").ok());
+    CHECK_EQ(destination->getBaseAttribute("attack"), 18.0);
+    CHECK_EQ(destination->getCurrent("hp"), 47.0);
+    CHECK_EQ(destination->getLevel(), 4);
+
+    source->release();
+    destination->release();
+}
+}  // namespace test_rpg_actor_protobuf
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_game_state_protobuf)
+#include "PrivateTestScope.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+
+#include "rpg/GameState.h"
+#include "rpg_game_state.pb.h"
+
+#include <limits>
+namespace test_rpg_game_state_protobuf {
+TEST_CASE("rpg.gameState.protobufRoundTripAndAtomicRejection") {
+    eve::rpg::GameState source;
+    source.switchOn("door.open");
+    source.setVariable("gold", 125.5);
+    source.setSelfVariable("map:1", "visits", 2.0);
+    source.setSelfString("story", "cursor", "chapter.2");
+    auto bytes = source.snapshotBinary();
+    REQUIRE(bytes.ok());
+
+    eve::rpg::GameState restored;
+    restored.setVariable("sentinel", 7.0);
+    REQUIRE(restored.restoreSnapshotBinary(bytes.value()).ok());
+    CHECK(restored.isSwitchOn("door.open"));
+    CHECK_EQ(restored.getVariable("gold"), 125.5);
+    CHECK_EQ(restored.getSelfVariable("map:1", "visits"), 2.0);
+    CHECK_EQ(restored.getSelfString("story", "cursor"), std::string("chapter.2"));
+    CHECK_EQ(restored.getVariable("sentinel"), 0.0);
+
+    eve::rpg::proto::GameStateSave invalid;
+    REQUIRE(invalid.ParseFromString(bytes.value()));
+    invalid.set_version(2);
+    std::string future;
+    REQUIRE(invalid.SerializeToString(&future));
+    CHECK(!restored.restoreSnapshotBinary(future).ok());
+    CHECK_EQ(restored.getVariable("gold"), 125.5);
+
+    invalid.set_version(1);
+    (*invalid.mutable_variables())["gold"] = std::numeric_limits<double>::infinity();
+    std::string nonFinite;
+    REQUIRE(invalid.SerializeToString(&nonFinite));
+    CHECK(!restored.restoreSnapshotBinary(nonFinite).ok());
+    CHECK_EQ(restored.getVariable("gold"), 125.5);
+
+    (*invalid.mutable_variables())["gold"] = 125.5;
+    const auto firstScope                  = invalid.self_variables(0);
+    *invalid.add_self_variables()          = firstScope;
+    std::string duplicateScope;
+    REQUIRE(invalid.SerializeToString(&duplicateScope));
+    CHECK(!restored.restoreSnapshotBinary(duplicateScope).ok());
+    CHECK_EQ(restored.getSelfVariable("map:1", "visits"), 2.0);
+
+    auto json = source.snapshotJson();
+    REQUIRE(json.ok());
+    REQUIRE(restored.restoreSnapshotJson(json.value()).ok());
+    CHECK_EQ(restored.getSelfString("story", "cursor"), std::string("chapter.2"));
+    REQUIRE(
+        restored
+            .restoreSnapshotJson(
+                R"({"schema":"eve.rpg.game-state","version":1,"switches":{},"variables":{"gold":3},"selfVariables":{}})")
+            .ok());
+    CHECK_EQ(restored.getVariable("gold"), 3.0);
+    CHECK(
+        !restored
+             .restoreSnapshotJson(
+                 R"({"schema":"eve.rpg.game-state","version":1,"switches":{},"variables":{"gold":4},"selfVariables":{"map:1":{"visits":"invalid"}}})")
+             .ok());
+    CHECK_EQ(restored.getVariable("gold"), 3.0);
+}
+}  // namespace test_rpg_game_state_protobuf
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_party_protobuf)
+#include "PrivateTestScope.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+
+#include "rpg/Party.h"
+namespace test_rpg_party_protobuf {
+TEST_CASE("rpg.partyProtobuf.binaryRoundTripAndAtomicFailure") {
+    eve::rpg::Party party;
+    auto           *hero      = eve::rpg::RPGActor::createActor();
+    auto           *companion = eve::rpg::RPGActor::createActor();
+    REQUIRE(hero != nullptr);
+    REQUIRE(companion != nullptr);
+    hero->setBaseAttribute("attack", 20.0);
+    companion->setBaseAttribute("attack", 12.0);
+    REQUIRE(party.addMember("hero", hero).ok());
+    REQUIRE(party.addMember("companion", companion).ok());
+    auto bytes = party.checkpointBinary();
+    REQUIRE(bytes.ok());
+
+    hero->setBaseAttribute("attack", 1.0);
+    companion->setBaseAttribute("attack", 2.0);
+    REQUIRE(party.restoreCheckpointBinary(bytes.value()).ok());
+    CHECK_EQ(hero->getBaseAttribute("attack"), 20.0);
+    CHECK_EQ(companion->getBaseAttribute("attack"), 12.0);
+
+    hero->setBaseAttribute("attack", 7.0);
+    CHECK(!party.restoreCheckpointBinary("malformed protobuf").ok());
+    CHECK_EQ(hero->getBaseAttribute("attack"), 7.0);
+    REQUIRE(party.removeMember("companion").ok());
+    CHECK(!party.restoreCheckpointBinary(bytes.value()).ok());
+    CHECK_EQ(hero->getBaseAttribute("attack"), 7.0);
+
+    hero->release();
+    companion->release();
+}
+}  // namespace test_rpg_party_protobuf
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_tracker_protobuf)
+#include "PrivateTestScope.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+
+#include "rpg/Quest.h"
+#include "rpg/Tracker.h"
+#include "rpg_tracker.pb.h"
+namespace test_rpg_tracker_protobuf {
+TEST_CASE("rpg.tracker.protobufRoundTripAndAtomicRejection") {
+    using namespace eve::rpg;
+    QuestRegistry::clear();
+    REQUIRE_EQ(QuestRegistry::loadFromJson(R"([
+      {"id":"quest.hunt","startPolicy":"auto","completePolicy":"claim",
+       "objectives":[{"id":"kill","topic":"kill","target":"slime","count":3}]}
+    ])"),
+               1);
+    Tracker source;
+    source.notify("kill", "slime", 2);
+    auto encoded = source.snapshotBinary();
+    REQUIRE(encoded.ok());
+
+    Tracker restored;
+    restored.notify("kill", "slime", 1);
+    REQUIRE(restored.restoreSnapshotBinary(encoded.value()).ok());
+    CHECK_EQ(restored.getObjectiveCurrent("quest.hunt", 0), 2);
+
+    std::string withUnknown = encoded.value();
+    withUnknown.append("\xa0\x06\x01", 3);  // field 100, varint 1
+    REQUIRE(restored.restoreSnapshotBinary(withUnknown).ok());
+    CHECK_EQ(restored.getObjectiveCurrent("quest.hunt", 0), 2);
+
+    auto rejected = restored.restoreSnapshotBinary(std::string("\xff", 1));
+    CHECK(!rejected.ok());
+    CHECK_EQ(restored.getObjectiveCurrent("quest.hunt", 0), 2);
+
+    proto::TrackerSave future;
+    REQUIRE(future.ParseFromString(encoded.value()));
+    future.set_version(2);
+    std::string futureBytes;
+    REQUIRE(future.SerializeToString(&futureBytes));
+    CHECK(!restored.restoreSnapshotBinary(futureBytes).ok());
+    CHECK_EQ(restored.getObjectiveCurrent("quest.hunt", 0), 2);
+
+    future.set_version(1);
+    future.mutable_entries(0)->mutable_objectives(0)->set_current(4);
+    std::string invalidProgress;
+    REQUIRE(future.SerializeToString(&invalidProgress));
+    CHECK(!restored.restoreSnapshotBinary(invalidProgress).ok());
+    CHECK_EQ(restored.getObjectiveCurrent("quest.hunt", 0), 2);
+
+    auto json = source.snapshotJson();
+    REQUIRE(json.ok());
+    REQUIRE(restored.restoreSnapshotJson(json.value()).ok());
+    CHECK_EQ(restored.getObjectiveCurrent("quest.hunt", 0), 2);
+    QuestRegistry::clear();
+}
+}  // namespace test_rpg_tracker_protobuf
+#endif

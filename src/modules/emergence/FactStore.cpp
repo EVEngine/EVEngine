@@ -2,6 +2,9 @@
 
 #include "common/ConditionKeys.h"
 #include "common/Diagnostic.h"
+#include "emergence_runtime.pb.h"
+
+#include <google/protobuf/util/json_util.h>
 
 #include <set>
 #include <utility>
@@ -248,36 +251,11 @@ std::optional<condition::ConditionResult> FactStore::policy(std::string_view nam
     return it == policies_.end() ? std::nullopt : std::optional<condition::ConditionResult>(it->second);
 }
 
-std::string FactStore::snapshotJson() const {
-    eve::Value::Object root;
-    eve::Value::Object values;
-    for (const auto& [key, value] : values_) values.emplace(key, value);
-    eve::Value::Object tags;
-    for (const auto& [key, value] : tags_) tags.emplace(key, eve::Value(value));
-    eve::Value::Object attributes;
-    for (const auto& [key, value] : attributes_) attributes.emplace(key, value);
-    eve::Value::Object resources;
-    for (const auto& [key, value] : resources_) resources.emplace(key, value);
-    eve::Value::Object states;
-    for (const auto& [key, value] : states_) states.emplace(key, value);
-    eve::Value::Object authorities;
-    for (const auto& [key, value] : authorities_) authorities.emplace(key, eve::Value(value));
-    eve::Value::Object policies;
-    for (const auto& [key, value] : policies_) policies.emplace(key, encodePolicyResult(value));
-    root.emplace("schema", eve::Value("eve.emergence.facts"));
-    root.emplace("version", eve::Value(std::int64_t{1}));
-    root.emplace("values", eve::Value(std::move(values)));
-    root.emplace("tags", eve::Value(std::move(tags)));
-    root.emplace("attributes", eve::Value(std::move(attributes)));
-    root.emplace("resources", eve::Value(std::move(resources)));
-    root.emplace("states", eve::Value(std::move(states)));
-    root.emplace("authorities", eve::Value(std::move(authorities)));
-    root.emplace("policies", eve::Value(std::move(policies)));
-    auto encoded = eve::Value(std::move(root)).toJson();
-    return encoded ? std::move(encoded).takeValue() : std::string("{}");
-}
-
 eve::Result<void> FactStore::restoreJson(std::string_view json) {
+    proto::FactStoreSave typed;
+    if (google::protobuf::util::JsonStringToMessage(std::string(json), &typed).ok() && typed.has_schema() &&
+        typed.schema() == "eve.emergence.facts" && typed.has_version() && typed.version() == 2)
+        return restoreMessage(typed);
     auto parsed = eve::Value::fromJson(json);
     if (!parsed) return eve::Result<void>::failure(parsed.status());
     const auto* object = parsed.value().getIf<eve::Value::Object>();

@@ -102,19 +102,56 @@ public:
     const PolicyEvent* eventAt(int index) const;
     /** @brief Clears events without resetting the sequence allocator. */
     void clearEvents();
-    /** @brief Exports registry state as deterministic JSON. */
+    /** @brief Compatibility-only Protobuf JSON projection; use snapshotBinary() for structured failures. */
     std::string snapshotJson() const;
-    /** @brief Transactionally restores state from the registry snapshot. */
+    /**
+     * @brief Encodes the typed version-2 registry schema as Protobuf wire bytes.
+     * @return Complete registry bytes or a structured serialization failure.
+     * @cost Linear in retained slots, events and metadata bytes per save operation.
+     * @thread Call on the registry's owning thread.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] eve::Result<std::string> snapshotBinary() const;
+    /**
+     * @brief Validates and transactionally restores a typed registry snapshot.
+     * @param bytes Protobuf wire bytes.
+     * @return Success, or a failure leaving every observable registry field unchanged.
+     * @cost Linear in encoded bytes and retained entries per restore operation.
+     * @thread Call on the registry's owning thread.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] eve::Result<void> restoreBinary(std::string_view bytes);
+    /**
+     * @brief Seals the typed registry payload in a Protobuf envelope.
+     * @param hashProvider Explicit digest provider for the stable header and exact payload bytes.
+     * @return Envelope wire bytes or a structured failure.
+     * @cost Linear in retained state and encoded bytes, plus one digest per save operation.
+     * @thread Call on the registry's owning thread.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] eve::Result<std::string> snapshotEnvelopeBinary(const eve::SnapshotHashProvider& hashProvider) const;
+    /**
+     * @brief Verifies and transactionally restores a typed Protobuf envelope.
+     * @param bytes Envelope wire bytes.
+     * @param hashProvider Provider used to verify the envelope digest.
+     * @return Success, or a failure leaving registry state unchanged.
+     * @cost Linear in encoded bytes and retained state per restore operation.
+     * @thread Call on the registry's owning thread.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] eve::Result<void> restoreSnapshotBinary(std::string_view                 bytes,
+                                                          const eve::SnapshotHashProvider& hashProvider);
+    /** @brief Transactionally restores Protobuf JSON or a legacy version-1 registry snapshot. */
     [[nodiscard]] eve::Result<void> restoreJson(const std::string& json);
 
-    /** @brief Captures this registry in the common snapshot envelope. */
+    /** @brief Compatibility-only capture in the common Value snapshot envelope. */
     [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(const eve::SnapshotHashProvider& hashProvider) const;
     /** @brief Restores a verified snapshot transactionally without per-item events. */
     [[nodiscard]] eve::Result<void> restoreSnapshot(const eve::SnapshotEnvelope&     snapshot,
                                                     const eve::SnapshotHashProvider& hashProvider);
-    /** @brief Serializes the common snapshot envelope as canonical JSON. */
+    /** @brief Serializes the typed Protobuf envelope as human-readable Protobuf JSON. */
     [[nodiscard]] eve::Result<std::string> snapshotEnvelopeJson(const eve::SnapshotHashProvider& hashProvider) const;
-    /** @brief Parses and transactionally restores a common snapshot envelope. */
+    /** @brief Parses and restores Protobuf JSON or a legacy common snapshot envelope. */
     [[nodiscard]] eve::Result<void> restoreSnapshotJson(std::string_view                 json,
                                                         const eve::SnapshotHashProvider& hashProvider);
 

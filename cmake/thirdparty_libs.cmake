@@ -159,6 +159,9 @@ function(eve_thirdparty_libs out_var)
                 list(APPEND _libs lz4)
             endif()
 
+        elseif(g STREQUAL "protobuf")
+            list(APPEND _libs protobuf::libprotobuf)
+
         elseif(g STREQUAL "box2d")
             # The dynamic route links the shared twin (one contact registry per
             # process); the archive is the canonical target for the OBJECT /

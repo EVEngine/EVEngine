@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "script-components-protobuf-persistence",
+      "rule": "persistence",
+      "scope": "src/engine/common/ScriptComponentSnapshot*",
+      "owner": "eve::ScriptComponentStore",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "Script component identity, version and entry structure use a typed Protobuf payload; runtime-defined field values use DynamicValue.",
+      "expiry": "2027-12-31",
+      "evidence": ["proto/script_component_store.proto", "src/engine/common/ScriptComponentSnapshotProtobuf.cpp"],
+      "tests": ["test/unit/common/common_tests.cpp", "test/integration/script-api/script_component_protobuf.cpp"],
+      "schema": "eve:script-components version 2 is ScriptComponentStoreSave inside BinarySnapshotEnvelope.",
+      "version": "Binary writers emit version 2; the version 1 JSON snapshot remains readable through its compatibility API.",
+      "migration": "A version 1 JSON snapshot can be restored and recaptured through the version 2 binary writer.",
+      "unknown_fields": "Binary restore rejects unknown Protobuf fields recursively, unknown components and undeclared dynamic fields.",
+      "restore_atomicity": "All entries validate in a detached candidate map before replacing the authoritative store."
+    },
+    {
+      "id": "script-components-protobuf-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/common/ScriptComponentSnapshot*",
+      "owner": "eve::ScriptComponentStore",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "The engine foundation exposes typed binary script component persistence in addition to its tool JSON view.",
+      "expiry": "2027-12-31",
+      "evidence": ["src/engine/common/ScriptComponentSnapshot.h", "proto/script_component_store.proto"],
+      "tests": ["test/unit/common/common_tests.cpp"],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {"absent_profile": "No L1-L4 trim claim is made for this foundation change."},
+      "thread_affinity": "Snapshot and restore run on the script component store owner thread and invoke only the injected hash provider.",
+      "cost_notes": ["Binary save and restore cost linear time in component entries and dynamic field bytes per snapshot."],
+      "hot_path": []
+    }
+  ]
+}

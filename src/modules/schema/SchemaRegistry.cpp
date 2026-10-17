@@ -1,5 +1,7 @@
 #include "schema/SchemaRegistry.h"
 
+#include "schema/ProtobufSchema.h"
+
 #include "common/Json.h"
 
 #include <algorithm>
@@ -594,6 +596,10 @@ SchemaRegistrationStatus registerDefinition(const SchemaDefinition& definition, 
     if (definition.version <= 0) {
         if (error) *error = "schema version must be positive";
         return SchemaRegistrationStatus::Invalid;
+    }
+    if (ProtobufSchema::contains(definition.id, definition.version)) {
+        if (error) *error = "schema version is already registered as Protobuf";
+        return SchemaRegistrationStatus::Conflict;
     }
     std::string                                 validationError;
     std::unordered_set<const SchemaDefinition*> activeDefinitions;

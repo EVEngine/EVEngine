@@ -21,6 +21,9 @@
 namespace eve::rpg {
 
 class RPGSaveSession;
+namespace proto {
+class GameStateSave;
+}
 
 /** @brief 一份游戏状态（开关/变量/独立变量）。 */
 class EVENGINE_API_PLATFORM GameState {
@@ -77,8 +80,8 @@ public:
     void clear();
 
     /**
-     * @brief Serialize this state as the canonical versioned RPG game-state JSON document.
-     * @return Owning deterministic JSON, or a structured serialization failure.
+     * @brief Project this state through the versioned Protobuf JSON mapping.
+     * @return Owning JSON, or a structured serialization failure.
      * @remarks Schema `eve.rpg.game-state` version 1 preserves switches, numeric
      * variables, scoped numeric variables and optional scoped string facts
      * (`selfStrings`). Unknown fields are reserved and ignored when restoring
@@ -89,25 +92,45 @@ public:
     [[nodiscard]] eve::Result<std::string> snapshotJson() const;
 
     /**
-     * @brief Validate and atomically restore a canonical RPG game-state JSON document.
+     * @brief Capture typed RPG game state as Protobuf wire bytes.
+     * @return Owning bytes, or a structured failure for non-finite numeric state.
+     * @cost Linear in the number of switches and scoped facts, once per save.
+     * @thread Owning simulation thread; no callbacks are invoked.
+     */
+    [[nodiscard]] eve::Result<std::string> snapshotBinary() const;
+
+    /**
+     * @brief Restore Protobuf JSON or the legacy version-1 nested-map JSON shape.
      * @param json UTF-8 JSON produced by snapshotJson().
      * @return Success after one commit, or a structured parse/schema/version failure.
      * @remarks A failed restore leaves every current value unchanged. Version 1
-     * accepts unknown fields and treats a missing `selfStrings` object as empty,
-     * but rejects unknown schema ids and versions.
+     * accepts unknown fields and treats missing string facts as empty, but
+     * rejects unknown schema ids and versions.
      * @thread Call on the owning simulation thread.
      * @reentrancy No callbacks are invoked.
      */
     [[nodiscard]] eve::Result<void> restoreSnapshotJson(std::string_view json);
+
+    /**
+     * @brief Validate and atomically restore a versioned Protobuf game-state record.
+     * @param bytes Borrowed wire bytes needed only during this call.
+     * @return Applied only after schema, version and all numeric facts validate.
+     * @remarks Version 1 ignores unknown wire fields, matching the old JSON policy.
+     * @cost Linear in the serialized state size, once per load.
+     * @thread Owning simulation thread; no callbacks are invoked.
+     */
+    [[nodiscard]] eve::Result<void> restoreSnapshotBinary(std::string_view bytes);
 
     /** @brief 进程级全局单例（脚本便利入口）。 */
     static GameState &global();
 
 private:
     friend class RPGSaveSession;
-    std::unordered_map<std::string, bool> switches_;
+    [[nodiscard]] eve::Result<void>         captureMessage(proto::GameStateSave &save) const;
+    [[nodiscard]] eve::Result<void>         restoreMessage(const proto::GameStateSave &save);
+    std::unordered_map<std::string, bool>   switches_;
     std::unordered_map<std::string, double> variables_;
-    std::unordered_map<std::string, std::unordered_map<std::string, double>> selfVariables_;
+    std::unordered_map<std::string, std::unordered_map<std::string, double>>      selfVariables_;
     std::unordered_map<std::string, std::unordered_map<std::string, std::string>> selfStrings_;
 };
 

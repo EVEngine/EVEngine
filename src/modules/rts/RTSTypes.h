@@ -446,9 +446,13 @@ public:
     ProductionComponent();
     /** @brief Production component. */
     ~ProductionComponent();
-    /** @brief Production component. */
+    /** @brief Copy the canonical queue through its typed Protobuf snapshot.
+     * @cost Linear in retained production tasks, events and dynamic payload bytes.
+     * @throws std::runtime_error when an internal queue cannot be serialized or restored. */
     ProductionComponent(const ProductionComponent& other);
-    /** @brief Operator =. */
+    /** @brief Replace this component from a typed Protobuf copy.
+     * @cost Linear in retained production tasks, events and dynamic payload bytes.
+     * @throws std::runtime_error when an internal queue cannot be serialized or restored. */
     ProductionComponent& operator=(const ProductionComponent& other);
     /** @brief Production component. */
     ProductionComponent(ProductionComponent&& other) noexcept;

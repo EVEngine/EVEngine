@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package eve.script.proto;
+
+import "dynamic_value.proto";
+
+// Typed payload inside BinarySnapshotEnvelope. The envelope identifies the
+// schema and version; field values remain open-ended script runtime data.
+message ScriptComponentStoreSave {
+  optional uint32 format_version = 1;
+  repeated ScriptComponentEntry components = 2;
+}
+
+message ScriptComponentEntry {
+  optional uint64 entity_id = 1;
+  optional string name = 2;
+  optional uint64 version = 3;
+  eve.persistence.proto.DynamicValue fields = 4;
+}

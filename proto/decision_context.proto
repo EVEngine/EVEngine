@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package eve.decision.proto;
+
+import "dynamic_value.proto";
+
+// Version 3 stores dynamic blackboard scalars as typed values. Version 2 with
+// scalar_json remains readable for migration; version 1 uses legacy JSON.
+message DecisionContextSave {
+  optional string schema = 1;
+  optional uint32 version = 2;
+  repeated Blackboard boards = 3;
+  map<string, string> states = 4;
+  repeated Transition transitions = 5;
+  repeated InfluenceGrid grids = 6;
+}
+
+message Blackboard {
+  optional string name = 1;
+  // Version 2 compatibility only.
+  map<string, string> scalar_json = 2;
+  map<string, eve.persistence.proto.DynamicValue> scalar_values = 3;
+}
+
+message Transition {
+  optional string machine = 1;
+  optional string from = 2;
+  optional string trigger = 3;
+  optional string to = 4;
+}
+
+message InfluenceGrid {
+  optional string name = 1;
+  optional int32 width = 2;
+  optional int32 height = 3;
+  optional float cell_size = 4;
+  optional float origin_x = 5;
+  optional float origin_y = 6;
+  repeated float values = 7;
+}

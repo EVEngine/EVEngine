@@ -2,6 +2,58 @@
   "schema_version": 1,
   "entries": [
     {
+      "id": "common-lossless-dynamic-protobuf",
+      "rule": "persistence",
+      "scope": "src/engine/common/ProtobufDynamicValue.*",
+      "owner": "eve::proto_support",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "Open-ended JSON-compatible values need one Protobuf representation that retains distinct Int64 and Double values across typed domain snapshots.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "proto/dynamic_value.proto",
+        "src/engine/common/ProtobufDynamicValue.cpp"
+      ],
+      "tests": [
+        "test/value_protobuf.cpp"
+      ],
+      "schema": "eve.persistence.proto.DynamicValue is a recursive oneof for null, bool, Int64, finite Double, string, list and object.",
+      "version": "The shared value message is embedded inside versioned owning-domain messages; it is not an independent persistent root.",
+      "migration": "Owning domains migrate their outer schema and can convert prior JSON values through the same dynamic runtime contract.",
+      "unknown_fields": "Owning-domain binary restore rejects unknown fields recursively; the codec rejects unset kinds, false null markers, duplicate object keys and non-finite doubles.",
+      "restore_atomicity": "Decode builds an independent Value; encode swaps a complete temporary message only after every nested value succeeds."
+    },
+    {
+      "id": "common-lossless-dynamic-protobuf-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/common/ProtobufDynamicValue.*",
+      "owner": "eve::proto_support",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "Foundation persistence modules share a typed conversion boundary for genuinely dynamic data.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/ProtobufDynamicValue.h",
+        "src/engine/common/ProtobufDynamicValue.cpp",
+        "proto/dynamic_value.proto"
+      ],
+      "tests": [
+        "test/value_protobuf.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "No L1-L4 trim claim is made for the common codec."
+      },
+      "thread_affinity": "The caller owns the input and output values; conversion has no shared state or callbacks.",
+      "cost_notes": [
+        "Encoding and decoding cost linear time in recursively owned value size per persistence operation."
+      ],
+      "hot_path": []
+    },
+    {
       "id": "common-result-observation-interface",
       "rule": "module-interface",
       "scope": "src/engine/common/Result.h",
@@ -88,6 +140,60 @@
         "src/engine/common/Status.h",
         "src/engine/common/Status.cpp"
       ]
+    },
+    {
+      "id": "common-typed-protobuf-envelope",
+      "rule": "persistence",
+      "scope": "src/engine/common/ProtobufSnapshot.*",
+      "owner": "eve::proto_support",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "Typed domain payloads share one deterministic binary envelope and digest contract instead of defining a second header in every domain.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "proto/snapshot_envelope.proto",
+        "src/engine/common/ProtobufSnapshot.cpp"
+      ],
+      "tests": [
+        "test/protobuf_snapshot.cpp",
+        "test/transaction.cpp"
+      ],
+      "schema": "eve.persistence.proto.BinarySnapshotEnvelope owns typed header fields, opaque domain payload wire bytes and a digest.",
+      "version": "The envelope carries the owning domain schema id and version; no independent envelope version is introduced.",
+      "migration": "The shared binary wire field numbers match the former transaction-specific envelope; legacy Value envelopes remain readable through domain compatibility readers.",
+      "unknown_fields": "The parser rejects unknown envelope fields and requires every stable header, nonempty payload bytes and a fixed-size digest.",
+      "restore_atomicity": "The parser verifies the complete digest before returning owned payload bytes; domain restore validates in a detached candidate before publication."
+    },
+    {
+      "id": "common-typed-protobuf-envelope-interface",
+      "rule": "module-interface",
+      "scope": "src/engine/common/ProtobufSnapshot.*",
+      "owner": "eve::proto_support",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "Foundation persistence modules can seal and verify typed Protobuf payload bytes with one binary interface.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/engine/common/ProtobufSnapshot.h",
+        "src/engine/common/ProtobufSnapshot.cpp",
+        "proto/snapshot_envelope.proto"
+      ],
+      "tests": [
+        "test/protobuf_snapshot.cpp",
+        "test/transaction.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "No L1-L4 trim claim is made for the common envelope."
+      },
+      "thread_affinity": "The caller owns the payload; the injected hash provider controls callback behavior and must be safe for the caller thread.",
+      "cost_notes": [
+        "Seal and verify cost linear time in payload bytes and two deterministic envelope serializations per operation."
+      ],
+      "hot_path": []
     }
   ]
 }

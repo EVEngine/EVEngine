@@ -19,6 +19,12 @@
 
 namespace eve::emergence {
 
+namespace proto {
+class FactStoreSave;
+}
+
+class RuleEngine;
+
 /** @brief Domain partition of a fact key used by the watch index. */
 enum class FactDomain : std::uint8_t {
     Value,
@@ -92,10 +98,21 @@ public:
     [[nodiscard]] std::optional<condition::ConditionResult> policy(std::string_view  name,
                                                                    const eve::Value& arguments) const override;
 
-    /** @brief Export deterministic compact JSON for runtime snapshots. */
+    /** @brief Serialize a versioned typed Protobuf fact snapshot.
+     * @return Deterministic binary bytes, or a structured serialization failure.
+     * @cost Linear in stored facts and dynamic payload bytes per capture.
+     * @thread Owning simulation thread only. */
+    [[nodiscard]] eve::Result<std::string> snapshotBinary() const;
+    /** @brief Atomically restore a typed Protobuf fact snapshot.
+     * @return Success, or a diagnostic leaving the store unchanged.
+     * @cost Linear in encoded facts and dynamic payload bytes per restore.
+     * @thread Owning simulation thread only. */
+    [[nodiscard]] eve::Result<void> restoreBinary(std::string_view bytes);
+
+    /** @brief Compatibility-only Protobuf JSON export; use snapshotBinary for persistence. */
     [[nodiscard]] std::string snapshotJson() const;
     /**
-     * @brief Transactionally restore facts from a snapshot produced by snapshotJson().
+     * @brief Restore Protobuf JSON or legacy version-1 JSON transactionally.
      * @return Success, or structured failure leaving the prior store unchanged.
      */
     [[nodiscard]] eve::Result<void> restoreJson(std::string_view json);
@@ -104,6 +121,9 @@ public:
     [[nodiscard]] int valueCount() const noexcept { return static_cast<int>(values_.size()); }
 
 private:
+    friend class RuleEngine;
+    [[nodiscard]] eve::Result<void> captureMessage(proto::FactStoreSave& save) const;
+    [[nodiscard]] eve::Result<void> restoreMessage(const proto::FactStoreSave& save);
     template <class Map, class T>
     static FactChange assign(Map& map, std::string key, T value);
 

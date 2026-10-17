@@ -54,7 +54,7 @@ public:
     void pollEvents();
 
     /**
-     * @brief Serialize persistent quest progress as deterministic versioned JSON.
+     * @brief Project persistent quest progress through the Protobuf JSON mapping.
      * @return Owning JSON using schema `eve.rpg.quest-tracker` version 1, or a structured failure.
      * @remarks Runtime event queues are transient and are intentionally excluded. The snapshot
      * is bound to the currently registered quest and objective ids.
@@ -62,6 +62,14 @@ public:
      * @reentrancy No callbacks are invoked.
      */
     [[nodiscard]] eve::Result<std::string> snapshotJson() const;
+
+    /**
+     * @brief Capture quest progress in the versioned Protobuf wire format.
+     * @return Owning bytes, or a structured invariant/serialization failure.
+     * @cost Linear in the registered quest and objective count, once per save.
+     * @thread Owning simulation thread; no callbacks are invoked.
+     */
+    [[nodiscard]] eve::Result<std::string> snapshotBinary() const;
 
     /**
      * @brief Validate and atomically restore quest progress against the current registry.
@@ -74,6 +82,16 @@ public:
      * @reentrancy No callbacks are invoked.
      */
     [[nodiscard]] eve::Result<void> restoreSnapshotJson(std::string_view json);
+
+    /**
+     * @brief Validate and atomically restore a versioned Protobuf quest snapshot.
+     * @param bytes Borrowed wire bytes needed only for this call.
+     * @return Applied only after all quest and objective definitions match.
+     * @remarks Version 1 ignores unknown Protobuf fields, matching the legacy JSON policy.
+     * @cost Linear in the serialized quest and objective count, once per load.
+     * @thread Owning simulation thread; no callbacks are invoked.
+     */
+    [[nodiscard]] eve::Result<void> restoreSnapshotBinary(std::string_view bytes);
 
     int getCount() const;
     /** @brief Returns the id. */

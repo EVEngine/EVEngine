@@ -89,7 +89,9 @@ bool readIndex(const eve::Value& value, size_t limit, size_t& result) {
     return true;
 }
 
-bool generatedOrderId(std::string_view id, std::uint64_t& number) {
+}  // namespace
+
+bool CommandQueue::generatedOrderId(std::string_view id, std::uint64_t& number) {
     constexpr std::string_view prefix = "order-";
     if (!id.starts_with(prefix) || id.size() == prefix.size()) return false;
     const auto digits = id.substr(prefix.size());
@@ -98,8 +100,6 @@ bool generatedOrderId(std::string_view id, std::uint64_t& number) {
     const auto parsed = std::from_chars(digits.data(), digits.data() + digits.size(), number);
     return parsed.ec == std::errc{} && parsed.ptr == digits.data() + digits.size() && number != 0;
 }
-
-}  // namespace
 
 void OrderPayload::setString(const std::string& key, const std::string& value) {
     if (!key.empty()) values_[key] = eve::Value(value);
@@ -419,61 +419,7 @@ eve::OptionalRef<const OrderEvent> CommandQueue::eventAt(int index) const {
 
 void CommandQueue::clearEvents() { events_.clear(); }
 
-eve::Result<std::string> CommandQueue::snapshot() const {
-    eve::Value::Object root;
-    root.emplace("active", active_ == noIndex ? eve::Value() : eve::Value(static_cast<std::int64_t>(active_)));
-    root.emplace("nextId", eve::Value(std::to_string(nextId_)));
-    root.emplace("nextSequence", eve::Value(std::to_string(nextSequence_)));
-    root.emplace("schema", eve::Value(std::string(snapshotSchema)));
-    root.emplace("version", eve::Value(snapshotVersion));
-
-    eve::Value::Array queued;
-    queued.reserve(queued_.size());
-    for (const size_t index : queued_) {
-        if (index >= orders_.size() || index > static_cast<size_t>(std::numeric_limits<std::int64_t>::max()))
-            return eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
-                                                                            "queue contains an invalid queued index",
-                                                                            "queued", {}, "orders.snapshot"));
-        queued.emplace_back(static_cast<std::int64_t>(index));
-    }
-    root.emplace("queued", eve::Value(std::move(queued)));
-
-    eve::Value::Array orders;
-    orders.reserve(orders_.size());
-    for (const auto& order : orders_) {
-        eve::Value::Object encoded;
-        encoded.emplace("elapsedSeconds", eve::Value(order.elapsedSeconds));
-        encoded.emplace("id", eve::Value(order.id));
-        encoded.emplace("kind", eve::Value(order.kind));
-        encoded.emplace("payload", eve::Value(order.payload.values_));
-        encoded.emplace("priority", eve::Value(order.priority));
-        encoded.emplace("reason", eve::Value(order.reason));
-        encoded.emplace("state", eve::Value(stateName(order.state)));
-        encoded.emplace("timeoutSeconds", eve::Value(order.timeoutSeconds));
-        orders.emplace_back(std::move(encoded));
-    }
-    root.emplace("orders", eve::Value(std::move(orders)));
-
-    eve::Value::Array events;
-    events.reserve(events_.size());
-    for (const auto& event : events_) {
-        eve::Value::Object encoded;
-        encoded.emplace("from", eve::Value(stateName(event.from)));
-        encoded.emplace("kind", eve::Value(event.kind));
-        encoded.emplace("orderId", eve::Value(event.orderId));
-        encoded.emplace("reason", eve::Value(event.reason));
-        encoded.emplace("sequence", eve::Value(std::to_string(event.sequence)));
-        encoded.emplace("to", eve::Value(stateName(event.to)));
-        events.emplace_back(std::move(encoded));
-    }
-    root.emplace("events", eve::Value(std::move(events)));
-
-    auto encoded = eve::Value(std::move(root)).toJson();
-    if (!encoded.ok()) return eve::Result<std::string>::failure(encoded.status());
-    return eve::Result<std::string>::success(std::move(encoded).takeValue());
-}
-
-eve::Result<void> CommandQueue::restore(std::string_view json) {
+eve::Result<void> CommandQueue::restoreLegacyJson(std::string_view json) {
     auto parsed = eve::Value::fromJson(json);
     if (!parsed.ok()) return eve::Result<void>::failure(parsed.status());
     eve::Value  snapshotValue = std::move(parsed).takeValue();

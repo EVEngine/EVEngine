@@ -260,7 +260,7 @@ bool Card::removeCardDefinition(const std::string &id) {
     return true;
 }
 
-eve::Result<void> Card::setCardPlayCondition(const std::string& id, condition::Condition condition) {
+eve::Result<void> Card::setCardPlayCondition(const std::string &id, condition::Condition condition) {
     auto it = defs_.find(id);
     if (it == defs_.end())
         return eve::Result<void>::failure(
@@ -277,7 +277,7 @@ const CardDefinition *Card::findDef(const std::string &id) const {
     return it == defs_.end() ? nullptr : &it->second;
 }
 
-condition::ConditionResult Card::evaluatePlay(const CardData* card, CardPlayConditionQueries queries) const {
+condition::ConditionResult Card::evaluatePlay(const CardData *card, CardPlayConditionQueries queries) const {
     if (!card) return condition::ConditionResult::failed(condition::ConditionReasonCode::InvalidCondition);
     const auto *definition = findDef(const_cast<CardData *>(card)->identity()->definitionId);
     if (!definition) return condition::ConditionResult::failed(condition::ConditionReasonCode::InvalidCondition);

@@ -1,11 +1,12 @@
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_authority)
-#include "PrivateTestScope.h"
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <string>
+#include "PrivateTestScope.h"
 #include "authority/Authority.h"
 #include "common/Module.h"
+#include "common/SnapshotHash.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // authority.cpp
@@ -125,7 +126,7 @@ TEST_CASE("authority.snapshot.restoreIsDeterministicAndTransactional") {
     CHECK(restored.can("other", "s", "inspect"));
     const auto before   = restored.snapshotJson();
     auto       rejected = restored.restoreJson("{\"version\":1}");
-    CHECK(!rejected.ok());
+    REQUIRE(!rejected.ok());
     const auto* diagnostic = rejected.error();
     REQUIRE(diagnostic != nullptr);
     CHECK_EQ(diagnostic->code(), eve::DiagnosticCode::ParseError);
@@ -138,6 +139,105 @@ TEST_CASE("authority.snapshot.restoreIsDeterministicAndTransactional") {
     CHECK_EQ(parseDiagnostic->code(), eve::DiagnosticCode::ParseError);
     CHECK(!parseDiagnostic->message().empty());
     CHECK_EQ(restored.snapshotJson(), before);
+}
+
+TEST_CASE("authority.snapshot.protobufRoundTripAndFailedRestoreAreTransactional") {
+    Store source;
+    requireId(source.grant("actor", "scene", "edit", "role", 3));
+    requireId(source.deny("actor", "scene", "delete", "policy", 5, 2.0));
+    source.update(0.5);
+    auto encoded = source.snapshotBinary();
+    REQUIRE(encoded.ok());
+
+    Store restored;
+    REQUIRE(restored.restoreBinary(encoded.value()).ok());
+    CHECK(restored.can("actor", "scene", "edit"));
+    CHECK(!restored.can("actor", "scene", "delete"));
+    auto repeated = restored.snapshotBinary();
+    REQUIRE(repeated.ok());
+    CHECK_EQ(repeated.value(), encoded.value());
+
+    const auto before = restored.snapshotJson();
+    CHECK(!restored.restoreBinary("\x00\x01\x02").ok());
+    CHECK_EQ(restored.snapshotJson(), before);
+    std::string truncated = encoded.value();
+    truncated.pop_back();
+    CHECK(!restored.restoreBinary(truncated).ok());
+    CHECK_EQ(restored.snapshotJson(), before);
+    std::string futureField = encoded.value();
+    futureField.append("\xA0\x06\x01", 3);  // Unknown field 100, varint 1.
+    CHECK(!restored.restoreBinary(futureField).ok());
+    CHECK_EQ(restored.snapshotJson(), before);
+}
+
+TEST_CASE("authority.snapshot.legacyJsonIsReadButRewrittenWithProtobufSchema") {
+    const std::string legacy =
+        R"({"version":1,"nextId":"2","nextOrder":"2","nextSequence":"2","rules":[{"id":"authority-0000000000000001","actor":"actor","scope":"scene","capability":"edit","source":"role","effect":"grant","priority":3,"duration":0,"remaining":-1,"order":"1"}]})";
+    Store restored;
+    REQUIRE(restored.restoreJson(legacy).ok());
+    CHECK(restored.can("actor", "scene", "edit"));
+    const auto rewritten = restored.snapshotJson();
+    CHECK(rewritten.find("authority:store") != std::string::npos);
+    CHECK(rewritten != legacy);
+    Store copy;
+    REQUIRE(copy.restoreJson(rewritten).ok());
+    CHECK(copy.can("actor", "scene", "edit"));
+}
+
+TEST_CASE("authority.snapshot.typedEnvelopeVerifiesDigestAndIdentity") {
+    const auto identity = eve::PersistentId::parse("11111111-2222-4333-8444-555555555555");
+    REQUIRE(identity.has_value());
+    const auto hash = eve::snapshotContentHashProvider();
+    Store      source(*identity);
+    requireId(source.grant("actor", "scene", "edit", "role", 3));
+    auto wire = source.snapshotEnvelopeBinary(hash);
+    REQUIRE(wire.ok());
+
+    Store restored(*identity);
+    REQUIRE(restored.restoreSnapshotBinary(wire.value(), hash).ok());
+    CHECK(restored.can("actor", "scene", "edit"));
+    const auto  stable   = restored.snapshotJson();
+    std::string tampered = wire.value();
+    const auto  position = tampered.find("actor");
+    REQUIRE(position != std::string::npos);
+    tampered[position] = 'x';
+    auto rejected      = restored.restoreSnapshotBinary(tampered, hash);
+    REQUIRE(!rejected.ok());
+    CHECK_EQ(rejected.error()->code(), eve::DiagnosticCode::HashMismatch);
+    CHECK_EQ(restored.snapshotJson(), stable);
+
+    auto json = source.snapshotEnvelopeJson(hash);
+    REQUIRE(json.ok());
+    CHECK(json.value().find("\"payload\"") != std::string::npos);
+    Store fromJson(*identity);
+    REQUIRE(fromJson.restoreSnapshotJson(json.value(), hash).ok());
+    CHECK_EQ(fromJson.snapshotJson(), source.snapshotJson());
+
+    auto parsedJson = eve::Value::fromJson(json.value());
+    REQUIRE(parsedJson.ok());
+    auto* fields = parsedJson.value().getIf<eve::Value::Object>();
+    REQUIRE(fields != nullptr);
+    (*fields)["revision"] = eve::Value("900");
+    auto changedHeader    = parsedJson.value().toJson();
+    REQUIRE(changedHeader.ok());
+    auto headerFailure = fromJson.restoreSnapshotJson(changedHeader.value(), hash);
+    REQUIRE(!headerFailure.ok());
+    CHECK_EQ(headerFailure.error()->code(), eve::DiagnosticCode::HashMismatch);
+    CHECK_EQ(fromJson.snapshotJson(), source.snapshotJson());
+
+    auto compatible = source.snapshot(hash);
+    REQUIRE(compatible.ok());
+    auto oldEnvelope = eve::serializeSnapshotEnvelope(compatible.value());
+    REQUIRE(oldEnvelope.ok());
+    Store fromOldEnvelope(*identity);
+    REQUIRE(fromOldEnvelope.restoreSnapshotJson(oldEnvelope.value(), hash).ok());
+    CHECK_EQ(fromOldEnvelope.snapshotJson(), source.snapshotJson());
+
+    const auto foreignId = eve::PersistentId::parse("aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee");
+    REQUIRE(foreignId.has_value());
+    Store foreign(*foreignId);
+    CHECK(!foreign.restoreSnapshotBinary(wire.value(), hash).ok());
+    CHECK(foreign.snapshotJson() != source.snapshotJson());
 }
 
 TEST_CASE("authority.input.invalidFactsDoNotMutate") {
@@ -153,10 +253,10 @@ TEST_CASE("authority.input.invalidFactsDoNotMutate") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_script_ownership)
-#include "PrivateTestScope.h"
 #include <memory>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <string>
+#include "PrivateTestScope.h"
 #include "authority/Authority.h"
 #include "common/SquirrelOwnership.h"
 #include "effects/Effects.h"

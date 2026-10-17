@@ -3,7 +3,10 @@
 #include "common/SquirrelBinding.h"
 #include "sensing/SensingScriptCandidateSeam.h"
 #include "sensing/TargetingPipeline.h"
+#include "sensing_world.pb.h"
 #include "spatial/SpatialHash2D.h"
+
+#include <google/protobuf/util/json_util.h>
 
 #include <algorithm>
 #include <array>
@@ -86,14 +89,6 @@ std::string quote(std::string_view s) {
         o << c;
     }
     return o.str() + '"';
-}
-std::string join(const std::set<std::string>& s) {
-    std::string o;
-    for (auto& v : s) {
-        if (!o.empty()) o += ',';
-        o += v;
-    }
-    return o;
 }
 bool finite(float v) { return std::isfinite(v); }
 
@@ -663,20 +658,11 @@ std::string SensingWorld::debugLastQueryJson() const {
     return o.str();
 }
 
-std::string SensingWorld::snapshotJson() const {
-    std::ostringstream o;
-    o << "{\"schema\":\"eve.sensing.world\",\"version\":1,\"subjects\":[";
-    bool first = true;
-    for (auto& [id, s] : subjects_) {
-        if (!first) o << ',';
-        first = false;
-        o << "{\"id\":" << quote(id) << ",\"x\":" << std::setprecision(9) << s.x << ",\"y\":" << s.y
-          << ",\"faction\":" << quote(s.faction) << ",\"tags\":" << quote(join(s.tags))
-          << ",\"visibleTo\":" << quote(join(s.visibleTo)) << ",\"zones\":" << quote(join(s.zones)) << '}';
-    }
-    return o.str() + "]}";
-}
 eve::Result<void> SensingWorld::restoreJson(const std::string& j) {
+    proto::WorldSave typed;
+    if (google::protobuf::util::JsonStringToMessage(j, &typed).ok() && typed.has_schema() &&
+        typed.schema() == "eve.sensing.world" && typed.has_version() && typed.version() == 2)
+        return restoreMessage(typed);
     std::string err;
     auto        d = eve::json::Document::parse(j, &err);
     if (!d.valid() || !d.root().isObject() || d.root().getString("schema") != "eve.sensing.world" ||

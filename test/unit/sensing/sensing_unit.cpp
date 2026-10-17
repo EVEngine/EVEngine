@@ -1,6 +1,7 @@
 #include "zeroerr/assert.h"
 
 #include <cstddef>
+#include <limits>
 #include <optional>
 #include <string>
 #include <utility>
@@ -8,6 +9,7 @@
 #include "sensing/LineOfSightRouter.h"
 #include "sensing/Sensing.h"
 #include "sensing/TargetingPipeline.h"
+#include "sensing_world.pb.h"
 #include "simplesquirrel/simplesquirrel.hpp"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -56,6 +58,57 @@ TEST_CASE("sensing.snapshotIsTransactional") {
     auto rejected = x.restoreJson("{}");
     CHECK(!rejected.ok());
     CHECK_EQ(x.snapshotJson(), before);
+}
+
+TEST_CASE("sensing.typedProtobufSnapshotAndLegacyImport") {
+    SensingWorld source;
+    REQUIRE(source.upsert("u", 2.25f, -3.5f, "f", "b,a", "p").ok());
+    REQUIRE(source.setZones("u", "arena:central").ok());
+    auto bytes = source.snapshotBinary();
+    REQUIRE(bytes.ok());
+    auto repeated = source.snapshotBinary();
+    REQUIRE(repeated.ok());
+    CHECK_EQ(bytes.value(), repeated.value());
+
+    SensingWorld restored;
+    REQUIRE(restored.setSpatialIndexEnabled(true).ok());
+    REQUIRE(restored.restoreBinary(bytes.value()).ok());
+    CHECK(restored.spatialIndexEnabled());
+    CHECK_EQ(restored.snapshotBinary().expect("sensing round trip"), bytes.value());
+    CHECK_EQ(restored.subjects().at("u").zones.count("arena:central"), 1u);
+
+    eve::sensing::proto::WorldSave invalid;
+    REQUIRE(invalid.ParseFromString(bytes.value()));
+    invalid.mutable_subjects(0)->GetReflection()->MutableUnknownFields(invalid.mutable_subjects(0))->AddVarint(99, 1);
+    std::string unknown;
+    REQUIRE(invalid.SerializeToString(&unknown));
+    CHECK(!restored.restoreBinary(unknown).ok());
+    CHECK_EQ(restored.snapshotBinary().expect("sensing unchanged"), bytes.value());
+
+    eve::sensing::proto::WorldSave duplicate;
+    REQUIRE(duplicate.ParseFromString(bytes.value()));
+    duplicate.add_subjects()->CopyFrom(duplicate.subjects(0));
+    std::string duplicateBytes;
+    REQUIRE(duplicate.SerializeToString(&duplicateBytes));
+    CHECK(!restored.restoreBinary(duplicateBytes).ok());
+    CHECK_EQ(restored.snapshotBinary().expect("duplicate unchanged"), bytes.value());
+
+    eve::sensing::proto::WorldSave nonFinite;
+    REQUIRE(nonFinite.ParseFromString(bytes.value()));
+    nonFinite.mutable_subjects(0)->set_x(std::numeric_limits<float>::infinity());
+    std::string nonFiniteBytes;
+    REQUIRE(nonFinite.SerializeToString(&nonFiniteBytes));
+    CHECK(!restored.restoreBinary(nonFiniteBytes).ok());
+
+    SensingWorld fromJson;
+    REQUIRE(fromJson.restoreJson(source.snapshotJson()).ok());
+    CHECK_EQ(fromJson.snapshotBinary().expect("Protobuf JSON sensing"), bytes.value());
+    REQUIRE(
+        fromJson
+            .restoreJson(
+                R"({"schema":"eve.sensing.world","version":1,"subjects":[{"id":"old","x":1,"y":2,"faction":"f","tags":"a,b","visibleTo":"p","zones":"arena:central"}]})")
+            .ok());
+    CHECK_EQ(fromJson.subjects().at("old").tags.size(), 2u);
 }
 
 TEST_CASE("sensing.querySpecRanksAndHonorsCountPolicy") {

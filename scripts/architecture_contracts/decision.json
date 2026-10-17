@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "decision-context-typed-scalar-protobuf",
+      "rule": "persistence",
+      "scope": "src/modules/decision/**",
+      "owner": "decision::DecisionContext",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "Open-ended blackboard scalars stay dynamic in memory but persist through typed DynamicValue fields instead of JSON strings.",
+      "expiry": "2027-12-31",
+      "evidence": ["proto/decision_context.proto", "src/modules/decision/Decision.cpp"],
+      "tests": ["test/unit/decision/decision_tests.cpp"],
+      "schema": "eve.decision.proto.DecisionContextSave with scalar_values in each Blackboard.",
+      "version": "Version 3 writes typed scalars; version 2 remains readable for binary and Protobuf JSON migration.",
+      "migration": "Version 2 scalar_json entries are parsed once into dynamic runtime values; original version-1 JSON retains its compatibility importer.",
+      "unknown_fields": "Binary restore rejects unknown Protobuf fields recursively, and dynamic scalar decode rejects invalid kinds and non-finite values.",
+      "restore_atomicity": "Every board, state, transition and grid is validated in a detached DecisionContext before authoritative maps are swapped."
+    },
+    {
+      "id": "decision-context-typed-scalar-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/decision/**",
+      "owner": "decision::DecisionContext",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "The public binary snapshot stays the canonical persistence face; script JSON methods remain compatibility entry points.",
+      "expiry": "2027-12-31",
+      "evidence": ["src/modules/decision/Decision.h", "proto/decision_context.proto"],
+      "tests": ["test/unit/decision/decision_tests.cpp"],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "trim": {"absent_profile": "No L1-L4 trim claim is made for this internal format revision."},
+      "thread_affinity": "The caller owns the DecisionContext and performs snapshots and restores outside concurrent mutation.",
+      "cost_notes": ["Capture and restore cost linear time in boards, scalar bytes, transitions and grid cells."],
+      "hot_path": []
+    }
+  ]
+}

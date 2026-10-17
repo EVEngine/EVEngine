@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package eve.rpg.proto;
+
+message QuestObjectiveProgress {
+  optional string id = 1;
+  optional int32 current = 2;
+}
+
+message QuestProgress {
+  optional string id = 1;
+  optional string state = 2;
+  repeated QuestObjectiveProgress objectives = 3;
+}
+
+// Runtime event queues are transient and are intentionally omitted.
+message TrackerSave {
+  optional string schema = 1;
+  optional uint32 version = 2;
+  repeated QuestProgress entries = 3;
+}

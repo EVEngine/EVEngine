@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "transaction-ledger-protobuf-persistence",
+      "rule": "persistence",
+      "scope": "src/modules/transaction/Transaction.*",
+      "owner": "transaction::Ledger",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "The ledger and its ordered plan, operation and event records use typed Protobuf binary, JSON and envelope snapshots; operation payloads remain open-ended.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "proto/transaction_ledger.proto",
+        "src/modules/transaction/Transaction.cpp"
+      ],
+      "tests": [
+        "test/transaction.cpp"
+      ],
+      "schema": "transaction:ledger version 2 stores fixed ledger fields in TransactionLedgerSave and dynamic operation payloads in shared eve.persistence.proto.DynamicValue with distinct Int64 and Double variants; binary envelopes use shared eve.persistence.proto.BinarySnapshotEnvelope.",
+      "version": "Binary and JSON writers emit version 2; legacy version 1 JSON remains readable through the existing restore API.",
+      "migration": "Legacy version 1 JSON and common Value envelopes are read into a detached ledger image; new writes use typed version 2 Protobuf binary, JSON and envelopes.",
+      "unknown_fields": "Binary restore rejects unknown Protobuf fields recursively; Protobuf JSON rejects unknown names, including nested operation payload messages.",
+      "restore_atomicity": "The full plan and event image is validated in temporary storage; the live ledger is replaced only after all records pass."
+    },
+    {
+      "id": "transaction-ledger-protobuf-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/transaction/**",
+      "owner": "transaction::Ledger",
+      "issue": "https://github.com/EVEngine/EVEngine/pull/570",
+      "reason": "The transaction module exposes typed Protobuf ledger persistence and compatibility projections alongside the existing plan and script interfaces.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/transaction/Transaction.h",
+        "src/modules/transaction/Transaction.cpp",
+        "proto/transaction_ledger.proto",
+        "cmake/module_manifest/core_foundation.cmake"
+      ],
+      "tests": [
+        "test/transaction.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        { "script_class": "Transaction", "methods": [ "newLedger" ] },
+        { "script_class": "Ledger", "methods": [ "create", "find", "snapshotJson", "restore" ] }
+      ],
+      "protocol": [],
+      "trim": {
+        "absent_profile": "No L1-L4 trim claim is made for this change."
+      },
+      "thread_affinity": "Ledger snapshot and restore run on the owning transaction thread; restore does not invoke callbacks.",
+      "cost_notes": [
+        "Binary save and restore cost linear time in plan, operation, event and payload bytes per snapshot."
+      ],
+      "hot_path": []
+    }
+  ]
+}

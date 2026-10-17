@@ -4,6 +4,7 @@
 #include "zeroerr/unittest.h"
 
 #include "common/Module.h"
+#include "common/SnapshotHash.h"
 #include "policyregistry/PolicyRegistry.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -118,6 +119,66 @@ TEST_CASE("policyregistry.subscriptionAndSnapshotEnvelopeAreCompatible") {
     auto safe = copy.resolve("orders", "safe");
     REQUIRE(safe.ok());
     CHECK(!safe.value().get().enabled);
+}
+
+TEST_CASE("policyregistry.snapshot.typedBinaryPreservesTombstonesAndRejectsUnknownFields") {
+    PolicyRegistry source;
+    REQUIRE(source.insert("movement", "ground", 2, 10, true, "builtin", "move.schema", "{\"z\":2,\"a\":1}").ok());
+    REQUIRE(
+        source.replace("movement", "ground", 3, 11, false, "script", "move.next", "{\"nested\":{\"x\":true}}").ok());
+    REQUIRE(source.insert("movement", "retired", 1, 0, true, "batch", "", "{}").ok());
+    REQUIRE(source.remove("movement", "retired").ok());
+    auto wire = source.snapshotBinary();
+    REQUIRE(wire.ok());
+
+    PolicyRegistry restored;
+    REQUIRE(restored.restoreBinary(wire.value()).ok());
+    CHECK(restored.isTombstone("movement", "retired"));
+    CHECK_EQ(restored.snapshotJson(), source.snapshotJson());
+    auto repeated = restored.snapshotBinary();
+    REQUIRE(repeated.ok());
+    CHECK_EQ(repeated.value(), wire.value());
+
+    const auto  before = restored.snapshotJson();
+    std::string future = wire.value();
+    future.append("\xA0\x06\x01", 3);  // Unknown field 100, varint 1.
+    CHECK(!restored.restoreBinary(future).ok());
+    CHECK_EQ(restored.snapshotJson(), before);
+    std::string truncated = wire.value();
+    truncated.pop_back();
+    CHECK(!restored.restoreBinary(truncated).ok());
+    CHECK_EQ(restored.snapshotJson(), before);
+}
+
+TEST_CASE("policyregistry.snapshot.typedEnvelopeChecksMetadataAndReadsLegacyJson") {
+    PolicyRegistry source;
+    REQUIRE(source.insert("orders", "safe", 1, 5, true, "script", "orders.policy", "{\"label\":\"Safe\"}").ok());
+    const auto hash   = eve::snapshotContentHashProvider();
+    auto       binary = source.snapshotEnvelopeBinary(hash);
+    REQUIRE(binary.ok());
+    PolicyRegistry restored;
+    REQUIRE(restored.restoreSnapshotBinary(binary.value(), hash).ok());
+    CHECK_EQ(restored.snapshotJson(), source.snapshotJson());
+
+    auto json = source.snapshotEnvelopeJson(hash);
+    REQUIRE(json.ok());
+    auto document = eve::Value::fromJson(json.value());
+    REQUIRE(document.ok());
+    auto* fields = document.value().getIf<eve::Value::Object>();
+    REQUIRE(fields != nullptr);
+    (*fields)["revision"] = eve::Value("900");
+    auto changed          = document.value().toJson();
+    REQUIRE(changed.ok());
+    const auto before   = restored.snapshotJson();
+    auto       mismatch = restored.restoreSnapshotJson(changed.value(), hash);
+    REQUIRE(!mismatch.ok());
+    CHECK_EQ(mismatch.error()->code(), eve::DiagnosticCode::HashMismatch);
+    CHECK_EQ(restored.snapshotJson(), before);
+
+    PolicyRegistry legacy;
+    REQUIRE(legacy.restoreJson(R"({"version":1,"nextEventSequence":"1","descriptors":[],"generations":[],"events":[]})")
+                .ok());
+    CHECK(legacy.snapshotJson().find("policyregistry:registry") != std::string::npos);
 }
 
 TEST_CASE("policyregistry.mutationPreservesObserverWarning") {

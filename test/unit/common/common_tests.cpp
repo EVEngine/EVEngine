@@ -3733,6 +3733,125 @@ TEST_CASE("Capability.leaseMovedFromIsEmpty") {
 }  // namespace test_capability_owned
 #endif
 
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_value_protobuf)
+#include "PrivateTestScope.h"
+#include "common/ProtobufDynamicValue.h"
+
+#include "dynamic_value.pb.h"
+#include "zeroerr/unittest.h"
+
+#include <limits>
+#include <string>
+namespace test_value_protobuf {
+TEST_CASE("value-protobuf.roundTripsExactDynamicValues") {
+    auto source = eve::Value::fromJson(
+        R"({"large":9223372036854775807,"small":-9223372036854775808,"items":[null,true,1.25,"text"]})");
+    REQUIRE(source.ok());
+    eve::persistence::proto::DynamicValue encoded;
+    REQUIRE(eve::proto_support::encodeDynamicValue(source.value(), encoded).ok());
+    std::string wire;
+    REQUIRE(encoded.SerializeToString(&wire));
+    eve::persistence::proto::DynamicValue parsed;
+    REQUIRE(parsed.ParseFromString(wire));
+    auto restored = eve::proto_support::decodeDynamicValue(parsed);
+    REQUIRE(restored.ok());
+    CHECK_EQ(restored.value(), source.value());
+}
+
+TEST_CASE("value-protobuf.rejectsInvalidValuesWithoutChangingDestination") {
+    eve::persistence::proto::DynamicValue destination;
+    destination.set_string_value("before");
+    CHECK(
+        !eve::proto_support::encodeDynamicValue(eve::Value(std::numeric_limits<double>::infinity()), destination).ok());
+    CHECK_EQ(destination.string_value(), std::string("before"));
+
+    eve::persistence::proto::DynamicValue missing;
+    CHECK(!eve::proto_support::decodeDynamicValue(missing).ok());
+    eve::persistence::proto::DynamicValue invalidNull;
+    invalidNull.set_null_value(false);
+    CHECK(!eve::proto_support::decodeDynamicValue(invalidNull).ok());
+
+    eve::persistence::proto::DynamicValue duplicate;
+    auto*                                 object = duplicate.mutable_object_value();
+    for (int index = 0; index < 2; ++index) {
+        auto* field = object->add_fields();
+        field->set_key("same");
+        field->mutable_value()->set_int_value(index);
+    }
+    CHECK(!eve::proto_support::decodeDynamicValue(duplicate).ok());
+}
+}  // namespace test_value_protobuf
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_protobuf_snapshot)
+#include "PrivateTestScope.h"
+#include "common/ProtobufSnapshot.h"
+#include "common/ScriptComponentSnapshot.h"
+#include "common/ScriptComponentStore.h"
+
+#include "common/SnapshotHash.h"
+#include "snapshot_envelope.pb.h"
+#include "zeroerr/unittest.h"
+
+#include <string>
+namespace test_protobuf_snapshot {
+TEST_CASE("protobuf-snapshot.roundTripsTypedPayloadAndRejectsTampering") {
+    const auto schema = eve::LogicalId::parse("sample:state");
+    REQUIRE(schema.has_value());
+    const auto identity = eve::PersistentId::parse("aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee");
+    REQUIRE(identity.has_value());
+    const auto                                   hash = eve::snapshotContentHashProvider();
+    const eve::proto_support::BinarySnapshotData source{"sample.state",
+                                                        *schema,
+                                                        eve::SchemaVersion(3),
+                                                        *identity,
+                                                        eve::Revision(7),
+                                                        eve::SimulationTick(9),
+                                                        std::string("\0typed\xff", 7)};
+    auto                                         wire = eve::proto_support::serializeBinarySnapshot(source, hash);
+    REQUIRE(wire.ok());
+    auto restored = eve::proto_support::parseBinarySnapshot(wire.value(), hash);
+    REQUIRE(restored.ok());
+    CHECK_EQ(restored.value().type, source.type);
+    CHECK_EQ(restored.value().schema, source.schema);
+    CHECK_EQ(restored.value().schemaVersion, source.schemaVersion);
+    CHECK_EQ(restored.value().instanceId, source.instanceId);
+    CHECK_EQ(restored.value().revision, source.revision);
+    CHECK_EQ(restored.value().tick, source.tick);
+    CHECK_EQ(restored.value().payloadWire, source.payloadWire);
+
+    eve::persistence::proto::BinarySnapshotEnvelope tampered;
+    REQUIRE(tampered.ParseFromString(wire.value()));
+    tampered.set_payload_wire("changed");
+    std::string bytes;
+    REQUIRE(tampered.SerializeToString(&bytes));
+    auto rejected = eve::proto_support::parseBinarySnapshot(bytes, hash);
+    REQUIRE(!rejected.ok());
+    CHECK_EQ(rejected.error()->code(), eve::DiagnosticCode::HashMismatch);
+
+    tampered.GetReflection()->MutableUnknownFields(&tampered)->AddVarint(99, 1);
+    REQUIRE(tampered.SerializeToString(&bytes));
+    CHECK(!eve::proto_support::parseBinarySnapshot(bytes, hash).ok());
+}
+
+TEST_CASE("protobuf-snapshot.scriptComponentEmptyStoreRoundTripAndAtomicRejection") {
+    eve::clearScriptComponentStore();
+    const auto hash     = eve::snapshotContentHashProvider();
+    const auto identity = eve::PersistentId::parse("aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee");
+    REQUIRE(identity.has_value());
+    auto saved = eve::serializeScriptComponentSnapshotBinary(*identity, eve::Revision(1), eve::SimulationTick(2), hash);
+    REQUIRE(saved.ok());
+    REQUIRE(eve::restoreScriptComponentSnapshotBinary(saved.value(), hash).ok());
+    CHECK_EQ(eve::scriptComponentStoreSize(), std::size_t(0));
+    CHECK(!eve::restoreScriptComponentSnapshotBinary("invalid", hash).ok());
+    auto repeated =
+        eve::serializeScriptComponentSnapshotBinary(*identity, eve::Revision(1), eve::SimulationTick(2), hash);
+    REQUIRE(repeated.ok());
+    CHECK_EQ(repeated.value(), saved.value());
+}
+}  // namespace test_protobuf_snapshot
+#endif
+
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_condition)
 #include <map>
 #include <optional>
@@ -3776,7 +3895,7 @@ TEST_CASE("decision.condition.supportsAllLeafNodes") {
     context.values.emplace(stateKey("phase"), "ready");
     context.policies.emplace("safe", ConditionResult::success(eve::Value(true)));
 
-    const Condition condition = Condition::all({
+    const Condition        condition = Condition::all({
         Condition::compare("level", CompareOperator::GreaterEqual, 7),
         tagPresent("fire"),
         attributeExists("power"),

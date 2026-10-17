@@ -357,6 +357,19 @@ else()
   endif()
 endif()
 
+# Generated Protobuf headers are third-party output and carry upstream MSVC
+# conversion warnings; direct test includes must use the system include path.
+set(_eve_proto_test_targets ${EVE_TEST_TARGETS})
+if(EVENGINE_IOS_TEST_APP)
+  list(APPEND _eve_proto_test_targets eve)
+endif()
+foreach(_eve_proto_test_target IN LISTS _eve_proto_test_targets)
+  if(TARGET ${_eve_proto_test_target})
+    target_include_directories(${_eve_proto_test_target} SYSTEM PRIVATE
+      ${CMAKE_SOURCE_DIR}/proto/generated)
+  endif()
+endforeach()
+
 # zeroerr's REQUIRE/CHECK/ASSERT are compiled out under ZEROERR_NO_ASSERT
 # (the root CMakeLists strips them from non-Debug builds). That silently
 # deletes test setup calls written as REQUIRE(initSideEffect()), which made
@@ -706,6 +719,265 @@ foreach(_eve_test_target IN LISTS EVE_TEST_TARGETS)
   eve_apply_test_origin_definitions(${_eve_test_target} ${_eve_test_origin_definitions})
   zeroerr_discover_tests(${_eve_test_target} LABEL "${_eve_test_target}")
 endforeach()
+
+# Inventory's protobuf codec belongs to Foundation. This narrow target proves
+# the save contract in a trimmed host without unrelated RPG test sources that
+# still reference optional gameplay modules.
+if(TARGET EVInventory AND TARGET EVFoundation)
+  add_executable(inventory_save_protobuf_test EXCLUDE_FROM_ALL
+    main.cpp unit/inventory/inventory_tests.cpp)
+  target_include_directories(inventory_save_protobuf_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+  target_compile_definitions(inventory_save_protobuf_test PRIVATE
+    EVE_TEST_FILTER_ORIGINS EVE_TEST_ORIGIN_inventory_save_protobuf)
+  target_link_libraries(inventory_save_protobuf_test PRIVATE
+    eve_engine_includes ${ThirdParty} EVFoundation zeroerr)
+  target_compile_options(inventory_save_protobuf_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(inventory_save_protobuf_test PRIVATE EVBacktrace)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/inventory_save_protobuf_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/inventory_save_protobuf_test_zeroerr_tests.cmake"
+      "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(inventory_save_protobuf_test
+    LABEL "inventory_save_protobuf_test" NAME_PREFIX "inventory-protobuf/")
+endif()
+
+# The core domain executable includes consumers of optional modules in a
+# trimmed profile. Keep the transaction persistence contract runnable there.
+if(TARGET EVTransaction AND TARGET EVFoundation)
+  add_executable(transaction_protobuf_test EXCLUDE_FROM_ALL
+    main.cpp unit/transaction/transaction_unit.cpp)
+  target_include_directories(transaction_protobuf_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+  target_link_libraries(transaction_protobuf_test PRIVATE
+    eve_engine_includes ${ThirdParty} EVFoundation zeroerr)
+  target_compile_options(transaction_protobuf_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(transaction_protobuf_test PRIVATE EVBacktrace)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/transaction_protobuf_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/transaction_protobuf_test_zeroerr_tests.cmake"
+      "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(transaction_protobuf_test
+    LABEL "transaction_protobuf_test" NAME_PREFIX "transaction-protobuf/")
+endif()
+
+# The shared dynamic value codec must be independently usable by every
+# persistence module, including a trimmed foundation host.
+if(TARGET EVCommon AND TARGET EVFoundation)
+  add_executable(dynamic_value_protobuf_test EXCLUDE_FROM_ALL
+    main.cpp unit/common/common_tests.cpp)
+  target_include_directories(dynamic_value_protobuf_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+  target_compile_definitions(dynamic_value_protobuf_test PRIVATE
+    EVE_TEST_FILTER_ORIGINS EVE_TEST_ORIGIN_value_protobuf)
+  target_link_libraries(dynamic_value_protobuf_test PRIVATE
+    eve_engine_includes ${ThirdParty} EVFoundation zeroerr protobuf::libprotobuf)
+  target_include_directories(dynamic_value_protobuf_test SYSTEM PRIVATE
+    ${CMAKE_SOURCE_DIR}/proto/generated)
+  target_compile_options(dynamic_value_protobuf_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(dynamic_value_protobuf_test PRIVATE EVBacktrace)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/dynamic_value_protobuf_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/dynamic_value_protobuf_test_zeroerr_tests.cmake"
+      "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(dynamic_value_protobuf_test
+    LABEL "dynamic_value_protobuf_test" NAME_PREFIX "dynamic-value-protobuf/")
+endif()
+
+if(TARGET EVCommon AND TARGET EVFoundation)
+  add_executable(protobuf_snapshot_test EXCLUDE_FROM_ALL
+    main.cpp unit/common/common_tests.cpp)
+  target_include_directories(protobuf_snapshot_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+  target_compile_definitions(protobuf_snapshot_test PRIVATE
+    EVE_TEST_FILTER_ORIGINS EVE_TEST_ORIGIN_protobuf_snapshot)
+  target_link_libraries(protobuf_snapshot_test PRIVATE
+    eve_engine_includes ${ThirdParty} EVFoundation zeroerr protobuf::libprotobuf)
+  target_include_directories(protobuf_snapshot_test SYSTEM PRIVATE
+    ${CMAKE_SOURCE_DIR}/proto/generated)
+  target_compile_options(protobuf_snapshot_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(protobuf_snapshot_test PRIVATE EVBacktrace)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/protobuf_snapshot_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/protobuf_snapshot_test_zeroerr_tests.cmake"
+      "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(protobuf_snapshot_test
+    LABEL "protobuf_snapshot_test" NAME_PREFIX "protobuf-snapshot/")
+endif()
+
+if(TARGET EVCommon AND TARGET EVFoundation)
+  add_executable(script_component_protobuf_test EXCLUDE_FROM_ALL
+    main.cpp integration/script-api/script_component_protobuf.cpp)
+  target_include_directories(script_component_protobuf_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+  target_link_libraries(script_component_protobuf_test PRIVATE
+    eve_engine_includes ${ThirdParty} EVFoundation zeroerr protobuf::libprotobuf)
+  target_include_directories(script_component_protobuf_test SYSTEM PRIVATE
+    ${CMAKE_SOURCE_DIR}/proto/generated)
+  target_compile_options(script_component_protobuf_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(script_component_protobuf_test PRIVATE EVBacktrace)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/script_component_protobuf_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/script_component_protobuf_test_zeroerr_tests.cmake"
+      "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(script_component_protobuf_test
+    LABEL "script_component_protobuf_test" NAME_PREFIX "script-component-protobuf/")
+endif()
+
+if(TARGET EVGame_event AND TARGET EVFoundation)
+  add_executable(game_event_protobuf_test EXCLUDE_FROM_ALL
+    main.cpp unit/game_event/game_event_tests.cpp)
+  target_include_directories(game_event_protobuf_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+  target_compile_definitions(game_event_protobuf_test PRIVATE
+    EVE_TEST_FILTER_ORIGINS EVE_TEST_ORIGIN_game_event_protobuf)
+  target_link_libraries(game_event_protobuf_test PRIVATE
+    eve_engine_includes ${ThirdParty} EVFoundation zeroerr protobuf::libprotobuf)
+  target_include_directories(game_event_protobuf_test SYSTEM PRIVATE
+    ${CMAKE_SOURCE_DIR}/proto/generated)
+  target_compile_options(game_event_protobuf_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(game_event_protobuf_test PRIVATE EVBacktrace)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/game_event_protobuf_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/game_event_protobuf_test_zeroerr_tests.cmake"
+      "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(game_event_protobuf_test
+    LABEL "game_event_protobuf_test" NAME_PREFIX "game-event-protobuf/")
+endif()
+
+if(TARGET EVProduction AND TARGET EVFoundation)
+  add_executable(production_protobuf_test EXCLUDE_FROM_ALL
+    main.cpp unit/production/production_tests.cpp)
+  target_include_directories(production_protobuf_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+  target_compile_definitions(production_protobuf_test PRIVATE
+    EVE_TEST_FILTER_ORIGINS EVE_TEST_ORIGIN_production_protobuf)
+  target_link_libraries(production_protobuf_test PRIVATE
+    eve_engine_includes ${ThirdParty} EVFoundation zeroerr protobuf::libprotobuf)
+  target_include_directories(production_protobuf_test SYSTEM PRIVATE
+    ${CMAKE_SOURCE_DIR}/proto/generated)
+  target_compile_options(production_protobuf_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(production_protobuf_test PRIVATE EVBacktrace)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/production_protobuf_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/production_protobuf_test_zeroerr_tests.cmake"
+      "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(production_protobuf_test
+    LABEL "production_protobuf_test" NAME_PREFIX "production-protobuf/")
+endif()
+
+if(TARGET EVOrders AND TARGET EVFoundation)
+  add_executable(orders_protobuf_test EXCLUDE_FROM_ALL
+    main.cpp unit/orders/orders_unit.cpp)
+  target_include_directories(orders_protobuf_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+  target_link_libraries(orders_protobuf_test PRIVATE
+    eve_engine_includes ${ThirdParty} EVFoundation zeroerr protobuf::libprotobuf)
+  target_include_directories(orders_protobuf_test SYSTEM PRIVATE
+    ${CMAKE_SOURCE_DIR}/proto/generated)
+  target_compile_options(orders_protobuf_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(orders_protobuf_test PRIVATE EVBacktrace)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/orders_protobuf_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/orders_protobuf_test_zeroerr_tests.cmake"
+      "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(orders_protobuf_test
+    LABEL "orders_protobuf_test" NAME_PREFIX "orders-protobuf/")
+endif()
+
+if(TARGET EVRts AND TARGET EVDomains)
+  add_executable(rts_protobuf_transfer_test EXCLUDE_FROM_ALL
+    main.cpp integration/gameplay-composition/rts_protobuf_transfer_tests.cpp)
+  target_include_directories(rts_protobuf_transfer_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+  target_link_libraries(rts_protobuf_transfer_test PRIVATE
+    eve_engine_includes ${ThirdParty} EVFoundation EVDomains zeroerr protobuf::libprotobuf)
+  target_include_directories(rts_protobuf_transfer_test SYSTEM PRIVATE
+    ${CMAKE_SOURCE_DIR}/proto/generated)
+  target_compile_options(rts_protobuf_transfer_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(rts_protobuf_transfer_test PRIVATE EVBacktrace)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/rts_protobuf_transfer_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/rts_protobuf_transfer_test_zeroerr_tests.cmake"
+      "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(rts_protobuf_transfer_test
+    LABEL "rts_protobuf_transfer_test" NAME_PREFIX "rts-protobuf-transfer/")
+endif()
+
+if(TARGET EVStatepatch AND TARGET EVFoundation)
+  add_executable(statepatch_protobuf_test EXCLUDE_FROM_ALL
+    main.cpp unit/statepatch/statepatch_unit.cpp)
+  target_include_directories(statepatch_protobuf_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+  target_compile_definitions(statepatch_protobuf_test PRIVATE
+    EVE_TEST_FILTER_ORIGINS EVE_TEST_ORIGIN_statepatch_protobuf)
+  target_link_libraries(statepatch_protobuf_test PRIVATE
+    eve_engine_includes ${ThirdParty} EVFoundation zeroerr protobuf::libprotobuf)
+  target_include_directories(statepatch_protobuf_test SYSTEM PRIVATE
+    ${CMAKE_SOURCE_DIR}/proto/generated)
+  target_compile_options(statepatch_protobuf_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(statepatch_protobuf_test PRIVATE EVBacktrace)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/statepatch_protobuf_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/statepatch_protobuf_test_zeroerr_tests.cmake"
+      "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(statepatch_protobuf_test
+    LABEL "statepatch_protobuf_test" NAME_PREFIX "statepatch-protobuf/")
+endif()
+
+if(TARGET EVDefinitions AND TARGET EVFoundation)
+  add_executable(definitions_protobuf_test EXCLUDE_FROM_ALL
+    main.cpp unit/definitions/definitions_unit.cpp)
+  target_include_directories(definitions_protobuf_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+  target_compile_definitions(definitions_protobuf_test PRIVATE
+    EVE_TEST_FILTER_ORIGINS EVE_TEST_ORIGIN_definitions_protobuf)
+  target_link_libraries(definitions_protobuf_test PRIVATE
+    eve_engine_includes ${ThirdParty} EVFoundation zeroerr protobuf::libprotobuf)
+  target_include_directories(definitions_protobuf_test SYSTEM PRIVATE
+    ${CMAKE_SOURCE_DIR}/proto/generated)
+  target_compile_options(definitions_protobuf_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(definitions_protobuf_test PRIVATE EVBacktrace)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/definitions_protobuf_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/definitions_protobuf_test_zeroerr_tests.cmake"
+      "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(definitions_protobuf_test
+    LABEL "definitions_protobuf_test" NAME_PREFIX "definitions-protobuf/")
+endif()
 endif()
 include(asset_shader/GraphicsProbe.cmake)
 if(NOT EVENGINE_ANDROID_TEST_APP AND NOT EVENGINE_IOS_TEST_APP)
