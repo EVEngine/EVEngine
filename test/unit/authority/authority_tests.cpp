@@ -143,8 +143,8 @@ TEST_CASE("authority.snapshot.restoreIsDeterministicAndTransactional") {
 
 TEST_CASE("authority.snapshot.protobufRoundTripAndFailedRestoreAreTransactional") {
     Store source;
-    source.grant("actor", "scene", "edit", "role", 3);
-    source.deny("actor", "scene", "delete", "policy", 5, 2.0);
+    requireId(source.grant("actor", "scene", "edit", "role", 3));
+    requireId(source.deny("actor", "scene", "delete", "policy", 5, 2.0));
     source.update(0.5);
     auto encoded = source.snapshotBinary();
     REQUIRE(encoded.ok());
@@ -189,7 +189,7 @@ TEST_CASE("authority.snapshot.typedEnvelopeVerifiesDigestAndIdentity") {
     REQUIRE(identity.has_value());
     const auto hash = eve::snapshotContentHashProvider();
     Store      source(*identity);
-    source.grant("actor", "scene", "edit", "role", 3);
+    requireId(source.grant("actor", "scene", "edit", "role", 3));
     auto wire = source.snapshotEnvelopeBinary(hash);
     REQUIRE(wire.ok());
 

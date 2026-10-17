@@ -66,7 +66,7 @@ TEST_CASE("emergence.ruleEngineTypedProtobufRestoresAtomically") {
     REQUIRE(restored.replaceCatalogue({rule}).ok());
     REQUIRE(restored.restoreBinary(bytes.value()).ok());
     CHECK_EQ(restored.snapshotBinary().expect("restored rule snapshot"), bytes.value());
-    CHECK_EQ(restored.facts().hasTag("go"), std::optional<bool>(true));
+    CHECK_EQ(restored.facts().value("tag:go"), std::optional<eve::Value>(eve::Value(true)));
 
     eve::emergence::proto::RuleEngineSave invalid;
     REQUIRE(invalid.ParseFromString(bytes.value()));
@@ -94,7 +94,7 @@ TEST_CASE("emergence.ruleEngineTypedProtobufRestoresAtomically") {
             .restoreJson(
                 R"({"schema":"eve.emergence.runtime","version":1,"facts":{"schema":"eve.emergence.facts","version":1,"tags":{"go":true}},"rules":[{"id":"gate","passed":false,"fired":false,"disabled":false,"cooldownUntil":0}]})")
             .ok());
-    CHECK_EQ(restored.facts().hasTag("go"), std::optional<bool>(true));
+    CHECK_EQ(restored.facts().value("tag:go"), std::optional<eve::Value>(eve::Value(true)));
 }
 
 TEST_CASE("emergence.ruleCatalogueTypedProtobufAndLegacyJson") {

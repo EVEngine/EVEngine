@@ -10003,7 +10003,11 @@
         "local-logic": [
           "gameplay.control.rtsUsesSelectionAuthorityForPlayerAndAutomation",
           "gameplay.control.rtsRejectsUnselectedAndStaleCommands",
-          "gameplay.control.rtsEnumeratesItsPlayerInstances"
+          "gameplay.control.rtsEnumeratesItsPlayerInstances",
+          "rts.terrainNarrowRidgeBlocksShotsInBothDirections",
+          "rts.terrainHighGroundCanShootOverLowerRidge",
+          "rts.terrainDescendingProjectileHitsInsideCell",
+          "rts.terrainGridOriginScaleAndVerticalSegments"
         ]
       },
       "module": "rts",
@@ -11168,6 +11172,20 @@
         ]
       },
       "module": "graphics"
+    },
+    "integration/gameplay-composition/rts_terrain_combat.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "rts.terrainRidgeStopsFireAndTerrainEditsReopenFireLine"
+        ]
+      },
+      "module": "rts",
+      "task": "gameplay-composition",
+      "origins": [
+        "rts_terrain_combat.cpp"
+      ]
     }
   }
 }
