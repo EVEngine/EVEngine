@@ -169,6 +169,8 @@ void Graphics::createSwapchainAndPipeline() {
     // them down before replacing the swapchain (destroy() waitIdles first).
     presentRecording = {};
     swapchainPass = {};
+    presentModel.waitForAllFrames();
+    destroyFrameCapture();
     presentModel.destroy();
     presentModel = vkb::Present{};
 
