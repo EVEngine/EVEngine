@@ -1,5 +1,6 @@
 #include "graphics/Graphics.h"
 #include "common/Capability.h"
+#include "common/FrameCapture.h"
 #include "common/SquirrelBinding.h"
 #include "common/config.h"
 #include "font/FontData.h"
@@ -163,7 +164,7 @@ void setShaderScript(Graphics* gfx, ssq::Object obj) {
 
 }  // namespace
 
-Graphics::Graphics() {
+Graphics::Graphics() : frameCaptures_(std::make_unique<FrameCaptureStore>()) {
     primitiveScene_ = std::make_shared<PrimitiveScene>();
     // The window module owns the native window; we own the render surface.
     // Register as its surface host so window never has to include graphics.
@@ -171,11 +172,13 @@ Graphics::Graphics() {
     // by the time it is used; see common/WindowSurfaceHost.h.
     eve::cap::provide<IWindowSurfaceHost>(this);
     eve::cap::provide<IFramePresentation>(this);
+    eve::cap::provide<IRenderFrameCapture>(frameCaptures_.get());
     registerGraphicsCapabilities();
     registerGraphicsArtifactProvider(this);
 }
 
 Graphics::~Graphics() {
+    eve::cap::revoke<IRenderFrameCapture>(frameCaptures_.get());
     eve::cap::revoke<IFramePresentation>(this);
     retireResourceLifetime();
     // Derived backends detach first, while their virtual releaseMesh boundary
@@ -184,6 +187,8 @@ Graphics::~Graphics() {
     // Out-of-line so unique_ptr members of effect classes (Outline, AO, GI, …)
     // are destroyed where the complete types are visible.
 }
+
+FrameCaptureStore& Graphics::frameCaptures() { return *frameCaptures_; }
 
 #ifdef EVENGINE_WEBGPU
 Module_IMPL(Graphics, new eve::graphics::webgpu::Graphics());
