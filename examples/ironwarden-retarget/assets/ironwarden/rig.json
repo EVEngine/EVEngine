@@ -1,0 +1,1698 @@
+{
+  "schema": "ironwarden-rig",
+  "version": 1,
+  "source": "Quaternius AnimationLibrary.glb",
+  "sourceUnits": "metres",
+  "modelUnits": "millimetres",
+  "scale": 0.01,
+  "skin": "rigid: one bone per vertex",
+  "bones": [
+    {
+      "target": "IW_root",
+      "source": "root",
+      "parent": null,
+      "head": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "tail": [
+        0.0,
+        0.0,
+        0.11999999731779099
+      ]
+    },
+    {
+      "target": "IW_pelvis",
+      "source": "DEF-hips",
+      "parent": "IW_root",
+      "head": [
+        0.0,
+        0.009999999776482582,
+        1.059999942779541
+      ],
+      "tail": [
+        0.0,
+        0.009999999776482582,
+        1.1899999380111694
+      ]
+    },
+    {
+      "target": "IW_spine_01",
+      "source": "DEF-spine.001",
+      "parent": "IW_pelvis",
+      "head": [
+        0.0,
+        0.009999999776482582,
+        1.1899999380111694
+      ],
+      "tail": [
+        0.0,
+        0.009999999776482582,
+        1.350000023841858
+      ]
+    },
+    {
+      "target": "IW_spine_02",
+      "source": "DEF-spine.002",
+      "parent": "IW_spine_01",
+      "head": [
+        0.0,
+        0.009999999776482582,
+        1.350000023841858
+      ],
+      "tail": [
+        0.0,
+        0.009999999776482582,
+        1.4800000190734863
+      ]
+    },
+    {
+      "target": "IW_chest",
+      "source": "DEF-spine.003",
+      "parent": "IW_spine_02",
+      "head": [
+        0.0,
+        0.009999999776482582,
+        1.4800000190734863
+      ],
+      "tail": [
+        0.0,
+        0.0,
+        1.71999990940094
+      ]
+    },
+    {
+      "target": "IW_neck",
+      "source": "DEF-neck",
+      "parent": "IW_chest",
+      "head": [
+        0.0,
+        0.0,
+        1.71999990940094
+      ],
+      "tail": [
+        0.0,
+        0.0,
+        1.7899999618530273
+      ]
+    },
+    {
+      "target": "IW_head",
+      "source": "DEF-head",
+      "parent": "IW_neck",
+      "head": [
+        0.0,
+        0.0,
+        1.7899999618530273
+      ],
+      "tail": [
+        0.0,
+        0.0,
+        2.0399999618530273
+      ]
+    },
+    {
+      "target": "IW_clavicle.L",
+      "source": "DEF-shoulder.L",
+      "parent": "IW_chest",
+      "head": [
+        0.1899999976158142,
+        0.0,
+        1.6299999952316284
+      ],
+      "tail": [
+        0.3100000023841858,
+        0.0,
+        1.5799999237060547
+      ]
+    },
+    {
+      "target": "IW_upperarm.L",
+      "source": "DEF-upper_arm.L",
+      "parent": "IW_clavicle.L",
+      "head": [
+        0.3100000023841858,
+        0.0,
+        1.5799999237060547
+      ],
+      "tail": [
+        0.610832154750824,
+        0.0,
+        1.5799999237060547
+      ]
+    },
+    {
+      "target": "IW_forearm.L",
+      "source": "DEF-forearm.L",
+      "parent": "IW_upperarm.L",
+      "head": [
+        0.610832154750824,
+        0.0,
+        1.5799999237060547
+      ],
+      "tail": [
+        0.8860687017440796,
+        -0.019999999552965164,
+        1.5248196125030518
+      ]
+    },
+    {
+      "target": "IW_hand.L",
+      "source": "DEF-hand.L",
+      "parent": "IW_forearm.L",
+      "head": [
+        0.8860687017440796,
+        -0.019999999552965164,
+        1.5248196125030518
+      ],
+      "tail": [
+        0.9824678301811218,
+        -0.019999999552965164,
+        1.4982267618179321
+      ]
+    },
+    {
+      "target": "IW_thigh.L",
+      "source": "DEF-thigh.L",
+      "parent": "IW_pelvis",
+      "head": [
+        0.14999999105930328,
+        0.009999999776482582,
+        1.0399999618530273
+      ],
+      "tail": [
+        0.17000000178813934,
+        0.0,
+        0.6299999952316284
+      ]
+    },
+    {
+      "target": "IW_calf.L",
+      "source": "DEF-shin.L",
+      "parent": "IW_thigh.L",
+      "head": [
+        0.17000000178813934,
+        0.0,
+        0.6299999952316284
+      ],
+      "tail": [
+        0.17999999225139618,
+        0.0,
+        0.1599999964237213
+      ]
+    },
+    {
+      "target": "IW_foot.L",
+      "source": "DEF-foot.L",
+      "parent": "IW_calf.L",
+      "head": [
+        0.17999999225139618,
+        0.0,
+        0.1599999964237213
+      ],
+      "tail": [
+        0.17999999225139618,
+        -0.17999999225139618,
+        0.07999999821186066
+      ]
+    },
+    {
+      "target": "IW_toe.L",
+      "source": "DEF-toe.L",
+      "parent": "IW_foot.L",
+      "head": [
+        0.17999999225139618,
+        -0.17999999225139618,
+        0.07999999821186066
+      ],
+      "tail": [
+        0.17999999225139618,
+        -0.25,
+        0.07000000029802322
+      ]
+    },
+    {
+      "target": "IW_clavicle.R",
+      "source": "DEF-shoulder.R",
+      "parent": "IW_chest",
+      "head": [
+        -0.1899999976158142,
+        0.0,
+        1.6299999952316284
+      ],
+      "tail": [
+        -0.3100000023841858,
+        0.0,
+        1.5799999237060547
+      ]
+    },
+    {
+      "target": "IW_upperarm.R",
+      "source": "DEF-upper_arm.R",
+      "parent": "IW_clavicle.R",
+      "head": [
+        -0.3100000023841858,
+        0.0,
+        1.5799999237060547
+      ],
+      "tail": [
+        -0.610832154750824,
+        0.0,
+        1.5799999237060547
+      ]
+    },
+    {
+      "target": "IW_forearm.R",
+      "source": "DEF-forearm.R",
+      "parent": "IW_upperarm.R",
+      "head": [
+        -0.610832154750824,
+        0.0,
+        1.5799999237060547
+      ],
+      "tail": [
+        -0.8860687017440796,
+        -0.019999999552965164,
+        1.5248196125030518
+      ]
+    },
+    {
+      "target": "IW_hand.R",
+      "source": "DEF-hand.R",
+      "parent": "IW_forearm.R",
+      "head": [
+        -0.8860687017440796,
+        -0.019999999552965164,
+        1.5248196125030518
+      ],
+      "tail": [
+        -0.9824678301811218,
+        -0.019999999552965164,
+        1.4982267618179321
+      ]
+    },
+    {
+      "target": "IW_thigh.R",
+      "source": "DEF-thigh.R",
+      "parent": "IW_pelvis",
+      "head": [
+        -0.14999999105930328,
+        0.009999999776482582,
+        1.0399999618530273
+      ],
+      "tail": [
+        -0.17000000178813934,
+        0.0,
+        0.6299999952316284
+      ]
+    },
+    {
+      "target": "IW_calf.R",
+      "source": "DEF-shin.R",
+      "parent": "IW_thigh.R",
+      "head": [
+        -0.17000000178813934,
+        0.0,
+        0.6299999952316284
+      ],
+      "tail": [
+        -0.17999999225139618,
+        0.0,
+        0.1599999964237213
+      ]
+    },
+    {
+      "target": "IW_foot.R",
+      "source": "DEF-foot.R",
+      "parent": "IW_calf.R",
+      "head": [
+        -0.17999999225139618,
+        0.0,
+        0.1599999964237213
+      ],
+      "tail": [
+        -0.17999999225139618,
+        -0.17999999225139618,
+        0.07999999821186066
+      ]
+    },
+    {
+      "target": "IW_toe.R",
+      "source": "DEF-toe.R",
+      "parent": "IW_foot.R",
+      "head": [
+        -0.17999999225139618,
+        -0.17999999225139618,
+        0.07999999821186066
+      ],
+      "tail": [
+        -0.17999999225139618,
+        -0.25,
+        0.07000000029802322
+      ]
+    }
+  ],
+  "attachments": [
+    {
+      "part": 0,
+      "name": "chest_core",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 1,
+      "name": "upper_chest_mantle",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 2,
+      "name": "cockpit_nose",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 3,
+      "name": "collar_socket",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 4,
+      "name": "collar_gold",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 5,
+      "name": "chest_intake_frame",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 6,
+      "name": "chest_intake_recess",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 7,
+      "name": "chest_intake_louvre",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 8,
+      "name": "chest_intake_louvre",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 9,
+      "name": "chest_intake_louvre",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 10,
+      "name": "chest_seam",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 11,
+      "name": "chest_intake_frame",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 12,
+      "name": "chest_intake_recess",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 13,
+      "name": "chest_intake_louvre",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 14,
+      "name": "chest_intake_louvre",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 15,
+      "name": "chest_intake_louvre",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 16,
+      "name": "chest_seam",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 17,
+      "name": "red_abdomen",
+      "bone": "IW_spine_01"
+    },
+    {
+      "part": 18,
+      "name": "waist_mechanism",
+      "bone": "IW_pelvis"
+    },
+    {
+      "part": 19,
+      "name": "waist_rail",
+      "bone": "IW_pelvis"
+    },
+    {
+      "part": 20,
+      "name": "waist_rail",
+      "bone": "IW_pelvis"
+    },
+    {
+      "part": 21,
+      "name": "pelvis_core",
+      "bone": "IW_pelvis"
+    },
+    {
+      "part": 22,
+      "name": "pelvis_red_badge",
+      "bone": "IW_pelvis"
+    },
+    {
+      "part": 23,
+      "name": "pelvis_gold_chevron",
+      "bone": "IW_pelvis"
+    },
+    {
+      "part": 24,
+      "name": "front_skirt",
+      "bone": "IW_pelvis"
+    },
+    {
+      "part": 25,
+      "name": "skirt_yellow_latch",
+      "bone": "IW_pelvis"
+    },
+    {
+      "part": 26,
+      "name": "skirt_lower_seam",
+      "bone": "IW_pelvis"
+    },
+    {
+      "part": 27,
+      "name": "side_skirt",
+      "bone": "IW_pelvis"
+    },
+    {
+      "part": 28,
+      "name": "rear_skirt",
+      "bone": "IW_pelvis"
+    },
+    {
+      "part": 29,
+      "name": "hip_motor",
+      "bone": "IW_thigh.R"
+    },
+    {
+      "part": 30,
+      "name": "thigh_inner_frame",
+      "bone": "IW_thigh.R"
+    },
+    {
+      "part": 31,
+      "name": "thigh_white_shell",
+      "bone": "IW_thigh.R"
+    },
+    {
+      "part": 32,
+      "name": "thigh_outer_overlay",
+      "bone": "IW_thigh.R"
+    },
+    {
+      "part": 33,
+      "name": "thigh_service_seam",
+      "bone": "IW_thigh.R"
+    },
+    {
+      "part": 34,
+      "name": "knee_hinge",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 35,
+      "name": "knee_piston",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 36,
+      "name": "knee_white_motor_cap",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 37,
+      "name": "knee_motor_inset",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 38,
+      "name": "knee_white_motor_cap",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 39,
+      "name": "knee_motor_inset",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 40,
+      "name": "knee_armour",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 41,
+      "name": "shin_frame",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 42,
+      "name": "shin_outer_armour",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 43,
+      "name": "shin_ridge",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 44,
+      "name": "shin_front_duct",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 45,
+      "name": "shin_front_duct",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 46,
+      "name": "shin_front_duct",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 47,
+      "name": "shin_lower_seam",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 48,
+      "name": "calf_access_hatch",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 49,
+      "name": "calf_louvre",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 50,
+      "name": "calf_louvre",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 51,
+      "name": "calf_louvre",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 52,
+      "name": "calf_louvre",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 53,
+      "name": "ankle_joint",
+      "bone": "IW_foot.R"
+    },
+    {
+      "part": 54,
+      "name": "ankle_cuff",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 55,
+      "name": "red_foot",
+      "bone": "IW_foot.R"
+    },
+    {
+      "part": 56,
+      "name": "foot_sole",
+      "bone": "IW_foot.R"
+    },
+    {
+      "part": 57,
+      "name": "white_instep",
+      "bone": "IW_foot.R"
+    },
+    {
+      "part": 58,
+      "name": "toe_insert",
+      "bone": "IW_foot.R"
+    },
+    {
+      "part": 59,
+      "name": "shoulder_joint",
+      "bone": "IW_upperarm.R"
+    },
+    {
+      "part": 60,
+      "name": "shoulder_armour",
+      "bone": "IW_upperarm.R"
+    },
+    {
+      "part": 61,
+      "name": "shoulder_top_cap",
+      "bone": "IW_upperarm.R"
+    },
+    {
+      "part": 62,
+      "name": "shoulder_panel_seam",
+      "bone": "IW_upperarm.R"
+    },
+    {
+      "part": 63,
+      "name": "shoulder_dark_recess",
+      "bone": "IW_upperarm.R"
+    },
+    {
+      "part": 64,
+      "name": "shoulder_dark_recess",
+      "bone": "IW_upperarm.R"
+    },
+    {
+      "part": 65,
+      "name": "upper_arm_frame",
+      "bone": "IW_upperarm.R"
+    },
+    {
+      "part": 66,
+      "name": "upper_arm_shell",
+      "bone": "IW_upperarm.R"
+    },
+    {
+      "part": 67,
+      "name": "upper_arm_seam",
+      "bone": "IW_upperarm.R"
+    },
+    {
+      "part": 68,
+      "name": "elbow_motor",
+      "bone": "IW_forearm.R"
+    },
+    {
+      "part": 69,
+      "name": "elbow_cap",
+      "bone": "IW_forearm.R"
+    },
+    {
+      "part": 70,
+      "name": "forearm_armour",
+      "bone": "IW_forearm.R"
+    },
+    {
+      "part": 71,
+      "name": "forearm_panel",
+      "bone": "IW_forearm.R"
+    },
+    {
+      "part": 72,
+      "name": "forearm_inner_panel",
+      "bone": "IW_forearm.R"
+    },
+    {
+      "part": 73,
+      "name": "forearm_service_line",
+      "bone": "IW_forearm.R"
+    },
+    {
+      "part": 74,
+      "name": "wrist_cuff",
+      "bone": "IW_hand.R"
+    },
+    {
+      "part": 75,
+      "name": "hand_palm",
+      "bone": "IW_hand.R"
+    },
+    {
+      "part": 76,
+      "name": "finger_knuckle",
+      "bone": "IW_hand.R"
+    },
+    {
+      "part": 77,
+      "name": "finger_digit",
+      "bone": "IW_hand.R"
+    },
+    {
+      "part": 78,
+      "name": "finger_knuckle",
+      "bone": "IW_hand.R"
+    },
+    {
+      "part": 79,
+      "name": "finger_digit",
+      "bone": "IW_hand.R"
+    },
+    {
+      "part": 80,
+      "name": "finger_knuckle",
+      "bone": "IW_hand.R"
+    },
+    {
+      "part": 81,
+      "name": "finger_digit",
+      "bone": "IW_hand.R"
+    },
+    {
+      "part": 82,
+      "name": "finger_knuckle",
+      "bone": "IW_hand.R"
+    },
+    {
+      "part": 83,
+      "name": "finger_digit",
+      "bone": "IW_hand.R"
+    },
+    {
+      "part": 84,
+      "name": "thumb",
+      "bone": "IW_hand.R"
+    },
+    {
+      "part": 85,
+      "name": "front_skirt",
+      "bone": "IW_pelvis"
+    },
+    {
+      "part": 86,
+      "name": "skirt_yellow_latch",
+      "bone": "IW_pelvis"
+    },
+    {
+      "part": 87,
+      "name": "skirt_lower_seam",
+      "bone": "IW_pelvis"
+    },
+    {
+      "part": 88,
+      "name": "side_skirt",
+      "bone": "IW_pelvis"
+    },
+    {
+      "part": 89,
+      "name": "rear_skirt",
+      "bone": "IW_pelvis"
+    },
+    {
+      "part": 90,
+      "name": "hip_motor",
+      "bone": "IW_thigh.L"
+    },
+    {
+      "part": 91,
+      "name": "thigh_inner_frame",
+      "bone": "IW_thigh.L"
+    },
+    {
+      "part": 92,
+      "name": "thigh_white_shell",
+      "bone": "IW_thigh.L"
+    },
+    {
+      "part": 93,
+      "name": "thigh_outer_overlay",
+      "bone": "IW_thigh.L"
+    },
+    {
+      "part": 94,
+      "name": "thigh_service_seam",
+      "bone": "IW_thigh.L"
+    },
+    {
+      "part": 95,
+      "name": "knee_hinge",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 96,
+      "name": "knee_piston",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 97,
+      "name": "knee_white_motor_cap",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 98,
+      "name": "knee_motor_inset",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 99,
+      "name": "knee_white_motor_cap",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 100,
+      "name": "knee_motor_inset",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 101,
+      "name": "knee_armour",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 102,
+      "name": "shin_frame",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 103,
+      "name": "shin_outer_armour",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 104,
+      "name": "shin_ridge",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 105,
+      "name": "shin_front_duct",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 106,
+      "name": "shin_front_duct",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 107,
+      "name": "shin_front_duct",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 108,
+      "name": "shin_lower_seam",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 109,
+      "name": "calf_access_hatch",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 110,
+      "name": "calf_louvre",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 111,
+      "name": "calf_louvre",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 112,
+      "name": "calf_louvre",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 113,
+      "name": "calf_louvre",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 114,
+      "name": "ankle_joint",
+      "bone": "IW_foot.L"
+    },
+    {
+      "part": 115,
+      "name": "ankle_cuff",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 116,
+      "name": "red_foot",
+      "bone": "IW_foot.L"
+    },
+    {
+      "part": 117,
+      "name": "foot_sole",
+      "bone": "IW_foot.L"
+    },
+    {
+      "part": 118,
+      "name": "white_instep",
+      "bone": "IW_foot.L"
+    },
+    {
+      "part": 119,
+      "name": "toe_insert",
+      "bone": "IW_foot.L"
+    },
+    {
+      "part": 120,
+      "name": "shoulder_joint",
+      "bone": "IW_upperarm.L"
+    },
+    {
+      "part": 121,
+      "name": "shoulder_armour",
+      "bone": "IW_upperarm.L"
+    },
+    {
+      "part": 122,
+      "name": "shoulder_top_cap",
+      "bone": "IW_upperarm.L"
+    },
+    {
+      "part": 123,
+      "name": "shoulder_panel_seam",
+      "bone": "IW_upperarm.L"
+    },
+    {
+      "part": 124,
+      "name": "shoulder_dark_recess",
+      "bone": "IW_upperarm.L"
+    },
+    {
+      "part": 125,
+      "name": "shoulder_dark_recess",
+      "bone": "IW_upperarm.L"
+    },
+    {
+      "part": 126,
+      "name": "upper_arm_frame",
+      "bone": "IW_upperarm.L"
+    },
+    {
+      "part": 127,
+      "name": "upper_arm_shell",
+      "bone": "IW_upperarm.L"
+    },
+    {
+      "part": 128,
+      "name": "upper_arm_seam",
+      "bone": "IW_upperarm.L"
+    },
+    {
+      "part": 129,
+      "name": "elbow_motor",
+      "bone": "IW_forearm.L"
+    },
+    {
+      "part": 130,
+      "name": "elbow_cap",
+      "bone": "IW_forearm.L"
+    },
+    {
+      "part": 131,
+      "name": "forearm_armour",
+      "bone": "IW_forearm.L"
+    },
+    {
+      "part": 132,
+      "name": "forearm_panel",
+      "bone": "IW_forearm.L"
+    },
+    {
+      "part": 133,
+      "name": "forearm_inner_panel",
+      "bone": "IW_forearm.L"
+    },
+    {
+      "part": 134,
+      "name": "forearm_service_line",
+      "bone": "IW_forearm.L"
+    },
+    {
+      "part": 135,
+      "name": "wrist_cuff",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 136,
+      "name": "hand_palm",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 137,
+      "name": "finger_knuckle",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 138,
+      "name": "finger_digit",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 139,
+      "name": "finger_knuckle",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 140,
+      "name": "finger_digit",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 141,
+      "name": "finger_knuckle",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 142,
+      "name": "finger_digit",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 143,
+      "name": "finger_knuckle",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 144,
+      "name": "finger_digit",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 145,
+      "name": "thumb",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 146,
+      "name": "neck_column",
+      "bone": "IW_neck"
+    },
+    {
+      "part": 147,
+      "name": "helmet_shell",
+      "bone": "IW_head"
+    },
+    {
+      "part": 148,
+      "name": "face_shadow",
+      "bone": "IW_head"
+    },
+    {
+      "part": 149,
+      "name": "face_mask",
+      "bone": "IW_head"
+    },
+    {
+      "part": 150,
+      "name": "brow_left",
+      "bone": "IW_head"
+    },
+    {
+      "part": 151,
+      "name": "brow_right",
+      "bone": "IW_head"
+    },
+    {
+      "part": 152,
+      "name": "left_eye",
+      "bone": "IW_head"
+    },
+    {
+      "part": 153,
+      "name": "right_eye",
+      "bone": "IW_head"
+    },
+    {
+      "part": 154,
+      "name": "chin_red",
+      "bone": "IW_head"
+    },
+    {
+      "part": 155,
+      "name": "mask_mouth_vent",
+      "bone": "IW_head"
+    },
+    {
+      "part": 156,
+      "name": "mask_mouth_vent",
+      "bone": "IW_head"
+    },
+    {
+      "part": 157,
+      "name": "ear_motor",
+      "bone": "IW_head"
+    },
+    {
+      "part": 158,
+      "name": "cheek_guard",
+      "bone": "IW_head"
+    },
+    {
+      "part": 159,
+      "name": "cheek_exhaust",
+      "bone": "IW_head"
+    },
+    {
+      "part": 160,
+      "name": "cheek_exhaust",
+      "bone": "IW_head"
+    },
+    {
+      "part": 161,
+      "name": "cheek_exhaust",
+      "bone": "IW_head"
+    },
+    {
+      "part": 162,
+      "name": "cheek_exhaust",
+      "bone": "IW_head"
+    },
+    {
+      "part": 163,
+      "name": "head_vulcan_socket",
+      "bone": "IW_head"
+    },
+    {
+      "part": 164,
+      "name": "head_vulcan_bore",
+      "bone": "IW_head"
+    },
+    {
+      "part": 165,
+      "name": "v_fin",
+      "bone": "IW_head"
+    },
+    {
+      "part": 166,
+      "name": "ear_motor",
+      "bone": "IW_head"
+    },
+    {
+      "part": 167,
+      "name": "cheek_guard",
+      "bone": "IW_head"
+    },
+    {
+      "part": 168,
+      "name": "cheek_exhaust",
+      "bone": "IW_head"
+    },
+    {
+      "part": 169,
+      "name": "cheek_exhaust",
+      "bone": "IW_head"
+    },
+    {
+      "part": 170,
+      "name": "cheek_exhaust",
+      "bone": "IW_head"
+    },
+    {
+      "part": 171,
+      "name": "cheek_exhaust",
+      "bone": "IW_head"
+    },
+    {
+      "part": 172,
+      "name": "head_vulcan_socket",
+      "bone": "IW_head"
+    },
+    {
+      "part": 173,
+      "name": "head_vulcan_bore",
+      "bone": "IW_head"
+    },
+    {
+      "part": 174,
+      "name": "v_fin",
+      "bone": "IW_head"
+    },
+    {
+      "part": 175,
+      "name": "forehead_red_camera_mount",
+      "bone": "IW_head"
+    },
+    {
+      "part": 176,
+      "name": "forehead_camera",
+      "bone": "IW_head"
+    },
+    {
+      "part": 177,
+      "name": "helmet_crest",
+      "bone": "IW_head"
+    },
+    {
+      "part": 178,
+      "name": "rear_head_camera",
+      "bone": "IW_head"
+    },
+    {
+      "part": 179,
+      "name": "backpack",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 180,
+      "name": "backpack_upper_fan",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 181,
+      "name": "backpack_fan_centre",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 182,
+      "name": "thruster_bell",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 183,
+      "name": "thruster_nozzle",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 184,
+      "name": "thruster_core",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 185,
+      "name": "thruster_vane",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 186,
+      "name": "thruster_vane",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 187,
+      "name": "thruster_vane",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 188,
+      "name": "thruster_vane",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 189,
+      "name": "thruster_vane",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 190,
+      "name": "thruster_vane",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 191,
+      "name": "saber_mount",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 192,
+      "name": "beam_saber_hilt",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 193,
+      "name": "saber_hilt_ring",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 194,
+      "name": "saber_hilt_ring",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 195,
+      "name": "saber_hilt_ring",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 196,
+      "name": "saber_hilt_ring",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 197,
+      "name": "backpack_service_rail",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 198,
+      "name": "backpack_upper_fan",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 199,
+      "name": "backpack_fan_centre",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 200,
+      "name": "thruster_bell",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 201,
+      "name": "thruster_nozzle",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 202,
+      "name": "thruster_core",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 203,
+      "name": "thruster_vane",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 204,
+      "name": "thruster_vane",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 205,
+      "name": "thruster_vane",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 206,
+      "name": "thruster_vane",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 207,
+      "name": "thruster_vane",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 208,
+      "name": "thruster_vane",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 209,
+      "name": "saber_mount",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 210,
+      "name": "beam_saber_hilt",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 211,
+      "name": "saber_hilt_ring",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 212,
+      "name": "saber_hilt_ring",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 213,
+      "name": "saber_hilt_ring",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 214,
+      "name": "saber_hilt_ring",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 215,
+      "name": "backpack_service_rail",
+      "bone": "IW_chest"
+    },
+    {
+      "part": 216,
+      "name": "shield_white_frame",
+      "bone": "IW_forearm.R"
+    },
+    {
+      "part": 217,
+      "name": "shield_red_inset",
+      "bone": "IW_forearm.R"
+    },
+    {
+      "part": 218,
+      "name": "shield_view_frame",
+      "bone": "IW_forearm.R"
+    },
+    {
+      "part": 219,
+      "name": "shield_view_slot",
+      "bone": "IW_forearm.R"
+    },
+    {
+      "part": 220,
+      "name": "shield_cross_vertical",
+      "bone": "IW_forearm.R"
+    },
+    {
+      "part": 221,
+      "name": "shield_cross_horizontal",
+      "bone": "IW_forearm.R"
+    },
+    {
+      "part": 222,
+      "name": "shield_panel_line",
+      "bone": "IW_forearm.R"
+    },
+    {
+      "part": 223,
+      "name": "shield_panel_line",
+      "bone": "IW_forearm.R"
+    },
+    {
+      "part": 224,
+      "name": "shield_handle",
+      "bone": "IW_forearm.R"
+    },
+    {
+      "part": 225,
+      "name": "rifle_receiver",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 226,
+      "name": "rifle_upper_shroud",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 227,
+      "name": "rifle_grip",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 228,
+      "name": "rifle_magazine",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 229,
+      "name": "rifle_barrel",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 230,
+      "name": "rifle_muzzle_collar",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 231,
+      "name": "rifle_muzzle_bore",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 232,
+      "name": "rifle_sight_mount",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 233,
+      "name": "rifle_optic",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 234,
+      "name": "rifle_optic_glass",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 235,
+      "name": "rifle_cooling_slot",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 236,
+      "name": "rifle_cooling_slot",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 237,
+      "name": "rifle_cooling_slot",
+      "bone": "IW_hand.L"
+    },
+    {
+      "part": 238,
+      "name": "leg_service_fastener",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 239,
+      "name": "leg_service_fastener",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 240,
+      "name": "ankle_oxidation",
+      "bone": "IW_foot.R"
+    },
+    {
+      "part": 241,
+      "name": "leg_service_fastener",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 242,
+      "name": "leg_service_fastener",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 243,
+      "name": "ankle_oxidation",
+      "bone": "IW_foot.L"
+    },
+    {
+      "part": 244,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 245,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 246,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 247,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 248,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 249,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 250,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 251,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 252,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 253,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 254,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 255,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 256,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 257,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 258,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 259,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 260,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 261,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 262,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 263,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 264,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 265,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.L"
+    },
+    {
+      "part": 266,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.R"
+    },
+    {
+      "part": 267,
+      "name": "edge_paint_chip",
+      "bone": "IW_calf.L"
+    }
+  ]
+}
