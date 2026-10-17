@@ -1,0 +1,53 @@
+{
+  "schema": "ironwarden-render-validation",
+  "version": 1,
+  "capture": "engine MCP eve_screenshot",
+  "posePaused": true,
+  "state": {
+    "gbuffer": true,
+    "shadow": true,
+    "ao": true,
+    "gi": true,
+    "aa": true,
+    "msaa": true,
+    "ssr": true,
+    "requestedMsaa": 8,
+    "postQuality": "high",
+    "gbufferValid": true,
+    "gbufferWidth": 1440,
+    "gbufferHeight": 960,
+    "environmentRevision": 1,
+    "sunCastsShadow": true,
+    "shadowMethod": "csm",
+    "toneMapping": "aces",
+    "bloomIntensity": 0.1,
+    "vignetteIntensity": 0.12
+  },
+  "fpsSamples": [
+    48.996181,
+    48.996181,
+    48.996181,
+    61.795135,
+    61.795135,
+    61.795135
+  ],
+  "comparisonExcludesUiTopPixels": 300,
+  "samePoseDifferences": {
+    "render-no-shadow": {
+      "pixelsChangedOver3Levels": 49893,
+      "meanAbsoluteChannelDifference": 1.4995
+    },
+    "render-no-ao": {
+      "pixelsChangedOver3Levels": 176,
+      "meanAbsoluteChannelDifference": 0.0125
+    },
+    "render-no-aa": {
+      "pixelsChangedOver3Levels": 16382,
+      "meanAbsoluteChannelDifference": 0.3758
+    },
+    "render-baseline": {
+      "pixelsChangedOver3Levels": 949814,
+      "meanAbsoluteChannelDifference": 9.5985
+    }
+  }
+}
