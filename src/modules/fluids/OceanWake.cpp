@@ -165,6 +165,26 @@ Result<void> OceanWake::advance(double dt, double endTime, const OceanSpectrumFr
             impl_->foam[i]      = foam[i] * std::exp(-(s.foamDecay + 8.0 * sponge * sponge) * dt);
         }
     }
+    // White water is produced on steep, elevated faces, then transported and
+    // decayed by the existing foam field. Evaluate after every height is updated
+    // so the result does not depend on grid traversal order. This is a visual
+    // breaking-wave closure for the linear solver, not an overturning-fluid model.
+    const double cell = s.length / n;
+    for (unsigned z = 1; z + 1 < n; ++z) {
+        for (unsigned x = 1; x + 1 < n; ++x) {
+            const auto   i = z * n + x;
+            const double slope =
+                std::hypot(impl_->height[i + 1] - impl_->height[i - 1], impl_->height[i + n] - impl_->height[i - n]) /
+                (2.0 * cell);
+            const double steep     = std::clamp((slope - 0.035) / 0.10, 0.0, 1.0);
+            const double curvature = (4.0 * impl_->height[i] - impl_->height[i + 1] - impl_->height[i - 1] -
+                                      impl_->height[i + n] - impl_->height[i - n]) /
+                                     cell;
+            const double crest = std::clamp(impl_->height[i] / 0.6, 0.0, 1.0) * std::clamp(curvature / 0.10, 0.0, 1.0);
+            const double generated = -std::expm1(-4.0 * steep * steep * crest * dt);
+            impl_->foam[i] += (1.0 - impl_->foam[i]) * generated;
+        }
+    }
     impl_->time = endTime;
     return Result<void>::success();
 }

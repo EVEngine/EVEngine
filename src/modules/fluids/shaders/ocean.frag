@@ -27,19 +27,38 @@ bool dryInterior(vec3 point) {
     }
     return false;
 }
+float foamNoise(vec2 p) {
+    vec2 cell = floor(p), f = fract(p);
+    f = f*f*(3.0-2.0*f);
+    vec4 h = fract(sin(vec4(dot(cell,vec2(127.1,311.7)),
+        dot(cell+vec2(1,0),vec2(127.1,311.7)),
+        dot(cell+vec2(0,1),vec2(127.1,311.7)),
+        dot(cell+vec2(1,1),vec2(127.1,311.7))))*43758.5453);
+    return mix(mix(h.x,h.y,f.x),mix(h.z,h.w,f.x),f.y);
+}
 void main() {
-    if (dryInterior(world)) discard;
     vec3 N = normalize(gl_FrontFacing ? normal : -normal);
+    float variance = dot(dFdx(N),dFdx(N)) + dot(dFdy(N),dFdy(N));
+    if (dryInterior(world)) discard;
     vec3 V = normalize(ubo.cameraPos.xyz - world);
     vec3 L = normalize(ubo.lightDirIntensity.xyz);
     vec3 R = reflect(-V, N);
     float fresnel = 0.02037 + 0.97963 * pow(1.0 - max(dot(N,V), 0.0), 5.0);
-    float foam = clamp(max(surface.x, (0.72 - surface.y) * 2.5), 0.0, 1.0);
+    float coverage = clamp(max(surface.x, (0.72 - surface.y) * 2.5), 0.0, 1.0);
+    // Break up transported coverage into foam patches; zero coverage stays clear.
+    float threshold = 0.18 + 0.55 * foamNoise(world.xz * 0.4);
+    float foam = smoothstep(threshold-0.15,threshold+0.15,coverage)
+        * (0.55 + 0.45 * foamNoise(world.xz * 1.2));
     float roughness = mix(0.12, 0.65, foam);
     vec3 reflected = textureLod(environment, R, roughness * float(max(textureQueryLevels(environment)-1,0))).rgb * ubo.lightColor.w;
-    vec3 water = vec3(0.006, 0.055, 0.075) * (0.6 + 0.4 * max(N.y,0.0));
-    float sun = pow(max(dot(N,normalize(V+L)),0.0), mix(420.0,20.0,roughness));
-    vec3 lit = mix(water, reflected, fresnel) + ubo.lightColor.rgb * sun * 2.0 * max(dot(N,L),0.0);
+    // Directional water-body scattering makes crest slopes readable from above.
+    vec3 water = vec3(0.008, 0.075, 0.095) * (0.35 + 0.65 * max(dot(N,L),0.0));
+    // Filter the narrow sun lobe by the pixel's normal variance, retaining its
+    // integrated energy instead of flashing individual far-field triangles white.
+    float exponent = mix(160.0,24.0,foam);
+    float filteredExponent = exponent / (1.0 + exponent * variance);
+    float sun = (filteredExponent / exponent) * pow(max(dot(N,normalize(V+L)),0.0), filteredExponent);
+    vec3 lit = mix(water, reflected, fresnel) + ubo.lightColor.rgb * sun * 0.15 * max(dot(N,L),0.0);
     vec3 foamLight = vec3(0.83,0.91,0.91) * (0.4 + 0.6 * max(dot(N,L),0.0));
     color = vec4(mix(lit, foamLight, foam) * ubo.tint.rgb, 1.0);
 }

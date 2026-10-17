@@ -29,18 +29,32 @@ fn dryInterior(point:vec3f)->bool {
  }
  return false;
 }
+fn foamNoise(p:vec2f)->f32 {
+ let cell=floor(p);let fraction=fract(p);let f=fraction*fraction*(3.0-2.0*fraction);
+ let h=fract(sin(vec4f(dot(cell,vec2f(127.1,311.7)),
+  dot(cell+vec2f(1,0),vec2f(127.1,311.7)),
+  dot(cell+vec2f(0,1),vec2f(127.1,311.7)),
+  dot(cell+vec2f(1,1),vec2f(127.1,311.7))))*43758.5453);
+ return mix(mix(h.x,h.y,f.x),mix(h.z,h.w,f.x),f.y);
+}
 @fragment fn fs_main(input:Varying,@builtin(front_facing) front:bool)->@location(0) vec4f {
- if(dryInterior(input.world)) {discard;}
  let N=normalize(select(-input.normal,input.normal,front));
+ let variance=dot(dpdx(N),dpdx(N))+dot(dpdy(N),dpdy(N));
+ if(dryInterior(input.world)) {discard;}
  let V=normalize(frame.cameraPos.xyz-input.world);
  let L=normalize(frame.lightDir.xyz);let R=reflect(-V,N);
  let fresnel=0.02037+0.97963*pow(1.0-max(dot(N,V),0.0),5.0);
- let foam=clamp(max(input.surface.x,(0.72-input.surface.y)*2.5),0.0,1.0);
+ let coverage=clamp(max(input.surface.x,(0.72-input.surface.y)*2.5),0.0,1.0);
+ let threshold=0.18+0.55*foamNoise(input.world.xz*0.4);
+ let foam=smoothstep(threshold-0.15,threshold+0.15,coverage)*(0.55+0.45*foamNoise(input.world.xz*1.2));
  let roughness=mix(0.12,0.65,foam);
  let reflected=textureSampleLevel(environment,samp,R,roughness*f32(textureNumLevels(environment)-1u)).rgb*frame.lightColor.w;
- let water=vec3f(0.006,0.055,0.075)*(0.6+0.4*max(N.y,0.0));
- let sun=pow(max(dot(N,normalize(V+L)),0.0),mix(420.0,20.0,roughness));
- let lit=mix(water,reflected,vec3f(fresnel))+frame.lightColor.rgb*sun*2.0*max(dot(N,L),0.0);
+ // Keep the water-body scattering and filtered sun lobe identical to Vulkan.
+ let water=vec3f(0.008,0.075,0.095)*(0.35+0.65*max(dot(N,L),0.0));
+ let exponent=mix(160.0,24.0,foam);
+ let filteredExponent=exponent/(1.0+exponent*variance);
+ let sun=(filteredExponent/exponent)*pow(max(dot(N,normalize(V+L)),0.0),filteredExponent);
+ let lit=mix(water,reflected,vec3f(fresnel))+frame.lightColor.rgb*sun*0.15*max(dot(N,L),0.0);
  let foamLight=vec3f(0.83,0.91,0.91)*(0.4+0.6*max(dot(N,L),0.0));
  return vec4f(mix(lit,foamLight,vec3f(foam))*frame.tint.rgb,1.0);
 }
