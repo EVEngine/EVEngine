@@ -622,7 +622,6 @@
         ]
       },
       "module": "graphics",
-      "task": "gameplay-composition",
       "origins": [
         "virtual_texture_streaming.cpp"
       ]
@@ -7868,23 +7867,6 @@
         "RenderImageAudit.cpp"
       ]
     },
-    "unit/graphics/virtual_texture_streaming.cpp": {
-      "role": "tests",
-      "default": "local-logic",
-      "cases": {
-        "local-logic": [
-          "graphics.virtual_texture_streaming.pack_feedback_roundtrip",
-          "graphics.virtual_texture_streaming.feedback_decode_publish_and_abandon",
-          "graphics.virtual_texture_streaming.evicts_lru_and_clears_page_table_first",
-          "graphics.virtual_texture_streaming.writer_invalidates_dirty_pages",
-          "graphics.virtual_texture_streaming.ingest_packed_feedback_collapses_mips"
-        ]
-      },
-      "module": "graphics",
-      "origins": [
-        "virtual_texture_streaming.cpp"
-      ]
-    },
     "unit/graphics_fog/graphics_fog_unit.cpp": {
       "role": "tests",
       "default": "local-logic",
@@ -9856,7 +9838,11 @@
         "local-logic": [
           "gameplay.control.rtsUsesSelectionAuthorityForPlayerAndAutomation",
           "gameplay.control.rtsRejectsUnselectedAndStaleCommands",
-          "gameplay.control.rtsEnumeratesItsPlayerInstances"
+          "gameplay.control.rtsEnumeratesItsPlayerInstances",
+          "rts.terrainNarrowRidgeBlocksShotsInBothDirections",
+          "rts.terrainHighGroundCanShootOverLowerRidge",
+          "rts.terrainDescendingProjectileHitsInsideCell",
+          "rts.terrainGridOriginScaleAndVerticalSegments"
         ]
       },
       "module": "rts",
@@ -11002,6 +10988,20 @@
         ]
       },
       "module": "graphics"
+    },
+    "integration/gameplay-composition/rts_terrain_combat.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "rts.terrainRidgeStopsFireAndTerrainEditsReopenFireLine"
+        ]
+      },
+      "module": "rts",
+      "task": "gameplay-composition",
+      "origins": [
+        "rts_terrain_combat.cpp"
+      ]
     },
     "integration/module-composition/module_composition_devtools_frame_capture_tests.cpp": {
       "role": "tests",
