@@ -49,12 +49,13 @@ if(WIN32)
         get_filename_component(_eve_tp_bin_dir "${_eve_tp_link_dir}/../bin" ABSOLUTE)
         list(APPEND _eve_tp_bin_dirs "${_eve_tp_bin_dir}")
     endforeach()
+    list(APPEND _eve_tp_bin_dirs "${CMAKE_BINARY_DIR}/bin")
     add_custom_target(eve_third_party_runtime ALL
         COMMAND ${CMAKE_COMMAND}
             "-DSRC_DIRS=${_eve_tp_bin_dirs}"
             "-DDST=${CMAKE_BINARY_DIR}"
             -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/copy_third_party_runtime.cmake"
-        DEPENDS third-party
+        DEPENDS third-party libprotobuf
         COMMENT "Placing the shared third-party runtime libraries beside the executables")
 endif()
 
