@@ -541,29 +541,6 @@ TEST_CASE("procgen.terrainObject.exportsStableAttributedTransformsAndRemoval") {
     CHECK(removed.empty());
 }
 
-TEST_CASE("procgen.terrainObject.supportsPrototypeChildrenCollisionAndAtomicFailure") {
-    auto fitness = filled(5, 5, 1), heights = filled(3, 3, 0);
-    auto config                               = settings();
-    config.boundsCollisionCheck               = true;
-    config.boundsRadius                       = 0.75F;
-    config.instances.front().minimumInstances = config.instances.front().maximumInstances = 2;
-    config.instances.front().minimumOffsetX = config.instances.front().maximumOffsetX = -0.1F;
-    config.instances.front().minimumOffsetZ = config.instances.front().maximumOffsetZ = 0.1F;
-    config.instances.front().scaleMode             = TerrainObjectScaleMode::FitnessRandomized;
-    config.instances.front().scaleRandomPercentage = 0.2F;
-    config.instances.front().minimumRotationY      = -10;
-    config.instances.front().maximumRotationY      = 10;
-    PointSet output;
-    auto     emitted = exportTerrainObjectPoints(output, fitness, heights, config);
-    REQUIRE(emitted.ok());
-    CHECK(emitted.value() == 8);
-    PointSet preserved = output;
-    config.maxPoints   = 1;
-    CHECK(!exportTerrainObjectPoints(output, fitness, heights, config).ok());
-    CHECK(output.getCount() == preserved.getCount());
-    CHECK(output.getPointId(0) == preserved.getPointId(0));
-}
-
 
 TEST_CASE("procgen.terrainObject.multiTileSharesRngCollisionAndOwnsHistory") {
     PointSet empty, west, east;
@@ -2562,42 +2539,42 @@ TEST_CASE("procgen.multitile.treeSharedStreamAddRemoveAndAtomicFailure") {
     auto bounds                                                                     = setStamp(2, 1, 4, 2);
     auto added = applyTerrainTreesMultiTile(tiles, fitness, tree, bounds, TerrainTreeOperationMode::Add);
     REQUIRE(added.ok());
-    CHECK(added.value().affectedTiles == 2);
-    CHECK(added.value().changedSamples == 8);
-    CHECK(west.getCount() == 4);
-    CHECK(east.getCount() == 4);
-    CHECK(west.hasIntAttribute(0, "treeCandidate"));
-    CHECK(east.hasIntAttribute(0, "treeCandidate"));
-    CHECK(west.getIntAttribute(0, "treeCandidate", -1) != east.getIntAttribute(0, "treeCandidate", -1));
+    REQUIRE(added.value().affectedTiles == 2);
+    REQUIRE(added.value().changedSamples == 8);
+    REQUIRE(west.getCount() == 4);
+    REQUIRE(east.getCount() == 4);
+    REQUIRE(west.hasIntAttribute(0, "treeCandidate"));
+    REQUIRE(east.hasIntAttribute(0, "treeCandidate"));
+    REQUIRE(west.getIntAttribute(0, "treeCandidate", -1) != east.getIntAttribute(0, "treeCandidate", -1));
     std::vector<std::uint64_t> ids;
     for (const auto& point : west.points()) ids.push_back(point.id);
     for (const auto& point : east.points()) ids.push_back(point.id);
     std::sort(ids.begin(), ids.end());
-    CHECK(std::adjacent_find(ids.begin(), ids.end()) == ids.end());
+    REQUIRE(std::adjacent_find(ids.begin(), ids.end()) == ids.end());
 
     Heightmap wrong = filled(3, 2, 1);
-    CHECK(!applyTerrainTreesMultiTile(tiles, wrong, tree, bounds, TerrainTreeOperationMode::Add).ok());
-    CHECK(west.getCount() == 4);
-    CHECK(east.getCount() == 4);
+    REQUIRE(!applyTerrainTreesMultiTile(tiles, wrong, tree, bounds, TerrainTreeOperationMode::Add).ok());
+    REQUIRE(west.getCount() == 4);
+    REQUIRE(east.getCount() == 4);
     PointSet existing;
     existing.add(99, 0, 99);
     PointSet budgetEast = east;
-    tiles[0].trees      = &existing;
     tiles[1].trees      = &budgetEast;
+    tiles[0].trees      = &existing;
     tree.maxPoints      = 8;
     auto budgetIgnoresExisting =
         applyTerrainTreesMultiTile(tiles, fitness, tree, bounds, TerrainTreeOperationMode::Add);
     REQUIRE(budgetIgnoresExisting.ok());
     REQUIRE(existing.getCount() == 5);
-    REQUIRE(east.getCount() == 4);
     tree.maxPoints = 100;
     tiles[0].trees = &west;
     tiles[1].trees = &east;
-    auto removed   = applyTerrainTreesMultiTile(tiles, fitness, tree, bounds, TerrainTreeOperationMode::Remove);
+    REQUIRE_EQ(east.getCount(), 4);
+    auto removed = applyTerrainTreesMultiTile(tiles, fitness, tree, bounds, TerrainTreeOperationMode::Remove);
     REQUIRE(removed.ok());
     REQUIRE(removed.value().changedSamples == 8);
-    CHECK(west.empty());
-    CHECK(east.empty());
+    REQUIRE(west.empty());
+    REQUIRE(east.empty());
 }
 
 

@@ -1,46 +1,15 @@
 #include "procgen/road/RoadRecipes.h"
-#include <algorithm>
-#include <cmath>
-#include "common/Diagnostic.h"
+#include "procgen/road/RoadNetworkCodec.h"
+
 #include "image/ImageData.h"
 #include "procgen/ParamSchema.h"
 #include "procgen/algorithms/MarchingCubes.h"
-#include "procgen/road/RoadTypes.h"
 #include "procgen/texture/TextureRecipe.h"
 
-// RoadRecipes.cpp
+#include <algorithm>
+#include <cmath>
+
 namespace eve::procgen::road {
-namespace {
-
-RoadBakeOptions bakeOptionsFromParams(const Params& params) {
-    RoadBakeOptions options;
-    options.pathSegmentsPerEdge = std::max(4, params.getInt("pathSegments", 48));
-    options.turnSamples         = std::max(4, params.getInt("turnSamples", 12));
-    options.includePiers        = params.getBool("piers", true);
-    options.includeMarkings     = params.getBool("markings", true);
-    options.includeNavigation   = params.getBool("navigation", true);
-    options.includeJunctions    = params.getBool("junctions", true);
-    options.includePlacements   = params.getBool("placements", true);
-    options.junctionChordError  = params.getFloat("junctionChordError", 0.10f);
-    options.sideObjectSpacing   = params.getFloat("sideObjectSpacing", 8.f);
-    options.sideObjectOffset    = params.getFloat("sideObjectOffset", 0.5f);
-    options.sideObjectClearance = params.getFloat("sideObjectClearance", 1.5f);
-    return options;
-}
-
-Result<RoadNetwork> networkFromParams(const Params& params) {
-    const std::string scene = params.getString("scene", "straight");
-    return RoadNetwork::makeScene(scene, params.getFloat("span", 36.f), params.getFloat("bridgeHeight", 6.f),
-                                  std::max(1, params.getInt("lanes", 2)), params.getSeed());
-}
-
-}  // namespace
-
-Result<RoadBakeResult> bakeRoadNetworkRecipe(const Params& params) {
-    auto network = networkFromParams(params);
-    if (!network.ok()) return Result<RoadBakeResult>::failure(network.status());
-    return bakeRoadNetwork(network.value(), bakeOptionsFromParams(params));
-}
 
 bool generateRoadNetworkMesh(const Params& params, MeshBuild& out, std::string& error) {
     auto baked = bakeRoadNetworkRecipe(params);
@@ -149,90 +118,6 @@ void registerRoadTextureRecipes(TextureRecipeRegistry& registry) {
     schema.params.push_back(ParamDescriptor::floating("dashDuty", "Dash Duty", 0.45f, 0.05f, 0.95f, 0.01f));
     schema.params.push_back(ParamDescriptor::boolean("zebra", "Zebra Ends", true));
     registry.registerRecipe(std::move(schema), generateRoadMarkingsTexture);
-}
-
-}  // namespace eve::procgen::road
-
-// RoadProfile.cpp
-namespace eve::procgen::road {
-namespace {
-
-Result<void> validateStyle(const RoadStyle& style) {
-    const float values[] = {style.laneWidth,      style.curbWidth,     style.curbHeight,   style.sidewalkWidth,
-                            style.sidewalkHeight, style.deckThickness, style.pierWidth,    style.pierDepth,
-                            style.pierSpacing,    style.pierClearance, style.markingWidth, style.dashLength,
-                            style.dashGap,        style.uvMeters};
-    for (float v : values) {
-        if (!std::isfinite(v) || v < 0.f)
-            return Result<void>::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "road style values must be finite and non-negative", "style"));
-    }
-    if (style.laneWidth <= 1e-4f)
-        return Result<void>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "laneWidth must be positive", "laneWidth"));
-    if (style.uvMeters <= 1e-4f)
-        return Result<void>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "uvMeters must be positive", "uvMeters"));
-    return Result<void>::success();
-}
-
-void pushPoint(RoadProfile& profile, float side, float up, RoadMaterial material) {
-    profile.points.push_back(RoadProfilePoint{side, up, material});
-}
-
-}  // namespace
-
-const char* roadMaterialGroup(RoadMaterial material) noexcept {
-    switch (material) {
-        case RoadMaterial::Asphalt: return "asphalt";
-        case RoadMaterial::Curb: return "curb";
-        case RoadMaterial::Sidewalk: return "sidewalk";
-        case RoadMaterial::Deck: return "deck";
-        case RoadMaterial::Pier: return "pier";
-        case RoadMaterial::Marking: return "marking";
-        case RoadMaterial::MarkingYellow: return "markingYellow";
-        case RoadMaterial::Nav: return "nav";
-    }
-    return "asphalt";
-}
-
-Result<RoadProfile> makeRoadProfile(const RoadStyle& style, int lanesForward, int lanesBackward) {
-    auto ok = validateStyle(style);
-    if (!ok.ok()) return Result<RoadProfile>::failure(ok.status());
-    if (lanesForward < 0 || lanesForward > 8)
-        return Result<RoadProfile>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "lanesForward must be in [0,8]", "lanesForward"));
-    if (lanesBackward < 0 || lanesBackward > 8)
-        return Result<RoadProfile>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "lanesBackward must be in [0,8]", "lanesBackward"));
-    if (lanesForward + lanesBackward < 1)
-        return Result<RoadProfile>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "road must contain at least one directional lane", "lanes"));
-
-    const float asphaltHalf   = 0.5f * style.laneWidth * static_cast<float>(lanesForward + lanesBackward);
-    const float barrierInner  = asphaltHalf;
-    const float barrierOuter  = asphaltHalf + style.curbWidth;
-    const float sidewalkOuter = barrierOuter + style.sidewalkWidth;
-    const float barrierTop    = style.curbHeight;
-    const float walkH         = style.sidewalkHeight;
-
-    RoadProfile profile;
-    profile.halfWidth = sidewalkOuter;
-
-    // Jersey-barrier U-channel matching the reference interchange look:
-    // sidewalk → tall barrier outer/top/inner → asphalt deck → mirror.
-    pushPoint(profile, -sidewalkOuter, walkH, RoadMaterial::Sidewalk);
-    pushPoint(profile, -barrierOuter, walkH, RoadMaterial::Sidewalk);
-    pushPoint(profile, -barrierOuter, barrierTop, RoadMaterial::Curb);
-    pushPoint(profile, -barrierInner, barrierTop, RoadMaterial::Curb);
-    pushPoint(profile, -barrierInner, 0.f, RoadMaterial::Curb);
-    pushPoint(profile, barrierInner, 0.f, RoadMaterial::Asphalt);
-    pushPoint(profile, barrierInner, barrierTop, RoadMaterial::Curb);
-    pushPoint(profile, barrierOuter, barrierTop, RoadMaterial::Curb);
-    pushPoint(profile, barrierOuter, walkH, RoadMaterial::Sidewalk);
-    pushPoint(profile, sidewalkOuter, walkH, RoadMaterial::Sidewalk);
-
-    return Result<RoadProfile>::success(std::move(profile));
 }
 
 }  // namespace eve::procgen::road
