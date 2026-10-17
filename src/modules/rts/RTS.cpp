@@ -10,6 +10,7 @@
 #include "rts/RTSCrowdSurfaceInternal.h"
 #include "rts/RTSScriptInternal.h"
 #include "rts/RTSScriptRuntimeInternal.h"
+#include "rts/RTSTerrainTraceInternal.h"
 #include "sensing/Sensing.h"
 #include "weapon/WeaponDefinitionRuntime.h"
 
@@ -1910,17 +1911,16 @@ Result<void> RTS::configureScriptWorld(int width, int height, float cellSize, fl
             return firing ? building->combat()->firingHeight : building->combat()->targetHeight;
         return firing ? 1.0f : 0.0f;
     };
-    const auto terrainBlocks = [this, terrainAt](WorldPosition from, WorldPosition to, float fromHeight,
-                                                 float toHeight) {
-        const float distance     = std::hypot(to.x - from.x, to.y - from.y);
-        const float sampleLength = std::max(scriptRuntime_->cellSize * 0.25f, 0.001f);
-        const int   samples      = std::max(1, static_cast<int>(std::ceil(distance / sampleLength)));
-        for (int sample = 1; sample < samples; ++sample) {
-            const float         t = static_cast<float>(sample) / static_cast<float>(samples);
-            const WorldPosition point{from.x + (to.x - from.x) * t, from.y + (to.y - from.y) * t};
-            if (terrainAt(point) >= fromHeight + (toHeight - fromHeight) * t) return std::optional{point};
-        }
-        return std::optional<WorldPosition>{};
+    const auto terrainBlocks = [this](WorldPosition from, WorldPosition to, float fromHeight,
+                                      float toHeight) -> std::optional<WorldPosition> {
+        const auto impact = terrain_internal::firstTerrainImpact(
+            from.x, from.y, fromHeight, to.x, to.y, toHeight, scriptRuntime_->originX, scriptRuntime_->originY,
+            scriptRuntime_->cellSize, [this](int x, int y) {
+                if (x < 0 || y < 0 || x >= scriptRuntime_->width || y >= scriptRuntime_->height) return 0.0f;
+                return scriptRuntime_->terrainElevations[static_cast<std::size_t>(y * scriptRuntime_->width + x)];
+            });
+        if (!impact) return std::nullopt;
+        return WorldPosition{from.x + (to.x - from.x) * *impact, from.y + (to.y - from.y) * *impact};
     };
     setFireLineQuery([firstBlockedPoint, terrainAt, relativeHeight, terrainBlocks](
                          WorldPosition from, WorldPosition to, ecs::EntityHandle source, ecs::EntityHandle target,
@@ -1943,7 +1943,14 @@ Result<void> RTS::configureScriptWorld(int width, int height, float cellSize, fl
         const auto terrainImpact = terrainBlocks(from, to, fromHeight, toHeight);
         if (!blocked && !terrainImpact)
             return Result<std::optional<ProjectileCollision>>::success(std::nullopt, Status::success(StatusCode::NoOp));
-        const WorldPosition impact = blocked ? *blocked : *terrainImpact;
+        const auto distanceSquared = [from](WorldPosition point) {
+            const float dx = point.x - from.x;
+            const float dy = point.y - from.y;
+            return dx * dx + dy * dy;
+        };
+        const WorldPosition impact =
+            blocked && (!terrainImpact || distanceSquared(*blocked) < distanceSquared(*terrainImpact)) ? *blocked
+                                                                                                       : *terrainImpact;
         return Result<std::optional<ProjectileCollision>>::success(ProjectileCollision{impact, {}},
                                                                    Status::success(StatusCode::Applied));
     });
