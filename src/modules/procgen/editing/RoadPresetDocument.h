@@ -99,7 +99,7 @@ struct RoadTypeBinding {
     std::vector<RoadMarkerOverride>    markers;
     std::vector<RoadFacilityOverrides> facilities;
 };
-/** @brief Owning edit builder; source styles are unbound fallback author values, not resolved caches. */
+/** @brief Owning edit builder; edges without preset bindings retain their authored source styles. */
 struct RoadPresetDraft {
     procgen::road::RoadNetwork      source;
     std::vector<RoadTypePreset>     types;
