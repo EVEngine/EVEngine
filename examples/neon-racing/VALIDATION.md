@@ -15,3 +15,9 @@ The local `build/cloud-minimal` configuration enabled vehicle, physics, model3d,
 
 The only engine source correction is the missing `<algorithm>` include required by `ProcgenInstances.cpp` for `std::find_if`. No module API or architecture refactor was needed.
 This is a flat arcade driving example with 2D collision mapped into a 3D presentation; suspension, tire slip and animated wheels are outside its scope.
+
+## Native Dawn CI dependency fix
+
+The initial Windows run passed the main build and unit tests, then failed while configuring native Dawn because its unchecked shallow checkout left SPIRV-Headers without `CMakeLists.txt`.
+Native Dawn configuration now reads the exact SPIRV-Headers commit from Dawn's `DEPS`, fetches that commit as a GitHub archive, verifies its CMake file and core header, and supplies the same directory to Dawn and SPIRV-Tools before configuring either.
+The pinned archive (`0d25db97cb9b8f725e4c95e4553001710e7fc39d`) was downloaded and configured with real CMake; cached reconfiguration also passed. Three offline CMake regression tests cover successful setup, incomplete content, and an unpinned revision. The Windows lane itself must pass on GitHub Actions after the fix is pushed.
