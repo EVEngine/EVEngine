@@ -1,6 +1,7 @@
 #pragma once
 #include "common/Export.h"
 
+#include <memory>
 #include "common/Module.h"
 #include "common/Result.h"
 
@@ -26,6 +27,13 @@ public:
      */
     [[nodiscard("check geometry-collection renderer creation")]]
     eve::Result<GeometryCollectionRenderer*> createRenderer(GeometryCollectionInstance* instance);
+
+    /** @brief Create an owning renderer for physics-independent animation playback.
+     * @return Owning renderer with no instance/world binding; prepare meshes before drawing.
+     * @ownership Caller owns it; graphics used for preparation must outlive it.
+     * @thread Render thread; no callbacks. No physical world or cook dependency is required.
+     */
+    [[nodiscard]] eve::Result<std::unique_ptr<GeometryCollectionRenderer>> createAnimationRenderer();
 
     /**
      * @brief Script facade that projects creation failure to an exception.
