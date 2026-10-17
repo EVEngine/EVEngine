@@ -1,0 +1,278 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: Module Handbook</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">Module Handbook</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>Module Handbook</h1>
+<p><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/MODULES.md">中文</a> · <a class="el" href="usr_guide_en.html">User guide</a> · <a class="el" href="usr_conventions_en.html">API conventions</a></p>
+<p>Download an SDK from <a href="https://github.com/EVEngine/EVEngine/releases">Releases</a>, unzip it and run <code>eve run &lt;game-directory&gt;</code>. No engine compilation is needed.</p>
+<p>Guides explain tasks, working examples, ownership and failure handling. Exact C++ signatures belong in <a href="https://evengine.github.io/EVEngine/">Doxygen</a>; callable EveScript signatures belong in the SDK's <code>share/eve/ai/eve-api.json</code> or editor/MCP API lookup. A C++ public method is not necessarily script-callable.</p>
+<p>English guides are maintained by hand with Chinese as the authoritative source. This first batch covers onboarding, language, saving and common game-development workflows. Links marked <b>Chinese</b> lead to guides not yet translated; they remain useful and are not represented as English documentation.</p>
+<p>Use <code>has_module("slot")</code> for optional features. Project module selection and source-build trimming are different; see <a class="el" href="usr_evescript_en.html">EveScript</a> and <a class="el" href="usr_trimming_en.html">module trimming</a>.</p>
+<p>SCAD and LDraw model import converts procedural solids and part assemblies into canonical native static prefabs.</p>
+<h2>Runtime and input</h2>
+<ul>
+<li><a class="el" href="mod_window_en.html">Window</a>: window dimensions, resizing and DPI.</li>
+<li><a class="el" href="mod_keyboard_en.html">Keyboard</a>: held keys, edge detection and text input.</li>
+<li><a class="el" href="mod_mouse_en.html">Mouse</a>: pointer coordinates, relative motion and wheel snapshots.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/agent.md">Agent — Chinese</a>: policy learning, decisions, tensor inference and trajectory replay.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/event.md">Events — Chinese</a>: platform event pumping and string-message queues.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/rx.md">Reactive streams — Chinese</a>: Subjects, operators, reactive properties and event bridging.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/timer.md">Timer — Chinese</a>: elapsed time and frame intervals.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/os.md">OS — Chinese</a>: operating system, CPU, memory, battery, clipboard and GPU information.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/touch.md">Touch — Chinese</a>: touch counts and normalized/screen coordinates.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/joystick.md">Joystick — Chinese</a>: axes, buttons, hats, controller mappings and vibration.</li>
+</ul>
+<h2>Assets and I/O</h2>
+<ul>
+<li><a class="el" href="mod_filesystem_en.html">Filesystem and hot reload</a>: virtual paths, save files and local/remote reload.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/data.md">Data — Chinese</a>: byte data/views, compression, hashes and JSON/XML.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/image.md">Image — Chinese</a>: script-binding limits and image data from font glyphs.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/font.md">Font — Chinese</a>: font data, glyph metrics and bitmaps.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/i18n.md">Localization — Chinese</a>: JSON dictionaries, placeholders, plurals and language fallback.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/sound.md">Sound data — Chinese</a>: decoding and samples for audio sources.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/audio.md">Audio — Chinese</a>: playback, volume, pitch, looping and 3D source positions.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/model3d.md">3D models — Chinese</a>: model loading for rendering.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/network.md">Network — Chinese</a>: HTTP, TCP and network state.</li>
+</ul>
+<h2>Gameplay</h2>
+<ul>
+<li><a class="el" href="mod_entity_en.html">Script ECS</a>: components, entity composition, systems and GPU integration.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/physics.md">Physics — Chinese</a>: 2D and 3D worlds, contacts and spatial queries.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/physics_cloth.md">Cloth — Chinese</a>: cloth simulation.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/physics_rope.md">Rope — Chinese</a>: rope simulation and attachments.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/physics_destruction.md">Destruction — Chinese</a>: geometry collections and runtime destruction.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/physics_destruction_graphics.md">Destruction graphics — Chinese</a>: destruction presentation.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/map.md">Tilemap — Chinese</a>: layers, tiles, projections and rendering.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/particles.md">Particles — Chinese</a>: emitters, movement, color, lifetime and rendering.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/pixelworld.md">PixelWorld — Chinese</a>: material-cell simulation.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/pixelworld_replay.md">PixelWorld replay — Chinese</a>: deterministic replay.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/pixelworld_streaming.md">PixelWorld streaming — Chinese</a>: interest areas and authoritative corrections.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/pixelworld_editor.md">PixelWorld editor — Chinese</a>: material catalog editing.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/animation.md">Animation — Chinese</a>: tweening, skeletal playback, motion matching, procedural poses and trails.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/climbing.md">Climbing — Chinese</a>: obstacle detection and physics-constrained vault/mantle actions.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/action.md">Action and abilities — Chinese</a>: grants, cooldowns, activation and action submission.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/combat.md">Combat — Chinese</a>: combat runtime and simulation.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/settlement.md">Settlement — Chinese</a>: deterministic settlement rules and ledgers.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/npc_ai.md">NPC AI — Chinese</a>: state trees, blackboards, sensing memory and scheduling.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/rpg.md">RPG — Chinese</a>: attributes, statuses, skills, casting and damage.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/inventory.md">Inventory — Chinese</a>: bags, transfer, equipment and capacity/stacking rules.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/cardgame.md">Cards — Chinese</a>: hands, drawing, shuffling, dragging and costs.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/building.md">Building — Chinese</a>: definitions, occupied cells, previews, validation and snapping.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/buildingfx.md">Building visuals — Chinese</a>: 2D/3D placement presentation.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/housegen.md">House generation — Chinese</a>: component-based generation into layout JSON.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/archspace.md">ArchSpace — Chinese</a>: floor, wall, room and opening documents.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/procgen.md">Procedural generation — Chinese</a>: meshes, maps, images and GPU textures.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/hexmap.md">Hex maps — Chinese</a>: planar/spherical terrain, pathfinding, units and saves.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/weapon.md">Weapons — Chinese</a>: ammunition, mounts, aiming, firing and reloading.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/vehicle.md">Vehicles — Chinese</a>: movement, seats, turrets, damage and physics integration.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/effects.md">Effects — Chinese</a>: stackable and expiring effects.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/statepatch.md">State patches — Chinese</a>: atomic JSON updates with conflict checks.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/orders.md">Orders — Chinese</a>: priority queues, preemption, timeouts and snapshots.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/social.md">Social graph — Chinese</a>: ownership, control, roles and directed relations.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/production.md">Production — Chinese</a>: parallel slots and resumable production tasks.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/authority.md">Authority — Chinese</a>: prioritized allow/deny rules.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/sensing.md">Sensing — Chinese</a>: candidate queries and selection.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/emergence.md">Emergence — Chinese</a>: rule-based triggers.</li>
+</ul>
+<h2>Rendering and scenes</h2>
+<ul>
+<li><a class="el" href="mod_graphics_en.html">Graphics: getting started</a>: 2D frames, sprites, 3D resources and rendering boundaries.</li>
+<li><a class="el" href="mod_ui_en.html">UI: getting started</a>: retained trees, stable IDs, events and reusable components.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/graphics_fog.md">Fog — Chinese</a>: fluid density, ray marching and froxel integration.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/voxel.md">Voxel — Chinese</a>: chunk worlds, meshes, picking, streaming and saves.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/spritestack.md">Sprite stacking — Chinese</a>: layered images for pseudo-3D rendering.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/daynight.md">Day/night — Chinese</a>: sun orbit, sky and night lighting.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/weather.md">Weather — Chinese</a>: rain, snow, lightning and wind.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/snow.md">Snow — Chinese</a>: interactive accumulation and displacement.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/avatar.md">Avatar — Chinese</a>: layered characters, expressions, lip sync and motion.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/dialogue.md">Dialogue — Chinese</a>: staging, typing, choices and <code>.dnut</code> scripts.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/camera.md">Camera controllers — Chinese</a>: follow, orbit, top-down, first-person and sequences.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/sceneloader.md">Scene loading — Chinese</a>: glTF/OBJ/FBX, reload and async loading.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/scene.md">Scene graph — Chinese</a>: hierarchy, local/world transforms and render entities.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/decal.md">Decals — Chinese</a>: projected and procedural decals.</li>
+</ul>
+<h2>Advanced capabilities</h2>
+<ul>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/math.md">Math — Chinese</a>: vectors, matrices, geometry, noise, random numbers and easing.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/spatial.md">Spatial indexing — Chinese</a>: culling and neighborhood queries.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/editor.md">Editor components — Chinese</a>: gizmos, brushes, inspectors, docks and history.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/ik.md">IK — Chinese</a>: skeletons, targets and FABRIK solving.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/gpgpu.md">GPU compute — Chinese</a>: buffers, compute shaders and dispatch.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/tensor.md">Tensor — Chinese</a>: eager operations and compiled graphs.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/thread.md">Threads — Chinese</a>: safe worker tasks and main-thread delivery.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/stylize.md">Stylized rendering — Chinese</a>: cartoon, watercolor, ink and pixel effects.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/virtualgeometry.md">Virtual geometry — Chinese</a>: GPU cluster culling and LOD.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/grid.md">Grid — Chinese</a>: native coordinate/topology services used by map and building.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/plugins.md">Native plugins — Chinese</a>: SDK-built dynamic modules.</li>
+<li><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/demo.md">Built-in demo — Chinese</a>: runtime installation checks.</li>
+</ul>
+<p>For player persistence, start with <a class="el" href="usr_save_en.html">Saving games across modules</a>. Additional guides remain indexed by the <a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/MODULES.md">Chinese handbook</a>.</p>
+<h2>Extended gameplay and advanced guides (Chinese)</h2>
+<p>The <a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/MODULES.md">expanded Chinese navigation</a> includes Economy, Attributes, Decision, Definitions, Tags, GameEvent, PolicyRegistry, Transaction and RTS; it also covers provider/editor satellites, editable targets, RayTracing, StylizeAction, Fluids and native asset workflows. Start with the <a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/GAME_DEVELOPMENT.md">complete game tutorial</a>, then follow those module chapters for tasks, initialization, lifetime and failure handling. Supplementary signatures are generated from source; they are not a platform execution report. </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

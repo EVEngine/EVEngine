@@ -1,0 +1,838 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::crowd::StepReport结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1crowd.html">crowd</a></li><li class="navelem"><a class="el" href="structeve_1_1crowd_1_1StepReport.html">StepReport</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1crowd_1_1StepReport-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::crowd::StepReport结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owning observations of one completed advance; simulation-thread only.  
+ <a href="structeve_1_1crowd_1_1StepReport.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Crowd_8h_source.html">Crowd.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:aabc31614394504eb64e7defeae30cfe0" id="r_aabc31614394504eb64e7defeae30cfe0"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#aabc31614394504eb64e7defeae30cfe0">preferredNeighborsPeak</a> = 0</td></tr>
+<tr class="memdesc:aabc31614394504eb64e7defeae30cfe0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Largest complete preferred-neighbor buffer.  <br /></td></tr>
+<tr class="separator:aabc31614394504eb64e7defeae30cfe0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ea7ebb37ed4f7c9f6e5c90aed90dc3c" id="r_a8ea7ebb37ed4f7c9f6e5c90aed90dc3c"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#a8ea7ebb37ed4f7c9f6e5c90aed90dc3c">preferredVisits</a> = 0</td></tr>
+<tr class="memdesc:a8ea7ebb37ed4f7c9f6e5c90aed90dc3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Workspace/preparation/force entry work across substeps.  <br /></td></tr>
+<tr class="separator:a8ea7ebb37ed4f7c9f6e5c90aed90dc3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a885af7d104f25dfcccb5fdc15788d0de" id="r_a885af7d104f25dfcccb5fdc15788d0de"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1crowd_1_1FieldObservation.html">FieldObservation</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#a885af7d104f25dfcccb5fdc15788d0de">navigation</a></td></tr>
+<tr class="separator:a885af7d104f25dfcccb5fdc15788d0de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a91b19bcda215170f104122f336e6e8" id="r_a9a91b19bcda215170f104122f336e6e8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#a9a91b19bcda215170f104122f336e6e8">navigationClassMismatches</a></td></tr>
+<tr class="memdesc:a9a91b19bcda215170f104122f336e6e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flow agents with stale leases, missing/wrong classes or insufficient clearance.  <br /></td></tr>
+<tr class="separator:a9a91b19bcda215170f104122f336e6e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ea231e08c8074990f30f0550954ef01" id="r_a9ea231e08c8074990f30f0550954ef01"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#a9ea231e08c8074990f30f0550954ef01">tick</a></td></tr>
+<tr class="separator:a9ea231e08c8074990f30f0550954ef01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d7a7cd3ce2319d17396936fbe2125e6" id="r_a0d7a7cd3ce2319d17396936fbe2125e6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#a0d7a7cd3ce2319d17396936fbe2125e6">elapsed</a></td></tr>
+<tr class="separator:a0d7a7cd3ce2319d17396936fbe2125e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f3646c4d8575128bdc332ed59c8791e" id="r_a6f3646c4d8575128bdc332ed59c8791e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1crowd.html#a6f66f887e9a0df0480550a93f2d2c760">SolveQuality</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#a6f3646c4d8575128bdc332ed59c8791e">quality</a> = <a class="el" href="namespaceeve_1_1crowd.html#a6f66f887e9a0df0480550a93f2d2c760aae94f80b3ce82062a5dd7815daa04f9d">SolveQuality::Complete</a></td></tr>
+<tr class="separator:a6f3646c4d8575128bdc332ed59c8791e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a437a6a19673956880d4ebbeee1e1e2ac" id="r_a437a6a19673956880d4ebbeee1e1e2ac"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#a437a6a19673956880d4ebbeee1e1e2ac">gridBuilds</a> = 0</td></tr>
+<tr class="memdesc:a437a6a19673956880d4ebbeee1e1e2ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Broadphase rebuilds, including final residual inspection.  <br /></td></tr>
+<tr class="separator:a437a6a19673956880d4ebbeee1e1e2ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16ba096342a7ef25bf991e127a41ed61" id="r_a16ba096342a7ef25bf991e127a41ed61"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#a16ba096342a7ef25bf991e127a41ed61">gridCellsPeak</a> = 0</td></tr>
+<tr class="memdesc:a16ba096342a7ef25bf991e127a41ed61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Largest occupied sparse-cell count during this advance.  <br /></td></tr>
+<tr class="separator:a16ba096342a7ef25bf991e127a41ed61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac531b812677ce9866c8e73fa42bf9962" id="r_ac531b812677ce9866c8e73fa42bf9962"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#ac531b812677ce9866c8e73fa42bf9962">cellsVisited</a> = 0</td></tr>
+<tr class="memdesc:ac531b812677ce9866c8e73fa42bf9962"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occupied cells enumerated by all neighborhood queries.  <br /></td></tr>
+<tr class="separator:ac531b812677ce9866c8e73fa42bf9962"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77392d6df1f97f6dae1a53cbe22ee622" id="r_a77392d6df1f97f6dae1a53cbe22ee622"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#a77392d6df1f97f6dae1a53cbe22ee622">gridEntriesPeak</a> = 0</td></tr>
+<tr class="memdesc:a77392d6df1f97f6dae1a53cbe22ee622"><td class="mdescLeft">&#160;</td><td class="mdescRight">Largest indexed agent membership count.  <br /></td></tr>
+<tr class="separator:a77392d6df1f97f6dae1a53cbe22ee622"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94f7ea88ec245d3c0856cfd377392dad" id="r_a94f7ea88ec245d3c0856cfd377392dad"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#a94f7ea88ec245d3c0856cfd377392dad">gridSortComparisons</a> = 0</td></tr>
+<tr class="memdesc:a94f7ea88ec245d3c0856cfd377392dad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sorting comparisons across all broadphase rebuilds.  <br /></td></tr>
+<tr class="separator:a94f7ea88ec245d3c0856cfd377392dad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac837726bdb6f6bafe9f82e405994a8bc" id="r_ac837726bdb6f6bafe9f82e405994a8bc"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#ac837726bdb6f6bafe9f82e405994a8bc">spatialVisits</a> = 0</td></tr>
+<tr class="memdesc:ac837726bdb6f6bafe9f82e405994a8bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query row/cell enumeration and binary-search comparisons.  <br /></td></tr>
+<tr class="separator:ac837726bdb6f6bafe9f82e405994a8bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53691ded3f614af753b3d32a33a7364f" id="r_a53691ded3f614af753b3d32a33a7364f"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#a53691ded3f614af753b3d32a33a7364f">contactPairsPeak</a> = 0</td></tr>
+<tr class="memdesc:a53691ded3f614af753b3d32a33a7364f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Largest candidate-pair buffer in this advance.  <br /></td></tr>
+<tr class="separator:a53691ded3f614af753b3d32a33a7364f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc08f52e51761d902c5bb769da5f2b4a" id="r_acc08f52e51761d902c5bb769da5f2b4a"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#acc08f52e51761d902c5bb769da5f2b4a">pairVisits</a> = 0</td></tr>
+<tr class="memdesc:acc08f52e51761d902c5bb769da5f2b4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count/prefix/buffer-init/fill/sort work across contact passes.  <br /></td></tr>
+<tr class="separator:acc08f52e51761d902c5bb769da5f2b4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb8b2a0c064c6c46e03a729f28a23002" id="r_afb8b2a0c064c6c46e03a729f28a23002"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#afb8b2a0c064c6c46e03a729f28a23002">candidatesVisited</a> = 0</td></tr>
+<tr class="memdesc:afb8b2a0c064c6c46e03a729f28a23002"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bucket entries inspected before radius or interaction filtering.  <br /></td></tr>
+<tr class="separator:afb8b2a0c064c6c46e03a729f28a23002"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2d30c87736d2ad022703a3f40279284" id="r_ab2d30c87736d2ad022703a3f40279284"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#ab2d30c87736d2ad022703a3f40279284">contactPairsChecked</a> = 0</td></tr>
+<tr class="memdesc:ab2d30c87736d2ad022703a3f40279284"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unique interacting pairs tested during contact iterations.  <br /></td></tr>
+<tr class="separator:ab2d30c87736d2ad022703a3f40279284"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4a00991a240b5e2244cfe5d42248ce9" id="r_ac4a00991a240b5e2244cfe5d42248ce9"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#ac4a00991a240b5e2244cfe5d42248ce9">residualPairsChecked</a> = 0</td></tr>
+<tr class="memdesc:ac4a00991a240b5e2244cfe5d42248ce9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unique interacting pairs inspected after projection.  <br /></td></tr>
+<tr class="separator:ac4a00991a240b5e2244cfe5d42248ce9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d523cf3279af65a1aaf6f8754c9834d" id="r_a7d523cf3279af65a1aaf6f8754c9834d"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#a7d523cf3279af65a1aaf6f8754c9834d">contactPasses</a> = 0</td></tr>
+<tr class="memdesc:a7d523cf3279af65a1aaf6f8754c9834d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contact projection iterations across all substeps.  <br /></td></tr>
+<tr class="separator:a7d523cf3279af65a1aaf6f8754c9834d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59bec86f2a4d96ed644b6589341f26ba" id="r_a59bec86f2a4d96ed644b6589341f26ba"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#a59bec86f2a4d96ed644b6589341f26ba">gridNanoseconds</a> = 0</td></tr>
+<tr class="memdesc:a59bec86f2a4d96ed644b6589341f26ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Measured broadphase time; never controls simulation decisions.  <br /></td></tr>
+<tr class="separator:a59bec86f2a4d96ed644b6589341f26ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5dce1dcde57b7a89b57bc33d72c69dd2" id="r_a5dce1dcde57b7a89b57bc33d72c69dd2"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#a5dce1dcde57b7a89b57bc33d72c69dd2">motionNanoseconds</a> = 0</td></tr>
+<tr class="memdesc:a5dce1dcde57b7a89b57bc33d72c69dd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Preferred velocity, avoidance and integration time.  <br /></td></tr>
+<tr class="separator:a5dce1dcde57b7a89b57bc33d72c69dd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52844c0515adfb7544ce3adffc2f90c9" id="r_a52844c0515adfb7544ce3adffc2f90c9"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#a52844c0515adfb7544ce3adffc2f90c9">contactNanoseconds</a> = 0</td></tr>
+<tr class="memdesc:a52844c0515adfb7544ce3adffc2f90c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contact projection time, excluding grid and walls.  <br /></td></tr>
+<tr class="separator:a52844c0515adfb7544ce3adffc2f90c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44e7e4e7be47ed9f3e121389e94456cc" id="r_a44e7e4e7be47ed9f3e121389e94456cc"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#a44e7e4e7be47ed9f3e121389e94456cc">wallNanoseconds</a> = 0</td></tr>
+<tr class="memdesc:a44e7e4e7be47ed9f3e121389e94456cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Terrain projection time.  <br /></td></tr>
+<tr class="separator:a44e7e4e7be47ed9f3e121389e94456cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6629448ff0a6d46753d0e16716e2e1ed" id="r_a6629448ff0a6d46753d0e16716e2e1ed"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#a6629448ff0a6d46753d0e16716e2e1ed">residualNanoseconds</a> = 0</td></tr>
+<tr class="memdesc:a6629448ff0a6d46753d0e16716e2e1ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Final quality inspection time, excluding its grid rebuild.  <br /></td></tr>
+<tr class="separator:a6629448ff0a6d46753d0e16716e2e1ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43b95604b638a7bb463e0a9ec6b47923" id="r_a43b95604b638a7bb463e0a9ec6b47923"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#a43b95604b638a7bb463e0a9ec6b47923">avoidanceChecks</a> = 0</td></tr>
+<tr class="memdesc:a43b95604b638a7bb463e0a9ec6b47923"><td class="mdescLeft">&#160;</td><td class="mdescRight">Candidate-neighbor predictions across all substeps.  <br /></td></tr>
+<tr class="separator:a43b95604b638a7bb463e0a9ec6b47923"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a1b514fffe0f2e4554cd927322807d5" id="r_a1a1b514fffe0f2e4554cd927322807d5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#a1a1b514fffe0f2e4554cd927322807d5">avoidanceTruncations</a> = 0</td></tr>
+<tr class="memdesc:a1a1b514fffe0f2e4554cd927322807d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Agent/substep queries exceeding the configured neighbor limit.  <br /></td></tr>
+<tr class="separator:a1a1b514fffe0f2e4554cd927322807d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebe094013b93c93c3dabaab4d517818f" id="r_aebe094013b93c93c3dabaab4d517818f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#aebe094013b93c93c3dabaab4d517818f">substeps</a> = 0</td></tr>
+<tr class="memdesc:aebe094013b93c93c3dabaab4d517818f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of bounded integration intervals consumed.  <br /></td></tr>
+<tr class="separator:aebe094013b93c93c3dabaab4d517818f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8259191f96b910af8c6456197ee3d1fb" id="r_a8259191f96b910af8c6456197ee3d1fb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#a8259191f96b910af8c6456197ee3d1fb">unresolvedContacts</a> = 0</td></tr>
+<tr class="memdesc:a8259191f96b910af8c6456197ee3d1fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Final overlapping pairs deeper than 0.001 world units.  <br /></td></tr>
+<tr class="separator:a8259191f96b910af8c6456197ee3d1fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30b076e53ff2967eb38b77f74dee7e11" id="r_a30b076e53ff2967eb38b77f74dee7e11"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#a30b076e53ff2967eb38b77f74dee7e11">unresolvedWalls</a> = 0</td></tr>
+<tr class="memdesc:a30b076e53ff2967eb38b77f74dee7e11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Final agents violating terrain or field bounds.  <br /></td></tr>
+<tr class="separator:a30b076e53ff2967eb38b77f74dee7e11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb5b8f47acfafe88859623522036995c" id="r_acb5b8f47acfafe88859623522036995c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html#acb5b8f47acfafe88859623522036995c">maxPenetration</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:acb5b8f47acfafe88859623522036995c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Largest remaining pair penetration in world units.  <br /></td></tr>
+<tr class="separator:acb5b8f47acfafe88859623522036995c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owning observations of one completed advance; simulation-thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00094">94</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a43b95604b638a7bb463e0a9ec6b47923" name="a43b95604b638a7bb463e0a9ec6b47923"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43b95604b638a7bb463e0a9ec6b47923">&#9670;&#160;</a></span>avoidanceChecks</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::StepReport::avoidanceChecks = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Candidate-neighbor predictions across all substeps. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00120">120</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1a1b514fffe0f2e4554cd927322807d5" name="a1a1b514fffe0f2e4554cd927322807d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a1b514fffe0f2e4554cd927322807d5">&#9670;&#160;</a></span>avoidanceTruncations</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::crowd::StepReport::avoidanceTruncations = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Agent/substep queries exceeding the configured neighbor limit. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00121">121</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afb8b2a0c064c6c46e03a729f28a23002" name="afb8b2a0c064c6c46e03a729f28a23002"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb8b2a0c064c6c46e03a729f28a23002">&#9670;&#160;</a></span>candidatesVisited</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::StepReport::candidatesVisited = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bucket entries inspected before radius or interaction filtering. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00111">111</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdInternal_8h_source.html#l00247">eve::crowd::Crowd::Impl::forEachNeighbor()</a> , 以及 <a class="el" href="CrowdAvoidance_8cpp_source.html#l00030">eve::crowd::Crowd::Impl::prepareAvoidanceNeighbors()</a>.</p>
+
+</div>
+</div>
+<a id="ac531b812677ce9866c8e73fa42bf9962" name="ac531b812677ce9866c8e73fa42bf9962"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac531b812677ce9866c8e73fa42bf9962">&#9670;&#160;</a></span>cellsVisited</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::StepReport::cellsVisited = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Occupied cells enumerated by all neighborhood queries. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdInternal_8h_source.html#l00247">eve::crowd::Crowd::Impl::forEachNeighbor()</a> , 以及 <a class="el" href="CrowdAvoidance_8cpp_source.html#l00030">eve::crowd::Crowd::Impl::prepareAvoidanceNeighbors()</a>.</p>
+
+</div>
+</div>
+<a id="a52844c0515adfb7544ce3adffc2f90c9" name="a52844c0515adfb7544ce3adffc2f90c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52844c0515adfb7544ce3adffc2f90c9">&#9670;&#160;</a></span>contactNanoseconds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::StepReport::contactNanoseconds = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Contact projection time, excluding grid and walls. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00117">117</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab2d30c87736d2ad022703a3f40279284" name="ab2d30c87736d2ad022703a3f40279284"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2d30c87736d2ad022703a3f40279284">&#9670;&#160;</a></span>contactPairsChecked</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::StepReport::contactPairsChecked = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unique interacting pairs tested during contact iterations. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdContactSolver_8cpp_source.html#l00004">eve::crowd::Crowd::Impl::resolveOverlapsPass()</a>.</p>
+
+</div>
+</div>
+<a id="a53691ded3f614af753b3d32a33a7364f" name="a53691ded3f614af753b3d32a33a7364f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53691ded3f614af753b3d32a33a7364f">&#9670;&#160;</a></span>contactPairsPeak</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::StepReport::contactPairsPeak = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Largest candidate-pair buffer in this advance. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdContactSolver_8cpp_source.html#l00004">eve::crowd::Crowd::Impl::resolveOverlapsPass()</a>.</p>
+
+</div>
+</div>
+<a id="a7d523cf3279af65a1aaf6f8754c9834d" name="a7d523cf3279af65a1aaf6f8754c9834d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d523cf3279af65a1aaf6f8754c9834d">&#9670;&#160;</a></span>contactPasses</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::StepReport::contactPasses = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Contact projection iterations across all substeps. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00114">114</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdContactSolver_8cpp_source.html#l00004">eve::crowd::Crowd::Impl::resolveOverlapsPass()</a>.</p>
+
+</div>
+</div>
+<a id="a0d7a7cd3ce2319d17396936fbe2125e6" name="a0d7a7cd3ce2319d17396936fbe2125e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d7a7cd3ce2319d17396936fbe2125e6">&#9670;&#160;</a></span>elapsed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Duration.html">Duration</a> eve::crowd::StepReport::elapsed</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00101">101</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a437a6a19673956880d4ebbeee1e1e2ac" name="a437a6a19673956880d4ebbeee1e1e2ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a437a6a19673956880d4ebbeee1e1e2ac">&#9670;&#160;</a></span>gridBuilds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::StepReport::gridBuilds = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Broadphase rebuilds, including final residual inspection. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdSimulation_8cpp_source.html#l00012">eve::crowd::Crowd::Impl::rebuildGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a16ba096342a7ef25bf991e127a41ed61" name="a16ba096342a7ef25bf991e127a41ed61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16ba096342a7ef25bf991e127a41ed61">&#9670;&#160;</a></span>gridCellsPeak</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::StepReport::gridCellsPeak = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Largest occupied sparse-cell count during this advance. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdSimulation_8cpp_source.html#l00012">eve::crowd::Crowd::Impl::rebuildGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a77392d6df1f97f6dae1a53cbe22ee622" name="a77392d6df1f97f6dae1a53cbe22ee622"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77392d6df1f97f6dae1a53cbe22ee622">&#9670;&#160;</a></span>gridEntriesPeak</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::StepReport::gridEntriesPeak = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Largest indexed agent membership count. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdSimulation_8cpp_source.html#l00012">eve::crowd::Crowd::Impl::rebuildGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a59bec86f2a4d96ed644b6589341f26ba" name="a59bec86f2a4d96ed644b6589341f26ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59bec86f2a4d96ed644b6589341f26ba">&#9670;&#160;</a></span>gridNanoseconds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::StepReport::gridNanoseconds = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Measured broadphase time; never controls simulation decisions. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00115">115</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a94f7ea88ec245d3c0856cfd377392dad" name="a94f7ea88ec245d3c0856cfd377392dad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94f7ea88ec245d3c0856cfd377392dad">&#9670;&#160;</a></span>gridSortComparisons</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::StepReport::gridSortComparisons = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sorting comparisons across all broadphase rebuilds. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdSimulation_8cpp_source.html#l00012">eve::crowd::Crowd::Impl::rebuildGrid()</a>.</p>
+
+</div>
+</div>
+<a id="acb5b8f47acfafe88859623522036995c" name="acb5b8f47acfafe88859623522036995c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb5b8f47acfafe88859623522036995c">&#9670;&#160;</a></span>maxPenetration</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::crowd::StepReport::maxPenetration = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Largest remaining pair penetration in world units. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00125">125</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5dce1dcde57b7a89b57bc33d72c69dd2" name="a5dce1dcde57b7a89b57bc33d72c69dd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5dce1dcde57b7a89b57bc33d72c69dd2">&#9670;&#160;</a></span>motionNanoseconds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::StepReport::motionNanoseconds = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Preferred velocity, avoidance and integration time. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00116">116</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a885af7d104f25dfcccb5fdc15788d0de" name="a885af7d104f25dfcccb5fdc15788d0de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a885af7d104f25dfcccb5fdc15788d0de">&#9670;&#160;</a></span>navigation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1crowd_1_1FieldObservation.html">FieldObservation</a> eve::crowd::StepReport::navigation</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9a91b19bcda215170f104122f336e6e8" name="a9a91b19bcda215170f104122f336e6e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a91b19bcda215170f104122f336e6e8">&#9670;&#160;</a></span>navigationClassMismatches</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::crowd::StepReport::navigationClassMismatches</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        0</div>
+</div><!-- fragment -->
+<p>Flow agents with stale leases, missing/wrong classes or insufficient clearance. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00098">98</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acc08f52e51761d902c5bb769da5f2b4a" name="acc08f52e51761d902c5bb769da5f2b4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc08f52e51761d902c5bb769da5f2b4a">&#9670;&#160;</a></span>pairVisits</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::StepReport::pairVisits = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Count/prefix/buffer-init/fill/sort work across contact passes. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdContactSolver_8cpp_source.html#l00004">eve::crowd::Crowd::Impl::resolveOverlapsPass()</a>.</p>
+
+</div>
+</div>
+<a id="aabc31614394504eb64e7defeae30cfe0" name="aabc31614394504eb64e7defeae30cfe0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabc31614394504eb64e7defeae30cfe0">&#9670;&#160;</a></span>preferredNeighborsPeak</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::StepReport::preferredNeighborsPeak = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Largest complete preferred-neighbor buffer. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00095">95</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8ea7ebb37ed4f7c9f6e5c90aed90dc3c" name="a8ea7ebb37ed4f7c9f6e5c90aed90dc3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ea7ebb37ed4f7c9f6e5c90aed90dc3c">&#9670;&#160;</a></span>preferredVisits</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::StepReport::preferredVisits = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Workspace/preparation/force entry work across substeps. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdPreferred_8cpp_source.html#l00007">eve::crowd::Crowd::Impl::spendPreferredWork()</a>.</p>
+
+</div>
+</div>
+<a id="a6f3646c4d8575128bdc332ed59c8791e" name="a6f3646c4d8575128bdc332ed59c8791e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f3646c4d8575128bdc332ed59c8791e">&#9670;&#160;</a></span>quality</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1crowd.html#a6f66f887e9a0df0480550a93f2d2c760">SolveQuality</a> eve::crowd::StepReport::quality = <a class="el" href="namespaceeve_1_1crowd.html#a6f66f887e9a0df0480550a93f2d2c760aae94f80b3ce82062a5dd7815daa04f9d">SolveQuality::Complete</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00102">102</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6629448ff0a6d46753d0e16716e2e1ed" name="a6629448ff0a6d46753d0e16716e2e1ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6629448ff0a6d46753d0e16716e2e1ed">&#9670;&#160;</a></span>residualNanoseconds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::StepReport::residualNanoseconds = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Final quality inspection time, excluding its grid rebuild. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00119">119</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac4a00991a240b5e2244cfe5d42248ce9" name="ac4a00991a240b5e2244cfe5d42248ce9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4a00991a240b5e2244cfe5d42248ce9">&#9670;&#160;</a></span>residualPairsChecked</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::StepReport::residualPairsChecked = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unique interacting pairs inspected after projection. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00113">113</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac837726bdb6f6bafe9f82e405994a8bc" name="ac837726bdb6f6bafe9f82e405994a8bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac837726bdb6f6bafe9f82e405994a8bc">&#9670;&#160;</a></span>spatialVisits</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::StepReport::spatialVisits = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query row/cell enumeration and binary-search comparisons. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdInternal_8h_source.html#l00247">eve::crowd::Crowd::Impl::forEachNeighbor()</a> , 以及 <a class="el" href="CrowdAvoidance_8cpp_source.html#l00030">eve::crowd::Crowd::Impl::prepareAvoidanceNeighbors()</a>.</p>
+
+</div>
+</div>
+<a id="aebe094013b93c93c3dabaab4d517818f" name="aebe094013b93c93c3dabaab4d517818f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebe094013b93c93c3dabaab4d517818f">&#9670;&#160;</a></span>substeps</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::crowd::StepReport::substeps = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of bounded integration intervals consumed. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00122">122</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9ea231e08c8074990f30f0550954ef01" name="a9ea231e08c8074990f30f0550954ef01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ea231e08c8074990f30f0550954ef01">&#9670;&#160;</a></span>tick</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> eve::crowd::StepReport::tick</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00100">100</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8259191f96b910af8c6456197ee3d1fb" name="a8259191f96b910af8c6456197ee3d1fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8259191f96b910af8c6456197ee3d1fb">&#9670;&#160;</a></span>unresolvedContacts</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::crowd::StepReport::unresolvedContacts = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Final overlapping pairs deeper than 0.001 world units. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00123">123</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a30b076e53ff2967eb38b77f74dee7e11" name="a30b076e53ff2967eb38b77f74dee7e11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30b076e53ff2967eb38b77f74dee7e11">&#9670;&#160;</a></span>unresolvedWalls</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::crowd::StepReport::unresolvedWalls = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Final agents violating terrain or field bounds. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00124">124</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a44e7e4e7be47ed9f3e121389e94456cc" name="a44e7e4e7be47ed9f3e121389e94456cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44e7e4e7be47ed9f3e121389e94456cc">&#9670;&#160;</a></span>wallNanoseconds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::StepReport::wallNanoseconds = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Terrain projection time. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00118">118</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/crowd/<a class="el" href="Crowd_8h_source.html">Crowd.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

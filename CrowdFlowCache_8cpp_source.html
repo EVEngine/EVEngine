@@ -1,0 +1,433 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/crowd/CrowdFlowCache.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_dcb6d51ed595f676e5530c21ce2add48.html">crowd</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">CrowdFlowCache.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="CrowdFlowCache_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;tuple&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;type_traits&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="CrowdInternal_8h.html">crowd/CrowdInternal.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1crowd.html">eve::crowd</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>Result&lt;T&gt; cacheFailure(<a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> <a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="ScriptStructure_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>) {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;T&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>, <a class="code hl_variable" href="ScriptStructure_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>, <span class="stringliteral">&quot;flowCache&quot;</span>));</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>}</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>}  <span class="comment">// namespace</span></div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="}">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="namespaceeve_1_1crowd.html#a7d6ac32f6628cf9019ccca0149c0808b">   13</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;int&gt;</a>&gt; <a class="code hl_function" href="namespaceeve_1_1crowd.html#a7d6ac32f6628cf9019ccca0149c0808b">canonicalFlowCoordinates</a>(std::span&lt;const FlowGoal&gt; goals, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1crowd_1_1CrowdField.html">CrowdField</a>&amp; field) {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">if</span> (!field.valid() || goals.empty() || goals.size() &gt; 1024)</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        <span class="keywordflow">return</span> cacheFailure&lt;std::vector&lt;int&gt;&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>                                              <span class="stringliteral">&quot;Expected 1..1024 goals and a configured field&quot;</span>);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> goal : goals)</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keywordflow">if</span> (goal.x &lt; 0 || goal.y &lt; 0 || goal.x &gt;= field.getWidth() || goal.y &gt;= field.getHeight())</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>            <span class="keywordflow">return</span> cacheFailure&lt;std::vector&lt;int&gt;&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;Goal outside grid&quot;</span>);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    std::vector&lt;FlowGoal&gt; sorted(goals.begin(), goals.end());</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    std::sort(sorted.begin(), sorted.end());</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    sorted.erase(std::unique(sorted.begin(), sorted.end()), sorted.end());</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    std::vector&lt;int&gt; <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.reserve(sorted.size() * 2);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> goal : sorted) {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.push_back(goal.x);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.push_back(goal.y);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;int&gt;</a>&gt;::success(std::move(<a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>));</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="}">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="namespaceeve_1_1crowd.html#ac136251bc4991c283936f8b0c8de18eb">   31</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1crowd.html#ac136251bc4991c283936f8b0c8de18eb">isFlowPointReachable</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1crowd_1_1CrowdField.html">CrowdField</a>&amp; field, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">if</span> (!field.valid() || !field.isBuilt() || !std::isfinite(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>) || !std::isfinite(<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> = std::floor((<span class="keywordtype">double</span>(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>) - field.getOriginX()) / field.getCellSize());</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> = std::floor((<span class="keywordtype">double</span>(<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) - field.getOriginY()) / field.getCellSize());</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> &gt;= 0 &amp;&amp; <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> &gt;= 0 &amp;&amp; <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> &lt; field.getWidth() &amp;&amp; <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> &lt; field.getHeight() &amp;&amp;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>           field.isReachable(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>), <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>));</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="}">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ac2abb74b7103fa60d956241d17c2263e">   38</a></span>std::uint64_t <a class="code hl_function" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ac2abb74b7103fa60d956241d17c2263e">Crowd::Impl::retainedFlowBytes</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1crowd_1_1CrowdField.html">CrowdField</a>&amp; <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">return</span> <span class="keyword">sizeof</span>(<a class="code hl_class" href="classeve_1_1crowd_1_1CrowdField.html">CrowdField</a>) + <span class="keyword">sizeof</span>(<a class="code hl_struct" href="structeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry.html">FlowCacheEntry</a>) +</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>           <span class="keyword">sizeof</span>(float) * (<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.cost_.capacity() + <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.navigationCost_.capacity() + <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.integ_.capacity() +</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                            <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.flowX_.capacity() + <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.flowY_.capacity()) +</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>           <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>) * <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.goals_.capacity() + <span class="keyword">sizeof</span>(std::pair&lt;float, int&gt;) * <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.buildHeap_.capacity();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="}">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ab90e4794c96a6763e20889e8ed57b2e4">   44</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ab90e4794c96a6763e20889e8ed57b2e4">Crowd::Impl::isFlowKeyBefore</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry.html">FlowCacheEntry</a>&amp; <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry.html">FlowCacheEntry</a>&amp; <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">const</span> <span class="keyword">auto</span> prefix = [](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; entry) {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="BattleControl_8cpp.html#ac913d18953c212b83881e974836de358">s</a> = entry.surface;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordflow">return</span> std::tuple{entry.input,        <a class="code hl_variable" href="BattleControl_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.surface.value(),   <a class="code hl_variable" href="BattleControl_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.surfaceRevision, <a class="code hl_variable" href="BattleControl_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.movement.value(),</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                          <a class="code hl_variable" href="BattleControl_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.movementRevision, <a class="code hl_variable" href="BattleControl_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.costModelRevision, <a class="code hl_variable" href="BattleControl_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.clearanceRadius, entry.algorithm};</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    };</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">if</span> (prefix(<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>) != prefix(<a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>)) <span class="keywordflow">return</span> prefix(<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>) &lt; prefix(<a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>.field-&gt;goals_ &lt; <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>.field-&gt;goals_;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00053" data-start="{" data-end="}">
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ab12ce39c989d0f8ee94133acec0bd110">   53</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;Crowd::Impl::FlowCacheEntry&gt;</a>&gt; <a class="code hl_function" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ab12ce39c989d0f8ee94133acec0bd110">Crowd::Impl::stageFlowCache</a>(std::uint64_t budget,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                                                                             std::uint64_t addedBytes,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                                                                             <span class="keywordtype">size_t</span>        addedCount)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">if</span> (addedBytes &gt; budget)</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordflow">return</span> cacheFailure&lt;std::vector&lt;FlowCacheEntry&gt;&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">DiagnosticCode::PreconditionViolation</a>,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                                                         <span class="stringliteral">&quot;Field exceeds cache storage budget&quot;</span>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    std::vector&lt;bool&gt; evicted(flowCache.size(), <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">size_t</span>            <a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a> = flowCache.size();</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    std::uint64_t     <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a> = 0;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; entry : flowCache) <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a> += entry.bytes;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordflow">while</span> (<a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a> &gt; budget - addedBytes || <a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a> + addedCount &gt; 10000) {</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordtype">size_t</span> victim = flowCache.size();</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; flowCache.size(); ++i) {</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            <span class="keywordflow">if</span> (evicted[i] || !flowCache[i].pins.expired()) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            <span class="keywordflow">if</span> (victim == flowCache.size() || flowCache[i].access &lt; flowCache[victim].access ||</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                (flowCache[i].access == flowCache[victim].access &amp;&amp; isFlowKeyBefore(flowCache[i], flowCache[victim])))</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                victim = i;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keywordflow">if</span> (victim == flowCache.size())</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            <span class="keywordflow">return</span> cacheFailure&lt;std::vector&lt;FlowCacheEntry&gt;&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">DiagnosticCode::PreconditionViolation</a>,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                                                             <span class="stringliteral">&quot;Cache pressure: all remaining fields are pinned&quot;</span>);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        evicted[victim] = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a> -= flowCache[victim].bytes;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        --<a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    }</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    std::vector&lt;FlowCacheEntry&gt; staged;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    staged.reserve(<a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a> + addedCount);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; flowCache.size(); ++i)</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keywordflow">if</span> (!evicted[i]) staged.push_back(flowCache[i]);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;FlowCacheEntry&gt;</a>&gt;::success(std::move(staged));</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00084" data-start="{" data-end="}">
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a150c8a1bbf9039c26192e32d912692cc">   84</a></span><a class="code hl_class" href="classeve_1_1crowd_1_1FlowLease.html">FlowLease</a> <a class="code hl_function" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a150c8a1bbf9039c26192e32d912692cc">Crowd::Impl::leaseFor</a>(<a class="code hl_struct" href="structeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry.html">FlowCacheEntry</a>&amp; entry) {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keyword">auto</span> pin = entry.<a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry.html#aadfddbe765e25111658d501bee0be606">pins</a>.lock();</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">if</span> (!pin) pin = std::make_shared&lt;const unsigned char&gt;(0);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    entry.<a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry.html#aadfddbe765e25111658d501bee0be606">pins</a>   = pin;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    entry.<a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry.html#a0ddd6346f0da84e1f8712fda63fbe14b">access</a> = <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <a class="code hl_class" href="classeve_1_1crowd_1_1FlowLease.html">FlowLease</a> <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.field_      = entry.<a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry.html#a0bb00ddf352217eef59fded06a85f57d">field</a>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.pin_        = std::move(pin);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.owner_      = <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a1c82e23b3363a0cded2d2bdf7abfb5c8">owner</a>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.input_      = entry.<a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry.html#ab7e93018f448a0977df8562d9b68d5ef">input</a>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.generation_ = entry.<a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry.html#a98ea8cae38dd90ea5fb55f4483d04e8e">generation</a>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.algorithm_  = entry.<a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry.html#ab19ba4fab9dfd92214b510654dc3dd73">algorithm</a>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00098" data-start="{" data-end="}">
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classeve_1_1crowd_1_1Crowd.html#a9ac9288bc2953e3466a20d93572fc453">   98</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;FlowLease&gt;</a> <a class="code hl_function" href="classeve_1_1crowd_1_1Crowd.html#a9ac9288bc2953e3466a20d93572fc453">Crowd::acquireFlowField</a>(std::span&lt;const FlowGoal&gt; goals) <span class="keyword">try</span> {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keyword">auto</span> coordinates = <a class="code hl_function" href="namespaceeve_1_1crowd.html#a7d6ac32f6628cf9019ccca0149c0808b">canonicalFlowCoordinates</a>(goals, impl_-&gt;field);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordflow">if</span> (!coordinates) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;FlowLease&gt;::failure</a>(coordinates.status());</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keyword">const</span> <span class="keyword">auto</span> surface = <a class="code hl_function" href="classeve_1_1crowd_1_1Crowd.html#a067d6e783c786a3511dfaee0a2140f27">getFieldStatus</a>().<a class="code hl_variable" href="structeve_1_1crowd_1_1FieldObservation.html#ad4c7ebe7245232f947e3b18d60862170">surface</a>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; entry : impl_-&gt;flowCache)</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        <span class="keywordflow">if</span> (entry.input == impl_-&gt;field.inputRevision() &amp;&amp; entry.surface == surface &amp;&amp;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            entry.algorithm == <a class="code hl_variable" href="namespaceeve_1_1crowd.html#a1ce41618c6816e14cf0daead2b8865a0">flowBuildAlgorithmVersion</a> &amp;&amp; entry.field-&gt;goals_ == coordinates.value())</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;FlowLease&gt;::success</a>(impl_-&gt;leaseFor(entry));</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordflow">return</span> cacheFailure&lt;FlowLease&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">DiagnosticCode::NotFound</a>, <span class="stringliteral">&quot;No ready field for complete navigation key&quot;</span>);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>} <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordflow">return</span> cacheFailure&lt;FlowLease&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>, <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>.what());</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00110" data-start="{" data-end="}">
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="classeve_1_1crowd_1_1Crowd.html#afb21b600283f64ee7f7651e22ae5d376">  110</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;FlowLease&gt;</a> <a class="code hl_function" href="classeve_1_1crowd_1_1Crowd.html#a9ac9288bc2953e3466a20d93572fc453">Crowd::acquireFlowField</a>(<a class="code hl_class" href="classeve_1_1crowd_1_1Crowd_1_1FlowBuildPlan.html">FlowBuildPlan</a>&amp;&amp; plan) <span class="keyword">try</span> {</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordflow">if</span> (!plan.field_ || plan.owner_ != impl_-&gt;owner || plan.revision_ != impl_-&gt;field.inputRevision() ||</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        (plan.state_ != <a class="code hl_enumvalue" href="classeve_1_1crowd_1_1Crowd.html#a216543fdb15203eeb34f20d66294dde9ae7d31fc0602fb2ede144d18cdffd816b">FlowBuildState::Ready</a> &amp;&amp; plan.state_ != <a class="code hl_enumvalue" href="classeve_1_1crowd_1_1Crowd.html#a216543fdb15203eeb34f20d66294dde9a4bed942140642650ca78039de000796a">FlowBuildState::Unreachable</a>))</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keywordflow">return</span> cacheFailure&lt;FlowLease&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">DiagnosticCode::Conflict</a>, <span class="stringliteral">&quot;Incomplete, stale or foreign field publication&quot;</span>);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keyword">const</span> <span class="keyword">auto</span> surface = <a class="code hl_function" href="classeve_1_1crowd_1_1Crowd.html#a067d6e783c786a3511dfaee0a2140f27">getFieldStatus</a>().<a class="code hl_variable" href="structeve_1_1crowd_1_1FieldObservation.html#ad4c7ebe7245232f947e3b18d60862170">surface</a>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; entry : impl_-&gt;flowCache) {</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keywordflow">if</span> (entry.input == plan.revision_ &amp;&amp; entry.surface == surface &amp;&amp; entry.algorithm == <a class="code hl_variable" href="namespaceeve_1_1crowd.html#a1ce41618c6816e14cf0daead2b8865a0">flowBuildAlgorithmVersion</a> &amp;&amp;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            entry.field-&gt;goals_ == plan.field_-&gt;goals_) {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>            <span class="keyword">auto</span> <a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#ac1e879ba858768ec5f3c8454d722a29b">lease</a> = impl_-&gt;leaseFor(entry);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            plan.field_.reset();</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            plan.state_ = <a class="code hl_enumvalue" href="classeve_1_1crowd_1_1Crowd.html#a216543fdb15203eeb34f20d66294dde9afd8f656590df4b2d2b217b060b7204d3">FlowBuildState::Committed</a>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;FlowLease&gt;::success</a>(std::move(<a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#ac1e879ba858768ec5f3c8454d722a29b">lease</a>));</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        }</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    }</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordflow">if</span> (impl_-&gt;nextFlowGeneration == std::numeric_limits&lt;std::uint64_t&gt;::max())</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        <span class="keywordflow">return</span> cacheFailure&lt;FlowLease&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">DiagnosticCode::Conflict</a>, <span class="stringliteral">&quot;Flow generation exhausted&quot;</span>);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a>  = <a class="code hl_function" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ac2abb74b7103fa60d956241d17c2263e">Impl::retainedFlowBytes</a>(*plan.field_);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keyword">auto</span>       staged = impl_-&gt;stageFlowCache(impl_-&gt;flowCacheBudget, <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a>, 1);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordflow">if</span> (!staged) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;FlowLease&gt;::failure</a>(staged.status());</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="BattleControl_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a> = std::move(staged).takeValue();</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keyword">static_assert</span>(std::is_nothrow_move_constructible_v&lt;CrowdField&gt;);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keyword">static_assert</span>(std::is_nothrow_move_constructible_v&lt;Impl::FlowCacheEntry&gt;);</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="comment">// All metadata allocation and eviction validation precede the no-throw storage move.</span></div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keyword">auto</span> pin  = std::make_shared&lt;const unsigned char&gt;(0);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keyword">auto</span> data = std::make_shared&lt;const CrowdField&gt;(std::move(*plan.field_));</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <a class="code hl_variable" href="BattleControl_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a>.push_back({std::move(data), pin, surface, plan.revision_, impl_-&gt;nextFlowGeneration, <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a>, impl_-&gt;tick,</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>                       <a class="code hl_variable" href="namespaceeve_1_1crowd.html#a1ce41618c6816e14cf0daead2b8865a0">flowBuildAlgorithmVersion</a>});</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#ac1e879ba858768ec5f3c8454d722a29b">lease</a> = impl_-&gt;leaseFor(<a class="code hl_variable" href="BattleControl_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a>.back());</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    impl_-&gt;flowCache.swap(<a class="code hl_variable" href="BattleControl_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a>);</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    ++impl_-&gt;nextFlowGeneration;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    plan.field_.reset();</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    plan.state_ = <a class="code hl_enumvalue" href="classeve_1_1crowd_1_1Crowd.html#a216543fdb15203eeb34f20d66294dde9afd8f656590df4b2d2b217b060b7204d3">FlowBuildState::Committed</a>;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;FlowLease&gt;::success</a>(std::move(<a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#ac1e879ba858768ec5f3c8454d722a29b">lease</a>));</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>} <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordflow">return</span> cacheFailure&lt;FlowLease&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>, <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>.what());</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00146" data-start="{" data-end="}">
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="classeve_1_1crowd_1_1Crowd.html#ab22c2cfabfba6b0f7a134b3ce45e3c07">  146</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1crowd_1_1Crowd.html#ab22c2cfabfba6b0f7a134b3ce45e3c07">Crowd::configureFlowCache</a>(std::uint64_t budgetBytes) <span class="keyword">try</span> {</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keywordflow">if</span> (budgetBytes &gt; 8ULL * 1024 * 1024 * 1024)</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        <span class="keywordflow">return</span> cacheFailure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;Cache budget exceeds eight GiB&quot;</span>);</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keyword">auto</span> staged = impl_-&gt;stageFlowCache(budgetBytes, 0, 0);</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordflow">if</span> (!staged) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(staged.status());</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    impl_-&gt;flowCache       = std::move(staged).takeValue();</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    impl_-&gt;flowCacheBudget = budgetBytes;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>} <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordflow">return</span> cacheFailure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>, <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>.what());</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00157" data-start="{" data-end="}">
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno"><a class="line" href="classeve_1_1crowd_1_1Crowd.html#adad84d064e0e58d770db8f9e5624a0df">  157</a></span><a class="code hl_struct" href="structeve_1_1crowd_1_1FlowCacheObservation.html">FlowCacheObservation</a> <a class="code hl_function" href="classeve_1_1crowd_1_1Crowd.html#adad84d064e0e58d770db8f9e5624a0df">Crowd::getFlowCacheStatus</a>() const noexcept {</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <a class="code hl_struct" href="structeve_1_1crowd_1_1FlowCacheObservation.html">FlowCacheObservation</a> <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.<a class="code hl_variable" href="structeve_1_1crowd_1_1FlowCacheObservation.html#aa947d75b3d77de26f93dc093901772d0">entries</a>     = impl_-&gt;flowCache.size();</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.budgetBytes = impl_-&gt;flowCacheBudget;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; entry : impl_-&gt;flowCache) <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.residentBytes += entry.bytes;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00164" data-start="{" data-end="}">
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno"><a class="line" href="classeve_1_1crowd_1_1Crowd.html#af2ed65ff1e839b9fb544b928ffc7e911">  164</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;FlowSample&gt;</a> <a class="code hl_function" href="classeve_1_1crowd_1_1Crowd.html#af2ed65ff1e839b9fb544b928ffc7e911">Crowd::sampleFlowField</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1crowd_1_1FlowLease.html">FlowLease</a>&amp; <a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#ac1e879ba858768ec5f3c8454d722a29b">lease</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>) || !std::isfinite(<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>))</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        <span class="keywordflow">return</span> cacheFailure&lt;FlowSample&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;Nonfinite sample position&quot;</span>);</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keywordflow">if</span> (!impl_-&gt;isFlowLeaseCurrent(<a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#ac1e879ba858768ec5f3c8454d722a29b">lease</a>))</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        <span class="keywordflow">return</span> cacheFailure&lt;FlowSample&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">DiagnosticCode::Conflict</a>, <span class="stringliteral">&quot;Stale or foreign flow lease&quot;</span>);</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <a class="code hl_struct" href="structeve_1_1crowd_1_1FlowSample.html">FlowSample</a> <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="namespaceeve_1_1crowd.html#ac136251bc4991c283936f8b0c8de18eb">isFlowPointReachable</a>(*<a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#ac1e879ba858768ec5f3c8454d722a29b">lease</a>.field_, <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)) {</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.<a class="code hl_variable" href="structeve_1_1crowd_1_1FlowSample.html#a8bc7e114fb24b25343147adc2f2c6160">state</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1crowd.html#ad48d153b55bdf5bf78a21f9bee3e9429ae8f4d2326bcff302195325bc82960e16">FlowSampleState::Reachable</a>;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        <a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#ac1e879ba858768ec5f3c8454d722a29b">lease</a>.field_-&gt;flowAtWorld(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.direction.x, <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.direction.y);</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    }</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;FlowSample&gt;::success</a>(<a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>);</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>}</div>
+</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>}  <span class="comment">// namespace eve::crowd</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aBattleControl_8cpp_html_ac913d18953c212b83881e974836de358"><div class="ttname"><a href="BattleControl_8cpp.html#ac913d18953c212b83881e974836de358">s</a></div><div class="ttdeci">const std::string &amp; s</div><div class="ttdef"><b>Definition</b> <a href="BattleControl_8cpp_source.html#l00325">BattleControl.cpp:325</a></div></div>
+<div class="ttc" id="aBattleControl_8cpp_html_aeab8fb65bf7593cd8b7f00fb67d2dc09"><div class="ttname"><a href="BattleControl_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a></div><div class="ttdeci">std::unordered_map&lt; std::string, QuestRuntime &gt; entries</div><div class="ttdef"><b>Definition</b> <a href="BattleControl_8cpp_source.html#l00706">BattleControl.cpp:706</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6067f2d853b5521ca0162bd2770da5cf"><div class="ttname"><a href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a></div><div class="ttdeci">float cx</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00033">CardTypes.cpp:33</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6ac0a8c09e91acc33bc9b451a3d4bcab"><div class="ttname"><a href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a></div><div class="ttdeci">float cy</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00034">CardTypes.cpp:34</a></div></div>
+<div class="ttc" id="aCrowdInternal_8h_html"><div class="ttname"><a href="CrowdInternal_8h.html">CrowdInternal.h</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_ae9304e5e48b5f29bd2351ffc45b2b11a"><div class="ttname"><a href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a></div><div class="ttdeci">DiagnosticCode code</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00016">GltfAnimation.cpp:16</a></div></div>
+<div class="ttc" id="aMcpInputTools_8cpp_html_a1b012debbb0243926fff95a55e397b44"><div class="ttname"><a href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a></div><div class="ttdeci">Poco::JSON::Object::Ptr result</div><div class="ttdef"><b>Definition</b> <a href="McpInputTools_8cpp_source.html#l00052">McpInputTools.cpp:52</a></div></div>
+<div class="ttc" id="aMcpRuntimeTools_8cpp_html_a3a00ca04c0ed87681f126e891122e276"><div class="ttname"><a href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a></div><div class="ttdeci">std::uint64_t bytes</div><div class="ttdef"><b>Definition</b> <a href="McpRuntimeTools_8cpp_source.html#l00156">McpRuntimeTools.cpp:156</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a234e391f8e3e00f064813b98fb8f3cdb"><div class="ttname"><a href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a></div><div class="ttdeci">MeleePoint3 b</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00041">MeleeHit.cpp:41</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a65cfd4d3d71b298048a6baf087fe6579"><div class="ttname"><a href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a></div><div class="ttdeci">MeleePoint3 a</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00040">MeleeHit.cpp:40</a></div></div>
+<div class="ttc" id="aOceanRenderBindings_8cpp_html_a1c82e23b3363a0cded2d2bdf7abfb5c8"><div class="ttname"><a href="OceanRenderBindings_8cpp.html#a1c82e23b3363a0cded2d2bdf7abfb5c8">owner</a></div><div class="ttdeci">std::shared_ptr&lt; OceanGpuSpectrum &gt; owner</div><div class="ttdef"><b>Definition</b> <a href="OceanRenderBindings_8cpp_source.html#l00022">OceanRenderBindings.cpp:22</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00060">Package.cpp:60</a></div></div>
+<div class="ttc" id="aPrefabActionCapabilities_8cpp_html_ac1e879ba858768ec5f3c8454d722a29b"><div class="ttname"><a href="PrefabActionCapabilities_8cpp.html#ac1e879ba858768ec5f3c8454d722a29b">lease</a></div><div class="ttdeci">PrefabLease lease</div><div class="ttdef"><b>Definition</b> <a href="PrefabActionCapabilities_8cpp_source.html#l00360">PrefabActionCapabilities.cpp:360</a></div></div>
+<div class="ttc" id="aProjectIndexGraph_8cpp_html_a346a7d175620f8379f0ce521dc567d9c"><div class="ttname"><a href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a></div><div class="ttdeci">Object::Ptr value</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexGraph_8cpp_source.html#l00016">ProjectIndexGraph.cpp:16</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_a23c058547fbc73b5659191844a9f258c"><div class="ttname"><a href="ScriptStructure_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a></div><div class="ttdeci">std::string text</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00011">ScriptStructure.cpp:11</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8cpp_html_ad43c3812e6d13e0518d9f8b8f463ffcf"><div class="ttname"><a href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a></div><div class="ttdeci">int count</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00031">SquirrelBinding.cpp:31</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a9be293222289c40e0ca1ad953cb5a07e"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00158">TacticsPersistence.cpp:158</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a416c54d38b93dae0b4006c561c71bbb7"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8cpp_source.html#l00014">Diagnostic.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00184">Result.h:184</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00195">Result.h:195</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdField_html"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdField.html">eve::crowd::CrowdField</a></div><div class="ttdoc">连续流场（flow field）。</div><div class="ttdef"><b>Definition</b> <a href="CrowdField_8h_source.html#l00025">CrowdField.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1Crowd_1_1FlowBuildPlan_html"><div class="ttname"><a href="classeve_1_1crowd_1_1Crowd_1_1FlowBuildPlan.html">eve::crowd::Crowd::FlowBuildPlan</a></div><div class="ttdoc">Move-only navigation workstate; contains no borrowed provider pointers.</div><div class="ttdef"><b>Definition</b> <a href="Crowd_8h_source.html#l00309">Crowd.h:309</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1Crowd_html_a067d6e783c786a3511dfaee0a2140f27"><div class="ttname"><a href="classeve_1_1crowd_1_1Crowd.html#a067d6e783c786a3511dfaee0a2140f27">eve::crowd::Crowd::getFieldStatus</a></div><div class="ttdeci">FieldObservation getFieldStatus() const noexcept</div><div class="ttdoc">Observe current field readiness and owner-local revision without rebuilding.</div><div class="ttdef"><b>Definition</b> <a href="Crowd_8cpp_source.html#l00062">Crowd.cpp:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1Crowd_html_a216543fdb15203eeb34f20d66294dde9a4bed942140642650ca78039de000796a"><div class="ttname"><a href="classeve_1_1crowd_1_1Crowd.html#a216543fdb15203eeb34f20d66294dde9a4bed942140642650ca78039de000796a">eve::crowd::Crowd::FlowBuildState::Unreachable</a></div><div class="ttdeci">@ Unreachable</div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1Crowd_html_a216543fdb15203eeb34f20d66294dde9ae7d31fc0602fb2ede144d18cdffd816b"><div class="ttname"><a href="classeve_1_1crowd_1_1Crowd.html#a216543fdb15203eeb34f20d66294dde9ae7d31fc0602fb2ede144d18cdffd816b">eve::crowd::Crowd::FlowBuildState::Ready</a></div><div class="ttdeci">@ Ready</div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1Crowd_html_a216543fdb15203eeb34f20d66294dde9afd8f656590df4b2d2b217b060b7204d3"><div class="ttname"><a href="classeve_1_1crowd_1_1Crowd.html#a216543fdb15203eeb34f20d66294dde9afd8f656590df4b2d2b217b060b7204d3">eve::crowd::Crowd::FlowBuildState::Committed</a></div><div class="ttdeci">@ Committed</div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1Crowd_html_a9ac9288bc2953e3466a20d93572fc453"><div class="ttname"><a href="classeve_1_1crowd_1_1Crowd.html#a9ac9288bc2953e3466a20d93572fc453">eve::crowd::Crowd::acquireFlowField</a></div><div class="ttdeci">Result&lt; FlowLease &gt; acquireFlowField(std::span&lt; const FlowGoal &gt; goals)</div><div class="ttdoc">Acquire an existing field for a canonical goal set without graph work.</div><div class="ttdef"><b>Definition</b> <a href="CrowdFlowCache_8cpp_source.html#l00098">CrowdFlowCache.cpp:98</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1Crowd_html_ab22c2cfabfba6b0f7a134b3ce45e3c07"><div class="ttname"><a href="classeve_1_1crowd_1_1Crowd.html#ab22c2cfabfba6b0f7a134b3ce45e3c07">eve::crowd::Crowd::configureFlowCache</a></div><div class="ttdeci">Result&lt; void &gt; configureFlowCache(std::uint64_t budgetBytes)</div><div class="ttdoc">Set retained-storage budget, evicting only unleased fields with atomic pressure failure.</div><div class="ttdef"><b>Definition</b> <a href="CrowdFlowCache_8cpp_source.html#l00146">CrowdFlowCache.cpp:146</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1Crowd_html_adad84d064e0e58d770db8f9e5624a0df"><div class="ttname"><a href="classeve_1_1crowd_1_1Crowd.html#adad84d064e0e58d770db8f9e5624a0df">eve::crowd::Crowd::getFlowCacheStatus</a></div><div class="ttdeci">FlowCacheObservation getFlowCacheStatus() const noexcept</div><div class="ttdoc">Read retained-storage accounting without copying fields; owner thread only.</div><div class="ttdef"><b>Definition</b> <a href="CrowdFlowCache_8cpp_source.html#l00157">CrowdFlowCache.cpp:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1Crowd_html_af2ed65ff1e839b9fb544b928ffc7e911"><div class="ttname"><a href="classeve_1_1crowd_1_1Crowd.html#af2ed65ff1e839b9fb544b928ffc7e911">eve::crowd::Crowd::sampleFlowField</a></div><div class="ttdeci">Result&lt; FlowSample &gt; sampleFlowField(const FlowLease &amp;lease, float x, float y) const</div><div class="ttdoc">Sample a current lease; stale/foreign leases fail, unreachable locations return zero....</div><div class="ttdef"><b>Definition</b> <a href="CrowdFlowCache_8cpp_source.html#l00164">CrowdFlowCache.cpp:164</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1FlowLease_html"><div class="ttname"><a href="classeve_1_1crowd_1_1FlowLease.html">eve::crowd::FlowLease</a></div><div class="ttdoc">Owning immutable field lease; copies pin storage, never the Crowd provider. @thread Copy/release/quer...</div><div class="ttdef"><b>Definition</b> <a href="CrowdTypes_8h_source.html#l00048">CrowdTypes.h:48</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1crowd_html"><div class="ttname"><a href="namespaceeve_1_1crowd.html">eve::crowd</a></div><div class="ttdef"><b>Definition</b> <a href="Crowd_8cpp_source.html#l00014">Crowd.cpp:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1crowd_html_a1ce41618c6816e14cf0daead2b8865a0"><div class="ttname"><a href="namespaceeve_1_1crowd.html#a1ce41618c6816e14cf0daead2b8865a0">eve::crowd::flowBuildAlgorithmVersion</a></div><div class="ttdeci">constexpr std::uint32_t flowBuildAlgorithmVersion</div><div class="ttdoc">Increment when the navigation construction algorithm changes its observable output.</div><div class="ttdef"><b>Definition</b> <a href="CrowdTypes_8h_source.html#l00041">CrowdTypes.h:41</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1crowd_html_a7d6ac32f6628cf9019ccca0149c0808b"><div class="ttname"><a href="namespaceeve_1_1crowd.html#a7d6ac32f6628cf9019ccca0149c0808b">eve::crowd::canonicalFlowCoordinates</a></div><div class="ttdeci">Result&lt; std::vector&lt; int &gt; &gt; canonicalFlowCoordinates(std::span&lt; const FlowGoal &gt; goals, const CrowdField &amp;field)</div><div class="ttdoc">Copy validated goals into their unique canonical coordinates.</div><div class="ttdef"><b>Definition</b> <a href="CrowdFlowCache_8cpp_source.html#l00013">CrowdFlowCache.cpp:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1crowd_html_ac136251bc4991c283936f8b0c8de18eb"><div class="ttname"><a href="namespaceeve_1_1crowd.html#ac136251bc4991c283936f8b0c8de18eb">eve::crowd::isFlowPointReachable</a></div><div class="ttdeci">bool isFlowPointReachable(const CrowdField &amp;field, float x, float y) noexcept</div><div class="ttdoc">Observe exact containing-cell reachability, independent of interpolation across blocked cells....</div><div class="ttdef"><b>Definition</b> <a href="CrowdFlowCache_8cpp_source.html#l00031">CrowdFlowCache.cpp:31</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1crowd_html_ad48d153b55bdf5bf78a21f9bee3e9429ae8f4d2326bcff302195325bc82960e16"><div class="ttname"><a href="namespaceeve_1_1crowd.html#ad48d153b55bdf5bf78a21f9bee3e9429ae8f4d2326bcff302195325bc82960e16">eve::crowd::FlowSampleState::Reachable</a></div><div class="ttdeci">@ Reachable</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a></div><div class="ttdeci">DiagnosticCode</div><div class="ttdoc">Stable machine-readable diagnostic codes.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00047">Diagnostic.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::DiagnosticCode::NotFound</a></div><div class="ttdeci">@ NotFound</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a></div><div class="ttdeci">@ PreconditionViolation</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::DiagnosticCode::Conflict</a></div><div class="ttdeci">@ Conflict</div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry_html"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry.html">eve::crowd::Crowd::Impl::FlowCacheEntry</a></div><div class="ttdef"><b>Definition</b> <a href="CrowdInternal_8h_source.html#l00098">CrowdInternal.h:98</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry_html_a0bb00ddf352217eef59fded06a85f57d"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry.html#a0bb00ddf352217eef59fded06a85f57d">eve::crowd::Crowd::Impl::FlowCacheEntry::field</a></div><div class="ttdeci">std::shared_ptr&lt; const CrowdField &gt; field</div><div class="ttdef"><b>Definition</b> <a href="CrowdInternal_8h_source.html#l00099">CrowdInternal.h:99</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry_html_a0ddd6346f0da84e1f8712fda63fbe14b"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry.html#a0ddd6346f0da84e1f8712fda63fbe14b">eve::crowd::Crowd::Impl::FlowCacheEntry::access</a></div><div class="ttdeci">SimulationTick access</div><div class="ttdef"><b>Definition</b> <a href="CrowdInternal_8h_source.html#l00103">CrowdInternal.h:103</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry_html_a98ea8cae38dd90ea5fb55f4483d04e8e"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry.html#a98ea8cae38dd90ea5fb55f4483d04e8e">eve::crowd::Crowd::Impl::FlowCacheEntry::generation</a></div><div class="ttdeci">std::uint64_t generation</div><div class="ttdef"><b>Definition</b> <a href="CrowdInternal_8h_source.html#l00102">CrowdInternal.h:102</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry_html_aadfddbe765e25111658d501bee0be606"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry.html#aadfddbe765e25111658d501bee0be606">eve::crowd::Crowd::Impl::FlowCacheEntry::pins</a></div><div class="ttdeci">std::weak_ptr&lt; const void &gt; pins</div><div class="ttdef"><b>Definition</b> <a href="CrowdInternal_8h_source.html#l00100">CrowdInternal.h:100</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry_html_ab19ba4fab9dfd92214b510654dc3dd73"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry.html#ab19ba4fab9dfd92214b510654dc3dd73">eve::crowd::Crowd::Impl::FlowCacheEntry::algorithm</a></div><div class="ttdeci">std::uint32_t algorithm</div><div class="ttdef"><b>Definition</b> <a href="CrowdInternal_8h_source.html#l00104">CrowdInternal.h:104</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry_html_ab7e93018f448a0977df8562d9b68d5ef"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl_1_1FlowCacheEntry.html#ab7e93018f448a0977df8562d9b68d5ef">eve::crowd::Crowd::Impl::FlowCacheEntry::input</a></div><div class="ttdeci">std::uint64_t input</div><div class="ttdef"><b>Definition</b> <a href="CrowdInternal_8h_source.html#l00102">CrowdInternal.h:102</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_html_a150c8a1bbf9039c26192e32d912692cc"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a150c8a1bbf9039c26192e32d912692cc">eve::crowd::Crowd::Impl::leaseFor</a></div><div class="ttdeci">FlowLease leaseFor(FlowCacheEntry &amp;entry)</div><div class="ttdef"><b>Definition</b> <a href="CrowdFlowCache_8cpp_source.html#l00084">CrowdFlowCache.cpp:84</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_html_ab12ce39c989d0f8ee94133acec0bd110"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ab12ce39c989d0f8ee94133acec0bd110">eve::crowd::Crowd::Impl::stageFlowCache</a></div><div class="ttdeci">Result&lt; std::vector&lt; FlowCacheEntry &gt; &gt; stageFlowCache(std::uint64_t budget, std::uint64_t bytes, size_t count) const</div><div class="ttdoc">Stage cache metadata and deterministic unleased evictions without live mutation. @ownership Returns o...</div><div class="ttdef"><b>Definition</b> <a href="CrowdFlowCache_8cpp_source.html#l00053">CrowdFlowCache.cpp:53</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_html_ab90e4794c96a6763e20889e8ed57b2e4"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ab90e4794c96a6763e20889e8ed57b2e4">eve::crowd::Crowd::Impl::isFlowKeyBefore</a></div><div class="ttdeci">static bool isFlowKeyBefore(const FlowCacheEntry &amp;a, const FlowCacheEntry &amp;b)</div><div class="ttdef"><b>Definition</b> <a href="CrowdFlowCache_8cpp_source.html#l00044">CrowdFlowCache.cpp:44</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_html_ac2abb74b7103fa60d956241d17c2263e"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ac2abb74b7103fa60d956241d17c2263e">eve::crowd::Crowd::Impl::retainedFlowBytes</a></div><div class="ttdeci">static std::uint64_t retainedFlowBytes(const CrowdField &amp;value)</div><div class="ttdef"><b>Definition</b> <a href="CrowdFlowCache_8cpp_source.html#l00038">CrowdFlowCache.cpp:38</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1FieldObservation_html_ad4c7ebe7245232f947e3b18d60862170"><div class="ttname"><a href="structeve_1_1crowd_1_1FieldObservation.html#ad4c7ebe7245232f947e3b18d60862170">eve::crowd::FieldObservation::surface</a></div><div class="ttdeci">NavigationSurfaceStamp surface</div><div class="ttdef"><b>Definition</b> <a href="Crowd_8h_source.html#l00057">Crowd.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1FlowCacheObservation_html"><div class="ttname"><a href="structeve_1_1crowd_1_1FlowCacheObservation.html">eve::crowd::FlowCacheObservation</a></div><div class="ttdoc">Retained navigation-storage accounting; excludes allocator bookkeeping and pending builds.</div><div class="ttdef"><b>Definition</b> <a href="CrowdTypes_8h_source.html#l00062">CrowdTypes.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1FlowCacheObservation_html_aa947d75b3d77de26f93dc093901772d0"><div class="ttname"><a href="structeve_1_1crowd_1_1FlowCacheObservation.html#aa947d75b3d77de26f93dc093901772d0">eve::crowd::FlowCacheObservation::entries</a></div><div class="ttdeci">std::size_t entries</div><div class="ttdef"><b>Definition</b> <a href="CrowdTypes_8h_source.html#l00063">CrowdTypes.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1FlowSample_html"><div class="ttname"><a href="structeve_1_1crowd_1_1FlowSample.html">eve::crowd::FlowSample</a></div><div class="ttdoc">Owning lease sample with explicit reachability.</div><div class="ttdef"><b>Definition</b> <a href="Crowd_8h_source.html#l00050">Crowd.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1FlowSample_html_a8bc7e114fb24b25343147adc2f2c6160"><div class="ttname"><a href="structeve_1_1crowd_1_1FlowSample.html#a8bc7e114fb24b25343147adc2f2c6160">eve::crowd::FlowSample::state</a></div><div class="ttdeci">FlowSampleState state</div><div class="ttdef"><b>Definition</b> <a href="Crowd_8h_source.html#l00051">Crowd.h:51</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

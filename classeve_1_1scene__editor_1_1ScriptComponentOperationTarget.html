@@ -1,0 +1,649 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::scene_editor::ScriptComponentOperationTarget类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1scene__editor.html">scene_editor</a></li><li class="navelem"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentOperationTarget.html">ScriptComponentOperationTarget</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1scene__editor_1_1ScriptComponentOperationTarget-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::scene_editor::ScriptComponentOperationTarget类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>脚本组件字段的域操作目标：往引擎侧存储写字段的**唯一**通路。  
+ <a href="classeve_1_1scene__editor_1_1ScriptComponentOperationTarget.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ScriptComponentPayloadProvider_8h_source.html">ScriptComponentPayloadProvider.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::scene_editor::ScriptComponentOperationTarget 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1scene__editor_1_1ScriptComponentOperationTarget.png" usemap="#eve::scene_5Feditor::ScriptComponentOperationTarget_map" alt=""/>
+  <map id="eve::scene_5Feditor::ScriptComponentOperationTarget_map" name="eve::scene_5Feditor::ScriptComponentOperationTarget_map">
+<area href="classeve_1_1editing_1_1IDomainOperationTarget.html" title="Editable-target capability that applies owning domain operations." alt="eve::editing::IDomainOperationTarget" shape="rect" coords="0,56,306,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html" title="Optional candidate/publish capability for atomic domain operations." alt="eve::editing::IDomainOperationTargetStaging" shape="rect" coords="316,56,622,80"/>
+<area href="classeve_1_1editing_1_1IEditableTarget.html" title="IEditableTarget public API." alt="eve::editing::IEditableTarget" shape="rect" coords="0,0,306,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a8af50d086f519f173ae381ae5c19c477" id="r_a8af50d086f519f173ae381ae5c19c477"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentOperationTarget.html#a8af50d086f519f173ae381ae5c19c477">ScriptComponentOperationTarget</a> ()=default</td></tr>
+<tr class="separator:a8af50d086f519f173ae381ae5c19c477"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8756908fda38e45760164944ae6804e" id="r_ab8756908fda38e45760164944ae6804e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentOperationTarget.html#ab8756908fda38e45760164944ae6804e">bind</a> (const <a class="el" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">scene_editing::TargetId</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, std::string <a class="el" href="DnutCompiler_8cpp.html#ada457f520f5dccd1dcdc4167ce0879f0">nodeId</a>, std::uint64_t entityId, std::string <a class="el" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="el" href="namespaceeve.html#a622007bd83c1f1b09c596c474039ca56">eve::SchemaVersion</a> <a class="el" href="TerrainGenerationSession_8cpp.html#aad880fc4455c253781e8968f2239d56f">version</a>, <a class="el" href="namespaceeve.html#a20904870079a4f75791c4511a6954313">eve::Generation</a> <a class="el" href="ECS_8cpp.html#a53722de7c6c943c26ef6cd0e41ec958c">generation</a>)</td></tr>
+<tr class="memdesc:ab8756908fda38e45760164944ae6804e"><td class="mdescLeft">&#160;</td><td class="mdescRight">绑定到一个组件实例（编辑器每次解析选中项时重新绑定）。  <br /></td></tr>
+<tr class="separator:ab8756908fda38e45760164944ae6804e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a972de0ed0042b2f97f90b6ec99c262ba" id="r_a972de0ed0042b2f97f90b6ec99c262ba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">scene_editing::TargetId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentOperationTarget.html#a972de0ed0042b2f97f90b6ec99c262ba">targetId</a> () const override</td></tr>
+<tr class="memdesc:a972de0ed0042b2f97f90b6ec99c262ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Target id.  <br /></td></tr>
+<tr class="separator:a972de0ed0042b2f97f90b6ec99c262ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a680e5db3f355b390841425db0dfa78f0" id="r_a680e5db3f355b390841425db0dfa78f0"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentOperationTarget.html#a680e5db3f355b390841425db0dfa78f0">revision</a> () const override</td></tr>
+<tr class="memdesc:a680e5db3f355b390841425db0dfa78f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Revision.  <br /></td></tr>
+<tr class="separator:a680e5db3f355b390841425db0dfa78f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96d84b6a620f5ae58ef108175ad5baa6" id="r_a96d84b6a620f5ae58ef108175ad5baa6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editing_1_1EditRegion.html">scene_editing::EditRegion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentOperationTarget.html#a96d84b6a620f5ae58ef108175ad5baa6">dirtyRegion</a> () const override</td></tr>
+<tr class="memdesc:a96d84b6a620f5ae58ef108175ad5baa6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dirty region.  <br /></td></tr>
+<tr class="separator:a96d84b6a620f5ae58ef108175ad5baa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3e72d802f5a62d5bbca535fee32ede1" id="r_ac3e72d802f5a62d5bbca535fee32ede1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentOperationTarget.html#ac3e72d802f5a62d5bbca535fee32ede1">clearDirtyRegion</a> () override</td></tr>
+<tr class="memdesc:ac3e72d802f5a62d5bbca535fee32ede1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears dirty region.  <br /></td></tr>
+<tr class="separator:ac3e72d802f5a62d5bbca535fee32ede1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ddcc7846797898a840d280c6cf9b3a2" id="r_a2ddcc7846797898a840d280c6cf9b3a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentOperationTarget.html#a2ddcc7846797898a840d280c6cf9b3a2">applyDomainOperation</a> (const <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">scene_editing::DomainOperation</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>) override</td></tr>
+<tr class="memdesc:a2ddcc7846797898a840d280c6cf9b3a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one validated domain operation.  <br /></td></tr>
+<tr class="separator:a2ddcc7846797898a840d280c6cf9b3a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab79adb50824aa2832f2c3bc94885084a" id="r_ab79adb50824aa2832f2c3bc94885084a"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">scene_editing::IDomainOperationTarget</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentOperationTarget.html#ab79adb50824aa2832f2c3bc94885084a">cloneDomainState</a> () const override</td></tr>
+<tr class="memdesc:ab79adb50824aa2832f2c3bc94885084a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clone the complete target state into an owning detached candidate.  <br /></td></tr>
+<tr class="separator:ab79adb50824aa2832f2c3bc94885084a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cffc6c5b9668e406be58d6bc8143ee8" id="r_a8cffc6c5b9668e406be58d6bc8143ee8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentOperationTarget.html#a8cffc6c5b9668e406be58d6bc8143ee8">commitDomainState</a> (std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">scene_editing::IDomainOperationTarget</a> &gt; candidate) override</td></tr>
+<tr class="separator:a8cffc6c5b9668e406be58d6bc8143ee8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">eve::editing::IDomainOperationTarget</a></td></tr>
+<tr class="memitem:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget" id="r_a2c13b149a0b37ca54f14636232983fb7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a2c13b149a0b37ca54f14636232983fb7">~IDomainOperationTarget</a> () override=default</td></tr>
+<tr class="memdesc:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html" title="Editable-target capability that applies owning domain operations.">IDomainOperationTarget</a> resources.  <br /></td></tr>
+<tr class="separator:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IEditableTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IEditableTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></td></tr>
+<tr class="memitem:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_aef4699204241c733a4ea7ae39bfdb9fc"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aef4699204241c733a4ea7ae39bfdb9fc">~IEditableTarget</a> ()=default</td></tr>
+<tr class="memdesc:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html" title="IEditableTarget public API.">IEditableTarget</a> resources.  <br /></td></tr>
+<tr class="separator:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af13b7927d4f01f4fe487f199b42bf5ae inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_af13b7927d4f01f4fe487f199b42bf5ae"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structeve_1_1editing_1_1TargetDescriptor.html">TargetDescriptor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af13b7927d4f01f4fe487f199b42bf5ae">describe</a> () const</td></tr>
+<tr class="memdesc:af13b7927d4f01f4fe487f199b42bf5ae inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describe the target for tools and automation.  <br /></td></tr>
+<tr class="separator:af13b7927d4f01f4fe487f199b42bf5ae inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e202dd6b1ca3b75e726a90a82081653 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_a3e202dd6b1ca3b75e726a90a82081653"><td class="memItemLeft" align="right" valign="top">virtual void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a3e202dd6b1ca3b75e726a90a82081653">queryCapability</a> (const <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a> &amp;<a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a>)</td></tr>
+<tr class="memdesc:a3e202dd6b1ca3b75e726a90a82081653 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query an optional stable capability.  <br /></td></tr>
+<tr class="separator:a3e202dd6b1ca3b75e726a90a82081653 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_a1e541660312c789b59e0a247f6e614ac"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a> ()</td></tr>
+<tr class="memdesc:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query a capability through its interface-owned stable identity.  <br /></td></tr>
+<tr class="separator:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac9b1ff8c3e6303775341b3ef9a4cf804"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac9b1ff8c3e6303775341b3ef9a4cf804">capability</a> () const</td></tr>
+<tr class="memdesc:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capability.  <br /></td></tr>
+<tr class="separator:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ab0f1bd1f6a96f49d37c185f6a3579d6c"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ab0f1bd1f6a96f49d37c185f6a3579d6c">query</a> ()</td></tr>
+<tr class="memdesc:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries query.  <br /></td></tr>
+<tr class="separator:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac235d153455fc2615a8857551d588812"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">const C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac235d153455fc2615a8857551d588812">query</a> () const</td></tr>
+<tr class="memdesc:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries query.  <br /></td></tr>
+<tr class="separator:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">eve::editing::IDomainOperationTargetStaging</a></td></tr>
+<tr class="memitem:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging" id="r_aac59f1484d9f3abf0013d03b3b95779e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aac59f1484d9f3abf0013d03b3b95779e">~IDomainOperationTargetStaging</a> ()=default</td></tr>
+<tr class="memdesc:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html" title="Optional candidate/publish capability for atomic domain operations.">IDomainOperationTargetStaging</a> resources.  <br /></td></tr>
+<tr class="separator:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa89a3f39369f32d299d4aa6f2f4aa670 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging" id="r_aa89a3f39369f32d299d4aa6f2f4aa670"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aa89a3f39369f32d299d4aa6f2f4aa670">commitDomainState</a> (std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">IDomainOperationTarget</a> &gt; candidate)=0</td></tr>
+<tr class="memdesc:aa89a3f39369f32d299d4aa6f2f4aa670 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically publish a validated candidate state.  <br /></td></tr>
+<tr class="separator:aa89a3f39369f32d299d4aa6f2f4aa670 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a941e816a92a87036b6ffffb3aeada048" id="r_a941e816a92a87036b6ffffb3aeada048"><td class="memItemLeft" align="right" valign="top">static std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentOperationTarget.html#a941e816a92a87036b6ffffb3aeada048">setOperationType</a> ()</td></tr>
+<tr class="memdesc:a941e816a92a87036b6ffffb3aeada048"><td class="mdescLeft">&#160;</td><td class="mdescRight">域操作类型：一个脚本组件字段的绝对赋值。  <br /></td></tr>
+<tr class="separator:a941e816a92a87036b6ffffb3aeada048"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>脚本组件字段的域操作目标：往引擎侧存储写字段的**唯一**通路。 </p>
+<p>同一个类按两种身份工作，由是不是 <code><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentOperationTarget.html#ab79adb50824aa2832f2c3bc94885084a" title="Clone the complete target state into an owning detached candidate.">cloneDomainState()</a></code> 的产物决定：</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">身份   </th><th class="markdownTableHeadNone">谁调用   </th><th class="markdownTableHeadNone">写到哪里    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">权威实例   </td><td class="markdownTableBodyNone"><code>LocalWorldAuthority::commit</code>（正向写入）   </td><td class="markdownTableBodyNone">直接写引擎侧存储    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">候选副本   </td><td class="markdownTableBodyNone"><code><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentOperationTarget.html#ab79adb50824aa2832f2c3bc94885084a" title="Clone the complete target state into an owning detached candidate.">cloneDomainState()</a></code> 之后（撤销/重做）   </td><td class="markdownTableBodyNone">只改自己那份字段副本，<code>commitDomainState</code> 才发布   </td></tr>
+</table>
+<p>**候选副本绝不写存储**——"候选上试算失败不留半套状态"就靠这一条（对齐 <code>AudioSourcePublishingTarget</code>：候选从不发布，只有权威实例发布）。</p>
+<dl class="section remark"><dt>备注</dt><dd>一个实例同一时刻只服务一个组件实例：<code>bind</code> 记下 <code>(实体, 组件名, 版本)</code>。这是安全的， 因为域操作载荷里**也带着**组件身份（节点 + 名字 + 版本），绑错了的过期目标会明确 <code>Conflict</code> 拒绝，而不是把值写到另一个组件上。 </dd>
+<dd>
+主人线程亲和：读写引擎侧存储、以及撤销时的整份发布都按主线程约定，实现不做同步。 </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8h_source.html">ScriptComponentPayloadProvider.h</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8h_source.html#l00039">39</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a8af50d086f519f173ae381ae5c19c477" name="a8af50d086f519f173ae381ae5c19c477"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8af50d086f519f173ae381ae5c19c477">&#9670;&#160;</a></span>ScriptComponentOperationTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::scene_editor::ScriptComponentOperationTarget::ScriptComponentOperationTarget </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a2ddcc7846797898a840d280c6cf9b3a2" name="a2ddcc7846797898a840d280c6cf9b3a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ddcc7846797898a840d280c6cf9b3a2">&#9670;&#160;</a></span>applyDomainOperation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::scene_editor::ScriptComponentOperationTarget::applyDomainOperation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">scene_editing::DomainOperation</a> &amp;&#160;</td>
+          <td class="paramname"><em>operation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply one validated domain operation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">operation</td><td>Operation whose target must match this target. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied on mutation, otherwise a structured rejection or failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Implementations are main-thread-affine unless their domain contract states otherwise. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a99935ff065354cd9e92b13ce3d5dd47a">eve::editing::IDomainOperationTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html">ScriptComponentPayloadProvider.cpp</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00161">161</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Value_8h_source.html#l00209">eve::Value::getIf()</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="RoadTraffic_8cpp_source.html#l00015">node</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00152">operation</a>, <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00119">setOperationType()</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00098">eve::editing::toPresentationValue()</a>, <a class="el" href="StrongUint64_8h_source.html#l00026">eve::detail::StrongUint64&lt; Tag &gt;::value()</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a> , 以及 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00035">version</a>.</p>
+
+</div>
+</div>
+<a id="ab8756908fda38e45760164944ae6804e" name="ab8756908fda38e45760164944ae6804e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8756908fda38e45760164944ae6804e">&#9670;&#160;</a></span>bind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::scene_editor::ScriptComponentOperationTarget::bind </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">scene_editing::TargetId</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>nodeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>entityId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a622007bd83c1f1b09c596c474039ca56">eve::SchemaVersion</a>&#160;</td>
+          <td class="paramname"><em>version</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a20904870079a4f75791c4511a6954313">eve::Generation</a>&#160;</td>
+          <td class="paramname"><em>generation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>绑定到一个组件实例（编辑器每次解析选中项时重新绑定）。 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">target</td><td>编辑器自动化目标 id（域操作与事务都用它做归属校验）。 </td></tr>
+    <tr><td class="paramname">nodeId</td><td>场景节点 id（进操作载荷，用来认出"这个操作是不是写这个组件的"）。 </td></tr>
+    <tr><td class="paramname">entityId</td><td>脚本 VM 内的实体 id（引擎侧存储键的第一段）。 </td></tr>
+    <tr><td class="paramname">name</td><td>组件名；</td></tr>
+    <tr><td class="paramname">version</td><td>组件版本。 </td></tr>
+    <tr><td class="paramname">generation</td><td>绑定时的注册代际（同名同版本换了一代就是引用过期）。 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>备注</dt><dd>绑定只记身份，不校验身份还有效：校验发生在写的那一刻，那时才有最新事实。 </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html">ScriptComponentPayloadProvider.cpp</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptComponentStore_8cpp_source.html#l00041">eve::findScriptComponentValues()</a>, <a class="el" href="ECS_8cpp_source.html#l00040">generation</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="DnutCompiler_8cpp_source.html#l00026">nodeId</a>, <a class="el" href="Evpack_8cpp_source.html#l00171">stored</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a> , 以及 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00035">version</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00266">eve::scene_editor::ScriptComponentPayloadProvider::payloadOperationTarget()</a>.</p>
+
+</div>
+</div>
+<a id="ac3e72d802f5a62d5bbca535fee32ede1" name="ac3e72d802f5a62d5bbca535fee32ede1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3e72d802f5a62d5bbca535fee32ede1">&#9670;&#160;</a></span>clearDirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::scene_editor::ScriptComponentOperationTarget::clearDirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clears dirty region. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ae43ff3afd87b4ddbaced52ce78884f50">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8h_source.html">ScriptComponentPayloadProvider.h</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab79adb50824aa2832f2c3bc94885084a" name="ab79adb50824aa2832f2c3bc94885084a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab79adb50824aa2832f2c3bc94885084a">&#9670;&#160;</a></span>cloneDomainState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">scene_editing::IDomainOperationTarget</a> &gt; eve::scene_editor::ScriptComponentOperationTarget::cloneDomainState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clone the complete target state into an owning detached candidate. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning candidate that shares no mutable state with the authoritative target. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#a38fa0bcf976ff809974f54c41c284c00">eve::editing::IDomainOperationTargetStaging</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html">ScriptComponentPayloadProvider.cpp</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00190">190</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptComponentStore_8cpp_source.html#l00041">eve::findScriptComponentValues()</a>, <a class="el" href="Value_8h_source.html#l00209">eve::Value::getIf()</a> , 以及 <a class="el" href="Evpack_8cpp_source.html#l00171">stored</a>.</p>
+
+</div>
+</div>
+<a id="a8cffc6c5b9668e406be58d6bc8143ee8" name="a8cffc6c5b9668e406be58d6bc8143ee8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cffc6c5b9668e406be58d6bc8143ee8">&#9670;&#160;</a></span>commitDomainState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::scene_editor::ScriptComponentOperationTarget::commitDomainState </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">scene_editing::IDomainOperationTarget</a> &gt;&#160;</td>
+          <td class="paramname"><em>candidate</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html">ScriptComponentPayloadProvider.cpp</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00200">200</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptComponentStore_8cpp_source.html#l00041">eve::findScriptComponentValues()</a>, <a class="el" href="Value_8cpp_source.html#l00042">eve::Value::object()</a>, <a class="el" href="ECS_8cpp_source.html#l01573">eve::scriptComponentDeclaredSchema()</a> , 以及 <a class="el" href="ScriptComponentStore_8cpp_source.html#l00032">eve::setScriptComponentValues()</a>.</p>
+
+</div>
+</div>
+<a id="a96d84b6a620f5ae58ef108175ad5baa6" name="a96d84b6a620f5ae58ef108175ad5baa6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96d84b6a620f5ae58ef108175ad5baa6">&#9670;&#160;</a></span>dirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editing_1_1EditRegion.html">scene_editing::EditRegion</a> eve::scene_editor::ScriptComponentOperationTarget::dirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Dirty region. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aeac913a69164ac273c8461e47baaa237">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8h_source.html">ScriptComponentPayloadProvider.h</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a680e5db3f355b390841425db0dfa78f0" name="a680e5db3f355b390841425db0dfa78f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a680e5db3f355b390841425db0dfa78f0">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::scene_editor::ScriptComponentOperationTarget::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Revision. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af0b05b2d46d2bef1c3fdc3d8bc6e56ad">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html">ScriptComponentPayloadProvider.cpp</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00136">136</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptComponentStore_8cpp_source.html#l00133">eve::scriptComponentStoreRevision()</a>.</p>
+
+</div>
+</div>
+<a id="a941e816a92a87036b6ffffb3aeada048" name="a941e816a92a87036b6ffffb3aeada048"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a941e816a92a87036b6ffffb3aeada048">&#9670;&#160;</a></span>setOperationType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view eve::scene_editor::ScriptComponentOperationTarget::setOperationType </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>域操作类型：一个脚本组件字段的绝对赋值。 </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html">ScriptComponentPayloadProvider.cpp</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00161">applyDomainOperation()</a>.</p>
+
+</div>
+</div>
+<a id="a972de0ed0042b2f97f90b6ec99c262ba" name="a972de0ed0042b2f97f90b6ec99c262ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a972de0ed0042b2f97f90b6ec99c262ba">&#9670;&#160;</a></span>targetId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">scene_editing::TargetId</a> eve::scene_editor::ScriptComponentOperationTarget::targetId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Target id. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a06480dbea1cae62902c62fcd7a5ac194">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8h_source.html">ScriptComponentPayloadProvider.h</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/scene/editor/<a class="el" href="ScriptComponentPayloadProvider_8h_source.html">ScriptComponentPayloadProvider.h</a></li>
+<li>src/modules/scene/editor/<a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html">ScriptComponentPayloadProvider.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

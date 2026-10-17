@@ -1,0 +1,432 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::condition::ConditionResult类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1condition.html">condition</a></li><li class="navelem"><a class="el" href="classeve_1_1condition_1_1ConditionResult.html">ConditionResult</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1condition_1_1ConditionResult-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::condition::ConditionResult类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Explain one condition evaluation in a UI- and log-friendly form.  
+ <a href="classeve_1_1condition_1_1ConditionResult.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Condition_8h_source.html">Condition.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:acf1ab89b162d53a75ab58bab5b5dbe3f" id="r_acf1ab89b162d53a75ab58bab5b5dbe3f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1condition_1_1ConditionResult.html#acf1ab89b162d53a75ab58bab5b5dbe3f">passed</a> () const noexcept</td></tr>
+<tr class="memdesc:acf1ab89b162d53a75ab58bab5b5dbe3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the condition passed.  <br /></td></tr>
+<tr class="separator:acf1ab89b162d53a75ab58bab5b5dbe3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69c9187dd207046b816cd3b0ecdb367b" id="r_a69c9187dd207046b816cd3b0ecdb367b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1condition.html#a1eb4556a8fe19e1800cfb4ade57bd767">ConditionReasonCode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1condition_1_1ConditionResult.html#a69c9187dd207046b816cd3b0ecdb367b">reasonCode</a> () const noexcept</td></tr>
+<tr class="memdesc:a69c9187dd207046b816cd3b0ecdb367b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable machine-readable reason code.  <br /></td></tr>
+<tr class="separator:a69c9187dd207046b816cd3b0ecdb367b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2c0ebfb696fe408352236eadf96b121" id="r_ac2c0ebfb696fe408352236eadf96b121"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1condition_1_1ConditionResult.html#ac2c0ebfb696fe408352236eadf96b121">evidence</a> () const noexcept</td></tr>
+<tr class="memdesc:ac2c0ebfb696fe408352236eadf96b121"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observed value or child evidence owned by this result.  <br /></td></tr>
+<tr class="separator:ac2c0ebfb696fe408352236eadf96b121"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec2fa2b9d5c0215d2165631d7951ed2f" id="r_aec2fa2b9d5c0215d2165631d7951ed2f"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1condition_1_1ConditionResult.html#aec2fa2b9d5c0215d2165631d7951ed2f">details</a> () const noexcept</td></tr>
+<tr class="memdesc:aec2fa2b9d5c0215d2165631d7951ed2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structured details suitable for UI explanation.  <br /></td></tr>
+<tr class="separator:aec2fa2b9d5c0215d2165631d7951ed2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ae60512dd97fe70d5d36038e4ea2ec6aa" id="r_ae60512dd97fe70d5d36038e4ea2ec6aa"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1condition_1_1ConditionResult.html">ConditionResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1condition_1_1ConditionResult.html#ae60512dd97fe70d5d36038e4ea2ec6aa">success</a> (<a class="el" href="classeve_1_1Value.html">Value</a> <a class="el" href="classeve_1_1condition_1_1ConditionResult.html#ac2c0ebfb696fe408352236eadf96b121">evidence</a>={}, <a class="el" href="classeve_1_1Value.html">Value</a> <a class="el" href="classeve_1_1condition_1_1ConditionResult.html#aec2fa2b9d5c0215d2165631d7951ed2f">details</a>=<a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>{})</td></tr>
+<tr class="memdesc:ae60512dd97fe70d5d36038e4ea2ec6aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a passed result with optional evidence and details.  <br /></td></tr>
+<tr class="separator:ae60512dd97fe70d5d36038e4ea2ec6aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1bf34e4da1c3dc55291978fb6aa6931" id="r_af1bf34e4da1c3dc55291978fb6aa6931"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1condition_1_1ConditionResult.html">ConditionResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1condition_1_1ConditionResult.html#af1bf34e4da1c3dc55291978fb6aa6931">failed</a> (<a class="el" href="namespaceeve_1_1condition.html#a1eb4556a8fe19e1800cfb4ade57bd767">ConditionReasonCode</a> reason, <a class="el" href="classeve_1_1Value.html">Value</a> <a class="el" href="classeve_1_1condition_1_1ConditionResult.html#ac2c0ebfb696fe408352236eadf96b121">evidence</a>={}, <a class="el" href="classeve_1_1Value.html">Value</a> <a class="el" href="classeve_1_1condition_1_1ConditionResult.html#aec2fa2b9d5c0215d2165631d7951ed2f">details</a>=<a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>{})</td></tr>
+<tr class="memdesc:af1bf34e4da1c3dc55291978fb6aa6931"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a rejected result with a stable reason and explanation.  <br /></td></tr>
+<tr class="separator:af1bf34e4da1c3dc55291978fb6aa6931"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Explain one condition evaluation in a UI- and log-friendly form. </p>
+<p><code>evidence</code> is the value observed at the leaf or returned by a policy. <code>details</code> contains stable field names and child explanations. Both values own their storage and remain valid after the evaluation context is gone. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8h_source.html">Condition.h</a> 第 <a class="el" href="Condition_8h_source.html#l00136">136</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="aec2fa2b9d5c0215d2165631d7951ed2f" name="aec2fa2b9d5c0215d2165631d7951ed2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec2fa2b9d5c0215d2165631d7951ed2f">&#9670;&#160;</a></span>details()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp; eve::condition::ConditionResult::details </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Structured details suitable for UI explanation. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8h_source.html">Condition.h</a> 第 <a class="el" href="Condition_8h_source.html#l00151">151</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Condition_8cpp_source.html#l00135">failed()</a> , 以及 <a class="el" href="Condition_8cpp_source.html#l00131">success()</a>.</p>
+
+</div>
+</div>
+<a id="ac2c0ebfb696fe408352236eadf96b121" name="ac2c0ebfb696fe408352236eadf96b121"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2c0ebfb696fe408352236eadf96b121">&#9670;&#160;</a></span>evidence()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp; eve::condition::ConditionResult::evidence </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Observed value or child evidence owned by this result. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8h_source.html">Condition.h</a> 第 <a class="el" href="Condition_8h_source.html#l00149">149</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Condition_8cpp_source.html#l00135">failed()</a> , 以及 <a class="el" href="Condition_8cpp_source.html#l00131">success()</a>.</p>
+
+</div>
+</div>
+<a id="af1bf34e4da1c3dc55291978fb6aa6931" name="af1bf34e4da1c3dc55291978fb6aa6931"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1bf34e4da1c3dc55291978fb6aa6931">&#9670;&#160;</a></span>failed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1condition_1_1ConditionResult.html">ConditionResult</a> eve::condition::ConditionResult::failed </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1condition.html#a1eb4556a8fe19e1800cfb4ade57bd767">ConditionReasonCode</a>&#160;</td>
+          <td class="paramname"><em>reason</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td>
+          <td class="paramname"><em>evidence</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td>
+          <td class="paramname"><em>details</em> = <code><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a rejected result with a stable reason and explanation. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8cpp_source.html">Condition.cpp</a> 第 <a class="el" href="Condition_8cpp_source.html#l00135">135</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Condition_8h_source.html#l00151">details()</a> , 以及 <a class="el" href="Condition_8h_source.html#l00149">evidence()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Condition_8cpp_source.html#l00187">eve::condition::Condition::evaluate()</a>, <a class="el" href="DialogueState_8cpp_source.html#l00348">eve::dialogue::DialogueStateContext::evaluate()</a>, <a class="el" href="Card_8cpp_source.html#l00280">eve::card::Card::evaluatePlay()</a> , 以及 <a class="el" href="ConditionKeys_8h_source.html#l00158">eve::condition::resolveAuthorityAllow()</a>.</p>
+
+</div>
+</div>
+<a id="acf1ab89b162d53a75ab58bab5b5dbe3f" name="acf1ab89b162d53a75ab58bab5b5dbe3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf1ab89b162d53a75ab58bab5b5dbe3f">&#9670;&#160;</a></span>passed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::condition::ConditionResult::passed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether the condition passed. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8h_source.html">Condition.h</a> 第 <a class="el" href="Condition_8h_source.html#l00145">145</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a69c9187dd207046b816cd3b0ecdb367b" name="a69c9187dd207046b816cd3b0ecdb367b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69c9187dd207046b816cd3b0ecdb367b">&#9670;&#160;</a></span>reasonCode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1condition.html#a1eb4556a8fe19e1800cfb4ade57bd767">ConditionReasonCode</a> eve::condition::ConditionResult::reasonCode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable machine-readable reason code. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8h_source.html">Condition.h</a> 第 <a class="el" href="Condition_8h_source.html#l00147">147</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae60512dd97fe70d5d36038e4ea2ec6aa" name="ae60512dd97fe70d5d36038e4ea2ec6aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae60512dd97fe70d5d36038e4ea2ec6aa">&#9670;&#160;</a></span>success()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1condition_1_1ConditionResult.html">ConditionResult</a> eve::condition::ConditionResult::success </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td>
+          <td class="paramname"><em>evidence</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td>
+          <td class="paramname"><em>details</em> = <code><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct a passed result with optional evidence and details. </p>
+
+<p class="definition">在文件 <a class="el" href="Condition_8cpp_source.html">Condition.cpp</a> 第 <a class="el" href="Condition_8cpp_source.html#l00131">131</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Condition_8h_source.html#l00151">details()</a>, <a class="el" href="Condition_8h_source.html#l00149">evidence()</a> , 以及 <a class="el" href="namespaceeve_1_1condition.html#a1eb4556a8fe19e1800cfb4ade57bd767aa0d0628f6b4e4d78d2ffef4d4d1c4b15">eve::condition::Passed</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Condition_8cpp_source.html#l00187">eve::condition::Condition::evaluate()</a> , 以及 <a class="el" href="ConditionKeys_8h_source.html#l00158">eve::condition::resolveAuthorityAllow()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="Condition_8h_source.html">Condition.h</a></li>
+<li>src/engine/common/<a class="el" href="Condition_8cpp_source.html">Condition.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

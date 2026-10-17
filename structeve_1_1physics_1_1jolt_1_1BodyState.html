@@ -1,0 +1,513 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::jolt::BodyState结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html">jolt</a></li><li class="navelem"><a class="el" href="structeve_1_1physics_1_1jolt_1_1BodyState.html">BodyState</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1physics_1_1jolt_1_1BodyState-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::jolt::BodyState结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a0c309d08614c6c333b979c2c3ece897b" id="r_a0c309d08614c6c333b979c2c3ece897b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1BodyState.html#a0c309d08614c6c333b979c2c3ece897b">valid</a> () const</td></tr>
+<tr class="separator:a0c309d08614c6c333b979c2c3ece897b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ce96fc3bbaa5c7786d36d1b912b8080" id="r_a1ce96fc3bbaa5c7786d36d1b912b8080"><td class="memItemLeft" align="right" valign="top">JPH::BodyInterface &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1BodyState.html#a1ce96fc3bbaa5c7786d36d1b912b8080">api</a> () const</td></tr>
+<tr class="separator:a1ce96fc3bbaa5c7786d36d1b912b8080"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:acfe3e1f64908ff394c77d2553dbe3e24" id="r_acfe3e1f64908ff394c77d2553dbe3e24"><td class="memItemLeft" align="right" valign="top">std::weak_ptr&lt; <a class="el" href="structeve_1_1physics_1_1jolt_1_1State.html">State</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1BodyState.html#acfe3e1f64908ff394c77d2553dbe3e24">world</a></td></tr>
+<tr class="separator:acfe3e1f64908ff394c77d2553dbe3e24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add35e6cb29bfdf3c5a2fdfd3cccec653" id="r_add35e6cb29bfdf3c5a2fdfd3cccec653"><td class="memItemLeft" align="right" valign="top">JPH::MassProperties&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1BodyState.html#add35e6cb29bfdf3c5a2fdfd3cccec653">mass</a></td></tr>
+<tr class="separator:add35e6cb29bfdf3c5a2fdfd3cccec653"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab24d9ccd279e1e02f26c12236da36362" id="r_ab24d9ccd279e1e02f26c12236da36362"><td class="memItemLeft" align="right" valign="top">JPH::BodyID&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1BodyState.html#ab24d9ccd279e1e02f26c12236da36362">id</a></td></tr>
+<tr class="separator:ab24d9ccd279e1e02f26c12236da36362"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e0b186c21be9e5aa2a8793b343a8186" id="r_a7e0b186c21be9e5aa2a8793b343a8186"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1Body3D.html">Body3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1BodyState.html#a7e0b186c21be9e5aa2a8793b343a8186">owner</a> = nullptr</td></tr>
+<tr class="separator:a7e0b186c21be9e5aa2a8793b343a8186"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8d25347f02999e53f7f4f7ba1d67a03" id="r_ab8d25347f02999e53f7f4f7ba1d67a03"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="structeve_1_1physics_1_1jolt_1_1ShapeState.html">ShapeState</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1BodyState.html#ab8d25347f02999e53f7f4f7ba1d67a03">shapes</a></td></tr>
+<tr class="separator:ab8d25347f02999e53f7f4f7ba1d67a03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dc34efffda5f9e595b38631df8e0c3f" id="r_a9dc34efffda5f9e595b38631df8e0c3f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1BodyState.html#a9dc34efffda5f9e595b38631df8e0c3f">alive</a> = true</td></tr>
+<tr class="separator:a9dc34efffda5f9e595b38631df8e0c3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5250a2801b6995d3617630cffa7cfb8d" id="r_a5250a2801b6995d3617630cffa7cfb8d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1BodyState.html#a5250a2801b6995d3617630cffa7cfb8d">active</a> = true</td></tr>
+<tr class="separator:a5250a2801b6995d3617630cffa7cfb8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a578800f37070d5387b1396fea6c22fd4" id="r_a578800f37070d5387b1396fea6c22fd4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1BodyState.html#a578800f37070d5387b1396fea6c22fd4">attached</a> = true</td></tr>
+<tr class="separator:a578800f37070d5387b1396fea6c22fd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5723e4ed27c58b3df73ec0db90991c39" id="r_a5723e4ed27c58b3df73ec0db90991c39"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1BodyState.html#a5723e4ed27c58b3df73ec0db90991c39">bullet</a> = false</td></tr>
+<tr class="separator:a5723e4ed27c58b3df73ec0db90991c39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01e9ec692ba405051986c08bc8a09980" id="r_a01e9ec692ba405051986c08bc8a09980"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1BodyState.html#a01e9ec692ba405051986c08bc8a09980">customSleepThreshold</a> = false</td></tr>
+<tr class="separator:a01e9ec692ba405051986c08bc8a09980"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cc079637016907cbf040d61f1e17afd" id="r_a5cc079637016907cbf040d61f1e17afd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1BodyState.html#a5cc079637016907cbf040d61f1e17afd">sleepEnabled</a> = true</td></tr>
+<tr class="separator:a5cc079637016907cbf040d61f1e17afd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39d0b807755ab039053398fad120ff2e" id="r_a39d0b807755ab039053398fad120ff2e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1BodyState.html#a39d0b807755ab039053398fad120ff2e">sleepThreshold</a> = .03<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a39d0b807755ab039053398fad120ff2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c0d2765c55c9a42a369e60fbbb43ad5" id="r_a6c0d2765c55c9a42a369e60fbbb43ad5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1BodyState.html#a6c0d2765c55c9a42a369e60fbbb43ad5">quietSeconds</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a6c0d2765c55c9a42a369e60fbbb43ad5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53d00275a8f24b3fffdc0c88a8aa5165" id="r_a53d00275a8f24b3fffdc0c88a8aa5165"><td class="memItemLeft" align="right" valign="top">JPH::EAllowedDOFs&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1BodyState.html#a53d00275a8f24b3fffdc0c88a8aa5165">dofs</a> = JPH::EAllowedDOFs::All</td></tr>
+<tr class="separator:a53d00275a8f24b3fffdc0c88a8aa5165"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00072">72</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a1ce96fc3bbaa5c7786d36d1b912b8080" name="a1ce96fc3bbaa5c7786d36d1b912b8080"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ce96fc3bbaa5c7786d36d1b912b8080">&#9670;&#160;</a></span>api()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">JPH::BodyInterface &amp; eve::physics::jolt::BodyState::api </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00087">87</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JoltInternal_8h_source.html#l00073">world</a>.</p>
+
+</div>
+</div>
+<a id="a0c309d08614c6c333b979c2c3ece897b" name="a0c309d08614c6c333b979c2c3ece897b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c309d08614c6c333b979c2c3ece897b">&#9670;&#160;</a></span>valid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::jolt::BodyState::valid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JoltInternal_8h_source.html#l00078">alive</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">w</a> , 以及 <a class="el" href="JoltInternal_8h_source.html#l00073">world</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a5250a2801b6995d3617630cffa7cfb8d" name="a5250a2801b6995d3617630cffa7cfb8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5250a2801b6995d3617630cffa7cfb8d">&#9670;&#160;</a></span>active</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::jolt::BodyState::active = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00078">78</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9dc34efffda5f9e595b38631df8e0c3f" name="a9dc34efffda5f9e595b38631df8e0c3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dc34efffda5f9e595b38631df8e0c3f">&#9670;&#160;</a></span>alive</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::jolt::BodyState::alive = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltInternal_8h_source.html#l00083">valid()</a>.</p>
+
+</div>
+</div>
+<a id="a578800f37070d5387b1396fea6c22fd4" name="a578800f37070d5387b1396fea6c22fd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a578800f37070d5387b1396fea6c22fd4">&#9670;&#160;</a></span>attached</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::jolt::BodyState::attached = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00078">78</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5723e4ed27c58b3df73ec0db90991c39" name="a5723e4ed27c58b3df73ec0db90991c39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5723e4ed27c58b3df73ec0db90991c39">&#9670;&#160;</a></span>bullet</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::jolt::BodyState::bullet = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a01e9ec692ba405051986c08bc8a09980" name="a01e9ec692ba405051986c08bc8a09980"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01e9ec692ba405051986c08bc8a09980">&#9670;&#160;</a></span>customSleepThreshold</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::jolt::BodyState::customSleepThreshold = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a53d00275a8f24b3fffdc0c88a8aa5165" name="a53d00275a8f24b3fffdc0c88a8aa5165"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53d00275a8f24b3fffdc0c88a8aa5165">&#9670;&#160;</a></span>dofs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">JPH::EAllowedDOFs eve::physics::jolt::BodyState::dofs = JPH::EAllowedDOFs::All</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab24d9ccd279e1e02f26c12236da36362" name="ab24d9ccd279e1e02f26c12236da36362"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab24d9ccd279e1e02f26c12236da36362">&#9670;&#160;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">JPH::BodyID eve::physics::jolt::BodyState::id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="add35e6cb29bfdf3c5a2fdfd3cccec653" name="add35e6cb29bfdf3c5a2fdfd3cccec653"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add35e6cb29bfdf3c5a2fdfd3cccec653">&#9670;&#160;</a></span>mass</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">JPH::MassProperties eve::physics::jolt::BodyState::mass</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7e0b186c21be9e5aa2a8793b343a8186" name="a7e0b186c21be9e5aa2a8793b343a8186"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e0b186c21be9e5aa2a8793b343a8186">&#9670;&#160;</a></span>owner</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1Body3D.html">Body3D</a>* eve::physics::jolt::BodyState::owner = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6c0d2765c55c9a42a369e60fbbb43ad5" name="a6c0d2765c55c9a42a369e60fbbb43ad5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c0d2765c55c9a42a369e60fbbb43ad5">&#9670;&#160;</a></span>quietSeconds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::jolt::BodyState::quietSeconds = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab8d25347f02999e53f7f4f7ba1d67a03" name="ab8d25347f02999e53f7f4f7ba1d67a03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8d25347f02999e53f7f4f7ba1d67a03">&#9670;&#160;</a></span>shapes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::shared_ptr&lt;<a class="el" href="structeve_1_1physics_1_1jolt_1_1ShapeState.html">ShapeState</a>&gt; &gt; eve::physics::jolt::BodyState::shapes</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5cc079637016907cbf040d61f1e17afd" name="a5cc079637016907cbf040d61f1e17afd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cc079637016907cbf040d61f1e17afd">&#9670;&#160;</a></span>sleepEnabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::jolt::BodyState::sleepEnabled = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a39d0b807755ab039053398fad120ff2e" name="a39d0b807755ab039053398fad120ff2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39d0b807755ab039053398fad120ff2e">&#9670;&#160;</a></span>sleepThreshold</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::jolt::BodyState::sleepThreshold = .03<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acfe3e1f64908ff394c77d2553dbe3e24" name="acfe3e1f64908ff394c77d2553dbe3e24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfe3e1f64908ff394c77d2553dbe3e24">&#9670;&#160;</a></span>world</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::weak_ptr&lt;<a class="el" href="structeve_1_1physics_1_1jolt_1_1State.html">State</a>&gt; eve::physics::jolt::BodyState::world</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltInternal_8h_source.html#l00087">api()</a> , 以及 <a class="el" href="JoltInternal_8h_source.html#l00083">valid()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/physics/jolt/<a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,306 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/road/RoadPlacementTerrain.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_eae28a20e025a9c7686e9c0b6d57b77b.html">road</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">RoadPlacementTerrain.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="RoadPlacementTerrain_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="ProcgenWorldQuery_8h.html">common/ProcgenWorldQuery.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="RoadBakeInternal_8h.html">procgen/road/RoadBakeInternal.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen_1_1road_1_1detail.html">eve::procgen::road::detail</a> {</div>
+<div class="foldopen" id="foldopen00007" data-start="{" data-end="}">
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen_1_1road_1_1detail.html#a85fecca1f3b3008feb3cf7521f1cc944">    7</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;V3&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1road_1_1detail.html#a85fecca1f3b3008feb3cf7521f1cc944">sideTerrainNormal</a>(<a class="code hl_class" href="classeve_1_1IProcgenWorldQuery.html">eve::IProcgenWorldQuery</a>&amp; query, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html">RoadBakeOptions</a>&amp; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>,</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>                             std::size_t&amp; work) {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.placementQueryMinY) || !std::isfinite(<a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.placementQueryMaxY) ||</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>        <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.placementQueryMinY &gt; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.placementQueryMaxY || <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.maximumPlacementQueries &lt; 1 ||</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.maximumPlacementQueries &gt; 4194304u)</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        <span class="keywordflow">return</span> bakeFail&lt;V3&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;invalid placement projection window or budget&quot;</span>,</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>                            <span class="stringliteral">&quot;sideTerrain&quot;</span>);</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">if</span> (work &gt;= <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.maximumPlacementQueries)</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        <span class="keywordflow">return</span> bakeFail&lt;V3&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">DiagnosticCode::PreconditionViolation</a>, <span class="stringliteral">&quot;side-object terrain query budget exceeded&quot;</span>,</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>                            <span class="stringliteral">&quot;sideTerrain&quot;</span>);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    ++work;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">auto</span> projected =</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        query.projectDown(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.placementQueryMaxY, <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.placementQueryMinY, <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.placementQueryMask);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">if</span> (!projected.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;V3&gt;::failure</a>(projected.status());</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a> = projected.value();</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>.hit) <span class="keywordflow">return</span> bakeFail&lt;V3&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">DiagnosticCode::NotFound</a>, <span class="stringliteral">&quot;side-object normal projection missed&quot;</span>, <span class="stringliteral">&quot;sideTerrain&quot;</span>);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1detail_1_1V3.html">V3</a> <a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>{<a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>.normalX, <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>.normalY, <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>.normalZ};</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>.y) || <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>.y &lt; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.placementQueryMinY || <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>.y &gt; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.placementQueryMaxY ||</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        !std::isfinite(<a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>.x) || !std::isfinite(<a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>.y) || !std::isfinite(<a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>.z) ||</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        !std::isfinite(<a class="code hl_variable" href="Joint2DBindings_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>(<a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>)) || <a class="code hl_variable" href="Joint2DBindings_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>(<a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>) &lt; 1e-6f)</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keywordflow">return</span> bakeFail&lt;V3&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">DiagnosticCode::PreconditionViolation</a>,</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>                            <span class="stringliteral">&quot;terrain provider returned an invalid normal or height&quot;</span>, <span class="stringliteral">&quot;sideTerrain&quot;</span>);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;V3&gt;::success</a>(<a class="code hl_function" href="namespaceeve_1_1procgen_1_1road_1_1detail.html#ae3368879245b6851c438a1228c2e7abd">normalize</a>(<a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>));</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="}">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen_1_1road_1_1detail.html#accbeb32e00c4bdd84af2698f740631b0">   31</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;float&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1road_1_1detail.html#accbeb32e00c4bdd84af2698f740631b0">sideTerrainHeight</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadSideTerrainRule.html">RoadSideTerrainRule</a>&amp; rule, <a class="code hl_class" href="classeve_1_1IProcgenWorldQuery.html">eve::IProcgenWorldQuery</a>&amp; query, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>,</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                                <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1ProcgenPoint.html">ProcgenPoint</a>&amp; <a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>, <span class="keyword">const</span> std::array&lt;float, 6&gt;* assetBounds,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                                <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html">RoadBakeOptions</a>&amp; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>, std::size_t&amp; work) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.placementQueryMinY) || !std::isfinite(<a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.placementQueryMaxY) ||</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.placementQueryMinY &gt; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.placementQueryMaxY || <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.maximumPlacementQueries &lt; 1 ||</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.maximumPlacementQueries &gt; 4194304u)</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">return</span> bakeFail&lt;float&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;invalid placement projection window or budget&quot;</span>,</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                               <span class="stringliteral">&quot;sideTerrain&quot;</span>);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>       <a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a>   = rule.<a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadSideTerrainRule.html#a9b3ff966efc31fe168dca0ebdd771809">mode</a> == <a class="code hl_enumvalue" href="namespaceeve_1_1procgen_1_1road.html#a03241cb176c0bdb5a25156c992330050a4f1f6016fc9f3f2353c0cc7c67b292bd">RoadSideTerrainMode::Center</a> ? 1 : rule.<a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadSideTerrainRule.html#a5b0331f027ca4171b778012b53f76cd9">samplesPerAxis</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">constexpr</span> <span class="keywordtype">float</span> radians = .017453292519943295f;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>     <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a> = std::cos(<a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>.yaw * radians), <a class="code hl_variable" href="BattleControl_8cpp.html#ac913d18953c212b83881e974836de358">s</a> = std::sin(<a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>.yaw * radians);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>     cp = std::cos(<a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>.pitch * radians), sp = std::sin(<a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>.pitch * radians);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>     cr = std::cos(<a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>.roll * radians), sr = std::sin(<a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>.roll * radians);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>       layers = <a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a> &gt; 1 &amp;&amp; assetBounds &amp;&amp; (*assetBounds)[1] != (*assetBounds)[4] &amp;&amp;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                               (std::fabs(sp) &gt; 1e-6f || std::fabs(sr) &gt; 1e-6f)</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                                 ? 2</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                                 : 1;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordtype">double</span>          sum    = 0.;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">float</span>           low = std::numeric_limits&lt;float&gt;::max(), high = -low;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a> = 0; <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a> &lt; layers; ++<a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>)</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a>; ++i)</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a>; ++j) {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                <span class="keywordflow">if</span> (work &gt;= <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.maximumPlacementQueries)</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                    <span class="keywordflow">return</span> bakeFail&lt;float&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">DiagnosticCode::PreconditionViolation</a>,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                                           <span class="stringliteral">&quot;side-object terrain query budget exceeded&quot;</span>, <span class="stringliteral">&quot;sideTerrain&quot;</span>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a> =</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                    <a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a> == 1 ? 0.f : std::lerp(rule.<a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadSideTerrainRule.html#a7deaa262c53de18d57c0a3f50e7ca6c8">minSide</a>, rule.<a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadSideTerrainRule.html#a6a2de7adfcd09d405800d28ee334523b">maxSide</a>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(i) / (<a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a> - 1));</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="VehicleTires3D_8cpp.html#a41694d5f784f19074af5a03f8c929abd">forward</a> =</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                    <a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a> == 1 ? 0.f : std::lerp(rule.<a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadSideTerrainRule.html#a4a15cd97b321d65b161b1ec43fbae53f">minForward</a>, rule.<a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadSideTerrainRule.html#a3151010ee9739082e8d886862aaf819c">maxForward</a>, <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(j) / (<a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a> - 1));</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="HexSphereMesh_8cpp.html#a3ac73cb3882ce4d27f939ed60e19fdae">up</a> = layers == 2 ? (*assetBounds)[<a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a> == 0 ? 1 : 4] : 0.f;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> rx = cr * <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a> - sr * <a class="code hl_variable" href="HexSphereMesh_8cpp.html#a3ac73cb3882ce4d27f939ed60e19fdae">up</a>, ry = sr * <a class="code hl_variable" href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a> + cr * <a class="code hl_variable" href="HexSphereMesh_8cpp.html#a3ac73cb3882ce4d27f939ed60e19fdae">up</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> rz = sp * ry + cp * <a class="code hl_variable" href="VehicleTires3D_8cpp.html#a41694d5f784f19074af5a03f8c929abd">forward</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a> = <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> + <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a> * rx + <a class="code hl_variable" href="BattleControl_8cpp.html#ac913d18953c212b83881e974836de358">s</a> * rz, <a class="code hl_variable" href="CaveSurfaceReactivity_8cpp.html#ad14cf8d20cbd0a50cdc6cd204096aa46">pz</a> = <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> - <a class="code hl_variable" href="BattleControl_8cpp.html#ac913d18953c212b83881e974836de358">s</a> * rx + <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a> * rz;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a>) || !std::isfinite(<a class="code hl_variable" href="CaveSurfaceReactivity_8cpp.html#ad14cf8d20cbd0a50cdc6cd204096aa46">pz</a>))</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                    <span class="keywordflow">return</span> bakeFail&lt;float&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;placement footprint is not representable&quot;</span>,</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                                           <span class="stringliteral">&quot;sideTerrain&quot;</span>);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                ++work;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                <span class="keyword">auto</span> projected = query.projectDown(<a class="code hl_variable" href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a>, <a class="code hl_variable" href="CaveSurfaceReactivity_8cpp.html#ad14cf8d20cbd0a50cdc6cd204096aa46">pz</a>, <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.placementQueryMaxY, <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.placementQueryMinY,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                                                   <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.placementQueryMask);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                <span class="keywordflow">if</span> (!projected.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;float&gt;::failure</a>(projected.status());</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a> = projected.value();</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                <span class="keywordflow">if</span> (!<a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>.hit)</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                    <span class="keywordflow">return</span> bakeFail&lt;float&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">DiagnosticCode::NotFound</a>,</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                                           <span class="stringliteral">&quot;side-object terrain footprint has a projection miss&quot;</span>, <span class="stringliteral">&quot;sideTerrain&quot;</span>);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>.y) || <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>.y &lt; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.placementQueryMinY || <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>.y &gt; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>.placementQueryMaxY)</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                    <span class="keywordflow">return</span> bakeFail&lt;float&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">DiagnosticCode::PreconditionViolation</a>,</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                                           <span class="stringliteral">&quot;terrain provider returned an invalid height&quot;</span>, <span class="stringliteral">&quot;sideTerrain&quot;</span>);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                low  = std::min(low, <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>.y);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                high = std::max(high, <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>.y);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                sum += <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>.y;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            }</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">if</span> (rule.<a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadSideTerrainRule.html#a9b3ff966efc31fe168dca0ebdd771809">mode</a> == <a class="code hl_enumvalue" href="namespaceeve_1_1procgen_1_1road.html#a03241cb176c0bdb5a25156c992330050ab5b8e20937205384be7b9e0c29a28fdb">RoadSideTerrainMode::Lowest</a>) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;float&gt;::success</a>(low);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">if</span> (rule.<a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadSideTerrainRule.html#a9b3ff966efc31fe168dca0ebdd771809">mode</a> == <a class="code hl_enumvalue" href="namespaceeve_1_1procgen_1_1road.html#a03241cb176c0bdb5a25156c992330050a582996407922dab08d5cf2b3d2a7c1c9">RoadSideTerrainMode::Highest</a>) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;float&gt;::success</a>(high);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;float&gt;::success</a>(<span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(sum / (<a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a> * <a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a> * layers)));</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>}</div>
+</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>}  <span class="comment">// namespace eve::procgen::road::detail</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAudioCapabilities_8cpp_html_ac8f9d11b63bfd0cfb294366658eb7e91"><div class="ttname"><a href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a></div><div class="ttdeci">eve::EntitySpatialPose pose</div><div class="ttdef"><b>Definition</b> <a href="AudioCapabilities_8cpp_source.html#l00379">AudioCapabilities.cpp:379</a></div></div>
+<div class="ttc" id="aBattleControl_8cpp_html_ac913d18953c212b83881e974836de358"><div class="ttname"><a href="BattleControl_8cpp.html#ac913d18953c212b83881e974836de358">s</a></div><div class="ttdeci">const std::string &amp; s</div><div class="ttdef"><b>Definition</b> <a href="BattleControl_8cpp_source.html#l00325">BattleControl.cpp:325</a></div></div>
+<div class="ttc" id="aCaveSurfaceReactivity_8cpp_html_ad14cf8d20cbd0a50cdc6cd204096aa46"><div class="ttname"><a href="CaveSurfaceReactivity_8cpp.html#ad14cf8d20cbd0a50cdc6cd204096aa46">pz</a></div><div class="ttdeci">float pz</div><div class="ttdef"><b>Definition</b> <a href="CaveSurfaceReactivity_8cpp_source.html#l00150">CaveSurfaceReactivity.cpp:150</a></div></div>
+<div class="ttc" id="aHexSphereMesh_8cpp_html_a3ac73cb3882ce4d27f939ed60e19fdae"><div class="ttname"><a href="HexSphereMesh_8cpp.html#a3ac73cb3882ce4d27f939ed60e19fdae">up</a></div><div class="ttdeci">HexVec3 up</div><div class="ttdef"><b>Definition</b> <a href="HexSphereMesh_8cpp_source.html#l00218">HexSphereMesh.cpp:218</a></div></div>
+<div class="ttc" id="aHexSphereTopology_8cpp_html_a6508ac0a45fccabd203a6f520c69dca8"><div class="ttname"><a href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a></div><div class="ttdeci">std::int32_t c</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8cpp_source.html#l00075">HexSphereTopology.cpp:75</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_aecb57814a4eed9c5ec6047d3af2a9488"><div class="ttname"><a href="ImageData_8cpp.html#aecb57814a4eed9c5ec6047d3af2a9488">px</a></div><div class="ttdeci">std::vector&lt; Colorf &gt; px</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00691">ImageData.cpp:691</a></div></div>
+<div class="ttc" id="aJoint2DBindings_8cpp_html_a6150639f5295064e97e299a9206d16b1"><div class="ttname"><a href="Joint2DBindings_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a></div><div class="ttdeci">float length</div><div class="ttdef"><b>Definition</b> <a href="Joint2DBindings_8cpp_source.html#l00017">Joint2DBindings.cpp:17</a></div></div>
+<div class="ttc" id="aModelRenderer_8cpp_html_a7fc298ed6f70a0822720769c13216978"><div class="ttname"><a href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a></div><div class="ttdeci">Texture * normal</div><div class="ttdef"><b>Definition</b> <a href="ModelRenderer_8cpp_source.html#l00154">ModelRenderer.cpp:154</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_ac84a36ae433419b622c91ac3022cf1c9"><div class="ttname"><a href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a></div><div class="ttdeci">TileLayer * layer</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00147">Pathfinder.cpp:147</a></div></div>
+<div class="ttc" id="aPrimitiveDrawList_8cpp_html_a60be6f7b3d0d908fcedf0842fd96c1f4"><div class="ttname"><a href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a></div><div class="ttdeci">bool hit</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveDrawList_8cpp_source.html#l00077">PrimitiveDrawList.cpp:77</a></div></div>
+<div class="ttc" id="aProcgenWorldQuery_8h_html"><div class="ttname"><a href="ProcgenWorldQuery_8h.html">ProcgenWorldQuery.h</a></div></div>
+<div class="ttc" id="aRoadBakeInternal_8h_html"><div class="ttname"><a href="RoadBakeInternal_8h.html">RoadBakeInternal.h</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8cpp_html_abebf9d839cc4bbffbf6bb3cf6c4b1038"><div class="ttname"><a href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a></div><div class="ttdeci">const SquirrelValueOptions &amp; options</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00089">SquirrelBinding.cpp:89</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8cpp_html_ad43c3812e6d13e0518d9f8b8f463ffcf"><div class="ttname"><a href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a></div><div class="ttdeci">int count</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00031">SquirrelBinding.cpp:31</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_af7594145399eb356e6b338bf7d5a5c54"><div class="ttname"><a href="TacticsPersistence_8cpp.html#af7594145399eb356e6b338bf7d5a5c54">side</a></div><div class="ttdeci">ecs::EntityHandle side</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00144">TacticsPersistence.cpp:144</a></div></div>
+<div class="ttc" id="aVehicleTires3D_8cpp_html_a41694d5f784f19074af5a03f8c929abd"><div class="ttname"><a href="VehicleTires3D_8cpp.html#a41694d5f784f19074af5a03f8c929abd">forward</a></div><div class="ttdeci">V forward</div><div class="ttdef"><b>Definition</b> <a href="VehicleTires3D_8cpp_source.html#l00102">VehicleTires3D.cpp:102</a></div></div>
+<div class="ttc" id="aclasseve_1_1IProcgenWorldQuery_html"><div class="ttname"><a href="classeve_1_1IProcgenWorldQuery.html">eve::IProcgenWorldQuery</a></div><div class="ttdoc">Optional synchronous world-query capability for procedural generation.</div><div class="ttdef"><b>Definition</b> <a href="ProcgenWorldQuery_8h_source.html#l00023">ProcgenWorldQuery.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00184">Result.h:184</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00195">Result.h:195</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_1_1detail_html"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road_1_1detail.html">eve::procgen::road::detail</a></div><div class="ttdef"><b>Definition</b> <a href="RoadAlgorithmRevision_8h_source.html#l00005">RoadAlgorithmRevision.h:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_1_1detail_html_a85fecca1f3b3008feb3cf7521f1cc944"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road_1_1detail.html#a85fecca1f3b3008feb3cf7521f1cc944">eve::procgen::road::detail::sideTerrainNormal</a></div><div class="ttdeci">Result&lt; V3 &gt; sideTerrainNormal(eve::IProcgenWorldQuery &amp;query, float x, float z, const RoadBakeOptions &amp;options, std::size_t &amp;work)</div><div class="ttdoc">Borrow the center surface normal with the same network-wide projection budget; no retained provider.</div><div class="ttdef"><b>Definition</b> <a href="RoadPlacementTerrain_8cpp_source.html#l00007">RoadPlacementTerrain.cpp:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_1_1detail_html_accbeb32e00c4bdd84af2698f740631b0"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road_1_1detail.html#accbeb32e00c4bdd84af2698f740631b0">eve::procgen::road::detail::sideTerrainHeight</a></div><div class="ttdeci">Result&lt; float &gt; sideTerrainHeight(const RoadSideTerrainRule &amp;rule, eve::IProcgenWorldQuery &amp;query, float x, float z, const ProcgenPoint &amp;pose, const std::array&lt; float, 6 &gt; *assetBounds, const RoadBakeOptions &amp;options, std::size_t &amp;work)</div><div class="ttdoc">Bounded height-only projection; provider and options are borrowed synchronously, no callbacks retaine...</div><div class="ttdef"><b>Definition</b> <a href="RoadPlacementTerrain_8cpp_source.html#l00031">RoadPlacementTerrain.cpp:31</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_1_1detail_html_ae3368879245b6851c438a1228c2e7abd"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road_1_1detail.html#ae3368879245b6851c438a1228c2e7abd">eve::procgen::road::detail::normalize</a></div><div class="ttdeci">V3 normalize(V3 a)</div><div class="ttdoc">Module-private road bake implementation helper.</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8cpp_source.html#l00031">RoadBake.cpp:31</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html_a03241cb176c0bdb5a25156c992330050a4f1f6016fc9f3f2353c0cc7c67b292bd"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html#a03241cb176c0bdb5a25156c992330050a4f1f6016fc9f3f2353c0cc7c67b292bd">eve::procgen::road::RoadSideTerrainMode::Center</a></div><div class="ttdeci">@ Center</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html_a03241cb176c0bdb5a25156c992330050a582996407922dab08d5cf2b3d2a7c1c9"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html#a03241cb176c0bdb5a25156c992330050a582996407922dab08d5cf2b3d2a7c1c9">eve::procgen::road::RoadSideTerrainMode::Highest</a></div><div class="ttdeci">@ Highest</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html_a03241cb176c0bdb5a25156c992330050ab5b8e20937205384be7b9e0c29a28fdb"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html#a03241cb176c0bdb5a25156c992330050ab5b8e20937205384be7b9e0c29a28fdb">eve::procgen::road::RoadSideTerrainMode::Lowest</a></div><div class="ttdeci">@ Lowest</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::DiagnosticCode::NotFound</a></div><div class="ttdeci">@ NotFound</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a></div><div class="ttdeci">@ PreconditionViolation</div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ProcgenPoint_html"><div class="ttname"><a href="structeve_1_1procgen_1_1ProcgenPoint.html">eve::procgen::ProcgenPoint</a></div><div class="ttdoc">One deterministic sample used by script-first procedural pipelines.</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8h_source.html#l00017">PointSet.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadBakeOptions_html"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadBakeOptions.html">eve::procgen::road::RoadBakeOptions</a></div><div class="ttdoc">Options for baking a road network into mesh + navigation overlays.</div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8h_source.html#l00050">RoadBake.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadSideTerrainRule_html"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadSideTerrainRule.html">eve::procgen::road::RoadSideTerrainRule</a></div><div class="ttdoc">Owned side-object ground rule; None height retains road height, while TerrainNormal alignment indepen...</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00138">RoadTypes.h:138</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadSideTerrainRule_html_a3151010ee9739082e8d886862aaf819c"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadSideTerrainRule.html#a3151010ee9739082e8d886862aaf819c">eve::procgen::road::RoadSideTerrainRule::maxForward</a></div><div class="ttdeci">float maxForward</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00140">RoadTypes.h:140</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadSideTerrainRule_html_a4a15cd97b321d65b161b1ec43fbae53f"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadSideTerrainRule.html#a4a15cd97b321d65b161b1ec43fbae53f">eve::procgen::road::RoadSideTerrainRule::minForward</a></div><div class="ttdeci">float minForward</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00140">RoadTypes.h:140</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadSideTerrainRule_html_a5b0331f027ca4171b778012b53f76cd9"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadSideTerrainRule.html#a5b0331f027ca4171b778012b53f76cd9">eve::procgen::road::RoadSideTerrainRule::samplesPerAxis</a></div><div class="ttdeci">int samplesPerAxis</div><div class="ttdoc">Uniform inclusive footprint grid in [2,17]; Center performs one query.</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00141">RoadTypes.h:141</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadSideTerrainRule_html_a6a2de7adfcd09d405800d28ee334523b"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadSideTerrainRule.html#a6a2de7adfcd09d405800d28ee334523b">eve::procgen::road::RoadSideTerrainRule::maxSide</a></div><div class="ttdeci">float maxSide</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00140">RoadTypes.h:140</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadSideTerrainRule_html_a7deaa262c53de18d57c0a3f50e7ca6c8"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadSideTerrainRule.html#a7deaa262c53de18d57c0a3f50e7ca6c8">eve::procgen::road::RoadSideTerrainRule::minSide</a></div><div class="ttdeci">float minSide</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00140">RoadTypes.h:140</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadSideTerrainRule_html_a9b3ff966efc31fe168dca0ebdd771809"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadSideTerrainRule.html#a9b3ff966efc31fe168dca0ebdd771809">eve::procgen::road::RoadSideTerrainRule::mode</a></div><div class="ttdeci">RoadSideTerrainMode mode</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00139">RoadTypes.h:139</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1detail_1_1V3_html"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1detail_1_1V3.html">eve::procgen::road::detail::V3</a></div><div class="ttdef"><b>Definition</b> <a href="RoadBakeInternal_8h_source.html#l00062">RoadBakeInternal.h:62</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

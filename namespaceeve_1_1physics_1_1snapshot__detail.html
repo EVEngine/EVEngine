@@ -1,0 +1,1584 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::snapshot_detail 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html">snapshot_detail</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::snapshot_detail 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html">Body2DState</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body3DState.html">Body3DState</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1ObservationState.html">ObservationState</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:aa92b99071adf8dbfbd3bd1d1a8020273" id="r_aa92b99071adf8dbfbd3bd1d1a8020273"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#aa92b99071adf8dbfbd3bd1d1a8020273">captureJoint3DParameters</a> (b3JointId <a class="el" href="McpArchitectureTools_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="memdesc:aa92b99071adf8dbfbd3bd1d1a8020273"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture solver-owned parameters on the physics owner thread into an owning value.  <br /></td></tr>
+<tr class="separator:aa92b99071adf8dbfbd3bd1d1a8020273"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d1e6db4aaf1252a56ff21d891883ff2" id="r_a6d1e6db4aaf1252a56ff21d891883ff2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#a6d1e6db4aaf1252a56ff21d891883ff2">restoreJoint3DParameters</a> (b3JointId <a class="el" href="McpArchitectureTools_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>)</td></tr>
+<tr class="memdesc:a6d1e6db4aaf1252a56ff21d891883ff2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate the complete parameter object before updating a live candidate joint; no retained references.  <br /></td></tr>
+<tr class="separator:a6d1e6db4aaf1252a56ff21d891883ff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0f879ca3fe1b738366e8cf01a2afb18" id="r_ae0f879ca3fe1b738366e8cf01a2afb18"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#ae0f879ca3fe1b738366e8cf01a2afb18">fixtureMaterialValue</a> (const b2Fixture &amp;fixture)</td></tr>
+<tr class="memdesc:ae0f879ca3fe1b738366e8cf01a2afb18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning material/filter projection from a synchronous backend observation.  <br /></td></tr>
+<tr class="separator:ae0f879ca3fe1b738366e8cf01a2afb18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28890957adfeff5f8f8d1ac7eb3800bf" id="r_a28890957adfeff5f8f8d1ac7eb3800bf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#a28890957adfeff5f8f8d1ac7eb3800bf">restoreFixtureMaterial</a> (<a class="el" href="classeve_1_1physics_1_1Fixture.html">Fixture</a> &amp;fixture, const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>)</td></tr>
+<tr class="memdesc:a28890957adfeff5f8f8d1ac7eb3800bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate material fields before applying them to a detached fixture.  <br /></td></tr>
+<tr class="separator:a28890957adfeff5f8f8d1ac7eb3800bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb6d1817ff434f741425b81595c045cc" id="r_abb6d1817ff434f741425b81595c045cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#abb6d1817ff434f741425b81595c045cc">migratePlanarV2</a> (<a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="ActionTimelinePayloadEditor_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>)</td></tr>
+<tr class="memdesc:abb6d1817ff434f741425b81595c045cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Migrate previous schema with explicit defaults for previously omitted state.  <br /></td></tr>
+<tr class="separator:abb6d1817ff434f741425b81595c045cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7099e1f2da630c8beb22a044ce1fa68" id="r_aa7099e1f2da630c8beb22a044ce1fa68"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1LogicalId.html">eve::LogicalId</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#aa7099e1f2da630c8beb22a044ce1fa68">snapshotSchema</a> (std::string_view <a class="el" href="ScriptStructure_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>)</td></tr>
+<tr class="separator:aa7099e1f2da630c8beb22a044ce1fa68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0db7f9b208cf584c393cbca381c5013" id="r_ad0db7f9b208cf584c393cbca381c5013"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#ad0db7f9b208cf584c393cbca381c5013">checkEnvelope</a> (const <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &amp;<a class="el" href="McpProjectIndexTools_8cpp.html#ad48627cd289655d382112b727e253919">snapshot</a>, std::string_view <a class="el" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, std::string_view schema)</td></tr>
+<tr class="separator:ad0db7f9b208cf584c393cbca381c5013"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1832ae96613378d339b16d33276bdd2" id="r_af1832ae96613378d339b16d33276bdd2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1ObservationState.html">ObservationState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#af1832ae96613378d339b16d33276bdd2">parseObservation</a> (const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a> &amp;<a class="el" href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a>, const <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &amp;<a class="el" href="McpProjectIndexTools_8cpp.html#ad48627cd289655d382112b727e253919">snapshot</a>)</td></tr>
+<tr class="separator:af1832ae96613378d339b16d33276bdd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb4a2e8b17ba04eb3b0a616a8b92958f" id="r_aeb4a2e8b17ba04eb3b0a616a8b92958f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#aeb4a2e8b17ba04eb3b0a616a8b92958f">validBodyType</a> (const std::string &amp;<a class="el" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>)</td></tr>
+<tr class="separator:aeb4a2e8b17ba04eb3b0a616a8b92958f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4287b40495fffbeb3aa895c086aaebc" id="r_aa4287b40495fffbeb3aa895c086aaebc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html">Body2DState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#aa4287b40495fffbeb3aa895c086aaebc">parseBody2D</a> (const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;<a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>)</td></tr>
+<tr class="separator:aa4287b40495fffbeb3aa895c086aaebc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add90aa838b4d3369bb507ab7dc0b06fa" id="r_add90aa838b4d3369bb507ab7dc0b06fa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body3DState.html">Body3DState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#add90aa838b4d3369bb507ab7dc0b06fa">parseBody3D</a> (const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;<a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>)</td></tr>
+<tr class="separator:add90aa838b4d3369bb507ab7dc0b06fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb2fd0b78f2b76b8aa15b9c01123c21a" id="r_aeb2fd0b78f2b76b8aa15b9c01123c21a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">eve::Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#aeb2fd0b78f2b76b8aa15b9c01123c21a">bodyValue</a> (const <a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> &amp;<a class="el" href="ProjectIndexGraph_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>)</td></tr>
+<tr class="separator:aeb2fd0b78f2b76b8aa15b9c01123c21a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb3f0bc54d098f190c486b5ffa5e44b7" id="r_abb3f0bc54d098f190c486b5ffa5e44b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">eve::Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#abb3f0bc54d098f190c486b5ffa5e44b7">bodyValue</a> (const <a class="el" href="classeve_1_1physics_1_1Body3D.html">Body3D</a> &amp;<a class="el" href="ProjectIndexGraph_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>)</td></tr>
+<tr class="separator:abb3f0bc54d098f190c486b5ffa5e44b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a669fc260e65d7da36c34ca54d63277b8" id="r_a669fc260e65d7da36c34ca54d63277b8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">eve::Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#a669fc260e65d7da36c34ca54d63277b8">fixtureTopologyValue</a> (const <a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> &amp;<a class="el" href="ProjectIndexGraph_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>)</td></tr>
+<tr class="separator:a669fc260e65d7da36c34ca54d63277b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a1a39830572c3e70c770ba613397b61" id="r_a3a1a39830572c3e70c770ba613397b61"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">eve::Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#a3a1a39830572c3e70c770ba613397b61">shapesTopologyValue</a> (const std::vector&lt; <a class="el" href="classeve_1_1physics_1_1Shape3D.html">Shape3D</a> * &gt; &amp;shapes)</td></tr>
+<tr class="separator:a3a1a39830572c3e70c770ba613397b61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5036cce6ef2b221c50be0d802a984a50" id="r_a5036cce6ef2b221c50be0d802a984a50"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">eve::Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#a5036cce6ef2b221c50be0d802a984a50">jointsTopologyValue</a> (const std::vector&lt; <a class="el" href="classeve_1_1physics_1_1Joint3D.html">Joint3D</a> * &gt; &amp;joints)</td></tr>
+<tr class="separator:a5036cce6ef2b221c50be0d802a984a50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a520e8a946ddbebba416a0422358219e0" id="r_a520e8a946ddbebba416a0422358219e0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#a520e8a946ddbebba416a0422358219e0">observationFields</a> (const <a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a> &amp;observation, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="separator:a520e8a946ddbebba416a0422358219e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ddcfe278a0d599ea5d95c36af2fa2f3" id="r_a3ddcfe278a0d599ea5d95c36af2fa2f3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">eve::Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#a3ddcfe278a0d599ea5d95c36af2fa2f3">make2DPayload</a> (const <a class="el" href="classeve_1_1physics_1_1World.html">World</a> &amp;world, const std::vector&lt; <a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> * &gt; &amp;bodies)</td></tr>
+<tr class="separator:a3ddcfe278a0d599ea5d95c36af2fa2f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8aa04648b6bb8310a314a11e8a51150a" id="r_a8aa04648b6bb8310a314a11e8a51150a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">eve::Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#a8aa04648b6bb8310a314a11e8a51150a">make3DPayload</a> (const <a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> &amp;world, const std::vector&lt; <a class="el" href="classeve_1_1physics_1_1Body3D.html">Body3D</a> * &gt; &amp;bodies, const std::vector&lt; <a class="el" href="classeve_1_1physics_1_1Shape3D.html">Shape3D</a> * &gt; &amp;shapes, const std::vector&lt; <a class="el" href="classeve_1_1physics_1_1Joint3D.html">Joint3D</a> * &gt; &amp;joints)</td></tr>
+<tr class="separator:a8aa04648b6bb8310a314a11e8a51150a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac81d2bb537de02dbab57beb2cbd41fab" id="r_ac81d2bb537de02dbab57beb2cbd41fab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html">Body2DState</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#ac81d2bb537de02dbab57beb2cbd41fab">parseBodies2D</a> (const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a> &amp;<a class="el" href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a>)</td></tr>
+<tr class="separator:ac81d2bb537de02dbab57beb2cbd41fab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4728357e4d6e242e2153fb8523c2f83" id="r_ad4728357e4d6e242e2153fb8523c2f83"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body3DState.html">Body3DState</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#ad4728357e4d6e242e2153fb8523c2f83">parseBodies3D</a> (const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a> &amp;<a class="el" href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a>)</td></tr>
+<tr class="separator:ad4728357e4d6e242e2153fb8523c2f83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac64ed593b77f8919e531c181f8cbbd35" id="r_ac64ed593b77f8919e531c181f8cbbd35"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1physics_1_1World.html">World</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#ac64ed593b77f8919e531c181f8cbbd35">prepareWorld2D</a> (const std::vector&lt; <a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html">Body2DState</a> &gt; &amp;states, float gravityX, float gravityY, float meter, const <a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a> &amp;observation, <a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> instanceId)</td></tr>
+<tr class="separator:ac64ed593b77f8919e531c181f8cbbd35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a975bd347039f93c69f226d900a15804a" id="r_a975bd347039f93c69f226d900a15804a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::vector&lt; float &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#a975bd347039f93c69f226d900a15804a">readFloatArray</a> (const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;<a class="el" href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a>, std::string_view <a class="el" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a975bd347039f93c69f226d900a15804a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read a finite float array, rejecting missing or malformed elements.  <br /></td></tr>
+<tr class="separator:a975bd347039f93c69f226d900a15804a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d89b77c6ee6dbf58be802801c73bdea" id="r_a9d89b77c6ee6dbf58be802801c73bdea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::vector&lt; std::int32_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#a9d89b77c6ee6dbf58be802801c73bdea">readIntArray</a> (const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a> &amp;<a class="el" href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a>, std::string_view <a class="el" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a9d89b77c6ee6dbf58be802801c73bdea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a091b11c851544a095fcb4013c2668a2f" id="r_a091b11c851544a095fcb4013c2668a2f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#a091b11c851544a095fcb4013c2668a2f">prepareWorld3D</a> (const std::vector&lt; <a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body3DState.html">Body3DState</a> &gt; &amp;states, const <a class="el" href="classeve_1_1Value.html#ab1d85b7f682f864577d9030a3e7ea6c5">eve::Value::Array</a> &amp;shapes, const <a class="el" href="classeve_1_1Value.html#ab1d85b7f682f864577d9030a3e7ea6c5">eve::Value::Array</a> &amp;joints, float gravityX, float gravityY, float gravityZ, const <a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a> &amp;observation, <a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a> instanceId, bool legacyParameters, bool allowSleep)</td></tr>
+<tr class="separator:a091b11c851544a095fcb4013c2668a2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4fff2682f22ed831e46a0bba42789b9" id="r_aa4fff2682f22ed831e46a0bba42789b9"><td class="memTemplParams" colspan="2">template&lt;typename BodyState &gt; </td></tr>
+<tr class="memitem:aa4fff2682f22ed831e46a0bba42789b9"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#aa4fff2682f22ed831e46a0bba42789b9">matchBodyIds</a> (const std::vector&lt; BodyState &gt; &amp;states, std::set&lt; int &gt; &amp;<a class="el" href="GraphicsVirtualGeometry_8cpp.html#a7199017871c97339c74bf0d61d90f1f5">ids</a>)</td></tr>
+<tr class="separator:aa4fff2682f22ed831e46a0bba42789b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d5ec03306a21535a2cfcc1a0594a24a" id="r_a5d5ec03306a21535a2cfcc1a0594a24a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#a5d5ec03306a21535a2cfcc1a0594a24a">hasExactFields</a> (const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;<a class="el" href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a>, std::initializer_list&lt; std::string_view &gt; expected)</td></tr>
+<tr class="memdesc:a5d5ec03306a21535a2cfcc1a0594a24a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal exact-field schema predicate.  <br /></td></tr>
+<tr class="separator:a5d5ec03306a21535a2cfcc1a0594a24a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2acf05bfc47b86a1f53507f1c1c3fd4a" id="r_a2acf05bfc47b86a1f53507f1c1c3fd4a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1Value.html">Value</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#a2acf05bfc47b86a1f53507f1c1c3fd4a">field</a> (const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;<a class="el" href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a>, std::string_view <a class="el" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a2acf05bfc47b86a1f53507f1c1c3fd4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow an optional field only during the current synchronous codec call. @ownership Object owns the result; nullable on absence, invalid after object mutation/destruction. @thread Calling thread; no callbacks or retained references.  <br /></td></tr>
+<tr class="separator:a2acf05bfc47b86a1f53507f1c1c3fd4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8151421ca59c31584959d386cfca116c" id="r_a8151421ca59c31584959d386cfca116c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#a8151421ca59c31584959d386cfca116c">readUint64</a> (const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a> &amp;<a class="el" href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a>, std::string_view <a class="el" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a8151421ca59c31584959d386cfca116c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads a required unsigned decimal integer string.  <br /></td></tr>
+<tr class="separator:a8151421ca59c31584959d386cfca116c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a935036c994e41bfcef40186eed597069" id="r_a935036c994e41bfcef40186eed597069"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::int64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#a935036c994e41bfcef40186eed597069">readInt64</a> (const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a> &amp;<a class="el" href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a>, std::string_view <a class="el" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a935036c994e41bfcef40186eed597069"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads a required signed decimal integer string.  <br /></td></tr>
+<tr class="separator:a935036c994e41bfcef40186eed597069"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a054e49131dd1f993d4f332f275a53c39" id="r_a054e49131dd1f993d4f332f275a53c39"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#a054e49131dd1f993d4f332f275a53c39">readFloat</a> (const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a> &amp;<a class="el" href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a>, std::string_view <a class="el" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a054e49131dd1f993d4f332f275a53c39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads a required finite number representable by float.  <br /></td></tr>
+<tr class="separator:a054e49131dd1f993d4f332f275a53c39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94cd04a749d4b0db912cbb4bde43343e" id="r_a94cd04a749d4b0db912cbb4bde43343e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#a94cd04a749d4b0db912cbb4bde43343e">readBool</a> (const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a> &amp;<a class="el" href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a>, std::string_view <a class="el" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a94cd04a749d4b0db912cbb4bde43343e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads a required boolean.  <br /></td></tr>
+<tr class="separator:a94cd04a749d4b0db912cbb4bde43343e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeba527a22719d635508098283ad51667" id="r_aeba527a22719d635508098283ad51667"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#aeba527a22719d635508098283ad51667">readString</a> (const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a> &amp;<a class="el" href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a>, std::string_view <a class="el" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:aeba527a22719d635508098283ad51667"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads a required owning string.  <br /></td></tr>
+<tr class="separator:aeba527a22719d635508098283ad51667"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba4a4ca530383a87f1ede6be741056a5" id="r_aba4a4ca530383a87f1ede6be741056a5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#aba4a4ca530383a87f1ede6be741056a5">readNumber</a> (const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a> &amp;<a class="el" href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a>, std::string_view <a class="el" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:aba4a4ca530383a87f1ede6be741056a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads a required finite number.  <br /></td></tr>
+<tr class="separator:aba4a4ca530383a87f1ede6be741056a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:a8e9e84dfd7445b44b548f45a53ea3ca0" id="r_a8e9e84dfd7445b44b548f45a53ea3ca0"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#a8e9e84dfd7445b44b548f45a53ea3ca0">kWorld2DType</a> = &quot;physics.world2d&quot;</td></tr>
+<tr class="separator:a8e9e84dfd7445b44b548f45a53ea3ca0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0435d1f0e5e8dcba62d260c65af74824" id="r_a0435d1f0e5e8dcba62d260c65af74824"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#a0435d1f0e5e8dcba62d260c65af74824">kWorld2DSchema</a> = &quot;physics:world2d&quot;</td></tr>
+<tr class="separator:a0435d1f0e5e8dcba62d260c65af74824"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a801963c6edbaa12c2dc9dbd40c194e1d" id="r_a801963c6edbaa12c2dc9dbd40c194e1d"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#a801963c6edbaa12c2dc9dbd40c194e1d">kWorld3DType</a> = &quot;physics.world3d&quot;</td></tr>
+<tr class="separator:a801963c6edbaa12c2dc9dbd40c194e1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ff8040e514dbc9ca6c580965a5d49bc" id="r_a4ff8040e514dbc9ca6c580965a5d49bc"><td class="memItemLeft" align="right" valign="top">constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#a4ff8040e514dbc9ca6c580965a5d49bc">kWorld3DSchema</a> = &quot;physics:world3d&quot;</td></tr>
+<tr class="separator:a4ff8040e514dbc9ca6c580965a5d49bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24fe5ffca476afab66239ca84adea6dc" id="r_a24fe5ffca476afab66239ca84adea6dc"><td class="memItemLeft" align="right" valign="top">constexpr std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#a24fe5ffca476afab66239ca84adea6dc">kSnapshotVersion</a> = 3</td></tr>
+<tr class="separator:a24fe5ffca476afab66239ca84adea6dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5bb77e7263e6d38801e0763b5cbf655" id="r_ad5bb77e7263e6d38801e0763b5cbf655"><td class="memItemLeft" align="right" valign="top">constexpr std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html#ad5bb77e7263e6d38801e0763b5cbf655">kSnapshot2DVersion</a> = 3</td></tr>
+<tr class="separator:ad5bb77e7263e6d38801e0763b5cbf655"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="aeb2fd0b78f2b76b8aa15b9c01123c21a" name="aeb2fd0b78f2b76b8aa15b9c01123c21a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb2fd0b78f2b76b8aa15b9c01123c21a">&#9670;&#160;</a></span>bodyValue() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html">eve::Value</a> eve::physics::snapshot_detail::bodyValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> &amp;&#160;</td>
+          <td class="paramname"><em>body</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8cpp_source.html">WorldSnapshotCodec.cpp</a> 第 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00246">246</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a> , 以及 <a class="el" href="TileConfig_8cpp_source.html#l00782">object</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00397">make2DPayload()</a> , 以及 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00419">make3DPayload()</a>.</p>
+
+</div>
+</div>
+<a id="abb3f0bc54d098f190c486b5ffa5e44b7" name="abb3f0bc54d098f190c486b5ffa5e44b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb3f0bc54d098f190c486b5ffa5e44b7">&#9670;&#160;</a></span>bodyValue() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html">eve::Value</a> eve::physics::snapshot_detail::bodyValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1Body3D.html">Body3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>body</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8cpp_source.html">WorldSnapshotCodec.cpp</a> 第 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00267">267</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a>, <a class="el" href="Box3DBody_8cpp_source.html#l00649">eve::physics::box3d::Access::bodyId()</a> , 以及 <a class="el" href="TileConfig_8cpp_source.html#l00782">object</a>.</p>
+
+</div>
+</div>
+<a id="aa92b99071adf8dbfbd3bd1d1a8020273" name="aa92b99071adf8dbfbd3bd1d1a8020273"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa92b99071adf8dbfbd3bd1d1a8020273">&#9670;&#160;</a></span>captureJoint3DParameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html">Value</a> eve::physics::snapshot_detail::captureJoint3DParameters </td>
+          <td>(</td>
+          <td class="paramtype">b3JointId&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture solver-owned parameters on the physics owner thread into an owning value. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3DParameters_8cpp_source.html">Joint3DParameters.cpp</a> 第 <a class="el" href="Joint3DParameters_8cpp_source.html#l00240">240</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00336">f</a>, <a class="el" href="ECS_8cpp_source.html#l00042">fields</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00023">out</a>, <a class="el" href="ProjectIndexAutomatic_8cpp_source.html#l00016">values</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00360">jointsTopologyValue()</a>.</p>
+
+</div>
+</div>
+<a id="ad0db7f9b208cf584c393cbca381c5013" name="ad0db7f9b208cf584c393cbca381c5013"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0db7f9b208cf584c393cbca381c5013">&#9670;&#160;</a></span>checkEnvelope()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::snapshot_detail::checkEnvelope </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>schema</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8cpp_source.html">WorldSnapshotCodec.cpp</a> 第 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="SettlementModule_8cpp_source.html#l00035">current</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00014">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="WorldSnapshotCodec_8h_source.html#l00028">kSnapshot2DVersion</a>, <a class="el" href="WorldSnapshotCodec_8h_source.html#l00027">kSnapshotVersion</a>, <a class="el" href="WorldSnapshotCodec_8h_source.html#l00023">kWorld2DType</a>, <a class="el" href="WorldSnapshotCodec_8h_source.html#l00025">kWorld3DType</a>, <a class="el" href="McpProjectIndexTools_8cpp_source.html#l00017">snapshot</a>, <a class="el" href="Status_8cpp_source.html#l00013">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00016">type</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">eve::UnknownVersion</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshot_8cpp_source.html#l00060">eve::physics::World::restore()</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00149">eve::physics::World3D::restore()</a>.</p>
+
+</div>
+</div>
+<a id="a2acf05bfc47b86a1f53507f1c1c3fd4a" name="a2acf05bfc47b86a1f53507f1c1c3fd4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2acf05bfc47b86a1f53507f1c1c3fd4a">&#9670;&#160;</a></span>field()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> * eve::physics::snapshot_detail::field </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Borrow an optional field only during the current synchronous codec call. @ownership Object owns the result; nullable on absence, invalid after object mutation/destruction. @thread Calling thread; no callbacks or retained references. </p>
+<p>Finds a snapshot field without creating it.</p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable pointer into object. @ownership The caller owns object and the returned value. @lifetime Until object is mutated or destroyed. @thread Call while object is not being mutated on another thread. @reentrancy No callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotParsing_8cpp_source.html">WorldSnapshotParsing.cpp</a> 第 <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Value_8cpp_source.html#l00157">eve::Value::find()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00154">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FieldSet_8cpp_source.html#l00065">eve::physics::FieldSet::build()</a>, <a class="el" href="ClothModel_8cpp_source.html#l00311">eve::physics::ClothModel::fromValue()</a>, <a class="el" href="FractureRecipe_8cpp_source.html#l00250">eve::physics::FractureRecipe::fromValue()</a>, <a class="el" href="GeometryCollectionAsset_8cpp_source.html#l00277">eve::physics::GeometryCollectionAsset::fromValue()</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00243">eve::physics::GeometryCollectionInstanceSnapshot::fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00208">eve::physics::SoftBody3DDefinition::fromValue()</a>, <a class="el" href="SoftBody3D_8cpp_source.html#l00602">eve::physics::SoftBodyModelDefinition::fromValue()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00009">hasExactFields()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00440">parseBodies2D()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00456">parseBodies3D()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00089">parseBody2D()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00166">parseBody3D()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00472">prepareWorld2D()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00601">prepareWorld3D()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00075">readBool()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00558">readFloatArray()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00579">readIntArray()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00054">readNumber()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00022">readString()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00060">eve::physics::World::restore()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00149">eve::physics::World3D::restore()</a>, <a class="el" href="JointSnapshotCodec_8cpp_source.html#l00169">eve::physics::WorldSnapshotAccess::restoreJoints2D()</a>, <a class="el" href="Shape3DContactSnapshot_8cpp_source.html#l00067">eve::physics::WorldSnapshotAccess::restoreShapeContact()</a>, <a class="el" href="FractureRecipe_8cpp_source.html#l00202">eve::physics::FractureRecipe::schemaDefinition()</a>, <a class="el" href="GeometryCollectionAsset_8cpp_source.html#l00244">eve::physics::GeometryCollectionAsset::schemaDefinition()</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00206">eve::physics::GeometryCollectionInstanceSnapshot::schemaDefinition()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00132">eve::physics::SoftBody3DDefinition::schemaDefinition()</a> , 以及 <a class="el" href="SoftBody3D_8cpp_source.html#l00671">eve::physics::SoftBodyModelDefinition::schemaDefinition()</a>.</p>
+
+</div>
+</div>
+<a id="ae0f879ca3fe1b738366e8cf01a2afb18" name="ae0f879ca3fe1b738366e8cf01a2afb18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0f879ca3fe1b738366e8cf01a2afb18">&#9670;&#160;</a></span>fixtureMaterialValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html">Value</a> eve::physics::snapshot_detail::fixtureMaterialValue </td>
+          <td>(</td>
+          <td class="paramtype">const b2Fixture &amp;&#160;</td>
+          <td class="paramname"><em>fixture</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Owning material/filter projection from a synchronous backend observation. </p>
+
+<p class="definition">在文件 <a class="el" href="PlanarMaterialSnapshot_8cpp_source.html">PlanarMaterialSnapshot.cpp</a> 第 <a class="el" href="PlanarMaterialSnapshot_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ECS_8cpp_source.html#l00049">defaults</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00189">filter</a> , 以及 <a class="el" href="McpInputTools_8cpp_source.html#l00052">result</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00298">fixtureTopologyValue()</a>.</p>
+
+</div>
+</div>
+<a id="a669fc260e65d7da36c34ca54d63277b8" name="a669fc260e65d7da36c34ca54d63277b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a669fc260e65d7da36c34ca54d63277b8">&#9670;&#160;</a></span>fixtureTopologyValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html">Value</a> eve::physics::snapshot_detail::fixtureTopologyValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> &amp;&#160;</td>
+          <td class="paramname"><em>body</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8cpp_source.html">WorldSnapshotCodec.cpp</a> 第 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00298">298</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a>, <a class="el" href="RoadBakeFacilityLinks_8cpp_source.html#l00013">edge</a>, <a class="el" href="PlanarMaterialSnapshot_8cpp_source.html#l00053">fixtureMaterialValue()</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00169">fixtures</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="TileConfig_8cpp_source.html#l00782">object</a> , 以及 <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00397">make2DPayload()</a>.</p>
+
+</div>
+</div>
+<a id="a5d5ec03306a21535a2cfcc1a0594a24a" name="a5d5ec03306a21535a2cfcc1a0594a24a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d5ec03306a21535a2cfcc1a0594a24a">&#9670;&#160;</a></span>hasExactFields()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::snapshot_detail::hasExactFields </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::initializer_list&lt; std::string_view &gt;&#160;</td>
+          <td class="paramname"><em>expected</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal exact-field schema predicate. </p>
+<p>Checks the strict snapshot field set without mutating the payload. </p>
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotParsing_8cpp_source.html">WorldSnapshotParsing.cpp</a> 第 <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00017">field()</a> , 以及 <a class="el" href="TreeMesh_8cpp_source.html#l00156">size</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClothModel_8cpp_source.html#l00311">eve::physics::ClothModel::fromValue()</a>, <a class="el" href="FractureRecipe_8cpp_source.html#l00250">eve::physics::FractureRecipe::fromValue()</a>, <a class="el" href="GeometryCollectionAsset_8cpp_source.html#l00277">eve::physics::GeometryCollectionAsset::fromValue()</a>, <a class="el" href="GeometryCollectionSnapshot_8cpp_source.html#l00243">eve::physics::GeometryCollectionInstanceSnapshot::fromValue()</a>, <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00208">eve::physics::SoftBody3DDefinition::fromValue()</a>, <a class="el" href="SoftBody3D_8cpp_source.html#l00602">eve::physics::SoftBodyModelDefinition::fromValue()</a>, <a class="el" href="PlanarMaterialSnapshot_8cpp_source.html#l00102">migratePlanarV2()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00089">parseBody2D()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00166">parseBody3D()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00472">prepareWorld2D()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00601">prepareWorld3D()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00060">eve::physics::World::restore()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00149">eve::physics::World3D::restore()</a>, <a class="el" href="Coupling3DSnapshot_8cpp_source.html#l00081">eve::physics::WorldSnapshotAccess::restoreCouplings3D()</a>, <a class="el" href="PlanarMaterialSnapshot_8cpp_source.html#l00066">restoreFixtureMaterial()</a>, <a class="el" href="JointSnapshotCodec_8cpp_source.html#l00169">eve::physics::WorldSnapshotAccess::restoreJoints2D()</a> , 以及 <a class="el" href="Shape3DContactSnapshot_8cpp_source.html#l00067">eve::physics::WorldSnapshotAccess::restoreShapeContact()</a>.</p>
+
+</div>
+</div>
+<a id="a5036cce6ef2b221c50be0d802a984a50" name="a5036cce6ef2b221c50be0d802a984a50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5036cce6ef2b221c50be0d802a984a50">&#9670;&#160;</a></span>jointsTopologyValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html">Value</a> eve::physics::snapshot_detail::jointsTopologyValue </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classeve_1_1physics_1_1Joint3D.html">Joint3D</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>joints</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8cpp_source.html">WorldSnapshotCodec.cpp</a> 第 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00360">360</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Joint3DParameters_8cpp_source.html#l00240">captureJoint3DParameters()</a>, <a class="el" href="Box3DJoint_8cpp_source.html#l00626">eve::physics::box3d::Access::jointId()</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00219">left</a>, <a class="el" href="TileConfig_8cpp_source.html#l00782">object</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00220">right</a> , 以及 <a class="el" href="ProjectIndexAutomatic_8cpp_source.html#l00016">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00419">make3DPayload()</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00149">eve::physics::World3D::restore()</a>.</p>
+
+</div>
+</div>
+<a id="a3ddcfe278a0d599ea5d95c36af2fa2f3" name="a3ddcfe278a0d599ea5d95c36af2fa2f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ddcfe278a0d599ea5d95c36af2fa2f3">&#9670;&#160;</a></span>make2DPayload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html">Value</a> eve::physics::snapshot_detail::make2DPayload </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1World.html">World</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classeve_1_1physics_1_1Body.html">Body</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bodies</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8cpp_source.html">WorldSnapshotCodec.cpp</a> 第 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00397">397</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00246">bodyValue()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00298">fixtureTopologyValue()</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00219">left</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00387">observationFields()</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00220">right</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a> , 以及 <a class="el" href="ProjectIndexAutomatic_8cpp_source.html#l00016">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshot_8cpp_source.html#l00035">eve::physics::World::snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a8aa04648b6bb8310a314a11e8a51150a" name="a8aa04648b6bb8310a314a11e8a51150a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8aa04648b6bb8310a314a11e8a51150a">&#9670;&#160;</a></span>make3DPayload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html">Value</a> eve::physics::snapshot_detail::make3DPayload </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classeve_1_1physics_1_1Body3D.html">Body3D</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bodies</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classeve_1_1physics_1_1Shape3D.html">Shape3D</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>shapes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classeve_1_1physics_1_1Joint3D.html">Joint3D</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>joints</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8cpp_source.html">WorldSnapshotCodec.cpp</a> 第 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00419">419</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00246">bodyValue()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00360">jointsTopologyValue()</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00219">left</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00387">observationFields()</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00220">right</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00350">shapesTopologyValue()</a>, <a class="el" href="ProjectIndexAutomatic_8cpp_source.html#l00016">values</a> , 以及 <a class="el" href="Box3DWorld_8cpp_source.html#l00012">eve::physics::box3d::Access::worldId()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshot_8cpp_source.html#l00122">eve::physics::World3D::snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="aa4fff2682f22ed831e46a0bba42789b9" name="aa4fff2682f22ed831e46a0bba42789b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4fff2682f22ed831e46a0bba42789b9">&#9670;&#160;</a></span>matchBodyIds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename BodyState &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::snapshot_detail::matchBodyIds </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; BodyState &gt; &amp;&#160;</td>
+          <td class="paramname"><em>states</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::set&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>ids</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00014">eve::Diagnostic::error()</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00050">ids</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="Status_8cpp_source.html#l00013">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshot_8cpp_source.html#l00060">eve::physics::World::restore()</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00149">eve::physics::World3D::restore()</a>.</p>
+
+</div>
+</div>
+<a id="abb6d1817ff434f741425b81595c045cc" name="abb6d1817ff434f741425b81595c045cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb6d1817ff434f741425b81595c045cc">&#9670;&#160;</a></span>migratePlanarV2()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::snapshot_detail::migratePlanarV2 </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>payload</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Migrate previous schema with explicit defaults for previously omitted state. </p>
+
+<p class="definition">在文件 <a class="el" href="PlanarMaterialSnapshot_8cpp_source.html">PlanarMaterialSnapshot.cpp</a> 第 <a class="el" href="PlanarMaterialSnapshot_8cpp_source.html#l00102">102</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a>, <a class="el" href="ECS_8cpp_source.html#l00049">defaults</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00336">f</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00157">eve::Value::find()</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00169">fixtures</a>, <a class="el" href="Value_8h_source.html#l00209">eve::Value::getIf()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00009">hasExactFields()</a>, <a class="el" href="ForceMath_8h_source.html#l00017">eve::physics::force_detail::invalid()</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00020">payload</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00042">readInt64()</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00016">type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshot_8cpp_source.html#l00060">eve::physics::World::restore()</a>.</p>
+
+</div>
+</div>
+<a id="a520e8a946ddbebba416a0422358219e0" name="a520e8a946ddbebba416a0422358219e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a520e8a946ddbebba416a0422358219e0">&#9670;&#160;</a></span>observationFields()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a> eve::physics::snapshot_detail::observationFields </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a> &amp;&#160;</td>
+          <td class="paramname"><em>observation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8cpp_source.html">WorldSnapshotCodec.cpp</a> 第 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00387">387</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SimulationBackend_8h_source.html#l00146">eve::physics::SimulationObservation::lastDeltaSeconds</a>, <a class="el" href="Time_8h_source.html#l00069">eve::Duration::nanoseconds()</a>, <a class="el" href="TileConfig_8cpp_source.html#l00782">object</a>, <a class="el" href="SimulationBackend_8h_source.html#l00142">eve::physics::SimulationObservation::simulatedDuration</a>, <a class="el" href="SimulationBackend_8h_source.html#l00138">eve::physics::SimulationObservation::stepCount</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00158">tick</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00397">make2DPayload()</a> , 以及 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00419">make3DPayload()</a>.</p>
+
+</div>
+</div>
+<a id="ac81d2bb537de02dbab57beb2cbd41fab" name="ac81d2bb537de02dbab57beb2cbd41fab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac81d2bb537de02dbab57beb2cbd41fab">&#9670;&#160;</a></span>parseBodies2D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html">Body2DState</a> &gt; &gt; eve::physics::snapshot_detail::parseBodies2D </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8cpp_source.html">WorldSnapshotCodec.cpp</a> 第 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00440">440</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00014">eve::Diagnostic::error()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00017">field()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00089">parseBody2D()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00052">result</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshot_8cpp_source.html#l00060">eve::physics::World::restore()</a>.</p>
+
+</div>
+</div>
+<a id="ad4728357e4d6e242e2153fb8523c2f83" name="ad4728357e4d6e242e2153fb8523c2f83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4728357e4d6e242e2153fb8523c2f83">&#9670;&#160;</a></span>parseBodies3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body3DState.html">Body3DState</a> &gt; &gt; eve::physics::snapshot_detail::parseBodies3D </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8cpp_source.html">WorldSnapshotCodec.cpp</a> 第 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00456">456</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00014">eve::Diagnostic::error()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00017">field()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00166">parseBody3D()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00052">result</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshot_8cpp_source.html#l00149">eve::physics::World3D::restore()</a>.</p>
+
+</div>
+</div>
+<a id="aa4287b40495fffbeb3aa895c086aaebc" name="aa4287b40495fffbeb3aa895c086aaebc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4287b40495fffbeb3aa895c086aaebc">&#9670;&#160;</a></span>parseBody2D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html">Body2DState</a> &gt; eve::physics::snapshot_detail::parseBody2D </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8cpp_source.html">WorldSnapshotCodec.cpp</a> 第 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AgentBindings_8cpp_source.html#l00017">active</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00166">angle</a>, <a class="el" href="Coupling3DStep_8cpp_source.html#l00024">angular</a>, <a class="el" href="Coupling3DStep_8cpp_source.html#l00027">awake</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00168">bullet</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00014">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00017">field()</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00169">fixtures</a>, <a class="el" href="ForceBindings_8cpp_source.html#l00063">gravity</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00009">hasExactFields()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Value_8h_source.html#l00108">eve::Value::isArray()</a>, <a class="el" href="ForceBindings_8cpp_source.html#l00069">linear</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00075">readBool()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00066">readFloat()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00022">readString()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00030">readUint64()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00016">type</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00087">validBodyType()</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00167">vx</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00167">vy</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00440">parseBodies2D()</a>.</p>
+
+</div>
+</div>
+<a id="add90aa838b4d3369bb507ab7dc0b06fa" name="add90aa838b4d3369bb507ab7dc0b06fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add90aa838b4d3369bb507ab7dc0b06fa">&#9670;&#160;</a></span>parseBody3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body3DState.html">Body3DState</a> &gt; eve::physics::snapshot_detail::parseBody3D </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8cpp_source.html">WorldSnapshotCodec.cpp</a> 第 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00166">166</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AgentBindings_8cpp_source.html#l00017">active</a>, <a class="el" href="Coupling3DStep_8cpp_source.html#l00027">awake</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00168">bullet</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00014">eve::Diagnostic::error()</a>, <a class="el" href="PortableWorldSnapshot_8cpp.html#a024eeb94143577ec7a0f663b7f12bda9">EV_READ_BODY3D_BOOL</a>, <a class="el" href="PortableWorldSnapshot_8cpp.html#a81cb129bec8b334454b17d4aa0fc8484">EV_READ_BODY3D_FLOAT</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00017">field()</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00168">fixedRotation</a>, <a class="el" href="Value_8h_source.html#l00209">eve::Value::getIf()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00009">hasExactFields()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00176">qw</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00176">qx</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00176">qy</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00176">qz</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00075">readBool()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00066">readFloat()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00022">readString()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00030">readUint64()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00016">type</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00087">validBodyType()</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00167">vx</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00167">vy</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00177">vz</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00178">wx</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00178">wy</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00178">wz</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00456">parseBodies3D()</a>.</p>
+
+</div>
+</div>
+<a id="af1832ae96613378d339b16d33276bdd2" name="af1832ae96613378d339b16d33276bdd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1832ae96613378d339b16d33276bdd2">&#9670;&#160;</a></span>parseObservation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1ObservationState.html">ObservationState</a> &gt; eve::physics::snapshot_detail::parseObservation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SnapshotEnvelope.html">eve::SnapshotEnvelope</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8cpp_source.html">WorldSnapshotCodec.cpp</a> 第 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00018">duration</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00014">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Time_8h_source.html#l00055">eve::Duration::fromNanoseconds()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00066">readFloat()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00042">readInt64()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00030">readUint64()</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00052">result</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="McpProjectIndexTools_8cpp_source.html#l00017">snapshot</a>, <a class="el" href="SimulationBackend_8h_source.html#l00138">eve::physics::SimulationObservation::stepCount</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00158">tick</a>, <a class="el" href="McpServer_8cpp_source.html#l00319">valid</a> , 以及 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00031">eve::physics::snapshot_detail::ObservationState::value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshot_8cpp_source.html#l00060">eve::physics::World::restore()</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00149">eve::physics::World3D::restore()</a>.</p>
+
+</div>
+</div>
+<a id="ac64ed593b77f8919e531c181f8cbbd35" name="ac64ed593b77f8919e531c181f8cbbd35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac64ed593b77f8919e531c181f8cbbd35">&#9670;&#160;</a></span>prepareWorld2D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1physics_1_1World.html">World</a> &gt; &gt; eve::physics::snapshot_detail::prepareWorld2D </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html">Body2DState</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>states</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gravityX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gravityY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>meter</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a> &amp;&#160;</td>
+          <td class="paramname"><em>observation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8cpp_source.html">WorldSnapshotCodec.cpp</a> 第 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00472">472</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a>, <a class="el" href="SceneCapabilities_8cpp_source.html#l00669">created</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00014">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00017">field()</a>, <a class="el" href="WorldSnapshotAccess_8h_source.html#l00121">eve::physics::WorldSnapshotAccess::finishPrepared()</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00169">fixtures</a>, <a class="el" href="Value_8h_source.html#l00209">eve::Value::getIf()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00009">hasExactFields()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00034">loop</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00672">material</a>, <a class="el" href="WorldSnapshotAccess_8h_source.html#l00049">eve::physics::WorldSnapshotAccess::ownPreparedBody()</a>, <a class="el" href="WorldSnapshotAccess_8h_source.html#l00053">eve::physics::WorldSnapshotAccess::ownPreparedFixture()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00066">readFloat()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00042">readInt64()</a>, <a class="el" href="PlanarMaterialSnapshot_8cpp_source.html#l00066">restoreFixtureMaterial()</a>, <a class="el" href="WorldSnapshotAccess_8h_source.html#l00113">eve::physics::WorldSnapshotAccess::setBodyId()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00016">type</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a> , 以及 <a class="el" href="ProjectIndexAutomatic_8cpp_source.html#l00016">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshot_8cpp_source.html#l00060">eve::physics::World::restore()</a>.</p>
+
+</div>
+</div>
+<a id="a091b11c851544a095fcb4013c2668a2f" name="a091b11c851544a095fcb4013c2668a2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a091b11c851544a095fcb4013c2668a2f">&#9670;&#160;</a></span>prepareWorld3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> &gt; &gt; eve::physics::snapshot_detail::prepareWorld3D </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body3DState.html">Body3DState</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>states</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html#ab1d85b7f682f864577d9030a3e7ea6c5">eve::Value::Array</a> &amp;&#160;</td>
+          <td class="paramname"><em>shapes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html#ab1d85b7f682f864577d9030a3e7ea6c5">eve::Value::Array</a> &amp;&#160;</td>
+          <td class="paramname"><em>joints</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gravityX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gravityY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gravityZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1SimulationObservation.html">SimulationObservation</a> &amp;&#160;</td>
+          <td class="paramname"><em>observation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a2cc2fec4f4bc26901dd5e4f2f5891828">eve::PersistentId</a>&#160;</td>
+          <td class="paramname"><em>instanceId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>legacyParameters</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>allowSleep</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8cpp_source.html">WorldSnapshotCodec.cpp</a> 第 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00601">601</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="Joint2DBindings_8cpp_source.html#l00016">anchorA</a>, <a class="el" href="Joint2DBindings_8cpp_source.html#l00016">anchorB</a>, <a class="el" href="Joint2DBindings_8cpp_source.html#l00016">axis</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a>, <a class="el" href="Box3DBody_8cpp_source.html#l00649">eve::physics::box3d::Access::bodyId()</a>, <a class="el" href="HexSphereTopology_8cpp_source.html#l00075">c</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="VehicleTires3D_8cpp_source.html#l00052">contact</a>, <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="ForceBindings_8cpp_source.html#l00080">density</a>, <a class="el" href="McpArchitectureTools_8cpp_source.html#l00024">edges</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00014">eve::Diagnostic::error()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00336">f</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00017">field()</a>, <a class="el" href="WorldSnapshotAccess_8h_source.html#l00121">eve::physics::WorldSnapshotAccess::finishPrepared()</a>, <a class="el" href="Shape3DContactSnapshot_8cpp_source.html#l00168">eve::physics::WorldSnapshotAccess::finishShapeMass()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00009">hasExactFields()</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00019">indices</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Box3DJoint_8cpp_source.html#l00626">eve::physics::box3d::Access::jointId()</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00011">kind</a>, <a class="el" href="Joint2DBindings_8cpp_source.html#l00017">length</a>, <a class="el" href="WorldSnapshotAccess_8h_source.html#l00117">eve::physics::WorldSnapshotAccess::makeDetachedWorld3D()</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="TileConfig_8cpp_source.html#l00782">object</a>, <a class="el" href="WorldSnapshotAccess_8h_source.html#l00049">eve::physics::WorldSnapshotAccess::ownPreparedBody()</a>, <a class="el" href="WorldSnapshotAccess_8h_source.html#l00065">eve::physics::WorldSnapshotAccess::ownPreparedJoint()</a>, <a class="el" href="WorldSnapshotAccess_8h_source.html#l00061">eve::physics::WorldSnapshotAccess::ownPreparedShape()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00075">readBool()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00066">readFloat()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00558">readFloatArray()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00042">readInt64()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00579">readIntArray()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00022">readString()</a>, <a class="el" href="Joint3DParameters_8cpp_source.html#l00251">restoreJoint3DParameters()</a>, <a class="el" href="Shape3DContactSnapshot_8cpp_source.html#l00067">eve::physics::WorldSnapshotAccess::restoreShapeContact()</a>, <a class="el" href="WorldSnapshotAccess_8h_source.html#l00113">eve::physics::WorldSnapshotAccess::setBodyId()</a>, <a class="el" href="WorldSnapshotAccess_8h_source.html#l00116">eve::physics::WorldSnapshotAccess::setJointId()</a>, <a class="el" href="WorldSnapshotAccess_8h_source.html#l00115">eve::physics::WorldSnapshotAccess::setShapeId()</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>, <a class="el" href="Box3DShape_8cpp_source.html#l00328">eve::physics::box3d::Access::shapeId()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="GraphicsTextureMips_8cpp_source.html#l00013">status</a>, <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00039">sx</a>, <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00041">sz</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l00046">vertices</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshot_8cpp_source.html#l00149">eve::physics::World3D::restore()</a>.</p>
+
+</div>
+</div>
+<a id="a94cd04a749d4b0db912cbb4bde43343e" name="a94cd04a749d4b0db912cbb4bde43343e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94cd04a749d4b0db912cbb4bde43343e">&#9670;&#160;</a></span>readBool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt; eve::physics::snapshot_detail::readBool </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reads a required boolean. </p>
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotParsing_8cpp_source.html">WorldSnapshotParsing.cpp</a> 第 <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8cpp_source.html#l00014">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00017">field()</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00089">parseBody2D()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00166">parseBody3D()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00601">prepareWorld3D()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00060">eve::physics::World::restore()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00149">eve::physics::World3D::restore()</a>, <a class="el" href="Coupling3DSnapshot_8cpp_source.html#l00081">eve::physics::WorldSnapshotAccess::restoreCouplings3D()</a>, <a class="el" href="PlanarMaterialSnapshot_8cpp_source.html#l00066">restoreFixtureMaterial()</a>, <a class="el" href="Joint3DParameters_8cpp_source.html#l00251">restoreJoint3DParameters()</a>, <a class="el" href="JointSnapshotCodec_8cpp_source.html#l00169">eve::physics::WorldSnapshotAccess::restoreJoints2D()</a> , 以及 <a class="el" href="Shape3DContactSnapshot_8cpp_source.html#l00067">eve::physics::WorldSnapshotAccess::restoreShapeContact()</a>.</p>
+
+</div>
+</div>
+<a id="a054e49131dd1f993d4f332f275a53c39" name="a054e49131dd1f993d4f332f275a53c39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a054e49131dd1f993d4f332f275a53c39">&#9670;&#160;</a></span>readFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; float &gt; eve::physics::snapshot_detail::readFloat </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reads a required finite number representable by float. </p>
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotParsing_8cpp_source.html">WorldSnapshotParsing.cpp</a> 第 <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8cpp_source.html#l00014">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00332">number</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00054">readNumber()</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SoftBody3DDefinition_8cpp_source.html#l00208">eve::physics::SoftBody3DDefinition::fromValue()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00089">parseBody2D()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00166">parseBody3D()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00056">parseObservation()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00472">prepareWorld2D()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00601">prepareWorld3D()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00060">eve::physics::World::restore()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00149">eve::physics::World3D::restore()</a>, <a class="el" href="Coupling3DSnapshot_8cpp_source.html#l00081">eve::physics::WorldSnapshotAccess::restoreCouplings3D()</a>, <a class="el" href="PlanarMaterialSnapshot_8cpp_source.html#l00066">restoreFixtureMaterial()</a>, <a class="el" href="JointSnapshotCodec_8cpp_source.html#l00169">eve::physics::WorldSnapshotAccess::restoreJoints2D()</a> , 以及 <a class="el" href="Shape3DContactSnapshot_8cpp_source.html#l00067">eve::physics::WorldSnapshotAccess::restoreShapeContact()</a>.</p>
+
+</div>
+</div>
+<a id="a975bd347039f93c69f226d900a15804a" name="a975bd347039f93c69f226d900a15804a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a975bd347039f93c69f226d900a15804a">&#9670;&#160;</a></span>readFloatArray()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; float &gt; &gt; eve::physics::snapshot_detail::readFloatArray </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read a finite float array, rejecting missing or malformed elements. </p>
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8cpp_source.html">WorldSnapshotCodec.cpp</a> 第 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00558">558</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8cpp_source.html#l00014">eve::Diagnostic::error()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00017">field()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00332">number</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00052">result</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00601">prepareWorld3D()</a>, <a class="el" href="Coupling3DSnapshot_8cpp_source.html#l00081">eve::physics::WorldSnapshotAccess::restoreCouplings3D()</a>, <a class="el" href="Joint3DParameters_8cpp_source.html#l00251">restoreJoint3DParameters()</a> , 以及 <a class="el" href="Shape3DContactSnapshot_8cpp_source.html#l00067">eve::physics::WorldSnapshotAccess::restoreShapeContact()</a>.</p>
+
+</div>
+</div>
+<a id="a935036c994e41bfcef40186eed597069" name="a935036c994e41bfcef40186eed597069"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a935036c994e41bfcef40186eed597069">&#9670;&#160;</a></span>readInt64()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::int64_t &gt; eve::physics::snapshot_detail::readInt64 </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reads a required signed decimal integer string. </p>
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotParsing_8cpp_source.html">WorldSnapshotParsing.cpp</a> 第 <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00013">end</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00014">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00169">output</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00022">readString()</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00011">text</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlanarMaterialSnapshot_8cpp_source.html#l00102">migratePlanarV2()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00056">parseObservation()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00472">prepareWorld2D()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00601">prepareWorld3D()</a>, <a class="el" href="Coupling3DSnapshot_8cpp_source.html#l00081">eve::physics::WorldSnapshotAccess::restoreCouplings3D()</a>, <a class="el" href="PlanarMaterialSnapshot_8cpp_source.html#l00066">restoreFixtureMaterial()</a>, <a class="el" href="JointSnapshotCodec_8cpp_source.html#l00169">eve::physics::WorldSnapshotAccess::restoreJoints2D()</a> , 以及 <a class="el" href="Shape3DContactSnapshot_8cpp_source.html#l00067">eve::physics::WorldSnapshotAccess::restoreShapeContact()</a>.</p>
+
+</div>
+</div>
+<a id="a9d89b77c6ee6dbf58be802801c73bdea" name="a9d89b77c6ee6dbf58be802801c73bdea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d89b77c6ee6dbf58be802801c73bdea">&#9670;&#160;</a></span>readIntArray()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::vector&lt; std::int32_t &gt; &gt; eve::physics::snapshot_detail::readIntArray </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8cpp_source.html">WorldSnapshotCodec.cpp</a> 第 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00579">579</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00013">end</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00014">eve::Diagnostic::error()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00017">field()</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00052">result</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00011">text</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00601">prepareWorld3D()</a>.</p>
+
+</div>
+</div>
+<a id="aba4a4ca530383a87f1ede6be741056a5" name="aba4a4ca530383a87f1ede6be741056a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba4a4ca530383a87f1ede6be741056a5">&#9670;&#160;</a></span>readNumber()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; double &gt; eve::physics::snapshot_detail::readNumber </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reads a required finite number. </p>
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotParsing_8cpp_source.html">WorldSnapshotParsing.cpp</a> 第 <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8cpp_source.html#l00014">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00017">field()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00052">result</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00066">readFloat()</a>.</p>
+
+</div>
+</div>
+<a id="aeba527a22719d635508098283ad51667" name="aeba527a22719d635508098283ad51667"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeba527a22719d635508098283ad51667">&#9670;&#160;</a></span>readString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::physics::snapshot_detail::readString </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reads a required owning string. </p>
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotParsing_8cpp_source.html">WorldSnapshotParsing.cpp</a> 第 <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8cpp_source.html#l00014">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00017">field()</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00089">parseBody2D()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00166">parseBody3D()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00601">prepareWorld3D()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00042">readInt64()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00030">readUint64()</a>, <a class="el" href="Coupling3DSnapshot_8cpp_source.html#l00081">eve::physics::WorldSnapshotAccess::restoreCouplings3D()</a>, <a class="el" href="PlanarMaterialSnapshot_8cpp_source.html#l00066">restoreFixtureMaterial()</a> , 以及 <a class="el" href="physics_2ArtifactProvider_8cpp_source.html#l00525">eve::physics::PhysicsArtifactProvider::restoreState()</a>.</p>
+
+</div>
+</div>
+<a id="a8151421ca59c31584959d386cfca116c" name="a8151421ca59c31584959d386cfca116c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8151421ca59c31584959d386cfca116c">&#9670;&#160;</a></span>readUint64()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::uint64_t &gt; eve::physics::snapshot_detail::readUint64 </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reads a required unsigned decimal integer string. </p>
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotParsing_8cpp_source.html">WorldSnapshotParsing.cpp</a> 第 <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00013">end</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00014">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00169">output</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00022">readString()</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00011">text</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00089">parseBody2D()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00166">parseBody3D()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00056">parseObservation()</a> , 以及 <a class="el" href="Shape3DContactSnapshot_8cpp_source.html#l00067">eve::physics::WorldSnapshotAccess::restoreShapeContact()</a>.</p>
+
+</div>
+</div>
+<a id="a28890957adfeff5f8f8d1ac7eb3800bf" name="a28890957adfeff5f8f8d1ac7eb3800bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28890957adfeff5f8f8d1ac7eb3800bf">&#9670;&#160;</a></span>restoreFixtureMaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::snapshot_detail::restoreFixtureMaterial </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1Fixture.html">Fixture</a> &amp;&#160;</td>
+          <td class="paramname"><em>fixture</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate material fields before applying them to a detached fixture. </p>
+
+<p class="definition">在文件 <a class="el" href="PlanarMaterialSnapshot_8cpp_source.html">PlanarMaterialSnapshot.cpp</a> 第 <a class="el" href="PlanarMaterialSnapshot_8cpp_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UiPreview_8cpp_source.html#l00194">category</a>, <a class="el" href="ForceBindings_8cpp_source.html#l00080">density</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ForceBindings_8cpp_source.html#l00101">friction</a>, <a class="el" href="BuildingTarget_8cpp_source.html#l00248">group</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00009">hasExactFields()</a>, <a class="el" href="ForceMath_8h_source.html#l00017">eve::physics::force_detail::invalid()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00075">readBool()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00066">readFloat()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00042">readInt64()</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00022">readString()</a>, <a class="el" href="SpellFragmentCompiler_8cpp_source.html#l00105">restitution</a>, <a class="el" href="Fixture_8cpp_source.html#l00072">eve::physics::Fixture::setCategoryBits()</a>, <a class="el" href="Fixture_8cpp_source.html#l00064">eve::physics::Fixture::setDensity()</a>, <a class="el" href="Fixture_8cpp_source.html#l00050">eve::physics::Fixture::setFriction()</a>, <a class="el" href="Fixture_8cpp_source.html#l00092">eve::physics::Fixture::setGroupIndex()</a>, <a class="el" href="Fixture_8cpp_source.html#l00083">eve::physics::Fixture::setMaskBits()</a>, <a class="el" href="Fixture_8cpp_source.html#l00057">eve::physics::Fixture::setRestitution()</a>, <a class="el" href="Fixture_8cpp_source.html#l00043">eve::physics::Fixture::setSensor()</a>, <a class="el" href="Fixture_8h_source.html#l00049">eve::physics::Fixture::setTag()</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00085">tag</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00472">prepareWorld2D()</a>.</p>
+
+</div>
+</div>
+<a id="a6d1e6db4aaf1252a56ff21d891883ff2" name="a6d1e6db4aaf1252a56ff21d891883ff2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d1e6db4aaf1252a56ff21d891883ff2">&#9670;&#160;</a></span>restoreJoint3DParameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::snapshot_detail::restoreJoint3DParameters </td>
+          <td>(</td>
+          <td class="paramtype">b3JointId&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate the complete parameter object before updating a live candidate joint; no retained references. </p>
+
+<p class="definition">在文件 <a class="el" href="Joint3DParameters_8cpp_source.html">Joint3DParameters.cpp</a> 第 <a class="el" href="Joint3DParameters_8cpp_source.html#l00251">251</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00336">f</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ECS_8cpp_source.html#l00042">fields</a>, <a class="el" href="Joint3DParameters_8cpp_source.html#l00026">flags</a>, <a class="el" href="ForceMath_8h_source.html#l00017">eve::physics::force_detail::invalid()</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="Joint3DParameters_8cpp_source.html#l00025">numbers</a>, <a class="el" href="TileConfig_8cpp_source.html#l00782">object</a>, <a class="el" href="WorldSnapshotParsing_8cpp_source.html#l00075">readBool()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00558">readFloatArray()</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00601">prepareWorld3D()</a>.</p>
+
+</div>
+</div>
+<a id="a3a1a39830572c3e70c770ba613397b61" name="a3a1a39830572c3e70c770ba613397b61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a1a39830572c3e70c770ba613397b61">&#9670;&#160;</a></span>shapesTopologyValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html">Value</a> eve::physics::snapshot_detail::shapesTopologyValue </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classeve_1_1physics_1_1Shape3D.html">Shape3D</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>shapes</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8cpp_source.html">WorldSnapshotCodec.cpp</a> 第 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00350">350</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereMesh_8cpp_source.html#l00219">left</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00220">right</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>, <a class="el" href="WorldSnapshotAccess_8h_source.html#l00068">eve::physics::WorldSnapshotAccess::shapeSource()</a> , 以及 <a class="el" href="ProjectIndexAutomatic_8cpp_source.html#l00016">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00419">make3DPayload()</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00149">eve::physics::World3D::restore()</a>.</p>
+
+</div>
+</div>
+<a id="aa7099e1f2da630c8beb22a044ce1fa68" name="aa7099e1f2da630c8beb22a044ce1fa68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7099e1f2da630c8beb22a044ce1fa68">&#9670;&#160;</a></span>snapshotSchema()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1LogicalId.html">LogicalId</a> &gt; eve::physics::snapshot_detail::snapshotSchema </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>text</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8cpp_source.html">WorldSnapshotCodec.cpp</a> 第 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8cpp_source.html#l00014">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="Identity_8cpp_source.html#l00037">eve::LogicalId::parse()</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ScriptStructure_8cpp_source.html#l00011">text</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshot_8cpp_source.html#l00035">eve::physics::World::snapshot()</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00122">eve::physics::World3D::snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="aeb4a2e8b17ba04eb3b0a616a8b92958f" name="aeb4a2e8b17ba04eb3b0a616a8b92958f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb4a2e8b17ba04eb3b0a616a8b92958f">&#9670;&#160;</a></span>validBodyType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::snapshot_detail::validBodyType </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8cpp_source.html">WorldSnapshotCodec.cpp</a> 第 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00087">87</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00016">type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00089">parseBody2D()</a> , 以及 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00166">parseBody3D()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">变量说明</h2>
+<a id="ad5bb77e7263e6d38801e0763b5cbf655" name="ad5bb77e7263e6d38801e0763b5cbf655"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5bb77e7263e6d38801e0763b5cbf655">&#9670;&#160;</a></span>kSnapshot2DVersion</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::uint64_t eve::physics::snapshot_detail::kSnapshot2DVersion = 3</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00041">checkEnvelope()</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00035">eve::physics::World::snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a24fe5ffca476afab66239ca84adea6dc" name="a24fe5ffca476afab66239ca84adea6dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24fe5ffca476afab66239ca84adea6dc">&#9670;&#160;</a></span>kSnapshotVersion</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::uint64_t eve::physics::snapshot_detail::kSnapshotVersion = 3</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00041">checkEnvelope()</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00122">eve::physics::World3D::snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a0435d1f0e5e8dcba62d260c65af74824" name="a0435d1f0e5e8dcba62d260c65af74824"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0435d1f0e5e8dcba62d260c65af74824">&#9670;&#160;</a></span>kWorld2DSchema</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view eve::physics::snapshot_detail::kWorld2DSchema = &quot;physics:world2d&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshot_8cpp_source.html#l00060">eve::physics::World::restore()</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00035">eve::physics::World::snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a8e9e84dfd7445b44b548f45a53ea3ca0" name="a8e9e84dfd7445b44b548f45a53ea3ca0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e9e84dfd7445b44b548f45a53ea3ca0">&#9670;&#160;</a></span>kWorld2DType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view eve::physics::snapshot_detail::kWorld2DType = &quot;physics.world2d&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00041">checkEnvelope()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00060">eve::physics::World::restore()</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00035">eve::physics::World::snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a4ff8040e514dbc9ca6c580965a5d49bc" name="a4ff8040e514dbc9ca6c580965a5d49bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ff8040e514dbc9ca6c580965a5d49bc">&#9670;&#160;</a></span>kWorld3DSchema</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view eve::physics::snapshot_detail::kWorld3DSchema = &quot;physics:world3d&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshot_8cpp_source.html#l00149">eve::physics::World3D::restore()</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00122">eve::physics::World3D::snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a801963c6edbaa12c2dc9dbd40c194e1d" name="a801963c6edbaa12c2dc9dbd40c194e1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a801963c6edbaa12c2dc9dbd40c194e1d">&#9670;&#160;</a></span>kWorld3DType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::string_view eve::physics::snapshot_detail::kWorld3DType = &quot;physics.world3d&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00041">checkEnvelope()</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00149">eve::physics::World3D::restore()</a> , 以及 <a class="el" href="WorldSnapshot_8cpp_source.html#l00122">eve::physics::World3D::snapshot()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

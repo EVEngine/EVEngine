@@ -1,0 +1,463 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/mechanics/Joint2DBindings.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li><li class="navelem"><a class="el" href="dir_9f38896ae859590c557c1c3bfd7adccd.html">mechanics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">Joint2DBindings.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="Joint2DBindings_8h_source.html">physics/mechanics/Joint2DBindings.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="SquirrelBinding_8h_source.html">common/SquirrelBinding.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="SquirrelOwnership_8h_source.html">common/SquirrelOwnership.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Body_8h_source.html">physics/Body.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="PhysicsLink_8h_source.html">physics/PhysicsLink.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="World_8h_source.html">physics/World.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="mechanics_2Joint2D_8h_source.html">physics/mechanics/Joint2D.h</a>&quot;</code><br />
+<code>#include &lt;simplesquirrel/simplesquirrel.hpp&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+</div>
+<p><a href="Joint2DBindings_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1physics" id="r_namespaceeve_1_1physics"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html">eve::physics</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1physics"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional physics backend for vehicle mobility and body attach. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a6aa2a19c135bb0f26fddda3788abc49c" id="r_a6aa2a19c135bb0f26fddda3788abc49c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html#a6aa2a19c135bb0f26fddda3788abc49c">eve::physics::exposeJoint2DBindings</a> (ssq::Table &amp;table)</td></tr>
+<tr class="memdesc:a6aa2a19c135bb0f26fddda3788abc49c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register owning <a class="el" href="classeve_1_1physics_1_1Joint2D.html" title="Owning planar joint wrapper observing World-owned backend state. @ownership Caller/VM owns factory wr...">Joint2D</a> <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> factories; borrows table during this call on the VM owner thread only.  <br /></td></tr>
+<tr class="separator:a6aa2a19c135bb0f26fddda3788abc49c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="ae79f47bc4b2cc9646d0cea3d1509b87b" name="ae79f47bc4b2cc9646d0cea3d1509b87b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae79f47bc4b2cc9646d0cea3d1509b87b">&#9670;&#160;</a></span>anchorA</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">JointPoint2D anchorA</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Joint2DBindings_8cpp_source.html">Joint2DBindings.cpp</a> 第 <a class="el" href="Joint2DBindings_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DomainGizmoPreview_8cpp_source.html#l00090">eve::domain_gizmo_editing::EditorGizmoPreviewBuilder::joint()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00601">eve::physics::snapshot_detail::prepareWorld3D()</a> , 以及 <a class="el" href="Coupling3D_8cpp_source.html#l00053">eve::physics::Coupling3D::Data::row()</a>.</p>
+
+</div>
+</div>
+<a id="a077aaf7035bac0dbfe1b8018701caca7" name="a077aaf7035bac0dbfe1b8018701caca7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a077aaf7035bac0dbfe1b8018701caca7">&#9670;&#160;</a></span>anchorB</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">JointPoint2D anchorB</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Joint2DBindings_8cpp_source.html">Joint2DBindings.cpp</a> 第 <a class="el" href="Joint2DBindings_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DomainGizmoPreview_8cpp_source.html#l00090">eve::domain_gizmo_editing::EditorGizmoPreviewBuilder::joint()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00601">eve::physics::snapshot_detail::prepareWorld3D()</a> , 以及 <a class="el" href="Coupling3D_8cpp_source.html#l00053">eve::physics::Coupling3D::Data::row()</a>.</p>
+
+</div>
+</div>
+<a id="ae10a8406c828c4e67a5a81a81280531f" name="ae10a8406c828c4e67a5a81a81280531f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae10a8406c828c4e67a5a81a81280531f">&#9670;&#160;</a></span>axis</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">JointPoint2D axis {1, 0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Joint2DBindings_8cpp_source.html">Joint2DBindings.cpp</a> 第 <a class="el" href="Joint2DBindings_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="StructuredModelCommon_8cpp_source.html#l00008">eve::asset_import::structured_detail::appendTriangle()</a>, <a class="el" href="OceanBoat_8cpp_source.html#l00054">eve::fluids::OceanBoat::apply()</a>, <a class="el" href="SpriteStackTarget_8cpp_source.html#l00242">eve::spritestack_editing::SpriteStackDocumentTarget::applyDomainOperation()</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00428">eve::tensor::kernels::argmax()</a>, <a class="el" href="TF_8cpp_source.html#l00733">eve::tensor::TF::argmax()</a>, <a class="el" href="SkyAtmosphereLuts_8cpp_source.html#l00181">eve::graphics::detail::bakeDistantSkyAmbient()</a>, <a class="el" href="RoadBakePlacements_8cpp_source.html#l00024">eve::procgen::road::detail::bakePlacementPoints()</a>, <a class="el" href="GizmoManager_8cpp_source.html#l00071">eve::editor::GizmoManager::beginDrag()</a>, <a class="el" href="TransformGizmo_8cpp_source.html#l00423">eve::editor::TransformGizmo::beginDrag()</a>, <a class="el" href="OceanHullMask_8cpp_source.html#l00013">eve::fluids::OceanHullMaskBuilder::build()</a>, <a class="el" href="OceanMeshFrame_8cpp_source.html#l00007">eve::fluids::OceanMeshFrameBuilder::build()</a>, <a class="el" href="OceanSprayMesh_8cpp_source.html#l00007">eve::fluids::OceanSprayMeshBuilder::build()</a>, <a class="el" href="SkeletonOverlay_8cpp_source.html#l00057">eve::animation_editing::SkeletonOverlayBuilder::build()</a>, <a class="el" href="JoltQueryInternal_8cpp_source.html#l00009">eve::physics::jolt::capsuleVolume()</a>, <a class="el" href="Mesh_8cpp_source.html#l00095">eve::graphics::Mesh::computeBounds()</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00336">eve::tensor::kernels::concat()</a>, <a class="el" href="TF_8cpp_source.html#l00633">eve::tensor::TF::concat2()</a>, <a class="el" href="TF_8cpp_source.html#l00638">eve::tensor::TF::concat3()</a>, <a class="el" href="TF_8cpp_source.html#l00643">eve::tensor::TF::concat4()</a>, <a class="el" href="TF_8cpp_source.html#l00684">eve::tensor::TF::concatN()</a>, <a class="el" href="mechanics_2Joint2D_8cpp_source.html#l00061">eve::physics::Joint2D::create()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00583">eve::fluids::VolumeFluid::debugSdfSlice()</a>, <a class="el" href="VegetationMotion_8cpp_source.html#l00185">eve::graphics::deformVegetation()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00800">eve::graphics::PrimitiveSceneCanvas3D::drawArrow()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00776">eve::graphics::PrimitiveSceneCanvas3D::drawCone()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00663">eve::graphics::PrimitiveSceneCanvas3D::drawObb()</a>, <a class="el" href="BuildingEdgeCurveTool_8cpp_source.html#l00219">eve::editor::BuildingEdgeCurveTool::drawOverlay()</a>, <a class="el" href="BuildingTarget_8cpp_source.html#l01022">eve::building_editing::BuildingPlacementTarget::edgeCubicBezierGizmo()</a>, <a class="el" href="Graph_8cpp_source.html#l00480">eve::tensor::Func::emitArgMax()</a>, <a class="el" href="Graph_8cpp_source.html#l00401">eve::tensor::Func::emitConcat()</a>, <a class="el" href="Graph_8cpp_source.html#l00454">eve::tensor::Func::emitReduce()</a>, <a class="el" href="Graph_8cpp_source.html#l00436">eve::tensor::Func::emitSlice()</a>, <a class="el" href="Graph_8cpp_source.html#l00256">eve::tensor::Func::emitSoftmax()</a>, <a class="el" href="MotionFeatureInternal_8h_source.html#l00028">eve::animation::detail::encodeLocomotionPose()</a>, <a class="el" href="MotionFeatureInternal_8h_source.html#l00048">eve::animation::detail::encodeLocomotionTrajectory()</a>, <a class="el" href="MotionTypes_8cpp_source.html#l00186">eve::animation::evaluateMotionShakeSign()</a>, <a class="el" href="OnnxExecute_8cpp_source.html#l00211">eve::tensor::onnx_detail::execute()</a>, <a class="el" href="OnnxExecute_8cpp_source.html#l00486">eve::tensor::onnx_detail::executeIndex()</a>, <a class="el" href="OnnxMisc_8cpp_source.html#l00011">eve::tensor::onnx_detail::executeMisc()</a>, <a class="el" href="OnnxMisc_8cpp_source.html#l00444">eve::tensor::onnx_detail::executeNumeric()</a>, <a class="el" href="OnnxQuant_8cpp_source.html#l00034">eve::tensor::onnx_detail::executeQuant()</a>, <a class="el" href="OnnxQuant_8cpp_source.html#l00998">eve::tensor::onnx_detail::executeShape()</a>, <a class="el" href="SkyRuntime_8cpp_source.html#l00129">eve::daynight::SkyRuntime::frame()</a>, <a class="el" href="SkyTimeline_8cpp_source.html#l00049">eve::daynight::SkyTimeline::frame()</a>, <a class="el" href="KernelGenResize_8cpp_source.html#l00710">eve::tensor::wgsl_detail::genConcat()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00749">eve::tensor::glsl_detail::genConcat()</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00232">eve::procgen::urban::generateSplitCandidates()</a>, <a class="el" href="KernelGenWgslReduction_8cpp_source.html#l00155">eve::tensor::wgsl_detail::genReduceOrArgmax()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00653">eve::tensor::glsl_detail::genReduceOrArgmax()</a>, <a class="el" href="KernelGenResize_8cpp_source.html#l00753">eve::tensor::wgsl_detail::genSlice()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00792">eve::tensor::glsl_detail::genSlice()</a>, <a class="el" href="KernelGenWgslReduction_8cpp_source.html#l00009">eve::tensor::wgsl_detail::genSoftmax()</a>, <a class="el" href="KernelGen_8cpp_source.html#l00512">eve::tensor::glsl_detail::genSoftmax()</a>, <a class="el" href="Tensor_8cpp_source.html#l00141">eve::tensor::Tensor::getDim()</a>, <a class="el" href="Pad_8cpp_source.html#l00147">eve::joystick::sdl::Pad::getGamepadAxis()</a>, <a class="el" href="PlacementSession_8cpp_source.html#l00559">eve::building::PlacementSession::getPatternPreviewAxis()</a>, <a class="el" href="RootMotionPolicy_8h_source.html#l00042">eve::animation::hasLock()</a>, <a class="el" href="AnalyticalVolLight_8cpp_source.html#l00061">eve::graphics::fog::AnalyticalVolLight::integrate()</a>, <a class="el" href="AnalyticalVolLight_8cpp_source.html#l00012">eve::graphics::fog::AnalyticalVolLight::intersectBeam()</a>, <a class="el" href="DomainGizmoPreview_8cpp_source.html#l00090">eve::domain_gizmo_editing::EditorGizmoPreviewBuilder::joint()</a>, <a class="el" href="EvpackStaticPrefab_8cpp_source.html#l00285">eve::asset_graphics::EvpackStaticPrefab::load()</a>, <a class="el" href="EvpackGraphicsLoader_8cpp_source.html#l00009">eve::asset_graphics::EvpackGraphicsLoader::loadMesh()</a>, <a class="el" href="TF_8cpp_source.html#l00467">eve::tensor::TF::logSoftmax()</a>, <a class="el" href="SplinePathDocument_8cpp_source.html#l00448">eve::procgen_editing::SplinePathDocument::makeMirrorAxis()</a>, <a class="el" href="SceneVisibility_8cpp_source.html#l00151">eve::graphics::SceneVisibilityQuery::measure()</a>, <a class="el" href="World3DJoints_8cpp_source.html#l00104">eve::physics::World3D::newRatchet()</a>, <a class="el" href="World3DJoints_8cpp_source.html#l00090">eve::physics::World3D::newShaft()</a>, <a class="el" href="StructuredModelCommon_8cpp_source.html#l00044">eve::asset_import::structured_detail::packageModel()</a>, <a class="el" href="TransformGizmo_8cpp_source.html#l00323">eve::editor::TransformGizmo::pick()</a>, <a class="el" href="HexMap_8cpp_source.html#l00177">eve::hexmap::HexMap::pickCell()</a>, <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00110">eve::graphics::SkyAtmospherePass::prepare()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00601">eve::physics::snapshot_detail::prepareWorld3D()</a>, <a class="el" href="VolumeFluidColliders_8cpp_source.html#l00418">eve::fluids::VolumeFluid::queryBox()</a>, <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00464">eve::graphics::ReflectionProbeRegistry::queueCaptureAABB()</a>, <a class="el" href="SceneBounds_8h_source.html#l00049">eve::scene::rayAABB()</a>, <a class="el" href="PointSetAttributeOps_8cpp_source.html#l00082">eve::procgen::readPointFloatChannel()</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00401">eve::tensor::kernels::reduceAxis()</a>, <a class="el" href="Coupling3D_8cpp_source.html#l00053">eve::physics::Coupling3D::Data::row()</a>, <a class="el" href="RoadSurfacePath_8cpp_source.html#l00034">eve::procgen::road::detail::sampleSurfacePolyline()</a>, <a class="el" href="MotionSchemaInternal_8h_source.html#l00039">eve::animation::detail::schemaEncode()</a>, <a class="el" href="MotionSchemaInternal_8h_source.html#l00048">eve::animation::detail::schemaHeading()</a>, <a class="el" href="DiffuseLightProbeRegistry_8cpp_source.html#l00124">eve::graphics::DiffuseLightProbeRegistry::selectVolume()</a>, <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00087">eve::animation::DynamicBoneSolver::setChainFreezeAxis()</a>, <a class="el" href="MotionMatcher_8cpp_source.html#l00478">eve::animation::MotionMatcher::setFeatureQuery()</a>, <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00398">eve::graphics::SkyAtmospherePass::setFrame()</a>, <a class="el" href="PlacementWorld_8cpp_source.html#l00085">eve::building::PlacementWorld::setStagger()</a>, <a class="el" href="TF_8cpp_source.html#l00689">eve::tensor::TF::slice()</a>, <a class="el" href="SpriteStackModel_8cpp_source.html#l00057">eve::spritestack::SpriteStack::sliceModel()</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00365">eve::tensor::kernels::sliceOp()</a>, <a class="el" href="SpriteStack2D_8cpp_source.html#l00203">eve::spritestack::SpriteStack::slicePrimitive()</a>, <a class="el" href="CpuKernels_8cpp_source.html#l00163">eve::tensor::kernels::softmax()</a>, <a class="el" href="TF_8cpp_source.html#l00455">eve::tensor::TF::softmax()</a>, <a class="el" href="PetalSolver_8cpp_source.html#l00018">eve::gpuagents::PetalSolver::step()</a>, <a class="el" href="OceanGpuSpectrum_8cpp_source.html#l00143">eve::fluids::OceanGpuFrameBuilder::submit()</a>, <a class="el" href="CaveGeometry_8cpp_source.html#l00055">eve::procgen::cave_detail::taperedSegmentDistance()</a>, <a class="el" href="ReflectionProbeCapture_8cpp_source.html#l00542">eve::graphics::ReflectionProbeRegistry::updateCamera()</a>, <a class="el" href="TransformGizmo_8cpp_source.html#l00484">eve::editor::TransformGizmo::updateDrag()</a> , 以及 <a class="el" href="PhysicsJointTarget_8cpp_source.html#l00144">eve::physics_editing::PhysicsJointTarget::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a3ff9913587f351d61b9e379eef7c536b" name="a3ff9913587f351d61b9e379eef7c536b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ff9913587f351d61b9e379eef7c536b">&#9670;&#160;</a></span>collideConnected</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool collideConnected = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Joint2DBindings_8cpp_source.html">Joint2DBindings.cpp</a> 第 <a class="el" href="Joint2DBindings_8cpp_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WorldJoints2D_8cpp_source.html#l00156">eve::physics::World::newCrankSlider()</a>, <a class="el" href="World3DJoints_8cpp_source.html#l00123">eve::physics::World3D::newCrankSlider()</a>, <a class="el" href="Box3DWorldJoints_8cpp_source.html#l00128">eve::physics::box3d::WorldBackend::newDistanceJoint()</a>, <a class="el" href="World3DJoints_8cpp_source.html#l00163">eve::physics::World3D::newDistanceJoint()</a>, <a class="el" href="Box3DWorldJoints_8cpp_source.html#l00062">eve::physics::box3d::WorldBackend::newMotorJoint()</a>, <a class="el" href="World3DJoints_8cpp_source.html#l00049">eve::physics::World3D::newMotorJoint()</a>, <a class="el" href="Box3DWorldJoints_8cpp_source.html#l00082">eve::physics::box3d::WorldBackend::newParallelJoint()</a>, <a class="el" href="World3DJoints_8cpp_source.html#l00060">eve::physics::World3D::newParallelJoint()</a>, <a class="el" href="Box3DWorldJoints_8cpp_source.html#l00201">eve::physics::box3d::WorldBackend::newPrismaticJoint()</a>, <a class="el" href="World3DJoints_8cpp_source.html#l00190">eve::physics::World3D::newPrismaticJoint()</a>, <a class="el" href="WorldJoints2D_8cpp_source.html#l00141">eve::physics::World::newRatchet()</a>, <a class="el" href="World3DJoints_8cpp_source.html#l00104">eve::physics::World3D::newRatchet()</a>, <a class="el" href="Box3DWorldJoints_8cpp_source.html#l00163">eve::physics::box3d::WorldBackend::newRevoluteJoint()</a>, <a class="el" href="World3DJoints_8cpp_source.html#l00177">eve::physics::World3D::newRevoluteJoint()</a>, <a class="el" href="WorldJoints2D_8cpp_source.html#l00130">eve::physics::World::newShaft()</a>, <a class="el" href="World3DJoints_8cpp_source.html#l00090">eve::physics::World3D::newShaft()</a>, <a class="el" href="Box3DWorldJoints_8cpp_source.html#l00239">eve::physics::box3d::WorldBackend::newSphericalJoint()</a>, <a class="el" href="World3DJoints_8cpp_source.html#l00203">eve::physics::World3D::newSphericalJoint()</a>, <a class="el" href="Box3DWorldJoints_8cpp_source.html#l00032">eve::physics::box3d::WorldBackend::newWeldJoint()</a>, <a class="el" href="World3DJoints_8cpp_source.html#l00037">eve::physics::World3D::newWeldJoint()</a>, <a class="el" href="Box3DWorldJoints_8cpp_source.html#l00277">eve::physics::box3d::WorldBackend::newWheelJoint()</a> , 以及 <a class="el" href="World3DJoints_8cpp_source.html#l00216">eve::physics::World3D::newWheelJoint()</a>.</p>
+
+</div>
+</div>
+<a id="a34e71a39c8d26b2b44c821f8be754903" name="a34e71a39c8d26b2b44c821f8be754903"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34e71a39c8d26b2b44c821f8be754903">&#9670;&#160;</a></span>dampingRatio</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float dampingRatio = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Joint2DBindings_8cpp_source.html">Joint2DBindings.cpp</a> 第 <a class="el" href="Joint2DBindings_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionTypes_8cpp_source.html#l00177">eve::animation::evaluateMotionOscillation()</a>, <a class="el" href="AnimControlMath_8h_source.html#l00061">eve::animation::makeDampedSpringStep()</a>, <a class="el" href="World3D_8cpp_source.html#l00131">eve::physics::World3D::setContactTuning()</a>, <a class="el" href="Box3DWorld_8cpp_source.html#l00189">eve::physics::box3d::WorldBackend::setContactTuning()</a>, <a class="el" href="Joint3D_8cpp_source.html#l00127">eve::physics::Joint3D::setDistanceSpring()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00101">eve::physics::jolt::JointBackend::setDistanceSpring()</a>, <a class="el" href="Joint2D_8cpp_source.html#l00081">eve::physics::Joint2D::setDistanceSpring()</a>, <a class="el" href="Joint3D_8cpp_source.html#l00215">eve::physics::Joint3D::setMotorAngularSpring()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00576">eve::physics::jolt::JointBackend::setMotorAngularSpring()</a>, <a class="el" href="Joint3D_8cpp_source.html#l00212">eve::physics::Joint3D::setMotorLinearSpring()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00559">eve::physics::jolt::JointBackend::setMotorLinearSpring()</a>, <a class="el" href="Joint3D_8cpp_source.html#l00224">eve::physics::Joint3D::setParallelSpring()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00635">eve::physics::jolt::JointBackend::setParallelSpring()</a>, <a class="el" href="Joint3D_8cpp_source.html#l00148">eve::physics::Joint3D::setPrismaticSpring()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00195">eve::physics::jolt::JointBackend::setPrismaticSpring()</a>, <a class="el" href="Joint3D_8cpp_source.html#l00136">eve::physics::Joint3D::setRevoluteSpring()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00131">eve::physics::jolt::JointBackend::setRevoluteSpring()</a>, <a class="el" href="Joint3D_8cpp_source.html#l00196">eve::physics::Joint3D::setWeldAngularSpring()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00474">eve::physics::jolt::JointBackend::setWeldAngularSpring()</a>, <a class="el" href="Joint3D_8cpp_source.html#l00193">eve::physics::Joint3D::setWeldLinearSpring()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00457">eve::physics::jolt::JointBackend::setWeldLinearSpring()</a>, <a class="el" href="Joint2D_8cpp_source.html#l00158">eve::physics::Joint2D::setWeldSpring()</a>, <a class="el" href="Joint2D_8cpp_source.html#l00175">eve::physics::Joint2D::setWheelSpring()</a>, <a class="el" href="Joint3D_8cpp_source.html#l00182">eve::physics::Joint3D::setWheelSteering()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00388">eve::physics::jolt::JointBackend::setWheelSteering()</a>, <a class="el" href="Joint3D_8cpp_source.html#l00173">eve::physics::Joint3D::setWheelSuspension()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00341">eve::physics::jolt::JointBackend::setWheelSuspension()</a> , 以及 <a class="el" href="AnimControlMath_8h_source.html#l00115">eve::animation::stepDampedSpring()</a>.</p>
+
+</div>
+</div>
+<a id="a261f8ce194db405bc60e1058ebac4008" name="a261f8ce194db405bc60e1058ebac4008"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a261f8ce194db405bc60e1058ebac4008">&#9670;&#160;</a></span>groundA</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">JointPoint2D groundA {-1, 1}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Joint2DBindings_8cpp_source.html">Joint2DBindings.cpp</a> 第 <a class="el" href="Joint2DBindings_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7db8b8ba662105ff334912b48e684139" name="a7db8b8ba662105ff334912b48e684139"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7db8b8ba662105ff334912b48e684139">&#9670;&#160;</a></span>groundB</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">JointPoint2D groundB {1, 1}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Joint2DBindings_8cpp_source.html">Joint2DBindings.cpp</a> 第 <a class="el" href="Joint2DBindings_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7441ef0865bcb3db9b8064dd7375c1ea" name="a7441ef0865bcb3db9b8064dd7375c1ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7441ef0865bcb3db9b8064dd7375c1ea">&#9670;&#160;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Joint2DBindings_8cpp_source.html">Joint2DBindings.cpp</a> 第 <a class="el" href="Joint2DBindings_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aca87c2bbc26e697653e2d8461c76a361" name="aca87c2bbc26e697653e2d8461c76a361"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca87c2bbc26e697653e2d8461c76a361">&#9670;&#160;</a></span>kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string kind = &quot;revolute&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Joint2DBindings_8cpp_source.html">Joint2DBindings.cpp</a> 第 <a class="el" href="Joint2DBindings_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6150639f5295064e97e299a9206d16b1" name="a6150639f5295064e97e299a9206d16b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6150639f5295064e97e299a9206d16b1">&#9670;&#160;</a></span>length</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float length = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Joint2DBindings_8cpp_source.html">Joint2DBindings.cpp</a> 第 <a class="el" href="Joint2DBindings_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadBake_8cpp_source.html#l00471">eve::procgen::road::detail::addDeckAndPiers()</a>, <a class="el" href="CaveGeometry_8cpp_source.html#l00129">eve::procgen::cave_detail::addFacetedTriangle()</a>, <a class="el" href="FoliageCluster_8cpp_source.html#l00125">eve::procgen::addFoliageCluster()</a>, <a class="el" href="AnimConstraintStack_8cpp_source.html#l00032">eve::animation::AnimConstraintStack::addFootIK()</a>, <a class="el" href="RoadBake_8cpp_source.html#l00539">eve::procgen::road::detail::addLaneMarkings()</a>, <a class="el" href="ShapeGrammar_8cpp_source.html#l00070">eve::procgen::ShapeGrammar::addModule()</a>, <a class="el" href="GeometryStroke_8cpp_source.html#l00089">eve::procgen::GeometryStroke::addPointResult()</a>, <a class="el" href="CombatCharacterPose_8cpp_source.html#l00348">eve::combat::CombatLocomotionRuntime::advance()</a>, <a class="el" href="ClimbingExecution_8cpp_source.html#l00012">eve::climbing::ClimbingRuntime::advance()</a>, <a class="el" href="Aerodynamics_8cpp_source.html#l00025">eve::physics::ForceModels::angularDamping3D()</a>, <a class="el" href="StructuredModelCommon_8cpp_source.html#l00008">eve::asset_import::structured_detail::appendTriangle()</a>, <a class="el" href="RoadBakeEdges_8cpp_source.html#l00020">eve::procgen::road::detail::bakeEdgeGeometry()</a>, <a class="el" href="RoadBakeFacilityLinks_8cpp_source.html#l00137">eve::procgen::road::detail::bakeFacilityContinuations()</a>, <a class="el" href="RoadFacilityPrefab_8cpp_source.html#l00092">eve::procgen::road::detail::bakeFacilityPrefab()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00457">eve::procgen::bakeGtsDetailSurface()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00393">eve::procgen::bakeGtsGeologicalSurface()</a>, <a class="el" href="GtsTerrainLodRuntime_8cpp_source.html#l01422">eve::procgen::bakeGtsTerrainVertexColorsInto()</a>, <a class="el" href="RoadBakeJunctions_8cpp_source.html#l00020">eve::procgen::road::detail::bakeJunction()</a>, <a class="el" href="RoadBakePlacements_8cpp_source.html#l00024">eve::procgen::road::detail::bakePlacementPoints()</a>, <a class="el" href="RoadTraffic_8cpp_source.html#l00035">eve::procgen::road::detail::bakeTrafficControlPoints()</a>, <a class="el" href="RoadBakeNavigation_8cpp_source.html#l00019">eve::procgen::road::detail::bakeTurnOverlays()</a>, <a class="el" href="PoseInertiaInternal_8h_source.html#l00043">eve::animation::detail::PoseInertia::begin()</a>, <a class="el" href="OceanHullMask_8cpp_source.html#l00013">eve::fluids::OceanHullMaskBuilder::build()</a>, <a class="el" href="DecalGizmo_8cpp_source.html#l00007">eve::decal_editing::DecalGizmoPreviewService::build()</a>, <a class="el" href="ProceduralBoneOverlay_8cpp_source.html#l00010">eve::animation_editing::ProceduralBoneOverlayBuilder::build()</a>, <a class="el" href="SkeletonOverlay_8cpp_source.html#l00057">eve::animation_editing::SkeletonOverlayBuilder::build()</a>, <a class="el" href="BeamEffect_8cpp_source.html#l00084">eve::stylize::buildBeamEffect()</a>, <a class="el" href="GtsTerrainLodRuntime_8cpp_source.html#l00132">eve::procgen::buildGtsTerrainBaseMesh()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00529">eve::fluids::buildVolumeFluidEdgeDistribution()</a>, <a class="el" href="Rope3D_8cpp_source.html#l00229">eve::physics::Rope3D::calculateLength()</a>, <a class="el" href="JoltQueryInternal_8cpp_source.html#l00009">eve::physics::jolt::capsuleVolume()</a>, <a class="el" href="ClimbingRuntimeInternal_8h_source.html#l00072">eve::climbing::runtime_detail::clampMagnitude()</a>, <a class="el" href="RoadConnection_8cpp_source.html#l00127">eve::procgen::road::detail::connectionSocketDistance()</a>, <a class="el" href="CrowdSpawn_8cpp_source.html#l00037">eve::crowd::Crowd::createAgents()</a>, <a class="el" href="Skeleton2D_8cpp_source.html#l00044">eve::ik::Skeleton2D::createBone()</a>, <a class="el" href="Skeleton2D_8cpp_source.html#l00235">eve::ik::Skeleton3D::createBone()</a>, <a class="el" href="CaveObstacleScour_8cpp_source.html#l00042">eve::procgen::createCaveObstacleScourSites()</a>, <a class="el" href="CavePotholes_8cpp_source.html#l00041">eve::procgen::createCavePotholeSites()</a>, <a class="el" href="CaveSediment_8cpp_source.html#l00066">eve::procgen::createCaveSediment()</a>, <a class="el" href="ForceFields_8cpp_source.html#l00072">eve::physics::ForceModels::damping()</a>, <a class="el" href="SourcePng_8cpp_source.html#l00251">eve::asset::detail::decodeTiffRgba8()</a>, <a class="el" href="PoseInertiaInternal_8h_source.html#l00021">eve::animation::detail::PoseInertia::difference()</a>, <a class="el" href="UrbanTypes_8h_source.html#l00052">eve::procgen::urban::distance()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00800">eve::graphics::PrimitiveSceneCanvas3D::drawArrow()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00563">eve::graphics::PrimitiveSceneCanvas3D::drawRay()</a>, <a class="el" href="VegetationWind_8cpp_source.html#l00097">eve::graphics::evaluateVegetationWind()</a>, <a class="el" href="OnnxExecute_8cpp_source.html#l00486">eve::tensor::onnx_detail::executeIndex()</a>, <a class="el" href="OnnxMisc_8cpp_source.html#l00206">eve::tensor::onnx_detail::executeNeural()</a>, <a class="el" href="VolumeFluidFactoryBindings_8cpp_source.html#l00007">eve::fluids::exposeVolumeFluidFactory()</a>, <a class="el" href="PointSet_8cpp_source.html#l00622">eve::procgen::filterPointSlope()</a>, <a class="el" href="ForceFields_8cpp_source.html#l00081">eve::physics::ForceModels::friction()</a>, <a class="el" href="VegetationAsset_8cpp_source.html#l00023">eve::asset_graphics::VegetationAsset::fromCanonical()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00073">eve::procgen::generateTerrainConcavityMask()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00487">eve::procgen::generateTreeMesh()</a>, <a class="el" href="CameraTarget_8cpp_source.html#l00098">eve::camera_editing::CameraPreview::gizmo()</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00877">eve::graphics::webgpu::Graphics::gpuDrivenCullEmit()</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00308">eve::graphics::webgpu::Graphics::gpuDrivenVgComputeSection()</a>, <a class="el" href="OceanFourierInternal_8h_source.html#l00015">eve::fluids::ocean_detail::inverse1D()</a>, <a class="el" href="DomainGizmoPreview_8cpp_source.html#l00090">eve::domain_gizmo_editing::EditorGizmoPreviewBuilder::joint()</a>, <a class="el" href="RoadNetworkEditTarget_8cpp_source.html#l00548">eve::procgen_editing::detail::linePrimitive()</a>, <a class="el" href="EvpackSceneTemplateLoader_8cpp_source.html#l00056">eve::asset_scene::EvpackSceneTemplateLoader::load()</a>, <a class="el" href="RoadNetworkRecipes_8cpp_source.html#l00167">eve::procgen::road::RoadNetwork::makeBridge()</a>, <a class="el" href="RoadNetworkRecipes_8cpp_source.html#l00134">eve::procgen::road::RoadNetwork::makeStraight()</a>, <a class="el" href="MeshDeformationSession_8cpp_source.html#l00698">eve::procgen::MeshDeformationSession::manipulateSelectedVerticesResult()</a>, <a class="el" href="DistanceField3D_8cpp_source.html#l00407">eve::physics::DistanceField3D::moveCapsule()</a>, <a class="el" href="CaveScallops_8cpp_source.html#l00064">eve::procgen::nearestCavePassageFrame()</a>, <a class="el" href="WorldJoints2D_8cpp_source.html#l00078">eve::physics::World::newDistanceJoint()</a>, <a class="el" href="Box3DWorldJoints_8cpp_source.html#l00128">eve::physics::box3d::WorldBackend::newDistanceJoint()</a>, <a class="el" href="JoltWorldJoints_8cpp_source.html#l00129">eve::physics::jolt::WorldBackend::newDistanceJoint()</a>, <a class="el" href="World3DJoints_8cpp_source.html#l00163">eve::physics::World3D::newDistanceJoint()</a>, <a class="el" href="UrbanTypes_8h_source.html#l00044">eve::procgen::urban::normalize()</a>, <a class="el" href="RoadBake_8cpp_source.html#l00031">eve::procgen::road::detail::normalize()</a>, <a class="el" href="ClimbingRuntimeInternal_8h_source.html#l00065">eve::climbing::runtime_detail::normalizedHorizontal()</a>, <a class="el" href="VrmDocument_8cpp_source.html#l00227">eve::avatar::parseVrm()</a>, <a class="el" href="Math_8cpp_source.html#l00209">eve::math::Math::pingPong()</a>, <a class="el" href="CrowdPreferred_8cpp_source.html#l00065">eve::crowd::Crowd::Impl::preparePreferredVelocities()</a>, <a class="el" href="RoadSampling_8cpp_source.html#l00080">eve::procgen::road::detail::prepareRoadFrames()</a>, <a class="el" href="MeshEffectRenderer_8cpp_source.html#l00056">eve::stylize::prepareTrailUpload()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00601">eve::physics::snapshot_detail::prepareWorld3D()</a>, <a class="el" href="AnimationClip_8cpp_source.html#l00328">eve::animation_editing::AnimationClipDocumentTarget::preview()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l01553">eve::building::PlacementSystem::previewEdgePath()</a>, <a class="el" href="MapDocument_8cpp_source.html#l00563">eve::map_editing::MapDocumentTarget::previewRoad()</a>, <a class="el" href="SpatialData_8cpp_source.html#l00473">eve::procgen::SpatialData::project()</a>, <a class="el" href="MeshUvProjection_8cpp_source.html#l00015">eve::procgen::projectMeshUvResult()</a>, <a class="el" href="PointSetHeightmapAdapter_8cpp_source.html#l00008">eve::procgen::projectPointsToHeightmap()</a>, <a class="el" href="OceanRenderer_8cpp_source.html#l00098">eve::fluids::OceanRenderer::publish()</a>, <a class="el" href="RoadBake_8cpp_source.html#l00054">eve::procgen::road::detail::quadraticSegments()</a>, <a class="el" href="ForceFields_8cpp_source.html#l00047">eve::physics::ForceModels::radial()</a>, <a class="el" href="TerrainAsset_8cpp_source.html#l00085">eve::procgen::MemoryTerrainArchiveSource::read()</a>, <a class="el" href="PrimitiveGizmoRenderer_8cpp_source.html#l00057">eve::graphics_editing::PrimitiveGizmoRenderer::render()</a>, <a class="el" href="Rope3D_8cpp_source.html#l00248">eve::physics::Rope3D::repair()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02850">eve::rts::FireSupportSystem::request()</a>, <a class="el" href="CrowdContactSolver_8cpp_source.html#l00004">eve::crowd::Crowd::Impl::resolveOverlapsPass()</a>, <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00381">eve::graphics::resolvePrimitiveStrokes2D()</a>, <a class="el" href="Coupling3DSnapshot_8cpp_source.html#l00081">eve::physics::WorldSnapshotAccess::restoreCouplings3D()</a>, <a class="el" href="RoadAuthoring_8cpp_source.html#l00193">eve::procgen::road::detail::reverseFacilityPrefab()</a>, <a class="el" href="Rope3D_8cpp_source.html#l00020">eve::physics::Rope3D::Rope3D()</a>, <a class="el" href="Coupling3D_8cpp_source.html#l00053">eve::physics::Coupling3D::Data::row()</a>, <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00120">eve::fluids::OceanSpectrumFrame::sample()</a>, <a class="el" href="DistanceField3D_8cpp_source.html#l00151">eve::physics::DistanceField3D::sampleNormal()</a>, <a class="el" href="PointSet_8cpp_source.html#l00758">eve::procgen::samplePolylinePoints()</a>, <a class="el" href="RoadSampling_8cpp_source.html#l00017">eve::procgen::road::detail::sampleRoadFrames()</a>, <a class="el" href="RoadSurfacePath_8cpp_source.html#l00034">eve::procgen::road::detail::sampleSurfacePolyline()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l02696">eve::rts::ArtilleryRelocationSystem::select()</a>, <a class="el" href="CrowdAvoidance_8cpp_source.html#l00124">eve::crowd::Crowd::Impl::selectAvoidanceVelocity()</a>, <a class="el" href="CameraController_8cpp_source.html#l00096">eve::camera::CameraController::setCameraRoll()</a>, <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00098">eve::animation::DynamicBoneSolver::setChainEndOffset()</a>, <a class="el" href="Joint3D_8cpp_source.html#l00124">eve::physics::Joint3D::setDistanceLength()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00076">eve::physics::jolt::JointBackend::setDistanceLength()</a>, <a class="el" href="JoltDistanceConstraint_8cpp_source.html#l00136">eve::physics::jolt::setDistanceLength()</a>, <a class="el" href="SkyAtmospherePass_8cpp_source.html#l00398">eve::graphics::SkyAtmospherePass::setFrame()</a>, <a class="el" href="Skeleton2D_8cpp_source.html#l00088">eve::ik::Skeleton2D::setLength()</a>, <a class="el" href="Skeleton2D_8cpp_source.html#l00279">eve::ik::Skeleton3D::setLength()</a>, <a class="el" href="CombatCharacterPose_8cpp_source.html#l00306">eve::combat::CombatLocomotionRuntime::setMoveIntent()</a>, <a class="el" href="physfs_2Filesystem_8cpp_source.html#l00272">eve::filesystem::physfs::Filesystem::setupWriteDirectory()</a>, <a class="el" href="Pad_8cpp_source.html#l00253">eve::joystick::sdl::Pad::setVibration()</a>, <a class="el" href="RoadPlacementTerrain_8cpp_source.html#l00007">eve::procgen::road::detail::sideTerrainNormal()</a>, <a class="el" href="CombatCharacterPose_8cpp_source.html#l00253">eve::combat::DirectCombatNavigationProvider::steer()</a>, <a class="el" href="PathfinderCombatNavigation_8cpp_source.html#l00054">eve::combat::navigation::PathfinderCombatNavigationProvider::steer()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00284">eve::rts::TacticsSystem::step()</a>, <a class="el" href="PetalSolver_8cpp_source.html#l00018">eve::gpuagents::PetalSolver::step()</a>, <a class="el" href="ScenePhysicsPlacement_8cpp_source.html#l00424">eve::scene_editor::ScenePhysicsPlacementBackend::step()</a>, <a class="el" href="VolumeFluid_8cpp_source.html#l00183">eve::fluids::VolumeFluid::stepWithThermalContacts()</a>, <a class="el" href="VehicleTires3D_8cpp_source.html#l00110">eve::vehicle::tire_detail::submit3D()</a>, <a class="el" href="ClimbingAnchorExecution_8cpp_source.html#l00250">eve::climbing::ClimbingRuntime::transitionAnchor()</a>, <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00235">eve::animation::DynamicBoneSolver::update()</a>, <a class="el" href="ProjectileRuntime_8cpp_source.html#l00121">eve::weapon::ProjectileRuntime::update()</a>, <a class="el" href="CombatCarrier_8cpp_source.html#l00434">eve::weapon::CombatCarrierRuntime::update()</a>, <a class="el" href="BuildingTarget_8cpp_source.html#l01533">eve::building_editing::BuildingEdgeCurveDragSession::updateDrag()</a>, <a class="el" href="RoadConnection_8cpp_source.html#l00027">eve::procgen::road::detail::validateConnectionAsset()</a>, <a class="el" href="RoadFacilityPrefab_8cpp_source.html#l00041">eve::procgen::road::detail::validateFacilityPrefab()</a> , 以及 <a class="el" href="Aerodynamics_8cpp_source.html#l00040">eve::physics::ForceModels::wing()</a>.</p>
+
+</div>
+</div>
+<a id="acb8c56924b6437938d12471ec2ccfe3c" name="acb8c56924b6437938d12471ec2ccfe3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb8c56924b6437938d12471ec2ccfe3c">&#9670;&#160;</a></span>lifetime</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::weak_ptr&lt;const void&gt; lifetime</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Joint2DBindings_8cpp_source.html">Joint2DBindings.cpp</a> 第 <a class="el" href="Joint2DBindings_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TargetingLineOfSightAdapter_8cpp_source.html#l00015">eve::physics::TargetingLineOfSightAdapter::addWorld()</a>, <a class="el" href="ParticleGraphRuntime_8cpp_source.html#l00035">eve::particles_editing::ParticleGraphRuntimeBuilder::apply()</a>, <a class="el" href="OceanRenderer_8cpp_source.html#l00038">eve::fluids::OceanRendererBuilder::build()</a>, <a class="el" href="OceanSprayRenderer_8cpp_source.html#l00035">eve::fluids::OceanSprayRendererBuilder::build()</a>, <a class="el" href="ActionAttackVfxBlock_8cpp_source.html#l00030">eve::action::ActionAttackVfxBinding::fromPayload()</a>, <a class="el" href="ActionPrefabBlock_8cpp_source.html#l00119">eve::action::ActionVfxBinding::fromPayload()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l03093">eve::rts::RTSProjectileSystem::launch()</a>, <a class="el" href="GraphicsFoliage_8cpp_source.html#l00074">eve::graphics::Graphics::onResourcesRetiring()</a>, <a class="el" href="ParticleGraph_8cpp_source.html#l00260">eve::particles_editing::ParticleGraphDomain::preview()</a>, <a class="el" href="Decal_8cpp_source.html#l00049">eve::decal::Decal::project()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00081">eve::decal::DecalManager::project()</a>, <a class="el" href="TargetingLineOfSightAdapter_8cpp_source.html#l00047">eve::physics::TargetingLineOfSightAdapter::query()</a>, <a class="el" href="VehiclePhysics_8cpp_source.html#l00035">eve::vehicle::VehiclePhysicsBinding::resolve2D()</a>, <a class="el" href="VehiclePhysics_8cpp_source.html#l00049">eve::vehicle::VehiclePhysicsBinding::resolve3D()</a> , 以及 <a class="el" href="GraphicsFoliage_8cpp_source.html#l00070">eve::graphics::Graphics::resourceLifetime()</a>.</p>
+
+</div>
+</div>
+<a id="ae80b27e9552504bb73e5997d6bf3b515" name="ae80b27e9552504bb73e5997d6bf3b515"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae80b27e9552504bb73e5997d6bf3b515">&#9670;&#160;</a></span>link</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">PhysicsJointLink link</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Joint2DBindings_8cpp_source.html">Joint2DBindings.cpp</a> 第 <a class="el" href="Joint2DBindings_8cpp_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadNetwork_8cpp_source.html#l00291">eve::procgen::road::RoadNetwork::addLaneLink()</a>, <a class="el" href="RTSMatch_8cpp_source.html#l00093">eve::rts::MatchSystem::addParticipant()</a>, <a class="el" href="RTSAction_8cpp_source.html#l00412">eve::rts::RTSArchetypeMaterializer::apply()</a>, <a class="el" href="RTSAction_8cpp_source.html#l00241">eve::rts::RTSArchetypeMaterializer::apply()</a>, <a class="el" href="RoadNetworkEditApply_8cpp_source.html#l00056">eve::procgen_editing::RoadNetworkEditTarget::applyDomainOperation()</a>, <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00136">eve::physics::GeometryCollectionInstance::applyField()</a>, <a class="el" href="VolumeFluidContactTracker_8cpp_source.html#l00094">eve::fluids::VolumeFluidCoupling::attach()</a>, <a class="el" href="VehiclePhysics_8cpp_source.html#l00149">eve::vehicle::VehiclePhysics::attach2D()</a>, <a class="el" href="VehiclePhysics_8cpp_source.html#l00173">eve::vehicle::VehiclePhysics::attach3D()</a>, <a class="el" href="RoadBakeNavigation_8cpp_source.html#l00019">eve::procgen::road::detail::bakeTurnOverlays()</a>, <a class="el" href="RoadNetwork_8cpp_source.html#l00307">eve::procgen::road::RoadNetwork::blockLaneLink()</a>, <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00411">eve::physics::GeometryCollectionInstance::boneLink()</a>, <a class="el" href="PixelWorldStreaming_8cpp_source.html#l00023">eve::pixelworld_streaming::PixelChunkStreamCursor::capture()</a>, <a class="el" href="RoadNetworkCodec_8cpp_source.html#l00038">eve::procgen::road::captureRoadNetwork()</a>, <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00619">eve::pixelworld_physics::PixelTerrainCollisionCache::clearPhysics()</a>, <a class="el" href="SceneRuntime_8cpp_source.html#l00097">eve::scene_editing::SceneHostEditorTarget::componentLinks()</a>, <a class="el" href="RTS_8cpp_source.html#l01836">eve::rts::RTS::configureScriptWorld()</a>, <a class="el" href="RoadNetwork_8cpp_source.html#l00351">eve::procgen::road::RoadNetwork::connectAllTurns()</a>, <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00397">eve::pixelworld_physics::PixelFragmentBody::create()</a>, <a class="el" href="OceanBoat_8cpp_source.html#l00031">eve::fluids::OceanBoat::create()</a>, <a class="el" href="GeometryCollectionInstance_8cpp_source.html#l00038">eve::physics::GeometryCollectionInstance::create()</a>, <a class="el" href="RoadNetworkEditTarget_8cpp_source.html#l00136">eve::procgen_editing::detail::decodeBlockedLink()</a>, <a class="el" href="RoadNetworkEditTarget_8cpp_source.html#l00507">eve::procgen_editing::detail::decodeIntersectionDisconnect()</a>, <a class="el" href="RoadNetworkEditTarget_8cpp_source.html#l00182">eve::procgen_editing::detail::decodeLaneCounts()</a>, <a class="el" href="RoadNetworkEditTarget_8cpp_source.html#l00155">eve::procgen_editing::detail::decodeLinks()</a>, <a class="el" href="RoadNetworkEditTarget_8cpp_source.html#l00340">eve::procgen_editing::detail::decodeUnmergeNodes()</a>, <a class="el" href="Cloth_8cpp_source.html#l00605">eve::physics::Cloth::draw()</a>, <a class="el" href="ClothGPU_8cpp_source.html#l00664">eve::physics::ClothGPU::draw()</a>, <a class="el" href="RoadNetworkEditTarget_8cpp_source.html#l00130">eve::procgen_editing::detail::encodeBlockedLink()</a>, <a class="el" href="RoadNetworkEditTarget_8cpp_source.html#l00486">eve::procgen_editing::detail::encodeIntersectionDisconnect()</a>, <a class="el" href="RoadNetworkEditTarget_8cpp_source.html#l00169">eve::procgen_editing::detail::encodeLaneCounts()</a>, <a class="el" href="RoadNetworkEditTarget_8cpp_source.html#l00148">eve::procgen_editing::detail::encodeLinks()</a>, <a class="el" href="RoadNetworkEditTarget_8cpp_source.html#l00321">eve::procgen_editing::detail::encodeUnmergeNodes()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00659">eve::scene::SceneHost::linkAudio3D()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00655">eve::scene::SceneHost::linkCamera3D()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00647">eve::scene::SceneHost::linkPhysics2D()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00651">eve::scene::SceneHost::linkPhysics3D()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00639">eve::scene::SceneHost::linkRenderable2D()</a>, <a class="el" href="SceneHost_8cpp_source.html#l00643">eve::scene::SceneHost::linkRenderable3D()</a>, <a class="el" href="RoadNetworkEditTarget_8cpp_source.html#l00675">eve::procgen_editing::RoadNetworkEditTarget::loadSnapshot()</a>, <a class="el" href="RoadNetworkEditOperations_8cpp_source.html#l00615">eve::procgen_editing::RoadNetworkEditTarget::makeAddEdgeAndConnect()</a>, <a class="el" href="RoadNetworkEditOperations_8cpp_source.html#l00668">eve::procgen_editing::RoadNetworkEditTarget::makeAddLaneLink()</a>, <a class="el" href="RoadNetworkEditOperations_8cpp_source.html#l00704">eve::procgen_editing::RoadNetworkEditTarget::makeBlockLaneLink()</a>, <a class="el" href="RoadNetworkEditOperations_8cpp_source.html#l00740">eve::procgen_editing::RoadNetworkEditTarget::makeConnectAllTurns()</a>, <a class="el" href="RoadNetworkEditOperations_8cpp_source.html#l00493">eve::procgen_editing::RoadNetworkEditTarget::makeConnectEdgeIntersection()</a>, <a class="el" href="RoadNetworkEditOperations_8cpp_source.html#l00442">eve::procgen_editing::RoadNetworkEditTarget::makeConnectNodeAtPosition()</a>, <a class="el" href="RoadNetworkEditOperations_8cpp_source.html#l00345">eve::procgen_editing::RoadNetworkEditTarget::makeDetachEdgeEndpoint()</a>, <a class="el" href="RoadNetworkEditOperations_8cpp_source.html#l00238">eve::procgen_editing::RoadNetworkEditTarget::makeReconnectEdgeEndpoint()</a>, <a class="el" href="RoadNetworkEditOperations_8cpp_source.html#l00279">eve::procgen_editing::RoadNetworkEditTarget::makeReconnectEdgeEndpointAndConnect()</a>, <a class="el" href="RoadNetworkEditOperations_8cpp_source.html#l00644">eve::procgen_editing::RoadNetworkEditTarget::makeRemoveEdge()</a>, <a class="el" href="RoadNetworkEditOperations_8cpp_source.html#l00686">eve::procgen_editing::RoadNetworkEditTarget::makeRemoveLaneLink()</a>, <a class="el" href="Network_8cpp_source.html#l00135">eve::network::Network::makeRpc()</a>, <a class="el" href="RoadNetworkEditOperations_8cpp_source.html#l00175">eve::procgen_editing::RoadNetworkEditTarget::makeSetEdgeLaneCounts()</a>, <a class="el" href="RoadNetworkEditOperations_8cpp_source.html#l00383">eve::procgen_editing::RoadNetworkEditTarget::makeSplitEdge()</a>, <a class="el" href="RoadNetworkEditOperations_8cpp_source.html#l00413">eve::procgen_editing::RoadNetworkEditTarget::makeSplitEdgeAtPosition()</a>, <a class="el" href="Network_8cpp_source.html#l00127">eve::network::Network::makeUdpLink()</a>, <a class="el" href="RoadNetworkEditOperations_8cpp_source.html#l00722">eve::procgen_editing::RoadNetworkEditTarget::makeUnblockLaneLink()</a>, <a class="el" href="RTS_8cpp_source.html#l00665">eve::rts::RTS::newFactionBuilding()</a>, <a class="el" href="RTS_8cpp_source.html#l00615">eve::rts::RTS::newFactionUnit()</a>, <a class="el" href="Network_8cpp_source.html#l00138">eve::network::Network::newRpc()</a>, <a class="el" href="NetHost_8cpp_source.html#l00051">eve::network::NetHost::onDatagram()</a>, <a class="el" href="RoadNetwork_8cpp_source.html#l00746">eve::procgen::road::RoadNetwork::reconnectEdgeEndpoint()</a>, <a class="el" href="RoadNetworkEditingCommands_8cpp_source.html#l00011">eve::procgen_editing::registerRoadNetworkEditingCommands()</a>, <a class="el" href="RoadNetwork_8cpp_source.html#l00834">eve::procgen::road::RoadNetwork::removeEdge()</a>, <a class="el" href="GtsTerrainColliderRuntime_8cpp_source.html#l00040">eve::procgen_physics::GtsTerrainColliderRuntime::replace()</a>, <a class="el" href="RoadNetworkCodec_8cpp_source.html#l00070">eve::procgen::road::restoreRoadNetwork()</a>, <a class="el" href="RoadNetwork_8cpp_source.html#l00687">eve::procgen::road::RoadNetwork::reverseEdge()</a>, <a class="el" href="NetHost_8cpp_source.html#l00091">eve::network::NetHost::sendStringTo()</a>, <a class="el" href="NetHost_8cpp_source.html#l00086">eve::network::NetHost::sendTo()</a>, <a class="el" href="RoadNetwork_8cpp_source.html#l00659">eve::procgen::road::RoadNetwork::setEdgeLaneCounts()</a>, <a class="el" href="RoadNetworkEditTarget_8cpp_source.html#l00651">eve::procgen_editing::RoadNetworkEditTarget::snapshotValue()</a>, <a class="el" href="RoadNetworkSplit_8cpp_source.html#l00098">eve::procgen::road::RoadNetwork::splitEdge()</a>, <a class="el" href="RTSMining_8cpp_source.html#l00009">eve::rts::WorkerAssignmentSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l01444">eve::rts::ContainmentSystem::step()</a>, <a class="el" href="RTSBuildingProduction_8cpp_source.html#l00010">eve::rts::BuildingProductionSystem::step()</a>, <a class="el" href="VehicleTires2D_8cpp_source.html#l00021">eve::vehicle::tire_detail::submit2D()</a>, <a class="el" href="VehicleTires3D_8cpp_source.html#l00110">eve::vehicle::tire_detail::submit3D()</a>, <a class="el" href="PixelWorldPhysics_8cpp_source.html#l00503">eve::pixelworld_physics::PixelTerrainCollisionCache::sync()</a>, <a class="el" href="Cloth3DTearing_8cpp_source.html#l00023">eve::physics::Cloth3D::tearConstraint()</a> , 以及 <a class="el" href="RoadNetwork_8cpp_source.html#l00404">eve::procgen::road::RoadNetwork::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a93636d5a62a5dfce2a284d6af96cb020" name="a93636d5a62a5dfce2a284d6af96cb020"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93636d5a62a5dfce2a284d6af96cb020">&#9670;&#160;</a></span>owner</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">World* owner</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Joint2DBindings_8cpp_source.html">Joint2DBindings.cpp</a> 第 <a class="el" href="Joint2DBindings_8cpp_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a207ad05f99cc72068a92358861ff5e71" name="a207ad05f99cc72068a92358861ff5e71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a207ad05f99cc72068a92358861ff5e71">&#9670;&#160;</a></span>ratio</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float ratio = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Joint2DBindings_8cpp_source.html">Joint2DBindings.cpp</a> 第 <a class="el" href="Joint2DBindings_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadFacilityPrefab_8cpp_source.html#l00092">eve::procgen::road::detail::bakeFacilityPrefab()</a>, <a class="el" href="UI_8cpp_source.html#l00685">eve::ui::UI::beginSplitPane()</a>, <a class="el" href="Shadow_8cpp_source.html#l00081">eve::graphics::buildDirectionalCSM()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00497">eve::fluids::buildVolumeFluidCubeDistribution()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00549">eve::fluids::buildVolumeFluidDiskDistribution()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00444">eve::fluids::buildVolumeFluidSphereDistribution()</a>, <a class="el" href="mechanics_2Joint2D_8cpp_source.html#l00153">eve::physics::Joint2D::createGear()</a>, <a class="el" href="MotionBuilder_8cpp_source.html#l00241">eve::animation::MotionBuilder::dampingRatio()</a>, <a class="el" href="MotionBuilder_8cpp_source.html#l00258">eve::animation::MotionVec2Builder::dampingRatio()</a>, <a class="el" href="MotionBuilder_8cpp_source.html#l00275">eve::animation::MotionVec3Builder::dampingRatio()</a>, <a class="el" href="TerrainPipeline_8cpp_source.html#l00179">eve::procgen::TerrainPipeline::erodeHydraulic()</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00442">eve::procgen::exposeModuleAssembly()</a>, <a class="el" href="WorldJoints2D_8cpp_source.html#l00123">eve::physics::World::newGearJoint()</a>, <a class="el" href="SplinePath_8cpp_source.html#l00912">eve::procgen::SplinePath::polylineResult()</a>, <a class="el" href="FluidTarget_8cpp_source.html#l00223">eve::fluids_editing::FluidSimulationTarget::previewBudget()</a>, <a class="el" href="Coupling3DSnapshot_8cpp_source.html#l00081">eve::physics::WorldSnapshotAccess::restoreCouplings3D()</a>, <a class="el" href="JointSnapshotCodec_8cpp_source.html#l00169">eve::physics::WorldSnapshotAccess::restoreJoints2D()</a>, <a class="el" href="SplinePath_8cpp_source.html#l00557">eve::procgen::SplinePath::sampleFramesResult()</a>, <a class="el" href="RTS_8cpp_source.html#l02407">eve::rts::RTS::sellScriptBuilding()</a>, <a class="el" href="Joint2D_8cpp_source.html#l00234">eve::physics::Joint2D::setGearRatio()</a>, <a class="el" href="UI_8cpp_source.html#l00852">eve::ui::UI::setItemAspectRatio()</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00166">eve::procgen::ModuleAssemblyPlan::setMinimumSupportRatio()</a>, <a class="el" href="JoltDistanceConstraint_8cpp_source.html#l00058">eve::physics::jolt::DistanceConstraint::setSpring()</a>, <a class="el" href="Widget_8cpp_source.html#l00607">eve::ui::splitPane()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l01667">eve::rts::SupplySystem::step()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00415">eve::particles::stepEmitterSim()</a>, <a class="el" href="JoltDistanceConstraint_8cpp_source.html#l00098">eve::physics::jolt::DistanceConstraint::WarmStartVelocityConstraint()</a> , 以及 <a class="el" href="Widget_8h_source.html#l00271">eve::ui::WidgetDesc::withAspectRatio()</a>.</p>
+
+</div>
+</div>
+<a id="ab73b6fd7b2e036316eb827d5783ad74c" name="ab73b6fd7b2e036316eb827d5783ad74c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab73b6fd7b2e036316eb827d5783ad74c">&#9670;&#160;</a></span>springHertz</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float springHertz = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Joint2DBindings_8cpp_source.html">Joint2DBindings.cpp</a> 第 <a class="el" href="Joint2DBindings_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rts/RTSAttackSlots.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b34b76c5127db2af25782628231a25c8.html">rts</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">RTSAttackSlots.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="RTSAttackSlots_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Profile_8h.html">common/Profile.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;new&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;numbers&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;tuple&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="RTS_8h.html">rts/RTS.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="RTSSystemMovementInternal_8h.html">rts/RTSSystemMovementInternal.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rts.html">eve::rts</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>Result&lt;std::size_t&gt; RTS::stepAttackSlots() {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <a class="code hl_define" href="Profile_8h.html#afb1a021433a7506983dc37028cab99cf">EV_PROFILE_MODULE</a>(<span class="stringliteral">&quot;rts&quot;</span>, <span class="stringliteral">&quot;RTS::stepAttackSlots&quot;</span>);</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        <span class="comment">// Scope: Unit infantry with current Attack/AttackMove and a live Unit target.</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <span class="comment">// Read: Identity, Orders, Motion, Combat, Crowd, Durability, Containment; canonical map.</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <span class="comment">// Write: Navigation combatSlotTarget/combatSlotWaiting, after closing the view.</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="comment">// No structural mutations/events/callbacks; simulation phase before both motion backends.</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <span class="keyword">struct </span>Projection {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>            ecs::EntityHandle            <a class="code hl_variable" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>            std::optional&lt;WorldPosition&gt; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>            <span class="keywordtype">bool</span>                         waiting = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        };</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        std::vector&lt;Projection&gt; plan;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keyword">struct </span>Member {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            ecs::EntityHandle <a class="code hl_variable" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            <a class="code hl_typedef" href="namespaceeve_1_1sensing.html#a070c050c984b3f451a7aba3b399dad3d">SubjectRef</a>        <a class="code hl_variable" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>            <span class="keywordtype">float</span>             <a class="code hl_variable" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a>, <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, <a class="code hl_variable" href="MeshContactBlend_8cpp.html#a06f14a9abd47b91465f895d5259cdc1b">distance</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>            std::size_t       projection;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        };</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keyword">using </span>Key = std::tuple&lt;ecs::Table*, std::type_index, std::uint32_t, std::uint32_t&gt;;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keyword">struct </span><a class="code hl_enumvalue" href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a03937134cedab9078be39a77ee3a48a0">Group</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            ecs::EntityHandle   <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            std::vector&lt;Member&gt; <a class="code hl_variable" href="UnityPackage_8cpp.html#a07d3cf07e7831b4b6c40d01c4c84ef5d">members</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        };</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        std::map&lt;Key, Group&gt; <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a00921b24efd4597f8c48e380e195a80c">groups</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            <span class="keyword">auto</span> <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a20f7a01c65e0cec1613314b7c3e174f2">view</a> = ecs::View&lt;Unit, Unit::Identity, Unit::Navigation, Unit::Motion, Unit::Orders, Unit::Combat,</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                                  Unit::Crowd, Unit::Durability, Unit::Containment&gt;();</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span> it = <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a20f7a01c65e0cec1613314b7c3e174f2">view</a>.begin(); it != <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a20f7a01c65e0cec1613314b7c3e174f2">view</a>.end(); ++it) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                <span class="keyword">auto</span> [identity, nav, motion, orders, combat, crowd, durability, containment] = *it;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                (void)nav;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                <span class="keyword">const</span> <span class="keyword">auto</span> projection = plan.size();</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                plan.push_back({identity-&gt;self, {}, <span class="keyword">false</span>});</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                <span class="keywordflow">if</span> (!durability-&gt;alive || containment-&gt;container.isBound()) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                <span class="keyword">auto</span> <a class="code hl_variable" href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a> = <a class="code hl_function" href="namespaceeve_1_1rts_1_1systems__internal.html#a523acebfc2c9d19afeaaa94edc40a7c3">systems_internal::readCurrent</a>(orders-&gt;values);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                <span class="keywordflow">if</span> (!<a class="code hl_variable" href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a>) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;std::size_t&gt;::failure</a>(<a class="code hl_variable" href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a>.status());</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                <span class="keywordflow">if</span> (!<a class="code hl_variable" href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a>.value() ||</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                    (<a class="code hl_variable" href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a>.value()-&gt;kind != <a class="code hl_enumvalue" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884adcfafcb4323b102c7e204555d313ba0a">OrderKind::Attack</a> &amp;&amp; <a class="code hl_variable" href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a>.value()-&gt;kind != <a class="code hl_enumvalue" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884a364dce30a8b9b040a3938b09d9932a4a">OrderKind::AttackMove</a>))</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                    <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a> =</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                    <a class="code hl_variable" href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a>.value()-&gt;kind == <a class="code hl_enumvalue" href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884adcfafcb4323b102c7e204555d313ba0a">OrderKind::Attack</a> ? <a class="code hl_variable" href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a>.value()-&gt;targetEntity : combat-&gt;target;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                <span class="keyword">auto</span>* <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a> = <span class="keyword">dynamic_cast&lt;</span>Unit*<span class="keyword">&gt;</span>(ecs::try_get(<a class="code hl_variable" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>));</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a> || !<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>-&gt;durability()-&gt;alive || <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>-&gt;containment()-&gt;container.isBound()) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a> = combat-&gt;engagementRange;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> touch = crowd-&gt;radius + <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>-&gt;crowd()-&gt;radius;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                <span class="keywordflow">if</span> (!std::isfinite(touch) || crowd-&gt;radius &lt; 0.f || <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>-&gt;crowd()-&gt;radius &lt; 0.f ||</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                    !std::isfinite(motion-&gt;x) || !std::isfinite(motion-&gt;y) || !std::isfinite(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>-&gt;motion()-&gt;x) ||</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                    !std::isfinite(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>-&gt;motion()-&gt;y))</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;std::size_t&gt;::failure</a>(</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                        <a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                                          <span class="stringliteral">&quot;Infantry slot geometry must be finite and non-negative&quot;</span>, <span class="stringliteral">&quot;combat.slots&quot;</span>));</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                <span class="comment">// Rifle/artillery standoff remains owned by the weapon policy; infantry melee alone needs front</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                <span class="comment">// admission.</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a>) || <a class="code hl_variable" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a> &lt;= 0.f || touch &lt;= 0.f || <a class="code hl_variable" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a> &gt; touch * 2.f) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="MeshContactBlend_8cpp.html#a06f14a9abd47b91465f895d5259cdc1b">distance</a> = std::hypot(motion-&gt;x - <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>-&gt;motion()-&gt;x, motion-&gt;y - <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>-&gt;motion()-&gt;y);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                <span class="keywordflow">if</span> (<a class="code hl_variable" href="MeshContactBlend_8cpp.html#a06f14a9abd47b91465f895d5259cdc1b">distance</a> &gt; <a class="code hl_variable" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a> + touch * 2.f) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                <span class="keyword">const</span> Key <a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>{<a class="code hl_variable" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>.table, <a class="code hl_variable" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>.type, <a class="code hl_variable" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>.id, <a class="code hl_variable" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>.generation};</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                <span class="keyword">auto</span>&amp;     <a class="code hl_variable" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a> = <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a00921b24efd4597f8c48e380e195a80c">groups</a>[<a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>];</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                <a class="code hl_variable" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a>.target    = <a class="code hl_variable" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                <a class="code hl_variable" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a>.members.push_back(</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                    {identity-&gt;self, identity-&gt;subject, <a class="code hl_variable" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a>, crowd-&gt;radius, <a class="code hl_variable" href="MeshContactBlend_8cpp.html#a06f14a9abd47b91465f895d5259cdc1b">distance</a>, projection});</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            }</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        }</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        std::size_t processed = 0;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; [<a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>, <a class="code hl_variable" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a>] : <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a00921b24efd4597f8c48e380e195a80c">groups</a>) {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            (void)<a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            <span class="keyword">auto</span>* <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a> = <span class="keyword">dynamic_cast&lt;</span>Unit*<span class="keyword">&gt;</span>(ecs::try_get(<a class="code hl_variable" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a>.target));</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            std::sort(<a class="code hl_variable" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a>.members.begin(), <a class="code hl_variable" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a>.members.end(), [](<span class="keyword">const</span> Member&amp; <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <span class="keyword">const</span> Member&amp; <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>) {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                if (a.distance != b.distance) return a.distance &lt; b.distance;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                return a.subject.persistentId() &lt; b.subject.persistentId();</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            });</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> = 0.f, maximumFrontRadius = 0.f, maximumRange = 0.f;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="UiPreview_8cpp.html#ae3fb3c00da2b2455218d2c66570e6a68">member</a> : <a class="code hl_variable" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a>.<a class="code hl_variable" href="UnityPackage_8cpp.html#a07d3cf07e7831b4b6c40d01c4c84ef5d">members</a>) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>             = std::max(<a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, <a class="code hl_variable" href="UiPreview_8cpp.html#ae3fb3c00da2b2455218d2c66570e6a68">member</a>.radius);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                maximumRange       = std::max(maximumRange, <a class="code hl_variable" href="UiPreview_8cpp.html#ae3fb3c00da2b2455218d2c66570e6a68">member</a>.range);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                maximumFrontRadius = std::max(maximumFrontRadius,</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                                              std::max(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>-&gt;crowd()-&gt;radius + <a class="code hl_variable" href="UiPreview_8cpp.html#ae3fb3c00da2b2455218d2c66570e6a68">member</a>.radius, <a class="code hl_variable" href="UiPreview_8cpp.html#ae3fb3c00da2b2455218d2c66570e6a68">member</a>.range * 0.8f));</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            }</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>  = 2.f * <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> + 0.1f;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            <span class="keyword">const</span> <span class="keywordtype">int</span>   <a class="code hl_variable" href="GraphicsParticles_8cpp.html#ac6929dd676d28e30e74a1624a9324cc7">capacity</a> = std::clamp(</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                <span class="keywordtype">int</span>(std::clamp(std::floor(2.0 * std::numbers::pi * <span class="keywordtype">double</span>(maximumFrontRadius) / <a class="code hl_variable" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>), 1.0, 64.0)),</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                1, 64);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            std::vector&lt;bool&gt;                            reserved(<span class="keywordtype">size_t</span>(<a class="code hl_variable" href="GraphicsParticles_8cpp.html#ac6929dd676d28e30e74a1624a9324cc7">capacity</a>), <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            std::vector&lt;std::pair&lt;WorldPosition, float&gt;&gt; footprints;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            footprints.reserve(<span class="keywordtype">size_t</span>(<a class="code hl_variable" href="GraphicsParticles_8cpp.html#ac6929dd676d28e30e74a1624a9324cc7">capacity</a>));</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            std::size_t waiting = 0;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="UiPreview_8cpp.html#ae3fb3c00da2b2455218d2c66570e6a68">member</a> : <a class="code hl_variable" href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a>.<a class="code hl_variable" href="UnityPackage_8cpp.html#a07d3cf07e7831b4b6c40d01c4c84ef5d">members</a>) {</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                <span class="keyword">auto</span>* <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a> = <span class="keyword">dynamic_cast&lt;</span>Unit*<span class="keyword">&gt;</span>(ecs::try_get(<a class="code hl_variable" href="UiPreview_8cpp.html#ae3fb3c00da2b2455218d2c66570e6a68">member</a>.handle));</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                <span class="keywordflow">if</span> (!<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                <span class="keyword">auto</span>&amp;               projected = plan[<a class="code hl_variable" href="UiPreview_8cpp.html#ae3fb3c00da2b2455218d2c66570e6a68">member</a>.projection];</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                <span class="keyword">const</span> WorldPosition <a class="code hl_variable" href="McpArchitectureTools_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>{<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>-&gt;motion()-&gt;x, <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>-&gt;motion()-&gt;y};</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                <span class="keywordtype">int</span>                 <a class="code hl_variable" href="TacticsPath_8cpp.html#afb5c888046070dcfd5008e34354b90d6">best</a>         = -1;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                <span class="keywordtype">float</span>               bestDistance = 0.f;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                WorldPosition       destination{};</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> frontRadius = std::max(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>-&gt;crowd()-&gt;radius + <a class="code hl_variable" href="UiPreview_8cpp.html#ae3fb3c00da2b2455218d2c66570e6a68">member</a>.radius, <a class="code hl_variable" href="UiPreview_8cpp.html#ae3fb3c00da2b2455218d2c66570e6a68">member</a>.range * 0.8f);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> slot = 0; slot &lt; <a class="code hl_variable" href="GraphicsParticles_8cpp.html#ac6929dd676d28e30e74a1624a9324cc7">capacity</a> &amp;&amp; frontRadius &lt;= <a class="code hl_variable" href="UiPreview_8cpp.html#ae3fb3c00da2b2455218d2c66570e6a68">member</a>.range; ++slot) {</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                    <span class="keywordflow">if</span> (reserved[<span class="keywordtype">size_t</span>(slot)]) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                    <span class="keyword">const</span> <span class="keywordtype">float</span>         <a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#ab8ef1bf8a70cc07c6d55823c390a7e76">angle</a> = 2.f * std::numbers::pi_v&lt;float&gt; * float(slot) / float(<a class="code hl_variable" href="GraphicsParticles_8cpp.html#ac6929dd676d28e30e74a1624a9324cc7">capacity</a>);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>                    <span class="keyword">const</span> WorldPosition candidate{<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>-&gt;motion()-&gt;x + std::cos(<a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#ab8ef1bf8a70cc07c6d55823c390a7e76">angle</a>) * frontRadius,</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                                                  <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>-&gt;motion()-&gt;y + std::sin(<a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#ab8ef1bf8a70cc07c6d55823c390a7e76">angle</a>) * frontRadius};</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                    <span class="keyword">const</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="Shadow_8cpp.html#ad0f4f9e74e593402c49ae3ef819c0f20">occupied</a> = std::any_of(footprints.begin(), footprints.end(), [&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; footprint) {</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                        return std::hypot(candidate.x - footprint.first.x, candidate.y - footprint.first.y) &lt;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                               member.radius + footprint.second + 0.1f;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                    });</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                    <span class="keywordflow">if</span> (<a class="code hl_variable" href="Shadow_8cpp.html#ad0f4f9e74e593402c49ae3ef819c0f20">occupied</a>) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                    <span class="keywordflow">if</span> (pathfinder_ &amp;&amp; !<a class="code hl_function" href="namespaceeve_1_1rts_1_1systems__internal.html#adcb4b962a62abcaf52e40c6fb3c417fe">systems_internal::isFormationSegmentClear</a>(*pathfinder_, navigationGrid_, <a class="code hl_variable" href="McpArchitectureTools_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>,</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                                                                                  candidate, <a class="code hl_variable" href="UiPreview_8cpp.html#ae3fb3c00da2b2455218d2c66570e6a68">member</a>.radius))</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>                        <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="MeshContactBlend_8cpp.html#a06f14a9abd47b91465f895d5259cdc1b">distance</a> = std::hypot(candidate.x - <a class="code hl_variable" href="McpArchitectureTools_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>.x, candidate.y - <a class="code hl_variable" href="McpArchitectureTools_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>.y);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                    <span class="keywordflow">if</span> (<a class="code hl_variable" href="TacticsPath_8cpp.html#afb5c888046070dcfd5008e34354b90d6">best</a> &lt; 0 || <a class="code hl_variable" href="MeshContactBlend_8cpp.html#a06f14a9abd47b91465f895d5259cdc1b">distance</a> &lt; bestDistance) {</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                        <a class="code hl_variable" href="TacticsPath_8cpp.html#afb5c888046070dcfd5008e34354b90d6">best</a>         = slot;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                        bestDistance = <a class="code hl_variable" href="MeshContactBlend_8cpp.html#a06f14a9abd47b91465f895d5259cdc1b">distance</a>;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                        destination  = candidate;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                    }</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                }</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                <span class="keywordflow">if</span> (<a class="code hl_variable" href="TacticsPath_8cpp.html#afb5c888046070dcfd5008e34354b90d6">best</a> &gt;= 0) {</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                    reserved[size_t(<a class="code hl_variable" href="TacticsPath_8cpp.html#afb5c888046070dcfd5008e34354b90d6">best</a>)] = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                    footprints.emplace_back(destination, <a class="code hl_variable" href="UiPreview_8cpp.html#ae3fb3c00da2b2455218d2c66570e6a68">member</a>.radius);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                    projected.waiting     = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                    <span class="keyword">const</span> std::size_t <a class="code hl_function" href="namespaceeve_1_1ui.html#accf39723d2d9a1aab16bfadacb5ee645">row</a> = waiting / size_t(<a class="code hl_variable" href="GraphicsParticles_8cpp.html#ac6929dd676d28e30e74a1624a9324cc7">capacity</a>) + 1, slot = waiting++ % size_t(<a class="code hl_variable" href="GraphicsParticles_8cpp.html#ac6929dd676d28e30e74a1624a9324cc7">capacity</a>);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>                    <span class="keyword">const</span> <span class="keywordtype">float</span>       <a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#ab8ef1bf8a70cc07c6d55823c390a7e76">angle</a> = 2.f * std::numbers::pi_v&lt;float&gt; * float(slot) / float(<a class="code hl_variable" href="GraphicsParticles_8cpp.html#ac6929dd676d28e30e74a1624a9324cc7">capacity</a>);</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>                    <span class="keyword">const</span> <span class="keywordtype">float</span>       rearRadius =</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>                        std::max(maximumFrontRadius + <span class="keywordtype">float</span>(row) * <a class="code hl_variable" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>, maximumRange + <a class="code hl_variable" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>                    destination = {<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>-&gt;motion()-&gt;x + std::cos(<a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#ab8ef1bf8a70cc07c6d55823c390a7e76">angle</a>) * rearRadius,</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>                                   <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>-&gt;motion()-&gt;y + std::sin(<a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#ab8ef1bf8a70cc07c6d55823c390a7e76">angle</a>) * rearRadius};</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>                    <span class="keywordflow">if</span> (pathfinder_ &amp;&amp; !<a class="code hl_function" href="namespaceeve_1_1rts_1_1systems__internal.html#adcb4b962a62abcaf52e40c6fb3c417fe">systems_internal::isFormationSegmentClear</a>(*pathfinder_, navigationGrid_, <a class="code hl_variable" href="McpArchitectureTools_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>,</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>                                                                                  destination, <a class="code hl_variable" href="UiPreview_8cpp.html#ae3fb3c00da2b2455218d2c66570e6a68">member</a>.radius))</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>                        destination = <a class="code hl_variable" href="McpArchitectureTools_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>                }</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>                projected.target = destination;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>                ++processed;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>            }</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        }</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; projected : plan) {</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>            <span class="keyword">auto</span>* <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a> = <span class="keyword">dynamic_cast&lt;</span>Unit*<span class="keyword">&gt;</span>(ecs::try_get(projected.handle));</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>            <span class="keywordflow">if</span> (!<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>            <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>-&gt;navigation()-&gt;combatSlotTarget  = projected.target;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>            <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>-&gt;navigation()-&gt;combatSlotWaiting = projected.waiting;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        }</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;std::size_t&gt;::success</a>(processed);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::bad_alloc&amp;) {</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;std::size_t&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>, <span class="stringliteral">&quot;Infantry attack-slot preparation allocation failed&quot;</span>, <span class="stringliteral">&quot;combat.slots&quot;</span>));</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    }</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>}</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>}  <span class="comment">// namespace eve::rts</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_a16c9300acaea4db7696fb24b3802bfa5"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a></div><div class="ttdeci">LogicalId target</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00151">ActionNotifyRegistry.cpp:151</a></div></div>
+<div class="ttc" id="aAnimSmr_8cpp_html_aaca3fbd883cca67884738545312b4752"><div class="ttname"><a href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a></div><div class="ttdeci">int subject</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8cpp_source.html#l00163">AnimSmr.cpp:163</a></div></div>
+<div class="ttc" id="aBuildingTarget_8cpp_html_a7c1559cdaf08cadb03946cf9675af2d8"><div class="ttname"><a href="BuildingTarget_8cpp.html#a7c1559cdaf08cadb03946cf9675af2d8">group</a></div><div class="ttdeci">building::EdgeCurveGroup group</div><div class="ttdef"><b>Definition</b> <a href="BuildingTarget_8cpp_source.html#l00248">BuildingTarget.cpp:248</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a1f53a56adfc8a8f39c5e553c97a7b2ff"><div class="ttname"><a href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a></div><div class="ttdeci">SQObjectPtr key</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00155">ECS.cpp:155</a></div></div>
+<div class="ttc" id="aGraphicsParticles_8cpp_html_ac6929dd676d28e30e74a1624a9324cc7"><div class="ttname"><a href="GraphicsParticles_8cpp.html#ac6929dd676d28e30e74a1624a9324cc7">capacity</a></div><div class="ttdeci">std::uint32_t capacity</div><div class="ttdef"><b>Definition</b> <a href="GraphicsParticles_8cpp_source.html#l00037">GraphicsParticles.cpp:37</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_ad73a08b362d03aef0cbf46e78c9c0631"><div class="ttname"><a href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a></div><div class="ttdeci">Range range</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00020">LanguageIndex.cpp:20</a></div></div>
+<div class="ttc" id="aMcpArchitectureTools_8cpp_html_ad1b6861c9cfa34da8ef12c5bb1cf2114"><div class="ttname"><a href="McpArchitectureTools_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a></div><div class="ttdeci">std::string from</div><div class="ttdef"><b>Definition</b> <a href="McpArchitectureTools_8cpp_source.html#l00020">McpArchitectureTools.cpp:20</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a234e391f8e3e00f064813b98fb8f3cdb"><div class="ttname"><a href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a></div><div class="ttdeci">MeleePoint3 b</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00041">MeleeHit.cpp:41</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a65cfd4d3d71b298048a6baf087fe6579"><div class="ttname"><a href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a></div><div class="ttdeci">MeleePoint3 a</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00040">MeleeHit.cpp:40</a></div></div>
+<div class="ttc" id="aMeshContactBlend_8cpp_html_a06f14a9abd47b91465f895d5259cdc1b"><div class="ttname"><a href="MeshContactBlend_8cpp.html#a06f14a9abd47b91465f895d5259cdc1b">distance</a></div><div class="ttdeci">float distance</div><div class="ttdef"><b>Definition</b> <a href="MeshContactBlend_8cpp_source.html#l00043">MeshContactBlend.cpp:43</a></div></div>
+<div class="ttc" id="aOceanSprayBindings_8cpp_html_a20f7a01c65e0cec1613314b7c3e174f2"><div class="ttname"><a href="OceanSprayBindings_8cpp.html#a20f7a01c65e0cec1613314b7c3e174f2">view</a></div><div class="ttdeci">OceanSprayView view</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayBindings_8cpp_source.html#l00030">OceanSprayBindings.cpp:30</a></div></div>
+<div class="ttc" id="aOnnxGpgpu_8cpp_html_a00921b24efd4597f8c48e380e195a80c"><div class="ttname"><a href="OnnxGpgpu_8cpp.html#a00921b24efd4597f8c48e380e195a80c">groups</a></div><div class="ttdeci">uint32_t groups</div><div class="ttdef"><b>Definition</b> <a href="OnnxGpgpu_8cpp_source.html#l00039">OnnxGpgpu.cpp:39</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_a5050a760c11da521cd4aee6336f6529f"><div class="ttname"><a href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00042">PlacementSystem.cpp:42</a></div></div>
+<div class="ttc" id="aPortableWorldSnapshot_8cpp_html_ab8ef1bf8a70cc07c6d55823c390a7e76"><div class="ttname"><a href="PortableWorldSnapshot_8cpp.html#ab8ef1bf8a70cc07c6d55823c390a7e76">angle</a></div><div class="ttdeci">float angle</div><div class="ttdef"><b>Definition</b> <a href="PortableWorldSnapshot_8cpp_source.html#l00166">PortableWorldSnapshot.cpp:166</a></div></div>
+<div class="ttc" id="aPrimitivePath_8cpp_html_afb09dcd532f47a3a9fa9eed7d5a09e93"><div class="ttname"><a href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a></div><div class="ttdeci">PrimitiveHandle handle</div><div class="ttdef"><b>Definition</b> <a href="PrimitivePath_8cpp_source.html#l00489">PrimitivePath.cpp:489</a></div></div>
+<div class="ttc" id="aProfile_8h_html"><div class="ttname"><a href="Profile_8h.html">Profile.h</a></div></div>
+<div class="ttc" id="aProfile_8h_html_afb1a021433a7506983dc37028cab99cf"><div class="ttname"><a href="Profile_8h.html#afb1a021433a7506983dc37028cab99cf">EV_PROFILE_MODULE</a></div><div class="ttdeci">#define EV_PROFILE_MODULE(module, name)</div><div class="ttdoc">Profile the enclosing scope, tagged with a module for grouping.</div><div class="ttdef"><b>Definition</b> <a href="Profile_8h_source.html#l00148">Profile.h:148</a></div></div>
+<div class="ttc" id="aRTSSystemMovementInternal_8h_html"><div class="ttname"><a href="RTSSystemMovementInternal_8h.html">RTSSystemMovementInternal.h</a></div></div>
+<div class="ttc" id="aRTS_8h_html"><div class="ttname"><a href="RTS_8h.html">RTS.h</a></div><div class="ttdoc">RTS module owner and phase-one composition profile entry point.</div></div>
+<div class="ttc" id="aSettlementModule_8cpp_html_ae36027a2ebe1db7af7b94bb1f5ebb1fc"><div class="ttname"><a href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a></div><div class="ttdeci">double current</div><div class="ttdef"><b>Definition</b> <a href="SettlementModule_8cpp_source.html#l00035">SettlementModule.cpp:35</a></div></div>
+<div class="ttc" id="aShadow_8cpp_html_ad0f4f9e74e593402c49ae3ef819c0f20"><div class="ttname"><a href="Shadow_8cpp.html#ad0f4f9e74e593402c49ae3ef819c0f20">occupied</a></div><div class="ttdeci">bool occupied</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8cpp_source.html#l00138">Shadow.cpp:138</a></div></div>
+<div class="ttc" id="aTacticsPath_8cpp_html_afb5c888046070dcfd5008e34354b90d6"><div class="ttname"><a href="TacticsPath_8cpp.html#afb5c888046070dcfd5008e34354b90d6">best</a></div><div class="ttdeci">std::map&lt; Cell, int &gt; best</div><div class="ttdef"><b>Definition</b> <a href="TacticsPath_8cpp_source.html#l00027">TacticsPath.cpp:27</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a5b77101175f979d95b9601fe99c12994"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a></div><div class="ttdeci">TacticalUnit * unit</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00143">TacticsPersistence.cpp:143</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a12acf4cc0533ead229b8b9f6c86b7fe6"><div class="ttname"><a href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a></div><div class="ttdeci">int spacing</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00086">TileConfig.cpp:86</a></div></div>
+<div class="ttc" id="aUiPreview_8cpp_html_ae3fb3c00da2b2455218d2c66570e6a68"><div class="ttname"><a href="UiPreview_8cpp.html#ae3fb3c00da2b2455218d2c66570e6a68">member</a></div><div class="ttdeci">float(ui::Theme::* member)[4]</div><div class="ttdef"><b>Definition</b> <a href="UiPreview_8cpp_source.html#l00186">UiPreview.cpp:186</a></div></div>
+<div class="ttc" id="aUnityPackage_8cpp_html_a07d3cf07e7831b4b6c40d01c4c84ef5d"><div class="ttname"><a href="UnityPackage_8cpp.html#a07d3cf07e7831b4b6c40d01c4c84ef5d">members</a></div><div class="ttdeci">std::map&lt; std::string, std::span&lt; const std::uint8_t &gt; &gt; members</div><div class="ttdef"><b>Definition</b> <a href="UnityPackage_8cpp_source.html#l00081">UnityPackage.cpp:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a416c54d38b93dae0b4006c561c71bbb7"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8cpp_source.html#l00014">Diagnostic.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00184">Result.h:184</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00195">Result.h:195</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_1_1systems__internal_html_a523acebfc2c9d19afeaaa94edc40a7c3"><div class="ttname"><a href="namespaceeve_1_1rts_1_1systems__internal.html#a523acebfc2c9d19afeaaa94edc40a7c3">eve::rts::systems_internal::readCurrent</a></div><div class="ttdeci">Result&lt; std::optional&lt; OrderRecord &gt; &gt; readCurrent(OrderComponent &amp;orders)</div><div class="ttdef"><b>Definition</b> <a href="RTSSystemMovementInternal_8h_source.html#l00115">RTSSystemMovementInternal.h:115</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_1_1systems__internal_html_adcb4b962a62abcaf52e40c6fb3c417fe"><div class="ttname"><a href="namespaceeve_1_1rts_1_1systems__internal.html#adcb4b962a62abcaf52e40c6fb3c417fe">eve::rts::systems_internal::isFormationSegmentClear</a></div><div class="ttdeci">EVENGINE_API_DOMAINS bool isFormationSegmentClear(const map::Pathfinder &amp;pathfinder, const NavigationGrid &amp;grid, WorldPosition from, WorldPosition to, float radius)</div><div class="ttdef"><b>Definition</b> <a href="RTSFormationClearance_8cpp_source.html#l00009">RTSFormationClearance.cpp:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_html"><div class="ttname"><a href="namespaceeve_1_1rts.html">eve::rts</a></div><div class="ttdef"><b>Definition</b> <a href="RTS_8cpp_source.html#l00029">RTS.cpp:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_html_a6dd5454eb67a8ce170d34106833c4884a364dce30a8b9b040a3938b09d9932a4a"><div class="ttname"><a href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884a364dce30a8b9b040a3938b09d9932a4a">eve::rts::OrderKind::AttackMove</a></div><div class="ttdeci">@ AttackMove</div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_html_a6dd5454eb67a8ce170d34106833c4884adcfafcb4323b102c7e204555d313ba0a"><div class="ttname"><a href="namespaceeve_1_1rts.html#a6dd5454eb67a8ce170d34106833c4884adcfafcb4323b102c7e204555d313ba0a">eve::rts::OrderKind::Attack</a></div><div class="ttdeci">@ Attack</div></div>
+<div class="ttc" id="anamespaceeve_1_1sensing_html_a070c050c984b3f451a7aba3b399dad3d"><div class="ttname"><a href="namespaceeve_1_1sensing.html#a070c050c984b3f451a7aba3b399dad3d">eve::sensing::SubjectRef</a></div><div class="ttdeci">::eve::SubjectRef SubjectRef</div><div class="ttdoc">Strong reference to a runtime subject.</div><div class="ttdef"><b>Definition</b> <a href="Targeting_8h_source.html#l00076">Targeting.h:76</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a6bdaf95b2b644f85ea130aecf0e53639a03937134cedab9078be39a77ee3a48a0"><div class="ttname"><a href="namespaceeve_1_1ui.html#a6bdaf95b2b644f85ea130aecf0e53639a03937134cedab9078be39a77ee3a48a0">eve::ui::NodeType::Group</a></div><div class="ttdeci">@ Group</div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_accf39723d2d9a1aab16bfadacb5ee645"><div class="ttname"><a href="namespaceeve_1_1ui.html#accf39723d2d9a1aab16bfadacb5ee645">eve::ui::row</a></div><div class="ttdeci">WidgetDesc row(std::vector&lt; WidgetDesc &gt; children, std::string id)</div><div class="ttdoc">Horizontal elastic layout row.</div><div class="ttdef"><b>Definition</b> <a href="Widget_8cpp_source.html#l00778">Widget.cpp:778</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

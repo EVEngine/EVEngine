@@ -1,0 +1,450 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/scene/ScriptLinks.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_ec6971fd057795f74726f2442b6b5463.html">scene</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ScriptLinks.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ScriptLinks_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// The scene link kind backed by user script.</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">//</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// A node can already carry a renderable, a physics body, a camera or an audio</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// source and have it follow the node&#39;s transform. This adds the kind that lets a</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// *script* object do the same, so a user can attach their own object to the</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">// transform pipeline without a C++ build:</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">//</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">//     local follower = Follower()</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">//     eve.provider.publish(&quot;my.follower&quot;, follower)</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">//     scene.linkScriptAt(&quot;host&quot;, &quot;node&quot;, &quot;my.follower&quot;, &quot;node&quot;)</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">//</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment">// Two directions, matching the two link sync modes:</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment">//</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment">//   syncMode 0 (&quot;node&quot;) -- for every dirty node, TransformSystem calls</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment">//     `onNodeTransform(nodeId, worldX, worldY, worldZ, yaw, pitch, roll,</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">//      scaleX, scaleY, scaleZ)` on the published instance.</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment">//   syncMode 1 (&quot;body&quot;) -- before world propagation, the instance&#39;s</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment">//     `nodeTransform()` returns `[x, y, z, yaw, pitch, roll]` in local space and</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment">//     the node is moved to it.</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment">//</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment">// Dispatch stays a function-pointer table (scene/SceneLink.h), so the transform</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment">// pipeline still never learns what the target is.</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment">//</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment">// Ownership: `SceneLink::target` points at a process-lifetime `ScriptLinkTarget`</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment">// record, never at a script object. The record holds a generation-qualified</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment">// provider handle, which gives three properties the pipeline needs:</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment">//</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="comment">//   * a retired generation is reported as a dead link instead of resolving to</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="comment">//     whatever was published under that name next;</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="comment">//   * the scene may still ask `alive()` about a record whose provider is gone,</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="comment">//     so records are retained (moved to `retired`) rather than freed;</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="comment">//   * no VM reference is held here at all -- `ScriptProviderRegistry` owns those,</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="comment">//     and it drops them before the VM is destroyed.</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="preprocessor">#include &quot;<a class="code" href="CrashLog_8h.html">common/CrashLog.h</a>&quot;</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="preprocessor">#include &quot;<a class="code" href="ScriptProvider_8h.html">common/ScriptProvider.h</a>&quot;</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="preprocessor">#include &quot;<a class="code" href="SquirrelBinding_8h.html">common/SquirrelBinding.h</a>&quot;</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="preprocessor">#include &quot;<a class="code" href="Scene_8h.html">scene/Scene.h</a>&quot;</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="preprocessor">#include &quot;<a class="code" href="SceneHost_8h.html">scene/SceneHost.h</a>&quot;</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="preprocessor">#include &quot;<a class="code" href="SceneInternal_8h.html">scene/SceneInternal.h</a>&quot;</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#include &quot;<a class="code" href="SceneLink_8h.html">scene/SceneLink.h</a>&quot;</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="preprocessor">#include &quot;<a class="code" href="TransformSystem_8h.html">scene/TransformSystem.h</a>&quot;</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="preprocessor">#include &lt;glm/glm.hpp&gt;</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1scene.html">eve::scene</a> {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* kScriptKind = <span class="stringliteral">&quot;script&quot;</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* kPushMethod = <span class="stringliteral">&quot;onNodeTransform&quot;</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* kPullMethod = <span class="stringliteral">&quot;nodeTransform&quot;</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="keyword">constexpr</span> std::size_t kPullElementCount = 6;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="keyword">struct </span>ScriptLinkTarget {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="ScriptLinks_8cpp.html#a5d842a6f5624813bbf240ce6655aa1af">   75</a></span>    ScriptProviderHandle <a class="code hl_variable" href="ScriptLinks_8cpp.html#a5d842a6f5624813bbf240ce6655aa1af">provider</a>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="ScriptLinks_8cpp.html#aa2dd95ec3a7f3b92d3c3681686d87ad4">   77</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="ScriptLinks_8cpp.html#aa2dd95ec3a7f3b92d3c3681686d87ad4">reported</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>};</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="keyword">struct </span>ScriptLinkTargets {</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="ScriptLinks_8cpp.html#af3d4efbd1e421b50207956843a1985c5">   89</a></span>    std::vector&lt;std::unique_ptr&lt;ScriptLinkTarget&gt;&gt; <a class="code hl_variable" href="ClimbingServices_8cpp.html#a7a4b77771014f8d8727fe84f51158bca">live</a>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="ScriptLinks_8cpp.html#a2f214fdf7c2be0e3d42861ad470a9a55">   90</a></span>    std::vector&lt;std::unique_ptr&lt;ScriptLinkTarget&gt;&gt; <a class="code hl_variable" href="ClimbingServices_8cpp.html#a7a610afa9ba24ee93c89fb822536d7de">retired</a>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>};</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>ScriptLinkTargets&amp; <a class="code hl_variable" href="ForceBindings_8cpp.html#a76784f58666ff01eaacea421395b430d">targets</a>() {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keyword">static</span> ScriptLinkTargets <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>}</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="keywordtype">bool</span> targetIsLive(<span class="keyword">const</span> ScriptLinkTarget&amp; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>) {</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keyword">const</span> ScriptProviderRegistry&amp; <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#af921fa52c376e1d3dfe04f7f70926b51">registry</a> = <a class="code hl_function" href="classeve_1_1ScriptProviderRegistry.html#a2cf2b18b18bc95a50cc1ed4db1330c46">ScriptProviderRegistry::instance</a>();</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#af921fa52c376e1d3dfe04f7f70926b51">registry</a>.generationOf(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>.provider.name) == <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>.provider.generation;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>}</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span><span class="keywordtype">bool</span> isStaleHandle(<span class="keyword">const</span> Status&amp; <a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>) {</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; diagnostics = <a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>.diagnostics();</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordflow">return</span> !diagnostics.empty() &amp;&amp; diagnostics.front().code() == <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">DiagnosticCode::StaleHandle</a>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>}</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span><span class="keywordtype">void</span> reportScriptLinkFailure(ScriptLinkTarget&amp; <a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method</a>, <span class="keyword">const</span> Status&amp; <a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>) {</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a>.reported) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a>.reported = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <a class="code hl_function" href="namespaceeve.html#a95dc41bb89b83bd8c794a4769752f935">recordLogEvent</a>(<span class="stringliteral">&quot;error&quot;</span>, <span class="stringliteral">&quot;script link target &#39;&quot;</span> + <a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a>.provider.name + <span class="stringliteral">&quot;&#39; method &#39;&quot;</span> + <a class="code hl_variable" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method</a> +</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                                <span class="stringliteral">&quot;&#39; failed; the link was skipped this frame: &quot;</span> + <a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>.describe());</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>}</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>ScriptLinkTarget* acquireTarget(<span class="keyword">const</span> ScriptProviderHandle&amp; <a class="code hl_variable" href="ScriptLinks_8cpp.html#a5d842a6f5624813bbf240ce6655aa1af">provider</a>) {</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    ScriptLinkTargets&amp; pool = <a class="code hl_variable" href="ForceBindings_8cpp.html#a76784f58666ff01eaacea421395b430d">targets</a>();</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; candidate : pool.<a class="code hl_variable" href="ClimbingServices_8cpp.html#a7a4b77771014f8d8727fe84f51158bca">live</a>) {</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        <span class="keywordflow">if</span> (candidate-&gt;provider == <a class="code hl_variable" href="ScriptLinks_8cpp.html#a5d842a6f5624813bbf240ce6655aa1af">provider</a>) <span class="keywordflow">return</span> candidate.get();</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    }</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="comment">// Drop records whose generation is gone so `live` tracks published providers.</span></div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> it = pool.live.begin(); it != pool.live.end();) {</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        <span class="keywordflow">if</span> (targetIsLive(**it)) {</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>            ++it;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>            <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        }</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        pool.retired.push_back(std::move(*it));</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        it = pool.live.erase(it);</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    }</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    pool.live.push_back(std::make_unique&lt;ScriptLinkTarget&gt;(ScriptLinkTarget{<a class="code hl_variable" href="ScriptLinks_8cpp.html#a5d842a6f5624813bbf240ce6655aa1af">provider</a>}));</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keywordflow">return</span> pool.live.back().get();</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>}</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span><span class="keywordtype">void</span> pushNodeTransform(<span class="keyword">const</span> SceneNode&amp; <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>, <span class="keywordtype">void</span>* <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>) {</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <span class="keyword">auto</span>* <a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a> = <span class="keyword">static_cast&lt;</span>ScriptLinkTarget*<span class="keyword">&gt;</span>(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>);</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    glm::vec3 <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>(0.f), euler(0.f), <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>(1.f);  <span class="comment">// euler = yaw, pitch, roll</span></div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    decomposeWorld(<a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.world, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, euler, <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>);</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="keyword">const</span> ScriptArg args[] = {</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        <a class="code hl_function" href="structeve_1_1ScriptArg.html#a4c8fc6d7ea049e2fe7f21c17daf3c4a9">ScriptArg::fromText</a>(<a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.id),      <a class="code hl_function" href="structeve_1_1ScriptArg.html#a79207adee24944789ef668a2091fe379">ScriptArg::fromNumber</a>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>.x), <a class="code hl_function" href="structeve_1_1ScriptArg.html#a79207adee24944789ef668a2091fe379">ScriptArg::fromNumber</a>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>.y),</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        <a class="code hl_function" href="structeve_1_1ScriptArg.html#a79207adee24944789ef668a2091fe379">ScriptArg::fromNumber</a>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>.z), <a class="code hl_function" href="structeve_1_1ScriptArg.html#a79207adee24944789ef668a2091fe379">ScriptArg::fromNumber</a>(euler.x),    <a class="code hl_function" href="structeve_1_1ScriptArg.html#a79207adee24944789ef668a2091fe379">ScriptArg::fromNumber</a>(euler.y),</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <a class="code hl_function" href="structeve_1_1ScriptArg.html#a79207adee24944789ef668a2091fe379">ScriptArg::fromNumber</a>(euler.z),    <a class="code hl_function" href="structeve_1_1ScriptArg.html#a79207adee24944789ef668a2091fe379">ScriptArg::fromNumber</a>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>.x),    <a class="code hl_function" href="structeve_1_1ScriptArg.html#a79207adee24944789ef668a2091fe379">ScriptArg::fromNumber</a>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>.y),</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        <a class="code hl_function" href="structeve_1_1ScriptArg.html#a79207adee24944789ef668a2091fe379">ScriptArg::fromNumber</a>(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>.z),</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    };</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keyword">const</span> ScriptProviderRegistry&amp; <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#af921fa52c376e1d3dfe04f7f70926b51">registry</a> = <a class="code hl_function" href="classeve_1_1ScriptProviderRegistry.html#a2cf2b18b18bc95a50cc1ed4db1330c46">ScriptProviderRegistry::instance</a>();</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <span class="keyword">auto</span>                          pushed   = <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#af921fa52c376e1d3dfe04f7f70926b51">registry</a>.call(<a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a>-&gt;provider, kPushMethod, args);</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="keywordflow">if</span> (pushed) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="comment">// A link whose provider was retired between the dirty marking and this call is</span></div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="comment">// already on its way out; anything else is a real script error worth one line.</span></div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    <span class="keywordflow">if</span> (isStaleHandle(pushed.status())) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    reportScriptLinkFailure(*<a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a>, kPushMethod, pushed.status());</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>}</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span><span class="keywordtype">void</span> pullNodeTransform(SceneNode&amp; <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>, <span class="keywordtype">void</span>* <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>) {</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    <span class="keyword">auto</span>* <a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a> = <span class="keyword">static_cast&lt;</span>ScriptLinkTarget*<span class="keyword">&gt;</span>(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>);</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keyword">const</span> ScriptProviderRegistry&amp; <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#af921fa52c376e1d3dfe04f7f70926b51">registry</a> = <a class="code hl_function" href="classeve_1_1ScriptProviderRegistry.html#a2cf2b18b18bc95a50cc1ed4db1330c46">ScriptProviderRegistry::instance</a>();</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    <span class="keyword">auto</span>                          <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>   = <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#af921fa52c376e1d3dfe04f7f70926b51">registry</a>.callNumbers(<a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a>-&gt;provider, kPullMethod);</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>) {</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keywordflow">if</span> (isStaleHandle(<a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>.status())) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        reportScriptLinkFailure(*<a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a>, kPullMethod, <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>.status());</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    }</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>.value().size() &lt; kPullElementCount) {</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        reportScriptLinkFailure(</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>            *<a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a>, kPullMethod,</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>            <a class="code hl_function" href="classeve_1_1Status.html#af690431c5a78ab4182c39ccffc24095a">Status::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>                                              <span class="stringliteral">&quot;script link method &#39;&quot;</span> + std::string(kPullMethod) + <span class="stringliteral">&quot;&#39; returned &quot;</span> +</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>                                                  std::to_string(<a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>.value().size()) + <span class="stringliteral">&quot; numbers; six are required&quot;</span>,</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>                                              <a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a>-&gt;provider.name)));</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    }</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span> </div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.x     = float(<a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>.value()[0]);</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.y     = float(<a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>.value()[1]);</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.z     = float(<a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>.value()[2]);</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.yaw   = float(<a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>.value()[3]);</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.pitch = float(<a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>.value()[4]);</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.roll  = float(<a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>.value()[5]);</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>}</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span> </div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span><span class="keywordtype">bool</span> aliveScriptTarget(<span class="keyword">const</span> <span class="keywordtype">void</span>* <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>) {</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* <a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a> = <span class="keyword">static_cast&lt;</span><span class="keyword">const </span>ScriptLinkTarget*<span class="keyword">&gt;</span>(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>);</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a> != <span class="keyword">nullptr</span> &amp;&amp; targetIsLive(*<a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a>);</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>}</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span> </div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span><span class="keyword">struct </span>Register {</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    Register() { <a class="code hl_function" href="namespaceeve_1_1scene.html#acc333ac988ab5e2de2c88982266d20ad">registerLinkKind</a>({kScriptKind, &amp;pushNodeTransform, &amp;pullNodeTransform, &amp;aliveScriptTarget}); }</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>} g_register;</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span> </div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span> </div>
+<div class="foldopen" id="foldopen00234" data-start="{" data-end="}">
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno"><a class="line" href="namespaceeve_1_1scene.html#ac28c26ac0f67275c12a65e466866a049">  234</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1scene.html#ac28c26ac0f67275c12a65e466866a049">exposeScriptLinkBindings</a>(ssq::Class&amp; <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>) {</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;linkScriptAt&quot;</span>,</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>                [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a> = <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.getHandle()](<a class="code hl_class" href="classeve_1_1scene_1_1Scene.html">Scene</a>* self, <span class="keyword">const</span> std::string&amp; hostName, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="DnutCompiler_8cpp.html#ada457f520f5dccd1dcdc4167ce0879f0">nodeId</a>,</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>                                       <span class="keyword">const</span> std::string&amp; providerName, <span class="keyword">const</span> std::string&amp; mode) -&gt; ssq::Table {</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>                    if (self == nullptr) {</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>                        return script::projectResult(vm, Result&lt;void&gt;::failure(Diagnostic::error(</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>                                                             DiagnosticCode::InvalidArgument,</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>                                                             <span class="stringliteral">&quot;linkScriptAt needs a live Scene instance&quot;</span>, nodeId)));</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>                    }</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>                    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, self-&gt;<a class="code hl_function" href="classeve_1_1scene_1_1Scene.html#a70f1e347189eeae1f34ffba25e0431e5">linkScriptAt</a>(hostName, <a class="code hl_variable" href="DnutCompiler_8cpp.html#ada457f520f5dccd1dcdc4167ce0879f0">nodeId</a>, providerName, mode));</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>                });</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>}</div>
+</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
+<div class="foldopen" id="foldopen00247" data-start="{" data-end="}">
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno"><a class="line" href="classeve_1_1scene_1_1Scene.html#a70f1e347189eeae1f34ffba25e0431e5">  247</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> Scene::linkScriptAt(<span class="keyword">const</span> std::string&amp; hostName, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="DnutCompiler_8cpp.html#ada457f520f5dccd1dcdc4167ce0879f0">nodeId</a>,</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>                                 <span class="keyword">const</span> std::string&amp; providerName, <span class="keyword">const</span> std::string&amp; mode) {</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    <a class="code hl_class" href="classeve_1_1scene_1_1SceneHost.html">SceneHost</a>* <a class="code hl_variable" href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a> = resolveHost(hostName);</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a>) {</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>            Diagnostic::error(DiagnosticCode::NotFound, <span class="stringliteral">&quot;no scene host named &#39;&quot;</span> + hostName + <span class="stringliteral">&quot;&#39;&quot;</span>, providerName));</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    }</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span> </div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1ScriptProviderRegistry.html">ScriptProviderRegistry</a>&amp; <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#af921fa52c376e1d3dfe04f7f70926b51">registry</a>   = ScriptProviderRegistry::instance();</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    <span class="keyword">const</span> std::uint64_t           <a class="code hl_variable" href="ECS_8cpp.html#a53722de7c6c943c26ef6cd0e41ec958c">generation</a> = <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#af921fa52c376e1d3dfe04f7f70926b51">registry</a>.generationOf(providerName);</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ECS_8cpp.html#a53722de7c6c943c26ef6cd0e41ec958c">generation</a> == 0) {</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;::failure</a>(Diagnostic::error(</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>            DiagnosticCode::NotFound, <span class="stringliteral">&quot;no script provider published as &#39;&quot;</span> + providerName + <span class="stringliteral">&quot;&#39;&quot;</span>, providerName));</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>    }</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span> </div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a> = <a class="code hl_function" href="namespaceeve_1_1scene.html#acd723e75f6f313ac9506077090e96929">findLinkKind</a>(kScriptKind);</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a> &lt; 0) {</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        <span class="comment">// Cannot happen while this translation unit is linked, but a trimmed build</span></div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>        <span class="comment">// that dropped it must say so instead of linking nothing.</span></div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>            Diagnostic::error(DiagnosticCode::Unsupported, <span class="stringliteral">&quot;the &#39;script&#39; link kind is not registered&quot;</span>, providerName));</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>    }</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span> </div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> <a class="code hl_variable" href="ScriptLinks_8cpp.html#a5d842a6f5624813bbf240ce6655aa1af">provider</a>{providerName, <a class="code hl_variable" href="ECS_8cpp.html#a53722de7c6c943c26ef6cd0e41ec958c">generation</a>};</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a>-&gt;link(<a class="code hl_variable" href="DnutCompiler_8cpp.html#ada457f520f5dccd1dcdc4167ce0879f0">nodeId</a>, <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a>, acquireTarget(<a class="code hl_variable" href="ScriptLinks_8cpp.html#a5d842a6f5624813bbf240ce6655aa1af">provider</a>), syncModeFromString(mode))) {</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>            Diagnostic::error(DiagnosticCode::NotFound, <span class="stringliteral">&quot;no node named &#39;&quot;</span> + <a class="code hl_variable" href="DnutCompiler_8cpp.html#ada457f520f5dccd1dcdc4167ce0879f0">nodeId</a> + <span class="stringliteral">&quot;&#39;&quot;</span>, <a class="code hl_variable" href="DnutCompiler_8cpp.html#ada457f520f5dccd1dcdc4167ce0879f0">nodeId</a>));</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    }</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>    TransformSystem::updateHost(<a class="code hl_variable" href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a>);</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>}</div>
+</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span> </div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>}  <span class="comment">// namespace eve::scene</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_a16c9300acaea4db7696fb24b3802bfa5"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a></div><div class="ttdeci">LogicalId target</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00151">ActionNotifyRegistry.cpp:151</a></div></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00033">ActionTimelineWidget.cpp:33</a></div></div>
+<div class="ttc" id="aClimbingServices_8cpp_html_a7a4b77771014f8d8727fe84f51158bca"><div class="ttname"><a href="ClimbingServices_8cpp.html#a7a4b77771014f8d8727fe84f51158bca">live</a></div><div class="ttdeci">std::vector&lt; std::unique_ptr&lt; ScriptClimbingEventSink &gt; &gt; live</div><div class="ttdef"><b>Definition</b> <a href="ClimbingServices_8cpp_source.html#l00186">ClimbingServices.cpp:186</a></div></div>
+<div class="ttc" id="aClimbingServices_8cpp_html_a7a610afa9ba24ee93c89fb822536d7de"><div class="ttname"><a href="ClimbingServices_8cpp.html#a7a610afa9ba24ee93c89fb822536d7de">retired</a></div><div class="ttdeci">std::vector&lt; std::unique_ptr&lt; ScriptClimbingEventSink &gt; &gt; retired</div><div class="ttdef"><b>Definition</b> <a href="ClimbingServices_8cpp_source.html#l00187">ClimbingServices.cpp:187</a></div></div>
+<div class="ttc" id="aCrashLog_8h_html"><div class="ttname"><a href="CrashLog_8h.html">CrashLog.h</a></div><div class="ttdoc">Persistent, thread-safe record of engine crash and problem events.</div></div>
+<div class="ttc" id="aDnutCompiler_8cpp_html_ada457f520f5dccd1dcdc4167ce0879f0"><div class="ttname"><a href="DnutCompiler_8cpp.html#ada457f520f5dccd1dcdc4167ce0879f0">nodeId</a></div><div class="ttdeci">std::string nodeId</div><div class="ttdef"><b>Definition</b> <a href="DnutCompiler_8cpp_source.html#l00026">DnutCompiler.cpp:26</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a02347a3d911f31a15d03c50c85070bfe"><div class="ttname"><a href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a></div><div class="ttdeci">HSQUIRRELVM vm</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00038">ECS.cpp:38</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a091d9c8332bbc20675859af3713a8283"><div class="ttname"><a href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a></div><div class="ttdeci">HSQOBJECT cls</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00039">ECS.cpp:39</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a53722de7c6c943c26ef6cd0e41ec958c"><div class="ttname"><a href="ECS_8cpp.html#a53722de7c6c943c26ef6cd0e41ec958c">generation</a></div><div class="ttdeci">Generation generation</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00040">ECS.cpp:40</a></div></div>
+<div class="ttc" id="aEvaArchive_8cpp_html_a479a2ee6f46f3e24484628e37ee7460b"><div class="ttname"><a href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method</a></div><div class="ttdeci">std::uint16_t method</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00151">EvaArchive.cpp:151</a></div></div>
+<div class="ttc" id="aForceBindings_8cpp_html_a76784f58666ff01eaacea421395b430d"><div class="ttname"><a href="ForceBindings_8cpp.html#a76784f58666ff01eaacea421395b430d">targets</a></div><div class="ttdeci">std::vector&lt; FieldTarget &gt; targets</div><div class="ttdef"><b>Definition</b> <a href="ForceBindings_8cpp_source.html#l00165">ForceBindings.cpp:165</a></div></div>
+<div class="ttc" id="aGraphicsTextureMips_8cpp_html_ae2ee633a7768658281259907a29fc401"><div class="ttname"><a href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a></div><div class="ttdeci">wgpu::PopErrorScopeStatus status</div><div class="ttdef"><b>Definition</b> <a href="GraphicsTextureMips_8cpp_source.html#l00013">GraphicsTextureMips.cpp:13</a></div></div>
+<div class="ttc" id="aJoint2DBindings_8cpp_html_ae80b27e9552504bb73e5997d6bf3b515"><div class="ttname"><a href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a></div><div class="ttdeci">PhysicsJointLink link</div><div class="ttdef"><b>Definition</b> <a href="Joint2DBindings_8cpp_source.html#l00066">Joint2DBindings.cpp:66</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a60ea6c13eb7a935dc579b69b80cee822"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; position</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00016">LegacyAnimationImporter.cpp:16</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a97ae8bb7c8cb75233b0a0c268f0ae619"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; scale</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00018">LegacyAnimationImporter.cpp:18</a></div></div>
+<div class="ttc" id="aProjectIndexAutomatic_8cpp_html_a6c4a6d51eafaf91a7fcb4b346264fd92"><div class="ttname"><a href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a></div><div class="ttdeci">std::set&lt; std::string &gt; values</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexAutomatic_8cpp_source.html#l00016">ProjectIndexAutomatic.cpp:16</a></div></div>
+<div class="ttc" id="aProjectIndexAutomatic_8cpp_html_af921fa52c376e1d3dfe04f7f70926b51"><div class="ttname"><a href="ProjectIndexAutomatic_8cpp.html#af921fa52c376e1d3dfe04f7f70926b51">registry</a></div><div class="ttdeci">const eve::script::BindingContractRegistry &amp; registry</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexAutomatic_8cpp_source.html#l00024">ProjectIndexAutomatic.cpp:24</a></div></div>
+<div class="ttc" id="aRoadTraffic_8cpp_html_a01b9cdd37a32341c192e0756617f9dc0"><div class="ttname"><a href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a></div><div class="ttdeci">const RoadNode * node</div><div class="ttdef"><b>Definition</b> <a href="RoadTraffic_8cpp_source.html#l00015">RoadTraffic.cpp:15</a></div></div>
+<div class="ttc" id="aSceneHost_8h_html"><div class="ttname"><a href="SceneHost_8h.html">SceneHost.h</a></div></div>
+<div class="ttc" id="aSceneInternal_8h_html"><div class="ttname"><a href="SceneInternal_8h.html">SceneInternal.h</a></div></div>
+<div class="ttc" id="aSceneLink_8h_html"><div class="ttname"><a href="SceneLink_8h.html">SceneLink.h</a></div></div>
+<div class="ttc" id="aScene_8h_html"><div class="ttname"><a href="Scene_8h.html">Scene.h</a></div></div>
+<div class="ttc" id="aScriptLinks_8cpp_html_a5d842a6f5624813bbf240ce6655aa1af"><div class="ttname"><a href="ScriptLinks_8cpp.html#a5d842a6f5624813bbf240ce6655aa1af">provider</a></div><div class="ttdeci">ScriptProviderHandle provider</div><div class="ttdef"><b>Definition</b> <a href="ScriptLinks_8cpp_source.html#l00075">ScriptLinks.cpp:75</a></div></div>
+<div class="ttc" id="aScriptLinks_8cpp_html_aa2dd95ec3a7f3b92d3c3681686d87ad4"><div class="ttname"><a href="ScriptLinks_8cpp.html#aa2dd95ec3a7f3b92d3c3681686d87ad4">reported</a></div><div class="ttdeci">bool reported</div><div class="ttdef"><b>Definition</b> <a href="ScriptLinks_8cpp_source.html#l00077">ScriptLinks.cpp:77</a></div></div>
+<div class="ttc" id="aScriptProvider_8h_html"><div class="ttname"><a href="ScriptProvider_8h.html">ScriptProvider.h</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_aca87c2bbc26e697653e2d8461c76a361"><div class="ttname"><a href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a></div><div class="ttdeci">std::string kind</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00011">ScriptStructure.cpp:11</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8h_html"><div class="ttname"><a href="SquirrelBinding_8h.html">SquirrelBinding.h</a></div><div class="ttdoc">The single Squirrel projection for common Result, Status and Value.</div></div>
+<div class="ttc" id="aTransformSystem_8h_html"><div class="ttname"><a href="TransformSystem_8h.html">TransformSystem.h</a></div></div>
+<div class="ttc" id="aUIAutomationCapabilities_8cpp_html_a746317fdab8614a8048746f94bdacdab"><div class="ttname"><a href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a></div><div class="ttdeci">UIHostHandle host</div><div class="ttdef"><b>Definition</b> <a href="UIAutomationCapabilities_8cpp_source.html#l00227">UIAutomationCapabilities.cpp:227</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a416c54d38b93dae0b4006c561c71bbb7"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8cpp_source.html#l00014">Diagnostic.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1ScriptProviderRegistry_html"><div class="ttname"><a href="classeve_1_1ScriptProviderRegistry.html">eve::ScriptProviderRegistry</a></div><div class="ttdoc">Named script objects that native systems drive through named methods.</div><div class="ttdef"><b>Definition</b> <a href="ScriptProvider_8h_source.html#l00114">ScriptProvider.h:114</a></div></div>
+<div class="ttc" id="aclasseve_1_1ScriptProviderRegistry_html_a2cf2b18b18bc95a50cc1ed4db1330c46"><div class="ttname"><a href="classeve_1_1ScriptProviderRegistry.html#a2cf2b18b18bc95a50cc1ed4db1330c46">eve::ScriptProviderRegistry::instance</a></div><div class="ttdeci">static ScriptProviderRegistry &amp; instance()</div><div class="ttdoc">Process-lifetime registry; clearAll is the only reset.</div><div class="ttdef"><b>Definition</b> <a href="ScriptProvider_8cpp_source.html#l00318">ScriptProvider.cpp:318</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html_af690431c5a78ab4182c39ccffc24095a"><div class="ttname"><a href="classeve_1_1Status.html#af690431c5a78ab4182c39ccffc24095a">eve::Status::failure</a></div><div class="ttdeci">static Status failure(StatusCode code, Diagnostic diagnostic)</div><div class="ttdoc">Construct a failed status with one diagnostic.</div><div class="ttdef"><b>Definition</b> <a href="Status_8cpp_source.html#l00022">Status.cpp:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1SceneHost_html"><div class="ttname"><a href="classeve_1_1scene_1_1SceneHost.html">eve::scene::SceneHost</a></div><div class="ttdoc">ECS mount point for one scene graph (full scene or nested subtree root). Isomorphic to eve::ui::UIHos...</div><div class="ttdef"><b>Definition</b> <a href="SceneHost_8h_source.html#l00089">SceneHost.h:89</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1Scene_html"><div class="ttname"><a href="classeve_1_1scene_1_1Scene.html">eve::scene::Scene</a></div><div class="ttdoc">Declarative scene module (eve.Scene).</div><div class="ttdef"><b>Definition</b> <a href="Scene_8h_source.html#l00052">Scene.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1scene_1_1Scene_html_a70f1e347189eeae1f34ffba25e0431e5"><div class="ttname"><a href="classeve_1_1scene_1_1Scene.html#a70f1e347189eeae1f34ffba25e0431e5">eve::scene::Scene::linkScriptAt</a></div><div class="ttdeci">Result&lt; void &gt; linkScriptAt(const std::string &amp;hostName, const std::string &amp;nodeId, const std::string &amp;providerName, const std::string &amp;mode)</div><div class="ttdoc">Link a published script provider to a node as the &quot;script&quot; link kind.</div><div class="ttdef"><b>Definition</b> <a href="ScriptLinks_8cpp_source.html#l00247">ScriptLinks.cpp:247</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1scene_html"><div class="ttname"><a href="namespaceeve_1_1scene.html">eve::scene</a></div><div class="ttdef"><b>Definition</b> <a href="AvatarInstance_8h_source.html#l00034">AvatarInstance.h:34</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1scene_html_ac28c26ac0f67275c12a65e466866a049"><div class="ttname"><a href="namespaceeve_1_1scene.html#ac28c26ac0f67275c12a65e466866a049">eve::scene::exposeScriptLinkBindings</a></div><div class="ttdeci">EVENGINE_API_PLATFORM void exposeScriptLinkBindings(ssq::Class &amp;cls)</div><div class="ttdoc">Register eve.Scene's script-link surface.</div><div class="ttdef"><b>Definition</b> <a href="ScriptLinks_8cpp_source.html#l00234">ScriptLinks.cpp:234</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1scene_html_acc333ac988ab5e2de2c88982266d20ad"><div class="ttname"><a href="namespaceeve_1_1scene.html#acc333ac988ab5e2de2c88982266d20ad">eve::scene::registerLinkKind</a></div><div class="ttdeci">int registerLinkKind(const LinkOps &amp;ops)</div><div class="ttdoc">Registers link kind.</div><div class="ttdef"><b>Definition</b> <a href="SceneCameraQueries_8cpp_source.html#l00231">SceneCameraQueries.cpp:231</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1scene_html_acd723e75f6f313ac9506077090e96929"><div class="ttname"><a href="namespaceeve_1_1scene.html#acd723e75f6f313ac9506077090e96929">eve::scene::findLinkKind</a></div><div class="ttdeci">int findLinkKind(const char *kind)</div><div class="ttdoc">Finds link kind.</div><div class="ttdef"><b>Definition</b> <a href="SceneCameraQueries_8cpp_source.html#l00243">SceneCameraQueries.cpp:243</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_ac3b6f94120aaac0606b048042b94ec36"><div class="ttname"><a href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">eve::script::projectResult</a></div><div class="ttdeci">ssq::Table projectResult(HSQUIRRELVM vm, Result&lt; void &gt; &amp;&amp;result)</div><div class="ttdoc">Consume and project a void native Result using the common schema.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00542">SquirrelBinding.cpp:542</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::DiagnosticCode::StaleHandle</a></div><div class="ttdeci">@ StaleHandle</div></div>
+<div class="ttc" id="anamespaceeve_html_a95dc41bb89b83bd8c794a4769752f935"><div class="ttname"><a href="namespaceeve.html#a95dc41bb89b83bd8c794a4769752f935">eve::recordLogEvent</a></div><div class="ttdeci">void recordLogEvent(const std::string &amp;level, const std::string &amp;message)</div><div class="ttdoc">Appends a timestamped event line to the crash/error log.</div><div class="ttdef"><b>Definition</b> <a href="CrashLog_8cpp_source.html#l00070">CrashLog.cpp:70</a></div></div>
+<div class="ttc" id="astructeve_1_1ScriptArg_html_a4c8fc6d7ea049e2fe7f21c17daf3c4a9"><div class="ttname"><a href="structeve_1_1ScriptArg.html#a4c8fc6d7ea049e2fe7f21c17daf3c4a9">eve::ScriptArg::fromText</a></div><div class="ttdeci">static ScriptArg fromText(std::string value)</div><div class="ttdef"><b>Definition</b> <a href="ScriptProvider_8cpp_source.html#l00301">ScriptProvider.cpp:301</a></div></div>
+<div class="ttc" id="astructeve_1_1ScriptArg_html_a79207adee24944789ef668a2091fe379"><div class="ttname"><a href="structeve_1_1ScriptArg.html#a79207adee24944789ef668a2091fe379">eve::ScriptArg::fromNumber</a></div><div class="ttdeci">static ScriptArg fromNumber(double value)</div><div class="ttdef"><b>Definition</b> <a href="ScriptProvider_8cpp_source.html#l00287">ScriptProvider.cpp:287</a></div></div>
+<div class="ttc" id="astructeve_1_1ScriptProviderHandle_html"><div class="ttname"><a href="structeve_1_1ScriptProviderHandle.html">eve::ScriptProviderHandle</a></div><div class="ttdoc">Generation-qualified identity of one published script provider.</div><div class="ttdef"><b>Definition</b> <a href="ScriptProvider_8h_source.html#l00027">ScriptProvider.h:27</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

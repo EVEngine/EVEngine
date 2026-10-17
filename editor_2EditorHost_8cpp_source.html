@@ -1,0 +1,535 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/EditorHost.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditorHost.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="editor_2EditorHost_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="modules_2editor_2EditorHost_8h.html">editor/EditorHost.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Capability_8h.html">common/Capability.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="PropertySchemaJson_8h.html">editing/PropertySchemaJson.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Editor_8h.html">editor/Editor.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="EditorAutomationTargetFactory_8h.html">editor/EditorAutomationTargetFactory.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="EditorCommandService_8h.html">editor/EditorCommandService.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="EditorMcpProjector_8h.html">editor/EditorMcpProjector.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keywordtype">bool</span> ownerAllowed(<span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; owners, std::string_view <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a1c82e23b3363a0cded2d2bdf7abfb5c8">owner</a>) {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordflow">if</span> (owners.empty()) <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">return</span> std::find(owners.begin(), owners.end(), <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a1c82e23b3363a0cded2d2bdf7abfb5c8">owner</a>) != owners.end();</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>}</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="}">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorHost.html#a2873dbfbaab04ac00e12e8b9b7b1514f">   23</a></span><a class="code hl_function" href="classeve_1_1editor_1_1EditorHost.html#a2873dbfbaab04ac00e12e8b9b7b1514f">EditorHost::EditorHost</a>(<a class="code hl_class" href="classeve_1_1editor_1_1Editor.html">Editor</a>&amp; editor, <a class="code hl_struct" href="structeve_1_1editor_1_1EditorHost_1_1Options.html">Options</a> <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>)</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    : editor_(&amp;editor),</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>      commands_(&amp;editor.commandService()),</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>      options_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>)),</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>      workspace_(options_.<a class="code hl_variable" href="McpArchitectureTools_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, options_.<a class="code hl_variable" href="ConversationImporter_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a>.empty() ? options_.<a class="code hl_variable" href="McpArchitectureTools_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a> : options_.<a class="code hl_variable" href="ConversationImporter_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a>),</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>      selection_(<a class="code hl_namespace" href="namespacestd.html">std</a>::make_unique&lt;<a class="code hl_class" href="classeve_1_1editor_1_1EditorSelectionRouter.html">EditorSelectionRouter</a>&gt;(*this)),</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>      undo_(<a class="code hl_namespace" href="namespacestd.html">std</a>::make_unique&lt;<a class="code hl_class" href="classeve_1_1editor_1_1EditorUndoCoordinator.html">EditorUndoCoordinator</a>&gt;(*this)) {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="comment">// Default-constructed HostProfile is Developer but denies commands; promote to the</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="comment">// unrestricted developer profile unless the caller already configured one.</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">if</span> (options_.<a class="code hl_variable" href="structeve_1_1editor_1_1EditorHost_1_1Options.html#a90c23f188616f251375b15d06da3e425">profile</a>.<a class="code hl_function" href="classeve_1_1editor_1_1HostProfile.html#ad3157914befe38eb3f801bb3d843b6c8">kind</a>() == HostKind::Developer &amp;&amp; !options_.<a class="code hl_variable" href="structeve_1_1editor_1_1EditorHost_1_1Options.html#a90c23f188616f251375b15d06da3e425">profile</a>.<a class="code hl_function" href="classeve_1_1editor_1_1HostProfile.html#a0d70ec46899a3127d977021bafe69eb0">allowsAllCommands</a>())</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        options_.<a class="code hl_variable" href="structeve_1_1editor_1_1EditorHost_1_1Options.html#a90c23f188616f251375b15d06da3e425">profile</a> = <a class="code hl_function" href="classeve_1_1editor_1_1HostProfile.html#a1ed69bd0915eba18592a74670c4c855b">HostProfile::developer</a>();</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="}">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorHost.html#ad2fae4db042c4e12fd5634829caa0cdb">   36</a></span><a class="code hl_function" href="classeve_1_1editor_1_1EditorHost.html#ad2fae4db042c4e12fd5634829caa0cdb">EditorHost::~EditorHost</a>() {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="namespaceeve_1_1editor.html#a0e0962a53e1665f56ee2b6acccef5623">editorMcpProjector</a>().<a class="code hl_variable" href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a>() == <span class="keyword">this</span>) <a class="code hl_function" href="namespaceeve_1_1editor.html#a0e0962a53e1665f56ee2b6acccef5623">editorMcpProjector</a>().<a class="code hl_function" href="classeve_1_1editor_1_1EditorMcpProjector.html#a0c8c0eb7f7c02456188b2afc2cf8b49d">detach</a>();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <a class="code hl_function" href="classeve_1_1editor_1_1EditorHost.html#abfdb1afa413f8a49a27de3db955333d1">unmountAll</a>();</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>}</div>
+</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorHost.html#a8d1609f228efb22df86612e3c3a375b6">   41</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;EditorHostMountReport&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorHost.html#a8d1609f228efb22df86612e3c3a375b6">EditorHost::autoMount</a>() { <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1editor_1_1EditorHost.html#aa213696763e3aefb956a5d5b88bcbc64">mount</a>({}); }</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="foldopen" id="foldopen00043" data-start="{" data-end="}">
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorHost.html#aa213696763e3aefb956a5d5b88bcbc64">   43</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;EditorHostMountReport&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorHost.html#aa213696763e3aefb956a5d5b88bcbc64">EditorHost::mount</a>(</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; owners, <span class="keyword">const</span> std::unordered_map&lt;std::string, EditorHostMountOverride&gt;&amp; overrides) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <a class="code hl_struct" href="structeve_1_1editor_1_1EditorHostMountReport.html">EditorHostMountReport</a> report;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">if</span> (!owners.empty() &amp;&amp; eve::cap::listenerCount&lt;editing::IEditorPackageProvider&gt;() == 0)</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordflow">return</span> eve::editing::failed&lt;EditorHostMountReport&gt;(EditorStatus::NotFound, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(<span class="stringliteral">&quot;editor.host.no-providers&quot;</span>),</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                                                           <span class="stringliteral">&quot;No IEditorPackageProvider capabilities are loaded&quot;</span>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    eve::cap::forEach&lt;editing::IEditorPackageProvider&gt;([&amp;](<a class="code hl_class" href="classeve_1_1editing_1_1IEditorPackageProvider.html">editing::IEditorPackageProvider</a>* <a class="code hl_variable" href="ScriptLinks_8cpp.html#a5d842a6f5624813bbf240ce6655aa1af">provider</a>) {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ScriptLinks_8cpp.html#a5d842a6f5624813bbf240ce6655aa1af">provider</a>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1EditorPackage.html">editing::EditorPackage</a>&amp; <span class="keyword">package </span>= provider-&gt;package();</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordflow">if</span> (!ownerAllowed(owners, package.ownerModule)) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <a class="code hl_struct" href="structeve_1_1editor_1_1EditorHostMountOverride.html">EditorHostMountOverride</a> <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a> = overrides.find(package.ownerModule); <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a> != overrides.end())</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            <span class="keyword">override</span> = <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a>-&gt;second;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            <span class="keyword">override</span>.undoPolicy = package.undoPolicy;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keyword">auto</span> entry = mountPackage(package, <span class="keyword">override</span>);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordflow">if</span> (!entry.ok()) {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <a class="code hl_struct" href="structeve_1_1editor_1_1EditorHostMountEntry.html">EditorHostMountEntry</a> skipped;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            skipped.<a class="code hl_variable" href="structeve_1_1editor_1_1EditorHostMountEntry.html#a495a9eb46133b12156f0257ea93c5b35">ownerModule</a> = package.ownerModule;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            skipped.<a class="code hl_variable" href="structeve_1_1editor_1_1EditorHostMountEntry.html#a7c66deba00b159430651c51f8122ead7">skipped</a>     = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            skipped.<a class="code hl_variable" href="structeve_1_1editor_1_1EditorHostMountEntry.html#a379d00d2f3451eb4b36c072844680a24">skipReason</a>  = entry.status().describe();</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            report.<a class="code hl_variable" href="structeve_1_1editor_1_1EditorHostMountReport.html#a84ba97cd7f4296e2360a67f0b836798a">entries</a>.push_back(std::move(skipped));</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordflow">if</span> (!entry.value().skipped) ++report.<a class="code hl_variable" href="structeve_1_1editor_1_1EditorHostMountReport.html#ae58b311bf26a5f232cf50ccf65e1c2cf">mountedPackages</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        report.<a class="code hl_variable" href="structeve_1_1editor_1_1EditorHostMountReport.html#a84ba97cd7f4296e2360a67f0b836798a">entries</a>.push_back(std::move(entry).takeValue());</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    });</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;EditorHostMountReport&gt;(std::move(report));</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>}</div>
+</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="foldopen" id="foldopen00076" data-start="{" data-end="}">
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorHost.html#af890f57f399ada703c5a3e5d24792ba0">   76</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorHost.html#af890f57f399ada703c5a3e5d24792ba0">EditorHost::unmount</a>(std::string_view ownerModule) {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a> = mounted_.find(std::string(ownerModule));</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a> == mounted_.end()) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1editing.html#ac47a05926d5cb9b5531d89b68505abde">eve::editing::noOp</a>();</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> std::string&amp; panelId : <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a>-&gt;second.panelIds) (<span class="keywordtype">void</span>)workspace_.<a class="code hl_function" href="classeve_1_1editor_1_1EditorWorkspace.html#a3c8f8d02ada262e47f5bb61d905d3b5c">removePanel</a>(panelId);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    mounted_.erase(<a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a>);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    hasPrimaryViewport_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [_, mounted] : mounted_)</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1EditorPanelSpec.html">editing::EditorPanelSpec</a>&amp; panel : mounted.package.panels)</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            <span class="keywordflow">if</span> (panel.primaryViewport) hasPrimaryViewport_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>}</div>
+</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="foldopen" id="foldopen00088" data-start="{" data-end="}">
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorHost.html#abfdb1afa413f8a49a27de3db955333d1">   88</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1EditorHost.html#abfdb1afa413f8a49a27de3db955333d1">EditorHost::unmountAll</a>() {</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">const</span> std::vector&lt;std::string&gt; owners = [&amp;] {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        std::vector&lt;std::string&gt; <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>.reserve(mounted_.size());</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [<a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a1c82e23b3363a0cded2d2bdf7abfb5c8">owner</a>, _] : mounted_) <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>.push_back(<a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a1c82e23b3363a0cded2d2bdf7abfb5c8">owner</a>);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    }();</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a1c82e23b3363a0cded2d2bdf7abfb5c8">owner</a> : owners)</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <a class="code hl_function" href="classeve_1_1editor_1_1EditorHost.html#af890f57f399ada703c5a3e5d24792ba0">unmount</a>(<a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a1c82e23b3363a0cded2d2bdf7abfb5c8">owner</a>).<a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#aa25a474a0e9b02d286999f1e9a50e10a">ignore</a>(<span class="stringliteral">&quot;EditorHost teardown discards per-owner unmount status&quot;</span>);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>}</div>
+</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorHost.html#a73c04781559a7986a63f5d93ae0ced41">   99</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1editor_1_1EditorHost.html#a73c04781559a7986a63f5d93ae0ced41">EditorHost::isMounted</a>(std::string_view ownerModule)<span class="keyword"> const </span>{ <span class="keywordflow">return</span> mounted_.contains(std::string(ownerModule)); }</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="foldopen" id="foldopen00101" data-start="{" data-end="}">
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorHost.html#a32cc32120ed0ea8c86925cf6eb51b715">  101</a></span>std::vector&lt;std::string&gt; <a class="code hl_function" href="classeve_1_1editor_1_1EditorHost.html#a32cc32120ed0ea8c86925cf6eb51b715">EditorHost::mountedOwnerNames</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    std::vector&lt;std::string&gt; owners;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    owners.reserve(mounted_.size());</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [<a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a1c82e23b3363a0cded2d2bdf7abfb5c8">owner</a>, _] : mounted_) owners.push_back(<a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a1c82e23b3363a0cded2d2bdf7abfb5c8">owner</a>);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    std::sort(owners.begin(), owners.end());</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordflow">return</span> owners;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>}</div>
+</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="foldopen" id="foldopen00109" data-start="{" data-end="}">
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorHost.html#a59eb545e579c77c33f6579f7cb7342f5">  109</a></span>std::vector&lt;std::string&gt; <a class="code hl_function" href="classeve_1_1editor_1_1EditorHost.html#a59eb545e579c77c33f6579f7cb7342f5">EditorHost::mountedTargetTypeNames</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    std::vector&lt;std::string&gt; types;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [_, mounted] : mounted_)</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1EditorTargetTypeSpec.html">editing::EditorTargetTypeSpec</a>&amp; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a> : mounted.package.targetTypes) types.push_back(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>.type);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    std::sort(types.begin(), types.end());</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    types.erase(std::unique(types.begin(), types.end()), types.end());</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordflow">return</span> types;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>}</div>
+</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="foldopen" id="foldopen00118" data-start="{" data-end="}">
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorHost.html#a0bd4da0adfb96ecdfd3a0b88cb834373">  118</a></span><a class="code hl_enumeration" href="namespaceeve_1_1editing.html#aa54f135759ed2d8162bb4a7c1020e7d5">editing::EditorUndoPolicy</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorHost.html#a0bd4da0adfb96ecdfd3a0b88cb834373">EditorHost::mountedUndoPolicy</a>(std::string_view ownerModule)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a> = mounted_.find(std::string(ownerModule));</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a> == mounted_.end()) <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#aa54f135759ed2d8162bb4a7c1020e7d5a5a95a425f74314a96f13a2f136992178">editing::EditorUndoPolicy::Share</a>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a>-&gt;second.package.undoPolicy;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>}</div>
+</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorHost.html#acc5ef9b2e797a4c19e46ca3397d61f42">  124</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorHost.html#acc5ef9b2e797a4c19e46ca3397d61f42">EditorHost::exportMcp</a>(<a class="code hl_enumeration" href="namespaceeve_1_1editor.html#ac87cd1c17fa9417b7fd4dae527a1e548">EditorMcpExportMode</a> mode) { <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1editor.html#a0e0962a53e1665f56ee2b6acccef5623">editorMcpProjector</a>().<a class="code hl_function" href="classeve_1_1editor_1_1EditorMcpProjector.html#a51f8b6dbacf596761d5b784d3e180a73">attach</a>(<span class="keyword">this</span>, mode); }</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorHost.html#ae8571841d769b98bd1c47aa89ab2b9b6">  126</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;EditorValue&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorHost.html#ae8571841d769b98bd1c47aa89ab2b9b6">EditorHost::auditPackages</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1editor.html#a0e0962a53e1665f56ee2b6acccef5623">editorMcpProjector</a>().<a class="code hl_function" href="classeve_1_1editor_1_1EditorMcpProjector.html#a0564d6aa2ba5194121b98f39ab7eca35">auditCompleteness</a>(); }</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;EditorHostMountEntry&gt;</a> EditorHost::mountPackage(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1EditorPackage.html">editing::EditorPackage</a>&amp;  package,</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                                                      <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1EditorHostMountOverride.html">EditorHostMountOverride</a>&amp; <span class="keyword">override</span>) {</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = <a class="code hl_function" href="namespaceeve_1_1editing.html#ab2249f4f96a1beaf0c0e22cb642639d7">editing::validateEditorPackage</a>(package, <span class="keyword">override</span>.allowIncomplete);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;EditorHostMountEntry&gt;::failure</a>(<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.status());</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keywordflow">if</span> (mounted_.contains(package.<a class="code hl_variable" href="structeve_1_1editing_1_1EditorPackage.html#a29097c75ef095f553a8bd04c1b562d66">ownerModule</a>))</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="keywordflow">return</span> eve::editing::failed&lt;EditorHostMountEntry&gt;(EditorStatus::Conflict, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(<span class="stringliteral">&quot;editor.host.already-mounted&quot;</span>),</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>                                                          <span class="stringliteral">&quot;Editor package already mounted: &quot;</span> + package.<a class="code hl_variable" href="structeve_1_1editing_1_1EditorPackage.html#a29097c75ef095f553a8bd04c1b562d66">ownerModule</a>);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1EditorPanelSpec.html">editing::EditorPanelSpec</a>&amp; panel : package.panels) {</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        <span class="keywordflow">if</span> (panel.primaryViewport &amp;&amp; hasPrimaryViewport_)</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>            <span class="keywordflow">return</span> eve::editing::failed&lt;EditorHostMountEntry&gt;(</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>                EditorStatus::Conflict, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(<span class="stringliteral">&quot;editor.host.primary-viewport&quot;</span>),</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>                <span class="stringliteral">&quot;Only one primaryViewport panel may be mounted on a host&quot;</span>);</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    }</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    std::vector&lt;std::string&gt; panelIds;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keyword">auto</span>                     installed = installPanels(package, panelIds);</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordflow">if</span> (!installed.ok()) {</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> std::string&amp; panelId : panelIds) (void)workspace_.removePanel(panelId);</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;EditorHostMountEntry&gt;::failure</a>(installed.status());</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    }</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> editing::EditorPanelSpec&amp; panel : package.panels)</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        if (panel.primaryViewport) hasPrimaryViewport_ = true;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    MountedPackage mounted;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    mounted.package            = package;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    mounted.package.<a class="code hl_variable" href="structeve_1_1editing_1_1EditorPackage.html#a4aae3b266344faf1bfdc2ea6be62bc0a">undoPolicy</a> = <span class="keyword">override</span>.undoPolicy;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    mounted.panelIds           = std::move(panelIds);</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    mounted_.emplace(package.<a class="code hl_variable" href="structeve_1_1editing_1_1EditorPackage.html#a29097c75ef095f553a8bd04c1b562d66">ownerModule</a>, std::move(mounted));</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    EditorHostMountEntry entry;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    entry.ownerModule  = package.<a class="code hl_variable" href="structeve_1_1editing_1_1EditorPackage.html#a29097c75ef095f553a8bd04c1b562d66">ownerModule</a>;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    entry.panelCount   = package.<a class="code hl_variable" href="structeve_1_1editing_1_1EditorPackage.html#a8d83d64a1b90d9603cfcf32e29d4c249">panels</a>.size();</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    entry.commandCount = package.<a class="code hl_variable" href="structeve_1_1editing_1_1EditorPackage.html#a86f3709fb09873602f4fe542fde43eda">commands</a>.size();</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    entry.targetCount  = package.<a class="code hl_variable" href="structeve_1_1editing_1_1EditorPackage.html#a8311b5cd57a7b7dae76cd3c3c42103c3">targetTypes</a>.size();</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;EditorHostMountEntry&gt;(std::move(entry));</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>}</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>Result&lt;void&gt; EditorHost::installPanels(<span class="keyword">const</span> editing::EditorPackage&amp; package, std::vector&lt;std::string&gt;&amp; panelIds) {</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> editing::EditorPanelSpec&amp; panel : package.panels) {</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        WorkspacePanelDescriptor <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.id         = panel.id;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.title      = panel.title;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.region     = panel.region;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.capability = panel.capability;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.context    = panel.context;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.order      = panel.order;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        <span class="keyword">auto</span> registered       = workspace_.<a class="code hl_function" href="classeve_1_1editor_1_1EditorWorkspace.html#a683fd37e0e50108da19eced8a264ac57">registerPanel</a>(std::move(<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>));</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        <span class="keywordflow">if</span> (!registered.ok())</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>            <span class="keywordflow">return</span> eve::editing::failed&lt;void&gt;(registered.code(), <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(<span class="stringliteral">&quot;editor.host.panel-conflict&quot;</span>),</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>                                              <span class="stringliteral">&quot;Could not install package panel: &quot;</span> + panel.id);</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        panelIds.push_back(panel.id);</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    }</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>}</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
+<div class="foldopen" id="foldopen00186" data-start="{" data-end="}">
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorHost.html#a09df09d6f929f4eb079490d57007b6d5">  186</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;EditorValue&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorHost.html#a09df09d6f929f4eb079490d57007b6d5">EditorHost::exportCommandCatalog</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keywordflow">if</span> (!commands_)</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="keywordflow">return</span> eve::editing::failed&lt;EditorValue&gt;(EditorStatus::Failed, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(<span class="stringliteral">&quot;editor.host.no-commands&quot;</span>),</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                                                 <span class="stringliteral">&quot;EditorHost has no command service&quot;</span>);</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    <span class="keyword">const</span> <span class="keyword">auto</span>         owners = <a class="code hl_function" href="classeve_1_1editor_1_1EditorHost.html#a32cc32120ed0ea8c86925cf6eb51b715">mountedOwnerNames</a>();</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span>         <a class="code hl_variable" href="SceneLoader_8cpp.html#a61e0e449fd7e8647d521cafd4f1d55a3">filter</a> = !owners.empty();</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a3c88bc09ffc0ed051db4007328a54971">EditorValue::Array</a> <a class="code hl_variable" href="VegetationPreset_8cpp.html#a9adc8157fafdeebb0f2a513f628b4f87">commands</a>;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1CommandDescriptor.html">CommandDescriptor</a>&amp; command : commands_-&gt;<a class="code hl_function" href="classeve_1_1editor_1_1EditorCommandService.html#a908c006e8a093d2dedc74382b2c929de">commands</a>(options_.<a class="code hl_variable" href="structeve_1_1editor_1_1EditorHost_1_1Options.html#a90c23f188616f251375b15d06da3e425">profile</a>)) {</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="SceneLoader_8cpp.html#a61e0e449fd7e8647d521cafd4f1d55a3">filter</a> &amp;&amp; std::find(owners.begin(), owners.end(), command.ownerModule) == owners.end()) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">EditorValue::Object</a> item;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        item[<span class="stringliteral">&quot;id&quot;</span>]                = command.id.value();</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        item[<span class="stringliteral">&quot;displayName&quot;</span>]       = command.displayName;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        item[<span class="stringliteral">&quot;category&quot;</span>]          = command.category;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        item[<span class="stringliteral">&quot;owner&quot;</span>]             = command.ownerModule;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        item[<span class="stringliteral">&quot;automationAllowed&quot;</span>] = command.automationAllowed;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        <span class="keywordflow">if</span> (!command.panelCapability.empty()) item[<span class="stringliteral">&quot;panelCapability&quot;</span>] = command.panelCapability;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        <span class="keywordflow">if</span> (!command.panelContext.empty()) item[<span class="stringliteral">&quot;panelContext&quot;</span>] = command.panelContext;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        <span class="keywordflow">if</span> (!command.targetKinds.empty()) {</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>            <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a3c88bc09ffc0ed051db4007328a54971">EditorValue::Array</a> kinds;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a> : command.targetKinds) kinds.emplace_back(<a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a>);</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>            item[<span class="stringliteral">&quot;targetKinds&quot;</span>] = std::move(kinds);</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        }</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="keyword">auto</span> schema = <a class="code hl_function" href="namespaceeve_1_1editing.html#a9cf56f7bb330eb43183491ef7d021e89">editing::propertySchemaToJsonSchema</a>(command.payloadSchema, command.id.value());</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        <span class="keywordflow">if</span> (schema.ok()) item[<span class="stringliteral">&quot;inputSchema&quot;</span>] = std::move(schema).takeValue();</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        <a class="code hl_variable" href="VegetationPreset_8cpp.html#a9adc8157fafdeebb0f2a513f628b4f87">commands</a>.emplace_back(std::move(item));</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    }</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;EditorValue&gt;(<a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">EditorValue::Object</a>{{<span class="stringliteral">&quot;commands&quot;</span>, std::move(<a class="code hl_variable" href="VegetationPreset_8cpp.html#a9adc8157fafdeebb0f2a513f628b4f87">commands</a>)}});</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>}</div>
+</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span> </div>
+<div class="foldopen" id="foldopen00215" data-start="{" data-end="}">
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorHost.html#a7a9c7449edd28b8c7667f3a2a3033dc2">  215</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;EditorValue&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorHost.html#a7a9c7449edd28b8c7667f3a2a3033dc2">EditorHost::exportTargetCatalog</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    std::unordered_map&lt;std::string, editing::PropertySchema&gt; createSchemas;</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [_, mounted] : mounted_) {</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1EditorTargetTypeSpec.html">editing::EditorTargetTypeSpec</a>&amp; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a> : mounted.package.targetTypes)</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>            createSchemas[<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>.type] = <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>.createSchema;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    }</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span> </div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <span class="keyword">const</span> <span class="keyword">auto</span>         allowed = <a class="code hl_function" href="classeve_1_1editor_1_1EditorHost.html#a59eb545e579c77c33f6579f7cb7342f5">mountedTargetTypeNames</a>();</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span>         <a class="code hl_variable" href="SceneLoader_8cpp.html#a61e0e449fd7e8647d521cafd4f1d55a3">filter</a>  = !allowed.empty();</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a3c88bc09ffc0ed051db4007328a54971">EditorValue::Array</a> types;</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    eve::cap::forEach&lt;IEditorAutomationTargetFactory&gt;([&amp;](<a class="code hl_class" href="classeve_1_1editor_1_1IEditorAutomationTargetFactory.html">IEditorAutomationTargetFactory</a>* factory) {</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        <span class="keywordflow">if</span> (!factory) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> std::string_view <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a> : factory-&gt;<a class="code hl_function" href="classeve_1_1editor_1_1IEditorAutomationTargetFactory.html#a6f26e9a2d345912114edd0964256098a">types</a>()) {</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="SceneLoader_8cpp.html#a61e0e449fd7e8647d521cafd4f1d55a3">filter</a> &amp;&amp; std::find(allowed.begin(), allowed.end(), <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>) == allowed.end()) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>            <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">EditorValue::Object</a> item;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>            item[<span class="stringliteral">&quot;type&quot;</span>] = std::string(<a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>);</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>            <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a> = createSchemas.find(std::string(<a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>)); <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a> != createSchemas.end()) {</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>                <span class="keyword">auto</span> schema = <a class="code hl_function" href="namespaceeve_1_1editing.html#a9cf56f7bb330eb43183491ef7d021e89">editing::propertySchemaToJsonSchema</a>(<a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a>-&gt;second, <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>);</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>                <span class="keywordflow">if</span> (schema.ok()) item[<span class="stringliteral">&quot;createSchema&quot;</span>] = std::move(schema).takeValue();</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>            }</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>            types.emplace_back(std::move(item));</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        }</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    });</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    std::sort(types.begin(), types.end(), [](<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp; <a class="code hl_variable" href="HexSphereMesh_8cpp.html#a4aec083086e51d216483397c15f1518c">left</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp; <a class="code hl_variable" href="HexSphereMesh_8cpp.html#a693f5ccb2102b8c2a7eb23cbb1e337bc">right</a>) {</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        const auto* leftObject  = left.getIf&lt;EditorValue::Object&gt;();</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        const auto* rightObject = right.getIf&lt;EditorValue::Object&gt;();</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        auto        typeOf      = [](const EditorValue::Object* object) -&gt; std::string {</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>            if (!object) return {};</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>            const auto found = object-&gt;find(<span class="stringliteral">&quot;type&quot;</span>);</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>            if (found == object-&gt;end()) return {};</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>            const auto* value = found-&gt;second.getIf&lt;std::string&gt;();</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>            return value ? *value : std::string{};</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>        };</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>        <span class="keywordflow">return</span> typeOf(leftObject) &lt; typeOf(rightObject);</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    });</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;EditorValue&gt;(<a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">EditorValue::Object</a>{{<span class="stringliteral">&quot;supportedTypes&quot;</span>, std::move(types)}});</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>}</div>
+</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span> </div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_a16c9300acaea4db7696fb24b3802bfa5"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a></div><div class="ttdeci">LogicalId target</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00151">ActionNotifyRegistry.cpp:151</a></div></div>
+<div class="ttc" id="aActionTimelinePayloadEditor_8cpp_html_acc84214b4748705f4d18dd8d143e70be"><div class="ttname"><a href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a></div><div class="ttdeci">LogicalId type</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00016">ActionTimelinePayloadEditor.cpp:16</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_a834ec2851d25006c87763cec4bedd900"><div class="ttname"><a href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a></div><div class="ttdeci">std::string descriptor</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00171">AssetCommand.cpp:171</a></div></div>
+<div class="ttc" id="aCapability_8h_html"><div class="ttname"><a href="Capability_8h.html">Capability.h</a></div></div>
+<div class="ttc" id="aConversationImporter_8cpp_html_ac30fed21fe991cc8475ce543929f8b72"><div class="ttname"><a href="ConversationImporter_8cpp.html#ac30fed21fe991cc8475ce543929f8b72">title</a></div><div class="ttdeci">std::string title</div><div class="ttdef"><b>Definition</b> <a href="ConversationImporter_8cpp_source.html#l00018">ConversationImporter.cpp:18</a></div></div>
+<div class="ttc" id="aEditorAutomationTargetFactory_8h_html"><div class="ttname"><a href="EditorAutomationTargetFactory_8h.html">EditorAutomationTargetFactory.h</a></div></div>
+<div class="ttc" id="aEditorCommandService_8h_html"><div class="ttname"><a href="EditorCommandService_8h.html">EditorCommandService.h</a></div></div>
+<div class="ttc" id="aEditorMcpProjector_8h_html"><div class="ttname"><a href="EditorMcpProjector_8h.html">EditorMcpProjector.h</a></div></div>
+<div class="ttc" id="aEditor_8h_html"><div class="ttname"><a href="Editor_8h.html">Editor.h</a></div></div>
+<div class="ttc" id="aHexSphereMesh_8cpp_html_a4aec083086e51d216483397c15f1518c"><div class="ttname"><a href="HexSphereMesh_8cpp.html#a4aec083086e51d216483397c15f1518c">left</a></div><div class="ttdeci">HexVec3 left</div><div class="ttdef"><b>Definition</b> <a href="HexSphereMesh_8cpp_source.html#l00219">HexSphereMesh.cpp:219</a></div></div>
+<div class="ttc" id="aHexSphereMesh_8cpp_html_a693f5ccb2102b8c2a7eb23cbb1e337bc"><div class="ttname"><a href="HexSphereMesh_8cpp.html#a693f5ccb2102b8c2a7eb23cbb1e337bc">right</a></div><div class="ttdeci">HexVec3 right</div><div class="ttdef"><b>Definition</b> <a href="HexSphereMesh_8cpp_source.html#l00220">HexSphereMesh.cpp:220</a></div></div>
+<div class="ttc" id="aMcpArchitectureTools_8cpp_html_afd0d68c6d31ff249f3ae8662162663c3"><div class="ttname"><a href="McpArchitectureTools_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="McpArchitectureTools_8cpp_source.html#l00017">McpArchitectureTools.cpp:17</a></div></div>
+<div class="ttc" id="aMcpServer_8cpp_html_a28e3c179a86f337095088b3ca02a2b2a"><div class="ttname"><a href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a></div><div class="ttdeci">bool valid</div><div class="ttdef"><b>Definition</b> <a href="McpServer_8cpp_source.html#l00319">McpServer.cpp:319</a></div></div>
+<div class="ttc" id="aOceanRenderBindings_8cpp_html_a1c82e23b3363a0cded2d2bdf7abfb5c8"><div class="ttname"><a href="OceanRenderBindings_8cpp.html#a1c82e23b3363a0cded2d2bdf7abfb5c8">owner</a></div><div class="ttdeci">std::shared_ptr&lt; OceanGpuSpectrum &gt; owner</div><div class="ttdef"><b>Definition</b> <a href="OceanRenderBindings_8cpp_source.html#l00022">OceanRenderBindings.cpp:22</a></div></div>
+<div class="ttc" id="aProjectIndexAutomatic_8cpp_html_a6c4a6d51eafaf91a7fcb4b346264fd92"><div class="ttname"><a href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a></div><div class="ttdeci">std::set&lt; std::string &gt; values</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexAutomatic_8cpp_source.html#l00016">ProjectIndexAutomatic.cpp:16</a></div></div>
+<div class="ttc" id="aPropertySchemaJson_8h_html"><div class="ttname"><a href="PropertySchemaJson_8h.html">PropertySchemaJson.h</a></div></div>
+<div class="ttc" id="aRpgDialect_8cpp_html_a7141f237b2648c631ce5b73215683565"><div class="ttname"><a href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a></div><div class="ttdeci">bool found</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00331">RpgDialect.cpp:331</a></div></div>
+<div class="ttc" id="aSceneLoader_8cpp_html_a61e0e449fd7e8647d521cafd4f1d55a3"><div class="ttname"><a href="SceneLoader_8cpp.html#a61e0e449fd7e8647d521cafd4f1d55a3">filter</a></div><div class="ttdeci">std::string filter</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00189">SceneLoader.cpp:189</a></div></div>
+<div class="ttc" id="aScriptLinks_8cpp_html_a5d842a6f5624813bbf240ce6655aa1af"><div class="ttname"><a href="ScriptLinks_8cpp.html#a5d842a6f5624813bbf240ce6655aa1af">provider</a></div><div class="ttdeci">ScriptProviderHandle provider</div><div class="ttdef"><b>Definition</b> <a href="ScriptLinks_8cpp_source.html#l00075">ScriptLinks.cpp:75</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_aca87c2bbc26e697653e2d8461c76a361"><div class="ttname"><a href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a></div><div class="ttdeci">std::string kind</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00011">ScriptStructure.cpp:11</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8cpp_html_abebf9d839cc4bbffbf6bb3cf6c4b1038"><div class="ttname"><a href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a></div><div class="ttdeci">const SquirrelValueOptions &amp; options</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00089">SquirrelBinding.cpp:89</a></div></div>
+<div class="ttc" id="aUIAutomationCapabilities_8cpp_html_a746317fdab8614a8048746f94bdacdab"><div class="ttname"><a href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a></div><div class="ttdeci">UIHostHandle host</div><div class="ttdef"><b>Definition</b> <a href="UIAutomationCapabilities_8cpp_source.html#l00227">UIAutomationCapabilities.cpp:227</a></div></div>
+<div class="ttc" id="aVegetationPreset_8cpp_html_a9adc8157fafdeebb0f2a513f628b4f87"><div class="ttname"><a href="VegetationPreset_8cpp.html#a9adc8157fafdeebb0f2a513f628b4f87">commands</a></div><div class="ttdeci">std::vector&lt; VegetationPresetCommand &gt; commands</div><div class="ttdef"><b>Definition</b> <a href="VegetationPreset_8cpp_source.html#l00096">VegetationPreset.cpp:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_3_01void_01_4_html_aa25a474a0e9b02d286999f1e9a50e10a"><div class="ttname"><a href="classeve_1_1Result_3_01void_01_4.html#aa25a474a0e9b02d286999f1e9a50e10a">eve::Result&lt; void &gt;::ignore</a></div><div class="ttdeci">void ignore(std::string_view reason={}) const noexcept</div><div class="ttdoc">Explicitly discard this result after documenting the reason.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00555">Result.h:555</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00195">Result.h:195</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditorPackageProvider_html"><div class="ttname"><a href="classeve_1_1editing_1_1IEditorPackageProvider.html">eve::editing::IEditorPackageProvider</a></div><div class="ttdoc">Capability-discovered package advertisement from a domain editor module.</div><div class="ttdef"><b>Definition</b> <a href="EditorPackage_8h_source.html#l00064">EditorPackage.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html">eve::editing::Value</a></div><div class="ttdoc">Deterministic owning value tree shared by authoring hosts.</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00023">EditingValue.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html_a3c88bc09ffc0ed051db4007328a54971"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html#a3c88bc09ffc0ed051db4007328a54971">eve::editing::Value::Array</a></div><div class="ttdeci">std::vector&lt; Value &gt; Array</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00025">EditingValue.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html_a71ec87a639bfcbcc701be7a93446a558"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">eve::editing::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00026">EditingValue.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorCommandService_html_a908c006e8a093d2dedc74382b2c929de"><div class="ttname"><a href="classeve_1_1editor_1_1EditorCommandService.html#a908c006e8a093d2dedc74382b2c929de">eve::editor::EditorCommandService::commands</a></div><div class="ttdeci">std::vector&lt; CommandDescriptor &gt; commands(const HostProfile &amp;profile) const</div><div class="ttdoc">Return descriptors visible to a host profile.</div><div class="ttdef"><b>Definition</b> <a href="EditorAssetDatabase_8cpp_source.html#l00333">EditorAssetDatabase.cpp:333</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorHost_html_a09df09d6f929f4eb079490d57007b6d5"><div class="ttname"><a href="classeve_1_1editor_1_1EditorHost.html#a09df09d6f929f4eb079490d57007b6d5">eve::editor::EditorHost::exportCommandCatalog</a></div><div class="ttdeci">Result&lt; EditorValue &gt; exportCommandCatalog() const</div><div class="ttdoc">Export mounted command catalog (id + inputSchema) for tests/MCP.</div><div class="ttdef"><b>Definition</b> <a href="editor_2EditorHost_8cpp_source.html#l00186">EditorHost.cpp:186</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorHost_html_a0bd4da0adfb96ecdfd3a0b88cb834373"><div class="ttname"><a href="classeve_1_1editor_1_1EditorHost.html#a0bd4da0adfb96ecdfd3a0b88cb834373">eve::editor::EditorHost::mountedUndoPolicy</a></div><div class="ttdeci">editing::EditorUndoPolicy mountedUndoPolicy(std::string_view ownerModule) const</div><div class="ttdoc">Undo policy recorded for a mounted owner (Share when unknown).</div><div class="ttdef"><b>Definition</b> <a href="editor_2EditorHost_8cpp_source.html#l00118">EditorHost.cpp:118</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorHost_html_a2873dbfbaab04ac00e12e8b9b7b1514f"><div class="ttname"><a href="classeve_1_1editor_1_1EditorHost.html#a2873dbfbaab04ac00e12e8b9b7b1514f">eve::editor::EditorHost::EditorHost</a></div><div class="ttdeci">EditorHost(Editor &amp;editor, Options options)</div><div class="ttdoc">Create a host bound to an Editor module's command service.</div><div class="ttdef"><b>Definition</b> <a href="editor_2EditorHost_8cpp_source.html#l00023">EditorHost.cpp:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorHost_html_a32cc32120ed0ea8c86925cf6eb51b715"><div class="ttname"><a href="classeve_1_1editor_1_1EditorHost.html#a32cc32120ed0ea8c86925cf6eb51b715">eve::editor::EditorHost::mountedOwnerNames</a></div><div class="ttdeci">std::vector&lt; std::string &gt; mountedOwnerNames() const</div><div class="ttdoc">Mounted package owner names. @cost Linear in mounted package count; returns an owning vector copy.</div><div class="ttdef"><b>Definition</b> <a href="editor_2EditorHost_8cpp_source.html#l00101">EditorHost.cpp:101</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorHost_html_a59eb545e579c77c33f6579f7cb7342f5"><div class="ttname"><a href="classeve_1_1editor_1_1EditorHost.html#a59eb545e579c77c33f6579f7cb7342f5">eve::editor::EditorHost::mountedTargetTypeNames</a></div><div class="ttdeci">std::vector&lt; std::string &gt; mountedTargetTypeNames() const</div><div class="ttdoc">Target types contributed by mounted packages. @cost Linear in mounted target types; returns a sorted ...</div><div class="ttdef"><b>Definition</b> <a href="editor_2EditorHost_8cpp_source.html#l00109">EditorHost.cpp:109</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorHost_html_a73c04781559a7986a63f5d93ae0ced41"><div class="ttname"><a href="classeve_1_1editor_1_1EditorHost.html#a73c04781559a7986a63f5d93ae0ced41">eve::editor::EditorHost::isMounted</a></div><div class="ttdeci">bool isMounted(std::string_view ownerModule) const</div><div class="ttdoc">True when owner is currently mounted.</div><div class="ttdef"><b>Definition</b> <a href="editor_2EditorHost_8cpp_source.html#l00099">EditorHost.cpp:99</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorHost_html_a7a9c7449edd28b8c7667f3a2a3033dc2"><div class="ttname"><a href="classeve_1_1editor_1_1EditorHost.html#a7a9c7449edd28b8c7667f3a2a3033dc2">eve::editor::EditorHost::exportTargetCatalog</a></div><div class="ttdeci">Result&lt; EditorValue &gt; exportTargetCatalog() const</div><div class="ttdoc">Export discovered target types with createSchema when known.</div><div class="ttdef"><b>Definition</b> <a href="editor_2EditorHost_8cpp_source.html#l00215">EditorHost.cpp:215</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorHost_html_a8d1609f228efb22df86612e3c3a375b6"><div class="ttname"><a href="classeve_1_1editor_1_1EditorHost.html#a8d1609f228efb22df86612e3c3a375b6">eve::editor::EditorHost::autoMount</a></div><div class="ttdeci">Result&lt; EditorHostMountReport &gt; autoMount()</div><div class="ttdoc">Discover every IEditorPackageProvider and mount complete packages.</div><div class="ttdef"><b>Definition</b> <a href="editor_2EditorHost_8cpp_source.html#l00041">EditorHost.cpp:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorHost_html_aa213696763e3aefb956a5d5b88bcbc64"><div class="ttname"><a href="classeve_1_1editor_1_1EditorHost.html#aa213696763e3aefb956a5d5b88bcbc64">eve::editor::EditorHost::mount</a></div><div class="ttdeci">Result&lt; EditorHostMountReport &gt; mount(const std::vector&lt; std::string &gt; &amp;owners={}, const std::unordered_map&lt; std::string, EditorHostMountOverride &gt; &amp;overrides={})</div><div class="ttdoc">Mount an explicit owner allowlist.</div><div class="ttdef"><b>Definition</b> <a href="editor_2EditorHost_8cpp_source.html#l00043">EditorHost.cpp:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorHost_html_abfdb1afa413f8a49a27de3db955333d1"><div class="ttname"><a href="classeve_1_1editor_1_1EditorHost.html#abfdb1afa413f8a49a27de3db955333d1">eve::editor::EditorHost::unmountAll</a></div><div class="ttdeci">void unmountAll()</div><div class="ttdoc">Unmount every mounted package.</div><div class="ttdef"><b>Definition</b> <a href="editor_2EditorHost_8cpp_source.html#l00088">EditorHost.cpp:88</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorHost_html_acc5ef9b2e797a4c19e46ca3397d61f42"><div class="ttname"><a href="classeve_1_1editor_1_1EditorHost.html#acc5ef9b2e797a4c19e46ca3397d61f42">eve::editor::EditorHost::exportMcp</a></div><div class="ttdeci">Result&lt; void &gt; exportMcp(EditorMcpExportMode mode=EditorMcpExportMode::Commands)</div><div class="ttdoc">Attach this host as the active Mode A MCP projection scope.</div><div class="ttdef"><b>Definition</b> <a href="editor_2EditorHost_8cpp_source.html#l00124">EditorHost.cpp:124</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorHost_html_ad2fae4db042c4e12fd5634829caa0cdb"><div class="ttname"><a href="classeve_1_1editor_1_1EditorHost.html#ad2fae4db042c4e12fd5634829caa0cdb">eve::editor::EditorHost::~EditorHost</a></div><div class="ttdeci">~EditorHost()</div><div class="ttdoc">Destroy host, detach MCP projection if attached, and unmount packages.</div><div class="ttdef"><b>Definition</b> <a href="editor_2EditorHost_8cpp_source.html#l00036">EditorHost.cpp:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorHost_html_ae8571841d769b98bd1c47aa89ab2b9b6"><div class="ttname"><a href="classeve_1_1editor_1_1EditorHost.html#ae8571841d769b98bd1c47aa89ab2b9b6">eve::editor::EditorHost::auditPackages</a></div><div class="ttdeci">Result&lt; EditorValue &gt; auditPackages() const</div><div class="ttdoc">Completeness audit (incomplete packages + orphan factory types).</div><div class="ttdef"><b>Definition</b> <a href="editor_2EditorHost_8cpp_source.html#l00126">EditorHost.cpp:126</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorHost_html_af890f57f399ada703c5a3e5d24792ba0"><div class="ttname"><a href="classeve_1_1editor_1_1EditorHost.html#af890f57f399ada703c5a3e5d24792ba0">eve::editor::EditorHost::unmount</a></div><div class="ttdeci">Result&lt; void &gt; unmount(std::string_view ownerModule)</div><div class="ttdoc">Unmount one owner and remove its workspace panels.</div><div class="ttdef"><b>Definition</b> <a href="editor_2EditorHost_8cpp_source.html#l00076">EditorHost.cpp:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorMcpProjector_html_a0564d6aa2ba5194121b98f39ab7eca35"><div class="ttname"><a href="classeve_1_1editor_1_1EditorMcpProjector.html#a0564d6aa2ba5194121b98f39ab7eca35">eve::editor::EditorMcpProjector::auditCompleteness</a></div><div class="ttdeci">Result&lt; EditorValue &gt; auditCompleteness() const</div><div class="ttdoc">Audit incomplete packages and orphan automation factories.</div><div class="ttdef"><b>Definition</b> <a href="EditorMcpProjector_8cpp_source.html#l00043">EditorMcpProjector.cpp:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorMcpProjector_html_a0c8c0eb7f7c02456188b2afc2cf8b49d"><div class="ttname"><a href="classeve_1_1editor_1_1EditorMcpProjector.html#a0c8c0eb7f7c02456188b2afc2cf8b49d">eve::editor::EditorMcpProjector::detach</a></div><div class="ttdeci">void detach()</div><div class="ttdoc">Clear the active attachment.</div><div class="ttdef"><b>Definition</b> <a href="EditorMcpProjector_8cpp_source.html#l00027">EditorMcpProjector.cpp:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorMcpProjector_html_a51f8b6dbacf596761d5b784d3e180a73"><div class="ttname"><a href="classeve_1_1editor_1_1EditorMcpProjector.html#a51f8b6dbacf596761d5b784d3e180a73">eve::editor::EditorMcpProjector::attach</a></div><div class="ttdeci">Result&lt; void &gt; attach(EditorHost *host, EditorMcpExportMode mode=EditorMcpExportMode::Commands)</div><div class="ttdoc">Attach a borrowed host as the active MCP projection scope.</div><div class="ttdef"><b>Definition</b> <a href="EditorMcpProjector_8cpp_source.html#l00018">EditorMcpProjector.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorSelectionRouter_html"><div class="ttname"><a href="classeve_1_1editor_1_1EditorSelectionRouter.html">eve::editor::EditorSelectionRouter</a></div><div class="ttdoc">Default selection → inspector panel activation for a mounted host.</div><div class="ttdef"><b>Definition</b> <a href="EditorSelectionRouter_8h_source.html#l00021">EditorSelectionRouter.h:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorUndoCoordinator_html"><div class="ttname"><a href="classeve_1_1editor_1_1EditorUndoCoordinator.html">eve::editor::EditorUndoCoordinator</a></div><div class="ttdoc">Tracks the focused package undo stack (Share vs Private).</div><div class="ttdef"><b>Definition</b> <a href="EditorUndoCoordinator_8h_source.html#l00021">EditorUndoCoordinator.h:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorWorkspace_html_a3c8f8d02ada262e47f5bb61d905d3b5c"><div class="ttname"><a href="classeve_1_1editor_1_1EditorWorkspace.html#a3c8f8d02ada262e47f5bb61d905d3b5c">eve::editor::EditorWorkspace::removePanel</a></div><div class="ttdeci">Result&lt; WorkspacePanelDescriptor &gt; removePanel(const StableId &amp;id)</div><div class="ttdoc">Remove a panel and return its final owning descriptor.</div><div class="ttdef"><b>Definition</b> <a href="EditorVolumeTarget_8cpp_source.html#l00147">EditorVolumeTarget.cpp:147</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorWorkspace_html_a683fd37e0e50108da19eced8a264ac57"><div class="ttname"><a href="classeve_1_1editor_1_1EditorWorkspace.html#a683fd37e0e50108da19eced8a264ac57">eve::editor::EditorWorkspace::registerPanel</a></div><div class="ttdeci">Result&lt; WorkspacePanelDescriptor &gt; registerPanel(WorkspacePanelDescriptor descriptor)</div><div class="ttdoc">Register a checked owning panel descriptor.</div><div class="ttdef"><b>Definition</b> <a href="EditorVolumeTarget_8cpp_source.html#l00118">EditorVolumeTarget.cpp:118</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1Editor_html"><div class="ttname"><a href="classeve_1_1editor_1_1Editor.html">eve::editor::Editor</a></div><div class="ttdoc">Editor building blocks — not a shipped 3D/map editor app. Script: editor &lt;- eve.Editor();</div><div class="ttdef"><b>Definition</b> <a href="Editor_8h_source.html#l00047">Editor.h:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1HostProfile_html_a0d70ec46899a3127d977021bafe69eb0"><div class="ttname"><a href="classeve_1_1editor_1_1HostProfile.html#a0d70ec46899a3127d977021bafe69eb0">eve::editor::HostProfile::allowsAllCommands</a></div><div class="ttdeci">bool allowsAllCommands() const</div><div class="ttdoc">Allows all commands.</div><div class="ttdef"><b>Definition</b> <a href="EditorHostProfile_8h_source.html#l00079">EditorHostProfile.h:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1HostProfile_html_a1ed69bd0915eba18592a74670c4c855b"><div class="ttname"><a href="classeve_1_1editor_1_1HostProfile.html#a1ed69bd0915eba18592a74670c4c855b">eve::editor::HostProfile::developer</a></div><div class="ttdeci">static HostProfile developer()</div><div class="ttdoc">Unrestricted developer profile used by legacy sessions.</div><div class="ttdef"><b>Definition</b> <a href="EditorHostProfile_8cpp_source.html#l00017">EditorHostProfile.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1HostProfile_html_ad3157914befe38eb3f801bb3d843b6c8"><div class="ttname"><a href="classeve_1_1editor_1_1HostProfile.html#ad3157914befe38eb3f801bb3d843b6c8">eve::editor::HostProfile::kind</a></div><div class="ttdeci">HostKind kind() const</div><div class="ttdoc">Kind.</div><div class="ttdef"><b>Definition</b> <a href="EditorHostProfile_8h_source.html#l00066">EditorHostProfile.h:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditorAutomationTargetFactory_html"><div class="ttname"><a href="classeve_1_1editor_1_1IEditorAutomationTargetFactory.html">eve::editor::IEditorAutomationTargetFactory</a></div><div class="ttdoc">Multi-provider extension point for domain-specific automation target creation.</div><div class="ttdef"><b>Definition</b> <a href="EditorAutomationTargetFactory_8h_source.html#l00022">EditorAutomationTargetFactory.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditorAutomationTargetFactory_html_a6f26e9a2d345912114edd0964256098a"><div class="ttname"><a href="classeve_1_1editor_1_1IEditorAutomationTargetFactory.html#a6f26e9a2d345912114edd0964256098a">eve::editor::IEditorAutomationTargetFactory::types</a></div><div class="ttdeci">virtual std::vector&lt; std::string_view &gt; types() const =0</div><div class="ttdoc">Stable target type names this factory accepts.</div></div>
+<div class="ttc" id="amodules_2editor_2EditorHost_8h_html"><div class="ttname"><a href="modules_2editor_2EditorHost_8h.html">EditorHost.h</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a9cf56f7bb330eb43183491ef7d021e89"><div class="ttname"><a href="namespaceeve_1_1editing.html#a9cf56f7bb330eb43183491ef7d021e89">eve::editing::propertySchemaToJsonSchema</a></div><div class="ttdeci">Result&lt; Value &gt; propertySchemaToJsonSchema(const PropertySchema &amp;schema, std::string_view schemaId)</div><div class="ttdoc">Project a PropertySchema into a JSON Schema object tree (pointer-free Value).</div><div class="ttdef"><b>Definition</b> <a href="PropertySchemaJson_8cpp_source.html#l00065">PropertySchemaJson.cpp:65</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_aa54f135759ed2d8162bb4a7c1020e7d5"><div class="ttname"><a href="namespaceeve_1_1editing.html#aa54f135759ed2d8162bb4a7c1020e7d5">eve::editing::EditorUndoPolicy</a></div><div class="ttdeci">EditorUndoPolicy</div><div class="ttdoc">Undo participation policy for a mounted package.</div><div class="ttdef"><b>Definition</b> <a href="EditorPackage_8h_source.html#l00038">EditorPackage.h:38</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_aa54f135759ed2d8162bb4a7c1020e7d5a5a95a425f74314a96f13a2f136992178"><div class="ttname"><a href="namespaceeve_1_1editing.html#aa54f135759ed2d8162bb4a7c1020e7d5a5a95a425f74314a96f13a2f136992178">eve::editing::EditorUndoPolicy::Share</a></div><div class="ttdeci">@ Share</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_ab2249f4f96a1beaf0c0e22cb642639d7"><div class="ttname"><a href="namespaceeve_1_1editing.html#ab2249f4f96a1beaf0c0e22cb642639d7">eve::editing::validateEditorPackage</a></div><div class="ttdeci">Result&lt; void &gt; validateEditorPackage(const EditorPackage &amp;package, bool allowIncomplete)</div><div class="ttdoc">Validate package completeness for Host mount.</div><div class="ttdef"><b>Definition</b> <a href="EditorPackage_8cpp_source.html#l00005">EditorPackage.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_ac47a05926d5cb9b5531d89b68505abde"><div class="ttname"><a href="namespaceeve_1_1editing.html#ac47a05926d5cb9b5531d89b68505abde">eve::editing::noOp</a></div><div class="ttdeci">Result&lt; void &gt; noOp(std::vector&lt; Diagnostic &gt; diagnostics={})</div><div class="ttdoc">Construct a successful void result for an operation that made no change.</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00062">EditingResult.h:62</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a0e0962a53e1665f56ee2b6acccef5623"><div class="ttname"><a href="namespaceeve_1_1editor.html#a0e0962a53e1665f56ee2b6acccef5623">eve::editor::editorMcpProjector</a></div><div class="ttdeci">EditorMcpProjector &amp; editorMcpProjector()</div><div class="ttdoc">Process-wide projector used by EditorAutomationProvider and eve.mcp.attachEditor.</div><div class="ttdef"><b>Definition</b> <a href="EditorMcpProjector_8cpp_source.html#l00013">EditorMcpProjector.cpp:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a6683873993ae84ab3ab178edae377c88"><div class="ttname"><a href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">eve::editor::RuleId</a></div><div class="ttdeci">eve::editing::RuleId RuleId</div><div class="ttdef"><b>Definition</b> <a href="EditorIds_8h_source.html#l00032">EditorIds.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_ac87cd1c17fa9417b7fd4dae527a1e548"><div class="ttname"><a href="namespaceeve_1_1editor.html#ac87cd1c17fa9417b7fd4dae527a1e548">eve::editor::EditorMcpExportMode</a></div><div class="ttdeci">EditorMcpExportMode</div><div class="ttdoc">MCP export mode for an attached EditorHost.</div><div class="ttdef"><b>Definition</b> <a href="EditorMcpProjector_8h_source.html#l00017">EditorMcpProjector.h:17</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00602">Container.h:602</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditorPackage_html"><div class="ttname"><a href="structeve_1_1editing_1_1EditorPackage.html">eve::editing::EditorPackage</a></div><div class="ttdoc">Single domain-editor deliverable for Host discover/autoMount.</div><div class="ttdef"><b>Definition</b> <a href="EditorPackage_8h_source.html#l00046">EditorPackage.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditorPackage_html_a29097c75ef095f553a8bd04c1b562d66"><div class="ttname"><a href="structeve_1_1editing_1_1EditorPackage.html#a29097c75ef095f553a8bd04c1b562d66">eve::editing::EditorPackage::ownerModule</a></div><div class="ttdeci">std::string ownerModule</div><div class="ttdef"><b>Definition</b> <a href="EditorPackage_8h_source.html#l00047">EditorPackage.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditorPackage_html_a4aae3b266344faf1bfdc2ea6be62bc0a"><div class="ttname"><a href="structeve_1_1editing_1_1EditorPackage.html#a4aae3b266344faf1bfdc2ea6be62bc0a">eve::editing::EditorPackage::undoPolicy</a></div><div class="ttdeci">EditorUndoPolicy undoPolicy</div><div class="ttdef"><b>Definition</b> <a href="EditorPackage_8h_source.html#l00054">EditorPackage.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditorPackage_html_a8311b5cd57a7b7dae76cd3c3c42103c3"><div class="ttname"><a href="structeve_1_1editing_1_1EditorPackage.html#a8311b5cd57a7b7dae76cd3c3c42103c3">eve::editing::EditorPackage::targetTypes</a></div><div class="ttdeci">std::vector&lt; EditorTargetTypeSpec &gt; targetTypes</div><div class="ttdef"><b>Definition</b> <a href="EditorPackage_8h_source.html#l00050">EditorPackage.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditorPackage_html_a86f3709fb09873602f4fe542fde43eda"><div class="ttname"><a href="structeve_1_1editing_1_1EditorPackage.html#a86f3709fb09873602f4fe542fde43eda">eve::editing::EditorPackage::commands</a></div><div class="ttdeci">std::vector&lt; EditingCommandDescriptor &gt; commands</div><div class="ttdef"><b>Definition</b> <a href="EditorPackage_8h_source.html#l00049">EditorPackage.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditorPackage_html_a8d83d64a1b90d9603cfcf32e29d4c249"><div class="ttname"><a href="structeve_1_1editing_1_1EditorPackage.html#a8d83d64a1b90d9603cfcf32e29d4c249">eve::editing::EditorPackage::panels</a></div><div class="ttdeci">std::vector&lt; EditorPanelSpec &gt; panels</div><div class="ttdef"><b>Definition</b> <a href="EditorPackage_8h_source.html#l00048">EditorPackage.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditorPanelSpec_html"><div class="ttname"><a href="structeve_1_1editing_1_1EditorPanelSpec.html">eve::editing::EditorPanelSpec</a></div><div class="ttdoc">UI-neutral panel descriptor contributed by a domain editor package.</div><div class="ttdef"><b>Definition</b> <a href="EditorPackage_8h_source.html#l00015">EditorPackage.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditorTargetTypeSpec_html"><div class="ttname"><a href="structeve_1_1editing_1_1EditorTargetTypeSpec.html">eve::editing::EditorTargetTypeSpec</a></div><div class="ttdoc">Target type advertised for automation create, with optional createSchema.</div><div class="ttdef"><b>Definition</b> <a href="EditorPackage_8h_source.html#l00026">EditorPackage.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1CommandDescriptor_html"><div class="ttname"><a href="structeve_1_1editor_1_1CommandDescriptor.html">eve::editor::CommandDescriptor</a></div><div class="ttdoc">Presentation and execution metadata for a registered command.</div><div class="ttdef"><b>Definition</b> <a href="EditorCommandService_8h_source.html#l00030">EditorCommandService.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorHostMountEntry_html"><div class="ttname"><a href="structeve_1_1editor_1_1EditorHostMountEntry.html">eve::editor::EditorHostMountEntry</a></div><div class="ttdoc">Summary of one successful or skipped package mount.</div><div class="ttdef"><b>Definition</b> <a href="modules_2editor_2EditorHost_8h_source.html#l00032">EditorHost.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorHostMountEntry_html_a379d00d2f3451eb4b36c072844680a24"><div class="ttname"><a href="structeve_1_1editor_1_1EditorHostMountEntry.html#a379d00d2f3451eb4b36c072844680a24">eve::editor::EditorHostMountEntry::skipReason</a></div><div class="ttdeci">std::string skipReason</div><div class="ttdef"><b>Definition</b> <a href="modules_2editor_2EditorHost_8h_source.html#l00038">EditorHost.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorHostMountEntry_html_a495a9eb46133b12156f0257ea93c5b35"><div class="ttname"><a href="structeve_1_1editor_1_1EditorHostMountEntry.html#a495a9eb46133b12156f0257ea93c5b35">eve::editor::EditorHostMountEntry::ownerModule</a></div><div class="ttdeci">std::string ownerModule</div><div class="ttdef"><b>Definition</b> <a href="modules_2editor_2EditorHost_8h_source.html#l00033">EditorHost.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorHostMountEntry_html_a7c66deba00b159430651c51f8122ead7"><div class="ttname"><a href="structeve_1_1editor_1_1EditorHostMountEntry.html#a7c66deba00b159430651c51f8122ead7">eve::editor::EditorHostMountEntry::skipped</a></div><div class="ttdeci">bool skipped</div><div class="ttdef"><b>Definition</b> <a href="modules_2editor_2EditorHost_8h_source.html#l00037">EditorHost.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorHostMountOverride_html"><div class="ttname"><a href="structeve_1_1editor_1_1EditorHostMountOverride.html">eve::editor::EditorHostMountOverride</a></div><div class="ttdoc">Per-owner mount overrides.</div><div class="ttdef"><b>Definition</b> <a href="modules_2editor_2EditorHost_8h_source.html#l00026">EditorHost.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorHostMountReport_html"><div class="ttname"><a href="structeve_1_1editor_1_1EditorHostMountReport.html">eve::editor::EditorHostMountReport</a></div><div class="ttdoc">Aggregate mount report returned by autoMount/mount.</div><div class="ttdef"><b>Definition</b> <a href="modules_2editor_2EditorHost_8h_source.html#l00042">EditorHost.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorHostMountReport_html_a84ba97cd7f4296e2360a67f0b836798a"><div class="ttname"><a href="structeve_1_1editor_1_1EditorHostMountReport.html#a84ba97cd7f4296e2360a67f0b836798a">eve::editor::EditorHostMountReport::entries</a></div><div class="ttdeci">std::vector&lt; EditorHostMountEntry &gt; entries</div><div class="ttdef"><b>Definition</b> <a href="modules_2editor_2EditorHost_8h_source.html#l00043">EditorHost.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorHostMountReport_html_ae58b311bf26a5f232cf50ccf65e1c2cf"><div class="ttname"><a href="structeve_1_1editor_1_1EditorHostMountReport.html#ae58b311bf26a5f232cf50ccf65e1c2cf">eve::editor::EditorHostMountReport::mountedPackages</a></div><div class="ttdeci">std::size_t mountedPackages</div><div class="ttdef"><b>Definition</b> <a href="modules_2editor_2EditorHost_8h_source.html#l00044">EditorHost.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorHost_1_1Options_html"><div class="ttname"><a href="structeve_1_1editor_1_1EditorHost_1_1Options.html">eve::editor::EditorHost::Options</a></div><div class="ttdef"><b>Definition</b> <a href="modules_2editor_2EditorHost_8h_source.html#l00055">EditorHost.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1EditorHost_1_1Options_html_a90c23f188616f251375b15d06da3e425"><div class="ttname"><a href="structeve_1_1editor_1_1EditorHost_1_1Options.html#a90c23f188616f251375b15d06da3e425">eve::editor::EditorHost::Options::profile</a></div><div class="ttdeci">HostProfile profile</div><div class="ttdef"><b>Definition</b> <a href="modules_2editor_2EditorHost_8h_source.html#l00058">EditorHost.h:58</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

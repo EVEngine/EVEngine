@@ -1,0 +1,486 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/archspace/ArchSpaceQuery.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_5f37a5bfda9404d9e8ca1fb80ac23983.html">archspace</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ArchSpaceQuery.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ArchSpaceQuery_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="ArchSpaceQuery_8h.html">archspace/ArchSpaceQuery.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="ArchSpaceDocument_8h.html">archspace/ArchSpaceDocument.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;queue&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;unordered_set&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1archspace.html">eve::archspace</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">constexpr</span> <span class="keywordtype">double</span> kEps = 1e-8;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1housegen_1_1house__detail.html#aa6c12e2062816342f145cef0765ecf73">pointInPolygon</a>(Vec2 <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, <span class="keyword">const</span> std::vector&lt;Vec2&gt;&amp; poly) {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordflow">if</span> (poly.size() &lt; 3) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="UrbanCrossField_8cpp.html#aac826de644f6d8b5f194b2b4fd0faa09">inside</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">for</span> (std::size_t i = 0, j = poly.size() - 1; i &lt; poly.size(); j = i++) {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keyword">const</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311afe98032d4f1c52a2f0b617f9205d5f80">Vec2</a>&amp; <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>         = poly[i];</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="keyword">const</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311afe98032d4f1c52a2f0b617f9205d5f80">Vec2</a>&amp; <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>         = poly[j];</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span>  intersect = ((<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>.z &gt; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.z) != (<a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>.z &gt; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.z)) &amp;&amp;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>                               (<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x &lt; (<a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>.x - <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>.x) * (<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.z - <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>.z) / ((<a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>.z - <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>.z) + (<a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>.z == <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>.z ? kEps : 0.0)) + <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>.x);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keywordflow">if</span> (intersect) <a class="code hl_variable" href="UrbanCrossField_8cpp.html#aac826de644f6d8b5f194b2b4fd0faa09">inside</a> = !<a class="code hl_variable" href="UrbanCrossField_8cpp.html#aac826de644f6d8b5f194b2b4fd0faa09">inside</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    }</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="UrbanCrossField_8cpp.html#aac826de644f6d8b5f194b2b4fd0faa09">inside</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>SpaceRegion toRegion(<span class="keyword">const</span> Node&amp; zone) {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    SpaceRegion <a class="code hl_variable" href="ForceBindings_8cpp.html#affe9b455631dfc00c1efb482584335f6">region</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <a class="code hl_variable" href="ForceBindings_8cpp.html#affe9b455631dfc00c1efb482584335f6">region</a>.id      = zone.id;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <a class="code hl_variable" href="ForceBindings_8cpp.html#affe9b455631dfc00c1efb482584335f6">region</a>.levelId = zone.parentId;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_variable" href="ForceBindings_8cpp.html#affe9b455631dfc00c1efb482584335f6">region</a>.name    = zone.name;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <a class="code hl_variable" href="ForceBindings_8cpp.html#affe9b455631dfc00c1efb482584335f6">region</a>.polygon = zone.polygon;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="ForceBindings_8cpp.html#affe9b455631dfc00c1efb482584335f6">region</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a> openingWorldPosition(<span class="keyword">const</span> Document&amp; document, <span class="keyword">const</span> Node&amp; opening) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">const</span> Node* wall = document.find(opening.parentId);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">if</span> (!wall) <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">return</span> <a class="code hl_typedef" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a>{wall-&gt;start.<a class="code hl_variable" href="structeve_1_1procgen_1_1CaveHydrologyVec3.html#a6bc01d8d872ddda070d9b57d09bfa6a1">x</a> + (wall-&gt;end.x - wall-&gt;start.x) * opening.t, opening.sill + opening.openingHeight * 0.5,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                wall-&gt;start.z + (wall-&gt;end.z - wall-&gt;start.z) * opening.t};</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>std::string nearestRegionId(<span class="keyword">const</span> Document&amp; document, <span class="keyword">const</span> std::string&amp; levelId, Vec2 xz) {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    std::string <a class="code hl_variable" href="TacticsPath_8cpp.html#afb5c888046070dcfd5008e34354b90d6">best</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">double</span>      bestDist2 = 0.0;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordtype">bool</span>        any       = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [<span class="keywordtype">id</span>, <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>] : document.<a class="code hl_variable" href="McpArchitectureTools_8cpp.html#ac544da480f9b8ec5f4ffb7cd59d1717a">nodes</a>()) {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        (void)<span class="keywordtype">id</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.kind != <a class="code hl_enumvalue" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aab3ff996fe5c77610359114835baf9b38">NodeKind::Zone</a> || <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.parentId != levelId || <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.polygon.empty()) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordtype">double</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> = 0.0, cz = 0.0;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a> : <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.polygon) {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> += <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            cz += <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.z;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> /= <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.polygon.size());</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        cz /= <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.polygon.size());</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#a2641fce3670ebce2e79db7c95db36fea">dx</a> = <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> - xz.x;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#ad034b3e72ac42aaf697313e8b8f355fe">dz</a> = cz - xz.z;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> d2 = <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#a2641fce3670ebce2e79db7c95db36fea">dx</a> * <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#a2641fce3670ebce2e79db7c95db36fea">dx</a> + <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#ad034b3e72ac42aaf697313e8b8f355fe">dz</a> * <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#ad034b3e72ac42aaf697313e8b8f355fe">dz</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordflow">if</span> (!any || d2 &lt; bestDist2) {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            any       = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            bestDist2 = d2;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <a class="code hl_variable" href="TacticsPath_8cpp.html#afb5c888046070dcfd5008e34354b90d6">best</a>      = <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.id;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="TacticsPath_8cpp.html#afb5c888046070dcfd5008e34354b90d6">best</a>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>}</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>SpacePortal toPortalFromOpening(<span class="keyword">const</span> Document&amp; document, <span class="keyword">const</span> Node&amp; opening) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    SpacePortal portal;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    portal.id          = opening.id;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    portal.name        = opening.name;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    portal.wallHosted  = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    portal.passageMask = opening.openingKind == <a class="code hl_enumvalue" href="namespaceeve_1_1archspace.html#a756ed6e7cbb2d0a3940dd1eee4c1ac8baf44e14d49cd011d1e873d9fe0c4624f1">OpeningKind::Door</a> ? <a class="code hl_variable" href="namespaceeve_1_1archspace.html#a9ed96e7ca1cb145815941ac7179e9c66">kPassageWalk</a> : <a class="code hl_typedef" href="namespaceeve_1_1archspace.html#a2f8a1e681a222e54026fc8c47d8ff6d6">PassageMask</a>{0};</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    portal.position    = openingWorldPosition(document, opening);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keyword">const</span> Node* wall   = document.find(opening.parentId);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    portal.levelId     = wall ? wall-&gt;parentId : std::string{};</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordflow">if</span> (wall) {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keyword">const</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311afe98032d4f1c52a2f0b617f9205d5f80">Vec2</a> <a class="code hl_variable" href="AnimSmr_8cpp.html#a50cb91e41ad7e1631895177b9ce32457">mid</a>{(wall-&gt;start.x + wall-&gt;end.x) * 0.5, (wall-&gt;start.z + wall-&gt;end.z) * 0.5};</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="comment">// Sample slightly off the wall midline toward both normals to find adjacent rooms.</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311afe98032d4f1c52a2f0b617f9205d5f80">Vec2</a>         <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>{wall-&gt;end.x - wall-&gt;start.x, wall-&gt;end.z - wall-&gt;start.z};</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> len = std::sqrt(<a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>.x * <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>.x + <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>.z * <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>.z);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keywordflow">if</span> (len &gt; kEps) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>.x /= len;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>.z /= len;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            <span class="keyword">const</span> <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311afe98032d4f1c52a2f0b617f9205d5f80">Vec2</a>   <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>{-<a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>.z, <a class="code hl_variable" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>.x};</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a> = std::max(wall-&gt;thickness, 0.2);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a> = nearestRegionId(document, portal.levelId, Vec2{mid.x + n.x * offset, mid.z + n.z * offset});</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a> = nearestRegionId(document, portal.levelId, Vec2{mid.x - n.x * offset, mid.z - n.z * offset});</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            portal.regionAId = <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            portal.regionBId = (<a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a> != <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>) ? <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a> : <a class="code hl_namespace" href="namespacestd.html">std</a>::<a class="code hl_variable" href="SettlementRules_8cpp.html#a97e7e8062940786c1012d3203be046c2">string</a>{};</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        }</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    }</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">return</span> portal;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>}</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>SpacePortal toPortalFromNode(<span class="keyword">const</span> Node&amp; <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>) {</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    SpacePortal portal;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    portal.id          = <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.id;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    portal.levelId     = <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.parentId;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    portal.name        = <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.name;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    portal.regionAId   = <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.regionAId;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    portal.regionBId   = <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.regionBId;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    portal.passageMask = <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.passageMask;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    portal.position    = <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.portalPosition;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    portal.wallHosted  = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordflow">return</span> portal;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>}</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="classeve_1_1archspace_1_1SpaceQuery.html#add44a49716c4d8cbf1713b9509dd348e">  114</a></span><a class="code hl_function" href="classeve_1_1archspace_1_1SpaceQuery.html#add44a49716c4d8cbf1713b9509dd348e">SpaceQuery::SpaceQuery</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1archspace_1_1Document.html">Document</a>&amp; document) noexcept : document_(&amp;document) {}</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="foldopen" id="foldopen00116" data-start="{" data-end="}">
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="classeve_1_1archspace_1_1SpaceQuery.html#a070fa9cb82b06b0c2a140a049a34a1cc">  116</a></span><a class="code hl_enumeration" href="namespaceeve_1_1archspace.html#af7b2f4e1edbfac1b8ad4f7f61d61571e">TopologyKind</a> <a class="code hl_function" href="classeve_1_1archspace_1_1SpaceQuery.html#a070fa9cb82b06b0c2a140a049a34a1cc">SpaceQuery::topology</a>() const noexcept {</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordflow">return</span> document_ ? document_-&gt;<a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#ae9e77d42bda94886a6fd4611225df77f">topology</a>() : <a class="code hl_enumvalue" href="namespaceeve_1_1archspace.html#af7b2f4e1edbfac1b8ad4f7f61d61571ea4e1698d93176b978070c3be7ea60fdec">TopologyKind::Architectural</a>;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>}</div>
+</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="foldopen" id="foldopen00120" data-start="{" data-end="}">
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="classeve_1_1archspace_1_1SpaceQuery.html#a2ddcacd05b28c04d5a5a1cc98584b539">  120</a></span>std::vector&lt;std::string&gt; <a class="code hl_function" href="classeve_1_1archspace_1_1SpaceQuery.html#a2ddcacd05b28c04d5a5a1cc98584b539">SpaceQuery::strata</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    std::vector&lt;std::string&gt; <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordflow">if</span> (!document_) <span class="keywordflow">return</span> <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [<span class="keywordtype">id</span>, <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>] : document_-&gt;<a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#a97bcec287a7687133101207f15f1e96f">nodes</a>()) {</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.kind == <a class="code hl_enumvalue" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aaa0db49ba470c1c9ae2128c3470339153">NodeKind::Level</a>) <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.push_back(<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    }</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>}</div>
+</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="foldopen" id="foldopen00129" data-start="{" data-end="}">
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno"><a class="line" href="classeve_1_1archspace_1_1SpaceQuery.html#a84db6b306b047e427bbfaf2c9663de01">  129</a></span>std::vector&lt;SpaceRegion&gt; <a class="code hl_function" href="classeve_1_1archspace_1_1SpaceQuery.html#a84db6b306b047e427bbfaf2c9663de01">SpaceQuery::regions</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    std::vector&lt;SpaceRegion&gt; <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keywordflow">if</span> (!document_) <span class="keywordflow">return</span> <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [<span class="keywordtype">id</span>, <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>] : document_-&gt;<a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#a97bcec287a7687133101207f15f1e96f">nodes</a>()) {</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        (void)<span class="keywordtype">id</span>;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.kind == <a class="code hl_enumvalue" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aab3ff996fe5c77610359114835baf9b38">NodeKind::Zone</a>) <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.push_back(toRegion(<a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>));</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    }</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>}</div>
+</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
+<div class="foldopen" id="foldopen00139" data-start="{" data-end="}">
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno"><a class="line" href="classeve_1_1archspace_1_1SpaceQuery.html#af78a638d0fc29fb5fb723f128546b1ec">  139</a></span>std::optional&lt;SpaceRegion&gt; <a class="code hl_function" href="classeve_1_1archspace_1_1SpaceQuery.html#af78a638d0fc29fb5fb723f128546b1ec">SpaceQuery::regionAt</a>(<a class="code hl_struct" href="structeve_1_1archspace_1_1Vec2.html">Vec2</a> xz, <span class="keyword">const</span> std::string&amp; levelId)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keywordflow">if</span> (!document_ || !std::isfinite(xz.<a class="code hl_variable" href="structeve_1_1archspace_1_1Vec2.html#ab9fda9756084d8eb8392302eea8c29b1">x</a>) || !std::isfinite(xz.<a class="code hl_variable" href="structeve_1_1archspace_1_1Vec2.html#af2e600a936b4ee44bff60fd044eaef62">z</a>)) <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [<span class="keywordtype">id</span>, <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>] : document_-&gt;<a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#a97bcec287a7687133101207f15f1e96f">nodes</a>()) {</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        (void)<span class="keywordtype">id</span>;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.kind != <a class="code hl_enumvalue" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aab3ff996fe5c77610359114835baf9b38">NodeKind::Zone</a> || <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.parentId != levelId) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        <span class="keywordflow">if</span> (pointInPolygon(xz, <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.polygon)) <span class="keywordflow">return</span> toRegion(<a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>);</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    }</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>}</div>
+</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="foldopen" id="foldopen00149" data-start="{" data-end="}">
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="classeve_1_1archspace_1_1SpaceQuery.html#a9bfd771fc2b0f8c6b1cf35ab7c338c2e">  149</a></span>std::vector&lt;SpacePortal&gt; <a class="code hl_function" href="classeve_1_1archspace_1_1SpaceQuery.html#a9bfd771fc2b0f8c6b1cf35ab7c338c2e">SpaceQuery::portals</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    std::vector&lt;SpacePortal&gt; <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordflow">if</span> (!document_) <span class="keywordflow">return</span> <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [<span class="keywordtype">id</span>, <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>] : document_-&gt;<a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#a97bcec287a7687133101207f15f1e96f">nodes</a>()) {</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        (void)<span class="keywordtype">id</span>;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.kind == <a class="code hl_enumvalue" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa9bd99a0beea48f10663fc4a7d7a33140">NodeKind::Opening</a>)</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>            <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.push_back(toPortalFromOpening(*document_, <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>));</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.kind == <a class="code hl_enumvalue" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa3e9b3ac6f082ec46a2d1d3f1f1647456">NodeKind::Portal</a>)</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>            <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.push_back(toPortalFromNode(<a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>));</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    }</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>}</div>
+</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span> </div>
+<div class="foldopen" id="foldopen00162" data-start="{" data-end="}">
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno"><a class="line" href="classeve_1_1archspace_1_1SpaceQuery.html#aff1dcd570b43f5b36cde217eca8b613c">  162</a></span>std::vector&lt;SpacePortal&gt; <a class="code hl_function" href="classeve_1_1archspace_1_1SpaceQuery.html#aff1dcd570b43f5b36cde217eca8b613c">SpaceQuery::portalsFrom</a>(<span class="keyword">const</span> std::string&amp; regionId)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    std::vector&lt;SpacePortal&gt; <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordflow">if</span> (regionId.empty()) <span class="keywordflow">return</span> <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; portal : <a class="code hl_function" href="classeve_1_1archspace_1_1SpaceQuery.html#a9bfd771fc2b0f8c6b1cf35ab7c338c2e">portals</a>()) {</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        <span class="keywordflow">if</span> (portal.regionAId == regionId || portal.regionBId == regionId) <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.push_back(std::move(portal));</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    }</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>}</div>
+</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
+<div class="foldopen" id="foldopen00171" data-start="{" data-end="}">
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno"><a class="line" href="classeve_1_1archspace_1_1SpaceQuery.html#a7da9e597d1de70c3773322876482f7de">  171</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;bool&gt;</a> <a class="code hl_function" href="classeve_1_1archspace_1_1SpaceQuery.html#a7da9e597d1de70c3773322876482f7de">SpaceQuery::regionsConnected</a>(<span class="keyword">const</span> std::string&amp; regionAId, <span class="keyword">const</span> std::string&amp; regionBId)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="keywordflow">if</span> (!document_)</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;bool&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>                                                                 <span class="stringliteral">&quot;ArchSpace SpaceQuery has no document&quot;</span>, <span class="stringliteral">&quot;document&quot;</span>, {},</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>                                                                 <span class="stringliteral">&quot;archspace.query&quot;</span>));</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="keywordflow">if</span> (regionAId.empty() || regionBId.empty())</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;bool&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>                                                                 <span class="stringliteral">&quot;ArchSpace region ids must be non-empty&quot;</span>, <span class="stringliteral">&quot;regionId&quot;</span>,</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>                                                                 {}, <span class="stringliteral">&quot;archspace.query&quot;</span>));</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <span class="keywordflow">if</span> (!document_-&gt;<a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#a672c80e8769fd47248fa907afd278cb3">find</a>(regionAId) || !document_-&gt;<a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#a672c80e8769fd47248fa907afd278cb3">find</a>(regionBId))</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result&lt;bool&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a>(</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::DiagnosticCode::NotFound</a>, <span class="stringliteral">&quot;ArchSpace region id is unknown&quot;</span>, <span class="stringliteral">&quot;regionId&quot;</span>, {}, <span class="stringliteral">&quot;archspace.query&quot;</span>));</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="keywordflow">if</span> (regionAId == regionBId) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;bool&gt;::success</a>(<span class="keyword">true</span>);</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    std::unordered_map&lt;std::string, std::vector&lt;std::string&gt;&gt; adj;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; portal : <a class="code hl_function" href="classeve_1_1archspace_1_1SpaceQuery.html#a9bfd771fc2b0f8c6b1cf35ab7c338c2e">portals</a>()) {</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        <span class="keywordflow">if</span> (portal.regionAId.empty()) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <span class="keywordflow">if</span> (!portal.regionBId.empty()) {</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>            adj[portal.regionAId].push_back(portal.regionBId);</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>            adj[portal.regionBId].push_back(portal.regionAId);</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        }</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    }</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    std::unordered_set&lt;std::string&gt; seen;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    std::queue&lt;std::string&gt;         <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a>;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a>.push(regionAId);</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    seen.insert(regionAId);</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    <span class="keywordflow">while</span> (!<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a>.empty()) {</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        <span class="keyword">const</span> std::string cur = std::move(<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a>.front());</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a>.pop();</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="keywordflow">if</span> (cur == regionBId) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;bool&gt;::success</a>(<span class="keyword">true</span>);</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keyword">const</span> <span class="keyword">auto</span> it = adj.find(cur);</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        <span class="keywordflow">if</span> (it == adj.end()) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; next : it-&gt;second) {</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>            <span class="keywordflow">if</span> (seen.insert(next).second) <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a>.push(next);</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        }</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    }</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result&lt;bool&gt;::success</a>(<span class="keyword">false</span>);</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>}</div>
+</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
+<div class="foldopen" id="foldopen00209" data-start="{" data-end="}">
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno"><a class="line" href="classeve_1_1archspace_1_1SpaceQuery.html#ab09c555a52f791dbc8991c3741259584">  209</a></span>std::vector&lt;SpaceAnchor&gt; <a class="code hl_function" href="classeve_1_1archspace_1_1SpaceQuery.html#ab09c555a52f791dbc8991c3741259584">SpaceQuery::anchorsIn</a>(<span class="keyword">const</span> std::string&amp; regionId)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    std::vector&lt;SpaceAnchor&gt; <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keywordflow">if</span> (!document_) <span class="keywordflow">return</span> <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1archspace_1_1Node.html">Node</a>* <a class="code hl_variable" href="ForceBindings_8cpp.html#affe9b455631dfc00c1efb482584335f6">region</a> = document_-&gt;<a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#a672c80e8769fd47248fa907afd278cb3">find</a>(regionId);</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ForceBindings_8cpp.html#affe9b455631dfc00c1efb482584335f6">region</a> || <a class="code hl_variable" href="ForceBindings_8cpp.html#affe9b455631dfc00c1efb482584335f6">region</a>-&gt;kind != <a class="code hl_enumvalue" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aab3ff996fe5c77610359114835baf9b38">NodeKind::Zone</a>) <span class="keywordflow">return</span> <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [<span class="keywordtype">id</span>, <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>] : document_-&gt;<a class="code hl_function" href="classeve_1_1archspace_1_1Document.html#a97bcec287a7687133101207f15f1e96f">nodes</a>()) {</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>        (void)<span class="keywordtype">id</span>;</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.kind != <a class="code hl_enumvalue" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa7d74f3b92b19da5e606d737d339a9679">NodeKind::Item</a> || <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.parentId != <a class="code hl_variable" href="ForceBindings_8cpp.html#affe9b455631dfc00c1efb482584335f6">region</a>-&gt;parentId) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        <span class="keywordflow">if</span> (!pointInPolygon(<a class="code hl_struct" href="structeve_1_1archspace_1_1Vec2.html">Vec2</a>{<a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.position.<a class="code hl_variable" href="structeve_1_1archspace_1_1Vec2.html#ab9fda9756084d8eb8392302eea8c29b1">x</a>, <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.position.z}, <a class="code hl_variable" href="ForceBindings_8cpp.html#affe9b455631dfc00c1efb482584335f6">region</a>-&gt;polygon)) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        <a class="code hl_struct" href="structeve_1_1archspace_1_1SpaceAnchor.html">SpaceAnchor</a> anchor;</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>        anchor.<a class="code hl_variable" href="structeve_1_1archspace_1_1SpaceAnchor.html#a1eb0f64d9c87309c53e717f03b35cedb">id</a>         = <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.id;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>        anchor.<a class="code hl_variable" href="structeve_1_1archspace_1_1SpaceAnchor.html#ab8dd4ea6bb7ddde10a231496158898a3">levelId</a>    = <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.parentId;</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        anchor.<a class="code hl_variable" href="structeve_1_1archspace_1_1SpaceAnchor.html#a9e1cf55081220f86469620aa8ba684d9">name</a>       = <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.name;</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        anchor.<a class="code hl_variable" href="structeve_1_1archspace_1_1SpaceAnchor.html#a3081b0f46eb19d62b7b21c93d8b0ed1d">catalogId</a>  = <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.catalogId;</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        anchor.<a class="code hl_variable" href="structeve_1_1archspace_1_1SpaceAnchor.html#a1408a98d6f200a1c0f2def3d36171f06">position</a>   = <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.position;</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        anchor.<a class="code hl_variable" href="structeve_1_1archspace_1_1SpaceAnchor.html#acf5c61a6f421fd0e007741ec9412bcbe">yawDegrees</a> = <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>.yawDegrees;</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>        <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.push_back(std::move(anchor));</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    }</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>}</div>
+</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span> </div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>}  <span class="comment">// namespace eve::archspace</span></div>
+<div class="ttc" id="aAnimSmr_8cpp_html_a50cb91e41ad7e1631895177b9ce32457"><div class="ttname"><a href="AnimSmr_8cpp.html#a50cb91e41ad7e1631895177b9ce32457">mid</a></div><div class="ttdeci">int mid</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8cpp_source.html#l00120">AnimSmr.cpp:120</a></div></div>
+<div class="ttc" id="aArchSpaceDocument_8h_html"><div class="ttname"><a href="ArchSpaceDocument_8h.html">ArchSpaceDocument.h</a></div></div>
+<div class="ttc" id="aArchSpaceQuery_8h_html"><div class="ttname"><a href="ArchSpaceQuery_8h.html">ArchSpaceQuery.h</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6067f2d853b5521ca0162bd2770da5cf"><div class="ttname"><a href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a></div><div class="ttdeci">float cx</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00033">CardTypes.cpp:33</a></div></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aForceBindings_8cpp_html_affe9b455631dfc00c1efb482584335f6"><div class="ttname"><a href="ForceBindings_8cpp.html#affe9b455631dfc00c1efb482584335f6">region</a></div><div class="ttdeci">ScriptFieldRegion region</div><div class="ttdef"><b>Definition</b> <a href="ForceBindings_8cpp_source.html#l00045">ForceBindings.cpp:45</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00063">Grass.cpp:63</a></div></div>
+<div class="ttc" id="aGtsMeshSimplifier_8cpp_html_a0f8c585c1198bd8e07eba4b29cb3f745"><div class="ttname"><a href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a></div><div class="ttdeci">std::array&lt; double, 10 &gt; q</div><div class="ttdef"><b>Definition</b> <a href="GtsMeshSimplifier_8cpp_source.html#l00014">GtsMeshSimplifier.cpp:14</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_aadb6d6eb83e646653a1402032e45dcab"><div class="ttname"><a href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a></div><div class="ttdeci">size_t offset</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00019">LanguageIndex.cpp:19</a></div></div>
+<div class="ttc" id="aMcpArchitectureTools_8cpp_html_ac544da480f9b8ec5f4ffb7cd59d1717a"><div class="ttname"><a href="McpArchitectureTools_8cpp.html#ac544da480f9b8ec5f4ffb7cd59d1717a">nodes</a></div><div class="ttdeci">std::map&lt; std::string, Node &gt; nodes</div><div class="ttdef"><b>Definition</b> <a href="McpArchitectureTools_8cpp_source.html#l00023">McpArchitectureTools.cpp:23</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a234e391f8e3e00f064813b98fb8f3cdb"><div class="ttname"><a href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a></div><div class="ttdeci">MeleePoint3 b</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00041">MeleeHit.cpp:41</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a65cfd4d3d71b298048a6baf087fe6579"><div class="ttname"><a href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a></div><div class="ttdeci">MeleePoint3 a</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00040">MeleeHit.cpp:40</a></div></div>
+<div class="ttc" id="aOceanSpectrumFrame_8cpp_html_a2641fce3670ebce2e79db7c95db36fea"><div class="ttname"><a href="OceanSpectrumFrame_8cpp.html#a2641fce3670ebce2e79db7c95db36fea">dx</a></div><div class="ttdeci">glm::dvec3 dx</div><div class="ttdef"><b>Definition</b> <a href="OceanSpectrumFrame_8cpp_source.html#l00025">OceanSpectrumFrame.cpp:25</a></div></div>
+<div class="ttc" id="aOceanSpectrumFrame_8cpp_html_ad034b3e72ac42aaf697313e8b8f355fe"><div class="ttname"><a href="OceanSpectrumFrame_8cpp.html#ad034b3e72ac42aaf697313e8b8f355fe">dz</a></div><div class="ttdeci">glm::dvec3 dz</div><div class="ttdef"><b>Definition</b> <a href="OceanSpectrumFrame_8cpp_source.html#l00026">OceanSpectrumFrame.cpp:26</a></div></div>
+<div class="ttc" id="aRoadTraffic_8cpp_html_a01b9cdd37a32341c192e0756617f9dc0"><div class="ttname"><a href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a></div><div class="ttdeci">const RoadNode * node</div><div class="ttdef"><b>Definition</b> <a href="RoadTraffic_8cpp_source.html#l00015">RoadTraffic.cpp:15</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_a4eeac3157ac481ce95fa8dd8e5e12a5f"><div class="ttname"><a href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a></div><div class="ttdeci">ScriptStructure out</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00023">ScriptStructure.cpp:23</a></div></div>
+<div class="ttc" id="aSettlementRules_8cpp_html_a97e7e8062940786c1012d3203be046c2"><div class="ttname"><a href="SettlementRules_8cpp.html#a97e7e8062940786c1012d3203be046c2">string</a></div><div class="ttdeci">std::string string</div><div class="ttdef"><b>Definition</b> <a href="SettlementRules_8cpp_source.html#l00514">SettlementRules.cpp:514</a></div></div>
+<div class="ttc" id="aTacticsPath_8cpp_html_afb5c888046070dcfd5008e34354b90d6"><div class="ttname"><a href="TacticsPath_8cpp.html#afb5c888046070dcfd5008e34354b90d6">best</a></div><div class="ttdeci">std::map&lt; Cell, int &gt; best</div><div class="ttdef"><b>Definition</b> <a href="TacticsPath_8cpp_source.html#l00027">TacticsPath.cpp:27</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_ad8763533b7c9fc0f7c4dd1918d79df84"><div class="ttname"><a href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a></div><div class="ttdeci">V3 dir</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00150">TreeMesh.cpp:150</a></div></div>
+<div class="ttc" id="aUrbanCrossField_8cpp_html_aac826de644f6d8b5f194b2b4fd0faa09"><div class="ttname"><a href="UrbanCrossField_8cpp.html#aac826de644f6d8b5f194b2b4fd0faa09">inside</a></div><div class="ttdeci">std::vector&lt; char &gt; inside</div><div class="ttdef"><b>Definition</b> <a href="UrbanCrossField_8cpp_source.html#l00025">UrbanCrossField.cpp:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a416c54d38b93dae0b4006c561c71bbb7"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8cpp_source.html#l00014">Diagnostic.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00184">Result.h:184</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00195">Result.h:195</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html">eve::archspace::Document</a></div><div class="ttdoc">Authoritative ArchSpace document (Pascal-like node graph).</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceDocument_8h_source.html#l00026">ArchSpaceDocument.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html_a672c80e8769fd47248fa907afd278cb3"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html#a672c80e8769fd47248fa907afd278cb3">eve::archspace::Document::find</a></div><div class="ttdeci">const Node * find(const std::string &amp;id) const</div><div class="ttdoc">Borrow a node by id. @ownership Non-owning pointer into this document's node map; do not free....</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceDocument_8cpp_source.html#l00091">ArchSpaceDocument.cpp:91</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html_a97bcec287a7687133101207f15f1e96f"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html#a97bcec287a7687133101207f15f1e96f">eve::archspace::Document::nodes</a></div><div class="ttdeci">const std::unordered_map&lt; std::string, Node &gt; &amp; nodes() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceDocument_8h_source.html#l00033">ArchSpaceDocument.h:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1Document_html_ae9e77d42bda94886a6fd4611225df77f"><div class="ttname"><a href="classeve_1_1archspace_1_1Document.html#ae9e77d42bda94886a6fd4611225df77f">eve::archspace::Document::topology</a></div><div class="ttdeci">TopologyKind topology() const noexcept</div><div class="ttdoc">Topology dialect for authoring helpers and SpaceQuery.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceDocument_8h_source.html#l00038">ArchSpaceDocument.h:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1SpaceQuery_html_a070fa9cb82b06b0c2a140a049a34a1cc"><div class="ttname"><a href="classeve_1_1archspace_1_1SpaceQuery.html#a070fa9cb82b06b0c2a140a049a34a1cc">eve::archspace::SpaceQuery::topology</a></div><div class="ttdeci">TopologyKind topology() const noexcept</div><div class="ttdoc">Document topology dialect.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceQuery_8cpp_source.html#l00116">ArchSpaceQuery.cpp:116</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1SpaceQuery_html_a2ddcacd05b28c04d5a5a1cc98584b539"><div class="ttname"><a href="classeve_1_1archspace_1_1SpaceQuery.html#a2ddcacd05b28c04d5a5a1cc98584b539">eve::archspace::SpaceQuery::strata</a></div><div class="ttdeci">std::vector&lt; std::string &gt; strata() const</div><div class="ttdoc">Level (stratum) ids in document iteration order.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceQuery_8cpp_source.html#l00120">ArchSpaceQuery.cpp:120</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1SpaceQuery_html_a7da9e597d1de70c3773322876482f7de"><div class="ttname"><a href="classeve_1_1archspace_1_1SpaceQuery.html#a7da9e597d1de70c3773322876482f7de">eve::archspace::SpaceQuery::regionsConnected</a></div><div class="ttdeci">eve::Result&lt; bool &gt; regionsConnected(const std::string &amp;regionAId, const std::string &amp;regionBId) const</div><div class="ttdoc">Whether two regions share a portal path (undirected, same connected component).</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceQuery_8cpp_source.html#l00171">ArchSpaceQuery.cpp:171</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1SpaceQuery_html_a84db6b306b047e427bbfaf2c9663de01"><div class="ttname"><a href="classeve_1_1archspace_1_1SpaceQuery.html#a84db6b306b047e427bbfaf2c9663de01">eve::archspace::SpaceQuery::regions</a></div><div class="ttdeci">std::vector&lt; SpaceRegion &gt; regions() const</div><div class="ttdoc">All Zone regions as SpaceRegion snapshots.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceQuery_8cpp_source.html#l00129">ArchSpaceQuery.cpp:129</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1SpaceQuery_html_a9bfd771fc2b0f8c6b1cf35ab7c338c2e"><div class="ttname"><a href="classeve_1_1archspace_1_1SpaceQuery.html#a9bfd771fc2b0f8c6b1cf35ab7c338c2e">eve::archspace::SpaceQuery::portals</a></div><div class="ttdeci">std::vector&lt; SpacePortal &gt; portals() const</div><div class="ttdoc">Wall openings and level portals as SpacePortal snapshots.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceQuery_8cpp_source.html#l00149">ArchSpaceQuery.cpp:149</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1SpaceQuery_html_ab09c555a52f791dbc8991c3741259584"><div class="ttname"><a href="classeve_1_1archspace_1_1SpaceQuery.html#ab09c555a52f791dbc8991c3741259584">eve::archspace::SpaceQuery::anchorsIn</a></div><div class="ttdeci">std::vector&lt; SpaceAnchor &gt; anchorsIn(const std::string &amp;regionId) const</div><div class="ttdoc">Item anchors whose position lies inside the region polygon (same level).</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceQuery_8cpp_source.html#l00209">ArchSpaceQuery.cpp:209</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1SpaceQuery_html_add44a49716c4d8cbf1713b9509dd348e"><div class="ttname"><a href="classeve_1_1archspace_1_1SpaceQuery.html#add44a49716c4d8cbf1713b9509dd348e">eve::archspace::SpaceQuery::SpaceQuery</a></div><div class="ttdeci">SpaceQuery(const Document &amp;document) noexcept</div><div class="ttdoc">Bind to an existing document. @ownership Non-owning borrow of document; caller retains ownership....</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceQuery_8cpp_source.html#l00114">ArchSpaceQuery.cpp:114</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1SpaceQuery_html_af78a638d0fc29fb5fb723f128546b1ec"><div class="ttname"><a href="classeve_1_1archspace_1_1SpaceQuery.html#af78a638d0fc29fb5fb723f128546b1ec">eve::archspace::SpaceQuery::regionAt</a></div><div class="ttdeci">std::optional&lt; SpaceRegion &gt; regionAt(Vec2 xz, const std::string &amp;levelId) const</div><div class="ttdoc">First region whose polygon contains the XZ point on the given level.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceQuery_8cpp_source.html#l00139">ArchSpaceQuery.cpp:139</a></div></div>
+<div class="ttc" id="aclasseve_1_1archspace_1_1SpaceQuery_html_aff1dcd570b43f5b36cde217eca8b613c"><div class="ttname"><a href="classeve_1_1archspace_1_1SpaceQuery.html#aff1dcd570b43f5b36cde217eca8b613c">eve::archspace::SpaceQuery::portalsFrom</a></div><div class="ttdeci">std::vector&lt; SpacePortal &gt; portalsFrom(const std::string &amp;regionId) const</div><div class="ttdoc">Portals that touch the given region id.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceQuery_8cpp_source.html#l00162">ArchSpaceQuery.cpp:162</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1archspace_html"><div class="ttname"><a href="namespaceeve_1_1archspace.html">eve::archspace</a></div><div class="ttdef"><b>Definition</b> <a href="ArchSpace_8cpp_source.html#l00014">ArchSpace.cpp:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1archspace_html_a2f8a1e681a222e54026fc8c47d8ff6d6"><div class="ttname"><a href="namespaceeve_1_1archspace.html#a2f8a1e681a222e54026fc8c47d8ff6d6">eve::archspace::PassageMask</a></div><div class="ttdeci">std::uint8_t PassageMask</div><div class="ttdoc">Bitmask of PassageMode values.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00044">ArchSpaceTypes.h:44</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1archspace_html_a756ed6e7cbb2d0a3940dd1eee4c1ac8baf44e14d49cd011d1e873d9fe0c4624f1"><div class="ttname"><a href="namespaceeve_1_1archspace.html#a756ed6e7cbb2d0a3940dd1eee4c1ac8baf44e14d49cd011d1e873d9fe0c4624f1">eve::archspace::OpeningKind::Door</a></div><div class="ttdeci">@ Door</div></div>
+<div class="ttc" id="anamespaceeve_1_1archspace_html_a9ed96e7ca1cb145815941ac7179e9c66"><div class="ttname"><a href="namespaceeve_1_1archspace.html#a9ed96e7ca1cb145815941ac7179e9c66">eve::archspace::kPassageWalk</a></div><div class="ttdeci">constexpr PassageMask kPassageWalk</div><div class="ttdoc">Default walkable mask.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00047">ArchSpaceTypes.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1archspace_html_acdc28c3bf777ecb60d9be6a3c834161aa3e9b3ac6f082ec46a2d1d3f1f1647456"><div class="ttname"><a href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa3e9b3ac6f082ec46a2d1d3f1f1647456">eve::archspace::NodeKind::Portal</a></div><div class="ttdeci">@ Portal</div><div class="ttdoc">Level-hosted portal connecting two regions (dungeon/cave or free openings).</div></div>
+<div class="ttc" id="anamespaceeve_1_1archspace_html_acdc28c3bf777ecb60d9be6a3c834161aa7d74f3b92b19da5e606d737d339a9679"><div class="ttname"><a href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa7d74f3b92b19da5e606d737d339a9679">eve::archspace::NodeKind::Item</a></div><div class="ttdeci">@ Item</div></div>
+<div class="ttc" id="anamespaceeve_1_1archspace_html_acdc28c3bf777ecb60d9be6a3c834161aa9bd99a0beea48f10663fc4a7d7a33140"><div class="ttname"><a href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa9bd99a0beea48f10663fc4a7d7a33140">eve::archspace::NodeKind::Opening</a></div><div class="ttdeci">@ Opening</div></div>
+<div class="ttc" id="anamespaceeve_1_1archspace_html_acdc28c3bf777ecb60d9be6a3c834161aaa0db49ba470c1c9ae2128c3470339153"><div class="ttname"><a href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aaa0db49ba470c1c9ae2128c3470339153">eve::archspace::NodeKind::Level</a></div><div class="ttdeci">@ Level</div></div>
+<div class="ttc" id="anamespaceeve_1_1archspace_html_acdc28c3bf777ecb60d9be6a3c834161aab3ff996fe5c77610359114835baf9b38"><div class="ttname"><a href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aab3ff996fe5c77610359114835baf9b38">eve::archspace::NodeKind::Zone</a></div><div class="ttdeci">@ Zone</div></div>
+<div class="ttc" id="anamespaceeve_1_1archspace_html_af7b2f4e1edbfac1b8ad4f7f61d61571e"><div class="ttname"><a href="namespaceeve_1_1archspace.html#af7b2f4e1edbfac1b8ad4f7f61d61571e">eve::archspace::TopologyKind</a></div><div class="ttdeci">TopologyKind</div><div class="ttdoc">Document topology dialect. Storage stays one node graph; semantics and authoring helpers differ by di...</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00033">ArchSpaceTypes.h:33</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1archspace_html_af7b2f4e1edbfac1b8ad4f7f61d61571ea4e1698d93176b978070c3be7ea60fdec"><div class="ttname"><a href="namespaceeve_1_1archspace.html#af7b2f4e1edbfac1b8ad4f7f61d61571ea4e1698d93176b978070c3be7ea60fdec">eve::archspace::TopologyKind::Architectural</a></div><div class="ttdeci">@ Architectural</div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a5e6cdd7dff35e738999feb5c8a4df311afe98032d4f1c52a2f0b617f9205d5f80"><div class="ttname"><a href="namespaceeve_1_1editing.html#a5e6cdd7dff35e738999feb5c8a4df311afe98032d4f1c52a2f0b617f9205d5f80">eve::editing::PropertyType::Vec2</a></div><div class="ttdeci">@ Vec2</div></div>
+<div class="ttc" id="anamespaceeve_1_1housegen_1_1house__detail_html_aa6c12e2062816342f145cef0765ecf73"><div class="ttname"><a href="namespaceeve_1_1housegen_1_1house__detail.html#aa6c12e2062816342f145cef0765ecf73">eve::housegen::house_detail::pointInPolygon</a></div><div class="ttdeci">bool pointInPolygon(float px, float py, const std::vector&lt; HousePolygonPoint &gt; &amp;poly)</div><div class="ttdoc">Ray-casting point-in-polygon test in corner coordinates.</div><div class="ttdef"><b>Definition</b> <a href="HouseGenerationAlgorithms_8cpp_source.html#l00100">HouseGenerationAlgorithms.cpp:100</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1cave__detail_html_a2608976c62b410255c6f7472e7a731b5"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">eve::procgen::cave_detail::Vec3</a></div><div class="ttdeci">CaveHydrologyVec3 Vec3</div><div class="ttdef"><b>Definition</b> <a href="CaveGenerationState_8h_source.html#l00053">CaveGenerationState.h:53</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::DiagnosticCode::NotFound</a></div><div class="ttdeci">@ NotFound</div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00602">Container.h:602</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1Node_html"><div class="ttname"><a href="structeve_1_1archspace_1_1Node.html">eve::archspace::Node</a></div><div class="ttdoc">One authored architectural node. Only fields for the active kind are meaningful.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00063">ArchSpaceTypes.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1SpaceAnchor_html"><div class="ttname"><a href="structeve_1_1archspace_1_1SpaceAnchor.html">eve::archspace::SpaceAnchor</a></div><div class="ttdoc">Read-only item/anchor view.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00123">ArchSpaceTypes.h:123</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1SpaceAnchor_html_a1408a98d6f200a1c0f2def3d36171f06"><div class="ttname"><a href="structeve_1_1archspace_1_1SpaceAnchor.html#a1408a98d6f200a1c0f2def3d36171f06">eve::archspace::SpaceAnchor::position</a></div><div class="ttdeci">Vec3 position</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00128">ArchSpaceTypes.h:128</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1SpaceAnchor_html_a1eb0f64d9c87309c53e717f03b35cedb"><div class="ttname"><a href="structeve_1_1archspace_1_1SpaceAnchor.html#a1eb0f64d9c87309c53e717f03b35cedb">eve::archspace::SpaceAnchor::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00124">ArchSpaceTypes.h:124</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1SpaceAnchor_html_a3081b0f46eb19d62b7b21c93d8b0ed1d"><div class="ttname"><a href="structeve_1_1archspace_1_1SpaceAnchor.html#a3081b0f46eb19d62b7b21c93d8b0ed1d">eve::archspace::SpaceAnchor::catalogId</a></div><div class="ttdeci">std::string catalogId</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00127">ArchSpaceTypes.h:127</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1SpaceAnchor_html_a9e1cf55081220f86469620aa8ba684d9"><div class="ttname"><a href="structeve_1_1archspace_1_1SpaceAnchor.html#a9e1cf55081220f86469620aa8ba684d9">eve::archspace::SpaceAnchor::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00126">ArchSpaceTypes.h:126</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1SpaceAnchor_html_ab8dd4ea6bb7ddde10a231496158898a3"><div class="ttname"><a href="structeve_1_1archspace_1_1SpaceAnchor.html#ab8dd4ea6bb7ddde10a231496158898a3">eve::archspace::SpaceAnchor::levelId</a></div><div class="ttdeci">std::string levelId</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00125">ArchSpaceTypes.h:125</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1SpaceAnchor_html_acf5c61a6f421fd0e007741ec9412bcbe"><div class="ttname"><a href="structeve_1_1archspace_1_1SpaceAnchor.html#acf5c61a6f421fd0e007741ec9412bcbe">eve::archspace::SpaceAnchor::yawDegrees</a></div><div class="ttdeci">double yawDegrees</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00129">ArchSpaceTypes.h:129</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1Vec2_html"><div class="ttname"><a href="structeve_1_1archspace_1_1Vec2.html">eve::archspace::Vec2</a></div><div class="ttdoc">Metres on the level XZ plane.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00050">ArchSpaceTypes.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1Vec2_html_ab9fda9756084d8eb8392302eea8c29b1"><div class="ttname"><a href="structeve_1_1archspace_1_1Vec2.html#ab9fda9756084d8eb8392302eea8c29b1">eve::archspace::Vec2::x</a></div><div class="ttdeci">double x</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00051">ArchSpaceTypes.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1Vec2_html_af2e600a936b4ee44bff60fd044eaef62"><div class="ttname"><a href="structeve_1_1archspace_1_1Vec2.html#af2e600a936b4ee44bff60fd044eaef62">eve::archspace::Vec2::z</a></div><div class="ttdeci">double z</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00052">ArchSpaceTypes.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1CaveHydrologyVec3_html_a6bc01d8d872ddda070d9b57d09bfa6a1"><div class="ttname"><a href="structeve_1_1procgen_1_1CaveHydrologyVec3.html#a6bc01d8d872ddda070d9b57d09bfa6a1">eve::procgen::CaveHydrologyVec3::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="CaveHydrology_8h_source.html#l00010">CaveHydrology.h:10</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

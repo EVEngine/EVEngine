@@ -1,0 +1,1179 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::VirtualTextureStreaming类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html">VirtualTextureStreaming</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1VirtualTextureStreaming-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::VirtualTextureStreaming类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Internal UE5-style runtime virtual texture session: feedback → decode → atomic publish.  
+ <a href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="VirtualTextureStreaming_8h_source.html">VirtualTextureStreaming.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a19bf3a65f98b37a320ffcda3949731cb" id="r_a19bf3a65f98b37a320ffcda3949731cb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::uint32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a19bf3a65f98b37a320ffcda3949731cb">addLayer</a> (const <a class="el" href="structeve_1_1graphics_1_1VirtualTextureBlendLayer.html">VirtualTextureBlendLayer</a> &amp;<a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>)</td></tr>
+<tr class="memdesc:a19bf3a65f98b37a320ffcda3949731cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy and append one material layer through the owned producer.  <br /></td></tr>
+<tr class="separator:a19bf3a65f98b37a320ffcda3949731cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44e14440ac60278a9c8e88ba6675f7bd" id="r_a44e14440ac60278a9c8e88ba6675f7bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a44e14440ac60278a9c8e88ba6675f7bd">initializePhysicalCache</a> ()</td></tr>
+<tr class="memdesc:a44e14440ac60278a9c8e88ba6675f7bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate CPU atlases and a page table with only the substitute slot resident.  <br /></td></tr>
+<tr class="separator:a44e14440ac60278a9c8e88ba6675f7bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa337bad0264205ef9178be5bff679e7" id="r_afa337bad0264205ef9178be5bff679e7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#afa337bad0264205ef9178be5bff679e7">recordFeedback</a> (int pageX, int pageY, int mipLevel=0)</td></tr>
+<tr class="memdesc:afa337bad0264205ef9178be5bff679e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record one page request (cheap; retained until the next update compact).  <br /></td></tr>
+<tr class="separator:afa337bad0264205ef9178be5bff679e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9a53fbaff165f10a8360210b6e11295" id="r_ab9a53fbaff165f10a8360210b6e11295"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#ab9a53fbaff165f10a8360210b6e11295">recordFeedbackUv</a> (float <a class="el" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, float <a class="el" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, int mipLevel=0)</td></tr>
+<tr class="memdesc:ab9a53fbaff165f10a8360210b6e11295"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record the page covering normalized UV (fract).  <br /></td></tr>
+<tr class="separator:ab9a53fbaff165f10a8360210b6e11295"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30721e8661ae6fefc15f20cb10f76eb9" id="r_a30721e8661ae6fefc15f20cb10f76eb9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a30721e8661ae6fefc15f20cb10f76eb9">ingestPackedFeedback</a> (std::span&lt; const std::uint32_t &gt; packed)</td></tr>
+<tr class="memdesc:a30721e8661ae6fefc15f20cb10f76eb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ingest a packed feedback buffer (UE-style page IDs). @cost Cheap relative to <a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#ab1a47a4e2c1d9fd882ebd55c84f762c3" title="Compact feedback, decode up to budget, and stage an incremental upload batch. @cost Expensive relativ...">update()</a>; copies and retains samples up to feedbackCapacity. @amortized Per feedback readback / frame ingest.  <br /></td></tr>
+<tr class="separator:a30721e8661ae6fefc15f20cb10f76eb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5a57d24a02f76adf576e039578a158b" id="r_ae5a57d24a02f76adf576e039578a158b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#ae5a57d24a02f76adf576e039578a158b">recordFeedbackGrid</a> (int gridW, int gridH, int mipLevel=0)</td></tr>
+<tr class="memdesc:ae5a57d24a02f76adf576e039578a158b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Record every cell centre of a low-resolution UV grid (CPU feedback stand-in). @cost Linear in gridW*gridH retained samples; still cheaper than page decode. @amortized Per simulated feedback pass.  <br /></td></tr>
+<tr class="separator:ae5a57d24a02f76adf576e039578a158b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4dea995611f59ef27b898caae83fbea" id="r_af4dea995611f59ef27b898caae83fbea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#af4dea995611f59ef27b898caae83fbea">invalidateRect</a> (float u0, float v0, float u1, float v1, int mipLevel=0)</td></tr>
+<tr class="memdesc:af4dea995611f59ef27b898caae83fbea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark resident pages covering a UV rectangle dirty so the next update re-decodes them.  <br /></td></tr>
+<tr class="separator:af4dea995611f59ef27b898caae83fbea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f8cc159a1b47c559cdc4257e274138c" id="r_a3f8cc159a1b47c559cdc4257e274138c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a3f8cc159a1b47c559cdc4257e274138c">invalidatePage</a> (int pageX, int pageY, int mipLevel=0)</td></tr>
+<tr class="memdesc:a3f8cc159a1b47c559cdc4257e274138c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mark one page dirty for writer-style attribute edits.  <br /></td></tr>
+<tr class="separator:a3f8cc159a1b47c559cdc4257e274138c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1a47a4e2c1d9fd882ebd55c84f762c3" id="r_ab1a47a4e2c1d9fd882ebd55c84f762c3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html">VirtualTextureStreamingStats</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#ab1a47a4e2c1d9fd882ebd55c84f762c3">update</a> ()</td></tr>
+<tr class="memdesc:ab1a47a4e2c1d9fd882ebd55c84f762c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compact feedback, decode up to budget, and stage an incremental upload batch. @cost Expensive relative to recordFeedback: page compose plus atlas/page-table staging. @amortized Per streaming update / frame.  <br /></td></tr>
+<tr class="separator:ab1a47a4e2c1d9fd882ebd55c84f762c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ad0b8f4754f2dc54c8057e31d9a5be3" id="r_a1ad0b8f4754f2dc54c8057e31d9a5be3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1VirtualTextureUploadBatch.html">VirtualTextureUploadBatch</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a1ad0b8f4754f2dc54c8057e31d9a5be3">takePendingUploads</a> ()</td></tr>
+<tr class="memdesc:a1ad0b8f4754f2dc54c8057e31d9a5be3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Take the staged upload batch for GPU application.  <br /></td></tr>
+<tr class="separator:a1ad0b8f4754f2dc54c8057e31d9a5be3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65dfd84377497b1d4aec57f3558e8693" id="r_a65dfd84377497b1d4aec57f3558e8693"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a65dfd84377497b1d4aec57f3558e8693">commitPublish</a> (std::uint64_t expectedGeneration)</td></tr>
+<tr class="memdesc:a65dfd84377497b1d4aec57f3558e8693"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish working state after successful GPU uploads (bumps generation).  <br /></td></tr>
+<tr class="separator:a65dfd84377497b1d4aec57f3558e8693"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67fadfffc5307e0077111a3c0b89a0d3" id="r_a67fadfffc5307e0077111a3c0b89a0d3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a67fadfffc5307e0077111a3c0b89a0d3">abandonPublish</a> ()</td></tr>
+<tr class="memdesc:a67fadfffc5307e0077111a3c0b89a0d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Discard staged working changes and restore the last published mapping.  <br /></td></tr>
+<tr class="separator:a67fadfffc5307e0077111a3c0b89a0d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbca741c86655b4a6e6010fd015ccb4d" id="r_acbca741c86655b4a6e6010fd015ccb4d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#acbca741c86655b4a6e6010fd015ccb4d">syncToMaterial</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> &amp;gfx, <a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a> &amp;<a class="el" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>)</td></tr>
+<tr class="memdesc:acbca741c86655b4a6e6010fd015ccb4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create or refresh GPU textures and bind them to a material. @cost Expensive on first call (full atlas upload); later calls apply pending regions only. @amortized Per material sync after <a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#ab1a47a4e2c1d9fd882ebd55c84f762c3" title="Compact feedback, decode up to budget, and stage an incremental upload batch. @cost Expensive relativ...">update()</a>.  <br /></td></tr>
+<tr class="separator:acbca741c86655b4a6e6010fd015ccb4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5732db6a584a0185eb1bb5d9bf337737" id="r_a5732db6a584a0185eb1bb5d9bf337737"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html">VirtualTextureStreamingStats</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a5732db6a584a0185eb1bb5d9bf337737">stats</a> () const</td></tr>
+<tr class="memdesc:a5732db6a584a0185eb1bb5d9bf337737"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snapshot counters.  <br /></td></tr>
+<tr class="separator:a5732db6a584a0185eb1bb5d9bf337737"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7723676ee8f36e3adc778e5b4dd5798" id="r_ae7723676ee8f36e3adc778e5b4dd5798"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#ae7723676ee8f36e3adc778e5b4dd5798">albedoAtlas</a> () const</td></tr>
+<tr class="memdesc:ae7723676ee8f36e3adc778e5b4dd5798"><td class="mdescLeft">&#160;</td><td class="mdescRight">Published albedo atlas (valid after initializePhysicalCache).  <br /></td></tr>
+<tr class="separator:ae7723676ee8f36e3adc778e5b4dd5798"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad936a5815a95c5832dd15341f2d2503f" id="r_ad936a5815a95c5832dd15341f2d2503f"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#ad936a5815a95c5832dd15341f2d2503f">normalAtlas</a> () const</td></tr>
+<tr class="memdesc:ad936a5815a95c5832dd15341f2d2503f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Published normal atlas.  <br /></td></tr>
+<tr class="separator:ad936a5815a95c5832dd15341f2d2503f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d4999e32532c918ec522c1a77893677" id="r_a9d4999e32532c918ec522c1a77893677"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a9d4999e32532c918ec522c1a77893677">pageTable</a> () const</td></tr>
+<tr class="memdesc:a9d4999e32532c918ec522c1a77893677"><td class="mdescLeft">&#160;</td><td class="mdescRight">Published page table.  <br /></td></tr>
+<tr class="separator:a9d4999e32532c918ec522c1a77893677"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac65507723e06e4a0bcc036f96006eecf" id="r_ac65507723e06e4a0bcc036f96006eecf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#ac65507723e06e4a0bcc036f96006eecf">atlasSlotsX</a> () const</td></tr>
+<tr class="memdesc:ac65507723e06e4a0bcc036f96006eecf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atlas slots x.  <br /></td></tr>
+<tr class="separator:ac65507723e06e4a0bcc036f96006eecf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab88fdfc83d870ae1e8487c10f7297075" id="r_ab88fdfc83d870ae1e8487c10f7297075"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#ab88fdfc83d870ae1e8487c10f7297075">atlasSlotsY</a> () const</td></tr>
+<tr class="memdesc:ab88fdfc83d870ae1e8487c10f7297075"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atlas slots y.  <br /></td></tr>
+<tr class="separator:ab88fdfc83d870ae1e8487c10f7297075"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa12f6645b7e864ffd4ce7970ec8a3674" id="r_aa12f6645b7e864ffd4ce7970ec8a3674"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#aa12f6645b7e864ffd4ce7970ec8a3674">pageExtent</a> () const</td></tr>
+<tr class="memdesc:aa12f6645b7e864ffd4ce7970ec8a3674"><td class="mdescLeft">&#160;</td><td class="mdescRight">Page extent including gutter.  <br /></td></tr>
+<tr class="separator:aa12f6645b7e864ffd4ce7970ec8a3674"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ef9ed14b76dd427f50bc4809247b34c" id="r_a1ef9ed14b76dd427f50bc4809247b34c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a1ef9ed14b76dd427f50bc4809247b34c">borderFraction</a> () const</td></tr>
+<tr class="memdesc:a1ef9ed14b76dd427f50bc4809247b34c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Border texels / pageExtent.  <br /></td></tr>
+<tr class="separator:a1ef9ed14b76dd427f50bc4809247b34c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addbfea65afae2a3292f4b33993641dcf" id="r_addbfea65afae2a3292f4b33993641dcf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#addbfea65afae2a3292f4b33993641dcf">pageCountX</a> () const</td></tr>
+<tr class="memdesc:addbfea65afae2a3292f4b33993641dcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mip-zero page count x.  <br /></td></tr>
+<tr class="separator:addbfea65afae2a3292f4b33993641dcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5264f19d8179e75e78a3d3610afebd2f" id="r_a5264f19d8179e75e78a3d3610afebd2f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a5264f19d8179e75e78a3d3610afebd2f">pageCountY</a> () const</td></tr>
+<tr class="memdesc:a5264f19d8179e75e78a3d3610afebd2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mip-zero page count y.  <br /></td></tr>
+<tr class="separator:a5264f19d8179e75e78a3d3610afebd2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0b25a9117769906c68a1e33754013f2" id="r_ac0b25a9117769906c68a1e33754013f2"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#ac0b25a9117769906c68a1e33754013f2">generation</a> () const</td></tr>
+<tr class="memdesc:ac0b25a9117769906c68a1e33754013f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Published generation.  <br /></td></tr>
+<tr class="separator:ac0b25a9117769906c68a1e33754013f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ae61c591a11ef7b08b5bf11e36f71d1" id="r_a6ae61c591a11ef7b08b5bf11e36f71d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureBlend.html">VirtualTextureBlend</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a6ae61c591a11ef7b08b5bf11e36f71d1">producer</a> ()</td></tr>
+<tr class="memdesc:a6ae61c591a11ef7b08b5bf11e36f71d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrowed producer.  <br /></td></tr>
+<tr class="separator:a6ae61c591a11ef7b08b5bf11e36f71d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a232054c3f017e86362e96a5225825264" id="r_a232054c3f017e86362e96a5225825264"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1graphics_1_1VirtualTextureBlend.html">VirtualTextureBlend</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a232054c3f017e86362e96a5225825264">producer</a> () const</td></tr>
+<tr class="memdesc:a232054c3f017e86362e96a5225825264"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrowed producer.  <br /></td></tr>
+<tr class="separator:a232054c3f017e86362e96a5225825264"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a7b66c4b9bbd9f34c5fe5aea92abff565" id="r_a7b66c4b9bbd9f34c5fe5aea92abff565"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html">VirtualTextureStreaming</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a7b66c4b9bbd9f34c5fe5aea92abff565">create</a> (const <a class="el" href="structeve_1_1graphics_1_1VirtualTextureStreamingConfig.html">VirtualTextureStreamingConfig</a> &amp;config)</td></tr>
+<tr class="memdesc:a7b66c4b9bbd9f34c5fe5aea92abff565"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate config and create an empty streaming session.  <br /></td></tr>
+<tr class="separator:a7b66c4b9bbd9f34c5fe5aea92abff565"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91819d15f16761dfd64e739e3cd0d110" id="r_a91819d15f16761dfd64e739e3cd0d110"><td class="memItemLeft" align="right" valign="top">static std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a91819d15f16761dfd64e739e3cd0d110">packFeedback</a> (int pageX, int pageY, int mipLevel) noexcept</td></tr>
+<tr class="memdesc:a91819d15f16761dfd64e739e3cd0d110"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack a feedback sample into the 32-bit GPU/CPU wire format.  <br /></td></tr>
+<tr class="separator:a91819d15f16761dfd64e739e3cd0d110"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a916b39375e599e298707fda2725e38ce" id="r_a916b39375e599e298707fda2725e38ce"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1VirtualTextureFeedbackSample.html">VirtualTextureFeedbackSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a916b39375e599e298707fda2725e38ce">unpackFeedback</a> (std::uint32_t packed)</td></tr>
+<tr class="memdesc:a916b39375e599e298707fda2725e38ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unpack a feedback sample into page coordinates.  <br /></td></tr>
+<tr class="separator:a916b39375e599e298707fda2725e38ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Internal UE5-style runtime virtual texture session: feedback → decode → atomic publish. </p>
+<p>Owned by <a class="el" href="classeve_1_1graphics_1_1Material.html" title="Packages shading method + surface parameters into one attachable asset.">Material</a> (enableVirtualTexture / addVirtualTextureLayer). Game scripts do not construct or tick this type; <a class="el" href="classeve_1_1graphics_1_1Material.html#ab709ccce5e563e2f79ca0e66f1541575" title="Push this material onto Graphics mesh3d state for the next draw. Does not issue the draw itself....">Material::bind</a> advances residency once per <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ad75b4544b7c5890156131114368c0966" title="Monotonic epoch advanced at the start of each render3D() submission. Materials use this to run virtua...">Graphics::mesh3dDrawEpoch()</a>. GPU resources stay in <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>; this object only stages CPU pixels and generation-qualified upload batches.</p>
+<p>@thread Not thread-safe; record feedback, update, and publish on one authoring/render thread. @reentrancy Does not invoke callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8h_source.html">VirtualTextureStreaming.h</a> 第 <a class="el" href="VirtualTextureStreaming_8h_source.html#l00095">95</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a67fadfffc5307e0077111a3c0b89a0d3" name="a67fadfffc5307e0077111a3c0b89a0d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67fadfffc5307e0077111a3c0b89a0d3">&#9670;&#160;</a></span>abandonPublish()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::graphics::VirtualTextureStreaming::abandonPublish </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Discard staged working changes and restore the last published mapping. </p>
+<dl class="section return"><dt>返回</dt><dd>Failure when there is no pending batch to abandon. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a> 第 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00449">449</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualTextureStreaming_8h_source.html#l00055">eve::graphics::VirtualTextureStreamingStats::abandonedPublishes</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00048">eve::graphics::VirtualTextureStreamingStats::pendingUploads</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00046">eve::graphics::VirtualTextureStreamingStats::residentPages</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00515">syncToMaterial()</a>.</p>
+
+</div>
+</div>
+<a id="a19bf3a65f98b37a320ffcda3949731cb" name="a19bf3a65f98b37a320ffcda3949731cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19bf3a65f98b37a320ffcda3949731cb">&#9670;&#160;</a></span>addLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::uint32_t &gt; eve::graphics::VirtualTextureStreaming::addLayer </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1VirtualTextureBlendLayer.html">VirtualTextureBlendLayer</a> &amp;&#160;</td>
+          <td class="paramname"><em>layer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy and append one material layer through the owned producer. </p>
+<dl class="section return"><dt>返回</dt><dd>Stable zero-based layer index, or a structured validation failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a> 第 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00147">layer</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00053">eve::graphics::VirtualTextureStreamingStats::pagesInvalidated</a> , 以及 <a class="el" href="McpInputTools_8cpp_source.html#l00052">result</a>.</p>
+
+</div>
+</div>
+<a id="ae7723676ee8f36e3adc778e5b4dd5798" name="ae7723676ee8f36e3adc778e5b4dd5798"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7723676ee8f36e3adc778e5b4dd5798">&#9670;&#160;</a></span>albedoAtlas()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> &amp; eve::graphics::VirtualTextureStreaming::albedoAtlas </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Published albedo atlas (valid after initializePhysicalCache). </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a> 第 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00489">489</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac65507723e06e4a0bcc036f96006eecf" name="ac65507723e06e4a0bcc036f96006eecf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac65507723e06e4a0bcc036f96006eecf">&#9670;&#160;</a></span>atlasSlotsX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::VirtualTextureStreaming::atlasSlotsX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Atlas slots x. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8h_source.html">VirtualTextureStreaming.h</a> 第 <a class="el" href="VirtualTextureStreaming_8h_source.html#l00200">200</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab88fdfc83d870ae1e8487c10f7297075" name="ab88fdfc83d870ae1e8487c10f7297075"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab88fdfc83d870ae1e8487c10f7297075">&#9670;&#160;</a></span>atlasSlotsY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::VirtualTextureStreaming::atlasSlotsY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Atlas slots y. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8h_source.html">VirtualTextureStreaming.h</a> 第 <a class="el" href="VirtualTextureStreaming_8h_source.html#l00202">202</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1ef9ed14b76dd427f50bc4809247b34c" name="a1ef9ed14b76dd427f50bc4809247b34c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ef9ed14b76dd427f50bc4809247b34c">&#9670;&#160;</a></span>borderFraction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VirtualTextureStreaming::borderFraction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Border texels / pageExtent. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8h_source.html">VirtualTextureStreaming.h</a> 第 <a class="el" href="VirtualTextureStreaming_8h_source.html#l00206">206</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a65dfd84377497b1d4aec57f3558e8693" name="a65dfd84377497b1d4aec57f3558e8693"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65dfd84377497b1d4aec57f3558e8693">&#9670;&#160;</a></span>commitPublish()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::graphics::VirtualTextureStreaming::commitPublish </td>
+          <td>(</td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>expectedGeneration</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Publish working state after successful GPU uploads (bumps generation). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">expectedGeneration</td><td>Must equal the batch's expectedGeneration. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a> 第 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00434">434</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00045">eve::graphics::VirtualTextureStreamingStats::generation</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00048">eve::graphics::VirtualTextureStreamingStats::pendingUploads</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00054">eve::graphics::VirtualTextureStreamingStats::publishes</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00046">eve::graphics::VirtualTextureStreamingStats::residentPages</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00515">syncToMaterial()</a>.</p>
+
+</div>
+</div>
+<a id="a7b66c4b9bbd9f34c5fe5aea92abff565" name="a7b66c4b9bbd9f34c5fe5aea92abff565"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b66c4b9bbd9f34c5fe5aea92abff565">&#9670;&#160;</a></span>create()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html">VirtualTextureStreaming</a> &gt; &gt; eve::graphics::VirtualTextureStreaming::create </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1VirtualTextureStreamingConfig.html">VirtualTextureStreamingConfig</a> &amp;&#160;</td>
+          <td class="paramname"><em>config</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validate config and create an empty streaming session. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a> 第 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualTextureStreaming_8h_source.html#l00036">eve::graphics::VirtualTextureStreamingConfig::blend</a>, <a class="el" href="VirtualTextureBlend_8cpp_source.html#l00055">eve::graphics::VirtualTextureBlend::create()</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00040">eve::graphics::VirtualTextureStreamingConfig::feedbackCapacity</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00038">eve::graphics::VirtualTextureStreamingConfig::maxDecodesPerUpdate</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00214">producer()</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Material_8cpp_source.html#l00018">eve::graphics::Material::enableVirtualTexture()</a>.</p>
+
+</div>
+</div>
+<a id="ac0b25a9117769906c68a1e33754013f2" name="ac0b25a9117769906c68a1e33754013f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0b25a9117769906c68a1e33754013f2">&#9670;&#160;</a></span>generation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::graphics::VirtualTextureStreaming::generation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Published generation. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8h_source.html">VirtualTextureStreaming.h</a> 第 <a class="el" href="VirtualTextureStreaming_8h_source.html#l00212">212</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a30721e8661ae6fefc15f20cb10f76eb9" name="a30721e8661ae6fefc15f20cb10f76eb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30721e8661ae6fefc15f20cb10f76eb9">&#9670;&#160;</a></span>ingestPackedFeedback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::graphics::VirtualTextureStreaming::ingestPackedFeedback </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const std::uint32_t &gt;&#160;</td>
+          <td class="paramname"><em>packed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Ingest a packed feedback buffer (UE-style page IDs). @cost Cheap relative to <a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#ab1a47a4e2c1d9fd882ebd55c84f762c3" title="Compact feedback, decode up to budget, and stage an incremental upload batch. @cost Expensive relativ...">update()</a>; copies and retains samples up to feedbackCapacity. @amortized Per feedback readback / frame ingest. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a> 第 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00161">recordFeedback()</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00137">unpackFeedback()</a> , 以及 <a class="el" href="devtools_2LanguageServer_8cpp_source.html#l00237">word</a>.</p>
+
+</div>
+</div>
+<a id="a44e14440ac60278a9c8e88ba6675f7bd" name="a44e14440ac60278a9c8e88ba6675f7bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44e14440ac60278a9c8e88ba6675f7bd">&#9670;&#160;</a></span>initializePhysicalCache()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::graphics::VirtualTextureStreaming::initializePhysicalCache </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Allocate CPU atlases and a page table with only the substitute slot resident. </p>
+<dl class="section return"><dt>返回</dt><dd>Success after publishing generation zero, or a structured failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a> 第 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00045">eve::graphics::VirtualTextureStreamingStats::generation</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00046">eve::graphics::VirtualTextureStreamingStats::residentPages</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a3f8cc159a1b47c559cdc4257e274138c" name="a3f8cc159a1b47c559cdc4257e274138c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f8cc159a1b47c559cdc4257e274138c">&#9670;&#160;</a></span>invalidatePage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::graphics::VirtualTextureStreaming::invalidatePage </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>pageX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>pageY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mipLevel</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mark one page dirty for writer-style attribute edits. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a> 第 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00215">215</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00053">eve::graphics::VirtualTextureStreamingStats::pagesInvalidated</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00319">valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00227">invalidateRect()</a>.</p>
+
+</div>
+</div>
+<a id="af4dea995611f59ef27b898caae83fbea" name="af4dea995611f59ef27b898caae83fbea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4dea995611f59ef27b898caae83fbea">&#9670;&#160;</a></span>invalidateRect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::graphics::VirtualTextureStreaming::invalidateRect </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>u0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>v0</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>u1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>v1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mipLevel</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mark resident pages covering a UV rectangle dirty so the next update re-decodes them. </p>
+<dl class="section return"><dt>返回</dt><dd>Failure when uninitialized or the rectangle is empty/non-finite. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a> 第 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00227">227</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00215">invalidatePage()</a>, <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00493">pageCountX()</a>, <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00494">pageCountY()</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+</div>
+</div>
+<a id="ad936a5815a95c5832dd15341f2d2503f" name="ad936a5815a95c5832dd15341f2d2503f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad936a5815a95c5832dd15341f2d2503f">&#9670;&#160;</a></span>normalAtlas()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> &amp; eve::graphics::VirtualTextureStreaming::normalAtlas </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Published normal atlas. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a> 第 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00490">490</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a91819d15f16761dfd64e739e3cd0d110" name="a91819d15f16761dfd64e739e3cd0d110"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91819d15f16761dfd64e739e3cd0d110">&#9670;&#160;</a></span>packFeedback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t eve::graphics::VirtualTextureStreaming::packFeedback </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>pageX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>pageY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mipLevel</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pack a feedback sample into the 32-bit GPU/CPU wire format. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a> 第 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+</div>
+</div>
+<a id="addbfea65afae2a3292f4b33993641dcf" name="addbfea65afae2a3292f4b33993641dcf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addbfea65afae2a3292f4b33993641dcf">&#9670;&#160;</a></span>pageCountX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::VirtualTextureStreaming::pageCountX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mip-zero page count x. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a> 第 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00493">493</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00227">invalidateRect()</a>, <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00172">recordFeedbackUv()</a> , 以及 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00515">syncToMaterial()</a>.</p>
+
+</div>
+</div>
+<a id="a5264f19d8179e75e78a3d3610afebd2f" name="a5264f19d8179e75e78a3d3610afebd2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5264f19d8179e75e78a3d3610afebd2f">&#9670;&#160;</a></span>pageCountY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::VirtualTextureStreaming::pageCountY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mip-zero page count y. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a> 第 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00494">494</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00227">invalidateRect()</a>, <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00172">recordFeedbackUv()</a> , 以及 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00515">syncToMaterial()</a>.</p>
+
+</div>
+</div>
+<a id="aa12f6645b7e864ffd4ce7970ec8a3674" name="aa12f6645b7e864ffd4ce7970ec8a3674"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa12f6645b7e864ffd4ce7970ec8a3674">&#9670;&#160;</a></span>pageExtent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::VirtualTextureStreaming::pageExtent </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Page extent including gutter. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8h_source.html">VirtualTextureStreaming.h</a> 第 <a class="el" href="VirtualTextureStreaming_8h_source.html#l00204">204</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9d4999e32532c918ec522c1a77893677" name="a9d4999e32532c918ec522c1a77893677"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d4999e32532c918ec522c1a77893677">&#9670;&#160;</a></span>pageTable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> &amp; eve::graphics::VirtualTextureStreaming::pageTable </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Published page table. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a> 第 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00491">491</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6ae61c591a11ef7b08b5bf11e36f71d1" name="a6ae61c591a11ef7b08b5bf11e36f71d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ae61c591a11ef7b08b5bf11e36f71d1">&#9670;&#160;</a></span>producer() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1VirtualTextureBlend.html">VirtualTextureBlend</a> &amp; eve::graphics::VirtualTextureStreaming::producer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrowed producer. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8h_source.html">VirtualTextureStreaming.h</a> 第 <a class="el" href="VirtualTextureStreaming_8h_source.html#l00214">214</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00061">create()</a>.</p>
+
+</div>
+</div>
+<a id="a232054c3f017e86362e96a5225825264" name="a232054c3f017e86362e96a5225825264"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a232054c3f017e86362e96a5225825264">&#9670;&#160;</a></span>producer() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1graphics_1_1VirtualTextureBlend.html">VirtualTextureBlend</a> &amp; eve::graphics::VirtualTextureStreaming::producer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrowed producer. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8h_source.html">VirtualTextureStreaming.h</a> 第 <a class="el" href="VirtualTextureStreaming_8h_source.html#l00216">216</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afa337bad0264205ef9178be5bff679e7" name="afa337bad0264205ef9178be5bff679e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa337bad0264205ef9178be5bff679e7">&#9670;&#160;</a></span>recordFeedback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::graphics::VirtualTextureStreaming::recordFeedback </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>pageX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>pageY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mipLevel</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Record one page request (cheap; retained until the next update compact). </p>
+<dl class="section return"><dt>返回</dt><dd>Failure when the physical cache is uninitialized or the coordinate is invalid. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a> 第 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00161">161</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualTextureStreaming_8h_source.html#l00040">eve::graphics::VirtualTextureStreamingConfig::feedbackCapacity</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00049">eve::graphics::VirtualTextureStreamingStats::feedbackSamples</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00319">valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00182">ingestPackedFeedback()</a> , 以及 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00172">recordFeedbackUv()</a>.</p>
+
+</div>
+</div>
+<a id="ae5a57d24a02f76adf576e039578a158b" name="ae5a57d24a02f76adf576e039578a158b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5a57d24a02f76adf576e039578a158b">&#9670;&#160;</a></span>recordFeedbackGrid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::graphics::VirtualTextureStreaming::recordFeedbackGrid </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gridW</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gridH</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mipLevel</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Record every cell centre of a low-resolution UV grid (CPU feedback stand-in). @cost Linear in gridW*gridH retained samples; still cheaper than page decode. @amortized Per simulated feedback pass. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a> 第 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00201">201</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00172">recordFeedbackUv()</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Grass_8cpp_source.html#l00233">u</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+</div>
+</div>
+<a id="ab9a53fbaff165f10a8360210b6e11295" name="ab9a53fbaff165f10a8360210b6e11295"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9a53fbaff165f10a8360210b6e11295">&#9670;&#160;</a></span>recordFeedbackUv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::graphics::VirtualTextureStreaming::recordFeedbackUv </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>u</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mipLevel</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Record the page covering normalized UV (fract). </p>
+<dl class="section return"><dt>返回</dt><dd>Failure when the physical cache is uninitialized. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a> 第 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00172">172</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00493">pageCountX()</a>, <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00494">pageCountY()</a>, <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00161">recordFeedback()</a>, <a class="el" href="Grass_8cpp_source.html#l00233">u</a> , 以及 <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00201">recordFeedbackGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a5732db6a584a0185eb1bb5d9bf337737" name="a5732db6a584a0185eb1bb5d9bf337737"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5732db6a584a0185eb1bb5d9bf337737">&#9670;&#160;</a></span>stats()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html">VirtualTextureStreamingStats</a> eve::graphics::VirtualTextureStreaming::stats </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Snapshot counters. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a> 第 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00478">478</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualTextureStreaming_8h_source.html#l00045">eve::graphics::VirtualTextureStreamingStats::generation</a> , 以及 <a class="el" href="ScriptStructure_8cpp_source.html#l00023">out</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00345">update()</a>.</p>
+
+</div>
+</div>
+<a id="acbca741c86655b4a6e6010fd015ccb4d" name="acbca741c86655b4a6e6010fd015ccb4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbca741c86655b4a6e6010fd015ccb4d">&#9670;&#160;</a></span>syncToMaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::graphics::VirtualTextureStreaming::syncToMaterial </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> &amp;&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a> &amp;&#160;</td>
+          <td class="paramname"><em>material</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create or refresh GPU textures and bind them to a material. @cost Expensive on first call (full atlas upload); later calls apply pending regions only. @amortized Per material sync after <a class="el" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#ab1a47a4e2c1d9fd882ebd55c84f762c3" title="Compact feedback, decode up to budget, and stage an incremental upload batch. @cost Expensive relativ...">update()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a> 第 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00515">515</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00449">abandonPublish()</a>, <a class="el" href="DecalAttackVfx_8cpp_source.html#l00159">albedo</a>, <a class="el" href="Graphics_8h_source.html#l00077">eve::graphics::TextureRegionUpload::bytesPerRow</a>, <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00434">commitPublish()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="TextureSampler_8h_source.html#l00115">eve::graphics::TextureCreateInfo::generateMipmaps</a>, <a class="el" href="Graphics_8h_source.html#l00075">eve::graphics::TextureRegionUpload::height</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00082">info</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00672">material</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a76e2ff4234588325e588b362a8781744">eve::graphics::Graphics::newTexture()</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00154">normal</a>, <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00493">pageCountX()</a>, <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00494">pageCountY()</a>, <a class="el" href="Graphics_8h_source.html#l00076">eve::graphics::TextureRegionUpload::rgba</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00422">takePendingUploads()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ab98487d3534d26d58f2f8fada8cb4cc0">eve::graphics::Graphics::updateTextureRegions()</a> , 以及 <a class="el" href="Graphics_8h_source.html#l00074">eve::graphics::TextureRegionUpload::width</a>.</p>
+
+</div>
+</div>
+<a id="a1ad0b8f4754f2dc54c8057e31d9a5be3" name="a1ad0b8f4754f2dc54c8057e31d9a5be3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ad0b8f4754f2dc54c8057e31d9a5be3">&#9670;&#160;</a></span>takePendingUploads()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1VirtualTextureUploadBatch.html">VirtualTextureUploadBatch</a> &gt; eve::graphics::VirtualTextureStreaming::takePendingUploads </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Take the staged upload batch for GPU application. </p>
+<dl class="section return"><dt>返回</dt><dd>Failure when nothing is pending or a previous batch was not committed/abandoned. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a> 第 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00422">422</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VirtualTextureStreaming_8h_source.html#l00077">eve::graphics::VirtualTextureUploadBatch::expectedGeneration</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00048">eve::graphics::VirtualTextureStreamingStats::pendingUploads</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00515">syncToMaterial()</a>.</p>
+
+</div>
+</div>
+<a id="a916b39375e599e298707fda2725e38ce" name="a916b39375e599e298707fda2725e38ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a916b39375e599e298707fda2725e38ce">&#9670;&#160;</a></span>unpackFeedback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1VirtualTextureFeedbackSample.html">VirtualTextureFeedbackSample</a> &gt; eve::graphics::VirtualTextureStreaming::unpackFeedback </td>
+          <td>(</td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>packed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unpack a feedback sample into page coordinates. </p>
+<dl class="section return"><dt>返回</dt><dd>Success with the decoded sample, or InvalidArgument when fields exceed the bit budget. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a> 第 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00137">137</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00182">ingestPackedFeedback()</a>.</p>
+
+</div>
+</div>
+<a id="ab1a47a4e2c1d9fd882ebd55c84f762c3" name="ab1a47a4e2c1d9fd882ebd55c84f762c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1a47a4e2c1d9fd882ebd55c84f762c3">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html">VirtualTextureStreamingStats</a> &gt; eve::graphics::VirtualTextureStreaming::update </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compact feedback, decode up to budget, and stage an incremental upload batch. @cost Expensive relative to recordFeedback: page compose plus atlas/page-table staging. @amortized Per streaming update / frame. </p>
+<dl class="section return"><dt>返回</dt><dd>Snapshot stats after the tick; failure leaves the previous published mapping intact. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a> 第 <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00345">345</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00079">eve::graphics::VirtualTextureUploadBatch::albedoRegions</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00077">eve::graphics::VirtualTextureUploadBatch::expectedGeneration</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00045">eve::graphics::VirtualTextureStreamingStats::generation</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00038">eve::graphics::VirtualTextureStreamingConfig::maxDecodesPerUpdate</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00080">eve::graphics::VirtualTextureUploadBatch::normalRegions</a>, <a class="el" href="Joint3DParameters_8cpp_source.html#l00015">ordered</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00078">eve::graphics::VirtualTextureUploadBatch::pageTableClears</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00081">eve::graphics::VirtualTextureUploadBatch::pageTableSets</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00047">eve::graphics::VirtualTextureStreamingStats::pendingFeedback</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00048">eve::graphics::VirtualTextureStreamingStats::pendingUploads</a>, <a class="el" href="ECS_8cpp_source.html#l00228">record</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00046">eve::graphics::VirtualTextureStreamingStats::residentPages</a>, <a class="el" href="VirtualTextureStreaming_8cpp_source.html#l00478">stats()</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="VirtualTextureStreaming_8h_source.html#l00050">eve::graphics::VirtualTextureStreamingStats::uniqueFeedback</a> , 以及 <a class="el" href="UnityVegetationScene_8cpp_source.html#l00934">weight</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="VirtualTextureStreaming_8h_source.html">VirtualTextureStreaming.h</a></li>
+<li>src/modules/graphics/<a class="el" href="VirtualTextureStreaming_8cpp_source.html">VirtualTextureStreaming.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

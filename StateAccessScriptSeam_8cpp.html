@@ -1,0 +1,321 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/dialogue/StateAccessScriptSeam.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9d7eb5392a4fb7dccc4284e89fdc9c92.html">dialogue</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">StateAccessScriptSeam.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="StateAccessScriptSeam_8h_source.html">dialogue/StateAccessScriptSeam.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Capability_8h_source.html">common/Capability.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="CrashLog_8h_source.html">common/CrashLog.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="ScriptProvider_8h_source.html">common/ScriptProvider.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="StateAccess_8h_source.html">common/StateAccess.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Value_8h_source.html">common/Value.h</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;array&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;span&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="StateAccessScriptSeam_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1dialogue" id="r_namespaceeve_1_1dialogue"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dialogue.html">eve::dialogue</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:ab5b86c7fc79b5390772aa775923ef71a" id="r_ab5b86c7fc79b5390772aa775923ef71a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#af85ff84ca379cb803d64a467fc5faf5a">EVENGINE_API_ORCHESTRATION</a> std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dialogue.html#ab5b86c7fc79b5390772aa775923ef71a">eve::dialogue::scriptStateQueryFailures</a> ()</td></tr>
+<tr class="memdesc:ab5b86c7fc79b5390772aa775923ef71a"><td class="mdescLeft">&#160;</td><td class="mdescRight">脚本 state query **失败**（抛错或答案形状不对）的累计次数。  <br /></td></tr>
+<tr class="separator:ab5b86c7fc79b5390772aa775923ef71a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8a816d0bd245ad07e4e4fe9a8c30ab8" id="r_ad8a816d0bd245ad07e4e4fe9a8c30ab8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#af85ff84ca379cb803d64a467fc5faf5a">EVENGINE_API_ORCHESTRATION</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dialogue.html#ad8a816d0bd245ad07e4e4fe9a8c30ab8">eve::dialogue::resetScriptStateQueryFailures</a> ()</td></tr>
+<tr class="memdesc:ad8a816d0bd245ad07e4e4fe9a8c30ab8"><td class="mdescLeft">&#160;</td><td class="mdescRight">把上面的计数归零（测试隔离用）。  <br /></td></tr>
+<tr class="separator:ad8a816d0bd245ad07e4e4fe9a8c30ab8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa93cac3578c81c097d8647df0e70dfe4" id="r_aa93cac3578c81c097d8647df0e70dfe4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#af85ff84ca379cb803d64a467fc5faf5a">EVENGINE_API_ORCHESTRATION</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dialogue.html#aa93cac3578c81c097d8647df0e70dfe4">eve::dialogue::declareScriptStateQuerySeam</a> ()</td></tr>
+<tr class="memdesc:aa93cac3578c81c097d8647df0e70dfe4"><td class="mdescLeft">&#160;</td><td class="mdescRight">声明"`IStateQuery` 可以由脚本提供"这条接缝。  <br /></td></tr>
+<tr class="separator:aa93cac3578c81c097d8647df0e70dfe4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa124b8a7e601c8f67aefae9b44948e85" id="r_aa124b8a7e601c8f67aefae9b44948e85"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#af85ff84ca379cb803d64a467fc5faf5a">EVENGINE_API_ORCHESTRATION</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dialogue.html#aa124b8a7e601c8f67aefae9b44948e85">eve::dialogue::withdrawScriptStateQuerySeam</a> ()</td></tr>
+<tr class="memdesc:aa124b8a7e601c8f67aefae9b44948e85"><td class="mdescLeft">&#160;</td><td class="mdescRight">撤回 <code>IStateQuery</code> 接缝与仍然在位的脚本适配器。  <br /></td></tr>
+<tr class="separator:aa124b8a7e601c8f67aefae9b44948e85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6ceeb79f4e2317c35bea9efa5adb7f8" id="r_ae6ceeb79f4e2317c35bea9efa5adb7f8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#af85ff84ca379cb803d64a467fc5faf5a">EVENGINE_API_ORCHESTRATION</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dialogue.html#ae6ceeb79f4e2317c35bea9efa5adb7f8">eve::dialogue::declareScriptStateMutationSeam</a> ()</td></tr>
+<tr class="memdesc:ae6ceeb79f4e2317c35bea9efa5adb7f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">声明"`IStateMutation` 可以由脚本提供"这条接缝。  <br /></td></tr>
+<tr class="separator:ae6ceeb79f4e2317c35bea9efa5adb7f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac145ea4fd3426160da82afbb5d19ac3d" id="r_ac145ea4fd3426160da82afbb5d19ac3d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#af85ff84ca379cb803d64a467fc5faf5a">EVENGINE_API_ORCHESTRATION</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dialogue.html#ac145ea4fd3426160da82afbb5d19ac3d">eve::dialogue::withdrawScriptStateMutationSeam</a> ()</td></tr>
+<tr class="memdesc:ac145ea4fd3426160da82afbb5d19ac3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">撤回 <code>IStateMutation</code> 接缝与仍然在位的脚本适配器。  <br /></td></tr>
+<tr class="separator:ac145ea4fd3426160da82afbb5d19ac3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="a38359539f7a56846fc3e8f92c7fd7b9e" name="a38359539f7a56846fc3e8f92c7fd7b9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38359539f7a56846fc3e8f92c7fd7b9e">&#9670;&#160;</a></span>liveMutations</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::unique_ptr&lt;ScriptStateMutation&gt; &gt; liveMutations</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StateAccessScriptSeam_8cpp_source.html">StateAccessScriptSeam.cpp</a> 第 <a class="el" href="StateAccessScriptSeam_8cpp_source.html#l00183">183</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3c7b7113641d6e2e7c5bccdfa33905b7" name="a3c7b7113641d6e2e7c5bccdfa33905b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c7b7113641d6e2e7c5bccdfa33905b7">&#9670;&#160;</a></span>liveQueries</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::unique_ptr&lt;ScriptStateQuery&gt; &gt; liveQueries</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StateAccessScriptSeam_8cpp_source.html">StateAccessScriptSeam.cpp</a> 第 <a class="el" href="StateAccessScriptSeam_8cpp_source.html#l00181">181</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a559aae3a7fdbb3dd9c919b528646f392" name="a559aae3a7fdbb3dd9c919b528646f392"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a559aae3a7fdbb3dd9c919b528646f392">&#9670;&#160;</a></span>name</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view name</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StateAccessScriptSeam_8cpp_source.html">StateAccessScriptSeam.cpp</a> 第 <a class="el" href="StateAccessScriptSeam_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a631014072130bb7784b46be9a83db359" name="a631014072130bb7784b46be9a83db359"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a631014072130bb7784b46be9a83db359">&#9670;&#160;</a></span>retiredMutations</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::unique_ptr&lt;ScriptStateMutation&gt; &gt; retiredMutations</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StateAccessScriptSeam_8cpp_source.html">StateAccessScriptSeam.cpp</a> 第 <a class="el" href="StateAccessScriptSeam_8cpp_source.html#l00184">184</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a65acd69b7db2d25cc3ea1d88d525c896" name="a65acd69b7db2d25cc3ea1d88d525c896"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65acd69b7db2d25cc3ea1d88d525c896">&#9670;&#160;</a></span>retiredQueries</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::unique_ptr&lt;ScriptStateQuery&gt; &gt; retiredQueries</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StateAccessScriptSeam_8cpp_source.html">StateAccessScriptSeam.cpp</a> 第 <a class="el" href="StateAccessScriptSeam_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4fc7f59e3113e19697159919a5aad095" name="a4fc7f59e3113e19697159919a5aad095"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fc7f59e3113e19697159919a5aad095">&#9670;&#160;</a></span>value</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">T value</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="StateAccessScriptSeam_8cpp_source.html">StateAccessScriptSeam.cpp</a> 第 <a class="el" href="StateAccessScriptSeam_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

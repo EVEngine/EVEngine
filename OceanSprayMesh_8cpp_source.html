@@ -1,0 +1,251 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/fluids/OceanSprayMesh.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_64d77e4380a58ef2a81d909febed7275.html">fluids</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">OceanSprayMesh.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="OceanSprayMesh_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;numeric&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="OceanSprayRenderer_8h.html">fluids/OceanSprayRenderer.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1fluids.html">eve::fluids</a> {</div>
+<div class="foldopen" id="foldopen00007" data-start="{" data-end="}">
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#a78d18e33be87d1590aa54cd5d5ac70b5">    7</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;OceanSprayMeshFrame&gt;</a> <a class="code hl_function" href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#a78d18e33be87d1590aa54cd5d5ac70b5">OceanSprayMeshBuilder::build</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="OnnxQuant_8cpp.html#a17baa4f903ac9966a0197d7067d9b425">finite</a> = [](glm::dvec3 <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>) {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>        <span class="keywordflow">return</span> std::isfinite(<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.x) &amp;&amp; std::isfinite(<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.y) &amp;&amp; std::isfinite(<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.z) &amp;&amp; glm::length(<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>) &lt;= 1<a class="code hl_function" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">e9</a>;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    };</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keyword">const</span> <span class="keyword">auto</span> cross = glm::cross(<a class="code hl_variable" href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#a889f787635623cf1ca5fc2d9fef1799c">view</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1OceanSprayView.html#a9fa5f15a0ce0193a92dbf02579aba57b">forward</a>, <a class="code hl_variable" href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#a889f787635623cf1ca5fc2d9fef1799c">view</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1OceanSprayView.html#a9f98760326e4b4ff4a3bbbeace20e13c">up</a>);</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="OnnxQuant_8cpp.html#a17baa4f903ac9966a0197d7067d9b425">finite</a>(<a class="code hl_variable" href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#a889f787635623cf1ca5fc2d9fef1799c">view</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1OceanSprayView.html#a42563ab3dae661ca62e488b90ac23d64">eye</a>) || !<a class="code hl_variable" href="OnnxQuant_8cpp.html#a17baa4f903ac9966a0197d7067d9b425">finite</a>(<a class="code hl_variable" href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#a889f787635623cf1ca5fc2d9fef1799c">view</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1OceanSprayView.html#a3d88407a9378bd7b08d9e58a3d2f4ac8">origin</a>) || !<a class="code hl_variable" href="OnnxQuant_8cpp.html#a17baa4f903ac9966a0197d7067d9b425">finite</a>(<a class="code hl_variable" href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#a889f787635623cf1ca5fc2d9fef1799c">view</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1OceanSprayView.html#a9fa5f15a0ce0193a92dbf02579aba57b">forward</a>) || !<a class="code hl_variable" href="OnnxQuant_8cpp.html#a17baa4f903ac9966a0197d7067d9b425">finite</a>(<a class="code hl_variable" href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#a889f787635623cf1ca5fc2d9fef1799c">view</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1OceanSprayView.html#a9f98760326e4b4ff4a3bbbeace20e13c">up</a>) ||</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        glm::length(<a class="code hl_variable" href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#a889f787635623cf1ca5fc2d9fef1799c">view</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1OceanSprayView.html#a9fa5f15a0ce0193a92dbf02579aba57b">forward</a>) &lt; 1e-8 || glm::length(<a class="code hl_variable" href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#a889f787635623cf1ca5fc2d9fef1799c">view</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1OceanSprayView.html#a9f98760326e4b4ff4a3bbbeace20e13c">up</a>) &lt; 1e-8 ||</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        glm::length(cross) &lt; 1e-8 * glm::length(<a class="code hl_variable" href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#a889f787635623cf1ca5fc2d9fef1799c">view</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1OceanSprayView.html#a9fa5f15a0ce0193a92dbf02579aba57b">forward</a>) * glm::length(<a class="code hl_variable" href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#a889f787635623cf1ca5fc2d9fef1799c">view</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1OceanSprayView.html#a9f98760326e4b4ff4a3bbbeace20e13c">up</a>))</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;OceanSprayMeshFrame&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;Invalid spray camera basis&quot;</span>, <span class="stringliteral">&quot;fluids.ocean.spray.render&quot;</span>));</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="VehicleTires3D_8cpp.html#a41694d5f784f19074af5a03f8c929abd">forward</a> = glm::normalize(<a class="code hl_variable" href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#a889f787635623cf1ca5fc2d9fef1799c">view</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1OceanSprayView.html#a9fa5f15a0ce0193a92dbf02579aba57b">forward</a>), <a class="code hl_variable" href="HexSphereMesh_8cpp.html#a693f5ccb2102b8c2a7eb23cbb1e337bc">right</a> = glm::normalize(cross), <a class="code hl_variable" href="HexSphereMesh_8cpp.html#a3ac73cb3882ce4d27f939ed60e19fdae">up</a> = glm::cross(<a class="code hl_variable" href="HexSphereMesh_8cpp.html#a693f5ccb2102b8c2a7eb23cbb1e337bc">right</a>, <a class="code hl_variable" href="VehicleTires3D_8cpp.html#a41694d5f784f19074af5a03f8c929abd">forward</a>);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">const</span> <span class="keyword">auto</span> particles = source_.<a class="code hl_function" href="classeve_1_1fluids_1_1OceanSprayFrame.html#a07bceaa87601326b8bdfa4a967f2aac2">particles</a>();</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    std::vector&lt;unsigned&gt; <a class="code hl_variable" href="MeshContactBlend_8cpp.html#a60a7fb4d9322c3ce2c36a55154a398bd">order</a>(particles.size());</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    std::iota(<a class="code hl_variable" href="MeshContactBlend_8cpp.html#a60a7fb4d9322c3ce2c36a55154a398bd">order</a>.begin(), <a class="code hl_variable" href="MeshContactBlend_8cpp.html#a60a7fb4d9322c3ce2c36a55154a398bd">order</a>.end(), 0<a class="code hl_function" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">U</a>);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    std::stable_sort(<a class="code hl_variable" href="MeshContactBlend_8cpp.html#a60a7fb4d9322c3ce2c36a55154a398bd">order</a>.begin(), <a class="code hl_variable" href="MeshContactBlend_8cpp.html#a60a7fb4d9322c3ce2c36a55154a398bd">order</a>.end(), [&amp;](<span class="keywordtype">unsigned</span> <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <span class="keywordtype">unsigned</span> <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>) {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        return glm::dot(particles[a].position - view.eye, forward) &gt;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>               glm::dot(particles[b].position - view.eye, forward);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    });</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <a class="code hl_struct" href="structeve_1_1fluids_1_1OceanSprayMeshFrame.html">OceanSprayMeshFrame</a> <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1OceanSprayMeshFrame.html#aa904802cbd227af66ec7253b4fc4f759">time</a> = source_.<a class="code hl_function" href="classeve_1_1fluids_1_1OceanSprayFrame.html#a0eef14db12c74080a78223d8f4de9c0a">time</a>();</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.positions.reserve(particles.size() * 12);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.attributes.reserve(particles.size() * 12);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.uv.reserve(particles.size() * 8);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.indices.reserve(particles.size() * 6);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> i : <a class="code hl_variable" href="MeshContactBlend_8cpp.html#a60a7fb4d9322c3ce2c36a55154a398bd">order</a>) {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>       = particles[i];</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keyword">const</span> <span class="keyword">auto</span>  base    = <span class="keyword">static_cast&lt;</span>std::uint32_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.positions.size() / 3);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="TileConfig_8cpp.html#a6f4dca6b48529c4d3dade0e8d46f4e43">opacity</a> = <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(std::clamp(1.0 - <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.age / <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.lifetime, 0.0, 1.0));</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> corner : {glm::dvec2(-1, -1), glm::dvec2(1, -1), glm::dvec2(1, 1), glm::dvec2(-1, 1)}) {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a> = (<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.position - <a class="code hl_variable" href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#a889f787635623cf1ca5fc2d9fef1799c">view</a>.<a class="code hl_variable" href="structeve_1_1fluids_1_1OceanSprayView.html#a3d88407a9378bd7b08d9e58a3d2f4ac8">origin</a>) + (<a class="code hl_variable" href="HexSphereMesh_8cpp.html#a693f5ccb2102b8c2a7eb23cbb1e337bc">right</a> * corner.x + <a class="code hl_variable" href="HexSphereMesh_8cpp.html#a3ac73cb3882ce4d27f939ed60e19fdae">up</a> * corner.y) * <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.radius;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae10a8406c828c4e67a5a81a81280531f">axis</a> = 0; <a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae10a8406c828c4e67a5a81a81280531f">axis</a> &lt; 3; ++<a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae10a8406c828c4e67a5a81a81280531f">axis</a>) <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.positions.push_back(<span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>[<a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae10a8406c828c4e67a5a81a81280531f">axis</a>]));</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.attributes.insert(<a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.attributes.end(), {<a class="code hl_variable" href="TileConfig_8cpp.html#a6f4dca6b48529c4d3dade0e8d46f4e43">opacity</a>, 0.0F, 0.0F});</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.uv.insert(<a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.uv.end(), {<span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(corner.x), <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(corner.y)});</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.indices.insert(<a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.indices.end(), {base, base + 1, base + 2, base, base + 2, base + 3});</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;OceanSprayMeshFrame&gt;::success</a>(std::move(<a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>));</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>}</div>
+</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}  <span class="comment">// namespace eve::fluids</span></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aHexSphereMesh_8cpp_html_a3ac73cb3882ce4d27f939ed60e19fdae"><div class="ttname"><a href="HexSphereMesh_8cpp.html#a3ac73cb3882ce4d27f939ed60e19fdae">up</a></div><div class="ttdeci">HexVec3 up</div><div class="ttdef"><b>Definition</b> <a href="HexSphereMesh_8cpp_source.html#l00218">HexSphereMesh.cpp:218</a></div></div>
+<div class="ttc" id="aHexSphereMesh_8cpp_html_a693f5ccb2102b8c2a7eb23cbb1e337bc"><div class="ttname"><a href="HexSphereMesh_8cpp.html#a693f5ccb2102b8c2a7eb23cbb1e337bc">right</a></div><div class="ttdeci">HexVec3 right</div><div class="ttdef"><b>Definition</b> <a href="HexSphereMesh_8cpp_source.html#l00220">HexSphereMesh.cpp:220</a></div></div>
+<div class="ttc" id="aJoint2DBindings_8cpp_html_ae10a8406c828c4e67a5a81a81280531f"><div class="ttname"><a href="Joint2DBindings_8cpp.html#ae10a8406c828c4e67a5a81a81280531f">axis</a></div><div class="ttdeci">JointPoint2D axis</div><div class="ttdef"><b>Definition</b> <a href="Joint2DBindings_8cpp_source.html#l00016">Joint2DBindings.cpp:16</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a234e391f8e3e00f064813b98fb8f3cdb"><div class="ttname"><a href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a></div><div class="ttdeci">MeleePoint3 b</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00041">MeleeHit.cpp:41</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a65cfd4d3d71b298048a6baf087fe6579"><div class="ttname"><a href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a></div><div class="ttdeci">MeleePoint3 a</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00040">MeleeHit.cpp:40</a></div></div>
+<div class="ttc" id="aMeshContactBlend_8cpp_html_a60a7fb4d9322c3ce2c36a55154a398bd"><div class="ttname"><a href="MeshContactBlend_8cpp.html#a60a7fb4d9322c3ce2c36a55154a398bd">order</a></div><div class="ttdeci">std::vector&lt; std::int32_t &gt; order</div><div class="ttdef"><b>Definition</b> <a href="MeshContactBlend_8cpp_source.html#l00126">MeshContactBlend.cpp:126</a></div></div>
+<div class="ttc" id="aOceanSprayRenderer_8h_html"><div class="ttname"><a href="OceanSprayRenderer_8h.html">OceanSprayRenderer.h</a></div></div>
+<div class="ttc" id="aOnnxQuant_8cpp_html_a17baa4f903ac9966a0197d7067d9b425"><div class="ttname"><a href="OnnxQuant_8cpp.html#a17baa4f903ac9966a0197d7067d9b425">finite</a></div><div class="ttdeci">bool finite</div><div class="ttdef"><b>Definition</b> <a href="OnnxQuant_8cpp_source.html#l00637">OnnxQuant.cpp:637</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_a4eeac3157ac481ce95fa8dd8e5e12a5f"><div class="ttname"><a href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a></div><div class="ttdeci">ScriptStructure out</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00023">ScriptStructure.cpp:23</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a6f4dca6b48529c4d3dade0e8d46f4e43"><div class="ttname"><a href="TileConfig_8cpp.html#a6f4dca6b48529c4d3dade0e8d46f4e43">opacity</a></div><div class="ttdeci">float opacity</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00785">TileConfig.cpp:785</a></div></div>
+<div class="ttc" id="aVehicleTires3D_8cpp_html_a41694d5f784f19074af5a03f8c929abd"><div class="ttname"><a href="VehicleTires3D_8cpp.html#a41694d5f784f19074af5a03f8c929abd">forward</a></div><div class="ttdeci">V forward</div><div class="ttdef"><b>Definition</b> <a href="VehicleTires3D_8cpp_source.html#l00102">VehicleTires3D.cpp:102</a></div></div>
+<div class="ttc" id="aVolumeFluidFoamSurface_8cpp_html_ac41ee5e90dfa1dead2adafcda2f01a08"><div class="ttname"><a href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a></div><div class="ttdeci">glm::vec3 point</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidFoamSurface_8cpp_source.html#l00304">VolumeFluidFoamSurface.cpp:304</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a416c54d38b93dae0b4006c561c71bbb7"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8cpp_source.html#l00014">Diagnostic.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00184">Result.h:184</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00195">Result.h:195</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanSprayFrame_html_a07bceaa87601326b8bdfa4a967f2aac2"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanSprayFrame.html#a07bceaa87601326b8bdfa4a967f2aac2">eve::fluids::OceanSprayFrame::particles</a></div><div class="ttdeci">std::span&lt; const OceanSprayParticle &gt; particles() const</div><div class="ttdoc">Borrow particles until this frame is destroyed or moved; never retain across replacement.</div><div class="ttdef"><b>Definition</b> <a href="OceanSpray_8h_source.html#l00050">OceanSpray.h:50</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanSprayFrame_html_a0eef14db12c74080a78223d8f4de9c0a"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanSprayFrame.html#a0eef14db12c74080a78223d8f4de9c0a">eve::fluids::OceanSprayFrame::time</a></div><div class="ttdeci">double time() const</div><div class="ttdoc">Simulation seconds represented by this frame.</div><div class="ttdef"><b>Definition</b> <a href="OceanSpray_8h_source.html#l00052">OceanSpray.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanSprayMeshBuilder_html_a78d18e33be87d1590aa54cd5d5ac70b5"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#a78d18e33be87d1590aa54cd5d5ac70b5">eve::fluids::OceanSprayMeshBuilder::build</a></div><div class="ttdeci">EVENGINE_API_DOMAINS Result&lt; OceanSprayMeshFrame &gt; build() const</div><div class="ttdoc">Sort back-to-front and build camera-facing quads in a floating render origin.</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayMesh_8cpp_source.html#l00007">OceanSprayMesh.cpp:7</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanSprayMeshBuilder_html_a889f787635623cf1ca5fc2d9fef1799c"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#a889f787635623cf1ca5fc2d9fef1799c">eve::fluids::OceanSprayMeshBuilder::view</a></div><div class="ttdeci">OceanSprayView view</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00026">OceanSprayRenderer.h:26</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_1_1ocean__script_html_ad23d23762c333240818be8885f83357c"><div class="ttname"><a href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">eve::fluids::ocean_script::vector</a></div><div class="ttdeci">Value vector(glm::dvec3 v)</div><div class="ttdef"><b>Definition</b> <a href="OceanBindingInternal_8h_source.html#l00033">OceanBindingInternal.h:33</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html"><div class="ttname"><a href="namespaceeve_1_1fluids.html">eve::fluids</a></div><div class="ttdoc">GLSL compute kernels for the GPU surface-flow solver.</div><div class="ttdef"><b>Definition</b> <a href="FluidTarget_8h_source.html#l00012">FluidTarget.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanSprayMeshFrame_html"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanSprayMeshFrame.html">eve::fluids::OceanSprayMeshFrame</a></div><div class="ttdoc">Owning batch; attributes store (coverage,0,0) in the mesh normal attribute.</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00016">OceanSprayRenderer.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanSprayMeshFrame_html_aa904802cbd227af66ec7253b4fc4f759"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanSprayMeshFrame.html#aa904802cbd227af66ec7253b4fc4f759">eve::fluids::OceanSprayMeshFrame::time</a></div><div class="ttdeci">double time</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00019">OceanSprayRenderer.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanSprayView_html_a3d88407a9378bd7b08d9e58a3d2f4ac8"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanSprayView.html#a3d88407a9378bd7b08d9e58a3d2f4ac8">eve::fluids::OceanSprayView::origin</a></div><div class="ttdeci">glm::dvec3 origin</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00013">OceanSprayRenderer.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanSprayView_html_a42563ab3dae661ca62e488b90ac23d64"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanSprayView.html#a42563ab3dae661ca62e488b90ac23d64">eve::fluids::OceanSprayView::eye</a></div><div class="ttdeci">glm::dvec3 eye</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00013">OceanSprayRenderer.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanSprayView_html_a9f98760326e4b4ff4a3bbbeace20e13c"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanSprayView.html#a9f98760326e4b4ff4a3bbbeace20e13c">eve::fluids::OceanSprayView::up</a></div><div class="ttdeci">glm::dvec3 up</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00013">OceanSprayRenderer.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanSprayView_html_a9fa5f15a0ce0193a92dbf02579aba57b"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanSprayView.html#a9fa5f15a0ce0193a92dbf02579aba57b">eve::fluids::OceanSprayView::forward</a></div><div class="ttdeci">glm::dvec3 forward</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00013">OceanSprayRenderer.h:13</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

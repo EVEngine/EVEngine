@@ -1,0 +1,222 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: Release Process</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">Release Process</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>Release Process</h1>
+<p><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/dev/发布流程.md">中文</a> · <a class="el" href="dev_guide_en.html">Developer index</a></p>
+<p><code>main</code> is the latest official release and default branch. Development happens on <code>dev</code>; each release uses an isolated <code>vMAJOR.MINOR.PATCH</code> branch. <code>scripts/release.py</code> implements these conventions.</p>
+<h2>Repository setup</h2>
+<p>Keep <code>main</code> as default. Initial setup, if dev does not yet exist:</p>
+<div class="fragment"><div class="line">git fetch origin</div>
+<div class="line">git branch dev origin/main</div>
+<div class="line">git push -u origin dev</div>
+</div><!-- fragment --><p>Recommended main protection requires PRs and <code>main-gate</code>, blocks force pushes/deletions and has no bypass. The gate allows documentation-only changes or official <code>promote/vX.X.X</code> PRs; it rejects direct engine-code promotion from dev.</p>
+<p>dev may require PRs. The Chinese policy cautions against mandatory status checks for token-created rebase/sync-docs PRs because they may not trigger workflows. Existing sync-docs automation opens a PR without directly pushing dev; this is separate from hand-maintained English translations.</p>
+<h2>Publish a version</h2>
+<ol type="1">
+<li>Ensure the intended commit is on dev.</li>
+<li>Create a GitHub Pre-release at that dev HEAD with a tag such as <code>v0.1.0</code>. Tags must use <code>vMAJOR.MINOR.PATCH</code>; the tree initially has the development version.</li>
+<li>Release runs <code>release.py start</code>: create the version branch, remove <code>-dev</code>, move the tag to the release commit. Run strict Debug CI, desktop Release builds/tests and mobile Release builds, then package five-platform SDKs and attach them.</li>
+<li><code>release.py finish</code> promotes the release, restores the same numeric version plus <code>-dev</code> on the version branch and opens two PRs: <code>promote/vX.X.X</code> to main and <code>rebase/vX.X.X</code> to dev. It directly pushes neither protected branch.</li>
+<li>A maintainer merges promotion first, then rebase.</li>
+</ol>
+<p>On rebase conflicts, follow the PR's continuation instructions and push the resolution to its rebase branch; never force-push dev. A new Pre-release tag determines the next number: a higher number than the tree is permitted, downgrading is rejected. finish restores the released number plus <code>-dev</code>, not an invented next version.</p>
+<h2>Version consistency</h2>
+<p>Required touchpoints include <code>CMakeLists.txt</code>, Android template versionName/derived versionCode, MCP serverInfo.version, version banners in basic/iOS/Android game-shell scripts and Doxygen's version in <code>docs/CMakeLists.txt</code>.</p>
+<p>start rewrites required touchpoints together. <code>python3 scripts/release.py check-versions</code> catches mismatches. Independent tool package versions report warnings and are not rewritten as engine versions. Android's code formula is <code>major*10000 + minor*100 + patch</code>.</p>
+<h2>SDK packaging</h2>
+<p>SDKs preserve engine/vendored licenses and relative attribution paths under <code>share/eve/licenses/</code>. Enabled module headers follow the module manifest rather than a separate whitelist.</p>
+<p>Five-platform SDK tests check layout, exact versions, zip/package operations and native plugin compilation via <code>find_package(EVEngine)</code> / <code>add_eve_plugin()</code>. Android also assembles the template APK; iOS checks the device bundle, Mach-O executable and arm64 slice. Missing required mobile tools fail rather than skip.</p>
+<p>Before publication, every archive's <code>share/eve/VERSION</code> must match the tag. Upload SHA256SUMS with SDKs; artifact attestations may be enabled.</p>
+<h2>Consumer validation</h2>
+<p>After upload, sdk-release.yml exercises real artifacts through consumer-test.sh:</p>
+<ul>
+<li>Desktop hosts download their SDK, verify eve's version, fetch the official Android SDK/toolchain with checksum validation, build/inspect an APK and its runtime/game assets/launcher, package a host game and actually launch it. Require <code>EVE_CI_GAME_OK</code>.</li>
+<li>Supported cross-host packaging combinations produce Windows/Linux games run on their target platforms with software Vulkan. Packaging alone is insufficient.</li>
+<li>Android collects APKs from all three desktop host consumers, installs each in an arm64 emulator, launches <code>EVEngineActivity</code> and requires the logcat startup marker. Missing artifacts or failed launches block publication.</li>
+<li>iOS builds a simulator application from release source, installs/launches with simctl and checks the marker. Device SDK bundle/arm64 checks remain separate because device apps cannot run in the simulator.</li>
+</ul>
+<p>Windows SDKs bundle the Vulkan loader and VC runtime. Packaging selects runtime names using TARGET_PLATFORM. Unbuffered stdout makes startup markers visible to CI promptly.</p>
+<h2>Retry and cleanup</h2>
+<p>start is idempotent for the same tag. A strict-test/SDK failure leaves the release commit/tag and Pre-release intact: repair and rerun Release for that tag. A partly completed finish reuses existing official release and promotion/rebase PRs. Resolve conflicts on the rebase branch.</p>
+<p>cleanup-branches removes merged version/promotion/rebase branches through the scheduled or manually dispatched workflow. It never deletes tags, main or dev.</p>
+<h2>Documentation-only main changes</h2>
+<p>main-gate permits README variants, docs/** and Doxyfile. After merging, existing Sync docs opens sync-docs/from-main to dev using only document-path differences since the merge base. Other changes belong on dev; release touchpoints follow the release rebase pipeline.</p>
+<h2>Local commands</h2>
+<p>The script requires GitHub <a class="el" href="namespaceCLI.html">CLI</a> on PATH. Preview before write operations:</p>
+<div class="fragment"><div class="line">python scripts/release.py --dry-run start --tag v0.1.0</div>
+<div class="line">python scripts/release.py start --tag v0.1.0</div>
+<div class="line">python scripts/release.py finish --tag v0.1.0</div>
+<div class="line">python scripts/release.py sync-docs</div>
+<div class="line">python scripts/release.py check-main-pr</div>
+<div class="line">python scripts/release.py check-versions</div>
+<div class="line">python scripts/release.py cleanup-branches</div>
+</div><!-- fragment --><p>The version is illustrative, not an instruction to create that release. Script tests run without network:</p>
+<div class="fragment"><div class="line">python -m unittest discover -s scripts/tests -p &quot;test_*.py&quot; -v</div>
+</div><!-- fragment --> </div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

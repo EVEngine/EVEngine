@@ -1,0 +1,733 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::scene_editing 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1scene__editing.html">scene_editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::scene_editing 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editing_1_1CreateSceneObjectRequest.html">CreateSceneObjectRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Request used to create a scene object in either backend.  <a href="structeve_1_1scene__editing_1_1CreateSceneObjectRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1ISceneComponentInspector.html">ISceneComponentInspector</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read-only live component/link inspection capability for scene inspectors.  <a href="classeve_1_1scene__editing_1_1ISceneComponentInspector.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1ISceneComponentPayloadProvider.html">ISceneComponentPayloadProvider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Module-owned adapter for one scene component payload type.  <a href="classeve_1_1scene__editing_1_1ISceneComponentPayloadProvider.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1ISceneComponentPayloadTarget.html">ISceneComponentPayloadTarget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scene capability that discovers and routes module-owned component payload editors.  <a href="classeve_1_1scene__editing_1_1ISceneComponentPayloadTarget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1ISceneHierarchyEditTarget.html">ISceneHierarchyEditTarget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable hierarchy capability implemented by document and runtime targets.  <a href="classeve_1_1scene__editing_1_1ISceneHierarchyEditTarget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1ITransformEditTarget.html">ITransformEditTarget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capability implemented by document and live scene targets.  <a href="classeve_1_1scene__editing_1_1ITransformEditTarget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1RuntimeWorldTarget.html">RuntimeWorldTarget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Live game-world backend exposing the same standard scene capabilities.  <a href="classeve_1_1scene__editing_1_1RuntimeWorldTarget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneAuthoringDocumentTarget.html">SceneAuthoringDocumentTarget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declarative authoring composition: hierarchy plus source and presentation payloads. Owns authored values; meshes, imported hosts and cameras are rebuildable projections. @thread Owner thread only, no callbacks. No native pointers are persisted.  <a href="classeve_1_1scene__editing_1_1SceneAuthoringDocumentTarget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editing_1_1SceneComponentLinkSnapshot.html">SceneComponentLinkSnapshot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Safe metadata for one external component link on a live scene object.  <a href="structeve_1_1scene__editing_1_1SceneComponentLinkSnapshot.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editing_1_1SceneComponentPayloadRef.html">SceneComponentPayloadRef</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable, pointer-free reference to one editable component instance.  <a href="structeve_1_1scene__editing_1_1SceneComponentPayloadRef.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneComponentPayloadRegistry.html">SceneComponentPayloadRegistry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-owning registry and scene-facing router for component payload providers.  <a href="classeve_1_1scene__editing_1_1SceneComponentPayloadRegistry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneComponentPropertyBindings.html">SceneComponentPropertyBindings</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reuses existing property/operation targets as scene component payloads.  <a href="classeve_1_1scene__editing_1_1SceneComponentPropertyBindings.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneDocumentTarget.html">SceneDocumentTarget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Authoring scene-document backend exposing the standard scene capabilities.  <a href="classeve_1_1scene__editing_1_1SceneDocumentTarget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneHierarchyToolLogic.html">SceneHierarchyToolLogic</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend-neutral hierarchy editing logic for outliner-style tools.  <a href="classeve_1_1scene__editing_1_1SceneHierarchyToolLogic.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneHostEditorTarget.html">SceneHostEditorTarget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional live adapter mirroring editor operations into one SceneHost.  <a href="classeve_1_1scene__editing_1_1SceneHostEditorTarget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editing_1_1SceneObjectSnapshot.html">SceneObjectSnapshot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable scene object snapshot returned across target boundaries.  <a href="structeve_1_1scene__editing_1_1SceneObjectSnapshot.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1ScenePlacementToolLogic.html">ScenePlacementToolLogic</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend-neutral placement logic suitable for a Tool, script or command handler.  <a href="classeve_1_1scene__editing_1_1ScenePlacementToolLogic.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1ScenePropertyProvider.html">ScenePropertyProvider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Property adapter exposing scene TRS to generic inspector presenters.  <a href="classeve_1_1scene__editing_1_1ScenePropertyProvider.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editing_1_1SceneRelation.html">SceneRelation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning relation between stable scene objects, measured against admitted contact proxies or native camera raster evidence.  <a href="structeve_1_1scene__editing_1_1SceneRelation.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTargetBase.html">SceneTargetBase</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shared in-memory scene target implementation for document/runtime adapters.  <a href="classeve_1_1scene__editing_1_1SceneTargetBase.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1SceneTransformToolLogic.html">SceneTransformToolLogic</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend-neutral transform logic suitable for a Tool, script or command handler.  <a href="classeve_1_1scene__editing_1_1SceneTransformToolLogic.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1scene__editing_1_1SceneTransformValue.html">SceneTransformValue</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializable transform exchanged across the scene editing boundary.  <a href="structeve_1_1scene__editing_1_1SceneTransformValue.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:abfc2bed55db48f3d24117604e21961d2" id="r_abfc2bed55db48f3d24117604e21961d2"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene__editing.html#abfc2bed55db48f3d24117604e21961d2">AuthoringBounds</a> = std::array&lt; double, 6 &gt;</td></tr>
+<tr class="memdesc:abfc2bed55db48f3d24117604e21961d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable asset-local bounds, ordered minimum XYZ then maximum XYZ.  <br /></td></tr>
+<tr class="separator:abfc2bed55db48f3d24117604e21961d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae48ab0c2d5327089a10160b2b39064bd" id="r_ae48ab0c2d5327089a10160b2b39064bd"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene__editing.html#ae48ab0c2d5327089a10160b2b39064bd">EditorStatus</a> = <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">editing::Status</a></td></tr>
+<tr class="separator:ae48ab0c2d5327089a10160b2b39064bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a0262a9187dbe53742b23b25e875c35" id="r_a6a0262a9187dbe53742b23b25e875c35"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene__editing.html#a6a0262a9187dbe53742b23b25e875c35">EditorValue</a> = <a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a></td></tr>
+<tr class="separator:a6a0262a9187dbe53742b23b25e875c35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e70faff6ed3f81bcf6cb96d45244bf0" id="r_a0e70faff6ed3f81bcf6cb96d45244bf0"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene__editing.html#a0e70faff6ed3f81bcf6cb96d45244bf0">EditorDiagnostic</a> = <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">editing::Diagnostic</a></td></tr>
+<tr class="separator:a0e70faff6ed3f81bcf6cb96d45244bf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:aca79ec7b927e9964a1146fa9d298cb5d" id="r_aca79ec7b927e9964a1146fa9d298cb5d"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene__editing.html#aca79ec7b927e9964a1146fa9d298cb5d">SceneComponentChange</a> { <a class="el" href="namespaceeve_1_1scene__editing.html#aca79ec7b927e9964a1146fa9d298cb5da820dbd2b8f606aff866c0bbfb6b737c1">Changed</a>
+, <a class="el" href="namespaceeve_1_1scene__editing.html#aca79ec7b927e9964a1146fa9d298cb5da5ff3c6978f87d96febfdc8ed3899a97e">Unchanged</a>
+ }</td></tr>
+<tr class="memdesc:aca79ec7b927e9964a1146fa9d298cb5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a registry or binding removal changed authoritative state.  <a href="namespaceeve_1_1scene__editing.html#aca79ec7b927e9964a1146fa9d298cb5d">更多...</a><br /></td></tr>
+<tr class="separator:aca79ec7b927e9964a1146fa9d298cb5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76d65b5af79e0a014d62f667e269110f" id="r_a76d65b5af79e0a014d62f667e269110f"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene__editing.html#a76d65b5af79e0a014d62f667e269110f">SceneRelationKind</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1scene__editing.html#a76d65b5af79e0a014d62f667e269110faeb7d3a9e1c2bd85c48f19c3e04977831">SupportedOn</a>
+, <a class="el" href="namespaceeve_1_1scene__editing.html#a76d65b5af79e0a014d62f667e269110fa09a5be583192536c34930d87682b454e">Nonpenetrating</a>
+, <a class="el" href="namespaceeve_1_1scene__editing.html#a76d65b5af79e0a014d62f667e269110fa9fe36cb666a80883fe8d1fb3d4e5a0b8">VisibleFraction</a>
+, <a class="el" href="namespaceeve_1_1scene__editing.html#a76d65b5af79e0a014d62f667e269110fa76d9b2c1dd5977921aaee076e8f0c199">Occludes</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1scene__editing.html#a76d65b5af79e0a014d62f667e269110fa04b2b6aaccbf4dc43e3d8f14e619a4f4">ProjectedOverlap</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a76d65b5af79e0a014d62f667e269110f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Supported authoring relations; these do not create transform parenting or runtime joints.  <a href="namespaceeve_1_1scene__editing.html#a76d65b5af79e0a014d62f667e269110f">更多...</a><br /></td></tr>
+<tr class="separator:a76d65b5af79e0a014d62f667e269110f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a506dfc83d1a9a4823280e3dfa8b2f31a" id="r_a506dfc83d1a9a4823280e3dfa8b2f31a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1editing.html#a69c9bf05ec03afaf2b389ee7df89f13e">EditorValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene__editing.html#a506dfc83d1a9a4823280e3dfa8b2f31a">inspectAuthoringObject</a> (const <a class="el" href="classeve_1_1scene__editing_1_1ISceneHierarchyEditTarget.html">ISceneHierarchyEditTarget</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">ObjectId</a> &amp;<a class="el" href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a>, const <a class="el" href="namespaceeve_1_1scene__editing.html#abfc2bed55db48f3d24117604e21961d2">AuthoringBounds</a> &amp;<a class="el" href="webgpu_2GraphicsGpuDriven_8cpp.html#a940cebe82cc3421a1b665752b3131564">bounds</a>)</td></tr>
+<tr class="memdesc:a506dfc83d1a9a4823280e3dfa8b2f31a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inspect world geometry derived from the canonical hierarchy and asset bounds.  <br /></td></tr>
+<tr class="separator:a506dfc83d1a9a4823280e3dfa8b2f31a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3a32297626e75f666c6d389f82723a7" id="r_ac3a32297626e75f666c6d389f82723a7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene__editing.html#ac3a32297626e75f666c6d389f82723a7">registerAuthoringCommands</a> (<a class="el" href="classeve_1_1editing_1_1IEditingCommandRegistry.html">editing::IEditingCommandRegistry</a> &amp;<a class="el" href="ProjectIndexAutomatic_8cpp.html#af921fa52c376e1d3dfe04f7f70926b51">registry</a>)</td></tr>
+<tr class="memdesc:ac3a32297626e75f666c6d389f82723a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register ground, surface-edge alignment and screen-anchor placement planners.  <br /></td></tr>
+<tr class="separator:ac3a32297626e75f666c6d389f82723a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa83aaa1033eaba5f2e9e8f220a695e57" id="r_aa83aaa1033eaba5f2e9e8f220a695e57"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene__editing.html#aa83aaa1033eaba5f2e9e8f220a695e57">registerAuthoringDocumentCommands</a> (<a class="el" href="classeve_1_1editing_1_1IEditingCommandRegistry.html">editing::IEditingCommandRegistry</a> &amp;<a class="el" href="ProjectIndexAutomatic_8cpp.html#af921fa52c376e1d3dfe04f7f70926b51">registry</a>)</td></tr>
+<tr class="memdesc:aa83aaa1033eaba5f2e9e8f220a695e57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register authored source creation and camera/lighting payload commands.  <br /></td></tr>
+<tr class="separator:aa83aaa1033eaba5f2e9e8f220a695e57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c3674a00c2291e774ac481f0e5dc739" id="r_a5c3674a00c2291e774ac481f0e5dc739"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene__editing.html#a5c3674a00c2291e774ac481f0e5dc739">makeSceneComponentSelection</a> (std::string channel, const std::vector&lt; <a class="el" href="structeve_1_1scene__editing_1_1SceneComponentPayloadRef.html">SceneComponentPayloadRef</a> &gt; &amp;components, std::uint64_t <a class="el" href="OnnxGpgpu_8cpp.html#ac98a13023de54e01aa103efe550e5e8d">sequence</a>=0)</td></tr>
+<tr class="memdesc:a5c3674a00c2291e774ac481f0e5dc739"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a property selection for one or more homogeneous component references.  <br /></td></tr>
+<tr class="separator:a5c3674a00c2291e774ac481f0e5dc739"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80ced2869e764df2d7f878c5a93179bc" id="r_a80ced2869e764df2d7f878c5a93179bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene__editing.html#a80ced2869e764df2d7f878c5a93179bc">registerEditingCommands</a> (<a class="el" href="classeve_1_1editing_1_1IEditingCommandRegistry.html">editing::IEditingCommandRegistry</a> &amp;<a class="el" href="ProjectIndexAutomatic_8cpp.html#af921fa52c376e1d3dfe04f7f70926b51">registry</a>)</td></tr>
+<tr class="memdesc:a80ced2869e764df2d7f878c5a93179bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register Scene-owned commands with a generic editing host.  <br /></td></tr>
+<tr class="separator:a80ced2869e764df2d7f878c5a93179bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a514b2e08237a3543e91dadd90f10a1ab" id="r_a514b2e08237a3543e91dadd90f10a1ab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene__editing.html#a514b2e08237a3543e91dadd90f10a1ab">sceneGeometryRevision</a> (const <a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a> &amp;<a class="el" href="McpProjectIndexTools_8cpp.html#ad48627cd289655d382112b727e253919">snapshot</a>, const <a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">editing::ObjectId</a> &amp;<a class="el" href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a>)</td></tr>
+<tr class="memdesc:a514b2e08237a3543e91dadd90f10a1ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Derive a stable geometry recipe revision from the authoritative document source. @thread Owner thread, no callbacks; snapshot borrowed only during call. @cost Source recipe serialization per explicit inspection; excludes transforms/materials.  <br /></td></tr>
+<tr class="separator:a514b2e08237a3543e91dadd90f10a1ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b0596d8b5fa3d2ea232b71277ab0a1e" id="r_a1b0596d8b5fa3d2ea232b71277ab0a1e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; <a class="el" href="classeve_1_1editing_1_1Value.html#a3c88bc09ffc0ed051db4007328a54971">editing::Value::Array</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene__editing.html#a1b0596d8b5fa3d2ea232b71277ab0a1e">sceneVisibilityTargets</a> (const std::vector&lt; <a class="el" href="structeve_1_1scene__editing_1_1SceneRelation.html">SceneRelation</a> &gt; &amp;relations, const <a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a> &amp;<a class="el" href="McpProjectIndexTools_8cpp.html#ad48627cd289655d382112b727e253919">snapshot</a>)</td></tr>
+<tr class="memdesc:a1b0596d8b5fa3d2ea232b71277ab0a1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build bounded raster targets and reject regions whose source geometry changed. @thread Owner thread; pure value planning without projection or scene mutation. @cost Linear in visual relations plus recipe serialization per explicit preview preparation.  <br /></td></tr>
+<tr class="separator:a1b0596d8b5fa3d2ea232b71277ab0a1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00b8c163f96913d21cdc7c78bd7c1b38" id="r_a00b8c163f96913d21cdc7c78bd7c1b38"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1scene__editing_1_1SceneRelation.html">SceneRelation</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1scene__editing.html#a00b8c163f96913d21cdc7c78bd7c1b38">parseSceneRelations</a> (const <a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a> &amp;<a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>, const <a class="el" href="classeve_1_1scene__editing_1_1ISceneHierarchyEditTarget.html">ISceneHierarchyEditTarget</a> &amp;hierarchy)</td></tr>
+<tr class="memdesc:a00b8c163f96913d21cdc7c78bd7c1b38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strictly decode physical and visual relations and validate all referenced objects.  <br /></td></tr>
+<tr class="separator:a00b8c163f96913d21cdc7c78bd7c1b38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="abfc2bed55db48f3d24117604e21961d2" name="abfc2bed55db48f3d24117604e21961d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfc2bed55db48f3d24117604e21961d2">&#9670;&#160;</a></span>AuthoringBounds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1scene__editing.html#abfc2bed55db48f3d24117604e21961d2">eve::scene_editing::AuthoringBounds</a> = typedef std::array&lt;double, 6&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Immutable asset-local bounds, ordered minimum XYZ then maximum XYZ. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneAuthoring_8h_source.html">SceneAuthoring.h</a> 第 <a class="el" href="SceneAuthoring_8h_source.html#l00014">14</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0e70faff6ed3f81bcf6cb96d45244bf0" name="a0e70faff6ed3f81bcf6cb96d45244bf0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e70faff6ed3f81bcf6cb96d45244bf0">&#9670;&#160;</a></span>EditorDiagnostic</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1scene__editing.html#a0e70faff6ed3f81bcf6cb96d45244bf0">eve::scene_editing::EditorDiagnostic</a> = typedef <a class="el" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">editing::Diagnostic</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneEditingTypes_8h_source.html">SceneEditingTypes.h</a> 第 <a class="el" href="SceneEditingTypes_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae48ab0c2d5327089a10160b2b39064bd" name="ae48ab0c2d5327089a10160b2b39064bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae48ab0c2d5327089a10160b2b39064bd">&#9670;&#160;</a></span>EditorStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">eve::scene_editing::EditorStatus</a> = typedef <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597f">editing::Status</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneEditingTypes_8h_source.html">SceneEditingTypes.h</a> 第 <a class="el" href="SceneEditingTypes_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6a0262a9187dbe53742b23b25e875c35" name="a6a0262a9187dbe53742b23b25e875c35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a0262a9187dbe53742b23b25e875c35">&#9670;&#160;</a></span>EditorValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1editing.html#a69c9bf05ec03afaf2b389ee7df89f13e">eve::scene_editing::EditorValue</a> = typedef <a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SceneEditingTypes_8h_source.html">SceneEditingTypes.h</a> 第 <a class="el" href="SceneEditingTypes_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="aca79ec7b927e9964a1146fa9d298cb5d" name="aca79ec7b927e9964a1146fa9d298cb5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca79ec7b927e9964a1146fa9d298cb5d">&#9670;&#160;</a></span>SceneComponentChange</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1scene__editing.html#aca79ec7b927e9964a1146fa9d298cb5d">eve::scene_editing::SceneComponentChange</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether a registry or binding removal changed authoritative state. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="aca79ec7b927e9964a1146fa9d298cb5da820dbd2b8f606aff866c0bbfb6b737c1" name="aca79ec7b927e9964a1146fa9d298cb5da820dbd2b8f606aff866c0bbfb6b737c1"></a>Changed&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aca79ec7b927e9964a1146fa9d298cb5da5ff3c6978f87d96febfdc8ed3899a97e" name="aca79ec7b927e9964a1146fa9d298cb5da5ff3c6978f87d96febfdc8ed3899a97e"></a>Unchanged&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="SceneComponentPayload_8h_source.html">SceneComponentPayload.h</a> 第 <a class="el" href="SceneComponentPayload_8h_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a76d65b5af79e0a014d62f667e269110f" name="a76d65b5af79e0a014d62f667e269110f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76d65b5af79e0a014d62f667e269110f">&#9670;&#160;</a></span>SceneRelationKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1scene__editing.html#a76d65b5af79e0a014d62f667e269110f">eve::scene_editing::SceneRelationKind</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Supported authoring relations; these do not create transform parenting or runtime joints. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a76d65b5af79e0a014d62f667e269110faeb7d3a9e1c2bd85c48f19c3e04977831" name="a76d65b5af79e0a014d62f667e269110faeb7d3a9e1c2bd85c48f19c3e04977831"></a>SupportedOn&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a76d65b5af79e0a014d62f667e269110fa09a5be583192536c34930d87682b454e" name="a76d65b5af79e0a014d62f667e269110fa09a5be583192536c34930d87682b454e"></a>Nonpenetrating&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a76d65b5af79e0a014d62f667e269110fa9fe36cb666a80883fe8d1fb3d4e5a0b8" name="a76d65b5af79e0a014d62f667e269110fa9fe36cb666a80883fe8d1fb3d4e5a0b8"></a>VisibleFraction&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a76d65b5af79e0a014d62f667e269110fa76d9b2c1dd5977921aaee076e8f0c199" name="a76d65b5af79e0a014d62f667e269110fa76d9b2c1dd5977921aaee076e8f0c199"></a>Occludes&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a76d65b5af79e0a014d62f667e269110fa04b2b6aaccbf4dc43e3d8f14e619a4f4" name="a76d65b5af79e0a014d62f667e269110fa04b2b6aaccbf4dc43e3d8f14e619a4f4"></a>ProjectedOverlap&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="SceneRelations_8h_source.html">SceneRelations.h</a> 第 <a class="el" href="SceneRelations_8h_source.html#l00010">10</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a506dfc83d1a9a4823280e3dfa8b2f31a" name="a506dfc83d1a9a4823280e3dfa8b2f31a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a506dfc83d1a9a4823280e3dfa8b2f31a">&#9670;&#160;</a></span>inspectAuthoringObject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a74b09fdcf18b26aea79409bf319c562c">EVENGINE_API_BACKENDS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1editing.html#a69c9bf05ec03afaf2b389ee7df89f13e">EditorValue</a> &gt; eve::scene_editing::inspectAuthoringObject </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1scene__editing_1_1ISceneHierarchyEditTarget.html">ISceneHierarchyEditTarget</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">ObjectId</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1scene__editing.html#abfc2bed55db48f3d24117604e21961d2">AuthoringBounds</a> &amp;&#160;</td>
+          <td class="paramname"><em>bounds</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Inspect world geometry derived from the canonical hierarchy and asset bounds. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">target</td><td>Borrowed hierarchy, retained only for this synchronous call. </td></tr>
+    <tr><td class="paramname">object</td><td>Stable host-local object identity. </td></tr>
+    <tr><td class="paramname">bounds</td><td>Immutable asset-local AABB; finite, ordered coordinates are required. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning world matrix, corners, AABB and bottom-center anchor, or a diagnostic. @thread Owner thread only. No mutation, callbacks or retained references. @cost Eight corner transforms plus ancestor traversal per object; use per edit/query. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SceneAuthoring_8cpp_source.html">SceneAuthoring.cpp</a> 第 <a class="el" href="SceneAuthoring_8cpp_source.html#l00197">197</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00049">bounds</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00033">center</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00012">column</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="SceneAuthoring_8cpp_source.html#l00064">matrix</a>, <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html#l00304">point</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00052">result</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a>.</p>
+
+</div>
+</div>
+<a id="a5c3674a00c2291e774ac481f0e5dc739" name="a5c3674a00c2291e774ac481f0e5dc739"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c3674a00c2291e774ac481f0e5dc739">&#9670;&#160;</a></span>makeSceneComponentSelection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a74b09fdcf18b26aea79409bf319c562c">EVENGINE_API_BACKENDS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">SelectionSnapshot</a> &gt; eve::scene_editing::makeSceneComponentSelection </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>channel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1scene__editing_1_1SceneComponentPayloadRef.html">SceneComponentPayloadRef</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>components</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>sequence</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build a property selection for one or more homogeneous component references. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneComponentPayload_8cpp_source.html">SceneComponentPayload.cpp</a> 第 <a class="el" href="SceneComponentPayload_8cpp_source.html#l00249">249</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingSelection_8h_source.html#l00021">eve::editing::SelectionSnapshot::channel</a>, <a class="el" href="Identity_8h_source.html#l00377">eve::UuidIdAdapter&lt; Tag &gt;::empty()</a>, <a class="el" href="SceneComponentPayload_8cpp_source.html#l00249">makeSceneComponentSelection()</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00052">result</a>, <a class="el" href="OnnxGpgpu_8cpp_source.html#l00043">sequence</a> , 以及 <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00016">type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneComponentPayload_8cpp_source.html#l00249">makeSceneComponentSelection()</a>.</p>
+
+</div>
+</div>
+<a id="a00b8c163f96913d21cdc7c78bd7c1b38" name="a00b8c163f96913d21cdc7c78bd7c1b38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00b8c163f96913d21cdc7c78bd7c1b38">&#9670;&#160;</a></span>parseSceneRelations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a74b09fdcf18b26aea79409bf319c562c">EVENGINE_API_BACKENDS</a> <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1scene__editing_1_1SceneRelation.html">SceneRelation</a> &gt; &gt; eve::scene_editing::parseSceneRelations </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1scene__editing_1_1ISceneHierarchyEditTarget.html">ISceneHierarchyEditTarget</a> &amp;&#160;</td>
+          <td class="paramname"><em>hierarchy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Strictly decode physical and visual relations and validate all referenced objects. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">value</td><td>Array of relation objects; unknown types and fields are rejected. </td></tr>
+    <tr><td class="paramname">hierarchy</td><td>Borrowed only for this owner-thread call. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Independent owning relations or a diagnostic, without changing the target. @cost Linear in relation count plus object lookup per restore or edit. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SceneRelations_8cpp_source.html">SceneRelations.cpp</a> 第 <a class="el" href="SceneRelations_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="SceneLocalRegion_8cpp_source.html#l00004">eve::SceneLocalRegion::fromValue()</a>, <a class="el" href="EditingValue_8h_source.html#l00078">eve::editing::Value::getIf()</a>, <a class="el" href="McpArchitectureTools_8cpp_source.html#l00017">id</a>, <a class="el" href="SceneRelations_8h_source.html#l00014">eve::scene_editing::SceneRelation::id</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00050">ids</a>, <a class="el" href="ECS_8cpp_source.html#l00155">key</a>, <a class="el" href="GltfAnimation_8cpp_source.html#l00017">message</a>, <a class="el" href="namespaceeve_1_1scene__editing.html#a76d65b5af79e0a014d62f667e269110fa09a5be583192536c34930d87682b454e">Nonpenetrating</a>, <a class="el" href="TileConfig_8cpp_source.html#l00782">object</a>, <a class="el" href="namespaceeve_1_1scene__editing.html#a76d65b5af79e0a014d62f667e269110fa76d9b2c1dd5977921aaee076e8f0c199">Occludes</a>, <a class="el" href="Capability_8cpp_source.html#l00015">priority</a>, <a class="el" href="namespaceeve_1_1scene__editing.html#a76d65b5af79e0a014d62f667e269110fa04b2b6aaccbf4dc43e3d8f14e619a4f4">ProjectedOverlap</a>, <a class="el" href="Authority_8cpp_source.html#l00024">reference</a>, <a class="el" href="ForceBindings_8cpp_source.html#l00045">region</a>, <a class="el" href="McpArchitectureTools_8cpp_source.html#l00020">relation</a>, <a class="el" href="RoadPresetDocument_8cpp_source.html#l00328">resolved</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00052">result</a>, <a class="el" href="classeve_1_1scene__editing_1_1ISceneHierarchyEditTarget.html#a9ebc449944196579830a64016996ab32">eve::scene_editing::ISceneHierarchyEditTarget::sceneObject()</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="namespaceeve_1_1scene__editing.html#a76d65b5af79e0a014d62f667e269110faeb7d3a9e1c2bd85c48f19c3e04977831">SupportedOn</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00011">text</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00098">eve::editing::toPresentationValue()</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00016">type</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>, <a class="el" href="ProjectIndexAutomatic_8cpp_source.html#l00016">values</a> , 以及 <a class="el" href="namespaceeve_1_1scene__editing.html#a76d65b5af79e0a014d62f667e269110fa9fe36cb666a80883fe8d1fb3d4e5a0b8">VisibleFraction</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorSession_8cpp_source.html#l00500">eve::scene_editor::SceneEditorSession::beginRelationPlacement()</a>, <a class="el" href="SceneEditorSession_8cpp_source.html#l00605">eve::scene_editor::SceneEditorSession::checkRelationPlacement()</a>, <a class="el" href="SceneAuthoringDocument_8cpp_source.html#l00128">eve::scene_editing::SceneAuthoringDocumentTarget::makeRestore()</a> , 以及 <a class="el" href="SceneEditorSession_8cpp_source.html#l00537">eve::scene_editor::SceneEditorSession::prepareRelationVisibility()</a>.</p>
+
+</div>
+</div>
+<a id="ac3a32297626e75f666c6d389f82723a7" name="ac3a32297626e75f666c6d389f82723a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3a32297626e75f666c6d389f82723a7">&#9670;&#160;</a></span>registerAuthoringCommands()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a74b09fdcf18b26aea79409bf319c562c">EVENGINE_API_BACKENDS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::scene_editing::registerAuthoringCommands </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editing_1_1IEditingCommandRegistry.html">editing::IEditingCommandRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>registry</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register ground, surface-edge alignment and screen-anchor placement planners. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">registry</td><td>Borrowed registry owned by the editing host. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Registration status; planners produce reversible operations without mutation. @thread Owner thread only. Registry must outlive registered planners. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SceneAuthoring_8cpp_source.html">SceneAuthoring.cpp</a> 第 <a class="el" href="SceneAuthoring_8cpp_source.html#l00214">214</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00171">descriptor</a>, <a class="el" href="EditingCommandRegistry_8h_source.html#l00015">eve::editing::EditingCommandDescriptor::id</a>, <a class="el" href="ProjectIndexAutomatic_8cpp_source.html#l00024">registry</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneComponentPayload_8cpp_source.html#l00313">registerEditingCommands()</a>.</p>
+
+</div>
+</div>
+<a id="aa83aaa1033eaba5f2e9e8f220a695e57" name="aa83aaa1033eaba5f2e9e8f220a695e57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa83aaa1033eaba5f2e9e8f220a695e57">&#9670;&#160;</a></span>registerAuthoringDocumentCommands()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a74b09fdcf18b26aea79409bf319c562c">EVENGINE_API_BACKENDS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::scene_editing::registerAuthoringDocumentCommands </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editing_1_1IEditingCommandRegistry.html">editing::IEditingCommandRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>registry</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register authored source creation and camera/lighting payload commands. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneAuthoringDocument_8cpp_source.html">SceneAuthoringDocument.cpp</a> 第 <a class="el" href="SceneAuthoringDocument_8cpp_source.html#l00275">275</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Coupling3DStep_8cpp_source.html#l00032">applied</a>, <a class="el" href="SceneCapabilities_8cpp_source.html#l00669">created</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00171">descriptor</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ECS_8cpp_source.html#l00042">fields</a>, <a class="el" href="McpArchitectureTools_8cpp_source.html#l00017">id</a>, <a class="el" href="EditingCommandRegistry_8h_source.html#l00015">eve::editing::EditingCommandDescriptor::id</a>, <a class="el" href="SceneTarget_8h_source.html#l00028">eve::scene_editing::CreateSceneObjectRequest::id</a>, <a class="el" href="ECS_8cpp_source.html#l00155">key</a>, <a class="el" href="SceneTarget_8h_source.html#l00030">eve::scene_editing::CreateSceneObjectRequest::name</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00332">number</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00152">operation</a>, <a class="el" href="EditingProtocol_8h_source.html#l00078">eve::editing::CommandPlan::operations</a>, <a class="el" href="LDrawImporter_8cpp_source.html#l00073">parent</a>, <a class="el" href="SceneTarget_8h_source.html#l00029">eve::scene_editing::CreateSceneObjectRequest::parent</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00020">payload</a>, <a class="el" href="ProjectIndexAutomatic_8cpp_source.html#l00024">registry</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00020">source</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00011">text</a>, <a class="el" href="SceneTarget_8h_source.html#l00031">eve::scene_editing::CreateSceneObjectRequest::transform</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>, <a class="el" href="ProjectIndexAutomatic_8cpp_source.html#l00016">values</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneComponentPayload_8cpp_source.html#l00313">registerEditingCommands()</a>.</p>
+
+</div>
+</div>
+<a id="a80ced2869e764df2d7f878c5a93179bc" name="a80ced2869e764df2d7f878c5a93179bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80ced2869e764df2d7f878c5a93179bc">&#9670;&#160;</a></span>registerEditingCommands()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a74b09fdcf18b26aea79409bf319c562c">EVENGINE_API_BACKENDS</a> <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; void &gt; eve::scene_editing::registerEditingCommands </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editing_1_1IEditingCommandRegistry.html">editing::IEditingCommandRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>registry</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register Scene-owned commands with a generic editing host. </p>
+
+<p class="definition">在文件 <a class="el" href="SceneComponentPayload_8cpp_source.html">SceneComponentPayload.cpp</a> 第 <a class="el" href="SceneComponentPayload_8cpp_source.html#l00313">313</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlayHost_8cpp_source.html#l00118">action</a>, <a class="el" href="EditingCommandRegistry_8h_source.html#l00019">eve::editing::EditingCommandDescriptor::automationAllowed</a>, <a class="el" href="EditingCommandRegistry_8h_source.html#l00018">eve::editing::EditingCommandDescriptor::category</a>, <a class="el" href="SettlementModule_8cpp_source.html#l00035">current</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00171">descriptor</a>, <a class="el" href="EditingCommandRegistry_8h_source.html#l00017">eve::editing::EditingCommandDescriptor::displayName</a>, <a class="el" href="SceneEditingCommands_8h_source.html#l00031">eve::scene_editing::ITransformEditTarget::editingCapabilityId()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="EditingValue_8h_source.html#l00078">eve::editing::Value::getIf()</a>, <a class="el" href="McpArchitectureTools_8cpp_source.html#l00017">id</a>, <a class="el" href="EditingCommandRegistry_8h_source.html#l00015">eve::editing::EditingCommandDescriptor::id</a>, <a class="el" href="SceneTarget_8h_source.html#l00028">eve::scene_editing::CreateSceneObjectRequest::id</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00050">ids</a>, <a class="el" href="ECS_8cpp_source.html#l00155">key</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="SceneTarget_8h_source.html#l00030">eve::scene_editing::CreateSceneObjectRequest::name</a>, <a class="el" href="TileConfig_8cpp_source.html#l00782">object</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00152">operation</a>, <a class="el" href="EditingProtocol_8h_source.html#l00078">eve::editing::CommandPlan::operations</a>, <a class="el" href="EditingCommandRegistry_8h_source.html#l00016">eve::editing::EditingCommandDescriptor::ownerModule</a>, <a class="el" href="LDrawImporter_8cpp_source.html#l00073">parent</a>, <a class="el" href="SceneTarget_8h_source.html#l00029">eve::scene_editing::CreateSceneObjectRequest::parent</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00042">placement</a>, <a class="el" href="SceneAuthoring_8cpp_source.html#l00214">registerAuthoringCommands()</a>, <a class="el" href="SceneAuthoringDocument_8cpp_source.html#l00275">registerAuthoringDocumentCommands()</a>, <a class="el" href="ProjectIndexAutomatic_8cpp_source.html#l00024">registry</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="SceneEditingCommands_8h_source.html#l00014">eve::scene_editing::SceneTransformValue::rotationX</a>, <a class="el" href="SceneEditingCommands_8h_source.html#l00015">eve::scene_editing::SceneTransformValue::rotationY</a>, <a class="el" href="SceneEditingCommands_8h_source.html#l00016">eve::scene_editing::SceneTransformValue::rotationZ</a>, <a class="el" href="SceneEditingCommands_8h_source.html#l00017">eve::scene_editing::SceneTransformValue::scaleX</a>, <a class="el" href="SceneEditingCommands_8h_source.html#l00018">eve::scene_editing::SceneTransformValue::scaleY</a>, <a class="el" href="SceneEditingCommands_8h_source.html#l00019">eve::scene_editing::SceneTransformValue::scaleZ</a>, <a class="el" href="PrimitivePath_8cpp_source.html#l00488">scene</a>, <a class="el" href="EditingProtocol_8h_source.html#l00079">eve::editing::CommandPlan::summary</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00011">text</a>, <a class="el" href="SceneTarget_8h_source.html#l00031">eve::scene_editing::CreateSceneObjectRequest::transform</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00053">updated</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>, <a class="el" href="ProjectIndexAutomatic_8cpp_source.html#l00016">values</a>, <a class="el" href="SceneEditingCommands_8h_source.html#l00011">eve::scene_editing::SceneTransformValue::x</a>, <a class="el" href="SceneEditingCommands_8h_source.html#l00012">eve::scene_editing::SceneTransformValue::y</a> , 以及 <a class="el" href="SceneEditingCommands_8h_source.html#l00013">eve::scene_editing::SceneTransformValue::z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorSession_8cpp_source.html#l00285">eve::scene_editor::SceneEditorSession::Impl::Impl()</a>.</p>
+
+</div>
+</div>
+<a id="a514b2e08237a3543e91dadd90f10a1ab" name="a514b2e08237a3543e91dadd90f10a1ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a514b2e08237a3543e91dadd90f10a1ab">&#9670;&#160;</a></span>sceneGeometryRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a74b09fdcf18b26aea79409bf319c562c">EVENGINE_API_BACKENDS</a> <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; std::string &gt; eve::scene_editing::sceneGeometryRevision </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">editing::ObjectId</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Derive a stable geometry recipe revision from the authoritative document source. @thread Owner thread, no callbacks; snapshot borrowed only during call. @cost Source recipe serialization per explicit inspection; excludes transforms/materials. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning recipe identity or missing-source diagnostic; no native upload id persisted. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SceneRegions_8cpp_source.html">SceneRegions.cpp</a> 第 <a class="el" href="SceneRegions_8cpp_source.html#l00006">6</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingValueJson_8cpp_source.html#l00346">eve::editing::editorValueToJson()</a>, <a class="el" href="EditingValue_8h_source.html#l00078">eve::editing::Value::getIf()</a>, <a class="el" href="ECS_8cpp_source.html#l00155">key</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00119">root</a>, <a class="el" href="McpProjectIndexTools_8cpp_source.html#l00017">snapshot</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00020">source</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00021">sources</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorSession_8cpp_source.html#l00534">eve::scene_editor::SceneEditorSession::geometryRevision()</a> , 以及 <a class="el" href="SceneRegions_8cpp_source.html#l00019">sceneVisibilityTargets()</a>.</p>
+
+</div>
+</div>
+<a id="a1b0596d8b5fa3d2ea232b71277ab0a1e" name="a1b0596d8b5fa3d2ea232b71277ab0a1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b0596d8b5fa3d2ea232b71277ab0a1e">&#9670;&#160;</a></span>sceneVisibilityTargets()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#a74b09fdcf18b26aea79409bf319c562c">EVENGINE_API_BACKENDS</a> <a class="el" href="namespaceeve_1_1editing.html#a941124259061002fa1f7ca0b17cb6026">editing::Result</a>&lt; <a class="el" href="classeve_1_1editing_1_1Value.html#a3c88bc09ffc0ed051db4007328a54971">editing::Value::Array</a> &gt; eve::scene_editing::sceneVisibilityTargets </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1scene__editing_1_1SceneRelation.html">SceneRelation</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>relations</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editing_1_1Value.html">editing::Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build bounded raster targets and reject regions whose source geometry changed. @thread Owner thread; pure value planning without projection or scene mutation. @cost Linear in visual relations plus recipe serialization per explicit preview preparation. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning target array; repeated object/region definitions must be identical. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SceneRegions_8cpp_source.html">SceneRegions.cpp</a> 第 <a class="el" href="SceneRegions_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve_1_1scene__editing.html#a76d65b5af79e0a014d62f667e269110fa76d9b2c1dd5977921aaee076e8f0c199">Occludes</a>, <a class="el" href="namespaceeve_1_1scene__editing.html#a76d65b5af79e0a014d62f667e269110fa04b2b6aaccbf4dc43e3d8f14e619a4f4">ProjectedOverlap</a>, <a class="el" href="McpArchitectureTools_8cpp_source.html#l00020">relation</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>, <a class="el" href="SceneRegions_8cpp_source.html#l00006">sceneGeometryRevision()</a>, <a class="el" href="HexSphereTopology_8cpp_source.html#l00088">second</a>, <a class="el" href="McpProjectIndexTools_8cpp_source.html#l00017">snapshot</a>, <a class="el" href="ForceBindings_8cpp_source.html#l00165">targets</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00120">eve::editing::toEditingValue()</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a> , 以及 <a class="el" href="namespaceeve_1_1scene__editing.html#a76d65b5af79e0a014d62f667e269110fa9fe36cb666a80883fe8d1fb3d4e5a0b8">VisibleFraction</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SceneEditorSession_8cpp_source.html#l00537">eve::scene_editor::SceneEditorSession::prepareRelationVisibility()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

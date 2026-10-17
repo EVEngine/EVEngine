@@ -1,0 +1,1315 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::fluids::ShallowWaterField类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1fluids.html">fluids</a></li><li class="navelem"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">ShallowWaterField</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1fluids_1_1ShallowWaterField-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::fluids::ShallowWaterField类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>GPU-first shallow-water (2D Saint-Venant) free-surface solver.  
+ <a href="classeve_1_1fluids_1_1ShallowWaterField.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ShallowWaterField_8h_source.html">ShallowWaterField.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a0137fa80da7b36d469947167abb0f63d" id="r_a0137fa80da7b36d469947167abb0f63d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a0137fa80da7b36d469947167abb0f63d">~ShallowWaterField</a> ()</td></tr>
+<tr class="separator:a0137fa80da7b36d469947167abb0f63d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefe242256e61f6cbafa325cfb53f41c8" id="r_aefe242256e61f6cbafa325cfb53f41c8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#aefe242256e61f6cbafa325cfb53f41c8">ShallowWaterField</a> (<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">ShallowWaterField</a> &amp;)=<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">delete</a></td></tr>
+<tr class="separator:aefe242256e61f6cbafa325cfb53f41c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b75a83b69f11327dd18e86dae88f4f1" id="r_a4b75a83b69f11327dd18e86dae88f4f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">ShallowWaterField</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a4b75a83b69f11327dd18e86dae88f4f1">operator=</a> (<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">ShallowWaterField</a> &amp;)=<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">delete</a></td></tr>
+<tr class="separator:a4b75a83b69f11327dd18e86dae88f4f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79de1a34985afb07b5787aecb6d7c4bc" id="r_a79de1a34985afb07b5787aecb6d7c4bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a79de1a34985afb07b5787aecb6d7c4bc">step</a> (<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> <a class="el" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>)</td></tr>
+<tr class="memdesc:a79de1a34985afb07b5787aecb6d7c4bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance the free surface by <code>dt</code> seconds (CFL substeps).  <br /></td></tr>
+<tr class="separator:a79de1a34985afb07b5787aecb6d7c4bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefc2440c3107ad32f2ccf22dc125fd4c" id="r_aefc2440c3107ad32f2ccf22dc125fd4c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#aefc2440c3107ad32f2ccf22dc125fd4c">setColliders</a> (std::span&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="structeve_1_1fluids_1_1ShallowWaterCollider.html">ShallowWaterCollider</a> &gt; <a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#af6266bc94c6de661efd0d85238c950ff">colliders</a>)</td></tr>
+<tr class="memdesc:aefc2440c3107ad32f2ccf22dc125fd4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace analytic interactors atomically.  <br /></td></tr>
+<tr class="separator:aefc2440c3107ad32f2ccf22dc125fd4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49f224f203ef16fce6c040117f4855f3" id="r_a49f224f203ef16fce6c040117f4855f3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a49f224f203ef16fce6c040117f4855f3">setBed</a> (std::span&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> &gt; <a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a3ae2acd930f5d624eb1c72e894868244">beds</a>)</td></tr>
+<tr class="memdesc:a49f224f203ef16fce6c040117f4855f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace bed heights (size must equal <a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#ac04f247e59032bda6baed5adb406a45e">cellCount()</a>).  <br /></td></tr>
+<tr class="separator:a49f224f203ef16fce6c040117f4855f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3298ff257e75df0494a392c9240ea278" id="r_a3298ff257e75df0494a392c9240ea278"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a3298ff257e75df0494a392c9240ea278">fillDepth</a> (<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> <a class="el" href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a>)</td></tr>
+<tr class="memdesc:a3298ff257e75df0494a392c9240ea278"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fill every cell with a uniform water depth (momentum cleared).  <br /></td></tr>
+<tr class="separator:a3298ff257e75df0494a392c9240ea278"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a875acdba44d337d6620ffac695724985" id="r_a875acdba44d337d6620ffac695724985"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a875acdba44d337d6620ffac695724985">disturbAt</a> (<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> worldX, <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> worldZ, <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> heightDelta, <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">radialSpeed</a>=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a875acdba44d337d6620ffac695724985"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inject a localized height bump and radial outflow (mouse / splash).  <br /></td></tr>
+<tr class="separator:a875acdba44d337d6620ffac695724985"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f8d781f588756a29d812ca2d247ccff" id="r_a7f8d781f588756a29d812ca2d247ccff"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a7f8d781f588756a29d812ca2d247ccff">addImpulse</a> (<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> worldX, <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> worldZ, <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> <a class="el" href="ForceBindings_8cpp.html#a2c1c8f9331368f38bfc3eaee260b59a6">strength</a>)</td></tr>
+<tr class="memdesc:a7f8d781f588756a29d812ca2d247ccff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience splash: positive strength raises water, negative digs.  <br /></td></tr>
+<tr class="separator:a7f8d781f588756a29d812ca2d247ccff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af20f9936b58ce339207e35f62e50d23f" id="r_af20f9936b58ce339207e35f62e50d23f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#af20f9936b58ce339207e35f62e50d23f">resolutionX</a> () <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">noexcept</a></td></tr>
+<tr class="separator:af20f9936b58ce339207e35f62e50d23f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6c0fad80789b6e59548dad3ca59fc1c" id="r_ac6c0fad80789b6e59548dad3ca59fc1c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#ac6c0fad80789b6e59548dad3ca59fc1c">resolutionZ</a> () <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">noexcept</a></td></tr>
+<tr class="separator:ac6c0fad80789b6e59548dad3ca59fc1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a370171756db5ea065145512e3025c78b" id="r_a370171756db5ea065145512e3025c78b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a370171756db5ea065145512e3025c78b">cellSize</a> () <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">noexcept</a></td></tr>
+<tr class="separator:a370171756db5ea065145512e3025c78b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac04f247e59032bda6baed5adb406a45e" id="r_ac04f247e59032bda6baed5adb406a45e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">int</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#ac04f247e59032bda6baed5adb406a45e">cellCount</a> () <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">noexcept</a></td></tr>
+<tr class="separator:ac04f247e59032bda6baed5adb406a45e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cce6a06181ef399c6ba6b17dc4532f1" id="r_a5cce6a06181ef399c6ba6b17dc4532f1"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a5cce6a06181ef399c6ba6b17dc4532f1">origin</a> () <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">noexcept</a></td></tr>
+<tr class="separator:a5cce6a06181ef399c6ba6b17dc4532f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f8a9b1c1afd99f8bd347ac3506f1dcb" id="r_a9f8a9b1c1afd99f8bd347ac3506f1dcb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a9f8a9b1c1afd99f8bd347ac3506f1dcb">usingGpu</a> () <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">noexcept</a></td></tr>
+<tr class="separator:a9f8a9b1c1afd99f8bd347ac3506f1dcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52bc21b44be44ec59be04baecedee23c" id="r_a52bc21b44be44ec59be04baecedee23c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a52bc21b44be44ec59be04baecedee23c">usedBackendFallback</a> () <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">noexcept</a></td></tr>
+<tr class="separator:a52bc21b44be44ec59be04baecedee23c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0404750c96d79587539eb0f48fec5c71" id="r_a0404750c96d79587539eb0f48fec5c71"><td class="memItemLeft" align="right" valign="top">std::span&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a0404750c96d79587539eb0f48fec5c71">depths</a> () <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">noexcept</a></td></tr>
+<tr class="separator:a0404750c96d79587539eb0f48fec5c71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ae2acd930f5d624eb1c72e894868244" id="r_a3ae2acd930f5d624eb1c72e894868244"><td class="memItemLeft" align="right" valign="top">std::span&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a3ae2acd930f5d624eb1c72e894868244">beds</a> () <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">noexcept</a></td></tr>
+<tr class="separator:a3ae2acd930f5d624eb1c72e894868244"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1515fb24b2cf41815c12f96c4b68d28e" id="r_a1515fb24b2cf41815c12f96c4b68d28e"><td class="memItemLeft" align="right" valign="top">std::span&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a1515fb24b2cf41815c12f96c4b68d28e">momentumX</a> () <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">noexcept</a></td></tr>
+<tr class="separator:a1515fb24b2cf41815c12f96c4b68d28e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3029b2c9b16091a6b2cddd24b04e269c" id="r_a3029b2c9b16091a6b2cddd24b04e269c"><td class="memItemLeft" align="right" valign="top">std::span&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a3029b2c9b16091a6b2cddd24b04e269c">momentumZ</a> () <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">noexcept</a></td></tr>
+<tr class="separator:a3029b2c9b16091a6b2cddd24b04e269c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6266bc94c6de661efd0d85238c950ff" id="r_af6266bc94c6de661efd0d85238c950ff"><td class="memItemLeft" align="right" valign="top">std::span&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="structeve_1_1fluids_1_1ShallowWaterCollider.html">ShallowWaterCollider</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#af6266bc94c6de661efd0d85238c950ff">colliders</a> () <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">noexcept</a></td></tr>
+<tr class="separator:af6266bc94c6de661efd0d85238c950ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8189a0acfa560e80c7c214f078daf3e" id="r_ae8189a0acfa560e80c7c214f078daf3e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#ae8189a0acfa560e80c7c214f078daf3e">surfaceHeightAt</a> (<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> worldX, <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> worldZ) <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">noexcept</a></td></tr>
+<tr class="memdesc:ae8189a0acfa560e80c7c214f078daf3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bilinear free-surface height <code>b + h</code> at a world XZ point.  <br /></td></tr>
+<tr class="separator:ae8189a0acfa560e80c7c214f078daf3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11293231ab9c1cb42e66a5c4a5b14f8d" id="r_a11293231ab9c1cb42e66a5c4a5b14f8d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a11293231ab9c1cb42e66a5c4a5b14f8d">depthAt</a> (<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> worldX, <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> worldZ) <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">noexcept</a></td></tr>
+<tr class="memdesc:a11293231ab9c1cb42e66a5c4a5b14f8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bilinear water depth at a world XZ point.  <br /></td></tr>
+<tr class="separator:a11293231ab9c1cb42e66a5c4a5b14f8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4daf6ac03af43a431d6387a226e94a1" id="r_ac4daf6ac03af43a431d6387a226e94a1"><td class="memItemLeft" align="right" valign="top">glm::vec2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#ac4daf6ac03af43a431d6387a226e94a1">velocityAt</a> (<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> worldX, <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> worldZ) <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">noexcept</a></td></tr>
+<tr class="memdesc:ac4daf6ac03af43a431d6387a226e94a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bilinear horizontal velocity at a world XZ point.  <br /></td></tr>
+<tr class="separator:ac4daf6ac03af43a431d6387a226e94a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92c4e496b17a73babb606f26770ab822" id="r_a92c4e496b17a73babb606f26770ab822"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a92c4e496b17a73babb606f26770ab822">buildSurfaceMesh</a> (std::vector&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> &gt; &amp;<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">positionsXYZ</a>, std::vector&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> &gt; &amp;<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">normalsXYZ</a>, std::vector&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> &gt; &amp;<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">uvsST</a>, std::vector&lt; uint32_t &gt; &amp;<a class="el" href="HeightmapMesh_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>, <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">visualHeightGain</a>=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, std::vector&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> &gt; *<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">colorsRGBA</a>=<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">nullptr</a>) <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a></td></tr>
+<tr class="memdesc:a92c4e496b17a73babb606f26770ab822"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a Y-up triangle mesh of the free surface for Graphics upload.  <br /></td></tr>
+<tr class="separator:a92c4e496b17a73babb606f26770ab822"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d959c7104c5be9c4bedafb8c41ec6f2" id="r_a9d959c7104c5be9c4bedafb8c41ec6f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a9d959c7104c5be9c4bedafb8c41ec6f2">copyFieldToImage</a> (<a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> &amp;image, <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">velocityScale</a>=2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">depthContrast</a>=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a></td></tr>
+<tr class="memdesc:a9d959c7104c5be9c4bedafb8c41ec6f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack per-cell depth / velocity into an RGBA8 image (<code>resolutionX</code> × <code>resolutionZ</code>).  <br /></td></tr>
+<tr class="separator:a9d959c7104c5be9c4bedafb8c41ec6f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed7e4c2d55780e94d7cd35ded0d1b2ce" id="r_aed7e4c2d55780e94d7cd35ded0d1b2ce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#aed7e4c2d55780e94d7cd35ded0d1b2ce">copyShadedAlbedoToImage</a> (<a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> &amp;image, <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">restDepth</a>, <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">velocityScale</a>=2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a></td></tr>
+<tr class="memdesc:aed7e4c2d55780e94d7cd35ded0d1b2ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a shaded water albedo (RGBA8, same size as the grid) for Material upload.  <br /></td></tr>
+<tr class="separator:aed7e4c2d55780e94d7cd35ded0d1b2ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f600ef026ba79b9542e2b2368110551" id="r_a7f600ef026ba79b9542e2b2368110551"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a7f600ef026ba79b9542e2b2368110551">copyNormalToImage</a> (<a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> &amp;image, <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> <a class="el" href="CableTextures_8cpp.html#ac5ee4c850452c326a0e0c95bf057c052">normalStrength</a>=6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a></td></tr>
+<tr class="memdesc:a7f600ef026ba79b9542e2b2368110551"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write tangent-space normals from free-surface slopes (RGBA8, same grid size).  <br /></td></tr>
+<tr class="separator:a7f600ef026ba79b9542e2b2368110551"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc904dac02959fb9304ad55f9a06cdb7" id="r_afc904dac02959fb9304ad55f9a06cdb7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1fluids_1_1ShallowWaterSettings.html">ShallowWaterSettings</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#afc904dac02959fb9304ad55f9a06cdb7">settings</a> () <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">noexcept</a></td></tr>
+<tr class="separator:afc904dac02959fb9304ad55f9a06cdb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:aaacc51feffe693a13174977922e4e461" id="r_aaacc51feffe693a13174977922e4e461"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">static</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">ShallowWaterField</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#aaacc51feffe693a13174977922e4e461">create</a> (<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="structeve_1_1fluids_1_1ShallowWaterSettings.html">ShallowWaterSettings</a> &amp;<a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#afc904dac02959fb9304ad55f9a06cdb7">settings</a>)</td></tr>
+<tr class="memdesc:aaacc51feffe693a13174977922e4e461"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate settings and allocate a filled lake.  <br /></td></tr>
+<tr class="separator:aaacc51feffe693a13174977922e4e461"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>GPU-first shallow-water (2D Saint-Venant) free-surface solver. </p>
+<p>Owns height <code>h</code>, momentum <code>(hu, hv)</code> and bed <code>b</code> on a Cartesian XZ grid. The CPU reference mirrors the GLSL kernels 1:1 and is selected automatically when compute is unavailable. Character-leg capsules write displacement / momentum sources before each integrate pass.</p>
+<p>@thread Graphics/device owner thread for GPU path; CPU path is reentrant for distinct instances only. </p>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8h_source.html">ShallowWaterField.h</a> 第 <a class="el" href="ShallowWaterField_8h_source.html#l00100">100</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a0137fa80da7b36d469947167abb0f63d" name="a0137fa80da7b36d469947167abb0f63d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0137fa80da7b36d469947167abb0f63d">&#9670;&#160;</a></span>~ShallowWaterField()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::fluids::ShallowWaterField::~ShallowWaterField </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8cpp_source.html">ShallowWaterField.cpp</a> 第 <a class="el" href="ShallowWaterField_8cpp_source.html#l00116">116</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aefe242256e61f6cbafa325cfb53f41c8" name="aefe242256e61f6cbafa325cfb53f41c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefe242256e61f6cbafa325cfb53f41c8">&#9670;&#160;</a></span>ShallowWaterField()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::fluids::ShallowWaterField::ShallowWaterField </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">ShallowWaterField</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a7f8d781f588756a29d812ca2d247ccff" name="a7f8d781f588756a29d812ca2d247ccff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f8d781f588756a29d812ca2d247ccff">&#9670;&#160;</a></span>addImpulse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt; eve::fluids::ShallowWaterField::addImpulse </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>worldX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>worldZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>strength</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convenience splash: positive strength raises water, negative digs. </p>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8cpp_source.html">ShallowWaterField.cpp</a> 第 <a class="el" href="ShallowWaterField_8cpp_source.html#l00252">252</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ShallowWaterField_8cpp_source.html#l00222">disturbAt()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a> , 以及 <a class="el" href="ForceBindings_8cpp_source.html#l00056">strength</a>.</p>
+
+</div>
+</div>
+<a id="a3ae2acd930f5d624eb1c72e894868244" name="a3ae2acd930f5d624eb1c72e894868244"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ae2acd930f5d624eb1c72e894868244">&#9670;&#160;</a></span>beds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::span&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> &gt; eve::fluids::ShallowWaterField::beds </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>返回</dt><dd>Bed heights. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8h_source.html">ShallowWaterField.h</a> 第 <a class="el" href="ShallowWaterField_8h_source.html#l00164">164</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShallowWaterField_8cpp_source.html#l00198">setBed()</a>.</p>
+
+</div>
+</div>
+<a id="a92c4e496b17a73babb606f26770ab822" name="a92c4e496b17a73babb606f26770ab822"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92c4e496b17a73babb606f26770ab822">&#9670;&#160;</a></span>buildSurfaceMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt; eve::fluids::ShallowWaterField::buildSurfaceMesh </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>positionsXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>normalsXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>uvsST</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; uint32_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>indices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>visualHeightGain</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> &gt; *&#160;</td>
+          <td class="paramname"><em>colorsRGBA</em> = <code><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">nullptr</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build a Y-up triangle mesh of the free surface for Graphics upload. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">positionsXYZ</td><td>Vertex positions (3 floats each). </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">normalsXYZ</td><td>Vertex normals (3 floats each). </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">uvsST</td><td>Vertex UVs in [0,1]^2 (2 floats each). </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">indices</td><td>Triangle indices. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">visualHeightGain</td><td>Display-only scale for <code>(h - rest)</code> relative to mean depth; 1 keeps physical heights. Values in (0, 32] exaggerate centimetre waves for readability. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">colorsRGBA</td><td>Optional per-vertex RGBA (4 floats each) for coloured meshes; pass nullptr to skip. Packs the same channel layout as <code>copyFieldToImage</code> with rest-relative depth (<code>depthContrast = 0.12 * meanH</code>, <code>velocityScale = 1.5</code>). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8cpp_source.html">ShallowWaterField.cpp</a> 第 <a class="el" href="ShallowWaterField_8cpp_source.html#l00312">312</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00075">c</a>, <a class="el" href="ShallowWaterField_8h_source.html#l00153">cellCount()</a>, <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00025">dx</a>, <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00026">dz</a>, <a class="el" href="ImageData_8cpp_source.html#l00690">h</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00019">indices</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="UdpLink_8cpp_source.html#l00058">pos</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Grass_8cpp_source.html#l00233">u</a>, <a class="el" href="OceanBindingInternal_8h_source.html#l00033">eve::fluids::ocean_script::vector()</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00167">vx</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00177">vz</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="ac04f247e59032bda6baed5adb406a45e" name="ac04f247e59032bda6baed5adb406a45e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac04f247e59032bda6baed5adb406a45e">&#9670;&#160;</a></span>cellCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">int</a> eve::fluids::ShallowWaterField::cellCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>返回</dt><dd>Cell count (<code>resolutionX * resolutionZ</code>). </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8h_source.html">ShallowWaterField.h</a> 第 <a class="el" href="ShallowWaterField_8h_source.html#l00153">153</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShallowWaterField_8cpp_source.html#l00312">buildSurfaceMesh()</a>, <a class="el" href="ShallowWaterField_8cpp_source.html#l00411">copyFieldToImage()</a>, <a class="el" href="ShallowWaterField_8cpp_source.html#l00198">setBed()</a> , 以及 <a class="el" href="ShallowWaterField_8cpp_source.html#l00676">step()</a>.</p>
+
+</div>
+</div>
+<a id="a370171756db5ea065145512e3025c78b" name="a370171756db5ea065145512e3025c78b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a370171756db5ea065145512e3025c78b">&#9670;&#160;</a></span>cellSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> eve::fluids::ShallowWaterField::cellSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>返回</dt><dd>Cell edge length in meters. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8h_source.html">ShallowWaterField.h</a> 第 <a class="el" href="ShallowWaterField_8h_source.html#l00151">151</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af6266bc94c6de661efd0d85238c950ff" name="af6266bc94c6de661efd0d85238c950ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6266bc94c6de661efd0d85238c950ff">&#9670;&#160;</a></span>colliders()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::span&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="structeve_1_1fluids_1_1ShallowWaterCollider.html">ShallowWaterCollider</a> &gt; eve::fluids::ShallowWaterField::colliders </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>返回</dt><dd>Live collider samples. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8h_source.html">ShallowWaterField.h</a> 第 <a class="el" href="ShallowWaterField_8h_source.html#l00170">170</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShallowWaterField_8cpp_source.html#l00175">setColliders()</a>.</p>
+
+</div>
+</div>
+<a id="a9d959c7104c5be9c4bedafb8c41ec6f2" name="a9d959c7104c5be9c4bedafb8c41ec6f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d959c7104c5be9c4bedafb8c41ec6f2">&#9670;&#160;</a></span>copyFieldToImage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt; eve::fluids::ShallowWaterField::copyFieldToImage </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> &amp;&#160;</td>
+          <td class="paramname"><em>image</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>velocityScale</em> = <code>2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>depthContrast</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pack per-cell depth / velocity into an RGBA8 image (<code>resolutionX</code> × <code>resolutionZ</code>). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">image</td><td>Destination; must be RGBA8 with width=<code>resolutionX</code> and height=<code>resolutionZ</code>. </td></tr>
+    <tr><td class="paramname">velocityScale</td><td>Horizontal speed that maps to the full channel range, in (0, 50]. </td></tr>
+    <tr><td class="paramname">depthContrast</td><td>When <code>&lt;= 0</code>, R stores absolute <code>h / maxDepth</code>. When <code>&gt; 0</code>, R stores a crest heat map <code>clamp((h - meanH) / depthContrast, 0, 1)</code> so rest water stays dark and centimetre waves still paint red (range <code>(0, maxDepth]</code>).</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Channel layout (row <code>z</code>, column <code>x</code>, matching mesh UVs):</p><ul>
+<li>R: water depth (absolute <code>h/maxDepth</code>, or crest heat when <code>depthContrast &gt; 0</code>)</li>
+<li>G: <code>0.5 + 0.5 * clamp(vx / velocityScale, -1, 1)</code></li>
+<li>B: <code>0.5 + 0.5 * clamp(vz / velocityScale, -1, 1)</code></li>
+<li>A: <code>clamp(|v| / velocityScale, 0, 1)</code> (foam / speed mask) @ownership Does not retain <code>image</code>; caller owns the pixel buffer for the call duration. <dl class="section return"><dt>返回</dt><dd>Success, or InvalidArgument when the image shape/format/scale is rejected. </dd></dl>
+</li>
+</ul>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8cpp_source.html">ShallowWaterField.cpp</a> 第 <a class="el" href="ShallowWaterField_8cpp_source.html#l00411">411</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ShallowWaterField_8h_source.html#l00153">cellCount()</a>, <a class="el" href="ImageData_8cpp_source.html#l00690">h</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00014">image</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00043">pixels</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="OceanBindingInternal_8h_source.html#l00033">eve::fluids::ocean_script::vector()</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00167">vx</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00177">vz</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a7f600ef026ba79b9542e2b2368110551" name="a7f600ef026ba79b9542e2b2368110551"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f600ef026ba79b9542e2b2368110551">&#9670;&#160;</a></span>copyNormalToImage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt; eve::fluids::ShallowWaterField::copyNormalToImage </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> &amp;&#160;</td>
+          <td class="paramname"><em>image</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>normalStrength</em> = <code>6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write tangent-space normals from free-surface slopes (RGBA8, same grid size). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">image</td><td>Destination RGBA8 <code>resolutionX</code> × <code>resolutionZ</code>. </td></tr>
+    <tr><td class="paramname">normalStrength</td><td>Slope exaggeration in (0, 64]; higher values make small waves catch light.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>RGB stores <code>0.5 + 0.5 * n</code> with <code>n</code> in tangent space (Z-up in texture); A = 1. @ownership Does not retain <code>image</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8cpp_source.html">ShallowWaterField.cpp</a> 第 <a class="el" href="ShallowWaterField_8cpp_source.html#l00492">492</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00014">image</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="CableTextures_8cpp_source.html#l00057">normalStrength</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00043">pixels</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="OceanBindingInternal_8h_source.html#l00033">eve::fluids::ocean_script::vector()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="aed7e4c2d55780e94d7cd35ded0d1b2ce" name="aed7e4c2d55780e94d7cd35ded0d1b2ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed7e4c2d55780e94d7cd35ded0d1b2ce">&#9670;&#160;</a></span>copyShadedAlbedoToImage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt; eve::fluids::ShallowWaterField::copyShadedAlbedoToImage </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a> &amp;&#160;</td>
+          <td class="paramname"><em>image</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>restDepth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>velocityScale</em> = <code>2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write a shaded water albedo (RGBA8, same size as the grid) for Material upload. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">image</td><td>Destination RGBA8 <code>resolutionX</code> × <code>resolutionZ</code>. </td></tr>
+    <tr><td class="paramname">restDepth</td><td>Reference depth used to exaggerate crests/troughs; typically <code>initialDepth</code>. </td></tr>
+    <tr><td class="paramname">velocityScale</td><td>Speed scale for foam / flow tint, in (0, 50].</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Deep water is dark cyan; crests lighten; horizontal flow shifts green/magenta; foam (near-white) follows speed. Intended for <code>setAlbedoTexture</code> / <code>setTexture</code>. @ownership Does not retain <code>image</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8cpp_source.html">ShallowWaterField.cpp</a> 第 <a class="el" href="ShallowWaterField_8cpp_source.html#l00449">449</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="ImageData_8cpp_source.html#l00690">h</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00014">image</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00043">pixels</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00012">r</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="OceanBindingInternal_8h_source.html#l00033">eve::fluids::ocean_script::vector()</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00167">vx</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00177">vz</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="aaacc51feffe693a13174977922e4e461" name="aaacc51feffe693a13174977922e4e461"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaacc51feffe693a13174977922e4e461">&#9670;&#160;</a></span>create()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">ShallowWaterField</a> &gt; &gt; eve::fluids::ShallowWaterField::create </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="structeve_1_1fluids_1_1ShallowWaterSettings.html">ShallowWaterSettings</a> &amp;&#160;</td>
+          <td class="paramname"><em>settings</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validate settings and allocate a filled lake. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">settings</td><td>Borrowed immutable configuration. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owned solver, or InvalidArgument when ranges fail. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8cpp_source.html">ShallowWaterField.cpp</a> 第 <a class="el" href="ShallowWaterField_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ShallowWaterField_8h_source.html#l00086">eve::fluids::ShallowWaterSettings::bedHeight</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00052">cells</a>, <a class="el" href="OceanCodecInternal_8h_source.html#l00020">eve::fluids::ocean_codec::field()</a>, <a class="el" href="ShallowWaterField_8h_source.html#l00084">eve::fluids::ShallowWaterSettings::initialDepth</a>, <a class="el" href="ShallowWaterField_8cpp_source.html#l00156">settings()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00319">valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fluids_8cpp_source.html#l00426">eve::fluids::Fluids::newShallowWater()</a>.</p>
+
+</div>
+</div>
+<a id="a11293231ab9c1cb42e66a5c4a5b14f8d" name="a11293231ab9c1cb42e66a5c4a5b14f8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11293231ab9c1cb42e66a5c4a5b14f8d">&#9670;&#160;</a></span>depthAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> eve::fluids::ShallowWaterField::depthAt </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>worldX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>worldZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bilinear water depth at a world XZ point. </p>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8cpp_source.html">ShallowWaterField.cpp</a> 第 <a class="el" href="ShallowWaterField_8cpp_source.html#l00278">278</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00025">inside</a>, <a class="el" href="OceanBindingInternal_8h_source.html#l00033">eve::fluids::ocean_script::vector()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a0404750c96d79587539eb0f48fec5c71" name="a0404750c96d79587539eb0f48fec5c71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0404750c96d79587539eb0f48fec5c71">&#9670;&#160;</a></span>depths()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::span&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> &gt; eve::fluids::ShallowWaterField::depths </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>返回</dt><dd>Water-column heights (authoritative CPU mirror). </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8h_source.html">ShallowWaterField.h</a> 第 <a class="el" href="ShallowWaterField_8h_source.html#l00162">162</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a875acdba44d337d6620ffac695724985" name="a875acdba44d337d6620ffac695724985"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a875acdba44d337d6620ffac695724985">&#9670;&#160;</a></span>disturbAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt; eve::fluids::ShallowWaterField::disturbAt </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>worldX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>worldZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>heightDelta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>radialSpeed</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Inject a localized height bump and radial outflow (mouse / splash). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">worldX</td><td>World X of the disturbance center. </td></tr>
+    <tr><td class="paramname">worldZ</td><td>World Z of the disturbance center. </td></tr>
+    <tr><td class="paramname">radius</td><td>Influence radius in meters. </td></tr>
+    <tr><td class="paramname">heightDelta</td><td>Added water column height. </td></tr>
+    <tr><td class="paramname">radialSpeed</td><td>Outward horizontal speed applied under the bump. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8cpp_source.html">ShallowWaterField.cpp</a> 第 <a class="el" href="ShallowWaterField_8cpp_source.html#l00222">222</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00025">dx</a>, <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00026">dz</a>, <a class="el" href="ImageData_8cpp_source.html#l00690">h</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="OceanBindingInternal_8h_source.html#l00033">eve::fluids::ocean_script::vector()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">w</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00178">wx</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00178">wz</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShallowWaterField_8cpp_source.html#l00252">addImpulse()</a>.</p>
+
+</div>
+</div>
+<a id="a3298ff257e75df0494a392c9240ea278" name="a3298ff257e75df0494a392c9240ea278"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3298ff257e75df0494a392c9240ea278">&#9670;&#160;</a></span>fillDepth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt; eve::fluids::ShallowWaterField::fillDepth </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>depth</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fill every cell with a uniform water depth (momentum cleared). </p>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8cpp_source.html">ShallowWaterField.cpp</a> 第 <a class="el" href="ShallowWaterField_8cpp_source.html#l00208">208</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00034">depth</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="OceanBindingInternal_8h_source.html#l00033">eve::fluids::ocean_script::vector()</a>.</p>
+
+</div>
+</div>
+<a id="a1515fb24b2cf41815c12f96c4b68d28e" name="a1515fb24b2cf41815c12f96c4b68d28e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1515fb24b2cf41815c12f96c4b68d28e">&#9670;&#160;</a></span>momentumX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::span&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> &gt; eve::fluids::ShallowWaterField::momentumX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>返回</dt><dd>X momentum <code>hu</code>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8h_source.html">ShallowWaterField.h</a> 第 <a class="el" href="ShallowWaterField_8h_source.html#l00166">166</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3029b2c9b16091a6b2cddd24b04e269c" name="a3029b2c9b16091a6b2cddd24b04e269c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3029b2c9b16091a6b2cddd24b04e269c">&#9670;&#160;</a></span>momentumZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::span&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> &gt; eve::fluids::ShallowWaterField::momentumZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>返回</dt><dd>Z momentum <code>hv</code>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8h_source.html">ShallowWaterField.h</a> 第 <a class="el" href="ShallowWaterField_8h_source.html#l00168">168</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4b75a83b69f11327dd18e86dae88f4f1" name="a4b75a83b69f11327dd18e86dae88f4f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b75a83b69f11327dd18e86dae88f4f1">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">ShallowWaterField</a> &amp; eve::fluids::ShallowWaterField::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">ShallowWaterField</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5cce6a06181ef399c6ba6b17dc4532f1" name="a5cce6a06181ef399c6ba6b17dc4532f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cce6a06181ef399c6ba6b17dc4532f1">&#9670;&#160;</a></span>origin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::fluids::ShallowWaterField::origin </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>返回</dt><dd>World origin of cell (0,0). </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8h_source.html">ShallowWaterField.h</a> 第 <a class="el" href="ShallowWaterField_8h_source.html#l00155">155</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af20f9936b58ce339207e35f62e50d23f" name="af20f9936b58ce339207e35f62e50d23f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af20f9936b58ce339207e35f62e50d23f">&#9670;&#160;</a></span>resolutionX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">int</a> eve::fluids::ShallowWaterField::resolutionX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>返回</dt><dd>Grid resolution along X. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8h_source.html">ShallowWaterField.h</a> 第 <a class="el" href="ShallowWaterField_8h_source.html#l00147">147</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac6c0fad80789b6e59548dad3ca59fc1c" name="ac6c0fad80789b6e59548dad3ca59fc1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6c0fad80789b6e59548dad3ca59fc1c">&#9670;&#160;</a></span>resolutionZ()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">int</a> eve::fluids::ShallowWaterField::resolutionZ </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>返回</dt><dd>Grid resolution along Z. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8h_source.html">ShallowWaterField.h</a> 第 <a class="el" href="ShallowWaterField_8h_source.html#l00149">149</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a49f224f203ef16fce6c040117f4855f3" name="a49f224f203ef16fce6c040117f4855f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49f224f203ef16fce6c040117f4855f3">&#9670;&#160;</a></span>setBed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt; eve::fluids::ShallowWaterField::setBed </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> &gt;&#160;</td>
+          <td class="paramname"><em>beds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace bed heights (size must equal <a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#ac04f247e59032bda6baed5adb406a45e">cellCount()</a>). </p>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8cpp_source.html">ShallowWaterField.cpp</a> 第 <a class="el" href="ShallowWaterField_8cpp_source.html#l00198">198</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ShallowWaterField_8h_source.html#l00164">beds()</a>, <a class="el" href="ShallowWaterField_8h_source.html#l00153">cellCount()</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>, <a class="el" href="OceanBindingInternal_8h_source.html#l00033">eve::fluids::ocean_script::vector()</a> , 以及 <a class="el" href="classeve_1_1gpgpu_1_1GpuBuffer.html#a18eca506cb20e5f3106091de0b46318e">eve::gpgpu::GpuBuffer::writeFloat32s()</a>.</p>
+
+</div>
+</div>
+<a id="aefc2440c3107ad32f2ccf22dc125fd4c" name="aefc2440c3107ad32f2ccf22dc125fd4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefc2440c3107ad32f2ccf22dc125fd4c">&#9670;&#160;</a></span>setColliders()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt; eve::fluids::ShallowWaterField::setColliders </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="structeve_1_1fluids_1_1ShallowWaterCollider.html">ShallowWaterCollider</a> &gt;&#160;</td>
+          <td class="paramname"><em>colliders</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace analytic interactors atomically. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">colliders</td><td>Borrowed samples valid only for the call duration. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8cpp_source.html">ShallowWaterField.cpp</a> 第 <a class="el" href="ShallowWaterField_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1fluids.html#a2215f1af7e6e40bf5aec71b35ce08977a3cfce651e667ab85486dd42a8185f98a">eve::fluids::Box</a>, <a class="el" href="HexSphereTopology_8cpp_source.html#l00075">c</a>, <a class="el" href="namespaceeve_1_1fluids.html#a2215f1af7e6e40bf5aec71b35ce08977a4880c0f12c06dd6d142e7a40b041bf1a">eve::fluids::Capsule</a>, <a class="el" href="ShallowWaterField_8h_source.html#l00170">colliders()</a>, <a class="el" href="McpArchitectureTools_8cpp_source.html#l00017">label</a>, <a class="el" href="namespaceeve_1_1fluids.html#a2215f1af7e6e40bf5aec71b35ce08977ab7095f057db3fefa7325ad93a04e14fd">eve::fluids::Sphere</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="OceanBindingInternal_8h_source.html#l00033">eve::fluids::ocean_script::vector()</a>.</p>
+
+</div>
+</div>
+<a id="afc904dac02959fb9304ad55f9a06cdb7" name="afc904dac02959fb9304ad55f9a06cdb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc904dac02959fb9304ad55f9a06cdb7">&#9670;&#160;</a></span>settings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1fluids_1_1ShallowWaterSettings.html">ShallowWaterSettings</a> eve::fluids::ShallowWaterField::settings </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>返回</dt><dd>Mutable tuning copy (does not resize the grid). </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8cpp_source.html">ShallowWaterField.cpp</a> 第 <a class="el" href="ShallowWaterField_8cpp_source.html#l00156">156</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ShallowWaterField_8h_source.html#l00060">eve::fluids::ShallowWaterSettings::resolutionX</a> , 以及 <a class="el" href="BattleControl_8cpp_source.html#l00325">s</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ShallowWaterField_8cpp_source.html#l00085">create()</a>.</p>
+
+</div>
+</div>
+<a id="a79de1a34985afb07b5787aecb6d7c4bc" name="a79de1a34985afb07b5787aecb6d7c4bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79de1a34985afb07b5787aecb6d7c4bc">&#9670;&#160;</a></span>step()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt; eve::fluids::ShallowWaterField::step </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance the free surface by <code>dt</code> seconds (CFL substeps). </p>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8cpp_source.html">ShallowWaterField.cpp</a> 第 <a class="el" href="ShallowWaterField_8cpp_source.html#l00676">676</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ShallowWaterField_8h_source.html#l00153">cellCount()</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00020">dt</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00038">gpu</a>, <a class="el" href="ImageData_8cpp_source.html#l00690">h</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Grass_8cpp_source.html#l00233">u</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a> , 以及 <a class="el" href="OceanBindingInternal_8h_source.html#l00033">eve::fluids::ocean_script::vector()</a>.</p>
+
+</div>
+</div>
+<a id="ae8189a0acfa560e80c7c214f078daf3e" name="ae8189a0acfa560e80c7c214f078daf3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8189a0acfa560e80c7c214f078daf3e">&#9670;&#160;</a></span>surfaceHeightAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a> eve::fluids::ShallowWaterField::surfaceHeightAt </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>worldX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>worldZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bilinear free-surface height <code>b + h</code> at a world XZ point. </p>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8cpp_source.html">ShallowWaterField.cpp</a> 第 <a class="el" href="ShallowWaterField_8cpp_source.html#l00257">257</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00025">inside</a>, <a class="el" href="OceanBindingInternal_8h_source.html#l00033">eve::fluids::ocean_script::vector()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a52bc21b44be44ec59be04baecedee23c" name="a52bc21b44be44ec59be04baecedee23c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52bc21b44be44ec59be04baecedee23c">&#9670;&#160;</a></span>usedBackendFallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">bool</a> eve::fluids::ShallowWaterField::usedBackendFallback </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>返回</dt><dd>True when GPU was requested but CPU was selected. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8h_source.html">ShallowWaterField.h</a> 第 <a class="el" href="ShallowWaterField_8h_source.html#l00159">159</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9f8a9b1c1afd99f8bd347ac3506f1dcb" name="a9f8a9b1c1afd99f8bd347ac3506f1dcb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f8a9b1c1afd99f8bd347ac3506f1dcb">&#9670;&#160;</a></span>usingGpu()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">bool</a> eve::fluids::ShallowWaterField::usingGpu </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>返回</dt><dd>True when the GPU compute path is active. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8h_source.html">ShallowWaterField.h</a> 第 <a class="el" href="ShallowWaterField_8h_source.html#l00157">157</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac4daf6ac03af43a431d6387a226e94a1" name="ac4daf6ac03af43a431d6387a226e94a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4daf6ac03af43a431d6387a226e94a1">&#9670;&#160;</a></span>velocityAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec2 eve::fluids::ShallowWaterField::velocityAt </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>worldX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">float</a>&#160;</td>
+          <td class="paramname"><em>worldZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bilinear horizontal velocity at a world XZ point. </p>
+
+<p class="definition">在文件 <a class="el" href="ShallowWaterField_8cpp_source.html">ShallowWaterField.cpp</a> 第 <a class="el" href="ShallowWaterField_8cpp_source.html#l00294">294</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="ImageData_8cpp_source.html#l00690">h</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00025">inside</a>, <a class="el" href="OceanBindingInternal_8h_source.html#l00033">eve::fluids::ocean_script::vector()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/fluids/<a class="el" href="ShallowWaterField_8h_source.html">ShallowWaterField.h</a></li>
+<li>src/modules/fluids/<a class="el" href="ShallowWaterField_8cpp_source.html">ShallowWaterField.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

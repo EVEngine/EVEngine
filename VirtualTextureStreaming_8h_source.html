@@ -1,0 +1,436 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/VirtualTextureStreaming.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">VirtualTextureStreaming.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="VirtualTextureStreaming_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="VirtualTextureBlend_8h.html">graphics/VirtualTextureBlend.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="ImageData_8h.html">image/ImageData.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;list&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;span&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61ad334dfcea59127bedfcdbe0a3ee7f494">Graphics</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7ad92a8333dd3ccb895cc65f7455b71206">Material</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#ab58f96281585822e94cace95ce53fcecaa3e8ae43188ae76d38f414b2bdb0077b">Texture</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="};">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureFeedbackSample.html">   28</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1VirtualTextureFeedbackSample.html">VirtualTextureFeedbackSample</a> {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureFeedbackSample.html#a03e75cbad7044267b6a10edd4661cae6">   29</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureFeedbackSample.html#a03e75cbad7044267b6a10edd4661cae6">pageX</a>    = 0;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureFeedbackSample.html#a31c1db81d048ce958794b17e62694aff">   30</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureFeedbackSample.html#a31c1db81d048ce958794b17e62694aff">pageY</a>    = 0;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureFeedbackSample.html#a7702a30762768306633adcca913cec27">   31</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureFeedbackSample.html#a7702a30762768306633adcca913cec27">mipLevel</a> = 0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>};</div>
+</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="};">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureStreamingConfig.html">   35</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1VirtualTextureStreamingConfig.html">VirtualTextureStreamingConfig</a> {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureStreamingConfig.html#ae8b2b04515b9db4976c3ef0bc44bb864">   36</a></span>    <a class="code hl_struct" href="structeve_1_1graphics_1_1VirtualTextureBlendConfig.html">VirtualTextureBlendConfig</a> <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureStreamingConfig.html#ae8b2b04515b9db4976c3ef0bc44bb864">blend</a>{};</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureStreamingConfig.html#a36713f9920f26790e74d1405ce1e6b3b">   38</a></span>    std::size_t <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureStreamingConfig.html#a36713f9920f26790e74d1405ce1e6b3b">maxDecodesPerUpdate</a> = 4;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureStreamingConfig.html#a33ea5683eca4ba0b35d966cc4fe8446e">   40</a></span>    std::size_t <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureStreamingConfig.html#a33ea5683eca4ba0b35d966cc4fe8446e">feedbackCapacity</a> = 4096;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>};</div>
+</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="};">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html">   44</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html">VirtualTextureStreamingStats</a> {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#ae327f3e457aa3598a55679d0fba751d0">   45</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#ae327f3e457aa3598a55679d0fba751d0">generation</a>         = 0;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#ae0a65b6329dd6a6af4a67db3249e4ca2">   46</a></span>    std::size_t   <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#ae0a65b6329dd6a6af4a67db3249e4ca2">residentPages</a>      = 0;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#aecc932f8bd391f3a74d61a114a68592e">   47</a></span>    std::size_t   <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#aecc932f8bd391f3a74d61a114a68592e">pendingFeedback</a>    = 0;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#a88e13b120707f552a835518090006395">   48</a></span>    std::size_t   <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#a88e13b120707f552a835518090006395">pendingUploads</a>     = 0;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#a544c8b49607b54dc9c9534bf636ca8bf">   49</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#a544c8b49607b54dc9c9534bf636ca8bf">feedbackSamples</a>    = 0;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#aa0aebd4ff5f3bd15c4198f924a4f32d9">   50</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#aa0aebd4ff5f3bd15c4198f924a4f32d9">uniqueFeedback</a>     = 0;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#ab5a375d4e111d61241763558ec21bdc2">   51</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#ab5a375d4e111d61241763558ec21bdc2">pagesDecoded</a>       = 0;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#a7e9641a8f2f1589854299e83e076f6f3">   52</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#a7e9641a8f2f1589854299e83e076f6f3">pagesEvicted</a>       = 0;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#a1ab07f2ca2f2226c145aef76ab65a085">   53</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#a1ab07f2ca2f2226c145aef76ab65a085">pagesInvalidated</a>   = 0;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#a4dbee3e68999aa887fabb11f5482f62e">   54</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#a4dbee3e68999aa887fabb11f5482f62e">publishes</a>          = 0;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#a98263e81521a0f1989d07ee77d5307d8">   55</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#a98263e81521a0f1989d07ee77d5307d8">abandonedPublishes</a> = 0;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>};</div>
+</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="foldopen" id="foldopen00062" data-start="{" data-end="};">
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureRegionPixels.html">   62</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1VirtualTextureRegionPixels.html">VirtualTextureRegionPixels</a> {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureRegionPixels.html#abf02a6346c102f7acdf6488af89447c7">   63</a></span>    <span class="keywordtype">int</span>                       <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureRegionPixels.html#abf02a6346c102f7acdf6488af89447c7">x</a>      = 0;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureRegionPixels.html#a5cb60943141b69656145cb9c53c2d257">   64</a></span>    <span class="keywordtype">int</span>                       <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureRegionPixels.html#a5cb60943141b69656145cb9c53c2d257">y</a>      = 0;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureRegionPixels.html#a985b8359cc4f3989fb8eea2197548336">   65</a></span>    <span class="keywordtype">int</span>                       <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureRegionPixels.html#a985b8359cc4f3989fb8eea2197548336">width</a>  = 0;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureRegionPixels.html#addcd49dd7c2e45ca4673d4cd73d0277f">   66</a></span>    <span class="keywordtype">int</span>                       <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureRegionPixels.html#addcd49dd7c2e45ca4673d4cd73d0277f">height</a> = 0;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureRegionPixels.html#a63f06386ea708684b3b2aa7a95899c31">   67</a></span>    std::vector&lt;std::uint8_t&gt; <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureRegionPixels.html#a63f06386ea708684b3b2aa7a95899c31">rgba</a>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>};</div>
+</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="foldopen" id="foldopen00076" data-start="{" data-end="};">
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureUploadBatch.html">   76</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1VirtualTextureUploadBatch.html">VirtualTextureUploadBatch</a> {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureUploadBatch.html#a0016081ba8c64aab815b83a339087e23">   77</a></span>    std::uint64_t                           <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureUploadBatch.html#a0016081ba8c64aab815b83a339087e23">expectedGeneration</a> = 0;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureUploadBatch.html#a8a1f3b19b60346366ac3dcb6619e98bc">   78</a></span>    std::vector&lt;VirtualTextureRegionPixels&gt; <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureUploadBatch.html#a8a1f3b19b60346366ac3dcb6619e98bc">pageTableClears</a>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureUploadBatch.html#a9eab39e3c99d8ecb663d3b84fd5cae31">   79</a></span>    std::vector&lt;VirtualTextureRegionPixels&gt; <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureUploadBatch.html#a9eab39e3c99d8ecb663d3b84fd5cae31">albedoRegions</a>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureUploadBatch.html#a1571a0f2ccf5865f5ee87386d5bc111b">   80</a></span>    std::vector&lt;VirtualTextureRegionPixels&gt; <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureUploadBatch.html#a1571a0f2ccf5865f5ee87386d5bc111b">normalRegions</a>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VirtualTextureUploadBatch.html#af2226e200baf90f83a2521ece4d0a39a">   81</a></span>    std::vector&lt;VirtualTextureRegionPixels&gt; <a class="code hl_variable" href="structeve_1_1graphics_1_1VirtualTextureUploadBatch.html#af2226e200baf90f83a2521ece4d0a39a">pageTableSets</a>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>};</div>
+</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="foldopen" id="foldopen00095" data-start="{" data-end="};">
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html">   95</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a74b09fdcf18b26aea79409bf319c562c">EVENGINE_API_BACKENDS</a> <a class="code hl_class" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html">VirtualTextureStreaming</a> {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::unique_ptr&lt;VirtualTextureStreaming&gt;</a>&gt; create(</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1VirtualTextureStreamingConfig.html">VirtualTextureStreamingConfig</a>&amp; config);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::uint32_t&gt;</a> addLayer(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1VirtualTextureBlendLayer.html">VirtualTextureBlendLayer</a>&amp; <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> initializePhysicalCache();</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    [[nodiscard]] <span class="keyword">static</span> std::uint32_t packFeedback(<span class="keywordtype">int</span> pageX, <span class="keywordtype">int</span> pageY, <span class="keywordtype">int</span> mipLevel) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;VirtualTextureFeedbackSample&gt;</a> unpackFeedback(std::uint32_t packed);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> recordFeedback(<span class="keywordtype">int</span> pageX, <span class="keywordtype">int</span> pageY, <span class="keywordtype">int</span> mipLevel = 0);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> recordFeedbackUv(<span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <span class="keywordtype">int</span> mipLevel = 0);</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> ingestPackedFeedback(std::span&lt;const std::uint32_t&gt; packed);</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> recordFeedbackGrid(<span class="keywordtype">int</span> gridW, <span class="keywordtype">int</span> gridH, <span class="keywordtype">int</span> mipLevel = 0);</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> invalidateRect(<span class="keywordtype">float</span> u0, <span class="keywordtype">float</span> v0, <span class="keywordtype">float</span> u1, <span class="keywordtype">float</span> v1, <span class="keywordtype">int</span> mipLevel = 0);</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> invalidatePage(<span class="keywordtype">int</span> pageX, <span class="keywordtype">int</span> pageY, <span class="keywordtype">int</span> mipLevel = 0);</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;VirtualTextureStreamingStats&gt;</a> update();</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;VirtualTextureUploadBatch&gt;</a> takePendingUploads();</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> commitPublish(std::uint64_t expectedGeneration);</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> abandonPublish();</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> syncToMaterial(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>&amp; gfx, <a class="code hl_class" href="classeve_1_1graphics_1_1Material.html">Material</a>&amp; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>);</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span> </div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    <a class="code hl_struct" href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html">VirtualTextureStreamingStats</a> <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#a880e0b3e657e02fc555ef2b0da783a2b">stats</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span> </div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a>&amp; albedoAtlas() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a>&amp; normalAtlas() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a>&amp; pageTable() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#ac65507723e06e4a0bcc036f96006eecf">  200</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#ac65507723e06e4a0bcc036f96006eecf">atlasSlotsX</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> atlasSlotsX_; }</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#ab88fdfc83d870ae1e8487c10f7297075">  202</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#ab88fdfc83d870ae1e8487c10f7297075">atlasSlotsY</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> atlasSlotsY_; }</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#aa12f6645b7e864ffd4ce7970ec8a3674">  204</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#aa12f6645b7e864ffd4ce7970ec8a3674">pageExtent</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> pageExtent_; }</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a1ef9ed14b76dd427f50bc4809247b34c">  206</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a1ef9ed14b76dd427f50bc4809247b34c">borderFraction</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> borderFraction_; }</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    <span class="keywordtype">int</span> pageCountX() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <span class="keywordtype">int</span> pageCountY() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#ac0b25a9117769906c68a1e33754013f2">  212</a></span>    std::uint64_t <a class="code hl_function" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#ac0b25a9117769906c68a1e33754013f2">generation</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> generation_; }</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a6ae61c591a11ef7b08b5bf11e36f71d1">  214</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1VirtualTextureBlend.html">VirtualTextureBlend</a>&amp; <a class="code hl_function" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a6ae61c591a11ef7b08b5bf11e36f71d1">producer</a>() { <span class="keywordflow">return</span> *producer_; }</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a232054c3f017e86362e96a5225825264">  216</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics_1_1VirtualTextureBlend.html">VirtualTextureBlend</a>&amp; <a class="code hl_function" href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a232054c3f017e86362e96a5225825264">producer</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> *producer_; }</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span> </div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    <span class="keyword">struct </span>SlotRecord {</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>        <span class="keywordtype">bool</span>                     <a class="code hl_variable" href="Shadow_8cpp.html#ad0f4f9e74e593402c49ae3ef819c0f20">occupied</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        <span class="keywordtype">bool</span>                     <a class="code hl_variable" href="Pathfinder_8cpp.html#ad25edacba00e4d0666a9959053b7cc10">dirty</a>    = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        <span class="keywordtype">int</span>                      pageX    = -1;</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        <span class="keywordtype">int</span>                      pageY    = -1;</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        std::list&lt;int&gt;::iterator lru;</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    };</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    <span class="keyword">struct </span>PageKey {</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        <span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> = 0;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>        <span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> = 0;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> PageKey&amp; other) <span class="keyword">const</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    };</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    <span class="keyword">struct </span>PageKeyHash {</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>        std::size_t operator()(<span class="keyword">const</span> PageKey&amp; <a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    };</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    <span class="keyword">struct </span>PhysicalState {</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>        std::unique_ptr&lt;image::ImageData&gt;             <a class="code hl_variable" href="DecalAttackVfx_8cpp.html#a899871882586e1cb83f5b303c42f2b98">albedo</a>;</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        std::unique_ptr&lt;image::ImageData&gt;             <a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>;</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        std::unique_ptr&lt;image::ImageData&gt;             pageTable;</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        std::vector&lt;SlotRecord&gt;                       <a class="code hl_variable" href="Shadow_8cpp.html#ad254e1f2c7b99b75f16388b16ac9fca6">slots</a>;</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        std::list&lt;int&gt;                                lru;  <span class="comment">// physical slot indices, front = most recent</span></div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>        std::unordered_map&lt;PageKey, int, PageKeyHash&gt; pageToSlot;</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    };</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span> </div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    <span class="keyword">explicit</span> VirtualTextureStreaming(VirtualTextureStreamingConfig        config,</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>                                     std::unique_ptr&lt;VirtualTextureBlend&gt; producer);</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span> </div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a>                 ensureInitialized() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a>                 validatePage(<span class="keywordtype">int</span> pageX, <span class="keywordtype">int</span> pageY, <span class="keywordtype">int</span> mipLevel) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    <span class="keywordtype">void</span>                                            touchSlot(PhysicalState&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>, <span class="keywordtype">int</span> slot);</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a>                  allocateSlot(PhysicalState&amp;                           <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>,</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>                                                                 std::vector&lt;VirtualTextureRegionPixels&gt;&amp; pageTableClears);</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a>                 decodeIntoSlot(PhysicalState&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>, <span class="keywordtype">int</span> slot, <span class="keywordtype">int</span> pageX, <span class="keywordtype">int</span> pageY,</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>                                                                   std::vector&lt;VirtualTextureRegionPixels&gt;&amp; albedoRegions,</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>                                                                   std::vector&lt;VirtualTextureRegionPixels&gt;&amp; normalRegions,</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>                                                                   std::vector&lt;VirtualTextureRegionPixels&gt;&amp; pageTableSets);</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    [[nodiscard]] <span class="keyword">static</span> VirtualTextureRegionPixels copyRegion(<span class="keyword">const</span> image::ImageData&amp; <a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac97fcc7b295c4be16e43a17090bc02db">image</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>,</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>                                                               <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>);</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    [[nodiscard]] <span class="keyword">static</span> VirtualTextureRegionPixels copyPageTableTexel(<span class="keyword">const</span> image::ImageData&amp; table, <span class="keywordtype">int</span> pageX,</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>                                                                       <span class="keywordtype">int</span> pageY);</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    <span class="keywordtype">void</span>                                            clearPageMapping(PhysicalState&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>, <span class="keywordtype">int</span> pageX, <span class="keywordtype">int</span> pageY);</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>    PhysicalState                                   cloneState(<span class="keyword">const</span> PhysicalState&amp; <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span> </div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>    VirtualTextureStreamingConfig             config_;</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>    std::unique_ptr&lt;VirtualTextureBlend&gt;      producer_;</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>    <span class="keywordtype">bool</span>                                      initialized_    = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    <span class="keywordtype">int</span>                                       atlasSlotsX_    = 0;</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>    <span class="keywordtype">int</span>                                       atlasSlotsY_    = 0;</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>    <span class="keywordtype">int</span>                                       pageExtent_     = 0;</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>    <span class="keywordtype">float</span>                                     borderFraction_ = 0.f;</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>    std::uint64_t                             generation_     = 0;</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    PhysicalState                             published_;</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    PhysicalState                             working_;</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    std::optional&lt;VirtualTextureUploadBatch&gt;  pending_;</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>    std::vector&lt;VirtualTextureFeedbackSample&gt; feedback_;</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    VirtualTextureStreamingStats              lifetime_{};</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span> </div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#ab58f96281585822e94cace95ce53fcecaa3e8ae43188ae76d38f414b2bdb0077b">Texture</a>* gpuAlbedo_    = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#ab58f96281585822e94cace95ce53fcecaa3e8ae43188ae76d38f414b2bdb0077b">Texture</a>* gpuNormal_    = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#ab58f96281585822e94cace95ce53fcecaa3e8ae43188ae76d38f414b2bdb0077b">Texture</a>* gpuPageTable_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>};</div>
+</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span> </div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00033">ActionTimelineWidget.cpp:33</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_a56eca241e2896b9f57a79589e76fd24b"><div class="ttname"><a href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a></div><div class="ttdeci">float w</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aDecalAttackVfx_8cpp_html_a899871882586e1cb83f5b303c42f2b98"><div class="ttname"><a href="DecalAttackVfx_8cpp.html#a899871882586e1cb83f5b303c42f2b98">albedo</a></div><div class="ttdeci">graphics::Texture * albedo</div><div class="ttdef"><b>Definition</b> <a href="DecalAttackVfx_8cpp_source.html#l00159">DecalAttackVfx.cpp:159</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a1f53a56adfc8a8f39c5e553c97a7b2ff"><div class="ttname"><a href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a></div><div class="ttdeci">SQObjectPtr key</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00155">ECS.cpp:155</a></div></div>
+<div class="ttc" id="aExport_8h_html_a74b09fdcf18b26aea79409bf319c562c"><div class="ttname"><a href="Export_8h.html#a74b09fdcf18b26aea79409bf319c562c">EVENGINE_API_BACKENDS</a></div><div class="ttdeci">#define EVENGINE_API_BACKENDS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00108">Export.h:108</a></div></div>
+<div class="ttc" id="aGraphicsShaderResources_8cpp_html_ac97fcc7b295c4be16e43a17090bc02db"><div class="ttname"><a href="GraphicsShaderResources_8cpp.html#ac97fcc7b295c4be16e43a17090bc02db">image</a></div><div class="ttdeci">vk::UniqueImage image</div><div class="ttdef"><b>Definition</b> <a href="GraphicsShaderResources_8cpp_source.html#l00014">GraphicsShaderResources.cpp:14</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a55831f7eab5ed2917a0191e858852f42"><div class="ttname"><a href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a></div><div class="ttdeci">float u</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00233">Grass.cpp:233</a></div></div>
+<div class="ttc" id="aHexRiverMesh_8cpp_html_a48d9522e58fa05906c6dba23e5745a72"><div class="ttname"><a href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="HexRiverMesh_8cpp_source.html#l00019">HexRiverMesh.cpp:19</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00690">ImageData.cpp:690</a></div></div>
+<div class="ttc" id="aImageData_8h_html"><div class="ttname"><a href="ImageData_8h.html">ImageData.h</a></div></div>
+<div class="ttc" id="aModelRenderer_8cpp_html_a7fc298ed6f70a0822720769c13216978"><div class="ttname"><a href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a></div><div class="ttdeci">Texture * normal</div><div class="ttdef"><b>Definition</b> <a href="ModelRenderer_8cpp_source.html#l00154">ModelRenderer.cpp:154</a></div></div>
+<div class="ttc" id="aOnnxGpgpu_8cpp_html_a880e0b3e657e02fc555ef2b0da783a2b"><div class="ttname"><a href="OnnxGpgpu_8cpp.html#a880e0b3e657e02fc555ef2b0da783a2b">stats</a></div><div class="ttdeci">OnnxTransferStats stats</div><div class="ttdef"><b>Definition</b> <a href="OnnxGpgpu_8cpp_source.html#l00056">OnnxGpgpu.cpp:56</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_ac84a36ae433419b622c91ac3022cf1c9"><div class="ttname"><a href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a></div><div class="ttdeci">TileLayer * layer</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00147">Pathfinder.cpp:147</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_ad25edacba00e4d0666a9959053b7cc10"><div class="ttname"><a href="Pathfinder_8cpp.html#ad25edacba00e4d0666a9959053b7cc10">dirty</a></div><div class="ttdeci">bool dirty</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00155">Pathfinder.cpp:155</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ae5f89cb6e6c69abb9c0b93094fd97a1a"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a></div><div class="ttdeci">Material * material</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00672">RenderSystem3D.cpp:672</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_aa035d90db0e334b2f2f53e55a79e621f"><div class="ttname"><a href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a></div><div class="ttdeci">std::string_view source</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00020">ScriptStructure.cpp:20</a></div></div>
+<div class="ttc" id="aShadow_8cpp_html_ad0f4f9e74e593402c49ae3ef819c0f20"><div class="ttname"><a href="Shadow_8cpp.html#ad0f4f9e74e593402c49ae3ef819c0f20">occupied</a></div><div class="ttdeci">bool occupied</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8cpp_source.html#l00138">Shadow.cpp:138</a></div></div>
+<div class="ttc" id="aShadow_8cpp_html_ad254e1f2c7b99b75f16388b16ac9fca6"><div class="ttname"><a href="Shadow_8cpp.html#ad254e1f2c7b99b75f16388b16ac9fca6">slots</a></div><div class="ttdeci">LocalPageCacheEntry slots[ShadowConfig::kLocalSlots]</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8cpp_source.html#l00142">Shadow.cpp:142</a></div></div>
+<div class="ttc" id="aVirtualTextureBlend_8h_html"><div class="ttname"><a href="VirtualTextureBlend_8h.html">VirtualTextureBlend.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00116">Graphics.h:126</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Material_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Material.html">eve::graphics::Material</a></div><div class="ttdoc">Packages shading method + surface parameters into one attachable asset.</div><div class="ttdef"><b>Definition</b> <a href="Material_8h_source.html#l00038">Material.h:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VirtualTextureBlend_html"><div class="ttname"><a href="classeve_1_1graphics_1_1VirtualTextureBlend.html">eve::graphics::VirtualTextureBlend</a></div><div class="ttdoc">CPU reference implementation of a tiled, height-aware material virtual texture.</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureBlend_8h_source.html#l00080">VirtualTextureBlend.h:80</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VirtualTextureStreaming_html"><div class="ttname"><a href="classeve_1_1graphics_1_1VirtualTextureStreaming.html">eve::graphics::VirtualTextureStreaming</a></div><div class="ttdoc">Internal UE5-style runtime virtual texture session: feedback → decode → atomic publish.</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00095">VirtualTextureStreaming.h:95</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VirtualTextureStreaming_html_a1ef9ed14b76dd427f50bc4809247b34c"><div class="ttname"><a href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a1ef9ed14b76dd427f50bc4809247b34c">eve::graphics::VirtualTextureStreaming::borderFraction</a></div><div class="ttdeci">float borderFraction() const</div><div class="ttdoc">Border texels / pageExtent.</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00206">VirtualTextureStreaming.h:206</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VirtualTextureStreaming_html_a232054c3f017e86362e96a5225825264"><div class="ttname"><a href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a232054c3f017e86362e96a5225825264">eve::graphics::VirtualTextureStreaming::producer</a></div><div class="ttdeci">const VirtualTextureBlend &amp; producer() const</div><div class="ttdoc">Borrowed producer.</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00216">VirtualTextureStreaming.h:216</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VirtualTextureStreaming_html_a6ae61c591a11ef7b08b5bf11e36f71d1"><div class="ttname"><a href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#a6ae61c591a11ef7b08b5bf11e36f71d1">eve::graphics::VirtualTextureStreaming::producer</a></div><div class="ttdeci">VirtualTextureBlend &amp; producer()</div><div class="ttdoc">Borrowed producer.</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00214">VirtualTextureStreaming.h:214</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VirtualTextureStreaming_html_aa12f6645b7e864ffd4ce7970ec8a3674"><div class="ttname"><a href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#aa12f6645b7e864ffd4ce7970ec8a3674">eve::graphics::VirtualTextureStreaming::pageExtent</a></div><div class="ttdeci">int pageExtent() const</div><div class="ttdoc">Page extent including gutter.</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00204">VirtualTextureStreaming.h:204</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VirtualTextureStreaming_html_ab88fdfc83d870ae1e8487c10f7297075"><div class="ttname"><a href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#ab88fdfc83d870ae1e8487c10f7297075">eve::graphics::VirtualTextureStreaming::atlasSlotsY</a></div><div class="ttdeci">int atlasSlotsY() const</div><div class="ttdoc">Atlas slots y.</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00202">VirtualTextureStreaming.h:202</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VirtualTextureStreaming_html_ac0b25a9117769906c68a1e33754013f2"><div class="ttname"><a href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#ac0b25a9117769906c68a1e33754013f2">eve::graphics::VirtualTextureStreaming::generation</a></div><div class="ttdeci">std::uint64_t generation() const</div><div class="ttdoc">Published generation.</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00212">VirtualTextureStreaming.h:212</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VirtualTextureStreaming_html_ac65507723e06e4a0bcc036f96006eecf"><div class="ttname"><a href="classeve_1_1graphics_1_1VirtualTextureStreaming.html#ac65507723e06e4a0bcc036f96006eecf">eve::graphics::VirtualTextureStreaming::atlasSlotsX</a></div><div class="ttdeci">int atlasSlotsX() const</div><div class="ttdoc">Atlas slots x.</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00200">VirtualTextureStreaming.h:200</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html">eve::image::ImageData</a></div><div class="ttdoc">Represents raw pixel data.</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00038">ImageData.h:38</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_html_a5da392e8585b052058364218588f46a7ad92a8333dd3ccb895cc65f7455b71206"><div class="ttname"><a href="namespaceeve_1_1asset__import.html#a5da392e8585b052058364218588f46a7ad92a8333dd3ccb895cc65f7455b71206">eve::asset_import::UnitySourceKind::Material</a></div><div class="ttdeci">@ Material</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00025">Animation.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_ab58f96281585822e94cace95ce53fcecaa3e8ae43188ae76d38f414b2bdb0077b"><div class="ttname"><a href="namespaceeve_1_1procgen.html#ab58f96281585822e94cace95ce53fcecaa3e8ae43188ae76d38f414b2bdb0077b">eve::procgen::TerrainOperationDomain::Texture</a></div><div class="ttdeci">@ Texture</div></div>
+<div class="ttc" id="anamespaceeve_html_ae5defde2d23d6c815e440eabbed4eb61ad334dfcea59127bedfcdbe0a3ee7f494"><div class="ttname"><a href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61ad334dfcea59127bedfcdbe0a3ee7f494">eve::PhotoModeDomain::Graphics</a></div><div class="ttdeci">@ Graphics</div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureBlendConfig_html"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureBlendConfig.html">eve::graphics::VirtualTextureBlendConfig</a></div><div class="ttdoc">Backend-neutral configuration for a paged material-attribute texture.</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureBlend_8h_source.html#l00016">VirtualTextureBlend.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureBlendLayer_html"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureBlendLayer.html">eve::graphics::VirtualTextureBlendLayer</a></div><div class="ttdoc">One immutable source layer copied into a VirtualTextureBlend.</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureBlend_8h_source.html#l00025">VirtualTextureBlend.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureFeedbackSample_html"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureFeedbackSample.html">eve::graphics::VirtualTextureFeedbackSample</a></div><div class="ttdoc">One GPU/CPU feedback sample requesting residency for a virtual page.</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00028">VirtualTextureStreaming.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureFeedbackSample_html_a03e75cbad7044267b6a10edd4661cae6"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureFeedbackSample.html#a03e75cbad7044267b6a10edd4661cae6">eve::graphics::VirtualTextureFeedbackSample::pageX</a></div><div class="ttdeci">int pageX</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00029">VirtualTextureStreaming.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureFeedbackSample_html_a31c1db81d048ce958794b17e62694aff"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureFeedbackSample.html#a31c1db81d048ce958794b17e62694aff">eve::graphics::VirtualTextureFeedbackSample::pageY</a></div><div class="ttdeci">int pageY</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00030">VirtualTextureStreaming.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureFeedbackSample_html_a7702a30762768306633adcca913cec27"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureFeedbackSample.html#a7702a30762768306633adcca913cec27">eve::graphics::VirtualTextureFeedbackSample::mipLevel</a></div><div class="ttdeci">int mipLevel</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00031">VirtualTextureStreaming.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureRegionPixels_html"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureRegionPixels.html">eve::graphics::VirtualTextureRegionPixels</a></div><div class="ttdoc">One RGBA8 rectangle owned by an upload batch. @ownership Pixels are owned by the batch until it is de...</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00062">VirtualTextureStreaming.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureRegionPixels_html_a5cb60943141b69656145cb9c53c2d257"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureRegionPixels.html#a5cb60943141b69656145cb9c53c2d257">eve::graphics::VirtualTextureRegionPixels::y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00064">VirtualTextureStreaming.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureRegionPixels_html_a63f06386ea708684b3b2aa7a95899c31"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureRegionPixels.html#a63f06386ea708684b3b2aa7a95899c31">eve::graphics::VirtualTextureRegionPixels::rgba</a></div><div class="ttdeci">std::vector&lt; std::uint8_t &gt; rgba</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00067">VirtualTextureStreaming.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureRegionPixels_html_a985b8359cc4f3989fb8eea2197548336"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureRegionPixels.html#a985b8359cc4f3989fb8eea2197548336">eve::graphics::VirtualTextureRegionPixels::width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00065">VirtualTextureStreaming.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureRegionPixels_html_abf02a6346c102f7acdf6488af89447c7"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureRegionPixels.html#abf02a6346c102f7acdf6488af89447c7">eve::graphics::VirtualTextureRegionPixels::x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00063">VirtualTextureStreaming.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureRegionPixels_html_addcd49dd7c2e45ca4673d4cd73d0277f"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureRegionPixels.html#addcd49dd7c2e45ca4673d4cd73d0277f">eve::graphics::VirtualTextureRegionPixels::height</a></div><div class="ttdeci">int height</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00066">VirtualTextureStreaming.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureStreamingConfig_html"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureStreamingConfig.html">eve::graphics::VirtualTextureStreamingConfig</a></div><div class="ttdoc">Runtime streaming budgets over a VirtualTextureBlend producer.</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00035">VirtualTextureStreaming.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureStreamingConfig_html_a33ea5683eca4ba0b35d966cc4fe8446e"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureStreamingConfig.html#a33ea5683eca4ba0b35d966cc4fe8446e">eve::graphics::VirtualTextureStreamingConfig::feedbackCapacity</a></div><div class="ttdeci">std::size_t feedbackCapacity</div><div class="ttdoc">Soft cap on retained raw feedback samples before compact.</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00040">VirtualTextureStreaming.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureStreamingConfig_html_a36713f9920f26790e74d1405ce1e6b3b"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureStreamingConfig.html#a36713f9920f26790e74d1405ce1e6b3b">eve::graphics::VirtualTextureStreamingConfig::maxDecodesPerUpdate</a></div><div class="ttdeci">std::size_t maxDecodesPerUpdate</div><div class="ttdoc">Maximum page decodes applied by one update() call.</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00038">VirtualTextureStreaming.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureStreamingConfig_html_ae8b2b04515b9db4976c3ef0bc44bb864"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureStreamingConfig.html#ae8b2b04515b9db4976c3ef0bc44bb864">eve::graphics::VirtualTextureStreamingConfig::blend</a></div><div class="ttdeci">VirtualTextureBlendConfig blend</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00036">VirtualTextureStreaming.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureStreamingStats_html"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html">eve::graphics::VirtualTextureStreamingStats</a></div><div class="ttdoc">Observable counters for one streaming session.</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00044">VirtualTextureStreaming.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureStreamingStats_html_a1ab07f2ca2f2226c145aef76ab65a085"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#a1ab07f2ca2f2226c145aef76ab65a085">eve::graphics::VirtualTextureStreamingStats::pagesInvalidated</a></div><div class="ttdeci">std::uint64_t pagesInvalidated</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00053">VirtualTextureStreaming.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureStreamingStats_html_a4dbee3e68999aa887fabb11f5482f62e"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#a4dbee3e68999aa887fabb11f5482f62e">eve::graphics::VirtualTextureStreamingStats::publishes</a></div><div class="ttdeci">std::uint64_t publishes</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00054">VirtualTextureStreaming.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureStreamingStats_html_a544c8b49607b54dc9c9534bf636ca8bf"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#a544c8b49607b54dc9c9534bf636ca8bf">eve::graphics::VirtualTextureStreamingStats::feedbackSamples</a></div><div class="ttdeci">std::uint64_t feedbackSamples</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00049">VirtualTextureStreaming.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureStreamingStats_html_a7e9641a8f2f1589854299e83e076f6f3"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#a7e9641a8f2f1589854299e83e076f6f3">eve::graphics::VirtualTextureStreamingStats::pagesEvicted</a></div><div class="ttdeci">std::uint64_t pagesEvicted</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00052">VirtualTextureStreaming.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureStreamingStats_html_a88e13b120707f552a835518090006395"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#a88e13b120707f552a835518090006395">eve::graphics::VirtualTextureStreamingStats::pendingUploads</a></div><div class="ttdeci">std::size_t pendingUploads</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00048">VirtualTextureStreaming.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureStreamingStats_html_a98263e81521a0f1989d07ee77d5307d8"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#a98263e81521a0f1989d07ee77d5307d8">eve::graphics::VirtualTextureStreamingStats::abandonedPublishes</a></div><div class="ttdeci">std::uint64_t abandonedPublishes</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00055">VirtualTextureStreaming.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureStreamingStats_html_aa0aebd4ff5f3bd15c4198f924a4f32d9"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#aa0aebd4ff5f3bd15c4198f924a4f32d9">eve::graphics::VirtualTextureStreamingStats::uniqueFeedback</a></div><div class="ttdeci">std::uint64_t uniqueFeedback</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00050">VirtualTextureStreaming.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureStreamingStats_html_ab5a375d4e111d61241763558ec21bdc2"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#ab5a375d4e111d61241763558ec21bdc2">eve::graphics::VirtualTextureStreamingStats::pagesDecoded</a></div><div class="ttdeci">std::uint64_t pagesDecoded</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00051">VirtualTextureStreaming.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureStreamingStats_html_ae0a65b6329dd6a6af4a67db3249e4ca2"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#ae0a65b6329dd6a6af4a67db3249e4ca2">eve::graphics::VirtualTextureStreamingStats::residentPages</a></div><div class="ttdeci">std::size_t residentPages</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00046">VirtualTextureStreaming.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureStreamingStats_html_ae327f3e457aa3598a55679d0fba751d0"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#ae327f3e457aa3598a55679d0fba751d0">eve::graphics::VirtualTextureStreamingStats::generation</a></div><div class="ttdeci">std::uint64_t generation</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00045">VirtualTextureStreaming.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureStreamingStats_html_aecc932f8bd391f3a74d61a114a68592e"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureStreamingStats.html#aecc932f8bd391f3a74d61a114a68592e">eve::graphics::VirtualTextureStreamingStats::pendingFeedback</a></div><div class="ttdeci">std::size_t pendingFeedback</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00047">VirtualTextureStreaming.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureUploadBatch_html"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureUploadBatch.html">eve::graphics::VirtualTextureUploadBatch</a></div><div class="ttdoc">Ordered GPU upload transaction for atlas pages and page-table texels.</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00076">VirtualTextureStreaming.h:76</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureUploadBatch_html_a0016081ba8c64aab815b83a339087e23"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureUploadBatch.html#a0016081ba8c64aab815b83a339087e23">eve::graphics::VirtualTextureUploadBatch::expectedGeneration</a></div><div class="ttdeci">std::uint64_t expectedGeneration</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00077">VirtualTextureStreaming.h:77</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureUploadBatch_html_a1571a0f2ccf5865f5ee87386d5bc111b"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureUploadBatch.html#a1571a0f2ccf5865f5ee87386d5bc111b">eve::graphics::VirtualTextureUploadBatch::normalRegions</a></div><div class="ttdeci">std::vector&lt; VirtualTextureRegionPixels &gt; normalRegions</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00080">VirtualTextureStreaming.h:80</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureUploadBatch_html_a8a1f3b19b60346366ac3dcb6619e98bc"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureUploadBatch.html#a8a1f3b19b60346366ac3dcb6619e98bc">eve::graphics::VirtualTextureUploadBatch::pageTableClears</a></div><div class="ttdeci">std::vector&lt; VirtualTextureRegionPixels &gt; pageTableClears</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00078">VirtualTextureStreaming.h:78</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureUploadBatch_html_a9eab39e3c99d8ecb663d3b84fd5cae31"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureUploadBatch.html#a9eab39e3c99d8ecb663d3b84fd5cae31">eve::graphics::VirtualTextureUploadBatch::albedoRegions</a></div><div class="ttdeci">std::vector&lt; VirtualTextureRegionPixels &gt; albedoRegions</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00079">VirtualTextureStreaming.h:79</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VirtualTextureUploadBatch_html_af2226e200baf90f83a2521ece4d0a39a"><div class="ttname"><a href="structeve_1_1graphics_1_1VirtualTextureUploadBatch.html#af2226e200baf90f83a2521ece4d0a39a">eve::graphics::VirtualTextureUploadBatch::pageTableSets</a></div><div class="ttdeci">std::vector&lt; VirtualTextureRegionPixels &gt; pageTableSets</div><div class="ttdef"><b>Definition</b> <a href="VirtualTextureStreaming_8h_source.html#l00081">VirtualTextureStreaming.h:81</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

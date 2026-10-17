@@ -1,0 +1,539 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ScriptArg结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="structeve_1_1ScriptArg.html">ScriptArg</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1ScriptArg-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ScriptArg结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>One argument passed to a script provider method.  
+ <a href="structeve_1_1ScriptArg.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ScriptProvider_8h_source.html">ScriptProvider.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:aedac12fb588690dd61dd0e8258bd387a" id="r_aedac12fb588690dd61dd0e8258bd387a"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ScriptArg.html#aedac12fb588690dd61dd0e8258bd387a">Kind</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="structeve_1_1ScriptArg.html#aedac12fb588690dd61dd0e8258bd387aaa0faef0851b4294c06f2b94bb1cb2044">Integer</a>
+, <a class="el" href="structeve_1_1ScriptArg.html#aedac12fb588690dd61dd0e8258bd387aab2ee912b91d69b435159c7c3f6df7f5f">Number</a>
+, <a class="el" href="structeve_1_1ScriptArg.html#aedac12fb588690dd61dd0e8258bd387aa27226c864bac7454a8504f8edb15d95b">Boolean</a>
+, <a class="el" href="structeve_1_1ScriptArg.html#aedac12fb588690dd61dd0e8258bd387aa9dffbf69ffba8bc38bc4e01abf4b1675">Text</a>
+, <br />
+&#160;&#160;<a class="el" href="structeve_1_1ScriptArg.html#aedac12fb588690dd61dd0e8258bd387aa51c45b795d5d18a3e4e0c37e8b20a141">Table</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:aedac12fb588690dd61dd0e8258bd387a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Active argument kind.  <a href="structeve_1_1ScriptArg.html#aedac12fb588690dd61dd0e8258bd387a">更多...</a><br /></td></tr>
+<tr class="separator:aedac12fb588690dd61dd0e8258bd387a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a476d87bb58bad5e978186a6f340a3d3a" id="r_a476d87bb58bad5e978186a6f340a3d3a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1ScriptArg.html">ScriptArg</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ScriptArg.html#a476d87bb58bad5e978186a6f340a3d3a">fromInteger</a> (std::int64_t <a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>)</td></tr>
+<tr class="separator:a476d87bb58bad5e978186a6f340a3d3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79207adee24944789ef668a2091fe379" id="r_a79207adee24944789ef668a2091fe379"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1ScriptArg.html">ScriptArg</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ScriptArg.html#a79207adee24944789ef668a2091fe379">fromNumber</a> (double <a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>)</td></tr>
+<tr class="separator:a79207adee24944789ef668a2091fe379"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a302b4b3856c4ffa0290feb441881a0" id="r_a5a302b4b3856c4ffa0290feb441881a0"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1ScriptArg.html">ScriptArg</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ScriptArg.html#a5a302b4b3856c4ffa0290feb441881a0">fromBoolean</a> (bool <a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>)</td></tr>
+<tr class="separator:a5a302b4b3856c4ffa0290feb441881a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c8fc6d7ea049e2fe7f21c17daf3c4a9" id="r_a4c8fc6d7ea049e2fe7f21c17daf3c4a9"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1ScriptArg.html">ScriptArg</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ScriptArg.html#a4c8fc6d7ea049e2fe7f21c17daf3c4a9">fromText</a> (std::string <a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>)</td></tr>
+<tr class="separator:a4c8fc6d7ea049e2fe7f21c17daf3c4a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a761641a8829274af26cce1b0bdfbeb06" id="r_a761641a8829274af26cce1b0bdfbeb06"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structeve_1_1ScriptArg.html">ScriptArg</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ScriptArg.html#a761641a8829274af26cce1b0bdfbeb06">fromTable</a> (<a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> <a class="el" href="ECS_8cpp.html#acf26f1505f276ea0dbf631c4bf19727a">fields</a>)</td></tr>
+<tr class="memdesc:a761641a8829274af26cce1b0bdfbeb06"><td class="mdescLeft">&#160;</td><td class="mdescRight">One object argument (a table on the script side). @cost One <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> tree copy.  <br /></td></tr>
+<tr class="separator:a761641a8829274af26cce1b0bdfbeb06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a1a388ec13962647a83788f93f54bf1aa" id="r_a1a388ec13962647a83788f93f54bf1aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1ScriptArg.html#aedac12fb588690dd61dd0e8258bd387a">Kind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ScriptArg.html#a1a388ec13962647a83788f93f54bf1aa">kind</a> = <a class="el" href="structeve_1_1ScriptArg.html#aedac12fb588690dd61dd0e8258bd387aab2ee912b91d69b435159c7c3f6df7f5f">Kind::Number</a></td></tr>
+<tr class="separator:a1a388ec13962647a83788f93f54bf1aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d7ed1bb30554af4dd1c9ae7b2954bc3" id="r_a9d7ed1bb30554af4dd1c9ae7b2954bc3"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ScriptArg.html#a9d7ed1bb30554af4dd1c9ae7b2954bc3">integer</a> = 0</td></tr>
+<tr class="separator:a9d7ed1bb30554af4dd1c9ae7b2954bc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af84c1fd27d797c19afa83c96fcbb53cd" id="r_af84c1fd27d797c19afa83c96fcbb53cd"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ScriptArg.html#af84c1fd27d797c19afa83c96fcbb53cd">number</a> = 0.0</td></tr>
+<tr class="separator:af84c1fd27d797c19afa83c96fcbb53cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9f73e57a328cc758e0b960b89dee340" id="r_ae9f73e57a328cc758e0b960b89dee340"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ScriptArg.html#ae9f73e57a328cc758e0b960b89dee340">boolean</a> = false</td></tr>
+<tr class="separator:ae9f73e57a328cc758e0b960b89dee340"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ac54610975740d9bc924395241c620c" id="r_a5ac54610975740d9bc924395241c620c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ScriptArg.html#a5ac54610975740d9bc924395241c620c">text</a></td></tr>
+<tr class="separator:a5ac54610975740d9bc924395241c620c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad366395b4b93b7fec5743a11270a6215" id="r_ad366395b4b93b7fec5743a11270a6215"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ScriptArg.html#ad366395b4b93b7fec5743a11270a6215">table</a></td></tr>
+<tr class="memdesc:ad366395b4b93b7fec5743a11270a6215"><td class="mdescLeft">&#160;</td><td class="mdescRight">Object payload for <code><a class="el" href="structeve_1_1ScriptArg.html#aedac12fb588690dd61dd0e8258bd387aa51c45b795d5d18a3e4e0c37e8b20a141">Kind::Table</a></code>; keys are the script side's field names.  <br /></td></tr>
+<tr class="separator:ad366395b4b93b7fec5743a11270a6215"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>One argument passed to a script provider method. </p>
+<p>The bridge marshals <b>values</b>: the four scalar kinds plus an owning object (<code>Table</code>) for capabilities whose payload is a record rather than a number. A module that serves a capability from script decides which of its fields cross the boundary, in what order.</p>
+<dl class="section remark"><dt>备注</dt><dd>用户 2026-09-20 的决定③（"全面加对象/表参数 + 结构化返回"）把这条边界从"只有标量" 放宽到"标量 + 对象"。代价是这里多一层编组语义，所以 <code>call</code>/<code>callNumber</code> 的 <code>@cost</code> 要 按"构造一个表"而不是"几个标量压栈"来读（见下）；<code>Table</code> 载荷仍走 <code><a class="el" href="SquirrelBinding_8h.html" title="The single Squirrel projection for common Result, Status and Value.">common/SquirrelBinding.h</a></code> 那一套权威转换（递归/元素数上限、环检测、非有限数拒绝）， 桥本身不新增第二套递归转换。 </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8h_source.html">ScriptProvider.h</a> 第 <a class="el" href="ScriptProvider_8h_source.html#l00046">46</a> 行定义.</p>
+</div><h2 class="groupheader">成员枚举类型说明</h2>
+<a id="aedac12fb588690dd61dd0e8258bd387a" name="aedac12fb588690dd61dd0e8258bd387a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedac12fb588690dd61dd0e8258bd387a">&#9670;&#160;</a></span>Kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="structeve_1_1ScriptArg.html#aedac12fb588690dd61dd0e8258bd387a">eve::ScriptArg::Kind</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Active argument kind. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="aedac12fb588690dd61dd0e8258bd387aaa0faef0851b4294c06f2b94bb1cb2044" name="aedac12fb588690dd61dd0e8258bd387aaa0faef0851b4294c06f2b94bb1cb2044"></a>Integer&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aedac12fb588690dd61dd0e8258bd387aab2ee912b91d69b435159c7c3f6df7f5f" name="aedac12fb588690dd61dd0e8258bd387aab2ee912b91d69b435159c7c3f6df7f5f"></a>Number&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aedac12fb588690dd61dd0e8258bd387aa27226c864bac7454a8504f8edb15d95b" name="aedac12fb588690dd61dd0e8258bd387aa27226c864bac7454a8504f8edb15d95b"></a>Boolean&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aedac12fb588690dd61dd0e8258bd387aa9dffbf69ffba8bc38bc4e01abf4b1675" name="aedac12fb588690dd61dd0e8258bd387aa9dffbf69ffba8bc38bc4e01abf4b1675"></a>Text&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aedac12fb588690dd61dd0e8258bd387aa51c45b795d5d18a3e4e0c37e8b20a141" name="aedac12fb588690dd61dd0e8258bd387aa51c45b795d5d18a3e4e0c37e8b20a141"></a>Table&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8h_source.html">ScriptProvider.h</a> 第 <a class="el" href="ScriptProvider_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a5a302b4b3856c4ffa0290feb441881a0" name="a5a302b4b3856c4ffa0290feb441881a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a302b4b3856c4ffa0290feb441881a0">&#9670;&#160;</a></span>fromBoolean()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ScriptArg.html">ScriptArg</a> eve::ScriptArg::fromBoolean </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00294">294</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="structeve_1_1ScriptArg.html#aedac12fb588690dd61dd0e8258bd387aa27226c864bac7454a8504f8edb15d95b">Boolean</a>, <a class="el" href="ScriptProvider_8h_source.html#l00053">boolean</a>, <a class="el" href="ScriptProvider_8h_source.html#l00050">kind</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+</div>
+</div>
+<a id="a476d87bb58bad5e978186a6f340a3d3a" name="a476d87bb58bad5e978186a6f340a3d3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a476d87bb58bad5e978186a6f340a3d3a">&#9670;&#160;</a></span>fromInteger()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ScriptArg.html">ScriptArg</a> eve::ScriptArg::fromInteger </td>
+          <td>(</td>
+          <td class="paramtype">std::int64_t&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00280">280</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="structeve_1_1ScriptArg.html#aedac12fb588690dd61dd0e8258bd387aaa0faef0851b4294c06f2b94bb1cb2044">Integer</a>, <a class="el" href="ScriptProvider_8h_source.html#l00051">integer</a>, <a class="el" href="ScriptProvider_8h_source.html#l00050">kind</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+</div>
+</div>
+<a id="a79207adee24944789ef668a2091fe379" name="a79207adee24944789ef668a2091fe379"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79207adee24944789ef668a2091fe379">&#9670;&#160;</a></span>fromNumber()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ScriptArg.html">ScriptArg</a> eve::ScriptArg::fromNumber </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00287">287</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptProvider_8h_source.html#l00050">kind</a>, <a class="el" href="structeve_1_1ScriptArg.html#aedac12fb588690dd61dd0e8258bd387aab2ee912b91d69b435159c7c3f6df7f5f">Number</a>, <a class="el" href="ScriptProvider_8h_source.html#l00052">number</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptProvider_8cpp_source.html#l00526">eve::ScriptProviderRegistry::call()</a> , 以及 <a class="el" href="ScriptProvider_8cpp_source.html#l00545">eve::ScriptProviderRegistry::callNumber()</a>.</p>
+
+</div>
+</div>
+<a id="a761641a8829274af26cce1b0bdfbeb06" name="a761641a8829274af26cce1b0bdfbeb06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a761641a8829274af26cce1b0bdfbeb06">&#9670;&#160;</a></span>fromTable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ScriptArg.html">ScriptArg</a> eve::ScriptArg::fromTable </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>&#160;</td>
+          <td class="paramname"><em>fields</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>One object argument (a table on the script side). @cost One <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> tree copy. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00308">308</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ECS_8cpp_source.html#l00042">fields</a>, <a class="el" href="ScriptProvider_8h_source.html#l00050">kind</a>, <a class="el" href="structeve_1_1ScriptArg.html#aedac12fb588690dd61dd0e8258bd387aa51c45b795d5d18a3e4e0c37e8b20a141">Table</a> , 以及 <a class="el" href="ScriptProvider_8h_source.html#l00056">table</a>.</p>
+
+</div>
+</div>
+<a id="a4c8fc6d7ea049e2fe7f21c17daf3c4a9" name="a4c8fc6d7ea049e2fe7f21c17daf3c4a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c8fc6d7ea049e2fe7f21c17daf3c4a9">&#9670;&#160;</a></span>fromText()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ScriptArg.html">ScriptArg</a> eve::ScriptArg::fromText </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00301">301</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptProvider_8h_source.html#l00050">kind</a>, <a class="el" href="structeve_1_1ScriptArg.html#aedac12fb588690dd61dd0e8258bd387aa9dffbf69ffba8bc38bc4e01abf4b1675">Text</a>, <a class="el" href="ScriptProvider_8h_source.html#l00054">text</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="ae9f73e57a328cc758e0b960b89dee340" name="ae9f73e57a328cc758e0b960b89dee340"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9f73e57a328cc758e0b960b89dee340">&#9670;&#160;</a></span>boolean</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ScriptArg::boolean = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8h_source.html">ScriptProvider.h</a> 第 <a class="el" href="ScriptProvider_8h_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptProvider_8cpp_source.html#l00294">fromBoolean()</a>.</p>
+
+</div>
+</div>
+<a id="a9d7ed1bb30554af4dd1c9ae7b2954bc3" name="a9d7ed1bb30554af4dd1c9ae7b2954bc3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d7ed1bb30554af4dd1c9ae7b2954bc3">&#9670;&#160;</a></span>integer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::ScriptArg::integer = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8h_source.html">ScriptProvider.h</a> 第 <a class="el" href="ScriptProvider_8h_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptProvider_8cpp_source.html#l00280">fromInteger()</a>.</p>
+
+</div>
+</div>
+<a id="a1a388ec13962647a83788f93f54bf1aa" name="a1a388ec13962647a83788f93f54bf1aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a388ec13962647a83788f93f54bf1aa">&#9670;&#160;</a></span>kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1ScriptArg.html#aedac12fb588690dd61dd0e8258bd387a">Kind</a> eve::ScriptArg::kind = <a class="el" href="structeve_1_1ScriptArg.html#aedac12fb588690dd61dd0e8258bd387aab2ee912b91d69b435159c7c3f6df7f5f">Kind::Number</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8h_source.html">ScriptProvider.h</a> 第 <a class="el" href="ScriptProvider_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptProvider_8cpp_source.html#l00294">fromBoolean()</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00280">fromInteger()</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00287">fromNumber()</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00308">fromTable()</a> , 以及 <a class="el" href="ScriptProvider_8cpp_source.html#l00301">fromText()</a>.</p>
+
+</div>
+</div>
+<a id="af84c1fd27d797c19afa83c96fcbb53cd" name="af84c1fd27d797c19afa83c96fcbb53cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af84c1fd27d797c19afa83c96fcbb53cd">&#9670;&#160;</a></span>number</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::ScriptArg::number = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8h_source.html">ScriptProvider.h</a> 第 <a class="el" href="ScriptProvider_8h_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptProvider_8cpp_source.html#l00287">fromNumber()</a>.</p>
+
+</div>
+</div>
+<a id="ad366395b4b93b7fec5743a11270a6215" name="ad366395b4b93b7fec5743a11270a6215"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad366395b4b93b7fec5743a11270a6215">&#9670;&#160;</a></span>table</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> eve::ScriptArg::table</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Object payload for <code><a class="el" href="structeve_1_1ScriptArg.html#aedac12fb588690dd61dd0e8258bd387aa51c45b795d5d18a3e4e0c37e8b20a141">Kind::Table</a></code>; keys are the script side's field names. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8h_source.html">ScriptProvider.h</a> 第 <a class="el" href="ScriptProvider_8h_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptProvider_8cpp_source.html#l00308">fromTable()</a>.</p>
+
+</div>
+</div>
+<a id="a5ac54610975740d9bc924395241c620c" name="a5ac54610975740d9bc924395241c620c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ac54610975740d9bc924395241c620c">&#9670;&#160;</a></span>text</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::ScriptArg::text</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8h_source.html">ScriptProvider.h</a> 第 <a class="el" href="ScriptProvider_8h_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptProvider_8cpp_source.html#l00301">fromText()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="ScriptProvider_8h_source.html">ScriptProvider.h</a></li>
+<li>src/engine/common/<a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

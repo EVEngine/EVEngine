@@ -1,0 +1,653 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::jolt::Listener结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html">jolt</a></li><li class="navelem"><a class="el" href="structeve_1_1physics_1_1jolt_1_1Listener.html">Listener</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1physics_1_1jolt_1_1Listener-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::jolt::Listener结构体 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::physics::jolt::Listener 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="structeve_1_1physics_1_1jolt_1_1Listener.png" alt=""/>
+ </div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:acacbacc795eb13eb340df97c09cc755a" id="r_acacbacc795eb13eb340df97c09cc755a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1Listener.html#acacbacc795eb13eb340df97c09cc755a">OnStep</a> (const JPH::PhysicsStepListenerContext &amp;) override</td></tr>
+<tr class="separator:acacbacc795eb13eb340df97c09cc755a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49df93f4dc8cd8ba6d07e77998da792b" id="r_a49df93f4dc8cd8ba6d07e77998da792b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1Listener.html#a49df93f4dc8cd8ba6d07e77998da792b">OnContactSolved</a> (const JPH::Body &amp;, const JPH::SubShapeID &amp;, const JPH::Body &amp;, const JPH::SubShapeID &amp;, const JPH::ContactSolveResult &amp;) override</td></tr>
+<tr class="separator:a49df93f4dc8cd8ba6d07e77998da792b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5aa001b43a917c5821c311fdf2b82902" id="r_a5aa001b43a917c5821c311fdf2b82902"><td class="memItemLeft" align="right" valign="top">JPH::ValidateResult&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1Listener.html#a5aa001b43a917c5821c311fdf2b82902">OnContactValidate</a> (const JPH::Body &amp;, const JPH::Body &amp;, JPH::RVec3Arg, const JPH::CollideShapeResult &amp;) override</td></tr>
+<tr class="separator:a5aa001b43a917c5821c311fdf2b82902"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a602468dc32dc6e925417d711ee7358c4" id="r_a602468dc32dc6e925417d711ee7358c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1Listener.html#a602468dc32dc6e925417d711ee7358c4">OnContactAdded</a> (const JPH::Body &amp;, const JPH::Body &amp;, const JPH::ContactManifold &amp;, JPH::ContactSettings &amp;) override</td></tr>
+<tr class="separator:a602468dc32dc6e925417d711ee7358c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adccca06991ff5343583714b3bf17ad64" id="r_adccca06991ff5343583714b3bf17ad64"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1Listener.html#adccca06991ff5343583714b3bf17ad64">OnContactPersisted</a> (const JPH::Body &amp;, const JPH::Body &amp;, const JPH::ContactManifold &amp;, JPH::ContactSettings &amp;) override</td></tr>
+<tr class="separator:adccca06991ff5343583714b3bf17ad64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abae04e61c82458159cf902ba9e9817dc" id="r_abae04e61c82458159cf902ba9e9817dc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1Listener.html#abae04e61c82458159cf902ba9e9817dc">OnContactRemoved</a> (const JPH::SubShapeIDPair &amp;) override</td></tr>
+<tr class="separator:abae04e61c82458159cf902ba9e9817dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:aaf80897d5ab256000385424d5fa2d97e" id="r_aaf80897d5ab256000385424d5fa2d97e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1physics_1_1jolt_1_1State.html">State</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1Listener.html#aaf80897d5ab256000385424d5fa2d97e">state</a> = nullptr</td></tr>
+<tr class="separator:aaf80897d5ab256000385424d5fa2d97e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70991dc1bd2aac96e15ac5351fe4a823" id="r_a70991dc1bd2aac96e15ac5351fe4a823"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1physics_1_1jolt_1_1ContactPair.html">ContactPair</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1Listener.html#a70991dc1bd2aac96e15ac5351fe4a823">begins</a></td></tr>
+<tr class="separator:a70991dc1bd2aac96e15ac5351fe4a823"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab27c50838200b077a08361d6eb605c63" id="r_ab27c50838200b077a08361d6eb605c63"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1physics_1_1jolt_1_1ContactPair.html">ContactPair</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1Listener.html#ab27c50838200b077a08361d6eb605c63">ends</a></td></tr>
+<tr class="separator:ab27c50838200b077a08361d6eb605c63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3417ced948cf2b485a7d5a30faeb0d0e" id="r_a3417ced948cf2b485a7d5a30faeb0d0e"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; JPH::SubShapeIDPair, <a class="el" href="structeve_1_1physics_1_1jolt_1_1ContactPair.html">ContactPair</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1Listener.html#a3417ced948cf2b485a7d5a30faeb0d0e">contacts</a></td></tr>
+<tr class="separator:a3417ced948cf2b485a7d5a30faeb0d0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a378e970538bfb2997c56448bcc4fd8a1" id="r_a378e970538bfb2997c56448bcc4fd8a1"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; JPH::SubShapeIDPair, std::vector&lt; <a class="el" href="structeve_1_1physics_1_1jolt_1_1SolvedPoint.html">SolvedPoint</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1Listener.html#a378e970538bfb2997c56448bcc4fd8a1">solved</a></td></tr>
+<tr class="separator:a378e970538bfb2997c56448bcc4fd8a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a478fb7937a9327e720621b48fc02aa" id="r_a3a478fb7937a9327e720621b48fc02aa"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; uint64_t, <a class="el" href="structeve_1_1physics_1_1jolt_1_1SolvedHit.html">SolvedHit</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1Listener.html#a3a478fb7937a9327e720621b48fc02aa">hits</a></td></tr>
+<tr class="separator:a3a478fb7937a9327e720621b48fc02aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac954aa51348f7e24ecdf3c99fa3cdd04" id="r_ac954aa51348f7e24ecdf3c99fa3cdd04"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; uint64_t, float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1Listener.html#ac954aa51348f7e24ecdf3c99fa3cdd04">normalTotals</a></td></tr>
+<tr class="separator:ac954aa51348f7e24ecdf3c99fa3cdd04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa211e2534c338c1006affc9f547c6317" id="r_aa211e2534c338c1006affc9f547c6317"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1Listener.html#aa211e2534c338c1006affc9f547c6317">substep</a> = 0</td></tr>
+<tr class="separator:aa211e2534c338c1006affc9f547c6317"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00104">104</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a602468dc32dc6e925417d711ee7358c4" name="a602468dc32dc6e925417d711ee7358c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a602468dc32dc6e925417d711ee7358c4">&#9670;&#160;</a></span>OnContactAdded()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::jolt::Listener::OnContactAdded </td>
+          <td>(</td>
+          <td class="paramtype">const JPH::Body &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const JPH::Body &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const JPH::ContactManifold &amp;&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">JPH::ContactSettings &amp;&#160;</td>
+          <td class="paramname"><em>settings</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltState_8cpp_source.html">JoltState.cpp</a> 第 <a class="el" href="JoltState_8cpp_source.html#l00125">125</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="JoltInternal_8h_source.html#l00107">begins</a>, <a class="el" href="JoltInternal_8h_source.html#l00134">eve::physics::jolt::child()</a>, <a class="el" href="JoltInternal_8h_source.html#l00108">contacts</a>, <a class="el" href="VirtualGeometry_8cpp_source.html#l00081">m</a> , 以及 <a class="el" href="OceanInteractionBindings_8cpp_source.html#l00010">settings</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltState_8cpp_source.html#l00139">OnContactPersisted()</a>.</p>
+
+</div>
+</div>
+<a id="adccca06991ff5343583714b3bf17ad64" name="adccca06991ff5343583714b3bf17ad64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adccca06991ff5343583714b3bf17ad64">&#9670;&#160;</a></span>OnContactPersisted()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::jolt::Listener::OnContactPersisted </td>
+          <td>(</td>
+          <td class="paramtype">const JPH::Body &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const JPH::Body &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const JPH::ContactManifold &amp;&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">JPH::ContactSettings &amp;&#160;</td>
+          <td class="paramname"><em>settings</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltState_8cpp_source.html">JoltState.cpp</a> 第 <a class="el" href="JoltState_8cpp_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="JoltInternal_8h_source.html#l00134">eve::physics::jolt::child()</a>, <a class="el" href="JoltInternal_8h_source.html#l00108">contacts</a>, <a class="el" href="ECS_8cpp_source.html#l00155">key</a>, <a class="el" href="VirtualGeometry_8cpp_source.html#l00081">m</a>, <a class="el" href="JoltState_8cpp_source.html#l00125">OnContactAdded()</a>, <a class="el" href="JoltState_8cpp_source.html#l00151">OnContactRemoved()</a> , 以及 <a class="el" href="OceanInteractionBindings_8cpp_source.html#l00010">settings</a>.</p>
+
+</div>
+</div>
+<a id="abae04e61c82458159cf902ba9e9817dc" name="abae04e61c82458159cf902ba9e9817dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abae04e61c82458159cf902ba9e9817dc">&#9670;&#160;</a></span>OnContactRemoved()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::jolt::Listener::OnContactRemoved </td>
+          <td>(</td>
+          <td class="paramtype">const JPH::SubShapeIDPair &amp;&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltState_8cpp_source.html">JoltState.cpp</a> 第 <a class="el" href="JoltState_8cpp_source.html#l00151">151</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JoltInternal_8h_source.html#l00108">contacts</a>, <a class="el" href="JoltInternal_8h_source.html#l00107">ends</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00155">key</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltState_8cpp_source.html#l00139">OnContactPersisted()</a>.</p>
+
+</div>
+</div>
+<a id="a49df93f4dc8cd8ba6d07e77998da792b" name="a49df93f4dc8cd8ba6d07e77998da792b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49df93f4dc8cd8ba6d07e77998da792b">&#9670;&#160;</a></span>OnContactSolved()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::jolt::Listener::OnContactSolved </td>
+          <td>(</td>
+          <td class="paramtype">const JPH::Body &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const JPH::SubShapeID &amp;&#160;</td>
+          <td class="paramname"><em>subA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const JPH::Body &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const JPH::SubShapeID &amp;&#160;</td>
+          <td class="paramname"><em>subB</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const JPH::ContactSolveResult &amp;&#160;</td>
+          <td class="paramname"><em>result</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltSolvedContacts_8cpp_source.html">JoltSolvedContacts.cpp</a> 第 <a class="el" href="JoltSolvedContacts_8cpp_source.html#l00012">12</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="JoltInternal_8h_source.html#l00134">eve::physics::jolt::child()</a>, <a class="el" href="HexSphereTopology_8cpp_source.html#l00087">first</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00077">hit</a>, <a class="el" href="JoltInternal_8h_source.html#l00110">hits</a>, <a class="el" href="JoltInternal_8h_source.html#l00067">eve::physics::jolt::State::hitThreshold</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="ECS_8cpp_source.html#l00155">key</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00154">normal</a>, <a class="el" href="JoltInternal_8h_source.html#l00111">normalTotals</a>, <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html#l00304">point</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00052">result</a>, <a class="el" href="HexSphereTopology_8cpp_source.html#l00088">second</a>, <a class="el" href="JoltInternal_8h_source.html#l00048">eve::physics::jolt::SolvedHit::shapeA</a>, <a class="el" href="JoltInternal_8h_source.html#l00109">solved</a>, <a class="el" href="JoltInternal_8h_source.html#l00106">state</a>, <a class="el" href="JoltInternal_8h_source.html#l00112">substep</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+</div>
+</div>
+<a id="a5aa001b43a917c5821c311fdf2b82902" name="a5aa001b43a917c5821c311fdf2b82902"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5aa001b43a917c5821c311fdf2b82902">&#9670;&#160;</a></span>OnContactValidate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">JPH::ValidateResult eve::physics::jolt::Listener::OnContactValidate </td>
+          <td>(</td>
+          <td class="paramtype">const JPH::Body &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const JPH::Body &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">JPH::RVec3Arg&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const JPH::CollideShapeResult &amp;&#160;</td>
+          <td class="paramname"><em>result</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltState_8cpp_source.html">JoltState.cpp</a> 第 <a class="el" href="JoltState_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="JoltInternal_8h_source.html#l00134">eve::physics::jolt::child()</a>, <a class="el" href="JoltContactPolicy_8cpp_source.html#l00014">eve::physics::jolt::WorldBackend::isPairAllowed()</a>, <a class="el" href="JoltJoint_8cpp_source.html#l00008">eve::physics::jolt::pairKey()</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00052">result</a>, <a class="el" href="JoltInternal_8h_source.html#l00106">state</a> , 以及 <a class="el" href="JoltInternal_8h_source.html#l00063">eve::physics::jolt::State::suppressedPairs</a>.</p>
+
+</div>
+</div>
+<a id="acacbacc795eb13eb340df97c09cc755a" name="acacbacc795eb13eb340df97c09cc755a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acacbacc795eb13eb340df97c09cc755a">&#9670;&#160;</a></span>OnStep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::jolt::Listener::OnStep </td>
+          <td>(</td>
+          <td class="paramtype">const JPH::PhysicsStepListenerContext &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltState_8cpp_source.html">JoltState.cpp</a> 第 <a class="el" href="JoltState_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OceanRenderBindings_8cpp_source.html#l00041">frame</a>, <a class="el" href="JoltInternal_8h_source.html#l00062">eve::physics::jolt::State::joints</a>, <a class="el" href="namespaceeve_1_1physics.html#afd233582abf17207b98d5ee6bc1b2f05ab33538179f5661a86cbe327a1793e199">eve::physics::Motor</a>, <a class="el" href="namespaceeve_1_1physics.html#afd233582abf17207b98d5ee6bc1b2f05a24e5c24fabd1c081d4c729094df0b947">eve::physics::Spherical</a>, <a class="el" href="JoltInternal_8h_source.html#l00106">state</a> , 以及 <a class="el" href="JoltInternal_8h_source.html#l00112">substep</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a70991dc1bd2aac96e15ac5351fe4a823" name="a70991dc1bd2aac96e15ac5351fe4a823"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70991dc1bd2aac96e15ac5351fe4a823">&#9670;&#160;</a></span>begins</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1physics_1_1jolt_1_1ContactPair.html">ContactPair</a>&gt; eve::physics::jolt::Listener::begins</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltState_8cpp_source.html#l00125">OnContactAdded()</a>.</p>
+
+</div>
+</div>
+<a id="a3417ced948cf2b485a7d5a30faeb0d0e" name="a3417ced948cf2b485a7d5a30faeb0d0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3417ced948cf2b485a7d5a30faeb0d0e">&#9670;&#160;</a></span>contacts</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;JPH::SubShapeIDPair, <a class="el" href="structeve_1_1physics_1_1jolt_1_1ContactPair.html">ContactPair</a>&gt; eve::physics::jolt::Listener::contacts</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltState_8cpp_source.html#l00125">OnContactAdded()</a>, <a class="el" href="JoltState_8cpp_source.html#l00139">OnContactPersisted()</a> , 以及 <a class="el" href="JoltState_8cpp_source.html#l00151">OnContactRemoved()</a>.</p>
+
+</div>
+</div>
+<a id="ab27c50838200b077a08361d6eb605c63" name="ab27c50838200b077a08361d6eb605c63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab27c50838200b077a08361d6eb605c63">&#9670;&#160;</a></span>ends</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1physics_1_1jolt_1_1ContactPair.html">ContactPair</a>&gt; eve::physics::jolt::Listener::ends</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltState_8cpp_source.html#l00151">OnContactRemoved()</a>.</p>
+
+</div>
+</div>
+<a id="a3a478fb7937a9327e720621b48fc02aa" name="a3a478fb7937a9327e720621b48fc02aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a478fb7937a9327e720621b48fc02aa">&#9670;&#160;</a></span>hits</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;uint64_t, <a class="el" href="structeve_1_1physics_1_1jolt_1_1SolvedHit.html">SolvedHit</a>&gt; eve::physics::jolt::Listener::hits</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltSolvedContacts_8cpp_source.html#l00012">OnContactSolved()</a>.</p>
+
+</div>
+</div>
+<a id="ac954aa51348f7e24ecdf3c99fa3cdd04" name="ac954aa51348f7e24ecdf3c99fa3cdd04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac954aa51348f7e24ecdf3c99fa3cdd04">&#9670;&#160;</a></span>normalTotals</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;uint64_t, float&gt; eve::physics::jolt::Listener::normalTotals</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00111">111</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltSolvedContacts_8cpp_source.html#l00012">OnContactSolved()</a>.</p>
+
+</div>
+</div>
+<a id="a378e970538bfb2997c56448bcc4fd8a1" name="a378e970538bfb2997c56448bcc4fd8a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a378e970538bfb2997c56448bcc4fd8a1">&#9670;&#160;</a></span>solved</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;JPH::SubShapeIDPair, std::vector&lt;<a class="el" href="structeve_1_1physics_1_1jolt_1_1SolvedPoint.html">SolvedPoint</a>&gt; &gt; eve::physics::jolt::Listener::solved</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltSolvedContacts_8cpp_source.html#l00012">OnContactSolved()</a>.</p>
+
+</div>
+</div>
+<a id="aaf80897d5ab256000385424d5fa2d97e" name="aaf80897d5ab256000385424d5fa2d97e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf80897d5ab256000385424d5fa2d97e">&#9670;&#160;</a></span>state</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1physics_1_1jolt_1_1State.html">State</a>* eve::physics::jolt::Listener::state = nullptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltSolvedContacts_8cpp_source.html#l00012">OnContactSolved()</a>, <a class="el" href="JoltState_8cpp_source.html#l00110">OnContactValidate()</a> , 以及 <a class="el" href="JoltState_8cpp_source.html#l00096">OnStep()</a>.</p>
+
+</div>
+</div>
+<a id="aa211e2534c338c1006affc9f547c6317" name="aa211e2534c338c1006affc9f547c6317"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa211e2534c338c1006affc9f547c6317">&#9670;&#160;</a></span>substep</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::physics::jolt::Listener::substep = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltSolvedContacts_8cpp_source.html#l00012">OnContactSolved()</a> , 以及 <a class="el" href="JoltState_8cpp_source.html#l00096">OnStep()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/physics/jolt/<a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a></li>
+<li>src/modules/physics/jolt/<a class="el" href="JoltSolvedContacts_8cpp_source.html">JoltSolvedContacts.cpp</a></li>
+<li>src/modules/physics/jolt/<a class="el" href="JoltState_8cpp_source.html">JoltState.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: UI: Getting Started</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">UI: Getting Started</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>UI: Getting Started</h1>
+<p><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/ui.md">中文完整手册</a> · <a class="el" href="usr_modules_en.html">Module handbook</a></p>
+<p>This manually maintained English introduction covers the common workflows from the authoritative Chinese guide. Advanced editor-host, property-inspection and specialized widget sections remain in that guide.</p>
+<p><b>Script constructor:</b> <code>eve.UI()</code>. The normal game instance is <code>ui</code>. UI retains named Host trees; stable IDs identify controls. Events return full <code>host/id</code> paths, while setters search the currently selected Host.</p>
+<h2>Create an interactive HUD</h2>
+<p>Build and mount once during initialization, consume events during update and render each frame:</p>
+<div class="fragment"><div class="line">eve_init &lt;- function() {</div>
+<div class="line">    ui.beginBuild();</div>
+<div class="line">    ui.beginWindow(&quot;HUD&quot;, &quot;root&quot;);</div>
+<div class="line">    ui.text(&quot;Ready&quot;, &quot;status&quot;);</div>
+<div class="line">    ui.button(&quot;Start&quot;, &quot;start&quot;);</div>
+<div class="line">    ui.end();</div>
+<div class="line">    ui.mountBuildAs(&quot;hud&quot;);</div>
+<div class="line">};</div>
+<div class="line">eve_update &lt;- function(dt) {</div>
+<div class="line">    local id = ui.consumeClick();</div>
+<div class="line">    while (id != &quot;&quot;) {</div>
+<div class="line">        if (id == &quot;hud/start&quot;) ui.setText(&quot;status&quot;, &quot;Running&quot;);</div>
+<div class="line">        id = ui.consumeClick();</div>
+<div class="line">    }</div>
+<div class="line">};</div>
+<div class="line">eve_render &lt;- function() {</div>
+<div class="line">    gfx.clear();</div>
+<div class="line">    ui.beginFrameAndRender();</div>
+<div class="line">};</div>
+</div><!-- fragment --><p>Keep control IDs stable. Drain event queues instead of reading a single click and leaving the rest for later frames. Before interpreting gameplay input, check whether UI wants to capture it.</p>
+<h2>Layout</h2>
+<p>Rows and columns arrange children without manual positioning:</p>
+<div class="fragment"><div class="line">ui.beginRow(&quot;toolbar&quot;, 8.0);</div>
+<div class="line">ui.setFlexJustify(&quot;space-between&quot;);</div>
+<div class="line">ui.iconButton(&quot;save&quot;, &quot;Save&quot;, &quot;save&quot;);</div>
+<div class="line">ui.spacer(&quot;sp&quot;);</div>
+<div class="line">ui.button(&quot;Quit&quot;, &quot;quit&quot;);</div>
+<div class="line">ui.end();</div>
+</div><!-- fragment --><p><code>setItemFlexGrow</code>, <code>setItemFlexShrink</code>, <code>setItemFlexBasis</code>, <code>setItemAlignSelf</code> and <code>setItemSize</code> affect the most recently added child. <code>setFlexAlign</code> / <code>setFlexJustify</code> configure the current container. Use <code>setLayoutGaps(columnGap, rowGap)</code> for separate axis spacing and <code>setLayoutOverflow("visible" | "clip" | "scroll")</code> for overflow.</p>
+<p><code>beginGrid(columns, id, columnGap, rowGap)</code> creates equal-width columns; a child can span columns or derive a dimension from an aspect ratio. A SplitPane requires exactly two direct children. Its dragged ratio produces an ordinary value-change event and can be saved/restored with <code>getValue</code> / <code>setValue</code>.</p>
+<p>Movable/resizable Hosts use stable IDs to retain <a class="el" href="namespaceImGui.html">ImGui</a> layout. Choose logical UI coordinates consistently with the <a class="el" href="mod_window_en.html">window DPI guide</a>.</p>
+<h2>Reusable components</h2>
+<p>Derive a component from <code>eve.UIComponent</code>. Each instance has its own <code>props</code> and <code>state</code>. <code>setProps()</code> / <code>setState()</code> merge changes and mark it dirty. Mounted roots rebuild once before rendering and reconcile controls by stable ID; normal game code need not call <code>updateIfDirty()</code> manually.</p>
+<p>Embed retained child instances with <code>renderChild(child, props)</code>. Child dirtiness propagates to the parent. Passing <code>replaceProps=true</code> replaces rather than merges old props. First mounting calls <code>onMount()</code>, later rebuilds call <code>onUpdated()</code>, and explicit <code>unmount()</code> recursively calls <code>onUnmount()</code> and hides the Host.</p>
+<p>Use component <code>bindClick(id, fn)</code> / <code>bindChange(id, fn)</code> for owned handlers. Rebinding the same type/ID replaces the old handler. Unmounting unregisters handlers. <code>renderKeyed(key, factory, props)</code> reuses components for stable keys; removing a key unmounts it. Internal <code>componentOnClick</code> / <code>componentOnChange</code> bridges are not the recommended gameplay interface.</p>
+<h2>Nine-patch assets</h2>
+<p>The loader accepts raw Android-style <code>.9.png</code> files. A single continuous black segment on the top and left borders defines stretch regions; optional bottom/right marks define content padding. The one-pixel marker frame is removed before rendering.</p>
+<div class="fragment"><div class="line">ui.beginBuild()</div>
+<div class="line">ui.beginWindow(&quot;Nine patch&quot;, &quot;root&quot;)</div>
+<div class="line">if (ui.beginNinePatch(&quot;assets/panel.9.png&quot;, &quot;panel&quot;, 320, 0)) {</div>
+<div class="line">    ui.text(&quot;Content uses the asset&#39;s padding&quot;, &quot;content&quot;)</div>
+<div class="line">    ui.end()</div>
+<div class="line">}</div>
+<div class="line">ui.ninePatch(&quot;assets/button.9.png&quot;, &quot;preview&quot;, 180, 48)</div>
+<div class="line">ui.end()</div>
+<div class="line">ui.mountBuildAs(&quot;nine-patch-demo&quot;)</div>
+</div><!-- fragment --><p>Discontinuous stretch regions are deliberately unsupported: the call returns false with a diagnostic. Use <code>ninePatch()</code> for a leaf image and <code>beginNinePatch()</code> for a panel containing children.</p>
+<h2>Persisted trees and troubleshooting</h2>
+<p><code>saveTreeJson()</code> currently writes <code>schema: "eve.ui.tree"</code>, version 4. Loading treats unversioned documents as version 1, accepts versions 1–4 and rejects unknown schemas/future versions. Unknown fields are ignored; newer fields have compatible defaults.</p>
+<p>If changes do not appear, check the selected Host and the control ID. If clicks affect gameplay too, check input capture. Rebuilding everything with unstable IDs loses retained control state. Use the source examples <a href="https://github.com/EVEngine/EVEngine/blob/dev/examples/basic/ui_demo.nut">ui_demo.nut</a> and <a href="https://github.com/EVEngine/EVEngine/blob/dev/examples/basic/ui_component.nut">ui_component.nut</a> as starting points.</p>
+<p>For complete contracts, use <a class="el" href="usr_conventions_en.html">API conventions</a>, your SDK's bindings and the <a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/ui.md">Chinese UI guide</a>. </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>
