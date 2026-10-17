@@ -27,19 +27,27 @@
         "boat.y",
         "boat.z",
         "boat.speed",
+        "boat.forwardSpeed",
         "boat.yaw",
         "boat.pitch",
         "boat.roll",
         "spray.alive",
         "spray.emitted",
         "spray.dropped",
-        "sprayVisible"
+        "sprayVisible",
+        "camera.x",
+        "camera.y",
+        "camera.z",
+        "wake.height",
+        "wake.foam"
       ]
     }
   ],
   "actions": {
     "source": "script-map",
     "map": [
+      {"id": "top-view", "script": "oceanCommand(\"top-view\")"},
+      {"id": "chase-view", "script": "oceanCommand(\"chase-view\")"},
       {
         "id": "forward",
         "script": "oceanCommand(\"forward\")"

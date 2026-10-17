@@ -87,7 +87,31 @@ Result<OceanSprayFrame> OceanSprayStepBuilder::build() const {
         for (const auto& old : previous_.streams_)
             if (old.id == source.id) remainder = old.remainder;
         std::uint64_t rng = mix(mix(mix(s.seed) ^ source.id) ^ out.tick_);
+        glm::dvec3    center(0.0), heading(0.0);
         for (const auto& c : source.receipt.contacts) {
+            center += c.position;
+            heading += glm::dvec3(c.relativeVelocity.x, 0.0, c.relativeVelocity.z);
+        }
+        const bool hull  = source.receipt.contacts.size() > 1 && glm::length(heading) > 1e-6;
+        double     front = 0.0, rear = 0.0;
+        glm::dvec3 lateral(0.0);
+        if (hull) {
+            center /= double(source.receipt.contacts.size());
+            heading = glm::normalize(heading);
+            lateral = glm::dvec3(heading.z, 0.0, -heading.x);
+            for (const auto& c : source.receipt.contacts) {
+                const double along = glm::dot(c.position - center, heading);
+                front              = std::max(front, along);
+                rear               = std::min(rear, along);
+            }
+        }
+        for (const auto& c : source.receipt.contacts) {
+            // Displacement cells lie inside the hull. Emit at their outboard
+            // waterline and only on the leading quarter, otherwise the hull
+            // hides the spray while aft cells exhaust the particle budget.
+            if (hull && glm::dot(c.position - center, heading) < front - (front - rear) * 0.25) continue;
+            const auto   outward  = lateral * (glm::dot(c.position - center, lateral) < 0.0 ? -1.0 : 1.0);
+            const auto   emission = c.position + outward * (0.85 * std::cbrt(c.submergedVolume));
             const double speed = glm::length(c.relativeVelocity);
             const double drive = std::max(0.0, speed - 1.0);
             // Bounded contact contribution prevents a large displacement cell exhausting the budget.
@@ -96,7 +120,7 @@ Result<OceanSprayFrame> OceanSprayStepBuilder::build() const {
             const auto count = static_cast<unsigned>(std::floor(requested));
             remainder        = requested - count;
             if (!count) continue;
-            auto surface = water_.sample({c.position.x, c.position.z});
+            auto surface = water_.sample({emission.x, emission.z});
             if (!surface) return Result<OceanSprayFrame>::failure(surface.status());
             const unsigned accepted = std::min(count, s.capacity - static_cast<unsigned>(out.particles_.size()));
             out.report_.dropped += count - accepted;
@@ -107,9 +131,9 @@ Result<OceanSprayFrame> OceanSprayStepBuilder::build() const {
                 p.id       = out.nextId_++;
                 p.radius   = s.radius * (0.7 + 0.6 * d);
                 p.lifetime = s.lifetime * (0.7 + 0.6 * a);
-                p.position = {c.position.x, surface.value().height + p.radius * 2, c.position.z};
+                p.position = {emission.x, surface.value().height + p.radius * 2, emission.z};
                 p.velocity =
-                    surface.value().velocity + c.relativeVelocity * 0.3 +
+                    surface.value().velocity + c.relativeVelocity * 0.3 + outward * (drive * 0.35) +
                     glm::dvec3((a - 0.5) * drive * 0.5, 1.0 + drive * (0.25 + 0.25 * d), (b - 0.5) * drive * 0.5);
                 p.velocity.y = std::max(0.5, p.velocity.y);
                 out.particles_.push_back(p);
