@@ -251,3 +251,5 @@ Shape3D hit events，按目标位于稳定 A/B 侧修正法线方向，过滤小
 渲染原网格、融合 Bend/Twist、Noise/Spherify、FFD、封口 Cut、Spline 和可撤销
 Sculpt 七种结果。
 
+
+对象指向提示可使用 [2D / 3D 箭头生成器](arrows.md)，支持 A→B 直线和弯曲网格。

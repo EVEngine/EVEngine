@@ -11917,6 +11917,19 @@
           "physics_destruction_graphics.depthTracksCurrentSubmissionAndExpiresWithRenderer"
         ]
       }
+    "unit/procgen/procgen_arrow.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.arrow.planarStraightAndCurvedHaveExactTipAndRepeatableMesh",
+          "procgen.arrow.spatialCurvesHaveClosedOrientedSurface",
+          "procgen.arrow.invalidParametersPreservePriorConfiguration",
+          "procgen.arrow.flatBeveledMeshIsClosedAndHasConfiguredThickness",
+          "procgen.arrow.flatTipHasOneWorldSpaceApexForOddAndEvenBevels"
+        ]
+      },
+      "module": "procgen"
     }
   }
 }
