@@ -35,7 +35,7 @@ def main() -> None:
     stage.mkdir()
     shutil.copy2(base / "assets.nut", stage / "assets.nut")
     shutil.copytree(base / "models", stage / "models")
-    shutil.copy2(base / "inspection/main.nut", stage / "main.nut")
+    shutil.copy2(base / "inspection/main.nut.in", stage / "main.nut")
     shutil.copy2(base / "inspection/config.nut", stage / "config.nut")
     selection = {"kind": args.kind, "size": args.size, "height": args.height, "air": args.air, "view": args.view,
                  "stationary": args.static}
