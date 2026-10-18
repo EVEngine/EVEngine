@@ -4758,6 +4758,20 @@
         "weather.cpp"
       ]
     },
+    "integration/render-presentation/render_presentation_impasto_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "stylize.impasto.independentMaterialContract"
+        ],
+        "render-window": [
+          "stylize.impasto.realGpuPipeline"
+        ]
+      },
+      "module": "stylize",
+      "task": "render-presentation"
+    },
     "integration/render-presentation/render_presentation_graphics_window_cpp_tests.cpp": {
       "role": "tests",
       "default": "render-window",
@@ -11917,6 +11931,7 @@
           "physics_destruction_graphics.depthTracksCurrentSubmissionAndExpiresWithRenderer"
         ]
       }
+    },
     "unit/procgen/procgen_arrow.cpp": {
       "role": "tests",
       "default": "local-logic",
