@@ -74,6 +74,26 @@ TEST_CASE("fluids.ocean.wakePropagatesAndRejectsAtomically") {
     REQUIRE(edge.ok());
     CHECK(edge.value().height == 0.0);
     CHECK(glm::length(edge.value().gradient) == 0.0);
+
+    // A wave without injected foam must create white water on its steep crest;
+    // a resting field must remain clear. The solver still owns propagation.
+    auto breaking = OceanWake::create(settings), calm = OceanWake::create(settings);
+    REQUIRE(breaking.ok());
+    REQUIRE(calm.ok());
+    const OceanWakeImpulse crest{{0.0, 0.0}, 2.0, 5.0, {0.0, 0.0}, 0.0};
+    REQUIRE(breaking.value()->inject(std::span(&crest, 1)).ok());
+    double whiteWater = 0.0;
+    for (int step = 1; step <= 60; ++step) {
+        auto frame = stationaryFrame((step - 1) / 60.0);
+        REQUIRE(advanceWake(*breaking.value(), 1.0 / 60.0, step / 60.0, frame).ok());
+        REQUIRE(advanceWake(*calm.value(), 1.0 / 60.0, step / 60.0, frame).ok());
+        for (double f : breaking.value()->gridView().foam) {
+            CHECK((f >= 0.0 && f <= 1.0));
+            whiteWater = std::max(whiteWater, f);
+        }
+    }
+    CHECK(whiteWater > 0.1);
+    for (double f : calm.value()->gridView().foam) CHECK(f == 0.0);
 }
 
 TEST_CASE("fluids.ocean.wakeRecenterAndComposition") {
@@ -132,6 +152,48 @@ TEST_CASE("fluids.ocean.wakeRecenterAndComposition") {
     auto cleared = wake.value()->sample({1000.0, 1000.0});
     REQUIRE(cleared.ok());
     CHECK(cleared.value().height == 0.0);
+
+    // A subdivided large hull shares one forcing budget, rather than injecting
+    // sixteen complete wakes and hitting the field's velocity/foam clamps.
+    auto largeHullWake = OceanWake::create(settings);
+    REQUIRE(largeHullWake.ok());
+    OceanBoatReceipt largeHull;
+    for (int cell = 0; cell < 16; ++cell) largeHull.contacts.push_back({{0.0, 0.0, 0.0}, {0.0, 0.0, 12.0}, 500.0});
+    REQUIRE(injectOceanBoatWake(*largeHullWake.value(), largeHull, 1.0 / 60.0).ok());
+    double maxVelocity = 0.0, maxFoam = 0.0;
+    for (int z = -24; z <= 24; z += 2) {
+        auto point = largeHullWake.value()->sample({0.0, double(z)});
+        REQUIRE(point.ok());
+        maxVelocity = std::max(maxVelocity, std::abs(point.value().velocity));
+        maxFoam     = std::max(maxFoam, point.value().foam);
+    }
+    CHECK(maxVelocity > 0.1);
+    CHECK(maxVelocity < 0.25);
+    CHECK(maxFoam <= 0.020001);
+    largeHull.contacts.back().position.x = std::numeric_limits<double>::quiet_NaN();
+    auto beforeInvalid                   = largeHullWake.value()->sample({0.0, 8.0});
+    REQUIRE(beforeInvalid.ok());
+    CHECK(!injectOceanBoatWake(*largeHullWake.value(), largeHull, 1.0 / 60.0).ok());
+    auto afterInvalid = largeHullWake.value()->sample({0.0, 8.0});
+    REQUIRE(afterInvalid.ok());
+    CHECK(afterInvalid.value().velocity == beforeInvalid.value().velocity);
+    CHECK(afterInvalid.value().foam == beforeInvalid.value().foam);
+
+    for (double direction : {1.0, -1.0}) {
+        auto bowWake = OceanWake::create(settings);
+        REQUIRE(bowWake.ok());
+        OceanBoatReceipt hull;
+        for (double along : {-12.0, -4.0, 4.0, 12.0})
+            for (double side : {-2.0, 2.0})
+                hull.contacts.push_back({{side, 0.0, along}, {0.0, 0.0, 12.0 * direction}, 8.0});
+        REQUIRE(injectOceanBoatWake(*bowWake.value(), hull, 1.0 / 60.0).ok());
+        auto leading  = bowWake.value()->sample({0.0, 14.0 * direction});
+        auto trailing = bowWake.value()->sample({0.0, -10.0 * direction});
+        REQUIRE(leading.ok());
+        REQUIRE(trailing.ok());
+        CHECK(leading.value().velocity > 0.05);
+        CHECK(leading.value().velocity > 10.0 * std::abs(trailing.value().velocity));
+    }
 }
 
 TEST_CASE("fluids.ocean.wakeDispersionMatchesIndependentDft") {

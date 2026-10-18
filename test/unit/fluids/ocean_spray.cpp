@@ -62,6 +62,23 @@ TEST_CASE("fluids.ocean.sprayDeterminismAndSourceOrder") {
     const auto& q = next.value().particles()[0];
     CHECK(glm::length(q.position - (p.position + p.velocity / 30.0 + glm::dvec3(0, -0.5 * 9.81 / 900, 0))) < 1e-12);
     CHECK(std::abs(q.velocity.y - (p.velocity.y - 9.81 / 30.0)) < 1e-12);
+
+    // Large-hull spray clears the hull and follows the leading end when reversing.
+    for (double direction : {1.0, -1.0}) {
+        OceanBoatReceipt hull;
+        for (double longitudinal : {-70.0, -50.0, 50.0, 70.0})
+            for (double side : {-4.0, 4.0})
+                hull.contacts.push_back({{side, 0.0, longitudinal}, {0.0, 0.0, 12.0 * direction}, 500.0});
+        const std::array<OceanSpraySource, 1> source{{{1, hull}}};
+        auto bow = OceanSprayStepBuilder(initial.value(), water, source, 1.0 / 30.0).build();
+        REQUIRE(bow.ok());
+        REQUIRE(!bow.value().particles().empty());
+        for (const auto& particle : bow.value().particles()) {
+            CHECK(std::abs(particle.position.x) > 10.0);
+            CHECK(particle.position.z * direction >= 50.0);
+            CHECK(particle.position.x * particle.velocity.x > 0.0);
+        }
+    }
 }
 TEST_CASE("fluids.ocean.sprayBudgetsLifetimeAndReentry") {
     OceanSpraySettings settings;
