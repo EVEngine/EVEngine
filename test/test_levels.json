@@ -11848,6 +11848,75 @@
       "module": "graphics",
       "task": "render-pipeline"
     },
+    "integration/house-collapse/physics_collapse_animation.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "physics_destruction",
+      "task": "house-collapse",
+      "origins": [
+        "physics_collapse_animation.cpp"
+      ],
+      "cases": {
+        "module-composition": [
+          "physics_collapse_animation.savedPlaybackOutlivesWorld",
+          "physics_collapse_animation.emptyAndStaleRecording",
+          "physics_collapse_animation.contentKeyIncludesEveryByte"
+        ]
+      }
+    },
+    "integration/house-collapse/physics_voronoi_fracture.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "physics_destruction_cook",
+      "task": "house-collapse",
+      "origins": [
+        "physics_voronoi_fracture.cpp"
+      ],
+      "cases": {
+        "module-composition": [
+          "physics_voronoi.closedVolumePartitionAndDeterminism",
+          "physics_voronoi.convexTetrahedronAndClusteredSites",
+          "physics_voronoi.invalidInputAndMeshBudgets",
+          "physics_voronoi.meshBakeSurvivesWorldAndDisk",
+          "physics_voronoi.authoredAssemblyKeepsSupports",
+          "physics_voronoi.legacyBoxBakeVersionOneMigration",
+          "physics_voronoi.houseSeedsRemainClosed",
+          "physics_voronoi.failedAdmissionDoesNotLeakBodies",
+          "physics_voronoi.perStructurePoliciesAndComponentOverride",
+          "physics_voronoi.survivingBondsKeepDetachedChunkTogether",
+          "physics_voronoi.weldedWorldFirstTeardown"
+        ]
+      }
+    },
+    "integration/house-collapse/physics_collapse_dust.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "physics_destruction_dust",
+      "task": "house-collapse",
+      "origins": [
+        "physics_collapse_dust.cpp"
+      ],
+      "cases": {
+        "module-composition": [
+          "physics_collapse_dust.savedGasOutlivesSolverAndRejectsPartialLoad",
+          "physics_collapse_dust.savedGasInjectsExistingFogWithBoundedFootprints",
+          "physics_collapse_dust.ownedWorkerIsBoundedNonblockingAndOutlivesSources"
+        ]
+      }
+    },
+    "integration/house-collapse/physics_destruction_graphics_depth.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "physics_destruction_graphics",
+      "task": "house-collapse",
+      "origins": [
+        "physics_destruction_graphics_depth.cpp"
+      ],
+      "cases": {
+        "render-window": [
+          "physics_destruction_graphics.depthTracksCurrentSubmissionAndExpiresWithRenderer"
+        ]
+      }
     "unit/procgen/procgen_arrow.cpp": {
       "role": "tests",
       "default": "local-logic",
