@@ -7,7 +7,7 @@ and task ownership. References are header/API-name evidence, not measured behavi
 coverage. Missing local-rule coverage is reported explicitly; no empty assertion
 or placeholder test is counted as coverage.
 
-Declared modules: **196**. Task groups: **25**.
+Declared modules: **196**. Task groups: **26**.
 
 - api-symbol-in-other-tests: 3
 - local-rules-recorded: 91
@@ -111,7 +111,7 @@ Declared modules: **196**. Task groups: **25**.
 - `stylize_action` (`stylize/action`): task-tests-recorded; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `stylize_editing` (`stylize/editing`): referenced-by-other-tests; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `stylize_editor` (`stylize/editor`): task-tests-recorded; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `thread` (`thread`): task-tests-recorded; 12 direct header references; 17 API-name references. A composition/adapter reference does not prove local rules are tested.
+- `thread` (`thread`): task-tests-recorded; 12 direct header references; 18 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `tilelayer_target` (`map/tilelayer_target`): api-symbol-in-other-tests; 0 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `touch` (`touch`): task-tests-recorded; 1 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `ui_editing` (`ui/editing`): referenced-by-other-tests; 3 direct header references; 3 API-name references. A composition/adapter reference does not prove local rules are tested.
@@ -703,7 +703,7 @@ Source directory: `src/modules/gpgpu`. Status: **local-rules-recorded**. Local c
 - Unit: [unit/gpgpu/gpgpu_tests.cpp](unit/gpgpu/gpgpu_tests.cpp)
 - Integration task `render-pipeline`: [render_pipeline_graphics_graphics_backend_parity_tests.cpp](integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp)
 - Integration task `render-presentation`: [render_presentation_graphics_gpu_driven_tests.cpp](integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp)
-- Direct header evidence: [ocean_gpu.cpp](integration/ocean-voyage/ocean_gpu.cpp), [ocean_render.cpp](integration/ocean-voyage/ocean_render.cpp), [render_pipeline_graphics_graphics_backend_parity_tests.cpp](integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp), [render_pipeline_graphics_graphics_vegetation_extras_tests.cpp](integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp), [render_presentation_graphics_gpu_driven_tests.cpp](integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp), [render_presentation_graphics_voxel_face_dir_tests.cpp](integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp), [gpgpu_tests.cpp](unit/gpgpu/gpgpu_tests.cpp), [softbody_unit.cpp](unit/physics_softbody/softbody_unit.cpp)
+- Direct header evidence: [physics_layered_cloth_gpu.cpp](integration/layered-cloth/physics_layered_cloth_gpu.cpp), [ocean_gpu.cpp](integration/ocean-voyage/ocean_gpu.cpp), [ocean_render.cpp](integration/ocean-voyage/ocean_render.cpp), [render_pipeline_graphics_graphics_backend_parity_tests.cpp](integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp), [render_pipeline_graphics_graphics_vegetation_extras_tests.cpp](integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp), [render_presentation_graphics_gpu_driven_tests.cpp](integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp), [render_presentation_graphics_voxel_face_dir_tests.cpp](integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp), [gpgpu_tests.cpp](unit/gpgpu/gpgpu_tests.cpp), [softbody_unit.cpp](unit/physics_softbody/softbody_unit.cpp)
 
 ### gpuagents
 
@@ -1042,11 +1042,12 @@ Source directory: `src/modules/physics/backend`. Status: **local-rules-recorded*
 
 ### physics_cloth
 
-Source directory: `src/modules/physics/cloth`. Status: **local-rules-recorded**. Local cases: **9**.
+Source directory: `src/modules/physics/cloth`. Status: **local-rules-recorded**. Local cases: **17**.
 
 - Unit: [unit/physics_cloth/physics_cloth_unit.cpp](unit/physics_cloth/physics_cloth_unit.cpp)
+- Integration task `layered-cloth`: [physics_layered_cloth_gpu.cpp](integration/layered-cloth/physics_layered_cloth_gpu.cpp), [physics_layered_cloth_script.cpp](integration/layered-cloth/physics_layered_cloth_script.cpp)
 - Integration task `script-api`: [script_api_graphics_mcp_tests.cpp](integration/script-api/script_api_graphics_mcp_tests.cpp)
-- Direct header evidence: [asset_pipeline_graphics_asset_image_mips_tests.cpp](integration/asset-pipeline/asset_pipeline_graphics_asset_image_mips_tests.cpp), [gameplay_composition_graphics_procgen_core_boundary_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_procgen_core_boundary_tests.cpp), [render_presentation_graphics_RenderImageAudit_tests.cpp](integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp), [render_presentation_graphics_voxel_face_dir_tests.cpp](integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp), [script_api_graphics_mcp_tests.cpp](integration/script-api/script_api_graphics_mcp_tests.cpp), [physics_cloth_unit.cpp](unit/physics_cloth/physics_cloth_unit.cpp), [softbody_unit.cpp](unit/physics_softbody/softbody_unit.cpp)
+- Direct header evidence: [asset_pipeline_graphics_asset_image_mips_tests.cpp](integration/asset-pipeline/asset_pipeline_graphics_asset_image_mips_tests.cpp), [gameplay_composition_graphics_procgen_core_boundary_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_procgen_core_boundary_tests.cpp), [physics_layered_cloth_gpu.cpp](integration/layered-cloth/physics_layered_cloth_gpu.cpp), [physics_layered_cloth_script.cpp](integration/layered-cloth/physics_layered_cloth_script.cpp), [render_presentation_graphics_RenderImageAudit_tests.cpp](integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp), [render_presentation_graphics_voxel_face_dir_tests.cpp](integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp), [script_api_graphics_mcp_tests.cpp](integration/script-api/script_api_graphics_mcp_tests.cpp), [physics_cloth_unit.cpp](unit/physics_cloth/physics_cloth_unit.cpp), [softbody_unit.cpp](unit/physics_softbody/softbody_unit.cpp)
 
 ### physics_destruction
 
@@ -1783,6 +1784,13 @@ Cases: 18. Referenced/owning modules: `asset`, `camera`, `common`, `fluids`, `gr
 - [physics_collapse_dust.cpp](integration/house-collapse/physics_collapse_dust.cpp)
 - [physics_destruction_graphics_depth.cpp](integration/house-collapse/physics_destruction_graphics_depth.cpp)
 - [physics_voronoi_fracture.cpp](integration/house-collapse/physics_voronoi_fracture.cpp)
+
+### layered-cloth
+
+Cases: 15. Referenced/owning modules: `animation`, `card`, `common`, `economy`, `gpgpu`, `physics_cloth`, `procgen`, `rts`, `thread`, `transaction`, `weapon`.
+
+- [physics_layered_cloth_gpu.cpp](integration/layered-cloth/physics_layered_cloth_gpu.cpp)
+- [physics_layered_cloth_script.cpp](integration/layered-cloth/physics_layered_cloth_script.cpp)
 
 ### map-navigation
 

@@ -1,5 +1,6 @@
 #include "physics/cloth/Cloth3D.h"
 #include "physics/cloth/ClothModel.h"
+#include "physics/cloth/LayeredCloth3D.h"
 
 #include "common/Exception.h"
 #include "graphics/Canvas.h"
@@ -9,6 +10,7 @@
 #include "physics/World3D.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <exception>
 #include <limits>
@@ -1265,32 +1267,29 @@ eve::Result<void> Cloth3D::restoreObservation(const SimulationObservation& obser
 }
 
 void Cloth3D::draw(graphics::Graphics* gfx) {
-    if (!gfx || destroyed_ || getParticleCount() < 4) return;
+    if (!gfx || destroyed_ || getParticleCount() < 3 || triangles_.empty()) return;
 
     // Double-sided mesh: front vertices carry the face normals, back vertices
     // duplicate positions with flipped normals and reversed winding.
-    const int gridVertices = cols_ * rows_;
+    const int gridVertices = getParticleCount();
     const int vertexCount  = gridVertices * 2;
-    const int quadCount    = (cols_ - 1) * (rows_ - 1);
-    const int indexCount   = quadCount * 12;
+    const int indexCount   = static_cast<int>(triangles_.size()) * 6;
 
     std::vector<float> pos(static_cast<size_t>(vertexCount) * 3);
     std::vector<float> nrm(static_cast<size_t>(vertexCount) * 3, 0.f);
     std::vector<float> uv(static_cast<size_t>(vertexCount) * 2);
-    for (int r = 0; r < rows_; ++r) {
-        for (int c = 0; c < cols_; ++c) {
-            const size_t    i = static_cast<size_t>(r * cols_ + c);
-            const Particle& p = particles_[i];
-            const float     u = cols_ > 1 ? float(c) / float(cols_ - 1) : 0.f;
-            const float     v = rows_ > 1 ? float(r) / float(rows_ - 1) : 0.f;
-            for (int side = 0; side < 2; ++side) {
-                const size_t vi = i + static_cast<size_t>(side) * gridVertices;
-                pos[vi * 3 + 0] = p.x;
-                pos[vi * 3 + 1] = p.y;
-                pos[vi * 3 + 2] = p.z;
-                uv[vi * 2 + 0]  = u;
-                uv[vi * 2 + 1]  = v;
-            }
+    for (int index = 0; index < gridVertices; ++index) {
+        const size_t    i = static_cast<size_t>(index);
+        const Particle& p = particles_[i];
+        const float     u = cols_ > 1 ? float(index % cols_) / float(cols_ - 1) : p.x;
+        const float     v = rows_ > 1 ? float(index / cols_) / float(rows_ - 1) : p.z;
+        for (int side = 0; side < 2; ++side) {
+            const size_t vi = i + static_cast<size_t>(side) * gridVertices;
+            pos[vi * 3 + 0] = p.x;
+            pos[vi * 3 + 1] = p.y;
+            pos[vi * 3 + 2] = p.z;
+            uv[vi * 2 + 0]  = u;
+            uv[vi * 2 + 1]  = v;
         }
     }
 
@@ -1344,32 +1343,13 @@ void Cloth3D::draw(graphics::Graphics* gfx) {
     if (!mesh_ || meshVertexCount_ != vertexCount || meshIndexCount_ != indexCount) {
         std::vector<uint32_t> indices(static_cast<size_t>(indexCount));
         int                   out = 0;
-        for (int r = 0; r + 1 < rows_; ++r) {
-            for (int c = 0; c + 1 < cols_; ++c) {
-                const uint32_t a  = static_cast<uint32_t>(r * cols_ + c);
-                const uint32_t b  = static_cast<uint32_t>(r * cols_ + c + 1);
-                const uint32_t cc = static_cast<uint32_t>((r + 1) * cols_ + c + 1);
-                const uint32_t d  = static_cast<uint32_t>((r + 1) * cols_ + c);
-                // Front faces (CCW when viewed from +Y).
-                indices[static_cast<size_t>(out) + 0] = a;
-                indices[static_cast<size_t>(out) + 1] = d;
-                indices[static_cast<size_t>(out) + 2] = b;
-                indices[static_cast<size_t>(out) + 3] = d;
-                indices[static_cast<size_t>(out) + 4] = cc;
-                indices[static_cast<size_t>(out) + 5] = b;
-                // Back faces (reversed winding on the duplicated vertex set).
-                const uint32_t oa                      = a + static_cast<uint32_t>(gridVertices);
-                const uint32_t ob                      = b + static_cast<uint32_t>(gridVertices);
-                const uint32_t occ                     = cc + static_cast<uint32_t>(gridVertices);
-                const uint32_t od                      = d + static_cast<uint32_t>(gridVertices);
-                indices[static_cast<size_t>(out) + 6]  = ob;
-                indices[static_cast<size_t>(out) + 7]  = od;
-                indices[static_cast<size_t>(out) + 8]  = oa;
-                indices[static_cast<size_t>(out) + 9]  = ob;
-                indices[static_cast<size_t>(out) + 10] = occ;
-                indices[static_cast<size_t>(out) + 11] = od;
-                out += 12;
+        for (const Tri& triangle : triangles_) {
+            for (int corner = 0; corner < 3; ++corner) {
+                indices[static_cast<size_t>(out + corner)] = static_cast<uint32_t>(triangle.v[corner]);
+                indices[static_cast<size_t>(out + 3 + corner)] =
+                    static_cast<uint32_t>(triangle.v[2 - corner] + gridVertices);
             }
+            out += 6;
         }
         mesh_ = gfx->newMeshFromArrays(pos.data(), nrm.data(), uv.data(), vertexCount, indices.data(), indexCount);
         meshVertexCount_ = vertexCount;
@@ -1381,6 +1361,208 @@ void Cloth3D::draw(graphics::Graphics* gfx) {
     if (mesh_) {
         gfx->drawMesh(mesh_, glm::mat4(1.f), nullptr, Color(colorR_, colorG_, colorB_, colorA_));
     }
+}
+
+// Multi-sheet coupling reuses the same triangle feature queries as self-contact.
+LayeredCloth3D::LayeredCloth3D(int count, int cols, int rows, float spacing, float gap, float x, float y, float z) {
+    if (count < 1 || count > 32 || !std::isfinite(gap) || gap <= 0.f || !std::isfinite(x) || !std::isfinite(y) ||
+        !std::isfinite(z) || !std::isfinite(spacing) || !std::isfinite(y + float(count - 1) * gap))
+        throw Exception("LayeredCloth3D: invalid count, gap or coordinates");
+    for (int i = 0; i < count; ++i) {
+        auto cloth = std::make_unique<Cloth3D>(cols, rows, spacing, x, y + float(i) * gap, z);
+        cloth->setParticleSize(std::min(spacing * 0.2f, gap * 0.4f));
+        cloth->setStretchCompliance(1e-7f);
+        cloth->setBendCompliance(1e-4f * float(i + 1));
+        cloth->setParticleMass(0.08f + 0.04f * float(i));
+        cloth->setAerodynamics(1.225f, 0.6f, 0.05f);
+        const float t = count > 1 ? float(i) / float(count - 1) : 0.f;
+        cloth->setColor(0.2f + t * 0.7f, 0.65f - t * 0.3f, 0.9f - t * 0.65f, 1.f);
+        layers_.push_back(std::move(cloth));
+    }
+}
+
+LayeredCloth3D::LayeredCloth3D(std::span<const ClothModel> models) {
+    if (models.empty()) throw Exception("LayeredCloth3D: models cannot be empty");
+    for (const auto& model : models) layers_.push_back(std::make_unique<Cloth3D>(model));
+}
+LayeredCloth3D::~LayeredCloth3D() = default;
+Cloth3D& LayeredCloth3D::layer(int index) {
+    if (index < 0 || index >= getLayerCount()) throw Exception("LayeredCloth3D: invalid layer index");
+    return *layers_[static_cast<size_t>(index)];
+}
+int  LayeredCloth3D::getLayerCount() const { return static_cast<int>(layers_.size()); }
+void LayeredCloth3D::setSolver(int substeps, int passes) {
+    if (substeps < 1 || substeps > 32 || passes < 1 || passes > 16)
+        throw Exception("LayeredCloth3D: invalid solver budget");
+    substeps_ = substeps;
+    passes_   = passes;
+}
+void LayeredCloth3D::setInterCollision(bool enabled) { interCollision_ = enabled; }
+bool LayeredCloth3D::getInterCollision() const { return interCollision_; }
+int  LayeredCloth3D::getContactCount() const { return contacts_; }
+void LayeredCloth3D::setWindVelocity(float x, float y, float z) {
+    if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z)) throw Exception("LayeredCloth3D: invalid wind");
+    for (auto& cloth : layers_) cloth->setWindVelocity(x, y, z);
+}
+void LayeredCloth3D::reset() {
+    for (auto& cloth : layers_) cloth->reset();
+    contacts_ = 0;
+}
+void LayeredCloth3D::draw(graphics::Graphics* gfx) {
+    for (auto& cloth : layers_) cloth->draw(gfx);
+}
+void LayeredCloth3D::update(float dt) {
+    if (!std::isfinite(dt) || dt < 0.f || dt > 0.05f)
+        throw Exception("LayeredCloth3D: dt must be finite and in [0,0.05]");
+    for (const auto& cloth : layers_)
+        if (cloth->destroyed_) throw Exception("LayeredCloth3D: layer was destroyed");
+    contacts_ = 0;
+    if (dt == 0.f) return;
+    const float h = dt / float(substeps_);
+    for (int step = 0; step < substeps_; ++step) {
+        for (auto& c : layers_) {
+            c->integrate(h);
+            c->applyAutomaticTearing();
+        }
+        for (int pass = 0; pass < passes_; ++pass) {
+            for (auto& c : layers_) {
+                c->solveConstraints(h);
+                c->solveFoldConstraint();
+                c->solveSelfCollision();
+                c->solveSelfCollisionTriangles();
+                c->collideWorld(h);
+                c->collideBounds();
+            }
+            if (interCollision_)
+                for (size_t a = 0; a < layers_.size(); ++a)
+                    for (size_t b = a + 1; b < layers_.size(); ++b) solveContacts(*layers_[a], *layers_[b]);
+        }
+        for (auto& c : layers_)
+            if (c->grabIndex_ >= 0) {
+                auto& p = c->particles_[static_cast<size_t>(c->grabIndex_)];
+                p.px    = p.x;
+                p.py    = p.y;
+                p.pz    = p.z;
+            }
+    }
+    for (auto& c : layers_) {
+        c->forceX_ = c->forceY_ = c->forceZ_ = 0.f;
+        c->interactStrength_                 = 0.f;
+    }
+}
+
+void LayeredCloth3D::solveContacts(Cloth3D& a, Cloth3D& b) {
+    if (!(a.collisionCategoryBits_ & b.collisionMaskBits_) || !(b.collisionCategoryBits_ & a.collisionMaskBits_))
+        return;
+    const float thickness = a.particleSize_ + b.particleSize_;
+    // Sweep on X; Y/Z AABB rejection precedes the full vertex/edge/face query.
+    struct Bounds {
+        float  lo[3], hi[3];
+        size_t triangle;
+    };
+    auto bounds = [](const Cloth3D& cloth) {
+        std::vector<Bounds> result;
+        result.reserve(cloth.triangles_.size());
+        for (size_t i = 0; i < cloth.triangles_.size(); ++i) {
+            Bounds box{{INFINITY, INFINITY, INFINITY}, {-INFINITY, -INFINITY, -INFINITY}, i};
+            for (int index : cloth.triangles_[i].v) {
+                const auto& p      = cloth.particles_[static_cast<size_t>(index)];
+                const float xyz[3] = {p.x, p.y, p.z};
+                for (int k = 0; k < 3; ++k) {
+                    box.lo[k] = std::min(box.lo[k], xyz[k]);
+                    box.hi[k] = std::max(box.hi[k], xyz[k]);
+                }
+            }
+            result.push_back(box);
+        }
+        std::stable_sort(result.begin(), result.end(),
+                         [](const Bounds& x, const Bounds& y) { return x.lo[0] < y.lo[0]; });
+        return result;
+    };
+    const auto boxesA = bounds(a), boxesB = bounds(b);
+    // Candidate bounds are a snapshot of this pass. New contacts introduced by
+    // projection are picked up by the next coupling pass/substep.
+    for (const auto& ba : boxesA)
+        for (const auto& bb : boxesB) {
+            if (bb.lo[0] > ba.hi[0] + thickness) break;
+            if (bb.hi[0] < ba.lo[0] - thickness || bb.lo[1] > ba.hi[1] + thickness || bb.hi[1] < ba.lo[1] - thickness ||
+                bb.lo[2] > ba.hi[2] + thickness || bb.hi[2] < ba.lo[2] - thickness)
+                continue;
+            const auto& ta = a.triangles_[ba.triangle];
+            const auto& tb = b.triangles_[bb.triangle];
+            V3          pa[3], pb[3];
+            for (int i = 0; i < 3; ++i) {
+                const auto& p = a.particles_[static_cast<size_t>(ta.v[i])];
+                const auto& q = b.particles_[static_cast<size_t>(tb.v[i])];
+                pa[i]         = {p.x, p.y, p.z};
+                pb[i]         = {q.x, q.y, q.z};
+            }
+            V3          ca, cb;
+            int         fa[3], fb[3], na = 0, nb = 0;
+            const float distance = triangleDistance(pa, pb, fa, fb, na, nb, ca, cb);
+            if (distance >= thickness) continue;
+            // Recover barycentric contact gradients for all three feature types.
+            auto weights = [](const V3* p, const int* feature, int count, V3 cp) {
+                std::array<float, 3> w{};
+                if (count == 1)
+                    w[static_cast<size_t>(feature[0])] = 1.f;
+                else if (count == 2) {
+                    const V3    edge = sub(p[feature[1]], p[feature[0]]);
+                    const float t =
+                        std::clamp(dot(sub(cp, p[feature[0]]), edge) / std::max(dot(edge, edge), 1e-12f), 0.f, 1.f);
+                    w[static_cast<size_t>(feature[0])] = 1.f - t;
+                    w[static_cast<size_t>(feature[1])] = t;
+                } else {
+                    const V3    u = sub(p[1], p[0]), v = sub(p[2], p[0]), q = sub(cp, p[0]);
+                    const float uu = dot(u, u), uv = dot(u, v), vv = dot(v, v);
+                    const float det = uu * vv - uv * uv;
+                    if (det <= 1e-12f) {
+                        w[0] = 1.f;
+                        return w;
+                    }
+                    w[1] = std::clamp((vv * dot(q, u) - uv * dot(q, v)) / det, 0.f, 1.f);
+                    w[2] = std::clamp((uu * dot(q, v) - uv * dot(q, u)) / det, 0.f, 1.f - w[1]);
+                    w[0] = 1.f - w[1] - w[2];
+                }
+                return w;
+            };
+            const auto wa = weights(pa, fa, na, ca), wb = weights(pb, fb, nb, cb);
+            V3         previousA{}, previousB{};
+            float      denominator = 0.f;
+            for (int i = 0; i < 3; ++i) {
+                const auto& p = a.particles_[static_cast<size_t>(ta.v[i])];
+                const auto& q = b.particles_[static_cast<size_t>(tb.v[i])];
+                previousA     = add(previousA, mul(wa[i], {p.px, p.py, p.pz}));
+                previousB     = add(previousB, mul(wb[i], {q.px, q.py, q.pz}));
+                denominator += (p.pinned || ta.v[i] == a.grabIndex_ ? 0.f : p.inverseMass) * wa[i] * wa[i];
+                denominator += (q.pinned || tb.v[i] == b.grabIndex_ ? 0.f : q.inverseMass) * wb[i] * wb[i];
+            }
+            if (denominator <= 1e-12f) continue;
+            V3          normal = distance > 1e-7f ? mul(1.f / distance, sub(ca, cb)) : vnorm(sub(previousA, previousB));
+            const float lambda = (thickness - distance) / denominator;
+            const V3    relative = sub(sub(ca, previousA), sub(cb, previousB));
+            const V3    tangent  = sub(relative, mul(dot(relative, normal), normal));
+            const float length   = vlen(tangent);
+            const float friction = std::sqrt(a.collisionFriction_ * b.collisionFriction_);
+            const V3    frictionDelta =
+                mul(std::min(1.f, friction * (thickness - distance) / std::max(length, 1e-8f)) / denominator, tangent);
+            for (int i = 0; i < 3; ++i) {
+                auto project = [&](Cloth3D& c, int index, float weight, float sign) {
+                    auto& p = c.particles_[static_cast<size_t>(index)];
+                    if (p.pinned || index == c.grabIndex_) return;
+                    const float scale = sign * p.inverseMass * weight;
+                    p.x += normal.x * lambda * scale;
+                    p.y += normal.y * lambda * scale;
+                    p.z += normal.z * lambda * scale;
+                    p.px += frictionDelta.x * scale;
+                    p.py += frictionDelta.y * scale;
+                    p.pz += frictionDelta.z * scale;
+                };
+                project(a, ta.v[i], wa[i], 1.f);
+                project(b, tb.v[i], wb[i], -1.f);
+            }
+            ++contacts_;
+        }
 }
 
 }  // namespace eve::physics
