@@ -136,6 +136,16 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
             absPos[size_t(i) * 3u + 2] = am->mVertices[i].z;
         }
         handle->addMorphTargetAbsolute(morphName, absPos.data());
+        if (am->mNormals) {
+            std::vector<float> deltaNormals(size_t(am->mNumVertices) * 3u);
+            for (unsigned i = 0; i < am->mNumVertices; ++i) {
+                deltaNormals[size_t(i) * 3]     = am->mNormals[i].x - baseNrm[size_t(i) * 3];
+                deltaNormals[size_t(i) * 3 + 1] = am->mNormals[i].y - baseNrm[size_t(i) * 3 + 1];
+                deltaNormals[size_t(i) * 3 + 2] = am->mNormals[i].z - baseNrm[size_t(i) * 3 + 2];
+            }
+            auto normalResult = handle->setMorphNormalDeltas(morphName, deltaNormals);
+            if (!normalResult.ok()) throw Exception("Invalid imported morph normals: %s", morphName.c_str());
+        }
     }
     handle->markMorphClean();
     Mesh *raw = handle.get();

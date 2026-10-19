@@ -598,6 +598,11 @@ void Graphics::expose(ssq::Table& table) {
     });
     material.addFunc("setShader", &Material::setShader);
     material.addFunc("getShader", &Material::getShader);
+    // Script adapter for the canonical validated PbrSurface API. Only the descriptor
+    // is copied; referenced textures remain borrowed from their Graphics owner.
+    material.addFunc("copyPbrSurfaceFrom", [vm = table.getHandle()](Material* self, Material* source) {
+        return eve::script::projectResult(vm, self->setPbrSurface(source->pbrSurface()));
+    });
     material.addFunc("setTint", &Material::setTint);
     material.addFunc("setMetallic", &Material::setMetallic);
     material.addFunc("getMetallic", &Material::getMetallic);
