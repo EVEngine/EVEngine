@@ -1222,6 +1222,8 @@ public:
      * HistoryReuse is observable quality degradation because it is not same-frame data.
      *
      * @return Capture disposition for the current render frame.
+     * @cost One full-resolution GPU color copy per request; amortize over all consumers
+     * in a frame by capturing once after opaque rendering, before their draws.
      * @thread Render-thread affine; call immediately before the first refractive draw.
      * @reentrancy Does not invoke scripts or caller callbacks.
      */

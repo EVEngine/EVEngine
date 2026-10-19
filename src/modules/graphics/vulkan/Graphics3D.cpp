@@ -636,8 +636,18 @@ Graphics::Mesh3DSceneColorCaptureStatus Graphics::captureMesh3DSceneColor() {
     cb.endRenderPass();
     sceneColorPassOpen = false;
     source.color.endSampledLayout();
-    source.color.setLayout(cb, vk::ImageLayout::eTransferSrcOptimal);
-    snapshot.color.setLayout(cb, vk::ImageLayout::eTransferDstOptimal);
+    const vk::ImageSubresourceRange       range{vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1};
+    std::array<vk::ImageMemoryBarrier, 2> before{};
+    before[0] = vk::ImageMemoryBarrier(vk::AccessFlagBits::eColorAttachmentWrite, vk::AccessFlagBits::eTransferRead,
+                                       vk::ImageLayout::eShaderReadOnlyOptimal, vk::ImageLayout::eTransferSrcOptimal,
+                                       VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, source.color.image(), range);
+    before[1] = vk::ImageMemoryBarrier(
+        snapshot.color.currentLayout() == vk::ImageLayout::eUndefined ? vk::AccessFlags{}
+                                                                      : vk::AccessFlagBits::eShaderRead,
+        vk::AccessFlagBits::eTransferWrite, snapshot.color.currentLayout(), vk::ImageLayout::eTransferDstOptimal,
+        VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, snapshot.color.image(), range);
+    cb.pipelineBarrier(vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eFragmentShader,
+                       vk::PipelineStageFlagBits::eTransfer, {}, {}, {}, before);
     vk::ImageCopy copy{};
     copy.srcSubresource =
         vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1};
@@ -647,9 +657,20 @@ Graphics::Mesh3DSceneColorCaptureStatus Graphics::captureMesh3DSceneColor() {
                               static_cast<uint32_t>(sceneColorHeight), 1};
     cb.copyImage(source.color.image(), vk::ImageLayout::eTransferSrcOptimal,
                  snapshot.color.image(), vk::ImageLayout::eTransferDstOptimal, 1, &copy);
-    snapshot.color.setLayout(cb, vk::ImageLayout::eShaderReadOnlyOptimal);
-
-    source.color.setLayout(cb, vk::ImageLayout::eColorAttachmentOptimal);
+    std::array<vk::ImageMemoryBarrier, 2> after{};
+    after[0] =
+        vk::ImageMemoryBarrier(vk::AccessFlagBits::eTransferRead,
+                               vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite,
+                               vk::ImageLayout::eTransferSrcOptimal, vk::ImageLayout::eColorAttachmentOptimal,
+                               VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, source.color.image(), range);
+    after[1] = vk::ImageMemoryBarrier(vk::AccessFlagBits::eTransferWrite, vk::AccessFlagBits::eShaderRead,
+                                      vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal,
+                                      VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, snapshot.color.image(), range);
+    cb.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
+                       vk::PipelineStageFlagBits::eFragmentShader | vk::PipelineStageFlagBits::eColorAttachmentOutput,
+                       {}, {}, {}, after);
+    source.color.setCurrentLayout(vk::ImageLayout::eColorAttachmentOptimal);
+    snapshot.color.setCurrentLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
     source.depth.setLayout(cb, vk::ImageLayout::eDepthStencilAttachmentOptimal,
                            vk::ImageAspectFlagBits::eDepth);
     vk::RenderPassBeginInfo resume{};
