@@ -122,11 +122,27 @@ public:
     [[nodiscard("check shallow-water colliders")]] Result<void> setColliders(
         std::span<const ShallowWaterCollider> colliders);
 
-    /** @brief Replace bed heights (size must equal cellCount()). */
+    /**
+     * @brief Replace bed heights; call fillSurface afterwards to initialize a level lake.
+     * @param beds Borrowed cellCount() heights in row-major Z/X order, copied during this call.
+     * @return InvalidArgument for wrong size or nonfinite data; failure leaves the field unchanged.
+     * @thread Owner thread, not concurrent with step or queries; no callbacks/reentrancy.
+     * @cost Linear in grid cells, more expensive than a point query; amortize over terrain setup.
+     */
     [[nodiscard("check shallow-water bed")]] Result<void> setBed(std::span<const float> beds);
 
     /** @brief Fill every cell with a uniform water depth (momentum cleared). */
     [[nodiscard("check shallow-water fill")]] Result<void> fillDepth(float depth);
+
+    /**
+     * @brief Fill to a world-space free-surface elevation, leaving high terrain dry.
+     * @param surfaceY Finite elevation in the same coordinates as setBed.
+     * @return InvalidArgument for invalid elevation or depth exceeding maxDepth; failure is atomic.
+     * @ownership Copies reference depths internally; no borrowed input is retained.
+     * @thread Owner thread, not concurrent with step or queries; invokes no callbacks.
+     * @cost Linear in grid cells, more expensive than a point query; amortize over lake initialization.
+     */
+    [[nodiscard("check shallow-water surface fill")]] Result<void> fillSurface(float surfaceY);
 
     /**
      * @brief Inject a localized height bump and radial outflow (mouse / splash).
@@ -182,7 +198,7 @@ public:
      * @param[out] normalsXYZ Vertex normals (3 floats each).
      * @param[out] uvsST Vertex UVs in [0,1]^2 (2 floats each).
      * @param[out] indices Triangle indices.
-     * @param visualHeightGain Display-only scale for `(h - rest)` relative to mean depth; 1 keeps
+     * @param visualHeightGain Display-only scale for `(h - rest)` relative to the last fill depth per cell; 1 keeps
      *        physical heights. Values in (0, 32] exaggerate centimetre waves for readability.
      * @param[out] colorsRGBA Optional per-vertex RGBA (4 floats each) for coloured meshes;
      *             pass nullptr to skip. Packs the same channel layout as `copyFieldToImage` with
@@ -271,6 +287,7 @@ private:
     bool        backendFallback_ = false;
 
     std::vector<float>                 heights_;
+    std::vector<float>                 restDepths_;
     std::vector<float>                 momentumX_;
     std::vector<float>                 momentumZ_;
     std::vector<float>                 beds_;
