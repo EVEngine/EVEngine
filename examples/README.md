@@ -119,7 +119,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [daynight](daynight/README.md) | 昼夜循环：太阳轨道、程序化天空盒、月光 / 星光 / 火焰 / 萤火虫 |
 | [uds-sky](uds-sky/README.md) | 独立天空配置与大气渲染对照场景（完整 UDS 效果开发中） |
 | [weather](weather/README.md) | 天气系统：雨 / 雪 / 雷暴 / 雾 / 风，实时滑块 |
-| [weather-daynight](weather-daynight/README.md) | 统一昼夜 + 天气：太阳轨道、程序化天空与雨雪雷暴 |
+| [weather-daynight](weather-daynight/README.md) | 样条瀑布与河流 / 昼夜天气 / 泡沫水流 / 体积云雾 |
 | [snow](snow/README.md) | 可交互积雪：与高度图同尺寸的 `SnowField` 深度场驱动形变与着色 |
 | [softbody](softbody/README.md) | 布料与 2D 流体解算器（拖拽 / 排斥 / 吸引） |
 | [softbody3d](softbody3d/README.md) | 3D 软体：Verlet 布料 + 体积体与静态 Box3D 碰撞 |
