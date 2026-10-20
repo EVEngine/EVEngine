@@ -564,6 +564,15 @@ function(main)
         include(${CMAKE_SOURCE_DIR}/cmake/profile_checks.cmake)
     endif()
 
+    include(${CMAKE_SOURCE_DIR}/cmake/native_showcase.cmake)
+    if(EVENGINE_BUILD_HOST AND TARGET EVMap AND TARGET EVImage)
+        add_subdirectory(examples/dual-grid-material-gallery EXCLUDE_FROM_ALL)
+    endif()
+
+    if(EVENGINE_BUILD_HOST AND TARGET EVProcgen AND TARGET EVGraphics)
+        add_subdirectory(examples/procedural-render-gallery EXCLUDE_FROM_ALL)
+    endif()
+
     if(EVENGINE_BUILD_HOST AND BUILD_TESTING)
         add_subdirectory(test)
     endif()
