@@ -12,6 +12,11 @@ int appendNode(UIHost::Tree &tree, WidgetDesc &&desc, int parent = -1) {
     node.text = std::move(desc.text);
     node.valueText = std::move(desc.valueText);
     node.tooltip = std::move(desc.tooltip);
+    node.helpText       = std::move(desc.helpText);
+    node.disabledReason = std::move(desc.disabledReason);
+    node.placeholder    = std::move(desc.placeholder);
+    node.multiline      = desc.multiline;
+    node.readOnly       = desc.readOnly;
     node.visible = desc.visible;
     node.enabled = desc.enabled;
     node.checked = desc.checked;
@@ -165,6 +170,11 @@ void patchProps(UIHost::Tree &tree, int nodeIndex, WidgetDesc &&desc) {
     n.text = std::move(desc.text);
     n.valueText = std::move(desc.valueText);
     n.tooltip = std::move(desc.tooltip);
+    n.helpText       = std::move(desc.helpText);
+    n.disabledReason = std::move(desc.disabledReason);
+    n.placeholder    = std::move(desc.placeholder);
+    n.multiline      = desc.multiline;
+    n.readOnly       = desc.readOnly;
     n.visible = desc.visible;
     n.enabled = desc.enabled;
     n.checked = desc.checked;
@@ -459,6 +469,18 @@ WidgetDesc inputText(std::string label, std::string value, std::string id,
     d.text = std::move(label);
     d.valueText = std::move(value);
     d.onTextChange = std::move(onChange);
+    return d;
+}
+
+WidgetDesc link(std::string label, std::string target, std::string id, std::function<void()> onClick) {
+    WidgetDesc d;
+    d.type              = NodeType::Link;
+    d.accessibilityRole = AccessibilityRole::Link;
+    d.text              = std::move(label);
+    d.valueText         = std::move(target);
+    d.id                = std::move(id);
+    d.key               = d.id;
+    d.onClick           = std::move(onClick);
     return d;
 }
 

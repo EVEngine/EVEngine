@@ -1,13 +1,15 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "ui/UI.h"
+#include "ui/ControlPrimitives.h"
 #include "ui/Theme.h"
+#include "ui/UI.h"
 #include "ui/UIHost.h"
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
 
 #include <imgui.h>
+#include <imgui_internal.h>
 
 #include <string>
 
@@ -203,4 +205,105 @@ TEST_CASE("UI.editorKit.desktopCompositionRenders") {
     CHECK(findNode(host, "sidebar")->measuredW >= Theme::dark().layout.minPaneSize);
     CHECK(findNode(host, "content")->measuredW > findNode(host, "sidebar")->measuredW);
     CHECK(findNode(host, "tool_search")->measuredW > Theme::dark().layout.searchMinWidth);
+}
+
+TEST_CASE("UI.editorKit.textToolsRoundTripAndReconcile") {
+    UI* ui = UI::create();
+    REQUIRE(ui != nullptr);
+    ui->beginBuild();
+    ui->beginWindow("Text tools", "root");
+    ui->addLink("Documentation", "https://example.com/docs", "docs");
+    ui->addInputText("Notes", "First line\n第二行", "notes");
+    ui->setItemTextInput(true, true, "Enter notes");
+    ui->setItemHelp("Plain text notes", "Document is locked");
+    ui->end();
+    REQUIRE(ui->mountBuildAs("text_tools"));
+    const std::string saved = ui->saveTreeJson();
+    REQUIRE(ui->loadTreeJson(saved));
+    UINode* docs  = findNode(*ui, "docs");
+    UINode* notes = findNode(*ui, "notes");
+    REQUIRE(docs != nullptr);
+    REQUIRE(notes != nullptr);
+    REQUIRE(docs->type == NodeType::Link);
+    REQUIRE(docs->valueText == "https://example.com/docs");
+    REQUIRE(docs->accessibilityRole == AccessibilityRole::Link);
+    REQUIRE(notes->multiline);
+    REQUIRE(notes->readOnly);
+    REQUIRE(notes->valueText == "First line\n第二行");
+    REQUIRE(notes->placeholder == "Enter notes");
+    REQUIRE(notes->helpText == "Plain text notes");
+    REQUIRE(notes->disabledReason == "Document is locked");
+
+    UIHost* host = resolveHost(ui->current());
+    REQUIRE(host != nullptr);
+    applyTree(host, window("Text tools",
+                           {link("Documentation", "resource://manual", "docs"),
+                            inputText("Notes", "Editable", "notes").withTextInput(false).withHelp("Updated help")},
+                           "root"));
+    REQUIRE(findNode(host, "notes")->multiline == false);
+    REQUIRE(findNode(host, "notes")->readOnly == false);
+    REQUIRE(findNode(host, "notes")->disabledReason.empty());
+    REQUIRE(findNode(host, "notes")->helpText == "Updated help");
+    REQUIRE(findNode(host, "docs")->valueText == "resource://manual");
+}
+
+TEST_CASE("UI.editorKit.textControlsInteraction") {
+    ImGuiContext* previous = ImGui::GetCurrentContext();
+    ImGuiContext* context  = ImGui::CreateContext();
+    auto&         io       = ImGui::GetIO();
+    io.DisplaySize         = ImVec2(800.f, 600.f);
+    io.IniFilename         = nullptr;
+    unsigned char* pixels  = nullptr;
+    int            width = 0, height = 0;
+    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+    std::string value = "original\ntext";
+    ImVec2      linkPos, inputPos;
+    auto        frame = [&](bool disabled, bool readOnly) {
+        ImGui::NewFrame();
+        ImGui::SetNextWindowPos(ImVec2(10.f, 10.f));
+        ImGui::SetNextWindowSize(ImVec2(500.f, 400.f));
+        ImGui::Begin("Text controls");
+        if (disabled) ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+        const bool clicked = controls::textLink("Documentation##docs") == controls::ControlEdit::Changed;
+        ImVec2     pos     = ImGui::GetItemRectMin();
+        linkPos            = ImVec2(pos.x + 3.f, pos.y + 3.f);
+        if (disabled) ImGui::PopItemFlag();
+        controls::inputText("Notes", value, true, ImVec2(300.f, 100.f), readOnly);
+        pos      = ImGui::GetItemRectMin();
+        inputPos = ImVec2(pos.x + 10.f, pos.y + 10.f);
+        ImGui::End();
+        ImGui::Render();
+        return clicked;
+    };
+    frame(false, true);
+    frame(false, true);
+    io.MousePos     = linkPos;
+    io.MouseDown[0] = true;
+    REQUIRE(!frame(false, true));
+    io.MouseDown[0] = false;
+    REQUIRE(frame(false, true));
+    io.MouseDown[0] = true;
+    REQUIRE(!frame(true, true));
+    io.MouseDown[0] = false;
+    REQUIRE(!frame(true, true));
+    io.MousePos     = inputPos;
+    io.MouseDown[0] = true;
+    frame(false, true);
+    io.MouseDown[0] = false;
+    frame(false, true);
+    io.AddInputCharactersUTF8("unchanged");
+    frame(false, true);
+    REQUIRE(value == "original\ntext");
+    frame(false, false);
+    io.MousePos     = inputPos;
+    io.MouseDown[0] = true;
+    frame(false, false);
+    io.MouseDown[0] = false;
+    frame(false, false);
+    const std::string longText(2048, 'x');
+    io.AddInputCharactersUTF8(longText.c_str());
+    frame(false, false);
+    REQUIRE(value.size() > 2048);
+    ImGui::DestroyContext(context);
+    if (previous) ImGui::SetCurrentContext(previous);
 }
