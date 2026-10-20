@@ -155,7 +155,8 @@ independent instances with editor modules absent, and rejects mounting with a
 clear missing-module message.
 
 Validation covers ten native/script contract cases in
-`test/editor_material_facade.cpp`, the repository `make check` gate, and the
+`test/unit/material_editor/material_editor_tests.cpp` and
+`test/integration/material-studio/material_studio_scripts.cpp`, the repository `make check` gate, and the
 headless `material-editor` example smoke. A functional runtime scenario also
 exercises custom panels, presets/history, external document edits, JSON disk
 round-trips, resizing, preview overrides and resource-failure recovery.
@@ -219,7 +220,7 @@ unshadowed forward path used for inexpensive captures. No SSAO/GI pass is implie
 
 Current rendered captures: [photographic sky + CSM](material-editor-skybox.png)
 and [photographic studio + CSM](material-editor-photo-studio.png). The native
-pixel test in `test/editor_material_preview_shadows.cpp` verifies that receivers
+pixel test in `test/integration/material-studio/material_preview_shadows.cpp` verifies that receivers
 actually darken, each shadow flag works, and unshadowed captures stay independent.
 The Vulkan replay shares the normal shadow draw encoder, runs before offscreen
 color on the same command buffer, and also works without a swapchain. WebGPU uses
