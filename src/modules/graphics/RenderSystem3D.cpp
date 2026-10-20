@@ -1721,7 +1721,8 @@ void RenderSystem3D::render(Graphics& gfx) {
 
 void RenderSystem3D::renderToCanvas(Graphics& gfx, Canvas* target, Camera3D* camera, uint32_t reflectionCaptureMask,
                                     float lodDistanceScale, bool includeTransparent, bool useClusteredLighting,
-                                    Texture* skyFaceTexture, Mesh* skyQuad, float skyFaceTextureScale) {
+                                    Texture* skyFaceTexture, Mesh* skyQuad, float skyFaceTextureScale,
+                                    bool includePrimitives) {
     if (!target || !camera) return;
     auto        cd     = camera->data();
     const float aspect = target->getWidth() > 0 ? float(target->getWidth()) / float(target->getHeight()) : 1.f;
@@ -1988,6 +1989,19 @@ void RenderSystem3D::renderToCanvas(Graphics& gfx, Canvas* target, Camera3D* cam
     for (const CaptureExtraDrawerEntry& entry : captureDrawers) {
         if ((entry.mask & reflectionCaptureMask) == 0u || !entry.drawer) continue;
         entry.drawer(gfx, *cd, captureViewProj, aspect, reflectionCaptureMask);
+    }
+
+    if (includePrimitives) {
+        SceneDrawContext context;
+        context.view           = viewM;
+        context.projection     = projM;
+        context.cameraPosition = eye;
+        context.viewportSize   = glm::ivec2(target->getWidth(), target->getHeight());
+        context.nearPlane      = cd->nearZ;
+        context.farPlane       = cd->farZ;
+        PrimitiveSceneCanvas3D primitives(context);
+        gfx.getPrimitiveScene()->render(primitives);
+        if (!primitives.commands().empty() || !primitives.triangles().empty()) gfx.drawPrimitiveScene(primitives);
     }
 
     gfx.end3DFrameToCanvas();

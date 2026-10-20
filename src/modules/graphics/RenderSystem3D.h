@@ -517,12 +517,14 @@ public:
      * @param lodDistanceScale Multiplier applied before selecting mesh LOD.
      * @param includeTransparent Whether transparent and hair surfaces are submitted.
      * @param useClusteredLighting Whether lights beyond the legacy pack use clustered shading.
+     * @param includePrimitives Draw persistent scene primitives for interactive viewports;
+     * false for probe/material captures so editor handles never enter baked lighting.
      */
     static void renderToCanvas(Graphics& gfx, Canvas* target, Camera3D* camera,
                                uint32_t reflectionCaptureMask = 0xffffffffu, float lodDistanceScale = 1.f,
                                bool includeTransparent = true, bool useClusteredLighting = true,
                                Texture* skyFaceTexture = nullptr, Mesh* skyQuad = nullptr,
-                               float skyFaceTextureScale = 1.f);
+                               float skyFaceTextureScale = 1.f, bool includePrimitives = false);
 
     /**
      * @brief Draw custom forward geometry into reflection-probe and preview captures.

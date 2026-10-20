@@ -24,7 +24,7 @@ function levelConfigureWorkspace() {
     level.workspace.setRegionSize("left", 260.0);
     level.workspace.setRegionSize("right", 340.0);
     level.workspace.setRegionSize("bottom", 200.0);
-    level.workspace.layout(config.width.tofloat(), config.height.tofloat());
+    level.workspace.layout(win.getWidth().tofloat(), win.getHeight().tofloat());
     level.workspace.registerPanel("toolbar", "Toolbar", "top", 0);
     level.workspace.registerPanel("hierarchy", "Outliner", "left", 10);
     level.workspace.registerPanel("viewport", "Viewport", "center", 20);
@@ -56,7 +56,9 @@ function levelHierarchyOrder() {
 function levelToolLabel(tool) {
     if (tool == "select") return "Select";
     if (tool == "whitebox") return "Whitebox";
-    if (tool == "spawn") return "Spawn";
+    if (tool == "spawn") return "Character";
+    if(tool=="terrain") return "Terrain";
+    if(tool=="blocks") return "Blocks";
     return tool;
 }
 
@@ -66,64 +68,88 @@ function levelGizmoModeLabel() {
     return "Move";
 }
 
+// Semantic Font Awesome icons use the engine's bundled font. Keep widget IDs
+// stable for input routing; compact actions retain tooltips and accessible names.
+function levelIconButton(icon,label,id,hint="",selected=false,compact=false) {
+    local description=hint!="" ? hint : label;
+    ui.iconButton(icon,compact ? "" : label,id);
+    ui.setItemTooltip(description);
+    ui.setItemAccessibility("button",label,description);
+    ui.setItemSelected(selected);
+}
+
 function levelPanelToolbar() {
-    // One horizontal strip — stacked rows get clipped by the top region height.
-    ui.beginRow("toolbar-row", 6.0);
-    ui.button("New", "new");
-    ui.button("Save", "save");
-    ui.button("Load", "load");
+    ui.beginRow("toolbar-row",6.0);
+    levelIconButton("file","New","new","New empty scene",false,true);
+    levelIconButton("save","Save","save","Save scene · Ctrl+S",false,true);
+    levelIconButton("folder-open","Load","load","Load saved scene",false,true);
+    levelIconButton("home","Demo","demo","Open the editable courtyard demo",false,true);
     ui.separator("tb-sep-file");
-    ui.button(level.tool == "select" ? "[Select]" : "Select", "tool:select");
-    ui.button(level.tool == "whitebox" ? "[Whitebox]" : "Whitebox", "tool:whitebox");
-    ui.button(level.tool == "spawn" ? "[Spawn]" : "Spawn", "tool:spawn");
+    levelIconButton("pointer","Select","tool:select","Select objects · 1",level.tool=="select");
+    levelIconButton("cube","Build","tool:whitebox","Place a construction piece · 2",level.tool=="whitebox");
+    levelIconButton("user","Character","tool:spawn","Place a character · 3",level.tool=="spawn");
+    levelIconButton("paint-brush","Terrain","tool:terrain","Sculpt terrain · 4",level.tool=="terrain");
+    levelIconButton("layers","Blocks","tool:blocks","Place reusable blocks · 5",level.tool=="blocks");
     ui.separator("tb-sep-gizmo");
-    ui.button(level.gizmoMode == "translate" ? "[Move]" : "Move", "gizmo:translate");
-    ui.button(level.gizmoMode == "rotate" ? "[Rotate]" : "Rotate", "gizmo:rotate");
-    ui.button(level.gizmoMode == "scale" ? "[Scale]" : "Scale", "gizmo:scale");
+    levelIconButton("move","Move","gizmo:translate","Move selection · W",level.gizmoMode=="translate");
+    levelIconButton("redo","Rotate","gizmo:rotate","Rotate selection · R",level.gizmoMode=="rotate");
+    levelIconButton("grid","Scale","gizmo:scale","Scale selection · T",level.gizmoMode=="scale");
     ui.separator("tb-sep-hist");
-    ui.button("Undo", "undo");
-    ui.button("Redo", "redo");
-    ui.button(level.mode == "play" ? "Stop" : "Play", "play");
-    ui.button("Frame", "frame");
-    ui.button("Focus", "focus");
-    ui.spacer("tb-fill", 1.0);
-    ui.badge(level.mode == "play" ? "PLAY" : "EDIT", "mode-badge");
+    levelIconButton("undo","Undo","undo","Undo · Ctrl+Z",false,true);
+    levelIconButton("redo","Redo","redo","Redo · Ctrl+Y",false,true);
+    levelIconButton(level.mode=="play" ? "stop" : "play",level.mode=="play" ? "Stop" : "Play","play",
+        "Start / stop physics simulation · F5");
+    if(level.mode=="play") {
+        levelIconButton(level.play.paused ? "play" : "pause",level.play.paused ? "Resume" : "Pause","pause");
+        levelIconButton("chevron-right","Step","step","Advance physics by one frame");
+    }
+    levelIconButton("grid","Frame","frame","Frame the entire terrain",false,true);
+    levelIconButton("search","Focus","focus","Focus selection · F",false,true);
+    ui.spacer("tb-fill",1.0);
+    ui.badge(level.mode=="play" ? "PLAY" : "EDIT","mode-badge");
     ui.end();
 }
 
 function levelPanelHierarchy() {
     ui.sectionHeader("Terrain", "terrain-header");
-    local reference = level.terrain != null ? level.terrain.reference : terrainDefaultReference();
+    local reference = level.terrainDraft != null ? level.terrainDraft :
+        (level.terrain != null ? level.terrain.reference : terrainDefaultReference());
     ui.combo("Source", "Generated\nAsset file", reference.mode == "asset" ? 1 : 0, "terrainMode");
     if (reference.mode == "asset") ui.inputText("Asset path", reference.path, "terrainPath");
-    ui.button("Rebuild terrain", "terrainRebuild");
+    levelIconButton("refresh","Rebuild terrain","terrainRebuild");
     if (level.terrain != null)
         ui.text(level.terrain.width + "x" + level.terrain.height + " @ " +
                 level.terrain.spacingX + "m", "terrain-info");
 
     ui.separator("hierarchy-sep");
     ui.sectionHeader("Hierarchy", "hierarchy-header");
-    ui.text(level.objects.len() + " objects · rev " + level.revision, "hierarchy-meta");
-    local listH = level.workspace.getRegionH("left") - 210.0;
+    ui.text(level.objects.len() + " objects · " + level.selection.len() + " selected", "hierarchy-meta");
+    ui.text("Editing: " + (levelObject(level.scope)!=null ? levelObject(level.scope).name : "World"),"scope");
+    ui.beginRow("block-navigation",4.0);
+    levelIconButton("chevron-up","Up","leave","Return to parent block · Backspace");
+    levelIconButton("folder-open","Enter","enter","Edit the selected block · Enter");
+    levelIconButton("cubes","Group","group","Group selection · Ctrl+G");ui.end();
+    local listH = level.workspace.getRegionH("left") - 280.0;
     if (listH < 120.0) listH = 120.0;
     ui.beginScrollList("hierarchy", listH, 0.0);
     foreach (entry in levelHierarchyOrder()) {
         local indent = "";
         for (local i = 0; i < entry.depth; ++i) indent += "  ";
-        local tag = entry.spawn ? "  [spawn]" : (entry.piece ? "  [box]" : "");
-        local mark = entry.id == level.selected ? "> " : "  ";
-        ui.button(indent + mark + entry.name + tag, "select:" + entry.id);
+        local icon=entry.spawn ? "user" : (entry.piece ? "cube" : "layers");
+        local kind=entry.spawn ? "Character" : (entry.piece ? "Construction piece" : "Building block");
+        levelIconButton(icon,indent+entry.name,"select:"+entry.id,kind+" · "+entry.name,
+            level.selection.find(entry.id)!=null);
     }
     ui.end();
 }
 
 function levelPanelViewport() {
     local help = level.mode == "play"
-        ? "Mouse look · WASD+Shift · Q/E zoom · F1/F2 · Esc"
-        : "LMB select/place · RMB orbit · MMB pan · wheel zoom · F focus · Del · 1/2/3";
+        ? "Mouse look · WASD+Shift · Space jump · Esc stop"
+        : "LMB select/place · Ctrl multi-select · RMB orbit · MMB pan · 1-5 tools · F focus";
     ui.text(help, "viewport-help");
     local vpW = level.workspace.getRegionW("center") - 16.0;
-    local vpH = level.workspace.getRegionH("center") - 78.0;
+    local vpH = level.workspace.getRegionH("center") - (level.mode=="play" ? 150.0 : 104.0);
     if (vpW < 64.0) vpW = 64.0;
     if (vpH < 64.0) vpH = 64.0;
     ui.viewport("level-vp", vpW, vpH);
@@ -139,6 +165,14 @@ function levelPanelViewport() {
 }
 
 function levelPanelInspector() {
+    if(level.mode=="play") {
+        ui.sectionHeader("Physics simulation","simulation-title");
+        ui.text(level.play.paused ? "PAUSED" : "RUNNING","simulation-state");
+        ui.text("Fixed timestep: 60 Hz","simulation-rate");
+        ui.text("Dynamic objects: " + level.play.dynamics.len(),"simulation-dynamics");
+        ui.textWrapped("WASD move · Shift run · Space jump. Push dynamic objects with the character. Pause / Step inspects physics one frame at a time. Stop restores the authored scene.",290.0,"simulation-help");
+        return;
+    }
     ui.sectionHeader("Selection", "selection-header");
     local object = levelObject(level.selected);
     if (object == null) {
@@ -150,6 +184,14 @@ function levelPanelInspector() {
         return;
     }
 
+    if(levelIsGroup(object.id) && object.id!="root") {
+        ui.sectionHeader("Building block","block-header");
+        ui.beginRow("block-actions",4.0);
+        levelIconButton("folder-open","Enter","enter");
+        levelIconButton("cubes","Unpack","unpack");
+        levelIconButton("save","Capture","capture");ui.end();
+        ui.textWrapped("A block can contain pieces, characters, and other blocks. Enter to edit the next level.",290.0,"block-help");
+    }
     ui.inputText("Name", object.name, "name");
     ui.text("id: " + object.id, "object-id");
     ui.separator("trs-sep");
@@ -164,19 +206,23 @@ function levelPanelInspector() {
     ui.inputText("Scale", object.transform.scaleX.tostring(), "sx");
     ui.end();
     ui.beginRow("object-actions", 4.0);
-    ui.button("Apply", "apply");
-    ui.button("Drop to terrain", "drop");
-    ui.button("Delete", "delete");
+    levelIconButton("check","Apply","apply");
+    levelIconButton("chevron-down","Drop to terrain","drop");
+    levelIconButton("close","Delete","delete");
     ui.end();
 
+    levelIconButton("cubes","Duplicate selection","duplicate");
     if (object.id in level.pieces) {
         local piece = level.pieces[object.id];
+        ui.sectionHeader("Physics","physics-header");
+        ui.combo("Body", "Static\nDynamic", piece.motion=="dynamic" ? 1 : 0,"bodyMotion");
+        ui.textWrapped("Dynamic pieces fall, collide, and can be pushed by the character in Play. Static: exact triangle mesh. Dynamic: convex hull (concave gaps are filled).",290.0,"physics-help");
         ui.separator("piece-params-sep");
         ui.sectionHeader("Whitebox parameters", "piece-title");
         ui.text(piece.recipe.slice("prototype.".len()), "piece-recipe");
         local schema = whiteboxSchema(piece.recipe);
         if (schema != null) {
-            local paramsH = level.workspace.getRegionH("right") - 340.0;
+            local paramsH = level.workspace.getRegionH("right") - 455.0;
             if (paramsH < 100.0) paramsH = 100.0;
             ui.beginScrollList("piece-params", paramsH, 0.0);
             for (local i = 0; i < schema.getParamCount(); ++i) {
@@ -236,7 +282,26 @@ function levelPanelInspector() {
 }
 
 function levelPanelPalette() {
-    if (level.tool == "whitebox") {
+    if(level.tool=="terrain") {
+        ui.sectionHeader("Terrain sculpt · world-space brush","palette-header");
+        ui.beginRow("brush-modes",6.0);
+        local brushIcons={raise="plus",lower="minus",smooth="paint-brush",flatten="sliders"};
+        foreach(mode in ["raise","lower","smooth","flatten"])
+            levelIconButton(brushIcons[mode],mode,"brush:"+mode,"Terrain brush · "+mode,level.brushMode==mode);
+        ui.end();
+        ui.slider("Radius (m)",level.brushRadius,1.0,24.0,"brushRadius");
+        ui.slider("Strength (m/s)",level.brushStrength,0.1,8.0,"brushStrength");
+        ui.text("Hold LMB on terrain · flatten samples height at stroke start · Undo/Redo restores entire strokes","brush-help");
+    } else if(level.tool=="blocks") {
+        ui.sectionHeader("Reusable building blocks","palette-header");
+        levelIconButton("save","Capture selection","capture");
+        ui.text("Select a saved block, then click the terrain to place an independent instance.","blocks-help");
+        ui.beginScrollList("block-library",90.0,0.0);
+        foreach(index,record in level.library)
+            levelIconButton("layers",record.name+" ("+record.objects.len()+" nodes)","block:"+index,
+                "Place reusable block · "+record.name,index==level.blockIndex);
+        ui.end();
+    } else if (level.tool == "whitebox") {
         ui.sectionHeader("Whitebox palette · " + level.recipes.len() + " recipes", "palette-header");
         ui.text("Active: " + level.piece.slice("prototype.".len()) + "  ·  click terrain to place",
             "palette-active");
@@ -246,7 +311,7 @@ function levelPanelPalette() {
         ui.beginScrollList("palette", listH, 0.0);
         foreach (recipe in level.recipes) {
             local label = recipe.slice("prototype.".len());
-            ui.button(level.piece == recipe ? "> " + label : label, "piece:" + recipe);
+            levelIconButton("cube",label,"piece:"+recipe,"Place "+label,level.piece==recipe);
         }
         ui.end();
     } else if (level.tool == "spawn") {
@@ -275,8 +340,9 @@ function levelMountPanels() {
     // Cleared up front: if a field throws, degrade to stale instead of
     // rebuilding every frame.
     level.panelsDirty = false;
+    level.layoutWidth=win.getWidth();level.layoutHeight=win.getHeight();
     if (level.workspace == null) levelConfigureWorkspace();
-    level.workspace.layout(config.width.tofloat(), config.height.tofloat());
+    level.workspace.layout(win.getWidth().tofloat(), win.getHeight().tofloat());
     for (local i = 0; i < level.workspace.getPanelCount(); ++i) {
         if (!level.workspace.getPanelVisible(i)) continue;
         local id = level.workspace.getPanelId(i);
@@ -314,30 +380,29 @@ function levelApplySelectionFields() {
         level.status = "position, yaw and scale must be numbers";
         return;
     }
-    if (sx == 0.0) { level.status = "scale must not be zero"; return; }
+    if (sx <= 0.0) { level.status = "scale must not be zero"; return; }
     levelCommand("scene.object.update.v1", {
         object = level.selected,
         name = ui.getValueText("name"),
         parent = object.parent,
         position = [px, py, pz],
         rotation = [object.transform.rotationX, ry, object.transform.rotationZ],
-        scale = [sx, object.transform.scaleY, object.transform.scaleZ]
+        scale = [sx, sx, sx]
     });
 }
 
 /** @brief Put the selection back on the terrain surface, keeping its XZ. */
 function levelDropSelectionToTerrain() {
     local object = levelObject(level.selected);
-    if (object == null) return;
-    local t = object.transform;
-    local ground = terrainHeightAt(t.x, t.z);
-    if (ground == null) { level.status = "outside the terrain extent"; return; }
-    levelCommand("scene.transform.set.v1", {
-        object = level.selected,
-        position = [t.x, ground, t.z],
-        rotation = [t.rotationX, t.rotationY, t.rotationZ],
-        scale = [t.scaleX, t.scaleY, t.scaleZ]
-    });
+    if (object == null || object.id=="root") return;
+    local t=object.transform;
+    local world=scene.localToWorldAt(levelHost(),object.id,0.0,0.0,0.0);
+    local ground=terrainHeightAt(world[0],world[2]);
+    if(ground==null) { level.status="outside the terrain extent";return; }
+    local localPoint=scene.worldToLocalAt(levelHost(),object.parent,world[0],ground,world[2]);
+    levelCommand("scene.transform.set.v1",{object=object.id,position=localPoint,
+        rotation=[t.rotationX,t.rotationY,t.rotationZ],scale=[t.scaleX,t.scaleY,t.scaleZ]});
+
 }
 
 function levelUpdatePieceParam(id, key) {
@@ -370,17 +435,31 @@ function levelHandleUi() {
     while (change != "") {
         local parts = levelEventParts(change);
         local id = parts[1];
-        if (id.find("pp:") == 0) levelUpdatePieceParam(id, id.slice(3));
+        if (level.mode == "play") { change=ui.consumeChange(); continue; }
+        if (id == "brushRadius" || id == "brushStrength") {
+            ui.select("palette");
+            if(id=="brushRadius") level.brushRadius=ui.getValue(id); else level.brushStrength=ui.getValue(id);
+        } else if(id=="bodyMotion") {
+            ui.select("inspector");
+            if(level.selected in level.pieces) {
+                level.pieces[level.selected].motion=ui.getValue(id).tointeger()==1 ? "dynamic" : "static";
+                whiteboxRebuildPiece(level.selected);
+            }
+        } else if (id.find("pp:") == 0) levelUpdatePieceParam(id, id.slice(3));
         else if (id == "terrainMode") {
             ui.select("hierarchy");
             if (level.terrain != null) {
-                level.terrain.reference.mode = ui.getValue("terrainMode").tointeger() == 1 ? "asset" : "generated";
-                level.status = "terrain source: " + level.terrain.reference.mode + " (press Rebuild terrain)";
+                if(level.terrainDraft==null) level.terrainDraft=levelCopy(level.terrain.reference);
+                level.terrainDraft.mode = ui.getValue("terrainMode").tointeger() == 1 ? "asset" : "generated";
+                level.status = "terrain source: " + level.terrainDraft.mode + " (press Rebuild terrain)";
             }
             levelMarkPanelsDirty();
         } else if (id == "terrainPath") {
             ui.select("hierarchy");
-            if (level.terrain != null) level.terrain.reference.path = ui.getValueText("terrainPath");
+            if (level.terrain != null) {
+                if(level.terrainDraft==null) level.terrainDraft=levelCopy(level.terrain.reference);
+                level.terrainDraft.path=ui.getValueText("terrainPath");
+            }
         } else if (id == "spawnYaw") {
             ui.select("inspector");
             local spawn = (level.selected in level.spawns) ? level.spawns[level.selected] : null;
@@ -401,7 +480,23 @@ function levelHandleUi() {
 }
 
 function levelHandleAction(id) {
-    if (id == "tool:select" || id == "tool:whitebox" || id == "tool:spawn") {
+    if(level.mode=="play" && ["play","pause","step"].find(id)==null) {
+        levelStatus("Stop Play to edit the scene");return;
+    }
+    if(id=="pause") { level.play.paused=!level.play.paused;levelMarkPanelsDirty();return; }
+    if(id=="step") { levelStepPlay();return; }
+    if(id=="demo") { levelBuildDemo();return; }
+    if(id=="group") { levelGroupSelection();return; }
+    if(id=="enter") { levelEnterBlock();return; }
+    if(id=="leave") { levelLeaveBlock();return; }
+    if(id=="unpack") { levelUnpackBlock();return; }
+    if(id=="capture") { levelCaptureBlock();return; }
+    if(id=="duplicate") { levelDuplicateSelection();return; }
+    if(id.find("brush:")==0) { terrainEndStroke();level.brushMode=id.slice(6);levelMarkPanelsDirty();return; }
+    if(id.find("block:")==0) { level.blockIndex=id.slice(6).tointeger();levelMarkPanelsDirty();return; }
+    if((id=="undo" || id=="redo") && level.tool=="terrain") { terrainHistory(id=="redo");return; }
+    if(id.find("tool:")==0) terrainEndStroke();
+    if (id == "tool:select" || id == "tool:whitebox" || id == "tool:spawn" || id == "tool:terrain" || id == "tool:blocks") {
         level.tool = id.slice(5);
         level.status = "tool: " + levelToolLabel(level.tool);
         levelMarkPanelsDirty();
@@ -435,24 +530,10 @@ function levelHandleAction(id) {
         levelDropSelectionToTerrain();
         levelRefreshPanels();
     } else if (id == "delete") {
-        local removed = level.selected;
-        levelCommand("scene.object.delete.v1", {object = removed});
-        if (removed in level.pieces) {
-            local piece = level.pieces[removed];
-            if (piece.entity != null) piece.entity.setVisible(false);
-            delete level.pieces[removed];
-        }
-        if (removed in level.spawns) {
-            local spawn = level.spawns[removed];
-            if (spawn.entity != null) spawn.entity.setVisible(false);
-            if (spawn.facing != null) spawn.facing.setVisible(false);
-            delete level.spawns[removed];
-        }
-        level.selected = "";
+        levelDeleteSelection();
         levelRefreshPanels();
     } else if (id.find("select:") == 0) {
-        level.selected = id.slice(7);
-        levelSyncGizmo();
+        levelSelect(id.slice(7),levelKeyEither("lctrl","LCtrl") || levelKeyEither("rctrl","RCtrl"));
         levelMarkPanelsDirty();
         levelMountPanels();
     } else if (id.find("piece:") == 0) {
