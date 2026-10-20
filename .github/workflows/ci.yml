@@ -848,6 +848,17 @@ jobs:
             sed -n '/NetHostPeers .*: .* ms/p' "$log"
           fi
 
+      - name: Upload macOS test failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: macos-test-failure-logs
+          path: |
+            build/macosx-debug/Testing/Temporary/LastTestsFailed.log
+            build/macosx-debug/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Setup Dawn generator Python
         if: ${{ needs.change-scope.outputs.dawn_metal == 'true' }}
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0

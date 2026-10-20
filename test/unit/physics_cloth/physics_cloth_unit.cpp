@@ -1,4 +1,5 @@
 #include <limits>
+#include <type_traits>
 #include "LayeredClothGeometryOracle.h"
 #include "physics/cloth/LayeredCloth3D.h"
 #include "zeroerr/assert.h"
@@ -216,6 +217,9 @@ TEST_CASE("PhysicsCloth.runtimeTearingChangesAuthoritativeConstraintAndSurfaceTo
 }
 
 namespace test_layered_cloth_reference {
+
+static_assert(!std::is_copy_constructible_v<eve::physics::LayeredCloth3D>);
+static_assert(!std::is_copy_assignable_v<eve::physics::LayeredCloth3D>);
 
 namespace {
 using eve::physics::ClothModel;

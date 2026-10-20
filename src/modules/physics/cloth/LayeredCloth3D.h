@@ -27,6 +27,10 @@ public:
     explicit LayeredCloth3D(std::span<const ClothModel> models);
     /** @brief Release owned runtime layers; render resources follow the graphics owner. */
     ~LayeredCloth3D();
+    /** @brief Owned layers cannot be copied between groups. */
+    LayeredCloth3D(const LayeredCloth3D&) = delete;
+    /** @brief Owned layers cannot be copy-assigned between groups. */
+    LayeredCloth3D& operator=(const LayeredCloth3D&) = delete;
     /** @brief Borrow a layer for synchronous configuration; valid until owner destruction.
      * Do not destroy or independently update it while the group is active.
      * @throws eve::Exception for invalid index.
