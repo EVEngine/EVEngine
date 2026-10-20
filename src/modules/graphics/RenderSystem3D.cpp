@@ -2,6 +2,7 @@
 #include "common/Assert.h"
 #include "common/Capability.h"
 #include "common/Exception.h"
+#include "common/Profile.h"
 #include "common/RenderTrace.h"
 #include "common/Status.h"
 #include "graphics/AmbientOcclusion.h"
@@ -705,6 +706,8 @@ SkinInfluenceLimit skinInfluenceLimit(int count) {
 }  // namespace
 
 void RenderSystem3D::render(Graphics& gfx) {
+    eve::debug::rtFrameBegin();
+    EV_PROFILE_MODULE("graphics", "Render3D");
     eve::debug::RenderPassScope pass3d("RenderSystem3D");
     Camera3D*                   defaultCam = findDefaultCamera3D();
 

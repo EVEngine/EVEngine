@@ -11940,6 +11940,63 @@
         ]
       },
       "module": "procgen"
+    },
+    "integration/frame-recording/frame_recording_tests.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "graphics",
+      "modules": [
+        "graphics",
+        "thread",
+        "common",
+        "window"
+      ],
+      "task": "frame-recording",
+      "cases": {
+        "module-composition": [
+          "graphics.frameRecording.inlineBudgetAndPeriodicReprobe"
+        ],
+        "render-window": [
+          "graphics.frameRecording.fxaaSlotReuseResizeAndPersistentCanvas"
+        ]
+      }
+    },
+    "integration/profiler-capture/profile_capture_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "profiler.core.reportMeasuresCapturedSpan",
+          "profiler.core.sameNameDifferentStorageAggregates",
+          "profiler.capture.automaticFrameBeginIncludesEarlier3DWork"
+        ]
+      },
+      "module": "profiler",
+      "modules": [
+        "common",
+        "profiler"
+      ],
+      "task": "profiler-capture"
+    },
+    "integration/vsync-config/vsync_config_tests.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "graphics",
+      "modules": [
+        "graphics",
+        "window",
+        "common"
+      ],
+      "task": "vsync-config",
+      "cases": {
+        "render-window": [
+          "scriptConfig.vsyncDefaultsEnabled",
+          "scriptConfig.vsyncExplicitTrue",
+          "scriptConfig.vsyncFalseUsesUnsynchronizedPresent",
+          "scriptConfig.vsyncAppliedBeforeEditorWindow",
+          "scriptConfig.vsyncRejectsNonBoolean"
+        ]
+      }
     }
   }
 }

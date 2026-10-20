@@ -29,6 +29,7 @@
 #include "graphics/Texture.h"
 #include "graphics/vulkan/ComputePass.h"
 #include "graphics/vulkan/FrameArena.h"
+#include "graphics/vulkan/FrameGraphJobs.h"
 #include "graphics/vulkan/GpuDriven.h"
 #include "vkbuilder.hpp"
 #include "vkbuilder/framegraph.hpp"
@@ -356,11 +357,11 @@ public:
     // ---- GPU frame timing (eve::service::IGpuTimer) ----------------------
     /** @brief Creates the GPU timestamp query pool; call after device init. */
     void initGpuTiming();
-    /** @brief Writes a begin timestamp into the current present command buffer. */
+    /** @brief Records a slot-owned prefix timestamp; submitted before deferred or present GPU work. */
     void writeGpuTimestampBegin();
     /** @brief Writes an end timestamp into the current present command buffer. */
     void writeGpuTimestampEnd();
-    /** @brief Reads the query results after the frame's submit has completed. */
+    /** @brief Reads a completed reusable slot without blocking; call after acquire and before recording. */
     void readGpuFrameTiming();
 
     /** @brief Gpu timing available. */
@@ -1976,6 +1977,12 @@ private:
     // keeps ownership so readback / entity-ID rendering / postFX wrappers keep
     // working unchanged.
     std::array<std::unique_ptr<vkb::FrameGraph>, kAsyncResourceCopies> deferredFrameGraphs_;
+    FrameGraphRecordingState                                           deferredRecordingState_;
+    // Only fully overwritten pipeline intermediates are frame-local. User canvases
+    // and temporal histories retain their persistent-image semantics.
+    std::array<std::vector<Canvas *>, 2> framePostTargets_;
+    Canvas                              &prepareFramePostTarget(FramePostTarget target, int width, int height) override;
+    void                                 releaseFramePostTargets();
     vkb::FrameGraph *currentDeferredFrameGraph();
     /** @brief True once this frame slot's deferred graph was recorded+submitted. */
     bool deferredGraphRecorded_ = false;
@@ -2075,7 +2082,10 @@ private:
     vkb::DepthStencilImage depthImage;
     vk::Format depthFormat = vk::Format::eD32Sfloat;
 
-    // GPU timestamp queries (one pool of 2: [0]=frame begin, [1]=frame end).
+    // One timestamp pair and prefix command buffer per reusable frame slot.
+    void                                                submitGpuTimingPrefix();
+    std::array<vk::CommandBuffer, kAsyncResourceCopies> gpuTimingPrefix_{};
+    std::array<bool, kAsyncResourceCopies>              gpuTimingPrefixSubmitted_{};
     vk::QueryPool gpuQueryPool_{};
     float         timestampPeriod_ = 1.f;
     bool          gpuTimingReady_  = false;

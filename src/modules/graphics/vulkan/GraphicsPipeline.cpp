@@ -1,3 +1,4 @@
+#include "common/Profile.h"
 // Vulkan backend implementation — swapchain and pipeline creation.
 //
 // Re-split from the merged dev single-TU Graphics.cpp (pure move;
@@ -214,21 +215,19 @@ void Graphics::createSwapchainAndPipeline() {
         vkb::RenderPassBuilder rpBuilder{device};
         renderpass =
             rpBuilder.addPresentAttachment(swapchain.image_format, vk::AttachmentLoadOp::eClear)
-                .addDepthAttachment(depthFormat, vk::AttachmentLoadOp::eClear,
-                                    vk::AttachmentStoreOp::eDontCare)
+                .addDepthAttachment(depthFormat, vk::AttachmentLoadOp::eClear, vk::AttachmentStoreOp::eDontCare)
                 .addSubpass(vkb::SubpassBuilder()
                                 .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
-                                .setDepthStencilAttachment(
-                                    1, vk::ImageLayout::eDepthStencilAttachmentOptimal))
-                .addDependency(VK_SUBPASS_EXTERNAL, 0,
-                               vk::PipelineStageFlagBits::eColorAttachmentOutput |
-                                   vk::PipelineStageFlagBits::eEarlyFragmentTests,
-                               vk::PipelineStageFlagBits::eColorAttachmentOutput |
-                                   vk::PipelineStageFlagBits::eEarlyFragmentTests,
-                               {},
-                               vk::AccessFlagBits::eColorAttachmentRead |
-                                   vk::AccessFlagBits::eColorAttachmentWrite |
-                                   vk::AccessFlagBits::eDepthStencilAttachmentWrite)
+                                .setDepthStencilAttachment(1, vk::ImageLayout::eDepthStencilAttachmentOptimal))
+                .addDependency(
+                    VK_SUBPASS_EXTERNAL, 0,
+                    vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests |
+                        vk::PipelineStageFlagBits::eLateFragmentTests,
+                    vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests,
+                    vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
+                    vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite |
+                        vk::AccessFlagBits::eDepthStencilAttachmentRead |
+                        vk::AccessFlagBits::eDepthStencilAttachmentWrite)
                 .build();
         presentAttachmentFormat_ = swapchain.image_format;
     }
@@ -697,6 +696,7 @@ void Graphics::destroyGBufferResources() {
 }
 
 void Graphics::destroySceneColorResources() {
+    releaseFramePostTargets();
     sceneColorPassOpen = false;
     sceneColorHistoryValid = false;
     if (device.instance) device->waitIdle();
@@ -1703,6 +1703,7 @@ void Graphics::queueSceneColorResolve() {
 }
 
 void Graphics::materializeSceneColorResolve() {
+    EV_PROFILE_MODULE("graphics", "Present.SceneResolve");
     Texture *src = pendingSceneResolveSource;
     pendingSceneResolveSource = nullptr;
     if (!src || !src->gpuHandle) return;

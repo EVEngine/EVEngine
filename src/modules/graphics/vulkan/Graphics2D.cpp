@@ -3,6 +3,7 @@
 // Re-split from the merged dev single-TU Graphics.cpp (pure move;
 // dev changes preserved). Shared helpers live in GraphicsInternal.h.
 
+#include "common/Profile.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/Light.h"
 #include "graphics/PrimitiveDrawList.h"
@@ -1287,6 +1288,7 @@ void Graphics::abortOpen3DFrame() {
             const bool captured = screenReadbackEnabled
                                       ? recordSwapchainReadback(presentRecording.commandBuffer())
                                       : false;
+            submitGpuTimingPrefix();
             presentRecording.end().submitAndPresent();
             presentRecording = {};
             if (captured) {
@@ -1308,6 +1310,7 @@ void Graphics::abortOpen3DFrame() {
 }
 
 void Graphics::flushToSwapchain() {
+    EV_PROFILE_MODULE("graphics", "Present.Flush");
     if (flushingSwapchain_) return;
     flushingSwapchain_ = true;
     bool completed = false;
@@ -1462,6 +1465,7 @@ void Graphics::flushToSwapchain() {
     const bool litAvailable = lit2dPipeline || (presentComposeActive_ && hdrOffscreenLitPipeline);
 
     auto drawTextured = [&](TexturedBatch &tb, bool toneMapScene = false) {
+        EV_PROFILE_MODULE("graphics", "Present.DrawTextured");
         if (tb.batch.empty() || !tb.texture || !tb.texture->gpuHandle) return;
         auto *gpu = static_cast<GpuTexture *>(tb.texture->gpuHandle);
         vk::DescriptorSet texSet = gpu->descriptorSet;
@@ -1681,9 +1685,12 @@ void Graphics::flushToSwapchain() {
         screenReadbackEnabled ? recordSwapchainReadback(presentRecording.commandBuffer()) : false;
     writeGpuTimestampEnd();
     recordFrameCapture(presentRecording.commandBuffer());
-    presentRecording.end().submitAndPresent();
+    {
+        EV_PROFILE_MODULE("graphics", "Frame.SubmitPresent");
+        submitGpuTimingPrefix();
+        presentRecording.end().submitAndPresent();
+    }
     markFrameCaptureSubmitted();
-    readGpuFrameTiming();
     presentRecording = {};
     if (captured) {
         hasPresentedFrame = true;
