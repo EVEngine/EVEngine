@@ -1,4 +1,5 @@
 #include "asset/graphics/EvpackGraphicsLoader.h"
+#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <new>
@@ -29,6 +30,16 @@ Result<LoadedGraphicsMesh> EvpackGraphicsLoader::loadMesh(const AssetRef&       
     auto staging = asset::decodeCanonicalMesh(
         bulk->bytes, {limits.maximumVertices, limits.maximumIndices, limits.maximumDecodedBytes});
     if (!staging) return Result<LoadedGraphicsMesh>::failure(staging.status());
+    std::array<float, 6> localBounds;
+    for (unsigned axis = 0; axis < 3; ++axis) {
+        localBounds[axis]     = std::numeric_limits<float>::max();
+        localBounds[axis + 3] = std::numeric_limits<float>::lowest();
+    }
+    for (std::size_t i = 0; i < staging.value().positions.size(); ++i) {
+        const auto axis       = i % 3;
+        localBounds[axis]     = std::min(localBounds[axis], staging.value().positions[i]);
+        localBounds[axis + 3] = std::max(localBounds[axis + 3], staging.value().positions[i]);
+    }
     if (staging.value().positions.size() / 3 > size_t(std::numeric_limits<int>::max()) ||
         staging.value().indices.size() > size_t(std::numeric_limits<int>::max()))
         return Result<LoadedGraphicsMesh>::failure(Diagnostic::error(
@@ -103,7 +114,7 @@ Result<LoadedGraphicsMesh> EvpackGraphicsLoader::loadMesh(const AssetRef&       
     for (const auto& [set, values] : staging.value().texcoords) available.push_back(set);
     return Result<LoadedGraphicsMesh>::success({asset, uploaded.value(), std::move(payload).takeValue().variant,
                                                 texcoordSet, std::move(available),
-                                                std::move(staging.value().attributes)});
+                                                std::move(staging.value().attributes), localBounds});
 }
 
 }  // namespace eve::asset_graphics

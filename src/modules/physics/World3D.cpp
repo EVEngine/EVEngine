@@ -8,6 +8,7 @@
 #if EVENGINE_HAS_JOLT
 #include "physics/jolt/JoltWorldFactory.h"
 #endif
+#include "physics/mechanics/Coupling3D.h"
 
 #include "common/Exception.h"
 #include "common/Profile.h"
@@ -39,22 +40,6 @@ bool pairContains(uint64_t key, int id) {
     return static_cast<uint32_t>(key) == value || static_cast<uint32_t>(key >> 32) == value;
 }
 
-eve::Result<eve::SimulationStep> makeLegacyStep(float dt, eve::SimulationTick currentTick) {
-    if (!std::isfinite(dt) || dt < 0.f) {
-        return eve::Result<eve::SimulationStep>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                   "World3D update dt must be finite and non-negative", "physics.world3d.update.dt"));
-    }
-    const auto nextTick = currentTick.incremented();
-    if (!nextTick) {
-        return eve::Result<eve::SimulationStep>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
-                                   "World3D simulation tick cannot be incremented", "physics.world3d.simulationTick"));
-    }
-    auto duration = eve::Duration::fromSeconds(static_cast<double>(std::min(dt, 0.05f)));
-    if (!duration) return eve::Result<eve::SimulationStep>::failure(duration.status());
-    return eve::Result<eve::SimulationStep>::success({*nextTick, std::move(duration).takeValue()});
-}
 
 struct WorldRegistry {
     std::mutex mutex;
@@ -250,37 +235,20 @@ float World3D::getProfileSensorsMs() const { return worldValue(rigidBackend_->ge
 
 World3D::~World3D() { destroy(); }
 
-void World3D::adoptPreparedTopology(World3D &prepared) {
-    worldValue(rigidBackend_->swapTopology(*prepared.rigidBackend_));
-    std::swap(nextId_, prepared.nextId_);
-    std::swap(nextShapeId_, prepared.nextShapeId_);
-    std::swap(nextJointId_, prepared.nextJointId_);
-    std::swap(bodies_, prepared.bodies_);
-    std::swap(shapes_, prepared.shapes_);
-    std::swap(joints_, prepared.joints_);
-    std::swap(shapeRecords_, prepared.shapeRecords_);
-    std::swap(shapeHandles_, prepared.shapeHandles_);
-    std::swap(shapeRawHandles_, prepared.shapeRawHandles_);
-    std::swap(jointHandles_, prepared.jointHandles_);
-    std::swap(simulationTick_, prepared.simulationTick_);
-    for (Body3D *body : bodies_) body->world_ = this;
-    for (Shape3D *shape : shapes_) shape->world_ = this;
-    for (Joint3D *joint : joints_) joint->world_ = this;
-    for (Body3D *body : prepared.bodies_) body->world_ = &prepared;
-    for (Shape3D *shape : prepared.shapes_) shape->world_ = &prepared;
-    for (Joint3D *joint : prepared.joints_) joint->world_ = &prepared;
-}
 
 bool World3D::isValid() const { return !destroyed_ && rigidBackend_ && rigidBackend_->isValid(); }
 
 void World3D::destroy() {
     if (destroyed_) return;
+    cancelForceStep();
     {
         auto& registry = worldRegistry();
     std::scoped_lock registryLock(registry.mutex);
         auto found = registry.worlds.find(runtimeHandle_.index());
         if (found != registry.worlds.end() && found->second == this) registry.worlds.erase(found);
     }
+    invalidateCouplings3D();
+    restoredCouplings3D_.clear();
     destroyed_ = true;
     // Invalidate borrowed query registrations without touching any global
     // registry. This keeps teardown safe for every static destruction order.
@@ -297,6 +265,7 @@ void World3D::destroy() {
         if (joint) joint->invalidate();
     }
     joints_.clear();
+    restoredJoints_.clear();
     disabledBodyPairs_.clear();
     disabledShapePairs_.clear();
 
@@ -311,6 +280,8 @@ void World3D::destroy() {
         if (s) s->invalidate();
     }
     shapes_.clear();
+    restoredShapes_.clear();
+    restoredBodies_.clear();
 
     simulation_.reset();
     if (rigidBackend_) rigidBackend_->destroy();
@@ -333,6 +304,7 @@ World3D* World3D::findWorld(PhysicsWorldHandle handle) noexcept {
 
 void World3D::forgetJoint(Joint3D *joint) {
     if (!joint) return;
+    releaseCouplingsForJoint(joint->runtimeHandle());
     joints_.erase(joint);
     if (joint->runtimeHandle().isValid()) jointHandles_.erase(joint->runtimeHandle());
     for (auto it = jointHandles_.begin(); it != jointHandles_.end();) {
@@ -342,55 +314,6 @@ void World3D::forgetJoint(Joint3D *joint) {
             ++it;
     }
 }
-
-void World3D::update(float dt) { updateFull(dt, 4); }
-
-void World3D::updateFull(float dt, int subStepCount) {
-    EV_PROFILE_MODULE("physics", "World3D::update");
-    auto legacyStep = makeLegacyStep(dt, simulationTick_);
-    if (!legacyStep) {
-        legacyStep.ignore("legacy World3D::updateFull cannot return a structured error");
-        return;
-    }
-    auto result = step(std::move(legacyStep).takeValue(), SimulationSettings{8, 3, subStepCount});
-    result.ignore("legacy World3D::updateFull cannot return a structured result");
-}
-
-eve::Result<void> World3D::step(const eve::SimulationStep &stepValue, const SimulationSettings &settings) {
-    if (!isValid() || !simulation_) {
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::PreconditionViolation, "Cannot step a destroyed or uninitialized 3D physics world",
-            "physics.world3d.step"));
-    }
-    auto valid = detail::validateSimulationStep(stepValue, settings, simulation_->observation());
-    if (!valid) return valid;
-    for (Mechanism3D *mechanism : mechanisms_) {
-        if (mechanism) mechanism->syncBeforeStep();
-    }
-    for (Shape3D *shape : shapes_) {
-        if (shape && shape->isOneWay()) shape->refreshOneWayWorldData();
-    }
-    auto result = simulation_->step(stepValue, settings);
-    if (!result) return result;
-    simulationTick_ = stepValue.tick;
-    clearContactEvents();
-    emitContactEvents();
-    return result;
-}
-
-SimulationObservation World3D::simulationObservation() const noexcept {
-    return simulation_ ? simulation_->observation() : SimulationObservation{};
-}
-
-SimulationBackendKind World3D::backendKind() const noexcept {
-    return simulation_ ? simulation_->kind() : SimulationBackendKind::Cpu;
-}
-
-SimulationDeterminism World3D::backendDeterminism() const noexcept {
-    return simulation_ ? simulation_->determinism() : SimulationDeterminism::ToleranceBounded;
-}
-
-eve::Status World3D::backendSelectionStatus() const { return backendSelectionStatus_; }
 
 void World3D::setGravity(float gx, float gy, float gz) { worldValue(rigidBackend_->setGravity(gx, gy, gz)); }
 
@@ -577,6 +500,7 @@ void World3D::destroyBody(Body3D *body) {
 }
 
 void World3D::forgetBody(Body3D *body) {
+    if (body) releaseCouplingsForBody(body->runtimeHandle());
     if (body) removeCollisionOverridesForBody(body->getId());
     bodies_.erase(body);
 }

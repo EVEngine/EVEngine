@@ -69,6 +69,10 @@ EditorValue nodeValue(const archspace::Node& node) {
         {"width", node.width},
         {"openingHeight", node.openingHeight},
         {"sill", node.sill},
+        {"regionAId", node.regionAId},
+        {"regionBId", node.regionBId},
+        {"passageMask", static_cast<std::int64_t>(node.passageMask)},
+        {"portalPosition", vec3Value(node.portalPosition)},
     };
 }
 
@@ -155,6 +159,31 @@ Result<archspace::Node> parseNode(const EditorValue& value) {
     readNumber(field(value, "width"), node.width);
     readNumber(field(value, "openingHeight"), node.openingHeight);
     readNumber(field(value, "sill"), node.sill);
+    if (const auto* regionA = field(value, "regionAId")) {
+        const auto* text = regionA->getIf<std::string>();
+        if (!text)
+            return eve::editing::failed<archspace::Node>(EditorStatus::Rejected, RuleId("editor.archspace.portal"),
+                                                         "ArchSpace regionAId must be a string");
+        node.regionAId = *text;
+    }
+    if (const auto* regionB = field(value, "regionBId")) {
+        const auto* text = regionB->getIf<std::string>();
+        if (!text)
+            return eve::editing::failed<archspace::Node>(EditorStatus::Rejected, RuleId("editor.archspace.portal"),
+                                                         "ArchSpace regionBId must be a string");
+        node.regionBId = *text;
+    }
+    if (const auto* mask = field(value, "passageMask")) {
+        double value = 0.0;
+        if (!readNumber(mask, value) || value < 0.0 || value > 255.0)
+            return eve::editing::failed<archspace::Node>(EditorStatus::Rejected, RuleId("editor.archspace.portal"),
+                                                         "ArchSpace passageMask is invalid");
+        node.passageMask = static_cast<archspace::PassageMask>(value);
+    }
+    if (const auto* portalPosition = field(value, "portalPosition");
+        portalPosition && !parseVec3(*portalPosition, node.portalPosition))
+        return eve::editing::failed<archspace::Node>(EditorStatus::Rejected, RuleId("editor.archspace.portal"),
+                                                     "ArchSpace portalPosition is invalid");
     return eve::editing::applied<archspace::Node>(std::move(node));
 }
 
@@ -275,7 +304,9 @@ EditorValue ArchSpaceDocumentTarget::contentValue() const {
         (void)id;
         nodes.push_back(nodeValue(node));
     }
-    return EditorValue::Object{{"rootId", document_.rootId()}, {"nodes", std::move(nodes)}};
+    return EditorValue::Object{{"rootId", document_.rootId()},
+                               {"topology", std::string(archspace::topologyKindName(document_.topology()))},
+                               {"nodes", std::move(nodes)}};
 }
 
 Result<DomainOperation> ArchSpaceDocumentTarget::replacement(EditorValue content, std::string property) const {
@@ -304,6 +335,18 @@ Result<void> ArchSpaceDocumentTarget::installContent(const EditorValue& content)
                                           "ArchSpace document exceeds 100000 nodes");
 
     archspace::Document candidate;
+    if (const auto* topologyValue = field(content, "topology")) {
+        const auto* text = topologyValue->getIf<std::string>();
+        if (!text)
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.archspace.topology"),
+                                              "ArchSpace topology must be a string");
+        auto parsedTopology = archspace::parseTopologyKind(*text);
+        if (!parsedTopology.ok())
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.archspace.topology"),
+                                              "ArchSpace topology is unknown");
+        auto applied = candidate.setTopology(parsedTopology.value());
+        if (!applied.ok()) return applied;
+    }
     if (rootId->empty() && nodes->empty()) {
         document_ = std::move(candidate);
         return eve::editing::applied<void>();
@@ -625,6 +668,15 @@ Result<EditorGizmoSnapshot> ArchSpaceDocumentTarget::gizmo() const {
             primitive.radius   = 0.12;
             primitive.color    = {0.2, 1.0, 0.4, 0.9};
             primitive.text     = archspace::openingKindName(node.openingKind);
+            snapshot.primitives.push_back(std::move(primitive));
+        } else if (node.kind == archspace::NodeKind::Portal) {
+            EditorGizmoPrimitive primitive;
+            primitive.id       = node.id;
+            primitive.kind     = "point";
+            primitive.position = {node.portalPosition.x, node.portalPosition.y, node.portalPosition.z};
+            primitive.radius   = 0.14;
+            primitive.color    = {1.0, 0.4, 0.1, 0.9};
+            primitive.text     = "portal";
             snapshot.primitives.push_back(std::move(primitive));
         }
     }
