@@ -6398,13 +6398,20 @@
           "avatar.vrm.parseVersionAndHumanoid",
           "avatar.vrm.rejectTruncatedAndUnknownVersion",
           "avatar.vrm.rejectInvalidNodeReference",
-          "avatar.vrm.failedLoadPreservesPath"
+          "avatar.vrm.failedLoadPreservesPath",
+          "avatar.appearance.signedChannelsAndCorrective",
+          "avatar.appearance.atomicWardrobeAndHistory",
+          "avatar.appearance.rejectInvalidStateAndDefinition",
+          "avatar.appearance.snapshotRoundTripAndProfileIsolation",
+          "avatar.appearance.morphProjectionValidatesBeforeWriting",
+          "avatar.appearance.morphNormalsBlendAndRejectAtomically"
         ]
       },
       "module": "avatar",
       "origins": [
         "avatar.cpp",
-        "avatar_vrm.cpp"
+        "avatar_vrm.cpp",
+        "avatar_appearance.cpp"
       ]
     },
     "unit/building/building.cpp": {
@@ -11945,6 +11952,20 @@
         ]
       },
       "module": "procgen"
+    },
+    "integration/avatar-appearance/avatar_appearance_script.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "avatar.appearance.scriptBoundaryUsesCheckedResults"
+        ]
+      },
+      "module": "avatar",
+      "origins": [
+        "avatar_appearance.cpp"
+      ],
+      "task": "avatar-appearance"
     }
   }
 }
