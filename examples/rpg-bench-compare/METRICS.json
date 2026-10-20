@@ -1,0 +1,22 @@
+{
+  "engine": "evengine",
+  "started_at_utc": "2026-10-20T05:36:57Z",
+  "finished_at_utc": "2026-10-20T05:39:28Z",
+  "wall_seconds": 151,
+  "agent_self_reported_turns": 3,
+  "agent_self_reported_tool_calls": 48,
+  "approx_output_chars": 31020,
+  "loc_code": 651,
+  "loc_data": 95,
+  "checklist": {
+    "character": true,
+    "combat": true,
+    "inventory": true,
+    "dialogue": true,
+    "map_edit": true,
+    "scene_edit": true,
+    "runs": true
+  },
+  "blockers": [],
+  "run_command": "MIN_RUN_SECONDS=2 bash scripts/smoke_examples.sh rpg-bench-compare"
+}
