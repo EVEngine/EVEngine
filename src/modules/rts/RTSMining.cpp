@@ -1,11 +1,13 @@
 #include <algorithm>
 #include <cmath>
+#include "common/Profile.h"
 #include "rts/RTSSystemMovementInternal.h"
 namespace eve::rts {
 using systems_internal::distanceSquared;
 using systems_internal::isSameHandle;
 using systems_internal::readCurrent;
 Result<std::size_t> WorkerAssignmentSystem::step() {
+    EV_PROFILE_MODULE("rts", "WorkerAssignmentSystem::step");
     struct Candidate {
         ResourceNode* node     = nullptr;
         float         distance = 0.0f;
@@ -68,6 +70,7 @@ Result<std::size_t> WorkerAssignmentSystem::step() {
 }
 
 Result<std::size_t> MiningSystem::step(const SimulationStep& step, const ResourceCredit& credit) {
+    EV_PROFILE_MODULE("rts", "MiningSystem::step");
     if (step.delta.nanoseconds() < 0 || !credit)
         return Result<std::size_t>::failure(
             Diagnostic::error(DiagnosticCode::InvalidArgument,

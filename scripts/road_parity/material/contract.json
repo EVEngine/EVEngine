@@ -1,0 +1,35 @@
+{
+  "schema": "eve.tests.road-material-contract",
+  "version": 1,
+  "mapping": "mirrored-world-triplanar",
+  "periodMeters": 8.0,
+  "textureInterior": [
+    0.05,
+    0.95
+  ],
+  "roughness": 0.88,
+  "metallic": 0.0,
+  "normalStrength": 0.12,
+  "lightDirection": [
+    -0.4,
+    1.0,
+    0.7
+  ],
+  "lightRadiance": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "ambient": 0.08,
+  "exposureEV": 0.0,
+  "toneMapping": "none",
+  "backgroundDisplaySRGB": 0.3,
+  "shadows": false,
+  "rawTextureUNORM": true,
+  "sampleLod": 0,
+  "width": 1280,
+  "height": 720,
+  "scope": "Shared explicit forward road material; not default deferred/Standard shader parity. Preserve raw author mesh UVs; material uses world mapping. Surface-only 35 scene set, no marking/facility parity claim.",
+  "cull": "back",
+  "depthWrite": true
+}

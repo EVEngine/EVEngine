@@ -1,0 +1,201 @@
+{
+  "ready": {
+    "bestLap": 0.0,
+    "checkpoint": 1,
+    "heading": 0.0,
+    "lap": 0,
+    "lastLap": 0.0,
+    "offTrack": false,
+    "ready": true,
+    "speed": 0.0,
+    "tick": 4795,
+    "time": 0.5500001311302185,
+    "x": 0.0,
+    "z": -48.0
+  },
+  "accelerate": {
+    "bestLap": 0.0,
+    "checkpoint": 1,
+    "heading": 0.0,
+    "lap": 0,
+    "lastLap": 0.0,
+    "offTrack": false,
+    "ready": true,
+    "speed": 19.733325958251953,
+    "tick": 4869,
+    "time": 1.783332347869873,
+    "x": 12.00444507598877,
+    "z": -48.0
+  },
+  "brake": {
+    "bestLap": 0.0,
+    "checkpoint": 1,
+    "heading": 0.0,
+    "lap": 0,
+    "lastLap": 0.0,
+    "offTrack": false,
+    "ready": true,
+    "speed": 0.0,
+    "tick": 4964,
+    "time": 3.366664171218872,
+    "x": 24.337779998779297,
+    "z": -48.0
+  },
+  "steer": {
+    "bestLap": 0.0,
+    "checkpoint": 1,
+    "heading": 25.479997634887695,
+    "lap": 0,
+    "lastLap": 0.0,
+    "offTrack": false,
+    "ready": true,
+    "speed": 13.066664695739746,
+    "tick": 5013,
+    "time": 4.183332443237305,
+    "x": 29.341415405273438,
+    "z": -46.6010856628418
+  },
+  "recover": {
+    "bestLap": 0.0,
+    "checkpoint": 1,
+    "heading": 0.0,
+    "lap": 0,
+    "lastLap": 0.0,
+    "offTrack": false,
+    "ready": true,
+    "speed": 0.0,
+    "tick": 5039,
+    "time": 4.616671562194824,
+    "x": -2.098146524076583e-06,
+    "z": -48.0
+  },
+  "collision": {
+    "bestLap": 0.0,
+    "checkpoint": 1,
+    "heading": 0.0,
+    "lap": 0,
+    "lastLap": 0.0,
+    "offTrack": true,
+    "ready": true,
+    "speed": 13.066665649414062,
+    "tick": 5316,
+    "time": 9.23336410522461,
+    "x": 51.05495834350586,
+    "z": -26.954570770263672
+  },
+  "lap": {
+    "bestLap": 20.599857330322266,
+    "checkpoint": 1,
+    "heading": 357.2554016113281,
+    "lap": 1,
+    "lastLap": 20.599857330322266,
+    "offTrack": false,
+    "ready": true,
+    "speed": 15.039999961853027,
+    "tick": 6745,
+    "time": 20.81652069091797,
+    "x": -2.4776251316070557,
+    "z": -49.066123962402344
+  },
+  "evidenceSession": {
+    "active": false,
+    "criteria": [
+      {
+        "description": "Vehicle accelerates, steers and brakes",
+        "id": "drive",
+        "passed": true,
+        "required": true
+      },
+      {
+        "description": "Outer guardrail blocks a straight drive",
+        "id": "collision",
+        "passed": true,
+        "required": true
+      },
+      {
+        "description": "Recovery synchronizes physics and rendered state",
+        "id": "recovery",
+        "passed": true,
+        "required": true
+      },
+      {
+        "description": "Normal inputs complete all checkpoints and record a lap",
+        "id": "lap",
+        "passed": true,
+        "required": true
+      },
+      {
+        "description": "Engine-owned frame capture shows the actual scene",
+        "id": "visual",
+        "passed": true,
+        "required": true
+      }
+    ],
+    "evidence": [
+      {
+        "artifact": "captures/chase.png",
+        "criterionId": "visual",
+        "kind": "screenshot",
+        "sequence": 1,
+        "status": "pass",
+        "summary": "play capture"
+      },
+      {
+        "artifact": "captures/overview.png",
+        "criterionId": "visual",
+        "kind": "screenshot",
+        "sequence": 2,
+        "status": "pass",
+        "summary": "play capture"
+      },
+      {
+        "artifact": "captures/runtime-validation.json",
+        "criterionId": "drive",
+        "kind": "runtime-observation",
+        "sequence": 3,
+        "status": "pass",
+        "summary": "drive: verified through declared driving actions and race telemetry"
+      },
+      {
+        "artifact": "captures/runtime-validation.json",
+        "criterionId": "collision",
+        "kind": "runtime-observation",
+        "sequence": 4,
+        "status": "pass",
+        "summary": "collision: verified through declared driving actions and race telemetry"
+      },
+      {
+        "artifact": "captures/runtime-validation.json",
+        "criterionId": "recovery",
+        "kind": "runtime-observation",
+        "sequence": 5,
+        "status": "pass",
+        "summary": "recovery: verified through declared driving actions and race telemetry"
+      },
+      {
+        "artifact": "captures/runtime-validation.json",
+        "criterionId": "lap",
+        "kind": "runtime-observation",
+        "sequence": 6,
+        "status": "pass",
+        "summary": "lap: verified through declared driving actions and race telemetry"
+      },
+      {
+        "artifact": "captures/chase.png",
+        "criterionId": "visual",
+        "kind": "screenshot",
+        "sequence": 7,
+        "status": "pass",
+        "summary": "visual: verified through declared driving actions and race telemetry"
+      }
+    ],
+    "objective": "Verify NEON R driving, road collision, recovery, lap and rendered scene",
+    "phase": "complete",
+    "readyToComplete": true,
+    "schema": "eve.agent-development-session",
+    "schemaVersion": 1,
+    "sessionId": "agent.dev.1",
+    "status": "applied",
+    "summary": "NEON R road and Vehicle integration verified in actual engine frames"
+  }
+}

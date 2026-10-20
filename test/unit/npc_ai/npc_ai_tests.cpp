@@ -1,0 +1,581 @@
+#include "zeroerr/assert.h"
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_npc_ai)
+#include "PrivateTestScope.h"
+#include <map>
+#include "npc_ai/NpcAi.h"
+#include "npc_ai/SensingPerception.h"
+#include "sensing/Sensing.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+// npc_ai.cpp
+namespace test_npc_ai {
+using namespace eve::npc_ai;
+
+namespace {
+class CountingTask final : public ITaskService {
+public:
+    eve::Result<void> start(const TaskContext&, const TaskSpec& spec, std::string&) override {
+        ++starts;
+        ++startsById[spec.id];
+        return eve::Result<void>::success();
+    }
+    eve::Result<TaskStatus> tick(const TaskContext&, const TaskSpec& spec, std::string&) override {
+        ++ticks;
+        return eve::Result<TaskStatus>::success(TaskStatus::Running);
+    }
+    void stop(const TaskContext& context, const TaskSpec& spec, StopReason, std::string_view) noexcept override {
+        ++stops;
+        ++stopsById[spec.id];
+        stopStates.push_back(std::string(context.stateId));
+    }
+    int                        starts = 0;
+    int                        ticks  = 0;
+    int                        stops  = 0;
+    std::map<std::string, int> startsById;
+    std::map<std::string, int> stopsById;
+    std::vector<std::string>   stopStates;
+};
+
+class FailingStartTask final : public ITaskService {
+public:
+    eve::Result<void> start(const TaskContext&, const TaskSpec&, std::string&) override {
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::CallbackFailure,
+                                                                 "injected task start failure", {}, {}, "npc_ai.test"));
+    }
+    eve::Result<TaskStatus> tick(const TaskContext&, const TaskSpec&, std::string&) override {
+        return eve::Result<TaskStatus>::success(TaskStatus::Running);
+    }
+    void stop(const TaskContext&, const TaskSpec&, StopReason, std::string_view) noexcept override {}
+};
+
+BehaviorDefinition patrolBehavior() {
+    BehaviorDefinition result{"guard", 1, "idle", {}};
+    StateDefinition    idle;
+    idle.id = "idle";
+    idle.tasks.push_back({"wait", "count"});
+    idle.transitions.push_back({"alert", "enemy_seen", {}, 10});
+    StateDefinition alert;
+    alert.id = "alert";
+    alert.enterConditions.push_back({"enemy", CompareOp::Exists, std::nullopt});
+    result.states = {idle, alert};
+    return result;
+}
+}  // namespace
+
+TEST_CASE("npc_ai.definitionValidationIsTransactional") {
+    NpcAiWorld world;
+    auto       invalid   = patrolBehavior();
+    invalid.states[1].id = "idle";
+    auto rejected        = world.registerBehavior(std::move(invalid));
+    CHECK(!rejected.ok());
+    auto missing = world.createAgent("guard");
+    CHECK(!missing.ok());
+    auto accepted = world.registerBehavior(patrolBehavior());
+    REQUIRE(accepted.ok());
+}
+
+TEST_CASE("npc_ai.signalTransitionAndTaskLifecycle") {
+    NpcAiWorld world;
+    auto       task     = std::make_unique<CountingTask>();
+    auto*      observed = task.get();
+    REQUIRE(world.registerTaskService("count", std::move(task)).ok());
+    REQUIRE(world.registerBehavior(patrolBehavior()).ok());
+    auto created = world.createAgent("guard");
+    REQUIRE(created.ok());
+    const auto agent = created.value();
+    REQUIRE(world.setBlackboard(agent, "enemy", std::string("player")).ok());
+    auto first = world.tick({1, 1.0 / 60.0, 1, 8});
+    REQUIRE(first.ok());
+    CHECK_EQ(observed->starts, 1);
+    CHECK_EQ(observed->ticks, 1);
+    REQUIRE(world.signal(agent, "enemy_seen").ok());
+    auto second = world.tick({2, 1.0 / 60.0, 1, 8});
+    REQUIRE(second.ok());
+    auto snapshot = world.snapshot(agent);
+    REQUIRE(snapshot.ok());
+    CHECK_EQ(snapshot.value().activeState, std::string("alert"));
+    CHECK_EQ(observed->stops, 1);
+    REQUIRE(world.destroyAgent(agent).ok());
+    auto stale = world.snapshot(agent);
+    CHECK(!stale.ok());
+}
+
+TEST_CASE("npc_ai.schedulerHonorsAgentBudget") {
+    NpcAiWorld         world;
+    BehaviorDefinition behavior;
+    behavior.id           = "idle";
+    behavior.initialState = "root";
+    behavior.states.push_back({"root"});
+    REQUIRE(world.registerBehavior(std::move(behavior)).ok());
+    REQUIRE(world.createAgent("idle").ok());
+    REQUIRE(world.createAgent("idle").ok());
+    auto report = world.tick({7, 0.1, 1, 2});
+    REQUIRE(report.ok());
+    CHECK_EQ(report.value().agentsUpdated, 1u);
+    CHECK_EQ(report.value().agentsDeferred, 1u);
+}
+
+TEST_CASE("npc_ai.hierarchicalPathKeepsParentTaskAcrossSiblingTransition") {
+    NpcAiWorld world;
+    auto       task     = std::make_unique<CountingTask>();
+    auto*      observed = task.get();
+    REQUIRE(world.registerTaskService("count", std::move(task)).ok());
+
+    BehaviorDefinition behavior;
+    behavior.id           = "hierarchy";
+    behavior.initialState = "patrol";
+    StateDefinition root;
+    root.id = "root";
+    root.tasks.push_back({"awareness", "count"});
+    StateDefinition patrol;
+    patrol.id     = "patrol";
+    patrol.parent = "root";
+    patrol.tasks.push_back({"move", "count"});
+    patrol.transitions.push_back({"combat", "enemy_seen", {}, 1});
+    StateDefinition combat;
+    combat.id     = "combat";
+    combat.parent = "root";
+    combat.tasks.push_back({"aim", "count"});
+    behavior.states = {root, patrol, combat};
+    REQUIRE(world.registerBehavior(std::move(behavior)).ok());
+    auto created = world.createAgent("hierarchy");
+    REQUIRE(created.ok());
+
+    REQUIRE(world.tick({1, 0.016, 1, 4}).ok());
+    REQUIRE(world.signal(created.value(), "enemy_seen").ok());
+    REQUIRE(world.tick({2, 0.016, 1, 4}).ok());
+    auto snapshot = world.snapshot(created.value());
+    REQUIRE(snapshot.ok());
+    CHECK_EQ(snapshot.value().activePath.size(), 2u);
+    CHECK_EQ(snapshot.value().activePath[0], std::string("root"));
+    CHECK_EQ(snapshot.value().activePath[1], std::string("combat"));
+    CHECK_EQ(observed->startsById["awareness"], 1);
+    CHECK_EQ(observed->stopsById["awareness"], 0);
+    CHECK_EQ(observed->stopsById["move"], 1);
+    CHECK_EQ(observed->startsById["aim"], 1);
+}
+
+TEST_CASE("npc_ai.failedEnterConditionDoesNotPartiallyTransition") {
+    NpcAiWorld world;
+    auto       task     = std::make_unique<CountingTask>();
+    auto*      observed = task.get();
+    REQUIRE(world.registerTaskService("count", std::move(task)).ok());
+    REQUIRE(world.registerBehavior(patrolBehavior()).ok());
+    auto created = world.createAgent("guard");
+    REQUIRE(created.ok());
+    REQUIRE(world.tick({1, 0.016, 1, 4}).ok());
+    REQUIRE(world.signal(created.value(), "enemy_seen").ok());
+    REQUIRE(world.tick({2, 0.016, 1, 4}).ok());
+    auto snapshot = world.snapshot(created.value());
+    REQUIRE(snapshot.ok());
+    CHECK_EQ(snapshot.value().activeState, std::string("idle"));
+    CHECK_EQ(observed->stops, 0);
+}
+
+TEST_CASE("npc_ai.typedBlackboardAndPerceptionMemoryAreBounded") {
+    NpcAiWorld         world({32, 2});
+    BehaviorDefinition behavior;
+    behavior.id           = "perception";
+    behavior.initialState = "idle";
+    behavior.blackboardSchema.push_back({"alert", BlackboardType::Boolean, true, false});
+    behavior.states.push_back({"idle"});
+    REQUIRE(world.registerBehavior(std::move(behavior)).ok());
+    auto created = world.createAgent("perception");
+    REQUIRE(created.ok());
+    auto badType = world.setBlackboard(created.value(), "alert", std::string("yes"));
+    CHECK(!badType.ok());
+    REQUIRE(world.remember(created.value(), {"enemy-a", "sight", 0.8, 1, 10, "{}"}).ok());
+    REQUIRE(world.remember(created.value(), {"enemy-b", "hearing", 0.5, 2, 2, "{}"}).ok());
+    REQUIRE(world.remember(created.value(), {"enemy-c", "damage", 1.0, 3, 20, "{}"}).ok());
+    auto bounded = world.snapshot(created.value());
+    REQUIRE(bounded.ok());
+    CHECK_EQ(bounded.value().perception.size(), 2u);
+    REQUIRE(world.tick({4, 0.016, 1, 4}).ok());
+    auto expired = world.snapshot(created.value());
+    REQUIRE(expired.ok());
+    CHECK_EQ(expired.value().perception.size(), 1u);
+    auto trace = world.trace(created.value());
+    REQUIRE(trace.ok());
+    CHECK(trace.value().size() >= 5u);
+}
+
+TEST_CASE("npc_ai.taskAdmissionPreflightsAndRollsBackFailedStarts") {
+    BehaviorDefinition behavior;
+    behavior.id           = "admission";
+    behavior.initialState = "root";
+    StateDefinition root;
+    root.id         = "root";
+    root.tasks      = {{"first", "count"}, {"second", "fail"}};
+    behavior.states = {root};
+
+    NpcAiWorld missingProviderWorld;
+    auto       missingCounter  = std::make_unique<CountingTask>();
+    auto*      missingObserved = missingCounter.get();
+    REQUIRE(missingProviderWorld.registerTaskService("count", std::move(missingCounter)).ok());
+    REQUIRE(missingProviderWorld.registerBehavior(behavior).ok());
+    auto missingAgent = missingProviderWorld.createAgent("admission");
+    REQUIRE(missingAgent.ok());
+    auto missingTick = missingProviderWorld.tick({1, 0.016, 1, 4});
+    CHECK(!missingTick.ok());
+    CHECK_EQ(missingObserved->starts, 0);
+
+    NpcAiWorld rollbackWorld;
+    auto       rollbackCounter  = std::make_unique<CountingTask>();
+    auto*      rollbackObserved = rollbackCounter.get();
+    REQUIRE(rollbackWorld.registerTaskService("count", std::move(rollbackCounter)).ok());
+    REQUIRE(rollbackWorld.registerTaskService("fail", std::make_unique<FailingStartTask>()).ok());
+    REQUIRE(rollbackWorld.registerBehavior(std::move(behavior)).ok());
+    auto rollbackAgent = rollbackWorld.createAgent("admission");
+    REQUIRE(rollbackAgent.ok());
+    auto rollbackTick = rollbackWorld.tick({1, 0.016, 1, 4});
+    CHECK(!rollbackTick.ok());
+    CHECK_EQ(rollbackObserved->starts, 1);
+    CHECK_EQ(rollbackObserved->stops, 1);
+}
+
+TEST_CASE("npc_ai.archiveRestoreIsVersionedAtomicAndRestartsProviders") {
+    NpcAiWorld world;
+    auto       task     = std::make_unique<CountingTask>();
+    auto*      observed = task.get();
+    REQUIRE(world.registerTaskService("count", std::move(task)).ok());
+    REQUIRE(world.registerBehavior(patrolBehavior()).ok());
+    auto created = world.createAgent("guard");
+    REQUIRE(created.ok());
+    REQUIRE(world.setBlackboard(created.value(), "enemy", std::string("player")).ok());
+    REQUIRE(world.tick({11, 0.016, 1, 4}).ok());
+    CHECK_EQ(observed->starts, 1);
+
+    auto saved = world.archive(created.value());
+    REQUIRE(saved.ok());
+    auto incompatible          = saved.value();
+    incompatible.schemaVersion = 99;
+    auto rejected              = world.restoreAgent(incompatible);
+    CHECK(!rejected.ok());
+    CHECK(!world.isStale(created.value()));
+
+    auto restored = world.restoreAgent(saved.value());
+    REQUIRE(restored.ok());
+    CHECK_NE(restored.value(), created.value());
+    auto restoredSnapshot = world.snapshot(restored.value());
+    REQUIRE(restoredSnapshot.ok());
+    CHECK_EQ(restoredSnapshot.value().lastTick, 11u);
+    CHECK_EQ(restoredSnapshot.value().blackboard.at("enemy"), BlackboardValue(std::string("player")));
+    REQUIRE(world.tick({12, 0.016, 2, 4}).ok());
+    CHECK_EQ(observed->starts, 2);
+}
+
+TEST_CASE("npc_ai.largePopulationMakesBoundedRoundRobinProgress") {
+    constexpr std::uint32_t Population = 2048;
+    constexpr std::uint32_t Budget     = 128;
+    NpcAiWorld              world({64, 0});
+    BehaviorDefinition      behavior;
+    behavior.id           = "crowd";
+    behavior.initialState = "idle";
+    behavior.states.push_back({"idle"});
+    REQUIRE(world.registerBehavior(std::move(behavior)).ok());
+    std::vector<AgentHandle> agents;
+    agents.reserve(Population);
+    for (std::uint32_t index = 0; index < Population; ++index) {
+        auto created = world.createAgent("crowd");
+        REQUIRE(created.ok());
+        agents.push_back(created.value());
+    }
+    for (std::uint32_t batch = 0; batch < Population / Budget; ++batch) {
+        auto report = world.tick({batch + 1, 1.0 / 30.0, Budget, 2});
+        REQUIRE(report.ok());
+        CHECK_EQ(report.value().agentsUpdated, Budget);
+        CHECK_EQ(report.value().agentsDeferred, Population - Budget);
+    }
+    for (const auto agent : agents) {
+        auto state = world.snapshot(agent);
+        REQUIRE(state.ok());
+        CHECK(state.value().lastTick > 0);
+    }
+}
+
+TEST_CASE("npc_ai.transitionPriorityAppliesAcrossTheActiveHierarchy") {
+    NpcAiWorld         world;
+    BehaviorDefinition behavior;
+    behavior.id           = "priority";
+    behavior.initialState = "leaf";
+    StateDefinition root;
+    root.id = "root";
+    root.transitions.push_back({"high", "choose", {}, 10});
+    StateDefinition leaf;
+    leaf.id     = "leaf";
+    leaf.parent = "root";
+    leaf.transitions.push_back({"low", "choose", {}, 1});
+    behavior.states = {root, leaf, {"low"}, {"high"}};
+    REQUIRE(world.registerBehavior(std::move(behavior)).ok());
+    auto agent = world.createAgent("priority");
+    REQUIRE(agent.ok());
+    REQUIRE(world.signal(agent.value(), "choose").ok());
+    REQUIRE(world.tick({1, 0.016, 1, 4}).ok());
+    auto state = world.snapshot(agent.value());
+    REQUIRE(state.ok());
+    CHECK_EQ(state.value().activeState, std::string("high"));
+}
+
+TEST_CASE("npc_ai.startupRollbackUsesEachTaskStateContext") {
+    NpcAiWorld world;
+    auto       task     = std::make_unique<CountingTask>();
+    auto*      observed = task.get();
+    REQUIRE(world.registerTaskService("count", std::move(task)).ok());
+    REQUIRE(world.registerTaskService("fail", std::make_unique<FailingStartTask>()).ok());
+    BehaviorDefinition behavior;
+    behavior.id           = "rollback-context";
+    behavior.initialState = "leaf";
+    StateDefinition root;
+    root.id = "root";
+    root.tasks.push_back({"parent-task", "count"});
+    StateDefinition leaf;
+    leaf.id     = "leaf";
+    leaf.parent = "root";
+    leaf.tasks.push_back({"leaf-task", "fail"});
+    behavior.states = {root, leaf};
+    REQUIRE(world.registerBehavior(std::move(behavior)).ok());
+    auto agent = world.createAgent("rollback-context");
+    REQUIRE(agent.ok());
+    auto ticked = world.tick({1, 0.016, 1, 4});
+    CHECK(!ticked.ok());
+    REQUIRE_EQ(observed->stopStates.size(), 1u);
+    CHECK_EQ(observed->stopStates.front(), std::string("root"));
+}
+
+TEST_CASE("npc_ai.sensingPerceptionFactsProjectIntoMemory") {
+    eve::sensing::SensingWorld sensing;
+    REQUIRE(sensing.upsert("00000000-0000-7000-8000-000000000031", 1.f, 0.f, "red", "unit", "").ok());
+    REQUIRE(sensing.upsert("00000000-0000-7000-8000-000000000032", 4.f, 0.f, "red", "unit", "").ok());
+    eve::sensing::QuerySpec spec;
+    spec.requiredTags = {"unit"};
+    spec.maxRange     = 10.f;
+    spec.maxCount     = 8;
+    spec.countPolicy  = eve::sensing::CountPolicy::TruncateToMax;
+    spec.sortKey      = eve::sensing::SortKey::DistanceAscending;
+    auto ranked       = sensing.query(eve::sensing::QueryOrigin{0.f, 0.f, std::nullopt}, spec);
+    REQUIRE(ranked.ok());
+    const auto facts = eve::sensing::perceptionFactsFrom(ranked.value());
+    REQUIRE_EQ(facts.size(), 2u);
+
+    NpcAiWorld         world({32, 8});
+    BehaviorDefinition behavior;
+    behavior.id           = "sensing-bridge";
+    behavior.initialState = "idle";
+    behavior.states.push_back({"idle"});
+    REQUIRE(world.registerBehavior(std::move(behavior)).ok());
+    auto created = world.createAgent("sensing-bridge");
+    REQUIRE(created.ok());
+
+    const auto memories = perceptionMemoriesFrom(facts, /*observedTick=*/10, /*forgetAfterTicks=*/20);
+    REQUIRE_EQ(memories.size(), 2u);
+    CHECK_EQ(memories[0].subject, facts[0].subjectId);
+    CHECK_EQ(memories[0].sense, std::string("sensing.query"));
+    CHECK(memories[0].confidence > memories[1].confidence);
+    REQUIRE(world.remember(created.value(), memories[0]).ok());
+    REQUIRE(world.remember(created.value(), memories[1]).ok());
+    auto snap = world.snapshot(created.value());
+    REQUIRE(snap.ok());
+    CHECK_EQ(snap.value().perception.size(), 2u);
+}
+}  // namespace test_npc_ai
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_npc_ai_ecs)
+#include "PrivateTestScope.h"
+#include "npc_ai/NpcAiECS.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+// npc_ai_ecs.cpp
+namespace test_npc_ai_ecs {
+using namespace eve::npc_ai;
+
+namespace {
+class NpcTestEntity final : public ecs::Entity {
+public:
+    ENTITY(NpcTestEntity, ecs::Entity)
+    void release() override { ecs::DestroyEntity(this); }
+    COMPONENT(NpcAgentState, npcAgent)
+    COMPONENT(NpcAiProjection, npcProjection)
+};
+
+BehaviorDefinition idleBehavior() {
+    BehaviorDefinition behavior;
+    behavior.id           = "ecs-idle";
+    behavior.initialState = "idle";
+    behavior.states.push_back({"idle"});
+    return behavior;
+}
+}  // namespace
+
+TEST_CASE("npc_ai.ecsCompositionPublishesDerivedProjection") {
+    NpcAiWorld aiWorld;
+    REQUIRE(aiWorld.registerBehavior(idleBehavior()).ok());
+    ecs::Table       ecsWorld;
+    ecs::ScopedTable guard(ecsWorld);
+    auto*            entity = NpcTestEntity::create();
+    auto             state  = NpcAgentState::create(aiWorld, "ecs-idle");
+    REQUIRE(state.ok());
+    *entity->npcAgent() = state.value();
+
+    auto stepped = NpcAiEcsSystem::step<NpcTestEntity>(aiWorld, {11, 0.016, 8, 4});
+    REQUIRE(stepped.ok());
+    CHECK_EQ(stepped.value().linkedEntities, 1u);
+    CHECK_EQ(entity->npcProjection()->activeState, std::string("idle"));
+    CHECK_EQ(entity->npcProjection()->lastTick, 11u);
+
+    REQUIRE(entity->npcAgent()->releaseAgent(aiWorld).ok());
+    entity->release();
+}
+
+TEST_CASE("npc_ai.ecsLinkDefinesAgentFirstAndEntityFirstCleanup") {
+    NpcAiWorld aiWorld;
+    REQUIRE(aiWorld.registerBehavior(idleBehavior()).ok());
+
+    auto entityFirst = NpcAgentState::create(aiWorld, "ecs-idle");
+    REQUIRE(entityFirst.ok());
+    const NpcAgentState deferredCopy = entityFirst.value();
+    REQUIRE(entityFirst.value().releaseAgent(aiWorld).ok());
+    NpcAgentState staleCopy    = deferredCopy;
+    auto          staleRelease = staleCopy.releaseAgent(aiWorld);
+    REQUIRE(staleRelease.ok());
+    CHECK(staleCopy.agent.isInvalid());
+
+    auto agentFirst = NpcAgentState::create(aiWorld, "ecs-idle");
+    REQUIRE(agentFirst.ok());
+    REQUIRE(aiWorld.destroyAgent(agentFirst.value().agent).ok());
+    auto cleanup = agentFirst.value().releaseAgent(aiWorld);
+    REQUIRE(cleanup.ok());
+    CHECK(agentFirst.value().agent.isInvalid());
+}
+}  // namespace test_npc_ai_ecs
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_npc_ai_smart_object)
+#include "PrivateTestScope.h"
+#include "npc_ai/SmartObject.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+// npc_ai_smart_object.cpp
+namespace test_npc_ai_smart_object {
+using namespace eve::npc_ai;
+
+namespace {
+SmartObjectDefinition cover(std::string id, double x) {
+    return {std::move(id), {{"left", "cover", {"high", "outdoor"}, {x, 0.0, 0.0}}}};
+}
+}  // namespace
+
+TEST_CASE("npc_ai.smartObjectQueryAndLeaseAreDeterministic") {
+    SmartObjectWorld world;
+    auto             farObject  = world.registerObject(cover("cover-b", 8.0));
+    auto             nearObject = world.registerObject(cover("cover-a", 2.0));
+    REQUIRE(farObject.ok());
+    REQUIRE(nearObject.ok());
+    SmartObjectQuery query{"cover", {"high"}, {0.0, 0.0, 0.0}, 10.0};
+    auto             candidates = world.query(query);
+    REQUIRE(candidates.ok());
+    CHECK_EQ(candidates.value().size(), 2u);
+    CHECK_EQ(candidates.value()[0].logicalId, std::string("cover-a"));
+
+    const AgentHandle agent(4, 1);
+    auto              claim = world.claim(agent, nearObject.value(), "left", 10, 5);
+    REQUIRE(claim.ok());
+    auto unavailable = world.query(query);
+    REQUIRE(unavailable.ok());
+    CHECK_EQ(unavailable.value().size(), 1u);
+    auto conflict = world.claim(AgentHandle(5, 1), nearObject.value(), "left", 10, 5);
+    CHECK(!conflict.ok());
+    REQUIRE(world.renew(claim.value(), agent, 12, 10).ok());
+    auto snapshot = world.snapshot(claim.value());
+    REQUIRE(snapshot.ok());
+    CHECK_EQ(snapshot.value().expiresAtTick, 22u);
+    auto expiry = world.expire(22);
+    REQUIRE(expiry.ok());
+    CHECK_EQ(expiry.value().claimsExpired, 1u);
+    auto stale = world.snapshot(claim.value());
+    CHECK(!stale.ok());
+}
+
+TEST_CASE("npc_ai.smartObjectDefinesBothDestructionOrders") {
+    SmartObjectWorld world;
+    auto             object = world.registerObject(cover("door", 1.0));
+    REQUIRE(object.ok());
+    const AgentHandle agent(7, 2);
+    auto              claim = world.claim(agent, object.value(), "left", 1, 100);
+    REQUIRE(claim.ok());
+    auto rejected = world.removeObject(object.value(), SmartObjectRemoval::RejectClaimed);
+    CHECK(!rejected.ok());
+    REQUIRE(world.removeObject(object.value(), SmartObjectRemoval::CancelClaims).ok());
+    auto staleClaim = world.snapshot(claim.value());
+    CHECK(!staleClaim.ok());
+
+    auto secondObject = world.registerObject(cover("chair", 3.0));
+    REQUIRE(secondObject.ok());
+    auto secondClaim = world.claim(agent, secondObject.value(), "left", 2, 100);
+    REQUIRE(secondClaim.ok());
+    auto released = world.releaseAgentClaims(agent);
+    REQUIRE(released.ok());
+    CHECK_EQ(released.value(), 1u);
+    REQUIRE(world.removeObject(secondObject.value(), SmartObjectRemoval::RejectClaimed).ok());
+}
+}  // namespace test_npc_ai_smart_object
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_decision_context)
+#include <cmath>
+#include "PrivateTestScope.h"
+#include "npc_ai/Decision.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+// decision_context.cpp
+namespace test_decision_context {
+using namespace eve::npc_ai;
+
+TEST_CASE("decision.blackboardsAndFsmAreExplicit") {
+    DecisionContext context;
+
+    auto setResult = context.set("ai", "enemy", "\"tank-1\"");
+    REQUIRE(setResult.ok());
+    CHECK_EQ(context.get("ai", "enemy", "null"), std::string("\"tank-1\""));
+
+    auto stateResult = context.setState("unit", "idle");
+    REQUIRE(stateResult.ok());
+    auto transitionResult = context.addTransition("unit", "idle", "enemy_seen", "attack");
+    REQUIRE(transitionResult.ok());
+    auto triggerResult = context.trigger("unit", "enemy_seen");
+    REQUIRE(triggerResult.ok());
+    REQUIRE(triggerResult.value());
+    CHECK_EQ(context.state("unit"), std::string("attack"));
+}
+
+TEST_CASE("decision.utilityIsDeterministic") {
+    CHECK(std::abs(DecisionContext::utility("1:2,0:1") - .6666667f) < .001f);
+    CHECK_EQ(DecisionContext::choose("retreat=0.8:1;attack=0.8:1"), std::string("attack"));
+}
+
+TEST_CASE("decision.influenceAndSnapshotRoundTrip") {
+    DecisionContext context;
+
+    auto gridResult = context.newGrid("threat", 2, 2, 10, 0, 0);
+    REQUIRE(gridResult.ok());
+    auto setCellResult = context.setCell("threat", 1, 0, 2);
+    REQUIRE(setCellResult.ok());
+    auto addCellResult = context.addCell("threat", 1, 0, 3);
+    REQUIRE(addCellResult.ok());
+    CHECK_EQ(context.sample("threat", 15, 5, -1), 5.f);
+
+    auto            snapshot = context.snapshotJson();
+    DecisionContext restored;
+    auto            restoreResult = restored.restoreJson(snapshot);
+    REQUIRE(restoreResult.ok());
+    CHECK_EQ(restored.snapshotJson(), snapshot);
+
+    auto beforeInvalidRestore = restored.snapshotJson();
+    auto rejected             = restored.restoreJson("{}");
+    CHECK(!rejected.ok());
+    CHECK_EQ(rejected.code(), eve::StatusCode::Failed);
+    CHECK_EQ(restored.snapshotJson(), beforeInvalidRestore);
+}
+}  // namespace test_decision_context
+#endif

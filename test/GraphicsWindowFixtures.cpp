@@ -1,6 +1,22 @@
 #include "Fixtures.h"
 
+#include <cstdio>
+
+namespace {
+void rejectRenderInUnitLane() {
+    if (std::getenv("EVENGINE_TEST_NO_RENDER") != nullptr) {
+        // Helpers do not receive zeroerr's TestContext. A helper REQUIRE can
+        // print an assertion yet leave the caller's result green; this boundary
+        // must fail the isolated process before touching SDL or the device.
+        std::fprintf(stderr, "EVENGINE_TEST_NO_RENDER: unit test attempted rendering startup\n");
+        std::fflush(stderr);
+        std::_Exit(EXIT_FAILURE);
+    }
+}
+}  // namespace
+
 void openGfxWindow(eve::window::Window *&win, eve::graphics::Graphics *&gfx, int w, int h) {
+    rejectRenderInUnitLane();
     const char *viewW = std::getenv("EVENGINE_TEST_VIEW_W");
     const char *viewH = std::getenv("EVENGINE_TEST_VIEW_H");
     if (viewW && viewW[0]) w = std::atoi(viewW);
@@ -23,6 +39,7 @@ void openGfxWindow(eve::window::Window *&win, eve::graphics::Graphics *&gfx, int
 }
 
 void openHeadlessGfx(eve::graphics::Graphics *&gfx, int w, int h) {
+    rejectRenderInUnitLane();
     const char *viewW = std::getenv("EVENGINE_TEST_VIEW_W");
     const char *viewH = std::getenv("EVENGINE_TEST_VIEW_H");
     if (viewW && viewW[0]) w = std::atoi(viewW);

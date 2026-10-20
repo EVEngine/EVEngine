@@ -4,7 +4,7 @@
 
 /** @file StandardAbilities.h @brief Registerable standard action-combat ability archetypes. */
 
-#include "action/AbilitySystem.h"
+#include "action/AbilityRuntime.h"
 
 #include <vector>
 
