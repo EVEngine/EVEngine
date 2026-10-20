@@ -1,0 +1,5 @@
+[
+  {"id":"skill.slash","displayName":"斩击","cost":{"mp":0},"cooldown":0.0,"castTime":0.0,"tags":["attack"]},
+  {"id":"skill.fireball","displayName":"火球","cost":{"mp":10},"cooldown":0.0,"castTime":0.0,"tags":["magic","fire"]},
+  {"id":"skill.heal","displayName":"治疗术","cost":{"mp":8},"cooldown":0.0,"castTime":0.0,"tags":["heal"]}
+]

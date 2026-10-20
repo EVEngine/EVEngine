@@ -1,0 +1,33 @@
+{
+  "schemaId": "evengine.game-agent-contract",
+  "schemaVersion": 1,
+  "id": "examples/rpg-atelier",
+  "entry": "main.nut",
+  "smoke": {
+    "scene": "default",
+    "seed": 1,
+    "maxHostFrames": 120,
+    "mustReach": ["atelier-alive"]
+  },
+  "clock": { "defaultStep": "frame" },
+  "observations": [
+    {
+      "id": "atelier-alive",
+      "kind": "script-root",
+      "path": "mode",
+      "fields": []
+    }
+  ],
+  "actions": {
+    "source": "script-map",
+    "map": []
+  },
+  "capture": {
+    "requiredFor": ["visual"],
+    "backend": "engine-readback"
+  },
+  "tolerances": {
+    "screenshot": "human-or-vlm",
+    "numericAbs": 0.0001
+  }
+}

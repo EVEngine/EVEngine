@@ -80,6 +80,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 |---|---|
 | [rpg](rpg/README.md) | RPG 五系统：属性 / 效果 / 状态 / 技能 / 结算（最小可玩动作 RPG） |
 | [rpg-classic](rpg-classic/README.md) | 经典回合制 RPG 纵向切片：`eve.RPG()` + `eve.Inventory()` + `map` 的数据驱动界面 |
+| [rpg-atelier](rpg-atelier/README.md) | RPG 工坊：角色/战斗/背包/对话 + 地图编辑 + scene_director 场景编辑（集成探测） |
 | [inventory](inventory/README.md) | 背包：物品定义、主背包 / 任务栏 / 仓库、装备穿脱、跨包转移 |
 | [cardgame](cardgame/README.md) | 可玩的双人德州扑克：四轮下注、AI、七选五牌型、真实烧牌与 52 张 CC0 牌面 |
 | [dialogue](dialogue/README.md) | 对话 + Avatar：Squirrel generator 剧情、i18n 翻译表、分层立绘、程序化台词池（.dnut） |

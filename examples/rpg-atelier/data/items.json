@@ -1,0 +1,5 @@
+[
+  {"id":"potion.hp","displayName":"治疗药水","maxStack":10,"weight":0.3,"tags":["consumable","potion"]},
+  {"id":"sword.iron","displayName":"铁剑","maxStack":1,"weight":3.5,"equipSlot":"weapon","tags":["weapon","melee"]},
+  {"id":"quest.token","displayName":"长者信物","maxStack":1,"weight":0.1,"tags":["quest"]}
+]

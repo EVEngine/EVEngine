@@ -1,0 +1,18 @@
+schema "eve.dnut"
+version 1
+
+conversation elder.offer version=1 entry=intro {
+node intro line speaker=elder text="旅人，村子需要你。愿意帮忙吗？" next=decision
+node decision choice {
+route accept target=accepted
+route later target=declined
+}
+node accepted line speaker=elder text="去东侧草地清理史莱姆，回来找我领奖。" next=end
+node declined line speaker=elder text="那便改日再会。" next=end
+node end end
+}
+
+conversation slime.hint version=1 entry=intro {
+node intro line speaker=narrator text="草丛里传来黏液声……按 1 开战。" next=end
+node end end
+}

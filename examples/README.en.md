@@ -32,6 +32,7 @@ On Windows, use the equivalent absolute `eve.exe` path. These script examples do
 
 - [Terrain editor](terrain-editor/README.en.md): edit a 3D heightfield inside the game and save/reload a validated document.
 - [RPG dungeon survival](rpg/README.en.md): play a small combat loop and change data-driven skills and effects.
+- [RPG Atelier](rpg-atelier/README.md): character/combat/inventory/dialogue plus map edit and scene_director stage editing in one probe project.
 - [Roguelike generator](roguelike-generator/README.md): tune deterministic rooms, corridors, decoration and props.
 - [Weather](weather/README.md): explore rain, snow, fog and storm presets.
 - [Hex planet](hex-planet/README.md): explore a procedural planet example and its gameplay controls.
