@@ -46,6 +46,8 @@ bool WorldBackend::do_moveCapsule(float ax, float ay, float az, float bx, float 
         WorldBackend    *world = nullptr;
         b3CollisionPlane planes[planeCapacity]{};
         int              count      = 0;
+        b3Vec3           steepNormals[planeCapacity]{};
+        int              steepCount = 0;
         b3Vec3           desired    = b3Vec3_zero;
         b3Vec3           up         = b3Vec3_axisY;
         b3Vec3           bestNormal = b3Vec3_zero;
@@ -59,6 +61,13 @@ bool WorldBackend::do_moveCapsule(float ax, float ay, float az, float bx, float 
                 const b3Plane &plane = results[i].plane;
                 self->planes[self->count++] =
                     b3CollisionPlane{.plane = plane, .pushLimit = FLT_MAX, .push = 0.f, .clipVelocity = true};
+                const float upDot = b3Dot(plane.normal, self->up);
+                // Clip uphill intent independently of penetration recovery to avoid solver slop creep.
+                if (upDot > 0.f && upDot < self->world->owner_->moverSlopeCos_ && self->steepCount < planeCapacity) {
+                    const b3Vec3 horizontal = plane.normal - upDot * self->up;
+                    const float  length     = b3Length(horizontal);
+                    if (length > 1e-6f) self->steepNormals[self->steepCount++] = (1.f / length) * horizontal;
+                }
                 const float d = b3Dot(plane.normal, self->desired);
                 if (d < self->bestDot) {
                     self->bestDot    = d;
@@ -82,12 +91,18 @@ bool WorldBackend::do_moveCapsule(float ax, float ay, float az, float bx, float 
 
     for (int pass = 0; pass < 5; ++pass) {
         collector.count   = 0;
+        collector.steepCount = 0;
         collector.desired = target - current;
         b3World_CollideMover(worldId_, current, &mover, filter, &PlaneCollector::callback, &collector);
         owner_->moverPlaneCount_ += collector.count;
         collided = collided || collector.count > 0;
 
-        const b3Vec3        targetDelta = target - current;
+        b3Vec3 targetDelta = target - current;
+        for (int i = 0; i < collector.steepCount; ++i) {
+            const auto  normal = collector.steepNormals[i];
+            const float inward = b3Dot(targetDelta, normal);
+            if (inward < 0.f) targetDelta = targetDelta - inward * normal;
+        }
         b3PlaneSolverResult solved      = b3SolvePlanes(targetDelta, collector.planes, collector.count);
         b3Vec3              delta       = solved.delta;
         struct MoverFilter {

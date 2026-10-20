@@ -4072,8 +4072,16 @@
       ]
     },
     "integration/render-presentation/fluids_shore_backend_tests.cpp": {
-      "role": "tests", "default": "render-offscreen", "module": "fluids", "task": "render-presentation",
-      "cases": {"render-offscreen": ["fluids.shore.gpuMatchesCpuOnSlopingWetDryBed", "fluids.shore.scriptSurfaceSyncChecksInputsAndPublishesMesh"]}
+      "role": "tests",
+      "default": "render-offscreen",
+      "module": "fluids",
+      "task": "render-presentation",
+      "cases": {
+        "render-offscreen": [
+          "fluids.shore.gpuMatchesCpuOnSlopingWetDryBed",
+          "fluids.shore.scriptSurfaceSyncChecksInputsAndPublishesMesh"
+        ]
+      }
     },
     "integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp": {
       "role": "tests",
@@ -7448,13 +7456,15 @@
       "role": "tests",
       "default": "local-logic",
       "module": "fluids",
-      "cases": {"local-logic": [
-        "fluids.shore.levelLakeStaysAtRestOverWetDrySlope",
-        "fluids.shore.invalidInitializationIsAtomic",
-        "fluids.shore.waveRunsUpAndReturnsWithoutNegativeDepth",
-        "fluids.shore.visualGainPreservesLevelRestSurface",
-        "fluids.shore.airAndDryLandCollidersDoNotCreateWater"
-      ]}
+      "cases": {
+        "local-logic": [
+          "fluids.shore.levelLakeStaysAtRestOverWetDrySlope",
+          "fluids.shore.invalidInitializationIsAtomic",
+          "fluids.shore.waveRunsUpAndReturnsWithoutNegativeDepth",
+          "fluids.shore.visualGainPreservesLevelRestSurface",
+          "fluids.shore.airAndDryLandCollidersDoNotCreateWater"
+        ]
+      }
     },
     "unit/fluids/fluids_solver_tests.cpp": {
       "role": "tests",
@@ -11940,6 +11950,31 @@
         ]
       },
       "module": "procgen"
+    },
+    "terrain_traversal.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "procgen",
+      "task": "terrain-navigation",
+      "cases": {
+        "module-composition": [
+          "procgen.traversal.worldSlopeAndCost",
+          "procgen.traversal.ridgeAtomicAlias",
+          "procgen.traversal.kilometrePathDetour"
+        ]
+      }
+    },
+    "physics_terrain_slope.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "module": "physics",
+      "task": "terrain-navigation",
+      "cases": {
+        "physics-backend": [
+          "physics.terrainSlope.blocksUphillByPolicy",
+          "physics.terrainSlope.permitsDownhillAndLateral"
+        ]
+      }
     }
   }
 }

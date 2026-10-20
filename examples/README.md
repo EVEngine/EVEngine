@@ -280,3 +280,5 @@ material bakers live beside their examples and are opt-in build targets.
 Tests with actual regression assertions remain in `test/`: castle mesh groups
 and image occupancy, decal material/projection behavior, planar-reflection pixel
 coverage, water animation differences, and grid semantic-color matching.
+
+| [terrain-navigation-lab](terrain-navigation-lab/) | Real Cesium Man, configurable slope costs, A*/flow-field and capsule terrain traversal; full-map and character cameras. |
