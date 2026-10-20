@@ -951,6 +951,14 @@ public:
      * can then be shown inside a UI Viewport widget. See RenderSystem3D::renderToCanvas.
      */
     virtual void renderScene3DToCanvas(Canvas *canvas, Camera3D *camera);
+    /**
+     * @brief Render an offscreen editor preview with directional CSM and per-material shadow flags.
+     * @ownership Canvas and camera are borrowed for this call; null arguments draw nothing.
+     * @thread Graphics thread only; synchronous, without shadow contributor callbacks.
+     * @cost Three extra shadow-map submissions per frame compared with renderScene3DToCanvas.
+     * @details Reflective captures keep their separate unshadowed render path. No G-buffer or AO is run.
+     */
+    void renderScene3DWithShadowsToCanvas(Canvas *canvas, Camera3D *camera);
     /** @brief Sets the directional light. */
     virtual void setDirectionalLight(float dx, float dy, float dz, float r = 1.f, float g = 1.f, float b = 1.f);
 
