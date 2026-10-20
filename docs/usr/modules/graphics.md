@@ -935,3 +935,36 @@ visibility-request v2 支持对象局部区域 target（v1 字符串 target 仍�
 ## 投影轮廓重叠
 
 作者文档 v4 支持 projected_overlap(subject, reference, minimum, maximum)，可附 reference 的 local_box region。测量两个对象独立真实投影 mask 的交集/reference 像素数；前后顺序及第三者遮挡不改变该构图指标。visibility-evidence v3 的 projectedOverlaps 返回交集像素、双方像素数及比例；任一 mask 少于 4 像素不可测。关系通过原有 relations/relation_begin/relation_check/relation_commit 正式路径使用，提交重新测量并一次撤销。详见 [契约与验证](../../dev/2026-10-12-scene-projected-overlap-validation.md)。
+
+## 同帧 SceneColor 与实例草坪
+
+`gfx.captureMesh3DSceneColor()` 在 `gfx.render3D()` 后、消费该图像的自定义绘制前调用，返回
+`captured` / `scheduled` / `explicitOverride` / `historyReuse` / `unavailable`。
+它是渲染线程操作，不调用脚本回调；快照及绑定 18 的纹理由 Graphics 持有，使用期内不向脚本转移所有权。
+代价约为一次全分辨率 GPU 颜色复制，应每帧捕获一次供所有草簇共享，不能每簇捕获。
+`historyReuse` 明确表示使用历史帧，不能当作同帧证据；当前 Vulkan 同帧复制要求单采样场景通道。
+
+实例资源 shader 允许在 **fragment stage** 使用 `set=0,binding=18` 的普通 `sampler2D`
+读取已完成快照；vertex stage 和其他未登记的绑定仍被拒绝。实例矩阵仍在
+`set=1,binding=33`，不改变已有 ABI。
+
+`examples/stylized-meadow` 在绘制草之前捕获已受光、含阴影的地表颜色，按草根投影位置的亮度
+决定整簇颜色。输入是画面中该位置实际可见的表面；根部被其他物体遮挡时会读取遮挡物的颜色，
+并非无限制的离屏地表查询。输出不反馈到快照中。
+
+边界变更仅扩展 graphics 的既有脚本和 shader 资源面；没有 capability、ECS/Link、事件或工具协议变更。
+复用现有后端状态枚举，无全局附加状态、无跨模块 include，也未宣称新增裁剪等级。
+
+### 可复用默认草坪 Style
+
+[Stylized Grass](../../../assets/styles/stylized-grass/README.md) 提供三阶草色、CPU 生成的两组四帧遮罩、分组慢速摇曳与地面补色。复制目录并调用 `StylizedGrassStyle`；`examples/stylized-meadow` 使用同一份 style。要求原生 Vulkan 单采样与同帧 SceneColor 支持，接入、成本和实例数据契约见 style 文档。
+
+### CPU 生成的默认草坪（无部署素材）
+
+`gfx.buildStylizedGrassPoints(radius, extent, seed)` 在 CPU 上生成 Bridson 蓝噪声，返回结构化 Result，value 为交错 x/z 数值数组。初始化时调用；固定种子可复现，半径及半边长为正有限数，radius 至少 extent/1000、seed 非负、最多 49,999 点。
+
+`gfx.buildStylizedGrassShader(records, pass)` 是初始化 builder：`pass` 为 `grass` 或 `ground`，records 是内存中的列主序仿射矩阵平坦数组，最多 64 MiB。返回 Result.value 中 Graphics 拥有的 shader 借用句柄；所有输入同步复制，调用后可释放。无调用方指针跨帧保留；限定渲染/VM 线程，不调用脚本回调或持有跨回调锁。非法矩阵、未知 pass、非 Vulkan 后端明确失败。失败不返回部分 style。
+
+@cost 蓝噪声生成、CPU 矢量轮廓栅格化及 GPU 上传远高于普通参数更新，应在初始化阶段完成并跨帧摊销。草 pass 在 CPU 内存生成两种草型、各四帧遮罩，再上传纹理；地面 pass 不生成纹理。shader 已内嵌，无需外部 PNG/RGBA/SPIR-V/草根文件。每帧仍一次地面补色、一次 GPU 草实例绘制与一张同帧场景快照。
+
+脚本封装、根点 ABI、参数和部署要求见 [默认草坪 style](../../../assets/styles/stylized-grass/README.md)。场景高度与剔除回调由脚本初始化时同步执行；没有每帧逐草簇脚本更新。

@@ -91,7 +91,8 @@ TEST_CASE("fluids.shallowWater.capsuleLegDisplacesWater") {
 
     const float underFoot = field->depthAt(cx, cz);
     const float beside    = field->depthAt(cx + 0.8f, cz);
-    const auto  flow      = field->velocityAt(cx + 0.4f, cz);
+    const auto  flow      = field->velocityAt(cx + settings.cellSize, cz);
+    // Check direct momentum transfer one cell downstream; wave propagation is tested separately.
     // Leg immersion lowers local depth and pushes water / momentum sideways.
     REQUIRE(underFoot < before);
     REQUIRE(beside > underFoot - 0.05f);

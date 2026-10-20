@@ -58,8 +58,9 @@ Result<void> stage(std::span<const uint32_t> words, bool vertex, const ShaderRes
             compiler.get_type(t.image.type).basetype != spirv_cross::SPIRType::Float)
             return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Expected a non-shadow, non-MS float combined image", "shader.resources"));
         ShaderImageDimension expected = ShaderImageDimension::Image2D;
-        if (set == 0 && binding == 1 && !vertex) {
-            // The existing per-material albedo binding.
+        if (set == 0 && (binding == 1 || binding == 18) && !vertex) {
+            // Material albedo or the engine-owned completed scene-color snapshot.
+            // Neither may be read by a vertex stage or supplied through set 1.
         } else if (set == 1) {
             auto found = std::find_if(inputs.images.begin(), inputs.images.end(),
                                       [&](const auto& item) { return item.binding == binding; });

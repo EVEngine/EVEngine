@@ -1337,8 +1337,26 @@ void Graphics::createSceneColorResources(int sceneW, int sceneH) {
     const bool msaa = samples != vk::SampleCountFlagBits::e1;
 
     sceneColorSlots.resize(kAsyncResourceCopies);
+    // Every scene slot can also be the destination of a same-frame snapshot.
+    struct CopyableSceneColor : vkb::ColorAttachmentImage {
+        CopyableSceneColor(vkb::Device &targetDevice, uint32_t width, uint32_t height, vk::Format format) {
+            vk::ImageCreateInfo info{};
+            info.imageType   = vk::ImageType::e2D;
+            info.format      = format;
+            info.extent      = vk::Extent3D{width, height, 1};
+            info.mipLevels   = 1;
+            info.arrayLayers = 1;
+            info.samples     = vk::SampleCountFlagBits::e1;
+            info.tiling      = vk::ImageTiling::eOptimal;
+            info.usage       = vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled |
+                         vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst;
+            info.sharingMode   = vk::SharingMode::eExclusive;
+            info.initialLayout = vk::ImageLayout::eUndefined;
+            create(targetDevice, info, vk::ImageViewType::e2D, vk::ImageAspectFlagBits::eColor, false);
+        }
+    };
     for (auto &slot : sceneColorSlots) {
-        slot.color = device.createColorTarget(w, h, colorFmt);
+        slot.color = CopyableSceneColor(device, w, h, colorFmt);
         if (msaa) {
             slot.msaaColor = device.createColorTarget(w, h, colorFmt, samples);
             slot.depth = device.createDepthTarget(w, h, depthFmt, false, samples);
@@ -1406,21 +1424,26 @@ void Graphics::createSceneColorResources(int sceneW, int sceneH) {
                 .setPColorAttachments(&colorRef)
                 .setPDepthStencilAttachment(&depthRef);
         std::array<vk::SubpassDependency, 2> dependencies{};
+        // Match addExternalShaderReadDependencies() exactly: dependencies are
+        // part of render-pass compatibility with existing pipelines/framebuffers.
+        // The copy is synchronized explicitly outside these compatible passes.
         dependencies[0] = vk::SubpassDependency()
                               .setSrcSubpass(VK_SUBPASS_EXTERNAL)
                               .setDstSubpass(0)
-                              .setSrcStageMask(vk::PipelineStageFlagBits::eTransfer)
+                              .setSrcStageMask(vk::PipelineStageFlagBits::eFragmentShader)
                               .setDstStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput |
                                                vk::PipelineStageFlagBits::eEarlyFragmentTests)
-                              .setSrcAccessMask(vk::AccessFlagBits::eTransferRead)
+                              .setSrcAccessMask(vk::AccessFlagBits::eShaderRead)
                               .setDstAccessMask(vk::AccessFlagBits::eColorAttachmentWrite |
-                                                vk::AccessFlagBits::eDepthStencilAttachmentRead);
+                                                vk::AccessFlagBits::eDepthStencilAttachmentWrite);
         dependencies[1] = vk::SubpassDependency()
                               .setSrcSubpass(0)
                               .setDstSubpass(VK_SUBPASS_EXTERNAL)
-                              .setSrcStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput)
+                              .setSrcStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput |
+                                               vk::PipelineStageFlagBits::eLateFragmentTests)
                               .setDstStageMask(vk::PipelineStageFlagBits::eFragmentShader)
-                              .setSrcAccessMask(vk::AccessFlagBits::eColorAttachmentWrite)
+                              .setSrcAccessMask(vk::AccessFlagBits::eColorAttachmentWrite |
+                                                vk::AccessFlagBits::eDepthStencilAttachmentWrite)
                               .setDstAccessMask(vk::AccessFlagBits::eShaderRead);
         const vk::RenderPassCreateInfo resumeInfo =
             vk::RenderPassCreateInfo()

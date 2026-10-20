@@ -320,7 +320,6 @@ TEST_CASE("procgen.rng.cellularDoesNotConsumeImplicitStream") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen)
-#include "PrivateTestScope.h"
 #include <SDL2/SDL.h>
 #include <algorithm>
 #include <array>
@@ -338,6 +337,7 @@ TEST_CASE("procgen.rng.cellularDoesNotConsumeImplicitStream") {
 #include <string>
 #include <unordered_set>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "RenderImageAudit.h"
 #include "asset/procgen/TerrainMaterialAtlas.h"
 #include "data/ByteData.h"
@@ -386,7 +386,6 @@ TEST_CASE("procgen.rng.cellularDoesNotConsumeImplicitStream") {
 #include "procgen/texture/NoiseField.h"
 #include "procgen/texture/PbrMaterial.h"
 #include "procgen/texture/TextureRecipe.h"
-#include "water_scene_fixture.h"
 #include "window/Window.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

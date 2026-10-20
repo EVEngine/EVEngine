@@ -1495,13 +1495,6 @@
           "devtools.languageServer.formatFoldAndIncrementalEdit",
           "devtools.languageServer.semanticTokensClassFunctionAndSlot",
           "map.dualGridMask.packagedSbsFixturesDecode",
-          "map.dualGridMask.preview",
-          "map.dualGridMask.realAssetPreview",
-          "map.dualGridMask.realAssetMap16x16Preview",
-          "map.dualGridMask.threeMaterialMap16x16Preview",
-          "map.dualGridMask.worldSpaceSplatPreview",
-          "map.dualGridMask.worldSpaceSandStonePreview",
-          "map.dualGridMask.worldSpaceFourMaterialPreview",
           "devtools.projectIndex.realQuestChainAndVersionedContext",
           "devtools.projectIndex.incrementRenameDeleteAndRejectFailedPublication",
           "devtools.projectIndex.budgetsAndUntrustedSource",
@@ -4078,6 +4071,10 @@
         "virtualgeometry_builder.cpp"
       ]
     },
+    "integration/render-presentation/fluids_shore_backend_tests.cpp": {
+      "role": "tests", "default": "render-offscreen", "module": "fluids", "task": "render-presentation",
+      "cases": {"render-offscreen": ["fluids.shore.gpuMatchesCpuOnSlopingWetDryBed", "fluids.shore.scriptSurfaceSyncChecksInputsAndPublishesMesh"]}
+    },
     "integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp": {
       "role": "tests",
       "default": "render-window",
@@ -4563,22 +4560,14 @@
           "particles.playback.renderDistanceTrailAndLoopingBurst",
           "particles.reference.compositedBurstsRenderAtMultipleAngles",
           "particles.scalability.renderBudgetStressScene",
-          "procgen.mesh.tree.renderDump",
-          "procgen.mesh.bush.renderDump",
-          "procgen.render.hexplanetPng",
           "procgen.render.cloudShadowsDarkenGround",
-          "procgen.render.skyscraperPng",
           "procgen.render.castlePng",
           "graphics.waterfall.paramsRoundTrip",
           "graphics.waterfall.render.flowAndFoam",
           "graphics.water.paramsRoundTrip",
           "graphics.water.render.dynamicRipplesAndReflection",
-          "graphics.water.render.plane",
-          "graphics.water.render.ssr",
           "graphics.render3d.toCanvas",
           "graphics.water.render.planar",
-          "procgen.mesh.foliageCluster.stages",
-          "procgen.lsystem.renderDump",
           "procgen.render.dungeonCaveMazePreview",
           "graphics.resourceLifetime.textureHandleIsBorrowedUntilReleased",
           "graphics.resourceLifetime.sharedTextureReusesContentKeyAndEvictsOnRelease",
@@ -7461,6 +7450,18 @@
         "fluids_volume_mesh_emitter.cpp",
         "fluids_volume_triggers.cpp"
       ]
+    },
+    "unit/fluids/fluids_shore_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "module": "fluids",
+      "cases": {"local-logic": [
+        "fluids.shore.levelLakeStaysAtRestOverWetDrySlope",
+        "fluids.shore.invalidInitializationIsAtomic",
+        "fluids.shore.waveRunsUpAndReturnsWithoutNegativeDepth",
+        "fluids.shore.visualGainPreservesLevelRestSurface",
+        "fluids.shore.airAndDryLandCollidersDoNotCreateWater"
+      ]}
     },
     "unit/fluids/fluids_solver_tests.cpp": {
       "role": "tests",
@@ -10792,12 +10793,6 @@
         "thunder_strike.cpp",
         "weather.cpp"
       ]
-    },
-    "water_scene_fixture.cpp": {
-      "role": "helper",
-      "default": "local-logic",
-      "cases": {},
-      "module": "graphics"
     },
     "integration/ocean-voyage/ocean_boat.cpp": {
       "role": "tests",
