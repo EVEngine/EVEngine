@@ -1,3 +1,4 @@
+#include "avatar/Appearance.h"
 #include "common/Module.h"
 #include "zeroerr/unittest.h"
 
