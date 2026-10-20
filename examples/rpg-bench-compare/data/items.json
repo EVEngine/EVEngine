@@ -1,0 +1,5 @@
+[
+  {"id":"potion.hp","displayName":"Herb Potion","maxStack":10,"weight":0.3,"tags":["consumable","potion"]},
+  {"id":"sword.iron","displayName":"Iron Blade","maxStack":1,"weight":3.5,"equipSlot":"weapon","tags":["weapon","melee"]},
+  {"id":"quest.seal","displayName":"Village Seal","maxStack":1,"weight":0.1,"tags":["quest"]}
+]

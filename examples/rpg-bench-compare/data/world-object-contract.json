@@ -1,0 +1,22 @@
+{
+  "schema": "eve.map.object-contract",
+  "version": 1,
+  "requireUniqueNames": true,
+  "allowUnknownTypes": false,
+  "types": [
+    { "type": "spawn", "properties": [] },
+    {
+      "type": "npc",
+      "properties": [
+        { "name": "conversation", "kind": "string", "required": true }
+      ]
+    },
+    { "type": "encounter", "properties": [] },
+    {
+      "type": "prop",
+      "properties": [
+        { "name": "label", "kind": "string", "required": false }
+      ]
+    }
+  ]
+}

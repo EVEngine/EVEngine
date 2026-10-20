@@ -1,0 +1,39 @@
+{
+  "width": 16,
+  "height": 10,
+  "tilewidth": 32,
+  "tileheight": 32,
+  "origin": [120, 100],
+  "autoReload": false,
+  "layers": [
+    {
+      "type": "tilelayer",
+      "name": "ground",
+      "layer": 0,
+      "data": [
+        2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+        2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+        2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+        2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+        2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+        2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+        2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+        2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+        2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+        2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
+      ]
+    },
+    {
+      "type": "objectgroup",
+      "name": "events",
+      "objects": [
+        { "name": "spawn", "type": "spawn", "x": 2, "y": 5, "width": 0, "height": 0 },
+        { "name": "keeper", "type": "npc", "x": 4, "y": 3, "width": 0, "height": 0,
+          "properties": [{ "name": "conversation", "type": "string", "value": "keeper.offer" }] },
+        { "name": "goblin", "type": "encounter", "x": 12, "y": 5, "width": 0, "height": 0 },
+        { "name": "crate", "type": "prop", "x": 7, "y": 4, "width": 0, "height": 0,
+          "properties": [{ "name": "label", "type": "string", "value": "crate" }] }
+      ]
+    }
+  ]
+}

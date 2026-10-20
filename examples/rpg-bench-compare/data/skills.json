@@ -1,0 +1,5 @@
+[
+  {"id":"skill.strike","displayName":"Strike","cost":{"mp":0},"cooldown":0.0,"castTime":0.0,"tags":["attack"]},
+  {"id":"skill.bolt","displayName":"Arc Bolt","cost":{"mp":10},"cooldown":0.0,"castTime":0.0,"tags":["magic"]},
+  {"id":"skill.mend","displayName":"Mend","cost":{"mp":8},"cooldown":0.0,"castTime":0.0,"tags":["heal"]}
+]

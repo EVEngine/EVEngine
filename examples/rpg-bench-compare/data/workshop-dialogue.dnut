@@ -1,0 +1,18 @@
+schema "eve.dnut"
+version 1
+
+conversation keeper.offer version=1 entry=intro {
+node intro line speaker=keeper text="Traveler — our orchard is overrun. Will you help?" next=decision
+node decision choice {
+route accept target=accepted
+route later target=declined
+}
+node accepted line speaker=keeper text="Clear the goblin by the east path, then return." next=end
+node declined line speaker=keeper text="Come back when you are ready." next=end
+node end end
+}
+
+conversation goblin.hint version=1 entry=intro {
+node intro line speaker=narrator text="A goblin snarls in the brush. Press 1 to fight." next=end
+node end end
+}

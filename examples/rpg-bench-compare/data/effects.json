@@ -1,0 +1,6 @@
+[
+  {"id":"heal.potion","kind":"instant","tags":["heal"],
+   "modifiers":[{"attribute":"hp","op":"add","value":35.0}]},
+  {"id":"buff.focus","kind":"duration","duration":8.0,"tags":["buff"],
+   "modifiers":[{"attribute":"attack","op":"mul","value":1.3}]}
+]
