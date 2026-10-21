@@ -150,6 +150,8 @@ bool mcpProfileAllowsTool(std::string_view profile, std::string_view tool) {
         // Only the fix profile may touch eval/run_script; still not valid required evidence.
         return profile == "fix.compile";
     }
+    // Stable facade: never leak into content/verify via shared scene/play tags.
+    if (tool == "eve_workshop") return profile == "workshop.rpg";
 
     const auto                      tagList = mcpProfileToolsetTags(profile);
     std::unordered_set<std::string> tags(tagList.begin(), tagList.end());
@@ -177,7 +179,8 @@ bool mcpProfileAllowsTool(std::string_view profile, std::string_view tool) {
     }
 
     if (profile == "content.scene") {
-        if (startsWith(tool, "eve_procgen_") || tool == "eve_scene_info" || tool == "eve_scene_director_status")
+        if (startsWith(tool, "eve_procgen_") || startsWith(tool, "eve_recipe_") || tool == "eve_scene_info" ||
+            tool == "eve_scene_director_status")
             return true;
         return tagsAllow(tool, tags);
     }
@@ -209,10 +212,15 @@ std::optional<McpProfileEscalate> mcpProfileEscalateHint(std::string_view profil
         return hint;
     }
     if ((startsWith(tool, "eve_scene_") || startsWith(tool, "eve_camera_") || startsWith(tool, "eve_procgen_") ||
-         tool == "eve_whitebox_playtest") &&
+         startsWith(tool, "eve_recipe_") || tool == "eve_whitebox_playtest") &&
         (profile == "verify.play" || profile == "script.bind" || profile == "fix.compile")) {
         hint.to     = "content.scene";
-        hint.reason = "scene or procgen mutation requires content.scene";
+        hint.reason = "scene, recipe, or procgen mutation requires content.scene";
+        return hint;
+    }
+    if (tool == "eve_workshop" && profile != "workshop.rpg") {
+        hint.to     = "workshop.rpg";
+        hint.reason = "workshop facade is limited to workshop.rpg";
         return hint;
     }
     if ((startsWith(tool, "eve_editor_") || startsWith(tool, "eve_host_")) &&

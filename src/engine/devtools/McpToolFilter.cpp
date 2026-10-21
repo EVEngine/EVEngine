@@ -132,6 +132,17 @@ std::vector<std::string> mcpToolTags(std::string_view name) {
         add("scene");
         return tags;
     }
+    if (startsWith(name, "eve_recipe_")) {
+        add("scene");
+        add("agent");
+        return tags;
+    }
+    if (name == "eve_workshop") {
+        add("play");
+        add("scene");
+        add("agent");
+        return tags;
+    }
     if (startsWith(name, "eve_agent_")) {
         add("agent");
         return tags;
@@ -196,8 +207,9 @@ bool mcpToolMutates(std::string_view name) {
     if (name == "eve_ui_click" || name == "eve_play" || name == "eve_gameplay") return true;
     if (name == "eve_scene_modify" || name == "eve_scene_batch" || name == "eve_scene_reset" ||
         name == "eve_scene_node_set" || name == "set_camera_pose" || name == "eve_camera_generate" ||
-        name == "eve_whitebox_playtest")
+        name == "eve_whitebox_playtest" || name == "eve_recipe_apply")
         return true;
+    if (name == "eve_workshop") return true;
     if (startsWith(name, "eve_editor_") &&
         (name.find("execute") != std::string_view::npos || name.find("commit") != std::string_view::npos ||
          name.find("plan") != std::string_view::npos || name.find("create") != std::string_view::npos ||
@@ -279,7 +291,7 @@ std::string mcpToolFilteredPayload(std::string_view name) {
 
     std::string error = "tool '" + std::string(name) +
                         "' is hidden by EVE_MCP_TOOLSET / EVE_MCP_READONLY / EVE_MCP_EXCLUDE / EVE_MCP_PROFILE";
-    std::string hint  = "Adjust env filters or call eve_status; use EVE_MCP_TOOLSET=all to advertise every tool";
+    std::string hint = "Adjust env filters or call eve_status; use EVE_MCP_TOOLSET=all to advertise every tool";
     std::vector<std::string>          next = {"eve_status"};
     std::optional<McpProfileEscalate> escalate;
     if (!activeProfile.empty() && !mcpProfileAllowsTool(activeProfile, name)) {
