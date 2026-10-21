@@ -378,16 +378,27 @@ jobs:
           key: ${{ steps.third-party-cache.outputs.cache-primary-key }}
 
       - name: Run win32 unit tests
-        # Run 35519931809 reached 5548/5550 passing cases when the 40-minute
-        # guard fired. Keep a bounded margin for the final structural tests and
-        # normal hosted-runner variance when CI/build files require a full run.
-        timeout-minutes: 50
+        # Run 39399072292 reached only 5042/7039 cases before the 50-minute
+        # guard fired. The expanded full suite needs room for the remaining
+        # cases; individual CTest timeouts still bound hung tests.
+        timeout-minutes: 90
         # Headless runners have no WASAPI endpoint (0x80070490); OpenAL Soft null backend.
         env:
           ALSOFT_DRIVERS: "null"
         run: >-
           make test/win32-debug
           LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
+
+      - name: Upload Windows test failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: windows-test-failure-logs
+          path: |
+            build/win32-debug/Testing/Temporary/LastTestsFailed.log
+            build/win32-debug/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Capture Vulkan parity artifacts
         timeout-minutes: 10
@@ -848,6 +859,17 @@ jobs:
             sed -n '/NetHostPeers .*: .* ms/p' "$log"
           fi
 
+      - name: Upload macOS test failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: macos-test-failure-logs
+          path: |
+            build/macosx-debug/Testing/Temporary/LastTestsFailed.log
+            build/macosx-debug/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Setup Dawn generator Python
         if: ${{ needs.change-scope.outputs.dawn_metal == 'true' }}
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -1289,7 +1311,9 @@ jobs:
         run: python3 scripts/resource_format_suite.py --report build/resource-format-inventory.json
 
       - name: Run linux unit tests
-        timeout-minutes: 30
+        # Run 39399072292 passed 6628/7045 cases before the 30-minute
+        # guard fired. Keep headroom for the expanded suite and runner variance.
+        timeout-minutes: 45
         env:
           ALSOFT_DRIVERS: "null"
           EVENGINE_FORMAT_EXPORT_DIR: "${{ github.workspace }}/build/resource-format-exports"
@@ -1299,6 +1323,17 @@ jobs:
           # SEGFAULT) that is not reproducible in isolation.
           xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-debug CTEST_JOBS=2 \
             LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
+
+      - name: Upload Linux test failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: linux-test-failure-logs
+          path: |
+            build/linux-debug/Testing/Temporary/LastTestsFailed.log
+            build/linux-debug/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Verify resource test results without skipped or warning-only cases
         timeout-minutes: 20
