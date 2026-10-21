@@ -209,7 +209,7 @@ void Graphics::render3D() {
 
 void Graphics::renderScene3DToCanvas(Canvas* canvas, Camera3D* camera) {
     pushValidationScope();
-    RenderSystem3D::renderToCanvas(*this, canvas, camera);
+    RenderSystem3D::renderToCanvas(*this, canvas, camera, 0xffffffffu, 1.f, true, true, nullptr, nullptr, 1.f, true);
     popValidationScope();
 }
 

@@ -229,7 +229,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [composable-editor](composable-editor/README.md) | 可组合编辑器 SDK：C++ Workspace、动态面板、MVVM、ECS，以及游戏/编辑器共享运行时 |
 | [scene-editor](scene-editor/README.md) | 可组合场景编辑：场景树、选择与属性联动 |
 | [scene-builder-game](scene-builder-game/README.md) | 游戏内嵌场景建造：运行时可组合的场景编辑会话 |
-| [level-designer](level-designer/README.md) | 3D 关卡设计工具：引用地形 → 放置白盒 → 调模型 → 出生点 → Motion Matching 试玩 |
+| [level-designer](level-designer/README.md) | 原生 Terrain & Scene Studio：地形笔刷、嵌套建造块和库、精确静态网格碰撞、动态物体与人物物理试玩 |
 | [terrain-editor](terrain-editor/README.md) | 运行时生成的地形编辑器：Viewport 内嵌 3D、笔刷、轨道相机 |
 | [voxel-catalog-editor](voxel-catalog-editor/README.md) | MagicaVoxel 风格体素雕刻：占用网格与撤销 |
 | [editor-api-v2](editor-api-v2/README.md) | Editor API V2 同构演示：游戏注入命令，玩家通过 discovery → plan → execute 建造场景 |
