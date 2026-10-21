@@ -3314,6 +3314,7 @@ void Graphics::end3DFrameToCanvas() {
     }
 
     wgpu::CommandEncoder          encoder = device.CreateCommandEncoder();
+    recordDirectionalShadowPasses(encoder);
     WGPURenderPassColorAttachment color{};
     color.view              = canvas->colorView.Get();
     color.depthSlice        = WGPU_DEPTH_SLICE_UNDEFINED;
@@ -4225,6 +4226,43 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
     mesh3dDraws.clear();
 }
 
+void Graphics::recordDirectionalShadowPasses(wgpu::CommandEncoder encoder) {
+    // 1. Shadow passes (CSM cascade layers).
+    if (shadowDepthArray) {
+        // Every cascade is sampled by receivers, including cascades with no
+        // caster draw this frame. Clear all layers while shadows are active so
+        // an empty cascade deterministically means fully lit (depth 1) instead
+        // of retaining undefined or previous-frame depth.
+        if (mesh3dShadows.active) {
+            for (int c = 0; c < ShadowConfig::kCascades; ++c) {
+                WGPUTextureViewDescriptor lvd{};
+                lvd.format          = WGPUTextureFormat_Depth32Float;
+                lvd.dimension       = WGPUTextureViewDimension_2D;
+                lvd.baseMipLevel    = 0;
+                lvd.mipLevelCount   = 1;
+                lvd.baseArrayLayer  = static_cast<uint32_t>(c);
+                lvd.arrayLayerCount = 1;
+                wgpu::TextureView layerView =
+                    shadowDepthArray->texture.CreateView(reinterpret_cast<const wgpu::TextureViewDescriptor*>(&lvd));
+                WGPURenderPassDepthStencilAttachment ds{};
+                ds.view              = layerView.Get();
+                ds.depthClearValue   = 1.f;
+                ds.depthLoadOp       = WGPULoadOp_Clear;
+                ds.depthStoreOp      = WGPUStoreOp_Store;
+                ds.stencilClearValue = 0;
+                ds.stencilLoadOp     = WGPULoadOp_Undefined;
+                ds.stencilStoreOp    = WGPUStoreOp_Undefined;
+                WGPURenderPassDescriptor rp{};
+                rp.depthStencilAttachment = &ds;
+                wgpu::RenderPassEncoder pass =
+                    encoder.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor*>(&rp));
+                flushShadowPass(pass, c);
+                pass.End();
+            }
+        }
+    }
+}
+
 void Graphics::flushShadowPass(wgpu::RenderPassEncoder pass, int cascade) {
     auto& uboArena = currentUboArena();
     if (cascade < 0 || cascade >= ShadowConfig::kTotalLayers) return;
@@ -4641,40 +4679,7 @@ void Graphics::present() {
     // pass establishes the required WebGPU storage-to-indirect dependency.
     recordGpuDrivenCompute(encoder);
 
-    // 1. Shadow passes (CSM cascade layers).
-    if (shadowDepthArray) {
-        // Every cascade is sampled by receivers, including cascades with no
-        // caster draw this frame. Clear all layers while shadows are active so
-        // an empty cascade deterministically means fully lit (depth 1) instead
-        // of retaining undefined or previous-frame depth.
-        if (mesh3dShadows.active) {
-            for (int c = 0; c < ShadowConfig::kCascades; ++c) {
-                WGPUTextureViewDescriptor lvd{};
-                lvd.format          = WGPUTextureFormat_Depth32Float;
-                lvd.dimension       = WGPUTextureViewDimension_2D;
-                lvd.baseMipLevel    = 0;
-                lvd.mipLevelCount   = 1;
-                lvd.baseArrayLayer  = static_cast<uint32_t>(c);
-                lvd.arrayLayerCount = 1;
-                wgpu::TextureView layerView =
-                    shadowDepthArray->texture.CreateView(reinterpret_cast<const wgpu::TextureViewDescriptor*>(&lvd));
-                WGPURenderPassDepthStencilAttachment ds{};
-                ds.view              = layerView.Get();
-                ds.depthClearValue   = 1.f;
-                ds.depthLoadOp       = WGPULoadOp_Clear;
-                ds.depthStoreOp      = WGPUStoreOp_Store;
-                ds.stencilClearValue = 0;
-                ds.stencilLoadOp     = WGPULoadOp_Undefined;
-                ds.stencilStoreOp    = WGPUStoreOp_Undefined;
-                WGPURenderPassDescriptor rp{};
-                rp.depthStencilAttachment = &ds;
-                wgpu::RenderPassEncoder pass =
-                    encoder.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor*>(&rp));
-                flushShadowPass(pass, c);
-                pass.End();
-            }
-        }
-    }
+    recordDirectionalShadowPasses(encoder);
 
     // Stage-3 visibility pass consumes the compute-compacted instance table
     // before the scene pass resolves material shading.

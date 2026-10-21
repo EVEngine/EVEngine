@@ -1,3 +1,4 @@
+#include "common/config.h"
 #if !defined(EVENGINE_WEBGPU)
 #include <SDL2/SDL.h>
 #include <algorithm>
@@ -15,15 +16,6 @@
 #include "zeroerr/unittest.h"
 
 namespace {
-PFN_vkCreateSwapchainKHR       originalCreate  = nullptr;
-VkPresentModeKHR               selectedMode    = VK_PRESENT_MODE_MAX_ENUM_KHR;
-VkSurfaceKHR                   selectedSurface = VK_NULL_HANDLE;
-VKAPI_ATTR VkResult VKAPI_CALL trackSwapchain(VkDevice device, const VkSwapchainCreateInfoKHR *info,
-                                              const VkAllocationCallbacks *allocator, VkSwapchainKHR *swapchain) {
-    selectedMode    = info->presentMode;
-    selectedSurface = info->surface;
-    return originalCreate(device, info, allocator, swapchain);
-}
 struct GameDirectory {
     std::filesystem::path previous = std::filesystem::current_path();
     std::filesystem::path path =
@@ -76,20 +68,17 @@ BootResult bootConfig(const std::string &fields, bool enabled, bool editor = fal
     }
     REQUIRE(win->isOpen());
     SDL_HideWindow(static_cast<SDL_Window *>(win->getHandle()));
-    auto *backend  = static_cast<eve::graphics::vulkan::Graphics *>(gfx);
-    originalCreate = VULKAN_HPP_DEFAULT_DISPATCHER.vkCreateSwapchainKHR;
-    selectedMode   = VK_PRESENT_MODE_MAX_ENUM_KHR;
-    struct Restore {
-        ~Restore() { VULKAN_HPP_DEFAULT_DISPATCHER.vkCreateSwapchainKHR = originalCreate; }
-    } restore;
-    VULKAN_HPP_DEFAULT_DISPATCHER.vkCreateSwapchainKHR = trackSwapchain;
+    auto      *backend     = static_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    const auto initialMode = backend->getSwapchain().present_mode;
     SDL_SetWindowSize(static_cast<SDL_Window *>(win->getHandle()), 112, 96);
     gfx->setViewportSize(112, 96, 112, 96);
     gfx->present();
-    REQUIRE_NE(selectedMode, VK_PRESENT_MODE_MAX_ENUM_KHR);
-    const auto modes     = backend->getDevice().physical_device->getSurfacePresentModesKHR(selectedSurface);
-    const auto desired   = enabled ? vk::PresentModeKHR::eMailbox : vk::PresentModeKHR::eImmediate;
-    const bool supported = std::find(modes.begin(), modes.end(), desired) != modes.end();
+    REQUIRE_EQ(backend->getSwapchain().present_mode, initialMode);
+    const auto  selectedMode = static_cast<VkPresentModeKHR>(backend->getSwapchain().present_mode);
+    const auto &device       = backend->getDevice();
+    const auto  modes        = device.physical_device->getSurfacePresentModesKHR(device.surface);
+    const auto  desired      = enabled ? vk::PresentModeKHR::eMailbox : vk::PresentModeKHR::eImmediate;
+    const bool  supported    = std::find(modes.begin(), modes.end(), desired) != modes.end();
     if (supported) REQUIRE_EQ(selectedMode, static_cast<VkPresentModeKHR>(desired));
     if (enabled) REQUIRE_NE(selectedMode, VK_PRESENT_MODE_IMMEDIATE_KHR);
     std::fprintf(stderr, "VSYNC_CONFIG enabled=%d count=%d actualPresentMode=%d\n", enabled, gfx->getVSyncCount(),

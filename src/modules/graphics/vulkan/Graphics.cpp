@@ -1055,7 +1055,10 @@ bool Graphics::beginPresentCommandBuffer() {
         if (!rebuildSwapchainIfNeeded()) return false;
         {
             EV_PROFILE_MODULE("graphics", "Frame.Acquire");
-            presentRecording = presentModel.begin();
+            const bool newFrame = !presentRecording;
+            presentRecording    = presentModel.begin();
+            // A slot can recur after empty frames. Its number is not a frame identity.
+            if (presentRecording && newFrame) deferredGraphRecorded_ = false;
         }
         if (presentRecording) {
             pollFrameCapture();

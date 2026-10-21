@@ -1996,6 +1996,7 @@ private:
     void resetDeferredFrameGraphs();
     /** @brief Draws one CSM cascade's pending casters into a FrameGraph pass CB. */
     void recordShadowCascadePass(vkb::FrameGraphPassContext &ctx, int cascade);
+    void recordShadowCascadeDraws(vk::CommandBuffer cb, int cascade, uint32_t size);
     /** @brief Draws the pending G-buffer list into a FrameGraph pass CB. */
     void recordGBufferPassDraws(vkb::FrameGraphPassContext &ctx);
 
