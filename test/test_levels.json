@@ -3680,6 +3680,7 @@
           "container.adaptersShareParityAndCanonicalLifecycleEnvelope",
           "fluids.volumeCoupling.attachmentReturnsGravityLoadAndTorque",
           "fluids.volumeCoupling.extremeMassRatioUsesObservableVelocityLimits",
+          "fluids.volumeCoupling.sdfObstacleTransfersImpulseToDynamicBody",
           "gameplay.control.climbingReprobesAuthorityForPlayerAndAutomation",
           "gameplay.control.climbingRejectsUnauthorizedCharacterWithoutProbeMutation",
           "procgen.physics.gtsTerrainCollider.replacesAtomicallyAndSurvivesWorldFirstTeardown",
