@@ -1,4 +1,5 @@
 // Deferred shadow/G-buffer graph ownership and recording.
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <string>
@@ -120,12 +121,14 @@ void Graphics::recordShadowCascadePass(vkb::FrameGraphPassContext &ctx, int casc
     // may be recorded on a JobSystem worker, so everything below must be
     // read-only: shadowCascadeDraws was captured by endShadowPass on the main
     // thread before the graph records.
-    auto              &cb     = ctx.commandBuffer();
-    const vk::Extent2D extent = ctx.extent();
-    const uint32_t     size =
-        extent.width ? extent.width
-                         : uint32_t(allocatedShadowMapSize > 0 ? allocatedShadowMapSize
-                                                               : ShadowSchemeSettings::current().resolvedAtlasMapSize());
+    auto &cb = ctx.commandBuffer();
+    // Adaptive CSM: each cascade may occupy only a top-left viewport of the
+    // shared depth-array layer. Local spot layers keep the full atlas extent.
+    uint32_t size = uint32_t(allocatedShadowMapSize > 0 ? allocatedShadowMapSize
+                                                        : ShadowSchemeSettings::current().resolvedAtlasMapSize());
+    if (cascade >= 0 && cascade < ShadowConfig::kCascades && mesh3dShadows.active) {
+        size = uint32_t(std::max(1, mesh3dShadows.cascadeMapSizes[cascade]));
+    }
     recordShadowCascadeDraws(cb, cascade, size);
 }
 

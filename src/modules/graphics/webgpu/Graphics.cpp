@@ -4275,6 +4275,14 @@ void Graphics::flushShadowPass(wgpu::RenderPassEncoder pass, int cascade) {
     auto& uboArena = currentUboArena();
     if (cascade < 0 || cascade >= ShadowConfig::kTotalLayers) return;
     if (!mesh3dShadowPipeline) createShadowPipelines();
+    // Adaptive CSM: render into a top-left viewport matching the cascade's
+    // allocated map size; shaders remap UVs via cascadeUvScale.
+    float viewport = float(shadowMapSize > 0 ? shadowMapSize : ShadowConfig::kMapSize);
+    if (cascade >= 0 && cascade < ShadowConfig::kCascades && mesh3dShadows.active) {
+        viewport = float(std::max(1, mesh3dShadows.cascadeMapSizes[cascade]));
+    }
+    pass.SetViewport(0.f, 0.f, viewport, viewport, 0.f, 1.f);
+    pass.SetScissorRect(0, 0, uint32_t(viewport), uint32_t(viewport));
     ensureUboArena(uboArena, uboArena.used + shadowCascadeDraws[cascade].size() * 256);
     for (auto& d : shadowCascadeDraws[cascade]) {
         auto* gpuMesh = static_cast<GpuMesh*>(d.mesh->gpuHandle);

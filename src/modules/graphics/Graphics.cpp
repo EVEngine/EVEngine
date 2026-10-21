@@ -1503,6 +1503,11 @@ void Graphics::expose(ssq::Class& cls) {
                 [](Graphics*, float meters) { (void)setShadowSchemeDirectionalMaxDistance(meters); });
     cls.addFunc("getShadowSchemeDirectionalMaxDistance",
                 [](Graphics*) { return ShadowSchemeSettings::current().directionalMaxDistance; });
+    cls.addFunc("setShadowSchemeAdaptiveCascadeResolution", [](Graphics*, bool enabled) {
+        ShadowSchemeSettings::current().enableAdaptiveCascadeResolution = enabled;
+    });
+    cls.addFunc("getShadowSchemeAdaptiveCascadeResolution",
+                [](Graphics*) { return ShadowSchemeSettings::current().enableAdaptiveCascadeResolution; });
     cls.addFunc("setCloudShadows", &Graphics::setCloudShadows);
     cls.addFunc("newMaterial", &Graphics::newMaterial);
     cls.addFunc("getRenderControl", &Graphics::getRenderControl);

@@ -95,6 +95,27 @@ struct EVENGINE_API_BACKENDS ShadowSchemeSettings {
     /** @brief Drop candidates below this score when paging view is valid. */
     float minPageScore = 1e-4f;
 
+    /**
+     * @brief Allocate different effective resolutions per CSM cascade from
+     * camera distance and screen coverage (shadow-edge / silhouette importance).
+     * Vulkan depth arrays require uniform layer extent, so the GPU still allocates
+     * one atlas edge; each cascade renders into a top-left viewport of its size
+     * and shaders remap UVs via `ShadowUBO::cascadeUvScale`.
+     */
+    bool enableAdaptiveCascadeResolution = true;
+    /**
+     * @brief Extra weight for cascades that cover more of the screen (edges /
+     * silhouettes that span the frame). 0 disables the screen term.
+     */
+    float adaptiveScreenWeight = 0.65f;
+    /** @brief Extra weight for near-camera distance (1/midSplit). */
+    float adaptiveDistanceWeight = 1.f;
+    /**
+     * @brief Hysteresis: only change a cascade size when the new candidate
+     * differs by at least this ratio (reduces flicker when scores wobble).
+     */
+    float adaptiveSizeHysteresis = 0.2f;
+
     /** @brief Borrow the process-wide settings object. */
     [[nodiscard]] static ShadowSchemeSettings& current();
 
@@ -110,6 +131,37 @@ struct EVENGINE_API_BACKENDS ShadowSchemeSettings {
      */
     [[nodiscard]] float resolvedDirectionalMaxDistance() const;
 };
+
+/**
+ * @brief Per-cascade effective map sizes chosen for one CSM build.
+ * @ownership Value type; copied into ShadowUpload for the frame.
+ */
+struct AdaptiveCascadeAllocation {
+    int sizes[ShadowConfig::kCascades]{ShadowConfig::kMapSize, ShadowConfig::kMapSize, ShadowConfig::kMapSize};
+    int atlasSize = ShadowConfig::kMapSize;
+};
+
+/**
+ * @brief Distribute atlas resolution across cascades by distance + screen coverage.
+ * @param atlasSize Shared depth-array edge length.
+ * @param splitEnds Camera-forward split ends (near..far); borrowed for the call only.
+ * @param screenCoverage Per-cascade projected screen area in [0,1] (0 = unknown); borrowed.
+ * @param settings Scheme toggles / weights / hysteresis.
+ * @ownership Caller retains `splitEnds` / `screenCoverage`; no pointer is retained.
+ * @lifetime Inputs must remain valid for the duration of the call.
+ * @cost Cheap CPU; no GPU work. May read/update process-wide size hysteresis cache.
+ */
+[[nodiscard]] EVENGINE_API_BACKENDS AdaptiveCascadeAllocation allocateAdaptiveCascadeResolutions(
+    int atlasSize, const float (&splitEnds)[ShadowConfig::kCascades + 1],
+    const float (&screenCoverage)[ShadowConfig::kCascades], const ShadowSchemeSettings& settings);
+
+/**
+ * @brief Estimate how much of the screen a cascade frustum slice covers.
+ * @return Area fraction in [0,1] of the NDC square covered by the projected slice.
+ */
+[[nodiscard]] EVENGINE_API_BACKENDS float estimateCascadeScreenCoverage(const glm::vec3& eye, const glm::vec3& target,
+                                                                        const glm::vec3& up, float fovYRad,
+                                                                        float aspect, float nearZ, float farZ);
 
 /** @brief Smallest supported shadow-map edge length. */
 inline constexpr int kMinShadowMapSize = 256;

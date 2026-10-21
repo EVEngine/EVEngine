@@ -1364,6 +1364,8 @@ TEST_CASE("Shadow.scheme.dynamicMapSizeAndMaxDistance") {
     const int   prevMap         = scheme.directionalMapSize;
     const int   prevLocal       = scheme.localMapSize;
     const float prevMaxDistance = scheme.directionalMaxDistance;
+    const bool  prevAdaptive    = scheme.enableAdaptiveCascadeResolution;
+    resetShadowLocalPageCache();
 
     CHECK_EQ(clampShadowMapSize(100), 256);
     CHECK_EQ(clampShadowMapSize(900), 1024);
@@ -1386,9 +1388,10 @@ TEST_CASE("Shadow.scheme.dynamicMapSizeAndMaxDistance") {
     const glm::vec3 target(0.f, 1.f, 0.f);
     const glm::vec3 up(0.f, 1.f, 0.f);
 
-    scheme.directionalMapSize     = 1024;
-    scheme.localMapSize           = 1024;
-    scheme.directionalMaxDistance = 64.f;
+    scheme.enableAdaptiveCascadeResolution = false;
+    scheme.directionalMapSize              = 1024;
+    scheme.localMapSize                    = 1024;
+    scheme.directionalMaxDistance          = 64.f;
     ShadowUpload low = buildDirectionalCSM(dir, eye, target, up, 1.047f, 16.f / 9.f, 0.1f, 500.f, 0.002f, 1.f);
 
     scheme.directionalMapSize = 4096;
@@ -1403,9 +1406,64 @@ TEST_CASE("Shadow.scheme.dynamicMapSizeAndMaxDistance") {
     CHECK(far.ubo.splits.z > 64.f);
     CHECK(far.ubo.splits.z <= 128.f + 1e-3f);
 
-    scheme.directionalMapSize     = prevMap;
-    scheme.localMapSize           = prevLocal;
-    scheme.directionalMaxDistance = prevMaxDistance;
+    scheme.directionalMapSize              = prevMap;
+    scheme.localMapSize                    = prevLocal;
+    scheme.directionalMaxDistance          = prevMaxDistance;
+    scheme.enableAdaptiveCascadeResolution = prevAdaptive;
+}
+
+TEST_CASE("Shadow.scheme.adaptiveCascadeResolutionByDistanceAndCoverage") {
+    auto       &scheme       = ShadowSchemeSettings::current();
+    const bool  prevAdaptive = scheme.enableAdaptiveCascadeResolution;
+    const int   prevMap      = scheme.directionalMapSize;
+    const int   prevLocal    = scheme.localMapSize;
+    const float prevMaxDist  = scheme.directionalMaxDistance;
+    resetShadowLocalPageCache();
+
+    scheme.enableAdaptiveCascadeResolution = true;
+    scheme.directionalMapSize              = 2048;
+    scheme.localMapSize                    = 1024;
+    scheme.directionalMaxDistance          = 64.f;
+
+    const float               splits[4]   = {0.1f, 4.f, 16.f, 64.f};
+    const float               coverage[3] = {0.9f, 0.4f, 0.1f};  // near covers most of the screen / edges
+    AdaptiveCascadeAllocation alloc       = allocateAdaptiveCascadeResolutions(2048, splits, coverage, scheme);
+    CHECK_EQ(alloc.atlasSize, 2048);
+    CHECK(alloc.sizes[0] >= alloc.sizes[1]);
+    CHECK(alloc.sizes[1] >= alloc.sizes[2]);
+    CHECK(alloc.sizes[0] >= 1024);
+    CHECK(alloc.sizes[2] < alloc.sizes[0]);
+
+    // Far-heavy coverage still keeps near >= mid >= far (distance preference).
+    const float farHeavy[3] = {0.1f, 0.2f, 0.95f};
+    resetShadowLocalPageCache();
+    AdaptiveCascadeAllocation farAlloc = allocateAdaptiveCascadeResolutions(2048, splits, farHeavy, scheme);
+    CHECK(farAlloc.sizes[0] >= farAlloc.sizes[1]);
+    CHECK(farAlloc.sizes[1] >= farAlloc.sizes[2]);
+
+    const glm::vec3 dir(0.2f, 1.f, 0.1f);
+    const glm::vec3 eye(0.f, 2.f, 8.f);
+    const glm::vec3 target(0.f, 1.f, 0.f);
+    const glm::vec3 up(0.f, 1.f, 0.f);
+    resetShadowLocalPageCache();
+    ShadowUpload u = buildDirectionalCSM(dir, eye, target, up, 1.047f, 16.f / 9.f, 0.1f, 500.f, 0.002f, 1.f);
+    REQUIRE(u.active);
+    CHECK_EQ(u.atlasMapSize, 2048);
+    CHECK(u.cascadeMapSizes[0] >= u.cascadeMapSizes[1]);
+    CHECK(u.cascadeMapSizes[1] >= u.cascadeMapSizes[2]);
+    CHECK(u.ubo.cascadeUvScale.x >= u.ubo.cascadeUvScale.y - 1e-5f);
+    CHECK(u.ubo.cascadeUvScale.y >= u.ubo.cascadeUvScale.z - 1e-5f);
+    CHECK_EQ(u.ubo.cascadeUvScale.w, 2048.f);
+    // Near cascade denser world texels than far when adaptive shrinks far maps.
+    if (u.cascadeMapSizes[0] > u.cascadeMapSizes[2]) {
+        CHECK(u.ubo.cascadeTexel.x < u.ubo.cascadeTexel.z);
+    }
+
+    scheme.enableAdaptiveCascadeResolution = prevAdaptive;
+    scheme.directionalMapSize              = prevMap;
+    scheme.localMapSize                    = prevLocal;
+    scheme.directionalMaxDistance          = prevMaxDist;
+    resetShadowLocalPageCache();
 }
 }  // namespace test_Shadow3D_unit
 #endif

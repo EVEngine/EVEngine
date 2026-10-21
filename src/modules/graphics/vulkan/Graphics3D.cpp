@@ -288,13 +288,17 @@ void Graphics::begin3DFrameToCanvas(Canvas *canvas) {
             vk::RenderPassBeginInfo shadowBegin{};
             shadowBegin.renderPass      = shadowRenderPass;
             shadowBegin.framebuffer     = slot.framebuffers[cascade];
-            const uint32_t mapSize =
+            const uint32_t atlasSize =
                 uint32_t(allocatedShadowMapSize > 0 ? allocatedShadowMapSize : ShadowConfig::kMapSize);
-            shadowBegin.renderArea      = vk::Rect2D{{0, 0}, {mapSize, mapSize}};
+            uint32_t viewportSize = atlasSize;
+            if (cascade >= 0 && cascade < ShadowConfig::kCascades && mesh3dShadows.active) {
+                viewportSize = uint32_t(std::max(1, mesh3dShadows.cascadeMapSizes[cascade]));
+            }
+            shadowBegin.renderArea      = vk::Rect2D{{0, 0}, {atlasSize, atlasSize}};
             shadowBegin.clearValueCount = 1;
             shadowBegin.pClearValues    = &clear;
             offscreen3DCB.beginRenderPass(shadowBegin, vk::SubpassContents::eInline);
-            recordShadowCascadeDraws(offscreen3DCB, cascade, mapSize);
+            recordShadowCascadeDraws(offscreen3DCB, cascade, viewportSize);
             offscreen3DCB.endRenderPass();
             shadowCascadeDraws[cascade].clear();
         }
