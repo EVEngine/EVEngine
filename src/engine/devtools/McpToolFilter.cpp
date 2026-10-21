@@ -291,7 +291,7 @@ std::string mcpToolFilteredPayload(std::string_view name) {
 
     std::string error = "tool '" + std::string(name) +
                         "' is hidden by EVE_MCP_TOOLSET / EVE_MCP_READONLY / EVE_MCP_EXCLUDE / EVE_MCP_PROFILE";
-    std::string hint = "Adjust env filters or call eve_status; use EVE_MCP_TOOLSET=all to advertise every tool";
+    std::string hint  = "Adjust env filters or call eve_status; use EVE_MCP_TOOLSET=all to advertise every tool";
     std::vector<std::string>          next = {"eve_status"};
     std::optional<McpProfileEscalate> escalate;
     if (!activeProfile.empty() && !mcpProfileAllowsTool(activeProfile, name)) {

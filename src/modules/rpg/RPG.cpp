@@ -1,37 +1,37 @@
 #include "rpg/RPG.h"
-#include "common/PersistentId.h"
-#include "common/SubjectRef.h"
+#include "common/Identity.h"
 #include "common/SquirrelBinding.h"
+#include "common/SubjectRef.h"
 #include "rpg/Battle.h"
 #include "rpg/BattleControl.h"
-#include "rpg/BattleVictory.h"
 #include "rpg/BattleSystem.h"
 #include "rpg/BattleTactics.h"
+#include "rpg/BattleVictory.h"
 #include "rpg/Class.h"
 #include "rpg/Effect.h"
-#include "rpg/EquipmentSystem.h"
 #include "rpg/EncounterCatalogue.h"
+#include "rpg/EquipmentSystem.h"
 #include "rpg/GameState.h"
 #include "rpg/LevelSystem.h"
+#include "rpg/LootSystem.h"
 #include "rpg/Party.h"
 #include "rpg/ProductControl.h"
-#include "rpg/LootSystem.h"
 #include "rpg/Quest.h"
 #include "rpg/QuestReward.h"
 #include "rpg/RPGSaveSession.h"
-#include "rpg/Skill.h"
-#include "rpg/StatusSystem.h"
-#include "rpg/StoryEvent.h"
 #include "rpg/RpgDialect.h"
-#include "rpg/SkillSystem.h"
 #include "rpg/Settlement.h"
 #include "rpg/ShopCatalogue.h"
 #include "rpg/ShopTransaction.h"
+#include "rpg/Skill.h"
+#include "rpg/SkillSystem.h"
+#include "rpg/StatusSystem.h"
+#include "rpg/StoryEvent.h"
 #include "rpg/Tracker.h"
 #include "rpg/Trait.h"
 #include "rpg/VitalsSystem.h"
-#include "rpg/WorldState.h"
 #include "rpg/WorldInteraction.h"
+#include "rpg/WorldState.h"
 
 #include <random>
 
@@ -42,7 +42,10 @@ namespace eve::rpg {
 
 Module_IMPL(RPG, new RPG());
 
+RPG::RPG() = default;
 RPG::~RPG() { clearGameplayControls(); }
+RPG::RPG(RPG&&) noexcept            = default;
+RPG& RPG::operator=(RPG&&) noexcept = default;
 
 Party *RPG::newParty() { return new Party(); }
 
@@ -412,15 +415,15 @@ Result<std::unique_ptr<ProductControl>> RPG::newProductControl(
         std::make_unique<ProductControl>(instance, *gameState, *tracker, *bag));
 }
 
-Result<void> RPG::publishBattleGameplay(Battle *battle, const std::string &instanceId) {
+Result<void> RPG::publishBattleGameplay(Battle* battle, const std::string& instanceId) {
     const auto parsed = PersistentId::parse(instanceId);
     if (!parsed)
-        return Result<void>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "instanceId must be a canonical persistent id", "instanceId"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "instanceId must be a canonical persistent id", "instanceId"));
     const auto instance = SubjectRef::fromPersistentId(*parsed);
-    for (const auto &control : battleControls_) {
+    for (const auto& control : battleControls_) {
         if (!control) continue;
-        for (const auto &published : control->gameplayInstances()) {
+        for (const auto& published : control->gameplayInstances()) {
             if (published.format() == instance.format())
                 return Result<void>::failure(Diagnostic::error(
                     DiagnosticCode::Conflict, "battle gameplay instance is already published", "instanceId"));
@@ -432,16 +435,16 @@ Result<void> RPG::publishBattleGameplay(Battle *battle, const std::string &insta
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
-Result<void> RPG::publishProductGameplay(const std::string &instanceId, GameState *gameState, Tracker *tracker,
-                                         inventory::Bag *bag) {
+Result<void> RPG::publishProductGameplay(const std::string& instanceId, GameState* gameState, Tracker* tracker,
+                                         inventory::Bag* bag) {
     const auto parsed = PersistentId::parse(instanceId);
     if (!parsed)
-        return Result<void>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "instanceId must be a canonical persistent id", "instanceId"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "instanceId must be a canonical persistent id", "instanceId"));
     const auto instance = SubjectRef::fromPersistentId(*parsed);
-    for (const auto &control : productControls_) {
+    for (const auto& control : productControls_) {
         if (!control) continue;
-        for (const auto &published : control->gameplayInstances()) {
+        for (const auto& published : control->gameplayInstances()) {
             if (published.format() == instance.format())
                 return Result<void>::failure(Diagnostic::error(
                     DiagnosticCode::Conflict, "product gameplay instance is already published", "instanceId"));
@@ -453,15 +456,15 @@ Result<void> RPG::publishProductGameplay(const std::string &instanceId, GameStat
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
-Result<void> RPG::unpublishBattleGameplay(const std::string &instanceId) {
+Result<void> RPG::unpublishBattleGameplay(const std::string& instanceId) {
     const auto parsed = PersistentId::parse(instanceId);
     if (!parsed)
-        return Result<void>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "instanceId must be a canonical persistent id", "instanceId"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "instanceId must be a canonical persistent id", "instanceId"));
     const std::string wanted = SubjectRef::fromPersistentId(*parsed).format();
     for (auto it = battleControls_.begin(); it != battleControls_.end(); ++it) {
         if (!*it) continue;
-        for (const auto &published : (*it)->gameplayInstances()) {
+        for (const auto& published : (*it)->gameplayInstances()) {
             if (published.format() == wanted) {
                 battleControls_.erase(it);
                 return Result<void>::success(Status::success(StatusCode::Applied));
@@ -472,15 +475,15 @@ Result<void> RPG::unpublishBattleGameplay(const std::string &instanceId) {
         Diagnostic::error(DiagnosticCode::NotFound, "battle gameplay instance is not published", "instanceId"));
 }
 
-Result<void> RPG::unpublishProductGameplay(const std::string &instanceId) {
+Result<void> RPG::unpublishProductGameplay(const std::string& instanceId) {
     const auto parsed = PersistentId::parse(instanceId);
     if (!parsed)
-        return Result<void>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "instanceId must be a canonical persistent id", "instanceId"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "instanceId must be a canonical persistent id", "instanceId"));
     const std::string wanted = SubjectRef::fromPersistentId(*parsed).format();
     for (auto it = productControls_.begin(); it != productControls_.end(); ++it) {
         if (!*it) continue;
-        for (const auto &published : (*it)->gameplayInstances()) {
+        for (const auto& published : (*it)->gameplayInstances()) {
             if (published.format() == wanted) {
                 productControls_.erase(it);
                 return Result<void>::success(Status::success(StatusCode::Applied));
@@ -496,9 +499,7 @@ void RPG::clearGameplayControls() {
     productControls_.clear();
 }
 
-int RPG::gameplayControlCount() const {
-    return static_cast<int>(battleControls_.size() + productControls_.size());
-}
+int RPG::gameplayControlCount() const { return static_cast<int>(battleControls_.size() + productControls_.size()); }
 
 GameState *RPG::newGameState() { return new GameState(); }
 
@@ -788,9 +789,9 @@ void RPG::expose(ssq::Table &table) {
     actor.addFunc("setCurrent",
                   [](RPGActor *a, const std::string &r, float value) { if (a) a->setCurrent(r, double(value)); });
     actor.addFunc("takeDamage",
-                  [](RPGActor *a, const std::string &resource, float amount, const std::string &source) -> float {
-        return a ? float(a->takeDamage(resource, double(amount), source)) : 0.f;
-    });
+                  [](RPGActor* a, const std::string& resource, float amount, const std::string& source) -> float {
+                      return a ? float(a->takeDamage(resource, double(amount), source)) : 0.f;
+                  });
     actor.addFunc("heal", [](RPGActor *a, const std::string &r, float amount) -> float {
         return a ? float(a->heal(r, double(amount))) : 0.f;
     });
@@ -1555,61 +1556,37 @@ void RPG::expose(ssq::Class &cls) {
                                                   double(critChance), hitChance);
                 });
     cls.addFunc("clearSkillDamage", &RPG::clearSkillDamage);
-    cls.addFunc("publishBattleGameplay",
-                [vm = cls.getHandle()](RPG *self, Battle *battle, const std::string &instanceId) {
-                    ssq::Table result(vm);
-                    if (self == nullptr) {
-                        result.set("ok", false);
-                        result.set("message", std::string("rpg module unavailable"));
-                        return result;
-                    }
-                    const auto published = self->publishBattleGameplay(battle, instanceId);
-                    result.set("ok", published.ok());
-                    result.set("message", published.ok() ? std::string("published") : published.status().describe());
-                    result.set("domain", std::string("rpg.battle"));
-                    return result;
-                });
-    cls.addFunc("publishProductGameplay",
-                [vm = cls.getHandle()](RPG *self, const std::string &instanceId, GameState *gameState,
-                                       Tracker *tracker, inventory::Bag *bag) {
-                    ssq::Table result(vm);
-                    if (self == nullptr) {
-                        result.set("ok", false);
-                        result.set("message", std::string("rpg module unavailable"));
-                        return result;
-                    }
-                    const auto published = self->publishProductGameplay(instanceId, gameState, tracker, bag);
-                    result.set("ok", published.ok());
-                    result.set("message", published.ok() ? std::string("published") : published.status().describe());
-                    result.set("domain", std::string("rpg.product"));
-                    return result;
-                });
-    cls.addFunc("unpublishBattleGameplay",
-                [vm = cls.getHandle()](RPG *self, const std::string &instanceId) {
-                    ssq::Table result(vm);
-                    const auto unpublished =
-                        self == nullptr
-                            ? Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed,
-                                                                      "rpg module unavailable", "self"))
-                            : self->unpublishBattleGameplay(instanceId);
-                    result.set("ok", unpublished.ok());
-                    result.set("message",
-                               unpublished.ok() ? std::string("unpublished") : unpublished.status().describe());
-                    return result;
-                });
-    cls.addFunc("unpublishProductGameplay",
-                [vm = cls.getHandle()](RPG *self, const std::string &instanceId) {
-                    ssq::Table result(vm);
-                    const auto unpublished =
-                        self == nullptr
-                            ? Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed,
-                                                                      "rpg module unavailable", "self"))
-                            : self->unpublishProductGameplay(instanceId);
-                    result.set("ok", unpublished.ok());
-                    result.set("message",
-                               unpublished.ok() ? std::string("unpublished") : unpublished.status().describe());
-                    return result;
-                });
+    cls.addFunc(
+        "publishBattleGameplay", [vm = cls.getHandle()](RPG* self, Battle* battle, const std::string& instanceId) {
+            if (!self)
+                return eve::script::projectResult(
+                    vm, Result<void>::failure(Diagnostic::error(
+                            DiagnosticCode::InvalidArgument, "publishBattleGameplay requires an RPG module", "rpg")));
+            return eve::script::projectResult(vm, self->publishBattleGameplay(battle, instanceId));
+        });
+    cls.addFunc(
+        "publishProductGameplay", [vm = cls.getHandle()](RPG* self, const std::string& instanceId, GameState* gameState,
+                                                         Tracker* tracker, inventory::Bag* bag) {
+            if (!self)
+                return eve::script::projectResult(
+                    vm, Result<void>::failure(Diagnostic::error(
+                            DiagnosticCode::InvalidArgument, "publishProductGameplay requires an RPG module", "rpg")));
+            return eve::script::projectResult(vm, self->publishProductGameplay(instanceId, gameState, tracker, bag));
+        });
+    cls.addFunc("unpublishBattleGameplay", [vm = cls.getHandle()](RPG* self, const std::string& instanceId) {
+        if (!self)
+            return eve::script::projectResult(
+                vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                            "unpublishBattleGameplay requires an RPG module", "rpg")));
+        return eve::script::projectResult(vm, self->unpublishBattleGameplay(instanceId));
+    });
+    cls.addFunc("unpublishProductGameplay", [vm = cls.getHandle()](RPG* self, const std::string& instanceId) {
+        if (!self)
+            return eve::script::projectResult(
+                vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                            "unpublishProductGameplay requires an RPG module", "rpg")));
+        return eve::script::projectResult(vm, self->unpublishProductGameplay(instanceId));
+    });
     cls.addFunc("clearGameplayControls", &RPG::clearGameplayControls);
     cls.addFunc("getGameplayControlCount", &RPG::gameplayControlCount);
     cls.addFunc("newBattle", &RPG::newBattle);

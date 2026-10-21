@@ -132,9 +132,8 @@ eve::Result<void> validateMapObjects(std::span<const MapObject> objects, std::st
     const auto* types = typesValue ? typesValue->getIf<eve::Value::Array>() : nullptr;
     if (!types)
         return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::TypeMismatch,
-            "types must be an array of {type,properties:[{name,kind}]} rules", "$contract.types", {},
-            "map.object-contract"));
+            eve::DiagnosticCode::TypeMismatch, "types must be an array of {type,properties:[{name,kind}]} rules",
+            "$contract.types", {}, "map.object-contract"));
 
     bool requireUniqueNames = true;
     bool allowUnknownTypes = false;

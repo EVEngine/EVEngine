@@ -548,7 +548,7 @@ Source directory: `src/modules/demo`. Status: **task-tests-recorded**. Local cas
 
 ### devtools
 
-Source directory: `src/modules/devtools`. Status: **local-rules-recorded**. Local cases: **71**.
+Source directory: `src/modules/devtools`. Status: **local-rules-recorded**. Local cases: **74**.
 
 - Unit: [unit/devtools/devtools_tests.cpp](unit/devtools/devtools_tests.cpp)
 - Integration task `concurrency`: [concurrency_graphics_tests.cpp](integration/concurrency/concurrency_graphics_tests.cpp)
