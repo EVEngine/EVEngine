@@ -4073,8 +4073,16 @@
       ]
     },
     "integration/render-presentation/fluids_shore_backend_tests.cpp": {
-      "role": "tests", "default": "render-offscreen", "module": "fluids", "task": "render-presentation",
-      "cases": {"render-offscreen": ["fluids.shore.gpuMatchesCpuOnSlopingWetDryBed", "fluids.shore.scriptSurfaceSyncChecksInputsAndPublishesMesh"]}
+      "role": "tests",
+      "default": "render-offscreen",
+      "module": "fluids",
+      "task": "render-presentation",
+      "cases": {
+        "render-offscreen": [
+          "fluids.shore.gpuMatchesCpuOnSlopingWetDryBed",
+          "fluids.shore.scriptSurfaceSyncChecksInputsAndPublishesMesh"
+        ]
+      }
     },
     "integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp": {
       "role": "tests",
@@ -6388,13 +6396,20 @@
           "avatar.vrm.parseVersionAndHumanoid",
           "avatar.vrm.rejectTruncatedAndUnknownVersion",
           "avatar.vrm.rejectInvalidNodeReference",
-          "avatar.vrm.failedLoadPreservesPath"
+          "avatar.vrm.failedLoadPreservesPath",
+          "avatar.appearance.signedChannelsAndCorrective",
+          "avatar.appearance.atomicWardrobeAndHistory",
+          "avatar.appearance.rejectInvalidStateAndDefinition",
+          "avatar.appearance.snapshotRoundTripAndProfileIsolation",
+          "avatar.appearance.morphProjectionValidatesBeforeWriting",
+          "avatar.appearance.morphNormalsBlendAndRejectAtomically"
         ]
       },
       "module": "avatar",
       "origins": [
         "avatar.cpp",
-        "avatar_vrm.cpp"
+        "avatar_vrm.cpp",
+        "avatar_appearance.cpp"
       ]
     },
     "unit/building/building.cpp": {
@@ -7449,13 +7464,15 @@
       "role": "tests",
       "default": "local-logic",
       "module": "fluids",
-      "cases": {"local-logic": [
-        "fluids.shore.levelLakeStaysAtRestOverWetDrySlope",
-        "fluids.shore.invalidInitializationIsAtomic",
-        "fluids.shore.waveRunsUpAndReturnsWithoutNegativeDepth",
-        "fluids.shore.visualGainPreservesLevelRestSurface",
-        "fluids.shore.airAndDryLandCollidersDoNotCreateWater"
-      ]}
+      "cases": {
+        "local-logic": [
+          "fluids.shore.levelLakeStaysAtRestOverWetDrySlope",
+          "fluids.shore.invalidInitializationIsAtomic",
+          "fluids.shore.waveRunsUpAndReturnsWithoutNegativeDepth",
+          "fluids.shore.visualGainPreservesLevelRestSurface",
+          "fluids.shore.airAndDryLandCollidersDoNotCreateWater"
+        ]
+      }
     },
     "unit/fluids/fluids_solver_tests.cpp": {
       "role": "tests",
@@ -12032,6 +12049,20 @@
         ]
       },
       "module": "material_editor"
+    },
+    "integration/avatar-appearance/avatar_appearance_script.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "avatar.appearance.scriptBoundaryUsesCheckedResults"
+        ]
+      },
+      "module": "avatar",
+      "origins": [
+        "avatar_appearance.cpp"
+      ],
+      "task": "avatar-appearance"
     }
   }
 }
