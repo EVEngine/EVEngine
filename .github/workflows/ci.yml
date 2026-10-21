@@ -1311,7 +1311,9 @@ jobs:
         run: python3 scripts/resource_format_suite.py --report build/resource-format-inventory.json
 
       - name: Run linux unit tests
-        timeout-minutes: 30
+        # Run 39399072292 passed 6628/7045 cases before the 30-minute
+        # guard fired. Keep headroom for the expanded suite and runner variance.
+        timeout-minutes: 45
         env:
           ALSOFT_DRIVERS: "null"
           EVENGINE_FORMAT_EXPORT_DIR: "${{ github.workspace }}/build/resource-format-exports"
