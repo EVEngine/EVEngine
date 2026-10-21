@@ -641,12 +641,12 @@ Result<void> VolumeFluid::stepWithColliders(float seconds, unsigned substeps,
                                             std::span<const VolumeFluidCollider>    colliders,
                                             std::span<const VolumeFluidSdfCollider> sdfColliders,
                                             std::span<const VolumeFluidThermalRule> rules) {
-    auto previousColliders      = impl_->colliders;
-    auto previousRotations      = impl_->colliderRotations;
-    auto previousAttachments    = impl_->attachments;
-    auto previousSdfColliders   = impl_->sdfColliders;
-    auto previousSdfRotations   = impl_->sdfColliderRotations;
-    auto configuredAnalytic     = setColliders(colliders);
+    auto previousColliders    = impl_->colliders;
+    auto previousRotations    = impl_->colliderRotations;
+    auto previousAttachments  = impl_->attachments;
+    auto previousSdfColliders = impl_->sdfColliders;
+    auto previousSdfRotations = impl_->sdfColliderRotations;
+    auto configuredAnalytic   = setColliders(colliders);
     if (!configuredAnalytic) return configuredAnalytic;
     auto configuredSdf = setSdfColliders(sdfColliders);
     if (!configuredSdf) {

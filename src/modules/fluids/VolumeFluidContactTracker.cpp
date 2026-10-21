@@ -196,11 +196,9 @@ Result<unsigned> VolumeFluidCoupling::step(physics::World3D& world, VolumeFluid&
         auto*           body = resolved.value();
         const glm::quat orientation(body->getRotW(), body->getRotX(), body->getRotY(), body->getRotZ());
         auto            sample = binding.local;
-        const auto      origin =
-            body->localToWorldPointOwned(sample.position.x, sample.position.y, sample.position.z);
+        const auto      origin = body->localToWorldPointOwned(sample.position.x, sample.position.y, sample.position.z);
         if (!origin) return Result<unsigned>::failure(origin.status());
-        const auto velocity =
-            body->getLocalPointVelocityOwned(sample.position.x, sample.position.y, sample.position.z);
+        const auto velocity = body->getLocalPointVelocityOwned(sample.position.x, sample.position.y, sample.position.z);
         if (!velocity) return Result<unsigned>::failure(velocity.status());
         sample.position        = {origin.value().x, origin.value().y, origin.value().z};
         sample.velocity        = {velocity.value().x, velocity.value().y, velocity.value().z};
