@@ -464,6 +464,8 @@ if(_has_physics OR _eve_physics_core_profile OR EVENGINE_BUILD_PHYSICS_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/SimulationBackend.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3D.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3DMover.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3DQueries.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/WorldSnapshot.cpp)
   set(_eve_physics_core_boundary_files ${_eve_physics_core_sources}
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/Body.h

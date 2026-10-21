@@ -409,6 +409,7 @@ function(main)
         message(STATUS "webgpu (native Dawn) build: unit tests enabled")
     endif()
     add_subdirectory(external/zeroerr)
+    include(${CMAKE_SOURCE_DIR}/cmake/zeroerr_assertion_contract.cmake)
     target_compile_definitions(zeroerr PUBLIC ZEROERR_NO_MAIN)
     # Strip ASSERT macros in non-Debug builds (upstream ZEROERR_NO_ASSERT under
     # NDEBUG is commented out), unless assertions were explicitly enabled with

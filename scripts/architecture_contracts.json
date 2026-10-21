@@ -593,6 +593,162 @@
       ],
       "removal_condition": "remove the debt entry when the corresponding migration or documentation is complete; expiry forces review before renewal.",
       "max_net_growth": 0
+    },
+    {
+      "id": "physics-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/physics/**",
+      "owner": "physics-maintainers",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACES",
+      "reason": "Declare the existing physics boundary and the extracted capsule hot path without adding providers or a second mover API.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/physics/PhysicsCapabilities.cpp",
+        "src/modules/physics/Physics.cpp",
+        "src/modules/physics/World3DMover.cpp",
+        "docs/dev/2026-10-21-collision-baseline.md",
+        "src/modules/physics/World3DQueries.cpp",
+        "src/modules/physics/World3DQueryInternal.h"
+      ],
+      "tests": [
+        "test/physics_mover_grounding.cpp",
+        "test/climbing_grounding.cpp",
+        "test/physics_core_boundary.cpp",
+        "test/physics_accelerator_domains.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "eve::IPhysicsQuery",
+          "impl": "PhysicsQueryImpl",
+          "absent_behavior": "Consumer observes no provider."
+        },
+        {
+          "capability": "eve::IProcgenWorldQuery",
+          "impl": "ProcgenWorldQueryImpl",
+          "absent_behavior": "Consumer observes no provider."
+        },
+        {
+          "capability": "eve::ICameraObstructionQuery",
+          "impl": "CameraObstructionQueryImpl",
+          "absent_behavior": "Consumer observes no provider."
+        },
+        {
+          "capability": "eve::artifact::IPhysicsArtifactAdapter",
+          "impl": "PhysicsArtifactProvider",
+          "absent_behavior": "Publication reports unsupported adapter."
+        },
+        {
+          "capability": "eve::action::IActionStateWindowSink",
+          "impl": "action_adapter::ActionCollisionIgnoreState",
+          "absent_behavior": "Action window has no physics collision-ignore listener."
+        },
+        {
+          "capability": "IAcceleratorBackendProvider",
+          "impl": "BackendRegistration provider listener",
+          "absent_behavior": "Explicit CPU fallback with selection diagnostics."
+        }
+      ],
+      "requires": [
+        {
+          "capability": "IAcceleratorBackendProvider",
+          "required": false,
+          "fallback": "CPU selection with structured diagnostics; provider present/absent covered in physics_accelerator_domains.cpp."
+        }
+      ],
+      "data": "World owns backend bodies/shapes/joints and transient query buffers; owning query values survive subsequent calls. Existing PhysicsLink catalogue supplies cross-domain lifecycle rules.",
+      "emits": [
+        {
+          "event": "World3D ContactEvent/TriggerEvent/HitEvent/JointStressEvent",
+          "ordering": "Batches from completed backend steps only.",
+          "dispatch_phase": "Poll after successful physics step; no unknown callback during mover queries."
+        }
+      ],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.TerrainLoadGravityState",
+          "methods_from": "src/modules/physics/Physics.cpp:Physics::expose",
+          "ownership": "World/Body/Shape/Joint instances are world-owned borrowed script objects; Physics factories define standalone ownership."
+        },
+        {
+          "script_class": "eve.World",
+          "methods_from": "src/modules/physics/Physics.cpp:Physics::expose",
+          "ownership": "World/Body/Shape/Joint instances are world-owned borrowed script objects; Physics factories define standalone ownership."
+        },
+        {
+          "script_class": "eve.World3D",
+          "methods_from": "src/modules/physics/Physics.cpp:Physics::expose",
+          "ownership": "World/Body/Shape/Joint instances are world-owned borrowed script objects; Physics factories define standalone ownership."
+        },
+        {
+          "script_class": "eve.DistanceField3D",
+          "methods_from": "src/modules/physics/Physics.cpp:Physics::expose",
+          "ownership": "World/Body/Shape/Joint instances are world-owned borrowed script objects; Physics factories define standalone ownership."
+        },
+        {
+          "script_class": "eve.Body",
+          "methods_from": "src/modules/physics/Physics.cpp:Physics::expose",
+          "ownership": "World/Body/Shape/Joint instances are world-owned borrowed script objects; Physics factories define standalone ownership."
+        },
+        {
+          "script_class": "eve.Body3D",
+          "methods_from": "src/modules/physics/Physics.cpp:Physics::expose",
+          "ownership": "World/Body/Shape/Joint instances are world-owned borrowed script objects; Physics factories define standalone ownership."
+        },
+        {
+          "script_class": "eve.Joint3D",
+          "methods_from": "src/modules/physics/Physics.cpp:Physics::expose",
+          "ownership": "World/Body/Shape/Joint instances are world-owned borrowed script objects; Physics factories define standalone ownership."
+        },
+        {
+          "script_class": "eve.Fixture",
+          "methods_from": "src/modules/physics/Physics.cpp:Physics::expose",
+          "ownership": "World/Body/Shape/Joint instances are world-owned borrowed script objects; Physics factories define standalone ownership."
+        },
+        {
+          "script_class": "eve.Shape3D",
+          "methods_from": "src/modules/physics/Physics.cpp:Physics::expose",
+          "ownership": "World/Body/Shape/Joint instances are world-owned borrowed script objects; Physics factories define standalone ownership."
+        },
+        {
+          "script_class": "eve.SoftBody3D",
+          "methods_from": "src/modules/physics/Physics.cpp:Physics::expose",
+          "ownership": "World/Body/Shape/Joint instances are world-owned borrowed script objects; Physics factories define standalone ownership."
+        },
+        {
+          "script_class": "eve.SoftBody3DRenderer",
+          "methods_from": "src/modules/physics/Physics.cpp:Physics::expose",
+          "ownership": "World/Body/Shape/Joint instances are world-owned borrowed script objects; Physics factories define standalone ownership."
+        },
+        {
+          "script_class": "eve.Fluid2D",
+          "methods_from": "src/modules/physics/Physics.cpp:Physics::expose",
+          "ownership": "World/Body/Shape/Joint instances are world-owned borrowed script objects; Physics factories define standalone ownership."
+        },
+        {
+          "script_class": "eve.Physics",
+          "methods_from": "src/modules/physics/Physics.cpp:Physics::expose"
+        }
+      ],
+      "protocol": [],
+      "thread_affinity": "Owning physics simulation thread; registration at module startup. Mover invokes backend-local synchronous callbacks only.",
+      "trim": {
+        "level": "L1",
+        "absent_profile": "physics-core-only excludes the Physics facade and graphics; curated domain object target includes World3DMover.cpp. L2/L3/L4 trim is not claimed here.",
+        "evidence": "src/modules/CMakeLists.txt:EVPhysicsCoreCheck"
+      },
+      "hot_path": [
+        "src/modules/physics/World3DMover.cpp",
+        "src/modules/physics/World3DQueries.cpp",
+        "src/modules/physics/DistanceField3D.cpp"
+      ],
+      "cost_notes": [
+        {
+          "api": "World3D::moveCapsule / moveCapsuleOwned",
+          "shape": "owned-result",
+          "why": "Bounded movement solve plus one final contact query; no allocation or registry lookup added to the mover."
+        }
+      ]
     }
   ]
 }

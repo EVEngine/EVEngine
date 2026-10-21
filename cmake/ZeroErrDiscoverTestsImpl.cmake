@@ -103,7 +103,7 @@ set(_content "")
 foreach(_basename IN LISTS _bundle_files)
   string(APPEND _content
     "add_test(\"bundle/${_basename}\" \"${ZEROERR_EXE}\" \"--quiet\" \"--file=.*${_basename}\")\n"
-    "set_tests_properties(\"bundle/${_basename}\" PROPERTIES LABELS \"bundle\" WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\")\n")
+    "set_tests_properties(\"bundle/${_basename}\" PROPERTIES FAIL_REGULAR_EXPRESSION \"(WARN|ERROR) Assertion Failed\" LABELS \"bundle\" WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\")\n")
   foreach(_entry IN LISTS _cases)
     string(REPLACE "|" ";" _parts "${_entry}")
     list(GET _parts 0 _name)
@@ -113,24 +113,20 @@ foreach(_basename IN LISTS _bundle_files)
       # cases from changed test translation units without relying on naming
       # conventions inside TEST_CASE strings.
       set(_labels "source:${_basename}")
-      if(_name STREQUAL "ClassicScenes.perf.maxFps")
+      if(_name STREQUAL "ClassicScenes.perf.maxFps" OR _name MATCHES "^physics\\.benchmark\\.")
         list(APPEND _labels "benchmark")
       endif()
       # CTest include files use classic add_test(name exe [args...]), not NAME/COMMAND keywords.
       string(APPEND _content
         "add_test(\"${_name}\" \"${ZEROERR_EXE}\" \"--testcase=^${_name}$\")\n"
         "set_tests_properties(\"${_name}\" PROPERTIES LABELS \"${_labels}\" WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\")\n")
+      string(APPEND _content
+        "set_tests_properties(\"${_name}\" PROPERTIES FAIL_REGULAR_EXPRESSION \"(WARN|ERROR) Assertion Failed\")\n")
       if(_name MATCHES "^ClassicScenes[.]")
         # These asset-dependent cases already return early with these diagnostics.
         # Expose that outcome as skipped rather than a zero-assertion pass.
         string(APPEND _content
           "set_tests_properties(\"${_name}\" PROPERTIES SKIP_REGULAR_EXPRESSION \"ClassicScenes.*: missing\")\n")
-      endif()
-      if(_name MATCHES "^resourceFormats\\.")
-        # Helpers must receive TestContext, but fail closed if a future helper
-        # logs an assertion without propagating it to zeroerr's exit status.
-        string(APPEND _content
-          "set_tests_properties(\"${_name}\" PROPERTIES FAIL_REGULAR_EXPRESSION \"Assertion Failed\")\n")
       endif()
     endif()
   endforeach()

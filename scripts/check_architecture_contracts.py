@@ -56,6 +56,7 @@ RULES = (
     "optional-capability",
     "backend-contract",
     "debt-metadata",
+    "module-interface",
 )
 
 COMMON_REQUIRED = {
@@ -111,6 +112,10 @@ RULE_REQUIRED = {
     "debt-metadata": {
         "removal_condition",
         "max_net_growth",
+    },
+    "module-interface": {
+        "provides", "requires", "data", "emits", "observes", "binds", "protocol",
+        "thread_affinity", "trim", "hot_path", "cost_notes",
     },
 }
 
@@ -269,6 +274,16 @@ def validate_catalogue(metadata: Any, today: date | None = None) -> list[str]:
                 growth = entry.get("max_net_growth")
                 if not isinstance(growth, int) or growth < 0:
                     errors.append(f"{prefix}.max_net_growth must be a non-negative integer")
+            if rule == "module-interface":
+                for field in ("provides", "requires", "emits", "observes", "binds", "protocol", "cost_notes"):
+                    if not isinstance(entry.get(field), list):
+                        errors.append(f"{prefix}.{field} must be an array (empty when not applicable)")
+                if not isinstance(entry.get("trim"), Mapping):
+                    errors.append(f"{prefix}.trim must declare the evidence level")
+                if not nonempty_string(entry.get("data")) or not nonempty_string(entry.get("thread_affinity")):
+                    errors.append(f"{prefix} must describe data ownership and thread affinity")
+                if not nonempty_list(entry.get("hot_path")):
+                    errors.append(f"{prefix}.hot_path must name the runtime files")
 
     missing = sorted(set(RULES) - covered)
     if missing:

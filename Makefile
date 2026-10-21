@@ -209,7 +209,7 @@ check/quality-metadata:
 check/nodiscard:
 	python3 scripts/check_nodiscard.py
 
-# Validate the ten top-level architecture contracts and lint changed C/C++
+# Validate the top-level architecture contracts and lint changed C/C++
 # lines. The source-only gate never configures or builds the engine.
 # The unit test runs with -X utf8: its own stdout/stderr would otherwise follow
 # the host ANSI code page (cp936 on a Chinese Windows) and mangle test output.

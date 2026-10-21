@@ -433,6 +433,10 @@ TEST_CASE("climbing.ledgeGrabTransitionsToHangAndDrop") {
     CHECK_EQ(static_cast<int>(begun.value().kind), static_cast<int>(eve::climbing::ClimbingActionKind::LedgeGrab));
     CHECK_NE(static_cast<int>(begun.value().support), static_cast<int>(eve::climbing::HangSupport::None));
 
+    // Probe work and per-tick hanging clearance have separate query budgets.
+    const auto probeDebug = runtime.inspect();
+    CHECK_GE(probeDebug.queryCount, 4u);
+
     for (std::uint64_t tick = 11; tick <= 16; ++tick) {
         auto advanced = runtime.advance(*fixture.world, {eve::SimulationTick(tick), seconds(0.1)});
         REQUIRE(advanced.ok());
@@ -446,7 +450,8 @@ TEST_CASE("climbing.ledgeGrabTransitionsToHangAndDrop") {
     CHECK(sawHangingEvent);
     auto debug = runtime.inspect();
     CHECK_EQ(debug.candidates.size(), std::size_t{1});
-    CHECK(debug.queryCount >= 4);
+    CHECK_EQ(debug.queryCount, 1u);
+    CHECK_EQ(debug.queryCount, runtime.counters().queryCount);
     CHECK(!debug.queries.empty());
     CHECK(!debug.evidence.empty());
     CHECK(!debug.motion.empty());

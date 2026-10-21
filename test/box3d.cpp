@@ -141,7 +141,7 @@ TEST_CASE("box3d.body.dampingGravitySleepMassAndCenters") {
     CHECK(std::fabs(body->getSleepThreshold() - 0.25f) < 0.001f);
 
     body->setLinearVelocity(6.f, 0.f, 0.f);
-    world->updateFull(0.25f, 4);
+    for (int i = 0; i < 15; ++i) world->updateFull(1.f / 60.f, 4);
     CHECK_LT(body->getLinearVelocityX(), 6.f);
     CHECK_GT(body->getLinearVelocityY(), 0.f);
 
@@ -266,7 +266,7 @@ TEST_CASE("box3d.body.perAxisLocksAndAdvancedForces") {
     body->setLinearVelocity(5.f, 2.f, 4.f);
     body->applyLinearImpulseAt(0.f, 1.f, 0.f, 0.5f, 0.f, 0.f);
     body->applyTorque(0.f, 0.f, 4.f);
-    world->updateFull(0.25f, 4);
+    for (int i = 0; i < 15; ++i) world->updateFull(1.f / 60.f, 4);
     CHECK(std::fabs(body->getX()) < 0.001f);
     CHECK_GT(body->getY(), 0.1f);
     CHECK(std::fabs(body->getZ()) < 0.001f);
@@ -287,7 +287,7 @@ TEST_CASE("box3d.body.kinematicTargetTransform") {
     Body3D *body = world->newBody("kinematic", 0.f, 0.f, 0.f);
     body->newBoxShape(1.f, 1.f, 1.f);
     body->setTargetTransform(2.f, 1.f, -1.f, 0.f, 0.f, 0.f, 2.f, 0.5f);
-    world->updateFull(0.5f, 4);
+    for (int i = 0; i < 30; ++i) world->updateFull(1.f / 60.f, 4);
     CHECK(std::fabs(body->getX() - 2.f) < 0.05f);
     CHECK(std::fabs(body->getY() - 1.f) < 0.05f);
     CHECK(std::fabs(body->getZ() + 1.f) < 0.05f);
@@ -467,9 +467,13 @@ TEST_CASE("box3d.joint.wheelCombinesSuspensionSpinAndSteering") {
     wheel->setWheelSpinMotor(true, 5.f, 100.f);
     wheel->setWheelSteering(true, 0.3f, 5.f, 0.8f, 100.f);
     wheel->setWheelSteeringLimits(true, -0.4f, 0.4f);
-    for (int i = 0; i < 120; ++i) world->updateFull(1.f / 60.f, 4);
-    CHECK_GT(wheel->getWheelSpinSpeed(), 4.f);
+    // Torque reports the last substep: sample the initial acceleration directly.
+    world->updateFull(1.f / 60.f, 1);
     CHECK_GT(std::fabs(wheel->getWheelSpinTorque()), 0.001f);
+    for (int i = 0; i < 120; ++i) {
+        world->updateFull(1.f / 60.f, 4);
+    }
+    CHECK_GT(wheel->getWheelSpinSpeed(), 4.f);
     CHECK_GT(wheel->getWheelSteeringAngle(), 0.2f);
     CHECK_LT(wheel->getWheelSteeringAngle(), 0.4f);
     CHECK(std::isfinite(wheel->getWheelSteeringTorque()));
@@ -1006,8 +1010,13 @@ TEST_CASE("box3d.shape.convexHullSupportsLocalTransformAndRigidCollision") {
 
     Body3D *ball = world->newBody("dynamic", 1.f, 3.f, -1.5f);
     ball->newSphereShape(0.25f);
+    // Isolate vertical support; an unconstrained sphere rolls off this wedge.
+    ball->setMotionLocks(true, false, true, true, true, true);
     for (int i = 0; i < 120; ++i) world->update(1.f / 60.f);
-    CHECK_GT(ball->getY(), 0.65f);
+    // Top plane is y=-z/4. A radius-r sphere rests r*sqrt(1+slope^2) above it.
+    const float supportedY = 0.375f + 0.25f * std::sqrt(1.f + 0.25f * 0.25f);
+    CHECK(std::fabs(ball->getY() - supportedY) < 0.02f);
+    CHECK(std::fabs(ball->getZ() + 1.5f) < 0.001f);
 }
 
 TEST_CASE("box3d.shape.triangleMeshValidatesRebuildsAndStaysStatic") {
@@ -2037,12 +2046,14 @@ TEST_CASE("box3d.sdf.moverRecoversInitialPenetration") {
 }
 
 TEST_CASE("box3d.sdf.moverStopsAtTwoPlaneCorner") {
-    DistanceField3D field(9, 7, 9, 0.5f, -2.f, -1.5f, -2.f, 100.f);
-    for (int z = 0; z < 9; ++z) {
-        for (int y = 0; y < 7; ++y) {
-            for (int x = 0; x < 9; ++x) {
-                const float worldX = -2.f + 0.5f * static_cast<float>(x);
-                const float worldZ = -2.f + 0.5f * static_cast<float>(z);
+    // Resolve the corner below the 1cm positional tolerance. A 0.5m grid
+    // interpolates min(x,z-0.5) into a rounded corner wider than this capsule.
+    DistanceField3D field(201, 61, 201, 0.02f, -2.f, -0.6f, -2.f, 100.f);
+    for (int z = 0; z < 201; ++z) {
+        for (int y = 0; y < 61; ++y) {
+            for (int x = 0; x < 201; ++x) {
+                const float worldX = -2.f + 0.02f * static_cast<float>(x);
+                const float worldZ = -2.f + 0.02f * static_cast<float>(z);
                 // Union of x<=0 and z<=0.5 half spaces.
                 field.setDistance(x, y, z, std::min(worldX, worldZ - 0.5f));
             }
@@ -2116,12 +2127,13 @@ TEST_CASE("box3d.sdf.moverGroundSnapAndLedge") {
 }
 
 TEST_CASE("box3d.sdf.moverStepOffsetClimbsOnlyLowLedges") {
-    DistanceField3D field(41, 31, 5, 0.1f, -2.f, -1.f, -0.2f, 100.f);
+    // The grid must resolve the 1cm skin and 2cm no-climb tolerance.
+    DistanceField3D field(201, 151, 5, 0.02f, -2.f, -1.f, -0.04f, 100.f);
     for (int z = 0; z < 5; ++z) {
-        for (int y = 0; y < 31; ++y) {
-            for (int x = 0; x < 41; ++x) {
-                const float worldX = -2.f + 0.1f * static_cast<float>(x);
-                const float worldY = -1.f + 0.1f * static_cast<float>(y);
+        for (int y = 0; y < 151; ++y) {
+            for (int x = 0; x < 201; ++x) {
+                const float worldX = -2.f + 0.02f * static_cast<float>(x);
+                const float worldY = -1.f + 0.02f * static_cast<float>(y);
                 // Ground union a 0.4m-high semi-infinite step at x>=0.
                 const float step = std::max(-worldX, worldY - 0.4f);
                 field.setDistance(x, y, z, std::min(worldY, step));
