@@ -18,6 +18,7 @@
 #include "graphics/Shader.h"
 #include "graphics/ShaderResources.h"
 #include "graphics/ShaderScriptBindings.h"
+#include "graphics/shaders/stylized_grass_spv.inc"
 
 // ShaderResourceScriptBindings.cpp
 namespace eve::graphics::detail {
@@ -147,6 +148,16 @@ Result<void> replace(Graphics& graphics, Shader& shader, const std::string& vert
 }
 }  // namespace
 void exposeShaderResourceBindings(ssq::Table& table, ssq::Class& cls) {
+    cls.addFunc("captureMesh3DSceneColor", [](Graphics* graphics) {
+        switch (graphics->captureMesh3DSceneColor()) {
+            case Graphics::Mesh3DSceneColorCaptureStatus::ExplicitOverride: return std::string("explicitOverride");
+            case Graphics::Mesh3DSceneColorCaptureStatus::Scheduled: return std::string("scheduled");
+            case Graphics::Mesh3DSceneColorCaptureStatus::Captured: return std::string("captured");
+            case Graphics::Mesh3DSceneColorCaptureStatus::HistoryReuse: return std::string("historyReuse");
+            case Graphics::Mesh3DSceneColorCaptureStatus::Unavailable: return std::string("unavailable");
+        }
+        return std::string("unavailable");
+    });
     const auto vm = table.getHandle();
     cls.addFunc("setBloomFilter", [vm](Graphics* graphics, const std::string& mode, float scatter, int iterations,
                                        float clamp) {
@@ -400,6 +411,180 @@ Result<std::uint32_t> shaderInstanceMatrixCount(std::span<const std::byte> bytes
 // ShaderScriptBindings.cpp
 namespace eve::graphics {
 namespace {
+Result<Value> buildGrassPoints(double radius, double extent, int seed) {
+    if (!std::isfinite(radius) || !std::isfinite(extent) || radius <= 0 || extent <= 0 || radius < extent / 1000 ||
+        seed < 0)
+        return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                        "Invalid bounded grass scatter dimensions or seed", "scatter"));
+    const double     cell = radius / std::sqrt(2.0);
+    const int        side = int(std::ceil(2 * extent / cell)) + 1;
+    std::vector<int> grid(size_t(side) * size_t(side), -1), active;
+    struct Point {
+        double x, z;
+    };
+    std::vector<Point> points;
+    int64_t            state = int64_t(seed) % 2147483646 + 1;
+    auto               next  = [&]() {
+        state = state * 48271 % 2147483647;
+        return double(state) / 2147483647.0;
+    };
+    auto insert = [&](double x, double z) {
+        const auto id                                                                            = int(points.size());
+        grid[size_t(int((z + extent) / cell)) * size_t(side) + size_t(int((x + extent) / cell))] = id;
+        points.push_back({x, z});
+        active.push_back(id);
+    };
+    const double firstX = (next() * 2 - 1) * extent, firstZ = (next() * 2 - 1) * extent;
+    insert(firstX, firstZ);
+    while (!active.empty()) {
+        const auto index = size_t(next() * double(active.size()));
+        const auto p     = points[size_t(active[index])];
+        bool       found = false;
+        for (int trial = 0; trial < 30; ++trial) {
+            const double angle = next() * 6.283185307179586, distance = radius * std::sqrt(1 + 3 * next());
+            const double x = p.x + std::cos(angle) * distance, z = p.z + std::sin(angle) * distance;
+            if (std::abs(x) > extent || std::abs(z) > extent) continue;
+            const int gx = int((x + extent) / cell), gz = int((z + extent) / cell);
+            bool      valid = true;
+            for (int dz = -2; dz <= 2 && valid; ++dz)
+                for (int dx = -2; dx <= 2; ++dx) {
+                    const int cx = gx + dx, cz = gz + dz;
+                    if (cx < 0 || cz < 0 || cx >= side || cz >= side) continue;
+                    const auto other = grid[size_t(cz) * size_t(side) + size_t(cx)];
+                    if (other < 0) continue;
+                    const auto   q  = points[size_t(other)];
+                    const double ox = x - q.x, oz = z - q.z;
+                    if (ox * ox + oz * oz < radius * radius) {
+                        valid = false;
+                        break;
+                    }
+                }
+            if (valid) {
+                insert(x, z);
+                found = true;
+                break;
+            }
+        }
+        // Two coordinates per point plus the array container stay inside the
+        // common Squirrel Value projection's 100,000-element limit.
+        if (points.size() > 49999)
+            return Result<Value>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Grass scatter exceeds 49,999 points", "scatter"));
+        if (!found) {
+            active[index] = active.back();
+            active.pop_back();
+        }
+    }
+    Value::Array output;
+    output.reserve(points.size() * 2);
+    for (const auto& p : points) {
+        output.emplace_back(p.x);
+        output.emplace_back(p.z);
+    }
+    return Result<Value>::success(Value(std::move(output)));
+}
+
+// CPU-authored vector blades rasterized once per field. No texture file or
+// shader-time shape generation is involved; RGB remains untinted white.
+std::vector<std::byte> grassMaskPixels() {
+    constexpr int size = 96, width = size * 4, height = size * 2, samples = 3;
+    struct Blade {
+        float root, height, bend, width;
+    };
+    constexpr Blade blades[2][4] = {
+        {{0.18f, 0.65f, -0.17f, 0.075f}, {0.48f, 0.96f, 0.08f, 0.10f}, {0.79f, 0.76f, 0.15f, 0.085f}, {}},
+        {{0.12f, 0.50f, -0.15f, 0.07f},
+         {0.32f, 0.84f, -0.10f, 0.065f},
+         {0.57f, 0.97f, 0.17f, 0.085f},
+         {0.83f, 0.61f, 0.16f, 0.075f}}};
+    std::vector<std::byte> pixels(width * height * 4, std::byte{255});
+    for (int variant = 0; variant < 2; ++variant)
+        for (int frame = 0; frame < 4; ++frame) {
+            constexpr float pi      = 3.14159265358979323846f;
+            const float     sway    = std::sin(float(frame) * pi * 0.5f) * 0.075f;
+            const float     flutter = std::cos(float(frame) * pi * 0.5f) * 0.12f;
+            for (int y = 0; y < size; ++y)
+                for (int x = 0; x < size; ++x) {
+                    int covered = 0;
+                    for (int sy = 0; sy < samples; ++sy)
+                        for (int sx = 0; sx < samples; ++sx) {
+                            const float u = (float(x) + (float(sx) + 0.5f) / samples) / size;
+                            const float v = 1.f - (float(y) + (float(sy) + 0.5f) / samples) / size;
+                            for (int leaf = 0; leaf < (variant == 0 ? 3 : 4); ++leaf) {
+                                const auto& b = blades[variant][leaf];
+                                const float t = v / b.height;
+                                if (t < 0.f || t > 1.f) continue;
+                                const float center = b.root + (b.bend + sway) * t * t;
+                                const float half   = b.width * std::pow(1.f - t, 0.8f) * (1.f + flutter * t);
+                                if (std::abs(u - center) <= half) {
+                                    ++covered;
+                                    break;
+                                }
+                            }
+                        }
+                    const auto offset = size_t(((variant * size + y) * width + frame * size + x) * 4 + 3);
+                    pixels[offset]    = std::byte((covered * 255 + samples * samples / 2) / (samples * samples));
+                }
+        }
+    return pixels;
+}
+
+ResultRef<Shader> buildGrassShader(Graphics& graphics, ssq::Array records, const std::string& pass) {
+    using namespace detail::grass_spv;
+    try {
+        if (graphics.getBackendName() != "vulkan")
+            return ResultRef<Shader>::failure(
+                Diagnostic::error(DiagnosticCode::Unsupported, "Stylized grass requires Vulkan", "backend"));
+        if (pass != "grass" && pass != "ground")
+            return ResultRef<Shader>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Expected grass or ground pass", "pass"));
+        if (records.size() == 0 || records.size() % 16 != 0 || records.size() > 64u * 1024u * 1024u / sizeof(float))
+            return ResultRef<Shader>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "Expected nonempty affine matrix records within 64 MiB", "instances"));
+        std::vector<float> matrices;
+        matrices.reserve(records.size());
+        for (size_t i = 0; i < records.size(); ++i) {
+            const auto type = records.get<ssq::Object>(i).getType();
+            if (type != ssq::Type::FLOAT && type != ssq::Type::INTEGER)
+                return ResultRef<Shader>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "Matrix elements must be numbers", "instances"));
+            matrices.push_back(type == ssq::Type::INTEGER ? float(records.get<SQInteger>(i)) : records.get<float>(i));
+        }
+        ShaderResourceInputs inputs{};
+        inputs.instanceMatrices = std::as_bytes(std::span(matrices));
+        auto count              = shaderInstanceMatrixCount(inputs.instanceMatrices);
+        if (!count) return ResultRef<Shader>::failure(count.status());
+        std::vector<std::byte> pixels;
+        ShaderImageInput       image;
+        if (pass == "grass") {
+            pixels            = grassMaskPixels();
+            image.binding     = 0;
+            image.width       = 384;
+            image.height      = 192;
+            image.sampler.min = image.sampler.mag = FilterMode::Linear;
+            image.sampler.repeatU = image.sampler.repeatV = false;
+            image.bytes                                   = pixels;
+            inputs.images                                 = std::span(&image, 1);
+        }
+        const std::vector<uint32_t> vertex =
+            pass == "grass" ? std::vector<uint32_t>(std::begin(meadow_vert_spv), std::end(meadow_vert_spv))
+                            : std::vector<uint32_t>(std::begin(ground_vert_spv), std::end(ground_vert_spv));
+        const std::vector<uint32_t> fragment =
+            pass == "grass" ? std::vector<uint32_t>(std::begin(meadow_frag_spv), std::end(meadow_frag_spv))
+                            : std::vector<uint32_t>(std::begin(ground_frag_spv), std::end(ground_frag_spv));
+        auto* shader = graphics.newMeshShaderFromSpv({std::begin(bootstrap_vert_spv), std::end(bootstrap_vert_spv)},
+                                                     {std::begin(bootstrap_frag_spv), std::end(bootstrap_frag_spv)});
+        if (!shader)
+            return ResultRef<Shader>::failure(
+                Diagnostic::error(DiagnosticCode::Failed, "Shader allocation failed", "shader"));
+        auto uploaded = graphics.replaceMeshShaderResources(*shader, vertex, fragment, inputs);
+        if (!uploaded) return ResultRef<Shader>::failure(uploaded.status());
+        return ResultRef<Shader>::success(std::ref(*shader));
+    } catch (const std::exception& error) {
+        return ResultRef<Shader>::failure(Diagnostic::error(DiagnosticCode::Failed, error.what(), "stylized-grass"));
+    }
+}
+
 Result<std::vector<uint32_t>> shaderWords(ssq::Array array) {
     std::vector<uint32_t> words;
     words.reserve(array.size());
@@ -470,6 +655,22 @@ ResultRef<Shader> loadMeshShader(Graphics& graphics, const std::string& vertex, 
 void exposeShaderScriptBindings(ssq::Table& table, ssq::Class& cls) {
     detail::exposeShaderResourceBindings(table, cls);
     const auto vm = table.getHandle();
+    cls.addFunc("buildStylizedGrassPoints", [vm](Graphics*, float radius, float extent, int seed) {
+        return eve::script::projectResult(vm, buildGrassPoints(radius, extent, seed),
+                                          [](const Value& value) { return value; });
+    });
+    cls.addFunc("buildStylizedGrassShader", [vm](Graphics* self, ssq::Array instances, const std::string& pass) {
+        if (!self)
+            return eve::script::projectResult(vm, Result<void>::failure(Diagnostic::error(
+                                                      DiagnosticCode::InvalidArgument, "Graphics must be present")));
+        auto result = buildGrassShader(*self, instances, pass);
+        if (!result) return eve::script::projectStatusResult(vm, result.status());
+        auto projected = eve::script::projectStatusResult(vm, result.status());
+        projected.set("value", &result.value().get());
+        eve::script::markResultHasValue(projected);
+        projected.set("ownership", std::string("borrowed-from-graphics"));
+        return projected;
+    });
     cls.addFunc(
         "replaceShaderFromSpv", [vm](Graphics* graphics, Shader* shader, ssq::Array vertex, ssq::Array fragment) {
             if (!graphics || !shader)

@@ -966,6 +966,7 @@ private:
     wgpu::RenderPipeline getPrimitive3DPipeline(PrimitiveDepthMode depth, BlendMode blend, PrimitiveCullMode cull,
                                                 WGPUTextureFormat format, uint32_t sampleCount);
     void flushShadowPass(wgpu::RenderPassEncoder pass, int cascade);
+    void                 recordDirectionalShadowPasses(wgpu::CommandEncoder encoder);
     void flushGbufferPass(wgpu::RenderPassEncoder pass);
     void flushDecalPass(wgpu::RenderPassEncoder pass);
     void submitPendingDeferredPasses();

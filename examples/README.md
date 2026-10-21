@@ -1,5 +1,7 @@
 # EVEngine 示例总览
 
+- [stylized-meadow](stylized-meadow/README.md)：三阶卡通草坪，可调蓝噪声覆盖、GPU 实例化、两组四帧摇曳、同帧阴影取色与稀疏蓝噪声变色。
+
 - [modern-battlefield](modern-battlefield/README.md)：现代陆空动态战场，24 类独立细化资源与逐件检视截图、可转炮塔/炮管、射击弹道、直升机旋翼与飞行编队。
 
 [English](README.en.md)
@@ -237,7 +239,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [combat-arena](combat-arena/README.md) | 动作战斗竖切：移动/闪避/伤害/锁定与敌人近距攻击的组合烟测 |
 | [procgen-script-editor](procgen-script-editor/README.md) | 宿主封装 Squirrel generator（`generators/forest.nut`）的程序化生成编辑器 |
 | [ui-theme-editor](ui-theme-editor/README.md) | UI 主题编辑示例：组装命名 Theme 工作区 + 实时预览 |
-| [material-editor](material-editor/README.md) | 材质编辑器：中央 UE5 材质球预览 + 右侧 Shading/Surface/Lighting 参数面板 |
+| [material-editor](material-editor/README.md) | 材质编辑器：高层脚本创建、复杂测试球、模型导入、可切换天空盒与 IBL、完整参数及撤销保存 |
 | [ai-stage](ai-stage/README.md) | AI 空舞台：scene_director 搭台 kit + MCP，供 Agent 摆物 / 调光 / 截图 / 质检 |
 | [blender_hot_reload](blender_hot_reload/README.md) | Blender 保存 → GLB → `SceneLoader.load` → 卸载旧 SceneHost 的热重载往返 |
 | [model-converter](model-converter/README.md) | 驱动 Blender 把 OBJ 转换成 GLB 并回载（modelconverter 插件） |
@@ -265,3 +267,18 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 开发者体验类的设计价值（热重载、快照、暂停调试、AI/MCP）集中在 `devlab` 与 `ai-stage` 中体现。
 
 | [house-collapse](house-collapse/README.md) | Voronoi 房屋预破碎、分阶段坍塌、保存播放与体积烟尘 |
+
+## Scenes migrated from screenshot tests
+
+| Example | Description |
+|---|---|
+| [stylized-water-shore](stylized-water-shore/README.md) | Shore rocks, reeds, jetty and animated stylized water; four views and material layers |
+| [procedural-render-gallery](procedural-render-gallery/README.md) | Original tree, bush, L-system, hex planet and skyscraper screenshot recipes |
+| [dual-grid-material-gallery](dual-grid-material-gallery/README.md) | Seven offline dual-grid material previews with a native baker, moved out of tests |
+
+These examples replace 15 visualization cases that primarily exported pictures
+or required an opt-in output environment variable. Native-only construction and
+material bakers live beside their examples and are opt-in build targets.
+Tests with actual regression assertions remain in `test/`: castle mesh groups
+and image occupancy, decal material/projection behavior, planar-reflection pixel
+coverage, water animation differences, and grid semantic-color matching.

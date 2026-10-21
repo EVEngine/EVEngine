@@ -52,12 +52,6 @@ SHARED_SOURCES: dict[str, tuple[str, ...]] = {
     # procgen_*), by procgen.cpp, and by the voxel render tests through
     # VoxelRenderFixtures.h.
     "RenderImageAuditIo": ("graphics", "procgen", "voxel"),
-    # createStylizedWaterScene / WaterSceneFixture::update: declared in
-    # water_scene_fixture.h and called by procgen.cpp, while the defining TU has no
-    # TEST_CASE and was partitioned into graphics. Same shape as RenderImageAuditIo
-    # (spec 7.8/7.9): a `unit_test_<domain>` executable is its own link unit, so the
-    # helper has to be compiled into every consumer domain.
-    "water_scene_fixture": ("graphics", "procgen"),
 }
 
 
