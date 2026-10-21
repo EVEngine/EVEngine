@@ -126,6 +126,8 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [snow](snow/README.md) | 可交互积雪：与高度图同尺寸的 `SnowField` 深度场驱动形变与着色 |
 | [softbody](softbody/README.md) | 布料与 2D 流体解算器（拖拽 / 排斥 / 吸引） |
 | [softbody3d](softbody3d/README.md) | 3D 软体：Verlet 布料 + 体积体与静态 Box3D 碰撞 |
+| [layered-cloth](layered-cloth/README.md) | 三层布料联合接触、风力与碰撞开关 |
+| [layered-cloth-gpu](layered-cloth-gpu/README.md) | Vulkan Compute 多层布料与驻留顶点直接绘制 |
 | [destruction-basic](destruction-basic/README.md) | Chaos 风格破碎 P0：两块焊接盒子 + Strain 场断边 |
 | [destruction-clusters](destruction-clusters/README.md) | Chaos 破碎 P3：双岛锚定柱、步进预算、cluster 断边与快照 |
 | [lattice-deform](lattice-deform/README.md) | 3D 晶格缩放变形：squash & stretch、局部鼓起、波浪 |
@@ -137,6 +139,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [impasto-paint](impasto-paint/README.md) | 独立厚涂油彩：笔触化 SDF 遮蔽、明暗交界、外扩与侵蚀轮廓 |
 | [avatar-document-editor](avatar-document-editor/README.md) | Azure / Avatar 工作区：可编辑分层母稿 + 真实 `eve.Avatar` 图层渲染 |
 | [vrm-avatar](vrm-avatar/README.md) | VRM 角色加载与渲染示例 |
+| [character-atelier](character-atelier/README.md) | 骨骼捏脸编辑器：现成女性、YSA、脸部关键点、身体比例、姿势、存档与撤销 |
 | [voxel](voxel/README.md) | 流式体素地形 + 方块建造：脚本图集、流式 chunk 与 DDA 拾取 |
 | [voxel-terrain](voxel-terrain/README.md) | 体素引擎 + 地形生成：32³ chunk、贪婪矩形合并、视锥/视距裁剪、顶点 AO |
 | [ocean-voyage](ocean-voyage/README.md) | 可驾驶 055 展示舰、三频段 FFT 广阔海洋、GPU 驻留绘制、浮力与尾浪泡沫 |
@@ -227,7 +230,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [composable-editor](composable-editor/README.md) | 可组合编辑器 SDK：C++ Workspace、动态面板、MVVM、ECS，以及游戏/编辑器共享运行时 |
 | [scene-editor](scene-editor/README.md) | 可组合场景编辑：场景树、选择与属性联动 |
 | [scene-builder-game](scene-builder-game/README.md) | 游戏内嵌场景建造：运行时可组合的场景编辑会话 |
-| [level-designer](level-designer/README.md) | 3D 关卡设计工具：引用地形 → 放置白盒 → 调模型 → 出生点 → Motion Matching 试玩 |
+| [level-designer](level-designer/README.md) | 原生 Terrain & Scene Studio：地形笔刷、嵌套建造块和库、精确静态网格碰撞、动态物体与人物物理试玩 |
 | [terrain-editor](terrain-editor/README.md) | 运行时生成的地形编辑器：Viewport 内嵌 3D、笔刷、轨道相机 |
 | [voxel-catalog-editor](voxel-catalog-editor/README.md) | MagicaVoxel 风格体素雕刻：占用网格与撤销 |
 | [editor-api-v2](editor-api-v2/README.md) | Editor API V2 同构演示：游戏注入命令，玩家通过 discovery → plan → execute 建造场景 |

@@ -49,7 +49,8 @@ public:
 
     /**
      * @brief Allocate a GPU buffer.
-     * usage: "storage" (SSBO, device-local) | "staging" (host-visible transfer).
+     * usage: "storage" (SSBO) | "staging" (host transfer) |
+     * "storage_vertex" (Vulkan SSBO + vertex stream, same-device rendering).
      */
     GpuBuffer *newBuffer(int byteSize, const std::string &usage = "storage");
 

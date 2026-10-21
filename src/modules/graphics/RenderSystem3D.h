@@ -517,12 +517,14 @@ public:
      * @param lodDistanceScale Multiplier applied before selecting mesh LOD.
      * @param includeTransparent Whether transparent and hair surfaces are submitted.
      * @param useClusteredLighting Whether lights beyond the legacy pack use clustered shading.
+     * @param includePrimitives Draw persistent scene primitives for interactive viewports;
+     * false for probe/material captures so editor handles never enter baked lighting.
      */
     static void renderToCanvas(Graphics& gfx, Canvas* target, Camera3D* camera,
                                uint32_t reflectionCaptureMask = 0xffffffffu, float lodDistanceScale = 1.f,
                                bool includeTransparent = true, bool useClusteredLighting = true,
                                Texture* skyFaceTexture = nullptr, Mesh* skyQuad = nullptr,
-                               float skyFaceTextureScale = 1.f);
+                               float skyFaceTextureScale = 1.f, bool includePrimitives = false);
 
     /**
      * @brief Render an editor preview with directional cascaded shadows before forward shading.
@@ -661,7 +663,7 @@ private:
     static void renderToCanvasImpl(Graphics& gfx, Canvas* target, Camera3D* camera, uint32_t reflectionCaptureMask,
                                    float lodDistanceScale, bool includeTransparent, bool useClusteredLighting,
                                    Texture* skyFaceTexture, Mesh* skyQuad, float skyFaceTextureScale,
-                                   CanvasShadows shadows);
+                                   CanvasShadows shadows, bool includePrimitives);
 };
 
 }  // namespace eve::graphics

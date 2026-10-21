@@ -2355,6 +2355,58 @@ TEST_CASE("gpgpu.sequence.stagingSizeReuse") {
     }
 }
 
+TEST_CASE("gpgpu.sequence.largeRebindingBatchesPreserveSnapshots") {
+    initialize();
+    auto *gp = eve::gpgpu::Gpgpu::create();
+    REQUIRE(gp->isAvailable());
+    std::unique_ptr<eve::gpgpu::GpuBuffer>     first(gp->newBuffer(4)), second(gp->newBuffer(4));
+    std::unique_ptr<eve::gpgpu::ComputeShader> shader(
+        gp->newShader("#version 450\nlayout(local_size_x=1)in;layout(std430,binding=0)buffer B{float x[];};"
+                      "layout(push_constant)uniform P{float value[32];}pc;void main(){x[0]+=pc.value[0];}"));
+    float zero = 0;
+    first->uploadBytes(&zero, 4);
+    second->uploadBytes(&zero, 4);
+    auto record = [&](eve::gpgpu::Sequence &sequence, int count) {
+        sequence.begin();
+        for (int i = 0; i < count; ++i) {
+            shader->bindBuffer(0, i % 2 ? second.get() : first.get());
+            shader->setFloat(0, float(i + 1));
+            sequence.recordDispatch(shader.get(), 1);
+        }
+    };
+    // Abandon a recording that spans several descriptor pools. Its commands
+    // must never execute, and its leases must not leak into later batches.
+    {
+        std::unique_ptr<eve::gpgpu::Sequence> canceled(gp->newSequence());
+        record(*canceled, 192);
+    }
+    std::unique_ptr<eve::gpgpu::Sequence> sequence(gp->newSequence());
+    float                                 expectedFirst = 0, expectedSecond = 0;
+    for (int pass = 0; pass < 2; ++pass) {
+        record(*sequence, 192);
+        sequence->submit();
+        for (int i = 0; i < 192; ++i) (i % 2 ? expectedSecond : expectedFirst) += float(i + 1);
+        float actualFirst = 0, actualSecond = 0;
+        first->downloadBytes(&actualFirst, 4);
+        second->downloadBytes(&actualSecond, 4);
+        REQUIRE(actualFirst == expectedFirst);
+        REQUIRE(actualSecond == expectedSecond);
+    }
+    // Retiring one sequence must preserve snapshots held by another open
+    // sequence, including snapshots allocated from earlier pools.
+    std::unique_ptr<eve::gpgpu::Sequence> other(gp->newSequence());
+    record(*sequence, 96);
+    record(*other, 96);
+    sequence->submit();
+    other->submit();
+    for (int i = 0; i < 96; ++i) (i % 2 ? expectedSecond : expectedFirst) += 2.f * float(i + 1);
+    float actualFirst = 0, actualSecond = 0;
+    first->downloadBytes(&actualFirst, 4);
+    second->downloadBytes(&actualSecond, 4);
+    REQUIRE(actualFirst == expectedFirst);
+    REQUIRE(actualSecond == expectedSecond);
+}
+
 TEST_CASE("gpgpu.sequence.cancelRecordingRetiresDescriptors") {
     initialize();
     auto                                      *gp = eve::gpgpu::Gpgpu::create();
