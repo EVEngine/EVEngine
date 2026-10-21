@@ -1,10 +1,11 @@
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_agent_development_session)
-#include "PrivateTestScope.h"
 #include <Poco/JSON/Parser.h>
+#include "PrivateTestScope.h"
 #include "devtools/AgentDevelopmentMcp.hpp"
 #include "devtools/AgentDevelopmentSession.hpp"
+#include "devtools/McpTaskProfile.hpp"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // agent_development_session.cpp
@@ -93,9 +94,48 @@ TEST_CASE("devtools.agentDevelopmentSession.mcpAdapterReturnsVersionedSnapshot")
     REQUIRE(response);
     CHECK_EQ(response->getValue<std::string>("status"), "applied");
     CHECK_EQ(response->getValue<std::string>("schema"), "eve.agent-development-session");
-    CHECK_EQ(response->getValue<int>("schemaVersion"), 1);
+    CHECK_EQ(response->getValue<int>("schemaVersion"), 2);
     CHECK_EQ(response->getValue<std::string>("phase"), "discover");
+    CHECK_EQ(response->getValue<std::string>("taskKind"), "verify");
+    CHECK_EQ(response->getValue<std::string>("profile"), "verify.play");
     CHECK_EQ(response->getArray("criteria")->size(), std::size_t{1});
+    REQUIRE(response->has("metrics"));
+}
+
+TEST_CASE("devtools.agentDevelopmentSession.defaultsToVerifyProfileAndEscalates") {
+    auto& session = AgentDevelopmentSession::instance();
+    session.reset();
+    REQUIRE(session.start("Narrow by default", {{"play", "Playable", true, false}}).isAccepted());
+    CHECK_EQ(session.taskKind(), "verify");
+    CHECK_EQ(session.profile(), "verify.play");
+    CHECK(mcpProfileAllowsTool(session.profile(), "eve_play"));
+    CHECK(!mcpProfileAllowsTool(session.profile(), "eve_scene_batch"));
+    CHECK(!mcpProfileAllowsTool(session.profile(), "eve_eval"));
+
+    const std::string id      = session.sessionId();
+    const auto        unknown = session.escalate(id, "no.such");
+    CHECK_EQ(unknown.code, "invalid-profile");
+    const auto toContent = session.escalate(id, "content.scene");
+    REQUIRE(toContent.isAccepted());
+    CHECK_EQ(session.profile(), "content.scene");
+    CHECK_EQ(session.taskKind(), "content");
+    CHECK_EQ(session.escalateCount(), std::uint64_t{1});
+    CHECK(mcpProfileAllowsTool(session.profile(), "eve_scene_batch"));
+    CHECK(!mcpProfileAllowsTool(session.profile(), "eve_eval"));
+    const auto illegal = session.escalate(id, "script.bind");
+    CHECK_EQ(illegal.code, "invalid-escalate");
+    session.reset();
+    CHECK(mcpSessionProfile().empty());
+}
+
+TEST_CASE("devtools.agentDevelopmentSession.rejectsMismatchedProfile") {
+    auto& session = AgentDevelopmentSession::instance();
+    session.reset();
+    const auto mismatch = session.start("Bad combo", {{"x", "y", true, false}}, "verify", "content.scene");
+    CHECK_EQ(mismatch.code, "profile-task-mismatch");
+    REQUIRE(
+        session.start("Content layout", {{"layout", "Placed", true, false}}, "content", "content.scene").isAccepted());
+    CHECK_EQ(session.profile(), "content.scene");
 }
 }  // namespace test_agent_development_session
 #endif

@@ -548,7 +548,7 @@ Source directory: `src/modules/demo`. Status: **task-tests-recorded**. Local cas
 
 ### devtools
 
-Source directory: `src/modules/devtools`. Status: **local-rules-recorded**. Local cases: **69**.
+Source directory: `src/modules/devtools`. Status: **local-rules-recorded**. Local cases: **71**.
 
 - Unit: [unit/devtools/devtools_tests.cpp](unit/devtools/devtools_tests.cpp)
 - Integration task `concurrency`: [concurrency_graphics_tests.cpp](integration/concurrency/concurrency_graphics_tests.cpp)
@@ -1700,7 +1700,7 @@ Cases: 11. Referenced/owning modules: `action`, `attributes`, `avatar`, `card`, 
 
 ### concurrency
 
-Cases: 111. Referenced/owning modules: `animation`, `asset`, `avatar`, `card`, `cmdline`, `common`, `crowd`, `data`, `decal`, `devtools`, `dialogue`, `economy`, `editing`, `editor`, `graphics`, `graphics_editing`, `graphics_fog`, `inventory`, `map`, `material_editing`, `material_editor`, `mouse`, `network`, `npc_ai`, `particles`, `physics_cloth`, `pixelworld`, `pixelworld_thread`, `platform_event`, `procgen`, `profiler`, `rts`, `rx`, `scene`, `sensing`, `statepatch`, `thread`, `voxel`, `voxel_editor`, `weapon`.
+Cases: 112. Referenced/owning modules: `animation`, `asset`, `avatar`, `card`, `cmdline`, `common`, `crowd`, `data`, `decal`, `devtools`, `dialogue`, `economy`, `editing`, `editor`, `graphics`, `graphics_editing`, `graphics_fog`, `inventory`, `map`, `material_editing`, `material_editor`, `mouse`, `network`, `npc_ai`, `particles`, `physics_cloth`, `pixelworld`, `pixelworld_thread`, `platform_event`, `procgen`, `profiler`, `rts`, `rx`, `scene`, `sensing`, `statepatch`, `thread`, `voxel`, `voxel_editor`, `weapon`.
 
 - [concurrency_graphics_tests.cpp](integration/concurrency/concurrency_graphics_tests.cpp)
 

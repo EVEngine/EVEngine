@@ -25,6 +25,7 @@
 #include "devtools/McpSceneLiteral.hpp"
 #include "devtools/McpScriptTools.hpp"
 #include "devtools/McpSquirrelJson.hpp"
+#include "devtools/McpTaskProfile.hpp"
 #include "devtools/McpToolFilter.hpp"
 #include "devtools/McpWhiteboxTools.hpp"
 #include "devtools/PlayHost.h"
@@ -2073,6 +2074,7 @@ std::string handleToolsCall(McpServer& mcp, const std::string& idJson, Poco::JSO
     if (!mcpToolAllowed(name)) {
         return makeResult(idJson, textContentResult(mcpToolFilteredPayload(name), true));
     }
+    mcpFilterNoteCall(true, 0, false);
 
     // Playtest input batches (inject + deferred wait/capture).
     if (isMcpInputTool(name)) {

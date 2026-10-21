@@ -1294,7 +1294,6 @@ TEST_CASE("devtools.mcp.stdioTransport") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_tool_filter)
-#include "PrivateTestScope.h"
 #include <Poco/JSON/Array.h>
 #include <Poco/JSON/Object.h>
 #include <Poco/JSON/Parser.h>
@@ -1304,7 +1303,10 @@ TEST_CASE("devtools.mcp.stdioTransport") {
 #include <string>
 #include <thread>
 #include <vector>
+#include "PrivateTestScope.h"
+#include "devtools/AgentDevelopmentSession.hpp"
 #include "devtools/McpServer.hpp"
+#include "devtools/McpTaskProfile.hpp"
 #include "devtools/McpToolFilter.hpp"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -1406,8 +1408,14 @@ struct EnvGuard {
 
 
 TEST_CASE("devtools.mcp.toolsetFilterHidesAndRejects") {
+    AgentDevelopmentSession::instance().reset();
+    mcpSetSessionProfile({});
+    mcpFilterStatsResetForTest();
     {
-        EnvGuard env{{{"EVE_MCP_TOOLSET", "core"}, {"EVE_MCP_READONLY", nullptr}, {"EVE_MCP_EXCLUDE", nullptr}}};
+        EnvGuard env{{{"EVE_MCP_TOOLSET", "core"},
+                      {"EVE_MCP_READONLY", nullptr},
+                      {"EVE_MCP_EXCLUDE", nullptr},
+                      {"EVE_MCP_PROFILE", nullptr}}};
         CHECK(mcpToolAllowed("eve_status"));
         CHECK(!mcpToolAllowed("eve_eval"));
         CHECK(toolsListContains("eve_status"));
@@ -1417,19 +1425,61 @@ TEST_CASE("devtools.mcp.toolsetFilterHidesAndRejects") {
         CHECK(text.find("hint") != std::string::npos);
     }
     {
-        EnvGuard env{{{"EVE_MCP_TOOLSET", "all"}, {"EVE_MCP_READONLY", "1"}, {"EVE_MCP_EXCLUDE", nullptr}}};
+        EnvGuard env{{{"EVE_MCP_TOOLSET", "all"},
+                      {"EVE_MCP_READONLY", "1"},
+                      {"EVE_MCP_EXCLUDE", nullptr},
+                      {"EVE_MCP_PROFILE", nullptr}}};
         CHECK(mcpToolAllowed("eve_status"));
         CHECK(!mcpToolAllowed("eve_eval"));
         CHECK(!mcpToolAllowed("eve_input_batch"));
         CHECK(mcpToolAllowed("eve_input_poll"));
     }
     {
-        EnvGuard env{
-            {{"EVE_MCP_TOOLSET", "all"}, {"EVE_MCP_READONLY", nullptr}, {"EVE_MCP_EXCLUDE", "eve_status,eve_restart"}}};
+        EnvGuard env{{{"EVE_MCP_TOOLSET", "all"},
+                      {"EVE_MCP_READONLY", nullptr},
+                      {"EVE_MCP_EXCLUDE", "eve_status,eve_restart"},
+                      {"EVE_MCP_PROFILE", nullptr}}};
         CHECK(!mcpToolAllowed("eve_status"));
         CHECK(!mcpToolAllowed("eve_restart"));
         CHECK(mcpToolAllowed("eve_console_read"));
     }
+}
+
+TEST_CASE("devtools.mcp.taskProfileStacksWithToolsetAndEscalates") {
+    AgentDevelopmentSession::instance().reset();
+    mcpSetSessionProfile({});
+    mcpFilterStatsResetForTest();
+    {
+        EnvGuard env{{{"EVE_MCP_TOOLSET", "all"},
+                      {"EVE_MCP_READONLY", nullptr},
+                      {"EVE_MCP_EXCLUDE", nullptr},
+                      {"EVE_MCP_PROFILE", "verify.play"}}};
+        CHECK(mcpToolAllowed("eve_play"));
+        CHECK(mcpToolAllowed("eve_agent_session_status"));
+        CHECK(!mcpToolAllowed("eve_scene_batch"));
+        CHECK(!mcpToolAllowed("eve_eval"));
+        const std::string text = callToolText("eve_scene_batch");
+        CHECK(text.find("\"filtered\":true") != std::string::npos);
+        CHECK(text.find("\"profile\":\"verify.play\"") != std::string::npos);
+        CHECK(text.find("\"escalate\"") != std::string::npos);
+        CHECK(text.find("content.scene") != std::string::npos);
+    }
+    {
+        EnvGuard env{{{"EVE_MCP_TOOLSET", "all"},
+                      {"EVE_MCP_READONLY", nullptr},
+                      {"EVE_MCP_EXCLUDE", nullptr},
+                      {"EVE_MCP_PROFILE", nullptr}}};
+        auto&    session = AgentDevelopmentSession::instance();
+        session.reset();
+        REQUIRE(session.start("Session overlay", {{"play", "ok", true, false}}, "verify", "verify.play").isAccepted());
+        CHECK(mcpToolAllowed("eve_play"));
+        CHECK(!mcpToolAllowed("eve_scene_batch"));
+        REQUIRE(session.escalate(session.sessionId(), "content.scene").isAccepted());
+        CHECK(mcpToolAllowed("eve_scene_batch"));
+        CHECK(!mcpToolAllowed("eve_eval"));
+        session.reset();
+    }
+    CHECK_EQ(mcpProfileToolsetEnv("verify.play"), std::string("agent,core,play,input"));
 }
 }  // namespace test_mcp_tool_filter
 #endif

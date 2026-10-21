@@ -585,10 +585,14 @@ Agent 上下文塞满 130+ schema 会伤命中率。引擎在 `tools/list` 与 `
 | 环境变量 | 含义 |
 |----------|------|
 | `EVE_MCP_TOOLSET` | 逗号分隔标签，默认 `all`；可选 `core,debug,play,editor,host,scene,input,domain,agent` |
+| `EVE_MCP_PROFILE` | 命名任务剖面（`verify.play` / `content.scene` / …）；与 toolset 叠加，并与 `eve_agent_session_start` 的 session 剖面叠加。`tools/eve-mcp --profile=` 可写入此项 |
 | `EVE_MCP_READONLY` | `1` 时隐藏/拒绝会改状态的工具 |
 | `EVE_MCP_EXCLUDE` | 逗号分隔的精确工具名黑名单 |
 
-被过滤的 `tools/call` 返回 `{ok:false, filtered:true, hint, nextTools, tags, mutates}`。
+被过滤的 `tools/call` 返回 `{ok:false, filtered:true, hint, nextTools, tags, mutates}`；
+任务剖面拒绝时另带 `profile` 与可选 `escalate:{to,reason,errorCode}`。
+`eve_agent_session_start` 可传 `taskKind` / `profile`（省略时默认 `verify` / `verify.play`），
+并用 `eve_agent_session_escalate` 沿合法边换剖面。
 
 ## `tools/eve-mcp` 生命周期
 

@@ -1,7 +1,8 @@
 # Agent 任务剖面（Task Profile）与少 Token 内容面 — 修改方案
 
 日期：2026-10-20  
-状态：设计提案（本文只定合同与落地顺序，不代表代码已实现）  
+状态：Slice A 已落地（session `taskKind`/`profile`、filter 叠加、`eve-mcp --profile=`、调用拒绝带 escalate）；B–E 未开始  
+
 来源：会话结论（按任务主动裁切工作面 / recipe+约束 / 少写脚本）+ Godot MCP 实探与 EVEngine atelier/bench 问题汇总  
 相关：[`AI知识补偿.md`](AI知识补偿.md)、[`Agent游戏开发范式.md`](Agent游戏开发范式.md)、[`2026-09-05-play-verify-evolve.md`](2026-09-05-play-verify-evolve.md)、[`AI与MCP支持.md`](AI与MCP支持.md)、[`AI场景导演.md`](AI场景导演.md)、[`2026-08-29-agent-native-engine-architecture.md`](2026-08-29-agent-native-engine-architecture.md)
 
