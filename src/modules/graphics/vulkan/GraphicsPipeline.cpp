@@ -1764,7 +1764,7 @@ void Graphics::createShadowResources() {
         destroyShadowResources();
     }
 
-    const uint32_t size = uint32_t(wantSize);
+    const uint32_t size    = uint32_t(wantSize);
     const uint32_t layers = uint32_t(ShadowConfig::kTotalLayers);
     allocatedShadowMapSize = wantSize;
 

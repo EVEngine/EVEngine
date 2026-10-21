@@ -1496,13 +1496,11 @@ void Graphics::expose(ssq::Class& cls) {
             s.localMapSize = clampShadowMapSize(size);
         }
     });
-    cls.addFunc("getShadowSchemeLocalMapSize",
-                [](Graphics*) { return ShadowSchemeSettings::current().localMapSize; });
+    cls.addFunc("getShadowSchemeLocalMapSize", [](Graphics*) { return ShadowSchemeSettings::current().localMapSize; });
     cls.addFunc("getShadowSchemeAtlasMapSize",
                 [](Graphics*) { return ShadowSchemeSettings::current().resolvedAtlasMapSize(); });
-    cls.addFunc("setShadowSchemeDirectionalMaxDistance", [](Graphics*, float meters) {
-        (void)setShadowSchemeDirectionalMaxDistance(meters);
-    });
+    cls.addFunc("setShadowSchemeDirectionalMaxDistance",
+                [](Graphics*, float meters) { (void)setShadowSchemeDirectionalMaxDistance(meters); });
     cls.addFunc("getShadowSchemeDirectionalMaxDistance",
                 [](Graphics*) { return ShadowSchemeSettings::current().directionalMaxDistance; });
     cls.addFunc("setCloudShadows", &Graphics::setCloudShadows);

@@ -1774,7 +1774,7 @@ private:
     };
     std::vector<ShadowMapSlot> shadowMaps;
     /** @brief Edge length of the currently allocated shadow depth array (0 = none). */
-    int allocatedShadowMapSize = 0;
+    int                           allocatedShadowMapSize = 0;
     vkb::DepthSampler shadowSampler{};
     vk::Sampler shadowRawSampler{};
     vkb::BuiltRenderPass shadowRenderPass{};

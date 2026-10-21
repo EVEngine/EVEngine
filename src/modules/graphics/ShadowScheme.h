@@ -134,8 +134,7 @@ inline constexpr int kMaxShadowMapSize = 4096;
  * @cost Cheap CPU clamp; GPU recreate happens later on the Graphics ensure path.
  * @return Failure when sizes are non-positive.
  */
-[[nodiscard]] EVENGINE_API_BACKENDS Result<void> setShadowSchemeMapSizes(int directionalMapSize,
-                                                                         int localMapSize = -1);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> setShadowSchemeMapSizes(int directionalMapSize, int localMapSize = -1);
 
 /**
  * @brief Apply CSM max distance with validation.

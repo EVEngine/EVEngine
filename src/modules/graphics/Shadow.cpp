@@ -84,14 +84,14 @@ ShadowUpload buildDirectionalCSM(const glm::vec3& lightDirTowardSurface, const g
                                  const glm::vec3& up, float fovYRad, float aspect, float nearZ, float farZ, float bias,
                                  float strength) {
     ShadowUpload out{};
-    out.active               = true;
-    const auto& scheme       = ShadowSchemeSettings::current();
-    const float mapSize      = float(scheme.resolvedAtlasMapSize());
-    const float maxDistance  = scheme.resolvedDirectionalMaxDistance();
-    const float n            = std::max(nearZ, 1e-3f);
-    const float fCam         = std::max(farZ, n + 1e-2f);
-    const float f            = std::min(fCam, std::max(n + 1e-2f, maxDistance));
-    const float ratio        = f / n;
+    out.active              = true;
+    const auto& scheme      = ShadowSchemeSettings::current();
+    const float mapSize     = float(scheme.resolvedAtlasMapSize());
+    const float maxDistance = scheme.resolvedDirectionalMaxDistance();
+    const float n           = std::max(nearZ, 1e-3f);
+    const float fCam        = std::max(farZ, n + 1e-2f);
+    const float f           = std::min(fCam, std::max(n + 1e-2f, maxDistance));
+    const float ratio       = f / n;
     float       splits[ShadowConfig::kCascades + 1];
     splits[0] = n;
     for (int i = 1; i <= ShadowConfig::kCascades; ++i) {
@@ -206,7 +206,7 @@ ShadowSchemeSettings& ShadowSchemeSettings::current() { return g_shadowSchemeSet
 int clampShadowMapSize(int size) {
     static constexpr int kAllowed[] = {256, 512, 1024, 2048, 4096};
     if (size <= kAllowed[0]) return kAllowed[0];
-    int best = kAllowed[0];
+    int best     = kAllowed[0];
     int bestDist = std::abs(size - best);
     for (int candidate : kAllowed) {
         const int dist = std::abs(size - candidate);
@@ -234,25 +234,22 @@ int ShadowSchemeSettings::resolvedAtlasMapSize() const {
 }
 
 float ShadowSchemeSettings::resolvedDirectionalMaxDistance() const {
-    if (!std::isfinite(directionalMaxDistance) || directionalMaxDistance <= 0.f)
-        return ShadowConfig::kMaxDistance;
+    if (!std::isfinite(directionalMaxDistance) || directionalMaxDistance <= 0.f) return ShadowConfig::kMaxDistance;
     return directionalMaxDistance;
 }
 
 Result<void> setShadowSchemeMapSizes(int directionalMapSize, int localMapSize) {
     if (directionalMapSize <= 0) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                       "directional shadow map size must be positive",
-                                                       "graphics.shadow"));
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "directional shadow map size must be positive", "graphics.shadow"));
     }
-    auto& settings             = ShadowSchemeSettings::current();
+    auto& settings              = ShadowSchemeSettings::current();
     settings.directionalMapSize = clampShadowMapSize(directionalMapSize);
     if (localMapSize > 0) {
         settings.localMapSize = clampShadowMapSize(localMapSize);
     } else if (localMapSize == 0) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                       "local shadow map size must be positive when set",
-                                                       "graphics.shadow"));
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "local shadow map size must be positive when set", "graphics.shadow"));
     }
     return Result<void>::success();
 }

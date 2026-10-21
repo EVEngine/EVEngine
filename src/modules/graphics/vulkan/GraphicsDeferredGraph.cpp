@@ -36,9 +36,8 @@ void Graphics::buildDeferredFrameGraphs() {
     // before the present command buffer).
     const vk::Format depthFmt     = vk::Format::eD32Sfloat;
     const vk::Format colorFmt     = pickGBufferColorFormat(device);
-    const uint32_t   mapSize =
-        uint32_t(allocatedShadowMapSize > 0 ? allocatedShadowMapSize
-                                            : ShadowSchemeSettings::current().resolvedAtlasMapSize());
+    const uint32_t   mapSize      = uint32_t(
+        allocatedShadowMapSize > 0 ? allocatedShadowMapSize : ShadowSchemeSettings::current().resolvedAtlasMapSize());
     const uint32_t   shadowLayers = uint32_t(ShadowConfig::kTotalLayers);
     const uint32_t   w            = gbufferWidth > 0 ? uint32_t(gbufferWidth) : 1u;
     const uint32_t   h            = gbufferHeight > 0 ? uint32_t(gbufferHeight) : 1u;
@@ -125,8 +124,8 @@ void Graphics::recordShadowCascadePass(vkb::FrameGraphPassContext &ctx, int casc
     const vk::Extent2D extent = ctx.extent();
     const uint32_t     size =
         extent.width ? extent.width
-                     : uint32_t(allocatedShadowMapSize > 0 ? allocatedShadowMapSize
-                                                           : ShadowSchemeSettings::current().resolvedAtlasMapSize());
+                         : uint32_t(allocatedShadowMapSize > 0 ? allocatedShadowMapSize
+                                                               : ShadowSchemeSettings::current().resolvedAtlasMapSize());
     recordShadowCascadeDraws(cb, cascade, size);
 }
 

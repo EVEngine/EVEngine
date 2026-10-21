@@ -1148,13 +1148,13 @@ TEST_CASE("RenderSystem3D.shadowExtraDrawerOwnerTokens") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_Shadow3D)
-#include "PrivateTestScope.h"
 #include <SDL2/SDL.h>
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <vector>
 #include "Fixtures.h"
+#include "PrivateTestScope.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/Canvas.h"
@@ -1332,13 +1332,13 @@ namespace {
 
 
 TEST_CASE("Shadow.directionalCSM.clampsFarAndSplitsAreViewZ") {
-    auto& scheme                     = ShadowSchemeSettings::current();
-    const int   prevMap              = scheme.directionalMapSize;
-    const int   prevLocal            = scheme.localMapSize;
-    const float prevMaxDistance      = scheme.directionalMaxDistance;
-    scheme.directionalMapSize        = ShadowConfig::kMapSize;
-    scheme.localMapSize              = 1024;
-    scheme.directionalMaxDistance    = ShadowConfig::kMaxDistance;
+    auto       &scheme            = ShadowSchemeSettings::current();
+    const int   prevMap           = scheme.directionalMapSize;
+    const int   prevLocal         = scheme.localMapSize;
+    const float prevMaxDistance   = scheme.directionalMaxDistance;
+    scheme.directionalMapSize     = ShadowConfig::kMapSize;
+    scheme.localMapSize           = 1024;
+    scheme.directionalMaxDistance = ShadowConfig::kMaxDistance;
 
     const glm::vec3 dir(0.3f, 1.f, 0.2f);
     const glm::vec3 eye(0.f, 2.f, 8.f);
@@ -1360,7 +1360,7 @@ TEST_CASE("Shadow.directionalCSM.clampsFarAndSplitsAreViewZ") {
 }
 
 TEST_CASE("Shadow.scheme.dynamicMapSizeAndMaxDistance") {
-    auto& scheme                = ShadowSchemeSettings::current();
+    auto       &scheme          = ShadowSchemeSettings::current();
     const int   prevMap         = scheme.directionalMapSize;
     const int   prevLocal       = scheme.localMapSize;
     const float prevMaxDistance = scheme.directionalMaxDistance;
@@ -1392,7 +1392,7 @@ TEST_CASE("Shadow.scheme.dynamicMapSizeAndMaxDistance") {
     ShadowUpload low = buildDirectionalCSM(dir, eye, target, up, 1.047f, 16.f / 9.f, 0.1f, 500.f, 0.002f, 1.f);
 
     scheme.directionalMapSize = 4096;
-    ShadowUpload high = buildDirectionalCSM(dir, eye, target, up, 1.047f, 16.f / 9.f, 0.1f, 500.f, 0.002f, 1.f);
+    ShadowUpload high         = buildDirectionalCSM(dir, eye, target, up, 1.047f, 16.f / 9.f, 0.1f, 500.f, 0.002f, 1.f);
     // Higher atlas resolution → denser world texels (smaller cascadeTexel).
     CHECK(high.ubo.cascadeTexel.x < low.ubo.cascadeTexel.x);
     CHECK(high.ubo.cascadeTexel.x * 4.f < low.ubo.cascadeTexel.x * 1.1f);

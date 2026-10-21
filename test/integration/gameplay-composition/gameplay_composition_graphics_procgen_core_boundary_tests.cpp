@@ -1350,9 +1350,9 @@ TEST_CASE("graphics.pcgWaterPhotoMode.authorityLeaseRevokesOnDestruction") {
 #include "graphics/AntiAliasing.h"
 #include "graphics/Graphics.h"
 #include "graphics/PcgGraphicsPhotoMode.h"
-#include "graphics/ShadowScheme.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/ShadowScheme.h"
 #include "graphics/Volumetric.h"
 #include "os/OS.h"
 #include "procgen/heightmap/PcgTerrainPhotoMode.h"
@@ -1691,10 +1691,10 @@ TEST_CASE("ui.pcgPhotoModeApply.terrainAuthorityDrivesLodBasemapAndDetailPolicy"
 }
 TEST_CASE("ui.pcgPhotoModeApply.graphicsAuthorityProjectsFiveLiveQualityFields") {
     cap::detail::clearAllRaw();
-    auto& scheme                = graphics::ShadowSchemeSettings::current();
-    const int   prevMap         = scheme.directionalMapSize;
-    const int   prevLocal       = scheme.localMapSize;
-    const float prevMaxDistance = scheme.directionalMaxDistance;
+    auto&                                   scheme          = graphics::ShadowSchemeSettings::current();
+    const int                               prevMap         = scheme.directionalMapSize;
+    const int                               prevLocal       = scheme.localMapSize;
+    const float                             prevMaxDistance = scheme.directionalMaxDistance;
     auto*                                   graphics = graphics::parity_test::headlessGraphics();
     auto*                                   camera   = graphics::Camera3D::createCamera();
     auto*                                   control  = graphics->getRenderControl();
@@ -1727,10 +1727,10 @@ TEST_CASE("ui.pcgPhotoModeApply.graphicsAuthorityProjectsFiveLiveQualityFields")
 }
 TEST_CASE("ui.pcgPhotoModeApply.lightingShadowMultiplierUsesGraphicsShadowAuthority") {
     cap::detail::clearAllRaw();
-    auto& scheme                = graphics::ShadowSchemeSettings::current();
-    const int   prevMap         = scheme.directionalMapSize;
-    const int   prevLocal       = scheme.localMapSize;
-    const float prevMaxDistance = scheme.directionalMaxDistance;
+    auto&                                   scheme          = graphics::ShadowSchemeSettings::current();
+    const int                               prevMap         = scheme.directionalMapSize;
+    const int                               prevLocal       = scheme.localMapSize;
+    const float                             prevMaxDistance = scheme.directionalMaxDistance;
     auto*                                   graphics = graphics::parity_test::headlessGraphics();
     auto*                                   camera   = graphics::Camera3D::createCamera();
     graphics::PcgGraphicsPhotoModeAuthority authority;
