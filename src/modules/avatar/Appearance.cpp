@@ -10,9 +10,9 @@ namespace {
 using Object = Value::Object;
 using Array  = Value::Array;
 
-const Value& field(const Value& value, const std::string& key) {
+const Value& field(const Value& value, const char* key) {
     const auto* found = value.find(key);
-    if (!found) throw std::invalid_argument("Missing field: " + key);
+    if (!found) throw std::invalid_argument(std::string("Missing field: ") + key);
     return *found;
 }
 std::string text(const Value& value) {
@@ -167,11 +167,11 @@ Result<void> Appearance::apply(const Value& patch) {
         auto candidate = state_;
         if (const auto* values = patch.find("parameters")) {
             if (!values->isObject()) return invalid("Expected parameter object");
-            for (const auto& key : values->keys()) candidate.parameters[key] = number(field(*values, key));
+            for (const auto& key : values->keys()) candidate.parameters[key] = number(field(*values, key.c_str()));
         }
         if (const auto* values = patch.find("selections")) {
             if (!values->isObject()) return invalid("Expected selection object");
-            for (const auto& key : values->keys()) candidate.selections[key] = text(field(*values, key));
+            for (const auto& key : values->keys()) candidate.selections[key] = text(field(*values, key.c_str()));
         }
         return publish(std::move(candidate));
     } catch (const std::invalid_argument& error) {
