@@ -1,0 +1,1 @@
+eve_add_native_showcase(foliage_stage_render foliage_stages.cpp)

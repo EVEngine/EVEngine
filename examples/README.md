@@ -1,5 +1,9 @@
 # EVEngine 示例总览
 
+- [stylized-meadow](stylized-meadow/README.md)：三阶卡通草坪，可调蓝噪声覆盖、GPU 实例化、两组四帧摇曳、同帧阴影取色与稀疏蓝噪声变色。
+
+- [modern-battlefield](modern-battlefield/README.md)：现代陆空动态战场，24 类独立细化资源与逐件检视截图、可转炮塔/炮管、射击弹道、直升机旋翼与飞行编队。
+
 [English](README.en.md)
 
 
@@ -62,6 +66,8 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 
 ## 入门与基础
 
+- [ironwarden-retarget](ironwarden-retarget/README.md)：RX-78-2 风格 SCAD 机甲、人体骨架导入、23 骨骼重定向、8 个动作与完整 HDR 渲染。
+
 | 示例 | 演示能力 |
 |---|---|
 | [basic](basic/README.md) | 六步 2D 入门：矩形 → 图片 → 移动 → 物理 → 粒子 → 火焰；另含两个 UI 变体 |
@@ -116,7 +122,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [daynight](daynight/README.md) | 昼夜循环：太阳轨道、程序化天空盒、月光 / 星光 / 火焰 / 萤火虫 |
 | [uds-sky](uds-sky/README.md) | 独立天空配置与大气渲染对照场景（完整 UDS 效果开发中） |
 | [weather](weather/README.md) | 天气系统：雨 / 雪 / 雷暴 / 雾 / 风，实时滑块 |
-| [weather-daynight](weather-daynight/README.md) | 统一昼夜 + 天气：太阳轨道、程序化天空与雨雪雷暴 |
+| [weather-daynight](weather-daynight/README.md) | 样条瀑布与河流 / 昼夜天气 / 泡沫水流 / 体积云雾 |
 | [snow](snow/README.md) | 可交互积雪：与高度图同尺寸的 `SnowField` 深度场驱动形变与着色 |
 | [softbody](softbody/README.md) | 布料与 2D 流体解算器（拖拽 / 排斥 / 吸引） |
 | [softbody3d](softbody3d/README.md) | 3D 软体：Verlet 布料 + 体积体与静态 Box3D 碰撞 |
@@ -128,11 +134,12 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [tactics](tactics/README.md) | 固定镜头 3D 战棋：4 名冒险者对战 6 种骷髅敌人（12×5 方格）；Hero/Foe ECS |
 | [venom-transform](venom-transform/README.md) | 毒液变装效果近似：形变与材质过渡 |
 | [anime-character-lab](anime-character-lab/README.md) | anime 风格化着色检查：`stylize.newMeshShader(gfx, "anime")` |
+| [impasto-paint](impasto-paint/README.md) | 独立厚涂油彩：笔触化 SDF 遮蔽、明暗交界、外扩与侵蚀轮廓 |
 | [avatar-document-editor](avatar-document-editor/README.md) | Azure / Avatar 工作区：可编辑分层母稿 + 真实 `eve.Avatar` 图层渲染 |
 | [vrm-avatar](vrm-avatar/README.md) | VRM 角色加载与渲染示例 |
 | [voxel](voxel/README.md) | 流式体素地形 + 方块建造：脚本图集、流式 chunk 与 DDA 拾取 |
 | [voxel-terrain](voxel-terrain/README.md) | 体素引擎 + 地形生成：32³ chunk、贪婪矩形合并、视锥/视距裁剪、顶点 AO |
-| [ocean-voyage](ocean-voyage/README.md) | 可驾驶船只、三频段 FFT 广阔海洋、GPU 驻留绘制、浮力与尾浪泡沫 |
+| [ocean-voyage](ocean-voyage/README.md) | 可驾驶 055 展示舰、三频段 FFT 广阔海洋、GPU 驻留绘制、浮力与尾浪泡沫 |
 | [fluid3d](fluid3d/README.md) | 体积流体实验室：19 个场景模式（水 / 黏性 / 烟雾 / 颗粒 / 射流 / 网格化 / 多相 / 热耦合 / 泡沫 / 移动 SDF / 重叠查询 / 尾流…）+ 70 余个 opt-in 数值验收脚本 |
 
 ## 程序化生成
@@ -179,6 +186,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [mesh-modifier-lab](mesh-modifier-lab/README.md) | 13 种网格变形变体并排对照：类型化修饰图（bend / twist / FFD / 切面 / 样条 / 声波）、雕刻笔刷、粘液回弹、Mesh Fit、顶点编辑器 |
 | [mesh-contact-fusion](mesh-contact-fusion/README.md) | 接触带融合：静态 `mergeStaticMeshes`（默认关 / 可选开）与实时 `MeshAdhereLive` 并排对照 |
 | [spline-tube-lab](spline-tube-lab/README.md) | 无源网格生成：样条路径驱动管道 / 带状体 / 自定义截面挤出，含开放与闭合回路、分块、分布采样与行进帧 |
+| [night-city](night-city/README.md) | 自动街区与新版路网结合的夜间都市：SCAD 高楼、发光窗户、路灯、信号灯与人行道 |
 | [procedural-road](procedural-road/README.md) | 程序化多层立交：截面挤出道路/桥墩/标线/导航逻辑叠加（`mesh.roadNetwork`） |
 | [mesh-impact-lab](mesh-impact-lab/README.md) | Box3D 命中事件驱动网格塑性冲击：法向冲量 → 形变会话 → 重新上传 |
 | [geometry-stroke-lab](geometry-stroke-lab/README.md) | 几何笔刷轨迹：quad / 三棱柱 / 立方体截面、平面与空间输入、最小间距过滤、撤销、CPU 生成 + GPU 上传 |
@@ -230,7 +238,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [combat-arena](combat-arena/README.md) | 动作战斗竖切：移动/闪避/伤害/锁定与敌人近距攻击的组合烟测 |
 | [procgen-script-editor](procgen-script-editor/README.md) | 宿主封装 Squirrel generator（`generators/forest.nut`）的程序化生成编辑器 |
 | [ui-theme-editor](ui-theme-editor/README.md) | UI 主题编辑示例：组装命名 Theme 工作区 + 实时预览 |
-| [material-editor](material-editor/README.md) | 材质编辑器：中央 UE5 材质球预览 + 右侧 Shading/Surface/Lighting 参数面板 |
+| [material-editor](material-editor/README.md) | 材质编辑器：高层脚本创建、复杂测试球、模型导入、可切换天空盒与 IBL、完整参数及撤销保存 |
 | [ai-stage](ai-stage/README.md) | AI 空舞台：scene_director 搭台 kit + MCP，供 Agent 摆物 / 调光 / 截图 / 质检 |
 | [blender_hot_reload](blender_hot_reload/README.md) | Blender 保存 → GLB → `SceneLoader.load` → 卸载旧 SceneHost 的热重载往返 |
 | [model-converter](model-converter/README.md) | 驱动 Blender 把 OBJ 转换成 GLB 并回载（modelconverter 插件） |
@@ -256,3 +264,20 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 
 想理解这些示例在证明引擎的哪些设计主张，见根目录 [Readme.md](../Readme.md) 的「设计思路」状态表；
 开发者体验类的设计价值（热重载、快照、暂停调试、AI/MCP）集中在 `devlab` 与 `ai-stage` 中体现。
+
+| [house-collapse](house-collapse/README.md) | Voronoi 房屋预破碎、分阶段坍塌、保存播放与体积烟尘 |
+
+## Scenes migrated from screenshot tests
+
+| Example | Description |
+|---|---|
+| [stylized-water-shore](stylized-water-shore/README.md) | Shore rocks, reeds, jetty and animated stylized water; four views and material layers |
+| [procedural-render-gallery](procedural-render-gallery/README.md) | Original tree, bush, L-system, hex planet and skyscraper screenshot recipes |
+| [dual-grid-material-gallery](dual-grid-material-gallery/README.md) | Seven offline dual-grid material previews with a native baker, moved out of tests |
+
+These examples replace 15 visualization cases that primarily exported pictures
+or required an opt-in output environment variable. Native-only construction and
+material bakers live beside their examples and are opt-in build targets.
+Tests with actual regression assertions remain in `test/`: castle mesh groups
+and image occupancy, decal material/projection behavior, planar-reflection pixel
+coverage, water animation differences, and grid semantic-color matching.

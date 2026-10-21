@@ -122,6 +122,10 @@ void Graphics::recordShadowCascadePass(vkb::FrameGraphPassContext &ctx, int casc
     auto              &cb     = ctx.commandBuffer();
     const vk::Extent2D extent = ctx.extent();
     const uint32_t     size   = extent.width ? extent.width : uint32_t(ShadowConfig::kMapSize);
+    recordShadowCascadeDraws(cb, cascade, size);
+}
+
+void Graphics::recordShadowCascadeDraws(vk::CommandBuffer cb, int cascade, uint32_t size) {
     setViewportAndScissor(cb, size, size);
     vk::Pipeline boundPipeline{};
     for (const auto &d : shadowCascadeDraws[cascade]) {

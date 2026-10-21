@@ -56,6 +56,29 @@ constexpr int kPushOriginZ       = 12;
     return {hv, hv * u, hv * v + 0.5f * g * h * h};
 }
 
+// Hydrostatic reconstruction (Audusse et al., 2004), including the pressure
+// correction on the receiving cell. A constant free surface remains at rest.
+[[nodiscard]] glm::vec3 bedFlux(glm::vec3 a, glm::vec3 b, float ba, float bb, float gravity, float minDepth, bool axisZ,
+                                bool receiveA) noexcept {
+    const float     top = std::max(ba, bb);
+    const float     ha  = std::max(0.f, a.x + ba - top);
+    const float     hb  = std::max(0.f, b.x + bb - top);
+    const glm::vec3 qa{ha, a.x > minDepth ? a.y * ha / a.x : 0.f, a.x > minDepth ? a.z * ha / a.x : 0.f};
+    const glm::vec3 qb{hb, b.x > minDepth ? b.y * hb / b.x : 0.f, b.x > minDepth ? b.z * hb / b.x : 0.f};
+    const int       axis  = axisZ ? 2 : 1;
+    const float     va    = ha > minDepth ? std::abs(qa[axis] / ha) : 0.f;
+    const float     vb    = hb > minDepth ? std::abs(qb[axis] / hb) : 0.f;
+    const float     alpha = std::max(va + std::sqrt(gravity * ha), vb + std::sqrt(gravity * hb));
+    glm::vec3       f =
+        0.5f * ((axisZ ? fluxZ(qa.x, qa.y, qa.z, gravity, minDepth) : fluxX(qa.x, qa.y, qa.z, gravity, minDepth)) +
+                (axisZ ? fluxZ(qb.x, qb.y, qb.z, gravity, minDepth) : fluxX(qb.x, qb.y, qb.z, gravity, minDepth))) -
+        0.5f * alpha * (qb - qa);
+    const float original      = receiveA ? a.x : b.x;
+    const float reconstructed = receiveA ? ha : hb;
+    f[axis] += 0.5f * gravity * (original * original - reconstructed * reconstructed);
+    return f;
+}
+
 [[nodiscard]] float colliderFootprintDistance(const ShallowWaterCollider& c, float worldX, float worldZ) noexcept {
     const float dx = worldX - c.center.x;
     const float dz = worldZ - c.center.z;
@@ -70,14 +93,14 @@ constexpr int kPushOriginZ       = 12;
 
 [[nodiscard]] float colliderImmersion(const ShallowWaterCollider& c, float surfaceY) noexcept {
     if (c.shape == ShallowWaterColliderShape::Sphere) {
-        return std::clamp(c.center.y + c.radius - surfaceY, 0.f, 2.f * c.radius);
+        return std::clamp(surfaceY - (c.center.y - c.radius), 0.f, 2.f * c.radius);
     }
     if (c.shape == ShallowWaterColliderShape::Capsule) {
         const float top    = c.center.y + c.halfExtent.y + c.radius;
         const float bottom = c.center.y - c.halfExtent.y - c.radius;
-        return std::clamp(top - surfaceY, 0.f, top - bottom);
+        return std::clamp(surfaceY - bottom, 0.f, top - bottom);
     }
-    return std::clamp(c.center.y + c.halfExtent.y - surfaceY, 0.f, 2.f * c.halfExtent.y);
+    return std::clamp(surfaceY - (c.center.y - c.halfExtent.y), 0.f, 2.f * c.halfExtent.y);
 }
 
 }  // namespace
@@ -87,6 +110,7 @@ Result<std::unique_ptr<ShallowWaterField>> ShallowWaterField::create(const Shall
     if (auto valid = field->validateSettings(settings); !valid) return Result<std::unique_ptr<ShallowWaterField>>::failure(valid.status());
     const int cells = field->cellCount();
     field->heights_.assign(size_t(cells), settings.initialDepth);
+    field->restDepths_ = field->heights_;
     field->momentumX_.assign(size_t(cells), 0.f);
     field->momentumZ_.assign(size_t(cells), 0.f);
     field->beds_.assign(size_t(cells), settings.bedHeight);
@@ -208,6 +232,19 @@ Result<void> ShallowWaterField::setBed(std::span<const float> beds) {
 Result<void> ShallowWaterField::fillDepth(float depth) {
     if (!std::isfinite(depth) || depth < 0.f || depth > maxDepth_) return fail("fillDepth out of range");
     std::fill(heights_.begin(), heights_.end(), depth);
+    restDepths_ = heights_;
+    std::fill(momentumX_.begin(), momentumX_.end(), 0.f);
+    std::fill(momentumZ_.begin(), momentumZ_.end(), 0.f);
+    stateOnGpu_ = false;
+    return Result<void>::success();
+}
+
+Result<void> ShallowWaterField::fillSurface(float surfaceY) {
+    if (!std::isfinite(surfaceY)) return fail("surfaceY must be finite");
+    for (float bed : beds_)
+        if (surfaceY - bed > maxDepth_) return fail("surface depth exceeds maxDepth");
+    for (size_t i = 0; i < heights_.size(); ++i) heights_[i] = std::max(0.f, surfaceY - beds_[i]);
+    restDepths_ = heights_;
     std::fill(momentumX_.begin(), momentumX_.end(), 0.f);
     std::fill(momentumZ_.begin(), momentumZ_.end(), 0.f);
     stateOnGpu_ = false;
@@ -335,7 +372,8 @@ Result<void> ShallowWaterField::buildSurfaceMesh(std::vector<float>& positionsXY
             const size_t p = size_t(i) * 3u;
             const size_t u = size_t(i) * 2u;
             const float  h = heights_[size_t(i)];
-            const float  y = beds_[size_t(i)] + restDepth + (h - restDepth) * visualHeightGain;
+            const float  reference = restDepths_[size_t(i)];
+            const float  y         = beds_[size_t(i)] + std::max(0.f, reference + (h - reference) * visualHeightGain);
             positionsXYZ[p]     = origin_.x + (float(x) + 0.5f) * cellSize_;
             positionsXYZ[p + 1] = y;
             positionsXYZ[p + 2] = origin_.z + (float(z) + 0.5f) * cellSize_;
@@ -533,6 +571,7 @@ void ShallowWaterField::rasterizeCollidersCpu(float dt) {
             const int   i  = index(x, z);
             const float wx = origin_.x + (float(x) + 0.5f) * cellSize_;
             const float wz = origin_.z + (float(z) + 0.5f) * cellSize_;
+            if (heights_[size_t(i)] <= minDepth_) continue;
             const float surfaceY = beds_[size_t(i)] + heights_[size_t(i)];
             for (const auto& c : colliders_) {
                 const float dist = colliderFootprintDistance(c, wx, wz);
@@ -566,16 +605,6 @@ void ShallowWaterField::rasterizeCollidersCpu(float dt) {
 }
 
 void ShallowWaterField::integrateCpu(float dt) {
-    // Local Lax-Friedrichs wave-speed bound (gravity waves + horizontal flow).
-    float maxWave = std::sqrt(gravity_ * minDepth_) + 1.f;
-    for (int i = 0; i < cellCount(); ++i) {
-        const float h = std::max(heights_[size_t(i)], minDepth_);
-        const float u = momentumX_[size_t(i)] / h;
-        const float v = momentumZ_[size_t(i)] / h;
-        maxWave       = std::max(maxWave, std::abs(u) + std::sqrt(gravity_ * h));
-        maxWave       = std::max(maxWave, std::abs(v) + std::sqrt(gravity_ * h));
-    }
-    const float alpha = maxWave;
     auto sample = [&](int x, int z, float& h, float& hu, float& hv) {
         x  = std::clamp(x, 0, resX_ - 1);
         z  = std::clamp(z, 0, resZ_ - 1);
@@ -612,26 +641,12 @@ void ShallowWaterField::integrateCpu(float dt) {
             const glm::vec3 qD{hD, huD, hvD};
             const glm::vec3 qU{hU, huU, hvU};
 
-            const glm::vec3 fR = 0.5f * (fluxX(h, hu, hv, gravity_, minDepth_) + fluxX(hR, huR, hvR, gravity_, minDepth_)) -
-                                 0.5f * alpha * (qR - q);
-            const glm::vec3 fL = 0.5f * (fluxX(hL, huL, hvL, gravity_, minDepth_) + fluxX(h, hu, hv, gravity_, minDepth_)) -
-                                 0.5f * alpha * (q - qL);
-            const glm::vec3 gUflux =
-                0.5f * (fluxZ(h, hu, hv, gravity_, minDepth_) + fluxZ(hU, huU, hvU, gravity_, minDepth_)) -
-                0.5f * alpha * (qU - q);
-            const glm::vec3 gDflux =
-                0.5f * (fluxZ(hD, huD, hvD, gravity_, minDepth_) + fluxZ(h, hu, hv, gravity_, minDepth_)) -
-                0.5f * alpha * (q - qD);
-
-            const float bL = sampleBed(x - 1, z);
-            const float bR = sampleBed(x + 1, z);
-            const float bD = sampleBed(x, z - 1);
-            const float bU = sampleBed(x, z + 1);
-            const float hSafe = std::max(h, minDepth_);
-            const glm::vec3 source{0.f, -gravity_ * hSafe * (bR - bL) / (2.f * cellSize_),
-                                   -gravity_ * hSafe * (bU - bD) / (2.f * cellSize_)};
-
-            glm::vec3 qn = q - (dt / cellSize_) * (fR - fL + gUflux - gDflux) + dt * source;
+            const float     bed = sampleBed(x, z);
+            const glm::vec3 fR  = bedFlux(q, qR, bed, sampleBed(x + 1, z), gravity_, minDepth_, false, true);
+            const glm::vec3 fL  = bedFlux(qL, q, sampleBed(x - 1, z), bed, gravity_, minDepth_, false, false);
+            const glm::vec3 fU  = bedFlux(q, qU, bed, sampleBed(x, z + 1), gravity_, minDepth_, true, true);
+            const glm::vec3 fD  = bedFlux(qD, q, sampleBed(x, z - 1), bed, gravity_, minDepth_, true, false);
+            glm::vec3       qn  = q - (dt / cellSize_) * (fR - fL + fU - fD);
             // dt-scaled Laplacian viscosity (was previously unscaled and blew up).
             qn.y += viscosity_ * dt * (huL + huR + huD + huU - 4.f * hu);
             qn.z += viscosity_ * dt * (hvL + hvR + hvD + hvU - 4.f * hv);
@@ -691,7 +706,7 @@ Result<void> ShallowWaterField::step(float dt) {
             maxVel        = std::max(maxVel, std::sqrt(u * u + v * v));
         }
         const float waveSpeed = std::sqrt(gravity_ * maxH) + maxVel + 1.f;
-        const float safeDt    = cfl_ * cellSize_ / std::max(waveSpeed, 1e-3f);
+        const float safeDt    = 0.5f * cfl_ * cellSize_ / std::max(waveSpeed, 1e-3f);
         int         substeps  = std::clamp(int(std::ceil(chunk / safeDt)), 1, maxSubsteps_);
         const float subDt     = chunk / float(substeps);
 
@@ -812,10 +827,14 @@ void ShallowWaterField::uploadColliders() {
 }
 
 Result<void> ShallowWaterField::stepGpu(float dt) {
-    float maxH = minDepth_;
-    for (float h : heights_) maxH = std::max(maxH, h);
-    const float waveSpeed = std::sqrt(gravity_ * maxH) + 1.f;
-    const float safeDt    = cfl_ * cellSize_ / std::max(waveSpeed, 1e-3f);
+    float maxH = minDepth_, maxVel = 0.f;
+    for (size_t i = 0; i < heights_.size(); ++i) {
+        maxH          = std::max(maxH, heights_[i]);
+        const float h = std::max(heights_[i], minDepth_);
+        maxVel        = std::max(maxVel, std::hypot(momentumX_[i], momentumZ_[i]) / h);
+    }
+    const float waveSpeed = std::sqrt(gravity_ * maxH) + maxVel + 1.f;
+    const float safeDt    = 0.5f * cfl_ * cellSize_ / std::max(waveSpeed, 1e-3f);
     const int   substeps  = std::clamp(int(std::ceil(dt / safeDt)), 1, maxSubsteps_);
     const float subDt     = dt / float(substeps);
     const int   groupsX   = (resX_ + 7) / 8;
