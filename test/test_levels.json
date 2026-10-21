@@ -11958,6 +11958,46 @@
         ]
       },
       "module": "procgen"
+    },
+    "integration/material-studio/material_preview_shadows.cpp": {
+      "role": "tests",
+      "default": "render-offscreen",
+      "cases": {
+        "render-offscreen": [
+          "editor.material.preview_shadows_affect_pixels_and_capture_path_stays_unshadowed"
+        ]
+      },
+      "module": "graphics",
+      "task": "material-studio"
+    },
+    "integration/material-studio/material_studio_scripts.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "editor.material.facade_script_projects_owned_values_and_checked_failures",
+          "editor.material.studio_publication_clears_resources_and_preserves_preview_on_failure",
+          "editor.material.preview_geometry_has_recessed_rings_valid_normals_and_matching_sky_edges",
+          "editor.material.preview_selection_failures_preserve_active_resources_and_fit_shared_bounds"
+        ]
+      },
+      "module": "material_editor",
+      "task": "material-studio"
+    },
+    "unit/material_editor/material_editor_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "editor.material.facade_patch_is_one_undo_record",
+          "editor.material.facade_invalid_patch_preserves_document_and_history",
+          "editor.material.facade_cross_field_validation_is_candidate_first",
+          "editor.material.facade_snapshot_restore_is_undoable_and_migrates",
+          "editor.material.facade_noop_preserves_redo_and_revision",
+          "editor.material.facade_schema_and_workspace_are_detached"
+        ]
+      },
+      "module": "material_editor"
     }
   }
 }
