@@ -131,10 +131,11 @@
 ## VolumeFluidCoupling
 
 - `attach(body: Body3D, object: dynamic)` → `dynamic`；[绑定实现 L95](../../../../src/modules/fluids/VolumeFluidBindings.cpp#L95)。
-- `detach(label: int)` → `dynamic`；[绑定实现 L108](../../../../src/modules/fluids/VolumeFluidBindings.cpp#L108)。
-- `lastClampedBodyCount()` → `int`；[绑定实现 L112](../../../../src/modules/fluids/VolumeFluidBindings.cpp#L112)。
-- `setImpulseLimits(linear: float, angular: float)` → `dynamic`；[绑定实现 L109](../../../../src/modules/fluids/VolumeFluidBindings.cpp#L109)。
-- `stepWithThermalContacts(world: World3D, fluid: VolumeFluid, dt: float, substeps: int, object: dynamic)` → `dynamic`；[绑定实现 L123](../../../../src/modules/fluids/VolumeFluidBindings.cpp#L123)。
+- `attachSdf(body: Body3D, object: dynamic)` → `dynamic`；[绑定实现 L108](../../../../src/modules/fluids/VolumeFluidBindings.cpp#L108)。
+- `detach(label: int)` → `dynamic`；[绑定实现 L121](../../../../src/modules/fluids/VolumeFluidBindings.cpp#L121)。
+- `lastClampedBodyCount()` → `int`；[绑定实现 L125](../../../../src/modules/fluids/VolumeFluidBindings.cpp#L125)。
+- `setImpulseLimits(linear: float, angular: float)` → `dynamic`；[绑定实现 L122](../../../../src/modules/fluids/VolumeFluidBindings.cpp#L122)。
+- `stepWithThermalContacts(world: World3D, fluid: VolumeFluid, dt: float, substeps: int, object: dynamic)` → `dynamic`；[绑定实现 L136](../../../../src/modules/fluids/VolumeFluidBindings.cpp#L136)。
 
 ## VolumeFluidDiffuse
 

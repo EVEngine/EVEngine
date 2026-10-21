@@ -564,10 +564,18 @@ never copied during stepping.
 
 `eve.VolumeFluidCoupling()` owns generation-checked PhysicsLink values and local
 collider descriptions. `attach(body,localShape)` returns Result; labels must be
-unique and at most 1024 links are accepted. The local shape center/rotation are
-relative to the body; sampled velocities come from the authoritative rigid body.
-`detach(label)` is an idempotent removal. The bridge never owns bodies, worlds or
-the fluid solver and does not retain their raw pointers between calls.
+unique across analytic and SDF attachments and at most 1024 links are accepted.
+The local shape center/rotation are relative to the body; sampled velocities come
+from the authoritative rigid body. `attachSdf(body,localSdf)` binds a MeshSdf
+collider the same way: bake once with `volumeSdfColliderFromModel` / sphere helpers,
+keep distance samples in collider-local space, and let each bridge step transform
+`position`/`rotation`/`scale` from the linked body. At most 16 SDF bindings are
+accepted. When any SDF binding is present, `step` exclusively replaces the fluid's
+SDF collider set for that tick; otherwise previously owned static SDF obstacles are
+left untouched. Analytic colliders remain exclusively supplied by the bridge on
+every step. `detach(label)` is an idempotent removal for either kind. The bridge
+never owns bodies, worlds or the fluid solver and does not retain their raw
+pointers between calls.
 
 `bridge.setImpulseLimits(maxLinearDelta,maxAngularDelta)` bounds the velocity change
 that one completed fluid step may apply to each dynamic body. Defaults are 20 m/s

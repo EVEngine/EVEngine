@@ -637,6 +637,34 @@ Result<void>                         VolumeFluid::stepWithColliders(float second
     }
     return advanced;
 }
+Result<void> VolumeFluid::stepWithColliders(float seconds, unsigned substeps,
+                                            std::span<const VolumeFluidCollider>    colliders,
+                                            std::span<const VolumeFluidSdfCollider> sdfColliders,
+                                            std::span<const VolumeFluidThermalRule> rules) {
+    auto previousColliders      = impl_->colliders;
+    auto previousRotations      = impl_->colliderRotations;
+    auto previousAttachments    = impl_->attachments;
+    auto previousSdfColliders   = impl_->sdfColliders;
+    auto previousSdfRotations   = impl_->sdfColliderRotations;
+    auto configuredAnalytic     = setColliders(colliders);
+    if (!configuredAnalytic) return configuredAnalytic;
+    auto configuredSdf = setSdfColliders(sdfColliders);
+    if (!configuredSdf) {
+        impl_->colliders.swap(previousColliders);
+        impl_->colliderRotations.swap(previousRotations);
+        impl_->attachments.swap(previousAttachments);
+        return configuredSdf;
+    }
+    auto advanced = stepWithThermalContacts(seconds, substeps, rules);
+    if (!advanced) {
+        impl_->colliders.swap(previousColliders);
+        impl_->colliderRotations.swap(previousRotations);
+        impl_->attachments.swap(previousAttachments);
+        impl_->sdfColliders.swap(previousSdfColliders);
+        impl_->sdfColliderRotations.swap(previousSdfRotations);
+    }
+    return advanced;
+}
 size_t       VolumeFluid::particleCount() const { return impl_->state.size(); }
 size_t       VolumeFluid::availableCapacity() const { return impl_->settings.capacity - impl_->state.size(); }
 float        VolumeFluid::spacing() const { return impl_->settings.spacing; }
