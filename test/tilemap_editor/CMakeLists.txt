@@ -3,6 +3,9 @@ project(EVEngineTilemapEditorTests LANGUAGES C CXX)
 
 # Compile the production CPU editing code without an engine host or GPU.
 get_filename_component(EVE_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
+include("${EVE_ROOT}/cmake/TestLevels.cmake")
+eve_configure_test_levels(EVE_TEST_LEVEL_FILE)
+include("${EVE_TEST_LEVEL_FILE}")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(EVE_ZEROERR_SOURCE "${EVE_ROOT}/external/zeroerr" CACHE PATH "Pinned zeroerr checkout")
@@ -14,10 +17,15 @@ set(USE_MOLD OFF CACHE BOOL "" FORCE)
 add_subdirectory("${EVE_ZEROERR_SOURCE}" zeroerr)
 
 set(case_sources "${EVE_ROOT}/test/editor_level.cpp" "${EVE_ROOT}/test/editor_tilemap_formats.cpp")
-add_executable(tilemap_editor_tests
+eve_add_test_executable(tilemap_editor_tests
     ${case_sources}
     "${EVE_ROOT}/src/engine/common/Json.cpp"
     "${EVE_ROOT}/src/engine/common/Value.cpp"
+    "${EVE_ROOT}/src/engine/common/Diagnostic.cpp"
+    "${EVE_ROOT}/src/engine/common/Status.cpp"
+    "${EVE_ROOT}/src/engine/common/Result.cpp"
+    "${EVE_ROOT}/src/engine/common/Identity.cpp"
+    "${EVE_ROOT}/src/modules/editing/EditingResult.cpp"
     "${EVE_ROOT}/src/engine/common/Exception.cpp"
     "${EVE_ROOT}/src/engine/common/RenderTrace.cpp"
     "${EVE_ROOT}/src/modules/map/level/editing/LevelDocument.cpp"
@@ -31,7 +39,7 @@ target_link_libraries(tilemap_editor_tests PRIVATE zeroerr)
 if(EVE_TILEMAP_RUNTIME_TESTS)
     find_path(EVE_GLM_INCLUDE glm/vec4.hpp HINTS "${EVE_ROOT}/third-party/glm" REQUIRED)
     target_include_directories(tilemap_editor_tests PRIVATE "${EVE_ECS_SOURCE}/src" "${EVE_GLM_INCLUDE}")
-    target_sources(tilemap_editor_tests PRIVATE
+    eve_target_test_sources(tilemap_editor_tests PRIVATE
         "${EVE_ROOT}/src/modules/map/TileLayer.cpp"
         "${EVE_ROOT}/src/modules/map/editing/TileLayerTarget.cpp"
         "${EVE_ROOT}/test/map_tile_editing.cpp")
@@ -53,12 +61,15 @@ else()
 endif()
 
 enable_testing()
+eve_resolve_test_sources(case_sources ${case_sources})
 foreach(source IN LISTS case_sources)
-    file(STRINGS "${source}" cases REGEX "^TEST_CASE\\(\"")
-    foreach(line IN LISTS cases)
-        string(REGEX REPLACE "^TEST_CASE\\(\"([^\"]+)\".*" "\\1" name "${line}")
+    eve_test_source_case_names("${source}" cases tilemap_editor_tests)
+    foreach(name IN LISTS cases)
         string(REPLACE "." "\\." pattern "${name}")
         add_test(NAME "${name}" COMMAND tilemap_editor_tests "--testcase=^${pattern}$")
         set_tests_properties("${name}" PROPERTIES FAIL_REGULAR_EXPRESSION "Assertion Failed" LABELS "tilemap;cpu")
+        eve_label_test_case("${name}" "${source}" "${name}")
     endforeach()
 endforeach()
+include("${EVE_ROOT}/cmake/TestImpact.cmake")
+eve_enable_test_impact(TARGETS tilemap_editor_tests)

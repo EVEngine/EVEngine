@@ -11,6 +11,9 @@
 #include "stylize/shaders/anime_mesh_frag_spv.inc"
 #include "stylize/shaders/anime_mesh_wgsl.inc"
 #include "stylize/shaders/cartoon_post_frag_spv.inc"
+#include "stylize/shaders/impasto_mesh_frag_spv.inc"
+#include "stylize/shaders/impasto_mesh_vert_spv.inc"
+#include "stylize/shaders/impasto_mesh_wgsl.inc"
 #include "stylize/shaders/ink_mesh_frag_spv.inc"
 #include "stylize/shaders/ink_post_frag_spv.inc"
 #include "stylize/shaders/pixel_post_frag_spv.inc"
@@ -28,7 +31,7 @@
 namespace eve::stylize {
 namespace {
 
-const std::array<StyleDefinition, 7> kStyles = {{
+const std::array<StyleDefinition, 8> kStyles = {{
     {"cartoon", true, true, true, false, false, graphics::PostEffectStage::BeforeTonemap, 100},
     {"watercolor", true, false, true, false, false, graphics::PostEffectStage::AfterTonemap, 200},
     {"ink", true, true, true, false, false, graphics::PostEffectStage::BeforeTonemap, 110},
@@ -36,6 +39,7 @@ const std::array<StyleDefinition, 7> kStyles = {{
     {"xray", false, true, false, true, false, graphics::PostEffectStage::AfterOpaque, 50},
     {"anime", false, true, false, false, false, graphics::PostEffectStage::AfterOpaque, 40},
     {"ysa", false, true, false, false, false, graphics::PostEffectStage::AfterOpaque, 40},
+    {"impasto", false, true, false, false, false, graphics::PostEffectStage::AfterOpaque, 40},
 }};
 
 std::vector<uint32_t> copySpv(const uint32_t *data, size_t count) {
@@ -200,6 +204,40 @@ bool styleSupports(const std::string &style, const std::string &feature) {
 
 namespace {
 // Order is the shared GLSL/WGSL parameter ABI. Seed shader uniforms from this table.
+const StyleParameterDesc kImpastoParams[] = {
+    {"strokeScale", 0.65f, 0.1f, 32.0f},
+    {"normalStrength", 0.88f, 0.0f, 3.0f},
+    {"colorVariation", 0.32f, 0.0f, 0.8f},
+    {"parallax", 0.06f, 0.0f, 0.15f},
+    {"reflectionStrength", 0.78f, 0.0f, 2.0f},
+    {"sdfShadowStrength", 0.0f, 0.0f, 1.0f},
+    {"shadowR", 0.24f, 0.0f, 1.0f},
+    {"shadowG", 0.18f, 0.0f, 1.0f},
+    {"shadowB", 0.48f, 0.0f, 1.0f},
+    {"rimStrength", 0.7f, 0.0f, 3.0f},
+    {"rimErosion", 0.8f, 0.0f, 1.0f},
+    {"packedBrush", 0.0f, 0.0f, 1.0f},
+    {"layer", 0.0f, 0.0f, 3.0f},
+    {"shellWidth", 0.045f, 0.0f, 0.2f},
+    {"shellOffset", 0.0f, -0.2f, 0.2f},
+    {"smoothNormalMode", 0.0f, 0.0f, 2.0f},
+    {"occlusionStrength", 0.0f, 0.0f, 1.0f},
+    {"occlusionRadius", 0.8f, 0.01f, 4.0f},
+    {"sdfFloorY", 0.0f, -1000.0f, 1000.0f},
+    {"sdfOwner", 0.0f, 0.0f, 4.0f},
+    {"sdfSphereAX", 0.0f, -1000.0f, 1000.0f},
+    {"sdfSphereAY", 0.0f, -1000.0f, 1000.0f},
+    {"sdfSphereAZ", 0.0f, -1000.0f, 1000.0f},
+    {"sdfSphereASize", 0.0f, 0.0f, 1000.0f},
+    {"sdfSphereBX", 0.0f, -1000.0f, 1000.0f},
+    {"sdfSphereBY", 0.0f, -1000.0f, 1000.0f},
+    {"sdfSphereBZ", 0.0f, -1000.0f, 1000.0f},
+    {"sdfSphereBSize", 0.0f, 0.0f, 1000.0f},
+    {"sdfBoxX", 0.0f, -1000.0f, 1000.0f},
+    {"sdfBoxY", 0.0f, -1000.0f, 1000.0f},
+    {"sdfBoxZ", 0.0f, -1000.0f, 1000.0f},
+    {"sdfBoxSize", 0.0f, 0.0f, 1000.0f},
+};
 const StyleParameterDesc kYsaParams[] = {
     {"lightMidpoint", 0.f, -1.f, 1.f},
     {"lightSmoothness", 0.1f, 0.00001f, 1.f},
@@ -283,6 +321,7 @@ const StyleParameterDesc *paramAt(const StyleParameterDesc (&params)[N], int ind
 }  // namespace
 
 int styleParamCount(const std::string &style) {
+    if (style == "impasto") return int(std::size(kImpastoParams));
     if (style == "ysa") return int(std::size(kYsaParams));
     if (style == "anime") return int(std::size(kAnimeParams));
     if (style == "cartoon") return int(sizeof(kCartoonParams) / sizeof(kCartoonParams[0]));
@@ -299,6 +338,7 @@ std::string styleParamName(const std::string &style, int index) {
 }
 
 const StyleParameterDesc *styleParameterAt(const std::string &style, int index) {
+    if (style == "impasto") return paramAt(kImpastoParams, index);
     if (style == "ysa") return paramAt(kYsaParams, index);
     if (style == "anime") return paramAt(kAnimeParams, index);
     if (style == "cartoon") return paramAt(kCartoonParams, index);
@@ -429,6 +469,13 @@ void bindPostUniforms(graphics::Shader *shader, const std::string &style) {
 
 void bindMeshUniforms(graphics::Shader *shader, const std::string &style) {
     if (!shader) throw eve::Exception("bindMeshUniforms: null shader");
+    if (style == "impasto") {
+        for (const auto &param : kImpastoParams) {
+            shader->declareFloat(param.id);
+            shader->sendFloat(param.id, param.defaultValue);
+        }
+        return;
+    }
     if (style == "ysa") {
         for (const auto &param : kYsaParams) {
             shader->declareFloat(param.id);
@@ -543,6 +590,18 @@ graphics::Shader *createPostShader(graphics::Graphics *gfx, const std::string &s
 graphics::Shader *createMeshShader(graphics::Graphics *gfx, const std::string &style) {
     if (!gfx) throw eve::Exception("createMeshShader: null graphics");
     if (isEffectStyle(style)) return createEffectMeshShader(gfx, style);
+
+    if (style == "impasto") {
+        graphics::Shader *shader =
+            gfx->getBackendName() == "webgpu"
+                ? gfx->newMeshShaderFromWgsl(shaders::kImpastoVert, shaders::kImpastoMesh)
+                : gfx->newMeshShaderFromSpv(copySpv(impasto_mesh_vert_spv, impasto_mesh_vert_spv_count),
+                                            copySpv(impasto_mesh_frag_spv, impasto_mesh_frag_spv_count));
+        if (!shader || !shader->gpuHandle)
+            throw eve::Exception("createMeshShader: failed to create impasto mesh shader");
+        bindMeshUniforms(shader, style);
+        return shader;
+    }
 
     if (style == "ysa") {
         // Vulkan stylize meshes share the skinning and vertex-color contract

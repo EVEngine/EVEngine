@@ -527,6 +527,14 @@ public:
                                float skyFaceTextureScale = 1.f, bool includePrimitives = false);
 
     /**
+     * @brief Render an editor preview with directional cascaded shadows before forward shading.
+     * @ownership Target and camera are borrowed for this synchronous call only.
+     * @thread Graphics thread; does not retain arguments or invoke shadow contributor callbacks.
+     * @cost Adds three shadow-map submissions per preview frame relative to renderToCanvas.
+     */
+    static void renderWithShadowsToCanvas(Graphics& gfx, Canvas& target, Camera3D& camera);
+
+    /**
      * @brief Draw custom forward geometry into reflection-probe and preview captures.
      * @param gfx Graphics backend receiving draw submissions.
      * @param cam Capture camera and its independent environment-lighting snapshot.
@@ -649,6 +657,13 @@ public:
 
     /** @brief Legacy single directional light used when no enabled Light3D exists. */
     static void setDirectionalLight(float dx, float dy, float dz, float r, float g, float b);
+
+private:
+    enum class CanvasShadows { Disabled, Directional };
+    static void renderToCanvasImpl(Graphics& gfx, Canvas* target, Camera3D* camera, uint32_t reflectionCaptureMask,
+                                   float lodDistanceScale, bool includeTransparent, bool useClusteredLighting,
+                                   Texture* skyFaceTexture, Mesh* skyQuad, float skyFaceTextureScale,
+                                   CanvasShadows shadows, bool includePrimitives);
 };
 
 }  // namespace eve::graphics

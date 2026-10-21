@@ -2,6 +2,8 @@
 #include <box3d/box3d.h>
 #include <cmath>
 #include "common/Exception.h"
+#include "physics/Joint3D.h"
+#include "physics/box3d/Box3DBody.h"
 namespace eve::physics::box3d {
 namespace {
 
@@ -16,6 +18,7 @@ void finite(float value, const char* operation, const char* name) {
 
 
 class Box3DJoint final : public IJointBackend3D {
+    friend struct eve::physics::box3d::Access;
     template <class F>
     auto checked(const char* operationName, F&& operation) const -> decltype(operation()) {
         using R = decltype(operation());
@@ -620,6 +623,11 @@ private:
     Kind      kind_;
 };
 }  // namespace
+b3JointId Access::jointId(const Joint3D& joint) {
+    auto* native = dynamic_cast<Box3DJoint*>(joint.backend_.get());
+    if (!native) throw eve::Exception("Box3D joint access requires a Box3D backend");
+    return native->jointId_;
+}
 std::unique_ptr<IJointBackend3D> adoptJoint(b3JointId id, JointKind3D kind) {
     return std::make_unique<Box3DJoint>(id, kind);
 }

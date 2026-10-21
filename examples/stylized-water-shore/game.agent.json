@@ -1,0 +1,73 @@
+{
+  "schemaId": "evengine.game-agent-contract",
+  "schemaVersion": 1,
+  "id": "examples/stylized-water-shore",
+  "entry": "main.nut",
+  "smoke": {
+    "scene": "default",
+    "seed": 2718,
+    "maxHostFrames": 180,
+    "mustReach": [
+      "shore-ready"
+    ]
+  },
+  "clock": {
+    "defaultStep": "frame"
+  },
+  "observations": [
+    {
+      "id": "shore-ready",
+      "kind": "script-root",
+      "path": "shoreTelemetry",
+      "fields": [
+        "time",
+        "paused",
+        "view",
+        "layer"
+      ]
+    }
+  ],
+  "actions": {
+    "source": "script-map",
+    "map": [
+      {
+        "id": "pause",
+        "script": "shorePaused=true"
+      },
+      {
+        "id": "resume",
+        "script": "shorePaused=false"
+      },
+      {
+        "id": "close-view",
+        "script": "shoreView=1;shoreSetView()"
+      },
+      {
+        "id": "overview",
+        "script": "shoreView=0;shoreSetView()"
+      },
+      {
+        "id": "overhead",
+        "script": "shoreView=2;shoreSetView()"
+      },
+      {
+        "id": "full",
+        "script": "shoreLayer=0;shoreStyle()"
+      },
+      {
+        "id": "wood-contact-view",
+        "script": "shoreView=3;shoreSetView()"
+      }
+    ]
+  },
+  "capture": {
+    "requiredFor": [
+      "visual"
+    ],
+    "backend": "engine-readback"
+  },
+  "tolerances": {
+    "screenshot": "human-or-vlm",
+    "numericAbs": 0.0001
+  }
+}

@@ -38,6 +38,9 @@ archspace_editor     Automation target factory、命令注册、脚本 facade
 - `housegen`：组件库 + 种子请求 → 布局实例；
 - `scene`：通用场景树 TRS。
 
+多拓扑（dungeon/cave）与 tile/HD2D/3D 投影见
+[`2026-10-15-archspace-multi-topology-projection.md`](./2026-10-15-archspace-multi-topology-projection.md)。
+
 ## 3. 文档模型
 
 扁平 `nodes: id → node`，父子用 `parentId` + `children[]`（与 Pascal 相同）。

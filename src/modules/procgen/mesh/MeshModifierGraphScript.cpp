@@ -3,6 +3,7 @@
 #include "common/SquirrelBinding.h"
 #include "common/SquirrelOwnership.h"
 #include "image/ImageData.h"
+#include "procgen/mesh/ArrowGenerator.h"
 #include "procgen/mesh/DynamicMeshUvPaintSession.h"
 #include "procgen/mesh/GeometryStroke.h"
 #include "procgen/mesh/MeshDeformationSession.h"
@@ -233,7 +234,43 @@ void exposeMeshModifierGraph(ssq::Table& table) {
     spline.addFunc("isClosed", [](SplinePath* self) { return self->isClosed(); });
     spline.addFunc("getRevision", [](SplinePath* self) { return self->revision(); });
 
-    auto stroke = table.addClass<GeometryStroke>("ProcgenGeometryStroke", ssq::Class::Ctor<GeometryStroke()>());
+    auto arrow = table.addClass<ArrowGenerator>("ProcgenArrowGenerator", ssq::Class::Ctor<ArrowGenerator()>());
+    arrow.addFunc("setEndpoints", [vm = arrow.getHandle()](ArrowGenerator* self, float ax, float ay, float az, float bx,
+                                                           float by, float bz) {
+        return eve::script::projectResult(vm, self->setEndpoints(ax, ay, az, bx, by, bz));
+    });
+    arrow.addFunc("setBend", [vm = arrow.getHandle()](ArrowGenerator* self, float x, float y, float z) {
+        return eve::script::projectResult(vm, self->setBend(x, y, z));
+    });
+    arrow.addFunc("setMode", [vm = arrow.getHandle()](ArrowGenerator* self, const std::string& mode) {
+        return eve::script::projectResult(vm, self->setMode(mode));
+    });
+    arrow.addFunc("setSize", [vm = arrow.getHandle()](ArrowGenerator* self, float shaft, float head, float length) {
+        return eve::script::projectResult(vm, self->setSize(shaft, head, length));
+    });
+    arrow.addFunc("setResolution", [vm = arrow.getHandle()](ArrowGenerator* self, int segments, int sides) {
+        return eve::script::projectResult(vm, self->setResolution(segments, sides));
+    });
+    arrow.addFunc("setBevel",
+                  [vm = arrow.getHandle()](ArrowGenerator* self, float thickness, float radius, int segments) {
+                      return eve::script::projectResult(vm, self->setBevel(thickness, radius, segments));
+                  });
+    arrow.addFunc("setHeadThicknessScale", [vm = arrow.getHandle()](ArrowGenerator* self, float scale) {
+        return eve::script::projectResult(vm, self->setHeadThicknessScale(scale));
+    });
+    arrow.addFunc("setFlatProfile", [vm = arrow.getHandle()](ArrowGenerator* self, const std::string& profile) {
+        return eve::script::projectResult(vm, self->setFlatProfile(profile));
+    });
+    arrow.addFunc("buildMeshResult", [vm = arrow.getHandle()](ArrowGenerator* self) {
+        auto result = self->buildMeshResult();
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
+        auto instance = eve::script::makeOwnedSquirrelInstance<MeshBuild>(
+            vm, std::make_unique<MeshBuild>(std::move(result).takeValue()));
+        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status());
+        return eve::script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
+    });
+
+    auto       stroke = table.addClass<GeometryStroke>("ProcgenGeometryStroke", ssq::Class::Ctor<GeometryStroke()>());
     const auto projectStrokeVoid = [vm = stroke.getHandle()](Result<void> result) {
         return eve::script::projectResult(vm, std::move(result));
     };

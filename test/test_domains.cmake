@@ -146,7 +146,6 @@ set(EVE_TEST_MODULE_DOMAIN
     "attributes;rpg"
     "definitions;rpg"
     "authority;rpg"
-    "decision;rpg"
     "emergence;rpg"
     "production;rpg"
     "orders;rpg"
@@ -281,6 +280,7 @@ set(EVE_TEST_PREFIX_DOMAIN
     "window;platform"
 
     "agent_development_session;devtools"
+    "devtools_;devtools"
     "callgraph;devtools"
     "console;devtools"
     "frame_stats;devtools"

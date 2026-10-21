@@ -82,6 +82,7 @@ void main() {
     vec3 origin = vec3(pc.d[10], pc.d[11], pc.d[12]);
     uint idx = z * resX + x;
     vec2 world = origin.xz + vec2((float(x) + 0.5) * cell, (float(z) + 0.5) * cell);
+    if (stateSrc.q[idx].x <= pc.d[7]) return;
     float surfaceY = bed.b[idx] + stateSrc.q[idx].x;
     vec4 acc = sources.s[idx];
     int count = int(pc.d[9]);
@@ -100,18 +101,16 @@ void main() {
         float immersion = 0.0;
         if (shape == 0) {
             dist = length(world - center.xz) - radius;
-            immersion = clamp(center.y + radius - surfaceY, 0.0, 2.0 * radius);
+            immersion = clamp(surfaceY - (center.y - radius), 0.0, 2.0 * radius);
         } else if (shape == 1) {
             dist = capsuleDistanceXZ(world, center, halfExtent.y, radius);
             float top = center.y + halfExtent.y + radius;
             float bottom = center.y - halfExtent.y - radius;
-            immersion = clamp(min(top, surfaceY + 2.0 * radius) - max(bottom, surfaceY - 2.0 * radius), 0.0,
-                              top - bottom);
-            immersion = max(0.0, min(immersion, top - surfaceY + radius));
+            immersion = clamp(surfaceY - bottom, 0.0, top - bottom);
         } else {
             vec2 d = abs(world - center.xz) - halfExtent.xz;
             dist = length(max(d, vec2(0.0))) + min(max(d.x, d.y), 0.0);
-            immersion = clamp(center.y + halfExtent.y - surfaceY, 0.0, 2.0 * halfExtent.y);
+            immersion = clamp(surfaceY - (center.y - halfExtent.y), 0.0, 2.0 * halfExtent.y);
         }
 
         if (dist >= cell * 0.75 || immersion <= 1e-4) continue;
@@ -168,6 +167,23 @@ vec3 fluxZ(vec3 q, float g, float minH) {
     return vec3(q.z, q.z * u, q.z * v + 0.5 * g * h * h);
 }
 
+// Same hydrostatic reconstruction and side-specific pressure correction as CPU.
+vec3 bedFlux(vec3 a, vec3 b, float ba, float bb, float g, float minH, bool axisZ, bool receiveA) {
+    float top = max(ba, bb);
+    float ha = max(0.0, a.x + ba - top), hb = max(0.0, b.x + bb - top);
+    vec3 qa = vec3(ha, a.x > minH ? a.yz * ha / a.x : vec2(0.0));
+    vec3 qb = vec3(hb, b.x > minH ? b.yz * hb / b.x : vec2(0.0));
+    int axis = axisZ ? 2 : 1;
+    float va = ha > minH ? abs(qa[axis] / ha) : 0.0;
+    float vb = hb > minH ? abs(qb[axis] / hb) : 0.0;
+    float alpha = max(va + sqrt(g * ha), vb + sqrt(g * hb));
+    vec3 f = 0.5 * ((axisZ ? fluxZ(qa, g, minH) : fluxX(qa, g, minH))
+                  + (axisZ ? fluxZ(qb, g, minH) : fluxX(qb, g, minH))) - 0.5 * alpha * (qb - qa);
+    float original = receiveA ? a.x : b.x, reconstructed = receiveA ? ha : hb;
+    f[axis] += 0.5 * g * (original * original - reconstructed * reconstructed);
+    return f;
+}
+
 vec3 sampleQ(int x, int z, int resX, int resZ) {
     x = clamp(x, 0, resX - 1);
     z = clamp(z, 0, resZ - 1);
@@ -203,22 +219,12 @@ void main() {
     vec3 qD = sampleQ(x, z - 1, resX, resZ);
     vec3 qU = sampleQ(x, z + 1, resX, resZ);
 
-    float hSafe = max(q.x, minH);
-    float u = q.y / hSafe;
-    float v = q.z / hSafe;
-    float alpha = abs(u) + abs(v) + sqrt(g * hSafe) + 1.0;
-    vec3 fR = 0.5 * (fluxX(q, g, minH) + fluxX(qR, g, minH)) - 0.5 * alpha * (qR - q);
-    vec3 fL = 0.5 * (fluxX(qL, g, minH) + fluxX(q, g, minH)) - 0.5 * alpha * (q - qL);
-    vec3 fluxUp = 0.5 * (fluxZ(q, g, minH) + fluxZ(qU, g, minH)) - 0.5 * alpha * (qU - q);
-    vec3 fluxDown = 0.5 * (fluxZ(qD, g, minH) + fluxZ(q, g, minH)) - 0.5 * alpha * (q - qD);
-
-    float bL = sampleBed(x - 1, z, resX, resZ);
-    float bR = sampleBed(x + 1, z, resX, resZ);
-    float bD = sampleBed(x, z - 1, resX, resZ);
-    float bU = sampleBed(x, z + 1, resX, resZ);
-    vec3 source = vec3(0.0, -g * hSafe * (bR - bL) / (2.0 * cell), -g * hSafe * (bU - bD) / (2.0 * cell));
-
-    vec3 qn = q - (dt / cell) * (fR - fL + fluxUp - fluxDown) + dt * source;
+    float centerBed = sampleBed(x, z, resX, resZ);
+    vec3 fR = bedFlux(q, qR, centerBed, sampleBed(x + 1, z, resX, resZ), g, minH, false, true);
+    vec3 fL = bedFlux(qL, q, sampleBed(x - 1, z, resX, resZ), centerBed, g, minH, false, false);
+    vec3 fU = bedFlux(q, qU, centerBed, sampleBed(x, z + 1, resX, resZ), g, minH, true, true);
+    vec3 fD = bedFlux(qD, q, sampleBed(x, z - 1, resX, resZ), centerBed, g, minH, true, false);
+    vec3 qn = q - (dt / cell) * (fR - fL + fU - fD);
     qn.y += viscosity * dt * (qL.y + qR.y + qD.y + qU.y - 4.0 * q.y);
     qn.z += viscosity * dt * (qL.z + qR.z + qD.z + qU.z - 4.0 * q.z);
     qn.y *= max(0.0, 1.0 - friction * dt);

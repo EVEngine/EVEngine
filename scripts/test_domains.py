@@ -52,12 +52,6 @@ SHARED_SOURCES: dict[str, tuple[str, ...]] = {
     # procgen_*), by procgen.cpp, and by the voxel render tests through
     # VoxelRenderFixtures.h.
     "RenderImageAuditIo": ("graphics", "procgen", "voxel"),
-    # createStylizedWaterScene / WaterSceneFixture::update: declared in
-    # water_scene_fixture.h and called by procgen.cpp, while the defining TU has no
-    # TEST_CASE and was partitioned into graphics. Same shape as RenderImageAuditIo
-    # (spec 7.8/7.9): a `unit_test_<domain>` executable is its own link unit, so the
-    # helper has to be compiled into every consumer domain.
-    "water_scene_fixture": ("graphics", "procgen"),
 }
 
 
@@ -204,6 +198,11 @@ def classify(
         # one; see SHARED_SOURCES.
         return None, "shared helper", None
 
+    # Consolidated integration files carry the existing executable domain in
+    # their name after the task goal. Their includes can span several modules.
+    for domain in sorted(tables["domains"], key=len, reverse=True):
+        if re.match(rf"^[a-z0-9_]+_{re.escape(domain)}(?:_|$)", basename) and basename.endswith("_tests"):
+            return domain, f"task-domain:{domain}", None
     module_domain = dict(tables["module_domain"])  # type: ignore[arg-type]
     package_override = dict(tables["package_override"])  # type: ignore[arg-type]
     by_include = _module_domains(source, module_domain, package_override)
@@ -254,7 +253,7 @@ def partition(
     tables: dict[str, object], test_dir: Path = TEST_DIR
 ) -> tuple[dict[str, list[Path]], list[str]]:
     """Classify every test_dir/*.cpp; used by the checker (no configure needed)."""
-    return classify_paths(sorted(test_dir.glob("*.cpp")), tables)
+    return classify_paths(sorted(test_dir.glob("*.cpp")) + sorted((test_dir / "unit").rglob("*.cpp")) + sorted((test_dir / "integration").rglob("*.cpp")), tables)
 
 
 def emit_cmake(
@@ -333,7 +332,7 @@ def main(argv: list[str] | None = None) -> int:
             if line.strip()
         ]
     else:
-        paths = sorted(TEST_DIR.glob("*.cpp"))
+        paths = sorted(TEST_DIR.glob("*.cpp")) + sorted((TEST_DIR / "unit").rglob("*.cpp")) + sorted((TEST_DIR / "integration").rglob("*.cpp"))
 
     buckets, errors = classify_paths(paths, tables)
     if errors:

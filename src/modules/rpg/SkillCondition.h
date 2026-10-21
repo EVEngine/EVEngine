@@ -7,7 +7,7 @@
  * @brief RPG Skill adapter for the renderer-independent decision protocol.
  */
 
-#include "decision/Condition.h"
+#include "common/Condition.h"
 
 #include <functional>
 #include <optional>
@@ -28,7 +28,7 @@ struct SkillDefinition;
 struct SkillConditionQueries {
     using Authority = std::function<std::optional<bool>(std::string_view scope)>;
     using Policy =
-        std::function<std::optional<decision::ConditionResult>(std::string_view name, const eve::Value& arguments)>;
+        std::function<std::optional<condition::ConditionResult>(std::string_view name, const eve::Value& arguments)>;
 
     Authority authority;
     Policy    policy;
@@ -43,7 +43,7 @@ struct SkillConditionQueries {
  * AttributeSet. Tags include both skill-definition tags and active RPG status
  * tags.
  */
-class EVENGINE_API_PLATFORM SkillConditionContext final : public decision::EvaluationContext {
+class EVENGINE_API_PLATFORM SkillConditionContext final : public condition::EvaluationContext {
 public:
     /**
      * @brief Bind a read-only actor/skill pair for one synchronous evaluation.
@@ -53,28 +53,13 @@ public:
      */
     SkillConditionContext(const RPGActor* actor, const SkillDefinition& definition, SkillConditionQueries queries = {});
 
-    /** @copydoc decision::EvaluationContext::value */
+    /** @copydoc condition::EvaluationContext::value */
     /** @brief Value. */
     [[nodiscard]] std::optional<eve::Value> value(std::string_view key) const override;
-    /** @copydoc decision::EvaluationContext::hasTag */
-    /** @brief True when tag. */
-    [[nodiscard]] std::optional<bool> hasTag(std::string_view tag) const override;
-    /** @copydoc decision::EvaluationContext::attribute */
-    /** @brief Attribute. */
-    [[nodiscard]] std::optional<eve::Value> attribute(std::string_view key) const override;
-    /** @copydoc decision::EvaluationContext::resource */
-    /** @brief Resource. */
-    [[nodiscard]] std::optional<eve::Value> resource(std::string_view key) const override;
-    /** @copydoc decision::EvaluationContext::state */
-    /** @brief State. */
-    [[nodiscard]] std::optional<eve::Value> state(std::string_view key) const override;
-    /** @copydoc decision::EvaluationContext::authority */
-    /** @brief Authority. */
-    [[nodiscard]] std::optional<bool> authority(std::string_view scope) const override;
-    /** @copydoc decision::EvaluationContext::policy */
+    /** @copydoc condition::EvaluationContext::policy */
     /** @brief Policy. */
-    [[nodiscard]] std::optional<decision::ConditionResult> policy(std::string_view  name,
-                                                                  const eve::Value& arguments) const override;
+    [[nodiscard]] std::optional<condition::ConditionResult> policy(std::string_view  name,
+                                                                   const eve::Value& arguments) const override;
 
 private:
     const RPGActor*        actor_      = nullptr;
@@ -93,9 +78,9 @@ public:
      * @param queries Optional read-only authority and policy providers.
      * @return A stable, UI-ready condition explanation.
      */
-    [[nodiscard]] static decision::ConditionResult evaluate(const RPGActor* actor, const SkillDefinition& definition,
-                                                            const decision::Condition& condition,
-                                                            SkillConditionQueries      queries = {});
+    [[nodiscard]] static condition::ConditionResult evaluate(const RPGActor* actor, const SkillDefinition& definition,
+                                                             const condition::Condition& condition,
+                                                             SkillConditionQueries       queries = {});
 };
 
 }  // namespace eve::rpg
