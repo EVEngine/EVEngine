@@ -76,9 +76,11 @@ BootResult bootConfig(const std::string &fields, bool enabled, bool editor = fal
     REQUIRE_EQ(backend->getSwapchain().present_mode, initialMode);
     const auto  selectedMode = static_cast<VkPresentModeKHR>(backend->getSwapchain().present_mode);
     const auto &device       = backend->getDevice();
-    const auto  modes        = device.physical_device->getSurfacePresentModesKHR(device.surface);
-    const auto  desired      = enabled ? vk::PresentModeKHR::eMailbox : vk::PresentModeKHR::eImmediate;
-    const bool  supported    = std::find(modes.begin(), modes.end(), desired) != modes.end();
+    // Release dependency targets can propagate NDEBUG to a Debug test consumer.
+    // Static dispatch avoids interpreting the backend's differently laid-out Hpp dispatcher.
+    const auto modes   = device.physical_device->getSurfacePresentModesKHR(device.surface, vk::DispatchLoaderStatic{});
+    const auto desired = enabled ? vk::PresentModeKHR::eMailbox : vk::PresentModeKHR::eImmediate;
+    const bool supported = std::find(modes.begin(), modes.end(), desired) != modes.end();
     if (supported) REQUIRE_EQ(selectedMode, static_cast<VkPresentModeKHR>(desired));
     if (enabled) REQUIRE_NE(selectedMode, VK_PRESENT_MODE_IMMEDIATE_KHR);
     std::fprintf(stderr, "VSYNC_CONFIG enabled=%d count=%d actualPresentMode=%d\n", enabled, gfx->getVSyncCount(),
