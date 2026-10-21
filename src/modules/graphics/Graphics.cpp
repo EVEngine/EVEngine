@@ -213,6 +213,13 @@ void Graphics::renderScene3DToCanvas(Canvas* canvas, Camera3D* camera) {
     popValidationScope();
 }
 
+void Graphics::renderScene3DWithShadowsToCanvas(Canvas* canvas, Camera3D* camera) {
+    if (!canvas || !camera) return;
+    pushValidationScope();
+    RenderSystem3D::renderWithShadowsToCanvas(*this, *canvas, *camera);
+    popValidationScope();
+}
+
 Shader* Graphics::prepareSceneColorResolveShader(Texture* scene) {
     if (!scene) return nullptr;
     AntiAliasing* aa   = pipelineAntiAliasing();
@@ -1439,6 +1446,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("setMesh3DView", std::function<void(Graphics*, ssq::Array)>(setMesh3DViewScript));
     cls.addFunc("setMesh3DCameraPos", std::function<void(Graphics*, float, float, float)>(setMesh3DCameraPosScript));
     cls.addFunc("renderScene3DToCanvas", &Graphics::renderScene3DToCanvas);
+    cls.addFunc("renderScene3DWithShadowsToCanvas", &Graphics::renderScene3DWithShadowsToCanvas);
     cls.addFunc("drawScene3DRGBA", &Graphics::drawScene3DRGBA);
     cls.addFunc("saveFramePng", &Graphics::saveFramePng);
     cls.addFunc("drawScene3D", &Graphics::drawScene3D);
