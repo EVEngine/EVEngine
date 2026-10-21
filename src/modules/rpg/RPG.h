@@ -19,11 +19,11 @@
  */
 
 #include "common/Module.h"
-#include "rpg/LevelSystem.h"
 #include "rpg/BattleVictory.h"
+#include "rpg/LevelSystem.h"
 #include "rpg/RPGActor.h"
-#include "rpg/StatusTypes.h"
 #include "rpg/SkillTypes.h"
+#include "rpg/StatusTypes.h"
 #include "rpg/VitalsSystem.h"
 
 #include <memory>
@@ -35,7 +35,7 @@ class SubjectRef;
 namespace inventory {
 class Bag;
 class EquipmentSet;
-}
+}  // namespace inventory
 }  // namespace eve
 
 namespace eve::rpg {
@@ -58,8 +58,8 @@ public:
     Module_REG(RPG);
     /** @brief Rpg. */
     RPG() = default;
-    /** @brief Rpg. */
-    ~RPG() override = default;
+    /** @brief Drop retained gameplay controls before module teardown. */
+    ~RPG() override;
 
     /**
      * @brief 创建一个空白 RPGActor。
@@ -103,7 +103,7 @@ public:
      * @reentrancy Does not invoke script callbacks.
      */
     [[nodiscard]] eve::Result<int> replaceQuestsFromJson(const std::string &json);
-    void clearQuestDefinitions();
+    void                           clearQuestDefinitions();
     /** @brief Returns the quest definition count. */
     int getQuestDefinitionCount();
     /** @brief Return whether one exact quest definition is present in the current catalogue. */
@@ -114,36 +114,31 @@ public:
      * @thread Call on the authoritative state owners' simulation thread.
      * @reentrancy Inventory observers run only after the complete state is committed.
      */
-    [[nodiscard]] eve::Result<int> claimQuestRewards(Tracker *tracker, GameState *gameState,
-                                                      inventory::Bag *bag, const std::string &questId);
+    [[nodiscard]] eve::Result<int> claimQuestRewards(Tracker *tracker, GameState *gameState, inventory::Bag *bag,
+                                                     const std::string &questId);
     /**
      * @brief Atomically settle one persistent loot object across world, quest, state and inventory owners.
      * @return Committed-effect count, or a structured failure without observable mutation.
      * @thread Call on the authoritative owners' simulation thread.
      * @reentrancy Inventory observers run only after all owners are committed.
      */
-    [[nodiscard]] eve::Result<int> collectWorldLoot(Tracker *tracker, GameState *gameState,
-                                                     inventory::Bag *bag,
-                                                     const WorldLootRequest &request);
+    [[nodiscard]] eve::Result<int> collectWorldLoot(Tracker *tracker, GameState *gameState, inventory::Bag *bag,
+                                                    const WorldLootRequest &request);
     /**
      * @brief Atomically settle one victorious persistent encounter.
      * @return Levels and learned skills after the complete settlement, or structured failure.
      * @thread Call on the authoritative owners' simulation thread.
      * @reentrancy No callbacks are invoked; level events are poll-only.
      */
-    [[nodiscard]] eve::Result<BattleVictoryReceipt>
-    settleBattleVictory(RPGActor *actor, Tracker *tracker, GameState *gameState,
-                        const BattleVictoryRequest &request);
+    [[nodiscard]] eve::Result<BattleVictoryReceipt> settleBattleVictory(RPGActor *actor, Tracker *tracker,
+                                                                        GameState                  *gameState,
+                                                                        const BattleVictoryRequest &request);
     /** @brief Atomically debit GameState currency and add purchased items to Bag. */
-    [[nodiscard]] eve::Result<int> buyFromShop(GameState *gameState, inventory::Bag *bag,
-                                                const std::string &currencyId,
-                                                const std::string &itemId, int quantity,
-                                                double unitPrice);
+    [[nodiscard]] eve::Result<int> buyFromShop(GameState *gameState, inventory::Bag *bag, const std::string &currencyId,
+                                               const std::string &itemId, int quantity, double unitPrice);
     /** @brief Atomically remove sold items from Bag and credit GameState currency. */
-    [[nodiscard]] eve::Result<int> sellToShop(GameState *gameState, inventory::Bag *bag,
-                                               const std::string &currencyId,
-                                               const std::string &itemId, int quantity,
-                                               double unitPrice);
+    [[nodiscard]] eve::Result<int> sellToShop(GameState *gameState, inventory::Bag *bag, const std::string &currencyId,
+                                              const std::string &itemId, int quantity, double unitPrice);
     /** @brief Strictly validate and atomically replace the authoritative shop catalogue. */
     [[nodiscard]] eve::Result<int> replaceShopOffersFromJson(const std::string &json);
     /** @brief Return the committed shop-offer count. */
@@ -166,15 +161,15 @@ public:
     int getShopOfferSellPrice(int index) const;
     /** @brief Buy using the item and price from the authoritative shop catalogue. */
     [[nodiscard]] eve::Result<int> buyShopOffer(GameState *gameState, inventory::Bag *bag,
-                                                const std::string &currencyId,
-                                                const std::string &offerId, int quantity);
+                                                const std::string &currencyId, const std::string &offerId,
+                                                int quantity);
     /** @brief Sell using the item and price from the authoritative shop catalogue. */
     [[nodiscard]] eve::Result<int> sellShopOffer(GameState *gameState, inventory::Bag *bag,
-                                                 const std::string &currencyId,
-                                                 const std::string &offerId, int quantity);
+                                                 const std::string &currencyId, const std::string &offerId,
+                                                 int quantity);
     /** @brief Strictly replace the data-driven encounter catalogue. */
     [[nodiscard]] eve::Result<int> replaceEncountersFromJson(const std::string &json);
-    void clearEncounters();
+    void                           clearEncounters();
     /** @brief True when encounter. */
     bool hasEncounter(const std::string &encounterId) const;
     /** @brief Returns the encounter member count. */
@@ -207,7 +202,7 @@ public:
     double getEncounterMemberMaxHp(const std::string &encounterId, int memberIndex) const;
     /** @brief Strictly replace ordered companion/AI battle tactics. */
     [[nodiscard]] eve::Result<int> replaceBattleTacticsFromJson(const std::string &json);
-    void clearBattleTactics();
+    void                           clearBattleTactics();
     /** @brief Select and queue one action from a registered tactics definition. */
     [[nodiscard]] eve::Result<std::string> queueBattleTactic(Battle *battle, RPGActor *actor,
                                                              const std::string &tacticsId);
@@ -244,10 +239,11 @@ public:
      */
     RpgStorySession *newStorySession();
     /** @brief Settle a victory using only rewards declared by the encounter catalogue. */
-    [[nodiscard]] eve::Result<BattleVictoryReceipt>
-    settleEncounterVictory(RPGActor *actor, Tracker *tracker, GameState *gameState,
-                           const std::string &encounterId, const std::string &mapId,
-                           const std::string &objectId);
+    [[nodiscard]] eve::Result<BattleVictoryReceipt> settleEncounterVictory(RPGActor *actor, Tracker *tracker,
+                                                                           GameState         *gameState,
+                                                                           const std::string &encounterId,
+                                                                           const std::string &mapId,
+                                                                           const std::string &objectId);
     /**
      * @brief 创建一个新的目标追踪器（任务日志 / 成就 / 教程各建一份）。
      * @return Owned nullable tracker created with new; the caller must destroy it.
@@ -319,9 +315,8 @@ public:
     int getClassDefinitionCount();
 
     /** @brief 技能伤害注册（战斗用）与战斗对象。 */
-    int registerSkillDamage(const std::string &skillId, const std::string &damageType,
-                            const std::string &formula, const std::string &element,
-                            double critChance, int hitChance);
+    int registerSkillDamage(const std::string &skillId, const std::string &damageType, const std::string &formula,
+                            const std::string &element, double critChance, int hitChance);
     /** @brief Clears skill damage. */
     void clearSkillDamage();
     /**
@@ -340,16 +335,38 @@ public:
      * @ownership The returned unique pointer owns the adapter and must be reset before battle destruction.
      * @thread Create and use on the RPG simulation thread.
      */
-    [[nodiscard]] Result<std::unique_ptr<BattleControl>> newBattleControl(Battle *battle,
-                                                                          SubjectRef instance);
+    [[nodiscard]] Result<std::unique_ptr<BattleControl>> newBattleControl(Battle *battle, SubjectRef instance);
     /**
      * @brief Create a unified shop, quest-reward and world-loot control adapter.
      * @return Owning adapter or structured validation failure.
      * @ownership Reset the returned unique pointer before GameState, Tracker or Bag destruction.
      * @thread Create and use on all participants' common simulation thread.
      */
-    [[nodiscard]] Result<std::unique_ptr<ProductControl>> newProductControl(
-        SubjectRef instance, GameState *gameState, Tracker *tracker, inventory::Bag *bag);
+    [[nodiscard]] Result<std::unique_ptr<ProductControl>> newProductControl(SubjectRef instance, GameState *gameState,
+                                                                            Tracker *tracker, inventory::Bag *bag);
+
+    /**
+     * @brief Publish a battle onto the shared gameplay protocol (`eve_gameplay` domain `rpg.battle`).
+     * @param battle Borrowed battle that must outlive the published control.
+     * @param instanceId Canonical persistent id for the gameplay instance.
+     * @return Applied, or structured failure (invalid id / null battle / duplicate).
+     * @ownership RPG retains the BattleControl until unpublish/clear/module teardown.
+     */
+    [[nodiscard]] Result<void> publishBattleGameplay(Battle *battle, const std::string &instanceId);
+    /**
+     * @brief Publish shop/quest/loot product loops (`eve_gameplay` domain `rpg.product`).
+     * @ownership RPG retains the ProductControl until unpublish/clear/module teardown.
+     */
+    [[nodiscard]] Result<void> publishProductGameplay(const std::string &instanceId, GameState *gameState,
+                                                      Tracker *tracker, inventory::Bag *bag);
+    /** @brief Drop one published battle gameplay instance. */
+    [[nodiscard]] Result<void> unpublishBattleGameplay(const std::string &instanceId);
+    /** @brief Drop one published product gameplay instance. */
+    [[nodiscard]] Result<void> unpublishProductGameplay(const std::string &instanceId);
+    /** @brief Drop every RPG-owned gameplay control adapter. */
+    void clearGameplayControls();
+    /** @brief Number of published battle + product gameplay adapters retained by this module. */
+    [[nodiscard]] int gameplayControlCount() const;
 
     /**
      * @brief 创建一份新的游戏状态（开关/变量）。
@@ -460,22 +477,22 @@ public:
     /** @brief True when settlement stage. */
     bool hasSettlementStage(const std::string &pipeline, const std::string &stage);
     /** @brief Sets the settlement stage enabled. */
-    bool setSettlementStageEnabled(const std::string &pipeline, const std::string &stage,
-                                    bool enabled);
+    bool setSettlementStageEnabled(const std::string &pipeline, const std::string &stage, bool enabled);
     /** @brief Sets the settlement stage priority. */
-    bool setSettlementStagePriority(const std::string &pipeline, const std::string &stage,
-                                     int priority);
+    bool setSettlementStagePriority(const std::string &pipeline, const std::string &stage, int priority);
     /** @brief Removes settlement stage. */
     bool removeSettlementStage(const std::string &pipeline, const std::string &stage);
     /** @brief Clears settlement pipeline. */
     void clearSettlementPipeline(const std::string &pipeline);
 
 private:
-    std::vector<StatusTickEvent> ticks_;
-    std::vector<StatusChangeEvent> changes_;
-    std::vector<SkillCastEvent> casts_;
-    std::vector<LevelUpEvent> levelUps_;
-    std::vector<VitalsEvent> vitals_;
+    std::vector<StatusTickEvent>                 ticks_;
+    std::vector<StatusChangeEvent>               changes_;
+    std::vector<SkillCastEvent>                  casts_;
+    std::vector<LevelUpEvent>                    levelUps_;
+    std::vector<VitalsEvent>                     vitals_;
+    std::vector<std::unique_ptr<BattleControl>>  battleControls_;
+    std::vector<std::unique_ptr<ProductControl>> productControls_;
 };
 
 }  // namespace eve::rpg

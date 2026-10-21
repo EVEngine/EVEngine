@@ -39,8 +39,7 @@ Result<const Value::Object*> asObject(const Value& value, std::string path) {
     return Result<const Value::Object*>::success(object);
 }
 
-Result<void> knownFields(const Value::Object& object, const std::set<std::string>& allowed,
-                         std::string_view path) {
+Result<void> knownFields(const Value::Object& object, const std::set<std::string>& allowed, std::string_view path) {
     for (const auto& [name, value] : object) {
         (void)value;
         if (!allowed.contains(name))
@@ -59,8 +58,7 @@ Result<const Value*> member(const Value::Object& object, std::string_view name, 
     return Result<const Value*>::success(&found->second);
 }
 
-Result<std::string> stringMember(const Value::Object& object, std::string_view name,
-                                 std::string_view path) {
+Result<std::string> stringMember(const Value::Object& object, std::string_view name, std::string_view path) {
     auto found = member(object, name, Value::Type::String, path);
     if (!found) return Result<std::string>::failure(found.status());
     return Result<std::string>::success(found.value()->asString());
@@ -146,11 +144,10 @@ Result<std::vector<std::string>> stringArray(const Value& value, std::string pat
 Result<ParsedContract> parseContract(const Value& contract) {
     auto root = asObject(contract, "contract");
     if (!root) return Result<ParsedContract>::failure(root.status());
-    auto known =
-        knownFields(*root.value(),
-                    {"actions", "capture", "clock", "entry", "id", "observations", "schemaId", "schemaVersion",
-                     "smoke", "tolerances"},
-                    "contract");
+    auto known = knownFields(*root.value(),
+                             {"actions", "capture", "clock", "entry", "id", "observations", "schemaId", "schemaVersion",
+                              "smoke", "tolerances"},
+                             "contract");
     if (!known) return Result<ParsedContract>::failure(known.status());
     auto schemaId = stringMember(*root.value(), "schemaId", "contract");
     if (!schemaId) return Result<ParsedContract>::failure(schemaId.status());
@@ -204,9 +201,9 @@ Result<ParsedContract> parseContract(const Value& contract) {
         if (!kind) return Result<ParsedContract>::failure(kind.status());
         auto path = stringMember(*object.value(), "path", itemPath);
         if (!path) return Result<ParsedContract>::failure(path.status());
-        spec.id   = specId.value();
-        spec.kind = kind.value();
-        spec.path = path.value();
+        spec.id           = specId.value();
+        spec.kind         = kind.value();
+        spec.path         = path.value();
         const auto fields = object.value()->find("fields");
         if (fields != object.value()->end()) {
             auto parsedFields = stringArray(fields->second, itemPath + ".fields");
@@ -273,14 +270,14 @@ Result<ParsedContract> parseContract(const Value& contract) {
                     DiagnosticCode::ParseError, "actions.map must be an array", "contract.actions.map"));
             for (std::size_t index = 0; index < array->size(); ++index) {
                 const std::string itemPath = "contract.actions.map." + std::to_string(index);
-                auto item = asObject((*array)[index], itemPath);
+                auto              item     = asObject((*array)[index], itemPath);
                 if (!item) return Result<ParsedContract>::failure(item.status());
                 auto itemKnown = knownFields(*item.value(), {"action", "id", "script"}, itemPath);
                 if (!itemKnown) return Result<ParsedContract>::failure(itemKnown.status());
                 ActionSpec spec;
-                auto actionId = stringMember(*item.value(), "id", itemPath);
+                auto       actionId = stringMember(*item.value(), "id", itemPath);
                 if (!actionId) return Result<ParsedContract>::failure(actionId.status());
-                spec.id = actionId.value();
+                spec.id          = actionId.value();
                 auto scriptField = optionalString(*item.value(), "script", itemPath, &spec.script);
                 if (!scriptField) return Result<ParsedContract>::failure(scriptField.status());
                 auto mappedAction = optionalString(*item.value(), "action", itemPath, &spec.action);
@@ -341,13 +338,13 @@ Value encodeDomains(const std::vector<std::string>& domains) {
 }
 
 Result<Value> opStatus(IPlayHostRuntime& runtime) {
-    Value::Object extra{{"paused", Value(runtime.paused())},
-                        {"hostFrame", Value(static_cast<std::int64_t>(runtime.hostFrame()))},
-                        {"domains", encodeDomains(runtime.gameplayDomains())}};
+    Value::Object          extra{{"paused", Value(runtime.paused())},
+                                 {"hostFrame", Value(static_cast<std::int64_t>(runtime.hostFrame()))},
+                                 {"domains", encodeDomains(runtime.gameplayDomains())}};
     GameWorldSnapshotInput worldInput;
-    worldInput.domains  = runtime.gameplayDomains();
-    worldInput.gameRoot = McpServer::instance().gameRoot();
-    const HSQUIRRELVM      vm = Debugger::instance().vm();
+    worldInput.domains           = runtime.gameplayDomains();
+    worldInput.gameRoot          = McpServer::instance().gameRoot();
+    const HSQUIRRELVM vm         = Debugger::instance().vm();
     worldInput.configTitle       = readConfigTitle(vm);
     worldInput.configuredModules = readConfiguredModules(vm);
     worldInput.liveModules       = readLiveModules(vm);
@@ -360,7 +357,7 @@ Result<Value> opStatus(IPlayHostRuntime& runtime) {
         extra.emplace("contractLoaded", Value(true));
         worldInput.contractId     = parsed.value().id;
         worldInput.contractLoaded = true;
-        auto snapshot = buildGameWorldSnapshot(worldInput);
+        auto snapshot             = buildGameWorldSnapshot(worldInput);
         if (!snapshot) return Result<Value>::failure(snapshot.status());
         extra.emplace("gameWorld", std::move(snapshot).takeValue());
     } else if (loaded.code() == StatusCode::NotFound) {
@@ -377,8 +374,10 @@ Result<Value> opStatus(IPlayHostRuntime& runtime) {
 Result<Value> opClock(const Value::Object& root, IPlayHostRuntime& runtime) {
     auto mode = stringMember(root, "mode", "request");
     if (!mode) return Result<Value>::failure(mode.status());
-    if (mode.value() == "pause") runtime.pause();
-    else if (mode.value() == "play") runtime.play();
+    if (mode.value() == "pause")
+        runtime.pause();
+    else if (mode.value() == "play")
+        runtime.play();
     else
         return Result<Value>::failure(
             Diagnostic::error(DiagnosticCode::ParseError, "clock mode must be pause or play", "request.mode"));
@@ -387,7 +386,7 @@ Result<Value> opClock(const Value::Object& root, IPlayHostRuntime& runtime) {
 }
 
 Result<Value> opStep(const Value::Object& root, IPlayHostRuntime& runtime) {
-    std::string clock = "frame";
+    std::string clock      = "frame";
     auto        clockField = optionalString(root, "clock", "request", &clock);
     if (!clockField) return Result<Value>::failure(clockField.status());
     if (clock != "frame")
@@ -400,11 +399,11 @@ Result<Value> opStep(const Value::Object& root, IPlayHostRuntime& runtime) {
             Diagnostic::error(DiagnosticCode::ParseError, "step count must be between 1 and 1024", "request.count"));
     auto stepped = runtime.stepFrames(count.value());
     if (!stepped) return Result<Value>::failure(stepped.status());
-    return Result<Value>::success(playResponse(
-        "step", {{"clock", Value(std::move(clock))},
-                 {"count", Value(count.value())},
-                 {"hostFrame", Value(static_cast<std::int64_t>(runtime.hostFrame()))},
-                 {"paused", Value(runtime.paused())}}));
+    return Result<Value>::success(
+        playResponse("step", {{"clock", Value(std::move(clock))},
+                              {"count", Value(count.value())},
+                              {"hostFrame", Value(static_cast<std::int64_t>(runtime.hostFrame()))},
+                              {"paused", Value(runtime.paused())}}));
 }
 
 Result<Value> opObserve(const Value::Object& root, IPlayHostRuntime& runtime) {
@@ -419,14 +418,31 @@ Result<Value> opObserve(const Value::Object& root, IPlayHostRuntime& runtime) {
     if (spec.value()->kind != "script-root")
         return Result<Value>::failure(Diagnostic::error(
             DiagnosticCode::Unsupported, "P0 play host only observes script-root", "request.observation"));
-    auto state = runtime.observeScriptRoot(spec.value()->path, spec.value()->fields);
+    // Prefer gameState (ai-game contract). Legacy `mode` string roots still work once, with a
+    // deprecated flag so agents migrate (EM4). Owner: play-host; remove after 2026-12-31.
+    std::string observedPath = spec.value()->path;
+    bool        deprecated   = false;
+    auto        state        = runtime.observeScriptRoot(observedPath, spec.value()->fields);
+    if (!state && observedPath == "mode") {
+        auto fallback = runtime.observeScriptRoot("gameState", spec.value()->fields);
+        if (fallback) {
+            state        = std::move(fallback);
+            observedPath = "gameState";
+            deprecated   = true;
+        }
+    } else if (state && observedPath == "mode") {
+        deprecated = true;
+    }
     if (!state) return Result<Value>::failure(state.status());
-    return Result<Value>::success(playResponse("observe", {{"observation", Value(observation.value())},
-                                                           {"state", std::move(state).takeValue()}}));
+    Value::Object payload{{"observation", Value(observation.value())},
+                          {"path", Value(observedPath)},
+                          {"state", std::move(state).takeValue()}};
+    if (deprecated) payload.emplace("deprecated", Value("observation.path=mode; use paths.gameState / gameState"));
+    return Result<Value>::success(playResponse("observe", std::move(payload)));
 }
 
 Result<Value> opCapture(const Value::Object& root, IPlayHostRuntime& runtime) {
-    std::string path = "mcp_screenshot.png";
+    std::string path      = "mcp_screenshot.png";
     auto        pathField = optionalString(root, "path", "request", &path);
     if (!pathField) return Result<Value>::failure(pathField.status());
     if (path.empty()) path = "mcp_screenshot.png";
@@ -486,13 +502,13 @@ Result<Value> opAct(const Value::Object& root, IPlayHostRuntime& runtime) {
     if (!commandObject) return Result<Value>::failure(commandObject.status());
     Value::Object command = *commandObject.value();
     if (command.find("action") == command.end()) command.emplace("action", Value(spec.value()->action));
-    std::string domain = parsed.value().actionDomain;
-    auto domainField = optionalString(root, "domain", "request", &domain);
+    std::string domain      = parsed.value().actionDomain;
+    auto        domainField = optionalString(root, "domain", "request", &domain);
     if (!domainField) return Result<Value>::failure(domainField.status());
     if (domain.empty())
         return Result<Value>::failure(
             Diagnostic::error(DiagnosticCode::ParseError, "gameplay-domain act requires domain", "request.domain"));
-    const auto sessionField = root.find("session");
+    const auto sessionField  = root.find("session");
     const auto instanceField = root.find("instance");
     if (sessionField == root.end() || instanceField == root.end())
         return Result<Value>::failure(Diagnostic::error(
@@ -504,7 +520,7 @@ Result<Value> opAct(const Value::Object& root, IPlayHostRuntime& runtime) {
                            {"instance", instanceField->second},
                            {"session", sessionField->second},
                            {"command", Value(std::move(command))}};
-    auto submitted = executeGameplayControlRequest(Value(std::move(gameplay)));
+    auto          submitted = executeGameplayControlRequest(Value(std::move(gameplay)));
     if (!submitted) return Result<Value>::failure(submitted.status());
     return Result<Value>::success(playResponse("act", {{"action", Value(action.value())},
                                                        {"source", Value("gameplay-domain")},
@@ -512,8 +528,7 @@ Result<Value> opAct(const Value::Object& root, IPlayHostRuntime& runtime) {
 }
 
 Result<Value> opTrace() {
-    return Result<Value>::success(
-        playResponse("trace", {{"recording", PlayTraceBuffer::instance().exportTrace()}}));
+    return Result<Value>::success(playResponse("trace", {{"recording", PlayTraceBuffer::instance().exportTrace()}}));
 }
 
 Result<Value> opReplay(const Value::Object& root, IPlayHostRuntime& runtime) {
@@ -557,7 +572,7 @@ void maybeAutoEvidence(const Value::Object& request, const Value& response, IPla
     const auto opField = request.find("op");
     if (opField == request.end() || !opField->second.isString()) return;
     const std::string& op = opField->second.asString();
-    std::string criterionId;
+    std::string        criterionId;
     optionalString(request, "criterionId", "request", &criterionId).ignore("optional play criterionId");
     const auto* responseObject = response.getIf<Value::Object>();
     if (op == "observe") {
@@ -609,16 +624,16 @@ void afterPlaySuccess(const Value& request, const Value& response, IPlayHostRunt
     if (PlayTraceBuffer::instance().isReplaying()) return;
     std::string trace;
     optionalString(*root, "trace", "request", &trace).ignore("trace already validated by dispatch");
-    const auto opField = root->find("op");
+    const auto        opField = root->find("op");
     const std::string op = (opField != root->end() && opField->second.isString()) ? opField->second.asString() : "";
-    const bool skipTrace = op == "status" || op == "clock" || op == "trace" || op == "replay" || op == "batch";
-    bool append = trace == "append" || (trace.empty() && sessionWantsTrace());
+    const bool        skipTrace = op == "status" || op == "clock" || op == "trace" || op == "replay" || op == "batch";
+    bool              append    = trace == "append" || (trace.empty() && sessionWantsTrace());
     if (trace == "off") append = false;
     if (append && !skipTrace) {
         if (!PlayTraceBuffer::instance().isRecording()) {
             std::string contractId;
             std::string contractHash;
-            auto loaded = runtime.loadContract();
+            auto        loaded = runtime.loadContract();
             if (loaded) {
                 auto parsed = parseContract(loaded.value());
                 if (parsed) contractId = parsed.value().id;
@@ -637,7 +652,7 @@ Result<Value> dispatchOne(const Value& request, IPlayHostRuntime& runtime, bool 
 Result<Value> opBatch(const Value::Object& root, IPlayHostRuntime& runtime) {
     auto requests = member(root, "requests", Value::Type::Array, "request");
     if (!requests) return Result<Value>::failure(requests.status());
-    const auto* array = requests.value()->getIf<Value::Array>();
+    const auto*  array = requests.value()->getIf<Value::Array>();
     Value::Array results;
     for (std::size_t index = 0; index < array->size(); ++index) {
         auto one = dispatchOne((*array)[index], runtime, true);
@@ -653,9 +668,8 @@ Result<Value> dispatchOne(const Value& request, IPlayHostRuntime& runtime, bool 
     auto root = asObject(request, "request");
     if (!root) return Result<Value>::failure(root.status());
     static const std::set<std::string> allowed{
-        "action",         "clock",        "command",     "count",        "criterionId", "domain",
-        "instance",       "json",         "mode",        "observation",  "op",          "path",
-        "recording",      "requests",     "schemaId",    "schemaVersion","session",     "trace"};
+        "action",      "clock", "command", "count",     "criterionId", "domain",   "instance",      "json",    "mode",
+        "observation", "op",    "path",    "recording", "requests",    "schemaId", "schemaVersion", "session", "trace"};
     auto known = knownFields(*root.value(), allowed, "request");
     if (!known) return Result<Value>::failure(known.status());
     auto schemaId = stringMember(*root.value(), "schemaId", "request");
@@ -748,10 +762,10 @@ Result<Value> snapshotRoot(HSQUIRRELVM vm, std::string_view rootName, const std:
 
 class EnginePlayHostRuntime final : public IPlayHostRuntime {
 public:
-    bool paused() const override { return Debugger::instance().isPaused(); }
+    bool          paused() const override { return Debugger::instance().isPaused(); }
     std::uint64_t hostFrame() const override { return hostFrame_; }
-    void pause() override { Debugger::instance().pause(PauseReason::PauseKey); }
-    void play() override { Debugger::instance().resume(); }
+    void          pause() override { Debugger::instance().pause(PauseReason::PauseKey); }
+    void          play() override { Debugger::instance().resume(); }
 
     Result<void> stepFrames(std::int64_t count) override {
         Debugger::instance().stepFrames(static_cast<int>(count));
@@ -768,7 +782,7 @@ public:
                 return Result<Value>::failure(
                     Diagnostic::error(DiagnosticCode::Failed, "cannot resolve game root", "contract"));
         }
-        const auto path = root / "game.agent.json";
+        const auto      path = root / "game.agent.json";
         std::error_code ec;
         if (!std::filesystem::is_regular_file(path, ec))
             return Result<Value>::failure(
@@ -782,8 +796,7 @@ public:
         return Value::fromJson(contents.str());
     }
 
-    Result<Value> observeScriptRoot(std::string_view root,
-                                    const std::vector<std::string>& fields) const override {
+    Result<Value> observeScriptRoot(std::string_view root, const std::vector<std::string>& fields) const override {
         return snapshotRoot(Debugger::instance().vm(), root, fields);
     }
 
@@ -830,10 +843,10 @@ public:
         if (!vm)
             return Result<Value>::failure(Diagnostic::error(
                 DiagnosticCode::Unsupported, "play act requires an attached script VM", "request.action"));
-        const SQInteger top = sq_gettop(vm);
+        const SQInteger   top = sq_gettop(vm);
         const std::string snippet(source);
-        if (SQ_FAILED(sq_compilebuffer(vm, snippet.c_str(), static_cast<SQInteger>(snippet.size()),
-                                       "<play-action>", SQTrue))) {
+        if (SQ_FAILED(sq_compilebuffer(vm, snippet.c_str(), static_cast<SQInteger>(snippet.size()), "<play-action>",
+                                       SQTrue))) {
             sq_settop(vm, top);
             return Result<Value>::failure(Diagnostic::error(
                 DiagnosticCode::Failed, eve::script::formatScriptError(eve::script::captureCompileError(vm)),
@@ -874,9 +887,7 @@ Result<Value> executePlayRequest(const Value& request, IPlayHostRuntime& runtime
     return dispatchOne(request, runtime, false);
 }
 
-Result<Value> executePlayRequest(const Value& request) {
-    return executePlayRequest(request, liveRuntime());
-}
+Result<Value> executePlayRequest(const Value& request) { return executePlayRequest(request, liveRuntime()); }
 
 Result<std::string> executePlayJson(std::string_view requestJson) {
     auto request = Value::fromJson(requestJson);

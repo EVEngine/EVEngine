@@ -383,6 +383,8 @@ def class_bindings(source: str) -> list[tuple[int, str, str]]:
             continue
         arguments = split_top_level(source[opening + 1 : closing])
         literal = re.match(r'\s*"([^"]+)"', arguments[0]) if arguments else None
+        # Do not infer scriptClass from Type::create: that rewrites contract keys
+        # (module/Class.method) and invalidates reviewed semantics maps.
         result.append((match.start(), match.group(1), literal.group(1) if literal else (match.group(2) or "")))
     return result
 
@@ -393,9 +395,11 @@ def callable_signature(expression: str, signatures: SignatureIndex) -> tuple[str
         signature = signatures.member(member.group(1), member.group(2))
         return (member.group(1).split("::")[-1], *signature) if signature else None
 
-    lambda_match = re.search(r"\[[^]]*\]\s*\(", expression)
+    # Capture lists may contain calls (`[vm = cls.getHandle()](...)`). The parameter
+    # '(' is the one that ends the `]\s*(` match — never the first '(' in the capture.
+    lambda_match = re.search(r"\[[^\]]*\]\s*\(", expression)
     if lambda_match:
-        opening = expression.find("(", lambda_match.start())
+        opening = lambda_match.end() - 1
         closing = matching(expression, opening)
         if closing is None:
             return None

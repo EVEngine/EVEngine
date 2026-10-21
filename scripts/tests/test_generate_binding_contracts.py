@@ -139,6 +139,22 @@ class CatalogExportTests(unittest.TestCase):
             self.assertIn("drawSolidRect(x: float, y: float): void;", dts_path.read_text(encoding="utf-8"))
 
 
+class LambdaCaptureTests(unittest.TestCase):
+    def test_getHandle_paren_inside_capture_is_not_the_parameter_list(self) -> None:
+        """Regression: `[vm = cls.getHandle()](T* self, const std::string& id)` used to
+        parse getHandle()'s empty argument list and publish zero parameters."""
+        from generate_binding_contracts import callable_signature
+
+        expression = (
+            "[vm = cls.getHandle()](DialogueFlow* value, const std::string& id, ssq::Object bindings) {\n"
+            "    return eve::script::projectResult(vm, value->startChecked(id, std::move(bindings)));\n"
+            "}"
+        )
+        signature = callable_signature(expression, SignatureIndex({}))
+        self.assertIsNotNone(signature)
+        self.assertEqual([parameter.name for parameter in signature[2]], ["value", "id", "bindings"])
+
+
 class BindMethodScrapeTests(unittest.TestCase):
     def test_bind_method_literal_names_are_scraped(self) -> None:
         from generate_binding_contracts import extract_contracts
