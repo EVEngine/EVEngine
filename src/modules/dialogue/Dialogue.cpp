@@ -14,12 +14,12 @@
 #include "scene/Scene.h"
 #include "scene/SceneHost.h"
 
-#include <squirrel.h>
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <iterator>
 #include <simplesquirrel/simplesquirrel.hpp>
+#include <squirrel.h>
 
 namespace eve::dialogue {
 
@@ -93,12 +93,12 @@ void pushVarTable(HSQUIRRELVM vm, const std::unordered_map<std::string, Dialogue
     }
 }
 
-std::vector<Dialogue *> &liveDialogues() {
-    static std::vector<Dialogue *> instances;
+std::vector<Dialogue*>& liveDialogues() {
+    static std::vector<Dialogue*> instances;
     return instances;
 }
 
-StateValue varValueToState(const Dialogue::VarValue &v) {
+StateValue varValueToState(const Dialogue::VarValue& v) {
     switch (v.type()) {
         case Dialogue::VarValue::Type::Int: return StateValue::integer(v.asInt());
         case Dialogue::VarValue::Type::Float: return StateValue::number(v.asDouble());
@@ -109,7 +109,7 @@ StateValue varValueToState(const Dialogue::VarValue &v) {
     return StateValue::null();
 }
 
-bool stateToVarValue(const StateValue &v, Dialogue::VarValue &out) {
+bool stateToVarValue(const StateValue& v, Dialogue::VarValue& out) {
     switch (v.kind()) {
         case StateValue::Kind::Int: out = Dialogue::VarValue::integer(v.asInt()); return true;
         case StateValue::Kind::Float: out = Dialogue::VarValue::number(v.asDouble()); return true;
@@ -122,11 +122,11 @@ bool stateToVarValue(const StateValue &v, Dialogue::VarValue &out) {
 /** @brief IStateProvider over every live Dialogue instance (module registry). */
 class DialogueStateProvider : public eve::caps::IStateProvider {
 public:
-    const char *stateKind() const override { return "dialogue"; }
+    const char* stateKind() const override { return "dialogue"; }
 
     Result<Value> capture() override {
         StateValue arr = StateValue::array();
-        for (Dialogue *d : liveDialogues()) {
+        for (Dialogue* d : liveDialogues()) {
             StateValue sv;
             if (!d->captureState(sv))
                 return Result<Value>::failure(Diagnostic::error(DiagnosticCode::Failed, "dialogue capture failed"));
@@ -151,7 +151,7 @@ public:
     }
 
     Result<void> resetToDefaults() override {
-        for (Dialogue *d : liveDialogues()) d->reset();
+        for (Dialogue* d : liveDialogues()) d->reset();
         return Result<void>::success();
     }
 };
@@ -185,19 +185,22 @@ Dialogue::~Dialogue() {
 // Variables (global / scene)
 // ---------------------------------------------------------------------------
 
-std::unordered_map<std::string, Dialogue::VarValue> *Dialogue::varsForScope(const std::string &scope) {
+std::unordered_map<std::string, Dialogue::VarValue> *Dialogue::varsForScope(
+    const std::string &scope) {
     if (scope == "global") return &globalVars_;
     if (scope == "scene") return &sceneVars_;
     return nullptr;
 }
 
-const std::unordered_map<std::string, Dialogue::VarValue> *Dialogue::varsForScope(const std::string &scope) const {
+const std::unordered_map<std::string, Dialogue::VarValue> *Dialogue::varsForScope(
+    const std::string &scope) const {
     if (scope == "global") return &globalVars_;
     if (scope == "scene") return &sceneVars_;
     return nullptr;
 }
 
-bool Dialogue::setVarValue(const std::string &name, const VarValue &value, const std::string &scope) {
+bool Dialogue::setVarValue(const std::string &name, const VarValue &value,
+                           const std::string &scope) {
     auto *m = varsForScope(scope);
     if (!m || name.empty()) return false;
     (*m)[name] = value;
@@ -208,7 +211,7 @@ bool Dialogue::setVar(const std::string &name, ssq::Object value, const std::str
     if (!vm_) return false;
     const SQInteger top = sq_gettop(vm_);
     sq_pushobject(vm_, value.getRaw());
-    VarValue   v;
+    VarValue v;
     const bool ok = squirrelToVarValueAt(vm_, -1, v);
     sq_settop(vm_, top);
     if (!ok) return false;
@@ -234,7 +237,8 @@ int Dialogue::getVarInt(const std::string &name, int defaultValue, const std::st
     return defaultValue;
 }
 
-float Dialogue::getVarFloat(const std::string &name, float defaultValue, const std::string &scope) const {
+float Dialogue::getVarFloat(const std::string &name, float defaultValue,
+                            const std::string &scope) const {
     const VarValue v = getVarValue(name, scope);
     if (v.type() == VarValue::Type::Int) return float(v.asInt());
     if (v.type() == VarValue::Type::Float) return float(v.asDouble());
@@ -242,7 +246,8 @@ float Dialogue::getVarFloat(const std::string &name, float defaultValue, const s
     return defaultValue;
 }
 
-bool Dialogue::getVarBool(const std::string &name, bool defaultValue, const std::string &scope) const {
+bool Dialogue::getVarBool(const std::string &name, bool defaultValue,
+                          const std::string &scope) const {
     const VarValue v = getVarValue(name, scope);
     if (v.type() == VarValue::Type::Int) return v.asInt() != 0;
     if (v.type() == VarValue::Type::Float) return v.asDouble() != 0.0;
@@ -315,7 +320,7 @@ bool Dialogue::parseCondition(const DataValue &v, Condition &out, std::string &e
         out.kind = Condition::Kind::All;
         for (size_t i = 0; i < v.arraySize(); ++i) {
             const auto &item = v.at(i);
-            Condition   child;
+            Condition child;
             if (!parseCondition(item, child, error)) return false;
             out.children.push_back(std::move(child));
         }
@@ -330,7 +335,7 @@ bool Dialogue::parseCondition(const DataValue &v, Condition &out, std::string &e
             error = "script condition name must be a string";
             return false;
         }
-        out.kind   = Condition::Kind::Script;
+        out.kind = Condition::Kind::Script;
         out.script = script->asString();
         return true;
     }
@@ -342,7 +347,7 @@ bool Dialogue::parseCondition(const DataValue &v, Condition &out, std::string &e
         out.kind = Condition::Kind::All;
         for (size_t i = 0; i < all->arraySize(); ++i) {
             const auto &item = all->at(i);
-            Condition   child;
+            Condition child;
             if (!parseCondition(item, child, error)) return false;
             out.children.push_back(std::move(child));
         }
@@ -356,7 +361,7 @@ bool Dialogue::parseCondition(const DataValue &v, Condition &out, std::string &e
         out.kind = Condition::Kind::Any;
         for (size_t i = 0; i < any->arraySize(); ++i) {
             const auto &item = any->at(i);
-            Condition   child;
+            Condition child;
             if (!parseCondition(item, child, error)) return false;
             out.children.push_back(std::move(child));
         }
@@ -379,9 +384,9 @@ bool Dialogue::parseCondition(const DataValue &v, Condition &out, std::string &e
             error = "unknown condition op: " + opStr;
             return false;
         }
-        out.kind  = Condition::Kind::Cmp;
+        out.kind = Condition::Kind::Cmp;
         out.var   = var->asString();
-        out.op    = opStr;
+        out.op = opStr;
         out.value = VarValue::string("");
         if (const DataValue *val = v.find("value")) {
             switch (val->kind()) {
@@ -389,7 +394,8 @@ bool Dialogue::parseCondition(const DataValue &v, Condition &out, std::string &e
                 case DataValue::Kind::Float: out.value = VarValue::number(val->asDouble()); break;
                 case DataValue::Kind::Bool: out.value = VarValue::boolean(val->asBool()); break;
                 case DataValue::Kind::String: out.value = VarValue::string(val->asString()); break;
-                default: break;
+                default:
+                    break;
             }
         }
         return true;
@@ -420,13 +426,15 @@ bool Dialogue::compareOrder(const std::string &op, const VarValue &a, const VarV
     return false;
 }
 
-bool Dialogue::evalConditionInternal(const Condition &c, const std::unordered_map<std::string, VarValue> &merged,
+bool Dialogue::evalConditionInternal(const Condition &c,
+                                     const std::unordered_map<std::string, VarValue> &merged,
                                      const std::unordered_map<std::string, VarValue> &params,
-                                     const std::string                               &lineId) const {
+                                     const std::string &lineId) const {
     switch (c.kind) {
-        case Condition::Kind::Always: return true;
+        case Condition::Kind::Always:
+            return true;
         case Condition::Kind::Cmp: {
-            const auto it      = merged.find(c.var);
+            const auto it = merged.find(c.var);
             const bool present = it != merged.end();
             if (c.op == "has") return present;
             if (c.op == "missing") return !present;
@@ -444,22 +452,25 @@ bool Dialogue::evalConditionInternal(const Condition &c, const std::unordered_ma
                 if (evalConditionInternal(child, merged, params, lineId)) return true;
             return false;
         case Condition::Kind::Not:
-            return c.children.empty() || !evalConditionInternal(c.children.front(), merged, params, lineId);
-        case Condition::Kind::Script: return evalScriptPredicate(c.script, merged, params, lineId);
+            return c.children.empty() ||
+                   !evalConditionInternal(c.children.front(), merged, params, lineId);
+        case Condition::Kind::Script:
+            return evalScriptPredicate(c.script, merged, params, lineId);
     }
     return false;
 }
 
 bool Dialogue::evalConditionData(const DataValue &cond) {
-    Condition   c;
+    Condition c;
     std::string error;
     if (!parseCondition(cond, c, error)) return false;
     return evalConditionInternal(c, mergedVars({}), {}, "");
 }
 
-bool Dialogue::evalScriptPredicate(const std::string &name, const std::unordered_map<std::string, VarValue> &merged,
+bool Dialogue::evalScriptPredicate(const std::string &name,
+                                   const std::unordered_map<std::string, VarValue> &merged,
                                    const std::unordered_map<std::string, VarValue> &params,
-                                   const std::string                               &lineId) const {
+                                   const std::string &lineId) const {
     if (!vm_) return false;
     const auto it = predicates_.find(name);
     if (it == predicates_.end()) return false;
@@ -513,7 +524,8 @@ int Dialogue::loadPoolsFromTable(ssq::Object table) {
     return loadPoolsFromData(root);
 }
 
-bool Dialogue::parseLineData(const std::string &poolId, const DataValue &v, int index, Line &line, std::string &error) {
+bool Dialogue::parseLineData(const std::string &poolId, const DataValue &v, int index, Line &line,
+                             std::string &error) {
     if (v.kind() != DataValue::Kind::Object) {
         error = "line must be a table";
         return false;
@@ -564,7 +576,8 @@ bool Dialogue::parseLineData(const std::string &poolId, const DataValue &v, int 
                 case DataValue::Kind::Int: val = std::to_string(mkv.second.asInt()); break;
                 case DataValue::Kind::Float: val = floatToString(mkv.second.asDouble()); break;
                 case DataValue::Kind::Bool: val = mkv.second.asBool() ? "true" : "false"; break;
-                default: break;
+                default:
+                    break;
             }
             line.meta[mkv.first] = val;
         }
@@ -585,7 +598,7 @@ bool Dialogue::parseLineData(const std::string &poolId, const DataValue &v, int 
 
 int Dialogue::loadPoolsFromData(const DataValue &root) { return applyPoolsFromData(root, false); }
 
-int Dialogue::replacePoolsFromData(const DataValue &root) { return applyPoolsFromData(root, true); }
+int Dialogue::replacePoolsFromData(const DataValue& root) { return applyPoolsFromData(root, true); }
 
 int Dialogue::applyPoolsFromData(const DataValue &root, bool replace) {
     lastPoolsError_.clear();
@@ -599,9 +612,9 @@ int Dialogue::applyPoolsFromData(const DataValue &root, bool replace) {
         return 0;
     }
 
-    int               registered = 0;
-    std::vector<Pool> candidate  = replace ? std::vector<Pool>{} : pools_;
-    const auto       *poolFields = pools->getIf<DataValue::Object>();
+    int registered = 0;
+    std::vector<Pool> candidate = replace ? std::vector<Pool>{} : pools_;
+    const auto *poolFields = pools->getIf<DataValue::Object>();
     for (const auto &kv : *poolFields) {
         Pool pool;
         pool.id = kv.first;
@@ -624,7 +637,7 @@ int Dialogue::applyPoolsFromData(const DataValue &root, bool replace) {
         int lineIndex = 1;
         for (size_t i = 0; i < lines->arraySize(); ++i) {
             const auto &lv = lines->at(i);
-            Line        line;
+            Line line;
             std::string error;
             if (!parseLineData(pool.id, lv, lineIndex, line, error)) {
                 lastPoolsError_ = error;
@@ -633,12 +646,10 @@ int Dialogue::applyPoolsFromData(const DataValue &root, bool replace) {
             pool.lines.push_back(std::move(line));
             ++lineIndex;
         }
-        auto existing =
-            std::find_if(candidate.begin(), candidate.end(), [&](const Pool &item) { return item.id == pool.id; });
-        if (existing != candidate.end())
-            *existing = std::move(pool);
-        else
-            candidate.push_back(std::move(pool));
+        auto existing = std::find_if(candidate.begin(), candidate.end(),
+                                     [&](const Pool& item) { return item.id == pool.id; });
+        if (existing != candidate.end()) *existing = std::move(pool);
+        else candidate.push_back(std::move(pool));
         ++registered;
     }
     pools_ = std::move(candidate);
@@ -701,7 +712,8 @@ std::unordered_map<std::string, std::string> Dialogue::stringParams(
     return out;
 }
 
-std::string Dialogue::interpolate(const std::string &tpl, const std::unordered_map<std::string, VarValue> &vars) const {
+std::string Dialogue::interpolate(const std::string &tpl,
+                                  const std::unordered_map<std::string, VarValue> &vars) const {
     std::string out;
     out.reserve(tpl.size());
     for (size_t i = 0; i < tpl.size();) {
@@ -709,7 +721,7 @@ std::string Dialogue::interpolate(const std::string &tpl, const std::unordered_m
             const size_t close = tpl.find('}', i + 1);
             if (close != std::string::npos) {
                 const std::string name = tpl.substr(i + 1, close - i - 1);
-                const auto        it   = vars.find(name);
+                const auto it = vars.find(name);
                 if (it != vars.end()) {
                     out += it->second.toString();
                     i = close + 1;
@@ -748,8 +760,8 @@ std::string Dialogue::pickLine(const std::string &poolId, ssq::Object params) {
     return pickLineWithParams(poolId, p);
 }
 
-std::string Dialogue::pickLineWithParams(const std::string                               &poolId,
-                                         const std::unordered_map<std::string, VarValue> &params) {
+std::string Dialogue::pickLineWithParams(
+    const std::string &poolId, const std::unordered_map<std::string, VarValue> &params) {
     Pool *pool = findPool(poolId);
     if (!pool) return "";
     const auto merged = mergedVars(params);
@@ -773,9 +785,9 @@ std::string Dialogue::pickLineWithParams(const std::string                      
 
     double total = 0.0;
     for (const size_t i : candidates) total += pool->lines[i].weight;
-    double roll   = nextUnit() * total;
+    double roll = nextUnit() * total;
     size_t picked = candidates.front();
-    double acc    = 0.0;
+    double acc = 0.0;
     for (const size_t i : candidates) {
         acc += pool->lines[i].weight;
         if (roll < acc) {
@@ -796,7 +808,8 @@ bool Dialogue::playLine(const std::string &lineId, ssq::Object params) {
     return playLineWithParams(lineId, p);
 }
 
-bool Dialogue::playLineWithParams(const std::string &lineId, const std::unordered_map<std::string, VarValue> &params) {
+bool Dialogue::playLineWithParams(const std::string &lineId,
+                                  const std::unordered_map<std::string, VarValue> &params) {
     Line *line = findLine(lineId);
     if (!line) return false;
     const auto merged = mergedVars(params);
@@ -806,15 +819,13 @@ bool Dialogue::playLineWithParams(const std::string &lineId, const std::unordere
         text = interpolate(line->text, merged);
     } else {
         auto *i18n = eve::ModuleManager::getInstance<eve::i18n::I18n>("I18n");
-        text       = i18n ? i18n->getWithParams(line->i18nKey, stringParams(merged)) : line->i18nKey;
+        text = i18n ? i18n->getWithParams(line->i18nKey, stringParams(merged)) : line->i18nKey;
     }
 
-    if (line->speaker.empty())
-        narrate(text);
-    else
-        say(line->speaker, text);
+    if (line->speaker.empty()) narrate(text);
+    else say(line->speaker, text);
 
-    currentLineId_   = line->id;
+    currentLineId_ = line->id;
     currentLineMeta_ = line->meta;
     currentLineTags_ = line->tags;
     applyLineMeta(*line);
@@ -827,7 +838,8 @@ bool Dialogue::playPool(const std::string &poolId, ssq::Object params) {
     return playPoolWithParams(poolId, p);
 }
 
-bool Dialogue::playPoolWithParams(const std::string &poolId, const std::unordered_map<std::string, VarValue> &params) {
+bool Dialogue::playPoolWithParams(const std::string &poolId,
+                                  const std::unordered_map<std::string, VarValue> &params) {
     const std::string lineId = pickLineWithParams(poolId, params);
     return !lineId.empty() && playLineWithParams(lineId, params);
 }
@@ -841,7 +853,7 @@ std::vector<std::string> Dialogue::getCurrentLineTags() const { return currentLi
 
 void Dialogue::applyLineMeta(const Line &line) {
     if (line.speaker.empty()) return;
-    const auto expr   = line.meta.find("expression");
+    const auto expr = line.meta.find("expression");
     const auto motion = line.meta.find("motion");
     if (expr == line.meta.end() && motion == line.meta.end()) return;
     Character *c = findCharacter(line.speaker);
@@ -858,7 +870,7 @@ void Dialogue::pollSceneChange() {
     auto *scn = eve::ModuleManager::getInstance<eve::scene::Scene>("Scene");
     if (!scn) return;
     eve::scene::SceneHost *host = scn->current();
-    const std::string      name = host ? host->getName() : "";
+    const std::string name = host ? host->getName() : "";
     if (!name.empty() && name != lastSceneName_) sceneVars_.clear();
     if (!name.empty()) lastSceneName_ = name;
 }
@@ -882,7 +894,7 @@ bool Dialogue::registerCharacter(const std::string &id, const std::string &displ
         return true;
     }
     Character c;
-    c.id          = id;
+    c.id = id;
     c.displayName = displayName.empty() ? id : displayName;
     characters_.push_back(c);
     return true;
@@ -907,8 +919,9 @@ bool Dialogue::bindAvatar(const std::string &id, avatar::AvatarInstance *av) {
     c->avatar = av;
     if (av) {
         const std::string key = id;
-        c->avatarHook         = av->addDestroyHook([this, key](avatar::AvatarInstance *) {
-            if (Character *ch = findCharacter(key)) ch->avatar = nullptr;
+        c->avatarHook = av->addDestroyHook([this, key](avatar::AvatarInstance *) {
+            if (Character *ch = findCharacter(key))
+                ch->avatar = nullptr;
         });
     }
     return true;
@@ -930,7 +943,7 @@ bool Dialogue::show(const std::string &id, const std::string &slot) {
     Character *c = findCharacter(id);
     if (!c) return false;
     c->shown = true;
-    c->slot  = slot.empty() ? "center" : slot;
+    c->slot = slot.empty() ? "center" : slot;
     if (c->avatar) c->avatar->setVisible(true);
     return true;
 }
@@ -991,7 +1004,7 @@ void Dialogue::syncStage(float stageWidth, float stageHeight) {
             continue;
         }
         const float xn = getSlotX(c.slot);
-        const float x  = xn * stageWidth;
+        const float x = xn * stageWidth;
         // Keep current Y; only drive X from slot.
         c.avatar->setPosition(x, c.avatar->getY());
         c.avatar->sync();
@@ -1000,20 +1013,22 @@ void Dialogue::syncStage(float stageWidth, float stageHeight) {
 
 void Dialogue::beginLine(const std::string &speakerId, const std::string &text) {
     speakerId_ = speakerId;
-    fullText_  = text;
-    typed_     = 0.f;
+    fullText_ = text;
+    typed_ = 0.f;
     selectedChoiceId_.clear();
     lipSyncTime_ = 0.f;
     if (typeSpeed_ <= 0.f) {
-        typed_        = float(utf8_codepoint_count(fullText_));
-        phase_        = Phase::WaitingAdvance;
+        typed_ = float(utf8_codepoint_count(fullText_));
+        phase_ = Phase::WaitingAdvance;
         lipSyncValue_ = 0.f;
     } else {
         phase_ = Phase::Typing;
     }
 }
 
-void Dialogue::say(const std::string &speakerId, const std::string &text) { beginLine(speakerId, text); }
+void Dialogue::say(const std::string &speakerId, const std::string &text) {
+    beginLine(speakerId, text);
+}
 
 void Dialogue::narrate(const std::string &text) { beginLine("", text); }
 
@@ -1048,7 +1063,7 @@ std::string Dialogue::getSpeakerName() const {
 std::string Dialogue::getVisibleText() const {
     if (fullText_.empty()) return {};
     const size_t total = utf8_codepoint_count(fullText_);
-    size_t       n     = size_t(std::floor(typed_ + 1e-4f));
+    size_t n = size_t(std::floor(typed_ + 1e-4f));
     if (n == 0) return {};
     if (n >= total) return fullText_;
     return fullText_.substr(0, utf8_byte_offset_for_codepoints(fullText_, n));
@@ -1056,10 +1071,14 @@ std::string Dialogue::getVisibleText() const {
 
 std::string Dialogue::getPhase() const {
     switch (phase_) {
-        case Phase::Idle: return "idle";
-        case Phase::Typing: return "typing";
-        case Phase::WaitingAdvance: return "waiting_advance";
-        case Phase::WaitingChoice: return "waiting_choice";
+        case Phase::Idle:
+            return "idle";
+        case Phase::Typing:
+            return "typing";
+        case Phase::WaitingAdvance:
+            return "waiting_advance";
+        case Phase::WaitingChoice:
+            return "waiting_choice";
     }
     return "idle";
 }
@@ -1108,7 +1127,7 @@ bool Dialogue::selectChoice(int index) {
     if (phase_ != Phase::WaitingChoice) return false;
     if (index < 0 || size_t(index) >= choices_.size()) return false;
     selectedChoiceId_ = choices_[size_t(index)].id;
-    phase_            = Phase::Idle;
+    phase_ = Phase::Idle;
     return true;
 }
 
@@ -1130,7 +1149,7 @@ void Dialogue::updateLipSync(float dt) {
         lipSyncTime_ += dt;
         // Simple mouth envelope while characters appear (no audio dependency).
         const float wave = std::fabs(std::sin(lipSyncTime_ * 14.f));
-        lipSyncValue_    = lipSyncAmplitude_ * (0.25f + 0.75f * wave);
+        lipSyncValue_ = lipSyncAmplitude_ * (0.25f + 0.75f * wave);
     } else {
         // Ease shut when not typing.
         lipSyncValue_ *= std::max(0.f, 1.f - dt * 8.f);
@@ -1168,7 +1187,7 @@ void Dialogue::reset() {
     choices_.clear();
     selectedChoiceId_.clear();
     lipSyncValue_ = 0.f;
-    lipSyncTime_  = 0.f;
+    lipSyncTime_ = 0.f;
     currentLineId_.clear();
     currentLineMeta_.clear();
     currentLineTags_.clear();
@@ -1178,7 +1197,7 @@ void Dialogue::reset() {
     }
 }
 
-bool Dialogue::captureState(StateValue &out) const {
+bool Dialogue::captureState(StateValue& out) const {
     out = StateValue::object();
     out.set("phase", StateValue::string(getPhase()));
     out.set("speakerId", StateValue::string(speakerId_));
@@ -1193,15 +1212,15 @@ bool Dialogue::captureState(StateValue &out) const {
     out.set("selectedChoiceId", StateValue::string(selectedChoiceId_));
 
     StateValue global = StateValue::object();
-    for (const auto &kv : globalVars_) global.set(kv.first, varValueToState(kv.second));
+    for (const auto& kv : globalVars_) global.set(kv.first, varValueToState(kv.second));
     out.set("globalVars", std::move(global));
 
     StateValue scene = StateValue::object();
-    for (const auto &kv : sceneVars_) scene.set(kv.first, varValueToState(kv.second));
+    for (const auto& kv : sceneVars_) scene.set(kv.first, varValueToState(kv.second));
     out.set("sceneVars", std::move(scene));
 
     StateValue choices = StateValue::array();
-    for (const auto &c : choices_) {
+    for (const auto& c : choices_) {
         StateValue item = StateValue::object();
         item.set("id", StateValue::string(c.id));
         item.set("label", StateValue::string(c.label));
@@ -1210,7 +1229,7 @@ bool Dialogue::captureState(StateValue &out) const {
     out.set("choices", std::move(choices));
 
     StateValue chars = StateValue::array();
-    for (const auto &c : characters_) {
+    for (const auto& c : characters_) {
         StateValue item = StateValue::object();
         item.set("id", StateValue::string(c.id));
         item.set("displayName", StateValue::string(c.displayName));
@@ -1221,17 +1240,17 @@ bool Dialogue::captureState(StateValue &out) const {
     out.set("characters", std::move(chars));
 
     StateValue slotX = StateValue::object();
-    for (const auto &kv : slotX_) slotX.set(kv.first, StateValue::number(kv.second));
+    for (const auto& kv : slotX_) slotX.set(kv.first, StateValue::number(kv.second));
     out.set("slotX", std::move(slotX));
     return true;
 }
 
-bool Dialogue::restoreState(const StateValue &in, std::string *err) {
+bool Dialogue::restoreState(const StateValue& in, std::string* err) {
     if (!in.isObject()) {
         if (err) *err = "dialogue: state is not an object";
         return false;
     }
-    const StateValue *phase = in.find("phase");
+    const StateValue* phase = in.find("phase");
     if (!phase || !phase->isString()) {
         if (err) *err = "dialogue: missing phase";
         return false;
@@ -1250,30 +1269,30 @@ bool Dialogue::restoreState(const StateValue &in, std::string *err) {
         return false;
     }
 
-    if (const StateValue *v = in.find("speakerId"); v && v->isString()) speakerId_ = v->asString();
-    if (const StateValue *v = in.find("fullText"); v && v->isString()) fullText_ = v->asString();
-    if (const StateValue *v = in.find("typed"); v && (v->isInt() || v->isFloat()))
+    if (const StateValue* v = in.find("speakerId"); v && v->isString()) speakerId_ = v->asString();
+    if (const StateValue* v = in.find("fullText"); v && v->isString()) fullText_ = v->asString();
+    if (const StateValue* v = in.find("typed"); v && (v->isInt() || v->isFloat()))
         typed_ = static_cast<float>(v->isInt() ? double(v->asInt()) : v->asDouble());
-    if (const StateValue *v = in.find("typeSpeed"); v && (v->isInt() || v->isFloat()))
+    if (const StateValue* v = in.find("typeSpeed"); v && (v->isInt() || v->isFloat()))
         typeSpeed_ = static_cast<float>(v->isInt() ? double(v->asInt()) : v->asDouble());
-    if (const StateValue *v = in.find("lipSyncEnabled"); v && v->isBool()) lipSyncEnabled_ = v->asBool();
-    if (const StateValue *v = in.find("lipSyncParameter"); v && v->isString()) lipSyncParameter_ = v->asString();
-    if (const StateValue *v = in.find("lipSyncAmplitude"); v && (v->isInt() || v->isFloat()))
+    if (const StateValue* v = in.find("lipSyncEnabled"); v && v->isBool()) lipSyncEnabled_ = v->asBool();
+    if (const StateValue* v = in.find("lipSyncParameter"); v && v->isString()) lipSyncParameter_ = v->asString();
+    if (const StateValue* v = in.find("lipSyncAmplitude"); v && (v->isInt() || v->isFloat()))
         lipSyncAmplitude_ = static_cast<float>(v->isInt() ? double(v->asInt()) : v->asDouble());
-    if (const StateValue *v = in.find("rngState"); v && v->isInt()) rngState_ = static_cast<uint32_t>(v->asInt());
-    if (const StateValue *v = in.find("currentLineId"); v && v->isString()) currentLineId_ = v->asString();
-    if (const StateValue *v = in.find("selectedChoiceId"); v && v->isString()) selectedChoiceId_ = v->asString();
+    if (const StateValue* v = in.find("rngState"); v && v->isInt()) rngState_ = static_cast<uint32_t>(v->asInt());
+    if (const StateValue* v = in.find("currentLineId"); v && v->isString()) currentLineId_ = v->asString();
+    if (const StateValue* v = in.find("selectedChoiceId"); v && v->isString()) selectedChoiceId_ = v->asString();
 
     globalVars_.clear();
-    if (const StateValue *vars = in.find("globalVars"); vars && vars->isObject()) {
-        for (const auto &key : vars->keys()) {
+    if (const StateValue* vars = in.find("globalVars"); vars && vars->isObject()) {
+        for (const auto& key : vars->keys()) {
             Dialogue::VarValue val;
             if (stateToVarValue(*vars->find(key), val)) globalVars_[key] = val;
         }
     }
     sceneVars_.clear();
-    if (const StateValue *vars = in.find("sceneVars"); vars && vars->isObject()) {
-        for (const auto &key : vars->keys()) {
+    if (const StateValue* vars = in.find("sceneVars"); vars && vars->isObject()) {
+        for (const auto& key : vars->keys()) {
             Dialogue::VarValue val;
             if (stateToVarValue(*vars->find(key), val)) sceneVars_[key] = val;
         }
@@ -1282,8 +1301,8 @@ bool Dialogue::restoreState(const StateValue &in, std::string *err) {
     choices_.clear();
     if (const StateValue *choices = in.find("choices"); choices && choices->isArray()) {
         for (size_t i = 0; i < choices->arraySize(); ++i) {
-            const StateValue &item  = choices->at(i);
-            const StateValue *id    = item.find("id");
+            const StateValue &item = choices->at(i);
+            const StateValue *id = item.find("id");
             const StateValue *label = item.find("label");
             if (id && id->isString() && label && label->isString()) {
                 choices_.push_back(Choice{id->asString(), label->asString()});
@@ -1294,17 +1313,18 @@ bool Dialogue::restoreState(const StateValue &in, std::string *err) {
     if (const StateValue *chars = in.find("characters"); chars && chars->isArray()) {
         for (size_t i = 0; i < chars->arraySize(); ++i) {
             const StateValue &item = chars->at(i);
-            const StateValue *id   = item.find("id");
+            const StateValue *id = item.find("id");
             if (!id || !id->isString()) continue;
             Character *c = findCharacter(id->asString());
             if (!c) {
                 characters_.push_back(Character{});
-                c     = &characters_.back();
+                c = &characters_.back();
                 c->id = id->asString();
                 if (const StateValue *name = item.find("displayName"); name && name->isString())
                     c->displayName = name->asString();
             }
-            if (const StateValue *slot = item.find("slot"); slot && slot->isString()) c->slot = slot->asString();
+            if (const StateValue *slot = item.find("slot"); slot && slot->isString())
+                c->slot = slot->asString();
             if (const StateValue *shown = item.find("shown"); shown && shown->isBool()) {
                 c->shown = shown->asBool();
                 if (c->avatar) c->avatar->setVisible(c->shown);
