@@ -21,7 +21,17 @@ persist wave = 1
 persist gold = 0
 persist kills = 0
 persist state = "idle"
-persist log = []
+persist battleLog = []
+persist gameState = {
+    mode = "title"
+    screen = "title"
+    state = "idle"
+    gold = 0
+    kills = 0
+    playerHp = 0.0
+    inBattle = false
+    worldMapId = "village"
+}
 persist hitFlash = { player = 0.0, enemy = 0.0 }
 persist worldX = 2
 persist worldY = 5
@@ -95,8 +105,30 @@ shop <- []
 function randf(a, b) { return a + (b - a) * (rand().tofloat() / RAND_MAX.tofloat()); }
 function roundi(v) { return floor(v + 0.5).tointeger(); }
 function logLine(text) {
-    log.push(text);
-    while (log.len() > 8) log.remove(0);
+    battleLog.push(text);
+    while (battleLog.len() > 8) battleLog.remove(0);
+}
+
+// Agent observe root (EM4): keep gameState in sync with play Host paths.gameState.
+// workshopInputMode separates battle digits from explore keys (EA5 pattern).
+function workshopInputMode() {
+    if (state == "gameover") return "gameover";
+    if (screen == "battle") return "battle";
+    if (screen == "dialogue") return "dialogue";
+    if (screen == "explore") return "explore";
+    if (screen == "adjust" || screen == "status" || screen == "pause") return "menu";
+    return "title";
+}
+function syncGameStateForAgent() {
+    gameState.mode = workshopInputMode();
+    gameState.screen = screen;
+    gameState.state = state;
+    gameState.gold = gold;
+    gameState.kills = kills;
+    gameState.worldMapId = worldMapId;
+    gameState.inBattle = (screen == "battle");
+    if (player != null) gameState.playerHp = player.getCurrent("hp");
+    else gameState.playerHp = 0.0;
 }
 function logMessage(key, params = {}) { logLine(text.getWithParams("gameplayLog." + key, params)); }
 
@@ -1546,7 +1578,7 @@ function refreshHud() {
     ui.setText("qtext", questText == "" ? tr("ui.quest.none") : questText);
     ui.setText("goldtext", trp("ui.hud.goldLevel", {gold = gold, level = player.getLevel()}));
     local logText = "";
-    for (local i = 0; i < log.len(); i += 1) logText += log[i] + "\n";
+    for (local i = 0; i < battleLog.len(); i += 1) logText += battleLog[i] + "\n";
     ui.setText("log", logText);
     ui.select("world");
     ui.setText("area", trp("ui.world.area", {area = worldMapTitle(worldMapId)}));
@@ -1857,7 +1889,7 @@ function loadCheckpoint(replaceUnsavedNewRun = false) {
     releaseEncounterEnemies();
     battle = null;
     state = "idle"; setScreen("explore"); showGameOver(false);
-    log = [];
+    battleLog = [];
     if (recovered) logMessage("save.backupRecovered");
     if (migratedWorldState) logMessage("save.migrated");
     logMessage("save.loaded", {area = worldMapTitle("village")});
@@ -1880,7 +1912,7 @@ function startNewGame(slot = activeSaveSlot) {
     activeEncounterId = "";
     storySession = null;
     storyWaitRemaining = 0.0;
-    log = [];
+    battleLog = [];
     hitFlash.player = 0.0; hitFlash.enemy = 0.0;
     state = "idle";
     if (gs == null) gs = rpg.newGameState();
@@ -2039,6 +2071,7 @@ eve_update = function(dt) {
         } else if (key_just_pressed("Q")) usePotion();
     }
     refreshHud();
+    syncGameStateForAgent();
 };
 
 eve_render = function() {
