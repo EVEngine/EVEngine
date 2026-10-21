@@ -1,3 +1,7 @@
+#include <limits>
+#include <type_traits>
+#include "LayeredClothGeometryOracle.h"
+#include "physics/cloth/LayeredCloth3D.h"
 #include "zeroerr/assert.h"
 
 #include "ScriptTest.h"
@@ -211,3 +215,184 @@ TEST_CASE("PhysicsCloth.runtimeTearingChangesAuthoritativeConstraintAndSurfaceTo
     automatic.update(1.f / 60.f);
     CHECK(automatic.getTornConstraintCount() >= 1);
 }
+
+namespace test_layered_cloth_reference {
+
+static_assert(!std::is_copy_constructible_v<eve::physics::LayeredCloth3D>);
+static_assert(!std::is_copy_assignable_v<eve::physics::LayeredCloth3D>);
+
+namespace {
+using eve::physics::ClothModel;
+using eve::physics::LayeredCloth3D;
+std::array<ClothModel, 2> sheets(float gap) {
+    const std::array<int, 3>   indices = {0, 1, 2};
+    const std::array<float, 9> lower   = {0, 0, 0, 1, 0, 0, 0, 0, 1};
+    const std::array<float, 9> upper   = {0, gap, 0, 1, gap, 0, 0, gap, 1};
+    auto                       a       = ClothModel::fromTriangles(lower, indices);
+    auto                       b       = ClothModel::fromTriangles(upper, indices);
+    REQUIRE(a.hasValue());
+    REQUIRE(b.hasValue());
+    return {std::move(a).takeValue(), std::move(b).takeValue()};
+}
+void configure(LayeredCloth3D& group) {
+    group.setSolver(1, 12);
+    for (int i = 0; i < group.getLayerCount(); ++i) {
+        auto& c = group.layer(i);
+        c.setGravity(0, 0, 0);
+        c.setStiffness(0);
+        c.setFoldStiffness(0);
+        c.setSelfCollision(false);
+        c.setParticleSize(0.04f);
+        c.setCollisionMaterial(0, 0);
+        for (int p = 0; p < c.getParticleCount(); ++p) c.setParticleInverseMass(p, 1.f);
+    }
+}
+float meanY(LayeredCloth3D& g, int layer) {
+    float sum = 0;
+    for (int i = 0; i < 3; ++i) sum += g.layer(layer).getParticleY(i);
+    return sum / 3.f;
+}
+}  // namespace
+TEST_CASE("PhysicsLayeredCloth.separatesFacesAndConservesMassWeightedCentre") {
+    auto           models = sheets(0.02f);
+    LayeredCloth3D group(models);
+    configure(group);
+    for (int i = 0; i < 3; ++i) group.layer(1).setParticleInverseMass(i, 0.25f);
+    group.update(1.f / 120.f);
+    CHECK(group.getContactCount() > 0);
+    CHECK(std::abs((meanY(group, 0) + 4.f * meanY(group, 1)) / 5.f - 0.016f) < 1e-5f);
+    for (int i = 0; i < 3; ++i) CHECK(group.layer(1).getParticleY(i) - group.layer(0).getParticleY(i) > 0.079f);
+}
+TEST_CASE("PhysicsLayeredCloth.respectsPinnedParticlesAndSymmetricFilter") {
+    auto           models = sheets(0.02f);
+    LayeredCloth3D group(models);
+    configure(group);
+    for (int i = 0; i < 3; ++i) group.layer(0).pin(i);
+    group.layer(0).setCollisionFilter(1, 2);
+    group.layer(1).setCollisionFilter(2, 0);
+    group.update(1.f / 120.f);
+    CHECK(group.getContactCount() == 0);
+    CHECK(std::abs(meanY(group, 1) - 0.02f) < 1e-6f);
+    group.layer(1).setCollisionFilter(2, 1);
+    group.update(1.f / 120.f);
+    CHECK(group.getContactCount() > 0);
+    CHECK(meanY(group, 0) == 0.f);
+    CHECK(meanY(group, 1) > 0.079f);
+}
+TEST_CASE("PhysicsLayeredCloth.disabledAndZeroStepDoNotSeparate") {
+    auto           models = sheets(0.02f);
+    LayeredCloth3D group(models);
+    configure(group);
+    group.update(0.f);
+    CHECK(group.getContactCount() == 0);
+    group.setInterCollision(false);
+    group.update(1.f / 120.f);
+    CHECK(group.getContactCount() == 0);
+    CHECK(std::abs(meanY(group, 1) - 0.02f) < 1e-6f);
+}
+TEST_CASE("PhysicsLayeredCloth.rejectsInvalidInputBeforeMutation") {
+    LayeredCloth3D group(3, 3, 3, 0.3f, 0.1f, 0, 2, 0);
+    const float    initial  = group.layer(0).getParticleY(4);
+    int            rejected = 0;
+    for (float dt : {-1.f, 0.1f, std::numeric_limits<float>::quiet_NaN()}) {
+        try {
+            group.update(dt);
+        } catch (const std::exception&) {
+            ++rejected;
+        }
+    }
+    CHECK(rejected == 3);
+    CHECK(group.layer(0).getParticleY(4) == initial);
+    group.layer(2).destroy();
+    try {
+        group.update(0.01f);
+    } catch (const std::exception&) {
+        ++rejected;
+    }
+    CHECK(rejected == 4);
+    CHECK(group.layer(0).getParticleY(4) == initial);
+}
+TEST_CASE("PhysicsLayeredCloth.threeLayerReplayRemainsFiniteAndResettable") {
+    LayeredCloth3D a(3, 4, 4, 0.25f, 0.08f, 0, 2, 0), b(3, 4, 4, 0.25f, 0.08f, 0, 2, 0);
+    a.setWindVelocity(0.5f, 0.2f, 0.1f);
+    b.setWindVelocity(0.5f, 0.2f, 0.1f);
+    for (int frame = 0; frame < 240; ++frame) {
+        a.update(1.f / 120.f);
+        b.update(1.f / 120.f);
+    }
+    for (int l = 0; l < 3; ++l)
+        for (int p = 0; p < 16; ++p) {
+            CHECK(std::isfinite(a.layer(l).getParticleY(p)));
+            CHECK(std::abs(a.layer(l).getParticleY(p) - b.layer(l).getParticleY(p)) < 1e-5f);
+            CHECK(std::abs(a.layer(l).getParticleX(p) - b.layer(l).getParticleX(p)) < 1e-5f);
+            CHECK(std::abs(a.layer(l).getParticleZ(p) - b.layer(l).getParticleZ(p)) < 1e-5f);
+        }
+    a.reset();
+    CHECK(a.getContactCount() == 0);
+    CHECK(std::abs(a.layer(2).getParticleY(8) - 2.16f) < 1e-5f);
+    CHECK(a.layer(0).isPinned(0));
+}
+
+TEST_CASE("PhysicsLayeredCloth.interiorFaceContactAndFriction") {
+    const std::array<int, 3>   indices = {0, 1, 2};
+    const std::array<float, 9> floor   = {-3, 0, -3, 3, 0, -3, 0, 0, 3};
+    const std::array<float, 9> patch   = {-0.2f, 0.02f, -0.2f, 0.2f, 0.02f, -0.2f, 0, 0.02f, 0.2f};
+    auto                       base    = ClothModel::fromTriangles(floor, indices);
+    auto                       top     = ClothModel::fromTriangles(patch, indices);
+    REQUIRE(base.hasValue());
+    REQUIRE(top.hasValue());
+    const std::array<ClothModel, 2> models = {base.value(), top.value()};
+    LayeredCloth3D                  smooth(models), rough(models);
+    configure(smooth);
+    configure(rough);
+    for (LayeredCloth3D* group : {&smooth, &rough}) {
+        for (int i = 0; i < 3; ++i) group->layer(0).pin(i);
+        group->layer(1).applyForce(100.f, 0, 0);
+    }
+    rough.layer(0).setCollisionMaterial(1, 0);
+    rough.layer(1).setCollisionMaterial(1, 0);
+    smooth.update(0.01f);
+    rough.update(0.01f);
+    CHECK(meanY(smooth, 1) > 0.079f);
+    CHECK(meanY(rough, 1) > 0.079f);
+    smooth.update(0.01f);
+    rough.update(0.01f);
+    CHECK(rough.layer(1).getParticleX(0) < smooth.layer(1).getParticleX(0) - 0.001f);
+}
+
+TEST_CASE("PhysicsLayeredCloth.coincidentAndFullyPinnedContactsStayFinite") {
+    auto           models = sheets(0.f);
+    LayeredCloth3D group(models);
+    configure(group);
+    group.update(0.01f);
+    CHECK(group.getContactCount() > 0);
+    for (int l = 0; l < 2; ++l)
+        for (int i = 0; i < 3; ++i) {
+            CHECK(std::isfinite(group.layer(l).getParticleY(i)));
+            group.layer(l).pin(i);
+        }
+    const float initial = meanY(group, 0);
+    group.update(0.01f);
+    CHECK(group.getContactCount() == 0);
+    CHECK(meanY(group, 0) == initial);
+}
+
+}  // namespace test_layered_cloth_reference
+
+namespace test_layered_cloth_geometry {
+
+using namespace cloth_test_geometry;
+TEST_CASE("PhysicsLayeredClothGPU.geometricDistanceOracleHandlesCrossingsAndDegeneracy") {
+    const Triangle flat     = {glm::dvec3(-1, 0, -1), glm::dvec3(1, 0, -1), glm::dvec3(0, 0, 1)};
+    Triangle       parallel = flat;
+    for (auto& point : parallel) point.y += 0.08;
+    REQUIRE(std::abs(faceDistance(flat, parallel) - 0.08) < 1e-12);
+    const Triangle crossing = {glm::dvec3(0, -1, 0), glm::dvec3(0, 1, 0), glm::dvec3(2, 0, 0)};
+    REQUIRE(faceDistance(flat, crossing) < 1e-12);
+    const Triangle collapsed = {glm::dvec3(0, 0.3, 0), glm::dvec3(0, 0.3, 0), glm::dvec3(0, 0.3, 0)};
+    REQUIRE(std::abs(faceDistance(flat, collapsed) - 0.3) < 1e-12);
+    const Triangle collinear = {glm::dvec3(-2, 0, 0), glm::dvec3(2, 0, 0), glm::dvec3(0, 0, 0)};
+    REQUIRE(faceDistance(flat, collinear) < 1e-12);
+}
+
+}  // namespace test_layered_cloth_geometry

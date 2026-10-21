@@ -124,7 +124,10 @@ vkb::GenericBuffer &meshDrawIndices(GpuMesh &mesh) {
 /** @brief Draws indexed mesh. */
 void drawIndexedMesh(vk::CommandBuffer cb, GpuMesh &mesh, uint32_t count = 1, uint32_t first = 0) {
     const vk::DeviceSize offset = 0;
-    cb.bindVertexBuffers(0, 1, meshDrawVertices(mesh), &offset);
+    if (mesh.residentVertexOverride) {
+        cb.bindVertexBuffers(0, 1, &mesh.residentVertexOverride, &mesh.residentVertexOffset);
+    } else
+        cb.bindVertexBuffers(0, 1, meshDrawVertices(mesh), &offset);
     cb.bindIndexBuffer(meshDrawIndices(mesh).buffer, 0, mesh.indexType);
     cb.drawIndexed(mesh.indexCount, count, 0, 0, first);
 }

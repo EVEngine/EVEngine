@@ -2574,6 +2574,16 @@ Mesh* Graphics::newMeshFromAssimp(const ::aiMesh& mesh, const aiMatrix4x4& world
             std::string name = am->mName.C_Str();
             if (name.empty()) name = "morph" + std::to_string(a);
             m->addMorphTargetAbsolute(name, absPos.data());
+            if (am->mNormals) {
+                std::vector<float> deltas(am->mNumVertices * 3u);
+                for (unsigned i = 0; i < am->mNumVertices; ++i) {
+                    deltas[i * 3]     = am->mNormals[i].x - nrm[i * 3];
+                    deltas[i * 3 + 1] = am->mNormals[i].y - nrm[i * 3 + 1];
+                    deltas[i * 3 + 2] = am->mNormals[i].z - nrm[i * 3 + 2];
+                }
+                auto normals = m->setMorphNormalDeltas(name, deltas);
+                if (!normals.ok()) throw Exception("Invalid imported morph normals: %s", name.c_str());
+            }
         }
     }
     return m;

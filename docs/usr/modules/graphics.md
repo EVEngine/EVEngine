@@ -287,6 +287,11 @@ r.clearPartSortPriority(0);         // 恢复使用 Material.getSortPriority()
 local effectiveOrder = r.getPartSortPriority(0);
 ```
 
+`mat.copyPbrSurfaceFrom(sourceMaterial)` 返回 Result，通过同一个原生 PbrSurface 校验入口复制
+导入材质的扩展 PBR 描述并启用相同渲染路径，适合让程序化服装和导入人物采用一致着色。
+不会复制 tint / roughness 等独立字段，也不共享可变材质状态；贴图仍由原 Graphics owner 拥有，
+需覆盖目标材质及绘制的生命周期。调用在渲染 / VM 所属线程同步执行，不保留 sourceMaterial 指针。
+
 遮罩材质使用 `setSurfaceMode("masked")`、`setAlphaCutoff()` 和
 `setAlphaTechnique("cutoff" | "dither" | "coverage")`。对应查询接口为
 `getSurfaceMode()`、`getBlendMode()`、`getDepthWrite()`、`getDoubleSided()`、
