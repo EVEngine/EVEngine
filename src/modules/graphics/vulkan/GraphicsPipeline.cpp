@@ -625,6 +625,7 @@ void Graphics::destroyShadowResources() {
         }
     }
     shadowMaps.clear();
+    allocatedShadowMapSize = 0;
     if (shadowSampler) {
         device->destroySampler(shadowSampler);
         shadowSampler = vkb::DepthSampler{};
@@ -1756,10 +1757,16 @@ void Graphics::materializeSceneColorResolve() {
 }
 
 void Graphics::createShadowResources() {
-    if (!shadowMaps.empty()) return;
+    const int wantSize = ShadowSchemeSettings::current().resolvedAtlasMapSize();
+    if (!shadowMaps.empty()) {
+        if (allocatedShadowMapSize == wantSize) return;
+        // Resolution changed: drop the old atlas + deferred graphs that import it.
+        destroyShadowResources();
+    }
 
-    const uint32_t size = uint32_t(ShadowConfig::kMapSize);
+    const uint32_t size = uint32_t(wantSize);
     const uint32_t layers = uint32_t(ShadowConfig::kTotalLayers);
+    allocatedShadowMapSize = wantSize;
 
     shadowMaps.resize(kAsyncResourceCopies);
     for (auto &slot : shadowMaps)

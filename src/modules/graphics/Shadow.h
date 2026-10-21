@@ -63,7 +63,9 @@ struct ShadowUpload {
  * @param fovYRad / aspect / nearZ / farZ  camera clip
  * Splits are camera-forward (view-space +Z) distances. Shaders must select cascades
  * with the same metric (max(-viewPos.z, 0)), not euclidean eye-to-point length.
- * Camera far is clamped to kMaxDistance so large scenes keep usable texel density.
+ * Camera far is clamped to `ShadowSchemeSettings::resolvedDirectionalMaxDistance()`
+ * and texel-world math uses `resolvedAtlasMapSize()` so runtime resolution changes
+ * keep bias / PCF / snap grids consistent with the allocated atlas.
  */
 EVENGINE_API_BACKENDS ShadowUpload buildDirectionalCSM(const glm::vec3 &lightDirTowardSurface, const glm::vec3 &eye,
                                                        const glm::vec3 &target, const glm::vec3 &up, float fovYRad,

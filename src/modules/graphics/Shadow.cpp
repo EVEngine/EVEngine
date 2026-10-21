@@ -1,6 +1,7 @@
 #include "graphics/Shadow.h"
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
 #include <glm/gtc/matrix_transform.hpp>
 #include "common/Diagnostic.h"
 #include "graphics/ClipSpace.h"
@@ -12,7 +13,8 @@ namespace eve::graphics {
 namespace {
 
 glm::mat4 cascadeVP(const glm::vec3& lightDir, const glm::vec3& eye, const glm::vec3& target, const glm::vec3& up,
-                    float fovYRad, float aspect, float nearZ, float farZ, float* texelWorldOut, float* zRangeOut) {
+                    float fovYRad, float aspect, float nearZ, float farZ, float mapSize, float* texelWorldOut,
+                    float* zRangeOut) {
     const glm::mat4 view = glm::lookAtRH(eye, target, up);
     // Match the camera projection used by RenderSystem3D so frustum corners align.
     const glm::mat4 proj = perspectiveVulkanRH_ZO(fovYRad, aspect, nearZ, farZ);
@@ -61,10 +63,10 @@ glm::mat4 cascadeVP(const glm::vec3& lightDir, const glm::vec3& eye, const glm::
     maxB.z += zPad + 2.f;
     if (zRangeOut) *zRangeOut = std::max(-minB.z - (-maxB.z), 1e-3f);
 
-    const float mapSize = float(ShadowConfig::kMapSize);
+    const float atlasSize = std::max(mapSize, 1.f);
     // World-space frustum sphere radius is pose-invariant for a given split, so
     // the texel grid does not rescale as the camera rotates.
-    const float texelWorld = (2.f * radius) / mapSize;
+    const float texelWorld = (2.f * radius) / atlasSize;
     if (texelWorldOut) *texelWorldOut = texelWorld;
 
     auto snap  = [&](float v) { return std::floor(v / texelWorld) * texelWorld; };
@@ -82,11 +84,14 @@ ShadowUpload buildDirectionalCSM(const glm::vec3& lightDirTowardSurface, const g
                                  const glm::vec3& up, float fovYRad, float aspect, float nearZ, float farZ, float bias,
                                  float strength) {
     ShadowUpload out{};
-    out.active        = true;
-    const float n     = std::max(nearZ, 1e-3f);
-    const float fCam  = std::max(farZ, n + 1e-2f);
-    const float f     = std::min(fCam, std::max(n + 1e-2f, ShadowConfig::kMaxDistance));
-    const float ratio = f / n;
+    out.active               = true;
+    const auto& scheme       = ShadowSchemeSettings::current();
+    const float mapSize      = float(scheme.resolvedAtlasMapSize());
+    const float maxDistance  = scheme.resolvedDirectionalMaxDistance();
+    const float n            = std::max(nearZ, 1e-3f);
+    const float fCam         = std::max(farZ, n + 1e-2f);
+    const float f            = std::min(fCam, std::max(n + 1e-2f, maxDistance));
+    const float ratio        = f / n;
     float       splits[ShadowConfig::kCascades + 1];
     splits[0] = n;
     for (int i = 1; i <= ShadowConfig::kCascades; ++i) {
@@ -102,7 +107,7 @@ ShadowUpload buildDirectionalCSM(const glm::vec3& lightDirTowardSurface, const g
         float texelWorld   = 0.f;
         float zRange       = 1.f;
         out.ubo.lightVP[i] = cascadeVP(lightDirTowardSurface, eye, target, up, fovYRad, aspect, splits[i],
-                                       splits[i + 1], &texelWorld, &zRange);
+                                       splits[i + 1], mapSize, &texelWorld, &zRange);
         // ~0.6 texels of world bias. More than that, projected onto a grazing
         // Cornell wall, becomes a multi-pixel bright rim on the left/top of
         // the umbra (peter-panning at the box/wall crease).
@@ -197,6 +202,70 @@ int findCachedSlot(Light3D::Data* light) {
 }  // namespace
 
 ShadowSchemeSettings& ShadowSchemeSettings::current() { return g_shadowSchemeSettings; }
+
+int clampShadowMapSize(int size) {
+    static constexpr int kAllowed[] = {256, 512, 1024, 2048, 4096};
+    if (size <= kAllowed[0]) return kAllowed[0];
+    int best = kAllowed[0];
+    int bestDist = std::abs(size - best);
+    for (int candidate : kAllowed) {
+        const int dist = std::abs(size - candidate);
+        if (dist < bestDist) {
+            best     = candidate;
+            bestDist = dist;
+        }
+    }
+    return best;
+}
+
+int shadowMapSizeForResolutionTier(int resolutionTier) {
+    switch (resolutionTier) {
+        case 0: return 512;
+        case 1: return 1024;
+        case 2: return 2048;
+        default: return 4096;
+    }
+}
+
+int ShadowSchemeSettings::resolvedAtlasMapSize() const {
+    const int directional = clampShadowMapSize(directionalMapSize);
+    const int local       = clampShadowMapSize(localMapSize);
+    return std::max(directional, local);
+}
+
+float ShadowSchemeSettings::resolvedDirectionalMaxDistance() const {
+    if (!std::isfinite(directionalMaxDistance) || directionalMaxDistance <= 0.f)
+        return ShadowConfig::kMaxDistance;
+    return directionalMaxDistance;
+}
+
+Result<void> setShadowSchemeMapSizes(int directionalMapSize, int localMapSize) {
+    if (directionalMapSize <= 0) {
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "directional shadow map size must be positive",
+                                                       "graphics.shadow"));
+    }
+    auto& settings             = ShadowSchemeSettings::current();
+    settings.directionalMapSize = clampShadowMapSize(directionalMapSize);
+    if (localMapSize > 0) {
+        settings.localMapSize = clampShadowMapSize(localMapSize);
+    } else if (localMapSize == 0) {
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "local shadow map size must be positive when set",
+                                                       "graphics.shadow"));
+    }
+    return Result<void>::success();
+}
+
+Result<void> setShadowSchemeDirectionalMaxDistance(float meters) {
+    if (!std::isfinite(meters) || meters <= 0.f) {
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "directional shadow max distance must be finite and > 0",
+                                                       "graphics.shadow"));
+    }
+    ShadowSchemeSettings::current().directionalMaxDistance = meters;
+    return Result<void>::success();
+}
 
 void resetShadowLocalPageCache() {
     for (auto& slot : g_localPageCache.slots) slot = LocalPageCacheEntry{};

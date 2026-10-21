@@ -1350,6 +1350,7 @@ TEST_CASE("graphics.pcgWaterPhotoMode.authorityLeaseRevokesOnDestruction") {
 #include "graphics/AntiAliasing.h"
 #include "graphics/Graphics.h"
 #include "graphics/PcgGraphicsPhotoMode.h"
+#include "graphics/ShadowScheme.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/Volumetric.h"
@@ -1690,6 +1691,10 @@ TEST_CASE("ui.pcgPhotoModeApply.terrainAuthorityDrivesLodBasemapAndDetailPolicy"
 }
 TEST_CASE("ui.pcgPhotoModeApply.graphicsAuthorityProjectsFiveLiveQualityFields") {
     cap::detail::clearAllRaw();
+    auto& scheme                = graphics::ShadowSchemeSettings::current();
+    const int   prevMap         = scheme.directionalMapSize;
+    const int   prevLocal       = scheme.localMapSize;
+    const float prevMaxDistance = scheme.directionalMaxDistance;
     auto*                                   graphics = graphics::parity_test::headlessGraphics();
     auto*                                   camera   = graphics::Camera3D::createCamera();
     auto*                                   control  = graphics->getRenderControl();
@@ -1713,9 +1718,19 @@ TEST_CASE("ui.pcgPhotoModeApply.graphicsAuthorityProjectsFiveLiveQualityFields")
     CHECK_EQ(graphics->pipelineAntiAliasing()->getMode(), std::string("smaa"));
     CHECK_EQ(authority.state().shadowResolution, 1);
     CHECK_EQ(authority.state().shadowCascades, 2);
+    CHECK_EQ(scheme.directionalMapSize, 1024);
+    CHECK_EQ(scheme.resolvedAtlasMapSize(), 1024);
+    CHECK_EQ(scheme.directionalMaxDistance, 220.f);
+    scheme.directionalMapSize     = prevMap;
+    scheme.localMapSize           = prevLocal;
+    scheme.directionalMaxDistance = prevMaxDistance;
 }
 TEST_CASE("ui.pcgPhotoModeApply.lightingShadowMultiplierUsesGraphicsShadowAuthority") {
     cap::detail::clearAllRaw();
+    auto& scheme                = graphics::ShadowSchemeSettings::current();
+    const int   prevMap         = scheme.directionalMapSize;
+    const int   prevLocal       = scheme.localMapSize;
+    const float prevMaxDistance = scheme.directionalMaxDistance;
     auto*                                   graphics = graphics::parity_test::headlessGraphics();
     auto*                                   camera   = graphics::Camera3D::createCamera();
     graphics::PcgGraphicsPhotoModeAuthority authority;
@@ -1731,9 +1746,14 @@ TEST_CASE("ui.pcgPhotoModeApply.lightingShadowMultiplierUsesGraphicsShadowAuthor
     CHECK_EQ(camera->getShadowLayerCullDistance(0), 500.f);
     CHECK_EQ(camera->getShadowLayerCullDistance(31), 500.f);
     CHECK_EQ(authority.state().globalShadowDistanceMultiplier, 2.5f);
+    // CSM coverage follows PhotoMode distance but stays capped for texel density.
+    CHECK_EQ(scheme.directionalMaxDistance, 256.f);
     PhotoModeAssignment invalid{"m_globalShadowDistanceMultiplier", PhotoModeDomain::Lighting, 5.1f};
     CHECK(!authority.applyPhotoModeField(invalid).ok());
     CHECK_EQ(camera->getShadowLayerCullDistance(7), 500.f);
+    scheme.directionalMapSize     = prevMap;
+    scheme.localMapSize           = prevLocal;
+    scheme.directionalMaxDistance = prevMaxDistance;
 }
 TEST_CASE("ui.pcgPhotoModeApply.framePacingAuthorityAppliesVSyncAndRealFrameCap") {
     cap::detail::clearAllRaw();

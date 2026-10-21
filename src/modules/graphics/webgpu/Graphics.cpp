@@ -3552,6 +3552,7 @@ void Graphics::setMesh3DSkinInfluenceLimit(SkinInfluenceLimit count) {
 }
 
 void Graphics::beginShadowPass(int cascadeIndex) {
+    createShadowResources();
     shadowPassCascade = cascadeIndex;
     shadowPassDraws.clear();
 }
@@ -3836,10 +3837,14 @@ void Graphics::setMsaaSamples(int samples) {
 
 void Graphics::createShadowResources() {
     if (!device) return;
-    if (shadowDepthArray) return;
-    shadowMapSize = ShadowConfig::kMapSize;
+    const int wantSize = ShadowSchemeSettings::current().resolvedAtlasMapSize();
+    if (shadowDepthArray) {
+        if (shadowMapSize == wantSize) return;
+        destroyShadowResources();
+    }
+    shadowMapSize = wantSize;
 
-    // Depth array: 3 cascade layers, renderable + sampleable.
+    // Depth array: CSM + local layers, renderable + sampleable.
     auto*                 gpu = new GpuTexture();
     WGPUTextureDescriptor td{};
     td.label         = sv("eve_shadow_depth");
@@ -3876,7 +3881,10 @@ void Graphics::createShadowResources() {
     shadowDepthArray = gpu;
 }
 
-void Graphics::destroyShadowResources() { shadowDepthArray = nullptr; }
+void Graphics::destroyShadowResources() {
+    shadowDepthArray = nullptr;
+    shadowMapSize    = 0;
+}
 
 void Graphics::createGbufferResources(int width, int height) {
     if (!device) return;

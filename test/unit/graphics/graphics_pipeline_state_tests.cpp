@@ -1175,6 +1175,7 @@ TEST_CASE("RenderSystem3D.shadowExtraDrawerOwnerTokens") {
 #include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Shader.h"
 #include "graphics/Shadow.h"
+#include "graphics/ShadowScheme.h"
 #include "graphics/Texture.h"
 #include "graphics/Volumetric.h"
 #include "graphics/Water.h"
@@ -1331,6 +1332,14 @@ namespace {
 
 
 TEST_CASE("Shadow.directionalCSM.clampsFarAndSplitsAreViewZ") {
+    auto& scheme                     = ShadowSchemeSettings::current();
+    const int   prevMap              = scheme.directionalMapSize;
+    const int   prevLocal            = scheme.localMapSize;
+    const float prevMaxDistance      = scheme.directionalMaxDistance;
+    scheme.directionalMapSize        = ShadowConfig::kMapSize;
+    scheme.localMapSize              = 1024;
+    scheme.directionalMaxDistance    = ShadowConfig::kMaxDistance;
+
     const glm::vec3 dir(0.3f, 1.f, 0.2f);
     const glm::vec3 eye(0.f, 2.f, 8.f);
     const glm::vec3 target(0.f, 1.f, 0.f);
@@ -1344,6 +1353,59 @@ TEST_CASE("Shadow.directionalCSM.clampsFarAndSplitsAreViewZ") {
     CHECK(u.ubo.splits.z <= ShadowConfig::kMaxDistance + 1e-3f);
     CHECK(u.ubo.splits.z < 100.f);
     CHECK(u.ubo.bias.x >= 0.002f);
+
+    scheme.directionalMapSize     = prevMap;
+    scheme.localMapSize           = prevLocal;
+    scheme.directionalMaxDistance = prevMaxDistance;
+}
+
+TEST_CASE("Shadow.scheme.dynamicMapSizeAndMaxDistance") {
+    auto& scheme                = ShadowSchemeSettings::current();
+    const int   prevMap         = scheme.directionalMapSize;
+    const int   prevLocal       = scheme.localMapSize;
+    const float prevMaxDistance = scheme.directionalMaxDistance;
+
+    CHECK_EQ(clampShadowMapSize(100), 256);
+    CHECK_EQ(clampShadowMapSize(900), 1024);
+    CHECK_EQ(clampShadowMapSize(3000), 2048);
+    CHECK_EQ(clampShadowMapSize(8000), 4096);
+    CHECK_EQ(shadowMapSizeForResolutionTier(0), 512);
+    CHECK_EQ(shadowMapSizeForResolutionTier(3), 4096);
+
+    REQUIRE(setShadowSchemeMapSizes(4096, 512).ok());
+    CHECK_EQ(scheme.directionalMapSize, 4096);
+    CHECK_EQ(scheme.localMapSize, 512);
+    CHECK_EQ(scheme.resolvedAtlasMapSize(), 4096);
+    REQUIRE(setShadowSchemeDirectionalMaxDistance(128.f).ok());
+    CHECK_EQ(scheme.resolvedDirectionalMaxDistance(), 128.f);
+    CHECK(!setShadowSchemeMapSizes(0, -1).ok());
+    CHECK(!setShadowSchemeDirectionalMaxDistance(0.f).ok());
+
+    const glm::vec3 dir(0.2f, 1.f, 0.1f);
+    const glm::vec3 eye(0.f, 2.f, 8.f);
+    const glm::vec3 target(0.f, 1.f, 0.f);
+    const glm::vec3 up(0.f, 1.f, 0.f);
+
+    scheme.directionalMapSize     = 1024;
+    scheme.localMapSize           = 1024;
+    scheme.directionalMaxDistance = 64.f;
+    ShadowUpload low = buildDirectionalCSM(dir, eye, target, up, 1.047f, 16.f / 9.f, 0.1f, 500.f, 0.002f, 1.f);
+
+    scheme.directionalMapSize = 4096;
+    ShadowUpload high = buildDirectionalCSM(dir, eye, target, up, 1.047f, 16.f / 9.f, 0.1f, 500.f, 0.002f, 1.f);
+    // Higher atlas resolution → denser world texels (smaller cascadeTexel).
+    CHECK(high.ubo.cascadeTexel.x < low.ubo.cascadeTexel.x);
+    CHECK(high.ubo.cascadeTexel.x * 4.f < low.ubo.cascadeTexel.x * 1.1f);
+
+    scheme.directionalMapSize     = 2048;
+    scheme.directionalMaxDistance = 128.f;
+    ShadowUpload far = buildDirectionalCSM(dir, eye, target, up, 1.047f, 16.f / 9.f, 0.1f, 500.f, 0.002f, 1.f);
+    CHECK(far.ubo.splits.z > 64.f);
+    CHECK(far.ubo.splits.z <= 128.f + 1e-3f);
+
+    scheme.directionalMapSize     = prevMap;
+    scheme.localMapSize           = prevLocal;
+    scheme.directionalMaxDistance = prevMaxDistance;
 }
 }  // namespace test_Shadow3D_unit
 #endif

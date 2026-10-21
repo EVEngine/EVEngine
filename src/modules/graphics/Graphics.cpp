@@ -1483,6 +1483,28 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("setShadowSchemeHysteresisBonus", [](Graphics*, float bonus) {
         ShadowSchemeSettings::current().hysteresisBonus = bonus;
     });
+    // Dynamic shadow atlas resolution + CSM coverage. GPU recreates on next
+    // shadow ensure when atlas size changes (@cost: full depth-array realloc).
+    cls.addFunc("setShadowSchemeDirectionalMapSize", [](Graphics*, int size) {
+        if (size > 0) (void)setShadowSchemeMapSizes(size, -1);
+    });
+    cls.addFunc("getShadowSchemeDirectionalMapSize",
+                [](Graphics*) { return ShadowSchemeSettings::current().directionalMapSize; });
+    cls.addFunc("setShadowSchemeLocalMapSize", [](Graphics*, int size) {
+        if (size > 0) {
+            auto& s        = ShadowSchemeSettings::current();
+            s.localMapSize = clampShadowMapSize(size);
+        }
+    });
+    cls.addFunc("getShadowSchemeLocalMapSize",
+                [](Graphics*) { return ShadowSchemeSettings::current().localMapSize; });
+    cls.addFunc("getShadowSchemeAtlasMapSize",
+                [](Graphics*) { return ShadowSchemeSettings::current().resolvedAtlasMapSize(); });
+    cls.addFunc("setShadowSchemeDirectionalMaxDistance", [](Graphics*, float meters) {
+        (void)setShadowSchemeDirectionalMaxDistance(meters);
+    });
+    cls.addFunc("getShadowSchemeDirectionalMaxDistance",
+                [](Graphics*) { return ShadowSchemeSettings::current().directionalMaxDistance; });
     cls.addFunc("setCloudShadows", &Graphics::setCloudShadows);
     cls.addFunc("newMaterial", &Graphics::newMaterial);
     cls.addFunc("getRenderControl", &Graphics::getRenderControl);

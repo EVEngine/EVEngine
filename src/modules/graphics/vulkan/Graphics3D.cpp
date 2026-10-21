@@ -288,11 +288,13 @@ void Graphics::begin3DFrameToCanvas(Canvas *canvas) {
             vk::RenderPassBeginInfo shadowBegin{};
             shadowBegin.renderPass      = shadowRenderPass;
             shadowBegin.framebuffer     = slot.framebuffers[cascade];
-            shadowBegin.renderArea      = vk::Rect2D{{0, 0}, {ShadowConfig::kMapSize, ShadowConfig::kMapSize}};
+            const uint32_t mapSize =
+                uint32_t(allocatedShadowMapSize > 0 ? allocatedShadowMapSize : ShadowConfig::kMapSize);
+            shadowBegin.renderArea      = vk::Rect2D{{0, 0}, {mapSize, mapSize}};
             shadowBegin.clearValueCount = 1;
             shadowBegin.pClearValues    = &clear;
             offscreen3DCB.beginRenderPass(shadowBegin, vk::SubpassContents::eInline);
-            recordShadowCascadeDraws(offscreen3DCB, cascade, ShadowConfig::kMapSize);
+            recordShadowCascadeDraws(offscreen3DCB, cascade, mapSize);
             offscreen3DCB.endRenderPass();
             shadowCascadeDraws[cascade].clear();
         }
@@ -741,7 +743,8 @@ void Graphics::setMesh3DSkinInfluenceLimit(SkinInfluenceLimit count) {
 
 void Graphics::beginShadowPass(int cascadeIndex) {
     ASSERT(initialized);
-    if (!shadowPipeline) createShadowResources();
+    // Recreate when scheme map size changes (dynamic shadow resolution).
+    createShadowResources();
     if (cascadeIndex < 0 || cascadeIndex >= ShadowConfig::kTotalLayers) {
         throw Exception("beginShadowPass: cascadeIndex out of range");
     }
