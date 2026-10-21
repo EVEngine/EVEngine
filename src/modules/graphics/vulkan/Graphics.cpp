@@ -228,11 +228,16 @@ vkb::Instance consumeWarmedInstance() {
     {
         auto&                       w = instanceWarmup();
         std::lock_guard<std::mutex> lock(w.mu);
-        if (w.consumed) {
-            throw Exception("Vulkan instance warmup already consumed");
+        if (!w.consumed) {
+            w.consumed = true;
+            fut        = std::move(w.future);
         }
-        w.consumed = true;
-        fut        = std::move(w.future);
+    }
+    // Boot warmup transfers one instance only. A later Graphics owner creates
+    // its own instance after the previous owner has retired; never reuse its handle.
+    if (!fut.valid()) {
+        StartupStage stage("  vulkan: instance (new owner)");
+        return createInstanceFast();
     }
     StartupStage waitStage("  vulkan: wait instance warmup");
     return fut.get();

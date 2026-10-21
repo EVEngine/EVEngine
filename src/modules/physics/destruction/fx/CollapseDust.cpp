@@ -10,6 +10,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <limits>
+#include <sstream>
 #include "fluids/VolumeFluid.h"
 #include "graphics/AtmosphereVolume.h"
 #include "graphics/FogVolume.h"
@@ -17,6 +18,7 @@
 #include "graphics/RenderSystem3D.h"
 #include "graphics/Texture.h"
 #include "graphics/Volumetric.h"
+#include "physics/bake/BakedAssetFile.h"
 #include "physics/destruction/CollapseAnimation.h"
 #include "physics/destruction/FractureGeometry.h"
 namespace eve::physics {
@@ -99,14 +101,11 @@ Result<void> CollapseDust::present(fluids::VolumeFluid& target, float seconds) c
     return target.restore(state);
 }
 Result<void> CollapseDust::save(std::string_view path) const {
-    if (path.empty() || frames_.empty()) return bad("path and frames required");
-    std::error_code             ec;
-    const std::filesystem::path output{std::string(path)};
-    if (std::filesystem::exists(output, ec) || ec) return bad("dust output already exists or cannot be inspected");
-    std::ofstream out(output, std::ios::binary);
-    if (!out) return bad("cannot create dust output");
+    if (path.empty() || path.find('\0') != std::string_view::npos || frames_.empty())
+        return bad("nonempty path without NUL and frames required");
+    std::ostringstream out(std::ios::binary);
     out.write("EVEDUST1", 8);
-    put(out, 1);
+    put(out, 2);
     put(out, static_cast<std::uint32_t>(frames_.size()));
     for (const auto& f : frames_) {
         real(out, f.seconds);
@@ -115,20 +114,51 @@ Result<void> CollapseDust::save(std::string_view path) const {
         for (const auto& p : f.particles)
             for (float v : p) real(out, v);
     }
-    out.close();
-    if (out) return Result<void>::success();
-    std::filesystem::remove(output, ec);
-    return bad("dust write failed");
+    if (!out) return bad("dust serialization failed");
+    auto bytes = out.str();
+    bytes += CollapseAnimation::contentKey(bytes);
+    return publishBakedAsset(path, bytes);
 }
 Result<void> CollapseDust::load(std::string_view path) {
     if (future_.valid()) return bad("collect fog worker before load");
-    std::ifstream in(std::string(path), std::ios::binary);
-    if (!in) return bad("dust asset not found");
+    if (path.empty() || path.find('\0') != std::string_view::npos)
+        return bad("dust asset path is empty or contains NUL");
+    std::ifstream file(std::string(path), std::ios::binary | std::ios::ate);
+    if (!file) {
+        std::error_code error;
+        const auto      status = std::filesystem::status(std::filesystem::path(path), error);
+        const bool      missing =
+            error == std::errc::no_such_file_or_directory || (!error && !std::filesystem::exists(status));
+        return Result<void>::failure(Diagnostic::error(missing ? DiagnosticCode::NotFound : DiagnosticCode::Failed,
+                                                       missing ? "dust asset not found" : "dust asset cannot be opened",
+                                                       "collapseDust"));
+    }
+    constexpr std::streamoff maxBytes = 16 + 12 * MaxFrames + 28 * MaxSamples + 32;
+    const auto               size     = file.tellg();
+    if (size < 16 || size > maxBytes) return bad("dust file size outside budget");
+    std::string bytes(static_cast<std::size_t>(size), '\0');
+    file.seekg(0);
+    file.read(bytes.data(), static_cast<std::streamsize>(bytes.size()));
+    if (!file) return bad("dust file read failed");
+    if (std::string_view(bytes).substr(0, 8) != "EVEDUST1") return bad("unsupported dust schema");
+    std::uint32_t version = 0;
+    for (unsigned i = 0; i < 4; ++i)
+        version |= static_cast<std::uint32_t>(static_cast<unsigned char>(bytes[8 + i])) << (8 * i);
+    if (version != 1 && version != 2) return bad("unsupported dust version");
+    if (version == 2) {
+        if (bytes.size() < 48) return bad("truncated dust checksum");
+        const auto payload = std::string_view(bytes).substr(0, bytes.size() - 32);
+        if (CollapseAnimation::contentKey(payload) != std::string_view(bytes).substr(bytes.size() - 32))
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::HashMismatch, "dust asset checksum mismatch", "collapseDust"));
+        bytes.resize(bytes.size() - 32);
+    }
+    std::istringstream in(std::move(bytes), std::ios::binary);
     std::vector<Frame> candidate;
     try {
         char magic[8];
         in.read(magic, 8);
-        if (!in || std::string_view(magic, 8) != "EVEDUST1" || get(in) != 1)
+        if (!in || std::string_view(magic, 8) != "EVEDUST1" || get(in) != version)
             return bad("unsupported dust schema/version");
         const auto count = get(in);
         if (!count || count > MaxFrames) return bad("dust frame budget exceeded");

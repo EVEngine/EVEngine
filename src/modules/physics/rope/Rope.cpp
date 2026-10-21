@@ -2,6 +2,7 @@
 
 #include "common/Exception.h"
 #include "common/Json.h"
+#include "common/SquirrelOwnership.h"
 #include "physics/rope/Rope3D.h"
 #include "schema/SchemaRegistry.h"
 
@@ -270,8 +271,19 @@ void Rope::expose(ssq::Table& table) {
 
 void Rope::expose(ssq::Class& cls) {
     cls.addFunc("getName", &Rope::getName);
-    cls.addFunc("newRope3D", &Rope::newRope3D);
-    cls.addFunc("newRope3DFromJson", &Rope::newRope3DFromJsonScript);
+    cls.addFunc("newRope3D", [vm = cls.getHandle()](Rope* self, int count, float sx, float sy, float sz, float ex,
+                                                    float ey, float ez) {
+        auto owned = script::makeOwnedSquirrelInstance(
+            vm, std::unique_ptr<Rope3D>(self->newRope3D(count, sx, sy, sz, ex, ey, ez)));
+        if (!owned) throw Exception("Rope.newRope3D: failed to publish owned script instance");
+        return std::move(owned).takeValue();
+    });
+    cls.addFunc("newRope3DFromJson", [vm = cls.getHandle()](Rope* self, const std::string& json) {
+        auto owned =
+            script::makeOwnedSquirrelInstance(vm, std::unique_ptr<Rope3D>(self->newRope3DFromJsonScript(json)));
+        if (!owned) throw Exception("Rope.newRope3DFromJson: failed to publish owned script instance");
+        return std::move(owned).takeValue();
+    });
 }
 
 }  // namespace eve::physics

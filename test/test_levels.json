@@ -2,6 +2,47 @@
   "schema": "evengine.test-levels",
   "version": 1,
   "sources": {
+    "integration/physics-bake/collapse_collision_reference.cpp": {
+      "role": "tests", "default": "module-composition",
+      "cases": {"module-composition": ["physics.bake.collapseCollisionReplayMatchesLiveReference"]}, "module": "physics_destruction", "task": "physics-bake"
+    },
+    "unit/physics_bake_collapse/physics_bake_collapse_values.cpp": {
+      "role": "tests", "default": "local-logic",
+      "cases": {"local-logic": ["physics.bake.collapseCaptureInterfaceRejectsWholeFrames", "physics.bake.collapseCaptureInterfaceOutlivesSource", "physics.bake.collapseRotationCrossesWrapWithoutStateAnticipation", "physics.bake.collapseFastRotationRequiresSufficientCadence"]},
+      "module": "physics_bake_collapse", "task": "physics-bake"
+    },
+    "integration/physics-bake/script_particle_presentation.cpp": {
+      "role": "tests", "default": "render-window",
+      "cases": {"render-window": ["physics.bake.scriptParticlePresentationBatchesMaterialsAndRejectsPartialDraw"]},
+      "module": "physics_bake_graphics_script", "task": "physics-bake"
+    },
+    "integration/physics-bake/script_deform_presentation.cpp": {
+      "role": "tests", "default": "render-window",
+      "cases": {"render-window": ["physics.bake.scriptDeformPresentationRendersAfterSourceAndPresenterRelease"]},
+      "module": "physics_bake_graphics_script", "task": "physics-bake"
+    },
+    "integration/physics-bake/script_presentation.cpp": {
+      "role": "tests", "default": "script-binding",
+      "cases": {"script-binding": ["physics.bake.scriptRigidPresentationBorrowsTargetsAndPreservesFailures"]},
+      "module": "physics_bake_graphics_script", "task": "physics-bake"
+    },
+    "integration/physics-bake/particle_script_recording.cpp": {
+      "role": "tests", "default": "script-binding",
+      "cases": {"script-binding": ["physics.bake.scriptParticleJournalsPublishRetryableMultiEmitterArchive", "physics.bake.scriptParticleAssetOutlivesProducerVmAndEcsSources"]},
+      "module": "physics_bake_particle_script", "task": "physics-bake"
+    },
+    "integration/physics-bake/script_recording.cpp": {
+      "role": "tests", "default": "script-binding",
+      "cases": {"script-binding": ["physics.bake.scriptRecordsLiveClothAndRopeThenReplaysWithoutSources", "physics.bake.scriptRigidRecordingUsesGenerationalBindings"]},
+      "module": "physics_bake_recording_script", "task": "physics-bake"
+    },
+    "integration/physics-bake/script_playback.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {"script-binding": ["physics.bake.scriptRigidPlaybackOwnsLoadedTrackAndCoexistsWithLegacyRecipe", "physics.bake.scriptDeformSamplesOwnTopologyAndPositions", "physics.bake.scriptParticleSnapshotsPreserveBirthBoundariesAndIdentity"]},
+      "module": "physics_bake_script",
+      "task": "physics-bake"
+    },
     "integration/crowd-runtime/crowd_advance.cpp": {
       "role": "tests",
       "default": "module-composition",
@@ -5949,6 +5990,126 @@
       "cases": {},
       "module": "common"
     },
+    "integration/physics-bake/track_storage.cpp": {
+      "role": "tests",
+      "default": "platform-file",
+      "cases": {"platform-file": ["physics.bake.rigidAssetRoundTripAndPublication", "physics.bake.rigidAssetRejectsCorruptionAndMalformedPayload", "physics.bake.deformAssetRoundTripAndCheckedRestore", "physics.bake.particleAssetRoundTripAndMalformedEvents"]},
+      "module": "physics_bake",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/rigid_presentation.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {"module-composition": ["physics.bake.rigidPresentationUsesRenderMatrixWithoutWorld", "physics.bake.planarPresentationPreservesPixelsAndScale"]},
+      "module": "physics_bake_graphics",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/particle_presentation.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {"render-window": ["physics.bake.particleSpritesRenderIndependentBirthIntervals"]},
+      "module": "physics_bake_graphics",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/graphics_owner_retirement.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {"render-window": ["physics.bake.deformPresentationSurvivesGraphicsOwnerReplacement"]},
+      "module": "physics_bake_graphics",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/deform_presentation.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {"render-window": ["physics.bake.deformMeshesRenderAndUpdateWithoutSimulation"]},
+      "module": "physics_bake_graphics",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/particle_reference.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {"module-composition": ["physics.bake.particleReplayMatchesLiveAppearanceAndLifetime"]},
+      "module": "physics_bake_particle_capture",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/particle_capture.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {"module-composition": ["physics.bake.particleEventsBecomeIndependentTrajectories"]},
+      "module": "physics_bake_particle_capture",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/particle_identity.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {"module-composition": ["physics.bake.particleBirthIdentitySurvivesCompactionAndRestart", "physics.bake.particleAppearanceMatchesLiveSpriteModes", "physics.bake.particleJournalRejectsIncompleteRecording", "physics.bake.particleSimulationRecordsActualDeathsAndReset", "physics.bake.particleRecordingCapturesCollisionAndRejectsPolicyDrift", "physics.bake.subEmitterEventsKeepSourceBoundaryAcrossUpdateOrder"]},
+      "module": "particles",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/resampling_error.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {"physics-backend": ["physics.bake.deformResamplingErrorAgainstLiveReference", "physics.bake.rigidResamplingErrorAgainstLiveReference"]},
+      "module": "physics_bake",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/deform_capture.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {"physics-backend": ["physics.bake.ropeCaptureRejectsCutTopologyAfterSourceDestruction", "physics.bake.clothCaptureKeepsActualSurvivingTriangles"]},
+      "module": "physics_bake_deform_capture",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/rigid_capture.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {"physics-backend": ["physics.bake.capture2DPreservesPixelsAfterWorldDestruction", "physics.bake.capture3DPreservesMetresAfterWorldDestruction"]},
+      "module": "physics_bake_capture",
+      "task": "physics-bake"
+    },
+    "unit/physics_bake/physics_bake_values.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {"local-logic": ["physics.bake.rigidTracksKeepStableIdentities", "physics.bake.rigidTracksRejectInvalidRecordings", "physics.bake.deformTopologyOwnsConnectivityIdentity", "physics.bake.deformTrackRejectsTopologyDriftAndSamplesWithoutSource", "physics.bake.deformPlayersShareClipButKeepAtomicIndependentOutput", "physics.bake.particleTracksRespectBirthDeathAndIdentity", "physics.bake.deformRecordingRejectsPartialFramesAndFreezesIndependentClips", "physics.bake.rigidRecordingPreservesRosterAndRejectsPartialFrames"]},
+      "module": "physics_bake"
+    },
+    "profile/physics_bake/durability.cpp": {
+      "role": "probe",
+      "default": "platform-file",
+      "cases": {},
+      "module": "physics_destruction",
+      "task": "house-collapse"
+    },
+    "profile/physics_bake/script_manifest.cpp": {
+      "role": "probe",
+      "default": "module-composition",
+      "cases": {},
+      "module": "physics_bake_script",
+      "task": "physics-bake"
+    },
+    "profile/physics_bake/manifest.cpp": {
+      "role": "probe", "default": "module-composition", "cases": {},
+      "module": "physics_bake", "task": "physics-bake"
+    },
+    "profile/physics_bake/allocation.cpp": {
+      "role": "probe", "default": "module-composition", "cases": {},
+      "module": "physics_bake_collapse", "task": "physics-bake"
+    },
+    "profile/physics_bake/collapse_error.cpp": {
+      "role": "probe", "default": "module-composition", "cases": {},
+      "module": "physics_bake_collapse", "task": "physics-bake"
+    },
+    "profile/physics_bake/measure.cpp": {
+      "role": "probe", "default": "module-composition", "cases": {},
+      "module": "physics_bake", "task": "physics-bake"
+    },
+    "profile/physics_bake/inspect.cpp": {
+      "role": "probe",
+      "default": "module-composition",
+      "cases": {},
+      "module": "physics_destruction",
+      "task": "house-collapse"
+    },
     "profile/physics_mechanics/NoPlatformEvent.cpp": {
       "role": "helper",
       "default": "module-composition",
@@ -11869,7 +12030,8 @@
         "module-composition": [
           "physics_collapse_animation.savedPlaybackOutlivesWorld",
           "physics_collapse_animation.emptyAndStaleRecording",
-          "physics_collapse_animation.contentKeyIncludesEveryByte"
+          "physics_collapse_animation.contentKeyIncludesEveryByte",
+          "physics_collapse_animation.scriptPlayerOwnsFrozenClip"
         ]
       }
     },
@@ -11940,6 +12102,26 @@
         ]
       },
       "module": "procgen"
+    },
+    "integration/house-collapse/physics_bake_storage.cpp": {
+      "role": "tests",
+      "default": "platform-file",
+      "module": "physics_destruction",
+      "task": "house-collapse",
+      "cases": {
+        "platform-file": [
+          "physics.bake.legacyMigrationAndSolverFreeSampling",
+          "physics.bake.checksumRejectsValidNumericCorruption",
+          "physics.bake.embeddedGeometrySurvivesUpgrade",
+          "physics.bake.failedPublicationPreservesExistingBytes",
+          "physics.bake.independentPlaybackClocks",
+          "physics.bake.placedSamplesAndZeroDuration",
+          "physics.bake.recipeIdentityAndAdmission"
+        ],
+        "concurrency": [
+          "physics.bake.concurrentPublicationHasOneWinner"
+        ]
+      }
     }
   }
 }

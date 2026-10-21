@@ -5,6 +5,8 @@
 #include "common/SquirrelOwnership.h"
 #include "graphics/Graphics.h"
 #include "physics/destruction/CollapseAnimation.h"
+#include "physics/destruction/CollapsePlayback.h"
+#include "physics/destruction/CollapseScriptValue.h"
 #include "physics/destruction/GeometryCollectionInstance.h"
 #include "physics/destruction/graphics/GeometryCollectionRenderer.h"
 
@@ -73,6 +75,19 @@ void DestructionFx::expose(ssq::Table& table) {
     });
     renderer.addFunc("setSleepColor", &GeometryCollectionRenderer::setSleepColor);
     renderer.addFunc("draw", drawScript);
+    renderer.addFunc("preparePlayback",
+                     [vm = table.getHandle()](GeometryCollectionRenderer* self, const ssq::Object& argument,
+                                              graphics::Graphics* graphics) {
+                         auto player = collapse_detail::scriptValue<CollapsePlayback>(argument);
+                         if (!player) return script::projectResult(vm, Result<void>::failure(player.status()));
+                         return script::projectResult(vm, self->preparePlayback(player.value().get(), graphics));
+                     });
+    renderer.addFunc("submitPlayback",
+                     [vm = table.getHandle()](GeometryCollectionRenderer* self, const ssq::Object& argument) {
+                         auto player = collapse_detail::scriptValue<CollapsePlayback>(argument);
+                         if (!player) return script::projectResult(vm, Result<void>::failure(player.status()));
+                         return script::projectResult(vm, self->submitPlayback(player.value().get()));
+                     });
     renderer.addFunc("prepareAnimation", [vm = table.getHandle()](GeometryCollectionRenderer* self,
                                                                   CollapseAnimation*          animation,
                                                                   graphics::Graphics*         graphics) {
