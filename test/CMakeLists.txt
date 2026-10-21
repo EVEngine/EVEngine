@@ -101,7 +101,7 @@ endif()
 # binary. Backend parity coverage lives in graphics_backend_parity.cpp.
 if(BUILD_PLATFORM STREQUAL "webgpu")
   foreach(_eve_vulkan_test IN ITEMS gpu_driven.cpp render_graph.cpp avatar_vrm_vulkan.cpp ShaderResourceSharing.cpp
-                                    shader_reload_vulkan.cpp)
+                                    shader_reload_vulkan.cpp physics_layered_cloth_gpu.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_vulkan_test}$")
   endforeach()
 endif()

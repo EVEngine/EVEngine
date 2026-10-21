@@ -4028,6 +4028,7 @@
           "tensor.gpu.quantizedWeightsMatchEager",
           "tensor.onnx.gpu.residentChain",
           "gpgpu.sequence.stagingSizeReuse",
+          "gpgpu.sequence.largeRebindingBatchesPreserveSnapshots",
           "gpgpu.sequence.cancelRecordingRetiresDescriptors",
           "tensor.onnx.gpu.sessionShapesAndLifetime",
           "tensor.onnx.gpu.parallelCompilation",
@@ -8586,12 +8587,22 @@
           "PhysicsCloth.closedModelPreservesAndInflatesVolume",
           "PhysicsCloth.skinBackstopAndAnimatedReferenceConstrainParticles",
           "PhysicsCloth.attachmentTracksTargetAndDetachesWithVelocity",
-          "PhysicsCloth.runtimeTearingChangesAuthoritativeConstraintAndSurfaceTopology"
+          "PhysicsCloth.runtimeTearingChangesAuthoritativeConstraintAndSurfaceTopology",
+          "PhysicsLayeredCloth.separatesFacesAndConservesMassWeightedCentre",
+          "PhysicsLayeredCloth.respectsPinnedParticlesAndSymmetricFilter",
+          "PhysicsLayeredCloth.disabledAndZeroStepDoNotSeparate",
+          "PhysicsLayeredCloth.rejectsInvalidInputBeforeMutation",
+          "PhysicsLayeredCloth.threeLayerReplayRemainsFiniteAndResettable",
+          "PhysicsLayeredCloth.interiorFaceContactAndFriction",
+          "PhysicsLayeredCloth.coincidentAndFullyPinnedContactsStayFinite",
+          "PhysicsLayeredClothGPU.geometricDistanceOracleHandlesCrossingsAndDegeneracy"
         ]
       },
       "module": "physics_cloth",
       "origins": [
-        "physics_cloth.cpp"
+        "physics_cloth.cpp",
+        "physics_layered_cloth.cpp",
+        "physics_layered_cloth_gpu.cpp"
       ]
     },
     "unit/physics_destruction/physics_destruction_fracture_rules.cpp": {
@@ -11940,6 +11951,47 @@
         ]
       },
       "module": "procgen"
+    },
+    "integration/layered-cloth/physics_layered_cloth_gpu.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "render-window": [
+          "PhysicsLayeredClothGPU.freeFallMatchesReferenceAndKeepsResidentState",
+          "PhysicsLayeredClothGPU.pinnedPoseAndReset",
+          "PhysicsLayeredClothGPU.contactsReactByMassAndCanBeDisabled",
+          "PhysicsLayeredClothGPU.hashOverflowUsesExplicitGpuScan",
+          "PhysicsLayeredClothGPU.rendersComputeGeneratedVertices",
+          "PhysicsLayeredClothGPU.ccdPointFacePreservesStartingSide",
+          "PhysicsLayeredClothGPU.ccdEdgeInteriorsAndDegeneracy",
+          "PhysicsLayeredClothGPU.sweptHashAndScanKeepCrossingPointAboveFace",
+          "PhysicsLayeredClothGPU.sweptEdgesReactWithBalancedMass",
+          "PhysicsLayeredClothGPU.contactFrictionAndSelfFiltering",
+          "PhysicsLayeredClothGPU.stabilityAndSynchronousTimingBaseline",
+          "PhysicsLayeredClothGPU.denseContactsBoundCorrectionAndConserveCentre",
+          "PhysicsLayeredClothGPU.foldedSelfContactSeparatesWithoutCentreDrift",
+          "PhysicsLayeredClothGPU.fallingSheetsRemainSeparatedForOneSimulatedMinute"
+        ]
+      },
+      "module": "physics_cloth",
+      "task": "layered-cloth",
+      "origins": [
+        "physics_layered_cloth_gpu.cpp"
+      ]
+    },
+    "integration/layered-cloth/physics_layered_cloth_script.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "PhysicsLayeredCloth.scriptBindings"
+        ]
+      },
+      "module": "physics_cloth",
+      "task": "layered-cloth",
+      "origins": [
+        "physics_layered_cloth.cpp"
+      ]
     },
     "integration/material-studio/material_preview_shadows.cpp": {
       "role": "tests",
