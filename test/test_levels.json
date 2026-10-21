@@ -11951,7 +11951,7 @@
       },
       "module": "procgen"
     },
-    "terrain_traversal.cpp": {
+    "integration/terrain-navigation/terrain_traversal.cpp": {
       "role": "tests",
       "default": "module-composition",
       "module": "procgen",
@@ -11964,11 +11964,11 @@
         ]
       }
     },
-    "physics_terrain_slope.cpp": {
+    "integration/physics-simulation/physics_terrain_slope.cpp": {
       "role": "tests",
       "default": "physics-backend",
       "module": "physics",
-      "task": "terrain-navigation",
+      "task": "physics-simulation",
       "cases": {
         "physics-backend": [
           "physics.terrainSlope.blocksUphillByPolicy",

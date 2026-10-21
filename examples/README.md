@@ -50,6 +50,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 
 | 示例 | 演示能力 |
 |---|---|
+| [terrain-navigation-lab](terrain-navigation-lab/README.md) | Real Cesium Man, configurable slope costs, A*/flow-field and capsule terrain traversal; full-map and character cameras. |
 | [explosion-lab](explosion-lab/README.md) | 3D 爆炸物理、火球、上升烟雾、火星与冲击环 |
 | [ember-guard](ember-guard/README.md) | 焰卫：六枚环绕火球自主索敌、命中爆燃、返回护卫的俯视角特效场景 |
 | [game-tutorial](game-tutorial/README.md) | EveScript import、输入与碰撞、程序纹理、HUD、热重载及严格版本化存档 |
@@ -280,5 +281,3 @@ material bakers live beside their examples and are opt-in build targets.
 Tests with actual regression assertions remain in `test/`: castle mesh groups
 and image occupancy, decal material/projection behavior, planar-reflection pixel
 coverage, water animation differences, and grid semantic-color matching.
-
-| [terrain-navigation-lab](terrain-navigation-lab/) | Real Cesium Man, configurable slope costs, A*/flow-field and capsule terrain traversal; full-map and character cameras. |
