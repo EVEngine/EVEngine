@@ -14,14 +14,14 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - name: Retrieve failed macOS job log
+      - name: Retrieve failed Linux job log
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh api --allow-escape-sequences repos/EVEngine/EVEngine/actions/jobs/118045511368/logs > macos-job.log
+          gh api --allow-escape-sequences repos/EVEngine/EVEngine/actions/jobs/118551723556/logs > linux-job.log
           python3 - <<'PY'
           from pathlib import Path
-          lines = Path('macos-job.log').read_text(encoding='utf-8', errors='replace').splitlines()
+          lines = Path('linux-job.log').read_text(encoding='utf-8', errors='replace').splitlines()
           markers = [i for i, line in enumerate(lines) if 'The following tests FAILED:' in line]
           start = markers[-1] if markers else max(0, len(lines) - 120)
           print('\n'.join(lines[start:start + 200]))
@@ -30,6 +30,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: recovered-macos-job-log
-          path: macos-job.log
+          name: recovered-linux-job-log
+          path: linux-job.log
           retention-days: 1

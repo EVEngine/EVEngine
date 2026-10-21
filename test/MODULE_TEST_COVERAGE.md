@@ -1851,7 +1851,7 @@ Cases: 306. Referenced/owning modules: `action`, `action_editor`, `animation`, `
 
 ### render-pipeline
 
-Cases: 111. Referenced/owning modules: `action`, `animation`, `archspace`, `asset`, `asset_graphics`, `avatar`, `building`, `camera`, `card`, `common`, `data`, `definitions`, `devtools`, `editor`, `filesystem`, `fluids`, `font`, `gpgpu`, `graphics`, `graphics_editing`, `graphics_fog`, `graphics_raytracing`, `image`, `map`, `model3d`, `network`, `npc_ai`, `particles`, `pixelworld`, `pixelworld_graphics`, `procgen`, `procgen_editing`, `rts`, `scene`, `sceneloader`, `spatial`, `statepatch`, `stylize`, `tactics`, `tensor`, `thread`, `transaction`, `ui`, `vehicle`, `virtualgeometry`, `weapon`, `window`.
+Cases: 112. Referenced/owning modules: `action`, `animation`, `archspace`, `asset`, `asset_graphics`, `avatar`, `building`, `camera`, `card`, `common`, `data`, `definitions`, `devtools`, `editor`, `filesystem`, `fluids`, `font`, `gpgpu`, `graphics`, `graphics_editing`, `graphics_fog`, `graphics_raytracing`, `image`, `map`, `model3d`, `network`, `npc_ai`, `particles`, `pixelworld`, `pixelworld_graphics`, `procgen`, `procgen_editing`, `rts`, `scene`, `sceneloader`, `spatial`, `statepatch`, `stylize`, `tactics`, `tensor`, `thread`, `transaction`, `ui`, `vehicle`, `virtualgeometry`, `weapon`, `window`.
 
 - [render_pipeline_graphics_frame_capture_tests.cpp](integration/render-pipeline/render_pipeline_graphics_frame_capture_tests.cpp)
 - [render_pipeline_graphics_graphics_backend_parity_tests.cpp](integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp)

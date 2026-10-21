@@ -4035,6 +4035,7 @@
           "tensor.gpu.quantizedWeightsMatchEager",
           "tensor.onnx.gpu.residentChain",
           "gpgpu.sequence.stagingSizeReuse",
+          "gpgpu.sequence.largeRebindingBatchesPreserveSnapshots",
           "gpgpu.sequence.cancelRecordingRetiresDescriptors",
           "tensor.onnx.gpu.sessionShapesAndLifetime",
           "tensor.onnx.gpu.parallelCompilation",
