@@ -1,4 +1,5 @@
 #include "avatar/Avatar.h"
+#include "avatar/Appearance.h"
 #include "avatar/Live2DNullBackend.h"
 #include "avatar/VrmRuntime.h"
 #include "common/SquirrelBinding.h"
@@ -184,6 +185,7 @@ bool Avatar::hasLive2DBackend() {
 }
 
 void Avatar::expose(ssq::Table &table) {
+    exposeAppearance(table);
     auto cls = table.addClass(name, Avatar::create, false);
     expose(cls);
 

@@ -68,15 +68,16 @@ GpuBuffer *vulkanNewBuffer(int byteSize, const std::string &usage) {
     auto &device = vkg->getDevice();
 
     const bool staging = (usage == "staging");
-    const bool storage = (usage == "storage" || usage.empty());
+    const bool storage = (usage == "storage" || usage == "storage_vertex" || usage.empty());
     if (!staging && !storage)
-        throw Exception("Gpgpu.newBuffer: usage must be \"storage\" or \"staging\"");
+        throw Exception("Gpgpu.newBuffer: usage must be \"storage\", \"storage_vertex\" or \"staging\"");
 
     using buf = vk::BufferUsageFlagBits;
     using pfb = vk::MemoryPropertyFlagBits;
 
     vk::BufferUsageFlags flags = buf::eTransferSrc | buf::eTransferDst;
     if (storage || staging) flags |= buf::eStorageBuffer;
+    if (usage == "storage_vertex") flags |= buf::eVertexBuffer;
 
     vk::MemoryPropertyFlags mem =
         staging ? (pfb::eHostVisible | pfb::eHostCoherent) : pfb::eDeviceLocal;
@@ -84,7 +85,7 @@ GpuBuffer *vulkanNewBuffer(int byteSize, const std::string &usage) {
     auto b          = std::make_unique<VulkanGpuBuffer>();
     b->device_ = &device;
     b->size_ = vk::DeviceSize(byteSize);
-    b->usage_ = staging ? "staging" : "storage";
+    b->usage_       = staging ? "staging" : (usage == "storage_vertex" ? "storage_vertex" : "storage");
     b->hostVisible_ = staging;
 
 #if defined(VKB_ENABLE_VMA)

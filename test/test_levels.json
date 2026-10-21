@@ -4028,6 +4028,7 @@
           "tensor.gpu.quantizedWeightsMatchEager",
           "tensor.onnx.gpu.residentChain",
           "gpgpu.sequence.stagingSizeReuse",
+          "gpgpu.sequence.largeRebindingBatchesPreserveSnapshots",
           "gpgpu.sequence.cancelRecordingRetiresDescriptors",
           "tensor.onnx.gpu.sessionShapesAndLifetime",
           "tensor.onnx.gpu.parallelCompilation",
@@ -4072,8 +4073,16 @@
       ]
     },
     "integration/render-presentation/fluids_shore_backend_tests.cpp": {
-      "role": "tests", "default": "render-offscreen", "module": "fluids", "task": "render-presentation",
-      "cases": {"render-offscreen": ["fluids.shore.gpuMatchesCpuOnSlopingWetDryBed", "fluids.shore.scriptSurfaceSyncChecksInputsAndPublishesMesh"]}
+      "role": "tests",
+      "default": "render-offscreen",
+      "module": "fluids",
+      "task": "render-presentation",
+      "cases": {
+        "render-offscreen": [
+          "fluids.shore.gpuMatchesCpuOnSlopingWetDryBed",
+          "fluids.shore.scriptSurfaceSyncChecksInputsAndPublishesMesh"
+        ]
+      }
     },
     "integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp": {
       "role": "tests",
@@ -6387,13 +6396,20 @@
           "avatar.vrm.parseVersionAndHumanoid",
           "avatar.vrm.rejectTruncatedAndUnknownVersion",
           "avatar.vrm.rejectInvalidNodeReference",
-          "avatar.vrm.failedLoadPreservesPath"
+          "avatar.vrm.failedLoadPreservesPath",
+          "avatar.appearance.signedChannelsAndCorrective",
+          "avatar.appearance.atomicWardrobeAndHistory",
+          "avatar.appearance.rejectInvalidStateAndDefinition",
+          "avatar.appearance.snapshotRoundTripAndProfileIsolation",
+          "avatar.appearance.morphProjectionValidatesBeforeWriting",
+          "avatar.appearance.morphNormalsBlendAndRejectAtomically"
         ]
       },
       "module": "avatar",
       "origins": [
         "avatar.cpp",
-        "avatar_vrm.cpp"
+        "avatar_vrm.cpp",
+        "avatar_appearance.cpp"
       ]
     },
     "unit/building/building.cpp": {
@@ -7448,13 +7464,15 @@
       "role": "tests",
       "default": "local-logic",
       "module": "fluids",
-      "cases": {"local-logic": [
-        "fluids.shore.levelLakeStaysAtRestOverWetDrySlope",
-        "fluids.shore.invalidInitializationIsAtomic",
-        "fluids.shore.waveRunsUpAndReturnsWithoutNegativeDepth",
-        "fluids.shore.visualGainPreservesLevelRestSurface",
-        "fluids.shore.airAndDryLandCollidersDoNotCreateWater"
-      ]}
+      "cases": {
+        "local-logic": [
+          "fluids.shore.levelLakeStaysAtRestOverWetDrySlope",
+          "fluids.shore.invalidInitializationIsAtomic",
+          "fluids.shore.waveRunsUpAndReturnsWithoutNegativeDepth",
+          "fluids.shore.visualGainPreservesLevelRestSurface",
+          "fluids.shore.airAndDryLandCollidersDoNotCreateWater"
+        ]
+      }
     },
     "unit/fluids/fluids_solver_tests.cpp": {
       "role": "tests",
@@ -8586,12 +8604,22 @@
           "PhysicsCloth.closedModelPreservesAndInflatesVolume",
           "PhysicsCloth.skinBackstopAndAnimatedReferenceConstrainParticles",
           "PhysicsCloth.attachmentTracksTargetAndDetachesWithVelocity",
-          "PhysicsCloth.runtimeTearingChangesAuthoritativeConstraintAndSurfaceTopology"
+          "PhysicsCloth.runtimeTearingChangesAuthoritativeConstraintAndSurfaceTopology",
+          "PhysicsLayeredCloth.separatesFacesAndConservesMassWeightedCentre",
+          "PhysicsLayeredCloth.respectsPinnedParticlesAndSymmetricFilter",
+          "PhysicsLayeredCloth.disabledAndZeroStepDoNotSeparate",
+          "PhysicsLayeredCloth.rejectsInvalidInputBeforeMutation",
+          "PhysicsLayeredCloth.threeLayerReplayRemainsFiniteAndResettable",
+          "PhysicsLayeredCloth.interiorFaceContactAndFriction",
+          "PhysicsLayeredCloth.coincidentAndFullyPinnedContactsStayFinite",
+          "PhysicsLayeredClothGPU.geometricDistanceOracleHandlesCrossingsAndDegeneracy"
         ]
       },
       "module": "physics_cloth",
       "origins": [
-        "physics_cloth.cpp"
+        "physics_cloth.cpp",
+        "physics_layered_cloth.cpp",
+        "physics_layered_cloth_gpu.cpp"
       ]
     },
     "unit/physics_destruction/physics_destruction_fracture_rules.cpp": {
@@ -11941,6 +11969,47 @@
       },
       "module": "procgen"
     },
+    "integration/layered-cloth/physics_layered_cloth_gpu.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "render-window": [
+          "PhysicsLayeredClothGPU.freeFallMatchesReferenceAndKeepsResidentState",
+          "PhysicsLayeredClothGPU.pinnedPoseAndReset",
+          "PhysicsLayeredClothGPU.contactsReactByMassAndCanBeDisabled",
+          "PhysicsLayeredClothGPU.hashOverflowUsesExplicitGpuScan",
+          "PhysicsLayeredClothGPU.rendersComputeGeneratedVertices",
+          "PhysicsLayeredClothGPU.ccdPointFacePreservesStartingSide",
+          "PhysicsLayeredClothGPU.ccdEdgeInteriorsAndDegeneracy",
+          "PhysicsLayeredClothGPU.sweptHashAndScanKeepCrossingPointAboveFace",
+          "PhysicsLayeredClothGPU.sweptEdgesReactWithBalancedMass",
+          "PhysicsLayeredClothGPU.contactFrictionAndSelfFiltering",
+          "PhysicsLayeredClothGPU.stabilityAndSynchronousTimingBaseline",
+          "PhysicsLayeredClothGPU.denseContactsBoundCorrectionAndConserveCentre",
+          "PhysicsLayeredClothGPU.foldedSelfContactSeparatesWithoutCentreDrift",
+          "PhysicsLayeredClothGPU.fallingSheetsRemainSeparatedForOneSimulatedMinute"
+        ]
+      },
+      "module": "physics_cloth",
+      "task": "layered-cloth",
+      "origins": [
+        "physics_layered_cloth_gpu.cpp"
+      ]
+    },
+    "integration/layered-cloth/physics_layered_cloth_script.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "PhysicsLayeredCloth.scriptBindings"
+        ]
+      },
+      "module": "physics_cloth",
+      "task": "layered-cloth",
+      "origins": [
+        "physics_layered_cloth.cpp"
+      ]
+    },
     "integration/material-studio/material_preview_shadows.cpp": {
       "role": "tests",
       "default": "render-offscreen",
@@ -11980,6 +12049,20 @@
         ]
       },
       "module": "material_editor"
+    },
+    "integration/avatar-appearance/avatar_appearance_script.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "avatar.appearance.scriptBoundaryUsesCheckedResults"
+        ]
+      },
+      "module": "avatar",
+      "origins": [
+        "avatar_appearance.cpp"
+      ],
+      "task": "avatar-appearance"
     }
   }
 }
