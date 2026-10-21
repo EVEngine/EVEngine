@@ -11927,6 +11927,24 @@
         ]
       }
     },
+    "unit/procgen/procgen_auto_bridge.cpp": {
+      "module": "procgen",
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.autoBridge.tenTopologiesHaveValidDistinctGeometry",
+          "procgen.autoBridge.planEditsAndInclinedEndpointsAreDeterministic",
+          "procgen.autoBridge.rejectsInvalidRequestsAndPlans",
+          "procgen.autoBridge.recipeSupportsAllTypesAndToggles",
+          "procgen.autoBridge.referencePresetsAndDefaultsShareOneContract",
+          "procgen.autoBridge.customSectionsRejectInvalidAndCollapsedGeometry"
+        ]
+      },
+      "origins": [
+        "procgen_auto_bridge.cpp"
+      ]
+    },
     "unit/procgen/procgen_arrow.cpp": {
       "role": "tests",
       "default": "local-logic",
