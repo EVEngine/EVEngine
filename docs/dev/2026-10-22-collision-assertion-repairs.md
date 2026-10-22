@@ -58,3 +58,28 @@ probe、源码门禁与核心独立编译。未以 mock 或 CTest 绿色状态�
 
 证据保存在忽略目录 `build/collision-validation/assertion-repairs-*.log`。
 本轮适用的模块边界、单一 owner、Result、固定仿真时间、公共生命周期与裁剪取证规则均保持；无架构规则例外。
+
+## PR #625 与最新 dev 的合并适配
+
+基线更新为 `5151e1480cfe3909982c12ca1ce43ba594e3fca0`。保留 dev 的后端接口和
+World3D 转发层，将最终位置支撑、Sensor 排除和 primitive 三角形索引修复迁入
+`box3d/Box3DWorldMover.cpp` 与 `box3d/Box3DWorldQueries.cpp`。不恢复旧实现或已移除的
+JSON 架构 catalogue；hot_path 按 dev 的代码式规则声明。
+
+十项旧测试修正迁入现有 `test/unit/physics/physics_tests.cpp` 和
+`test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp`；新增碰撞、
+接地、climbing 与性能用例也归入 physics-simulation 目录。测试等级元数据显式登记，
+`test/MODULE_TEST_COVERAGE.md` 由 `scripts/test_module_coverage.py --write` 更新。
+CTest 的新增失败保护保留 dev 的精确过滤、等级、前缀、环境和 resourceFormats 既有强约束。
+zeroerr 的 runner 修复与 dev 的 compiled diagnostics 同时启用。
+
+本次合并后的针对性验证使用固定依赖 `477333b3e4045a2c09a9ef8cf761acb94e9eb6f6`：
+
+- physics-core-only / eve_profile_smoke 编译通过（Box3D 配置，Jolt 关闭）。
+- 直接链接该核心对象的真实回归通过 22 个 CCD、查询、mover 与 SDF 用例，19,446 项断言无失败或告警。
+- 在 compiled diagnostics 模式重新编译的断言 probe 通过；CHECK/REQUIRE/ASSERT/helper 失败均返回非零。
+- 发现器及资源汇总的 23 项 Python 测试通过，包括零退出码断言日志被 CTest 判失败的验证。
+- `make check` 对最新 dev 差异通过，461 项脚本/契约测试全部通过。
+- 正常宿主 CMake 入口编译 `assertion_contract_probe` 并通过 CTest 的 `test.assertionExitContract`，等级标签从测试元数据派生为 unit/no-render。
+
+此前 185/185 是合并前的历史验收，本次没有将其作为新基线上的全量重跑结果。

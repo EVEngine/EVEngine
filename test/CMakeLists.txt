@@ -18,6 +18,9 @@ endif()
 include("${CMAKE_SOURCE_DIR}/cmake/TestLevels.cmake")
 eve_configure_test_levels(EVE_TEST_LEVEL_FILE)
 include("${EVE_TEST_LEVEL_FILE}")
+if(TARGET assertion_contract_probe)
+  eve_label_test_group(test.assertionExitContract assertion_contract.cpp)
+endif()
 add_custom_target(nodiscard_compile_check
   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/check_nodiscard.py
           --source-dir ${CMAKE_SOURCE_DIR}
