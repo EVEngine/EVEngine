@@ -3680,6 +3680,7 @@
           "container.adaptersShareParityAndCanonicalLifecycleEnvelope",
           "fluids.volumeCoupling.attachmentReturnsGravityLoadAndTorque",
           "fluids.volumeCoupling.extremeMassRatioUsesObservableVelocityLimits",
+          "fluids.volumeCoupling.sdfObstacleTransfersImpulseToDynamicBody",
           "gameplay.control.climbingReprobesAuthorityForPlayerAndAutomation",
           "gameplay.control.climbingRejectsUnauthorizedCharacterWithoutProbeMutation",
           "procgen.physics.gtsTerrainCollider.replacesAtomicallyAndSurvivesWorldFirstTeardown",
@@ -6795,7 +6796,10 @@
           "decision.condition.compoundsExplainFailureWithoutMutation",
           "decision.condition.scriptDeclarationIsExplicit",
           "decision.conditionUnavailableIsDifferentFromFalse",
-          "decision.condition.legacyCodecExpandsDomainLeaves"
+          "decision.condition.legacyCodecExpandsDomainLeaves",
+          "common.sdfField3D.blobRoundTripPreservesSamples",
+          "common.sdfField3D.blobRejectsUnknownSchemaAndBadCounts",
+          "common.sdfField3D.capabilityInterfaceSamplesGradient"
         ],
         "test-framework": [
           "common.zeroerr.preservesExpressionAndSource",
@@ -6840,7 +6844,8 @@
         "versioned_registry.cpp",
         "xml.cpp",
         "capability_owned.cpp",
-        "condition.cpp"
+        "condition.cpp",
+        "sdf_field3d.cpp"
       ]
     },
     "unit/crowd/crowd_tests.cpp": {
@@ -7489,6 +7494,7 @@
           "fluids.shallowWater.cpuMassStaysBoundedAfterSteps",
           "fluids.math.kernels",
           "fluids.sdf.sphere",
+          "fluids.sdf.sharedInterfaceAndDistanceFieldConvert",
           "fluids.sdf.triangleMesh",
           "fluids.cpu.surfaceFlowDownhill",
           "fluids.cpu.viscosityDampsRelativeMotion",
@@ -8475,6 +8481,7 @@
       "default": "local-logic",
       "cases": {
         "local-logic": [
+          "box3d.sdf.sharedInterfaceAndBlobRoundTrip",
           "box3d.sdf.interpolationNormalAndSphere",
           "box3d.sdf.boundaryNormalsUseOneSidedGradient",
           "box3d.sdf.bulkDataMetadataAndAtomicValidation",

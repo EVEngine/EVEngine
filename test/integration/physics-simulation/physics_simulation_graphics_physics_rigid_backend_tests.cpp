@@ -1017,6 +1017,47 @@ TEST_CASE("fluids.volumeCoupling.extremeMassRatioUsesObservableVelocityLimits") 
     REQUIRE(std::abs(body->getAngularVelocityZ() - 10.f) <= .2501f);
     REQUIRE(bridge.lastClampedBodyCount() == 1u);
 }
+
+TEST_CASE("fluids.volumeCoupling.sdfObstacleTransfersImpulseToDynamicBody") {
+    auto*                                  physics = eve::physics::Physics::create();
+    std::unique_ptr<eve::physics::World3D> world(physics->newWorld3D(0.f, 0.f, 0.f, false));
+    // Body origin is the SDF frame; matches fluids.volume.ownedSdfColliderObstacle geometry.
+    auto* body = world->newBody("dynamic", .2f, 0.f, 0.f);
+    body->newSphereShape(.75f, 2.f);
+    VolumeFluidSettings settings;
+    settings.gravity    = {0.f, 0.f, 0.f};
+    settings.iterations = 1;
+    settings.minimum    = {-1.f, .2f, -.8f};
+    settings.maximum    = {1.4f, 1.8f, .8f};
+    auto created        = VolumeFluid::create(settings);
+    REQUIRE(created.ok());
+    auto fluid = std::move(created).takeValue();
+
+    VolumeFluidSdfCollider local;
+    local.label    = 41;
+    local.sdf      = MeshSdf::makeSphere({0.f, 1.f, 0.f}, .5f, {24, 24, 24});
+    local.scale    = 1.5f;
+    local.friction = 0.f;
+    VolumeFluidCoupling bridge;
+    REQUIRE(bridge.attachSdf(*body, local).ok());
+    REQUIRE(!bridge.attachSdf(*body, local).ok());
+
+    VolumeFluidParticle particle;
+    particle.position           = {.9f, 1.5f, 0.f};
+    particle.material.cohesion  = 0.f;
+    particle.material.viscosity = 0.f;
+    REQUIRE(fluid->emit(std::span(&particle, 1)).ok());
+
+    const float beforeVx = body->getLinearVelocityX();
+    const auto  stepped  = bridge.step(*world, *fluid, 1.f / 120.f, 1);
+    REQUIRE(stepped.ok());
+    REQUIRE(!fluid->contacts().empty());
+    REQUIRE(fluid->contacts()[0].colliderLabel == 41u);
+    REQUIRE(fluid->particles()[0].position.x > .98f);
+    REQUIRE(body->getLinearVelocityX() != beforeVx);
+    bridge.detach(41);
+    REQUIRE(bridge.step(*world, *fluid, 1.f / 120.f, 1).ok());
+}
 }  // namespace test_fluids_volume_coupling
 #endif
 

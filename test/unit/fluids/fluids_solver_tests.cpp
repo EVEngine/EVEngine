@@ -1,10 +1,10 @@
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_fluids_shallow_water)
-#include "PrivateTestScope.h"
 #include <cmath>
 #include <cstdint>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "fluids/ShallowWaterField.h"
 #include "image/ImageData.h"
 #include "zeroerr/assert.h"
@@ -230,7 +230,6 @@ TEST_CASE("fluids.shallowWater.cpuMassStaysBoundedAfterSteps") {
 
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_fluids)
-#include "PrivateTestScope.h"
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -242,12 +241,15 @@ TEST_CASE("fluids.shallowWater.cpuMassStaysBoundedAfterSteps") {
 #include <numeric>
 #include <utility>
 #include <vector>
+#include "PrivateTestScope.h"
+#include "common/SdfField3D.h"
 #include "fluids/FluidMath.h"
 #include "fluids/FluidSdf.h"
 #include "fluids/FluidSimulation.h"
 #include "fluids/FluidSurfaceBinding.h"
 #include "fluids/FluidSurfaceRenderer.h"
 #include "fluids/Fluids.h"
+#include "fluids/MeshSdfField.h"
 #include "fluids/SurfaceDropletSimulation.h"
 #include "fluids/SurfaceFluidRenderData.h"
 #include "fluids/SurfaceFluidSceneRenderer.h"
@@ -256,6 +258,7 @@ TEST_CASE("fluids.shallowWater.cpuMassStaysBoundedAfterSteps") {
 #include "fluids/VolumeFluidCodec.h"
 #include "fluids/VolumeFluidDiffuse.h"
 #include "graphics/Graphics.h"
+#include "physics/DistanceField3D.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // fluids.cpp
@@ -351,6 +354,34 @@ TEST_CASE("fluids.sdf.sphere") {
     const glm::vec3 g = sdf.gradient(center + glm::vec3(0.f, radius, 0.f));
     CHECK(glm::dot(g, glm::vec3(0.f, 1.f, 0.f)) > 0.f);
     CHECK(glm::distance(g, sdf.sampleWithGradient(center + glm::vec3(0.f, radius, 0.f)).gradient) < 1e-6f);
+}
+
+TEST_CASE("fluids.sdf.sharedInterfaceAndDistanceFieldConvert") {
+    const MeshSdf sdf = MeshSdf::makeSphere(glm::vec3(0.f), 0.5f, glm::ivec3(16));
+    MeshSdfField  adapter;
+    adapter.bind(sdf);
+    REQUIRE(adapter.revision() == 1u);
+    REQUIRE(adapter.sample(0.f, 0.f, 0.f) < 0.f);
+    float nx = 0, ny = 0, nz = 0;
+    REQUIRE(adapter.gradient(0.f, 0.6f, 0.f, nx, ny, nz) == eve::SdfField3DGradientStatus::Defined);
+    REQUIRE(ny > 0.5f);
+
+    auto field = distanceFieldFromMeshSdf(sdf, 1000.f);
+    REQUIRE(field.ok());
+    REQUIRE(std::fabs(field.value().sample(0.f, 0.f, 0.f) - sdf.sample(glm::vec3(0.f))) < 1e-5f);
+    auto back = meshSdfFromDistanceField(field.value());
+    REQUIRE(back.ok());
+    REQUIRE(back.value().distances == sdf.distances);
+
+    auto blob = sdfField3DBlobFromMeshSdf(sdf);
+    REQUIRE(blob.ok());
+    auto encoded = eve::encodeSdfField3DBlob(blob.value());
+    REQUIRE(encoded.ok());
+    auto decoded = eve::decodeSdfField3DBlob(encoded.value());
+    REQUIRE(decoded.ok());
+    auto fromBlob = meshSdfFromSdfField3DBlob(decoded.value());
+    REQUIRE(fromBlob.ok());
+    REQUIRE(fromBlob.value().distances == sdf.distances);
 }
 
 TEST_CASE("fluids.sdf.triangleMesh") {
@@ -1561,10 +1592,10 @@ TEST_CASE("fluids.surfaceSceneRenderer.capModelTouchesBoundSurface") {
 
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_fluids_volume)
-#include "PrivateTestScope.h"
 #include <cmath>
 #include <glm/geometric.hpp>
 #include <limits>
+#include "PrivateTestScope.h"
 #include "fluids/VolumeFluid.h"
 #include "fluids/VolumeFluidCodec.h"
 #include "zeroerr/assert.h"
@@ -2418,10 +2449,10 @@ TEST_CASE("fluids.volume.viscosityDampsShearWithoutBulkDrag") {
 
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_fluids_volume_part2)
-#include "PrivateTestScope.h"
 #include <cmath>
 #include <glm/geometric.hpp>
 #include <limits>
+#include "PrivateTestScope.h"
 #include "fluids/VolumeFluid.h"
 #include "fluids/VolumeFluidCodec.h"
 #include "zeroerr/assert.h"
@@ -3281,10 +3312,10 @@ TEST_CASE("fluids.volume.attachedEllipsoidReturnsAngularInertia") {
 
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_fluids_volume_part3)
-#include "PrivateTestScope.h"
 #include <cmath>
 #include <glm/geometric.hpp>
 #include <limits>
+#include "PrivateTestScope.h"
 #include "fluids/VolumeFluid.h"
 #include "fluids/VolumeFluidCodec.h"
 #include "zeroerr/assert.h"
