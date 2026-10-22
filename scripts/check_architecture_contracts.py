@@ -90,6 +90,7 @@ HOT_PATH_GLOBS: tuple[str, ...] = (
     "src/modules/ui/Component.cpp",
     "src/modules/ui/EventSink.cpp",
     "src/modules/ui/UISystem.cpp",
+    "src/modules/weather/Lightning.cpp",
     "src/modules/window/sdl/EventSink.cpp",
 )
 

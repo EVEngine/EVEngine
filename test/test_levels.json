@@ -10805,7 +10805,8 @@
           "weather.ambientInRange",
           "weather.pcgSnowWindThreeAxisAndAtomicValidation",
           "weather.pcgInteriorVolumeShapesValidateAtomically",
-          "weather.pcgInteriorVolumeTransitionsAndReverb"
+          "weather.pcgInteriorVolumeTransitionsAndReverb",
+          "weather.lightning deterministic bounded geometry"
         ]
       },
       "module": "weather",
@@ -12063,6 +12064,17 @@
         "avatar_appearance.cpp"
       ],
       "task": "avatar-appearance"
+    },
+    "integration/weather-lightning/weather_lightning_runtime.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "render-window": [
+          "weather.lightning weapon endpoints pulse and stale entity"
+        ]
+      },
+      "module": "weather",
+      "task": "weather-lightning"
     }
   }
 }
