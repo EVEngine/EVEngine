@@ -262,6 +262,12 @@ public:
     /** @brief Adds combo. */
     void addCombo(const std::string &label, const std::string &options, int selected,
                   const std::string &id = "");
+    /** @brief Add clickable text; target is metadata and activation emits a click event. */
+    void addLink(const std::string &label, const std::string &target, const std::string &id);
+    /** @brief Configure the last control's plain-text editor options. */
+    void setItemTextInput(bool multiline, bool readOnly, const std::string &placeholder);
+    /** @brief Set the last control's help and disabled explanation. */
+    void setItemHelp(const std::string &help, const std::string &disabledReason);
     /** @brief Adds an editable text field. */
     void addInputText(const std::string &label, const std::string &value, const std::string &id = "");
     /** @brief Adds a compact search field. */
