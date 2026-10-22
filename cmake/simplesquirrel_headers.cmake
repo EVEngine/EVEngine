@@ -30,7 +30,8 @@ function(eve_prepare_simplesquirrel_headers)
             message(FATAL_ERROR "Cannot initialize generated SimpleSquirrel patch root")
         endif()
     endif()
-    foreach(_patch IN ITEMS simplesquirrel-constructor-exceptions simplesquirrel-stable-type-hash)
+    foreach(_patch IN ITEMS simplesquirrel-constructor-exceptions simplesquirrel-stable-type-hash
+                            simplesquirrel-module-type-identity)
         execute_process(
             COMMAND "${CMAKE_COMMAND}"
                 "-DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/${_patch}.patch"

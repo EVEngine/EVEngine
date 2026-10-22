@@ -25,18 +25,21 @@ class Class;
      * @thread Main/composition thread only.                                                                       \
      * @reentrancy Must not re-enter module registration. */                                                       \
     [[nodiscard("module instance ownership must be retained or explicitly handled")]] static ModuleName* create(); \
-    static const char*                                                                                   name
+    /** @brief Identifies this module's native type generation for script bindings. */                             \
+    static auto        nativeModuleFactory() { return &ModuleName::create; }                                       \
+    static const char* name
 
-#define Module_IMPL(ModuleName, newExpr) \
-    ModuleRegister ModuleName##_register(ModuleName::name, \
-        (ModuleManager::creator_t)(ModuleName::create), ModuleName::expose); \
-    ModuleName* ModuleName::create() { \
-        auto* p = ModuleManager::find(name); \
-        if (p) return static_cast<ModuleName*>(p); \
-        ModuleName* n = newExpr; \
-        ModuleManager::insert(name, n); \
-        return n; \
-    } \
+#define Module_IMPL(ModuleName, newExpr)                                                                   \
+    ModuleRegister ModuleName##_register(ModuleName::name, (ModuleManager::creator_t)(ModuleName::create), \
+                                         ModuleName::expose);                                              \
+    ModuleName*    ModuleName::create() {                                                                  \
+        auto  factory = reinterpret_cast<ModuleManager::creator_t>(&ModuleName::create);                \
+        auto* p       = ModuleManager::find(name, factory);                                             \
+        if (p) return static_cast<ModuleName*>(p);                                                      \
+        ModuleName* n = newExpr;                                                                        \
+        ModuleManager::insert(name, n, factory);                                                        \
+        return n;                                                                                       \
+    }                                                                                                      \
     const char* ModuleName::name = #ModuleName
 
 #define getModInst(N,T) eve::ModuleManager::getInstance<N::T>(#T)
@@ -74,13 +77,34 @@ public:
      * @reentrancy No module registration or shutdown may be re-entered by this call.
      */
     [[nodiscard("module lookup result must be checked before use")]] static Module* find(const char* name);
+    /** @brief Looks up a factory's own generation, including retired plugin generations.
+     * @ownership Borrowed; the registry owns the instance.
+     * @nullable Yes before this factory creates its instance.
+     * @lifetime Until process teardown; retired plugin instances remain resident.
+     * @thread Main/composition thread only; does not invoke callbacks.
+     */
+    [[nodiscard]] static Module* find(const char* name, creator_t factory);
     /** @brief Stores a module instance under a name (used by Module_IMPL). */
     static void    insert(const char* name, Module* inst);
+    /** @brief Stores an instance in its factory generation; transfers ownership to the registry.
+     * @param name Registered name, borrowed for this call.
+     * @param instance Owned instance, non-null, retained until registry teardown.
+     * @param factory Identifies the active or retired generation.
+     * @note Main/composition thread only; invokes no callbacks.
+     */
+    static void insert(const char* name, Module* instance, creator_t factory);
 
     /** @brief Registers a module factory (creator + script exposer) by name. */
     static void register_module(const char* name, creator_t c, exposer_t e);
     /** @brief Begins an atomic native-plugin module registration transaction. */
     [[nodiscard("plugin registration outcome must be checked")]] static eve::Result<void> beginPluginRegistration();
+    /** @brief Begins registration/replacement of modules owned by a canonical plugin path.
+     * @param owner Owning copy of the plugin identity; other owners cannot be replaced.
+     * @return Conflict for nested registration. Rollback preserves the previous generation.
+     * @note Main/script thread only; initializer must only register modules.
+     * @cost Copies registration metadata once per library load/reload.
+     */
+    [[nodiscard]] static eve::Result<void> beginPluginRegistration(std::string owner);
     /** @brief Commits or rolls back the active plugin registration transaction.
      * @param commit Whether to keep newly registered modules.
      * @return Applied when committed, NoOp when explicitly rolled back, or a
@@ -114,10 +138,10 @@ public:
      */
     static Runtime* runtime();
     /**
-     * @brief Script VM of the active runtime, or nullptr.
-     * @ownership Borrowed; Runtime owns the VM.
-     * @nullable Yes when no runtime is attached.
-     * @lifetime Valid until Runtime destruction or detach(); never retain it across either.
+     * @brief Script VM of the last expose call, including raw-VM embedders, or nullptr.
+     * @ownership Borrowed; Runtime or the embedding host owns the VM.
+     * @nullable Yes before expose and after detach.
+     * @lifetime Until owner destruction or detach; raw-VM embedders call detach(nullptr) before destruction.
      * @thread Main/script thread only.
      * @reentrancy Do not unload modules or detach the runtime while using the VM.
      */
@@ -165,6 +189,7 @@ protected:
     static void exposeVM(ssq::VM& vm);
 
 private:
+    static eve::Result<void> publishPluginBindings();
     static int ensureScriptEcs();
     static int exposeAllForCompatibility();
 
