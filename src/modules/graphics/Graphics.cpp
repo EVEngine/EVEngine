@@ -1,6 +1,7 @@
 #include "graphics/Graphics.h"
 #include "common/Capability.h"
 #include "common/FrameCapture.h"
+#include "common/Profile.h"
 #include "common/SquirrelBinding.h"
 #include "common/config.h"
 #include "font/FontData.h"
@@ -1518,6 +1519,8 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("getRenderControl", &Graphics::getRenderControl);
     cls.addFunc("setMsaaSamples", &Graphics::setMsaaSamples);
     cls.addFunc("getMsaaSamples", &Graphics::getMsaaSamples);
+    cls.addFunc("setVSyncCount", &Graphics::setVSyncCount);
+    cls.addFunc("getVSyncCount", [](Graphics* self) { return self->getVSyncCount(); });
     cls.addFunc("getSceneColorTexture", &Graphics::getSceneColorTexture);
     cls.addFunc("newQuad", &Graphics::newQuad);
     cls.addFunc("newVolumetric", &Graphics::newVolumetric);
@@ -1617,6 +1620,7 @@ void Graphics::setSceneDepthOfField(float focusDistance, float maximumBlurPixels
     sceneDepthOfFieldFarPlane_          = farPlane;
 }
 Texture* Graphics::prepareFinalSceneTexture(Texture* scene, Texture* motion) {
+    EV_PROFILE_MODULE("graphics", "PostProcess.Prepare");
     if (!scene) return nullptr;
     Texture*          resolved  = scene;
     AntiAliasing*     aa        = pipelineAntiAliasing();
@@ -1632,11 +1636,7 @@ Texture* Graphics::prepareFinalSceneTexture(Texture* scene, Texture* motion) {
         aa->setMode("fxaa");
         const int width  = std::max(scene->getWidth(), 1);
         const int height = std::max(scene->getHeight(), 1);
-        if (!spatialAAResolve_ || spatialAAResolveWidth_ != width || spatialAAResolveHeight_ != height) {
-            spatialAAResolve_       = newHDRCanvas(width, height);
-            spatialAAResolveWidth_  = width;
-            spatialAAResolveHeight_ = height;
-        }
+        spatialAAResolve_ = &prepareFramePostTarget(FramePostTarget::SpatialAA, width, height);
         aa->applyTo(this, scene, spatialAAResolve_);
         resolved = spatialAAResolve_->getTexture();
     }
@@ -1658,6 +1658,13 @@ Texture* Graphics::prepareFinalSceneTexture(Texture* scene, Texture* motion) {
                                      getSceneInverseGamma(), getSceneGain(), getSceneTransitionVignette(),
                                      getSceneTransitionVignetteSmoothness(), getSceneTransitionLensDistortion(),
                                      getSceneTransitionLensScale(), meterSource);
+}
+
+Canvas& Graphics::prepareFramePostTarget(FramePostTarget target, int width, int height) {
+    auto& canvas = sharedFramePostTargets_[static_cast<size_t>(target)];
+    if (!canvas || canvas->getWidth() != width || canvas->getHeight() != height) canvas = newHDRCanvas(width, height);
+    if (!canvas) throw Exception("Post-process target allocation failed");
+    return *canvas;
 }
 
 Canvas* Graphics::pipelineReflectionComposite(int width, int height) {

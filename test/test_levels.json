@@ -11979,46 +11979,62 @@
       },
       "module": "procgen"
     },
-    "integration/layered-cloth/physics_layered_cloth_gpu.cpp": {
+    "integration/frame-recording/frame_recording_tests.cpp": {
       "role": "tests",
       "default": "render-window",
+      "module": "graphics",
+      "modules": [
+        "graphics",
+        "thread",
+        "common",
+        "window"
+      ],
+      "task": "frame-recording",
+      "cases": {
+        "module-composition": [
+          "graphics.frameRecording.inlineBudgetAndPeriodicReprobe"
+        ],
+        "render-window": [
+          "graphics.frameRecording.fxaaSlotReuseResizeAndPersistentCanvas"
+        ]
+      }
+    },
+    "integration/profiler-capture/profile_capture_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "profiler.core.reportMeasuresCapturedSpan",
+          "profiler.core.sameNameDifferentStorageAggregates",
+          "profiler.capture.automaticFrameBeginIncludesEarlier3DWork"
+        ]
+      },
+      "module": "profiler",
+      "modules": [
+        "common",
+        "profiler"
+      ],
+      "task": "profiler-capture"
+    },
+    "integration/vsync-config/vsync_config_tests.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "graphics",
+      "modules": [
+        "graphics",
+        "window",
+        "common"
+      ],
+      "task": "vsync-config",
       "cases": {
         "render-window": [
-          "PhysicsLayeredClothGPU.freeFallMatchesReferenceAndKeepsResidentState",
-          "PhysicsLayeredClothGPU.pinnedPoseAndReset",
-          "PhysicsLayeredClothGPU.contactsReactByMassAndCanBeDisabled",
-          "PhysicsLayeredClothGPU.hashOverflowUsesExplicitGpuScan",
-          "PhysicsLayeredClothGPU.rendersComputeGeneratedVertices",
-          "PhysicsLayeredClothGPU.ccdPointFacePreservesStartingSide",
-          "PhysicsLayeredClothGPU.ccdEdgeInteriorsAndDegeneracy",
-          "PhysicsLayeredClothGPU.sweptHashAndScanKeepCrossingPointAboveFace",
-          "PhysicsLayeredClothGPU.sweptEdgesReactWithBalancedMass",
-          "PhysicsLayeredClothGPU.contactFrictionAndSelfFiltering",
-          "PhysicsLayeredClothGPU.stabilityAndSynchronousTimingBaseline",
-          "PhysicsLayeredClothGPU.denseContactsBoundCorrectionAndConserveCentre",
-          "PhysicsLayeredClothGPU.foldedSelfContactSeparatesWithoutCentreDrift",
-          "PhysicsLayeredClothGPU.fallingSheetsRemainSeparatedForOneSimulatedMinute"
+          "scriptConfig.vsyncDefaultsEnabled",
+          "scriptConfig.vsyncExplicitTrue",
+          "scriptConfig.vsyncFalseUsesUnsynchronizedPresent",
+          "scriptConfig.vsyncAppliedBeforeEditorWindow",
+          "scriptConfig.vsyncRejectsNonBoolean"
         ]
-      },
-      "module": "physics_cloth",
-      "task": "layered-cloth",
-      "origins": [
-        "physics_layered_cloth_gpu.cpp"
-      ]
-    },
-    "integration/layered-cloth/physics_layered_cloth_script.cpp": {
-      "role": "tests",
-      "default": "script-binding",
-      "cases": {
-        "script-binding": [
-          "PhysicsLayeredCloth.scriptBindings"
-        ]
-      },
-      "module": "physics_cloth",
-      "task": "layered-cloth",
-      "origins": [
-        "physics_layered_cloth.cpp"
-      ]
+      }
     },
     "integration/material-studio/material_preview_shadows.cpp": {
       "role": "tests",
@@ -12059,6 +12075,47 @@
         ]
       },
       "module": "material_editor"
+    },
+    "integration/layered-cloth/physics_layered_cloth_gpu.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "render-window": [
+          "PhysicsLayeredClothGPU.freeFallMatchesReferenceAndKeepsResidentState",
+          "PhysicsLayeredClothGPU.pinnedPoseAndReset",
+          "PhysicsLayeredClothGPU.contactsReactByMassAndCanBeDisabled",
+          "PhysicsLayeredClothGPU.hashOverflowUsesExplicitGpuScan",
+          "PhysicsLayeredClothGPU.rendersComputeGeneratedVertices",
+          "PhysicsLayeredClothGPU.ccdPointFacePreservesStartingSide",
+          "PhysicsLayeredClothGPU.ccdEdgeInteriorsAndDegeneracy",
+          "PhysicsLayeredClothGPU.sweptHashAndScanKeepCrossingPointAboveFace",
+          "PhysicsLayeredClothGPU.sweptEdgesReactWithBalancedMass",
+          "PhysicsLayeredClothGPU.contactFrictionAndSelfFiltering",
+          "PhysicsLayeredClothGPU.stabilityAndSynchronousTimingBaseline",
+          "PhysicsLayeredClothGPU.denseContactsBoundCorrectionAndConserveCentre",
+          "PhysicsLayeredClothGPU.foldedSelfContactSeparatesWithoutCentreDrift",
+          "PhysicsLayeredClothGPU.fallingSheetsRemainSeparatedForOneSimulatedMinute"
+        ]
+      },
+      "module": "physics_cloth",
+      "task": "layered-cloth",
+      "origins": [
+        "physics_layered_cloth_gpu.cpp"
+      ]
+    },
+    "integration/layered-cloth/physics_layered_cloth_script.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "PhysicsLayeredCloth.scriptBindings"
+        ]
+      },
+      "module": "physics_cloth",
+      "task": "layered-cloth",
+      "origins": [
+        "physics_layered_cloth.cpp"
+      ]
     },
     "integration/avatar-appearance/avatar_appearance_script.cpp": {
       "role": "tests",
