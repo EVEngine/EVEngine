@@ -118,7 +118,7 @@ python3 examples/blade-whirlwind/tools/verify_runtime.py
 ```
 
 验证工具只通过诊断接口设置 UI 参数模型，通过正常按钮事件触发攻击；不通过 eval 实现玩法。
-输出在仓库 `output/blade-whirlwind/`，含引擎 PNG、26 帧 GIF 和 `validation.json`。需要 Pillow。
+输出在仓库 `output/blade-whirlwind/`，含引擎 PNG、连续动画 GIF 和 `validation.json`。需要 Pillow。
 `tools/generate_masks.py` 可以重建两张例子自带的遮罩，不需要在运行时执行。
 
 本次只增加游戏侧表现包和 example，没有新增引擎模块、ECS System、持久化格式、跨模块接口或隐式依赖；无需新 module-interface 目录项。

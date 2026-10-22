@@ -170,6 +170,8 @@ def main():
         duration=durations,
         loop=0,
     )
+    with Image.open(OUT / "blade-whirlwind.gif") as animation:
+        encoded_frames = animation.n_frames
     click("cancel")
     time.sleep(1.2)
     assert "finished" in get("phase")["text"], get("phase")
@@ -209,7 +211,8 @@ def main():
             "customParameters",
         ],
         "parameterInstrumentation": "native UI model setValue through diagnostic tool; triggers through retained UI click events",
-        "animationFrames": len(frames),
+        "capturedFrames": len(frames),
+        "animationFrames": encoded_frames,
         "captures": ["jade", "amber", "dual", "forward", "depth-occluded", "custom-parameters"],
         "captureBackend": "engine MCP eve_screenshot",
     }
