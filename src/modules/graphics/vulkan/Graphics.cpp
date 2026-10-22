@@ -749,7 +749,7 @@ void Graphics::initHeadless(int width, int height) {
 
     initialized = true;
     {
-        StartupStage stage("  vulkan: shadow resources (3x2048^2 maps + pipelines)");
+        StartupStage stage("  vulkan: shadow resources (CSM atlas + pipelines)");
         createShadowResources();
     }
     {
@@ -831,7 +831,7 @@ void Graphics::initWithWindow(void* nativeWindow) {
     }
     initialized = true;
     {
-        StartupStage stage("  vulkan: shadow resources (3x2048^2 maps + pipelines)");
+        StartupStage stage("  vulkan: shadow resources (CSM atlas + pipelines)");
         createShadowResources();
     }
     {
