@@ -3680,6 +3680,7 @@
           "container.adaptersShareParityAndCanonicalLifecycleEnvelope",
           "fluids.volumeCoupling.attachmentReturnsGravityLoadAndTorque",
           "fluids.volumeCoupling.extremeMassRatioUsesObservableVelocityLimits",
+          "fluids.volumeCoupling.sdfObstacleTransfersImpulseToDynamicBody",
           "gameplay.control.climbingReprobesAuthorityForPlayerAndAutomation",
           "gameplay.control.climbingRejectsUnauthorizedCharacterWithoutProbeMutation",
           "procgen.physics.gtsTerrainCollider.replacesAtomicallyAndSurvivesWorldFirstTeardown",
@@ -6795,7 +6796,10 @@
           "decision.condition.compoundsExplainFailureWithoutMutation",
           "decision.condition.scriptDeclarationIsExplicit",
           "decision.conditionUnavailableIsDifferentFromFalse",
-          "decision.condition.legacyCodecExpandsDomainLeaves"
+          "decision.condition.legacyCodecExpandsDomainLeaves",
+          "common.sdfField3D.blobRoundTripPreservesSamples",
+          "common.sdfField3D.blobRejectsUnknownSchemaAndBadCounts",
+          "common.sdfField3D.capabilityInterfaceSamplesGradient"
         ],
         "test-framework": [
           "common.zeroerr.preservesExpressionAndSource",
@@ -6840,7 +6844,8 @@
         "versioned_registry.cpp",
         "xml.cpp",
         "capability_owned.cpp",
-        "condition.cpp"
+        "condition.cpp",
+        "sdf_field3d.cpp"
       ]
     },
     "unit/crowd/crowd_tests.cpp": {
@@ -7489,6 +7494,7 @@
           "fluids.shallowWater.cpuMassStaysBoundedAfterSteps",
           "fluids.math.kernels",
           "fluids.sdf.sphere",
+          "fluids.sdf.sharedInterfaceAndDistanceFieldConvert",
           "fluids.sdf.triangleMesh",
           "fluids.cpu.surfaceFlowDownhill",
           "fluids.cpu.viscosityDampsRelativeMotion",
@@ -7683,6 +7689,8 @@
           "Camera3D.orthographicScreenRaysAreParallel",
           "RenderSystem3D.shadowExtraDrawerOwnerTokens",
           "Shadow.directionalCSM.clampsFarAndSplitsAreViewZ",
+          "Shadow.scheme.dynamicMapSizeAndMaxDistance",
+          "Shadow.scheme.adaptiveCascadeResolutionByDistanceAndCoverage",
           "graphics.shadow_scheme.parse_and_resolve_methods",
           "graphics.shadow_scheme.selects_spot_slots_and_builds_vp",
           "graphics.shadow_scheme.pages_more_spots_than_atlas_slots",
@@ -8475,6 +8483,7 @@
       "default": "local-logic",
       "cases": {
         "local-logic": [
+          "box3d.sdf.sharedInterfaceAndBlobRoundTrip",
           "box3d.sdf.interpolationNormalAndSphere",
           "box3d.sdf.boundaryNormalsUseOneSidedGradient",
           "box3d.sdf.bulkDataMetadataAndAtomicValidation",
@@ -10805,7 +10814,8 @@
           "weather.ambientInRange",
           "weather.pcgSnowWindThreeAxisAndAtomicValidation",
           "weather.pcgInteriorVolumeShapesValidateAtomically",
-          "weather.pcgInteriorVolumeTransitionsAndReverb"
+          "weather.pcgInteriorVolumeTransitionsAndReverb",
+          "weather.lightning deterministic bounded geometry"
         ]
       },
       "module": "weather",
@@ -12081,6 +12091,17 @@
         "avatar_appearance.cpp"
       ],
       "task": "avatar-appearance"
+    },
+    "integration/weather-lightning/weather_lightning_runtime.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "render-window": [
+          "weather.lightning weapon endpoints pulse and stale entity"
+        ]
+      },
+      "module": "weather",
+      "task": "weather-lightning"
     }
   }
 }
