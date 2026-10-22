@@ -209,7 +209,14 @@ void Graphics::render3D() {
 
 void Graphics::renderScene3DToCanvas(Canvas* canvas, Camera3D* camera) {
     pushValidationScope();
-    RenderSystem3D::renderToCanvas(*this, canvas, camera);
+    RenderSystem3D::renderToCanvas(*this, canvas, camera, 0xffffffffu, 1.f, true, true, nullptr, nullptr, 1.f, true);
+    popValidationScope();
+}
+
+void Graphics::renderScene3DWithShadowsToCanvas(Canvas* canvas, Camera3D* camera) {
+    if (!canvas || !camera) return;
+    pushValidationScope();
+    RenderSystem3D::renderWithShadowsToCanvas(*this, *canvas, *camera);
     popValidationScope();
 }
 
@@ -639,6 +646,11 @@ void Graphics::expose(ssq::Table& table) {
     });
     material.addFunc("setShader", &Material::setShader);
     material.addFunc("getShader", &Material::getShader);
+    // Script adapter for the canonical validated PbrSurface API. Only the descriptor
+    // is copied; referenced textures remain borrowed from their Graphics owner.
+    material.addFunc("copyPbrSurfaceFrom", [vm = table.getHandle()](Material* self, Material* source) {
+        return eve::script::projectResult(vm, self->setPbrSurface(source->pbrSurface()));
+    });
     material.addFunc("setTint", &Material::setTint);
     material.addFunc("setMetallic", &Material::setMetallic);
     material.addFunc("getMetallic", &Material::getMetallic);
@@ -1439,6 +1451,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("setMesh3DView", std::function<void(Graphics*, ssq::Array)>(setMesh3DViewScript));
     cls.addFunc("setMesh3DCameraPos", std::function<void(Graphics*, float, float, float)>(setMesh3DCameraPosScript));
     cls.addFunc("renderScene3DToCanvas", &Graphics::renderScene3DToCanvas);
+    cls.addFunc("renderScene3DWithShadowsToCanvas", &Graphics::renderScene3DWithShadowsToCanvas);
     cls.addFunc("drawScene3DRGBA", &Graphics::drawScene3DRGBA);
     cls.addFunc("saveFramePng", &Graphics::saveFramePng);
     cls.addFunc("drawScene3D", &Graphics::drawScene3D);

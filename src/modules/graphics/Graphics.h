@@ -962,6 +962,14 @@ public:
      * can then be shown inside a UI Viewport widget. See RenderSystem3D::renderToCanvas.
      */
     virtual void renderScene3DToCanvas(Canvas *canvas, Camera3D *camera);
+    /**
+     * @brief Render an offscreen editor preview with directional CSM and per-material shadow flags.
+     * @ownership Canvas and camera are borrowed for this call; null arguments draw nothing.
+     * @thread Graphics thread only; synchronous, without shadow contributor callbacks.
+     * @cost Three extra shadow-map submissions per frame compared with renderScene3DToCanvas.
+     * @details Reflective captures keep their separate unshadowed render path. No G-buffer or AO is run.
+     */
+    void renderScene3DWithShadowsToCanvas(Canvas *canvas, Camera3D *camera);
     /** @brief Sets the directional light. */
     virtual void setDirectionalLight(float dx, float dy, float dz, float r = 1.f, float g = 1.f, float b = 1.f);
 
@@ -1138,6 +1146,23 @@ public:
     virtual image::ImageData *readDecalLayerToImageData(const std::string &attachment) {
         (void)attachment;
         return nullptr;
+    }
+
+    /** @brief Draw a mesh using a producer-owned packed resident vertex stream.
+     * Stream ABI: 22 float words per vertex: XYZ, normal XYZ, UV, two packed
+     * joint words, weights4, color4, tangent4. No skinning is supported here.
+     * @ownership Mesh is Graphics-owned; source is borrowed and never retained by this API.
+     * @lifetime Producer keeps the native buffer alive until the submitted frame completes.
+     * Producer and Graphics must share a device and the graphics submission queue;
+     * source must have vertex-buffer usage and sizeBytes denotes total buffer capacity.
+     * @thread Render thread, inside an open 3D pass; no callbacks/reentrancy.
+     * @return Unsupported on other backends, InvalidArgument on layout/owner errors.
+     */
+    [[nodiscard]] virtual Result<void> drawMeshResidentVertices(Mesh &mesh, const GpuResidentBufferView &source) {
+        (void)mesh;
+        (void)source;
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "Resident mesh vertices require Vulkan", "graphics.residentMesh"));
     }
 
     /** @brief Draw one mesh with model matrix. Requires begin3DFrame() (or an open swapchain pass). */

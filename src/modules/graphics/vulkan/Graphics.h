@@ -305,6 +305,9 @@ struct GpuMesh {
     /** @brief Number of dynamic updates; ring slot = count % kDynamicVertexCopies. */
     uint64_t      dynamicWriteCount = 0;
     bool          dynamic           = false;
+    // Borrowed only while drawMeshResidentVertices records one draw.
+    vk::Buffer     residentVertexOverride{};
+    vk::DeviceSize residentVertexOffset = 0;
     uint32_t      vertexCount       = 0;
     uint32_t      indexCount        = 0;
     vk::IndexType indexType         = vk::IndexType::eUint32;
@@ -752,6 +755,8 @@ public:
     Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) override;
     /** @brief Release mesh. */
     bool releaseMesh(Mesh *mesh) override;
+    /** @brief Record a same-device producer-owned vertex stream; inherits Graphics lifetime contract. */
+    [[nodiscard]] Result<void> drawMeshResidentVertices(Mesh &mesh, const GpuResidentBufferView &source) override;
     /** @brief Begins 3 d frame. */
     void begin3DFrame() override;
     /** @brief Begins 3 d frame to canvas. */
@@ -1989,6 +1994,7 @@ private:
     void resetDeferredFrameGraphs();
     /** @brief Draws one CSM cascade's pending casters into a FrameGraph pass CB. */
     void recordShadowCascadePass(vkb::FrameGraphPassContext &ctx, int cascade);
+    void recordShadowCascadeDraws(vk::CommandBuffer cb, int cascade, uint32_t size);
     /** @brief Draws the pending G-buffer list into a FrameGraph pass CB. */
     void recordGBufferPassDraws(vkb::FrameGraphPassContext &ctx);
 
