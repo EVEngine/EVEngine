@@ -15,7 +15,7 @@ function levelJsonEscape(text) {
         else if (c == '\n') out += "\\n";
         else if (c == '\r') out += "\\r";
         else if (c == '\t') out += "\\t";
-        else if (c < 32) out += " ";
+        else if (c < 32) out += format("\\u%04x", c);
         else out += c.tochar();
     }
     return out;
@@ -107,6 +107,28 @@ function levelJsonExpect(parser, expected) {
     parser.at += 1;
 }
 
+function levelJsonHex4(parser) {
+    if (parser.at + 4 > parser.text.len()) levelJsonFail(parser, "truncated Unicode escape");
+    local value = 0;
+    for (local i = 0; i < 4; ++i) {
+        local c = parser.text[parser.at++];
+        local digit = c >= '0' && c <= '9' ? c - '0' :
+            (c >= 'a' && c <= 'f' ? c - 'a' + 10 : (c >= 'A' && c <= 'F' ? c - 'A' + 10 : -1));
+        if (digit < 0) levelJsonFail(parser, "invalid Unicode escape");
+        value = value * 16 + digit;
+    }
+    return value;
+}
+
+function levelJsonUtf8(value) {
+    if (value < 0x80) return value.tochar();
+    if (value < 0x800) return (0xc0 | (value >> 6)).tochar() + (0x80 | (value & 63)).tochar();
+    if (value < 0x10000) return (0xe0 | (value >> 12)).tochar() +
+        (0x80 | ((value >> 6) & 63)).tochar() + (0x80 | (value & 63)).tochar();
+    return (0xf0 | (value >> 18)).tochar() + (0x80 | ((value >> 12) & 63)).tochar() +
+        (0x80 | ((value >> 6) & 63)).tochar() + (0x80 | (value & 63)).tochar();
+}
+
 function levelJsonParseString(parser) {
     levelJsonExpect(parser, '"');
     local out = "";
@@ -124,10 +146,16 @@ function levelJsonParseString(parser) {
         else if (escape == 'b') out += "\b";
         else if (escape == 'f') out += "\f";
         else if (escape == 'u') {
-            // The level schema only writes ASCII, so a \u escape is decoded to a
-            // placeholder rather than silently producing a wrong code point.
-            parser.at += 4;
-            out += "?";
+            local value = levelJsonHex4(parser);
+            if (value >= 0xd800 && value <= 0xdbff) {
+                if (parser.at + 2 > parser.text.len() || parser.text[parser.at] != '\\' ||
+                    parser.text[parser.at + 1] != 'u') levelJsonFail(parser, "missing low surrogate");
+                parser.at += 2;
+                local low = levelJsonHex4(parser);
+                if (low < 0xdc00 || low > 0xdfff) levelJsonFail(parser, "invalid low surrogate");
+                value = 0x10000 + (value - 0xd800) * 0x400 + low - 0xdc00;
+            } else if (value >= 0xdc00 && value <= 0xdfff) levelJsonFail(parser, "unpaired low surrogate");
+            out += levelJsonUtf8(value);
         } else out += escape.tochar();
     }
     levelJsonFail(parser, "unterminated string");

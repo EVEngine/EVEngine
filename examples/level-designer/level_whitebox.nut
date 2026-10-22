@@ -89,38 +89,58 @@ function whiteboxCreateRenderable(piece, schema) {
 
 function whiteboxApplyTransform(piece, object) {
     if (piece.entity == null || object == null) return;
-    local world = scene.localToWorldAt(levelHost(), object.id, 0.0, 0.0, 0.0);
-    piece.entity.setPosition(world[0], world[1], world[2]);
     local t = object.transform;
+    // A gizmo preview has not been committed to the scene node yet. Transform
+    // its proposed local point through the parent, not the node's old origin.
+    local node = levelObject(object.id);
+    local world = node != null && node.parent != ""
+        ? scene.localToWorldAt(levelHost(), node.parent, t.x, t.y, t.z)
+        : [t.x, t.y, t.z];
+    piece.entity.setPosition(world[0], world[1], world[2]);
     piece.entity.setRotation(t.rotationY, t.rotationX, t.rotationZ);
     piece.entity.setScale(t.scaleX, t.scaleY, t.scaleZ);
 }
 
 /** @brief Place the palette's active piece at a world point. */
-function whiteboxPlace(recipe, worldX, worldY, worldZ) {
+function whiteboxPlace(recipe, worldX, worldY, worldZ, scale = null) {
+    if (scale == null) scale = [1.0, 1.0, 1.0];
     local schema = whiteboxSchema(recipe);
     if (schema == null) return "";
-    local id = levelNextId("piece");
-    local placed = levelCommand("scene.object.create.v1", {
-        object = id,
-        name = schema.getDisplayName(),
-        parent = levelObject("root") != null ? "root" : "",
-        position = [worldX, worldY, worldZ]
-    });
-    if (!placed) return "";
     local piece = {
-        recipe = recipe,
-        values = whiteboxDefaultValues(schema),
-        entity = null,
-        half = null
+        recipe = recipe, values = whiteboxDefaultValues(schema), entity = null, half = null
     };
-    level.pieces[id] <- piece;
     if (!whiteboxCreateRenderable(piece, schema)) return "";
+    local result = whiteboxPublishPrepared(piece, levelNextId("piece"), schema.getDisplayName(),
+        [worldX, worldY, worldZ], [0.0, 0.0, 0.0], scale);
+    if (!result.ok) { level.status = result.message; return ""; }
+    return result.object;
+}
+
+/** @brief Publish an already generated mesh through the canonical scene command.
+ * @details Main thread only; no callbacks. Scene owns TRS; pieces owns recipe data.
+ * Failed scene publication hides the staged renderer and leaves no scene node.
+ */
+function whiteboxPublishPrepared(piece, id, name, position, rotation, scale) {
+    local result = level.session.execute("scene.object.create.v1", {
+        object = id, name = name,
+        parent = levelObject("root") != null ? "root" : "",
+        position = position, rotation = rotation, scale = scale
+    });
+    if (!result.ok) {
+        piece.entity.setVisible(false);
+        return {ok = false, code = "scene_rejected", message = result.status.summary};
+    }
+    level.pieces[id] <- piece;
     piece.half = whiteboxHalfExtents(piece);
+    levelRefreshObjects();
     level.selected = id;
     levelSyncGizmo();
-    level.status = "placed " + schema.getDisplayName();
-    return id;
+    scene.updateTransformsAll();
+    whiteboxApplyTransform(piece, levelObject(id));
+    piece.entity.setVisible(true);
+    level.status = "placed " + name;
+    levelMarkPanelsDirty();
+    return {ok = true, object = id};
 }
 
 function whiteboxRebuildPiece(id) {
@@ -139,12 +159,21 @@ function whiteboxRebuildAll() {
 
 /** @brief Drop pieces whose scene object no longer exists. */
 function whiteboxReconcile() {
+    local restored = [];
+    foreach (id, piece in level.pieceHistory) {
+        if (levelObject(id) == null) continue;
+        level.pieces[id] <- piece;
+        if (piece.entity != null) piece.entity.setVisible(true);
+        restored.push(id);
+    }
+    foreach (id in restored) delete level.pieceHistory[id];
     local stale = [];
     foreach (id, piece in level.pieces)
         if (levelObject(id) == null) stale.push(id);
     foreach (id in stale) {
         local piece = level.pieces[id];
         if (piece.entity != null) piece.entity.setVisible(false);
+        level.pieceHistory[id] <- piece;
         delete level.pieces[id];
     }
 }

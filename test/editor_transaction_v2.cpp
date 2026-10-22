@@ -160,8 +160,7 @@ TEST_CASE("editor.v2.authority_rolls_back_partial_commit") {
     auto result = authority.commit(plan.value());
     CHECK(!result.ok());
     CHECK_EQ(target.value(), 0);
-    CHECK(result.ok());
-    CHECK_EQ(static_cast<int>(result.value().state), static_cast<int>(TransactionState::Rejected));
+    CHECK_EQ(target.revision(), 0u);
 }
 
 TEST_CASE("editor.v2.local_transaction_backend_undo_and_redo") {

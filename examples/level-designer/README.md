@@ -184,3 +184,146 @@ build/win32-debug/test/unit_test.exe --testcase=procgen.terrain.file.decodeEvtrA
 
 素材来源与许可见 `assets/kaykit/README.md` 与 `assets/kaykit/LICENSE-KAYKIT-ANIMATIONS.txt`
 （CC0 1.0）。
+
+## 快速白盒搭建
+
+启动：`make run/win32-debug GAME=examples/level-designer`。
+
+- 默认进入 Whitebox；资源来自已有 ProcgenKit `prototype.*` 模型库（当前运行时 75 项）。
+- 将 Assets 中的资源按钮拖到视口，松手生成模型并切换到 Select。
+- Whitebox 模式下，在地面按住左键拖动，实时预览 X/Z 尺寸；松手生成。单击使用默认尺寸。
+- Esc 或在视口外松手取消；预览不会修改场景。拖出的高度保持默认，可用 Scale 或模型参数调整。
+- Snap 按钮切换 0.5m 网格吸附；Flat work surface 将地形替换为平面，保留现有模型。
+- Select 后使用 W/R/T 切换移动、旋转、缩放。Save/Load 沿用现有版本化关卡格式。
+- 每次生成是一次场景命令，Undo/Redo 保留白盒 recipe 和模型；历史元数据仅在当前会话存在。
+
+当前吸附目标是地形/平面，不包含模型表面堆叠；拖动按 recipe 默认包围尺寸缩放，不改写其参数。
+
+验证：`build_smoke.nut` 覆盖预览、取消、尺寸、单步撤销/重做、recipe 文档编码及正负网格吸附。
+通过 MCP `eve_run_script` 执行 `dofile("build_smoke.nut");`（在空场景运行，会留下一个测试白盒）。
+该测试调用与指针共用的手势函数，不代替原生鼠标拖放端到端验证。
+
+### 模型全库验证
+
+在空编辑器中执行 `dofile("model_gallery_check.nut");`，通过真实生成/放置路径建立
+75 个模型的检视阵列。成功打印 `MODEL_GALLERY_PASS 75 recipes`；任何失败的 recipe 会单独列出。
+2026-10-22 本机实际运行通过：75/75 生成，75 个模型文档 encode/decode/apply 往返恢复，
+以及 `build_smoke.nut` 的取消、尺寸、撤销/重做和移动预览回归检查。
+修正了移动预览读取已提交坐标、被帧末同步覆盖的问题。全库截图由引擎 `eve_screenshot` 取得。
+原生鼠标跨面板拖放仍需独立端到端验证，不能以这些脚本检查代替。
+
+## Agent / MCP 搭建接口
+
+启动编辑器后，agent 可以通过标准 MCP `tools/list` 发现 8 个项目工具；创建后的模型实时出现在
+同一个 3D 视口中，可以继续鼠标编辑。此路径不需要 `eve_eval` 或 `eve_run_script`。
+
+```powershell
+# 使用 SDK 时先将 bin 加入 PATH；本仓库 Debug DLL 在 build/win32-debug。
+$env:PATH = "$PWD/build/win32-debug;$env:PATH"
+& build/win32-debug/src/engine/eve.exe run --debug --mcp-port=7529 examples/level-designer
+```
+
+将 `mcp.example.json` 中桥接脚本的路径替换为实际仓库路径，加入调用方 agent 的 MCP 配置。
+桥接器是仓库已有的 `tools/eve-mcp/server.js`，连接正在运行的编辑器；端口必须一致。
+不要让多个引擎共享同一端口。工具注册失败会使启动失败，不会静默降级。
+
+- `whitebox_catalog_v1`：不带参数列出 recipe；传 `recipe` 返回原模型库的参数类型、默认值、边界和选项。
+- `whitebox_scene_v1`：返回模型 ID、recipe、参数、TRS 和场景 revision；可按 `object` 查询。
+- `whitebox_create_v1`：提交一个完整模型规格，一次生成、一条可撤销场景命令。agent 自定唯一 `id`。
+- `whitebox_transform_v1`：按 `object` 修改位置、旋转或缩放，未传字段保留原值。
+- `whitebox_delete_v1`：删除指定白盒，UI Undo 可恢复模型及 recipe。
+- `whitebox_save_v1`：保存到引擎用户目录，默认 `agent-whitebox.json`；同名文件原子覆盖。
+- `whitebox_view_v1`：调整检视相机；之后调用 `eve_screenshot` 获取真实引擎帧。
+- `whitebox_flat_surface_v1`：明确请求将地形换为 Y=0 平面；保留已放置模型，不支持撤销地形变更。
+
+例如按顺序调用工具（以下是 MCP `tools/call` 的 params）：
+
+```json
+{"name":"whitebox_catalog_v1","arguments":{"recipe":"prototype.stairs"}}
+{"name":"whitebox_flat_surface_v1","arguments":{}}
+{"name":"whitebox_create_v1","arguments":{"id":"room-floor","recipe":"prototype.cube","position":[0,0.05,0],"scale":[18,0.4,14]}}
+{"name":"whitebox_create_v1","arguments":{"id":"entry-stairs","recipe":"prototype.stairs","position":[-5,0.45,-1],"scale":[2,1,2]}}
+{"name":"whitebox_view_v1","arguments":{"focus":[0,1,0],"distance":30,"yaw":0.65,"pitch":0.8}}
+{"name":"whitebox_save_v1","arguments":{"filename":"my-whitebox.json"}}
+```
+
+坐标为米，Y 向上；旋转为 `[pitch,yaw,roll]` 弧度；scale 必须为正。位置为精确世界坐标，
+不会暗中吸附地形。`params` 使用 catalog 中的类型（数字、布尔值、字符串）；未传参数使用库默认值。
+
+所有项目工具返回 `{schema:"eve.whitebox.result",schemaVersion:1,ok,revision,...}`。
+成功结果在 `value`；失败返回稳定 `code` 和 `message`。客户端必须检查 **`ok`**，不能只检查 MCP
+传输是否成功。拒绝未知字段；协议变更使用新工具版本，不静默解释未知字段。
+创建/变换/删除可传 `expectedRevision`，不匹配返回 `stale_revision`；revision 指原生场景文档，
+不涵盖相机、地形或参数滑块。重复 ID 返回 `already_exists`，不会重复生成；删除后的 ID 在 undo
+历史内仍保留。运行中鼠标手势和 Play 模式拒绝 agent 写入（`busy`）。
+
+每次 create 是独立事务；多件场景由 agent 循环调用并逐项检查结果，不声称跨调用原子提交。
+输入先验证，网格先生成，然后通过 UI 共用的 `whiteboxPublishPrepared` 发布到
+`SceneEditorSession`，由原生场景命令持有 TRS/身份/撤销；没有第二份 agent 场景树。
+模型参数继续由原白盒资源库验证/生成，模型 metadata 仍由 `level.pieces` 唯一持有。
+这些工具只在主线程同步执行，返回 owning JSON 值，不向调用方暴露 GPU/VM 句柄；热重载重新注册。
+存档继续使用 `eve.level3d` v1；未改变引擎 API、模块边界或 ECS 模型，无架构规则例外。
+
+可复现的 agent 示例（要求空编辑器，保留生成结果供检查）：
+
+```powershell
+python3 -X utf8 examples/level-designer/agent_demo.py --port 7529 --screenshot build/whitebox-agent-demo.png
+```
+
+它从 tools/list 发现接口，通过真实 MCP 创建 10 件房间白盒，执行变换、删除、保存和截图，
+并检查 6 种拒绝请求不会改变场景。只依赖 Python 标准库。保存需要标准用户存档目录的写权限；
+权限不足会返回 `save_failed`，不会谎报保存成功。
+
+
+### 多 Agent 原子批量写入
+
+使用 `whitebox_transaction_v1`，不要把多次单对象调用当成一个事务：
+
+```json
+{"transactionId":"agent-a-room-001","expectedRevision":12,"operations":[
+  {"type":"create","id":"room-floor","recipe":"prototype.cube","position":[0,0,0],"scale":[10,0.2,10]},
+  {"type":"transform","id":"existing-wall","position":[0,0,5]},
+  {"type":"delete","id":"temporary-block"}
+]}
+```
+
+先读取 `whitebox_scene_v1` 的 revision。每批 1–128 项，每个对象最多出现一次。
+所有参数先校验，生成资源暂时隐藏，整批节点通过原生 `scene.snapshot.restore.v1`
+提交一次，成功后发布准备好的 metadata；撤销/重做覆盖整批。创建可携带 recipe 参数，
+本接口不修改已有模型的 recipe 参数、不混入地形或文件写入。未知字段和操作拒绝。
+生成中途或原生命令失败时不发布节点/metadata；已准备的隐藏 renderer 留在可复用池。
+
+引擎主线程串行处理多个客户端请求。两批使用同一旧 revision 时只允许一批成功，
+另一批返回 `stale_revision`，Agent 必须重新读取并重新规划，不会自动覆盖。
+相同 transactionId + 完全相同请求返回原回执；内容不同返回 `transaction_id_conflict`。
+回执中的 `committedRevision` 是原提交版本，外层 `revision` 是当前版本。
+重试已撤销事务也只返回原回执，不再次执行。回执仅保留在当前编辑器会话，重启/脚本重载不保留；
+最多 4096 条，满后显式拒绝新事务，不能把它当成跨重启的持久 exactly-once 协议。
+
+验证：
+
+```powershell
+python3 -X utf8 examples/level-designer/transaction_check.py --port 7529
+```
+
+该检查使用两个真实 TCP 客户端并发提交，覆盖冲突重试、失败后同 ID 重试、精确请求匹配、混合操作、拒绝时完整场景不变。
+`transaction_smoke.nut` 在专用测试会话运行，是诊断故障注入脚本，覆盖第二次网格生成抛异常、
+资源准备后原生命令拒绝，以及整批 undo/redo
+和模型 metadata 一致性；它不属于 Agent 正常创作路径。
+C++ `test/editor_authority_atomic.cpp` 覆盖候选操作异常、发布失败、并发版本冲突、计划校验、
+旧目标回滚异常传播。候选发布由现有 `IDomainOperationTargetStaging` 提供，未引入第二套场景 owner。
+
+
+独立原生契约测试（编译当前源码和 zeroerr，不借用旧引擎 DLL）：
+
+```powershell
+cmake/with-msvc.cmd cmake -S test/transaction_contracts -B build/transaction-contracts -G Ninja -DCMAKE_BUILD_TYPE=Debug
+cmake/with-msvc.cmd cmake --build build/transaction-contracts -j 4
+ctest --test-dir build/transaction-contracts --output-on-failure
+```
+
+组合验收必须使用重新编译的 `eve`，同时运行 `editor.atomic.*`、`editor.v2.*`、
+`scene.transaction.*` 和 transaction 原生测试，再运行上述真实 MCP 并发与故障注入检查。
+`model_gallery_check.nut` 在空场景生成全部白盒 recipe；截图必须来自引擎 `eve_screenshot`。
+
+`presentationError` 非空表示事务已提交但界面同步报错，调用方应保留原回执，不得按拒绝重新创建。

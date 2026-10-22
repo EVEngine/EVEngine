@@ -157,6 +157,8 @@ function levelDocumentApply(document) {
         if (spawn.entity != null) spawn.entity.setVisible(false);
         if (spawn.facing != null) spawn.facing.setVisible(false);
     }
+    whiteboxCancelDrag();
+    level.pieceHistory = {};
     level.pieces = {};
     level.spawns = {};
 
@@ -225,6 +227,8 @@ function levelNewDocument() {
         if (spawn.entity != null) spawn.entity.setVisible(false);
         if (spawn.facing != null) spawn.facing.setVisible(false);
     }
+    whiteboxCancelDrag();
+    level.pieceHistory = {};
     level.pieces = {};
     level.spawns = {};
     level.selected = "";

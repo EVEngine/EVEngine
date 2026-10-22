@@ -20,10 +20,10 @@ function levelEventParts(path) {
 function levelConfigureWorkspace() {
     level.workspace = editor.newWorkspace("level-designer.ui", "Level Designer");
     // Top is a single toolbar row (Unity-style); bottom holds the asset strip.
-    level.workspace.setRegionSize("top", 64.0);
+    level.workspace.setRegionSize("top", 112.0);
     level.workspace.setRegionSize("left", 260.0);
     level.workspace.setRegionSize("right", 340.0);
-    level.workspace.setRegionSize("bottom", 200.0);
+    level.workspace.setRegionSize("bottom", level.tool == "whitebox" ? 300.0 : 180.0);
     level.workspace.layout(config.width.tofloat(), config.height.tofloat());
     level.workspace.registerPanel("toolbar", "Toolbar", "top", 0);
     level.workspace.registerPanel("hierarchy", "Outliner", "left", 10);
@@ -123,10 +123,11 @@ function levelPanelViewport() {
         : "LMB select/place · RMB orbit · MMB pan · wheel zoom · F focus · Del · 1/2/3";
     ui.text(help, "viewport-help");
     local vpW = level.workspace.getRegionW("center") - 16.0;
-    local vpH = level.workspace.getRegionH("center") - 78.0;
+    local vpH = level.workspace.getRegionH("center") - 150.0;
     if (vpW < 64.0) vpW = 64.0;
     if (vpH < 64.0) vpH = 64.0;
     ui.viewport("level-vp", vpW, vpH);
+    ui.setItemDropTarget("level.whitebox.recipe");
     ui.text(level.status, "status");
     if (level.mode == "play" && level.play != null) {
         local play = level.play;
@@ -237,16 +238,20 @@ function levelPanelInspector() {
 
 function levelPanelPalette() {
     if (level.tool == "whitebox") {
+        ui.beginRow("build-options", 6.0);
+        ui.button(level.gridSnap > 0.0 ? "Snap: 0.5m" : "Snap: off", "build:snap");
+        ui.button("Flat work surface", "build:flat");
+        ui.end();
         ui.sectionHeader("Whitebox palette · " + level.recipes.len() + " recipes", "palette-header");
-        ui.text("Active: " + level.piece.slice("prototype.".len()) + "  ·  click terrain to place",
+        ui.text("Active: " + level.piece.slice("prototype.".len()) + "  ·  drag asset here / drag on terrain to size",
             "palette-active");
-        local listH = level.workspace.getRegionH("bottom") - 70.0;
+        local listH = level.workspace.getRegionH("bottom") - 205.0;
         if (listH < 80.0) listH = 80.0;
-        // Flat scroll list — nested beginRow wrapping clipped most recipes.
         ui.beginScrollList("palette", listH, 0.0);
         foreach (recipe in level.recipes) {
             local label = recipe.slice("prototype.".len());
             ui.button(level.piece == recipe ? "> " + label : label, "piece:" + recipe);
+            ui.setItemDragSource("level.whitebox.recipe", recipe);
         }
         ui.end();
     } else if (level.tool == "spawn") {
@@ -276,6 +281,7 @@ function levelMountPanels() {
     // rebuilding every frame.
     level.panelsDirty = false;
     if (level.workspace == null) levelConfigureWorkspace();
+    level.workspace.setRegionSize("bottom", level.tool == "whitebox" ? 300.0 : 180.0);
     level.workspace.layout(config.width.tofloat(), config.height.tofloat());
     for (local i = 0; i < level.workspace.getPanelCount(); ++i) {
         if (!level.workspace.getPanelVisible(i)) continue;
@@ -359,6 +365,7 @@ function levelUpdatePieceParam(id, key) {
 }
 
 function levelHandleUi() {
+    whiteboxConsumeDrops();
     // Global click/change queues carry "host/widget" paths — route by prefix.
     local click = ui.consumeClick();
     while (click != "") {
@@ -401,7 +408,22 @@ function levelHandleUi() {
 }
 
 function levelHandleAction(id) {
-    if (id == "tool:select" || id == "tool:whitebox" || id == "tool:spawn") {
+    if (id == "build:snap") {
+        level.gridSnap = level.gridSnap > 0.0 ? 0.0 : 0.5;
+        level.gizmo.setSnapTranslate(level.gridSnap, level.gridSnap, level.gridSnap);
+        levelMarkPanelsDirty();
+    } else if (id == "build:flat") {
+        whiteboxCancelDrag();
+        local reference = terrainDefaultReference();
+        reference.heightScale = 0.0;
+        if (terrainRebuild(reference) != null) {
+            level.distance = 35.0;
+            level.focusX = 0.0; level.focusY = 0.0; level.focusZ = 0.0;
+            levelUpdateOrbitCamera();
+            level.status = "Flat work surface ready";
+        }
+        levelMarkPanelsDirty();
+    } else if (id == "tool:select" || id == "tool:whitebox" || id == "tool:spawn") {
         level.tool = id.slice(5);
         level.status = "tool: " + levelToolLabel(level.tool);
         levelMarkPanelsDirty();

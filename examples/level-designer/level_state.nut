@@ -19,13 +19,15 @@ function levelInit() {
         world = null, workspace = null,
 
         mode = "edit",          // "edit" | "play"
-        tool = "select",        // select | whitebox | spawn
+        tool = "whitebox",        // select | whitebox | spawn
         gizmoMode = "translate", // translate | rotate | scale
         piece = "prototype.cube",
+        buildDrag = null, gridSnap = 0.5,
         recipes = [],           // whitebox palette (ProcgenKit prototype recipes)
         selected = "",
         objects = [],
         pieces = {},            // objectId -> {recipe, values, entity, half}
+        pieceHistory = {},          // detached recipe metadata for scene undo/redo
         spawns = {},            // objectId -> {yaw, character, motionSet, entity, facing}
         gizmoPrims = [],        // live TransformGizmo overlays (Primitive3D)
         rigCache = {},          // "character|motionSet" -> rigged character
