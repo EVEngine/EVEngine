@@ -382,6 +382,14 @@ function(load_third_party)
     execute_process(COMMAND "${CMAKE_COMMAND}"
         -P "${CMAKE_SOURCE_DIR}/third-party/cmake/apply_patches.cmake"
         COMMAND_ERROR_IS_FATAL ANY)
+    if(EVENGINE_NATIVE_ARM64 AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        # mpg123's host FPU probe can select fixed-point math with NEON64.
+        execute_process(COMMAND "${CMAKE_COMMAND}"
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/mpg123-linux-arm64-fpu.patch
+            -DPATCH_DIR=${CMAKE_SOURCE_DIR}/third-party/medialoader
+            -P "${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake"
+            COMMAND_ERROR_IS_FATAL ANY)
+    endif()
     include("${CMAKE_SOURCE_DIR}/cmake/third_party_release.cmake")
     eve_resolve_third_party_release()
     set(EVENGINE_THIRD_PARTY_BINARY_ONLY OFF CACHE INTERNAL
