@@ -1,0 +1,177 @@
+{
+  "schema": "eve.bridge-gallery-evidence",
+  "version": 2,
+  "purpose": "read-only verification report; unknown fields may be ignored; no runtime restore",
+  "referenceSource": "built-in image_gen; original images preserved",
+  "meshSource": "bridgePreset -> planBridge -> bakeBridge; OBJ includes UVs and normals",
+  "renderSource": "current worktree macOS Debug eve -> procgen.buildMesh(mesh.autoBridge) -> gfx.saveFramePng; no OBJ import",
+  "scope": "Reference topology, construction details, material categories and complete bridge framing; not pixel-exact reconstruction or load analysis",
+  "sourceSha256": {
+    "src/modules/procgen/road/BridgeGenerator.cpp": "9d91bdfe5a4829427e7998789164f7f459bc7e18da7a9432cbf73dd18cca503a",
+    "src/modules/procgen/road/BridgeGenerator.h": "e3ba36214a9d431a6ea45bc554bcbe5fd2a719a49d69b83c0ba7dd9463b095de",
+    "src/modules/procgen/road/RoadRecipes.cpp": "fd8ae905108751c91c25f7570a7614fa9d95c2664521bdc31e997ff6015a6582",
+    "src/modules/procgen/Procgen.cpp": "dabd99ca43d5e2a2c3fecd7ed8c71d2fd0ecbe960f44d9c9d281f4fd0b00ce70",
+    "src/modules/procgen/algorithms/MarchingCubes.cpp": "7bf0b3a291578ecea8a658c5cd6f58a4df84176f699ee6824c6496a2ea546a76",
+    "examples/automatic-bridge/materials.nut": "b22be6517755dd2d804f6e9b1b70f3723a7f922708358481e1b271b54580fa36",
+    "examples/automatic-bridge/environment.nut": "5ad35cba4cfe2302c4dbe32f520bf9cfb7b2e5e9cdc01fe2a9cf84aed858796c",
+    "examples/automatic-bridge/main.nut": "853c600ad10299a1d78bccc7f9fdb052441fe5a6c34b8c160ee2243ae6cd3d18",
+    "examples/automatic-bridge/config.nut": "e26e672bea97d65fe4b457f12e44f28f69f9239deb3fa48d80e135de2604b24d",
+    "examples/automatic-bridge/export_gallery.cpp": "257aa3ca89e056d66b183e86e254e431ecee0ea1f7c11a64c9cb9ad8296d438b",
+    "test/unit/procgen/procgen_auto_bridge.cpp": "442e73be9acddf83e5494b010f016560671275e617cbcd3efa02cc85ac40adc4"
+  },
+  "binarySha256": "4c15f790aeb37e5299d0d410352873e6f726927ae6864c545891f07112696584",
+  "verification": {
+    "hostBuild": "PASS: make build/macosx-debug, minimal + procgen/font/devtools",
+    "cpuTests": {
+      "cases": 6,
+      "assertions": 73270,
+      "failed": 0
+    },
+    "sourceGate": "PASS: make check, including 460 script tests",
+    "runtimeGallery": "PASS: 10 generations, 10 engine captures, gallery completion marker",
+    "smoke": "PASS: MIN_RUN_SECONDS=2 RUN_SECONDS=6 scripts/smoke_examples.sh automatic-bridge",
+    "architecture": "Owning transient CPU plan; Result/nodiscard; separate planning, baking and upload; no graphics dependency, ECS or persistence changes; no exceptions"
+  },
+  "bridges": [
+    {
+      "bridgeType": "beam",
+      "members": 171,
+      "parametersCanonical": "params:v2;9:dimension6:height6:int:32;9:dimension4:seed5:int:1;9:dimension5:width6:int:32;9:parameter13:abutmentDepth25:double:2.5999999046325684;9:parameter12:archRibDepth8:double:1;9:parameter12:archRibWidth26:double:0.85000002384185791;9:parameter8:archRise8:double:6;9:parameter10:bridgeType13:string:4:beam;9:parameter11:cableRadius27:double:0.090000003576278687;9:parameter8:cableSag26:double:0.64999997615814209;9:parameter10:cableSides5:int:8;9:parameter21:cantileverCenterRatio25:double:0.2800000011920929;9:parameter17:connectionDetails6:bool:1;9:parameter12:crossBracing6:bool:1;9:parameter13:curveSegments6:int:96;9:parameter13:deckThickness11:double:0.75;9:parameter9:deckWidth8:double:7;9:parameter4:endX9:double:36;9:parameter4:endY8:double:9;9:parameter4:endZ8:double:0;9:parameter16:foundationHeight26:double:0.80000001192092896;9:parameter15:foundationScale25:double:1.7999999523162842;9:parameter12:girderHeight25:double:1.2000000476837158;9:parameter7:groundY8:double:0;9:parameter8:markings6:bool:1;9:parameter11:memberDepth11:double:0.75;9:parameter11:memberWidth26:double:0.64999997615814209;9:parameter6:panels6:int:18;9:parameter13:pierCapHeight8:double:1;9:parameter9:pierDepth10:double:2.5;9:parameter9:pierWidth25:double:2.4000000953674316;9:parameter5:piers6:bool:1;9:parameter10:plankCount7:int:120;9:parameter11:portalInset27:double:0.059999998658895493;9:parameter11:railingBars5:int:4;9:parameter13:railingHeight25:double:1.1000000238418579;9:parameter11:railingType14:string:5:metal;9:parameter12:railingWidth26:double:0.11999999731779099;9:parameter8:railings6:bool:1;9:parameter13:sidewalkWidth8:double:1;9:parameter5:spans5:int:3;9:parameter6:startX10:double:-36;9:parameter6:startY8:double:9;9:parameter6:startZ8:double:0;9:parameter11:towerHeight9:double:14;9:parameter10:towerInset11:double:0.25;9:parameter13:towerLegWidth25:double:1.6000000238418579;9:parameter18:towerTopWidthRatio26:double:0.15000000596046448;9:parameter11:trussHeight8:double:5;9:parameter8:uvMeters8:double:2;9:parameter14:wingWallLength8:double:4;",
+      "triangles": 3524,
+      "vertices": 8168,
+      "visuallyCheckedFeatures": "Three spans; paired piers, caps, footings; concrete girders; metal rails",
+      "sha256": {
+        "references/beam.png": "e117a6afe1ddbfe6c5a4d31b09c3e92d202205ec83a4a1b94395f399ece2f755",
+        "generated/beam.obj": "d16da345afd1f0744d5763ac4f0c3e4733510150dfe2285101b2dd9fef8a8f77",
+        "generated/bridge.mtl": "4ea6af294e318d5070d8ad2ab56624aef9cd827055503ee2ff1b78344a53fc2b",
+        "renders/beam.png": "62e881c2ec7cf35305f771f1dd8a42e810590cd307fb06dccbcac00c540dae84"
+      }
+    },
+    {
+      "bridgeType": "slab",
+      "members": 34,
+      "parametersCanonical": "params:v2;9:dimension6:height6:int:32;9:dimension4:seed5:int:1;9:dimension5:width6:int:32;9:parameter13:abutmentDepth25:double:2.4000000953674316;9:parameter12:archRibDepth8:double:1;9:parameter12:archRibWidth26:double:0.85000002384185791;9:parameter8:archRise8:double:6;9:parameter10:bridgeType13:string:4:slab;9:parameter11:cableRadius27:double:0.090000003576278687;9:parameter8:cableSag26:double:0.64999997615814209;9:parameter10:cableSides5:int:8;9:parameter21:cantileverCenterRatio25:double:0.2800000011920929;9:parameter17:connectionDetails6:bool:1;9:parameter12:crossBracing6:bool:1;9:parameter13:curveSegments6:int:96;9:parameter13:deckThickness26:double:0.64999997615814209;9:parameter9:deckWidth8:double:7;9:parameter4:endX9:double:14;9:parameter4:endY8:double:5;9:parameter4:endZ8:double:0;9:parameter16:foundationHeight26:double:0.64999997615814209;9:parameter15:foundationScale25:double:1.7999999523162842;9:parameter12:girderHeight25:double:1.2000000476837158;9:parameter7:groundY8:double:0;9:parameter8:markings6:bool:1;9:parameter11:memberDepth11:double:0.75;9:parameter11:memberWidth26:double:0.64999997615814209;9:parameter6:panels6:int:18;9:parameter13:pierCapHeight8:double:1;9:parameter9:pierDepth10:double:2.5;9:parameter9:pierWidth25:double:2.4000000953674316;9:parameter5:piers6:bool:1;9:parameter10:plankCount7:int:120;9:parameter11:portalInset27:double:0.059999998658895493;9:parameter11:railingBars5:int:4;9:parameter13:railingHeight26:double:0.94999998807907104;9:parameter11:railingType17:string:8:concrete;9:parameter12:railingWidth26:double:0.11999999731779099;9:parameter8:railings6:bool:1;9:parameter13:sidewalkWidth26:double:0.40000000596046448;9:parameter5:spans5:int:1;9:parameter6:startX10:double:-14;9:parameter6:startY8:double:5;9:parameter6:startZ8:double:0;9:parameter11:towerHeight9:double:14;9:parameter10:towerInset11:double:0.25;9:parameter13:towerLegWidth25:double:1.6000000238418579;9:parameter18:towerTopWidthRatio26:double:0.15000000596046448;9:parameter11:trussHeight8:double:5;9:parameter8:uvMeters8:double:2;9:parameter14:wingWallLength8:double:5;",
+      "triangles": 408,
+      "vertices": 816,
+      "visuallyCheckedFeatures": "Single thin slab; no intermediate piers; concrete parapets; abutments and wings",
+      "sha256": {
+        "references/slab.png": "ec8d9ae343a8339f3572ec7dc44ab6ff290768186245a31b34c314355e7ff6a4",
+        "generated/slab.obj": "f64179dc7fc78ffd5c64526fbf3c96264db7e8d5c8b66955ba348de598714bd6",
+        "generated/bridge.mtl": "4ea6af294e318d5070d8ad2ab56624aef9cd827055503ee2ff1b78344a53fc2b",
+        "renders/slab.png": "e2963f3647c4d180bc7bba16b3697dfbbb3857db28fe1399b3ef72d956b53441"
+      }
+    },
+    {
+      "bridgeType": "arch",
+      "members": 284,
+      "parametersCanonical": "params:v2;9:dimension6:height6:int:32;9:dimension4:seed5:int:1;9:dimension5:width6:int:32;9:parameter13:abutmentDepth25:double:2.5999999046325684;9:parameter12:archRibDepth25:double:1.1000000238418579;9:parameter12:archRibWidth26:double:0.94999998807907104;9:parameter8:archRise8:double:7;9:parameter10:bridgeType13:string:4:arch;9:parameter11:cableRadius27:double:0.090000003576278687;9:parameter8:cableSag26:double:0.64999997615814209;9:parameter10:cableSides5:int:8;9:parameter21:cantileverCenterRatio25:double:0.2800000011920929;9:parameter17:connectionDetails6:bool:1;9:parameter12:crossBracing6:bool:1;9:parameter13:curveSegments6:int:96;9:parameter13:deckThickness11:double:0.75;9:parameter9:deckWidth8:double:6;9:parameter4:endX9:double:26;9:parameter4:endY9:double:12;9:parameter4:endZ8:double:0;9:parameter16:foundationHeight26:double:0.80000001192092896;9:parameter15:foundationScale25:double:1.7999999523162842;9:parameter12:girderHeight25:double:1.2000000476837158;9:parameter7:groundY8:double:0;9:parameter8:markings6:bool:1;9:parameter11:memberDepth26:double:0.55000001192092896;9:parameter11:memberWidth10:double:0.5;9:parameter6:panels6:int:14;9:parameter13:pierCapHeight8:double:1;9:parameter9:pierDepth10:double:2.5;9:parameter9:pierWidth25:double:2.4000000953674316;9:parameter5:piers6:bool:1;9:parameter10:plankCount7:int:120;9:parameter11:portalInset27:double:0.059999998658895493;9:parameter11:railingBars5:int:4;9:parameter13:railingHeight26:double:0.89999997615814209;9:parameter11:railingType16:string:7:masonry;9:parameter12:railingWidth26:double:0.11999999731779099;9:parameter8:railings6:bool:1;9:parameter13:sidewalkWidth8:double:1;9:parameter5:spans5:int:1;9:parameter6:startX10:double:-26;9:parameter6:startY9:double:12;9:parameter6:startZ8:double:0;9:parameter11:towerHeight9:double:14;9:parameter10:towerInset11:double:0.25;9:parameter13:towerLegWidth25:double:1.6000000238418579;9:parameter18:towerTopWidthRatio26:double:0.15000000596046448;9:parameter11:trussHeight8:double:5;9:parameter8:uvMeters8:double:2;9:parameter14:wingWallLength8:double:4;",
+      "triangles": 3408,
+      "vertices": 6816,
+      "visuallyCheckedFeatures": "Paired below-deck stone ribs; open spandrel columns; masonry joints and parapets",
+      "sha256": {
+        "references/arch.png": "49fbe115e7d703227b70411df914df8f68e52a110af459249e6b81060d2298d8",
+        "generated/arch.obj": "0f92f50e36229f2dcc62e9b93e88ba063a4d85e6183cb330f4d5c58ed7668e80",
+        "generated/bridge.mtl": "4ea6af294e318d5070d8ad2ab56624aef9cd827055503ee2ff1b78344a53fc2b",
+        "renders/arch.png": "b5e10be3605332622cc7b9eced77a23405457962fdb2f5ff3c0c7e237a358a16"
+      }
+    },
+    {
+      "bridgeType": "tiedArch",
+      "members": 403,
+      "parametersCanonical": "params:v2;9:dimension6:height6:int:32;9:dimension4:seed5:int:1;9:dimension5:width6:int:32;9:parameter13:abutmentDepth25:double:2.5999999046325684;9:parameter12:archRibDepth26:double:0.85000002384185791;9:parameter12:archRibWidth26:double:0.64999997615814209;9:parameter8:archRise9:double:12;9:parameter10:bridgeType17:string:8:tiedArch;9:parameter11:cableRadius27:double:0.054999999701976776;9:parameter8:cableSag26:double:0.64999997615814209;9:parameter10:cableSides5:int:8;9:parameter21:cantileverCenterRatio25:double:0.2800000011920929;9:parameter17:connectionDetails6:bool:1;9:parameter12:crossBracing6:bool:1;9:parameter13:curveSegments6:int:96;9:parameter13:deckThickness11:double:0.75;9:parameter9:deckWidth8:double:7;9:parameter4:endX9:double:32;9:parameter4:endY8:double:7;9:parameter4:endZ8:double:0;9:parameter16:foundationHeight26:double:0.80000001192092896;9:parameter15:foundationScale25:double:1.7999999523162842;9:parameter12:girderHeight25:double:1.2000000476837158;9:parameter7:groundY8:double:0;9:parameter8:markings6:bool:1;9:parameter11:memberDepth10:double:0.5;9:parameter11:memberWidth26:double:0.34999999403953552;9:parameter6:panels6:int:28;9:parameter13:pierCapHeight8:double:1;9:parameter9:pierDepth10:double:2.5;9:parameter9:pierWidth25:double:2.4000000953674316;9:parameter5:piers6:bool:1;9:parameter10:plankCount7:int:120;9:parameter11:portalInset27:double:0.059999998658895493;9:parameter11:railingBars5:int:4;9:parameter13:railingHeight25:double:1.1000000238418579;9:parameter11:railingType14:string:5:metal;9:parameter12:railingWidth26:double:0.11999999731779099;9:parameter8:railings6:bool:1;9:parameter13:sidewalkWidth8:double:1;9:parameter5:spans5:int:1;9:parameter6:startX10:double:-32;9:parameter6:startY8:double:7;9:parameter6:startZ8:double:0;9:parameter11:towerHeight9:double:14;9:parameter10:towerInset11:double:0.25;9:parameter13:towerLegWidth25:double:1.6000000238418579;9:parameter18:towerTopWidthRatio26:double:0.15000000596046448;9:parameter11:trussHeight8:double:5;9:parameter8:uvMeters8:double:2;9:parameter14:wingWallLength8:double:4;",
+      "triangles": 11972,
+      "vertices": 25832,
+      "visuallyCheckedFeatures": "Above-deck steel ribs; vertical hangers; deck ties; cross braces",
+      "sha256": {
+        "references/tiedArch.png": "b8a0847c6aee1ec4d65ea6a38064999ae4b1a44cb229ffccb92941470cc60eb8",
+        "generated/tiedArch.obj": "a41bb6ede17ad792968556c7f0c4f0e33314cba48d334f5bfbc9c0cf7002f47a",
+        "generated/bridge.mtl": "4ea6af294e318d5070d8ad2ab56624aef9cd827055503ee2ff1b78344a53fc2b",
+        "renders/tiedArch.png": "8d3445d7cc3c950119a6285c53c1a16a295b536bb90d4e289583b12d6e6ca016"
+      }
+    },
+    {
+      "bridgeType": "throughTruss",
+      "members": 726,
+      "parametersCanonical": "params:v2;9:dimension6:height6:int:32;9:dimension4:seed5:int:1;9:dimension5:width6:int:32;9:parameter13:abutmentDepth25:double:2.5999999046325684;9:parameter12:archRibDepth8:double:1;9:parameter12:archRibWidth26:double:0.85000002384185791;9:parameter8:archRise8:double:6;9:parameter10:bridgeType22:string:12:throughTruss;9:parameter11:cableRadius27:double:0.090000003576278687;9:parameter8:cableSag26:double:0.64999997615814209;9:parameter10:cableSides5:int:8;9:parameter21:cantileverCenterRatio25:double:0.2800000011920929;9:parameter17:connectionDetails6:bool:1;9:parameter12:crossBracing6:bool:1;9:parameter13:curveSegments6:int:96;9:parameter13:deckThickness11:double:0.75;9:parameter9:deckWidth8:double:7;9:parameter4:endX9:double:30;9:parameter4:endY8:double:8;9:parameter4:endZ8:double:0;9:parameter16:foundationHeight26:double:0.80000001192092896;9:parameter15:foundationScale25:double:1.7999999523162842;9:parameter12:girderHeight25:double:1.2000000476837158;9:parameter7:groundY8:double:0;9:parameter8:markings6:bool:1;9:parameter11:memberDepth10:double:0.5;9:parameter11:memberWidth26:double:0.41999998688697815;9:parameter6:panels6:int:12;9:parameter13:pierCapHeight8:double:1;9:parameter9:pierDepth10:double:2.5;9:parameter9:pierWidth25:double:2.4000000953674316;9:parameter5:piers6:bool:1;9:parameter10:plankCount7:int:120;9:parameter11:portalInset27:double:0.070000000298023224;9:parameter11:railingBars5:int:4;9:parameter13:railingHeight25:double:1.1000000238418579;9:parameter11:railingType14:string:5:metal;9:parameter12:railingWidth26:double:0.11999999731779099;9:parameter8:railings6:bool:1;9:parameter13:sidewalkWidth8:double:1;9:parameter5:spans5:int:1;9:parameter6:startX10:double:-30;9:parameter6:startY8:double:8;9:parameter6:startZ8:double:0;9:parameter11:towerHeight9:double:14;9:parameter10:towerInset11:double:0.25;9:parameter13:towerLegWidth25:double:1.6000000238418579;9:parameter18:towerTopWidthRatio26:double:0.15000000596046448;9:parameter11:trussHeight8:double:8;9:parameter8:uvMeters8:double:2;9:parameter14:wingWallLength8:double:4;",
+      "triangles": 20248,
+      "vertices": 47344,
+      "visuallyCheckedFeatures": "Sloped portals; above-deck triangles; overhead braces; gussets and bolts",
+      "sha256": {
+        "references/throughTruss.png": "6eb81c28cedb78803f747e36bf303dcf6911c358246b912389e9bf461b1f0134",
+        "generated/throughTruss.obj": "058b31991c099babcb9bfaac61081bb1ce59cbd45164c3548ad23deae1a519a1",
+        "generated/bridge.mtl": "4ea6af294e318d5070d8ad2ab56624aef9cd827055503ee2ff1b78344a53fc2b",
+        "renders/throughTruss.png": "91be165a23dd98bace9d168e07f0556e71d67d9cd725a6741d053bfc2f9494d3"
+      }
+    },
+    {
+      "bridgeType": "deckTruss",
+      "members": 1411,
+      "parametersCanonical": "params:v2;9:dimension6:height6:int:32;9:dimension4:seed5:int:1;9:dimension5:width6:int:32;9:parameter13:abutmentDepth25:double:2.5999999046325684;9:parameter12:archRibDepth8:double:1;9:parameter12:archRibWidth26:double:0.85000002384185791;9:parameter8:archRise8:double:6;9:parameter10:bridgeType18:string:9:deckTruss;9:parameter11:cableRadius27:double:0.090000003576278687;9:parameter8:cableSag26:double:0.64999997615814209;9:parameter10:cableSides5:int:8;9:parameter21:cantileverCenterRatio25:double:0.2800000011920929;9:parameter17:connectionDetails6:bool:1;9:parameter12:crossBracing6:bool:1;9:parameter13:curveSegments6:int:96;9:parameter13:deckThickness11:double:0.75;9:parameter9:deckWidth8:double:7;9:parameter4:endX9:double:42;9:parameter4:endY9:double:13;9:parameter4:endZ8:double:0;9:parameter16:foundationHeight26:double:0.80000001192092896;9:parameter15:foundationScale25:double:1.7999999523162842;9:parameter12:girderHeight25:double:1.2000000476837158;9:parameter7:groundY8:double:0;9:parameter8:markings6:bool:1;9:parameter11:memberDepth10:double:0.5;9:parameter11:memberWidth26:double:0.40000000596046448;9:parameter6:panels6:int:24;9:parameter13:pierCapHeight8:double:1;9:parameter9:pierDepth8:double:2;9:parameter9:pierWidth8:double:2;9:parameter5:piers6:bool:1;9:parameter10:plankCount7:int:120;9:parameter11:portalInset27:double:0.059999998658895493;9:parameter11:railingBars5:int:4;9:parameter13:railingHeight25:double:1.1000000238418579;9:parameter11:railingType14:string:5:metal;9:parameter12:railingWidth26:double:0.11999999731779099;9:parameter8:railings6:bool:1;9:parameter13:sidewalkWidth8:double:1;9:parameter5:spans5:int:3;9:parameter6:startX10:double:-42;9:parameter6:startY9:double:13;9:parameter6:startZ8:double:0;9:parameter11:towerHeight9:double:14;9:parameter10:towerInset11:double:0.25;9:parameter13:towerLegWidth25:double:1.6000000238418579;9:parameter18:towerTopWidthRatio26:double:0.15000000596046448;9:parameter11:trussHeight8:double:5;9:parameter8:uvMeters8:double:2;9:parameter14:wingWallLength8:double:4;",
+      "triangles": 40204,
+      "vertices": 93976,
+      "visuallyCheckedFeatures": "Below-deck triangles; three spans; paired piers; gussets and bolts",
+      "sha256": {
+        "references/deckTruss.png": "fffcdb438402fde671254e763e287876d657d74c41a4519c1f4c38f2321b1082",
+        "generated/deckTruss.obj": "3c7e5d5fa8ad0912332150e37b8994deae3f96d8327ec758fc07f780dfb7da27",
+        "generated/bridge.mtl": "4ea6af294e318d5070d8ad2ab56624aef9cd827055503ee2ff1b78344a53fc2b",
+        "renders/deckTruss.png": "385b5a69100d73af2c4eae0aad44a975e4718a7796e4e84c3206018a19c64ac0"
+      }
+    },
+    {
+      "bridgeType": "suspension",
+      "members": 848,
+      "parametersCanonical": "params:v2;9:dimension6:height6:int:32;9:dimension4:seed5:int:1;9:dimension5:width6:int:32;9:parameter13:abutmentDepth25:double:2.5999999046325684;9:parameter12:archRibDepth8:double:1;9:parameter12:archRibWidth26:double:0.85000002384185791;9:parameter8:archRise8:double:6;9:parameter10:bridgeType20:string:10:suspension;9:parameter11:cableRadius26:double:0.14000000059604645;9:parameter8:cableSag26:double:0.64999997615814209;9:parameter10:cableSides5:int:8;9:parameter21:cantileverCenterRatio25:double:0.2800000011920929;9:parameter17:connectionDetails6:bool:1;9:parameter12:crossBracing6:bool:1;9:parameter13:curveSegments6:int:96;9:parameter13:deckThickness11:double:0.75;9:parameter9:deckWidth8:double:9;9:parameter4:endX9:double:78;9:parameter4:endY9:double:10;9:parameter4:endZ8:double:0;9:parameter16:foundationHeight26:double:0.80000001192092896;9:parameter15:foundationScale25:double:1.7999999523162842;9:parameter12:girderHeight10:double:1.5;9:parameter7:groundY8:double:0;9:parameter8:markings6:bool:1;9:parameter11:memberDepth26:double:0.40000000596046448;9:parameter11:memberWidth26:double:0.34999999403953552;9:parameter6:panels6:int:60;9:parameter13:pierCapHeight8:double:1;9:parameter9:pierDepth10:double:2.5;9:parameter9:pierWidth25:double:2.4000000953674316;9:parameter5:piers6:bool:1;9:parameter10:plankCount7:int:120;9:parameter11:portalInset27:double:0.059999998658895493;9:parameter11:railingBars5:int:4;9:parameter13:railingHeight25:double:1.1000000238418579;9:parameter11:railingType14:string:5:metal;9:parameter12:railingWidth26:double:0.11999999731779099;9:parameter8:railings6:bool:1;9:parameter13:sidewalkWidth8:double:1;9:parameter5:spans5:int:3;9:parameter6:startX10:double:-78;9:parameter6:startY9:double:10;9:parameter6:startZ8:double:0;9:parameter11:towerHeight9:double:32;9:parameter10:towerInset26:double:0.23000000417232513;9:parameter13:towerLegWidth25:double:2.0999999046325684;9:parameter18:towerTopWidthRatio26:double:0.15000000596046448;9:parameter11:trussHeight8:double:5;9:parameter8:uvMeters8:double:2;9:parameter14:wingWallLength8:double:4;",
+      "triangles": 22184,
+      "vertices": 51632,
+      "visuallyCheckedFeatures": "Masonry portal towers; parabolic main cables; hangers; side cables and anchors",
+      "sha256": {
+        "references/suspension.png": "8de8c975e7c3ccd5b4e73545ed343c64069a0506214eb212a7217bce63b1aed5",
+        "generated/suspension.obj": "e7e99331e0c2cf1d6255cd8351af77ea9e357920949b4c67f337efd4c6a81d09",
+        "generated/bridge.mtl": "4ea6af294e318d5070d8ad2ab56624aef9cd827055503ee2ff1b78344a53fc2b",
+        "renders/suspension.png": "55697d65bfcebf33ae62a7fdebfbe68e85034126aeac2313759e50b350521cbf"
+      }
+    },
+    {
+      "bridgeType": "cableStayed",
+      "members": 332,
+      "parametersCanonical": "params:v2;9:dimension6:height6:int:32;9:dimension4:seed5:int:1;9:dimension5:width6:int:32;9:parameter13:abutmentDepth25:double:2.5999999046325684;9:parameter12:archRibDepth8:double:1;9:parameter12:archRibWidth26:double:0.85000002384185791;9:parameter8:archRise8:double:6;9:parameter10:bridgeType21:string:11:cableStayed;9:parameter11:cableRadius27:double:0.064999997615814209;9:parameter8:cableSag26:double:0.64999997615814209;9:parameter10:cableSides5:int:8;9:parameter21:cantileverCenterRatio25:double:0.2800000011920929;9:parameter17:connectionDetails6:bool:1;9:parameter12:crossBracing6:bool:1;9:parameter13:curveSegments6:int:96;9:parameter13:deckThickness11:double:0.75;9:parameter9:deckWidth8:double:9;9:parameter4:endX9:double:56;9:parameter4:endY9:double:10;9:parameter4:endZ8:double:0;9:parameter16:foundationHeight26:double:0.80000001192092896;9:parameter15:foundationScale25:double:1.7999999523162842;9:parameter12:girderHeight25:double:1.2000000476837158;9:parameter7:groundY8:double:0;9:parameter8:markings6:bool:1;9:parameter11:memberDepth11:double:0.75;9:parameter11:memberWidth26:double:0.64999997615814209;9:parameter6:panels6:int:48;9:parameter13:pierCapHeight8:double:1;9:parameter9:pierDepth10:double:2.5;9:parameter9:pierWidth25:double:2.4000000953674316;9:parameter5:piers6:bool:1;9:parameter10:plankCount7:int:120;9:parameter11:portalInset27:double:0.059999998658895493;9:parameter11:railingBars5:int:4;9:parameter13:railingHeight25:double:1.1000000238418579;9:parameter11:railingType14:string:5:metal;9:parameter12:railingWidth26:double:0.11999999731779099;9:parameter8:railings6:bool:1;9:parameter13:sidewalkWidth8:double:1;9:parameter5:spans5:int:3;9:parameter6:startX10:double:-56;9:parameter6:startY9:double:10;9:parameter6:startZ8:double:0;9:parameter11:towerHeight9:double:28;9:parameter10:towerInset11:double:0.25;9:parameter13:towerLegWidth25:double:1.8999999761581421;9:parameter18:towerTopWidthRatio26:double:0.20000000298023224;9:parameter11:trussHeight8:double:5;9:parameter8:uvMeters8:double:2;9:parameter14:wingWallLength8:double:4;",
+      "triangles": 7784,
+      "vertices": 18608,
+      "visuallyCheckedFeatures": "Tapered A towers; straight fan stays; road deck; spread tower foundations",
+      "sha256": {
+        "references/cableStayed.png": "a85b79502f938b13027b669bcdb425f77e06c8df3fb0a4073cbba9511faa2911",
+        "generated/cableStayed.obj": "412ed842ca15cd4c760853083694a0c344a8f92296f3329b0d651a043c5c8218",
+        "generated/bridge.mtl": "4ea6af294e318d5070d8ad2ab56624aef9cd827055503ee2ff1b78344a53fc2b",
+        "renders/cableStayed.png": "dca5ec56ce0d9235ec4eb084785d7f873934c4b326ebfb0e8708198d46c174b5"
+      }
+    },
+    {
+      "bridgeType": "cantilever",
+      "members": 1915,
+      "parametersCanonical": "params:v2;9:dimension6:height6:int:32;9:dimension4:seed5:int:1;9:dimension5:width6:int:32;9:parameter13:abutmentDepth25:double:2.5999999046325684;9:parameter12:archRibDepth8:double:1;9:parameter12:archRibWidth26:double:0.85000002384185791;9:parameter8:archRise8:double:6;9:parameter10:bridgeType20:string:10:cantilever;9:parameter11:cableRadius27:double:0.090000003576278687;9:parameter8:cableSag26:double:0.64999997615814209;9:parameter10:cableSides5:int:8;9:parameter21:cantileverCenterRatio26:double:0.30000001192092896;9:parameter17:connectionDetails6:bool:1;9:parameter12:crossBracing6:bool:1;9:parameter13:curveSegments6:int:96;9:parameter13:deckThickness11:double:0.75;9:parameter9:deckWidth8:double:8;9:parameter4:endX9:double:70;9:parameter4:endY9:double:16;9:parameter4:endZ8:double:0;9:parameter16:foundationHeight25:double:1.2000000476837158;9:parameter15:foundationScale25:double:1.7999999523162842;9:parameter12:girderHeight25:double:1.2000000476837158;9:parameter7:groundY8:double:0;9:parameter8:markings6:bool:1;9:parameter11:memberDepth26:double:0.85000002384185791;9:parameter11:memberWidth26:double:0.64999997615814209;9:parameter6:panels6:int:32;9:parameter13:pierCapHeight8:double:1;9:parameter9:pierDepth8:double:3;9:parameter9:pierWidth8:double:3;9:parameter5:piers6:bool:1;9:parameter10:plankCount7:int:120;9:parameter11:portalInset8:double:0;9:parameter11:railingBars5:int:4;9:parameter13:railingHeight25:double:1.1000000238418579;9:parameter11:railingType14:string:5:metal;9:parameter12:railingWidth26:double:0.11999999731779099;9:parameter8:railings6:bool:1;9:parameter13:sidewalkWidth8:double:1;9:parameter5:spans5:int:3;9:parameter6:startX10:double:-70;9:parameter6:startY9:double:16;9:parameter6:startZ8:double:0;9:parameter11:towerHeight9:double:14;9:parameter10:towerInset25:double:0.2800000011920929;9:parameter13:towerLegWidth25:double:1.6000000238418579;9:parameter18:towerTopWidthRatio26:double:0.15000000596046448;9:parameter11:trussHeight9:double:20;9:parameter8:uvMeters8:double:2;9:parameter14:wingWallLength8:double:4;",
+      "triangles": 54444,
+      "vertices": 127320,
+      "visuallyCheckedFeatures": "Deep peaks over piers; shallow center; triangulated chords; gussets and bolts",
+      "sha256": {
+        "references/cantilever.png": "d09c40ef6fa662ae9d8f541cb935f7c4e9408c6e1b17b28823f326c05b245f6a",
+        "generated/cantilever.obj": "81490089fd4309bfe5d3d1da1772cc155e82a62fa48e162a5b3d0ce275b684a5",
+        "generated/bridge.mtl": "4ea6af294e318d5070d8ad2ab56624aef9cd827055503ee2ff1b78344a53fc2b",
+        "renders/cantilever.png": "599aebc37cea099ce77b2d4b863ddf8c75b0dea7d3395f7bf8c3b2c180db0af6"
+      }
+    },
+    {
+      "bridgeType": "trestle",
+      "members": 382,
+      "parametersCanonical": "params:v2;9:dimension6:height6:int:32;9:dimension4:seed5:int:1;9:dimension5:width6:int:32;9:parameter13:abutmentDepth25:double:2.5999999046325684;9:parameter12:archRibDepth8:double:1;9:parameter12:archRibWidth26:double:0.85000002384185791;9:parameter8:archRise8:double:6;9:parameter10:bridgeType16:string:7:trestle;9:parameter11:cableRadius27:double:0.090000003576278687;9:parameter8:cableSag26:double:0.64999997615814209;9:parameter10:cableSides5:int:8;9:parameter21:cantileverCenterRatio25:double:0.2800000011920929;9:parameter17:connectionDetails6:bool:1;9:parameter12:crossBracing6:bool:1;9:parameter13:curveSegments6:int:96;9:parameter13:deckThickness25:double:0.2199999988079071;9:parameter9:deckWidth8:double:4;9:parameter4:endX9:double:28;9:parameter4:endY8:double:7;9:parameter4:endZ8:double:0;9:parameter16:foundationHeight26:double:0.40000000596046448;9:parameter15:foundationScale25:double:1.7999999523162842;9:parameter12:girderHeight10:double:0.5;9:parameter7:groundY8:double:0;9:parameter8:markings6:bool:0;9:parameter11:memberDepth26:double:0.31999999284744263;9:parameter11:memberWidth25:double:0.2800000011920929;9:parameter6:panels6:int:18;9:parameter13:pierCapHeight8:double:1;9:parameter9:pierDepth10:double:2.5;9:parameter9:pierWidth25:double:2.4000000953674316;9:parameter5:piers6:bool:1;9:parameter10:plankCount7:int:160;9:parameter11:portalInset27:double:0.059999998658895493;9:parameter11:railingBars5:int:3;9:parameter13:railingHeight25:double:1.1000000238418579;9:parameter11:railingType15:string:6:timber;9:parameter12:railingWidth26:double:0.10000000149011612;9:parameter8:railings6:bool:1;9:parameter13:sidewalkWidth8:double:0;9:parameter5:spans6:int:14;9:parameter6:startX10:double:-28;9:parameter6:startY8:double:7;9:parameter6:startZ8:double:0;9:parameter11:towerHeight9:double:14;9:parameter10:towerInset11:double:0.25;9:parameter13:towerLegWidth25:double:1.6000000238418579;9:parameter18:towerTopWidthRatio26:double:0.15000000596046448;9:parameter11:trussHeight8:double:5;9:parameter8:uvMeters8:double:2;9:parameter14:wingWallLength8:double:4;",
+      "triangles": 4584,
+      "vertices": 9168,
+      "visuallyCheckedFeatures": "Separate timber planks; dense bents; cross braces; stone footings; timber rails",
+      "sha256": {
+        "references/trestle.png": "424ee3bdc26f495797ff6c9e6d4812fef9796634957c3d20397a14372e13c887",
+        "generated/trestle.obj": "dc18d18ac316a272e25d10df2578bc270b09aa1d477a15b80f2b6e39c357b91c",
+        "generated/bridge.mtl": "4ea6af294e318d5070d8ad2ab56624aef9cd827055503ee2ff1b78344a53fc2b",
+        "renders/trestle.png": "18aba529df4aeae074c04720490a4471ba555c94170d1238009724b8df2f7225"
+      }
+    }
+  ]
+}
