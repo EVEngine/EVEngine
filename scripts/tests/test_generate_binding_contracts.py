@@ -189,5 +189,77 @@ class BindMethodScrapeTests(unittest.TestCase):
         self.assertIn("animation/OrientationWarping.isEnabled", keys)
 
 
+class SlotAwareKeyTests(unittest.TestCase):
+    def test_module_reg_roots_use_manifest_slot(self) -> None:
+        """addClass(name, …) leaves scriptClass empty; keys must still match SLOT."""
+        from generate_binding_contracts import SlotIndex, extract_contracts
+
+        root = Path(__file__).resolve().parents[2]
+        sources = {
+            root / "src/modules/dialogue/DialogueFlow.h": (
+                "namespace eve::dialogue {\n"
+                "class DialogueFlow {\n"
+                "public:\n"
+                "    eve::Result<void> publishGameplay(const std::string& instanceId,\n"
+                "                                      const std::string& ownerId);\n"
+                "};\n"
+                "}\n"
+            ),
+            root / "src/modules/dialogue/DialogueFlow.cpp": (
+                "namespace eve::dialogue {\n"
+                "void DialogueFlow::expose(ssq::Table& table) {\n"
+                "    auto cls = table.addClass(name, DialogueFlow::create, false);\n"
+                '    cls.addFunc("publishGameplay",\n'
+                "                [](DialogueFlow* self, const std::string& instanceId,\n"
+                "                   const std::string& ownerId) {\n"
+                "                    return self->publishGameplay(instanceId, ownerId);\n"
+                "                });\n"
+                "}\n"
+                "}\n"
+            ),
+            root / "src/modules/map/level/editor/LevelEditorModule.h": (
+                "namespace eve::level_editing { class TileBuffer { public: int width() const; }; }\n"
+                "namespace eve::level_editor {\n"
+                "class LevelEditorModule {\n"
+                "public:\n"
+                "    std::unique_ptr<level_editing::TileBuffer> newTileBuffer(int width, int height) const;\n"
+                "};\n"
+                "}\n"
+            ),
+            root / "src/modules/map/level/editor/LevelEditorModule.cpp": (
+                "namespace eve::level_editor {\n"
+                "void LevelEditorModule::expose(ssq::Table& table) {\n"
+                "    auto buffer = table.addClass<level_editing::TileBuffer>(\n"
+                '        "TileBuffer", std::function<level_editing::TileBuffer*()>([]() { return nullptr; }), true);\n'
+                "    buffer.addFunc(\"getWidth\", &level_editing::TileBuffer::width);\n"
+                "    auto module = table.addClass(name, LevelEditorModule::create, false);\n"
+                "    expose(module);\n"
+                "}\n"
+                "void LevelEditorModule::expose(ssq::Class& cls) {\n"
+                '    cls.addFunc("newTileBuffer", [](LevelEditorModule* self, int width, int height) {\n'
+                "        return self->newTileBuffer(width, height).release();\n"
+                "    });\n"
+                "}\n"
+                "}\n"
+            ),
+        }
+        slots = SlotIndex(
+            script_to_slot={
+                "DialogueFlow": "dialogueFlow",
+                "LevelEditorModule": "levelEditor",
+            },
+            dir_slots=(("map/level/editor", "levelEditor"),),
+        )
+
+        contracts, unresolved = extract_contracts(sources, slot_index=slots)
+        keys = {contract.key for contract in contracts}
+        self.assertEqual(unresolved, [])
+        self.assertIn("dialogueFlow/publishGameplay", keys)
+        self.assertNotIn("dialogue/publishGameplay", keys)
+        self.assertIn("levelEditor/newTileBuffer", keys)
+        self.assertIn("levelEditor/TileBuffer.getWidth", keys)
+        self.assertNotIn("map/newTileBuffer", keys)
+
+
 if __name__ == "__main__":
     unittest.main()

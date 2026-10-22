@@ -1124,6 +1124,65 @@ TEST_CASE("devtools.architecture.budgetsUnknownsAndStaleEvidence") {
     auto missing = payload(eve::dev::callMcpArchitectureTool("eve_architecture_query", args));
     CHECK_EQ(missing->getValue<std::string>("error"), std::string("unknown_seed"));
 }
+
+TEST_CASE("devtools.mcp.eveApiGetSuggestsOnMiss") {
+    auto& server = eve::dev::McpServer::instance();
+    server.stop();
+    std::istringstream input(
+        "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{}}\n"
+        "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/call\",\"params\":{"
+        "\"name\":\"eve_api_get\",\"arguments\":{\"key\":\"dialogue/publishGameplay\"}}}\n"
+        "{\"jsonrpc\":\"2.0\",\"id\":3,\"method\":\"tools/call\",\"params\":{"
+        "\"name\":\"eve_api_get\",\"arguments\":{\"key\":\"dialogueFlow.publishGameplay\"}}}\n");
+    std::ostringstream output;
+    struct StopServer {
+        eve::dev::McpServer& server;
+        ~StopServer() { server.stop(); }
+    } cleanup{server};
+    REQUIRE(server.listenStdio(input, output));
+    for (int attempt = 0; attempt < 200; ++attempt) {
+        server.poll();
+        if (output.str().find("\"id\":3") != std::string::npos) break;
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    }
+    server.stop();
+
+    std::istringstream responses(output.str());
+    std::string        line;
+    bool               sawSuggestions = false;
+    bool               sawResolved    = false;
+    while (std::getline(responses, line)) {
+        Poco::JSON::Parser parser;
+        auto               response = parser.parse(line).extract<Poco::JSON::Object::Ptr>();
+        const int          id       = response->getValue<int>("id");
+        if (id == 1) continue;
+        auto content = response->getObject("result")->getArray("content");
+        auto body =
+            parser.parse(content->getObject(0)->getValue<std::string>("text")).extract<Poco::JSON::Object::Ptr>();
+        if (id == 2) {
+            CHECK(!body->getValue<bool>("ok"));
+            auto suggestions = body->getArray("suggestions");
+            REQUIRE(suggestions);
+            REQUIRE(suggestions->size() > 0);
+            bool found = false;
+            for (size_t i = 0; i < suggestions->size(); ++i) {
+                if (suggestions->getObject(static_cast<unsigned>(i))->getValue<std::string>("key") ==
+                    "dialogueFlow/publishGameplay")
+                    found = true;
+            }
+            CHECK(found);
+            sawSuggestions = true;
+        }
+        if (id == 3) {
+            REQUIRE(body->getValue<bool>("ok"));
+            CHECK_EQ(body->getObject("contract")->getValue<std::string>("key"),
+                     std::string("dialogueFlow/publishGameplay"));
+            sawResolved = true;
+        }
+    }
+    CHECK(sawSuggestions);
+    CHECK(sawResolved);
+}
 }  // namespace mcp_architecture_graph
 }  // namespace
 

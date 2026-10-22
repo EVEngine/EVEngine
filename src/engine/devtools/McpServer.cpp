@@ -492,8 +492,21 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         const std::string                   method      = getArgString(args, "method");
         const auto&                         registry    = eve::script::generatedBindingContracts();
         const eve::script::BindingContract* contract    = nullptr;
+        std::string                         lookupKey   = key;
         if (!key.empty()) {
             contract = registry.find(key);
+            // Agents often write slot.method or module.Class.method; accept those spellings.
+            if (!contract) {
+                const auto slash = key.find('/');
+                if (slash == std::string::npos) {
+                    const auto firstDot = key.find('.');
+                    if (firstDot != std::string::npos) {
+                        lookupKey           = key;
+                        lookupKey[firstDot] = '/';
+                        contract            = registry.find(lookupKey);
+                    }
+                }
+            }
         } else if (!scriptClass.empty() && !method.empty()) {
             contract = registry.findMethod(scriptClass, method);
         } else if (!method.empty()) {
@@ -501,7 +514,26 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         } else {
             return "{\"ok\":false,\"error\":\"missing key or method\"}";
         }
-        if (!contract) return "{\"ok\":false,\"error\":\"binding not found or method name is ambiguous\"}";
+        if (!contract) {
+            std::string needle = !key.empty() ? key : (!scriptClass.empty() ? scriptClass + "." + method : method);
+            for (char& ch : needle) {
+                if (ch == '/' || ch == '.') ch = ' ';
+            }
+            const auto         hits = registry.search(needle, {}, {}, 5);
+            std::ostringstream json;
+            json << "{\"ok\":false,\"error\":\"binding not found or method name is ambiguous\"";
+            if (!hits.empty()) {
+                json << ",\"suggestions\":[";
+                for (size_t i = 0; i < hits.size(); ++i) {
+                    if (i != 0) json << ',';
+                    json << "{\"score\":" << hits[i].score << ",\"key\":\"" << mcpJsonEscape(hits[i].contract.key())
+                         << "\"}";
+                }
+                json << "]";
+            }
+            json << "}";
+            return json.str();
+        }
         return std::string("{\"ok\":true,\"schema\":\"eve.binding-api\",\"schemaVersion\":1,\"contract\":") +
                contract->toJson() + "}";
     }
@@ -1604,8 +1636,9 @@ std::string handleToolsList(const std::string& idJson) {
         "\"class\":{\"type\":\"string\",\"description\":\"optional exact script class\"},"
         "\"limit\":{\"type\":\"integer\",\"minimum\":1,\"maximum\":64}},"
         "\"required\":[]}},"
-        "{\"name\":\"eve_api_get\",\"description\":\"Fetch one EveScript Binding Contract by key (module/Class.method) "
-        "or unique method name. Prefer this after eve_api_search.\","
+        "{\"name\":\"eve_api_get\",\"description\":\"Fetch one EveScript Binding Contract by key (module/Class.method "
+        "or slot.method) or unique method name. Misses return suggestions (did-you-mean). Prefer after "
+        "eve_api_search.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{"
         "\"key\":{\"type\":\"string\"},\"class\":{\"type\":\"string\"},\"method\":{\"type\":\"string\"}}}},"
         "{\"name\":\"eve_script_components\","
