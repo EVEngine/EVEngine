@@ -842,7 +842,9 @@ jobs:
           CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
 
       - name: Run macosx unit tests
-        timeout-minutes: 60
+        # Run 39701509245 completed 6597/7063 cases at the 60m guard
+        # while tests were still progressing. Keep room for the full suite.
+        timeout-minutes: 90
         env:
           ALSOFT_DRIVERS: "null"
         run: >-
