@@ -1,7 +1,7 @@
 # Prepare the dependencies used unconditionally by native Dawn configuration.
-# Its pinned fetch script ignores failed Git commands; checked immutable archives
-# keep an empty Git checkout from reaching add_subdirectory or Python imports.
-function(_eve_dawn_support_archive output dawn_source_dir name dependency archive_prefix)
+# Its pinned fetch script ignores failed Git commands. FetchContent checks Git
+# failures, and fetching commits avoids the unreliable Gitiles archive endpoint.
+function(_eve_dawn_support_checkout output dawn_source_dir name dependency repository)
     file(STRINGS "${dawn_source_dir}/DEPS" _eve_pin_lines REGEX "${dependency}@")
     list(LENGTH _eve_pin_lines _eve_pin_count)
     if(NOT _eve_pin_count EQUAL 1)
@@ -16,8 +16,10 @@ function(_eve_dawn_support_archive output dawn_source_dir name dependency archiv
 
     include(FetchContent)
     FetchContent_Declare(eve_dawn_${name}
-        URL "${archive_prefix}${_eve_revision}.tar.gz"
-        DOWNLOAD_EXTRACT_TIMESTAMP FALSE
+        GIT_REPOSITORY "${repository}"
+        GIT_TAG "${_eve_revision}"
+        GIT_SHALLOW FALSE
+        GIT_SUBMODULES ""
         # The generator imports Python packages by their directory basename.
         SOURCE_DIR "${FETCHCONTENT_BASE_DIR}/eve_dawn_support/${name}"
         SOURCE_SUBDIR eve-populate-only
@@ -26,28 +28,28 @@ function(_eve_dawn_support_archive output dawn_source_dir name dependency archiv
     set(_eve_source "${eve_dawn_${name}_SOURCE_DIR}")
     foreach(_eve_required IN LISTS ARGN)
         if(NOT EXISTS "${_eve_source}/${_eve_required}")
-            message(FATAL_ERROR "Incomplete pinned Dawn ${name} archive: missing ${_eve_required}")
+            message(FATAL_ERROR "Incomplete pinned Dawn ${name} checkout: missing ${_eve_required}")
         endif()
     endforeach()
     set(${output} "${_eve_source}" PARENT_SCOPE)
 endfunction()
 
 function(eve_prepare_dawn_support_dependencies dawn_source_dir)
-    _eve_dawn_support_archive(_eve_abseil "${dawn_source_dir}" abseil
+    _eve_dawn_support_checkout(_eve_abseil "${dawn_source_dir}" abseil
         "chromium/src/third_party/abseil-cpp"
-        "https://chromium.googlesource.com/chromium/src/third_party/abseil-cpp/+archive/"
+        "https://chromium.googlesource.com/chromium/src/third_party/abseil-cpp"
         CMakeLists.txt absl/strings/string_view.h)
-    _eve_dawn_support_archive(_eve_glfw "${dawn_source_dir}" glfw
+    _eve_dawn_support_checkout(_eve_glfw "${dawn_source_dir}" glfw
         "github.com/glfw/glfw"
-        "https://github.com/glfw/glfw/archive/"
+        "https://github.com/glfw/glfw.git"
         CMakeLists.txt include/GLFW/glfw3.h)
-    _eve_dawn_support_archive(_eve_jinja2 "${dawn_source_dir}" jinja2
+    _eve_dawn_support_checkout(_eve_jinja2 "${dawn_source_dir}" jinja2
         "chromium/src/third_party/jinja2"
-        "https://chromium.googlesource.com/chromium/src/third_party/jinja2/+archive/"
+        "https://chromium.googlesource.com/chromium/src/third_party/jinja2"
         __init__.py environment.py loaders.py)
-    _eve_dawn_support_archive(_eve_markupsafe "${dawn_source_dir}" markupsafe
+    _eve_dawn_support_checkout(_eve_markupsafe "${dawn_source_dir}" markupsafe
         "chromium/src/third_party/markupsafe"
-        "https://chromium.googlesource.com/chromium/src/third_party/markupsafe/+archive/"
+        "https://chromium.googlesource.com/chromium/src/third_party/markupsafe"
         __init__.py _native.py _compat.py)
 
     find_package(Python3 REQUIRED COMPONENTS Interpreter)

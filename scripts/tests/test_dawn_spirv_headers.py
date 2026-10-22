@@ -120,7 +120,7 @@ endif()
             self.assertNotEqual(result.returncode, 0)
             self.assertRegex(result.stderr, r"full\s+40-character commit SHA")
 
-    def test_incomplete_support_archives_fail_before_dawn_configuration(self):
+    def test_incomplete_support_checkouts_fail_before_dawn_configuration(self):
         for dependency, filename in [
             ("abseil", "CMakeLists.txt"),
             ("glfw", "CMakeLists.txt"),
@@ -130,7 +130,7 @@ endif()
             with self.subTest(dependency=dependency), tempfile.TemporaryDirectory() as temporary:
                 result = self.configure(Path(temporary), missing_support=(dependency, filename))
                 self.assertNotEqual(result.returncode, 0)
-                self.assertIn(f"Incomplete pinned Dawn {dependency} archive", result.stderr)
+                self.assertIn(f"Incomplete pinned Dawn {dependency} checkout", result.stderr)
 
     def test_python_namespace_or_empty_package_is_rejected(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -155,4 +155,4 @@ endif()
                 capture_output=True, text=True, encoding="utf-8", check=False,
             )
             self.assertNotEqual(result.returncode, 0)
-            self.assertIn("Incomplete pinned Dawn glfw archive", result.stderr)
+            self.assertIn("Incomplete pinned Dawn glfw checkout", result.stderr)
