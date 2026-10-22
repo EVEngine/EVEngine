@@ -314,7 +314,7 @@ jobs:
           suffix=""
           if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
           make "build/win32-arm64${suffix}" JOBS=4 \
-            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=SOURCE -DEVENGINE_COMPILER_CACHE=OFF"
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
 
   linux-arm64:
     name: Linux ARM64 (${{ matrix.configuration }}, build)
@@ -364,7 +364,7 @@ jobs:
           suffix=""
           if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
           make "build/linux-arm64${suffix}" JOBS=4 \
-            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=SOURCE -DEVENGINE_COMPILER_CACHE=OFF"
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
 
   windows:
     name: Windows

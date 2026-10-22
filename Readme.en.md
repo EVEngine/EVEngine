@@ -52,8 +52,10 @@ CI builds these targets on native GitHub-hosted `windows-11-arm` and
 `ubuntu-24.04-arm` runners. The lanes follow the existing Windows/Linux change
 scopes: normal runs build Debug; `build_type=release` builds Release and
 `build_type=both` builds both configurations. Each lane compiles and links the
-engine and test binaries, using pinned third-party sources because ARM64 Windows
-and Linux dependency packages are not published. These are build checks;
+engine and test binaries, requiring the matching ARM64 third-party release
+packages (`EVENGINE_THIRD_PARTY_MODE=PREBUILT`). Dependency source fixes and binary
+packaging belong to the third-party repository. Missing packages fail explicitly
+instead of rebuilding dependencies in these CI lanes. These are build checks;
 ARM64 graphics tests and SDK release packaging are not part of these lanes.
 
 English user guides are maintained by hand; Chinese is the authoritative source. Guides not yet translated are marked Chinese in the English handbook.
