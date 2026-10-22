@@ -5900,6 +5900,7 @@
           "UI.componentScheduling.coalescesAndPreservesReentrantEdits",
           "UI.componentScheduling.failedBatchRetainsRemainingWork",
           "UI.editorKit.desktopCompositionRenders",
+          "UI.editorKit.textControlsInteraction",
           "UI.layout.measureNestedFlexAndWindowContent",
           "UI.p1.statsAfterHeadlessRender",
           "UI.p1.scrollListHeadlessRenderLarge",
@@ -10443,6 +10444,7 @@
           "UI.scriptStyleBuilder.mountBuildAs",
           "UI.editorKit.declarativeComponents",
           "UI.editorKit.scriptBuilderAndSerialization",
+          "UI.editorKit.textToolsRoundTripAndReconcile",
           "UI.adv.sliderProgressInputCollapseChild",
           "UI.adv.builderScriptWidgets",
           "UI.adv.wantCaptureAPI",
@@ -11965,6 +11967,24 @@
         ]
       }
     },
+    "unit/procgen/procgen_auto_bridge.cpp": {
+      "module": "procgen",
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.autoBridge.tenTopologiesHaveValidDistinctGeometry",
+          "procgen.autoBridge.planEditsAndInclinedEndpointsAreDeterministic",
+          "procgen.autoBridge.rejectsInvalidRequestsAndPlans",
+          "procgen.autoBridge.recipeSupportsAllTypesAndToggles",
+          "procgen.autoBridge.referencePresetsAndDefaultsShareOneContract",
+          "procgen.autoBridge.customSectionsRejectInvalidAndCollapsedGeometry"
+        ]
+      },
+      "origins": [
+        "procgen_auto_bridge.cpp"
+      ]
+    },
     "unit/procgen/procgen_arrow.cpp": {
       "role": "tests",
       "default": "local-logic",
@@ -11978,6 +11998,103 @@
         ]
       },
       "module": "procgen"
+    },
+    "integration/frame-recording/frame_recording_tests.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "graphics",
+      "modules": [
+        "graphics",
+        "thread",
+        "common",
+        "window"
+      ],
+      "task": "frame-recording",
+      "cases": {
+        "module-composition": [
+          "graphics.frameRecording.inlineBudgetAndPeriodicReprobe"
+        ],
+        "render-window": [
+          "graphics.frameRecording.fxaaSlotReuseResizeAndPersistentCanvas"
+        ]
+      }
+    },
+    "integration/profiler-capture/profile_capture_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "profiler.core.reportMeasuresCapturedSpan",
+          "profiler.core.sameNameDifferentStorageAggregates",
+          "profiler.capture.automaticFrameBeginIncludesEarlier3DWork"
+        ]
+      },
+      "module": "profiler",
+      "modules": [
+        "common",
+        "profiler"
+      ],
+      "task": "profiler-capture"
+    },
+    "integration/vsync-config/vsync_config_tests.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "graphics",
+      "modules": [
+        "graphics",
+        "window",
+        "common"
+      ],
+      "task": "vsync-config",
+      "cases": {
+        "render-window": [
+          "scriptConfig.vsyncDefaultsEnabled",
+          "scriptConfig.vsyncExplicitTrue",
+          "scriptConfig.vsyncFalseUsesUnsynchronizedPresent",
+          "scriptConfig.vsyncAppliedBeforeEditorWindow",
+          "scriptConfig.vsyncRejectsNonBoolean"
+        ]
+      }
+    },
+    "integration/material-studio/material_preview_shadows.cpp": {
+      "role": "tests",
+      "default": "render-offscreen",
+      "cases": {
+        "render-offscreen": [
+          "editor.material.preview_shadows_affect_pixels_and_capture_path_stays_unshadowed"
+        ]
+      },
+      "module": "graphics",
+      "task": "material-studio"
+    },
+    "integration/material-studio/material_studio_scripts.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "editor.material.facade_script_projects_owned_values_and_checked_failures",
+          "editor.material.studio_publication_clears_resources_and_preserves_preview_on_failure",
+          "editor.material.preview_geometry_has_recessed_rings_valid_normals_and_matching_sky_edges",
+          "editor.material.preview_selection_failures_preserve_active_resources_and_fit_shared_bounds"
+        ]
+      },
+      "module": "material_editor",
+      "task": "material-studio"
+    },
+    "unit/material_editor/material_editor_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "editor.material.facade_patch_is_one_undo_record",
+          "editor.material.facade_invalid_patch_preserves_document_and_history",
+          "editor.material.facade_cross_field_validation_is_candidate_first",
+          "editor.material.facade_snapshot_restore_is_undoable_and_migrates",
+          "editor.material.facade_noop_preserves_redo_and_revision",
+          "editor.material.facade_schema_and_workspace_are_detached"
+        ]
+      },
+      "module": "material_editor"
     },
     "integration/layered-cloth/physics_layered_cloth_gpu.cpp": {
       "role": "tests",
@@ -12019,46 +12136,6 @@
       "origins": [
         "physics_layered_cloth.cpp"
       ]
-    },
-    "integration/material-studio/material_preview_shadows.cpp": {
-      "role": "tests",
-      "default": "render-offscreen",
-      "cases": {
-        "render-offscreen": [
-          "editor.material.preview_shadows_affect_pixels_and_capture_path_stays_unshadowed"
-        ]
-      },
-      "module": "graphics",
-      "task": "material-studio"
-    },
-    "integration/material-studio/material_studio_scripts.cpp": {
-      "role": "tests",
-      "default": "script-binding",
-      "cases": {
-        "script-binding": [
-          "editor.material.facade_script_projects_owned_values_and_checked_failures",
-          "editor.material.studio_publication_clears_resources_and_preserves_preview_on_failure",
-          "editor.material.preview_geometry_has_recessed_rings_valid_normals_and_matching_sky_edges",
-          "editor.material.preview_selection_failures_preserve_active_resources_and_fit_shared_bounds"
-        ]
-      },
-      "module": "material_editor",
-      "task": "material-studio"
-    },
-    "unit/material_editor/material_editor_tests.cpp": {
-      "role": "tests",
-      "default": "local-logic",
-      "cases": {
-        "local-logic": [
-          "editor.material.facade_patch_is_one_undo_record",
-          "editor.material.facade_invalid_patch_preserves_document_and_history",
-          "editor.material.facade_cross_field_validation_is_candidate_first",
-          "editor.material.facade_snapshot_restore_is_undoable_and_migrates",
-          "editor.material.facade_noop_preserves_redo_and_revision",
-          "editor.material.facade_schema_and_workspace_are_detached"
-        ]
-      },
-      "module": "material_editor"
     },
     "integration/avatar-appearance/avatar_appearance_script.cpp": {
       "role": "tests",

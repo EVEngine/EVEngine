@@ -46,6 +46,7 @@ config <- {
     height = 540
     title = "EveScript Tutorial"
     hotReload = true
+    vsync = true // 默认开启；设为 false 请求关闭垂直同步。
     // 默认 ["."]。apps/<editor> 要监视父级 workflow 时写成 [".."]。
     // hotReloadWatch = ["."]
 

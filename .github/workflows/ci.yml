@@ -893,6 +893,13 @@ jobs:
               -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
               -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
           }
+          dawn_tp=build/webgpu-macos/_deps/dawn-src/third_party
+          dawn_deps_ok() {
+            [[ -f "$dawn_tp/abseil-cpp/CMakeLists.txt" ]] &&
+              [[ -f "$dawn_tp/glfw3/CMakeLists.txt" || -f "$dawn_tp/glfw3/src/CMakeLists.txt" ]] &&
+              [[ -f "$dawn_tp/spirv-headers/CMakeLists.txt" || -f "$dawn_tp/spirv-headers/src/CMakeLists.txt" ||
+                 -f build/webgpu-macos/_deps/eve_spirv_headers-src/CMakeLists.txt ]]
+          }
           for attempt in 1 2 3; do
             echo "Dawn Metal configure attempt ${attempt}/3"
             if configure_dawn; then

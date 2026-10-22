@@ -2,6 +2,12 @@
 
 [English](../../en/usr/modules/graphics.md)
 
+游戏 `config.nut` 支持布尔配置 `vsync`，默认 `true`；设置 `vsync = false` 请求关闭垂直同步。
+启动时会在普通窗口或编辑器宿主创建窗口前应用，修改配置后重启游戏生效。
+`gfx.getVSyncCount()` 返回当前请求值（关闭为 0，开启为 1）；`gfx.setVSyncCount(0)` / `gfx.setVSyncCount(1)`
+可在运行时更新请求。Vulkan 开启时优先 Mailbox、其次 FIFO；关闭时优先 Immediate，
+不支持时按原有后端策略回退 Mailbox/FIFO，所以关闭不保证所有平台都能解除显示同步。
+
 `Mesh.getLocalBounds()` 返回标准 Result，其 value 为 `[minX,minY,minZ,maxX,maxY,maxZ]`。
 结果由 CPU 顶点计算，CPU morph baking 会更新边界；GPU 蒙皮和着色器位移不包含在内。
 无有限顶点时返回 NotFound。

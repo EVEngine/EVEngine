@@ -3,6 +3,7 @@
 #include <array>
 #include <memory>
 #include <string>
+#include "common/Profile.h"
 #include "graphics/vulkan/FrameGraphJobs.h"
 #include "graphics/vulkan/Graphics.h"
 #include "graphics/vulkan/GraphicsInternal.h"
@@ -15,6 +16,7 @@ void Graphics::resetDeferredFrameGraphs() {
     // submitted slot before destroying graphs, then destroy target images.
     if (device.instance) device->waitIdle();
     for (auto &graph : deferredFrameGraphs_) graph.reset();
+    deferredRecordingState_    = {};
     deferredGraphRecorded_     = false;
     deferredGraphRecordedSlot_ = 0;
 }
@@ -259,13 +261,23 @@ void Graphics::recordDeferredFrameGraph() {
     // in the compiled phase for this record cycle — vkb::FrameGraph enforces
     // build -> compile -> record -> submit and record() exactly once per
     // compile.
-    graph->compile();
+    {
+        EV_PROFILE_MODULE("graphics", "DeferredGraph.Compile");
+        graph->compile();
+    }
     // Parallel executor: each pass owns a dedicated command pool (one pool per
     // frame slot per pass), so the workers never share a pool while recording
     // concurrently — the Vulkan external-synchronization rule for command
     // pools is satisfied structurally.
-    recordFrameGraphWithJobSystem(*graph, jobs);
-    graph->submit();
+    {
+        EV_PROFILE_MODULE("graphics", "DeferredGraph.RecordAndJoin");
+        recordFrameGraphWithJobSystem(*graph, jobs, deferredRecordingState_);
+    }
+    {
+        EV_PROFILE_MODULE("graphics", "DeferredGraph.Submit");
+        submitGpuTimingPrefix();
+        graph->submit();
+    }
     // Match shadowDesc.afterLayout: descriptors must describe the layout the
     // graph actually submitted, including clear-only shadow passes.
     if (!shadowMaps.empty()) currentShadowMap().image.setCurrentLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
