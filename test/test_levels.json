@@ -12063,6 +12063,63 @@
         "avatar_appearance.cpp"
       ],
       "task": "avatar-appearance"
+    },
+    "integration/projectile-behavior/continuous_solver.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "carrierSolver.remainderMultipleBouncesAndFramePartition",
+          "carrierSolver.intervalDistanceAndExpirySurviveBounce",
+          "carrierSolver.budgetsAndLaterProviderFailureRollbackWholeFrame",
+          "carrierSolver.substepBoundsSnapshotAndCallbackRemainder",
+          "carrierSolver.zeroProgressAndMalformedContactsAreBounded",
+          "carrierSolver.thresholdTimesAndDeferredChildren",
+          "carrierSolver.predictiveSamplesOncePerOuterUpdate",
+          "carrierSolver.pierceDeduplicatesAcrossSubstepsAndRestore",
+          "carrierSolver.impactSpeedCrossingAndLaterCallbackFailure",
+          "carrierSolver.optionalCollisionAndWorldSweep"
+        ]
+      },
+      "module": "weapon",
+      "task": "projectile-behavior"
+    },
+    "integration/projectile-behavior/advanced_carrier.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "advancedCarrier.customMotionAtomicityReplayAndReentrancy",
+          "advancedCarrier.customMotionCollisionAndClampedLifetime",
+          "advancedCarrier.rotationDragAndSignedAcceleration",
+          "advancedCarrier.antiparallelHomingAndOrbitProviderContract",
+          "advancedCarrier.seededWanderSnapshotReplayAndCodec",
+          "advancedCarrier.distanceSpeedApexAndLifetimeTriggers",
+          "advancedCarrier.bounceContactAndInvalidSnapshotRollback",
+          "advancedCarrier.predictiveLeadAndStoppedSpeedRecovery",
+          "advancedCarrier.intervalBudgetRecipeMutationAndExpiryBoundaries",
+          "advancedCarrier.curvesRemainBoundedAcrossManyPeriods",
+          "advancedCarrier.roughBounceReplayAndSnapshotVersionValidation",
+          "advancedCarrier.invalidOperatorAndTriggerCompositionIsRejected",
+          "advancedCarrier.triggerChronologyAndBouncePathRespectContact"
+        ]
+      },
+      "module": "weapon",
+      "task": "projectile-behavior"
+    },
+    "integration/projectile-behavior/world_sweep.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "carrierWorldSweep.box3dContractAndRestore",
+          "carrierWorldSweep.joltContractAndRestore",
+          "carrierWorldSweep.bodyDestructionAndBudget",
+          "carrierWorldSweep.carrierPierceSnapshotAndFailure"
+        ]
+      },
+      "module": "physics",
+      "task": "projectile-behavior"
     }
   }
 }
