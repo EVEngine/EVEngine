@@ -1357,3 +1357,5 @@ rpg-classic/skill:
 # build/.build-docker: Dockerfile
 # 	docker build . --tag evengine
 # 	mkdir -p build && touch $@
+
+include cmake/native_arm64.mk
