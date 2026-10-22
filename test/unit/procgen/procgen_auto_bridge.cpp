@@ -1,6 +1,5 @@
 #include "procgen/algorithms/MarchingCubes.h"
 #include "procgen/road/BridgeGenerator.h"
-#include "procgen/road/RoadRecipes.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
@@ -130,7 +129,7 @@ TEST_CASE("procgen.autoBridge.rejectsInvalidRequestsAndPlans") {
 
 TEST_CASE("procgen.autoBridge.recipeSupportsAllTypesAndToggles") {
     auto& registry = MeshRecipeRegistry::instance();
-    registerRoadMeshRecipes(registry);
+    registry.registerBuiltins();
     Params params;
     params.setFloat("deckWidth", 9.f);
     params.setFloat("endY", 16.f);
@@ -164,7 +163,7 @@ TEST_CASE("procgen.autoBridge.recipeSupportsAllTypesAndToggles") {
 
 TEST_CASE("procgen.autoBridge.referencePresetsAndDefaultsShareOneContract") {
     auto& registry = MeshRecipeRegistry::instance();
-    registerRoadMeshRecipes(registry);
+    registry.registerBuiltins();
     for (int index = 0; index < 10; ++index) {
         auto kind   = static_cast<BridgeKind>(index);
         auto source = bridgePreset(kind);
