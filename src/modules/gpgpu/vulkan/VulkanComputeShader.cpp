@@ -22,6 +22,7 @@ VulkanComputeShader::~VulkanComputeShader() {
         dev->destroyDescriptorSetLayout(setLayout_, device_->allocation_callbacks);
         setLayout_ = vk::DescriptorSetLayout{};
     }
+    for (vk::DescriptorPool pool : retiredPools_) dev->destroyDescriptorPool(pool, device_->allocation_callbacks);
     if (descriptorPool_) {
         // Sets allocated from the pool are freed with it.
         dev->destroyDescriptorPool(descriptorPool_, device_->allocation_callbacks);
@@ -83,29 +84,38 @@ void VulkanComputeShader::clearBindings() {
 void VulkanComputeShader::flushDescriptors(vkb::Device &device) {
     if (!descriptorsDirty_ && descriptorSet_) return;
 
-    if (!descriptorPool_) {
-        // maxSets sets x kMaxBindings storage-buffer descriptors per set: the
-        // pool must hold the deferred backlog from multi-dispatch Sequences.
-        vk::DescriptorPoolSize poolSize{vk::DescriptorType::eStorageBuffer,
-                                        uint32_t(kMaxBindings) * 64};
-        vk::DescriptorPoolCreateInfo poolInfo{};
-        poolInfo.flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet;
-        poolInfo.maxSets = 64;
-        poolInfo.poolSizeCount = 1;
-        poolInfo.pPoolSizes = &poolSize;
-        descriptorPool_ = device->createDescriptorPool(poolInfo, device.allocation_callbacks);
-    }
-
     if (descriptorSet_) {
         if (activeSequenceCount_ > 0) {
-            // A previously recorded command buffer in the open Sequence may
-            // still reference this set. Defer the free until that Sequence
-            // submits and waits; the pool is sized for the deferred backlog.
-            pendingSets_.push_back(descriptorSet_);
+            // Keep each immutable binding snapshot alive until all sequences
+            // that may reference it have retired.
+            pendingSets_.push_back({descriptorPool_, descriptorSet_});
         } else {
             device->freeDescriptorSets(descriptorPool_, descriptorSet_);
+            --allocatedSets_;
         }
         descriptorSet_ = vk::DescriptorSet{};
+    }
+
+    constexpr uint32_t setsPerPool = 64;
+    if (!descriptorPool_ || allocatedSets_ == setsPerPool) {
+        // Long recording batches can retain more than one pool of snapshots.
+        // Grow before exhausting maxSets; some drivers report fragmentation
+        // while others allow allocations beyond the declared pool capacity.
+        vk::DescriptorPoolSize       poolSize{vk::DescriptorType::eStorageBuffer, uint32_t(kMaxBindings) * setsPerPool};
+        vk::DescriptorPoolCreateInfo poolInfo{};
+        poolInfo.flags         = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet;
+        poolInfo.maxSets       = setsPerPool;
+        poolInfo.poolSizeCount = 1;
+        poolInfo.pPoolSizes    = &poolSize;
+        const auto nextPool    = device->createDescriptorPool(poolInfo, device.allocation_callbacks);
+        try {
+            if (descriptorPool_) retiredPools_.push_back(descriptorPool_);
+        } catch (...) {
+            device->destroyDescriptorPool(nextPool, device.allocation_callbacks);
+            throw;
+        }
+        descriptorPool_ = nextPool;
+        allocatedSets_  = 0;
     }
 
     vk::DescriptorSetAllocateInfo alloc{};
@@ -114,6 +124,7 @@ void VulkanComputeShader::flushDescriptors(vkb::Device &device) {
     alloc.pSetLayouts = &setLayout_;
     auto sets = device->allocateDescriptorSets(alloc);
     descriptorSet_ = sets[0];
+    ++allocatedSets_;
 
     // Dummy 4-byte SSBO for unused bindings (validation requires all layout slots valid).
     if (!dummyBuffer_) {
@@ -159,9 +170,16 @@ void VulkanComputeShader::endSequence() {
 void VulkanComputeShader::releasePendingDescriptors(vkb::Device &device) {
     if (activeSequenceCount_ > 0) return;
     if (pendingSets_.empty()) return;
-    for (vk::DescriptorSet set : pendingSets_)
-        device->freeDescriptorSets(descriptorPool_, set);
+    for (const auto &lease : pendingSets_) {
+        if (lease.pool != descriptorPool_) continue;
+        device->freeDescriptorSets(lease.pool, lease.set);
+        --allocatedSets_;
+    }
     pendingSets_.clear();
+    // Every set in a retired pool is now idle. Destroying the whole pool also
+    // releases its descriptors without retaining a high-water allocation.
+    for (vk::DescriptorPool pool : retiredPools_) device->destroyDescriptorPool(pool, device.allocation_callbacks);
+    retiredPools_.clear();
 }
 
 }  // namespace eve::gpgpu

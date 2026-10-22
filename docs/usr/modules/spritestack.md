@@ -92,7 +92,7 @@ local layers = spritestack.sliceModel(model, 24, 128, 128, "y", 0.0);
 
 **源码：** [`src/modules/spritestack/`](../../../src/modules/spritestack/)
 **示例：** [`examples/sprite-stack/`](../../../examples/sprite-stack/)
-**相关测试：** [`test/spritestack.cpp`](../../../test/spritestack.cpp)
+**相关测试：** [`test/integration/asset-import/asset_import_graphics_tests.cpp`](../../../test/integration/asset-import/asset_import_graphics_tests.cpp)
 
 这里的模型只用于生成 RGBA 切片；运行时仍走 2D 管线。
 

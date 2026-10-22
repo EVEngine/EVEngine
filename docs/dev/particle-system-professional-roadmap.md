@@ -78,7 +78,7 @@ and a six-emitter/150-frame rendered stress capture.
   emitter. A borrowed `IParticleSdfField` interface samples 2D signed distance
   for CPU collision (`setSdfField`); GPU resident sim reports `sdf` fallback.
 - Reference effect pack under `examples/particle-effects/` (fire, smoke, impact,
-  trail, weather) plus screenshot coverage in `test/particles_p2_p3.cpp`.
+  trail, weather) plus screenshot coverage in `test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp`.
 
 Remaining P2 work: GPU lit-resident data, mesh particle renderer inside the
 particles module, and active motion-vector buffer writes.

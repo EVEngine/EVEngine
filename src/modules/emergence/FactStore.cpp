@@ -1,5 +1,6 @@
 #include "emergence/FactStore.h"
 
+#include "common/ConditionKeys.h"
 #include "common/Diagnostic.h"
 
 #include <set>
@@ -35,8 +36,8 @@ bool exactFields(const eve::Value::Object& object, std::initializer_list<std::st
     return true;
 }
 
-eve::Result<decision::ConditionReasonCode> parseReasonCode(std::string_view text) {
-    using R                                             = decision::ConditionReasonCode;
+eve::Result<condition::ConditionReasonCode> parseReasonCode(std::string_view text) {
+    using R                                             = condition::ConditionReasonCode;
     static const std::pair<std::string_view, R> names[] = {
         {"passed", R::Passed},
         {"child_failed", R::ChildFailed},
@@ -57,45 +58,45 @@ eve::Result<decision::ConditionReasonCode> parseReasonCode(std::string_view text
         {"invalid_condition", R::InvalidCondition},
     };
     for (const auto& [name, code] : names) {
-        if (name == text) return eve::Result<decision::ConditionReasonCode>::success(code);
+        if (name == text) return eve::Result<condition::ConditionReasonCode>::success(code);
     }
-    return eve::Result<decision::ConditionReasonCode>::failure(eve::Diagnostic::error(
+    return eve::Result<condition::ConditionReasonCode>::failure(eve::Diagnostic::error(
         eve::DiagnosticCode::InvalidArgument, "unknown condition reason code", "reason", {}, "emergence.fact"));
 }
 
-eve::Result<decision::ConditionResult> decodePolicyResult(const eve::Value& value) {
+eve::Result<condition::ConditionResult> decodePolicyResult(const eve::Value& value) {
     const auto* object = value.getIf<eve::Value::Object>();
     if (object == nullptr)
-        return eve::Result<decision::ConditionResult>::failure(eve::Diagnostic::error(
+        return eve::Result<condition::ConditionResult>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "policy result must be an object", {}, {}, "emergence.fact"));
     if (!exactFields(*object, {"passed", "reason", "evidence", "details"}))
-        return eve::Result<decision::ConditionResult>::failure(eve::Diagnostic::error(
+        return eve::Result<condition::ConditionResult>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "policy result contains an unknown field", {}, {}, "emergence.fact"));
     const auto* passed = field(*object, "passed");
     const auto* reason = field(*object, "reason");
     if (passed == nullptr || !passed->isBool())
-        return eve::Result<decision::ConditionResult>::failure(eve::Diagnostic::error(
+        return eve::Result<condition::ConditionResult>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "policy passed must be a boolean", "passed", {}, "emergence.fact"));
     if (reason == nullptr || !reason->isString())
-        return eve::Result<decision::ConditionResult>::failure(eve::Diagnostic::error(
+        return eve::Result<condition::ConditionResult>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "policy reason must be a string", "reason", {}, "emergence.fact"));
     auto code = parseReasonCode(reason->asString());
-    if (!code) return eve::Result<decision::ConditionResult>::failure(code.status());
+    if (!code) return eve::Result<condition::ConditionResult>::failure(code.status());
     eve::Value evidence;
     eve::Value details = eve::Value::Object{};
     if (const auto* evidenceValue = field(*object, "evidence")) evidence = *evidenceValue;
     if (const auto* detailsValue = field(*object, "details")) details = *detailsValue;
     if (passed->asBool())
-        return eve::Result<decision::ConditionResult>::success(
-            decision::ConditionResult::success(std::move(evidence), std::move(details)));
-    return eve::Result<decision::ConditionResult>::success(
-        decision::ConditionResult::failed(code.value(), std::move(evidence), std::move(details)));
+        return eve::Result<condition::ConditionResult>::success(
+            condition::ConditionResult::success(std::move(evidence), std::move(details)));
+    return eve::Result<condition::ConditionResult>::success(
+        condition::ConditionResult::failed(code.value(), std::move(evidence), std::move(details)));
 }
 
-eve::Value encodePolicyResult(const decision::ConditionResult& result) {
+eve::Value encodePolicyResult(const condition::ConditionResult& result) {
     eve::Value::Object object;
     object.emplace("passed", eve::Value(result.passed()));
-    object.emplace("reason", eve::Value(decision::conditionReasonCodeName(result.reasonCode())));
+    object.emplace("reason", eve::Value(condition::conditionReasonCodeName(result.reasonCode())));
     object.emplace("evidence", result.evidence());
     object.emplace("details", result.details());
     return eve::Value(std::move(object));
@@ -193,7 +194,7 @@ FactChange FactStore::setAuthority(std::string scope, bool granted) {
     return assign(authorities_, std::move(scope), granted);
 }
 
-FactChange FactStore::setPolicy(std::string name, decision::ConditionResult result) {
+FactChange FactStore::setPolicy(std::string name, condition::ConditionResult result) {
     if (name.empty()) return FactChange::Unchanged;
     auto it = policies_.find(name);
     if (it != policies_.end()) {
@@ -216,38 +217,35 @@ FactChange FactStore::clearTag(std::string_view tag) {
 }
 
 std::optional<eve::Value> FactStore::value(std::string_view key) const {
+    if (auto tag = condition::stripPrefix(key, condition::kTagPrefix)) {
+        auto it = tags_.find(std::string(*tag));
+        return it == tags_.end() ? std::nullopt : std::optional<eve::Value>(eve::Value(it->second));
+    }
+    if (auto attr = condition::stripPrefix(key, condition::kAttrPrefix)) {
+        auto it = attributes_.find(std::string(*attr));
+        return it == attributes_.end() ? std::nullopt : std::optional<eve::Value>(it->second);
+    }
+    if (auto resource = condition::stripPrefix(key, condition::kResourcePrefix)) {
+        auto it = resources_.find(std::string(*resource));
+        return it == resources_.end() ? std::nullopt : std::optional<eve::Value>(it->second);
+    }
+    if (auto state = condition::stripPrefix(key, condition::kStatePrefix)) {
+        auto it = states_.find(std::string(*state));
+        return it == states_.end() ? std::nullopt : std::optional<eve::Value>(it->second);
+    }
     auto it = values_.find(std::string(key));
     return it == values_.end() ? std::nullopt : std::optional<eve::Value>(it->second);
 }
 
-std::optional<bool> FactStore::hasTag(std::string_view tag) const {
-    auto it = tags_.find(std::string(tag));
-    return it == tags_.end() ? std::nullopt : std::optional<bool>(it->second);
-}
-
-std::optional<eve::Value> FactStore::attribute(std::string_view key) const {
-    auto it = attributes_.find(std::string(key));
-    return it == attributes_.end() ? std::nullopt : std::optional<eve::Value>(it->second);
-}
-
-std::optional<eve::Value> FactStore::resource(std::string_view key) const {
-    auto it = resources_.find(std::string(key));
-    return it == resources_.end() ? std::nullopt : std::optional<eve::Value>(it->second);
-}
-
-std::optional<eve::Value> FactStore::state(std::string_view key) const {
-    auto it = states_.find(std::string(key));
-    return it == states_.end() ? std::nullopt : std::optional<eve::Value>(it->second);
-}
-
-std::optional<bool> FactStore::authority(std::string_view scope) const {
-    auto it = authorities_.find(std::string(scope));
-    return it == authorities_.end() ? std::nullopt : std::optional<bool>(it->second);
-}
-
-std::optional<decision::ConditionResult> FactStore::policy(std::string_view name, const eve::Value&) const {
+std::optional<condition::ConditionResult> FactStore::policy(std::string_view name, const eve::Value& arguments) const {
+    if (auto authority = condition::resolveAuthorityAllow(name, arguments, [this](std::string_view scope) {
+            auto it = authorities_.find(std::string(scope));
+            return it == authorities_.end() ? std::nullopt : std::optional<bool>(it->second);
+        })) {
+        return authority;
+    }
     auto it = policies_.find(std::string(name));
-    return it == policies_.end() ? std::nullopt : std::optional<decision::ConditionResult>(it->second);
+    return it == policies_.end() ? std::nullopt : std::optional<condition::ConditionResult>(it->second);
 }
 
 std::string FactStore::snapshotJson() const {

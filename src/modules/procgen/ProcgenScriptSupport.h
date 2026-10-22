@@ -33,6 +33,10 @@ struct NativeProxyReleases {
     struct Record {
         std::any                           reference;
         std::function<eve::Result<void>()> release;
+        // Borrowed C-API instance identity, valid until its release hook removes this record.
+        // Access and invalidation run on the owning VM thread; this does not root the instance.
+        HSQUIRRELVM vm;
+        HSQOBJECT   instance;
     };
     static inline std::mutex                     mutex;
     static inline std::unordered_map<T*, Record> records;
@@ -132,12 +136,32 @@ ssq::Table makeOwnedNativeProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Re
     }
     sq_remove(vm, -2);
     auto native = view.get();
+    std::optional<typename NativeProxyReleases<T>::Record> retired;
+    {
+        std::lock_guard lock(NativeProxyReleases<T>::mutex);
+        auto&           records = NativeProxyReleases<T>::records;
+        if (auto old = records.find(native); old != records.end()) {
+            retired.emplace(std::move(old->second));
+            records.erase(old);
+        }
+    }
+    if (retired) {
+        // An explicitly released allocation can be reused while its script proxy is still alive.
+        // Disarm that proxy before publishing the new generation at the same native address.
+        sq_pushobject(retired->vm, retired->instance);
+        sq_setreleasehook(retired->vm, -1, nullptr);
+        sq_setinstanceup(retired->vm, -1, nullptr);
+        sq_pop(retired->vm, 1);
+    }
+    HSQOBJECT instance;
+    sq_getstackobj(vm, -1, &instance);
     {
         std::lock_guard lock(NativeProxyReleases<T>::mutex);
         NativeProxyReleases<T>::records.emplace(
             native,
             typename NativeProxyReleases<T>::Record{
-                ref, [ref, release = std::forward<Release>(release)]() mutable { return std::invoke(release, ref); }});
+                ref, [ref, release = std::forward<Release>(release)]() mutable { return std::invoke(release, ref); },
+                vm, instance});
     }
     sq_setinstanceup(vm, -1, native);
     sq_settypetag(vm, -1, reinterpret_cast<SQUserPointer>(hashCode));

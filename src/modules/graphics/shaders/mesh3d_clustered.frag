@@ -65,6 +65,7 @@ layout(set = 0, binding = 7, std140) uniform ShadowFrame {
     vec4 bias;
     vec4 cascadeBias;
     vec4 cascadeTexel;
+    vec4 cascadeUvScale;
     mat4 localVP[4];
     vec4 localSlot01;
     vec4 localSlot23;
@@ -182,6 +183,8 @@ vec3 shadeLight(vec3 N, vec3 V, vec3 albedo, float metallic, float roughness, ve
     return (kD * albedo * diffuse + specular * NdotL) * radiance;
 }
 
+#include "shadow_cascade_uv.glsl"
+
 /** Hardware-PCF shadow lookup for a single cascade. Returns lit fraction in [0,1]. */
 float blockerPenumbra(vec3 worldPos, int cascade, float bias) {
     vec4 lightClip = shadow.lightVP[cascade] * vec4(worldPos, 1.0);
@@ -189,7 +192,9 @@ float blockerPenumbra(vec3 worldPos, int cascade, float bias) {
     vec2 uv = ndc.xy * 0.5 + 0.5;
     if (any(lessThan(uv, vec2(0.0))) || any(greaterThan(uv, vec2(1.0))))
         return 0.5;
-    vec2 texel = 1.0 / vec2(textureSize(shadowMapRaw, 0).xy);
+    float uvScale = eveCascadeUvScale(cascade);
+    float mapSize = eveCascadeMapSize(cascade);
+    vec2 texel = vec2(1.0 / mapSize);
     const vec2 searchOffsets[8] = vec2[8](
         vec2(-1.0, -1.0), vec2(0.0, -1.5), vec2(1.0, -1.0), vec2(-1.5, 0.0),
         vec2(1.5, 0.0), vec2(-1.0, 1.0), vec2(0.0, 1.5), vec2(1.0, 1.0));
@@ -197,9 +202,8 @@ float blockerPenumbra(vec3 worldPos, int cascade, float bias) {
     float blockerCount = 0.0;
     float receiver = ndc.z - bias;
     for (int i = 0; i < 8; ++i) {
-        float blocker = texture(shadowMapRaw,
-                                vec3(clamp(uv + searchOffsets[i] * texel * 1.5,
-                                           vec2(0.0), vec2(1.0)), float(cascade))).r;
+        vec2 s = clamp(uv + searchOffsets[i] * texel * 1.5, vec2(0.0), vec2(1.0));
+        float blocker = texture(shadowMapRaw, vec3(s * uvScale, float(cascade))).r;
         if (blocker < receiver) {
             blockerSum += blocker;
             blockerCount += 1.0;
@@ -208,7 +212,6 @@ float blockerPenumbra(vec3 worldPos, int cascade, float bias) {
     if (blockerCount < 0.5) return 0.5;
     float averageBlocker = blockerSum / blockerCount;
     float separation = max(receiver - averageBlocker, 0.0);
-    float mapSize = float(textureSize(shadowMapRaw, 0).x);
     return clamp(0.5 + separation * mapSize * max(shadow.bias.w, 0.0), 0.5, 4.0);
 }
 
@@ -221,7 +224,8 @@ float sampleShadowCascade(vec3 worldPos, int cascade, float bias, float filterRa
     if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0 || depth < 0.0 || depth > 1.0)
         return 1.0;
 
-    vec2 texel = 1.0 / vec2(textureSize(shadowMap, 0).xy);
+    float uvScale = eveCascadeUvScale(cascade);
+    vec2 texel = vec2(1.0 / eveCascadeMapSize(cascade));
     // Tight rotated 3x3. Wider taps (1–1.2 texels) plus hardware 2x2 PCF ate
     // indoor creases: empty / unoccluded taps read as lit and drew a bright
     // rim on the left and top of Cornell umbrae.
@@ -238,13 +242,13 @@ float sampleShadowCascade(vec3 worldPos, int cascade, float bias, float filterRa
     float sum = 0.0;
     float zref = depth - bias;
     for (int i = 0; i < 9; ++i) {
-        vec2 s = uv + rotation * kPoisson[i] * texel * filterRadius;
+        vec2 sCascade = uv + rotation * kPoisson[i] * texel * filterRadius;
         // Clamp-to-edge on a cleared border texel is depth=1 → fully lit.
         // Count out-of-cascade taps as shadowed so frustum-edge walls
         // (Cornell left/ceiling) do not leak.
-        if (s.x < 0.0 || s.x > 1.0 || s.y < 0.0 || s.y > 1.0)
+        if (sCascade.x < 0.0 || sCascade.x > 1.0 || sCascade.y < 0.0 || sCascade.y > 1.0)
             continue;
-        sum += texture(shadowMap, vec4(s, float(cascade), zref));
+        sum += texture(shadowMap, vec4(sCascade * uvScale, float(cascade), zref));
     }
     return sum / 9.0;
 }

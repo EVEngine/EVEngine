@@ -3,6 +3,7 @@
 // One table, one owner per field: level_terrain.nut owns `terrain`,
 // level_whitebox.nut owns `pieces`, level_spawn.nut owns `spawns`,
 // level_play.nut owns `play`, level_document.nut owns persistence.
+// level_blocks.nut owns selection/scope/library; level_sculpt.nut owns strokes.
 // The table itself lives in a `persist` slot so a hot reload keeps the session.
 
 persist level = null;
@@ -19,11 +20,15 @@ function levelInit() {
         world = null, workspace = null,
 
         mode = "edit",          // "edit" | "play"
-        tool = "select",        // select | whitebox | spawn
+        tool = "select",        // select | whitebox | spawn | terrain | blocks
         gizmoMode = "translate", // translate | rotate | scale
         piece = "prototype.cube",
         recipes = [],           // whitebox palette (ProcgenKit prototype recipes)
-        selected = "",
+        selected = "", selection = [], scope = "root",
+        library = [], blockIndex = -1,
+        brushMode = "raise", brushRadius = 6.0, brushStrength = 1.6,
+        terrainUndo = [], terrainRedo = [], strokeBefore = null,
+        brushTarget = 0.0, brushClock = 0.0, terrainDirty = false,
         objects = [],
         pieces = {},            // objectId -> {recipe, values, entity, half}
         spawns = {},            // objectId -> {yaw, character, motionSet, entity, facing}
@@ -31,12 +36,12 @@ function levelInit() {
         rigCache = {},          // "character|motionSet" -> rigged character
         characterName = "Mannequin",
         motionSetName = "Locomotion",
-        terrain = null,         // level_terrain.nut
+        terrain = null, terrainDraft = null,         // level_terrain.nut
         play = null,            // level_play.nut
         serial = 0,
         revision = -1,
         status = "ready",
-        panelsDirty = true,
+        panelsDirty = true, layoutWidth = 0, layoutHeight = 0,
 
         // editor camera: orbit around a pannable focus point
         focusX = 0.0, focusY = 0.0, focusZ = 0.0,
@@ -85,8 +90,13 @@ function levelRefreshObjects() {
     local snapshot = level.session.snapshot();
     if (!levelChecked(snapshot)) return;
     level.objects = snapshot.value.objects;
+    scene.updateTransformsAll();
     level.revision = level.session.getRevision();
     if (levelObject(level.selected) == null) level.selected = "";
+    if (!levelIsGroup(level.scope)) level.scope = "root";
+    local selection = [];
+    foreach (id in level.selection) if (levelObject(id) != null) selection.push(id);
+    level.selection = selection;
     whiteboxReconcile();
     spawnReconcile();
     levelSyncGizmo();
@@ -140,4 +150,11 @@ function levelEulerQuaternion(rx, ry, rz) {
     local qy = [0.0, sin(ry * 0.5), 0.0, cos(ry * 0.5)];
     local qz = [0.0, 0.0, sin(rz * 0.5), cos(rz * 0.5)];
     return levelQuaternionMultiply(levelQuaternionMultiply(qy, qx), qz);
+}
+
+/** @brief Release a derived ECS renderable on the owner thread at a history boundary. */
+function levelReleaseRenderable(entity) {
+    if(entity==null) return;
+    local released=eve.destroyRenderable3D(entity.getEntityId(),entity.getEntityGeneration());
+    if(!released.ok) throw released.status.summary;
 }

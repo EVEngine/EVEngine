@@ -1,4 +1,6 @@
 create_module(EVCommon common)
+# ECS script component reflection uses the pinned VM internal class/instance layouts.
+target_include_directories(EVCommon PRIVATE "${CMAKE_SOURCE_DIR}/third-party/squirrel/squirrel")
 
 eve_configure_file_if_changed(${CMAKE_CURRENT_SOURCE_DIR}/common/config.h.in common/config.h)
 eve_configure_file_if_changed(${CMAKE_CURRENT_SOURCE_DIR}/common/BuildInfo.h.in common/BuildInfo.h)
@@ -41,13 +43,13 @@ add_custom_command(
             "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneCameraQueries.cpp"
             "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneNodeRef.h"
             "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneHost.h"
-            "${CMAKE_SOURCE_DIR}/test/scene.cpp"
-            "${CMAKE_SOURCE_DIR}/test/scene_binding_architecture.cpp"
+            "${CMAKE_SOURCE_DIR}/test/integration/script-api/script_api_graphics_scene_tests.cpp" "${CMAKE_SOURCE_DIR}/test/unit/scene/scene_tests.cpp"
+            "${CMAKE_SOURCE_DIR}/test/integration/script-api/script_api_graphics_scene_tests.cpp"
             "${CMAKE_SOURCE_DIR}/src/modules/inventory/binding_architecture.json"
             "${CMAKE_SOURCE_DIR}/src/modules/inventory/Inventory.cpp"
             "${CMAKE_SOURCE_DIR}/src/modules/inventory/Bag.cpp"
             "${CMAKE_SOURCE_DIR}/src/modules/inventory/Bag.h"
-            "${CMAKE_SOURCE_DIR}/test/inventory_binding_architecture.cpp"
+            "${CMAKE_SOURCE_DIR}/test/integration/script-api/script_api_graphics_dap_tests.cpp"
     COMMENT "Generating strict EveScript Binding Contracts"
     VERBATIM)
 target_sources(EVCommon PRIVATE "${_eve_binding_contract_cpp}")
@@ -106,23 +108,7 @@ endif()
 # Crash-backtrace support (backward-cpp from EVEngine/third-party, MIT). The
 # host binary installs an unhandled-exception handler (main.cpp) that prints a
 # symbolized stack trace on crash; it is a host-only tool, not a game module.
-if(WIN32)
-    add_library(EVBacktrace INTERFACE)
-    # backward.hpp lives in the third-party install; get its include dirs
-    # through the shared include target instead of global include_directories.
-    target_link_libraries(EVBacktrace INTERFACE eve_engine_includes)
-    if(EVENGINE_THIRD_PARTY_BINARY_DIR)
-        # Prebuilt-install mode: point at the install tree directly.
-        target_include_directories(EVBacktrace INTERFACE ${EVENGINE_THIRD_PARTY_BINARY_DIR}/include)
-        target_link_libraries(EVBacktrace INTERFACE
-            ${EVENGINE_THIRD_PARTY_BINARY_DIR}/lib/backward$<$<CONFIG:Debug>:mdd>$<$<NOT:$<CONFIG:Debug>>:md>.lib)
-    else()
-        # ExternalProject mode (CI): the root CMakeLists already added the
-        # third-party install include/lib dirs to the global search paths.
-        target_link_libraries(EVBacktrace INTERFACE
-            backward$<$<CONFIG:Debug>:mdd>$<$<NOT:$<CONFIG:Debug>>:md>)
-    endif()
-endif()
+include(${CMAKE_SOURCE_DIR}/cmake/host_backtrace.cmake)
 
 # Engine entry-point sources include common/config.h / cmdline/*.h directly;
 # link the shared include set explicitly (also propagates the third-party
