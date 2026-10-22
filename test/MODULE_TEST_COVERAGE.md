@@ -7,7 +7,7 @@ and task ownership. References are header/API-name evidence, not measured behavi
 coverage. Missing local-rule coverage is reported explicitly; no empty assertion
 or placeholder test is counted as coverage.
 
-Declared modules: **196**. Task groups: **27**.
+Declared modules: **196**. Task groups: **28**.
 
 - api-symbol-in-other-tests: 3
 - local-rules-recorded: 92
@@ -1798,7 +1798,7 @@ Cases: 18. Referenced/owning modules: `asset`, `camera`, `common`, `fluids`, `gr
 
 ### layered-cloth
 
-Cases: 15. Referenced/owning modules: `animation`, `card`, `common`, `economy`, `gpgpu`, `physics_cloth`, `procgen`, `rts`, `thread`, `transaction`, `weapon`.
+Cases: 15. Referenced/owning modules: `animation`, `avatar`, `card`, `common`, `economy`, `gpgpu`, `physics_cloth`, `procgen`, `rts`, `thread`, `transaction`, `weapon`.
 
 - [physics_layered_cloth_gpu.cpp](integration/layered-cloth/physics_layered_cloth_gpu.cpp)
 - [physics_layered_cloth_script.cpp](integration/layered-cloth/physics_layered_cloth_script.cpp)

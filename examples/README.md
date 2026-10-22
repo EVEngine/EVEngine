@@ -142,6 +142,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [voxel](voxel/README.md) | 流式体素地形 + 方块建造：脚本图集、流式 chunk 与 DDA 拾取 |
 | [voxel-terrain](voxel-terrain/README.md) | 体素引擎 + 地形生成：32³ chunk、贪婪矩形合并、视锥/视距裁剪、顶点 AO |
 | [ocean-voyage](ocean-voyage/README.md) | 可驾驶 055 展示舰、三频段 FFT 广阔海洋、GPU 驻留绘制、浮力与尾浪泡沫 |
+| [smoke-flipbook](smoke-flipbook/README.md) | 引擎气体模拟生成烟雾，烘焙透明 TGA 图集，磁盘重载后用 Flipbook 粒子播放 |
 | [fluid3d](fluid3d/README.md) | 体积流体实验室：19 个场景模式（水 / 黏性 / 烟雾 / 颗粒 / 射流 / 网格化 / 多相 / 热耦合 / 泡沫 / 移动 SDF / 重叠查询 / 尾流…）+ 70 余个 opt-in 数值验收脚本 |
 
 ## 程序化生成
