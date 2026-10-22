@@ -26,6 +26,7 @@
 #include "graphics/RayTracingCaps.h"
 #include "graphics/Shader.h"
 #include "graphics/Shadow.h"
+#include "graphics/ShadowScheme.h"
 #include "graphics/Texture.h"
 #include "graphics/vulkan/ComputePass.h"
 #include "graphics/vulkan/FrameArena.h"
@@ -1777,6 +1778,8 @@ private:
         vk::Framebuffer      framebuffers[ShadowConfig::kTotalLayers]{};
     };
     std::vector<ShadowMapSlot> shadowMaps;
+    /** @brief Edge length of the currently allocated shadow depth array (0 = none). */
+    int                           allocatedShadowMapSize = 0;
     vkb::DepthSampler shadowSampler{};
     vk::Sampler shadowRawSampler{};
     vkb::BuiltRenderPass shadowRenderPass{};
