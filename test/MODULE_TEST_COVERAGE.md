@@ -451,7 +451,7 @@ Source directory: `src/modules/combat/navigation`. Status: **task-tests-recorded
 
 ### common
 
-Source directory: `src/engine/common`. Status: **local-rules-recorded**. Local cases: **151**.
+Source directory: `src/engine/common`. Status: **local-rules-recorded**. Local cases: **152**.
 
 - Unit: [unit/common/common_tests.cpp](unit/common/common_tests.cpp)
 - Integration task `asset-pipeline`: [asset_pipeline_graphics_asset_import_unity_vegetation_material_tests.cpp](integration/asset-pipeline/asset_pipeline_graphics_asset_import_unity_vegetation_material_tests.cpp)
@@ -1711,7 +1711,7 @@ Cases: 11. Referenced/owning modules: `action`, `attributes`, `avatar`, `card`, 
 
 ### concurrency
 
-Cases: 112. Referenced/owning modules: `animation`, `asset`, `avatar`, `card`, `cmdline`, `common`, `crowd`, `data`, `decal`, `devtools`, `dialogue`, `economy`, `editing`, `editor`, `graphics`, `graphics_editing`, `graphics_fog`, `inventory`, `map`, `material_editing`, `material_editor`, `mouse`, `network`, `npc_ai`, `particles`, `physics_cloth`, `pixelworld`, `pixelworld_thread`, `platform_event`, `procgen`, `profiler`, `rts`, `rx`, `scene`, `sensing`, `statepatch`, `thread`, `voxel`, `voxel_editor`, `weapon`.
+Cases: 113. Referenced/owning modules: `animation`, `asset`, `avatar`, `card`, `cmdline`, `common`, `crowd`, `data`, `decal`, `devtools`, `dialogue`, `economy`, `editing`, `editor`, `graphics`, `graphics_editing`, `graphics_fog`, `inventory`, `map`, `material_editing`, `material_editor`, `mouse`, `network`, `npc_ai`, `particles`, `physics_cloth`, `pixelworld`, `pixelworld_thread`, `platform_event`, `procgen`, `profiler`, `rts`, `rx`, `scene`, `sensing`, `statepatch`, `thread`, `voxel`, `voxel_editor`, `weapon`.
 
 - [concurrency_graphics_tests.cpp](integration/concurrency/concurrency_graphics_tests.cpp)
 
