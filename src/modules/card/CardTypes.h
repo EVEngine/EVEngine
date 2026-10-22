@@ -9,9 +9,9 @@
 
 #include "attributes/AttributeProjection.h"
 #include "card/CardEffects.h"
+#include "common/Condition.h"
 #include "common/ECS.h"
 #include "common/definitions/DefinitionRuntime.h"
-#include "decision/Condition.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -85,7 +85,7 @@ struct CardDefinition {
     int         health = 0;
     glm::vec3   tint{0.62f, 0.50f, 0.40f};
     /** @brief Side-effect-free condition tree required before this card can play. */
-    eve::decision::Condition playCondition;
+    eve::condition::Condition playCondition;
     /** @brief Definition tags available to HasTag nodes. */
     std::vector<std::string> tags;
 };

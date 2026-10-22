@@ -32,6 +32,8 @@ enum class SequenceStatus : uint8_t { Idle, Recording, Submitted, Complete, Fail
  *     // or submitAsync() + poll()/wait() to overlap unrelated CPU work
  *     staging->downloadBytes(dst, nbytes);      // host-visible memcpy
  *
+ * Vulkan sequences that bind a storage_vertex buffer execute on the graphics
+ * queue, ordering resident vertex production with same-device frame draws.
  * A Sequence is reusable after synchronous submit(), or after an asynchronous
  * submission reaches Complete/Failed. Shaders keep their bindings between
  * records; pending work retains no C++ owners, so callers must keep referenced

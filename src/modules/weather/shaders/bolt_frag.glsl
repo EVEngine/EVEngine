@@ -30,6 +30,6 @@ void main() {
     float viewDist = length(vViewPos);
     float fogAmt = clamp(1.0 - exp(-viewDist * u.data[10]), 0.0, 1.0);
     vec3 fogCol = vec3(u.data[7], u.data[8], u.data[9]);
-    vec3 rgb = mix(core, fogCol, fogAmt * 0.6);
+    vec3 rgb = mix(core * vTint.rgb, fogCol, fogAmt * 0.6);
     outColor = vec4(rgb, 1.0);
 }

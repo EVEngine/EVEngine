@@ -14,6 +14,7 @@
 #include <vector>
 #include "common/Capability.h"
 #include "common/Export.h"
+#include "common/FrameCapture.h"
 #include "common/GpuTimer.h"
 #include "graphics/Batcher.h"
 #include "graphics/ClusteredLight.h"
@@ -304,6 +305,9 @@ struct GpuMesh {
     /** @brief Number of dynamic updates; ring slot = count % kDynamicVertexCopies. */
     uint64_t      dynamicWriteCount = 0;
     bool          dynamic           = false;
+    // Borrowed only while drawMeshResidentVertices records one draw.
+    vk::Buffer     residentVertexOverride{};
+    vk::DeviceSize residentVertexOffset = 0;
     uint32_t      vertexCount       = 0;
     uint32_t      indexCount        = 0;
     vk::IndexType indexType         = vk::IndexType::eUint32;
@@ -751,6 +755,8 @@ public:
     Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) override;
     /** @brief Release mesh. */
     bool releaseMesh(Mesh *mesh) override;
+    /** @brief Record a same-device producer-owned vertex stream; inherits Graphics lifetime contract. */
+    [[nodiscard]] Result<void> drawMeshResidentVertices(Mesh &mesh, const GpuResidentBufferView &source) override;
     /** @brief Begins 3 d frame. */
     void begin3DFrame() override;
     /** @brief Begins 3 d frame to canvas. */
@@ -1303,6 +1309,26 @@ private:
     bool hasPresentedFrame = false;
     float maxSamplerAnisotropy = 1.f;
     std::vector<uint8_t> lastFrameRgba;
+    struct CaptureCopy {
+        eve::FrameCaptureBuffer metadata;
+        vkb::GenericBuffer      staging;
+        vk::Image               source;
+        vk::ImageLayout         layout{};
+        vk::ImageAspectFlags    aspect{};
+        uint32_t                layer        = 0;
+        size_t                  storageIndex = 0;
+    };
+    std::vector<CaptureCopy>  captureCopies_;
+    eve::FrameCaptureSnapshot captureSnapshot_;
+    std::string               captureToken_;
+    vk::Fence                 captureFence_;
+    uint64_t                  captureFrameId_          = 0;
+    uint64_t                  captureTargetGeneration_ = 1;
+    bool                      captureSubmitted_        = false;
+    void                      recordFrameCapture(vk::CommandBuffer cb);
+    void                      markFrameCaptureSubmitted();
+    void                      pollFrameCapture();
+    void                      destroyFrameCapture();
     // Persistent host-visible staging buffers for swapchain readback. The copy
     // is recorded into the present command buffer (no extra submit / no
     // per-frame GPU wait), and each present frame slot owns one slot so a
@@ -1968,6 +1994,7 @@ private:
     void resetDeferredFrameGraphs();
     /** @brief Draws one CSM cascade's pending casters into a FrameGraph pass CB. */
     void recordShadowCascadePass(vkb::FrameGraphPassContext &ctx, int cascade);
+    void recordShadowCascadeDraws(vk::CommandBuffer cb, int cascade, uint32_t size);
     /** @brief Draws the pending G-buffer list into a FrameGraph pass CB. */
     void recordGBufferPassDraws(vkb::FrameGraphPassContext &ctx);
 

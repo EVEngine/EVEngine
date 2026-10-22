@@ -59,7 +59,7 @@ eve.sensing.environmentTrace v1、eve.sensing.environmentResult v1，读者忽�
 
 ## 验证清单
 
-测试源：test/sensing_environment.cpp，加既有 sensing/targeting 契约。
+测试源：test/integration/sensing/environment_query_tests.cpp，加既有 sensing/targeting 契约。
 
 - 计划/定义独立生命周期、实例 Context 快照、重复执行拒绝。
 - 坐标、身份、Context、配置与资源上限拒绝。
@@ -100,3 +100,6 @@ EVE="$PWD/build/cloud-minimal/src/engine/eve" \
 新增用例验证了 Best 延迟验证在前一候选失败后继续尝试，并将该用例的 LOS 调用从 3 次
 降到 2 次；同时覆盖多组候选的优化/穷举一致性、评分累加顺序、异常诊断和旧管线最终限量。
 这里不把调用次数断言表述成通用性能基准。
+
+合入最新 dev 后，新增测试按现有目录与分类规则迁至 integration/sensing，并登记 test_levels.json。
+上述完整构建与运行记录对应合入 dev 前的功能提交；合入后的结果由 PR CI 验证。

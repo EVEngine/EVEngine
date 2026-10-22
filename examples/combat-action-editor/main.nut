@@ -28,6 +28,8 @@ persist combatEditor = {
     selectedAsset = "Melee 1H Attack Chop", selectedItem = "Nothing selected",
     previewOrbiting = false, previewLastX = 0.0, previewLastY = 0.0,
     previewYaw = 0.65, previewPitch = 0.28, previewDistance = 5.3,
+    previewRootMotion = true, previewFootIk = false, previewGrid = true,
+    previewSkeleton = false, previewJointNames = false, previewLit = true,
     spaceWas = false, undoWas = false, redoWas = false, saveWas = false,
     frame = 0, screenshotSaved = false,
 };
@@ -43,6 +45,8 @@ local editorUiDefaults = {
     abilityGrantId=0, abilityActivationId=0, abilityPhase="ready", abilityCooldown=0.0,
     comboWindowOpen=false, comboInputTag="", attackWas=false, comboCount=0,
     playbackRate=1.0, slowWas=false, normalWas=false, fastWas=false,
+    previewRootMotion=true, previewFootIk=false, previewGrid=true,
+    previewSkeleton=false, previewJointNames=false, previewLit=true,
     playerSubject="01020304-0506-4708-890a-0b0c0d0e0f10",
     enemySubject="11121314-1516-4718-991a-1b1c1d1e1f20",
     playerHealth=100.0, enemyHealth=80.0, enemyReaction="none",
@@ -122,22 +126,22 @@ function requireResult(result, context) {
 
 function attackTimeline(duration) {
     return {
-        schema="eve.action.timeline", schemaVersion=4,
+        schema="eve.action.timeline", schemaVersion=5,
         actionId="combat:light-attack-kaykit", durationNs=ns(duration),
         animationUri="asset://kaykit/Rig_Medium_CombatMelee.glb#Melee_1H_Attack_Chop",
         animationSections=[
             { id="kaykit-section:anticipation",
               animationUri="asset://kaykit/Rig_Medium_General.glb#Idle_A",
-              startNs=0, endNs=ns(duration * 0.30), blendInNs=0,
-              sourceStartNs=0, sourceEndNs=0, blendCurve="ease-in-out" },
+              startNs=0, endNs=ns(duration * 0.30), blendInNs=0, blendOutNs=ns(duration * 0.03),
+              sourceStartNs=0, sourceEndNs=0, blendInCurve="ease-in-out", blendOutCurve="ease-out" },
             { id="kaykit-section:strike",
               animationUri="asset://kaykit/Rig_Medium_CombatMelee.glb#Melee_1H_Attack_Chop",
-              startNs=ns(duration * 0.30), endNs=ns(duration * 0.62), blendInNs=ns(duration * 0.06),
-              sourceStartNs=0, sourceEndNs=0, blendCurve="ease-in-out" },
+              startNs=ns(duration * 0.30), endNs=ns(duration * 0.62), blendInNs=ns(duration * 0.06), blendOutNs=ns(duration * 0.04),
+              sourceStartNs=0, sourceEndNs=0, blendInCurve="ease-in-out", blendOutCurve="ease-out" },
             { id="kaykit-section:recovery",
               animationUri="asset://kaykit/Rig_Medium_CombatMelee.glb#Melee_Block",
-              startNs=ns(duration * 0.62), endNs=ns(duration), blendInNs=ns(duration * 0.05),
-              sourceStartNs=0, sourceEndNs=0, blendCurve="ease-in-out" },
+              startNs=ns(duration * 0.62), endNs=ns(duration), blendInNs=ns(duration * 0.05), blendOutNs=ns(duration * 0.08),
+              sourceStartNs=0, sourceEndNs=0, blendInCurve="ease-in-out", blendOutCurve="ease-in-out" },
         ],
         splitTimestampsNs=[ns(duration * 0.30), ns(duration * 0.62)],
         montage={ basePlayRate=1.0, looping=false, footIk=false, animationLayer=0,
@@ -459,10 +463,53 @@ function refreshEditedMontageClip() {
                   "Resample edited montage pose");
 }
 
+function configureActivePreviewProfile(saveProfile=false) {
+    local tab = combatEditor.tabs[combatEditor.activeTab];
+    local configured = tab.editor.configurePreviewProfile({
+        schema="eve.action.preview-profile", schemaVersion=1,
+        actionAssetGuid=tab.assetGuid,
+        previewModelUri="project://examples/combat-action-editor/assets/kaykit/Knight.glb",
+        baseMotionUri="project://examples/combat-action-editor/assets/kaykit/Rig_Medium_General.glb#Idle_A",
+        animationProfileUri="", boneMaskUri="",
+        showRootMotion=combatEditor.previewRootMotion, footIk=combatEditor.previewFootIk,
+        showGrid=combatEditor.previewGrid, showSkeleton=combatEditor.previewSkeleton,
+        showJointNames=combatEditor.previewJointNames,
+        shading=combatEditor.previewLit ? "lit" : "unlit"
+    });
+    if (!configured.ok) return configured;
+    if (saveProfile) return tab.editor.savePreviewProfile(".");
+    return configured;
+}
+
+function syncPreviewUiFromProfile(timeline) {
+    local snapshot = timeline.previewProfile();
+    if (!snapshot.ok) return;
+    local profile = snapshot.value;
+    combatEditor.previewRootMotion = profile.showRootMotion;
+    combatEditor.previewFootIk = profile.footIk;
+    combatEditor.previewGrid = profile.showGrid;
+    combatEditor.previewSkeleton = profile.showSkeleton;
+    combatEditor.previewJointNames = profile.showJointNames;
+    combatEditor.previewLit = profile.shading == "lit";
+}
+
 function openActionDocument(assetGuid, title, resourceUri, timelineData) {
     local timeline = requireResult(combatEditor.actionModule.openDocument(
         ".", assetGuid, title, resourceUri, timelineData), "Open " + title);
+    requireResult(timeline.registerPreviewModelSkeleton(
+        "project://examples/combat-action-editor/assets/kaykit/Knight.glb", combatEditor.skeleton),
+        "Register preview model skeleton");
     startMontageRuntime(timeline);
+    local loadedProfile = timeline.loadPreviewProfile(".", assetGuid);
+    if (!loadedProfile.ok) requireResult(timeline.configurePreviewProfile({
+        schema="eve.action.preview-profile", schemaVersion=1,
+        actionAssetGuid=assetGuid,
+        previewModelUri="project://examples/combat-action-editor/assets/kaykit/Knight.glb",
+        baseMotionUri="project://examples/combat-action-editor/assets/kaykit/Rig_Medium_General.glb#Idle_A",
+        animationProfileUri="", boneMaskUri="",
+        showRootMotion=true, footIk=false, showGrid=true,
+        showSkeleton=false, showJointNames=false, shading="lit"
+    }), "Configure asset-specific preview");
     combatEditor.tabs.push({ title=title, assetGuid=assetGuid, resourceUri=resourceUri, editor=timeline });
     return timeline;
 }
@@ -545,6 +592,7 @@ function activateTab(index) {
     if (index < 0 || index >= combatEditor.tabs.len()) return;
     combatEditor.activeTab = index;
     combatEditor.timeline = combatEditor.tabs[index].editor;
+    syncPreviewUiFromProfile(combatEditor.timeline);
     combatEditor.closeArmed = -1;
     requireResult(combatEditor.timeline.setViewport(combatEditor.workspace.getRegionW("bottom") - 20.0,
                                                     36.0, 145.0), "Configure active timeline viewport");
@@ -592,6 +640,7 @@ function buildWorkspace() {
                        "content://Actions/KayKitFollowUp.action", alternate);
     combatEditor.activeTab = 0;
     combatEditor.timeline = combatEditor.tabs[0].editor;
+    syncPreviewUiFromProfile(combatEditor.timeline);
     combatEditor.clipEditor = requireResult(
         eve.AnimationEditorModule().create("asset.kaykit.light-attack.clip"),
         "Create KayKit clip editor");
@@ -621,11 +670,27 @@ function panelAssets() {
 }
 
 function panelPreview() {
+    ui.beginToolbar("preview-view-tools");
+    ui.iconButton("move", "Root", "preview-root-motion");
+    ui.setItemSelected(combatEditor.previewRootMotion);
+    ui.iconButton("settings", "Foot IK", "preview-foot-ik");
+    ui.setItemSelected(combatEditor.previewFootIk);
+    ui.iconButton("grid", "Grid", "preview-grid");
+    ui.setItemSelected(combatEditor.previewGrid);
+    ui.iconButton("layers", "Skeleton", "preview-skeleton");
+    ui.setItemSelected(combatEditor.previewSkeleton);
+    ui.iconButton("eye", "Joint names", "preview-joint-names");
+    ui.setItemSelected(combatEditor.previewJointNames);
+    ui.iconButton("sliders", combatEditor.previewLit ? "Lit" : "Unlit", "preview-shading");
+    ui.setItemSelected(combatEditor.previewLit);
+    ui.iconButton("save", "Save profile", "save-preview-profile");
+    ui.end();
     ui.text("WASD move · RMB orbit · wheel zoom", "preview-help");
     ui.text("", "preview-status");
+    ui.text("", "preview-compatibility");
     ui.text("", "combat-status");
     ui.viewport("combat-preview", combatEditor.workspace.getRegionW("center") - 20.0,
-                combatEditor.workspace.getRegionH("center") - 92.0);
+                combatEditor.workspace.getRegionH("center") - 136.0);
 }
 
 function panelInspector() {
@@ -790,9 +855,12 @@ function panelInspector() {
         ui.text("Animation Section", "section-fields-title");
         ui.inputText("Animation URI", "", "section-uri");
         ui.slider("Blend In", 0.0, 0.0, combatEditor.timeline.getDuration(), "section-blend");
+        ui.slider("Blend Out", 0.0, 0.0, combatEditor.timeline.getDuration(), "section-blend-out");
         ui.slider("Source Start", 0.0, 0.0, combatEditor.timeline.getDuration(), "section-source-start");
         ui.slider("Source End", 0.0, 0.0, combatEditor.timeline.getDuration(), "section-source-end");
-        ui.combo("Blend Curve", "Linear\nEase In Out", 1, "section-curve");
+        ui.combo("Blend In Curve", "Linear\nEase In\nEase Out\nEase In Out\nSmooth Step", 3, "section-curve");
+        ui.combo("Blend Out Curve", "Linear\nEase In\nEase Out\nEase In Out\nSmooth Step", 3, "section-out-curve");
+        ui.text("", "section-compatibility");
         ui.beginToolbar("action-tools"); ui.iconButton("plus", "New Block", "new-action");
         ui.iconButton("layers", "New Section", "new-section");
         ui.iconButton("copy", "Copy", "copy-action");
@@ -854,8 +922,16 @@ function animationSectionIndex(itemId) {
     return -1;
 }
 
-function blendCurveIndex(name) { return name == "linear" ? 0 : 1; }
-function blendCurveAt(index) { return index == 0 ? "linear" : "ease-in-out"; }
+function blendCurveIndex(name) {
+    if (name == "linear") return 0;
+    if (name == "ease-in") return 1;
+    if (name == "ease-out") return 2;
+    if (name == "smooth-step") return 4;
+    return 3;
+}
+function blendCurveAt(index) {
+    return ["linear", "ease-in", "ease-out", "ease-in-out", "smooth-step"][index];
+}
 function isAudioType(type) { return type == "presentation:audio" || type == "presentation:audio-state"; }
 function isVfxType(type) { return type == "presentation:vfx" || type == "presentation:vfx-state"; }
 function isPrefabType(type) { return type == "gameplay:prefab-spawn"; }
@@ -983,6 +1059,14 @@ function mountInspectorPanel() {
     ui.setHostMovable(false); ui.setHostResizable(false); ui.setHostOverlay(false);
 }
 
+function mountPreviewPanel() {
+    ui.beginBuild(); ui.beginWindow("Preview", "root"); panelPreview(); ui.end();
+    ui.mountBuildAs("action.preview"); ui.select("action.preview");
+    ui.setHostPos(combatEditor.workspace.getRegionX("center"), combatEditor.workspace.getRegionY("center"), 0.0, 0.0);
+    ui.setHostSize(combatEditor.workspace.getRegionW("center"), combatEditor.workspace.getRegionH("center"));
+    ui.setHostMovable(false); ui.setHostResizable(false); ui.setHostOverlay(false);
+}
+
 function tabUiSignature() {
     local value = combatEditor.activeTab + ":" + combatEditor.closeArmed;
     foreach (tab in combatEditor.tabs) value += ":" + tab.title + ":" + (tab.editor.isDirty() ? "1" : "0");
@@ -1030,6 +1114,19 @@ function handleUiEvents() {
             } else {
                 combatEditor.timeline.play(); combatEditor.status = "Preview playing";
             }
+        } else if (id == "preview-root-motion" || id == "preview-foot-ik" || id == "preview-grid" ||
+                   id == "preview-skeleton" || id == "preview-joint-names" ||
+                   id == "preview-shading" || id == "save-preview-profile") {
+            if (id == "preview-root-motion") combatEditor.previewRootMotion = !combatEditor.previewRootMotion;
+            else if (id == "preview-foot-ik") combatEditor.previewFootIk = !combatEditor.previewFootIk;
+            else if (id == "preview-grid") combatEditor.previewGrid = !combatEditor.previewGrid;
+            else if (id == "preview-skeleton") combatEditor.previewSkeleton = !combatEditor.previewSkeleton;
+            else if (id == "preview-joint-names") combatEditor.previewJointNames = !combatEditor.previewJointNames;
+            else if (id == "preview-shading") combatEditor.previewLit = !combatEditor.previewLit;
+            local result = configureActivePreviewProfile(id == "save-preview-profile");
+            combatEditor.status = result.ok ? (id == "save-preview-profile" ?
+                "Preview profile saved" : "Preview profile updated") : result.status.summary;
+            mountPreviewPanel();
         } else if (id == "first-frame") {
             requireResult(combatEditor.timeline.stop(), "Jump to first frame");
             requireResult(combatEditor.timeline.jumpRuntimeSeconds(0.0), "Restart montage runtime");
@@ -1330,6 +1427,13 @@ function handleUiEvents() {
                     ui.getValue("section-source-start"), ui.getValue("section-source-end"),
                     blendCurveAt(ui.getValue("section-curve").tointeger()));
                 combatEditor.status = result.ok ? "Section source trim committed" : result.status.summary;
+            } else if ((id == "section-blend-out" || id == "section-out-curve") &&
+                       animationSectionIndex(combatEditor.selectedActionId) >= 0) {
+                result = combatEditor.timeline.editAnimationSectionEnvelope(combatEditor.selectedActionId,
+                    ui.getValue("section-blend"), ui.getValue("section-blend-out"),
+                    blendCurveAt(ui.getValue("section-curve").tointeger()),
+                    blendCurveAt(ui.getValue("section-out-curve").tointeger()));
+                combatEditor.status = result.ok ? "Section envelopes committed" : result.status.summary;
             } else if (id.find("position-") == 0) result = combatEditor.clipEditor.setSelectedPosition(
                 ui.getValue("position-x"), ui.getValue("position-y"), ui.getValue("position-z"));
             else if (id.find("rotation-") == 0) result = combatEditor.clipEditor.setSelectedRotation(
@@ -1478,6 +1582,15 @@ function updateLabels() {
         combatEditor.timeline.getRuntimeState(), combatEditor.timeline.getRuntimeLayer(),
         combatEditor.timeline.getRuntimeSlot(), combatEditor.timeline.getRuntimeElapsedSeconds(),
         combatEditor.timeline.getRuntimeDurationSeconds()));
+    local compatibility = combatEditor.timeline.canPreviewProfile() ? "Skeleton compatible" :
+        "Compatibility unavailable";
+    if (combatEditor.timeline.getPreviewCompatibilityCount() > 0) {
+        local status = combatEditor.timeline.getPreviewCompatibilityStatus(0);
+        local message = combatEditor.timeline.getPreviewCompatibilityMessage(0);
+        compatibility = "Preview profile · " + status;
+        if (message != "") compatibility += " · " + message;
+    }
+    ui.setText("preview-compatibility", compatibility);
     local runtimeSection = combatEditor.timeline.getRuntimePhysicalSection();
     local runtimeProgress = runtimeSection >= 0 ? combatEditor.timeline.getRuntimeSectionProgress(runtimeSection) : 0.0;
     ui.setText("combat-status", format("Player %.0f HP · Target %.0f HP · %s · Ability %s (%.2fs) · Combo %s x%d · Sec %d %.0f%% · W %.2f · %.1fx",
@@ -1522,15 +1635,26 @@ function updateLabels() {
             ui.setVisible("action-type-label", !isSection); ui.setVisible("action-type", !isSection);
             ui.setVisible("action-payload-label", !isSection); ui.setVisible("action-payload", !isSection);
             ui.setVisible("action-enabled", !isSection);
-            foreach (field in ["section-fields-title", "section-uri", "section-blend", "section-source-start",
-                               "section-source-end", "section-curve"]) ui.setVisible(field, isSection);
+            foreach (field in ["section-fields-title", "section-uri", "section-blend", "section-blend-out",
+                               "section-source-start", "section-source-end", "section-curve", "section-out-curve",
+                               "section-compatibility"])
+                ui.setVisible(field, isSection);
             if (isSection) {
                 ui.setValueText("section-uri", combatEditor.timeline.getAnimationSectionUri(sectionIndex));
                 ui.setValue("section-blend", combatEditor.timeline.getAnimationSectionBlendIn(sectionIndex));
+                ui.setValue("section-blend-out", combatEditor.timeline.getAnimationSectionBlendOut(sectionIndex));
                 ui.setValue("section-source-start", combatEditor.timeline.getAnimationSectionSourceStart(sectionIndex));
                 ui.setValue("section-source-end", combatEditor.timeline.getAnimationSectionSourceEnd(sectionIndex));
                 ui.setValue("section-curve", blendCurveIndex(
-                    combatEditor.timeline.getAnimationSectionBlendCurve(sectionIndex)).tofloat());
+                    combatEditor.timeline.getAnimationSectionBlendInCurve(sectionIndex)).tofloat());
+                ui.setValue("section-out-curve", blendCurveIndex(
+                    combatEditor.timeline.getAnimationSectionBlendOutCurve(sectionIndex)).tofloat());
+                local compatibility = sectionIndex < combatEditor.timeline.getPreviewCompatibilityCount() ?
+                    combatEditor.timeline.getPreviewCompatibilityStatus(sectionIndex) : "unavailable";
+                local compatibilityMessage = sectionIndex < combatEditor.timeline.getPreviewCompatibilityCount() ?
+                    combatEditor.timeline.getPreviewCompatibilityMessage(sectionIndex) : "";
+                ui.setText("section-compatibility", "Skeleton: " + compatibility +
+                    (compatibilityMessage == "" ? "" : " · " + compatibilityMessage));
             } else if (single && isSpatialType(selectedType)) {
                 local itemId = combatEditor.selectedActionId;
                 ui.setValueText("payload-uri", combatEditor.timeline.getItemPayloadText(itemId, "uri", ""));
@@ -1594,8 +1718,10 @@ function updateLabels() {
             ui.setEnabled("action-start", false); ui.setEnabled("action-end", false);
             ui.setEnabled("action-enabled", false); ui.setEnabled("action-type", false);
             ui.setEnabled("action-payload", false); ui.setEnabled("delete-action", false);
-            foreach (field in ["section-fields-title", "section-uri", "section-blend", "section-source-start",
-                               "section-source-end", "section-curve"]) ui.setVisible(field, false);
+            foreach (field in ["section-fields-title", "section-uri", "section-blend", "section-blend-out",
+                               "section-source-start", "section-source-end", "section-curve", "section-out-curve",
+                               "section-compatibility"])
+                ui.setVisible(field, false);
         }
         ui.setEnabled("action-undo", combatEditor.timeline.canUndo());
         ui.setEnabled("action-redo", combatEditor.timeline.canRedo());
@@ -1678,7 +1804,27 @@ function drawTimeline() {
         local x0 = combatEditor.timeline.getItemMinX(i); local x1 = combatEditor.timeline.getItemMaxX(i);
         local y0 = combatEditor.timeline.getItemMinY(i) + 5.0;
         local y1 = combatEditor.timeline.getItemMaxY(i) - 5.0;
+        local compatibility = "";
+        local sectionIndex = animationSectionIndex(combatEditor.timeline.getItemId(i));
+        if (sectionIndex >= 0 && sectionIndex < combatEditor.timeline.getPreviewCompatibilityCount()) {
+            compatibility = combatEditor.timeline.getPreviewCompatibilityStatus(sectionIndex);
+            if (compatibility == "incompatible" || compatibility == "unsupported") {
+                r = 0.82; g = 0.16; b = 0.18;
+            } else if (compatibility == "retargetable") {
+                r = 0.92; g = 0.62; b = 0.16;
+            }
+        }
         gfx.drawSolidRect(x0, y0, x1 - x0, y1 - y0, r, g, b, enabled ? 0.95 : 0.28);
+        if (compatibility == "incompatible" || compatibility == "unsupported" ||
+            compatibility == "retargetable") {
+            local cr = compatibility == "retargetable" ? 1.0 : 1.0;
+            local cg = compatibility == "retargetable" ? 0.78 : 0.18;
+            local cb = compatibility == "retargetable" ? 0.22 : 0.20;
+            gfx.drawSolidRect(x0, y0, x1 - x0, 2.0, cr, cg, cb, 1.0);
+            gfx.drawSolidRect(x0, y1 - 2.0, x1 - x0, 2.0, cr, cg, cb, 1.0);
+            gfx.drawSolidRect(x0, y0, 2.0, y1 - y0, cr, cg, cb, 1.0);
+            gfx.drawSolidRect(x1 - 2.0, y0, 2.0, y1 - y0, cr, cg, cb, 1.0);
+        }
         local visual = combatEditor.timeline.getItemVisual(i);
         local iconX = x0 + 4.0; local iconY = y0 + 4.0;
         local iconW = x1 - x0 - 8.0 < 13.0 ? x1 - x0 - 8.0 : 13.0;

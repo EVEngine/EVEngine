@@ -1,186 +1,117 @@
-# 关卡设计工具（Level Designer）
+# Terrain & Scene Studio：原生 3D 地形、分层建造和物理编辑器
 
-运行：`make run/win32-debug GAME=examples/level-designer`（其他平台替换构建配置）。
-需要 `scene`、`scene_editing`、`scene_editor`、`procgen`、`physics`、`animation`、`model3d`、
-`camera`、`ui`、`editor` 及其依赖。
+基于 EVEngine 的原生编辑器，运行于引擎进程内。入口仍为 `examples/level-designer`：
 
-这个例子把已有的可组合组件装配成一个 3D 关卡设计工具：引用地形数据 → 放置白盒快速模型 →
-调整模型 → 放置玩家出生点 → 用 Motion Matching 控制器在关卡里自由跑动。
-
-## 编辑器布局
-
-界面按常见关卡 / 场景编辑器壳（Unity / Godot / Unreal 一类）拆成五个区域，由
-`editor.newWorkspace` 排布、每个区域一个 UI host（与 `examples/composable-editor` 同壳）：
-
-| 区域 | 面板 | 内容 |
-| --- | --- | --- |
-| 顶栏 | Toolbar | New / Save / Load · Select / Whitebox / Spawn · Move / Rotate / Scale · Undo / Redo · Play · Frame / Focus |
-| 左侧 | Outliner | 地形引用与 Rebuild · 场景层级 |
-| 中央 | Viewport | 嵌入式 3D 视口（`ui.viewport` + `renderScene3DToCanvas`）· 状态行 |
-| 右侧 | Inspector | 选中物体的名字 / TRS · 白盒 recipe 参数或出生点朝向/人物 |
-| 底栏 | Assets | 白盒调色板（Whitebox 工具）或当前工具说明 |
-
-选中物体时会画出可见的 Transform Gizmo（旧版只有拾取、没有绘制）。
-
-## 操作
-
-| 输入 | 作用 |
-| --- | --- |
-| `1` / `2` / `3` | 切换 选择 / 白盒 / 出生点 工具 |
-| `W` / `R` / `T` | Gizmo：移动 / 旋转 / 缩放 |
-| 左键（视口内） | 选择工具：拾取物体并开始 Gizmo 拖动；白盒与出生点工具：在鼠标射线与地形交点处放置 |
-| 右键拖动（视口内） | 环绕相机（绕当前焦点旋转） |
-| 中键拖动（视口内） | **平移相机焦点**（在关卡里横向移动视角） |
-| 滚轮 / `Q` / `E` | 拉远 / 拉近 |
-| `F` | 聚焦当前选中物体；没有选中时框住整块地形 |
-| `Delete` | 删除当前选中节点 |
-| `F5` | 进入 / 退出 Play |
-| Play 中在视口内移动鼠标 | **视角转动**（第三人称跟随相机绕角色旋转） |
-| Play 中 `WASD` + `Shift` | 走 / 跑（方向相对当前视角） |
-| Play 中 `Q` / `E` | 拉远 / 拉近跟随距离 |
-| Play 中 `F1` / `F2` | 切换玩家人物 / motion 集合 |
-| Play 中 `Esc` | 退出 Play |
-
-## 视角调整
-
-编辑视角是「绕一个可平移焦点旋转」的轨道相机：`focusX/Y/Z` 是唯一权威，眼位由
-`focus + distance * (cosPitch*sinYaw, sinPitch, cosPitch*cosYaw)` 推出。右键绕焦点转，
-中键沿视线的地面基（`forward = (-sinYaw, -cosYaw)`、`right = (cosYaw, -sinYaw)`）平移焦点，
-滚轮与 `Q/E` 改距离；平移步长按当前距离缩放，因此在任意缩放下手感一致。`F` 把焦点与距离框到选中物体
-（按缩放估算距离），未选中时退回框住整块地形。射线与相机交互都相对**中央视口**的本地坐标
-（`ui.viewportMouse*` + `canvas` 尺寸），侧栏不会挡住拾取。
-
-Play 视角是第三人称跟随：`CameraController` 的 `follow` 模式求值 `eye = target + offset`，
-所以视角完全用一个 offset 表达：
-`offset = (-sinYaw * cosPitch, sinPitch, -cosYaw * cosPitch) * distance`。
-`cameraYaw` 同时是**移动方向的基准**（`levelPlayInputYaw`），因此转视角就是转 WASD 的前方；
-角色自身仍朝向实际移动方向。鼠标用视口内绝对光标差分（引擎没有提供 delta API），
-超过 200px 的跳变会被忽略；指针不在视口上时不转视角。
-
-
-## 地形数据引用
-
-地形以“引用”的形式存在关卡里，而不是把高度场写进文件：
-
-- `Generated`：由 `seed` + 采样器参数（`frequency`、`octaves`、`lacunarity`、`gain`、
-  `ridge`、`warp`、`exponent`、`continent`、`island`、`coast`、`baseLevel`、`amplitude`）
-  确定性地重建，关卡文件因此很小且可 diff。
-- `Asset file`：引用磁盘上已有的地形资产。`procgen.loadTerrainFile(path, format)` 直接解码
-  两种持久化编码——`EVTR` 分块归档（`TerrainAsset::bake` 的产物，UNORM16 量化 + 水文/气候层）
-  与 `EVTRN` 原始 float32 高度场（`eve.terrain/1` 资产旁边的 `heightfield.bin`）。`format` 默认
-  `auto`，按文件 magic 判定。
-
-世界映射对渲染网格与碰撞体完全一致：
-
-```
-worldX = originX + cellX * spacing
-worldY = sample * heightScale
-worldZ = originZ + cellY * spacing
+```bash
+make run/linux-debug GAME=examples/level-designer
+# Windows: make run/win32-debug GAME=examples/level-designer
+# macOS:   make run/macosx-debug GAME=examples/level-designer
 ```
 
-地形网格由 `HeightmapTargetModule.newSmoothMesh` 生成，Play 时的碰撞体是同一个采样面
-（`Body3D.newHeightFieldShape`，Box3D 高度场在 XZ 平面上、高度沿 Y），所以“看到的地面”与
-“踩到的地面”不会分叉。`spacing` 只有 `EVTRN` 才自带；`EVTR` 不存米/格，此时由关卡自己的
-`spacing` 决定（返回值里的 `hasSpacing` 区分这两种情况）。
+启动后显示可编辑的庭院示范场景：基础平台、墙体、嵌套亭子组合、可行走斜坡、动态箱体和人物出生点。
+`New` 创建空场景，`Demo` 重新载入示范。示范也通过普通编辑命令创建，所有对象都可继续编辑。
 
-`assets/terrain/ridge.evtrn` 是一个 65×65、3m 间距的示例地形资产，格式说明见
-`assets/terrain/README.md`。**重建失败是原子的**：路径不存在或编码不支持时保留原地形并报出
-诊断，不会把关卡拆成半成品。
+## 五个工作区
 
-## 白盒快速模型
+顶部为文件、工具、变换和试玩操作；左侧为地形来源、当前编辑层级和对象树；中央为嵌入式 3D 视口；
+右侧为对象名称、变换、物理类型和程序化参数；底部为当前工具的建造素材、笔刷或建造块库。
+方向光和深度绘制用于辨认空间关系；动态物体为暖橙色，静态零件为蓝灰色。
+嵌入视口采用前向预览，不启用运行时主画面的阴影 / G-buffer / AO；Gizmo 和笔刷圈以独立辅助图元叠加。
 
-调色板来自 ProcgenKit 的 recipe 注册表（`prototype.*`，共 75 件：cube/ramp/stairs/wall/
-pillar/fence/…）。关卡里只记录 `{recipe, values}`，网格、渲染实体和 Play 碰撞体都是派生的，
-所以关卡文件不内嵌几何。
+| 工具 / 输入 | 操作 |
+|---|---|
+| `1` Select | 选择；拖动可见 Gizmo；`W/R/T` 移动 / 旋转 / 缩放 |
+| `2` Whitebox | 在 75 个程序化 recipe 中选择零件，点击地形放置，检查器调参数 |
+| `3` Character | 点击地形放置人物出生点；选择人物、动作集和出生朝向 |
+| `4` Terrain | 按住左键抬升、下陷、平滑或整平；圈线表示世界单位笔刷半径 |
+| `5` Blocks | 选择已捕获的建造块，点击地形放置独立实例 |
+| 右键拖动 / 中键拖动 / 滚轮 | 环绕 / 平移 / 缩放视角 |
+| `F` | 聚焦选择；没有选择时框住地形 |
+| Ctrl + 点击 | 多选同层对象（视口或层级树） |
+| `Ctrl+G` / Group | 把选中的同层零件或组合抽象为更高一级建造块 |
+| `Enter` / Enter 按钮 | 进入选中建造块，编辑内部下一层对象 |
+| `Backspace` / Up | 回到上一层 |
+| `Unpack` | 拆开组合，保留子对象世界姿态 |
+| `Capture` | 将当前零件或整个嵌套子树捕获到可复用建造块库 |
+| `Ctrl+D` / Duplicate | 独立复制整个选中子树，平移 3m |
+| Delete | 删除选中对象及其子树；可撤销 |
+| `Ctrl+Z/Y` / Undo / Redo | 普通工具操作场景历史；Terrain 工具操作地形笔画历史 |
+| `Ctrl+S` / Save / Load | 保存 / 恢复包含地形样本和建造块库的关卡文档 |
+| `F5` / Play | 进入 / 退出真实物理试玩 |
 
-每件的参数面板由 recipe 自带的 schema 驱动（`getMeshRecipeSchema` 给出 key、类型、
-min/max、choice），浮点/整数用 slider、布尔用 checkbox、有限选项用 combo。改参数立即重新生成
-网格。
+工具栏、层级树和素材库使用引擎内置的 Font Awesome 语义图标。常用文件 / 历史 / 聚焦操作采用紧凑图标按钮，悬停显示操作与快捷键；编辑工具保留文字，选中状态通过高亮显示。人物、零件和组合分别使用不同对象图标，图标按钮均保留可访问名称。
 
-**已知近似**：Play 碰撞体按 width/height/depth 生成盒体，对阶梯、斜面等异形件是包围盒近似，
-这是白盒阶段的取舍。
+## 一层一层抽象场景
 
-## 调整模型
+例如先将立柱、梁和屋顶组合成“亭子”，进入亭子调整内部零件，再回到世界，把亭子、墙和地面组合成
+“庭院”。可继续把庭院放入更高一级场景。组合、拆开和整棵子树删除各为一次 SceneEditorSession 事务，
+支持撤销重做、修订检查和稳定 ID。选中块时视口拾取以当前编辑层级为界；层级树可以直接选择任意深度。
 
-选中后既可拖 Gizmo（预览 → 释放时提交一次事务），也可在检查器里直接改名字/位置/朝向/缩放。
-`Drop to terrain` 把选区贴回地形表面。所有修改都走 `SceneEditorSession` 的命令注册表，
-因此撤销重做与冲突检测和 `examples/scene-editor` 完全一致。
+`Capture` 保存独立的子树快照及程序化参数、物理类型和人物配置。放置实例产生新的稳定 ID，修改原块
+不会影响已放置实例。它不是联动更新的 prefab 实例。建造块库随关卡文件保存。
 
-## 玩家出生点
+对象树是父级和 TRS 的唯一权威。渲染和碰撞均使用组合后的世界变换，Gizmo 预览也会传播到子孙。
+组合采用统一缩放；不能无损表示为刚体姿态的层级剪切和镜像会明确拒绝，避免画面与碰撞静默分叉。
 
-出生点是普通场景节点（因此共用同一个 Gizmo、层级与撤销），额外携带设计者元数据：朝向 `yaw`、
-以及从这个点开始游戏时应使用的人物与 motion 集合。标记由一个柱体和一个朝向小球表示。
+## 地形编辑
 
-## Play：Motion Matching 控制器
+抬升 / 下陷以米每秒工作，半径以米表示。平滑先读取所有邻点再发布，整平高度取自笔画起点。
+每次完整笔画可一次撤销，保留最近 32 笔；网格上传合并到最多 30 Hz。笔刷离开视口或释放鼠标时结束笔画。
 
-Play 会用**同一份已授权数据**搭出运行时：静态地形高度场 + 每个白盒件一个静态盒体，在选中的
-出生点生成玩家。移动由 **Motion Matching 控制器**驱动：
+保存的是原生 `eve.terrain-editor-document/1` 编码的实际高度样本，重新打开不会丢掉雕刻结果。
+地形采样、放置和 Play 高度场共用高度图、原点、间距及高度比例。Play 期间禁止编辑；退出后可继续雕刻，
+再次 Play 使用更新后的地形。地形来源支持确定性生成参数或 EVTR / EVTRN 文件；不支持非等距 XZ 网格，
+重建失败保留原地形。来源设置在点击 Rebuild 前仅为草稿，不改变正在编辑的地形。
 
-```squirrel
-motionDb = animation.newMotionDatabase(skeleton);
-motionDb.setRootBoneByName("root");
-motionDb.addFeatureBoneByName("foot.l"); motionDb.addFeatureBoneByName("foot.r");
-foreach (clipName in levelMotionSetClips(motionSetName)) motionDb.addClip(clip);
-motionDb.bake();
-matcher = animation.newMotionMatcher(skeleton, motionDb);
-matcher.setDesiredVelocity(vx, vz);
-matcher.setDesiredYaw(facing);
-matcher.update(dt);
-```
+## 物理交互
 
-位移本身交给物理胶囊体（`World3D.moveCapsule` + `isMoverGrounded`），因此角色会被地形起伏和
-白盒盒体挡住；姿势来自 `matcher.getPose()`，经 `AnimSkin.applyToMesh` 上传，第三人称跟随相机
-用 `CameraController` 的 `follow` 模式。Play 期间不会写入任何已授权的数据，退出即还原编辑器。
+检查器的 Body 可选 `Static` / `Dynamic`。静态零件使用实际程序化网格的三角面碰撞，因此斜坡、楼梯和
+门洞可按其可见轮廓交互；动态物体使用最多 64 顶点的凸包，凹形空隙会被填充，当前不执行离线凸分解。
+几何只在参数变化时准备，不在每帧重新生成。
 
-`level.play.inputDriven` / `inputForward` / `inputStrafe` / `inputRunning` 让脚本（或 AI、
-或冒烟测试）驱动同一条运动路径，而不必模拟按键。
+Play 使用同一个调用方拥有的 World3D：地形高度场、所有建造块碰撞体和真正的动态人物胶囊在同一世界中
+以固定 60 Hz 推进。人物可推动箱体，箱体也会受到重力、接触和摩擦影响；人物外观由 KayKit 骨架和
+Motion Matching 动画驱动。多个出生点中优先控制选中者，其次控制第一个；其他放置的人物也会生成独立动态胶囊，可以受到物体和玩家推动。
+编辑模式直接预览所选角色模型，每个人物使用独立的模型与动画缓存。
 
-## 人物与 motion 集合
+| Play 输入 | 操作 |
+|---|---|
+| WASD / Shift / Space | 走动 / 跑动 / 跳跃 |
+| 视口内移动鼠标 / Q、E | 第三人称视角 / 跟随距离 |
+| F1 / F2 | 切换人物 / 动作集 |
+| Pause / Resume | 暂停 / 继续物理 |
+| Step | 暂停并前进一个 1/60 秒物理步 |
+| Esc / F5 / Stop | 销毁试玩世界并恢复编辑姿态 |
 
-- 人物：`Mannequin`（`Rig_Medium_MovementBasic.glb`）与 `Scout`（`Rig_Medium_MovementAdvanced.glb`），
-  都是 KayKit CC0 人形骨架，因此同一套 clip 可以直接驱动两者，不需要重定向配置。
-- motion 集合：`Walk`（2 clip）、`Run`（2）、`Locomotion`（4，默认）、`Full`（6，含横移）。
-  每个集合各自 bake 一份 `MotionDatabase`——Motion Matching 的质量直接取决于库里有那些 clip。
-- 按 (人物, motion 集合) 缓存，切回来是即时的。切到库里没有的 clip 会在启动日志里提示缺了哪几个。
+试玩不写入场景文档。停止后动态物体回到编辑时的位置；不自动烘焙模拟结果。固定时间步用于稳定交互，
+不承诺不同物理后端或硬件之间逐位确定性。当前人物为直接速度控制的动态胶囊，不是攀爬或自动跨台阶控制器。
 
-## 关卡文档
+## 文档、所有权与失败语义
 
-存档格式 `eve.level3d` version 1（`level_document.nut`）：
+关卡文件为 `eve.level3d` schemaVersion 2，保存到应用数据目录 `level-designer.json`，不覆盖源码。
+包含 scene 层级、地形来源及实际 surface、pieces 的 recipe / values / motion、spawns、player、library。
+文档 JSON 复用 common 的原生 `eve.json.encode/decode`（统一 Value / Result、有限值与重复键检查），
+避免在脚本中逐字拼接大地形字符串；中文名称和 Unicode 转义可以无损往返。
+v1 迁移为静态零件和空库，按旧地形引用重建。未知顶层 / 语义字段、未知版本、无效资源、坏层级或无效物理类型
+均拒绝。加载先离线检查层级、几何变换和记录，再暂存地形和网格，成功才替换可见文档；失败保留旧文档。
+加载 / New 建立新的历史基线。地形笔画与场景事务分别有历史；程序化参数及 Body 设置暂不加入场景撤销历史。
 
-```json
-{"schema":"eve.level3d","schemaVersion":1,
- "terrain":{...地形引用...},
- "scene":{...会话 saveJson() 的 eve.scene.hierarchy v1 载荷，原样内嵌...},
- "pieces":[{"object":"..","recipe":"prototype.ramp","values":{...}}],
- "spawns":[{"object":"..","yaw":0.0,"character":"Mannequin","motionSet":"Full"}],
- "player":{"character":"..","motionSet":".."}}
-```
-
-**权威划分**：内嵌的 `scene` 载荷仍然是节点身份、父子与 TRS 的唯一权威（它经
-`SceneEditorSession` 往返），本文档只负责场景格式刻意排除的语义层——哪个节点是哪件白盒 recipe、
-哪个节点是出生点、地形怎么来。未知字段策略：`scene` 载荷内的未知字段由 scene 模块负责保留；
-其余位置出现未知字段会以诊断拒绝，而不是静默丢弃。版本不支持时拒绝载入，且**拒绝不会留下
-半修改状态**（先校验、后改动）。
-
-存档写到引擎的用户存档目录（与 `examples/scene-editor` 一致，不覆盖项目源文件）：
-`eve.Filesystem().setIdentity("level-designer")` → `setupWriteDirectory()` →
-`writeTextAtomic("level-designer.json")`。
+SceneEditorSession 拥有节点和 TRS；地形模块拥有高度图；脚本拥有建造块语义；渲染物体、网格及碰撞是派生投影。
+删除后的语义记录保留到 New / Load，以便撤销恢复。Play 拥有且显式销毁运行时世界，停止后丢弃其所有 Body 引用。
+所有操作在引擎 owner thread 运行，不增设通用 GameObject 或 provider registry。
 
 ## 验证
 
-```
-make run/win32-debug GAME=examples/level-designer
-```
-然后在引擎 MCP 里执行 `dofile("smoke.nut");`，或直接把 `smoke.nut` 的内容作为
-`eve_run_script` 的 `source` 传入。它检查地形采样与吸附自洽、白盒放置与参数重建、出生点
-解析、Play 装配（碰撞体数量、落地、Motion Matching 出姿势）、人物/motion 切换、以及关卡
-文档 encode→decode→apply 往返与坏版本拒绝。
+在真实引擎启动后，通过 MCP `eve_run_script` 执行 `dofile("studio_smoke.nut");`。
+它先运行原有 `smoke.nut`，再验证笔画撤销、地形样本存档、嵌套组合与旋转缩放、独立实例、删除撤销、
+v1 迁移、坏资源原子拒绝、刚体下落和地面接触、人物推动箱体、暂停单步以及 Stop 恢复。
+场景验证脚本会重建当前文档，请在测试实例运行。
 
-C++ 侧（地形文件解码）有独立单元测试：
-
-```
-build/win32-debug/test/unit_test.exe --testcase=procgen.terrain.file.decodeEvtrAndEvtrn
+```bash
+python3 scripts/check_examples.py
+MIN_RUN_SECONDS=2 RUN_SECONDS=6 bash scripts/smoke_examples.sh level-designer
+make check
 ```
 
-素材来源与许可见 `assets/kaykit/README.md` 与 `assets/kaykit/LICENSE-KAYKIT-ANIMATIONS.txt`
-（CC0 1.0）。
+`level_blocks.nut` 为组合与库，`level_sculpt.nut` 为笔刷，`level_demo.nut` 为示范装配。
+人物与动作素材来源见 `assets/kaykit/README.md`（CC0）。

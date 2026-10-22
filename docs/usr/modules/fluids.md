@@ -46,3 +46,30 @@ result.ok，再取 value；以 admitted 数量和求解器状态确认真的注�
 ## 补充绑定参考
 
 参数与接收者见 [源码生成参考](fluids/api-reference.md)，使用前先确认本章的前置条件与生命周期。
+
+## 任务四：把岸坡接入浅水求解
+
+`field.setBed(beds)` 接收 `resolutionX*resolutionZ` 个有限床面高度，按 Z 行、X 列排列。
+它复制数组，失败不修改床面。随后调用 `field.fillSurface(surfaceY)`，按
+`max(surfaceY-bed,0)` 初始化水深并清零动量，高于水位的岸地保持干燥。
+两者返回 Result；初始化和重置时执行，不能每帧重灌床面/水位。
+`fillDepth(depth)` 保留原有统一水深语义，不适合在斜坡上建立水平静水面。
+
+```squirrel
+requireOk(field.setBed(beds), "shore bed");
+requireOk(field.fillSurface(0.55), "level lake");
+```
+
+高度与水平动量仍由 ShallowWaterField 单独拥有。CPU 与 GPU 使用相同的静水重构和
+侧向压力修正，支持干湿前沿；固定输入与步长的后端对比按容差验证，不承诺逐位相同。
+`buildSurfaceMesh` 的显示增益相对于最后一次填充的每格参考水深，保持斜坡静水面的水平。
+
+`interactive-shallow-water` 共用同一 `pondBed` 生成沙床和物理床面；水边的可见范围读取
+真实水深，泡沫根据浅水流速、速度收敛和表面坡度生成。泡沫是表现代理，未模拟气泡、
+翻卷或三维飞溅；动量回传人物也不在这个单向耦合例子的范围内。
+
+`field.syncSurfaceMesh(gfx, mesh, visualHeightGain)` 是设备线程上的同步表现桥：先创建 Graphics
+网格，再按帧把当前场同步到该网格。调用中临时借用 gfx/mesh，不保存指针，不修改物理状态；
+返回 Result，参数或上传失败须检查。成本与网格顶点数线性相关，明显高于点查询，按呈现帧
+摊销一次；内部拥有临时几何缓冲，避免 `buildSurfaceMesh` 的脚本数组导出/再导入成本。
+需要 CPU 网格数据的工具仍使用 `buildSurfaceMesh`，两者分别承担数据导出与渲染同步。

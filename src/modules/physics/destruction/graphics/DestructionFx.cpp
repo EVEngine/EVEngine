@@ -1,7 +1,10 @@
 #include "physics/destruction/graphics/DestructionFx.h"
 
 #include "common/Exception.h"
+#include "common/SquirrelBinding.h"
+#include "common/SquirrelOwnership.h"
 #include "graphics/Graphics.h"
+#include "physics/destruction/CollapseAnimation.h"
 #include "physics/destruction/GeometryCollectionInstance.h"
 #include "physics/destruction/graphics/GeometryCollectionRenderer.h"
 
@@ -20,6 +23,10 @@ eve::Result<GeometryCollectionRenderer*> DestructionFx::createRenderer(GeometryC
     return eve::Result<GeometryCollectionRenderer*>::success(new GeometryCollectionRenderer(instance));
 }
 
+eve::Result<std::unique_ptr<GeometryCollectionRenderer>> DestructionFx::createAnimationRenderer() {
+    return eve::Result<std::unique_ptr<GeometryCollectionRenderer>>::success(
+        std::make_unique<GeometryCollectionRenderer>(nullptr));
+}
 GeometryCollectionRenderer* DestructionFx::createRendererScript(GeometryCollectionInstance* instance) {
     auto created = createRenderer(instance);
     if (!created.ok()) {
@@ -52,6 +59,7 @@ void DestructionFx::expose(ssq::Table& table) {
         "GeometryCollectionRenderer",
         std::function<GeometryCollectionRenderer*()>([]() -> GeometryCollectionRenderer* { return nullptr; }), true);
     renderer.addFunc("setInstance", &GeometryCollectionRenderer::setInstance);
+    renderer.addFunc("clearInstance", [](GeometryCollectionRenderer* self) { self->setInstance(nullptr); });
     // Lambda keeps BindingContracts from needing to parse the inline noexcept getter.
     renderer.addFunc("getInstance",
                      [](GeometryCollectionRenderer* self) -> GeometryCollectionInstance* {
@@ -59,8 +67,40 @@ void DestructionFx::expose(ssq::Table& table) {
                      });
     renderer.addFunc("setExteriorColor", &GeometryCollectionRenderer::setExteriorColor);
     renderer.addFunc("setInteriorColor", &GeometryCollectionRenderer::setInteriorColor);
+    renderer.addFunc("setGroupExteriorColor", [vm = table.getHandle()](GeometryCollectionRenderer* self, int groupId,
+                                                                       float r, float g, float b, float a) {
+        return script::projectResult(vm, self->setGroupExteriorColor(groupId, r, g, b, a));
+    });
     renderer.addFunc("setSleepColor", &GeometryCollectionRenderer::setSleepColor);
     renderer.addFunc("draw", drawScript);
+    renderer.addFunc("prepareAnimation", [vm = table.getHandle()](GeometryCollectionRenderer* self,
+                                                                  CollapseAnimation*          animation,
+                                                                  graphics::Graphics*         graphics) {
+        if (!animation)
+            return script::projectResult(vm, Result<void>::failure(Diagnostic::error(
+                                                 DiagnosticCode::InvalidArgument, "animation required", "animation")));
+        return script::projectResult(vm, self->prepareAnimation(*animation, graphics));
+    });
+    renderer.addFunc("prepareInstance",
+                     [vm = table.getHandle()](GeometryCollectionRenderer* self, graphics::Graphics* graphics) {
+                         return script::projectResult(vm, self->prepareInstance(graphics));
+                     });
+    renderer.addFunc("submitAnimation", [vm = table.getHandle()](GeometryCollectionRenderer* self,
+                                                                 CollapseAnimation* animation, float seconds, float x,
+                                                                 float y, float z) {
+        if (!animation)
+            return script::projectResult(vm, Result<void>::failure(Diagnostic::error(
+                                                 DiagnosticCode::InvalidArgument, "animation required", "animation")));
+        return script::projectResult(vm, self->submitAnimation(*animation, seconds, x, y, z));
+    });
+    renderer.addFunc("drawAnimation", [vm = table.getHandle()](
+                                          GeometryCollectionRenderer* self, CollapseAnimation* animation,
+                                          graphics::Graphics* graphics, float seconds, float x, float y, float z) {
+        if (!animation)
+            return script::projectResult(vm, Result<void>::failure(Diagnostic::error(
+                                                 DiagnosticCode::InvalidArgument, "animation required", "animation")));
+        return script::projectResult(vm, self->drawAnimation(*animation, graphics, seconds, x, y, z));
+    });
     renderer.addFunc("lastActiveDrawCount", [](GeometryCollectionRenderer* self) {
         return self->lastActiveDrawCount();
     });
@@ -71,6 +111,14 @@ void DestructionFx::expose(ssq::Table& table) {
 
 void DestructionFx::expose(ssq::Class& cls) {
     cls.addFunc("createRenderer", &DestructionFx::createRendererScript);
+    cls.addFunc("createAnimationRenderer", [vm = cls.getHandle()](DestructionFx* self) {
+        auto created = self->createAnimationRenderer();
+        if (!created) return script::projectStatusResult(vm, created.status());
+        auto instance =
+            script::makeOwnedSquirrelInstance<GeometryCollectionRenderer>(vm, std::move(created).takeValue());
+        if (!instance) return script::projectStatusResult(vm, instance.status());
+        return script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
+    });
 }
 
 }  // namespace eve::physics

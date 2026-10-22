@@ -158,3 +158,9 @@ Weather 模块会在自身生命周期内注册照片模式字段提供者。m_p
 ## 补充绑定参考
 
 参数与接收者见 [源码生成参考](weather/api-reference.md)，使用前先确认本章的前置条件与生命周期。
+
+## Reusable weapon lightning
+
+`weather.prepareLightning(gfx, eve.LightningSettings())` prepares an independent owned `Lightning` in a Result. It does not start precipitation or modify environment lighting. Weather and weapon effects use the same CPU fractal/ribbon generator and return-stroke envelope. See [weapon-lightning](../../../examples/weapon-lightning/README.md) for a runnable integration and ownership contract.
+
+Settings: `width` (world half-width, (0,100]), `displacement` (world units, [0,100]), `duration` (seconds, (0,60]), `subdivisions` ([1,8]), `branches` ([0,16]), `variants` ([1,16]), `seed` (signed 32-bit). Preparation validates before allocating GPU resources. `setEndpoints(ax,ay,az,bx,by,bz)`, `setColor(r,g,b)`, `trigger()` and `update(dt)` return checked Results; invalid inputs preserve prior state. `stop()` hides; `amplitude()` observes the pulse. Endpoints are world-space and distinct; distance [0.0001,1000000]. Prepare once and copy current socket/target positions each frame. Multiple instances can play concurrently. Shape settings are immutable after preparation; color and endpoints are cheap updates.

@@ -35,6 +35,7 @@ struct SurfaceMaterial3D {
     float           friction = 0.2f, restitution = 0.f, rollingResistance = 0.f;
     PhysicsVector3D tangentVelocity;
     uint64_t        userMaterialId = 0;
+    std::uint32_t   customColor    = 0;  ///< Optional solver debug color, retained through topology rebuilds.
 };
 /** @brief Collision filter; negative groups never collide, positive groups always collide. */
 struct ShapeFilter3D {

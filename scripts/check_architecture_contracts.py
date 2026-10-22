@@ -43,6 +43,11 @@ ROOT = Path(__file__).resolve().parent.parent
 # primitives on changed lines. Migrated once from the retired JSON catalogue;
 # edit this list (not a parallel JSON) when marking a new hot path.
 HOT_PATH_GLOBS: tuple[str, ...] = (
+    "src/modules/physics/forces/*.cpp",
+    "src/modules/physics/mechanics/*.cpp",
+    "src/modules/vehicle/VehicleTires2D.cpp",
+    "src/modules/vehicle/VehicleTires3D.cpp",
+    "src/modules/vehicle/VehicleTireRuntime.cpp",
     "src/engine/common/SmoothMax.h",
     "src/modules/audio/EventSink.cpp",
     "src/modules/crowd/CrowdAvoidance.cpp",
@@ -86,6 +91,7 @@ HOT_PATH_GLOBS: tuple[str, ...] = (
     "src/modules/ui/Component.cpp",
     "src/modules/ui/EventSink.cpp",
     "src/modules/ui/UISystem.cpp",
+    "src/modules/weather/Lightning.cpp",
     "src/modules/window/sdl/EventSink.cpp",
 )
 

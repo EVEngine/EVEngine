@@ -38,6 +38,7 @@ class StyleRecipe;
  *   - "watercolor" — paper / bleed post
  *   - "ink"        — ink-wash post (+ mesh)
  *   - "pixel"      — pixel-art post
+ *   - "impasto"   — UV brush normals, stepped light and oily reflections (mesh)
  *   - "xray"       — depth-aware mesh technique
  *
  * Extension points (keep these stable):
