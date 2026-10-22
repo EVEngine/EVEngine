@@ -7689,6 +7689,8 @@
           "Camera3D.orthographicScreenRaysAreParallel",
           "RenderSystem3D.shadowExtraDrawerOwnerTokens",
           "Shadow.directionalCSM.clampsFarAndSplitsAreViewZ",
+          "Shadow.scheme.dynamicMapSizeAndMaxDistance",
+          "Shadow.scheme.adaptiveCascadeResolutionByDistanceAndCoverage",
           "graphics.shadow_scheme.parse_and_resolve_methods",
           "graphics.shadow_scheme.selects_spot_slots_and_builds_vp",
           "graphics.shadow_scheme.pages_more_spots_than_atlas_slots",

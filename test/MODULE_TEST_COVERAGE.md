@@ -728,7 +728,7 @@ Source directory: `src/modules/gpuagents/editor`. Status: **referenced-by-other-
 
 ### graphics
 
-Source directory: `src/modules/graphics`. Status: **local-rules-recorded**. Local cases: **189**.
+Source directory: `src/modules/graphics`. Status: **local-rules-recorded**. Local cases: **191**.
 
 - Unit: [unit/graphics/graphics_pipeline_state_tests.cpp](unit/graphics/graphics_pipeline_state_tests.cpp)
 - Unit: [unit/graphics/graphics_resources_tests.cpp](unit/graphics/graphics_resources_tests.cpp)

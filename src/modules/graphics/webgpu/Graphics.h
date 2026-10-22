@@ -10,6 +10,7 @@
 #include "graphics/PrimitiveTypes.h"
 #include "graphics/Shader.h"
 #include "graphics/Shadow.h"
+#include "graphics/ShadowScheme.h"
 #include "graphics/Texture.h"
 
 #if defined(__EMSCRIPTEN__) && __has_include(<webgpu/webgpu_cpp.h>)
