@@ -68,6 +68,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 
 | 示例 | 演示能力 |
 |---|---|
+| [environment-query](environment-query/README.md) | 环境查询：圆环位置候选、评分诊断、消费者显式选点与移动。 |
 | [rpg](rpg/README.md) | RPG 五系统：属性 / 效果 / 状态 / 技能 / 结算（最小可玩动作 RPG） |
 | [rpg-classic](rpg-classic/README.md) | 经典回合制 RPG 纵向切片：`eve.RPG()` + `eve.Inventory()` + `map` 的数据驱动界面 |
 | [inventory](inventory/README.md) | 背包：物品定义、主背包 / 任务栏 / 仓库、装备穿脱、跨包转移 |
