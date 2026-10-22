@@ -56,6 +56,7 @@ class AndroidLibraryStagingTests(unittest.TestCase):
         helper = self.root / "cmake/sync_android_libs.cmake"
         helper.parent.mkdir()
         shutil.copyfile(SCRIPT, helper)
+        shutil.copyfile(SCRIPT.parent / "native_arm64.mk", helper.parent / "native_arm64.mk")
         shutil.copyfile(SCRIPT.parent.parent / "Makefile", self.root / "Makefile")
         result = subprocess.run(
             ["make", "sync/android-libs", f"BUILD_DIR={self.build}",
