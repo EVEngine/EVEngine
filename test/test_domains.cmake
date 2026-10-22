@@ -224,6 +224,7 @@ set(EVE_TEST_PREFIX_DOMAIN
     "crashlog;core"
     "diagnostic_value;core"
     "ecs_container_instances;core"
+    "ecs_view_preparation;core"
     "string_instances;core"
     "ECS;core"
     "filesystem;core"

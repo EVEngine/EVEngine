@@ -492,19 +492,25 @@ function(main)
     # translation units and nothing orders a patch step in front of them. Skipped
     # when the submodule is absent (profiles and tools that do not use ECS), and
     # skipped without touching anything when the checkout already carries it.
+    # Runtime patches also skip fully initialized component words and avoid
+    # scanning the entity registry on commits with no deferred creation.
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src/ECS.hpp")
-        execute_process(
-            COMMAND ${CMAKE_COMMAND}
-                -DPATCH=${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/ecs-shared-default-table.patch
-                -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp
-                -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patch_third_party.cmake
-            RESULT_VARIABLE _eve_ecs_patch_result)
-        if(NOT _eve_ecs_patch_result EQUAL 0)
-            message(FATAL_ERROR
-                "Patching external/ECS.hpp failed (exit ${_eve_ecs_patch_result}). "
-                "The vendored submodule moved away from the pinned commit; "
-                "update cmake/patches/ecs-shared-default-table.patch.")
-        endif()
+        foreach(_eve_ecs_patch ecs-shared-default-table ecs-view-preparation ecs-idle-commit ecs-view-scope-and-iteration ecs-view-live-slots ecs-query-and-record-lifetime)
+            set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+                "${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/${_eve_ecs_patch}.patch")
+            execute_process(
+                COMMAND ${CMAKE_COMMAND}
+                    -DPATCH=${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/${_eve_ecs_patch}.patch
+                    -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp
+                    -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patch_third_party.cmake
+                RESULT_VARIABLE _eve_ecs_patch_result)
+            if(NOT _eve_ecs_patch_result EQUAL 0)
+                message(FATAL_ERROR
+                    "Patching external/ECS.hpp failed (exit ${_eve_ecs_patch_result}). "
+                    "The vendored submodule moved away from the pinned commit; "
+                    "update cmake/patches/${_eve_ecs_patch}.patch.")
+            endif()
+        endforeach()
     endif()
     # set_include() generated the ECS overlay before the patch above. Refresh
     # it now so a clean checkout compiles the patched default-table API.

@@ -64,7 +64,8 @@ def checkout_patch_inputs(source: Path, destination: Path, patches: list[Path]) 
     assert not run(["git", "-C", str(destination), "status", "--porcelain"]).stdout
 
 
-def apply_twice(patch: Path, patch_dir: Path, *, normalize_crlf: bool = False) -> None:
+def apply_twice(patch: Path, patch_dir: Path, *, normalize_crlf: bool = False,
+                already_applied: bool = False) -> None:
     # Apply the same patch content with LF endings, matching the inputs above.
     staged = patch_dir.parent / f"{patch.name}.lf"
     staged.write_text(patch.read_text(encoding="utf-8").replace("\r\n", "\n"),
@@ -79,7 +80,7 @@ def apply_twice(patch: Path, patch_dir: Path, *, normalize_crlf: bool = False) -
     command.extend(["-P", str(PATCH_SCRIPT)])
     first = run(command)
     second = run(command)
-    assert "Applied third-party patch" in first.stdout
+    assert ("already applied" if already_applied else "Applied third-party patch") in first.stdout
     assert "already applied" in second.stdout
 
 
@@ -125,8 +126,20 @@ def main() -> int:
         # external/ECS.hpp uses the same script from the engine's configure step.
         clean_ecs = temporary / "ecs-clean"
         checkout_patch_inputs(ECS_SUBMODULE, clean_ecs,
-                              [PATCHES / "ecs-shared-default-table.patch"])
+                              [PATCHES / "ecs-shared-default-table.patch",
+                               PATCHES / "ecs-query-and-record-lifetime.patch"])
         apply_twice(PATCHES / "ecs-shared-default-table.patch", clean_ecs)
+        apply_twice(PATCHES / "ecs-view-preparation.patch", clean_ecs)
+        apply_twice(PATCHES / "ecs-idle-commit.patch", clean_ecs)
+        apply_twice(PATCHES / "ecs-view-scope-and-iteration.patch", clean_ecs)
+        apply_twice(PATCHES / "ecs-view-live-slots.patch", clean_ecs)
+        apply_twice(PATCHES / "ecs-query-and-record-lifetime.patch", clean_ecs)
+        # Replaying the complete configure sequence must stay idempotent after
+        # later patches have changed nearby declarations in the same header.
+        for name in ("ecs-shared-default-table", "ecs-view-preparation", "ecs-idle-commit",
+                     "ecs-view-scope-and-iteration", "ecs-view-live-slots",
+                     "ecs-query-and-record-lifetime"):
+            apply_twice(PATCHES / f"{name}.patch", clean_ecs, already_applied=True)
 
         zeroerr_patch = PATCHES / "zeroerr-compiled-diagnostics.patch"
         for ending in ("lf", "crlf"):
