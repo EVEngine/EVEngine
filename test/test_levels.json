@@ -6800,7 +6800,22 @@
           "decision.condition.legacyCodecExpandsDomainLeaves",
           "common.sdfField3D.blobRoundTripPreservesSamples",
           "common.sdfField3D.blobRejectsUnknownSchemaAndBadCounts",
-          "common.sdfField3D.capabilityInterfaceSamplesGradient"
+          "common.sdfField3D.capabilityInterfaceSamplesGradient",
+          "ecs.viewPreparationPreservesWordAndPrefixBoundaries",
+          "ecs.viewPreparationRetriesThrowingConstruction",
+          "ecs.viewPreparationObservesConstructorChangesWithinWord",
+          "ecs.viewPreparationKeepsInheritanceDeferAndTableIsolation",
+          "ecs.viewPreparationDoesNotRequireDefaultConstruction",
+          "ecs.idleCommitKeepsNestedAndExplicitPublication",
+          "ecs.idleCommitCancelsStagedAndRearmsAfterReuse",
+          "ecs.failedViewPreparationReleasesItsDeferScope",
+          "ecs.failedNestedViewPreservesTheOuterDeferScope",
+          "ecs.entityOnlyViewKeepsDeferredIterationAndEmptyComparison",
+          "ecs.viewPreparationSkipsDeadSlotsAndInitializesReuse",
+          "ecs.viewPreparationKeepsStagingAndSkipsCancelledEntities",
+          "ecs.viewPreparationObservesDestructionDuringConstruction",
+          "ecs.viewPreparationInvalidatesCachedSparsePass",
+          "ecs.viewPreparationDoesNotCacheConstructorSideEffects"
         ],
         "test-framework": [
           "common.zeroerr.preservesExpressionAndSource",
@@ -6846,7 +6861,8 @@
         "xml.cpp",
         "capability_owned.cpp",
         "condition.cpp",
-        "sdf_field3d.cpp"
+        "sdf_field3d.cpp",
+        "ecs_view_preparation.cpp"
       ]
     },
     "unit/crowd/crowd_tests.cpp": {

@@ -451,7 +451,7 @@ Source directory: `src/modules/combat/navigation`. Status: **task-tests-recorded
 
 ### common
 
-Source directory: `src/engine/common`. Status: **local-rules-recorded**. Local cases: **154**.
+Source directory: `src/engine/common`. Status: **local-rules-recorded**. Local cases: **169**.
 
 - Unit: [unit/common/common_tests.cpp](unit/common/common_tests.cpp)
 - Integration task `asset-pipeline`: [asset_pipeline_graphics_asset_import_unity_vegetation_material_tests.cpp](integration/asset-pipeline/asset_pipeline_graphics_asset_import_unity_vegetation_material_tests.cpp)
