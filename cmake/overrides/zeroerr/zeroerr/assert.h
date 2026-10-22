@@ -11,18 +11,20 @@
 #define ZEROERR_CHECK(...)        ZEROERR_REQUIRE(__VA_ARGS__)
 #define ZEROERR_CHECK_NOT(...)    ZEROERR_REQUIRE_NOT(__VA_ARGS__)
 #define ZEROERR_CHECK_THROWS(...) ZEROERR_REQUIRE_THROWS(__VA_ARGS__)
+// Keep named operands at this layer: MSVC's legacy preprocessor can collapse
+// a forwarded __VA_ARGS__ pack into one argument of ZEROERR_REQUIRE_EQ, etc.
 #undef ZEROERR_CHECK_EQ
-#define ZEROERR_CHECK_EQ(...) ZEROERR_REQUIRE_EQ(__VA_ARGS__)
+#define ZEROERR_CHECK_EQ(lhs, rhs, ...) ZEROERR_ASSERT_CMP(lhs, ==, rhs, ZEROERR_ERROR, no_throw, false, __VA_ARGS__)
 #undef ZEROERR_CHECK_NE
-#define ZEROERR_CHECK_NE(...) ZEROERR_REQUIRE_NE(__VA_ARGS__)
+#define ZEROERR_CHECK_NE(lhs, rhs, ...) ZEROERR_ASSERT_CMP(lhs, !=, rhs, ZEROERR_ERROR, no_throw, false, __VA_ARGS__)
 #undef ZEROERR_CHECK_LT
-#define ZEROERR_CHECK_LT(...) ZEROERR_REQUIRE_LT(__VA_ARGS__)
+#define ZEROERR_CHECK_LT(lhs, rhs, ...) ZEROERR_ASSERT_CMP(lhs, <, rhs, ZEROERR_ERROR, no_throw, false, __VA_ARGS__)
 #undef ZEROERR_CHECK_LE
-#define ZEROERR_CHECK_LE(...) ZEROERR_REQUIRE_LE(__VA_ARGS__)
+#define ZEROERR_CHECK_LE(lhs, rhs, ...) ZEROERR_ASSERT_CMP(lhs, <=, rhs, ZEROERR_ERROR, no_throw, false, __VA_ARGS__)
 #undef ZEROERR_CHECK_GT
-#define ZEROERR_CHECK_GT(...) ZEROERR_REQUIRE_GT(__VA_ARGS__)
+#define ZEROERR_CHECK_GT(lhs, rhs, ...) ZEROERR_ASSERT_CMP(lhs, >, rhs, ZEROERR_ERROR, no_throw, false, __VA_ARGS__)
 #undef ZEROERR_CHECK_GE
-#define ZEROERR_CHECK_GE(...) ZEROERR_REQUIRE_GE(__VA_ARGS__)
+#define ZEROERR_CHECK_GE(lhs, rhs, ...) ZEROERR_ASSERT_CMP(lhs, >=, rhs, ZEROERR_ERROR, no_throw, false, __VA_ARGS__)
 
 // Upstream evaluates lhs/rhs once for comparison and again for printing. Cache
 // operands in an immediately invoked lambda. Even references into temporary
