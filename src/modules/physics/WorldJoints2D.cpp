@@ -33,15 +33,6 @@ b2Vec2 normalizedAxisPixels(float x, float y, const char *operation) {
 
 }  // namespace
 
-Joint2D *World::adoptJoint(Body *bodyA, Body *bodyB, b2Joint *raw, Joint2D::Kind kind) {
-    const PhysicsJointHandle runtimeHandle = nextJointRuntimeHandle();
-    auto *joint = new Joint2D(this, bodyA, bodyB, raw, runtimeHandle, kind, nextJointId());
-    raw->SetUserData(joint);
-    joints_.insert(joint);
-    jointHandles_[runtimeHandle] = joint;
-    return joint;
-}
-
 void World::forgetJoint(Joint2D *joint) {
     if (!joint) return;
     joints_.erase(joint);
@@ -76,103 +67,64 @@ Joint2D *World::findJoint(PhysicsJointHandle handle) const {
     return found->second;
 }
 
-Joint2D *World::newDistanceJoint(Body *bodyA, Body *bodyB, float anchorAX, float anchorAY,
-                                 float anchorBX, float anchorBY, float lengthPixels,
-                                 bool collideConnected) {
-    requireDistinctBodies(this, bodyA, bodyB, "World.newDistanceJoint");
-    const float values[] = {anchorAX, anchorAY, anchorBX, anchorBY, lengthPixels};
-    requireFiniteParams(values, 5, "World.newDistanceJoint");
-    if (lengthPixels < 0.f)
-        throw eve::Exception("World.newDistanceJoint: length must be >= 0");
-    b2DistanceJointDef def;
-    def.bodyA = bodyA->raw();
-    def.bodyB = bodyB->raw();
-    def.collideConnected = collideConnected;
-    def.localAnchorA = bodyA->raw()->GetLocalPoint(b2Vec2(toMeters(anchorAX), toMeters(anchorAY)));
-    def.localAnchorB = bodyB->raw()->GetLocalPoint(b2Vec2(toMeters(anchorBX), toMeters(anchorBY)));
-    def.length = toMeters(lengthPixels);
-    return adoptJoint(bodyA, bodyB, world_->CreateJoint(&def), Joint2D::Kind::Distance);
+namespace {
+Joint2D *createLegacy(World &world, Body *a, Body *b, Joint2DSettings settings) {
+    requireDistinctBodies(&world, a, b, "World.newJoint");
+    auto result = Joint2D::create(world, *a, *b, settings);
+    if (!result) throw eve::Exception("%s", result.status().describe().c_str());
+    return std::move(result).takeValue().release();
 }
-
-Joint2D *World::newRevoluteJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY,
-                                 bool collideConnected) {
-    requireDistinctBodies(this, bodyA, bodyB, "World.newRevoluteJoint");
-    const float values[] = {anchorX, anchorY};
-    requireFiniteParams(values, 2, "World.newRevoluteJoint");
-    b2RevoluteJointDef def;
-    def.Initialize(bodyA->raw(), bodyB->raw(), b2Vec2(toMeters(anchorX), toMeters(anchorY)));
-    def.collideConnected = collideConnected;
-    return adoptJoint(bodyA, bodyB, world_->CreateJoint(&def), Joint2D::Kind::Revolute);
+}  // namespace
+Joint2D *World::newDistanceJoint(Body *a, Body *b, float ax, float ay, float bx, float by, float length, bool collide) {
+    Joint2DSettings s;
+    s.kind             = Joint2DKind::Distance;
+    s.anchorA          = {toMeters(ax), toMeters(ay)};
+    s.anchorB          = {toMeters(bx), toMeters(by)};
+    s.length           = toMeters(length);
+    s.collideConnected = collide;
+    return createLegacy(*this, a, b, s);
 }
-
-Joint2D *World::newPrismaticJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY,
-                                  float axisX, float axisY, bool collideConnected) {
-    requireDistinctBodies(this, bodyA, bodyB, "World.newPrismaticJoint");
-    const float values[] = {anchorX, anchorY, axisX, axisY};
-    requireFiniteParams(values, 4, "World.newPrismaticJoint");
-    const b2Vec2 axis = normalizedAxisPixels(axisX, axisY, "World.newPrismaticJoint");
-    b2PrismaticJointDef def;
-    def.Initialize(bodyA->raw(), bodyB->raw(), b2Vec2(toMeters(anchorX), toMeters(anchorY)), axis);
-    def.collideConnected = collideConnected;
-    return adoptJoint(bodyA, bodyB, world_->CreateJoint(&def), Joint2D::Kind::Prismatic);
+Joint2D *World::newRevoluteJoint(Body *a, Body *b, float x, float y, bool collide) {
+    Joint2DSettings s;
+    s.kind             = Joint2DKind::Revolute;
+    s.anchorA          = {toMeters(x), toMeters(y)};
+    s.collideConnected = collide;
+    return createLegacy(*this, a, b, s);
 }
-
-Joint2D *World::newWeldJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY,
-                             bool collideConnected) {
-    requireDistinctBodies(this, bodyA, bodyB, "World.newWeldJoint");
-    const float values[] = {anchorX, anchorY};
-    requireFiniteParams(values, 2, "World.newWeldJoint");
-    b2WeldJointDef def;
-    def.Initialize(bodyA->raw(), bodyB->raw(), b2Vec2(toMeters(anchorX), toMeters(anchorY)));
-    def.collideConnected = collideConnected;
-    return adoptJoint(bodyA, bodyB, world_->CreateJoint(&def), Joint2D::Kind::Weld);
+Joint2D *World::newPrismaticJoint(Body *a, Body *b, float x, float y, float ax, float ay, bool collide) {
+    Joint2DSettings s;
+    s.kind             = Joint2DKind::Prismatic;
+    s.anchorA          = {toMeters(x), toMeters(y)};
+    s.axis             = {ax, ay};
+    s.collideConnected = collide;
+    return createLegacy(*this, a, b, s);
 }
-
-Joint2D *World::newWheelJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY, float axisX,
-                              float axisY, bool collideConnected) {
-    requireDistinctBodies(this, bodyA, bodyB, "World.newWheelJoint");
-    const float values[] = {anchorX, anchorY, axisX, axisY};
-    requireFiniteParams(values, 4, "World.newWheelJoint");
-    const b2Vec2 axis = normalizedAxisPixels(axisX, axisY, "World.newWheelJoint");
-    b2WheelJointDef def;
-    def.Initialize(bodyA->raw(), bodyB->raw(), b2Vec2(toMeters(anchorX), toMeters(anchorY)), axis);
-    def.collideConnected = collideConnected;
-    return adoptJoint(bodyA, bodyB, world_->CreateJoint(&def), Joint2D::Kind::Wheel);
+Joint2D *World::newWeldJoint(Body *a, Body *b, float x, float y, bool collide) {
+    Joint2DSettings s;
+    s.kind             = Joint2DKind::Weld;
+    s.anchorA          = {toMeters(x), toMeters(y)};
+    s.collideConnected = collide;
+    return createLegacy(*this, a, b, s);
 }
-
-Joint2D *World::newMotorJoint(Body *bodyA, Body *bodyB, bool collideConnected) {
-    requireDistinctBodies(this, bodyA, bodyB, "World.newMotorJoint");
-    b2MotorJointDef def;
-    def.Initialize(bodyA->raw(), bodyB->raw());
-    def.collideConnected = collideConnected;
-    return adoptJoint(bodyA, bodyB, world_->CreateJoint(&def), Joint2D::Kind::Motor);
+Joint2D *World::newWheelJoint(Body *a, Body *b, float x, float y, float ax, float ay, bool collide) {
+    Joint2DSettings s;
+    s.kind             = Joint2DKind::Wheel;
+    s.anchorA          = {toMeters(x), toMeters(y)};
+    s.axis             = {ax, ay};
+    s.collideConnected = collide;
+    return createLegacy(*this, a, b, s);
 }
-
-Joint2D *World::newGearJoint(Joint2D *joint1, Joint2D *joint2, float ratio) {
-    if (!isValid() || !joint1 || !joint2 || !joint1->isValid() || !joint2->isValid() ||
-        joint1->getWorld() != this || joint2->getWorld() != this || joint1 == joint2)
-        throw eve::Exception("World.newGearJoint: joints must be distinct and belong to this world");
-    if ((joint1->getKind() != "revolute" && joint1->getKind() != "prismatic") ||
-        (joint2->getKind() != "revolute" && joint2->getKind() != "prismatic"))
-        throw eve::Exception("World.newGearJoint: both joints must be revolute or prismatic");
-    if (!std::isfinite(ratio) || std::fabs(ratio) < 1e-8f)
-        throw eve::Exception("World.newGearJoint: ratio must be finite and non-zero");
-    // Gear joint attaches the two outer bodies of the child joints.
-    Body *bodyA = findBodyById(joint1->getBodyBId());
-    Body *bodyB = findBodyById(joint2->getBodyBId());
-    if (!bodyA) bodyA = findBodyById(joint1->getBodyAId());
-    if (!bodyB) bodyB = findBodyById(joint2->getBodyAId());
-    if (!bodyA || !bodyB)
-        throw eve::Exception("World.newGearJoint: child joints must reference live bodies");
-    b2GearJointDef def;
-    def.bodyA = bodyA->raw();
-    def.bodyB = bodyB->raw();
-    def.joint1 = joint1->raw();
-    def.joint2 = joint2->raw();
-    def.ratio = ratio;
-    Joint2D *gear = adoptJoint(bodyA, bodyB, world_->CreateJoint(&def), Joint2D::Kind::Gear);
-    gear->setGearMembers(joint1, joint2);
-    return gear;
+Joint2D *World::newMotorJoint(Body *a, Body *b, bool collide) {
+    Joint2DSettings s;
+    s.kind             = Joint2DKind::Motor;
+    s.collideConnected = collide;
+    return createLegacy(*this, a, b, s);
+}
+Joint2D *World::newGearJoint(Joint2D *first, Joint2D *second, float ratio) {
+    if (!first || !second) throw eve::Exception("World.newGearJoint: live source joints required");
+    auto result = Joint2D::createGear(*this, *first, *second, ratio);
+    if (!result) throw eve::Exception("%s", result.status().describe().c_str());
+    return std::move(result).takeValue().release();
 }
 
 Mechanism2D *World::newShaft(Body *support, Body *rotor, float anchorX, float anchorY,

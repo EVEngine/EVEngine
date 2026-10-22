@@ -45,8 +45,14 @@ function(load_webgpu_backend)
     FetchContent_Declare(dawn
         URL "https://github.com/google/dawn/archive/${EVENGINE_DAWN_TAG}.tar.gz"
         DOWNLOAD_EXTRACT_TIMESTAMP FALSE
+        # Populate first so we can resolve Dawn's exact SPIRV-Headers pin
+        # before its third_party/CMakeLists.txt configures SPIRV-Tools.
+        SOURCE_SUBDIR eve-populate-only
     )
     FetchContent_MakeAvailable(dawn)
+    include("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/dawn_spirv_headers.cmake")
+    eve_prepare_dawn_spirv_headers("${dawn_SOURCE_DIR}")
+    add_subdirectory("${dawn_SOURCE_DIR}" "${dawn_BINARY_DIR}")
 
     if(TARGET dawn::webgpu_dawn)
         set(_eve_dawn_target dawn::webgpu_dawn)

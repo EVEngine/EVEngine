@@ -447,7 +447,7 @@ ensure-built/win32:
 	if [ ! -f build/win32/test/test_src.txt ]; then stale=1; \
 	else \
 	  n_disk=0; \
-	  for cpp in test/*.cpp; do \
+	  for cpp in test/*.cpp $$(find test/unit test/integration -name '*.cpp' -type f); do \
 	    [ -f "$$cpp" ] || continue; \
 	    n_disk=$$((n_disk+1)); \
 	    if [ "$$cpp" -nt build/win32/test/test_src.txt ]; then stale=1; break; fi; \
@@ -533,7 +533,7 @@ ensure-built/win32-debug:
 	if [ ! -f build/win32-debug/test/test_src.txt ]; then stale=1; \
 	else \
 	  n_disk=0; \
-	  for cpp in test/*.cpp; do \
+	  for cpp in test/*.cpp $$(find test/unit test/integration -name '*.cpp' -type f); do \
 	    [ -f "$$cpp" ] || continue; \
 	    n_disk=$$((n_disk+1)); \
 	    if [ "$$cpp" -nt build/win32-debug/test/test_src.txt ]; then stale=1; break; fi; \
@@ -1021,7 +1021,7 @@ run/ios-test-all-debug: install/ios-test-debug
 	DEV=$$(xcrun devicectl list devices 2>/dev/null | sed -nE '/connected|available/s/.*([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}).*/\1/p' | head -1); \
 	test -n "$$DEV" || (echo "No connected/available iOS device found (devicectl)."; exit 1); \
 	ran=0; \
-	for f in test/*.cpp; do \
+	for f in test/*.cpp $$(find test/unit test/integration -name '*.cpp' -type f); do \
 	  b=$$(basename "$$f"); \
 	  [ "$$b" = "main.cpp" ] && continue; \
 	  ran=$$((ran+1)); \
@@ -1109,7 +1109,25 @@ docs:
 #  FILTER=bundle/ClassicScenes.cpp).
 CTEST_FILTER = $(if $(FILTER),-R '^$(subst .,\.,$(FILTER))')
 LABEL_FILTER ?=
-CTEST_LABEL_FILTER = $(if $(LABEL_FILTER),-L '$(LABEL_FILTER)')
+# Level is independent of DOMAIN and name filters. Empty selections are errors.
+TEST_LEVEL ?= all
+TEST_BASE ?= origin/dev
+
+# Build-derived source -> CTest index. The normal host build refreshes the index
+# after case discovery; explicit selection refreshes dependency facts again.
+test-impact/%: ensure-built/%
+	python3 -X utf8 scripts/test_impact.py select --build-dir build/$* --base "$(TEST_BASE)" --level "$(TEST_LEVEL)" $(if $(filter win32,$*),--config Release,) $(if $(DOMAIN),--domain "$(DOMAIN)",)
+
+test-affected/%: ensure-built/%
+	$(CTEST_ENV) python3 -X utf8 scripts/test_impact.py run --build-dir build/$* --base "$(TEST_BASE)" --level "$(TEST_LEVEL)" --jobs $(CTEST_JOBS) $(if $(filter win32,$*),--config Release,) $(if $(DOMAIN),--domain "$(DOMAIN)",)
+ifneq ($(words $(TEST_LEVEL)),1)
+$(error TEST_LEVEL must be all, unit, or integration)
+endif
+ifeq ($(filter $(TEST_LEVEL),all unit integration),)
+$(error TEST_LEVEL must be all, unit, or integration)
+endif
+CTEST_LEVEL_SEL = $(if $(filter all,$(TEST_LEVEL)),,-L '^$(TEST_LEVEL)$$' --no-tests=error)
+CTEST_LABEL_FILTER = $(if $(LABEL_FILTER),-L '$(LABEL_FILTER)') $(CTEST_LEVEL_SEL)
 
 # Restrict a run to one test link unit (see test/test_domains.cmake):
 #   make test/win32-debug DOMAIN=physics
@@ -1178,7 +1196,7 @@ test/macosx-debug: ensure-built/macosx-debug
 # Host-debug shortcut by test-name prefix, e.g. `make test/graphics.print`
 # (explicit test/<platform> rules above take precedence over this pattern).
 test/%: ensure-built/$(PLATFORM)-debug
-	$(CTEST_ENV) ctest --test-dir build/$(PLATFORM)-debug --output-on-failure -j $(CTEST_JOBS) -R '^$(subst .,\.,$*)' $(CTEST_REPEAT)
+	$(CTEST_ENV) ctest --test-dir build/$(PLATFORM)-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_LABEL_FILTER) -R '^$(subst .,\.,$*)' $(CTEST_REPEAT)
 
 # Build only one domain link unit. With EVENGINE_TEST_DOMAIN_SPLIT (on by
 # default for the SHARED route; the archive route builds one monolithic unit_test
@@ -1339,3 +1357,5 @@ rpg-classic/skill:
 # build/.build-docker: Dockerfile
 # 	docker build . --tag evengine
 # 	mkdir -p build && touch $@
+
+include cmake/native_arm64.mk

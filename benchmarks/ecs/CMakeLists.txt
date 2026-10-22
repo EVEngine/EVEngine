@@ -57,8 +57,9 @@ if(BUILD_TESTING)
         target_compile_definitions(zeroerr PRIVATE ZEROERR_NO_MAIN)
     endif()
     add_executable(ecs_contract_test contracts_main.cpp
-        "${ECS_ENGINE_ROOT}/test/ecs_view_preparation.cpp"
-        "${ECS_ENGINE_ROOT}/test/ecs_container_instances.cpp")
+        "${ECS_ENGINE_ROOT}/test/unit/common/common_tests.cpp")
+    target_compile_definitions(ecs_contract_test PRIVATE
+        EVE_TEST_FILTER_ORIGINS EVE_TEST_ORIGIN_ecs_view_preparation EVE_TEST_ORIGIN_ecs_container_instances)
     target_compile_features(ecs_contract_test PRIVATE cxx_std_20)
     target_include_directories(ecs_contract_test PRIVATE "${ECS_ENGINE_ROOT}/external/ECS.hpp/src")
     target_link_libraries(ecs_contract_test PRIVATE zeroerr)
@@ -95,8 +96,9 @@ if(BUILD_TESTING)
                 PUBLIC EVENGINE_MODULE_DLL PRIVATE EVENGINE_EXPORTS_FOUNDATION)
         endif()
         add_executable(ecs_contract_${_linkage} contracts_main.cpp
-            "${ECS_ENGINE_ROOT}/test/ecs_view_preparation.cpp"
-            "${ECS_ENGINE_ROOT}/test/ecs_container_instances.cpp")
+            "${ECS_ENGINE_ROOT}/test/unit/common/common_tests.cpp")
+        target_compile_definitions(ecs_contract_${_linkage} PRIVATE
+            EVE_TEST_FILTER_ORIGINS EVE_TEST_ORIGIN_ecs_view_preparation EVE_TEST_ORIGIN_ecs_container_instances)
         target_link_libraries(ecs_contract_${_linkage} PRIVATE ecs_contract_foundation_${_linkage} zeroerr)
         add_test(NAME ecs_benchmark.contracts_${_linkage} COMMAND ecs_contract_${_linkage} --no-color)
         add_executable(ecs_query_lifetime_${_linkage}

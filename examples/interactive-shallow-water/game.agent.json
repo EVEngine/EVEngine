@@ -1,0 +1,176 @@
+{
+  "schemaId": "evengine.game-agent-contract",
+  "schemaVersion": 1,
+  "id": "examples/interactive-shallow-water",
+  "entry": "main.nut",
+  "smoke": {
+    "scene": "default",
+    "seed": 2718,
+    "maxHostFrames": 180,
+    "mustReach": [
+      "pond-ready"
+    ]
+  },
+  "clock": {
+    "defaultStep": "frame"
+  },
+  "observations": [
+    {
+      "id": "pond-ready",
+      "kind": "script-root",
+      "path": "pondTelemetry",
+      "fields": [
+        "tick",
+        "time",
+        "paused",
+        "autowalk",
+        "backend",
+        "centerHeight",
+        "sampledDeviation",
+        "character.x",
+        "character.z",
+        "footfalls"
+      ]
+    },
+    {
+      "id": "performance",
+      "kind": "script-root",
+      "path": "pondPerf",
+      "fields": [
+        "frame",
+        "frameMs",
+        "updateMs",
+        "renderMs",
+        "surfaceSyncMs",
+        "collisionMs",
+        "scanMs",
+        "characterMs",
+        "solverMs"
+      ]
+    },
+    {
+      "id": "physics",
+      "kind": "script-root",
+      "path": "pondPhysics",
+      "fields": [
+        "colliderCount",
+        "leftSpeed",
+        "rightSpeed",
+        "probeX",
+        "probeZ",
+        "flowX",
+        "flowZ",
+        "frontHeight",
+        "backHeight"
+      ]
+    },
+    {
+      "id": "shore",
+      "kind": "script-root",
+      "path": "shoreTelemetry",
+      "fields": [
+        "tick",
+        "depth",
+        "speed",
+        "surface",
+        "wetFront",
+        "outwardFlow"
+      ]
+    }
+  ],
+  "actions": {
+    "source": "script-map",
+    "map": [
+      {
+        "id": "still",
+        "script": "autoWalk=false"
+      },
+      {
+        "id": "walk",
+        "script": "autoWalk=true"
+      },
+      {
+        "id": "pause",
+        "script": "paused=true"
+      },
+      {
+        "id": "resume",
+        "script": "paused=false"
+      },
+      {
+        "id": "splash",
+        "script": "pondSplash(6.4,6.4)"
+      },
+      {
+        "id": "reset",
+        "script": "pondReset()"
+      },
+      {
+        "id": "close-view",
+        "script": "pondView=1;pondCamera()"
+      },
+      {
+        "id": "overview",
+        "script": "pondView=0;pondCamera()"
+      },
+      {
+        "id": "splash-near",
+        "script": "pondSplash(characterX+0.9,characterZ+0.6)"
+      },
+      {
+        "id": "bank-view",
+        "script": "pondView=3;pondCamera()"
+      },
+      {
+        "id": "colliders-on",
+        "script": "wader.collisions=true"
+      },
+      {
+        "id": "colliders-off",
+        "script": "wader.collisions=false"
+      },
+      {
+        "id": "collider-view",
+        "script": "pondColliderDebug=true;pondDebugBoxes()"
+      },
+      {
+        "id": "probe-right",
+        "script": "pondStartProbe(1.0,0.0)"
+      },
+      {
+        "id": "probe-left",
+        "script": "pondStartProbe(-1.0,0.0)"
+      },
+      {
+        "id": "probe-fast",
+        "script": "pondStartProbe(1.5,0.0)"
+      },
+      {
+        "id": "probe-slow",
+        "script": "pondStartProbe(0.35,0.0)"
+      },
+      {
+        "id": "step-60",
+        "script": "pondAdvance(60)"
+      },
+      {
+        "id": "shore-walk",
+        "script": "pondShoreWalk()"
+      },
+      {
+        "id": "step-15",
+        "script": "pondAdvance(15)"
+      }
+    ]
+  },
+  "capture": {
+    "requiredFor": [
+      "visual"
+    ],
+    "backend": "engine-readback"
+  },
+  "tolerances": {
+    "screenshot": "human-or-vlm",
+    "numericAbs": 0.0001
+  }
+}

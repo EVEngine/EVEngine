@@ -146,7 +146,6 @@ set(EVE_TEST_MODULE_DOMAIN
     "attributes;rpg"
     "definitions;rpg"
     "authority;rpg"
-    "decision;rpg"
     "emergence;rpg"
     "production;rpg"
     "orders;rpg"
@@ -224,7 +223,6 @@ set(EVE_TEST_PREFIX_DOMAIN
     "crashlog;core"
     "diagnostic_value;core"
     "ecs_container_instances;core"
-    "ecs_view_preparation;core"
     "string_instances;core"
     "ECS;core"
     "filesystem;core"
@@ -254,6 +252,7 @@ set(EVE_TEST_PREFIX_DOMAIN
     "squirrel_binding;scripts"
 
     "SkyScriptBindings;weather"
+    "=weather_lightning_runtime;weather"
     "decal_script;graphics"
     "graphic;graphics"
     "graphics_primitive_script;graphics"
@@ -282,6 +281,7 @@ set(EVE_TEST_PREFIX_DOMAIN
     "window;platform"
 
     "agent_development_session;devtools"
+    "devtools_;devtools"
     "callgraph;devtools"
     "console;devtools"
     "frame_stats;devtools"

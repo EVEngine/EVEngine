@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include <vector>
 #include "procgen/heightmap/Heightmap.h"
+#include "procgen/heightmap/TerrainDetailLayerInternal.h"
 #include "procgen/heightmap/TerrainMultiTile.h"
 #include "procgen/heightmap/TerrainStamp.h"
 
@@ -51,24 +52,19 @@ bool validSettings(const TerrainDetailSettings& settings) {
             settings.mode == TerrainDetailMode::Remove);
 }
 }  // namespace
-struct TerrainDetailLayer::Impl {
-    int              width = 0, height = 0;
-    std::vector<int> counts;
-    std::map<std::uint64_t, std::vector<int>> resources;
-    Result<int> rebuildTotals() {
-        std::vector<int> totals(counts.size(), 0);
-        for (const auto& [namespaceId, resourceCounts] : resources) {
-            (void)namespaceId;
-            if (resourceCounts.size() != totals.size()) return invalid();
-            for (std::size_t i = 0; i < totals.size(); ++i) {
-                if (resourceCounts[i] > INT_MAX - totals[i]) return invalid();
-                totals[i] += resourceCounts[i];
-            }
+Result<int> TerrainDetailLayer::Impl::rebuildTotals() {
+    std::vector<int> totals(counts.size(), 0);
+    for (const auto& [namespaceId, resourceCounts] : resources) {
+        (void)namespaceId;
+        if (resourceCounts.size() != totals.size()) return invalid();
+        for (std::size_t i = 0; i < totals.size(); ++i) {
+            if (resourceCounts[i] > INT_MAX - totals[i]) return invalid();
+            totals[i] += resourceCounts[i];
         }
-        counts.swap(totals);
-        return Result<int>::success(static_cast<int>(counts.size()));
     }
-};
+    counts.swap(totals);
+    return Result<int>::success(static_cast<int>(counts.size()));
+}
 TerrainDetailLayer::TerrainDetailLayer()                                         = default;
 TerrainDetailLayer::~TerrainDetailLayer()                                        = default;
 TerrainDetailLayer::TerrainDetailLayer(TerrainDetailLayer&&) noexcept            = default;

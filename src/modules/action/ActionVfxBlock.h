@@ -2,7 +2,11 @@
 #include "common/Export.h"
 
 
-/** @file ActionVfxBlock.h @brief Typed VFX action-block payload contract. */
+/** @file ActionVfxBlock.h
+ *  @brief Typed VFX action-block payload contract.
+ *  @remarks L1 typed payload contract only — no domain mutation;
+ *           providers own handlers/sinks (`IActionNotifyProvider` / capabilities).
+ */
 
 #include "action/ActionSpatialBlock.h"
 

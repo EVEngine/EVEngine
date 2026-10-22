@@ -28,9 +28,12 @@
 .PARAMETER Eve
   Path to eve.exe. Defaults to $env:EVE, the parent EVEngine workspace build,
   or a local build/win32-debug binary.
+.PARAMETER Game
+  Explicit game directory instead of an examples/ name; useful for generated test fixtures.
 #>
 param(
-    [Parameter(Mandatory = $true)][string]$Example,
+    [Parameter(Mandatory = $true, ParameterSetName = "Example")][string]$Example,
+    [Parameter(Mandatory = $true, ParameterSetName = "Game")][string]$Game,
     [string]$Out,
     [int]$Frames = 180,
     [int]$WaitSec = 15,
@@ -53,7 +56,8 @@ if (-not $Eve) {
 }
 if (-not (Test-Path $Eve)) { throw "eve.exe not found at $Eve (set -Eve)" }
 
-$GameDir = Join-Path $RepoRoot "examples\$Example"
+$GameDir = if ($Game) { (Resolve-Path -LiteralPath $Game).Path } else { Join-Path $RepoRoot "examples\$Example" }
+if ($Game) { $Example = Split-Path -Leaf $GameDir }
 if (-not (Test-Path (Join-Path $GameDir "main.nut"))) {
     throw "examples\$Example has no main.nut"
 }
