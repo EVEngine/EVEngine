@@ -3924,7 +3924,7 @@ TEST_CASE("common.sdfField3D.blobRoundTripPreservesSamples") {
 TEST_CASE("common.sdfField3D.blobRejectsUnknownSchemaAndBadCounts") {
     auto encoded = encodeSdfField3DBlob(makeSphereBlob());
     REQUIRE(encoded.ok());
-    auto object = encoded.takeValue();
+    auto object = std::move(encoded).takeValue();
     object.set("schemaId", std::string("eve.sdf.other"));
     REQUIRE(!decodeSdfField3DBlob(object).ok());
 
