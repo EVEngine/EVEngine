@@ -31,11 +31,15 @@ SPIR-V 已提供，运行不需要编译器；面向 Vulkan。主 shader 使用�
 
 默认 192 次采样，面板范围 64–256；非均匀步长将更多样本放在近侧云层。体积云是高开销全屏效果，低配设备可减少采样数或窗口分辨率。当前是可运行的视觉原型：人物和岩地为程序网格，云层细节、远处采样与光照仍未达到概念图品质；没有使用多重散射、时域重建或真实大气模型。
 
-`python scripts/check_examples.py` 检查目录；`MIN_RUN_SECONDS=2 bash scripts/smoke_examples.sh vortex-cloud` 检查运行。引擎 MCP `eve_screenshot` 截帧验证云层随时间变化、暂停后稳定。概念图及生成提示词保存在 `references/`；`renders/preview.png` 是引擎 MCP 实拍。动态 GIF 是本地验证产物，位于原开发工作区 `output/vortex-cloud/`。
+`python scripts/check_examples.py` 检查目录；`MIN_RUN_SECONDS=2 bash scripts/smoke_examples.sh vortex-cloud` 检查运行。引擎 MCP `eve_screenshot` 截帧验证云层随时间变化、暂停后稳定。概念图及生成提示词保存在 `references/`；`renders/preview.png` 是引擎 MCP 实拍。`renders/vortex-cloud.gif` 是连续引擎截帧生成的动态预览。
 
 重新生成三维噪声需要 NumPy 与 Pillow：`python examples/vortex-cloud/generate_noise.py`。使用固定种子 22026，运行示例不依赖 Python。已检查重复生成字节一致及 64 个切片的周期边框。
 
 ## 渲染对照
+
+动态预览（引擎实际渲染）：
+
+![Sky vortex animation](renders/vortex-cloud.gif)
 
 当前引擎实拍：
 
