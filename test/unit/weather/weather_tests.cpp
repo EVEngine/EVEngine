@@ -271,13 +271,14 @@ TEST_CASE("weather.thunderStrike.isDeterministicAndFailureAtomic") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_weather)
-#include "PrivateTestScope.h"
 #include <cmath>
 #include <limits>
+#include "PrivateTestScope.h"
 #include "graphics/Graphics.h"
 #include "graphics/Material.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/Texture.h"
+#include "weather/Lightning.h"
 #include "weather/PcgInteriorWeatherVolume.h"
 #include "weather/Weather.h"
 #include "window/Window.h"
@@ -425,5 +426,33 @@ TEST_CASE("weather.pcgInteriorVolumeTransitionsAndReverb") {
     CHECK(weather.getCurrentWeatherReverbPreset() == 8);
     CHECK(!weather.applyInteriorVolume(volume, std::numeric_limits<float>::infinity(), 0.f, 0.f).ok());
 }
+TEST_CASE("weather.lightning deterministic bounded geometry") {
+    LightningSettings s;
+    auto a = buildLightningGeometry(s, 0), b = buildLightningGeometry(s, 0), c = buildLightningGeometry(s, 1);
+    REQUIRE(a.ok());
+    REQUIRE(b.ok());
+    REQUIRE(c.ok());
+    CHECK(a.value().positions == b.value().positions);
+    CHECK(a.value().positions != c.value().positions);
+    CHECK(a.value().positions.size() / 3 == a.value().normals.size() / 3);
+    for (auto index : a.value().indices) CHECK(index < a.value().positions.size() / 3);
+    for (float x : a.value().positions) CHECK(std::isfinite(x));
+    s.branches = 0;
+    auto trunk = buildLightningGeometry(s, 0);
+    REQUIRE(trunk.ok());
+    CHECK(trunk.value().indices.size() == static_cast<size_t>((1 << s.subdivisions) * 12));
+    CHECK(trunk.value().positions[1] == 0.f);
+    CHECK(trunk.value().positions[trunk.value().positions.size() - 2] == 1.f);
+    s.subdivisions = 9;
+    CHECK(!buildLightningGeometry(s, 0).ok());
+    s.subdivisions = 5;
+    s.width        = std::numeric_limits<float>::quiet_NaN();
+    CHECK(!validateLightning(s).ok());
+    CHECK(lightningEnvelope(0) == 1.f);
+    CHECK(lightningEnvelope(.15f) < lightningEnvelope(.20f));
+    CHECK(lightningEnvelope(1) == 0.f);
+    CHECK(lightningEnvelope(std::numeric_limits<float>::infinity()) == 0.f);
+}
+
 }  // namespace test_weather_unit
 #endif
