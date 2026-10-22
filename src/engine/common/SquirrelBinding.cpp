@@ -589,6 +589,20 @@ void exposeResultBindings(ssq::Table& eveTable) {
     result.addFunc("ignore", [](ssq::Object value, const std::string& reason) { return ignoreResult(value, reason); });
     result.addFunc("isChecked", [](ssq::Object value) { return readBoolField(value, "checked"); });
     result.addFunc("isIgnored", [](ssq::Object value) { return readBoolField(value, "ignored"); });
+
+    // Use the canonical owning Value codec for large script documents instead
+    // of quadratic VM string concatenation. Conversion retains its normal
+    // depth/element bounds and never borrows script storage across this call.
+    auto       json = eveTable.addTable("json");
+    const auto vm   = eveTable.getHandle();
+    json.addFunc("encode", [vm](const ssq::Object& object) {
+        auto value = valueFromSquirrel(object);
+        if (!value.ok()) return projectStatusResult(vm, value.status());
+        return projectResult(vm, value.value().toJson(), [](std::string text) { return Value(std::move(text)); });
+    });
+    json.addFunc("decode", [vm](const std::string& text) {
+        return projectResult(vm, Value::fromJson(text), [](Value value) { return value; });
+    });
 }
 
 void exposeProviderBindings(ssq::Table& eveTable) {
