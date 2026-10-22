@@ -11,7 +11,7 @@ class IGraphics3D;
 namespace eve::graphics_editing {
 
 /** @brief Converts renderer-neutral editor gizmos into one atomic primitive draw submission. */
-class PrimitiveGizmoRenderer {
+class EVENGINE_API_WORLD PrimitiveGizmoRenderer {
 public:
     /**
      * @brief Validate, record and submit one immutable gizmo snapshot.

@@ -40,7 +40,10 @@ trap 'rm -f "$DIFF_FILE"' EXIT
 
 # Compare against the working tree (not only HEAD) so a dirty local tree is
 # checked the same way CI checks a pushed commit.
-CHANGED_FILES="$(git diff --name-only "$MERGE_BASE" -- '*.cpp' '*.h' '*.hpp')"
+# Deleted files have no changed lines to format. In a source reorganization,
+# invoking git-clang-format separately for hundreds of deletions only repeats
+# empty work (and can hand a submodule directory to the formatter).
+CHANGED_FILES="$(git diff --name-only --diff-filter=ACMR "$MERGE_BASE" -- '*.cpp' '*.h' '*.hpp')"
 if [ -z "$CHANGED_FILES" ]; then
     echo "ok: no C/C++ files changed"
     exit 0

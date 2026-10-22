@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "pixelworld/PixelWorld.h"
 
@@ -42,7 +44,7 @@ struct PixelWorldPerformanceSample {
  * @remarks The service borrows live worlds only while they are registered by their
  * constructors. PixelWorld destruction and move rebinding prevent stale retention.
  */
-class PixelWorldControlService {
+class EVENGINE_API_FOUNDATION PixelWorldControlService {
 public:
     /** @brief Return canonical world-id-ordered summaries of all live worlds. */
     [[nodiscard]] std::vector<PixelWorldSummary> worlds() const;
@@ -86,6 +88,6 @@ private:
 };
 
 /** @brief Process-lifetime PixelWorld tooling registry. */
-PixelWorldControlService& pixelWorldControlService();
+EVENGINE_API_FOUNDATION PixelWorldControlService& pixelWorldControlService();
 
 }  // namespace eve::pixelworld

@@ -130,7 +130,7 @@ eve::OptionalRef<UINode> UIHost::findByKey(const std::string &key) {
 }
 
 void UIHost::setTextById(const std::string &id, const std::string &text) {
-    if (auto n = findById(id)) n->get().text = text;
+    if (auto n = findById(id); n && n->get().text != text) n->get().text = text;
 }
 
 void UIHost::setVisibleById(const std::string &id, bool visible) {

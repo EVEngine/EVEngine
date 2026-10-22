@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file EvpackRange.h
@@ -15,6 +17,7 @@ namespace eve::asset {
 /** @brief Abstract immutable byte-range provider for files, mmap, HTTP or object storage. */
 class EvpackRangeSource {
 public:
+    /** @brief Releases EvpackRangeSource resources. */
     virtual ~EvpackRangeSource() = default;
 
     /** @brief Return the authoritative immutable object size. */
@@ -34,7 +37,9 @@ class FileEvpackRangeSource final : public EvpackRangeSource {
 public:
     /** @brief Bind a path; the file is opened separately for every operation. */
     explicit FileEvpackRangeSource(std::filesystem::path path) : path_(std::move(path)) {}
+    /** @brief Returns the size of . */
     [[nodiscard]] Result<std::uint64_t> size() const override;
+    /** @brief Reads . */
     [[nodiscard]] Result<std::vector<std::uint8_t>> read(
         std::uint64_t offset, std::uint64_t size) const override;
 private:
@@ -45,7 +50,7 @@ private:
  * @brief Admitted metadata plus an immutable range source retained by shared ownership.
  * @remarks Every returned chunk is owning and SHA-256 verified before exposure.
  */
-class EvpackRangeMount {
+class EVENGINE_API_FOUNDATION EvpackRangeMount {
 public:
     /** @brief Verified package metadata and random-access TOC. */
     [[nodiscard]] const Evpack& index() const noexcept { return index_; }
@@ -54,7 +59,7 @@ public:
     [[nodiscard]] Result<std::vector<std::uint8_t>> readChunk(std::size_t index) const;
 
 private:
-    friend Result<EvpackRangeMount> prepareEvpackRangeMount(
+    friend EVENGINE_API_FOUNDATION Result<EvpackRangeMount> prepareEvpackRangeMount(
         std::shared_ptr<const EvpackRangeSource>, const EvpackLimits&, const EvpackTrust&);
     EvpackRangeMount(std::shared_ptr<const EvpackRangeSource> source, Evpack index,
                      EvpackLimits limits)
@@ -70,8 +75,7 @@ private:
  * @param limits Metadata and chunk budgets.
  * @return Prepared range mount; no chunk payload has been fetched yet.
  */
-[[nodiscard]] Result<EvpackRangeMount> prepareEvpackRangeMount(
-    std::shared_ptr<const EvpackRangeSource> source, const EvpackLimits& limits = {},
-    const EvpackTrust& trust = {});
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<EvpackRangeMount> prepareEvpackRangeMount(
+    std::shared_ptr<const EvpackRangeSource> source, const EvpackLimits& limits = {}, const EvpackTrust& trust = {});
 
 }  // namespace eve::asset

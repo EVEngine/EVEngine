@@ -1,7 +1,7 @@
 #pragma once
 
-#include "dialogue/Conversation.h"
 #include "dialogue/Dialogue.h"
+#include "dnut_interpreter/SequenceAsset.h"
 
 #include <string>
 #include <vector>
@@ -17,6 +17,7 @@ struct DnutSourceSpan {
 
 /** @brief Stable diagnostic emitted by dnut compilation, lint, or migration. */
 struct ConversationDiagnostic {
+    /** @brief Severity public API. */
     enum class Severity { Warning, Error };
     Severity severity = Severity::Error;
     std::string path;
@@ -33,7 +34,7 @@ struct DnutDocument {
     std::string schema;
     int version = 0;
     DataValue poolRoot = DataValue::object({});
-    std::vector<ConversationAsset> conversations;
+    std::vector<eve::dnut::SequenceAsset> conversations;
 };
 
 }  // namespace eve::dialogue

@@ -59,6 +59,11 @@ void SkillMeshEffect::update(float dtSeconds) {
     if (trail_) trail_->update(dtSeconds);
 }
 
+bool SkillMeshEffect::isFinished() const noexcept {
+    const auto state = effect_->state();
+    return state == MeshEffectState::Stopped || state == MeshEffectState::Finished;
+}
+
 TrailAppendResult SkillMeshEffect::appendBlade(glm::vec3 root, glm::vec3 tip) {
     if (!trail_) throw eve::Exception("SkillMeshEffect.appendBlade: recipe has no ribbon");
     return trail_->append(root, tip);

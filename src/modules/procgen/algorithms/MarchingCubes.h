@@ -18,12 +18,12 @@ namespace eve::procgen {
  * `density` is row-major: index = x + y * nx + z * nx * ny, size nx*ny*nz.
  * Cell (x,y,z) spans corners [x..x+1]×[y..y+1]×[z..z+1] (so loops are nx-1 etc.).
  */
-bool marchingCubes(const float *density, int nx, int ny, int nz, float isolevel, MeshBuild &out,
-                   std::string *error = nullptr);
+EVENGINE_API_DOMAINS bool marchingCubes(const float *density, int nx, int ny, int nz, float isolevel, MeshBuild &out,
+                                        std::string *error = nullptr);
 
 /** @brief Fill a density volume from a named field recipe (sphere / noise / terrain / torus). */
-bool fillDensityField(const Params &params, std::vector<float> &density, int &nx, int &ny, int &nz,
-                      std::string &error);
+EVENGINE_API_DOMAINS bool fillDensityField(const Params &params, std::vector<float> &density, int &nx, int &ny, int &nz,
+                                           std::string &error);
 
 /** @brief Build mesh from Params (field + resolution + isolevel). */
 bool generateMarchingCubesMesh(const Params &params, MeshBuild &out, std::string &error);
@@ -37,7 +37,8 @@ bool generateHexPlanetMesh(const Params &params, MeshBuild &out, std::string &er
 
 using MeshRecipeFn = std::function<bool(const Params &params, MeshBuild &out, std::string &error)>;
 
-class MeshRecipeRegistry {
+/** @brief EVENGINE_API_DOMAINS public API. */
+class EVENGINE_API_DOMAINS MeshRecipeRegistry {
 public:
     /** @brief Access the process-wide mesh recipe registry. @return Registry instance. */
     static MeshRecipeRegistry &instance();
@@ -46,15 +47,19 @@ public:
     void registerRecipe(const std::string &id, MeshRecipeFn fn);
     /** @brief Register a recipe with reusable metadata. @param descriptor Recipe schema. @param fn Generator callback. */
     void registerRecipe(RecipeDescriptor descriptor, MeshRecipeFn fn);
+    /** @brief True when active. */
     bool has(const std::string &id) const;
+    /** @brief Generate. */
     bool generate(const std::string &id, const Params &params, MeshBuild &out,
                   std::string &error) const;
+    /** @brief List. */
     std::vector<std::string> list() const;
     /** @brief Look up recipe metadata. @param id Recipe id. @return Registry-owned schema or nullptr. */
     const RecipeDescriptor *descriptor(const std::string &id) const;
     /** @brief Fill missing values from metadata. @param id Recipe id. @param params Values to update. @return False for an unknown recipe. */
     bool applyDefaults(const std::string &id, Params &params) const;
 
+    /** @brief Registers builtins. */
     void registerBuiltins();
 
 private:

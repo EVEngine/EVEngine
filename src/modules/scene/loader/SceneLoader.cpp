@@ -1,4 +1,5 @@
 #include "scene/loader/SceneLoader.h"
+#include "common/StringMapInstances.h"
 #include "scene/loader/PrefabActionCapabilities.h"
 
 #include "animation/AnimClip.h"
@@ -7,6 +8,7 @@
 #include "common/ECS.h"
 #include "common/Resource.h"
 #include "common/SquirrelBinding.h"
+#include "common/TransformEuler.h"
 #include "data/ByteData.h"
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
@@ -121,10 +123,9 @@ void decomposeNode(const aiMatrix4x4 &m, float &x, float &y, float &z, float &ya
     sy = scale.y;
     sz = scale.z;
     glm::quat q(rot.w, rot.x, rot.y, rot.z);
-    glm::vec3 e = glm::eulerAngles(q);
-    yaw = e.y;
-    pitch = e.x;
-    roll = e.z;
+    // The inverse of the order localMatrix() recomposes; glm::eulerAngles()
+    // belongs to a different family and mangled every multi-axis import.
+    eve::eulerYxzFromQuat(q, yaw, pitch, roll);
 }
 
 std::string uniqueId(const std::string &base, std::unordered_map<std::string, int> &counts) {

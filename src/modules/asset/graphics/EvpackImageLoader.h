@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file EvpackImageLoader.h @brief Transactional EVIMG runtime texture loading. */
 
@@ -21,10 +23,11 @@ struct LoadedGraphicsImage {
 };
 
 /** @brief Result-based adapter over the engine's established graphics resource factory. */
-class GraphicsImageFactoryAdapter final : public graphics::IImageResourceFactory {
+class EVENGINE_API_WORLD GraphicsImageFactoryAdapter final : public graphics::IImageResourceFactory {
 public:
     /** @brief Bind a borrowed graphics factory that must outlive this adapter. */
     explicit GraphicsImageFactoryAdapter(graphics::IResourceFactory& factory) noexcept
+        /** @brief Factory. */
         : factory_(factory) {}
 
     /**
@@ -32,15 +35,18 @@ public:
      * @ownership Returned texture remains owned by the bound graphics factory.
      * @lifetime Valid until release, backend shutdown, or device loss.
      */
+    /** @brief Uploads rgba 8. */
     [[nodiscard]] Result<graphics::Texture*> uploadRgba8(
         std::uint32_t width, std::uint32_t height, const std::uint8_t* pixels,
         bool srgb) override;
 
     /** @copydoc graphics::IImageResourceFactory::uploadRgba8MipChain */
+    /** @brief Uploads rgba 8 mip chain. */
     [[nodiscard]] Result<graphics::Texture*> uploadRgba8MipChain(uint32_t width, uint32_t height, uint32_t levels,
                                                                  std::span<const uint8_t> pixels) override;
 
     /** @copydoc graphics::IImageResourceFactory::uploadRgba8Volume */
+    /** @brief Uploads rgba 8 volume. */
     [[nodiscard]] Result<graphics::Texture*> uploadRgba8Volume(uint32_t width, uint32_t height, uint32_t depth,
                                                                std::span<const uint8_t> pixels) override;
 
@@ -48,6 +54,7 @@ public:
      * @copydoc graphics::IImageResourceFactory::releaseImage
      * @param texture Borrowed factory-owned texture, observed only for this call.
      */
+    /** @brief Release image. */
     [[nodiscard]] Result<void> releaseImage(graphics::Texture* texture) override;
 
 private:
@@ -55,11 +62,12 @@ private:
 };
 
 /** @brief Capability-aware adapter from admitted EVIMG assets to backend textures. */
-class EvpackImageLoader {
+class EVENGINE_API_WORLD EvpackImageLoader {
 public:
     /** @brief Bind borrowed reader and image factory; both must outlive this loader. */
     EvpackImageLoader(const asset::EvpackResourceReader& reader,
                       graphics::IImageResourceFactory& factory) noexcept
+        /** @brief Reader. */
         : reader_(reader), factory_(factory) {}
 
     /**
@@ -91,11 +99,12 @@ struct LoadedGraphicsVolumeTexture {
 };
 
 /** @brief Capability-aware loader for canonical volume-texture/1 assets. */
-class EvpackVolumeTextureLoader {
+class EVENGINE_API_WORLD EvpackVolumeTextureLoader {
 public:
     /** @brief Bind borrowed reader and image factory; both must outlive this loader. */
     EvpackVolumeTextureLoader(const asset::EvpackResourceReader& reader,
                               graphics::IImageResourceFactory&   factory) noexcept
+        /** @brief Reader. */
         : reader_(reader), factory_(factory) {}
 
     /** @brief Validate definition and EVVOL bulk before atomically uploading one volume.

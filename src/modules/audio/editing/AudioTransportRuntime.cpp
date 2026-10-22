@@ -11,7 +11,7 @@ void AudioSourceTransportBackend::pause() {
 void AudioSourceTransportBackend::stop() {
     if (source_) source_->stop();
 }
-EditorResult<void> AudioSourceTransportBackend::seek(double seconds) {
+Result<void> AudioSourceTransportBackend::seek(double seconds) {
     if (source_ && source_->seek(seconds)) return eve::editing::applied<void>();
     return eve::editing::failed<void>(EditorStatus::Failed, RuleId("editor.audio.backend-seek"),
                                       "Audio backend rejected seek");

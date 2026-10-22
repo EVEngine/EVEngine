@@ -17,6 +17,7 @@ namespace eve::service {
 class IGpuTimer {
 public:
     static constexpr const char *capabilityName = "IGpuTimer";
+    /** @brief Releases IGpuTimer resources. */
     virtual ~IGpuTimer() = default;
 
     /** @brief True when the renderer captured a valid GPU frame this frame. */

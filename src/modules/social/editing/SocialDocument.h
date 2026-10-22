@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "editing/EditingAuthority.h"
@@ -18,8 +20,7 @@ using DiagnosticSeverity = editing::DiagnosticSeverity;
 using DomainOperation    = editing::DomainOperation;
 using EditRegion         = editing::EditRegion;
 using EditorDiagnostic   = editing::Diagnostic;
-template <class T>
-using EditorResult                  = editing::Result<T>;
+using editing::Result;
 using EditorStatus                  = editing::Status;
 using EditorValue                   = editing::Value;
 using IDomainOperationTarget        = editing::IDomainOperationTarget;
@@ -49,39 +50,46 @@ struct SocialEdgeRecord {
 };
 
 /** @brief UI-neutral revisioned social graph authoring document. */
-class SocialDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                   public virtual IEditableTarget,
-                                   public IDomainOperationTarget,
-                                   public IDomainOperationTargetStaging {
+class EVENGINE_API_BACKENDS SocialDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                                         public virtual IEditableTarget,
+                                                         public IDomainOperationTarget,
+                                                         public IDomainOperationTargetStaging {
 public:
+    /** @brief Editor capability id. */
     static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.social-graph"); }
+    /** @brief Social document target. */
     explicit SocialDocumentTarget(std::string id);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
     void*                                   queryCapability(const CapabilityId& capability) override;
-    EditorResult<void>                      applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Applies domain operation. */
+    Result<void>                      applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    /** @brief Commits domain state. */
+    Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
     /** @brief Enumerate entities in stable order. */
     std::vector<SocialEntityRecord> entities() const;
     /** @brief Enumerate edges in stable order. */
     std::vector<SocialEdgeRecord> edges() const;
     /** @brief Plan reversible entity creation or replacement. */
-    EditorResult<DomainOperation> makeSetEntity(const SocialEntityRecord& entity) const;
+    Result<DomainOperation> makeSetEntity(const SocialEntityRecord& entity) const;
     /** @brief Plan deletion of an entity and reject it while edges reference it. */
-    EditorResult<DomainOperation> makeDeleteEntity(const StableId& id) const;
+    Result<DomainOperation> makeDeleteEntity(const StableId& id) const;
     /** @brief Plan reversible edge creation or replacement. */
-    EditorResult<DomainOperation> makeSetEdge(const SocialEdgeRecord& edge) const;
+    Result<DomainOperation> makeSetEdge(const SocialEdgeRecord& edge) const;
     /** @brief Plan reversible edge deletion. */
-    EditorResult<DomainOperation> makeDeleteEdge(const StableId& id) const;
+    Result<DomainOperation> makeDeleteEdge(const StableId& id) const;
     /** @brief Validate references, uniqueness constraints and finite weights. */
     std::vector<EditorDiagnostic> validate() const;
     /** @brief Capture deterministic schema-version-one graph content. */
     EditorValue snapshotValue() const;
     /** @brief Atomically load a validated graph snapshot. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
     std::string                            id_;
@@ -90,9 +98,10 @@ private:
 };
 
 /** @brief Publishes a complete validated social document to a runtime SocialGraph. */
-class SocialRuntimeApplier {
+class EVENGINE_API_BACKENDS SocialRuntimeApplier {
 public:
-    EditorResult<void> apply(const SocialDocumentTarget& document, social::SocialGraph* runtime) const;
+    /** @brief Applies . */
+    Result<void> apply(const SocialDocumentTarget& document, social::SocialGraph* runtime) const;
 };
 
 }  // namespace eve::social_editing

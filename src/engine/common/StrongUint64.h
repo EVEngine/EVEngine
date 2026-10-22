@@ -12,6 +12,7 @@
 namespace eve::detail {
 
 template <typename Tag>
+/** @brief StrongUint64 public API. */
 class StrongUint64 {
 public:
     /** @brief Constructs the zero value. */
@@ -28,10 +29,13 @@ public:
     /** @brief Returns the next value, or empty instead of unsigned wraparound. */
     [[nodiscard]] constexpr std::optional<StrongUint64> incremented() const noexcept {
         if (value_ == std::numeric_limits<std::uint64_t>::max()) return std::nullopt;
+        /** @brief Constructs a StrongUint64. */
         return StrongUint64(value_ + 1);
     }
 
+    /** @brief Operator ==. */
     friend constexpr bool operator==(const StrongUint64&, const StrongUint64&) noexcept  = default;
+    /** @brief Operator <=>. */
     friend constexpr auto operator<=>(const StrongUint64&, const StrongUint64&) noexcept = default;
 
 private:
@@ -43,6 +47,7 @@ private:
 namespace std {
 
 template <typename Tag>
+/** @brief hash public API. */
 struct hash<eve::detail::StrongUint64<Tag>> {
     /** @brief Hashes a strong numeric value for standard hash containers. */
     std::size_t operator()(const eve::detail::StrongUint64<Tag>& value) const noexcept {

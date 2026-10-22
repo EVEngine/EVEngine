@@ -1,6 +1,12 @@
 #pragma once
+#include "common/Export.h"
 
-/** @file ActionDamageBlock.h @brief Typed instantaneous combat-damage action contract. */
+
+/** @file ActionDamageBlock.h
+ *  @brief Typed instantaneous combat-damage action contract.
+ *  @remarks L1 typed payload contract only — no domain mutation;
+ *           providers own handlers/sinks (`IActionNotifyProvider` / capabilities).
+ */
 
 #include "action/ActionNotifyRegistry.h"
 
@@ -15,11 +21,12 @@ struct ActionDamageImpulse {
     double y = 0.0;
     double z = 0.0;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionDamageImpulse&) const = default;
 };
 
 /** @brief Owning validated damage request authored on an action timeline. */
-struct ActionDamageBinding {
+struct EVENGINE_API_PLATFORM ActionDamageBinding {
     /** @brief Gameplay-tag damage classification. */
     std::string damageType;
     /** @brief Non-negative health damage. */
@@ -31,6 +38,7 @@ struct ActionDamageBinding {
     /** @brief Optional world-space knockback impulse. */
     ActionDamageImpulse knockback;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionDamageBinding&) const = default;
 
     /** @brief Decode and validate a damage payload without mutating combat state. */
@@ -46,6 +54,7 @@ struct ActionDamageBinding {
 class IActionDamageSink {
 public:
     static constexpr const char* capabilityName = "eve.action.damage-sink";
+    /** @brief Releases IActionDamageSink resources. */
     virtual ~IActionDamageSink() = default;
 
     /** @brief Whether this sink can resolve the supplied target handle now. */

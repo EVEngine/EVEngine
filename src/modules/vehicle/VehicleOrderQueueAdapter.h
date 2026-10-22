@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief Vehicle-to-orders compatibility adapter.
@@ -24,7 +26,7 @@ namespace eve::vehicle {
  * Orders::queue/current fields are refreshed by syncCompatibility() and are a
  * read-only compatibility projection for existing Vehicle consumers.
  */
-class VehicleOrderQueueAdapter {
+class EVENGINE_API_DOMAINS VehicleOrderQueueAdapter {
 public:
     /** @brief Creates an empty adapter with an owned generic queue. */
     VehicleOrderQueueAdapter();

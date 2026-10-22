@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 namespace eve::procgen {
 
@@ -23,6 +25,6 @@ struct CaveKarrenSample {
  * @param input Passage-frame orientation, authoritative hydraulic exposure, and fracture masks.
  * @return Bounded erosion response that is inactive away from the passage floor.
  */
-[[nodiscard]] CaveKarrenSample sampleCaveStreamKarren(const CaveKarrenInput& input);
+[[nodiscard]] EVENGINE_API_DOMAINS CaveKarrenSample sampleCaveStreamKarren(const CaveKarrenInput& input);
 
 }  // namespace eve::procgen

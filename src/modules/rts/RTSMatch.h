@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file RTSMatch.h @brief Deterministic match lifecycle and victory systems. */
 
@@ -14,7 +16,7 @@ namespace eve::rts {
 using MatchResourceQuery = std::function<Result<double>(Faction&, std::string_view)>;
 
 /** @brief Match command and simulation boundary. */
-class MatchSystem {
+class EVENGINE_API_DOMAINS MatchSystem {
 public:
     /** @brief Add one live faction before match start. */
     [[nodiscard]] static Result<void> addParticipant(Match& match, Faction& faction, int team);

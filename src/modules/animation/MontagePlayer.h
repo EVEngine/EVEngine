@@ -1,9 +1,12 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file MontagePlayer.h @brief Deterministic presentation-only action montage playback. */
 
 #include "action/Action.h"
 #include "animation/AnimMath.h"
+#include "animation/RootMotionPolicy.h"
 #include "common/Result.h"
 #include "common/Time.h"
 
@@ -20,6 +23,7 @@ class AnimClip;
 class AnimPlayer;
 class AnimPose;
 class AnimSkeleton;
+class PreparedMontage;
 
 /** @brief Owning clip supplied while transactionally preparing a montage. */
 struct MontageClipAsset {
@@ -36,13 +40,19 @@ struct MontageClipAsset {
  */
 class IMontageClipProvider {
 public:
+    /** @brief Releases IMontageClipProvider resources. */
     virtual ~IMontageClipProvider() = default;
     /** @brief Resolve one URI into a clip compatible with the borrowed skeleton. */
     [[nodiscard]] virtual Result<std::unique_ptr<AnimClip>> load(std::string_view    uri,
                                                                  const AnimSkeleton& skeleton) = 0;
 };
 
-/** @brief Selects which extracted root-motion components leave the presentation player. */
+/**
+ * @brief Compatibility-only axis enable mask for montage root motion.
+ * @details Canonical control is RootMotionPolicy on MontagePlayer. This mask only
+ * projects translation/rotation enable bits onto policy lockAxes / lockRotation;
+ * bake-into-pose and apply-space live exclusively on RootMotionPolicy.
+ */
 struct MontageRootMotionMask {
     bool translationX = true;
     bool translationY = true;
@@ -66,6 +76,7 @@ enum class MontageGapPolicy : std::uint8_t {
  */
 class IMontageRootMotionReceiver {
 public:
+    /** @brief Releases IMontageRootMotionReceiver resources. */
     virtual ~IMontageRootMotionReceiver() = default;
     /** @brief Consume one borrowed filtered root-motion delta. */
     virtual void applyMontageRootMotion(const TransformTRS& delta) noexcept = 0;
@@ -94,10 +105,11 @@ struct MontageAdvance {
  * owner-thread-only, reads no wall clock, and invokes the optional receiver
  * without holding a lock.
  */
-class MontagePlayer {
+class EVENGINE_API_WORLD MontagePlayer {
 public:
     /** @brief Borrow a skeleton that must outlive this player. */
     explicit MontagePlayer(AnimSkeleton& skeleton);
+    /** @brief Montage player. */
     ~MontagePlayer();
 
     MontagePlayer(const MontagePlayer&)            = delete;
@@ -144,6 +156,14 @@ public:
      */
     [[nodiscard]] Result<MontageAdvance> present(const action::ActionAdvance& advance, SimulationTick tick);
     /**
+     * @brief Present an authoritative advance while transferring its owning timeline projections.
+     * @param advance Consumed owning observation; timelineEvents and activeBlocks are moved into the result.
+     * @param tick Strictly increasing simulation tick associated with the observation.
+     * @return Owning presentation result, without copying the transferred event and active-block vectors.
+     * @remarks Owner-thread-only. The moved-from advance remains valid with unspecified projection contents.
+     */
+    [[nodiscard]] Result<MontageAdvance> present(action::ActionAdvance&& advance, SimulationTick tick);
+    /**
      * @brief Atomically realign presentation and active state blocks to an externally authoritative timestamp.
      * @remarks This does not advance ActionRuntime; the caller must align its gameplay authority separately.
      */
@@ -177,8 +197,27 @@ public:
     void setRootMotionReceiver(IMontageRootMotionReceiver& receiver) noexcept { receiver_ = &receiver; }
     /** @brief Clear the borrowed root-motion receiver before its owner is destroyed. */
     void clearRootMotionReceiver() noexcept { receiver_ = nullptr; }
-    /** @brief Configure root-motion filtering. */
-    void setRootMotionMask(MontageRootMotionMask mask) noexcept { rootMotionMask_ = mask; }
+    /**
+     * @brief Compatibility setter for axis enable bits.
+     * @details Updates RootMotionPolicy lockAxes / lockRotation and pushes the policy into the
+     * owned AnimPlayer. Bake / apply-space / yaw are preserved.
+     */
+    void setRootMotionMask(MontageRootMotionMask mask) noexcept;
+    /** @brief Compatibility projection of the active policy lock bits. */
+    [[nodiscard]] MontageRootMotionMask getRootMotionMask() const noexcept { return rootMotionMask_; }
+    /**
+     * @brief Replace the canonical root-motion policy used by presentation and the owned AnimPlayer.
+     * @return Applied on success; InvalidArgument leaves the previous policy unchanged.
+     * @thread Owner thread only; no callbacks or reentrancy.
+     */
+    [[nodiscard]] Result<void> setRootMotionPolicy(const RootMotionPolicy& policy);
+    /** @brief Copy of the active root-motion policy. */
+    [[nodiscard]] RootMotionPolicy getRootMotionPolicy() const noexcept { return rootMotionPolicy_; }
+    /**
+     * @brief Update CharacterFacing yaw without replacing bake/lock/apply-space.
+     * @return Applied on success; InvalidArgument when yaw is non-finite.
+     */
+    [[nodiscard]] Result<void> setRootMotionCharacterYaw(float yawRadians);
     /** @brief Select the explicit pose policy used in gaps between animation sections. */
     void setGapPolicy(MontageGapPolicy policy) noexcept { gapPolicy_ = policy; }
     /** @brief Borrow the current evaluated pose. */
@@ -203,21 +242,34 @@ public:
     [[nodiscard]] bool footIkEnabled() const noexcept { return timeline_ && timeline_->montage.footIk; }
 
 private:
-    /** @brief Resolve an owned clip. @return Borrowed clip or null. @lifetime Until presentation replacement. */
-    [[nodiscard]] AnimClip* clipFor(std::string_view uri) const noexcept;
+    /** @brief Resolve a prepared section index in logarithmic time. */
+    [[nodiscard]] std::optional<std::size_t> sectionIndexAt(Duration time) const noexcept;
+    /** @brief Resolve the first authored section boundary after a gap. */
+    [[nodiscard]] std::optional<Duration> nextSectionStartAfter(Duration time) const noexcept;
     /** @brief Resolve a section. @return Borrowed section or null. @lifetime Until prepare or destruction. */
     [[nodiscard]] const action::ActionAnimationSection* sectionAt(Duration time) const noexcept;
+    /** @brief Evaluate the active section envelope; contiguous neighbors preserve full slot weight. */
+    [[nodiscard]] double sectionEnvelopeAt(Duration time) const noexcept;
     void activate(const action::ActionAnimationSection& section, Duration localTime);
     void accumulateRootMotion(TransformTRS& total) const;
+    /** @brief Project authored montage channel flags into policy locks and the owned AnimPlayer. */
+    void applyTimelineRootMotionChannels() noexcept;
+    /** @brief Push rootMotionPolicy_ into the owned AnimPlayer; ignore only impossible sync failure. */
+    void pushRootMotionPolicyToPlayer() noexcept;
     [[nodiscard]] std::vector<action::ActionTimelineEvent> realignStateEvents(Duration target) const;
     [[nodiscard]] Result<std::vector<MontageActiveBlock>>  activeBlocksAt(Duration target) const;
+    [[nodiscard]] Result<MontageAdvance>
+    presentImpl(const action::ActionAdvance& advance, std::vector<action::ActionTimelineEvent> events,
+                std::vector<MontageActiveBlock> activeBlocks, SimulationTick tick);
 
     AnimSkeleton&                         skeleton_;
     std::unique_ptr<AnimPlayer>           player_;
     std::optional<action::ActionTimeline> timeline_;
     std::vector<MontageClipAsset>         clips_;
+    std::unique_ptr<PreparedMontage>       prepared_;
     const action::ActionAnimationSection* activeSection_ = nullptr;
     IMontageRootMotionReceiver*           receiver_      = nullptr;
+    RootMotionPolicy                      rootMotionPolicy_{};
     MontageRootMotionMask                 rootMotionMask_;
     MontageGapPolicy                      gapPolicy_ = MontageGapPolicy::HoldPose;
     action::ActionExecutionId             executionId_{};

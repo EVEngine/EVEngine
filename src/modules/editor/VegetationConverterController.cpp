@@ -14,7 +14,7 @@ VegetationConverterController::VegetationConverterController(const IVegetationCo
                                                              IVegetationConversionPublisher&      publisher)
     : preparer_(preparer), publisher_(publisher) {}
 
-EditorResult<void> VegetationConverterController::setRequest(asset_import::UnityVegetationBatchImportRequest request,
+Result<void> VegetationConverterController::setRequest(asset_import::UnityVegetationBatchImportRequest request,
                                                              std::uint64_t expectedPublicationGeneration) {
     if (request.package.packageId.isNil() || request.package.packageName.empty() ||
         request.package.packageVersion.empty() || request.objects.empty())
@@ -34,7 +34,7 @@ EditorResult<void> VegetationConverterController::setRequest(asset_import::Unity
     return editing::applied<void>();
 }
 
-EditorResult<void> VegetationConverterController::prepare() {
+Result<void> VegetationConverterController::prepare() {
     if (!request_)
         return editing::failed<void>(EditorStatus::Rejected, RuleId("editor.vegetation-converter.no-request"),
                                      "Set a vegetation conversion request before preparing it");
@@ -46,7 +46,7 @@ EditorResult<void> VegetationConverterController::prepare() {
         state_.findingCount     = 0;
         state_.diagnostics      = project(prepared.diagnostics());
         state_.phase            = VegetationConverterState::Phase::Error;
-        return EditorResult<void>::failure(prepared.status());
+        return Result<void>::failure(prepared.status());
     }
     candidate_              = std::move(prepared).takeValue();
     state_.preparedRevision = state_.requestRevision;
@@ -57,7 +57,7 @@ EditorResult<void> VegetationConverterController::prepare() {
     return editing::applied<void>();
 }
 
-EditorResult<std::uint64_t> VegetationConverterController::publish() {
+Result<std::uint64_t> VegetationConverterController::publish() {
     if (!candidate_ || state_.preparedRevision != state_.requestRevision)
         return editing::failed<std::uint64_t>(EditorStatus::Conflict,
                                               RuleId("editor.vegetation-converter.stale-candidate"),
@@ -75,7 +75,7 @@ EditorResult<std::uint64_t> VegetationConverterController::publish() {
     return published;
 }
 
-EditorResult<void> VegetationConverterController::clear() {
+Result<void> VegetationConverterController::clear() {
     request_.reset();
     candidate_.reset();
     state_                         = {};

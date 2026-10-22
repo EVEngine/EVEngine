@@ -21,42 +21,55 @@ using editing::PropertyDescriptor; using editing::PropertyFlag; using editing::P
 using editing::PropertyReadResult; using editing::PropertyReadState; using editing::PropertySchema;
 using editing::PropertySetMode; using editing::PropertyType; using editing::Revision; using editing::RuleId;
 using editing::SelectionSnapshot; using editing::TargetDescriptor; using editing::TargetId;
-template <class T> using EditorResult = editing::Result<T>;
+using editing::Result;
 using EditorStatus=editing::Status; using EditorValue=editing::Value; using EditorDiagnostic=editing::Diagnostic;
 using EditorGizmoSnapshot=editing::GizmoSnapshot; using EditorGizmoPrimitive=editing::GizmoPrimitive;
 
 /** @brief Stable, serializable authoring document for one projected decal. */
-class DecalDocumentTarget final : public ::eve::editing::EditableTargetState,
-                                  public virtual IEditableTarget,
-                                  public IDomainOperationTarget,
-                                  public IDomainOperationTargetStaging,
-                                  public IPropertyProvider {
+class EVENGINE_API_DOMAINS DecalDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                                       public virtual IEditableTarget,
+                                                       public IDomainOperationTarget,
+                                                       public IDomainOperationTargetStaging,
+                                                       public IPropertyProvider {
 public:
+    /** @brief Decal document target. */
     explicit DecalDocumentTarget(std::string id);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Applies domain operation. */
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    /** @brief Commits domain state. */
+    Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision> currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
     PropertySchema schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
     PropertyReadResult read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+    /** @brief Make set. */
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                           const EditorValue& value, PropertySetMode mode) const override;
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot& selection,
+    /** @brief Make reset. */
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
                                             const PropertyPath& path) const override;
     /** @brief Read a renderer-neutral property by stable path. @return Borrowed pointer into this target, or null. @lifetime Valid until the target is mutated or destroyed. */
     const EditorValue* value(const std::string& path) const;
     /** @brief Validate projection geometry, fades, UVs and texture-channel rules. */
     std::vector<EditorDiagnostic> validate() const;
-    /** @brief Capture schema-version-one decal content. */
+    /** @brief Capture schema-version-two decal content. */
     EditorValue snapshotValue() const;
-    /** @brief Atomically load and validate persisted decal content. */
-    EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    /** @brief Atomically load v4 content or migrate v1-v3 content with compatible projection defaults. */
+    Result<void> loadSnapshot(const EditorValue& snapshot);
 private:
+    /** @brief Matches. */
     bool matches(const SelectionSnapshot& selection) const;
+    /** @brief Decal schema. */
     static PropertySchema decalSchema();
     static std::map<std::string,EditorValue> defaults();
     std::string                              id_;
@@ -66,28 +79,32 @@ private:
 /** @brief Resolves every decal texture before a live generation is replaced. */
 class IDecalRuntimeAssetResolver {
 public:
+    /** @brief Releases IDecalRuntimeAssetResolver resources. */
     virtual ~IDecalRuntimeAssetResolver() = default;
     /** @brief Resolve a borrowed texture, returning NotFound for missing assets. */
-    virtual EditorResult<graphics::Texture*> texture(const std::string& asset) const = 0;
+    virtual Result<graphics::Texture*> texture(const std::string& asset) const = 0;
 };
 
 /** @brief Atomic publication boundary for a complete decal candidate. */
 class IDecalRuntimeSink {
 public:
+    /** @brief Releases IDecalRuntimeSink resources. */
     virtual ~IDecalRuntimeSink() = default;
     /** @brief Publish a candidate while preserving runtime state on rejection. */
-    virtual EditorResult<void> publish(const DecalDocumentTarget& document) = 0;
+    virtual Result<void> publish(const DecalDocumentTarget& document) = 0;
 };
 
 /** @brief Candidate-first binding from one stable decal document to DecalManager. */
-class DecalRuntimeBinding final : public IDecalRuntimeSink {
+class EVENGINE_API_DOMAINS DecalRuntimeBinding final : public IDecalRuntimeSink {
 public:
+    /** @brief Decal runtime binding. */
     DecalRuntimeBinding(decal::DecalManager* manager, const IDecalRuntimeAssetResolver* assets)
+        /** @brief Manager. */
         : manager_(manager), assets_(assets) {}
     /** @brief Publish a complete replacement; failure preserves the previous generation. */
-    EditorResult<void> publish(const DecalDocumentTarget& document) override;
+    Result<void> publish(const DecalDocumentTarget& document) override;
     /** @brief Remove the currently published generation, if any. */
-    EditorResult<void> clear();
+    Result<void> clear();
     /** @brief Runtime integer ID for diagnostics only. */
     int runtimeId() const { return runtimeId_; }
 private:
@@ -96,18 +113,27 @@ private:
 };
 
 /** @brief Candidate-first operation target synchronizing author state and a live decal. */
-class DecalPublishingTarget final : public IDomainOperationTarget,
-                                    public IDomainOperationTargetStaging {
+class EVENGINE_API_DOMAINS DecalPublishingTarget final : public IDomainOperationTarget,
+                                                         public IDomainOperationTargetStaging {
 public:
+    /** @brief Decal publishing target. */
     DecalPublishingTarget(std::string id, IDecalRuntimeSink* sink)
+        /** @brief Document. */
         : document_(std::move(id)), sink_(sink) {}
+    /** @brief Target id. */
     TargetId targetId() const override { return TargetId(document_.targetId()); }
+    /** @brief Revision. */
     std::uint64_t revision() const override { return document_.revision(); }
+    /** @brief Dirty region. */
     EditRegion dirtyRegion() const override { return document_.dirtyRegion(); }
+    /** @brief Clears dirty region. */
     void clearDirtyRegion() override { document_.clearDirtyRegion(); }
-    EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Applies domain operation. */
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    /** @brief Commits domain state. */
+    Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
     /** @brief Mutable document used by the Inspector to plan operations. */
     DecalDocumentTarget& authoringTarget() { return document_; }
     /** @brief Immutable document used by previews and persistence. */
@@ -117,7 +143,7 @@ private:
 };
 
 /** @brief Builds projection-box and normal overlays for decal placement tools. */
-class DecalGizmoPreviewService {
+class EVENGINE_API_DOMAINS DecalGizmoPreviewService {
 public:
     /** @brief Create a revision-bound projection volume and direction arrow. */
     EditorGizmoSnapshot build(const DecalDocumentTarget& document) const;

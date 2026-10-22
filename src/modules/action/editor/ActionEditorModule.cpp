@@ -1,17 +1,21 @@
 #include "action/editor/ActionEditorModule.h"
 
 #include "action/editor/ActionEditingCommands.h"
+#include "action/editor/ActionEditorPackage.h"
 #include "action/editor/ActionTimelineEditor.h"
 #include "action/editor/ActionTimelineScriptBindings.h"
 #include "common/Capability.h"
 #include "editing/EditingCommandRegistry.h"
+#include "editing/EditorPackage.h"
 #include "editor/EditorAutomationTargetFactory.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 namespace eve::action_editor {
 namespace {
@@ -27,9 +31,9 @@ std::string stringField(const editor::EditorValue::Object& request, const char* 
 
 class ActionEditorModule::TargetFactory final : public editor::IEditorAutomationTargetFactory {
 public:
-    bool supports(std::string_view type) const override { return type == "action" || type == "action-timeline"; }
+    std::vector<std::string_view> types() const override { return {"action", "action-timeline"}; }
 
-    editor::EditorResult<editor::AutomationOwnedTarget> create(
+    editor::Result<editor::AutomationOwnedTarget> create(
         const editor::TargetId& target, std::string_view type, const editor::EditorValue::Object& request) override {
         (void)type;
         auto document = std::make_unique<editor::ActionTimelineTarget>(target.value());
@@ -37,7 +41,7 @@ public:
         if (found != request.end()) {
             auto loaded = document->loadSnapshot(found->second);
             if (!loaded.ok())
-                return editor::EditorResult<editor::AutomationOwnedTarget>::failure(loaded.status());
+                return editor::Result<editor::AutomationOwnedTarget>::failure(loaded.status());
         }
         const std::string animationUri = stringField(request, "animationUri");
         if (!animationUri.empty()) {
@@ -53,10 +57,10 @@ public:
             auto operation    = document->makeSet(selection, editor::PropertyPath("timeline.animationUri"),
                                                   animationUri, editor::PropertySetMode::Absolute);
             if (!operation.ok())
-                return editor::EditorResult<editor::AutomationOwnedTarget>::failure(operation.status());
+                return editor::Result<editor::AutomationOwnedTarget>::failure(operation.status());
             auto applied = document->applyDomainOperation(operation.value());
             if (!applied.ok())
-                return editor::EditorResult<editor::AutomationOwnedTarget>::failure(applied.status());
+                return editor::Result<editor::AutomationOwnedTarget>::failure(applied.status());
         }
         editor::AutomationOwnedTarget owned;
         owned.target = std::move(document);
@@ -66,14 +70,17 @@ public:
 
 Module_IMPL(ActionEditorModule, new ActionEditorModule());
 
-ActionEditorModule::ActionEditorModule() : factory_(std::make_unique<TargetFactory>()) {
+ActionEditorModule::ActionEditorModule()
+    : factory_(std::make_unique<TargetFactory>()), packageProvider_(std::make_unique<ActionEditorPackageProvider>()) {
     auto* registry = eve::cap::query<editing::IEditingCommandRegistry>();
     if (!registry || !registerEditingCommands(*registry).ok())
         throw std::runtime_error("Failed to register action editing commands");
     eve::cap::addListener<editor::IEditorAutomationTargetFactory>(factory_.get());
+    eve::cap::addListener<editing::IEditorPackageProvider>(packageProvider_.get());
 }
 
 ActionEditorModule::~ActionEditorModule() {
+    eve::cap::removeListener<editing::IEditorPackageProvider>(packageProvider_.get());
     eve::cap::removeListener<editor::IEditorAutomationTargetFactory>(factory_.get());
     if (auto* registry = eve::cap::query<editing::IEditingCommandRegistry>())
         registry->unregisterOwner("action_editor").ignore("action editor adapter shutdown");

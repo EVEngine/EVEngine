@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Capability.h"
 #include "common/Module.h"
@@ -15,10 +17,12 @@ namespace eve::timer {
  * @brief High-resolution frame/elapsed timer backed by SDL_GetPerformanceCounter().
  * Script: `timer <- eve.Timer();`
  */
-class Timer : public Module, public eve::service::ITimer, public eve::ITimeSource {
+class EVENGINE_API_FOUNDATION Timer : public Module, public eve::service::ITimer, public eve::ITimeSource {
 public:
     Module_REG(Timer);
+    /** @brief Timer. */
     Timer();
+    /** @brief Timer. */
     ~Timer() override;
 
     /**
@@ -51,6 +55,7 @@ public:
     /** @brief Return the presentation frame ordinal maintained by the simulation clock. */
     eve::FrameIndex getFrameIndex() const;
 
+    /** @brief Elapsed seconds. */
     double elapsedSeconds() override { return getTime(); }
 
 private:

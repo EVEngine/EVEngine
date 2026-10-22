@@ -40,6 +40,7 @@
 | Profiler | line hook 计时：`eve.dev.profileReport()` / `profileClear()`（按函数统计调用次数、行数、耗时） |
 | MCP / AI | `--mcp-port` 嵌入 MCP；`AiPanel` 会话日志；F9 切换 ImGui「AI / MCP」面板 |
 | 运行时控制台 | `ConsolePanel`: print 捕获 + 级别化日志 + Squirrel REPL; F4 切换 ImGui「Console」面板 |
+| 帧统计叠加 | `FrameStatsPanel`: EMA FPS + 帧时间 + 可选实体数; F3 切换 ImGui「Frame stats」面板 |
 
 ### 状态驱动 bug 复现（基线快照 + 步骤回放）
 
@@ -64,6 +65,7 @@
 - `eve::dev::McpServer`：MCP JSON-RPC TCP（AI Agent 测试 / 辅助开发）
 - `eve::dev::AiPanel`: AI 会话日志；ImGui 绘制由 `ImGuiHostPanels.cpp` 注册（避免 EVDevTools 拉入 imgui.h）
 - `eve::dev::ConsolePanel`: 运行时控制台环形缓冲（线程安全）+ Squirrel `print` 捕获 + REPL 求值；ImGui 绘制同样由 `ImGuiHostPanels.cpp` 注册
+- `eve::dev::FrameStatsPanel`: FPS / 帧时间 EMA + 可选实体数；`load.nut` 每帧 `sample(dt)`；ImGui 由宿主注册
 - `eve::dev::DevTool`：`attach` + `exposeScriptApi` + 可选 `startDap` / `startMcp`
 
 ### 脚本 API（`eve.dev`，仅 `--debug`）
@@ -103,6 +105,13 @@ eve.dev.console.recent(64);         // recent log entries
 eve.dev.console.format(64);         // recent log text
 eve.dev.console.clear();
 eve.dev.console.toggleVisible();    // F4
+// Frame stats overlay (FPS / frame ms / optional entity count)
+eve.dev.stats.sample(dt);           // load.nut does this each frame
+eve.dev.stats.setEntityCount(128);  // optional; clearEntityCount() to hide
+eve.dev.stats.fps();
+eve.dev.stats.frameMs();
+eve.dev.stats.format();
+eve.dev.stats.toggleVisible();      // F3
 ```
 
 ### 使用方式
@@ -139,6 +148,6 @@ debug adapter 在 launch 时启动 `eve run --debug --dap-port`，attach 则连�
 `eve language-server --root <game>` 只是把它接到 stdio 上。
 
 进程内可直接调用 `openDocument` / `complete` / `hover` / `definition` / `diagnosticsFor`
-/ `formatDocument` / `foldingRanges` / `semanticTokens` 等 API（见 `test/language_server.cpp`）。JSON-RPC
+/ `formatDocument` / `foldingRanges` / `semanticTokens` 等 API（见 `test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp`）。JSON-RPC
 覆盖 initialize、增量文档同步、补全、Hover、定义、引用、重命名、documentSymbol、
 signatureHelp、formatting、rangeFormatting、foldingRange、semanticTokens 和 publishDiagnostics。

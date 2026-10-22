@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Time.h"
 
@@ -11,7 +13,7 @@ namespace eve::particles {
 class ParticleEmitter;
 
 /** @brief Advances all ParticleEmitter Sim components. */
-class ParticleSimSystem {
+class EVENGINE_API_DOMAINS ParticleSimSystem {
 public:
     /**
      * @brief Advances emitters using one scheduler-owned deterministic step.
@@ -27,19 +29,21 @@ public:
 };
 
 /** @brief Draws all visible ParticleEmitter entities via Graphics batch path. */
-class ParticleRenderSystem {
+class EVENGINE_API_DOMAINS ParticleRenderSystem {
 public:
     /**
      * @brief Draw exactly one emitter without traversing the global ECS registry.
      * @return Number of particles submitted, or zero when hidden/empty/unsupported.
      */
     static int renderEmitter(graphics::Graphics* gfx, ParticleEmitter* emitter);
+    /** @brief Renders . */
     static void render(graphics::Graphics *gfx);
 };
 
 /** @brief Syncs pooled Light2D entities with alive particles (emitters with lights.enabled). */
-class ParticleLightSystem {
+class EVENGINE_API_DOMAINS ParticleLightSystem {
 public:
+    /** @brief Updates . */
     static void update();
 };
 
@@ -47,8 +51,9 @@ public:
  * @brief Polls bound config files (Resource.path) and hot-reloads when modtime changes.
  * Returns number of emitters reloaded.
  */
-class ParticleConfigSystem {
+class EVENGINE_API_DOMAINS ParticleConfigSystem {
 public:
+    /** @brief Polls . */
     static int poll();
 };
 

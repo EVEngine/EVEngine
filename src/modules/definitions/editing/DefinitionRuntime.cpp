@@ -6,7 +6,7 @@
 
 namespace eve::definitions_editing {
 
-EditorResult<void> DefinitionRuntimePublisher::publish(const DefinitionDocument& document,
+Result<void> DefinitionRuntimePublisher::publish(const DefinitionDocument& document,
                                                        definitions::DefinitionRegistry* registry,
                                                        bool replaceExisting) const {
     if (!registry)

@@ -1,4 +1,5 @@
 #pragma once
+#include "common/StringMapInstances.h"
 
 #include "common/BorrowedRef.h"
 #include "procgen/Grid2D.h"
@@ -32,7 +33,7 @@ enum class GridGraphValueType : std::uint8_t { Grid, PointSet };
  * @thread Graph-owning thread only.
  * @reentrant Not reentrant for one graph instance.
  */
-class GridGraph {
+class EVENGINE_API_DOMAINS GridGraph {
 public:
     /** @brief Add a reflected operation under a stable, non-empty node id. */
     [[nodiscard]] Result<void> addNode(std::string id, std::string operation);

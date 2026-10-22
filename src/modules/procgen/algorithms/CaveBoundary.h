@@ -1,10 +1,13 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <vector>
 
 namespace eve::procgen {
 
+/** @brief CaveBoundaryClosure public API. */
 struct CaveBoundaryClosure {
     int airSamplesBefore = 0;
     int airSamplesAfter  = 0;
@@ -21,7 +24,7 @@ struct CaveBoundaryClosure {
  * @param seed Deterministic rough-envelope seed.
  * @return Boundary air counts before/after closure and the number of changed voxels.
  */
-CaveBoundaryClosure closeCaveDensityBoundary(std::vector<float>& density, int nx, int ny, int nz, float strength,
-                                             uint32_t seed);
+EVENGINE_API_DOMAINS CaveBoundaryClosure closeCaveDensityBoundary(std::vector<float>& density, int nx, int ny, int nz,
+                                                                  float strength, uint32_t seed);
 
 }  // namespace eve::procgen

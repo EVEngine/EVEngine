@@ -23,7 +23,7 @@
 > 后端：Dear ImGui（SDL 输入 + Vulkan 绘制），由 C++ `UISystem` 每帧 walk。
 > ECS 基础库：[sunxfancy/ECS.hpp](https://github.com/sunxfancy/ECS.hpp)（`external/ECS.hpp`）。
 
-关联文档：[模块设计.md](./模块设计.md)、[依赖项.md](./依赖项.md)、[整体架构.md](./整体架构.md)、[游戏模型设计.md](./游戏模型设计.md)、[2D渲染API设计.md](./2D渲染API设计.md)
+关联文档：[模块设计.md](./模块设计.md)、[依赖项.md](./依赖项.md)、[整体架构.md](./整体架构.md)、[2D渲染API设计.md](./2D渲染API设计.md)
 代码落点：[`src/modules/ui/`](../../src/modules/ui/)（抽象 [`UIBackend`](../../src/modules/ui/UIBackend.h)；ImGui 实现 [`ui/imgui/`](../../src/modules/ui/imgui/)）
 
 
@@ -96,9 +96,7 @@ flowchart TB
 | `ui/imgui/ImGuiBackend` | SDL 输入、Vulkan present overlay | 脚本 API |
 | `graphics` | present 前调用 overlay 钩子 | UI 树语义 |
 
-### 2.2 与交互层（游戏模型）的关系
-
-对齐 [游戏模型设计.md](./游戏模型设计.md) 四层模型中的 **交互层**：
+### 2.2 与交互层的关系
 
 - UI 是 ViewModel 的可视化：改数据 → 改显示；用户操作 → 事件 → 改模型
 - 交互对象可作为 component 挂到模型实体上（`UIHost`），与声明式渲染同表
@@ -144,7 +142,7 @@ flowchart TB
 | `Control` 的可见/启用、focus mode、focus neighbor、mouse filter | `UINode` / `WidgetDesc` 的平台中立 Control 语义 | 已实现并序列化 |
 | `Container` 自动布局与 size flags | Flex、Row/Column、Toolbar、Sidebar、Toolbox、SplitPane、box model | 已实现核心组合与响应式布局 |
 | Theme 继承与局部 override | 全局 preset + `ThemePreset` 子树作用域 + `setThemeScope` | 已实现 dark/light 作用域与嵌套恢复 |
-| Inspector 按属性元数据生成 editor | `IPropertyModel` + `PropertyView` + 反射/Editor adapter | 已实现标量生成、校验、双向同步与结构值只读展示 |
+| Inspector 按属性元数据生成 editor | `IPropertyAccess` + `PropertyView` + 反射/Editor adapter | 已实现标量、枚举、Color/Vec 分量、Array/Map 展开编辑、校验与双向同步；嵌套 instance 仍由 Inspector 导航 |
 | `_gui_input` / mouse filter 传播 | UIEvent target + retained-tree `pass/ignore/stop` 冒泡 | 已实现 click 路由与自动化同路径 |
 | 键盘/手柄焦点导航 | 显式邻居 + 稳定 tabIndex fallback + `moveFocus` | 已实现后端中立 API 与 ImGui 键盘桥 |
 
@@ -461,7 +459,7 @@ sequenceDiagram
 
 ### C — DevTools
 
-- [x] 同一 `UISystem`；反射属性面板（见 [界面设计.md](./界面设计.md)）
+- [x] 同一 `UISystem`；反射属性面板（见下文 `ui.inspect` / DevTools）
 - [x] 脚本类/属性自动扫描：`Runtime::scanClasses()` 随时扫描根表（含
       `dofile`/`compilestring` 加载的类，热重载自动刷新）；
       实例级反射 API：`createInstance` / `reflectInstance` / `readProperty` /
@@ -469,13 +467,13 @@ sequenceDiagram
 - [x] MVVM 属性面板 `ui.inspect()` / `ui.inspectObject(obj)`：控件变更直接写回
       脚本实例，`sync()` 每帧把模型值拉回视图（双向绑定）；类/实例下拉 + 新增实例
 - [x] Squirrel 属性元数据选择控件：`</ editor = "slider", min, max />`、
-      `</ editor = "combo", options = "a,b,c" />`、checkbox/input 默认；
-      继承成员按所属基类分组（“父类属性面版”）
+      `</ editor = "combo", options = "a,b,c" />`、`editor="color"|"vec2"|"vec3"|"vec4"`、
+      checkbox/input 默认；继承成员按所属基类分组（“父类属性面版”）；
+      `ui.propertySchema(obj)` 投影反射派生的 PropertySchema
 - [x] 数据库管理面板 `ui.dbOpen()` / `dbRegister(obj)`：按脚本类名动态菜单 +
       实例网格（单元格编辑、+ 新增、删除），数据底座 `ui/ObjectRegistry`
-- [x] 嵌套引用编辑：`Runtime` 数组/表读写 API（`arraySize/Get/Set/Append/Remove`、
-      `tableKeys/Get/Set/Remove`、`readObjectProperty`）+ Inspector 数组/表展开编辑
-      与嵌套实例导航（open / back）
+- [x] 嵌套引用编辑：`Runtime` 数组/表读写 API + `ReflectedPropertyModel` 整容器
+      `write()` + `PropertyView` Array/Map 展开编辑与嵌套实例导航（open / back）
 - [x] 场景层级面板 `ui.sceneOpen()`：经 `ISceneQuery` 能力接口渲染节点树，
       选中节点可编辑 transform / visible，Pick 按钮把节点 id 交给脚本回调 →
       `ui.inspectObject()` 联动对象检查器
@@ -494,11 +492,11 @@ sequenceDiagram
 ## 9. 验收标准（第一期）
 
 - [x] 工程可编译并链接 imgui；`#include <imgui.h>`
-- [x] C++ 创建 `UIHost`，树含 Window+Text+Button；`UISystem` 每帧画出路径存在；**无**脚本 per-frame UI 循环（见 `test/UISystem.cpp`）
+- [x] C++ 创建 `UIHost`，树含 Window+Text+Button；`UISystem` 每帧画出路径存在；**无**脚本 per-frame UI 循环（见 `test/integration/ui-workflows/ui_workflows_graphics_tests.cpp`）
 - [x] 点击 Button 触发回调并改 Text（C++ handler + `dispatchEvents`）
 - [x] `setProps` / `setLabelText` 后保留树字段更新
 - [x] 与 boot 帧序对接（`src/scripts/load.nut`）
-- [x] 与现有 `RenderSystem` 同帧 Vulkan overlay 实机冒烟（`test/UIOverlaySmoke.cpp`）
+- [x] 与现有 `RenderSystem` 同帧 Vulkan overlay 实机冒烟（`test/integration/render-presentation/render_presentation_graphics_RenderSystem_tests.cpp`）
 
 
 ## 10. 内部逃生舱

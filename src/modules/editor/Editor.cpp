@@ -2,9 +2,14 @@
 
 #include "common/Capability.h"
 #include "common/EditorAutomation.h"
+#include "common/EditorMcpAttach.h"
+#include "common/SquirrelBinding.h"
+#include "editing/PropertySchemaJson.h"
 #include "editor/EditorAutomationProvider.h"
 #include "editor/EditorDock.h"
+#include "editor/EditorHost.h"
 #include "editor/EditorInspector.h"
+#include "editor/EditorMcpProjector.h"
 #include "editor/EditorSession.h"
 #include "editor/EditorTargetCoordinator.h"
 #include "editor/EditorToolbar.h"
@@ -196,7 +201,7 @@ ssq::Array diagnosticArray(HSQUIRRELVM vm, const std::vector<EditorDiagnostic>& 
 }
 
 template <class T>
-ssq::Table resultTable(HSQUIRRELVM vm, const EditorResult<T>& result) {
+ssq::Table resultTable(HSQUIRRELVM vm, const Result<T>& result) {
     ssq::Table out(vm);
     out.set("status", std::string(statusName(result.code())));
     out.set("accepted", result.ok());
@@ -204,7 +209,7 @@ ssq::Table resultTable(HSQUIRRELVM vm, const EditorResult<T>& result) {
     return out;
 }
 
-EditorResult<EditorValue> invalidScriptPayload() {
+Result<EditorValue> invalidScriptPayload() {
     return eve::editing::failed<EditorValue>(
         EditorStatus::Rejected, RuleId("editor.script.invalid-payload"),
         "Script payload must contain only null, bool, number, string, array, or table values");
@@ -218,27 +223,40 @@ bool invokeScriptCommand(const ssq::Object& callback, const EditorValue& payload
     sq_pushobject(vm, callback.getRaw());
     sq_pushroottable(vm);
     pushEditorValue(vm, payload);
+    // `pushEditorValue` pushes an EditorValue, which is not one of the types the shared
+    // helper's typed-argument form accepts, so the parameter count is derived from the
+    // pushes instead -- the same rule (R-FACE-7). A script command that threw used to be
+    // reported to the author as "callback rejected the planned payload", which reads as a
+    // deliberate `return false`.
+    const SQInteger params   = sq_gettop(vm) - top - 1;  // receiver + arguments
     bool accepted = false;
-    if (SQ_SUCCEEDED(sq_call(vm, 2, SQTrue, SQTrue))) {
+    if (SQ_SUCCEEDED(sq_call(vm, params, SQTrue, SQTrue))) {
         SQBool result = SQFalse;
         accepted      = SQ_SUCCEEDED(sq_getbool(vm, -1, &result)) && result != SQFalse;
+    } else {
+        script::reportScriptCallFailure(vm, "editor.script-command");
     }
     sq_settop(vm, top);
     return accepted;
 }
 
-bool registerScriptCommand(Editor* editor, const std::string& id, const std::string& displayName,
-                           const std::string& category, ssq::Object callback) {
+bool registerScriptCommandImpl(Editor* editor, const std::string& id, const std::string& displayName,
+                               const std::string& category, ssq::Object callback, bool automationAllowed,
+                               const std::string& panelCapability, const std::string& panelContext) {
     if (!editor || id.empty()) return false;
     const SQObjectType callbackType = callback.getRaw()._type;
     if (callbackType != OT_CLOSURE && callbackType != OT_NATIVECLOSURE) return false;
+    if (automationAllowed && (panelCapability.empty() || panelContext.empty())) return false;
 
     CommandDescriptor descriptor;
     descriptor.id                = CommandId(id);
     descriptor.ownerModule       = "script:" + id;
     descriptor.displayName       = displayName;
     descriptor.category          = category;
-    descriptor.automationAllowed = false;
+    descriptor.automationAllowed = automationAllowed;
+    descriptor.payloadSchema     = editing::emptyObjectPropertySchema("script." + id);
+    descriptor.panelCapability   = panelCapability;
+    descriptor.panelContext      = panelContext;
     return editor->commandService()
         .registerPlannedCommand(
             descriptor,
@@ -268,6 +286,30 @@ bool registerScriptCommand(Editor* editor, const std::string& id, const std::str
         .ok();
 }
 
+bool registerScriptCommand(Editor* editor, const std::string& id, const std::string& displayName,
+                           const std::string& category, ssq::Object callback) {
+    return registerScriptCommandImpl(editor, id, displayName, category, std::move(callback), false, {}, {});
+}
+
+bool registerAutomatedScriptCommand(Editor* editor, const std::string& id, const std::string& displayName,
+                                    const std::string& category, const std::string& panelCapability,
+                                    const std::string& panelContext, ssq::Object callback) {
+    return registerScriptCommandImpl(editor, id, displayName, category, std::move(callback), true, panelCapability,
+                                     panelContext);
+}
+
+}  // namespace
+
+namespace {
+
+bool attachEditorHostOpaque(void* host) {
+    auto* editorHost = static_cast<EditorHost*>(host);
+    if (!editorHost) return false;
+    return editorHost->exportMcp(EditorMcpExportMode::Commands).ok();
+}
+
+void detachEditorHostOpaque() { editorMcpProjector().detach(); }
+
 }  // namespace
 
 Editor::Editor()
@@ -275,22 +317,24 @@ Editor::Editor()
       automation_(std::make_unique<EditorAutomationProvider>(commandService_, *targets_)) {
     eve::cap::provide<eve::editing::IEditingCommandRegistry>(targets_.get());
     eve::cap::provide<eve::IEditorAutomation>(automation_.get());
+    eve::setEditorMcpAttachHooks(&attachEditorHostOpaque, &detachEditorHostOpaque);
 }
 
 Editor::~Editor() {
+    eve::setEditorMcpAttachHooks(nullptr, nullptr);
     eve::cap::revoke<eve::IEditorAutomation>(automation_.get());
     eve::cap::revoke<eve::editing::IEditingCommandRegistry>(targets_.get());
 }
 
-EditorResult<void> Editor::registerEditingTarget(IEditableTarget& target) { return targets_->registerTarget(target); }
+Result<void> Editor::registerEditingTarget(IEditableTarget& target) { return targets_->registerTarget(target); }
 
-EditorResult<void> Editor::unregisterEditingTarget(const TargetId& target) {
+Result<void> Editor::unregisterEditingTarget(const TargetId& target) {
     auto result = targets_->unregisterTarget(target);
     if (result.code() == EditorStatus::Applied) automation_->targetUnregistered(target);
     return result;
 }
 
-EditorResult<void> Editor::bindEditingTarget(EditorSession& session, const TargetId& target) {
+Result<void> Editor::bindEditingTarget(EditorSession& session, const TargetId& target) {
     return targets_->bind(session, target);
 }
 
@@ -310,12 +354,22 @@ std::unique_ptr<EditorSession> Editor::newSession() {
     return session;
 }
 
-EditorResult<std::unique_ptr<EditorWorkspace>> Editor::newWorkspace(const std::string& id, const std::string& title) {
+Result<std::unique_ptr<EditorWorkspace>> Editor::newWorkspace(const std::string& id, const std::string& title) {
     if (id.empty())
         return eve::editing::failed<std::unique_ptr<EditorWorkspace>>(
             EditorStatus::Rejected, RuleId("editor.workspace.empty-id"), "Workspace id must be non-empty");
     return eve::editing::applied<std::unique_ptr<EditorWorkspace>>(
         std::make_unique<EditorWorkspace>(id, title.empty() ? id : title));
+}
+
+Result<std::unique_ptr<EditorHost>> Editor::newHost(const std::string& id, const std::string& title) {
+    if (id.empty())
+        return eve::editing::failed<std::unique_ptr<EditorHost>>(EditorStatus::Rejected, RuleId("editor.host.empty-id"),
+                                                                 "EditorHost id must be non-empty");
+    EditorHost::Options options;
+    options.id    = id;
+    options.title = title.empty() ? id : title;
+    return eve::editing::applied<std::unique_ptr<EditorHost>>(std::make_unique<EditorHost>(*this, std::move(options)));
 }
 
 std::unique_ptr<ScriptEditorTool> Editor::newScriptTool(const std::string& id, const std::string& label) {
@@ -661,7 +715,7 @@ void Editor::expose(ssq::Table& table) {
         HSQUIRRELVM vm = payload.getHandle();
         EditorValue value;
         if (!self || !objectToEditorValue(payload, value)) return resultTable(vm, invalidScriptPayload());
-        const EditorResult<PlanId> planned = self->retainPlan(CommandId(id), value, CommandSource::Script);
+        const Result<PlanId> planned = self->retainPlan(CommandId(id), value, CommandSource::Script);
         ssq::Table                 out     = resultTable(vm, planned);
         if (planned.ok()) out.set("planId", planned.value().value());
         return out;
@@ -673,7 +727,7 @@ void Editor::expose(ssq::Table& table) {
                 return resultTable(vm, eve::editing::failed<TransactionReceipt>(EditorStatus::Failed,
                                                                                RuleId("editor.script.missing-session"),
                                                                                "Editor session is not available"));
-            const EditorResult<TransactionReceipt> executed =
+            const Result<TransactionReceipt> executed =
                 self->executeRetainedPlan(PlanId(planId), CommandSource::Script);
             ssq::Table out = resultTable(vm, executed);
             if (executed.ok()) {
@@ -691,7 +745,7 @@ void Editor::expose(ssq::Table& table) {
                         EditorValue value;
                         if (!self || !objectToEditorValue(payload, value))
                             return resultTable(vm, invalidScriptPayload());
-                        const EditorResult<EditorValue> executed =
+                        const Result<EditorValue> executed =
                             self->executeCommand(CommandId(id), value, CommandSource::Script);
                         ssq::Table out = resultTable(vm, executed);
                         if (executed.ok()) setValue(out, "value", executed.value());
@@ -733,6 +787,29 @@ void Editor::expose(ssq::Table& table) {
                             return (response.handled ? 1 : 0) | (response.capturePointer ? 2 : 0) |
                                    (response.releasePointer ? 4 : 0);
                         }));
+
+    auto host = table.addClass<EditorHost>("EditorHost",
+                                           std::function<EditorHost*()>([]() -> EditorHost* { return nullptr; }), true);
+    host.addFunc("autoMount", [](EditorHost* self) {
+        if (!self) return 0;
+        auto report = self->autoMount();
+        return report.ok() ? static_cast<int>(report.value().mountedPackages) : -1;
+    });
+    host.addFunc("mount", [](EditorHost* self, const std::string& owner) {
+        if (!self) return 0;
+        auto report = self->mount(std::vector<std::string>{owner});
+        return report.ok() ? static_cast<int>(report.value().mountedPackages) : -1;
+    });
+    host.addFunc("unmount",
+                 [](EditorHost* self, const std::string& owner) { return self && self->unmount(owner).ok(); });
+    host.addFunc("isMounted",
+                 [](EditorHost* self, const std::string& owner) { return self && self->isMounted(owner); });
+    host.addFunc("getPanelCount",
+                 [](EditorHost* self) { return self ? static_cast<int>(self->workspace().getPanelCount()) : 0; });
+    host.addFunc("exportMcp", [](EditorHost* self) { return self && self->exportMcp().ok(); });
+    host.addFunc("focusUndoOwner", [](EditorHost* self, const std::string& owner) {
+        return self && self->undo().focusOwner(owner).ok();
+    });
 
     auto workspace = table.addClass<EditorWorkspace>(
         "EditorWorkspace", std::function<EditorWorkspace*()>([]() -> EditorWorkspace* { return nullptr; }), true);
@@ -805,6 +882,10 @@ void Editor::expose(ssq::Class& cls) {
         auto created = self->newWorkspace(id, title);
         return created.ok() ? std::move(created).takeValue().release() : nullptr;
     });
+    cls.addFunc("newHost", [](Editor* self, const std::string& id, const std::string& title) {
+        auto created = self->newHost(id, title);
+        return created.ok() ? std::move(created).takeValue().release() : nullptr;
+    });
     cls.addFunc("newScriptTool", [](Editor* self, const std::string& id, const std::string& label) {
         return self->newScriptTool(id, label).release();
     });
@@ -831,6 +912,7 @@ void Editor::expose(ssq::Class& cls) {
         return self->newVolumeBrushTool(id, label).release();
     });
     cls.addFunc("registerScriptCommand", registerScriptCommand);
+    cls.addFunc("registerAutomatedScriptCommand", registerAutomatedScriptCommand);
     cls.addFunc("unregisterScriptCommand", [](Editor* self, const std::string& id) {
         return self && self->commandService().unregisterCommand(CommandId(id), "script:" + id);
     });

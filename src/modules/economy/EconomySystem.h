@@ -1,11 +1,15 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "economy/EconomyLedger.h"
 
 #include <functional>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include "common/ResourceAccount.h"
 
 namespace eve::economy {
 
@@ -22,7 +26,7 @@ using EconomyHook = std::function<void(const EconomyEvent&)>;
 /**
  * @brief 经济系统门面：按玩家持有账本、转发事件、注册钩子。
  */
-class EconomySystem {
+class EVENGINE_API_FOUNDATION EconomySystem {
 public:
     /** @brief 重置所有玩家账本、事件与钩子（测试用）。 */
     static void clear();
@@ -43,6 +47,13 @@ public:
     /** @brief 累计出账量。 */
     static int getExpense(int player, const std::string& type);
 
+    /**
+     * @brief 取一个玩家账本的完整只读快照（含未注册类型的余额与流水）。
+     * @param player 玩家 id。
+     * @return 拥有型快照，键按字典序；用于观察 / 调试 / MCP 投影。
+     */
+    [[nodiscard]] static EconomyLedger::Snapshot snapshot(int player);
+
     /** @brief 注册事件钩子（同名替换）。 */
     static void registerHook(const std::string& name, EconomyHook fn);
     /** @brief 注销事件钩子。 */
@@ -50,8 +61,16 @@ public:
 
     /** @brief 事件队列（按发生顺序）。 */
     static void clearEvents();
+    /** @brief Event count. */
     static int eventCount();
+    /** @brief Event at. */
     static const EconomyEvent& eventAt(int index);
+
+    /** @brief Share a cached protocol adapter over the canonical player ledger.
+     * @ownership The adapter is shared; EconomySystem retains the ledger. clear
+     * invalidates existing adapters before destroying ledgers; stale calls fail.
+     * @thread Simulation owner thread; no callbacks or reentry. */
+    [[nodiscard]] static std::shared_ptr<resource::IResourceAccount> resourceAccount(int player);
 
 private:
     static EconomyLedger& ledger(int player);

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file WeaponControl.h
@@ -6,6 +8,7 @@
  */
 
 #include "common/GameplayControl.h"
+#include "common/GameplayInstanceCatalog.h"
 #include "weapon/WeaponTypes.h"
 
 namespace eve::resource {
@@ -24,7 +27,7 @@ namespace eve::weapon {
  * participant remain authoritative borrowed collaborators and must outlive this
  * owner-thread-affine adapter. Firing is delegated to WeaponActionAdapter.
  */
-class WeaponControl final : public IGameplayControlProvider {
+class EVENGINE_API_WORLD WeaponControl final : public IGameplayControlProvider, public IGameplayInstanceCatalog {
 public:
     /**
      * @brief Construct a control adapter for one copied definition and borrowed effect authorities.
@@ -44,22 +47,31 @@ public:
     WeaponControl& operator=(const WeaponControl&) = delete;
 
     /** @copydoc IGameplayControlProvider::gameplayDomain */
+    /** @brief Gameplay domain. */
     [[nodiscard]] std::string_view gameplayDomain() const noexcept override;
+    /** @copydoc IGameplayInstanceCatalog::gameplayInstances */
+    /** @brief Gameplay instances. */
+    [[nodiscard]] std::vector<SubjectRef> gameplayInstances() const override;
     /** @copydoc IGameplayControlProvider::observeGameplay */
+    /** @brief Observe gameplay. */
     [[nodiscard]] Result<GameplayObservation> observeGameplay(const GameplaySession& session,
                                                                SubjectRef instance) const override;
     /** @copydoc IGameplayControlProvider::availableGameplayActions */
+    /** @brief Available gameplay actions. */
     [[nodiscard]] Result<std::vector<GameplayActionDescriptor>> availableGameplayActions(
         const GameplaySession& session, SubjectRef instance, SubjectRef subject) const override;
     /** @copydoc IGameplayControlProvider::submitGameplay */
+    /** @brief Submit gameplay. */
     [[nodiscard]] Result<GameplayCommandReceipt> submitGameplay(const GameplaySession& session,
                                                                  SubjectRef instance,
                                                                  const GameplayCommand& command) override;
     /** @copydoc IGameplayControlProvider::advanceGameplay */
+    /** @brief Advance gameplay. */
     [[nodiscard]] Result<GameplayObservation> advanceGameplay(const GameplaySession& session,
                                                                SubjectRef instance,
                                                                const SimulationStep& step) override;
     /** @copydoc IGameplayControlProvider::gameplayEvents */
+    /** @brief Gameplay events. */
     [[nodiscard]] Result<std::vector<GameplayEvent>> gameplayEvents(const GameplaySession& session,
                                                                      SubjectRef instance,
                                                                      std::uint64_t afterSequence) const override;

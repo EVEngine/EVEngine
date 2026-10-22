@@ -1,13 +1,18 @@
 #pragma once
+#include "common/Export.h"
+
 
 // 连续流场：Dijkstra 积分场 + 梯度方向场 + 双线性采样。
 // 与 map/FlowField 的区别：map 的流场是格级 next 指针，本类是连续方向向量，
 // 供单位在格子内平滑移动、平滑转向。纯数学，零模块依赖。
 
 #include <cstdint>
+#include <utility>
 #include <vector>
 
 namespace eve::crowd {
+/** @brief Navigation readiness relative to the current terrain and goals. */
+enum class FieldState { Unconfigured, Unbuilt, Ready, Stale };
 
 /**
  * @brief 连续流场（flow field）。
@@ -17,11 +22,12 @@ namespace eve::crowd {
  * （沿代价下降方向）。flowAtWorld() 用双线性插值给出任意世界坐标的方向，
  * 供单位逐帧采样跟随。
  */
-class CrowdField {
+class EVENGINE_API_FOUNDATION CrowdField {
 public:
     /** @brief 不可达/阻挡的积分代价。 */
     static constexpr float kUnreachable = 3.4e38f;
 
+    /** @brief Crowd field. */
     CrowdField() = default;
 
     /**
@@ -29,8 +35,14 @@ public:
      * @param width 列数（>0）
      * @param height 行数（>0）
      * @param cellSize 每格世界尺寸（>0）
-     * @param originX 世界原点 X（格 (0,0) 中心）
+     * @param originX 世界原点 X（格 (0,0) 左下角）
      * @param originY 世界原点 Y
+     * @details Identical geometry is a no-op. All buffer allocations precede geometry/revision publication.
+     * @thread Owner thread only. @reentrancy No callbacks.
+     * @cost Allocates grid-sized derived storage; amortize at explicit surface configuration boundaries.
+     * @throws std::invalid_argument Nonfinite geometry is rejected without changing the field.
+     * @throws std::length_error Grid dimensions exceed signed index range.
+     * @throws std::bad_alloc Buffer preparation fails without changing the field.
      */
     void resize(int width, int height, float cellSize, float originX, float originY);
 
@@ -42,9 +54,13 @@ public:
 
     /** @brief 网格尺寸访问器。 */
     int getWidth() const { return width_; }
+    /** @brief Returns the height. */
     int getHeight() const { return height_; }
+    /** @brief Returns the cell size. */
     float getCellSize() const { return cellSize_; }
+    /** @brief Returns the origin x. */
     float getOriginX() const { return originX_; }
+    /** @brief Returns the origin y. */
     float getOriginY() const { return originY_; }
 
     /**
@@ -77,17 +93,33 @@ public:
      */
     void setGoal(int gx, int gy);
 
-    /** @brief 追加一个目标格（多目标支持）。 */
+    /** @brief Append a unique goal cell; existing goals leave revision unchanged. */
     void addGoal(int gx, int gy);
     /** @brief 清空目标列表。 */
     void clearGoals();
     /** @brief 目标个数。 */
     int goalCount() const { return int(goals_.size() / 2); }
 
-    /** @brief 是否已 build 过（build 后或 resize 后为 true，改动地形后仍为 true）。 */
-    bool isBuilt() const { return built_; }
+    /** @brief Whether directions were built for the current terrain and goals. */
+    bool isBuilt() const { return built_ && builtRevision_ == revision_; }
+    /** @brief Read owner-local terrain/goal revision; snapshots preserve it. */
+    [[nodiscard]] std::uint64_t revision() const noexcept { return revision_; }
+    /** @brief Navigation geometry/cost/rule epoch; goal edits and field publications do not change it. */
+    [[nodiscard]] std::uint64_t inputRevision() const noexcept { return inputRevision_; }
+    /** @brief Read revision consumed by the last completed build. */
+    [[nodiscard]] std::uint64_t builtRevision() const noexcept { return builtRevision_; }
+    /** @brief Distinguish absent, unbuilt, current and stale navigation. */
+    [[nodiscard]] FieldState state() const noexcept {
+        if (!valid()) return FieldState::Unconfigured;
+        if (!built_) return FieldState::Unbuilt;
+        return isBuilt() ? FieldState::Ready : FieldState::Stale;
+    }
 
-    /** @brief 从目标格做 Dijkstra，生成积分场与方向场。 */
+    /** @brief Legacy synchronous build; publish the completed staged Dijkstra result atomically.
+     * @thread Owner thread only. @reentrancy No callbacks.
+     * @cost Copies field storage then performs global Dijkstra; amortize at explicit navigation rebuild boundaries.
+     * @throws std::bad_alloc Leaves the previously published field unchanged on allocation failure.
+     */
     void build();
 
     /** @brief 查询格级积分代价（未 build 返回 kUnreachable）。 */
@@ -143,10 +175,17 @@ public:
     const std::vector<float> &flowY() const { return flowY_; }
 
 private:
+    friend class Crowd;
+    void                beginBuildWorking();
+    std::pair<int, int> advanceBuildWorking(int maxWork);
+    void                invalidate();
+    void                invalidateInputs();
+    void                buildWorking();
     bool inBounds(int cx, int cy) const { return cx >= 0 && cy >= 0 && cx < width_ && cy < height_; }
     int index(int cx, int cy) const { return cy * width_ + cx; }
     void worldToCell(float wx, float wy, float &fx, float &fy) const;
-    void rebuildFlow();
+
+    void rebuildFlowCell(int index);
 
     int width_ = 0;
     int height_ = 0;
@@ -154,11 +193,18 @@ private:
     float originX_ = 0.f;
     float originY_ = 0.f;
     std::vector<float> cost_;     // 地形代价（0=阻挡，>=1 可走）
+    std::vector<float>                 navigationCost_;
+    bool                               navigationDiagonal_ = true, destinationEntryCost_ = false;
+    bool                               navigationBlocked(int cx, int cy) const;
+    float                              navigationCost(int index) const;
     std::vector<float> integ_;    // Dijkstra 积分场
     std::vector<float> flowX_;    // 每格方向 X
     std::vector<float> flowY_;    // 每格方向 Y
     std::vector<int> goals_;      // 目标格 (x,y) 对
     bool built_ = false;
+    std::uint64_t                      revision_ = 0, builtRevision_ = 0, inputRevision_ = 0;
+    std::vector<std::pair<float, int>> buildHeap_;
+    int                                flowCursor_ = 0;
 };
 
 }  // namespace eve::crowd

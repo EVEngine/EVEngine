@@ -1,0 +1,219 @@
+# action_editor：补充绑定参考
+
+本页由当前源码的绑定目录生成，补充主章尚未逐项解释的入口。先读主章的任务流程、
+初始化条件和生命周期，再查本页；本页不代表每个设备或平台都已执行这些 API。
+`dynamic` 表示静态提取器无法表达具体脚本投影，Result/异常/借用语义以绑定实现为准。
+参数列没有默认值：不要从 C++ 默认实参推断脚本实参可省略。
+
+## ActionTimelineAssetCatalog
+
+- `getAssetCount()` → `dynamic`；[绑定实现 L1040](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1040)。
+- `getAssetGuid(index: int)` → `dynamic`；[绑定实现 L1045](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1045)。
+- `getAssetTitle(index: int)` → `dynamic`；[绑定实现 L1049](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1049)。
+- `getAssetUri(index: int)` → `dynamic`；[绑定实现 L1047](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1047)。
+- `getGeneration()` → `dynamic`；[绑定实现 L1042](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1042)。
+- `registerDocument(guid: string, uri: string)` → `dynamic`；[绑定实现 L1052](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1052)。
+
+## ActionTimelineEditor
+
+- `addAnimationSection(sectionId: string, animationUri: string, startSeconds: float, endSeconds: float, blendInSeconds: float)` → `dynamic`；[绑定实现 L1862](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1862)。
+- `addNotifyAtCursor(trackId: string, type: string, payloadJson: string)` → `dynamic`；[绑定实现 L1070](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1070)。
+- `addParameterKey(itemId: string, time: float, value: float, inTangent: float, outTangent: float, interpolation: string)` → `dynamic`；[绑定实现 L1358](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1358)。
+- `addSectionSplit(timeSeconds: float)` → `dynamic`；[绑定实现 L1807](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1807)。
+- `addStateAtCursor(trackId: string, type: string, durationSeconds: float, payloadJson: string)` → `dynamic`；[绑定实现 L1084](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1084)。
+- `addTrack(trackId: string, label: string, kind: string)` → `dynamic`；[绑定实现 L1106](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1106)。
+- `advanceRuntime(deltaSeconds: float)` → `dynamic`；[绑定实现 L1455](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1455)。
+- `beginRuntime(skeleton: AnimSkeleton)` → `dynamic`；[绑定实现 L1449](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1449)。
+- `beginRuntimeBlendOut(durationSeconds: float)` → `dynamic`；[绑定实现 L1547](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1547)。
+- `canRedo()` → `dynamic`；[绑定实现 L1724](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1724)。
+- `canUndo()` → `dynamic`；[绑定实现 L1723](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1723)。
+- `cancelRuntime()` → `dynamic`；[绑定实现 L1576](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1576)。
+- `clearRuntimeBoneMask()` → `dynamic`；[绑定实现 L1527](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1527)。
+- `clearRuntimeSectionSync(sectionIndex: int)` → `dynamic`；[绑定实现 L1513](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1513)。
+- `copyTrack(trackId: string)` → `dynamic`；[绑定实现 L1146](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1146)。
+- `editAnimationSection(sectionId: string, startSeconds: float, endSeconds: float, blendInSeconds: float, animationUri: string)` → `dynamic`；[绑定实现 L1880](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1880)。
+- `editAnimationSectionSource(sectionId: string, sourceStartSeconds: float, sourceEndSeconds: float, blendCurve: string)` → `dynamic`；[绑定实现 L1908](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1908)。
+- `editItemDetails(itemId: string, type: string, payloadJson: string)` → `dynamic`；[绑定实现 L1310](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1310)。
+- `editParameterKey(itemId: string, index: int, time: float, value: float, inTangent: float, outTangent: float, interpolation: string)` → `dynamic`；[绑定实现 L1369](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1369)。
+- `evaluateRuntimeSectionProgress(sectionIndex: int, progress: float)` → `dynamic`；[绑定实现 L1475](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1475)。
+- `fitBlockToClip(itemId: string)` → `dynamic`；[绑定实现 L1276](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1276)。
+- `fitClipToBlock(itemId: string)` → `dynamic`；[绑定实现 L1285](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1285)。
+- `fitClipToNaturalDuration(itemId: string)` → `dynamic`；[绑定实现 L1294](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1294)。
+- `getAnimationSectionBlendCurve(index: int)` → `dynamic`；[绑定实现 L1858](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1858)。
+- `getAnimationSectionBlendIn(index: int)` → `dynamic`；[绑定实现 L1846](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1846)。
+- `getAnimationSectionCount()` → `dynamic`；[绑定实现 L1827](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1827)。
+- `getAnimationSectionEnd(index: int)` → `dynamic`；[绑定实现 L1842](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1842)。
+- `getAnimationSectionId(index: int)` → `dynamic`；[绑定实现 L1830](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1830)。
+- `getAnimationSectionSourceEnd(index: int)` → `dynamic`；[绑定实现 L1854](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1854)。
+- `getAnimationSectionSourceStart(index: int)` → `dynamic`；[绑定实现 L1850](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1850)。
+- `getAnimationSectionStart(index: int)` → `dynamic`；[绑定实现 L1838](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1838)。
+- `getAnimationSectionUri(index: int)` → `dynamic`；[绑定实现 L1834](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1834)。
+- `getAnimationUri()` → `dynamic`；[绑定实现 L1794](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1794)。
+- `getDocumentId()` → `dynamic`；[绑定实现 L1714](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1714)。
+- `getDocumentTitle()` → `dynamic`；[绑定实现 L1717](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1717)。
+- `getDocumentUri()` → `dynamic`；[绑定实现 L1720](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1720)。
+- `getDuration()` → `dynamic`；[绑定实现 L1728](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1728)。
+- `getEventCount()` → `dynamic`；[绑定实现 L2231](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2231)。
+- `getEventItemId(index: int)` → `dynamic`；[绑定实现 L2234](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2234)。
+- `getEventKind(index: int)` → `dynamic`；[绑定实现 L2255](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2255)。
+- `getEventTime(index: int)` → `dynamic`；[绑定实现 L2248](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2248)。
+- `getEventType(index: int)` → `dynamic`；[绑定实现 L2241](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2241)。
+- `getInsertableType(state: bool, index: int)` → `dynamic`；[绑定实现 L1955](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1955)。
+- `getInsertableTypeCount(state: bool)` → `dynamic`；[绑定实现 L1948](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1948)。
+- `getInsertableTypeLabel(state: bool, index: int)` → `dynamic`；[绑定实现 L1962](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1962)。
+- `getItemCount()` → `dynamic`；[绑定实现 L1992](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1992)。
+- `getItemDetail(index: int)` → `dynamic`；[绑定实现 L2015](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2015)。
+- `getItemEnabled(itemId: string)` → `dynamic`；[绑定实现 L2075](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2075)。
+- `getItemEnd(itemId: string)` → `dynamic`；[绑定实现 L2067](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2067)。
+- `getItemId(index: int)` → `dynamic`；[绑定实现 L1995](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1995)。
+- `getItemLabel(index: int)` → `dynamic`；[绑定实现 L2010](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2010)。
+- `getItemMaxX(index: int)` → `dynamic`；[绑定实现 L2035](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2035)。
+- `getItemMaxY(index: int)` → `dynamic`；[绑定实现 L2045](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2045)。
+- `getItemMinX(index: int)` → `dynamic`；[绑定实现 L2030](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2030)。
+- `getItemMinY(index: int)` → `dynamic`；[绑定实现 L2040](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2040)。
+- `getItemPayloadBool(itemId: string, field: string, fallback: bool)` → `dynamic`；[绑定实现 L2159](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2159)。
+- `getItemPayloadJson(itemId: string)` → `dynamic`；[绑定实现 L2083](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2083)。
+- `getItemPayloadNumber(itemId: string, field: string, fallback: float)` → `dynamic`；[绑定实现 L2151](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2151)。
+- `getItemPayloadText(itemId: string, field: string, fallback: string)` → `dynamic`；[绑定实现 L2145](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2145)。
+- `getItemPayloadTextList(itemId: string, field: string)` → `dynamic`；[绑定实现 L2165](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2165)。
+- `getItemPayloadVector(itemId: string, field: string, component: int, fallback: float)` → `dynamic`；[绑定实现 L2179](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2179)。
+- `getItemSelected(index: int)` → `dynamic`；[绑定实现 L2025](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2025)。
+- `getItemStart(itemId: string)` → `dynamic`；[绑定实现 L2059](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2059)。
+- `getItemState(index: int)` → `dynamic`；[绑定实现 L2020](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2020)。
+- `getItemType(index: int)` → `dynamic`；[绑定实现 L2000](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2000)。
+- `getItemVisual(index: int)` → `dynamic`；[绑定实现 L2005](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2005)。
+- `getLayoutHeight()` → `dynamic`；[绑定实现 L1973](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1973)。
+- `getLayoutWidth()` → `dynamic`；[绑定实现 L1971](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1971)。
+- `getMontageAnimationLayer()` → `dynamic`；[绑定实现 L1773](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1773)。
+- `getMontageBasePlayRate()` → `dynamic`；[绑定实现 L1764](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1764)。
+- `getMontageBlendIn()` → `dynamic`；[绑定实现 L1776](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1776)。
+- `getMontageBlendOut()` → `dynamic`；[绑定实现 L1779](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1779)。
+- `getMontageBlendOutOffset()` → `dynamic`；[绑定实现 L1782](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1782)。
+- `getMontageFootIk()` → `dynamic`；[绑定实现 L1770](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1770)。
+- `getMontageLooping()` → `dynamic`；[绑定实现 L1767](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1767)。
+- `getMontageRootMotionHorizontal()` → `dynamic`；[绑定实现 L1785](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1785)。
+- `getMontageRootMotionRotation()` → `dynamic`；[绑定实现 L1791](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1791)。
+- `getMontageRootMotionVertical()` → `dynamic`；[绑定实现 L1788](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1788)。
+- `getParameterKeyCount(itemId: string)` → `dynamic`；[绑定实现 L2189](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2189)。
+- `getParameterKeyInterpolation(itemId: string, index: int)` → `dynamic`；[绑定实现 L2213](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2213)。
+- `getParameterKeyTime(itemId: string, index: int)` → `dynamic`；[绑定实现 L2195](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2195)。
+- `getParameterKeyValue(itemId: string, index: int)` → `dynamic`；[绑定实现 L2204](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2204)。
+- `getPlayheadX()` → `dynamic`；[绑定实现 L1975](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1975)。
+- `getPreviewTime()` → `dynamic`；[绑定实现 L1731](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1731)。
+- `getRevision()` → `dynamic`；[绑定实现 L1734](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1734)。
+- `getRulerTickCount()` → `dynamic`；[绑定实现 L1978](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1978)。
+- `getRulerTickMajor(index: int)` → `dynamic`；[绑定实现 L1987](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1987)。
+- `getRulerTickX(index: int)` → `dynamic`；[绑定实现 L1981](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1981)。
+- `getRuntimeActiveBlockCount()` → `dynamic`；[绑定实现 L1650](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1650)。
+- `getRuntimeActiveBlockLocalSeconds(index: int)` → `dynamic`；[绑定实现 L1659](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1659)。
+- `getRuntimeActiveBlockType(index: int)` → `dynamic`；[绑定实现 L1653](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1653)。
+- `getRuntimeDurationSeconds()` → `dynamic`；[绑定实现 L1593](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1593)。
+- `getRuntimeElapsedSeconds()` → `dynamic`；[绑定实现 L1590](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1590)。
+- `getRuntimeEventCount()` → `dynamic`；[绑定实现 L1616](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1616)。
+- `getRuntimeEventId(index: int)` → `dynamic`；[绑定实现 L1625](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1625)。
+- `getRuntimeEventKind(index: int)` → `dynamic`；[绑定实现 L1619](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1619)。
+- `getRuntimeEventPayloadJson(index: int)` → `dynamic`；[绑定实现 L1643](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1643)。
+- `getRuntimeEventSeconds(index: int)` → `dynamic`；[绑定实现 L1637](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1637)。
+- `getRuntimeEventType(index: int)` → `dynamic`；[绑定实现 L1631](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1631)。
+- `getRuntimeLayer()` → `dynamic`；[绑定实现 L1596](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1596)。
+- `getRuntimeLayerAdditive()` → `dynamic`；[绑定实现 L1545](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1545)。
+- `getRuntimeLayerWeight()` → `dynamic`；[绑定实现 L1538](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1538)。
+- `getRuntimePhysicalSection()` → `dynamic`；[绑定实现 L1666](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1666)。
+- `getRuntimePose()` → `dynamic`；[绑定实现 L1581](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1581)。
+- `getRuntimePoseOverBase(basePose: AnimPose)` → `dynamic`；[绑定实现 L1583](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1583)。
+- `getRuntimeRate()` → `dynamic`；[绑定实现 L1573](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1573)。
+- `getRuntimeRootMotionX()` → `dynamic`；[绑定实现 L1604](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1604)。
+- `getRuntimeRootMotionY()` → `dynamic`；[绑定实现 L1607](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1607)。
+- `getRuntimeRootMotionZ()` → `dynamic`；[绑定实现 L1610](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1610)。
+- `getRuntimeSectionId()` → `dynamic`；[绑定实现 L1600](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1600)。
+- `getRuntimeSectionProgress(sectionIndex: int)` → `dynamic`；[绑定实现 L1671](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1671)。
+- `getRuntimeSlot()` → `dynamic`；[绑定实现 L1598](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1598)。
+- `getRuntimeState()` → `dynamic`；[绑定实现 L1588](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1588)。
+- `getRuntimeWeight()` → `dynamic`；[绑定实现 L1613](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1613)。
+- `getSectionSplitCount()` → `dynamic`；[绑定实现 L1797](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1797)。
+- `getSectionSplitTime(index: int)` → `dynamic`；[绑定实现 L1800](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1800)。
+- `getStateEnd(itemId: string)` → `dynamic`；[绑定实现 L2055](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2055)。
+- `getStateStart(itemId: string)` → `dynamic`；[绑定实现 L2051](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2051)。
+- `getTrackCount()` → `dynamic`；[绑定实现 L1925](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1925)。
+- `getTrackId(index: int)` → `dynamic`；[绑定实现 L1928](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1928)。
+- `getTrackKind(index: int)` → `dynamic`；[绑定实现 L1936](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1936)。
+- `getTrackLabel(index: int)` → `dynamic`；[绑定实现 L1932](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1932)。
+- `getTrackLocked(index: int)` → `dynamic`；[绑定实现 L1944](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1944)。
+- `getTrackMuted(index: int)` → `dynamic`；[绑定实现 L1940](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1940)。
+- `handleTimelineShortcut(shortcut: string)` → `dynamic`；[绑定实现 L1101](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1101)。
+- `hasPreviewHost()` → `dynamic`；[绑定实现 L1414](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1414)。
+- `hasVfxDurationProvider()` → `dynamic`；[绑定实现 L1307](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1307)。
+- `isDirty()` → `dynamic`；[绑定实现 L1700](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1700)。
+- `isDocumentBacked()` → `dynamic`；[绑定实现 L1697](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1697)。
+- `isDragging()` → `dynamic`；[绑定实现 L1725](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1725)。
+- `isPlaying()` → `dynamic`；[绑定实现 L1695](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1695)。
+- `isRuntimePaused()` → `dynamic`；[绑定实现 L1565](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1565)。
+- `isRuntimePlaying()` → `dynamic`；[绑定实现 L1586](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1586)。
+- `jumpRuntimeSeconds(targetSeconds: float)` → `dynamic`；[绑定实现 L1462](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1462)。
+- `jumpRuntimeSection(sectionIndex: int)` → `dynamic`；[绑定实现 L1469](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1469)。
+- `jumpToEnd()` → `dynamic`；[绑定实现 L1691](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1691)。
+- `panTimelineSeconds(deltaSeconds: float)` → `dynamic`；[绑定实现 L1192](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1192)。
+- `pasteSelectionToTrack(trackId: string, offsetSeconds: float)` → `dynamic`；[绑定实现 L1157](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1157)。
+- `pasteTrack()` → `dynamic`；[绑定实现 L1152](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1152)。
+- `patchItemPayload(itemId: string, fieldsJson: string)` → `dynamic`；[绑定实现 L2093](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2093)。
+- `pause()` → `dynamic`；[绑定实现 L1680](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1680)。
+- `play()` → `dynamic`；[绑定实现 L1677](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1677)。
+- `pointerDown(x: float, y: float, additive: bool)` → `dynamic`；[绑定实现 L1199](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1199)。
+- `pointerMove(x: float)` → `dynamic`；[绑定实现 L1204](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1204)。
+- `pointerUp(x: float)` → `dynamic`；[绑定实现 L1209](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1209)。
+- `reconcileDocument()` → `dynamic`；[绑定实现 L1708](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1708)。
+- `redo()` → `dynamic`；[绑定实现 L1395](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1395)。
+- `refreshPreview()` → `dynamic`；[绑定实现 L1409](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1409)。
+- `registerRuntimeClip(uri: string, model: ModelData, skeleton: AnimSkeleton, animationIndex: int)` → `dynamic`；[绑定实现 L1433](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1433)。
+- `removeAnimationSection(sectionId: string)` → `dynamic`；[绑定实现 L1898](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1898)。
+- `removeItem(itemId: string)` → `dynamic`；[绑定实现 L1263](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1263)。
+- `removeParameterKey(itemId: string, index: int)` → `dynamic`；[绑定实现 L1381](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1381)。
+- `removeSectionSplit(index: int)` → `dynamic`；[绑定实现 L1821](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1821)。
+- `removeTrack(trackId: string)` → `dynamic`；[绑定实现 L1119](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1119)。
+- `renameTrack(trackId: string, label: string)` → `dynamic`；[绑定实现 L1125](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1125)。
+- `replaceRuntimeClip(uri: string, clip: AnimClip)` → `dynamic`；[绑定实现 L1441](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1441)。
+- `replayRuntimeCrossFade()` → `dynamic`；[绑定实现 L1485](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1485)。
+- `resizeState(itemId: string, startSeconds: float, endSeconds: float)` → `dynamic`；[绑定实现 L1226](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1226)。
+- `sampleParameterCurve(itemId: string, progress: float)` → `dynamic`；[绑定实现 L2223](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2223)。
+- `saveDocument()` → `dynamic`；[绑定实现 L1702](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1702)。
+- `seekSeconds(value: float)` → `dynamic`；[绑定实现 L1219](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1219)。
+- `seekX(x: float)` → `dynamic`；[绑定实现 L1214](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1214)。
+- `setItemEnabled(itemId: string, enabled: bool)` → `dynamic`；[绑定实现 L1269](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1269)。
+- `setItemPayloadBool(itemId: string, field: string, value: bool)` → `dynamic`；[绑定实现 L2115](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2115)。
+- `setItemPayloadInteger(itemId: string, field: string, value: int)` → `dynamic`；[绑定实现 L2111](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2111)。
+- `setItemPayloadNumber(itemId: string, field: string, value: float)` → `dynamic`；[绑定实现 L2107](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2107)。
+- `setItemPayloadText(itemId: string, field: string, value: string)` → `dynamic`；[绑定实现 L2103](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2103)。
+- `setItemPayloadTextList(itemId: string, field: string, delimitedValues: string)` → `dynamic`；[绑定实现 L2125](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2125)。
+- `setItemPayloadVector3(itemId: string, field: string, x: float, y: float, z: float)` → `dynamic`；[绑定实现 L2119](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2119)。
+- `setItemTiming(itemId: string, startSeconds: float, endSeconds: float)` → `dynamic`；[绑定实现 L1240](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1240)。
+- `setMontageSettings(basePlayRate: float, looping: bool, footIk: bool, animationLayer: int, blendInSeconds: float, blendOutSeconds: float, blendOutOffsetSeconds: float, rootHorizontal: bool, rootVertical: bool, rootRotation: bool)` → `dynamic`；[绑定实现 L1737](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1737)。
+- `setRuntimeBlockExternallyHandled(type: string, external: bool)` → `dynamic`；[绑定实现 L1558](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1558)。
+- `setRuntimeBoneMask(mask: AnimBoneMask)` → `dynamic`；[绑定实现 L1520](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1520)。
+- `setRuntimeLayerAdditive(additive: bool)` → `dynamic`；[绑定实现 L1540](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1540)。
+- `setRuntimeLayerWeight(weight: float)` → `dynamic`；[绑定实现 L1533](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1533)。
+- `setRuntimePaused(paused: bool)` → `dynamic`；[绑定实现 L1555](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1555)。
+- `setRuntimeRate(rate: float)` → `dynamic`；[绑定实现 L1567](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1567)。
+- `setSectionSplit(index: int, timeSeconds: float)` → `dynamic`；[绑定实现 L1813](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1813)。
+- `setSnapSeconds(intervalSeconds: float)` → `dynamic`；[绑定实现 L1170](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1170)。
+- `setTrackLocked(trackId: string, locked: bool)` → `dynamic`；[绑定实现 L1139](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1139)。
+- `setTrackMuted(trackId: string, muted: bool)` → `dynamic`；[绑定实现 L1132](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1132)。
+- `setViewport(width: float, rowHeight: float, labelWidth: float)` → `dynamic`；[绑定实现 L1064](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1064)。
+- `setVisibleSeconds(startSeconds: float, endSeconds: float)` → `dynamic`；[绑定实现 L1177](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1177)。
+- `snapshot()` → `dynamic`；[绑定实现 L1417](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1417)。
+- `snapshotJson()` → `dynamic`；[绑定实现 L1423](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1423)。
+- `stepFrames(frames: int, frameRate: float)` → `dynamic`；[绑定实现 L1687](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1687)。
+- `stop()` → `dynamic`；[绑定实现 L1683](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1683)。
+- `syncRuntimeSection(sectionIndex: int, targetSeconds: float)` → `dynamic`；[绑定实现 L1491](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1491)。
+- `syncRuntimeSectionAndJump(sectionIndex: int, targetSeconds: float)` → `dynamic`；[绑定实现 L1500](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1500)。
+- `undo()` → `dynamic`；[绑定实现 L1389](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1389)。
+- `update(deltaSeconds: float)` → `dynamic`；[绑定实现 L1401](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1401)。
+- `zoomTimeline(factor: float, anchor: float)` → `dynamic`；[绑定实现 L1187](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L1187)。
+
+## 接收者见绑定源码
+
+- `createAssetCatalog(projectRoot: string)` → `dynamic`；[绑定实现 L2263](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2263)。
+- `openDocument(projectRoot: string, assetGuid: string, title: string, resourceUri: string, initialTimelineObject: dynamic)` → `dynamic`；[绑定实现 L2287](../../../../src/modules/action/editor/ActionTimelineScriptBindings.cpp#L2287)。
+
+
+重建：`python3 scripts/generate_binding_contracts.py --json-output eve-api.json`，
+再运行 `python3 scripts/generate_user_api_reference.py --catalogue eve-api.json`。

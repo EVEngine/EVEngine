@@ -9,7 +9,9 @@ inline constexpr int                  locomotionPoseOffset   = 19;
 inline constexpr int                  locomotionFeatureCount = 30;
 inline constexpr std::array<float, 5> locomotionHorizons{-0.05f, 0.f, 0.35f, 0.7f, 1.f};
 
+/** @brief Feature yaw. */
 inline float featureYaw(const TransformTRS& t) {
+    /** @brief Atan 2. */
     return std::atan2(2.f * (t.qw * t.qy + t.qx * t.qz), 1.f - 2.f * (t.qx * t.qx + t.qy * t.qy));
 }
 inline std::array<float, 3> featureLocal(float x, float y, float z, float yaw) {
@@ -17,10 +19,12 @@ inline std::array<float, 3> featureLocal(float x, float y, float z, float yaw) {
     return {x * cs - z * sn, y, x * sn + z * cs};
 }
 inline std::array<float, 3> featurePosition(const TransformTRS& bone, const TransformTRS& root) {
+    /** @brief Feature local. */
     return featureLocal(bone.px - root.px, bone.py - root.py, bone.pz - root.pz, featureYaw(root));
 }
 // Shared by database indexing and live pose-history queries. Each sample removes
 // its own root transform before differencing: capsule travel is not foot swing.
+/** @brief Encode locomotion pose. */
 inline void encodeLocomotionPose(std::span<float> out, const std::array<TransformTRS, 4>& now,
                                  const std::array<TransformTRS, 4>& past, float interval) {
     const auto left = featurePosition(now[1], now[0]), right = featurePosition(now[2], now[0]);
@@ -34,11 +38,13 @@ inline void encodeLocomotionPose(std::span<float> out, const std::array<Transfor
     // length (a tilted pelvis must not be renormalized after stripping vertical).
     const auto& q       = now[3];
     const auto  heading = featureLocal(2.f * (q.qx * q.qz + q.qw * q.qy), 0.f, 1.f - 2.f * (q.qx * q.qx + q.qy * q.qy),
+                                       /** @brief Feature yaw. */
                                        featureYaw(now[0]));
     out[28]             = heading[0];
     out[29]             = heading[2];
 }
 template <class Sample>
+/** @brief Encode locomotion trajectory. */
 inline void encodeLocomotionTrajectory(std::span<float> out, const std::array<Sample, 5>& samples, float yaw) {
     auto position = [&](int sample, int offset) {
         const auto p    = featureLocal(samples[sample].x, samples[sample].y, samples[sample].z, yaw);
@@ -51,21 +57,31 @@ inline void encodeLocomotionTrajectory(std::span<float> out, const std::array<Sa
         out[offset + 1] = v[2];
     };
     auto heading = [&](int sample, int offset) {
+        /** @brief Yaw to forward. */
         yawToForward(samples[sample].yaw - yaw, out[offset], out[offset + 1]);
     };
+    /** @brief Velocity. */
     velocity(1, 0);
+    /** @brief Position. */
     position(0, 2);
+    /** @brief Heading. */
     heading(1, 4);
+    /** @brief Position. */
     position(2, 6);
+    /** @brief Heading. */
     heading(2, 8);
+    /** @brief Position. */
     position(3, 10);
+    /** @brief Velocity. */
     velocity(3, 12);
+    /** @brief Heading. */
     heading(3, 14);
     auto v = featureLocal(samples[4].vx, samples[4].vy, samples[4].vz, yaw);
     // Reference bNormalize clamps at 1 cm/s; these assets and queries use metres.
     const float divisor = std::max(0.01f, std::sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]));
     for (int axis = 0; axis < 3; ++axis) out[16 + axis] = v[axis] / divisor;
 }
+/** @brief Locomotion weight. */
 inline float locomotionWeight(int index) {
     if (index == 2 || index == 3 || (index >= 22 && index < 28)) return 0.3f;
     if (index >= 16 && index < 19) return 1.5f;

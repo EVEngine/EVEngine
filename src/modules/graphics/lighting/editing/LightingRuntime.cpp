@@ -7,7 +7,7 @@
 namespace eve::lighting_editing {
 namespace {
 
-EditorResult<void> lightError(EditorStatus status, const char* rule, std::string message) {
+Result<void> lightError(EditorStatus status, const char* rule, std::string message) {
     return eve::editing::failed<void>(status, RuleId(rule), std::move(message));
 }
 
@@ -19,13 +19,13 @@ double component(const EditorValue::Array& values, size_t index) { return *value
 
 }  // namespace
 
-EditorResult<void> Light3DRuntimeApplier::apply(const Light3DDocumentTarget& document, graphics::Light3D* light) const {
+Result<void> Light3DRuntimeApplier::apply(const Light3DDocumentTarget& document, graphics::Light3D* light) const {
     if (!light)
         return lightError(EditorStatus::Rejected, "editor.light.runtime-required", "Runtime Light3D is required");
     const auto diagnostics = document.validate();
     for (const EditorDiagnostic& diagnostic : diagnostics)
         if (diagnostic.severity() == DiagnosticSeverity::Error)
-            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
+            return Result<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
     const auto& position  = array(document, "transform.position");
     const auto& direction = array(document, "transform.direction");
     const auto& color     = array(document, "light.color");
@@ -39,11 +39,23 @@ EditorResult<void> Light3DRuntimeApplier::apply(const Light3DDocumentTarget& doc
                     static_cast<float>(component(color, 2)),
                     static_cast<float>(*document.value("light.intensity")->getIf<double>()));
     light->setRadius(static_cast<float>(*document.value("light.radius")->getIf<double>()));
+    if (const auto* angle = document.value("light.spot-angle")) {
+        if (const auto* degrees = angle->getIf<double>()) light->setSpotAngle(static_cast<float>(*degrees));
+    }
+    if (const auto* soft = document.value("light.spot-softness")) {
+        if (const auto* value = soft->getIf<double>()) light->setSpotSoftness(static_cast<float>(*value));
+    }
     light->setCastShadow(*document.value("shadow.cast")->getIf<bool>());
+    if (const auto* method = document.value("shadow.method")) {
+        if (const auto* name = method->getIf<std::string>()) light->setShadowMethod(*name);
+    }
     light->setShadowBias(static_cast<float>(*document.value("shadow.bias")->getIf<double>()));
     light->setShadowStrength(static_cast<float>(*document.value("shadow.strength")->getIf<double>()));
     light->setVolumetric(*document.value("volumetric.enabled")->getIf<bool>());
     light->setVolumetricIntensity(static_cast<float>(*document.value("volumetric.intensity")->getIf<double>()));
+    if (const auto* only = document.value("volumetric.only")) {
+        if (const auto* flag = only->getIf<bool>()) light->setVolumetricOnly(*flag);
+    }
     return eve::editing::applied<void>(diagnostics);
 }
 

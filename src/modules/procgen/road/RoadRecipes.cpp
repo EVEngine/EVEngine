@@ -1,4 +1,5 @@
 #include "procgen/road/RoadRecipes.h"
+#include "procgen/road/RoadNetworkCodec.h"
 
 #include "image/ImageData.h"
 #include "procgen/ParamSchema.h"
@@ -9,34 +10,9 @@
 #include <cmath>
 
 namespace eve::procgen::road {
-namespace {
-
-RoadBakeOptions bakeOptionsFromParams(const Params& params) {
-    RoadBakeOptions options;
-    options.pathSegmentsPerEdge = std::max(4, params.getInt("pathSegments", 48));
-    options.turnSamples         = std::max(4, params.getInt("turnSamples", 12));
-    options.includePiers        = params.getBool("piers", true);
-    options.includeMarkings     = params.getBool("markings", true);
-    options.includeNavigation   = params.getBool("navigation", true);
-    options.includeJunctions    = params.getBool("junctions", true);
-    return options;
-}
-
-Result<RoadNetwork> networkFromParams(const Params& params) {
-    const std::string scene = params.getString("scene", "straight");
-    return RoadNetwork::makeScene(scene, params.getFloat("span", 36.f), params.getFloat("bridgeHeight", 6.f),
-                                  std::max(1, params.getInt("lanes", 2)), params.getSeed());
-}
-
-}  // namespace
 
 bool generateRoadNetworkMesh(const Params& params, MeshBuild& out, std::string& error) {
-    auto network = networkFromParams(params);
-    if (!network.ok()) {
-        error = network.status().describe();
-        return false;
-    }
-    auto baked = bakeRoadNetwork(network.value(), bakeOptionsFromParams(params));
+    auto baked = bakeRoadNetworkRecipe(params);
     if (!baked.ok()) {
         error = baked.status().describe();
         return false;
@@ -46,16 +22,14 @@ bool generateRoadNetworkMesh(const Params& params, MeshBuild& out, std::string& 
 }
 
 Result<RoadOverlay> generateRoadNetworkOverlay(const Params& params) {
-    auto network = networkFromParams(params);
-    if (!network.ok()) return Result<RoadOverlay>::failure(network.status());
-    auto baked = bakeRoadNetwork(network.value(), bakeOptionsFromParams(params));
+    auto baked = bakeRoadNetworkRecipe(params);
     if (!baked.ok()) return Result<RoadOverlay>::failure(baked.status());
     return Result<RoadOverlay>::success(std::move(baked.value().overlay));
 }
 
 std::unique_ptr<image::ImageData> generateRoadMarkingsTexture(const Params& params, std::string& error) {
-    const int width  = std::clamp(params.getWidth() > 0 ? params.getWidth() : params.getInt("width", 256), 8, 2048);
-    const int height = std::clamp(params.getHeight() > 0 ? params.getHeight() : params.getInt("height", 64), 8, 2048);
+    const int   width  = std::clamp(params.getWidth() > 0 ? params.getWidth() : params.getInt("width", 256), 8, 2048);
+    const int   height = std::clamp(params.getHeight() > 0 ? params.getHeight() : params.getInt("height", 64), 8, 2048);
     const float dashPeriod = std::max(0.05f, params.getFloat("dashPeriod", 0.18f));
     const float dashDuty   = std::clamp(params.getFloat("dashDuty", 0.45f), 0.05f, 0.95f);
     const bool  zebra      = params.getBool("zebra", true);
@@ -65,7 +39,7 @@ std::unique_ptr<image::ImageData> generateRoadMarkingsTexture(const Params& para
         const float v = (static_cast<float>(y) + 0.5f) / static_cast<float>(height);
         for (int x = 0; x < width; ++x) {
             const float u = (static_cast<float>(x) + 0.5f) / static_cast<float>(width);
-            float r = 0.18f, g = 0.18f, b = 0.20f;
+            float       r = 0.18f, g = 0.18f, b = 0.20f;
 
             // White edge lines near v=0 and v=1.
             if (v < 0.08f || v > 0.92f) {
@@ -113,15 +87,28 @@ void registerRoadMeshRecipes(MeshRecipeRegistry& registry) {
     schema.params.push_back(ParamDescriptor::integer("seed", "Seed", 1, 0, 2147483647));
     schema.params.push_back(
         ParamDescriptor::choice("scene", "Scene", "straight",
-                                {"straight", "curve", "bridge", "cross", "interchange"}));
-    schema.params.push_back(ParamDescriptor::floating("span", "Span", 36.f, 8.f, 256.f, 1.f));
+                                {"straight", "curve", "bridge", "cross", "tee", "y", "fork", "skew", "t-junction",
+                                 "y-junction", "sloped-t", "curve-uphill", "tight-turn", "roundabout", "interchange"}));
+    schema.params.push_back(ParamDescriptor::floating("span", "Span", 36.f, 16.f, 256.f, 1.f));
     schema.params.push_back(ParamDescriptor::floating("bridgeHeight", "Bridge Height", 6.f, 1.f, 64.f, 0.5f));
     schema.params.push_back(ParamDescriptor::integer("lanes", "Lanes", 2, 1, 4));
     schema.params.push_back(ParamDescriptor::integer("pathSegments", "Path Segments", 32, 8, 256));
     schema.params.push_back(ParamDescriptor::boolean("piers", "Piers", true));
     schema.params.push_back(ParamDescriptor::boolean("markings", "Markings", true));
-    schema.params.push_back(ParamDescriptor::boolean("navigation", "Navigation Mesh", false));
+    schema.params.push_back(ParamDescriptor::boolean("navigation", "Navigation Overlay", true));
     schema.params.push_back(ParamDescriptor::boolean("junctions", "Junctions", true));
+    schema.params.push_back(ParamDescriptor::boolean("placements", "Decoration Placements", true));
+    schema.params.push_back(
+        ParamDescriptor::floating("sideObjectSpacing", "Side Object Spacing", 8.f, 0.25f, 100.f, 0.25f));
+    schema.params.push_back(ParamDescriptor::floating("sideObjectOffset", "Side Object Offset", 0.5f, 0.f, 32.f, 0.1f));
+    schema.params.push_back(
+        ParamDescriptor::floating("sideObjectClearance", "Side Object Clearance", 1.5f, 0.f, 32.f, 0.1f));
+    schema.params.push_back(
+        ParamDescriptor::floating("junctionChordError", "Junction Curve Error", 0.10f, 0.01f, 1.f, 0.01f));
+    schema.params.push_back(
+        ParamDescriptor::floating("terrainBlendDistance", "Terrain Surface Blend", 2.f, 0.f, 64.f, 0.25f));
+    schema.params.push_back(ParamDescriptor::floating("chunkSize", "Render Chunk Size", 64.f, 4.f, 1024.f, 1.f));
+    schema.params.push_back(ParamDescriptor::integer("lodCount", "LOD Count", 3, 1, 4));
     registry.registerRecipe(std::move(schema), generateRoadNetworkMesh);
 }
 

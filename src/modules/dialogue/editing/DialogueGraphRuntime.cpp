@@ -17,12 +17,12 @@ const EditorValue* field(const EditorValue& value, const char* key) {
 
 }  // namespace
 
-EditorResult<dialogue::ConversationDocument*> DialogueGraphRuntimeBuilder::build(
+Result<dialogue::ConversationDocument*> DialogueGraphRuntimeBuilder::build(
     const GraphDocumentData& graph) const {
     DialogueGraphDomain domain;
     const DialogueGraphCompileResult compiled = domain.compile(graph);
     if (compiled.status != EditorStatus::Applied)
-        return EditorResult<dialogue::ConversationDocument*>::failure(
+        return Result<dialogue::ConversationDocument*>::failure(
             eve::Status(compiled.status, compiled.diagnostics));
     const auto* id = field(compiled.definition, "id")->getIf<std::string>();
     const auto* version = field(compiled.definition, "version")->getIf<int64_t>();
@@ -82,7 +82,7 @@ EditorResult<dialogue::ConversationDocument*> DialogueGraphRuntimeBuilder::build
                 document->getDiagnosticSeverity(index) == "error" ? DiagnosticSeverity::Error
                                                                     : DiagnosticSeverity::Warning,
                 document->getDiagnosticMessage(index)));
-        return EditorResult<dialogue::ConversationDocument*>::failure(
+        return Result<dialogue::ConversationDocument*>::failure(
             eve::Status(EditorStatus::Failed, std::move(diagnostics)));
     }
     return eve::editing::applied<dialogue::ConversationDocument*>(document.release());

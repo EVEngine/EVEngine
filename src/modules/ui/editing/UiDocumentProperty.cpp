@@ -242,7 +242,7 @@ PropertyReadResult UiDocumentTarget::read(const SelectionSnapshot& selection,
     return common ? PropertyReadResult{PropertyReadState::Value, *common, {}} : PropertyReadResult{};
 }
 
-EditorResult<DomainOperation> UiDocumentTarget::makeSet(const SelectionSnapshot& selection,
+Result<DomainOperation> UiDocumentTarget::makeSet(const SelectionSnapshot& selection,
                                                          const PropertyPath& path,
                                                          const EditorValue& value,
                                                          PropertySetMode mode) const {
@@ -282,7 +282,7 @@ EditorResult<DomainOperation> UiDocumentTarget::makeSet(const SelectionSnapshot&
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<DomainOperation> UiDocumentTarget::makeReset(const SelectionSnapshot& selection,
+Result<DomainOperation> UiDocumentTarget::makeReset(const SelectionSnapshot& selection,
                                                            const PropertyPath& path) const {
     auto property = schema(selection).find(path);
     if (!property)

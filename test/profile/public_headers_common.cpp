@@ -4,6 +4,8 @@
 #include "common/Capability.h"
 #include "common/Diagnostic.h"
 #include "common/EventSequence.h"
+#include "common/FrameCapture.h"
+#include "common/FrameCaptureImage.h"
 #include "common/Generation.h"
 #include "common/Identity.h"
 #include "common/Json.h"
@@ -20,6 +22,7 @@
 #include "common/Subscription.h"
 #include "common/Time.h"
 #include "common/Uri.h"
+#include "common/UuidV7.h"
 #include "common/Value.h"
 #include "common/VersionedRegistry.h"
 

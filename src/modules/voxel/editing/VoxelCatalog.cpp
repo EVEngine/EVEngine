@@ -33,7 +33,7 @@ EditorValue socketValue(const VoxelSocket& s) {
     return EditorValue::Object{{"tag", s.tag}, {"kind", std::string(voxelSocketKindName(s.kind))}};
 }
 
-EditorResult<VoxelSocket> parseSocket(const EditorValue& v) {
+Result<VoxelSocket> parseSocket(const EditorValue& v) {
     const auto* tag   = field(v, "tag");
     const auto* kind  = field(v, "kind");
     const auto* tags  = tag ? tag->getIf<std::string>() : nullptr;
@@ -50,7 +50,7 @@ EditorResult<VoxelSocket> parseSocket(const EditorValue& v) {
     return eve::editing::applied<VoxelSocket>(std::move(out));
 }
 
-EditorResult<std::array<VoxelSocket, 6>> parseSockets(const EditorValue* value) {
+Result<std::array<VoxelSocket, 6>> parseSockets(const EditorValue* value) {
     const auto* a = value ? value->getIf<EditorValue::Array>() : nullptr;
     if (!a || a->size() != 6)
         return eve::editing::failed<std::array<VoxelSocket, 6>>(
@@ -73,7 +73,7 @@ EditorValue voxelsValue(const std::vector<VoxelCoord>& voxels) {
     return a;
 }
 
-EditorResult<std::vector<VoxelCoord>> parseVoxels(const EditorValue* value) {
+Result<std::vector<VoxelCoord>> parseVoxels(const EditorValue* value) {
     const auto* a = value ? value->getIf<EditorValue::Array>() : nullptr;
     if (!a)
         return eve::editing::failed<std::vector<VoxelCoord>>(
@@ -119,7 +119,7 @@ EditorValue modelValue(const VoxelModelValue& v) {
                                {"voxels", voxelsValue(v.voxels)}};
 }
 
-EditorResult<VoxelModelValue> parseModel(const EditorValue& v) {
+Result<VoxelModelValue> parseModel(const EditorValue& v) {
     const auto *id = field(v, "id"), *name = field(v, "name");
     const auto* ids   = id ? id->getIf<std::string>() : nullptr;
     const auto* names = name ? name->getIf<std::string>() : nullptr;
@@ -390,7 +390,7 @@ EditorValue VoxelCatalogTarget::contentValue() const {
     return EditorValue::Object{{"models", std::move(models)}};
 }
 
-EditorResult<DomainOperation> VoxelCatalogTarget::replacement(EditorValue content, std::string property) const {
+Result<DomainOperation> VoxelCatalogTarget::replacement(EditorValue content, std::string property) const {
     DomainOperation op;
     op.type        = "voxel.catalog.replace.v1";
     op.inverseType = op.type;
@@ -403,7 +403,7 @@ EditorResult<DomainOperation> VoxelCatalogTarget::replacement(EditorValue conten
     return eve::editing::applied<DomainOperation>(std::move(op));
 }
 
-EditorResult<DomainOperation> VoxelCatalogTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
+Result<DomainOperation> VoxelCatalogTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
                                                           const EditorValue& value, PropertySetMode mode) const {
     if (mode == PropertySetMode::Reset) return makeReset(s, p);
     if (!matches(s) || !schema(s).find(p) || mode != PropertySetMode::Absolute)
@@ -450,7 +450,7 @@ EditorResult<DomainOperation> VoxelCatalogTarget::makeSet(const SelectionSnapsho
     return replacement(c.contentValue(), p.value());
 }
 
-EditorResult<DomainOperation> VoxelCatalogTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
+Result<DomainOperation> VoxelCatalogTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
     auto d = schema(s).find(p);
     if (!d)
         return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.voxel-model.property"),
@@ -458,7 +458,7 @@ EditorResult<DomainOperation> VoxelCatalogTarget::makeReset(const SelectionSnaps
     return makeSet(s, p, d->defaultValue, PropertySetMode::Absolute);
 }
 
-EditorResult<DomainOperation> VoxelCatalogTarget::makeCreateModel(const VoxelModelValue& v) const {
+Result<DomainOperation> VoxelCatalogTarget::makeCreateModel(const VoxelModelValue& v) const {
     if (v.id.empty() || v.name.empty() || findModel(v.id) ||
         std::any_of(models_.begin(), models_.end(), [&](const auto& x) { return x.name == v.name; }))
         return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.voxel-model.identity"),
@@ -471,7 +471,7 @@ EditorResult<DomainOperation> VoxelCatalogTarget::makeCreateModel(const VoxelMod
     return replacement(c.contentValue());
 }
 
-EditorResult<DomainOperation> VoxelCatalogTarget::makeDeleteModel(const ObjectId& id) const {
+Result<DomainOperation> VoxelCatalogTarget::makeDeleteModel(const ObjectId& id) const {
     if (!findModel(id))
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.voxel-model.entry"),
                                                      "Voxel model does not exist");
@@ -480,7 +480,7 @@ EditorResult<DomainOperation> VoxelCatalogTarget::makeDeleteModel(const ObjectId
     return replacement(c.contentValue());
 }
 
-EditorResult<DomainOperation> VoxelCatalogTarget::makeSetVoxel(const ObjectId& model, int x, int y, int z,
+Result<DomainOperation> VoxelCatalogTarget::makeSetVoxel(const ObjectId& model, int x, int y, int z,
                                                                bool occupied) const {
     const auto* current = findModel(model);
     if (!current)
@@ -539,7 +539,7 @@ std::vector<EditorDiagnostic> VoxelCatalogTarget::validate() const {
     return d;
 }
 
-EditorResult<void> VoxelCatalogTarget::applyDomainOperation(const DomainOperation& op) {
+Result<void> VoxelCatalogTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "voxel.catalog.replace.v1")
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.voxel-model.operation"),
                                           "Voxel catalog operation mismatch");
@@ -569,7 +569,7 @@ std::unique_ptr<IDomainOperationTarget> VoxelCatalogTarget::cloneDomainState() c
     return std::make_unique<VoxelCatalogTarget>(*this);
 }
 
-EditorResult<void> VoxelCatalogTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> c) {
+Result<void> VoxelCatalogTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> c) {
     auto* t = dynamic_cast<VoxelCatalogTarget*>(c.get());
     if (!t || t->id_ != id_)
         return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.voxel-model.candidate"),
@@ -582,7 +582,7 @@ EditorValue VoxelCatalogTarget::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"content", contentValue()}};
 }
 
-EditorResult<void> VoxelCatalogTarget::loadSnapshot(const EditorValue& s) {
+Result<void> VoxelCatalogTarget::loadSnapshot(const EditorValue& s) {
     const auto *v = field(s, "schemaVersion"), *content = field(s, "content");
     const auto* version = v ? v->getIf<int64_t>() : nullptr;
     if (!version || *version != 1 || !content)

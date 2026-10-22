@@ -26,6 +26,7 @@ inline glm::mat4 perspectiveVulkanRH_ZO(float fovyRad, float aspect, float zNear
 }
 
 /** Matching Y-flip for directional shadow ortho so clip space matches the camera. */
+/** @brief Ortho vulkan rh zo. */
 inline glm::mat4 orthoVulkanRH_ZO(float left, float right, float bottom, float top, float zNear,
                                   float zFar) {
     glm::mat4 p = glm::orthoRH_ZO(left, right, bottom, top, zNear, zFar);
@@ -40,6 +41,7 @@ inline glm::mat4 cameraProjectionVulkanRH_ZO(bool orthographic, float fovyRad,
     if (!orthographic) return perspectiveVulkanRH_ZO(fovyRad, aspect, zNear, zFar);
     const float halfH = std::max(0.001f, orthoHeight * 0.5f);
     const float halfW = halfH * std::max(0.001f, aspect);
+    /** @brief Ortho vulkan rh zo. */
     return orthoVulkanRH_ZO(-halfW, halfW, -halfH, halfH, zNear, zFar);
 }
 

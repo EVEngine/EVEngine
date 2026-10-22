@@ -9,6 +9,7 @@
 namespace eve::animation::detail {
 // Finite-duration offsets relative to a moving target. Inputs are copied;
 // simulation elapsed time is supplied by the owner, never wall-clock time.
+/** @brief PoseInertia public API. */
 struct PoseInertia {
     using Channels = std::array<float, 9>;
     std::vector<Channels> offsets, velocities;
@@ -16,6 +17,7 @@ struct PoseInertia {
     float                 historyInterval = 0.f;
     float                 duration        = 0.f;
 
+    /** @brief Difference. */
     static Channels difference(const TransformTRS& source, const TransformTRS& target) {
         auto a = source, b = target;
         a.normalizeRotation();
@@ -37,6 +39,7 @@ struct PoseInertia {
                 z * factor,  a.sx - b.sx, a.sy - b.sy, a.sz - b.sz};
     }
 
+    /** @brief Begins . */
     void begin(const AnimPose& source, const AnimPose& target, const AnimPose& previousTarget, float seconds) {
         duration = seconds;
         offsets.resize(source.getBoneCount());
@@ -62,12 +65,14 @@ struct PoseInertia {
         }
     }
 
+    /** @brief Remember. */
     void remember(const AnimPose& output, float dt) {
         if (dt <= 0.f) return;
         previousOutput.copyFrom(&output);
         historyInterval = dt;
     }
 
+    /** @brief Applies . */
     void apply(const AnimPose& target, float elapsed, AnimPose& output, std::span<const float> factors = {}) const {
         output.copyFrom(&target);
         if (duration <= 0.f || elapsed >= duration) return;

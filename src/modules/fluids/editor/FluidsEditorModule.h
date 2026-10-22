@@ -1,11 +1,17 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "editor/EditorAutomationTargetFactory.h"
 
 #include <memory>
+#include <string_view>
+#include <vector>
 
 namespace eve::fluids_editor {
+
+class FluidsEditorPackageProvider;
 
 /**
  * @brief Creates schema-driven fluid documents for editor automation.
@@ -13,29 +19,32 @@ namespace eve::fluids_editor {
  * @thread Editor/composition-thread affine.
  * @reentrancy Does not invoke callbacks or retain request values.
  */
-class FluidsAutomationTargetFactory final : public editor::IEditorAutomationTargetFactory {
+class EVENGINE_API_EDITORS FluidsAutomationTargetFactory final : public editor::IEditorAutomationTargetFactory {
 public:
-    /** @brief Report support for fluid-simulation, surface-fluid and volume-fluid documents. */
-    bool supports(std::string_view type) const override;
+    /** @brief Accepted fluid target type names (simulation, surface, volume). */
+    std::vector<std::string_view> types() const override;
     /** @brief Create a fluid document and optionally load its strict `snapshot` request field. */
-    editor::EditorResult<editor::AutomationOwnedTarget> create(const editor::TargetId& target, std::string_view type,
+    editor::Result<editor::AutomationOwnedTarget> create(const editor::TargetId& target, std::string_view type,
                                                                const editor::EditorValue::Object& request) override;
 };
 
 /**
- * @brief Composition adapter that publishes the fluid automation-target factory.
- * @ownership Owns the registered factory and removes it before destruction.
+ * @brief Composition adapter that publishes the fluid automation-target factory and EditorPackage.
+ * @ownership Owns the registered factory and package provider; removes both before destruction.
  * @thread Owner/composition-thread affine.
  * @reentrancy Do not construct or destroy while factory listeners are being enumerated.
  */
-class FluidsEditorModule final : public Module {
+class EVENGINE_API_EDITORS FluidsEditorModule final : public Module {
 public:
     Module_REG(FluidsEditorModule);
+    /** @brief Constructs a FluidsEditorModule. */
     FluidsEditorModule();
+    /** @brief Releases FluidsEditorModule resources. */
     ~FluidsEditorModule() override;
 
 private:
     std::unique_ptr<FluidsAutomationTargetFactory> factory_;
+    std::unique_ptr<FluidsEditorPackageProvider>   packageProvider_;
 };
 
 }  // namespace eve::fluids_editor

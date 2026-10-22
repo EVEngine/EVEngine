@@ -10,6 +10,8 @@
 
 #include <string>
 
+#include "common/Export.h"
+
 namespace eve::rpg {
 
 class RPGActor;
@@ -18,7 +20,7 @@ class RPGActor;
  * @brief 职业系统。
  * @thread 调用线程应与 RPGActor 的 ECS 线程一致。
  */
-class ClassSystem {
+class EVENGINE_API_PLATFORM ClassSystem {
 public:
     /**
      * @brief 设定职业并施加职业基础特征（compatibility facade (脚本兼容门面)；成功返回 true）。
@@ -38,7 +40,9 @@ public:
 
     /** @brief 职业定义中可学技能总数。 */
     static int getLearnCount(RPGActor *actor);
+    /** @brief Returns the learn skill id at. */
     static std::string getLearnSkillIdAt(RPGActor *actor, int index);
+    /** @brief Returns the learn level at. */
     static int getLearnLevelAt(RPGActor *actor, int index);
 };
 

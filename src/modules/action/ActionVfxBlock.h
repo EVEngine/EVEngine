@@ -1,6 +1,12 @@
 #pragma once
+#include "common/Export.h"
 
-/** @file ActionVfxBlock.h @brief Typed VFX action-block payload contract. */
+
+/** @file ActionVfxBlock.h
+ *  @brief Typed VFX action-block payload contract.
+ *  @remarks L1 typed payload contract only — no domain mutation;
+ *           providers own handlers/sinks (`IActionNotifyProvider` / capabilities).
+ */
 
 #include "action/ActionSpatialBlock.h"
 
@@ -16,7 +22,7 @@ enum class ActionVfxShape : std::uint8_t { Instant, State };
 enum class ActionVfxStopBehavior : std::uint8_t { StopEmitting, ClearImmediately };
 
 /** @brief Owning validated VFX settings shared by runtime and editor preview. */
-struct ActionVfxBinding {
+struct EVENGINE_API_PLATFORM ActionVfxBinding {
     std::string           uri;
     ActionSpatialBinding  spatial;
     ActionVfxStopBehavior stopBehavior       = ActionVfxStopBehavior::StopEmitting;
@@ -25,6 +31,7 @@ struct ActionVfxBinding {
     double                clipEndTime        = 0.5;
     double                lifetimeSeconds    = 0.0;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionVfxBinding&) const = default;
 
     /**

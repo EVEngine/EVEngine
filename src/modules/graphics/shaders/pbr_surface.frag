@@ -1,6 +1,6 @@
 #version 450
 struct UvInfo { float rotation; uint offset; float present; float srgb; };
-struct Light { vec4 posRadius; vec4 color; };
+struct Light { vec4 posRadius; vec4 color; vec4 spot; };
 layout(set=0,binding=0,std140) uniform Params {
  mat4 mvp; mat4 model; mat4 view;
  vec4 camera; vec4 tint; vec4 ambient; vec4 material;

@@ -1,5 +1,7 @@
 
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Data.h"
 #include "common/Resource.h"
@@ -33,13 +35,13 @@ struct UvPaintReceipt {
 /**
  * @brief Represents raw pixel data.
  **/
-class ImageData : public Resource
-{
+class EVENGINE_API_PLATFORM ImageData : public Resource {
 public:
 	using float16 = medialoader::float16;
 	using Colorf = medialoader::Colorf;
 	using FormatHandler = medialoader::FormatHandler;
 
+	/** @brief Pixel public API. */
 	union Pixel
 	{
 		uint8_t   rgba8[4];
@@ -202,7 +204,7 @@ private:
 	PixelSetFunction pixelSetFunction;
 	PixelGetFunction pixelGetFunction;
 
-}; // ImageData
+};  // ImageData
 
 } // image
 } // eve

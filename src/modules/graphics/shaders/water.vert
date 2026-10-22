@@ -4,7 +4,7 @@ layout(location=0) in vec3 inPos;
 layout(location=1) in vec3 inNormal;
 layout(location=2) in vec2 inUV;
 
-struct Light3D{vec4 posRadius;vec4 color;};
+struct Light3D{vec4 posRadius;vec4 color;vec4 spot;};
 layout(set=0,binding=0,std140) uniform Frame{mat4 mvp;mat4 model;vec4 lightDirIntensity;vec4 lightColor;vec4 tint;vec4 cameraPos;vec4 ambient;Light3D lights[8];vec4 texBomb;vec4 parallax;mat4 view;vec4 clipInfo;vec4 cloud;vec4 cloudWind;vec4 bindlessEnv;vec4 envProbeCenter;vec4 envProbeExtent;vec4 skinInfo;vec4 reflectionProbeCenter[2];vec4 reflectionProbeExtent[2];}ubo;
 layout(push_constant)uniform Externals{float data[32];}u;
 
@@ -42,7 +42,13 @@ void main(){
     gl_Position=ubo.mvp*vec4(localPos,1);
     vWorldPos=world.xyz;
     vViewPos=(ubo.view*world).xyz;
-    vNormal=normalize(transpose(inverse(mat3(ubo.model)))*normalize(vec3(-dx,1,-dz)));
+    // Prefer authored/sim mesh normals when procedural waveAmp is small so
+    // dynamic heightfields (shallow-water, etc.) still shade as ripples.
+    vec3 meshN=length(inNormal)>1e-5?normalize(inNormal):vec3(0,1,0);
+    vec3 waveN=normalize(vec3(-dx,1,-dz));
+    float waveW=clamp(u.data[2]/0.08,0.0,1.0);
+    vec3 localN=normalize(mix(meshN,waveN,waveW));
+    vNormal=normalize(transpose(inverse(mat3(ubo.model)))*localN);
     vUV=inUV;
     vTint=ubo.tint;
     vCameraPos=ubo.cameraPos.xyz;

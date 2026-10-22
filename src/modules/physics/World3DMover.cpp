@@ -1,23 +1,15 @@
-#include "physics/World3D.h"
-
-#include "common/Exception.h"
-
-#include <box3d/box3d.h>
+#include "physics/World3DInternal.h"
 
 #include <algorithm>
 #include <cfloat>
 #include <cmath>
+#include <utility>
 
 namespace eve::physics {
+using namespace world3d_detail;
 
-void World3D::setMoverUp(float x, float y, float z) {
-    if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z))
-        throw eve::Exception("World3D.setMoverUp: values must be finite");
-    const float lengthSquared = x * x + y * y + z * z;
-    if (lengthSquared <= 1e-12f) throw eve::Exception("World3D.setMoverUp: direction must be non-zero");
-    const float inverseLength = 1.f / std::sqrt(lengthSquared);
-    moverUp_                  = b3Vec3{x * inverseLength, y * inverseLength, z * inverseLength};
-}
+void World3D::setMoverUp(float x, float y, float z) { worldValue(rigidBackend_->setMoverUp(x, y, z)); }
+
 
 void World3D::setMoverSlopeLimit(float degrees) {
     if (!std::isfinite(degrees)) throw eve::Exception("World3D.setMoverSlopeLimit: degrees must be finite");
@@ -27,121 +19,105 @@ void World3D::setMoverSlopeLimit(float degrees) {
 
 bool World3D::moveCapsule(float ax, float ay, float az, float bx, float by, float bz, float radius, float dx, float dy,
                           float dz) {
-    if (!std::isfinite(ax) || !std::isfinite(ay) || !std::isfinite(az) || !std::isfinite(bx) || !std::isfinite(by) ||
-        !std::isfinite(bz) || !(radius > 0.f) || !std::isfinite(radius) || !std::isfinite(dx) || !std::isfinite(dy) ||
-        !std::isfinite(dz))
-        throw eve::Exception("World3D.moveCapsule: all values must be finite; radius > 0");
+    return worldValue(rigidBackend_->moveCapsule(ax, ay, az, bx, by, bz, radius, dx, dy, dz));
+}
 
-    moverDeltaX_ = moverDeltaY_ = moverDeltaZ_ = 0.f;
-    moverNormalX_ = moverNormalY_ = moverNormalZ_ = 0.f;
-    moverPlaneCount_                              = 0;
-    moverIterations_                              = 0;
-    moverGroundDot_                               = -1.f;
-    moverGrounded_                                = false;
-    if (!isValid()) return false;
 
-    constexpr int planeCapacity = 16;
-    struct PlaneCollector {
-        World3D         *world = nullptr;
-        b3CollisionPlane planes[planeCapacity]{};
-        int              count      = 0;
-        b3Vec3           desired    = b3Vec3_zero;
-        b3Vec3           up         = b3Vec3_axisY;
-        b3Vec3           bestNormal = b3Vec3_zero;
-        float            bestDot    = 0.f;
-        float            maxUpDot   = -1.f;
+eve::Result<CapsuleMove3D> World3D::moveCapsuleOwned(float ax, float ay, float az, float bx, float by, float bz,
+                                                     float radius, float dx, float dy, float dz, QueryFilter3D filter,
+                                                     CapsuleMovePolicy3D policy) {
+    return rigidBackend_->moveCapsuleOwned(ax, ay, az, bx, by, bz, radius, dx, dy, dz, filter, policy);
+}
 
-        static bool callback(b3ShapeId shapeId, const b3PlaneResult *results, int resultCount, void *context) {
-            auto *self = static_cast<PlaneCollector *>(context);
-            if (b3Shape_IsSensor(shapeId) || self->world->shouldIgnoreQueryShape(shapeId)) return true;
-            for (int i = 0; i < resultCount && self->count < planeCapacity; ++i) {
-                const b3Plane &plane = results[i].plane;
-                self->planes[self->count++] =
-                    b3CollisionPlane{.plane = plane, .pushLimit = FLT_MAX, .push = 0.f, .clipVelocity = true};
-                const float d = b3Dot(plane.normal, self->desired);
-                if (d < self->bestDot) {
-                    self->bestDot    = d;
-                    self->bestNormal = plane.normal;
-                }
-                self->maxUpDot = std::max(self->maxUpDot, b3Dot(plane.normal, self->up));
-            }
-            return true;
-        }
-    } collector;
-    collector.world = this;
-    collector.up    = moverUp_;
 
-    const b3Pos     start{ax, ay, az};
-    b3Pos           current = start;
-    const b3Pos     target{ax + dx, ay + dy, az + dz};
-    b3Capsule       mover{b3Vec3_zero, b3Vec3{bx - ax, by - ay, bz - az}, radius};
-    b3QueryFilter   filter           = makeQueryFilter();
-    constexpr float toleranceSquared = 1e-8f;
-    bool            collided         = false;
+int World3D::getQueryBodyId(int index) const {
+    if (index < 0 || index >= static_cast<int>(queryBodyIds_.size()))
+        throw eve::Exception("World3D.getQueryBodyId: index out of range");
+    return queryBodyIds_[static_cast<size_t>(index)];
+}
 
-    for (int pass = 0; pass < 5; ++pass) {
-        collector.count   = 0;
-        collector.desired = target - current;
-        b3World_CollideMover(worldId_, current, &mover, filter, &PlaneCollector::callback, &collector);
-        moverPlaneCount_ += collector.count;
-        collided = collided || collector.count > 0;
+bool World3D::pointProbe(float x, float y, float z, float radius, ClothContact3D *out) const {
+    return pointProbeFiltered(x, y, z, radius, out, ~uint64_t{0}, ~uint64_t{0}) == ClothProbeStatus::Hit;
+}
 
-        const b3Vec3        targetDelta = target - current;
-        b3PlaneSolverResult solved      = b3SolvePlanes(targetDelta, collector.planes, collector.count);
-        b3Vec3              delta       = solved.delta;
-        struct MoverFilter {
-            World3D    *world = nullptr;
-            static bool callback(b3ShapeId shapeId, void *context) {
-                auto *self = static_cast<MoverFilter *>(context);
-                return !b3Shape_IsSensor(shapeId) && !self->world->shouldIgnoreQueryShape(shapeId);
-            }
-        } moverFilter{this};
-        const float fraction =
-            b3World_CastMover(worldId_, current, &mover, delta, filter, &MoverFilter::callback, &moverFilter);
-        if (fraction < 1.f) collided = true;
-        delta            = fraction * delta;
-        current          = current + delta;
-        moverIterations_ = pass + 1;
+ClothProbeStatus World3D::pointProbeFiltered(float x, float y, float z, float radius, ClothContact3D *out,
+                                             uint64_t categoryBits, uint64_t maskBits) const {
+    if (!out) return ClothProbeStatus::Miss;
+    *out = worldValue(rigidBackend_->pointProbeFiltered(x, y, z, radius, categoryBits, maskBits));
+    return out->hit ? ClothProbeStatus::Hit : ClothProbeStatus::Miss;
+}
 
-        if (b3LengthSquared(delta) <= toleranceSquared) break;
-        if (b3LengthSquared(target - current) <= toleranceSquared) break;
-    }
 
-    const b3Vec3 total = current - start;
-    // Solver planes describe every point visited along the path. Grounding
-    // describes support at the resolved destination, never a floor left behind.
-    struct SupportCollector {
-        World3D *world  = nullptr;
-        b3Vec3   up     = b3Vec3_axisY;
-        b3Vec3   normal = b3Vec3_zero;
-        float    upDot  = -1.f;
+const World3D::RayResult &World3D::rayResultAt(int index, const char *operation) const {
+    if (index < 0 || index >= static_cast<int>(rayResults_.size()))
+        throw eve::Exception("World3D.%s: index out of range", operation);
+    return rayResults_[static_cast<size_t>(index)];
+}
 
-        static bool callback(b3ShapeId shapeId, const b3PlaneResult *results, int count, void *context) {
-            auto *self = static_cast<SupportCollector *>(context);
-            if (b3Shape_IsSensor(shapeId) || self->world->shouldIgnoreQueryShape(shapeId)) return true;
-            for (int i = 0; i < count; ++i) {
-                const float upDot = b3Dot(results[i].plane.normal, self->up);
-                if (upDot > self->upDot) {
-                    self->upDot  = upDot;
-                    self->normal = results[i].plane.normal;
-                }
-            }
-            return true;
-        }
-    } support{this, moverUp_};
-    b3World_CollideMover(worldId_, current, &mover, filter, &SupportCollector::callback, &support);
-    // Keep a representative blocking normal for wall sliding. With purely
-    // tangential motion there is no blocking plane, so return the support normal.
-    if (b3LengthSquared(collector.bestNormal) <= toleranceSquared) collector.bestNormal = support.normal;
-    moverDeltaX_    = total.x;
-    moverDeltaY_    = total.y;
-    moverDeltaZ_    = total.z;
-    moverNormalX_   = collector.bestNormal.x;
-    moverNormalY_   = collector.bestNormal.y;
-    moverNormalZ_   = collector.bestNormal.z;
-    moverGroundDot_ = support.upDot;
-    moverGrounded_  = moverGroundDot_ >= moverSlopeCos_;
-    return collided;
+#define EV_RAY_INT_GETTER(name, member) \
+    int World3D::name(int index) const { return rayResultAt(index, #name).member; }
+
+EV_RAY_INT_GETTER(getRayResultBodyId, bodyId)
+EV_RAY_INT_GETTER(getRayResultShapeId, shapeId)
+EV_RAY_INT_GETTER(getRayResultShapeTag, shapeTag)
+EV_RAY_INT_GETTER(getRayResultMaterialId, materialId)
+EV_RAY_INT_GETTER(getRayResultTriangleIndex, triangleIndex)
+
+#undef EV_RAY_INT_GETTER
+
+#define EV_RAY_FLOAT_GETTER(name, member) \
+    float World3D::name(int index) const { return rayResultAt(index, #name).member; }
+
+EV_RAY_FLOAT_GETTER(getRayResultX, x)
+EV_RAY_FLOAT_GETTER(getRayResultY, y)
+EV_RAY_FLOAT_GETTER(getRayResultZ, z)
+EV_RAY_FLOAT_GETTER(getRayResultNormalX, normalX)
+EV_RAY_FLOAT_GETTER(getRayResultNormalY, normalY)
+EV_RAY_FLOAT_GETTER(getRayResultNormalZ, normalZ)
+EV_RAY_FLOAT_GETTER(getRayResultFraction, fraction)
+
+#undef EV_RAY_FLOAT_GETTER
+
+const World3D::ShapeCastResult &World3D::shapeCastResultAt(int index, const char *operation) const {
+    if (index < 0 || index >= static_cast<int>(shapeCastResults_.size()))
+        throw eve::Exception("World3D.%s: index out of range", operation);
+    return shapeCastResults_[static_cast<size_t>(index)];
+}
+
+#define EV_CAST_INT_GETTER(name, member) \
+    int World3D::name(int index) const { return shapeCastResultAt(index, #name).member; }
+
+EV_CAST_INT_GETTER(getShapeCastResultBodyId, bodyId)
+EV_CAST_INT_GETTER(getShapeCastResultShapeId, shapeId)
+EV_CAST_INT_GETTER(getShapeCastResultShapeTag, shapeTag)
+EV_CAST_INT_GETTER(getShapeCastResultMaterialId, materialId)
+EV_CAST_INT_GETTER(getShapeCastResultTriangleIndex, triangleIndex)
+
+#undef EV_CAST_INT_GETTER
+
+#define EV_CAST_FLOAT_GETTER(name, member) \
+    float World3D::name(int index) const { return shapeCastResultAt(index, #name).member; }
+
+EV_CAST_FLOAT_GETTER(getShapeCastResultX, x)
+EV_CAST_FLOAT_GETTER(getShapeCastResultY, y)
+EV_CAST_FLOAT_GETTER(getShapeCastResultZ, z)
+EV_CAST_FLOAT_GETTER(getShapeCastResultNormalX, normalX)
+EV_CAST_FLOAT_GETTER(getShapeCastResultNormalY, normalY)
+EV_CAST_FLOAT_GETTER(getShapeCastResultNormalZ, normalZ)
+EV_CAST_FLOAT_GETTER(getShapeCastResultFraction, fraction)
+
+#undef EV_CAST_FLOAT_GETTER
+
+int World3D::getQueryShapeId(int index) const {
+    if (index < 0 || index >= static_cast<int>(queryShapes_.size()))
+        throw eve::Exception("World3D.getQueryShapeId: index out of range");
+    return queryShapes_[static_cast<size_t>(index)].first;
+}
+
+int World3D::getQueryShapeTag(int index) const {
+    if (index < 0 || index >= static_cast<int>(queryShapes_.size()))
+        throw eve::Exception("World3D.getQueryShapeTag: index out of range");
+    return queryShapes_[static_cast<size_t>(index)].second;
 }
 
 }  // namespace eve::physics

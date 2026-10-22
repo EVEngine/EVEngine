@@ -1,4 +1,7 @@
 #pragma once
+#include "common/Export.h"
+#include "common/StringMapInstances.h"
+
 
 #include "common/Module.h"
 
@@ -31,11 +34,13 @@ namespace eve::filesystem {
  * script layer to `dofile` / reload. This is what makes hot reload work on
  * read-only mobile bundles (iOS app bundle / Android APK).
  */
-class HotReload : public Module {
+class EVENGINE_API_FOUNDATION HotReload : public Module {
 public:
     Module_REG(HotReload);
 
+    /** @brief Hot reload. */
     HotReload() = default;
+    /** @brief Hot reload. */
     ~HotReload() override;
 
     /**
@@ -44,6 +49,7 @@ public:
      * "auto" (the default) lets every reloader claim the path itself.
      */
     void bind(std::string path, std::string kind = "auto");
+    /** @brief Unbinds unbind. */
     void unbind(std::string path);
 
     /** @brief Offer a (normalized) path to the registered reloaders; true if any reloaded. */
@@ -75,9 +81,11 @@ public:
      * @param url Base URL, e.g. "http://192.168.1.5:8765".
      * @param pollMs Poll interval in milliseconds (default 1000).
      */
+    /** @brief Starts remote sync. */
     bool startRemoteSync(std::string url, int pollMs = 1000);
 
     /** Stop the remote sync thread (joining it). Safe to call twice. */
+    /** @brief Stops remote sync. */
     void stopRemoteSync();
 
     /**
@@ -85,20 +93,25 @@ public:
      * downloads (default: platform appdata/EVE/hotreload, or the internal
      * storage hotreload dir on Android). Must be called before startRemoteSync.
      */
+    /** @brief Sets the remote hot dir. */
     void setRemoteHotDir(std::string dir);
 
     /** Whether the remote sync thread is currently running. */
+    /** @brief True when remote syncing. */
     bool isRemoteSyncing() const;
 
     /** Last sync status: "idle" | "syncing" | "synced" | "error:<reason>". */
+    /** @brief Remote sync status. */
     std::string remoteSyncStatus() const;
 
     /**
      * Pop the next changed virtual path reported by remote sync.
      * Returns empty string when the queue is drained.
      */
+    /** @brief Polls remote change. */
     std::string pollRemoteChange();
 
+    /** @brief Normalize path. */
     static std::string normalizePath(std::string path);
 
 private:

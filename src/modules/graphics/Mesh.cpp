@@ -5,7 +5,9 @@
 #include "graphics/Graphics.h"
 
 #include <algorithm>
+#include <atomic>
 #include <cmath>
+#include <limits>
 
 namespace eve::graphics {
 Result<void> Mesh::setTexcoordSet(uint32_t set, std::span<const float> values) {
@@ -91,6 +93,9 @@ Result<void> Mesh::setSkinPalette(const float* matrices, int matrixCount) {
 }
 
 void Mesh::computeBounds(const float *posXYZ, int vertexCount) {
+    static std::atomic<uint64_t> generation{0};
+    geometryGeneration_ = ++generation;
+    hasLocalBounds_     = false;
     boundsCx     = 0.f;
     boundsCy     = 0.f;
     boundsCz     = 0.f;
@@ -98,13 +103,24 @@ void Mesh::computeBounds(const float *posXYZ, int vertexCount) {
     if (!posXYZ || vertexCount <= 0) return;
 
     const size_t n = size_t(vertexCount);
+    for (int axis = 0; axis < 3; ++axis) {
+        localBounds_[axis]     = std::numeric_limits<float>::max();
+        localBounds_[axis + 3] = std::numeric_limits<float>::lowest();
+    }
     glm::vec3    c(0.f);
     for (size_t i = 0; i < n; ++i) {
+        for (int axis = 0; axis < 3; ++axis) {
+            const float value = posXYZ[i * 3u + static_cast<std::size_t>(axis)];
+            if (!std::isfinite(value)) return;
+            localBounds_[axis]     = std::min(localBounds_[axis], value);
+            localBounds_[axis + 3] = std::max(localBounds_[axis + 3], value);
+        }
         c.x += posXYZ[i * 3u + 0u];
         c.y += posXYZ[i * 3u + 1u];
         c.z += posXYZ[i * 3u + 2u];
     }
     c /= float(n);
+    if (!std::isfinite(c.x) || !std::isfinite(c.y) || !std::isfinite(c.z)) return;
     boundsCx = c.x;
     boundsCy = c.y;
     boundsCz = c.z;
@@ -119,7 +135,17 @@ void Mesh::computeBounds(const float *posXYZ, int vertexCount) {
     }
     // Degenerate (single-point) meshes still get a tiny non-zero sphere so
     // hasBounds() stays meaningful and the culler never drops point geometry.
-    boundsRadius = r > 0.f ? r : 1e-4f;
+    if (std::isfinite(r)) {
+        boundsRadius    = r > 0.f ? r : 1e-4f;
+        hasLocalBounds_ = true;
+    }
+}
+
+Result<std::array<float, 6>> Mesh::localBounds() const {
+    if (!hasLocalBounds_)
+        return Result<std::array<float, 6>>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "Mesh has no finite vertex bounds", "graphics.mesh.localBounds"));
+    return Result<std::array<float, 6>>::success(localBounds_);
 }
 
 void Mesh::drawOcclusion(Graphics *gfx, const glm::mat4 &matrix) const {
@@ -188,6 +214,22 @@ int Mesh::getVertexCount() const {
     return gpuVertexCount;
 }
 
+Result<void> Mesh::setMorphNormalDeltas(std::string_view name, std::span<const float> deltas) {
+    const auto target =
+        std::find_if(morphs_.begin(), morphs_.end(), [&](const auto &morph) { return morph.name == name; });
+    if (target == morphs_.end())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "Morph target was not found", std::string(name)));
+    if ((!deltas.empty() && deltas.size() != baseNrm_.size()) ||
+        std::any_of(deltas.begin(), deltas.end(), [](float x) { return !std::isfinite(x); }))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "Expected finite normal deltas matching the morph base"));
+    std::vector<float> owned(deltas.begin(), deltas.end());
+    target->deltaNrm.swap(owned);
+    morphDirty_ = true;
+    return Result<void>::success();
+}
+
 int Mesh::getMorphCount() const { return int(morphs_.size()); }
 
 std::string Mesh::getMorphName(int index) const {
@@ -229,13 +271,31 @@ void Mesh::computeMorphedPositions(std::vector<float> &outPos, std::vector<float
     outPos = basePos_;
     outNrm = baseNrm_;
     if (outPos.empty()) return;
+    bool normalsChanged = false;
     for (const MorphTarget &t : morphs_) {
         auto it = morphWeights_.find(t.name);
         const float w = (it == morphWeights_.end()) ? 0.f : it->second;
         if (std::fabs(w) < 1e-8f) continue;
         for (size_t i = 0; i < outPos.size() && i < t.deltaPos.size(); ++i)
             outPos[i] += t.deltaPos[i] * w;
+        if (!t.deltaNrm.empty()) {
+            normalsChanged = true;
+            for (size_t i = 0; i < outNrm.size(); ++i) outNrm[i] += t.deltaNrm[i] * w;
+        }
     }
+    if (normalsChanged)
+        for (size_t i = 0; i + 2 < outNrm.size(); i += 3) {
+            const float length = std::hypot(outNrm[i], outNrm[i + 1], outNrm[i + 2]);
+            if (length > 1e-8f) {
+                outNrm[i] /= length;
+                outNrm[i + 1] /= length;
+                outNrm[i + 2] /= length;
+            } else {
+                outNrm[i]     = baseNrm_[i];
+                outNrm[i + 1] = baseNrm_[i + 1];
+                outNrm[i + 2] = baseNrm_[i + 2];
+            }
+        }
 }
 
 }  // namespace eve::graphics

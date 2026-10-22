@@ -7,6 +7,7 @@
 // queries it (nullptr when the module was trimmed out).
 
 #include "common/Export.h"
+#include "common/Result.h"
 
 #include <string>
 #include <vector>
@@ -14,7 +15,7 @@
 namespace eve {
 
 /** @brief Serializable snapshot of one scene node (value type, no scene types). */
-struct EVENGINE_API SceneNodeInfo {
+struct EVENGINE_API_FOUNDATION_INLINE SceneNodeInfo {
     std::string id;
     std::string name;
     std::string path;
@@ -27,10 +28,11 @@ struct EVENGINE_API SceneNodeInfo {
 };
 
 /** @brief Scene graph query/mutation surface (provided by the scene module). */
-class EVENGINE_API ISceneQuery {
+class EVENGINE_API_FOUNDATION ISceneQuery {
 public:
     static constexpr const char* capabilityName = "ISceneQuery";
 
+    /** @brief I scene query. */
     virtual ~ISceneQuery() = default;
 
     /** @brief Name of the currently selected host, or "" when none. */
@@ -48,16 +50,27 @@ public:
     virtual std::vector<SceneNodeInfo> nodes(int limit) const = 0;
     /** @brief Node list of a named host, capped at `limit`. */
     virtual std::vector<SceneNodeInfo> nodesOf(const std::string& host, int limit) const = 0;
-    /** @brief Look up one node in the active host. */
-    virtual bool getNode(const std::string& id, SceneNodeInfo* out) const = 0;
-    /** @brief Look up one node in a named host. */
-    virtual bool getNodeIn(const std::string& host, const std::string& id,
-                           SceneNodeInfo* out) const = 0;
+    /**
+     * @brief Look up one node in the active host.
+     * @return Node snapshot on success; NotFound when the host or id is missing.
+     */
+    [[nodiscard]] virtual Result<SceneNodeInfo> getNode(const std::string& id) const = 0;
+    /**
+     * @brief Look up one node in a named host.
+     * @return Node snapshot on success; NotFound when the host or id is missing.
+     */
+    [[nodiscard]] virtual Result<SceneNodeInfo> getNodeIn(const std::string& host, const std::string& id) const = 0;
 
-    /** @brief Mutate the active host's node transform (marks subtree dirty). */
-    virtual bool setNodeTransform(const std::string& id, float x, float y, float z) = 0;
-    /** @brief Show/hide a node in the active host. */
-    virtual bool setNodeVisible(const std::string& id, bool visible) = 0;
+    /**
+     * @brief Mutate the active host's node transform (marks subtree dirty).
+     * @return Ok on success; NotFound when the node is missing.
+     */
+    [[nodiscard]] virtual Result<void> setNodeTransform(const std::string& id, float x, float y, float z) = 0;
+    /**
+     * @brief Show/hide a node in the active host.
+     * @return Ok on success; NotFound when the node is missing.
+     */
+    [[nodiscard]] virtual Result<void> setNodeVisible(const std::string& id, bool visible) = 0;
     /** @brief Propagate local transforms -> world for every host. */
     virtual void syncTransforms() = 0;
 };

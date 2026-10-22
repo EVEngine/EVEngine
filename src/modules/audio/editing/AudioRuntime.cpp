@@ -23,7 +23,7 @@ const T* value(const EditorValue::Object& properties, const char* path) {
 
 }  // namespace
 
-EditorResult<void> AudioSourceRuntimeApplier::apply(const AudioSourceTarget& target,
+Result<void> AudioSourceRuntimeApplier::apply(const AudioSourceTarget& target,
                                                     audio::Source* source) const {
     if (!source)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.audio.runtime-source"),
@@ -31,7 +31,7 @@ EditorResult<void> AudioSourceRuntimeApplier::apply(const AudioSourceTarget& tar
     const auto diagnostics = target.validate();
     for (const EditorDiagnostic& diagnostic : diagnostics)
         if (diagnostic.severity() == DiagnosticSeverity::Error)
-            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
+            return Result<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
     EditorValue snapshot;
     const auto* values = properties(target, snapshot);
     if (!values)
@@ -59,7 +59,7 @@ EditorResult<void> AudioSourceRuntimeApplier::apply(const AudioSourceTarget& tar
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> AudioSourceRuntimeSink::publish(const AudioSourceTarget& candidate) {
+Result<void> AudioSourceRuntimeSink::publish(const AudioSourceTarget& candidate) {
     return AudioSourceRuntimeApplier().apply(candidate, source_);
 }
 

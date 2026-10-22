@@ -21,7 +21,9 @@
 namespace eve {
 
 namespace detail {
+/** @brief SimulationTickTag public API. */
 struct SimulationTickTag {};
+/** @brief FrameIndexTag public API. */
 struct FrameIndexTag {};
 }  // namespace detail
 
@@ -38,7 +40,7 @@ using FrameIndex = detail::StrongUint64<detail::FrameIndexTag>;
  * error in deterministic state.  Conversion from seconds validates finiteness
  * and range and returns a checked Result.
  */
-class EVENGINE_API Duration {
+class EVENGINE_API_FOUNDATION Duration {
 public:
     /** @brief Construct a zero duration. */
     constexpr Duration() noexcept = default;
@@ -85,6 +87,7 @@ public:
     [[nodiscard]] Result<Duration> scaled(double rate) const;
 
     friend constexpr bool operator==(Duration, Duration) noexcept  = default;
+    /** @brief Operator <=>. */
     friend constexpr auto operator<=>(Duration, Duration) noexcept = default;
 
 private:
@@ -98,7 +101,7 @@ private:
  * a timestamp produced by another source.  It is appropriate for measuring
  * elapsed real time at the scheduler boundary.
  */
-class EVENGINE_API MonotonicTimestamp {
+class EVENGINE_API_FOUNDATION MonotonicTimestamp {
 public:
     /** @brief Construct the zero timestamp. */
     constexpr MonotonicTimestamp() noexcept = default;
@@ -119,6 +122,7 @@ public:
     [[nodiscard]] Result<Duration> since(MonotonicTimestamp earlier) const;
 
     friend constexpr bool operator==(MonotonicTimestamp, MonotonicTimestamp) noexcept  = default;
+    /** @brief Operator <=>. */
     friend constexpr auto operator<=>(MonotonicTimestamp, MonotonicTimestamp) noexcept = default;
 
 private:
@@ -131,7 +135,7 @@ private:
  * The value is nanoseconds since the Unix epoch.  It must not appear in
  * deterministic simulation state, replay keys, or simulation hashes.
  */
-class EVENGINE_API WallClockTimestamp {
+class EVENGINE_API_FOUNDATION_INLINE WallClockTimestamp {
 public:
     /** @brief Construct the Unix epoch timestamp. */
     constexpr WallClockTimestamp() noexcept = default;
@@ -143,6 +147,7 @@ public:
     [[nodiscard]] constexpr std::int64_t unixNanoseconds() const noexcept { return unixNanoseconds_; }
 
     friend constexpr bool operator==(WallClockTimestamp, WallClockTimestamp) noexcept  = default;
+    /** @brief Operator <=>. */
     friend constexpr auto operator<=>(WallClockTimestamp, WallClockTimestamp) noexcept = default;
 
 private:
@@ -150,7 +155,7 @@ private:
 };
 
 /** @brief One deterministic fixed-step emitted by SimulationClock. */
-struct EVENGINE_API SimulationStep {
+struct EVENGINE_API_FOUNDATION_INLINE SimulationStep {
     /** @brief Tick reached after this step is applied. */
     SimulationTick tick = SimulationTick::zero();
     /** @brief Fixed simulation duration for this step. */
@@ -165,9 +170,10 @@ struct EVENGINE_API SimulationStep {
  * interface never advances simulation state and never exposes a wall clock to
  * simulation consumers.
  */
-class EVENGINE_API ITimeSource {
+class EVENGINE_API_FOUNDATION_INLINE ITimeSource {
 public:
     static constexpr const char* capabilityName = "ITimeSource";
+    /** @brief I time source. */
     virtual ~ITimeSource()                      = default;
 
     /**
@@ -192,7 +198,7 @@ public:
  * rate scales accumulated simulation time while emitted steps remain fixed.
  * The scheduler is not thread-safe; one owner thread must serialize all calls.
  */
-class EVENGINE_API SimulationClock {
+class EVENGINE_API_FOUNDATION SimulationClock {
 public:
     /**
      * @brief Construct a fixed-step clock without reading the source.

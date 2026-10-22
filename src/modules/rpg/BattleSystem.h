@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file BattleSystem.h
@@ -42,7 +44,7 @@ struct DamageResult {
  * @brief 战斗数值：公式求值 + 技能伤害注册 + 结算。
  * @thread 纯计算，可在任意线程执行。
  */
-class BattleSystem {
+class EVENGINE_API_PLATFORM BattleSystem {
 public:
     /**
      * @brief Validate and publish one skill damage definition atomically.
@@ -56,7 +58,9 @@ public:
                                                                       const SkillDamageSpec &spec);
     /** @brief Compatibility facade; invalid definitions are ignored. */
     static void registerSkillDamage(const std::string &skillId, const SkillDamageSpec &spec);
+    /** @brief Finds skill damage. */
     static const SkillDamageSpec *findSkillDamage(const std::string &skillId);
+    /** @brief Clears skill damage. */
     static void clearSkillDamage();
 
     /**

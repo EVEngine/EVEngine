@@ -21,15 +21,15 @@ using eve::resource::ResourceId;
 constexpr double kMaxExactlyRepresentableInteger = 9007199254740991.0;  // 2^53 - 1
 
 eve::Diagnostic invalidArgument(std::string message, std::string path = {}) {
-    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message), std::move(path));
+    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message, path);
 }
 
 eve::Diagnostic conflict(std::string message, std::string path = {}) {
-    return eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move(message), std::move(path));
+    return eve::Diagnostic::error(eve::DiagnosticCode::Conflict, message, path);
 }
 
 eve::Diagnostic invariantFailure(std::string message, std::string path = {}) {
-    return eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, std::move(message), std::move(path));
+    return eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, message, path);
 }
 
 eve::Result<void> validateCost(const CostSpec& cost) {
@@ -49,7 +49,7 @@ eve::Status insufficientStatus(const Affordability& affordability) {
     return eve::Status::failure(
         eve::StatusCode::Rejected,
         eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "resource cost exceeds available balance",
-                               "cost", std::move(details)));
+                               "cost", details));
 }
 
 eve::Status unknownReservationStatus() {

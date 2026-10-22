@@ -37,16 +37,22 @@ public:
     [[nodiscard]] const SubjectRef& targetRef() const noexcept { return targetRef_; }
 
     /** @copydoc settlement::ISettlementPolicy::validate */
+    /** @brief Validate. */
     [[nodiscard]] eve::Result<void> validate(settlement::SettlementContext& context) override;
     /** @copydoc settlement::ISettlementPolicy::sourceModifiers */
+    /** @brief Source modifiers. */
     [[nodiscard]] eve::Result<void> sourceModifiers(settlement::SettlementContext& context) override;
     /** @copydoc settlement::ISettlementPolicy::targetMitigation */
+    /** @brief Target mitigation. */
     [[nodiscard]] eve::Result<void> targetMitigation(settlement::SettlementContext& context) override;
     /** @copydoc settlement::ISettlementPolicy::armorShield */
+    /** @brief Armor shield. */
     [[nodiscard]] eve::Result<void> armorShield(settlement::SettlementContext& context) override;
     /** @copydoc settlement::ISettlementPolicy::clamp */
+    /** @brief Clamp. */
     [[nodiscard]] eve::Result<void> clamp(settlement::SettlementContext& context) override;
     /** @copydoc settlement::ISettlementPolicy::prepareApply */
+    /** @brief Prepare apply. */
     [[nodiscard]] eve::Result<settlement::PreparedApply> prepareApply(
         const settlement::SettlementContext& context) override;
 

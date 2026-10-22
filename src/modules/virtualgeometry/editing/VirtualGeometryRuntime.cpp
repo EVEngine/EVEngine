@@ -27,12 +27,12 @@ std::uint64_t checksum(const virtualgeometry::VirtualGeometryAsset& a) {
 }  // namespace
 VirtualGeometryBuildRuntime::VirtualGeometryBuildRuntime()  = default;
 VirtualGeometryBuildRuntime::~VirtualGeometryBuildRuntime() = default;
-EditorResult<VirtualGeometryBuildArtifact> VirtualGeometryBuildRuntime::build(
+Result<VirtualGeometryBuildArtifact> VirtualGeometryBuildRuntime::build(
     const VirtualGeometryDocumentTarget& document, const IVirtualGeometryMeshResolver& resolver) {
     const auto diagnostics = document.validate();
     for (const auto& d : diagnostics)
         if (d.severity() == DiagnosticSeverity::Error)
-            return EditorResult<VirtualGeometryBuildArtifact>::failure(
+            return Result<VirtualGeometryBuildArtifact>::failure(
                 Status(EditorStatus::Rejected, diagnostics));
     if (document.value().sourceAsset.empty())
         return eve::editing::failed<VirtualGeometryBuildArtifact>(EditorStatus::Rejected,
@@ -40,7 +40,7 @@ EditorResult<VirtualGeometryBuildArtifact> VirtualGeometryBuildRuntime::build(
                                                                   "VirtualGeometry build requires a source asset");
     auto resolved = resolver.resolve(document.value().sourceAsset);
     if (!resolved.ok())
-        return EditorResult<VirtualGeometryBuildArtifact>::failure(resolved.status());
+        return Result<VirtualGeometryBuildArtifact>::failure(resolved.status());
     auto&      mesh           = resolved.value();
     const bool normalsInvalid = !mesh.normals.empty() && mesh.normals.size() != mesh.positions.size();
     if (mesh.positions.empty() || mesh.positions.size() % 3 != 0 || mesh.indices.empty() ||

@@ -19,7 +19,7 @@ enum class PcgInteriorWeatherTransition { Unchanged = 0, Entered = 1, Exited = 2
  * @thread Affine to the caller; configure and sample must not overlap.
  * @reentrancy Does not invoke callbacks.
  */
-class PcgInteriorWeatherVolume {
+class EVENGINE_API_ORCHESTRATION PcgInteriorWeatherVolume {
 public:
     /** @brief Configure an axis-aligned box atomically. Dimensions must be finite and positive. */
     [[nodiscard]] Result<void> configureBox(float centerX, float centerY, float centerZ,
@@ -34,9 +34,13 @@ public:
     /** @brief Return whether a finite world-space position lies inside, including the boundary. */
     bool contains(float x, float y, float z) const noexcept;
 
+    /** @brief Shape. */
     PcgInteriorWeatherShape shape() const noexcept { return shape_; }
+    /** @brief Mode. */
     PcgInteriorWeatherMode mode() const noexcept { return mode_; }
+    /** @brief Interior reverb preset. */
     int interiorReverbPreset() const noexcept { return interiorReverbPreset_; }
+    /** @brief Exterior reverb preset. */
     int exteriorReverbPreset() const noexcept { return exteriorReverbPreset_; }
 
 private:

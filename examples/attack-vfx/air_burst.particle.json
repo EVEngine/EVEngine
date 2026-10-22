@@ -1,0 +1,50 @@
+{
+  "type": "eve.particle-effect",
+  "version": 1,
+  "parameters": { "intensity": 1.25 },
+  "emitters": [
+    {
+      "name": "slash",
+      "emitter": {
+        "buffer": 240,
+        "emitterLife": 0.85,
+        "looping": false,
+        "emissionRate": 0.0,
+        "bursts": [[0.0, 56], [0.1, 30]],
+        "particleLifetime": [0.3, 0.7],
+        "particleSize": [8.0, 18.0],
+        "sizes": [1.25, 0.15],
+        "speed": [80.0, 220.0],
+        "spread": 6.2831853,
+        "damping": 0.12,
+        "renderMode": "velocity",
+        "stretch": 0.1,
+        "blendMode": "additive",
+        "colorOverLifetime": [
+          [0.0, 0.75, 1.0, 0.85, 1.0],
+          [0.35, 0.45, 0.95, 0.75, 0.85],
+          [0.7, 0.55, 0.45, 0.95, 0.4],
+          [1.0, 0.25, 0.2, 0.55, 0.0]
+        ]
+      }
+    },
+    {
+      "name": "glints",
+      "emitter": {
+        "buffer": 140,
+        "emitterLife": 0.8,
+        "looping": false,
+        "emissionRate": 0.0,
+        "bursts": [[0.0, 32]],
+        "particleLifetime": [0.2, 0.5],
+        "particleSize": [5.0, 12.0],
+        "sizes": [1.1, 0.1],
+        "speed": [50.0, 150.0],
+        "spread": 6.2831853,
+        "blendMode": "additive",
+        "colorStart": [1.0, 1.0, 1.0, 1.0],
+        "colorEnd": [0.55, 0.95, 0.85, 0.0]
+      }
+    }
+  ]
+}

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 // 结算系统：把伤害/治疗/命中率/掉落……等一切"多方参与、需要按顺序层层计算"的
 // 数值流程抽象成一条可插拔的流水线（SettlementPipeline），而不是把某一种
@@ -30,7 +32,7 @@ namespace eve::rpg {
 class RPGActor;
 
 /** @brief 结算上下文：通用的读写数据袋，字段完全由调用方与各阶段自行约定。 */
-struct SettlementContext {
+struct EVENGINE_API_PLATFORM SettlementContext {
     RPGActor *source = nullptr;
     RPGActor *target = nullptr;
     std::string kind;  ///< 自由字符串，如 "damage" / "heal"，供阶段内部分支使用
@@ -39,26 +41,43 @@ struct SettlementContext {
     std::unordered_map<std::string, double> values;
     std::vector<std::string> tags;
 
+    /** @brief Returns the value. */
     double get(const std::string &key, double fallback = 0.0) const;
+    /** @brief Sets the value. */
     void set(const std::string &key, double value);
+    /** @brief True when active. */
     bool has(const std::string &key) const;
 
+    /** @brief Adds tag. */
     void addTag(const std::string &tag);
+    /** @brief True when tag. */
     bool hasTag(const std::string &tag) const;
 };
 
-class SettlementPipeline {
+/**
+ * @brief Compatibility-only named calculator retained for existing RPG scripts.
+ * @deprecated New gameplay must use eve::settlement::SettlementPipeline through Battle or a domain policy.
+ * @remarks run() delegates scheduling and transaction boundaries to the canonical settlement pipeline; this facade
+ * retains only legacy stage registration and the open numeric value bag required by existing scripts.
+ */
+class EVENGINE_API_PLATFORM SettlementPipeline {
 public:
     using Stage = std::function<void(SettlementContext &)>;
 
     /** @brief 同名 stage 已存在则整体覆盖（fn/priority），并重置为 enabled。 */
     static void registerStage(const std::string &pipeline, const std::string &stage, int priority,
                                Stage fn);
+    /** @brief Unregisters stage. */
     static bool unregisterStage(const std::string &pipeline, const std::string &stage);
+    /** @brief Sets the stage enabled. */
     static bool setStageEnabled(const std::string &pipeline, const std::string &stage, bool enabled);
+    /** @brief Sets the stage priority. */
     static bool setStagePriority(const std::string &pipeline, const std::string &stage, int priority);
+    /** @brief True when stage. */
     static bool hasStage(const std::string &pipeline, const std::string &stage);
+    /** @brief Stage count. */
     static int stageCount(const std::string &pipeline);
+    /** @brief Clears pipeline. */
     static void clearPipeline(const std::string &pipeline);
 
     /** @brief 按 priority 升序依次执行 pipeline 内已启用的阶段；ctx.cancelled 时提前终止。 */

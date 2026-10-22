@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file CombatLocomotion.h @brief Deterministic player/navigation locomotion adapter for combat subjects. */
 
@@ -70,6 +72,7 @@ struct CombatNavigationSteering {
  */
 class ICombatNavigationProvider {
 public:
+    /** @brief Releases ICombatNavigationProvider resources. */
     virtual ~ICombatNavigationProvider() = default;
 
     /**
@@ -85,9 +88,10 @@ public:
 };
 
 /** @brief Straight-line obstacle-free provider useful for arenas and deterministic tests. */
-class DirectCombatNavigationProvider final : public ICombatNavigationProvider {
+class EVENGINE_API_BACKENDS DirectCombatNavigationProvider final : public ICombatNavigationProvider {
 public:
     /** @copydoc ICombatNavigationProvider::steer */
+    /** @brief Steer. */
     [[nodiscard]] Result<CombatNavigationSteering> steer(const CombatLocomotionState& state,
                                                           const CombatNavigationGoal& goal,
                                                           SimulationTick tick) override;
@@ -118,7 +122,7 @@ struct CombatLocomotionAdvance {
  * borrowed; advance prepares all states before one publication, so a provider
  * failure cannot leave a partially moved arena. No method reads a clock or RNG.
  */
-class CombatLocomotionRuntime {
+class EVENGINE_API_BACKENDS CombatLocomotionRuntime {
 public:
     /** @brief Construct without an installed navigation provider. */
     CombatLocomotionRuntime() = default;

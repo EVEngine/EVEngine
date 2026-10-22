@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file VehicleDefinitionRuntime.h
@@ -30,7 +32,8 @@ class Vehicle;
  * @remarks The returned value is not an additional definition store. Callers that need to
  *          retain the projection must own a copy for their runtime instance.
  */
-[[nodiscard]] eve::Result<VehicleDefinition> parseVehicleDefinition(const eve::definitions::Definition& source);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<VehicleDefinition> parseVehicleDefinition(
+    const eve::definitions::Definition& source);
 
 /** @brief Mutable state owned by one typed vehicle runtime instance. */
 struct VehicleRuntimeState {
@@ -51,7 +54,7 @@ struct VehicleRuntimeState {
  * writes the mutable ECS components in one candidate swap. Vehicle physics,
  * weapons and orders remain links/components owned by their own domains.
  */
-class VehicleDefinitionRuntime final {
+class EVENGINE_API_DOMAINS VehicleDefinitionRuntime final {
 public:
     /**
      * @brief Create from a common `vehicle:<name>` definition.
@@ -71,10 +74,13 @@ public:
         Vehicle& module, std::string_view definitionId, eve::PersistentId instanceId,
         eve::definition::ReloadPolicy policy = eve::definition::ReloadPolicy::RebuildInstance);
 
+    /** @brief Vehicle definition runtime. */
     VehicleDefinitionRuntime(VehicleDefinitionRuntime&&) noexcept            = default;
+    /** @brief Operator =. */
     VehicleDefinitionRuntime& operator=(VehicleDefinitionRuntime&&) noexcept = default;
     VehicleDefinitionRuntime(const VehicleDefinitionRuntime&)                = delete;
     VehicleDefinitionRuntime& operator=(const VehicleDefinitionRuntime&)     = delete;
+    /** @brief Vehicle definition runtime. */
     ~VehicleDefinitionRuntime()                                              = default;
 
     /** @brief Borrow common instance identity and exact definition generation. */

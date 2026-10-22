@@ -94,17 +94,22 @@ struct InstanceIdentity {
                                                               eve::DefinitionRef definition,
                                                               eve::Generation    definitionGeneration) {
         if (instanceId.isNil())
+            /** @brief Failure. */
             return eve::Result<InstanceIdentity>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::InvalidArgument, "runtime instance identity must not be nil", "instanceId", {},
                 "common.definitions"));
         if (!definition.id().isValid())
+            /** @brief Failure. */
             return eve::Result<InstanceIdentity>::failure(
+                /** @brief Error. */
                 eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "runtime definition reference is invalid",
                                        "definition", {}, "common.definitions"));
         if (definitionGeneration.isZero())
+            /** @brief Failure. */
             return eve::Result<InstanceIdentity>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::InvalidArgument, "runtime definition generation must be positive",
                 "definitionGeneration", {}, "common.definitions"));
+        /** @brief Success. */
         return eve::Result<InstanceIdentity>::success(
             InstanceIdentity{instanceId, std::move(definition), definitionGeneration});
     }
@@ -119,6 +124,7 @@ struct InstanceIdentity {
         return !instanceId.isNil() && definition.id().isValid() && !definitionGeneration.isZero();
     }
 
+    /** @brief Operator ==. */
     friend bool operator==(const InstanceIdentity&, const InstanceIdentity&) noexcept = default;
 };
 
@@ -243,18 +249,22 @@ private:
 
 /** @brief Payload operations for one state type; used by `RuntimeInstance<State>`. */
 template <class State>
+/** @brief Clones runtime state. */
 [[nodiscard]] void* cloneRuntimeState(const void* state) {
+    /** @brief State. */
     return new State(*static_cast<const State*>(state));
 }
 
 /** @brief Payload assignment for one state type. */
 template <class State>
+/** @brief Assign runtime state. */
 void assignRuntimeState(void* destination, const void* source) {
     *static_cast<State*>(destination) = *static_cast<const State*>(source);
 }
 
 /** @brief Payload destruction for one state type. */
 template <class State>
+/** @brief Destroys runtime state. */
 void destroyRuntimeState(void* state) noexcept {
     delete static_cast<State*>(state);
 }
@@ -278,6 +288,7 @@ void destroyRuntimeState(void* state) noexcept {
  *         non-throwing pointer swap.
  */
 template <class State>
+/** @brief RuntimeInstance public API. */
 class RuntimeInstance {
     static_assert(std::is_copy_constructible_v<State>, "RuntimeInstance state must be copy constructible");
 
@@ -313,7 +324,9 @@ public:
                                                              bool active = true) {
         auto identity = InstanceIdentity::create(instanceId, std::move(definition), definitionGeneration);
         if (!identity) return eve::Result<RuntimeInstance>::failure(identity.status());
+        /** @brief Success. */
         return eve::Result<RuntimeInstance>::success(
+            /** @brief Constructs a RuntimeInstance. */
             RuntimeInstance(std::move(identity).takeValue(), std::move(state), active));
     }
 
@@ -354,6 +367,7 @@ public:
                                                      const DefinitionHandle& handle) -> eve::Result<void*> {
                 auto rebuilt = callback(*static_cast<const State*>(state), identity, handle);
                 if (!rebuilt) return eve::Result<void*>::failure(rebuilt.status());
+                /** @brief Success. */
                 return eve::Result<void*>::success(new State(std::move(rebuilt).takeValue()));
             };
         }

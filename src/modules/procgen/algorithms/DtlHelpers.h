@@ -20,14 +20,18 @@
 
 namespace eve::procgen::dtlutil {
 
+/** @brief Make matrix. */
 inline std::vector<std::vector<std::uint_fast8_t>> makeMatrix(int width, int height,
                                                               std::uint_fast8_t fill = 0) {
     return std::vector<std::vector<std::uint_fast8_t>>(
+        /** @brief Returns the size of t. */
         size_t(height), std::vector<std::uint_fast8_t>(size_t(width), fill));
 }
 
+/** @brief Copies matrix to grid. */
 inline void copyMatrixToGrid(const std::vector<std::vector<std::uint_fast8_t>> &matrix,
                              Grid2D &grid,
+                             /** @brief Uint 32 t. */
                              const std::function<uint32_t(std::uint_fast8_t)> &mapValue) {
     const int h = int(matrix.size());
     const int w = h > 0 ? int(matrix[0].size()) : 0;

@@ -37,7 +37,7 @@ void Graphics::buildDeferredFrameGraphs() {
     const vk::Format depthFmt     = vk::Format::eD32Sfloat;
     const vk::Format colorFmt     = pickGBufferColorFormat(device);
     const uint32_t   mapSize      = uint32_t(ShadowConfig::kMapSize);
-    const uint32_t   shadowLayers = uint32_t(ShadowConfig::kCascades);
+    const uint32_t   shadowLayers = uint32_t(ShadowConfig::kTotalLayers);
     const uint32_t   w            = gbufferWidth > 0 ? uint32_t(gbufferWidth) : 1u;
     const uint32_t   h            = gbufferHeight > 0 ? uint32_t(gbufferHeight) : 1u;
 
@@ -79,6 +79,10 @@ void Graphics::buildDeferredFrameGraphs() {
             auto depthColorH =
                 graph->importTexture("gbDepthColor", slot.depthColor.image(), slot.depthColor.imageView(), colorDesc);
             auto albedoH = graph->importTexture("gbAlbedo", slot.albedo.image(), slot.albedo.imageView(), colorDesc);
+            auto pbrParamsH =
+                graph->importTexture("gbPbrParams", slot.pbrParams.image(), slot.pbrParams.imageView(), colorDesc);
+            auto emissiveH =
+                graph->importTexture("gbEmissive", slot.emissive.image(), slot.emissive.imageView(), colorDesc);
 
             vkb::TextureDesc depthDesc;
             depthDesc.format      = depthFmt;
@@ -88,17 +92,21 @@ void Graphics::buildDeferredFrameGraphs() {
             depthDesc.afterLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
             auto depthH = graph->importTexture("gbHwDepth", slot.depth.image(), slot.depth.imageView(), depthDesc);
 
-            std::array<vk::ClearValue, 4> clears{};
+            std::array<vk::ClearValue, 6> clears{};
             clears[0].color        = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
             clears[1].color        = vk::ClearColorValue(std::array<float, 4>{1, 1, 1, 1});
             clears[2].color        = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
-            clears[3].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+            clears[3].color        = vk::ClearColorValue(std::array<float, 4>{0, 1, 1, 1});
+            clears[4].color        = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+            clears[5].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
             graph->addPass("gbuffer")
                 .colorAttachment(normalH, vkb::AttachmentOp::clear(clears[0]))
                 .colorAttachment(depthColorH, vkb::AttachmentOp::clear(clears[1]))
                 .colorAttachment(albedoH, vkb::AttachmentOp::clear(clears[2]))
-                .depthAttachment(depthH, vkb::AttachmentOp::clear(clears[3]))
-                .record([this](vkb::FrameGraphPassContext &ctx) { recordGBufferPassDraws(ctx); });
+                .colorAttachment(pbrParamsH, vkb::AttachmentOp::clear(clears[3]))
+                .colorAttachment(emissiveH, vkb::AttachmentOp::clear(clears[4]))
+                .depthAttachment(depthH, vkb::AttachmentOp::clear(clears[5]))
+                .record([this](vkb::FrameGraphPassContext& ctx) { recordGBufferPassDraws(ctx); });
         }
         graph->compile();
         deferredFrameGraphs_[i] = std::move(graph);
@@ -114,6 +122,10 @@ void Graphics::recordShadowCascadePass(vkb::FrameGraphPassContext &ctx, int casc
     auto              &cb     = ctx.commandBuffer();
     const vk::Extent2D extent = ctx.extent();
     const uint32_t     size   = extent.width ? extent.width : uint32_t(ShadowConfig::kMapSize);
+    recordShadowCascadeDraws(cb, cascade, size);
+}
+
+void Graphics::recordShadowCascadeDraws(vk::CommandBuffer cb, int cascade, uint32_t size) {
     setViewportAndScissor(cb, size, size);
     vk::Pipeline boundPipeline{};
     for (const auto &d : shadowCascadeDraws[cascade]) {
@@ -247,7 +259,9 @@ void Graphics::recordDeferredFrameGraph() {
     // pools is satisfied structurally.
     recordFrameGraphWithJobSystem(*graph, jobs);
     graph->submit();
-    if (!shadowMaps.empty()) currentShadowMap().image.setCurrentLayout(vk::ImageLayout::eDepthStencilReadOnlyOptimal);
+    // Match shadowDesc.afterLayout: descriptors must describe the layout the
+    // graph actually submitted, including clear-only shadow passes.
+    if (!shadowMaps.empty()) currentShadowMap().image.setCurrentLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
     jobs->endFrame();
     for (auto &d : shadowCascadeDraws) d.clear();
     gbufferPassDraws.clear();

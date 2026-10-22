@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "graphics/GpuDrivenTypes.h"
 
@@ -19,8 +21,9 @@ namespace eve::graphics {
  * bucket is a contiguous range; each command's firstInstance points at the
  * bucket start in that buffer.
  */
-class IndirectBuilder {
+class EVENGINE_API_BACKENDS IndirectBuilder {
 public:
+    /** @brief Resets . */
     void reset();
 
     /** @brief seq = monotonic instance sequence (stable order tiebreak). */
@@ -35,7 +38,9 @@ public:
     /** @brief Instance indices in the sorted order the caller must upload. */
     const std::vector<uint32_t> &sortedInstanceOrder() const { return order_; }
 
+    /** @brief Commands. */
     const std::vector<GpuIndirectCommand> &commands() const { return commands_; }
+    /** @brief Draws count. */
     uint32_t drawCount() const { return uint32_t(commands_.size()); }
 
 private:

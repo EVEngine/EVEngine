@@ -633,6 +633,16 @@ MeshVfxAnimationDispatch MeshVfxAssetInstance::processAnimationEvents(const eve:
     return dispatch;
 }
 
+bool MeshVfxAssetInstance::isFinished() const noexcept {
+    if (layers_.empty()) return true;
+    for (const auto& layer : layers_) {
+        if (!layer) continue;
+        const auto state = layer->state();
+        if (state != MeshEffectState::Stopped && state != MeshEffectState::Finished) return false;
+    }
+    return true;
+}
+
 TrailEmitter& MeshVfxAssetInstance::trail() {
     if (!trail_) throw eve::Exception("MeshVfxAssetInstance.trail: asset has no trail");
     return *trail_;
