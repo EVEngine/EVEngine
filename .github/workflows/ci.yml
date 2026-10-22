@@ -257,6 +257,115 @@ jobs:
         timeout-minutes: 5
         run: cd tools/vision-prefilter && python3 -m pytest -q test
 
+  # Native ARM64 lanes compile and link the engine and test binaries. Runtime
+  # GPU/ICD coverage remains in the existing host lanes until validated on ARM64.
+  windows-arm64:
+    name: Windows ARM64 (${{ matrix.configuration }}, build)
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.windows == 'true' }}
+    runs-on: windows-11-arm
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: ${{ fromJSON(inputs.build_type == 'both' && '["debug","release"]' || inputs.build_type == 'release' && '["release"]' || '["debug"]') }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Verify native ARM64 runner
+        timeout-minutes: 5
+        shell: pwsh
+        run: |
+          if ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture -ne 'Arm64') {
+            throw 'This lane requires a native Windows ARM64 host'
+          }
+
+      - name: Install build tools
+        timeout-minutes: 15
+        shell: pwsh
+        run: |
+          choco install make ninja -y --no-progress
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Install native ARM64 Vulkan SDK
+        timeout-minutes: 20
+        # This pinned action selects the Windows ARM64 SDK from the host arch.
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Windows ARM64
+        timeout-minutes: 190
+        env:
+          CONFIGURATION: ${{ matrix.configuration }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          make "build/win32-arm64${suffix}" JOBS=4 \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=SOURCE -DEVENGINE_COMPILER_CACHE=OFF"
+
+  linux-arm64:
+    name: Linux ARM64 (${{ matrix.configuration }}, build)
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.linux == 'true' }}
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: ${{ fromJSON(inputs.build_type == 'both' && '["debug","release"]' || inputs.build_type == 'release' && '["release"]' || '["debug"]') }}
+    env:
+      CC: gcc
+      CXX: g++
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Verify native ARM64 runner
+        timeout-minutes: 5
+        run: test "$(uname -m)" = aarch64
+
+      - name: Install native system packages
+        timeout-minutes: 25
+        # Preserve the ARM ports mirror supplied by the runner image.
+        run: |
+          sudo apt-get update -o Acquire::Retries=2 \
+            -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build \
+            libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
+            libxrandr-dev libxinerama-dev libxext-dev libxss-dev \
+            libgl1-mesa-dev libbz2-dev libpng-dev \
+            libwayland-dev libxkbcommon-dev libasound2-dev \
+            libvulkan-dev glslc glslang-tools
+
+      - name: Build Linux ARM64
+        timeout-minutes: 140
+        env:
+          CONFIGURATION: ${{ matrix.configuration }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          make "build/linux-arm64${suffix}" JOBS=4 \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=SOURCE -DEVENGINE_COMPILER_CACHE=OFF"
+
   windows:
     name: Windows
     needs: [source-quality, change-scope]

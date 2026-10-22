@@ -48,6 +48,14 @@ Linux graphics tests still require a display/Vulkan ICD and audio backend;
 use the aarch64 system's installed Lavapipe ICD rather than an x86_64 ICD path.
 These explicit targets do not change the existing `make debug` default.
 
+CI builds these targets on native GitHub-hosted `windows-11-arm` and
+`ubuntu-24.04-arm` runners. The lanes follow the existing Windows/Linux change
+scopes: normal runs build Debug; `build_type=release` builds Release and
+`build_type=both` builds both configurations. Each lane compiles and links the
+engine and test binaries, using pinned third-party sources because ARM64 Windows
+and Linux dependency packages are not published. These are build checks;
+ARM64 graphics tests and SDK release packaging are not part of these lanes.
+
 English user guides are maintained by hand; Chinese is the authoritative source. Guides not yet translated are marked Chinese in the English handbook.
 
 - Want to see what the engine renders before running anything? Browse the [example render gallery](docs/images/examples/README.en.md) — every screenshot is a real presented frame written by the engine itself.
