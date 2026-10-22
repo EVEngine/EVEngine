@@ -8,6 +8,35 @@ Evolutionary Vision Engine
 
 ## 文档导航
 
+### Windows / Linux ARM64 原生构建
+
+在 ARM64 宿主上执行，先运行 `make init/submodules`：
+
+| 平台 | Debug | Release |
+| --- | --- | --- |
+| Windows ARM64 | `make build/win32-arm64-debug JOBS=8` | `make build/win32-arm64 JOBS=8` |
+| Linux ARM64 | `make build/linux-arm64-debug JOBS=4` | `make build/linux-arm64 JOBS=4` |
+
+Windows 需要 Visual Studio ARM64 C++ 工具（含 `vcvarsarm64.bat`）、Windows SDK、
+Ninja、Git Bash，以及 Vulkan 头文件、着色器工具和 ARM64 loader 库。
+Windows 命令通过 `cmake/with-msvc.cmd --arm64` 选择原生 MSVC 环境。
+Linux 使用原生 GCC/G++、Ninja，安装与普通 Linux 构建相同的 aarch64 开发依赖。
+这些入口不使用交叉编译工具链，会检查宿主、目标与编译器是否为 ARM64。
+
+third-party 同样从固定版本源码构建为 ARM64；构建入口会先完成依赖编译与安装。
+只构建依赖可用 `make deps/win32-arm64[-debug]` 或
+`make deps/linux-arm64[-debug]`（`[-debug]` 表示可选后缀）。
+依赖缓存位于 `build/third-party/<平台>-arm64[-debug]`，安装位于
+`build/third-party-binary/<平台>-arm64[-debug]`，与已有 x64 目录隔离。
+不要通过 `EVENGINE_THIRD_PARTY_BINARY_DIR` 指向 x64 库。
+
+CMake 直接配置仍使用根目录入口：`-DEVENGINE_NATIVE_ARM64=ON`，
+配合 `-DEVENGINE_BUILD_PLATFORM=win32` 或 `linux`，并指定独立的 `-B` 目录。
+Debug 保留严格警告，Release 使用 OBJECT 链接策略。
+定向测试使用 `make test/win32-arm64-debug DOMAIN=<域>` 或
+`make test/linux-arm64-debug DOMAIN=<域>`；Linux 图形测试仍需显示服务、
+匹配 aarch64 的 Vulkan ICD 和音频后端。原有 `make debug` 默认入口保持不变。
+
 - 想先直观感受引擎的渲染效果？浏览[示例渲染画廊](docs/images/examples/README.md)——每张截图都由引擎把交换链上实际呈现的一帧原样输出。
 - [游戏开发者文档](docs/usr/README.md)：下载引擎、创建并运行游戏、调试与打包发布；[模块使用手册](docs/usr/MODULES.md) 逐个说明脚本 API 和示例。
 - [在线 API 参考（Doxygen）](https://evengine.github.io/EVEngine/)：随 GitHub Pages 持续发布，包含 C++ API 与用户手册。

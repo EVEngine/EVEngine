@@ -192,6 +192,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [mesh-contact-fusion](mesh-contact-fusion/README.md) | 接触带融合：静态 `mergeStaticMeshes`（默认关 / 可选开）与实时 `MeshAdhereLive` 并排对照 |
 | [spline-tube-lab](spline-tube-lab/README.md) | 无源网格生成：样条路径驱动管道 / 带状体 / 自定义截面挤出，含开放与闭合回路、分块、分布采样与行进帧 |
 | [night-city](night-city/README.md) | 自动街区与新版路网结合的夜间都市：SCAD 高楼、发光窗户、路灯、信号灯与人行道 |
+| [automatic-bridge](automatic-bridge/README.md) | 自动桥梁：十种桥型共用起终点、尺寸与可编辑构件计划，含桥墩、护栏、缆索和桁架（`mesh.autoBridge`） |
 | [procedural-road](procedural-road/README.md) | 程序化多层立交：截面挤出道路/桥墩/标线/导航逻辑叠加（`mesh.roadNetwork`） |
 | [mesh-impact-lab](mesh-impact-lab/README.md) | Box3D 命中事件驱动网格塑性冲击：法向冲量 → 形变会话 → 重新上传 |
 | [geometry-stroke-lab](geometry-stroke-lab/README.md) | 几何笔刷轨迹：quad / 三棱柱 / 立方体截面、平面与空间输入、最小间距过滤、撤销、CPU 生成 + GPU 上传 |
@@ -244,6 +245,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [biome-rules-editor](biome-rules-editor/README.md) | 生物群系规则编辑示例：用 UI 无关编辑器 SDK 组装项目专属工作区 |
 | [combat-action-editor](combat-action-editor/README.md) | 战斗动作编辑示例：用 UI 无关编辑器 SDK 组装项目专属工作区 |
 | [combat-arena](combat-arena/README.md) | 动作战斗竖切：移动/闪避/伤害/锁定与敌人近距攻击的组合烟测 |
+| [companion-tactics](companion-tactics/README.md) | 队友协作战术沙场：原生 AI 状态机、能力评分、治疗预约、保护吸伤、动态站位与玩家指挥 |
 | [procgen-script-editor](procgen-script-editor/README.md) | 宿主封装 Squirrel generator（`generators/forest.nut`）的程序化生成编辑器 |
 | [ui-theme-editor](ui-theme-editor/README.md) | UI 主题编辑示例：组装命名 Theme 工作区 + 实时预览 |
 | [material-editor](material-editor/README.md) | 材质编辑器：高层脚本创建、复杂测试球、模型导入、可切换天空盒与 IBL、完整参数及撤销保存 |
@@ -289,3 +291,5 @@ material bakers live beside their examples and are opt-in build targets.
 Tests with actual regression assertions remain in `test/`: castle mesh groups
 and image occupancy, decal material/projection behavior, planar-reflection pixel
 coverage, water animation differences, and grid semantic-color matching.
+
+- [laser-weapon](laser-weapon/README.md) — HELIOS 激光武器：蓄能、光束与命中火花。
