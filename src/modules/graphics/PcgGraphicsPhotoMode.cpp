@@ -1,4 +1,5 @@
 #include "graphics/PcgGraphicsPhotoMode.h"
+#include <algorithm>
 #include <cmath>
 
 #include "common/Capability.h"
@@ -6,6 +7,7 @@
 #include "graphics/Graphics.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/ShadowScheme.h"
 
 namespace eve::graphics {
 PcgGraphicsPhotoModeAuthority::~PcgGraphicsPhotoModeAuthority() {
@@ -74,11 +76,20 @@ Result<void> PcgGraphicsPhotoModeAuthority::applyPhotoModeField(const PhotoModeA
 }
 
 void PcgGraphicsPhotoModeAuthority::project() {
+    const float shadowDistance = state_.shadowDistance * state_.globalShadowDistanceMultiplier;
     if (camera_) {
-        camera_->data()->lodBias    = state_.lodBias;
-        const float shadowDistance = state_.shadowDistance * state_.globalShadowDistanceMultiplier;
+        camera_->data()->lodBias = state_.lodBias;
         for (int layer = 0; layer < 32; ++layer) camera_->setShadowLayerCullDistance(layer, shadowDistance);
     }
+    // Drive the shared shadow atlas + CSM far clamp from PhotoMode quality knobs.
+    // Cascade *count* stays compile-time (ShadowConfig::kCascades); resolution and
+    // coverage are the runtime levers that affect GPU resources and texel density.
+    auto& scheme              = ShadowSchemeSettings::current();
+    scheme.directionalMapSize = shadowMapSizeForResolutionTier(int(state_.shadowResolution));
+    scheme.localMapSize       = clampShadowMapSize(std::max(256, scheme.directionalMapSize / 2));
+    // Cap CSM coverage so a huge PhotoMode cull distance does not dilute texels
+    // across kilometers; caster cull still uses the uncapped shadowDistance.
+    scheme.directionalMaxDistance = std::clamp(shadowDistance, 8.f, 256.f);
     if (!graphics_ || !control_) return;
     auto* antiAliasing = graphics_->pipelineAntiAliasing();
     const int mode     = int(state_.antiAliasing);

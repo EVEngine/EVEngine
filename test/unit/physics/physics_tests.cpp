@@ -1,14 +1,16 @@
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_box3d)
-#include "PrivateTestScope.h"
 #include <box3d/box3d.h>
 #include <cmath>
 #include <limits>
 #include <memory>
 #include <vector>
+#include "PrivateTestScope.h"
+#include "common/SdfField3D.h"
 #include "physics/Body3D.h"
 #include "physics/DistanceField3D.h"
+#include "physics/DistanceField3DSdf.h"
 #include "physics/Joint3D.h"
 #include "physics/Physics.h"
 #include "physics/Shape3D.h"
@@ -21,6 +23,30 @@
 namespace test_box3d_unit {
 using namespace eve::physics;
 
+
+TEST_CASE("box3d.sdf.sharedInterfaceAndBlobRoundTrip") {
+    DistanceField3D field(5, 5, 5, 1.f, -2.f, -2.f, -2.f, 100.f);
+    for (int z = 0; z < 5; ++z)
+        for (int y = 0; y < 5; ++y)
+            for (int x = 0; x < 5; ++x) field.setDistance(x, y, z, static_cast<float>(y - 2));
+    DistanceField3DSdf adapter;
+    adapter.bind(field);
+    REQUIRE(std::fabs(adapter.sample(0.f, 0.5f, 0.f) - 0.5f) < 1e-5f);
+    float nx = 0, ny = 0, nz = 0;
+    REQUIRE(adapter.gradient(0.f, 0.f, 0.f, nx, ny, nz) == eve::SdfField3DGradientStatus::Defined);
+    REQUIRE(ny > 0.9f);
+    REQUIRE(adapter.revision() == field.getRevision());
+    float minX, minY, minZ, maxX, maxY, maxZ;
+    adapter.bounds(minX, minY, minZ, maxX, maxY, maxZ);
+    REQUIRE(std::fabs(minX + 2.f) < 1e-5f);
+    REQUIRE(std::fabs(maxY - 2.f) < 1e-5f);
+
+    auto blob = sdfField3DBlobFromDistanceField(field);
+    REQUIRE(blob.ok());
+    auto restored = distanceFieldFromSdfField3DBlob(blob.value());
+    REQUIRE(restored.ok());
+    REQUIRE(std::fabs(restored.value().sample(0.25f, 0.5f, -0.25f) - 0.5f) < 1e-5f);
+}
 
 TEST_CASE("box3d.sdf.interpolationNormalAndSphere") {
     DistanceField3D field(5, 5, 5, 1.f, -2.f, -2.f, -2.f, 100.f);
@@ -325,9 +351,9 @@ TEST_CASE("box3d.sdf.moverStepOffsetClimbsOnlyLowLedges") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_jolt)
-#include "PrivateTestScope.h"
 #include <cmath>
 #include <memory>
+#include "PrivateTestScope.h"
 #include "common/Snapshot.h"
 #include "physics/Body3D.h"
 #include "physics/Joint3D.h"
@@ -1039,9 +1065,9 @@ TEST_CASE("physics.jolt.absentProviderRejectsExplicitSelection") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_jolt_contacts)
-#include "PrivateTestScope.h"
 #include <cmath>
 #include <memory>
+#include "PrivateTestScope.h"
 #include "physics/Body3D.h"
 #include "physics/Shape3D.h"
 #include "physics/World3D.h"
@@ -1284,10 +1310,10 @@ TEST_CASE("physics.jolt.disabledPairHasNoSolvedHitParity") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_jolt_cooking)
-#include "PrivateTestScope.h"
 #include <cmath>
 #include <limits>
 #include <memory>
+#include "PrivateTestScope.h"
 #include "physics/Body3D.h"
 #include "physics/Shape3D.h"
 #include "physics/World3D.h"
@@ -1371,8 +1397,8 @@ TEST_CASE("physics.jolt.simplifiedHullCollisionParity") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_rigid_backend)
-#include "PrivateTestScope.h"
 #include <memory>
+#include "PrivateTestScope.h"
 #include "common/Exception.h"
 #include "physics/Body3D.h"
 #include "physics/Joint3D.h"
@@ -1684,9 +1710,9 @@ TEST_CASE("physics.backend.detachedBodyDestructionReleasesOwner") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_targeting)
-#include "PrivateTestScope.h"
 #include <type_traits>
 #include <utility>
+#include "PrivateTestScope.h"
 #include "common/Capability.h"
 #include "common/Identity.h"
 #include "physics/TargetingLineOfSightAdapter.h"
@@ -2002,12 +2028,12 @@ TEST_CASE("targeting.sensingWorldProviderHonorsZoneMembership") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_water_mesh)
-#include "PrivateTestScope.h"
 #include <cmath>
 #include <limits>
 #include <memory>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include "Fixtures.h"
+#include "PrivateTestScope.h"
 #include "graphics/Canvas.h"
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem3D.h"

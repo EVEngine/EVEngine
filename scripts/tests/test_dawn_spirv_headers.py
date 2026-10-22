@@ -76,3 +76,26 @@ endif()
             result = self.configure(Path(temporary), revision="main")
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("full 40-character commit SHA", result.stderr)
+
+
+class DawnCiDependencyCheckTests(unittest.TestCase):
+    def check_dependencies(self, root):
+        workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        start = workflow.index("          dawn_tp=build/webgpu-macos/")
+        end = workflow.index("          for attempt in", start)
+        script = workflow[start:end] + "\ndawn_deps_ok\n"
+        return subprocess.run(["bash", "-c", script], cwd=root, check=False,
+                              capture_output=True, text=True, encoding="utf-8")
+
+    def test_accepts_prepared_headers_outside_dawn_checkout(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            for relative in ["dawn-src/third_party/abseil-cpp", "dawn-src/third_party/glfw3/src",
+                             "eve_spirv_headers-src"]:
+                directory = root / "build/webgpu-macos/_deps" / relative
+                directory.mkdir(parents=True)
+                (directory / "CMakeLists.txt").write_text("# fixture\n", encoding="utf-8")
+            result = self.check_dependencies(root)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            (root / "build/webgpu-macos/_deps/eve_spirv_headers-src/CMakeLists.txt").unlink()
+            self.assertNotEqual(self.check_dependencies(root).returncode, 0)

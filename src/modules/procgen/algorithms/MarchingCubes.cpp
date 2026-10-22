@@ -1,19 +1,20 @@
 #include "procgen/algorithms/MarchingCubes.h"
+#include "procgen/algorithms/BushMesh.h"
+#include "procgen/algorithms/CableChainRope.h"
+#include "procgen/algorithms/CastleMesh.h"
 #include "procgen/algorithms/CaveMesh.h"
+#include "procgen/algorithms/FlowerMesh.h"
 #include "procgen/algorithms/HexTerrain.h"
+#include "procgen/algorithms/LSystemMesh.h"
+#include "procgen/algorithms/LinearStructure.h"
+#include "procgen/algorithms/MeshDeformationGeometry.h"
 #include "procgen/algorithms/PrototypeKit.h"
 #include "procgen/algorithms/RockMesh.h"
 #include "procgen/algorithms/SkyscraperMesh.h"
 #include "procgen/algorithms/TreeMesh.h"
-#include "procgen/algorithms/BushMesh.h"
-#include "procgen/algorithms/FlowerMesh.h"
-#include "procgen/algorithms/CableChainRope.h"
-#include "procgen/algorithms/LinearStructure.h"
-#include "procgen/algorithms/MeshDeformationGeometry.h"
-#include "procgen/algorithms/LSystemMesh.h"
-#include "procgen/urban/UrbanOutput.h"
+#include "procgen/road/BridgeGenerator.h"
 #include "procgen/road/RoadRecipes.h"
-#include "procgen/algorithms/CastleMesh.h"
+#include "procgen/urban/UrbanOutput.h"
 
 #include <algorithm>
 #include <cmath>
@@ -485,6 +486,10 @@ const RecipeDescriptor *MeshRecipeRegistry::descriptor(const std::string &id) co
 }
 
 bool MeshRecipeRegistry::applyDefaults(const std::string &id, Params &params) const {
+    if (id == "mesh.autoBridge" && has(id)) {
+        auto applied = road::applyBridgeRecipeDefaults(params);
+        return applied.ok();
+    }
     const RecipeDescriptor *schema = descriptor(id);
     if (!schema) return false;
     schema->applyDefaults(params);
