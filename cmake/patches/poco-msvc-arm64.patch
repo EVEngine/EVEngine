@@ -1,0 +1,6 @@
+diff --git a/poco/Foundation/include/Poco/Platform.h b/poco/Foundation/include/Poco/Platform.h
+--- a/poco/Foundation/include/Poco/Platform.h
++++ b/poco/Foundation/include/Poco/Platform.h
+@@ -193,1 +193,1 @@
+-#elif defined(__arm64__) || defined(__arm64)
++#elif defined(__arm64__) || defined(__arm64) || defined(_M_ARM64)

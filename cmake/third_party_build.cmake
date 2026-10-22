@@ -105,6 +105,16 @@ endfunction()
 function(check_third_party_project name repo)
     include(ExternalProject)
 
+    if(WIN32)
+        # The pinned Poco release does not recognize MSVC's native ARM64 macro.
+        execute_process(COMMAND "${CMAKE_COMMAND}"
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/poco-msvc-arm64.patch
+            -DPATCH_DIR=${CMAKE_SOURCE_DIR}/third-party
+            -DPATCH_NORMALIZE_CRLF=ON
+            -P "${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake"
+            COMMAND_ERROR_IS_FATAL ANY)
+    endif()
+
     if(EVENGINE_THIRD_PARTY_BINARY_DIR)
         get_filename_component(_eve_tp_binary "${EVENGINE_THIRD_PARTY_BINARY_DIR}" ABSOLUTE)
         if(NOT IS_DIRECTORY "${_eve_tp_binary}/include" OR
