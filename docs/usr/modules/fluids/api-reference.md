@@ -185,6 +185,7 @@
 - `volumeHeightFieldColliderDefaults()` → `dynamic`；[绑定实现 L24](../../../../src/modules/fluids/VolumeFluidFactoryBindings.cpp#L24)。
 - `volumeSdfColliderDefaults()` → `dynamic`；[绑定实现 L19](../../../../src/modules/fluids/VolumeFluidFactoryBindings.cpp#L19)。
 - `volumeSdfColliderFromModel(model: ModelData, meshIndex: int, sx: float, sy: float, sz: float, resolution: int)` → `dynamic`；[绑定实现 L33](../../../../src/modules/fluids/VolumeFluidFactoryBindings.cpp#L33)。
+- `sdfField3DBlobFromModel(model: ModelData, meshIndex: int, sx: float, sy: float, sz: float, resolution: int)` → `dynamic`；[绑定实现 L75](../../../../src/modules/fluids/VolumeFluidFactoryBindings.cpp#L75)。
 - `volumeSdfPoseDefaults()` → `dynamic`；[绑定实现 L29](../../../../src/modules/fluids/VolumeFluidFactoryBindings.cpp#L29)。
 - `volumeThermalRuleDefaults()` → `dynamic`；[绑定实现 L9](../../../../src/modules/fluids/VolumeFluidFactoryBindings.cpp#L9)。
 - `volumeWindZoneDefaults()` → `dynamic`；[绑定实现 L13](../../../../src/modules/fluids/VolumeFluidFactoryBindings.cpp#L13)。

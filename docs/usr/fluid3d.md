@@ -496,6 +496,9 @@ closed model mesh during setup and returns an owning collider description.
 Resolution is in `[8,128]`; invalid triangles and a bake above four million
 voxel/triangle sign checks fail through Result. Do not call mesh baking from a
 frame loop. Snapshot v20 persists the samples; v13 migrates an empty SDF array.
+`fluids.sdfField3DBlobFromModel(...)` bakes the same MeshSdf into the portable
+`eve.sdf.field3d` v1 blob for sharing with `physics.distanceField3DFromSdfBlob`
+or other `ISdfField3D` consumers; bake once at setup.
 Press D in `examples/fluid3d` for a bounded 288-particle SDF-obstacle scene.
 It uses the same `FluidSurfaceRenderer` as every liquid mode and keeps collision
 sampling on the CPU solver path; no second surface reconstruction pass is added.

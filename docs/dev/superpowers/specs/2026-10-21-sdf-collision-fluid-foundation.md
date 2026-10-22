@@ -52,8 +52,9 @@ per-mesh DF 做精准流体碰撞。刚体求解器（Chaos）本身不以 SDF �
 
 差距（相对 Unity Obi / UE Niagara Fluids 产品体验）：
 
-1. ~~`VolumeFluidCoupling` 不能附着 SDF~~ → **本规格 P0 已补** `attachSdf`。
-2. `DistanceField3D` 与 `MeshSdf` 双栈，无共享资产 / 编解码。
+1. ~~`VolumeFluidCoupling` 不能附着 SDF~~ → **P0 已补** `attachSdf`。
+2. ~~`DistanceField3D` 与 `MeshSdf` 双栈，无共享资产 / 编解码~~ → **P1 已补**
+   `ISdfField3D` + `eve.sdf.field3d` blob + 双向转码。
 3. Softbody / Cloth 仍探针 `World3D`，不采样距离场。
 4. 无场景级 Global DF；无 Texture3D 共享采样路径。
 5. 刚体后端（Box3D/Jolt）不把 SDF 当形状（与 Unity/UE 一致，保持）。
@@ -61,12 +62,12 @@ per-mesh DF 做精准流体碰撞。刚体求解器（Chaos）本身不以 SDF �
 ## 3. 目标架构（分层）
 
 ```
-common/                 ISdfField3D（采样 + 法线 + revision）     [P1]
-physics/                DistanceField3D : 实现 + 角色/绳索         [已有]
-fluids/                 MeshSdf 适配为同一接口；VolumeFluid 障碍   [已有+P0]
-particles/              3D 扩展或继续 2D IParticleSdfField         [P2]
-gpgpu/                  可选 SSBO/Texture3D 上传（表面流体已 SSBO）[P2]
-graphics/               （可选）场景合成 DF — 后置，勿阻塞物理     [P3]
+common/                 ISdfField3D + SdfField3DBlob（eve.sdf.field3d v1） [P1 已有]
+physics/                DistanceField3D + DistanceField3DSdf 适配/导入导出 [已有+P1]
+fluids/                 MeshSdf + MeshSdfField 适配；VolumeFluid 障碍/耦合 [已有+P0+P1]
+particles/              3D 扩展或继续 2D IParticleSdfField                  [P2]
+gpgpu/                  可选 SSBO/Texture3D 上传（表面流体已 SSBO）         [P2]
+graphics/               （可选）场景合成 DF — 后置，勿阻塞物理              [P3]
 ```
 
 规则对齐：
@@ -90,13 +91,21 @@ graphics/               （可选）场景合成 DF — 后置，勿阻塞物理
 验收：动态刚体携带烘焙网格/球 SDF，流体粒子产生带 label 的 contact，并对
 刚体施加反向冲量；`detach` 后不再供应该 SDF。
 
-### P1 — 共享 3D SDF 接口与资产
+### P1 — 共享 3D SDF 接口与资产（本变更）
 
-- `eve::ISdfField3D`（`sample` / `gradient` / `revision` / bounds）。
-- `DistanceField3D` 与 `MeshSdf` 适配器；可选 `MeshSdf → DistanceField3D`
-  顶点网格转码（布局差异显式记录）。
-- 资源：从 `model3d` 烘焙一次（复用 `volumeSdfColliderFromModel`），写入
-  可序列化 blob（schema id + version）。
+- `eve::ISdfField3D`（`sample` / `gradient` / `revision` / `bounds`）+ capability 名。
+- 可序列化 `SdfField3DBlob`（`schemaId=eve.sdf.field3d`，`schemaVersion=1`，
+  `VertexGrid` 布局）；`encodeSdfField3DBlob` / `decodeSdfField3DBlob`。
+- `physics::DistanceField3DSdf` 适配器；`sdfField3DBlobFromDistanceField` /
+  `distanceFieldFromSdfField3DBlob`。
+- `fluids::MeshSdfField` 适配器；`sdfField3DBlobFromMeshSdf` /
+  `meshSdfFromSdfField3DBlob`；`distanceFieldFromMeshSdf` /
+  `meshSdfFromDistanceField`（边界策略：导入 DistanceField3D 后场外为常量
+  `outsideDistance`，不再是 MeshSdf 的欧氏外推）。
+- 脚本：`fluids.sdfField3DBlobFromModel`（设置期烘焙）、
+  `physics.distanceField3DFromSdfBlob`、`physics.sdfField3DBlobFromDistanceField`。
+- 测试：`common.sdfField3D.*`、`box3d.sdf.sharedInterfaceAndBlobRoundTrip`、
+  `fluids.sdf.sharedInterfaceAndDistanceFieldConvert`。
 
 ### P2 — 消费者扩展
 
@@ -127,6 +136,8 @@ graphics/               （可选）场景合成 DF — 后置，勿阻塞物理
 ## 7. 验证
 
 - 集成：`fluids.volumeCoupling.sdfObstacleTransfersImpulseToDynamicBody`
+- 单元：`common.sdfField3D.*`、`box3d.sdf.sharedInterfaceAndBlobRoundTrip`、
+  `fluids.sdf.sharedInterfaceAndDistanceFieldConvert`
 - 回归：既有 `fluids.volumeCoupling.*`、`fluids.volume.ownedSdfCollider*`、
-  `box3d.sdf.*`
+  `box3d.sdf.*`、`fluids.sdf.*`
 - 源码门禁：`make check`（本变更触及公开 API 与文档）
