@@ -104,6 +104,11 @@ if (nearest >= 0) {
 程序化洞穴和预烘焙距离场。世界坐标查询使用三线性插值；碰撞后可读取最小间隙、接触位置和
 由中心差分估计的表面法线。
 
+跨模块共享采样走 `eve::ISdfField3D`（`physics::DistanceField3DSdf` 适配器）。可移植资产用
+`eve.sdf.field3d` v1 blob：`physics.sdfField3DBlobFromDistanceField(field)` 导出，
+`physics.distanceField3DFromSdfBlob(blob)` 导入（与 fluids `MeshSdf` /
+`fluids.sdfField3DBlobFromModel` 互通；场外策略导入后变为常量 `outsideDistance`）。
+
 ```squirrel
 // 16³ 个网格顶点，间距 0.5m，原点在 (-4,-4,-4)，地图外视为空间。
 local sdf = physics.newDistanceField3D(16, 16, 16, 0.5, -4, -4, -4, 1000);

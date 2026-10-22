@@ -52,6 +52,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 |---|---|
 | [advanced-ballistics](advanced-ballistics/README.md) | 12 格高级弹道实验室：预瞄追踪、环绕、随机游走、变速、反弹和组合触发 |
 | [world-sweep-ballistics](world-sweep-ballistics/README.md) | World3D sphere sweeps, optional collision, ricochet, trigger-only contacts and custom-function piercing |
+| [ground-fissure](ground-fissure/README.md) | 参数化地裂：Voronoi 地块、分支传播、碎石扬尘、三种预设、调参与重播 |
 | [explosion-lab](explosion-lab/README.md) | 3D 爆炸物理、火球、上升烟雾、火星与冲击环 |
 | [ember-guard](ember-guard/README.md) | 焰卫：六枚环绕火球自主索敌、命中爆燃、返回护卫的俯视角特效场景 |
 | [game-tutorial](game-tutorial/README.md) | EveScript import、输入与碰撞、程序纹理、HUD、热重载及严格版本化存档 |
@@ -123,6 +124,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [daynight](daynight/README.md) | 昼夜循环：太阳轨道、程序化天空盒、月光 / 星光 / 火焰 / 萤火虫 |
 | [uds-sky](uds-sky/README.md) | 独立天空配置与大气渲染对照场景（完整 UDS 效果开发中） |
 | [weather](weather/README.md) | 天气系统：雨 / 雪 / 雷暴 / 雾 / 风，实时滑块 |
+| [weapon-lightning](weapon-lightning/README.md) | 可复用参数化雷电：剑刃附魔、移动目标放电、连锁电弧 |
 | [weather-daynight](weather-daynight/README.md) | 样条瀑布与河流 / 昼夜天气 / 泡沫水流 / 体积云雾 |
 | [snow](snow/README.md) | 可交互积雪：与高度图同尺寸的 `SnowField` 深度场驱动形变与着色 |
 | [softbody](softbody/README.md) | 布料与 2D 流体解算器（拖拽 / 排斥 / 吸引） |
@@ -192,6 +194,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [mesh-contact-fusion](mesh-contact-fusion/README.md) | 接触带融合：静态 `mergeStaticMeshes`（默认关 / 可选开）与实时 `MeshAdhereLive` 并排对照 |
 | [spline-tube-lab](spline-tube-lab/README.md) | 无源网格生成：样条路径驱动管道 / 带状体 / 自定义截面挤出，含开放与闭合回路、分块、分布采样与行进帧 |
 | [night-city](night-city/README.md) | 自动街区与新版路网结合的夜间都市：SCAD 高楼、发光窗户、路灯、信号灯与人行道 |
+| [automatic-bridge](automatic-bridge/README.md) | 自动桥梁：十种桥型共用起终点、尺寸与可编辑构件计划，含桥墩、护栏、缆索和桁架（`mesh.autoBridge`） |
 | [procedural-road](procedural-road/README.md) | 程序化多层立交：截面挤出道路/桥墩/标线/导航逻辑叠加（`mesh.roadNetwork`） |
 | [mesh-impact-lab](mesh-impact-lab/README.md) | Box3D 命中事件驱动网格塑性冲击：法向冲量 → 形变会话 → 重新上传 |
 | [geometry-stroke-lab](geometry-stroke-lab/README.md) | 几何笔刷轨迹：quad / 三棱柱 / 立方体截面、平面与空间输入、最小间距过滤、撤销、CPU 生成 + GPU 上传 |
@@ -215,7 +218,10 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [modern-balcony](modern-balcony/README.md) | 现代阳台：SCAD 固定建筑、程序化花园、两款骨骼动画猫、大气天空与硬件光追 / 便携反射 |
 | [scad-living-room](scad-living-room/README.md) | SCAD 原创现代客厅：暖光、PBR 家具、CSM / 局部阴影、体积光、AO / SSGI / SSR / TAA 与默认硬件光追探测 |
 | [shader-live-preview](shader-live-preview/README.md) | 实时 GLSL 预览：编辑 `shaders/preview.frag` 保存即热重载 |
+| [tornado-lab](tornado-lab/README.md) | 参数化体积龙卷风：Shader、粒子碎屑和原生曲线轮廓 |
+| [blade-whirlwind](blade-whirlwind/README.md) | 可复用世界空间剑刃旋风：攻击触发、生命周期、深度遮挡和可替换样式 |
 | [virtual-texture-blending](virtual-texture-blending/README.md) | 虚拟纹理材质混合：常驻虚拟页 + fallback 槽与无缝 gutter |
+| [ink-combat](ink-combat/README.md) | 中国风水墨攻击：弧形刀光、飞白、墨滴与蚀散 |
 | [ink-arena](ink-arena/README.md) | GPU 表面喷墨：片元着色器向持久 RGBA8 画布绘制 |
 | [uv-texture-paint](uv-texture-paint/README.md) | 点击网格经 Box3D 三角形命中映射回模型 UV 并绘制贴图 |
 | [tensor](tensor/README.md) | 张量编译管线：策略网络 / conv / SDPA / 批量模拟（纯计算） |
@@ -241,6 +247,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [biome-rules-editor](biome-rules-editor/README.md) | 生物群系规则编辑示例：用 UI 无关编辑器 SDK 组装项目专属工作区 |
 | [combat-action-editor](combat-action-editor/README.md) | 战斗动作编辑示例：用 UI 无关编辑器 SDK 组装项目专属工作区 |
 | [combat-arena](combat-arena/README.md) | 动作战斗竖切：移动/闪避/伤害/锁定与敌人近距攻击的组合烟测 |
+| [companion-tactics](companion-tactics/README.md) | 队友协作战术沙场：原生 AI 状态机、能力评分、治疗预约、保护吸伤、动态站位与玩家指挥 |
 | [procgen-script-editor](procgen-script-editor/README.md) | 宿主封装 Squirrel generator（`generators/forest.nut`）的程序化生成编辑器 |
 | [ui-theme-editor](ui-theme-editor/README.md) | UI 主题编辑示例：组装命名 Theme 工作区 + 实时预览 |
 | [material-editor](material-editor/README.md) | 材质编辑器：高层脚本创建、复杂测试球、模型导入、可切换天空盒与 IBL、完整参数及撤销保存 |
@@ -286,3 +293,5 @@ material bakers live beside their examples and are opt-in build targets.
 Tests with actual regression assertions remain in `test/`: castle mesh groups
 and image occupancy, decal material/projection behavior, planar-reflection pixel
 coverage, water animation differences, and grid semantic-color matching.
+
+- [laser-weapon](laser-weapon/README.md) — HELIOS 激光武器：蓄能、光束与命中火花。

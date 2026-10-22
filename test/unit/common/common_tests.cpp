@@ -3866,3 +3866,105 @@ TEST_CASE("decision.condition.legacyCodecExpandsDomainLeaves") {
 }
 }  // namespace test_condition
 #endif
+
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_sdf_field3d)
+#include <cmath>
+#include <vector>
+#include "PrivateTestScope.h"
+#include "common/SdfField3D.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+// sdf_field3d.cpp
+namespace test_common_sdf_field3d {
+using namespace eve;
+
+namespace {
+SdfField3DBlob makeSphereBlob(int resolution = 8) {
+    SdfField3DBlob blob;
+    blob.kind            = SdfField3DSampleKind::VertexGrid;
+    blob.width           = resolution;
+    blob.height          = resolution;
+    blob.depth           = resolution;
+    blob.cellSize        = 0.25f;
+    blob.originX         = -1.f;
+    blob.originY         = -1.f;
+    blob.originZ         = -1.f;
+    blob.outsideDistance = 10.f;
+    blob.distances.resize(size_t(resolution * resolution * resolution));
+    const float radius = 0.5f;
+    for (int z = 0; z < resolution; ++z)
+        for (int y = 0; y < resolution; ++y)
+            for (int x = 0; x < resolution; ++x) {
+                const float px = blob.originX + float(x) * blob.cellSize;
+                const float py = blob.originY + float(y) * blob.cellSize;
+                const float pz = blob.originZ + float(z) * blob.cellSize;
+                blob.distances[size_t(x + resolution * (y + resolution * z))] =
+                    std::sqrt(px * px + py * py + pz * pz) - radius;
+            }
+    return blob;
+}
+}  // namespace
+
+TEST_CASE("common.sdfField3D.blobRoundTripPreservesSamples") {
+    const auto blob = makeSphereBlob();
+    REQUIRE(validateSdfField3DBlob(blob).ok());
+    auto encoded = encodeSdfField3DBlob(blob);
+    REQUIRE(encoded.ok());
+    auto decoded = decodeSdfField3DBlob(encoded.value());
+    REQUIRE(decoded.ok());
+    REQUIRE(decoded.value().width == blob.width);
+    REQUIRE(decoded.value().height == blob.height);
+    REQUIRE(decoded.value().depth == blob.depth);
+    REQUIRE(decoded.value().cellSize == blob.cellSize);
+    REQUIRE(decoded.value().originX == blob.originX);
+    REQUIRE(decoded.value().distances == blob.distances);
+}
+
+TEST_CASE("common.sdfField3D.blobRejectsUnknownSchemaAndBadCounts") {
+    auto encoded = encodeSdfField3DBlob(makeSphereBlob());
+    REQUIRE(encoded.ok());
+    auto object = std::move(encoded).takeValue();
+    object.set("schemaId", std::string("eve.sdf.other"));
+    REQUIRE(!decodeSdfField3DBlob(object).ok());
+
+    auto shortBlob = makeSphereBlob();
+    shortBlob.distances.pop_back();
+    REQUIRE(!validateSdfField3DBlob(shortBlob).ok());
+    REQUIRE(!encodeSdfField3DBlob(shortBlob).ok());
+}
+
+class AnalyticSphereSdf final : public ISdfField3D {
+public:
+    float sample(float x, float y, float z) const override { return std::sqrt(x * x + y * y + z * z) - 0.5f; }
+    SdfField3DGradientStatus gradient(float x, float y, float z, float& outNx, float& outNy,
+                                      float& outNz) const override {
+        const float len = std::sqrt(x * x + y * y + z * z);
+        if (len <= 1e-8f) return SdfField3DGradientStatus::Undefined;
+        outNx = x / len;
+        outNy = y / len;
+        outNz = z / len;
+        return SdfField3DGradientStatus::Defined;
+    }
+    unsigned revision() const override { return 1; }
+    void     bounds(float& minX, float& minY, float& minZ, float& maxX, float& maxY, float& maxZ) const override {
+        minX = minY = minZ = -1.f;
+        maxX = maxY = maxZ = 1.f;
+    }
+};
+
+TEST_CASE("common.sdfField3D.capabilityInterfaceSamplesGradient") {
+    AnalyticSphereSdf field;
+    REQUIRE(std::abs(field.sample(0.f, 0.f, 0.f) + 0.5f) < 1e-5f);
+    float nx = 0, ny = 0, nz = 0;
+    REQUIRE(field.gradient(1.f, 0.f, 0.f, nx, ny, nz) == SdfField3DGradientStatus::Defined);
+    REQUIRE(std::abs(nx - 1.f) < 1e-5f);
+    float minX, minY, minZ, maxX, maxY, maxZ;
+    field.bounds(minX, minY, minZ, maxX, maxY, maxZ);
+    REQUIRE(minX == -1.f);
+    REQUIRE(maxZ == 1.f);
+    REQUIRE(field.revision() == 1u);
+}
+
+}  // namespace test_common_sdf_field3d
+#endif

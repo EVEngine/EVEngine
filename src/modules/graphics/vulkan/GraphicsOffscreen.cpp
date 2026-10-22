@@ -6,6 +6,7 @@
 #include <tuple>
 #include <vector>
 #include "common/Exception.h"
+#include "common/Profile.h"
 #include "graphics/PbrGpuUniform.h"
 #include "graphics/shaders/pbr_surface_frag_spv.inc"
 #include "graphics/shaders/pbr_surface_vert_spv.inc"
@@ -15,7 +16,45 @@
 
 // GraphicsOffscreen.cpp
 namespace eve::graphics::vulkan {
+void Graphics::releaseFramePostTargets() {
+    const bool empty = std::all_of(framePostTargets_.begin(), framePostTargets_.end(),
+                                   [](const auto& slots) { return slots.empty(); });
+    if (empty) return;
+    // Cache keys and descriptor payloads borrow these images. Drain consumers
+    // before retiring targets during resize, graph recreation or owner teardown.
+    device->waitIdle();
+    invalidateTextureBindings();
+    spatialAAResolve_ = nullptr;
+    for (auto& slots : framePostTargets_) {
+        for (Canvas* target : slots) {
+            auto it = std::find_if(ownedCanvases.begin(), ownedCanvases.end(),
+                                   [target](const auto& owned) { return owned.get() == target; });
+            if (it != ownedCanvases.end()) ownedCanvases.erase(it);
+        }
+        slots.clear();
+    }
+}
+
+Canvas& Graphics::prepareFramePostTarget(FramePostTarget target, int width, int height) {
+    if (!canRecordPostSceneGpuWork()) return eve::graphics::Graphics::prepareFramePostTarget(target, width, height);
+    const size_t count   = frameSlotCount();
+    const bool   resized = std::any_of(framePostTargets_.begin(), framePostTargets_.end(), [&](const auto& slots) {
+        return !slots.empty() &&
+               (slots.size() != count || std::any_of(slots.begin(), slots.end(), [&](const Canvas* canvas) {
+                    return canvas && (canvas->getWidth() != width || canvas->getHeight() != height);
+                }));
+    });
+    if (resized) releaseFramePostTargets();
+    auto& slots = framePostTargets_[static_cast<size_t>(target)];
+    if (slots.empty()) slots.resize(count, nullptr);
+    auto& canvas = slots[currentFrameSlot()];
+    if (!canvas) canvas = newHDRCanvas(width, height);
+    if (!canvas) throw Exception("Post-process frame target allocation failed");
+    return *canvas;
+}
+
 void Graphics::flushToOffscreen(OffscreenCanvas* canvas) {
+    EV_PROFILE_MODULE("graphics", "Offscreen.Record");
     auto solid    = std::move(solidBatches);
     auto textured = std::move(texturedBatches);
     auto lit = std::move(litBatches);
@@ -32,10 +71,14 @@ void Graphics::flushToOffscreen(OffscreenCanvas* canvas) {
         if (!sb.batch.empty()) hasSolid = true;
     if (!hasSolid && textured.empty() && lit.empty() && !needClear) return;
 
-    // Offscreen color is a single shared image. An in-flight swapchain frame
-    // may still be sampling it (draw canvas to screen last frame), so drain
-    // those frames before transitioning it back to a color attachment.
-    waitForSharedGpuResources();
+    // The acquired slot fence protects each pipeline intermediate and its immutable
+    // frame-arena vertices. All other canvases retain shared-image semantics.
+    const bool frameLocal = canRecordPostSceneGpuWork() &&
+                            std::any_of(framePostTargets_.begin(), framePostTargets_.end(), [&](const auto& slots) {
+                                return currentFrameSlot() < slots.size() && slots[currentFrameSlot()] == canvas;
+                            });
+    if (!frameLocal) waitForSharedGpuResources();
+    EV_PROFILE_MODULE("graphics", frameLocal ? "Offscreen.FrameLocalRecord" : "Offscreen.SharedRecord");
 
     auto recordOffscreen = [&](vk::CommandBuffer cb) {
         canvas->colorImage().setLayout(cb, vk::ImageLayout::eColorAttachmentOptimal);
@@ -213,6 +256,7 @@ void Graphics::flushToOffscreen(OffscreenCanvas* canvas) {
     if (canRecordPostSceneGpuWork()) {
         recordOffscreen(currentPresentCb());
     } else {
+        EV_PROFILE_MODULE("graphics", "Offscreen.SubmitAndWait");
         vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
                                 recordOffscreen);
     }

@@ -1,6 +1,7 @@
 #include "graphics/Graphics.h"
 #include "common/Capability.h"
 #include "common/FrameCapture.h"
+#include "common/Profile.h"
 #include "common/SquirrelBinding.h"
 #include "common/config.h"
 #include "font/FontData.h"
@@ -1488,11 +1489,38 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("setShadowSchemeHysteresisBonus", [](Graphics*, float bonus) {
         ShadowSchemeSettings::current().hysteresisBonus = bonus;
     });
+    // Dynamic shadow atlas resolution + CSM coverage. GPU recreates on next
+    // shadow ensure when atlas size changes (@cost: full depth-array realloc).
+    cls.addFunc("setShadowSchemeDirectionalMapSize", [](Graphics*, int size) {
+        if (size > 0) (void)setShadowSchemeMapSizes(size, -1);
+    });
+    cls.addFunc("getShadowSchemeDirectionalMapSize",
+                [](Graphics*) { return ShadowSchemeSettings::current().directionalMapSize; });
+    cls.addFunc("setShadowSchemeLocalMapSize", [](Graphics*, int size) {
+        if (size > 0) {
+            auto& s        = ShadowSchemeSettings::current();
+            s.localMapSize = clampShadowMapSize(size);
+        }
+    });
+    cls.addFunc("getShadowSchemeLocalMapSize", [](Graphics*) { return ShadowSchemeSettings::current().localMapSize; });
+    cls.addFunc("getShadowSchemeAtlasMapSize",
+                [](Graphics*) { return ShadowSchemeSettings::current().resolvedAtlasMapSize(); });
+    cls.addFunc("setShadowSchemeDirectionalMaxDistance",
+                [](Graphics*, float meters) { (void)setShadowSchemeDirectionalMaxDistance(meters); });
+    cls.addFunc("getShadowSchemeDirectionalMaxDistance",
+                [](Graphics*) { return ShadowSchemeSettings::current().directionalMaxDistance; });
+    cls.addFunc("setShadowSchemeAdaptiveCascadeResolution", [](Graphics*, bool enabled) {
+        ShadowSchemeSettings::current().enableAdaptiveCascadeResolution = enabled;
+    });
+    cls.addFunc("getShadowSchemeAdaptiveCascadeResolution",
+                [](Graphics*) { return ShadowSchemeSettings::current().enableAdaptiveCascadeResolution; });
     cls.addFunc("setCloudShadows", &Graphics::setCloudShadows);
     cls.addFunc("newMaterial", &Graphics::newMaterial);
     cls.addFunc("getRenderControl", &Graphics::getRenderControl);
     cls.addFunc("setMsaaSamples", &Graphics::setMsaaSamples);
     cls.addFunc("getMsaaSamples", &Graphics::getMsaaSamples);
+    cls.addFunc("setVSyncCount", &Graphics::setVSyncCount);
+    cls.addFunc("getVSyncCount", [](Graphics* self) { return self->getVSyncCount(); });
     cls.addFunc("getSceneColorTexture", &Graphics::getSceneColorTexture);
     cls.addFunc("newQuad", &Graphics::newQuad);
     cls.addFunc("newVolumetric", &Graphics::newVolumetric);
@@ -1592,6 +1620,7 @@ void Graphics::setSceneDepthOfField(float focusDistance, float maximumBlurPixels
     sceneDepthOfFieldFarPlane_          = farPlane;
 }
 Texture* Graphics::prepareFinalSceneTexture(Texture* scene, Texture* motion) {
+    EV_PROFILE_MODULE("graphics", "PostProcess.Prepare");
     if (!scene) return nullptr;
     Texture*          resolved  = scene;
     AntiAliasing*     aa        = pipelineAntiAliasing();
@@ -1607,11 +1636,7 @@ Texture* Graphics::prepareFinalSceneTexture(Texture* scene, Texture* motion) {
         aa->setMode("fxaa");
         const int width  = std::max(scene->getWidth(), 1);
         const int height = std::max(scene->getHeight(), 1);
-        if (!spatialAAResolve_ || spatialAAResolveWidth_ != width || spatialAAResolveHeight_ != height) {
-            spatialAAResolve_       = newHDRCanvas(width, height);
-            spatialAAResolveWidth_  = width;
-            spatialAAResolveHeight_ = height;
-        }
+        spatialAAResolve_ = &prepareFramePostTarget(FramePostTarget::SpatialAA, width, height);
         aa->applyTo(this, scene, spatialAAResolve_);
         resolved = spatialAAResolve_->getTexture();
     }
@@ -1633,6 +1658,13 @@ Texture* Graphics::prepareFinalSceneTexture(Texture* scene, Texture* motion) {
                                      getSceneInverseGamma(), getSceneGain(), getSceneTransitionVignette(),
                                      getSceneTransitionVignetteSmoothness(), getSceneTransitionLensDistortion(),
                                      getSceneTransitionLensScale(), meterSource);
+}
+
+Canvas& Graphics::prepareFramePostTarget(FramePostTarget target, int width, int height) {
+    auto& canvas = sharedFramePostTargets_[static_cast<size_t>(target)];
+    if (!canvas || canvas->getWidth() != width || canvas->getHeight() != height) canvas = newHDRCanvas(width, height);
+    if (!canvas) throw Exception("Post-process target allocation failed");
+    return *canvas;
 }
 
 Canvas* Graphics::pipelineReflectionComposite(int width, int height) {

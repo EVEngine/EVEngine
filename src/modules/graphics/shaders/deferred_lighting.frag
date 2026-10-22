@@ -45,6 +45,7 @@ layout(set = 0, binding = 10, std140) uniform ShadowFrame {
     vec4 bias;
     vec4 cascadeBias;
     vec4 cascadeTexel;
+    vec4 cascadeUvScale;
     mat4 localVP[4];
     vec4 localSlot01;
     vec4 localSlot23;
@@ -96,6 +97,8 @@ vec3 shadeLight(vec3 N, vec3 V, vec3 L, vec3 radiance, vec3 albedo, float metall
     return (kD * albedo / PI + specular) * radiance * NdotL;
 }
 
+#include "shadow_cascade_uv.glsl"
+
 float sampleShadowCascade(vec3 worldPos, int cascade, float biasAmt) {
     vec4 lightClip = shadow.lightVP[cascade] * vec4(worldPos, 1.0);
     vec3 ndc = lightClip.xyz / max(lightClip.w, 1e-6);
@@ -103,7 +106,7 @@ float sampleShadowCascade(vec3 worldPos, int cascade, float biasAmt) {
     float depth = ndc.z;
     if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0 || depth < 0.0 || depth > 1.0)
         return 1.0;
-    return texture(shadowMap, vec4(uv, float(cascade), depth - biasAmt));
+    return texture(shadowMap, vec4(uv * eveCascadeUvScale(cascade), float(cascade), depth - biasAmt));
 }
 
 float sampleShadowPCF(vec3 worldPos, vec3 N, float viewDepth, float nDotL) {

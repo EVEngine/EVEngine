@@ -277,6 +277,14 @@ function(check_third_party_project name repo)
         endif()
     endif()
 
+    if(EVENGINE_NATIVE_ARM64)
+        # Check the dependency compiler independently after EVEngineDeps project().
+        # This also catches a wrong cl.exe selected from a caller's environment.
+        list(APPEND _eve_tp_cmake_args
+            -DEVENGINE_NATIVE_ARM64=ON
+            -DCMAKE_PROJECT_EVEngineDeps_INCLUDE=${CMAKE_SOURCE_DIR}/cmake/native_arm64.cmake)
+    endif()
+
     # --config is required for multi-config generators (VS); ignored by Ninja.
     set(_eve_tp_build_cmd ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}/ --target install --config ${_eve_tp_build_type} --parallel 8)
 
@@ -358,6 +366,9 @@ function(load_third_party)
         set(_eve_tp_platform "ios-simulator")
     else()
         set(_eve_tp_platform ${BUILD_PLATFORM})
+    endif()
+    if(EVENGINE_NATIVE_ARM64)
+        string(APPEND _eve_tp_platform "-arm64")
     endif()
     set(TP_BUILD_PATH ${_eve_tp_platform}${DEBUG_APPENDIX})
     message("Third Party Build Path: ${TP_BUILD_PATH}")

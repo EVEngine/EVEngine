@@ -1,0 +1,23 @@
+{
+  "schemaId": "evengine.game-agent-contract",
+  "schemaVersion": 1,
+  "id": "examples/ground-fissure",
+  "entry": "main.nut",
+  "smoke": {"scene": "default", "seed": 37, "maxHostFrames": 180, "mustReach": ["fault"]},
+  "clock": {"defaultStep": "frame"},
+  "observations": [{"id": "fault", "kind": "script-root", "path": "faultState", "fields": ["time", "paused", "seed", "replays", "width", "depth", "preset"]}],
+  "actions": {"source": "script-map", "map": [
+    {"id": "replay", "script": "faultActions.replay()"},
+    {"id": "earth", "script": "faultActions.earth()"},
+    {"id": "lava", "script": "faultActions.lava()"},
+    {"id": "radial", "script": "faultActions.radial()"},
+    {"id": "intact", "script": "faultActions.intact()"},
+    {"id": "impact", "script": "faultActions.impact()"},
+    {"id": "opened", "script": "faultActions.opened()"},
+    {"id": "step", "script": "faultActions.step()"},
+    {"id": "narrower", "script": "faultActions.narrower()"},
+    {"id": "wider", "script": "faultActions.wider()"}
+  ]},
+  "capture": {"requiredFor": ["visual"], "backend": "engine-readback"},
+  "tolerances": {"screenshot": "human-or-vlm", "numericAbs": 0.0001}
+}
