@@ -127,3 +127,30 @@ v4 及旧版本迁移为历史的 target-only 表现，活动动作的窗口不�
 没有复用旧对象文件。新版 `make check` 对 `origin/dev` 通过（463 项脚本测试），
 climbing 与 animation 原生回归 324/324 通过；默认示例 8 秒 smoke 通过，
 八场景循环中两种转角和背跳到达目标，爬上落点与四肢端点断言通过。
+
+完整主机命令 `make test/macosx-debug JOBS=4 CTEST_JOBS=4` 已结束：
+7,122 项中 7,093 通过、15 项 ClassicScenes 由现有套件跳过、14 项失败。
+失败项经标准 harness 重试仍失败，完整测试没有全绿，因此 PR 保持草稿。
+
+失败清单：
+
+- `IBL.metallicPicksUpEnvColor`
+- `IBL.envIntensityScalesMetalBrightness`
+- `IBL.clearEnvMapDisablesReflection`
+- `IBL.dielectricEnvWeakerThanMetal`
+- `IBL.plusZFaceTintsSmoothMetal`
+- `IBL.studioEnvBrightensMetal`
+- `IBL.outdoorSkyDiffersFromStudio`
+- `RenderScenes.ibl.metalBrighterThanDielectric`
+- `RenderSystem3D.texCellBombChangesPixels`
+- `RenderSystem3D.parallaxChangesPixels`
+- `Shadow3D.receiveShadowFalseIgnoresMap`
+- `decal.gpuTriplanarCoversGrazingWall`
+- `graphics.waterfall.render.flowAndFoam`
+- `UI.textureBridge.preservesPainterOrderAndClipping`
+
+IBL 最小复现以 `EVENGINE_VULKAN_VALIDATION=1` 单独运行仍失败。验证层还报告
+`VUID-VkDescriptorImageInfo-mutableComparisonSamplers-04450`；该信息是观测证据，
+尚未证明它与所有像素断言失败存在因果关系。上述图形源码与测试相对 dev 没有改动，
+但未以独立的纯 dev 二进制做 A/B 验证，因此不宣称已证明是基线故障。
+没有降低阈值、增加跳过或豁免；完成图形失败诊断并通过测试之前不转正式 PR。
