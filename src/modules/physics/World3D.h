@@ -5,6 +5,7 @@
 #include "common/BorrowedRef.h"
 #include "common/Result.h"
 #include "common/Snapshot.h"
+#include "common/WorldSphereSweep.h"
 #include "physics/OwnedQuery3D.h"
 #include "physics/PhysicsHandles.h"
 #include "physics/backend/SimulationBackend.h"
@@ -618,6 +619,18 @@ public:
     int queryBox(float x, float y, float z, float width, float height, float depth, float qx,
                  float qy, float qz, float qw);
 
+    /** @brief Owning, filtered sphere sweep for optional runtime consumers.
+     * @thread Owner thread; no callbacks. Filters are scoped; legacy cast-result cache is overwritten.
+     * @cost One broad/narrow-phase query per segment, amortized by simulation substeps.
+     * @return Sorted sphere-center contacts, excluding zero-time initial overlaps; overflow fails.
+     */
+    [[nodiscard]] eve::Result<std::vector<eve::WorldSphereContact>> sweepSphereOwned(
+        double x, double y, double z, double endX, double endY, double endZ, eve::WorldSphereSweepSettings settings);
+    /** @brief Opaque process-local query token; re-fetch after restore, never persist in save data. */
+    [[nodiscard]] std::string queryToken() const;
+    /** @brief Monotonic query binding revision; successful restore invalidates prior sessions. */
+    [[nodiscard]] std::uint64_t queryEpoch() const noexcept { return queryEpoch_; }
+
     /**
      * @brief Sweep a sphere through the world and return the earliest hit body id, or -1.
      * @param dx world-space translation X
@@ -1052,6 +1065,7 @@ private:
     void                                releaseCouplingsForJoint(PhysicsJointHandle joint) noexcept;
     [[nodiscard]] Result<void> stepCoupledBackend(const SimulationStep &step, const SimulationSettings &settings);
     std::unique_ptr<ISimulationBackend> simulation_;
+    std::uint64_t                       queryEpoch_             = 1;
     PhysicsWorldHandle                  runtimeHandle_          = PhysicsWorldHandle::invalid();
     eve::PersistentId                   instanceId_             = eve::PersistentId::nil();
     std::shared_ptr<const void>         queryLifetime_          = std::make_shared<int>(0);
