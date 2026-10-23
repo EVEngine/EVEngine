@@ -5,12 +5,23 @@
 #         -DPATCH_DIR=<git checkout root the patch paths are relative to>
 #         -P cmake/patch_third_party.cmake
 #
+# LF-blob patches may pass PATCH_NORMALIZE_CRLF=ON when a Windows checkout is
+# also configured from WSL. Git then normalizes line endings on input only;
+# indentation and other whitespace still match exactly. Raw CRLF-blob patches
+# keep the default behavior.
+#
 # The patch is applied with `git apply` inside PATCH_DIR. If it is already
 # applied (reverse-apply succeeds) the step is a no-op so rebuilds do not fail.
 # If the working tree drifted so the patch no longer applies, configure/build
 # fails loudly instead of silently compiling different third-party code.
 # In particular, do not relax whitespace matching here: that can turn a real
 # source drift into an apparently successful but different third-party build.
+#
+# Line endings: git apply compares patch and target bytes, and a vendored checkout
+# is not line-ending uniform (external/ECS.hpp commits CRLF), so a patch targeting
+# such a file must be checked out with CRLF on every host. The .gitattributes
+# entry for cmake/patches/ecs-shared-default-table.patch does that. Do not reach
+# for --ignore-whitespace here: that would mask real source drift.
 
 if(NOT DEFINED PATCH OR NOT DEFINED PATCH_DIR)
     message(FATAL_ERROR "patch_third_party.cmake requires -DPATCH=... and -DPATCH_DIR=...")
@@ -30,6 +41,11 @@ if(NOT GIT_EXECUTABLE)
     message(FATAL_ERROR "git is required to apply third-party patches")
 endif()
 
+set(_eve_patch_git_options)
+if(PATCH_NORMALIZE_CRLF)
+    list(APPEND _eve_patch_git_options -c core.autocrlf=input)
+endif()
+
 execute_process(
     COMMAND "${GIT_EXECUTABLE}" -C "${PATCH_DIR_ABS}" rev-parse --show-toplevel
     RESULT_VARIABLE _eve_patch_repo_result
@@ -44,7 +60,7 @@ endif()
 
 # Already applied? `git apply --reverse --check` succeeds only then.
 execute_process(
-    COMMAND "${GIT_EXECUTABLE}" apply --reverse --check --unidiff-zero "${PATCH_ABS}"
+    COMMAND "${GIT_EXECUTABLE}" ${_eve_patch_git_options} apply --reverse --check --unidiff-zero "${PATCH_ABS}"
     WORKING_DIRECTORY "${PATCH_DIR_ABS}"
     RESULT_VARIABLE _eve_patch_reverse
     OUTPUT_VARIABLE _eve_patch_reverse_out
@@ -56,7 +72,7 @@ endif()
 
 # Apply cleanly, or fail loudly so a stale patch cannot silently bit-rot.
 execute_process(
-    COMMAND "${GIT_EXECUTABLE}" apply --check --unidiff-zero "${PATCH_ABS}"
+    COMMAND "${GIT_EXECUTABLE}" ${_eve_patch_git_options} apply --check --unidiff-zero "${PATCH_ABS}"
     WORKING_DIRECTORY "${PATCH_DIR_ABS}"
     RESULT_VARIABLE _eve_patch_check
     OUTPUT_VARIABLE _eve_patch_check_out
@@ -69,7 +85,7 @@ if(NOT _eve_patch_check EQUAL 0)
 endif()
 
 execute_process(
-    COMMAND "${GIT_EXECUTABLE}" apply --unidiff-zero "${PATCH_ABS}"
+    COMMAND "${GIT_EXECUTABLE}" ${_eve_patch_git_options} apply --unidiff-zero "${PATCH_ABS}"
     WORKING_DIRECTORY "${PATCH_DIR_ABS}"
     RESULT_VARIABLE _eve_patch_result
     OUTPUT_VARIABLE _eve_patch_out

@@ -1,9 +1,10 @@
 #pragma once
 
+
 namespace eve::graphics::shaders {
 
 inline constexpr const char *kGrassVertWgsl = R"wgsl(
-struct Light3D { posRadius: vec4f, color: vec4f };
+struct Light3D { posRadius: vec4f, color: vec4f, spot: vec4f };
 struct Frame {
     mvp: mat4x4f, model: mat4x4f, lightDir: vec4f, lightColor: vec4f,
     tint: vec4f, cameraPos: vec4f, ambient: vec4f,
@@ -121,7 +122,7 @@ fn vs_main(in: VSIn) -> VSOut {
 )wgsl";
 
 inline constexpr const char *kGrassFragWgsl = R"wgsl(
-struct Light3D { posRadius: vec4f, color: vec4f };
+struct Light3D { posRadius: vec4f, color: vec4f, spot: vec4f };
 struct Frame {
     mvp: mat4x4f, model: mat4x4f, lightDir: vec4f, lightColor: vec4f,
     tint: vec4f, cameraPos: vec4f, ambient: vec4f,
@@ -130,7 +131,7 @@ struct Frame {
 };
 struct ShadowFrame {
     lightVP: array<mat4x4f, 3>, splits: vec4f, bias: vec4f,
-    cascadeBias: vec4f, cascadeTexel: vec4f,
+    cascadeBias: vec4f, cascadeTexel: vec4f, cascadeUvScale: vec4f,
 };
 struct Externals { data: array<vec4f, 8> };
 struct FSIn {
@@ -167,14 +168,18 @@ fn sampleCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {
     if (any(uv < vec2f(0.0)) || any(uv > vec2f(1.0)) || ndc.z < 0.0 || ndc.z > 1.0) {
         return 1.0;
     }
+    var uvScale = shadow.cascadeUvScale.z;
+    if (cascade == 0) { uvScale = shadow.cascadeUvScale.x; }
+    else if (cascade == 1) { uvScale = shadow.cascadeUvScale.y; }
+    uvScale = max(uvScale, 1e-4);
+    let mapSize = max(shadow.cascadeUvScale.w, 1.0) * uvScale;
     var sum = 0.0;
     let offsets = array<vec2f, 9>(vec2f(-0.5,-0.5),vec2f(0.0,-0.6),vec2f(0.5,-0.5),
         vec2f(-0.6,0.0),vec2f(0.0),vec2f(0.6,0.0),vec2f(-0.5,0.5),vec2f(0.0,0.6),vec2f(0.5,0.5));
-    let dims = vec2f(textureDimensions(shadowMap));
     for (var i = 0; i < 9; i++) {
-        let sampleUv = uv + offsets[i] / dims;
-        if (all(sampleUv >= vec2f(0.0)) && all(sampleUv <= vec2f(1.0))) {
-            sum += textureSampleCompareLevel(shadowMap, shadowSampler, sampleUv, cascade,
+        let sampleCascadeUv = uv + offsets[i] / mapSize;
+        if (all(sampleCascadeUv >= vec2f(0.0)) && all(sampleCascadeUv <= vec2f(1.0))) {
+            sum += textureSampleCompareLevel(shadowMap, shadowSampler, sampleCascadeUv * uvScale, cascade,
                                              ndc.z - bias);
         }
     }

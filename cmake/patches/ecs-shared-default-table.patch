@@ -1,0 +1,40 @@
+diff --git a/src/ECS.hpp b/src/ECS.hpp
+index ca07ff1..abe566f 100644
+--- a/src/ECS.hpp
++++ b/src/ECS.hpp
+@@ -157,10 +157,35 @@ namespace ecs
+     friend void DestroyEntity(Entity *);
+   };
+ 
++  // EVEngine patch (cmake/patches/ecs-shared-default-table.patch): the default
++  // Table is process-wide state. When the engine is split into per-layer shared
++  // link groups (EVENGINE_MODULE_DLL) every image would get its own copy of the
++  // function-local static below, so the storage lives in the foundation link unit
++  // (src/engine/common/EcsDefaultTable.cpp) and each image calls into it. OBJECT /
++  // static builds keep the inline definition and are byte-for-byte unchanged.
++#if defined(EVENGINE_MODULE_DLL)
++#  if defined(_WIN32)
++#    if defined(EVENGINE_EXPORTS_FOUNDATION)
++#      define EVE_ECS_DEFAULT_TABLE_API __declspec(dllexport)
++#    else
++#      define EVE_ECS_DEFAULT_TABLE_API __declspec(dllimport)
++#    endif
++#  elif defined(__GNUC__) || defined(__clang__)
++#    define EVE_ECS_DEFAULT_TABLE_API __attribute__((visibility("default")))
++#  else
++#    define EVE_ECS_DEFAULT_TABLE_API
++#  endif
++  EVE_ECS_DEFAULT_TABLE_API Table &engine_default_table();
++#endif
++
+   inline Table &default_table()
+   {
++#if defined(EVENGINE_MODULE_DLL)
++    return engine_default_table();
++#else
+     static Table t;
+     return t;
++#endif
+   }
+ 
+   inline Table *&current_slot()

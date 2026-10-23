@@ -36,18 +36,19 @@ struct TerrainProbePlacementSettings {
  * @throws std::bad_alloc Output remains unchanged.
  * @thread Synchronous exclusive output access; no scene object, callback, clock or RNG state is retained.
  */
-[[nodiscard]] Result<int> exportTerrainProbePoints(PointSet& output, const Heightmap& fitness,
-                                                   const Heightmap& heights,
-                                                   const TerrainProbePlacementSettings& settings);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> exportTerrainProbePoints(PointSet& output, const Heightmap& fitness,
+                                                                        const Heightmap&                     heights,
+                                                                        const TerrainProbePlacementSettings& settings);
 
 /** @brief One exclusively borrowed terrain probe owner and immutable height source. */
 struct TerrainProbeTile {
     std::string name;
     PointSet* probes = nullptr;
     const Heightmap* heights = nullptr;
-    double originX = 0, originZ = 0, width = 1, depth = 1;
-    int resolutionX = 0, resolutionY = 0;
-    bool worldMap = false;
+    double           originX = 0, originZ = 0, width = 1, depth = 1;
+    int              resolutionX = 0, resolutionY = 0;
+    bool             worldMap = false;
+    double originY = 0;  ///< Added to sampled terrain height; explicit sea/custom height modes remain world absolute.
 };
 
 /**
@@ -56,7 +57,7 @@ struct TerrainProbeTile {
  * @ownership Tile outputs must be distinct. No pointer, raster, callback or RNG state is retained.
  * One seed drives a single stream in mapping order; Replace/Remove match the stable probe resource name.
  */
-[[nodiscard]] Result<TerrainMultiTileReport> applyTerrainProbesMultiTile(
+[[nodiscard]] EVENGINE_API_DOMAINS Result<TerrainMultiTileReport> applyTerrainProbesMultiTile(
     const std::vector<TerrainProbeTile>& tiles, const Heightmap& operationFitness,
     const TerrainProbePlacementSettings& settings, const TerrainStampSettings& operationSettings,
     TerrainProbeOperationMode mode, bool worldMapOperation = false,

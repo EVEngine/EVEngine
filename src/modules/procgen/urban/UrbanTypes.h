@@ -16,25 +16,39 @@ struct Vec2 {
     double x = 0.0;
     double y = 0.0;
 
+    /** @brief Operator +. */
     Vec2 operator+(const Vec2& o) const { return {x + o.x, y + o.y}; }
+    /** @brief Operator -. */
     Vec2 operator-(const Vec2& o) const { return {x - o.x, y - o.y}; }
+    /** @brief Operator *. */
     Vec2 operator*(double s) const { return {x * s, y * s}; }
+    /** @brief Operator /. */
     Vec2 operator/(double s) const { return {x / s, y / s}; }
+    /** @brief Operator -. */
     Vec2 operator-() const { return {-x, -y}; }
+    /** @brief Operator ==. */
     bool operator==(const Vec2& o) const { return x == o.x && y == o.y; }
+    /** @brief Operator !=. */
     bool operator!=(const Vec2& o) const { return !(*this == o); }
 };
 
+/** @brief Cross. */
 inline double cross(const Vec2& a, const Vec2& b) { return a.x * b.y - a.y * b.x; }
+/** @brief Dot. */
 inline double dot(const Vec2& a, const Vec2& b) { return a.x * b.x + a.y * b.y; }
+/** @brief Length. */
 inline double length(const Vec2& a) { return std::sqrt(dot(a, a)); }
+/** @brief Length sq. */
 inline double lengthSq(const Vec2& a) { return dot(a, a); }
+/** @brief Normalize. */
 inline Vec2   normalize(const Vec2& a) {
     const double l = length(a);
     if (l <= 1e-12) return {1.0, 0.0};
     return a / l;
 }
+/** @brief Perpendicular. */
 inline Vec2   perpendicular(const Vec2& a) { return {-a.y, a.x}; }
+/** @brief Distance. */
 inline double distance(const Vec2& a, const Vec2& b) { return length(a - b); }
 
 /** @brief Closed polygon ring, stored CCW, without repeating the first point. */
@@ -82,6 +96,7 @@ struct UrbanLayout {
     double maxIrregularity   = 0.0;
     int    levelsUsed        = 0;
 
+    /** @brief Clears . */
     void clear() {
         corners.clear();
         parcels.clear();

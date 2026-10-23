@@ -624,7 +624,14 @@ std::vector<std::string> SceneHost::collectIdsVisible(bool visible) {
 bool SceneHost::link(const std::string &nodeId, int kind, void *target, int syncMode) {
     if (!linkOps(kind)) return false;  // kind's module is not in this build
     SceneNode *n = borrowSceneResult(findById(nodeId));
-    return n ? setLink(*n, kind, target, syncMode) : false;
+    if (!n) return false;
+    if (!setLink(*n, kind, target, syncMode)) return false;
+    // A link that was just created (or retargeted) still has to be pushed to its
+    // target, but nothing about the node's transform changed, so no dirty flag is
+    // set anywhere. Without marking the subtree dirty the incremental transform
+    // pass sees a clean tree, early-outs, and the target keeps its old state.
+    markSubtreeDirty(findIndexById(nodeId));
+    return true;
 }
 
 // The typed helpers resolve their kind by name, so they return false rather

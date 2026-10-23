@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 // HD-2D module: renders 2D tilemaps and 2D sprite characters inside the 3D
 // scene. Both techniques layer on top of the existing graphics 3D pipeline
@@ -53,17 +55,20 @@ namespace eve::hd2d {
  * face. Tiled
  * diagonal/horizontal/vertical flags transform the top UVs.
  */
-class TileMap3D {
+class EVENGINE_API_DOMAINS TileMap3D {
 public:
+    /** @brief Tile map 3 d. */
     TileMap3D() = default;
     TileMap3D(const TileMap3D &) = delete;
     TileMap3D &operator=(const TileMap3D &) = delete;
 
     /** @brief Downward side-wall depth in world units (default 6). */
     void setSideDepth(float depth);
+    /** @brief Returns the side depth. */
     float getSideDepth() const;
     /** @brief World units per unit of tile "height" metadata (default 1). */
     void setHeightScale(float scale);
+    /** @brief Returns the height scale. */
     float getHeightScale() const;
     /** @brief UV sub-rectangle of the atlas used for extruded side walls. */
     void setWallUV(float u0, float v0, float u1, float v1);
@@ -111,30 +116,38 @@ private:
  * sprite-sheet animation: setFrameGrid(cols, rows) + setFrameIndex / play advance a frame index; update(dt) steps the
  * clock. This lets existing 2D character animations run in 3D.
  */
-class Sprite3D {
+class EVENGINE_API_DOMAINS Sprite3D {
 public:
+    /** @brief Sprite 3 d. */
     Sprite3D();
+    /** @brief Sprite 3 d. */
     ~Sprite3D();
     Sprite3D(const Sprite3D &) = delete;
     Sprite3D &operator=(const Sprite3D &) = delete;
 
     /** @brief Albedo texture (a sprite frame / sheet / animation image). */
     void setTexture(graphics::Texture *texture);
+    /** @brief Returns the texture. */
     graphics::Texture *getTexture() const;
 
     /** @brief Direct atlas sub-rect frame selection (0..1 UV). */
     void setFrame(float u0, float v0, float u1, float v1);
+    /** @brief Returns the frame. */
     void getFrame(float &u0, float &v0, float &u1, float &v1) const;
     /** @brief Flip the sampled frame horizontally / vertically. */
     void setFlipX(bool flip);
+    /** @brief Sets the flip y. */
     void setFlipY(bool flip);
 
     /** @brief Configure a sprite-sheet grid (frame 0 = top-left); stops the previous clip. */
     void setFrameGrid(int columns, int rows);
+    /** @brief Returns the frame grid columns. */
     int getFrameGridColumns() const;
+    /** @brief Returns the frame grid rows. */
     int getFrameGridRows() const;
     /** @brief Jump to a grid frame index, clamped within the grid. */
     void setFrameIndex(int index);
+    /** @brief Returns the frame index. */
     int getFrameIndex() const;
     /** @brief Total grid frames. */
     int getFrameCount() const;
@@ -145,7 +158,9 @@ public:
      * @param fps   Frames per second (must be > 0).
      */
     void play(int start, int end, float fps);
+    /** @brief Stops . */
     void stop();
+    /** @brief True when playing. */
     bool isPlaying() const;
     /**
      * @brief Advance the animation clock and re-orient the billboard toward the
@@ -183,16 +198,23 @@ public:
     void setPivot(float x, float y);
     /** @brief World position of the pivot (center by default). */
     void setPosition(float x, float y, float z);
+    /** @brief Returns the position x. */
     float getPositionX() const;
+    /** @brief Returns the position y. */
     float getPositionY() const;
+    /** @brief Returns the position z. */
     float getPositionZ() const;
     /** @brief Billboard size in world units. */
     void setSize(float width, float height);
+    /** @brief Returns the width. */
     float getWidth() const;
+    /** @brief Returns the height. */
     float getHeight() const;
     /** @brief Color multiplier (alpha participates in cutout discards). */
     void setTint(float r, float g, float b, float a = 1.f);
+    /** @brief Sets the visible. */
     void setVisible(bool visible);
+    /** @brief Returns the visible. */
     bool getVisible() const;
 
     /**
@@ -200,23 +222,28 @@ public:
      * @param cutoff Finite value clamped to [0,1]; default 0.5.
      */
     void setAlphaCutoff(float cutoff);
+    /** @brief Returns the alpha cutoff. */
     float getAlphaCutoff() const;
     /**
      * @brief Whether opaque/cutout texels write depth (required for DOF focus).
      * Default true — matches HD2DURP DopFix / TransparentCutout materials.
      */
     void setDepthWrite(bool enabled);
+    /** @brief Returns the depth write. */
     bool getDepthWrite() const;
     /** @brief Render both faces of the billboard quad (default true). */
     void setDoubleSided(bool enabled);
+    /** @brief Returns the double sided. */
     bool getDoubleSided() const;
     /**
      * @brief Billboard orientation mode.
      * @param mode "screen" (default, full camera basis) or "yaw" (Y-up cylindrical).
      */
     void setBillboardMode(const std::string &mode);
+    /** @brief Returns the billboard mode. */
     std::string getBillboardMode() const;
 
+    /** @brief Quad mesh. */
     graphics::Mesh *quadMesh() const { return quad_; }
 
 private:
@@ -267,24 +294,30 @@ private:
  * filtering on sprite/terrain atlases. Depth-of-field needs Sprite3D masked
  * cutout / DopFix depth writes so the focus plane can resolve.
  */
-class Hd2dLook {
+class EVENGINE_API_DOMAINS Hd2dLook {
 public:
+    /** @brief Hd 2 d look. */
     Hd2dLook() = default;
 
     /** @brief View-space focus plane distance (default 18). */
     void setFocusDistance(float distance);
+    /** @brief Returns the focus distance. */
     float getFocusDistance() const { return focusDistance_; }
     /** @brief Max Gaussian blur radius in texels; 0 disables DOF (default 5). */
     void setMaxBlur(float blurPx);
+    /** @brief Returns the max blur. */
     float getMaxBlur() const { return maxBlurPx_; }
     /** @brief Distance from focus where blur reaches the max (default 14). */
     void setFocusRange(float range);
+    /** @brief Returns the focus range. */
     float getFocusRange() const { return focusRange_; }
     /** @brief HDR bloom intensity (default 0.35). */
     void setBloomIntensity(float intensity);
+    /** @brief Returns the bloom intensity. */
     float getBloomIntensity() const { return bloomIntensity_; }
     /** @brief HDR bloom threshold (default 1.2). */
     void setBloomThreshold(float threshold);
+    /** @brief Returns the bloom threshold. */
     float getBloomThreshold() const { return bloomThreshold_; }
 
     /**
@@ -320,10 +353,12 @@ private:
 /**
  * @brief HD-2D module: tilemap-to-3D extrusion + 2D sprites as 3D billboards.
  */
-class Hd2D : public Module {
+class EVENGINE_API_DOMAINS Hd2D : public Module {
 public:
     Module_REG(Hd2D);
+    /** @brief Hd 2 d. */
     Hd2D();
+    /** @brief Hd 2 d. */
     ~Hd2D() override;
 
     /** @brief Create a tilemap-to-3D builder. */

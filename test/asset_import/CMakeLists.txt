@@ -3,13 +3,16 @@ project(EVEngineUnitySourceTests LANGUAGES C CXX)
 
 # CPU-only admission tests: no engine host, graphics backend or asset store login.
 get_filename_component(EVE_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
+include("${EVE_ROOT}/cmake/TestLevels.cmake")
+eve_configure_test_levels(EVE_TEST_LEVEL_FILE)
+include("${EVE_TEST_LEVEL_FILE}")
 set(CMAKE_CXX_STANDARD 20)
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(BUILD_TEST OFF CACHE BOOL "" FORCE)
 set(USE_MOLD OFF CACHE BOOL "" FORCE)
 add_subdirectory("${EVE_ROOT}/external/zeroerr" zeroerr)
 find_package(ZLIB REQUIRED)
-add_executable(unity_source_tests
+eve_add_test_executable(unity_source_tests
     "${EVE_ROOT}/src/engine/common/Utf8Validation.cpp"
     "${EVE_ROOT}/test/asset_import_unity_package.cpp"
     "${EVE_ROOT}/src/modules/asset/import/UnityPackage.cpp"
@@ -21,6 +24,7 @@ if(MSVC)
 endif()
 enable_testing()
 add_test(NAME asset.import.unitySource COMMAND unity_source_tests)
+eve_label_test_group(asset.import.unitySource asset_import_unity_package.cpp)
 
 add_library(unity_import_core STATIC
     "${EVE_ROOT}/src/modules/asset/import/UnityPrefabExpansion.cpp"
@@ -31,6 +35,9 @@ add_library(unity_import_core STATIC
     "${EVE_ROOT}/src/engine/common/Uri.cpp"
     "${EVE_ROOT}/src/engine/common/ResourceRef.cpp"
     "${EVE_ROOT}/src/engine/common/Value.cpp"
+    "${EVE_ROOT}/src/engine/common/Diagnostic.cpp"
+    "${EVE_ROOT}/src/engine/common/Status.cpp"
+    "${EVE_ROOT}/src/engine/common/Result.cpp"
     "${EVE_ROOT}/src/engine/common/Json.cpp"
     "${EVE_ROOT}/src/engine/common/Exception.cpp"
     "${EVE_ROOT}/src/engine/common/RenderTrace.cpp"
@@ -63,41 +70,45 @@ find_path(ZSTD_INCLUDE_DIR zstd.h REQUIRED)
 find_library(ZSTD_LIBRARY NAMES zstd_static zstd REQUIRED)
 file(GLOB EVE_ASSET_SOURCES "${EVE_ROOT}/src/modules/asset/*.cpp")
 list(REMOVE_ITEM EVE_ASSET_SOURCES "${EVE_ROOT}/src/modules/asset/CanonicalImageCook.cpp")
-target_sources(unity_import_core PRIVATE ${EVE_ASSET_SOURCES})
+eve_target_test_sources(unity_import_core PRIVATE ${EVE_ASSET_SOURCES})
 target_include_directories(unity_import_core PRIVATE "${UTF8PROC_INCLUDE_DIR}" "${ZSTD_INCLUDE_DIR}")
 target_compile_definitions(unity_import_core PRIVATE UTF8PROC_STATIC)
 target_link_libraries(unity_import_core PUBLIC "${UTF8PROC_LIBRARY}" "${ZSTD_LIBRARY}")
-add_executable(unity_collection_tests "${EVE_ROOT}/test/asset_import_unity_collection.cpp")
-target_sources(unity_collection_tests PRIVATE "${EVE_ROOT}/test/asset_migration.cpp")
-target_sources(unity_collection_tests PRIVATE "${EVE_ROOT}/test/asset_scene_bindings.cpp")
-target_sources(unity_collection_tests PRIVATE "${EVE_ROOT}/test/asset_import_unity_sprite.cpp" "${EVE_ROOT}/test/asset_import_unity_native.cpp")
+eve_add_test_executable(unity_collection_tests "${EVE_ROOT}/test/asset_import_unity_collection.cpp")
+eve_target_test_sources(unity_collection_tests PRIVATE "${EVE_ROOT}/test/asset_migration.cpp")
+eve_target_test_sources(unity_collection_tests PRIVATE "${EVE_ROOT}/test/asset_scene_bindings.cpp")
+eve_target_test_sources(unity_collection_tests PRIVATE "${EVE_ROOT}/test/asset_import_unity_sprite.cpp" "${EVE_ROOT}/test/asset_import_unity_native.cpp")
 target_link_libraries(unity_collection_tests PRIVATE unity_import_core)
 if(MSVC)
     target_compile_options(unity_collection_tests PRIVATE /utf-8 /EHsc)
 endif()
 add_test(NAME asset.import.unityCollection COMMAND unity_collection_tests)
-add_executable(unity_fbx_tests "${EVE_ROOT}/test/asset_import_unity_fbx.cpp")
+eve_label_test_group(asset.import.unityCollection asset_import_unity_collection.cpp asset_migration.cpp
+    asset_scene_bindings.cpp asset_import_unity_sprite.cpp asset_import_unity_native.cpp)
+eve_add_test_executable(unity_fbx_tests "${EVE_ROOT}/test/asset_import_unity_fbx.cpp")
 target_include_directories(unity_fbx_tests PRIVATE "${ASSIMP_INCLUDE_DIR}")
 target_link_libraries(unity_fbx_tests PRIVATE unity_import_core)
 if(MSVC)
     target_compile_options(unity_fbx_tests PRIVATE /utf-8 /EHsc)
 endif()
 add_test(NAME asset.import.unityFbx COMMAND unity_fbx_tests)
-add_executable(unity_fbx_unavailable UnityFbxUnavailable.cpp "${EVE_ROOT}/src/modules/asset/import/UnityFbx.cpp")
+eve_label_test_group(asset.import.unityFbx asset_import_unity_fbx.cpp)
+eve_add_test_executable(unity_fbx_unavailable UnityFbxUnavailable.cpp "${EVE_ROOT}/src/modules/asset/import/UnityFbx.cpp")
 target_compile_definitions(unity_fbx_unavailable PRIVATE __EMSCRIPTEN__)
 target_link_libraries(unity_fbx_unavailable PRIVATE unity_import_core)
 if(MSVC)
     target_compile_options(unity_fbx_unavailable PRIVATE /utf-8 /EHsc)
 endif()
 add_test(NAME asset.import.unityFbxProviderAbsent COMMAND unity_fbx_unavailable)
+eve_label_test_group(asset.import.unityFbxProviderAbsent UnityFbxUnavailable.cpp)
 set_tests_properties(asset.import.unityFbx PROPERTIES FAIL_REGULAR_EXPRESSION "Assertion Failed")
-target_sources(unity_import_core PRIVATE "${EVE_ROOT}/src/modules/asset/scene/EvpackSceneTemplateLoader.cpp")
-target_sources(unity_import_core PRIVATE
+eve_target_test_sources(unity_import_core PRIVATE "${EVE_ROOT}/src/modules/asset/scene/EvpackSceneTemplateLoader.cpp")
+eve_target_test_sources(unity_import_core PRIVATE
     "${EVE_ROOT}/src/modules/asset/graphics/EvpackStaticPrefab.cpp"
     "${EVE_ROOT}/src/modules/asset/graphics/EvpackGraphicsLoader.cpp"
     "${EVE_ROOT}/src/modules/asset/graphics/EvpackImageLoader.cpp")
 target_include_directories(unity_import_core PRIVATE "${EVE_ROOT}/third-party/glm")
-add_executable(unity_package_probe UnityPackageProbe.cpp)
+eve_add_test_executable(unity_package_probe UnityPackageProbe.cpp)
 target_link_libraries(unity_package_probe PRIVATE unity_import_core)
 if(MSVC)
     target_compile_options(unity_package_probe PRIVATE /utf-8 /EHsc)
@@ -107,6 +118,10 @@ set_tests_properties(asset.import.unitySource asset.import.unityCollection PROPE
 
 # Compile the production CLI entry point even when the full host cannot be built.
 find_path(CLI11_INCLUDE_DIR CLI11.hpp REQUIRED)
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    include("${EVE_ROOT}/cmake/TestImpact.cmake")
+    eve_enable_test_impact(TARGETS unity_source_tests unity_collection_tests unity_fbx_tests unity_fbx_unavailable)
+endif()
 add_library(unity_command_compile OBJECT "${EVE_ROOT}/src/modules/asset/import/AssetCommand.cpp")
 target_include_directories(unity_command_compile PRIVATE "${CLI11_INCLUDE_DIR}")
 target_link_libraries(unity_command_compile PRIVATE unity_import_core)

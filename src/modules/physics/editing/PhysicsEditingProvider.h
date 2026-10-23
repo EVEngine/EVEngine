@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingExtension.h"
 #include "physics/editing/PhysicsTarget.h"
@@ -11,6 +13,7 @@ namespace eve::physics_editing {
 /** @brief Open capability for constructing collider authoring targets without editor type switches. */
 class IPhysicsEditingFactory {
 public:
+    /** @brief Releases IPhysicsEditingFactory resources. */
     virtual ~IPhysicsEditingFactory() = default;
     /**
      * @brief Create an independently owned collider publishing target.
@@ -32,7 +35,7 @@ public:
  * @return Generation-qualified provider handle or a structured registration failure.
  * @thread Main-thread registration path; acquired leases follow the descriptor affinity.
  */
-[[nodiscard]] editing::Result<editing::ProviderHandle> registerEditingProvider(
+[[nodiscard]] EVENGINE_API_DOMAINS editing::Result<editing::ProviderHandle> registerEditingProvider(
     editing::ExtensionProviderRegistry& registry);
 
 }  // namespace eve::physics_editing

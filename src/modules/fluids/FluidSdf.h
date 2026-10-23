@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief Voxelized signed distance field (SDF) of a solid surface.
@@ -23,7 +25,7 @@ struct MeshSdfSample {
 };
 
 /** @brief Uniform signed-distance voxel field over a box. */
-class MeshSdf {
+class EVENGINE_API_DOMAINS MeshSdf {
 public:
     /** @brief World-space position of voxel (0,0,0). */
     glm::vec3 origin{0.f};
@@ -35,12 +37,15 @@ public:
     std::vector<float> distances;
 
     /** @return dims.x * dims.y * dims.z. */
+    /** @brief Voxel count. */
     int voxelCount() const;
 
     /** @return flat index for voxel (x,y,z); asserts bounds. */
+    /** @brief Index. */
     int index(int x, int y, int z) const;
 
     /** @return true when voxel coordinate is inside the field. */
+    /** @brief In bounds. */
     bool inBounds(const glm::ivec3& c) const;
 
     /**

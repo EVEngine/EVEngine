@@ -136,6 +136,16 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
             absPos[size_t(i) * 3u + 2] = am->mVertices[i].z;
         }
         handle->addMorphTargetAbsolute(morphName, absPos.data());
+        if (am->mNormals) {
+            std::vector<float> deltaNormals(size_t(am->mNumVertices) * 3u);
+            for (unsigned i = 0; i < am->mNumVertices; ++i) {
+                deltaNormals[size_t(i) * 3]     = am->mNormals[i].x - baseNrm[size_t(i) * 3];
+                deltaNormals[size_t(i) * 3 + 1] = am->mNormals[i].y - baseNrm[size_t(i) * 3 + 1];
+                deltaNormals[size_t(i) * 3 + 2] = am->mNormals[i].z - baseNrm[size_t(i) * 3 + 2];
+            }
+            auto normalResult = handle->setMorphNormalDeltas(morphName, deltaNormals);
+            if (!normalResult.ok()) throw Exception("Invalid imported morph normals: %s", morphName.c_str());
+        }
     }
     handle->markMorphClean();
     Mesh *raw = handle.get();
@@ -357,7 +367,9 @@ bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *
         if (indices[i] >= uint32_t(vertexCount)) return false;
     }
 
-    std::vector<MeshVertex> verts(static_cast<size_t>(vertexCount));
+    auto *gpu   = static_cast<GpuMesh *>(mesh->gpuHandle);
+    auto &verts = gpu->updateVertices;
+    verts.resize(static_cast<size_t>(vertexCount));
     for (int i = 0; i < vertexCount; ++i) {
         MeshVertex &v = verts[static_cast<size_t>(i)];
         v.pos = {posXYZ[size_t(i) * 3u], posXYZ[size_t(i) * 3u + 1u], posXYZ[size_t(i) * 3u + 2u]};
@@ -372,7 +384,6 @@ bool Graphics::updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *
             v.uv = {0.f, 0.f};
     }
 
-    auto *gpu = static_cast<GpuMesh *>(mesh->gpuHandle);
     mesh->computeBounds(posXYZ, vertexCount);
     // Same ring-buffer approach as bakeMeshMorph: never wait on in-flight
     // frames, just write the next copy.
@@ -620,6 +631,42 @@ Mesh *Graphics::newMeshCylinder(int slices, int stacks, bool caps) {
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
+}
+
+Result<void> Graphics::drawMeshResidentVertices(Mesh &mesh, const GpuResidentBufferView &source) {
+    static_assert(sizeof(MeshVertex) == 88 && offsetof(MeshVertex, color) == 56 &&
+                  offsetof(MeshVertex, weights) == 40 && offsetof(MeshVertex, tangent) == 72);
+    auto owned =
+        std::find_if(ownedMeshes.begin(), ownedMeshes.end(), [&](const auto &item) { return item.get() == &mesh; });
+    if (!initialized || owned == ownedMeshes.end() || !mesh.gpuHandle || source.backend != GpuResidentBackend::Vulkan ||
+        !source.nativeHandle || source.strideBytes != sizeof(MeshVertex) || source.offsetBytes % 4 ||
+        mesh.hasGpuSkinning() || (!swapchainPassOpen && !offscreen3DPassOpen))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "Expected same-device resident vertices in an open pass",
+                                                       "graphics.residentMesh"));
+    auto &gpu = *static_cast<GpuMesh *>(mesh.gpuHandle);
+    if (source.offsetBytes > source.sizeBytes ||
+        uint64_t(gpu.vertexCount) * sizeof(MeshVertex) > source.sizeBytes - source.offsetBytes)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "Resident vertex stream is too small", "graphics.residentMesh"));
+    VkBuffer raw{};
+    static_assert(sizeof(raw) <= sizeof(source.nativeHandle));
+    std::memcpy(&raw, &source.nativeHandle, sizeof(raw));
+    gpu.residentVertexOverride = raw;
+    gpu.residentVertexOffset   = source.offsetBytes;
+    struct ClearOverride {
+        GpuMesh &mesh;
+        ~ClearOverride() {
+            mesh.residentVertexOverride = vk::Buffer{};
+            mesh.residentVertexOffset   = 0;
+        }
+    } clear{gpu};
+    try {
+        drawMesh(&mesh, glm::mat4(1.f), nullptr, Color(1.f, 1.f, 1.f, 1.f));
+        return Result<void>::success();
+    } catch (const std::exception &e) {
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, e.what(), "graphics.residentMesh"));
+    }
 }
 
 void Graphics::drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) {

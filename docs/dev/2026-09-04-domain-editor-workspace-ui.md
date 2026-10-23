@@ -4,7 +4,7 @@
 状态：已冻结产品面；实现按此倒推，禁止先扩 automation 再补界面  
 存放：`docs/dev/`
 
-相关：[`编辑器模块设计.md`](编辑器模块设计.md)、[`2026-08-29-editing-editor-layering.md`](2026-08-29-editing-editor-layering.md)、[`editor-module-gap-analysis.md`](editor-module-gap-analysis.md)、[`docs/usr/modules/editor.md`](../usr/modules/editor.md)
+相关：[`编辑器模块设计.md`](编辑器模块设计.md)、[`2026-08-29-editing-editor-layering.md`](2026-08-29-editing-editor-layering.md)、[`docs/usr/modules/editor.md`](../usr/modules/editor.md)
 
 ## 1. 决策
 

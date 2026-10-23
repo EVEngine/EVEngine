@@ -7,13 +7,13 @@
 #include <sstream>
 
 namespace eve::ui {
-namespace { Result<void> invalid(const char *m) { return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, m, {}, {}, "ui.pcgPhotoModeRuntimeUI")); } }
+
 
 Result<void> PcgPhotoModeRuntimeUI::configure(int rawKind, const std::string &name, const std::string &text,
                                                 float value, float minimum, float maximum, bool imageFound) {
-    if (rawKind < 0 || rawKind > 13) return invalid("photo-mode widget kind must be in range 0..13");
+    if (rawKind < 0 || rawKind > 13) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "photo-mode widget kind must be in range 0..13", {}, {}, "ui.pcgPhotoModeRuntimeUI"));
     if (!std::isfinite(value) || !std::isfinite(minimum) || !std::isfinite(maximum) || minimum > maximum)
-        return invalid("photo-mode slider values must be finite and minimum must not exceed maximum");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "photo-mode slider values must be finite and minimum must not exceed maximum", {}, {}, "ui.pcgPhotoModeRuntimeUI"));
     kind_ = static_cast<PcgPhotoModeWidgetKind>(rawKind); name_ = name; valueText_ = text;
     value_ = value; minimum_ = minimum; maximum_ = maximum;
     wholeNumbers_ = kind_ == PcgPhotoModeWidgetKind::IntSlider || kind_ == PcgPhotoModeWidgetKind::DisplayIntSlider;
@@ -42,7 +42,7 @@ Result<void> PcgPhotoModeRuntimeUI::configure(int rawKind, const std::string &na
 }
 
 Result<void> PcgPhotoModeRuntimeUI::setSliderValue(float value) {
-    if (!std::isfinite(value)) return invalid("photo-mode slider value must be finite");
+    if (!std::isfinite(value)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "photo-mode slider value must be finite", {}, {}, "ui.pcgPhotoModeRuntimeUI"));
     value_ = value; inputRefresh_ = isUsingSlider_;
     if (inputRefresh_) { std::ostringstream s; s.imbue(std::locale::classic()); s << value; valueText_ = s.str(); }
     isUsingSlider_ = false; return Result<void>::success();

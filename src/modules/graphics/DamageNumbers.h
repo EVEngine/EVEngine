@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/Export.h"
 #include "common/Result.h"
 
 #include <cstddef>
@@ -58,7 +59,7 @@ struct DamageNumberSample {
  * @lifetime clear on scene teardown/reload. No persistent format or cross-frame object links.
  * Equal requests and accumulated time give equal samples within 1e-4 pixel floating tolerance.
  */
-class DamageNumbers {
+class EVENGINE_API_BACKENDS DamageNumbers {
 public:
     /** @brief Construct a pool with four built-in styles and 256 reusable slots. */
     DamageNumbers();

@@ -1,6 +1,8 @@
 #include "procgen/texture/TextureRecipe.h"
 #include "procgen/texture/NoiseField.h"
 #include "procgen/texture/PrototypeTextures.h"
+#include "procgen/texture/CableTextures.h"
+#include "procgen/texture/FloorTextures.h"
 #include "procgen/texture/ColorRamp.h"
 #include "procgen/texture/CloudField.h"
 #include "procgen/texture/CloudShadow.h"
@@ -387,6 +389,33 @@ std::vector<TextureRecipeDef> buildDefs() {
                 float       mottle = n.fbmPerlin(u, v, 4);
                 const float crack  = 1.f - smoothstep(0.55f, 0.72f, n.ridgedPerlin(u * 3.f, v * 3.f, 3));
                 return mottle * 0.6f + crack * 0.4f;
+            },
+            pbr));
+    }
+
+    // --- tex.asphalt: fine aggregate with sparse recessed wear ---
+    // The bright neutral ramp is intentional: road meshes already carry their
+    // authored asphalt colour in vertex RGB, so this map supplies detail as a
+    // multiplicative modulation instead of becoming a second colour authority.
+    {
+        ColorRamp ramp;
+        ramp.add(0.00f, 132, 134, 138);
+        ramp.add(0.30f, 172, 174, 178);
+        ramp.add(0.68f, 214, 216, 220);
+        ramp.add(1.00f, 244, 245, 247);
+        PbrParams pbr;
+        pbr.roughnessLow  = 0.78f;
+        pbr.roughnessHigh = 0.96f;
+        pbr.normalStrength = 2.2f;
+        pbr.aoStrength     = 0.65f;
+        pbr.heightStrength = 0.45f;
+        defs.push_back(makeDef(
+            "tex.asphalt", std::move(ramp),
+            [](float u, float v, const NoiseField &n) {
+                const float fine = n.fbmPerlin(u * 5.f, v * 5.f, 4);
+                const float aggregate = n.valueNoise(u * 18.f + 3.7f, v * 18.f + 9.1f);
+                const float wear = smoothstep(0.68f, 0.82f, n.ridgedPerlin(u * 1.6f, v * 1.6f, 3));
+                return std::clamp(fine * 0.55f + aggregate * 0.35f - wear * 0.18f + 0.16f, 0.f, 1.f);
             },
             pbr));
     }
@@ -963,6 +992,8 @@ void TextureRecipeRegistry::registerBuiltins() {
         });
     }
     road::registerRoadTextureRecipes(*this);
+    registerFloorTextureRecipes(*this);
+    registerCableTextureRecipes(*this);
     builtinsRegistered_ = true;
 }
 

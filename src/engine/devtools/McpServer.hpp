@@ -32,7 +32,7 @@ namespace eve::dev {
  *
  * Desktop-only (part of EVDevTools); not shipped on Android/iOS trimmed runtimes.
  */
-class EVENGINE_API McpServer {
+class EVENGINE_API_FOUNDATION McpServer {
 public:
     static McpServer& instance();
 

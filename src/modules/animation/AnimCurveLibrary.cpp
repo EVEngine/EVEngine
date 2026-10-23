@@ -52,7 +52,7 @@ private:
     std::size_t                offset = 0;
 };
 eve::Diagnostic invalid(std::string message) {
-    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message), "animationCurves", {},
+    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message, "animationCurves", {},
                                   "animation");
 }
 }  // namespace

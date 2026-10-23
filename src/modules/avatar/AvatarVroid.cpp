@@ -15,6 +15,7 @@
 #include "avatar/VrmRuntime.h"
 #include "common/ECS.h"
 #include "common/Module.h"
+#include "common/StringMapInstances.h"
 #include "graphics/DrawItem2D.h"
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"

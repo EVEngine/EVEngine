@@ -24,10 +24,13 @@ enum class ShaderImageFormat {
     BC3,
     BC3Srgb,
     BC7,
-    BC7Srgb
+    BC7Srgb,
+    RGBA16Unorm,
+    RGBA16Float,
+    RGBA32Float
 };
 /** @brief Sampled image view dimension; arrays retain all authored layers. */
-enum class ShaderImageDimension { Image2D, Array2D, Cube };
+enum class ShaderImageDimension { Image2D, Array2D, Cube, Image3D };
 
 /**
  * @brief Synchronous borrowed input for one immutable shader image.
@@ -48,6 +51,11 @@ struct ShaderImageInput {
      * Never reuse an owner for mutated bytes. Empty disables identity reuse.
      */
     std::shared_ptr<const void> contentOwner;
+    /** @brief Base Z extent for Image3D; other dimensions require one. Volume
+     * bytes are mip-major, then
+     * Z-slice-major, row-major within each slice.
+     * Every mip halves all three extents, clamping each to one. */
+    std::uint32_t depth = 1;
 };
 
 /**
@@ -71,12 +79,14 @@ struct ShaderResourceInputs {
  * @param bytes Borrowed unaligned bytes, retained only for this call. Worker-safe.
  * @return Count or diagnostic; empty input is valid and returns zero.
  */
-[[nodiscard]] Result<std::uint32_t> shaderInstanceMatrixCount(std::span<const std::byte> bytes);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<std::uint32_t> shaderInstanceMatrixCount(std::span<const std::byte> bytes);
 
 /** @brief One validated byte region for an image's layer/mip upload. */
 struct ShaderImageRegion {
     std::uint32_t layer = 0, mip = 0, width = 0, height = 0;
     std::size_t   offset = 0, size = 0;
+    /** @brief Z extent of this mip; one for non-volume image regions. */
+    std::uint32_t depth = 1;
 };
 
 /**
@@ -84,6 +94,7 @@ struct ShaderImageRegion {
  * @param image Borrowed input, read only during this call; may be validated on workers.
  * @return Owning region metadata, or a diagnostic. No GPU state is touched.
  */
-[[nodiscard]] Result<std::vector<ShaderImageRegion>> shaderImageRegions(const ShaderImageInput& image);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<std::vector<ShaderImageRegion>> shaderImageRegions(
+    const ShaderImageInput& image);
 
 }  // namespace eve::graphics

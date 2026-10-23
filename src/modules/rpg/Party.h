@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file Party.h @brief Generation-safe ordered RPG party relationships. */
 
@@ -19,7 +21,7 @@ class Battle;
  * @ownership Party owns only stable IDs and generation-qualified links; the RPG ECS world owns actors.
  * @thread Use on the actors' owning simulation thread.
  */
-class Party {
+class EVENGINE_API_PLATFORM Party {
 public:
     /**
      * @brief Append one unique stable member ID and live actor as one atomic roster mutation.
@@ -33,9 +35,13 @@ public:
     /** @brief Clear every relationship without destroying actors. */
     void clear();
 
+    /** @brief Returns the number of . */
     int count() const;
+    /** @brief True if active. */
     bool contains(const std::string &memberId) const;
+    /** @brief True when stale members. */
     bool hasStaleMembers() const;
+    /** @brief Returns the member id. */
     std::string getMemberId(int index) const;
     /**
      * @brief Resolve a member by ordered index.

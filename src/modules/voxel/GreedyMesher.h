@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "voxel/CubeTypeRegistry.h"
 #include "voxel/FaceDir.h"
@@ -30,7 +32,7 @@ using ChunkSampler = uint8_t (*)(void *userData, int chunkX, int chunkY, int chu
  * Out-of-chunk neighbors consult the optional ChunkSampler so shared faces
  * between adjacent chunks are culled (no duplicate interior faces).
  */
-class GreedyMesher {
+class EVENGINE_API_DOMAINS GreedyMesher {
 public:
     /** @brief Mesh all six faces. Clears and fills `outFaces[6]`. */
     static void meshChunk(const uint8_t *voxels, std::vector<PackedRect> outFaces[6],

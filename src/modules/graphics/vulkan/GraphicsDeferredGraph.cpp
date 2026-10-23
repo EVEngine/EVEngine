@@ -1,7 +1,9 @@
 // Deferred shadow/G-buffer graph ownership and recording.
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <string>
+#include "common/Profile.h"
 #include "graphics/vulkan/FrameGraphJobs.h"
 #include "graphics/vulkan/Graphics.h"
 #include "graphics/vulkan/GraphicsInternal.h"
@@ -14,6 +16,7 @@ void Graphics::resetDeferredFrameGraphs() {
     // submitted slot before destroying graphs, then destroy target images.
     if (device.instance) device->waitIdle();
     for (auto &graph : deferredFrameGraphs_) graph.reset();
+    deferredRecordingState_    = {};
     deferredGraphRecorded_     = false;
     deferredGraphRecordedSlot_ = 0;
 }
@@ -36,8 +39,9 @@ void Graphics::buildDeferredFrameGraphs() {
     // before the present command buffer).
     const vk::Format depthFmt     = vk::Format::eD32Sfloat;
     const vk::Format colorFmt     = pickGBufferColorFormat(device);
-    const uint32_t   mapSize      = uint32_t(ShadowConfig::kMapSize);
-    const uint32_t   shadowLayers = uint32_t(ShadowConfig::kCascades);
+    const uint32_t   mapSize      = uint32_t(
+        allocatedShadowMapSize > 0 ? allocatedShadowMapSize : ShadowSchemeSettings::current().resolvedAtlasMapSize());
+    const uint32_t   shadowLayers = uint32_t(ShadowConfig::kTotalLayers);
     const uint32_t   w            = gbufferWidth > 0 ? uint32_t(gbufferWidth) : 1u;
     const uint32_t   h            = gbufferHeight > 0 ? uint32_t(gbufferHeight) : 1u;
 
@@ -79,6 +83,10 @@ void Graphics::buildDeferredFrameGraphs() {
             auto depthColorH =
                 graph->importTexture("gbDepthColor", slot.depthColor.image(), slot.depthColor.imageView(), colorDesc);
             auto albedoH = graph->importTexture("gbAlbedo", slot.albedo.image(), slot.albedo.imageView(), colorDesc);
+            auto pbrParamsH =
+                graph->importTexture("gbPbrParams", slot.pbrParams.image(), slot.pbrParams.imageView(), colorDesc);
+            auto emissiveH =
+                graph->importTexture("gbEmissive", slot.emissive.image(), slot.emissive.imageView(), colorDesc);
 
             vkb::TextureDesc depthDesc;
             depthDesc.format      = depthFmt;
@@ -88,17 +96,21 @@ void Graphics::buildDeferredFrameGraphs() {
             depthDesc.afterLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
             auto depthH = graph->importTexture("gbHwDepth", slot.depth.image(), slot.depth.imageView(), depthDesc);
 
-            std::array<vk::ClearValue, 4> clears{};
+            std::array<vk::ClearValue, 6> clears{};
             clears[0].color        = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
             clears[1].color        = vk::ClearColorValue(std::array<float, 4>{1, 1, 1, 1});
             clears[2].color        = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
-            clears[3].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+            clears[3].color        = vk::ClearColorValue(std::array<float, 4>{0, 1, 1, 1});
+            clears[4].color        = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+            clears[5].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
             graph->addPass("gbuffer")
                 .colorAttachment(normalH, vkb::AttachmentOp::clear(clears[0]))
                 .colorAttachment(depthColorH, vkb::AttachmentOp::clear(clears[1]))
                 .colorAttachment(albedoH, vkb::AttachmentOp::clear(clears[2]))
-                .depthAttachment(depthH, vkb::AttachmentOp::clear(clears[3]))
-                .record([this](vkb::FrameGraphPassContext &ctx) { recordGBufferPassDraws(ctx); });
+                .colorAttachment(pbrParamsH, vkb::AttachmentOp::clear(clears[3]))
+                .colorAttachment(emissiveH, vkb::AttachmentOp::clear(clears[4]))
+                .depthAttachment(depthH, vkb::AttachmentOp::clear(clears[5]))
+                .record([this](vkb::FrameGraphPassContext& ctx) { recordGBufferPassDraws(ctx); });
         }
         graph->compile();
         deferredFrameGraphs_[i] = std::move(graph);
@@ -111,9 +123,18 @@ void Graphics::recordShadowCascadePass(vkb::FrameGraphPassContext &ctx, int casc
     // may be recorded on a JobSystem worker, so everything below must be
     // read-only: shadowCascadeDraws was captured by endShadowPass on the main
     // thread before the graph records.
-    auto              &cb     = ctx.commandBuffer();
-    const vk::Extent2D extent = ctx.extent();
-    const uint32_t     size   = extent.width ? extent.width : uint32_t(ShadowConfig::kMapSize);
+    auto &cb = ctx.commandBuffer();
+    // Adaptive CSM: each cascade may occupy only a top-left viewport of the
+    // shared depth-array layer. Local spot layers keep the full atlas extent.
+    uint32_t size = uint32_t(allocatedShadowMapSize > 0 ? allocatedShadowMapSize
+                                                        : ShadowSchemeSettings::current().resolvedAtlasMapSize());
+    if (cascade >= 0 && cascade < ShadowConfig::kCascades && mesh3dShadows.active) {
+        size = uint32_t(std::max(1, mesh3dShadows.cascadeMapSizes[cascade]));
+    }
+    recordShadowCascadeDraws(cb, cascade, size);
+}
+
+void Graphics::recordShadowCascadeDraws(vk::CommandBuffer cb, int cascade, uint32_t size) {
     setViewportAndScissor(cb, size, size);
     vk::Pipeline boundPipeline{};
     for (const auto &d : shadowCascadeDraws[cascade]) {
@@ -240,14 +261,26 @@ void Graphics::recordDeferredFrameGraph() {
     // in the compiled phase for this record cycle — vkb::FrameGraph enforces
     // build -> compile -> record -> submit and record() exactly once per
     // compile.
-    graph->compile();
+    {
+        EV_PROFILE_MODULE("graphics", "DeferredGraph.Compile");
+        graph->compile();
+    }
     // Parallel executor: each pass owns a dedicated command pool (one pool per
     // frame slot per pass), so the workers never share a pool while recording
     // concurrently — the Vulkan external-synchronization rule for command
     // pools is satisfied structurally.
-    recordFrameGraphWithJobSystem(*graph, jobs);
-    graph->submit();
-    if (!shadowMaps.empty()) currentShadowMap().image.setCurrentLayout(vk::ImageLayout::eDepthStencilReadOnlyOptimal);
+    {
+        EV_PROFILE_MODULE("graphics", "DeferredGraph.RecordAndJoin");
+        recordFrameGraphWithJobSystem(*graph, jobs, deferredRecordingState_);
+    }
+    {
+        EV_PROFILE_MODULE("graphics", "DeferredGraph.Submit");
+        submitGpuTimingPrefix();
+        graph->submit();
+    }
+    // Match shadowDesc.afterLayout: descriptors must describe the layout the
+    // graph actually submitted, including clear-only shadow passes.
+    if (!shadowMaps.empty()) currentShadowMap().image.setCurrentLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
     jobs->endFrame();
     for (auto &d : shadowCascadeDraws) d.clear();
     gbufferPassDraws.clear();

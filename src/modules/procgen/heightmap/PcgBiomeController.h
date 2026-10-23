@@ -24,7 +24,7 @@ struct PcgBiomeLoadingBounds {
  *          invokes no callbacks; callers use tierAt() to feed their terrain residency scheduler.
  * @thread Game thread only.
  */
-class PcgBiomeController {
+class EVENGINE_API_DOMAINS PcgBiomeController {
 public:
     /** @brief Configure the controller and reproduce Pcg's automatic regular/impostor bound calculation. */
     [[nodiscard]] Result<void> configure(double x, double y, double z, double range,

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file Action.h
@@ -14,6 +16,7 @@
  */
 
 #include "action/ActionTimeline.h"
+#include "common/Condition.h"
 #include "common/ECS.h"
 #include "common/Identity.h"
 #include "common/ResourceAccount.h"
@@ -21,7 +24,6 @@
 #include "common/StrongUint64.h"
 #include "common/Time.h"
 #include "common/Value.h"
-#include "decision/Condition.h"
 #include "sensing/Targeting.h"
 #include "transaction/Transaction.h"
 
@@ -51,7 +53,7 @@ enum class ActionPhase : std::uint8_t {
  * @return Borrowed static storage valid for the lifetime of the process.
  * @borrowed The returned pointer must not be freed or retained as mutable data.
  */
-[[nodiscard]] const char* actionPhaseName(ActionPhase phase) noexcept;
+[[nodiscard]] EVENGINE_API_PLATFORM const char* actionPhaseName(ActionPhase phase) noexcept;
 
 /** @brief Selects how an action obtains its target set. */
 enum class TargetingMode : std::uint8_t {
@@ -66,8 +68,12 @@ enum class TargetingMode : std::uint8_t {
 /**
  * @brief Deterministic simulation durations for the three timed action phases.
  *
- * Durations are injected values. No action code reads a wall or monotonic
- * clock; the caller advances an execution with a SimulationTick and Duration.
+ * This is the sole phase-machine authority read by ActionRuntime. Durations are
+ * injected values; no action code reads a wall or monotonic clock. When an
+ * ActionTimeline is attached, `timing.total()` must equal `timeline.duration`.
+ * Timeline `splitTimestamps` are physical section markers and are never read by
+ * ActionRuntime — see `actionTimingFromPhysicalSections` for the optional
+ * assembly projection used when authoring timing from those sections.
  */
 struct ActionTiming {
     /** @brief Time spent in Windup before Active. */
@@ -76,7 +82,27 @@ struct ActionTiming {
     Duration active = Duration::zero();
     /** @brief Time spent in Recover before completion. */
     Duration recover = Duration::zero();
+
+    /**
+     * @brief Sum of windup + active + recover.
+     * @return Owning total duration, or a structured overflow failure.
+     */
+    [[nodiscard]] EVENGINE_API_PLATFORM Result<Duration> total() const;
 };
+
+/**
+ * @brief Assemble ActionTiming from a timeline duration and at most two physical splits.
+ *
+ * @param timeline Borrowed timeline; only `duration` and `splitTimestamps` are read.
+ * @return Owning phase timing, or a structured rejection when more than two splits
+ *         make the windup/active/recover mapping ambiguous.
+ * @remarks ActionRuntime never reads `splitTimestamps`. This helper is an assembly
+ *          convention for timeline-authored definitions (e.g. ability registration)
+ *          when no separate ActionTiming was supplied: 0 splits → all active;
+ *          1 split → windup|active; 2 splits → windup|active|recover.
+ */
+[[nodiscard]] EVENGINE_API_PLATFORM Result<ActionTiming> actionTimingFromPhysicalSections(
+    const ActionTimeline& timeline);
 
 /**
  * @brief Immutable-by-convention definition of one action kind.
@@ -84,14 +110,19 @@ struct ActionTiming {
  * The definition owns condition and metadata values. A cost is the canonical
  * common `CostSpec`; effectIds are references resolved by the injected active
  * executor. No RPG, RTS, Weapon or Card type is included here.
+ *
+ * Authority split when both timing and timeline are present:
+ * - `timing` — ActionRuntime phase transitions (sole phase authority)
+ * - `timeline` — choreography (tracks/notifies); `duration` must equal `timing.total()`
+ * - `timeline->splitTimestamps` — physical sections for editor/montage only
  */
-struct ActionDefinition {
+struct EVENGINE_API_PLATFORM ActionDefinition {
     /** @brief Scoped logical definition identity, not a runtime execution id. */
     LogicalId id;
-    /** @brief Timed phase policy in simulation durations. */
+    /** @brief Timed phase policy; sole ActionRuntime phase authority. */
     ActionTiming timing;
     /** @brief Side-effect-free precondition tree. */
-    decision::Condition condition;
+    condition::Condition condition;
     /** @brief Target acquisition policy for this action. */
     TargetingMode targetingMode = TargetingMode::None;
     /** @brief Constraints used when targetingMode is Query. */
@@ -104,7 +135,7 @@ struct ActionDefinition {
     bool activeExecutionRequired = false;
     /** @brief Deterministic extension data owned by this definition. */
     Value::Object metadata;
-    /** @brief Optional versioned choreography authored by the action editor. */
+    /** @brief Optional versioned choreography; duration must match timing.total(). */
     std::optional<ActionTimeline> timeline;
 
     /**
@@ -122,7 +153,7 @@ struct ActionDefinition {
  * pointers. `requestedTick` is the deterministic starting point for this
  * execution.
  */
-struct ActionRequest {
+struct EVENGINE_API_PLATFORM ActionRequest {
     /** @brief Definition identity this request intends to execute. */
     LogicalId actionId;
     /** @brief Optional source ECS identity; the action core does not interpret its type. */
@@ -181,6 +212,11 @@ struct ActionAdvance {
     Duration phaseElapsed = Duration::zero();
     /** @brief Total simulation duration consumed by the execution. */
     Duration totalElapsed = Duration::zero();
+    /**
+     * @brief Caller-supplied delta accepted by the authoritative timeline mapping.
+     * @remarks For executions without a timeline this equals the supplied delta.
+     */
+    Duration inputConsumed = Duration::zero();
     /** @brief Owning timeline boundaries crossed by this advance. */
     std::vector<ActionTimelineEvent> timelineEvents;
     /** @brief Owning samples of timeline states active after this advance. */
@@ -197,14 +233,15 @@ struct ActionAdvance {
  */
 class IActionConditionEvaluator {
 public:
+    /** @brief Releases IActionConditionEvaluator resources. */
     virtual ~IActionConditionEvaluator() = default;
 
     /**
      * @brief Evaluate one action condition.
      * @return ConditionResult or a structured provider failure.
      */
-    [[nodiscard]] virtual Result<decision::ConditionResult> evaluate(const ActionDefinition& definition,
-                                                                     const ActionRequest&    request) const = 0;
+    [[nodiscard]] virtual Result<condition::ConditionResult> evaluate(const ActionDefinition& definition,
+                                                                      const ActionRequest&    request) const = 0;
 };
 
 /**
@@ -215,6 +252,7 @@ public:
  */
 class IActionTargetResolver {
 public:
+    /** @brief Releases IActionTargetResolver resources. */
     virtual ~IActionTargetResolver() = default;
 
     /**
@@ -234,6 +272,7 @@ public:
  */
 class IActionResourceProvider {
 public:
+    /** @brief Releases IActionResourceProvider resources. */
     virtual ~IActionResourceProvider() = default;
 
     /**
@@ -295,6 +334,7 @@ public:
  */
 class IActionEffectOperation {
 public:
+    /** @brief Releases IActionEffectOperation resources. */
     virtual ~IActionEffectOperation() = default;
 
     IActionEffectOperation(const IActionEffectOperation&)            = delete;
@@ -308,6 +348,7 @@ public:
     virtual void rollback() noexcept = 0;
 
 protected:
+    /** @brief Constructs a IActionEffectOperation. */
     IActionEffectOperation() = default;
 };
 
@@ -323,6 +364,7 @@ protected:
  */
 class IActionEffectExecutor {
 public:
+    /** @brief Releases IActionEffectExecutor resources. */
     virtual ~IActionEffectExecutor() = default;
 
     /**
@@ -423,8 +465,28 @@ public:
         return transactionReceipt_ ? &*transactionReceipt_ : nullptr;
     }
 
+    /**
+     * @brief Query a transient target duration for one physical timeline section.
+     * @param sectionIndex Zero-based physical section index.
+     * @return Target duration when overridden, otherwise no value.
+     * @remarks The returned value is an owning snapshot. Overrides belong to
+     *          this execution, are never persisted into the timeline asset,
+     *          and are discarded with the execution.
+     */
+    [[nodiscard]] std::optional<Duration> sectionTimingOverride(std::size_t sectionIndex) const noexcept {
+        const auto found = sectionTimingOverrides_.find(sectionIndex);
+        return found == sectionTimingOverrides_.end() ? std::nullopt
+                                                       : std::optional<Duration>(found->second.targetDuration);
+    }
+
 private:
     friend class ActionRuntime;
+
+    struct SectionTimingOverride {
+        Duration targetDuration = Duration::zero();
+        Duration authoredAnchor = Duration::zero();
+        Duration simulationElapsed = Duration::zero();
+    };
 
     ActionExecution(ActionExecutionId id, ActionDefinition definition, ActionRequest request)
         : id_(id),
@@ -446,6 +508,7 @@ private:
     std::optional<transaction::TransactionReceipt> transactionReceipt_;
     bool                                           activeExecuted_  = false;
     bool                                           timelineStarted_ = false;
+    std::map<std::size_t, SectionTimingOverride>    sectionTimingOverrides_;
 };
 
 /**
@@ -460,6 +523,7 @@ public:
     SensingTargetingAdapter() = default;
 
     /** @copydoc IActionTargetResolver::resolve */
+    /** @brief Resolve. */
     [[nodiscard]] Result<sensing::TargetSet> resolve(const sensing::TargetingQuery& query) const override;
 
 private:
@@ -473,7 +537,7 @@ private:
  * duration. Structural execution storage is owned here; adapters only submit
  * requests and observe results.
  */
-class ActionRuntime {
+class EVENGINE_API_PLATFORM ActionRuntime {
 public:
     /**
      * @brief Bind borrowed composition ports to this owner-thread runtime.
@@ -487,6 +551,7 @@ public:
     ActionRuntime& operator=(const ActionRuntime&) = delete;
     ActionRuntime(ActionRuntime&&)                 = delete;
     ActionRuntime& operator=(ActionRuntime&&)      = delete;
+    /** @brief Action runtime. */
     ~ActionRuntime()                               = default;
 
     /**
@@ -507,6 +572,36 @@ public:
      *         execution is observable through find() after the failure.
      */
     [[nodiscard]] Result<ActionAdvance> advance(ActionExecutionId id, SimulationTick tick, Duration delta);
+
+    /**
+     * @brief Retarget one physical section's simulation duration for an execution.
+     * @param id Execution identity returned by submit.
+     * @param sectionIndex Zero-based physical section index in the execution's timeline.
+     * @param targetDuration Positive simulation duration used to traverse the authored section.
+     * @return Applied/NoOp, or a structured failure without changing the execution.
+     * @remarks Main simulation thread only; callbacks are not invoked. The
+     *          authored cursor remains continuous when changed mid-section.
+     *          Notify/state boundaries, lifecycle phases and presentation all
+     *          consume the resulting authoritative cursor from advance().
+     */
+    [[nodiscard]] Result<void> setSectionTimingOverride(ActionExecutionId id, std::size_t sectionIndex,
+                                                        Duration targetDuration);
+
+    /**
+     * @brief Remove one transient section-duration override.
+     * @param id Execution identity returned by submit.
+     * @param sectionIndex Zero-based physical section index.
+     * @return Applied when removed, NoOp when already absent, or a structured failure.
+     * @remarks Main simulation thread only. The current authored cursor is not changed.
+     */
+    [[nodiscard]] Result<void> clearSectionTimingOverride(ActionExecutionId id, std::size_t sectionIndex);
+
+    /**
+     * @brief Query authoritative normalized progress within a physical section.
+     * @return Progress in [0,1], or a structured execution/section failure.
+     * @remarks This is an owning value and remains valid after later advances.
+     */
+    [[nodiscard]] Result<double> sectionProgress(ActionExecutionId id, std::size_t sectionIndex) const;
 
     /**
      * @brief Cancel a non-terminal execution before its Active transaction.
@@ -543,6 +638,8 @@ private:
     [[nodiscard]] Result<void> validateExecution(ActionExecution& execution);
     [[nodiscard]] Result<void> enterActive(ActionExecution& execution, SimulationTick tick);
     [[nodiscard]] Result<void> addElapsed(ActionExecution& execution, Duration amount);
+    [[nodiscard]] Result<std::pair<Duration, Duration>> mapSimulationDelta(ActionExecution& execution,
+                                                                           Duration delta) const;
     void                       transition(ActionExecution& execution, ActionPhase next, SimulationTick tick,
                                           std::vector<ActionTransition>& transitions);
     void                       failExecution(ActionExecution& execution, Status status, SimulationTick tick,

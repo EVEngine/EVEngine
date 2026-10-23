@@ -16,7 +16,7 @@ enum class PcgRuntimeStampStatus { Idle = 0, AwaitingResource = 1, Loaded = 2, C
  *          publishes it only on success. It retains no external pointer and invokes no callbacks.
  * @thread Game thread only; callers must serialize access to the target heightmap.
  */
-class PcgRuntimeStamper {
+class EVENGINE_API_DOMAINS PcgRuntimeStamper {
 public:
     /** @brief Set the resource address and presentation flags; backslashes are normalized to slashes. */
     [[nodiscard]] Result<void> configure(std::string stampAddress, bool showGui = true, bool showDebug = true);

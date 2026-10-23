@@ -1,6 +1,9 @@
 #include "devtools/ReloadSession.h"
+#include "devtools/McpFrameCapture.hpp"
 
 #include "devtools/Snapshot.hpp"
+
+#include <cstdio>
 
 namespace eve::dev {
 
@@ -22,9 +25,25 @@ bool ReloadSession::begin(HSQUIRRELVM vm, std::string* err) {
         transientRoots_.clear();
         return false;
     }
+    // Values the capture could not represent (entity instances, closures, ...) are left
+    // out, not fatal: refusing the session here used to make "keep a list of entities in a
+    // global" block hot reload entirely. Say so once; the same list stays in the captured
+    // state and in eve_snapshot.json for a tool to read.
+    if (const StateValue* skipped = buffer_.find("skipped");
+        skipped && skipped->isArray() && skipped->arraySize() > 0) {
+        std::string names;
+        for (std::size_t i = 0; i < skipped->arraySize() && i < 3; ++i) {
+            if (!names.empty()) names += ", ";
+            names += skipped->at(i).asString();
+        }
+        if (skipped->arraySize() > 3) names += ", ...";
+        std::fprintf(stderr, "EVEngine: reload state skips %zu unserializable value(s): %s\n", skipped->arraySize(),
+                     names.c_str());
+    }
     // Best-effort manual rollback point (same file as the F6/F7 snapshot).
     std::string saveErr;
     Snapshot::instance().saveFile(vm, "eve_snapshot.json", &saveErr);
+    resetMcpFrameCapture();
     active_ = true;
     return true;
 }

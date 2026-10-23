@@ -1,14 +1,19 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
+#include "common/Result.h"
 #include "common/Snapshot.h"
 #include "common/SquirrelOwnership.h"
 
 #include <cstdint>
 #include <deque>
+#include <functional>
 #include <memory>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
 
 namespace eve::authority {
@@ -20,6 +25,14 @@ using AuthorityStoreHandleRef = eve::script::RuntimeHandleRef<AuthorityStoreHand
 
 /** @brief Whether an authority rule grants or denies a capability. */
 enum class RuleEffect { Grant, Deny };
+
+/**
+ * @brief Opaque field token that matches any actor, scope, or capability.
+ * @remarks A rule field equal to this value is a wildcard for that dimension.
+ *          Query arguments never treat this token specially: a query for actor
+ *          `"*"` only matches rules whose actor is `"*"` or another wildcard.
+ */
+inline constexpr std::string_view kWildcard = "*";
 
 /** @brief One stable authority rule over an opaque actor and scope. */
 struct Rule {
@@ -60,7 +73,7 @@ struct Event {
 };
 
 /** @brief Generic, deterministic capability authority store. */
-class Store {
+class EVENGINE_API_FOUNDATION Store {
 public:
     /**
      * @brief Creates an authority store with an optional persistent identity.
@@ -68,25 +81,85 @@ public:
      */
     explicit Store(eve::PersistentId instanceId = {});
 
-    /** @brief Adds a grant rule and returns its stable ID, or an empty string for invalid input. */
-    std::string grant(const std::string& actor, const std::string& scope, const std::string& capability,
-                      const std::string& source, int priority = 0, double duration = 0.0);
-    /** @brief Adds a deny rule and returns its stable ID, or an empty string for invalid input. */
-    std::string deny(const std::string& actor, const std::string& scope, const std::string& capability,
-                     const std::string& source, int priority = 0, double duration = 0.0);
-    /** @brief Revokes a rule by stable ID. */
-    bool revoke(const std::string& id, const std::string& reason = "revoked");
-    /** @brief Revokes every rule from a source and returns the number removed. */
-    int revokeBySource(const std::string& source, const std::string& reason = "source_revoked");
-    /** @brief Advances finite rule durations and expires rules reaching zero. */
+    /**
+     * @brief Adds a grant rule and returns its stable ID.
+     * @param actor Opaque actor identity, or `kWildcard` to match any actor.
+     * @param scope Opaque scope identity, or `kWildcard` to match any scope.
+     * @param capability Opaque capability name, or `kWildcard` to match any capability.
+     * @param source Opaque provenance used by revokeBySource and explain.
+     * @param priority Higher values win; ties prefer deny, then earlier creation order.
+     * @param duration Seconds until expiry; `0` means the rule does not auto-expire.
+     * @return The stable rule id, or InvalidArgument when any required field is empty
+     *         or duration is non-finite.
+     */
+    [[nodiscard]] eve::Result<std::string> grant(const std::string& actor, const std::string& scope,
+                                                 const std::string& capability, const std::string& source,
+                                                 int priority = 0, double duration = 0.0);
+    /**
+     * @brief Adds a deny rule and returns its stable ID.
+     * @param actor Opaque actor identity, or `kWildcard` to match any actor.
+     * @param scope Opaque scope identity, or `kWildcard` to match any scope.
+     * @param capability Opaque capability name, or `kWildcard` to match any capability.
+     * @param source Opaque provenance used by revokeBySource and explain.
+     * @param priority Higher values win; ties prefer deny, then earlier creation order.
+     * @param duration Seconds until expiry; `0` means the rule does not auto-expire.
+     * @return The stable rule id, or InvalidArgument when any required field is empty
+     *         or duration is non-finite.
+     */
+    [[nodiscard]] eve::Result<std::string> deny(const std::string& actor, const std::string& scope,
+                                                const std::string& capability, const std::string& source,
+                                                int priority = 0, double duration = 0.0);
+    /**
+     * @brief Revokes a rule by stable ID.
+     * @return Applied on success, or NotFound when the id is absent.
+     */
+    [[nodiscard]] eve::Result<void> revoke(const std::string& id, const std::string& reason = "revoked");
+    /**
+     * @brief Revokes every rule from a source and returns the number removed.
+     * @remarks `0` is a valid no-op outcome, not a failure.
+     */
+    [[nodiscard]] int revokeBySource(const std::string& source, const std::string& reason = "source_revoked");
+    /**
+     * @brief Revokes every rule whose actor field equals @p actor.
+     * @remarks Use when an actor entity is destroyed; does not match wildcard actors.
+     */
+    [[nodiscard]] int revokeByActor(const std::string& actor, const std::string& reason = "actor_revoked");
+    /**
+     * @brief Revokes every rule whose scope field equals @p scope.
+     * @remarks Use when a scope entity is destroyed; does not match wildcard scopes.
+     */
+    [[nodiscard]] int revokeByScope(const std::string& scope, const std::string& reason = "scope_revoked");
+    /**
+     * @brief Revokes every rule whose capability field equals @p capability.
+     * @remarks Does not match wildcard capabilities.
+     */
+    [[nodiscard]] int revokeByCapability(const std::string& capability,
+                                         const std::string& reason = "capability_revoked");
+    /**
+     * @brief Advances finite rule durations and expires rules reaching zero.
+     * @param dtSeconds Injected simulation delta; non-positive or non-finite values are ignored.
+     */
     void update(double dtSeconds);
 
-    /** @brief Returns whether the winning rule allows a capability. */
-    bool can(const std::string& actor, const std::string& scope, const std::string& capability) const;
-    /** @brief Returns an explainable decision and its winning rule. */
-    Decision explain(const std::string& actor, const std::string& scope, const std::string& capability) const;
-    /** @brief Returns a rule by stable ID, or nullptr. */
-    const Rule* find(const std::string& id) const;
+    /**
+     * @brief Returns whether the winning rule allows a capability.
+     * @cost Linear in candidate rules for the query triple (exact key plus wildcard rules).
+     */
+    [[nodiscard]] bool can(const std::string& actor, const std::string& scope, const std::string& capability) const;
+    /**
+     * @brief Returns an explainable decision and its winning rule.
+     * @cost Linear in candidate rules for the query triple (exact key plus wildcard rules).
+     * @remarks Rule fields equal to `kWildcard` match any query value on that dimension.
+     */
+    [[nodiscard]] Decision explain(const std::string& actor, const std::string& scope,
+                                   const std::string& capability) const;
+    /**
+     * @brief Returns a rule by stable ID, or nullptr.
+     * @ownership Borrowed from this store; callers must not delete or retain it.
+     * @nullable Null when the id is absent.
+     * @lifetime Until the rule is revoked/expired or the store is restored/destroyed.
+     */
+    [[nodiscard]] const Rule* find(const std::string& id) const;
 
     /** @brief Queries rules for an actor in deterministic creation order. */
     int queryActor(const std::string& actor);
@@ -94,14 +167,38 @@ public:
     int queryScope(const std::string& scope);
     /** @brief Queries rules for a capability in deterministic creation order. */
     int queryCapability(const std::string& capability);
-    /** @brief Queries rules matching actor, scope, and capability. Empty fields act as wildcards. */
+    /**
+     * @brief Queries rules matching actor, scope, and capability.
+     * @remarks Empty query fields act as wildcards over stored rules. Stored
+     *          `kWildcard` fields also match the corresponding non-empty query field.
+     */
     int query(const std::string& actor, const std::string& scope, const std::string& capability);
-    /** @brief Returns a rule from the latest query, or nullptr. */
+    /**
+     * @brief Returns a rule from the latest query, or nullptr.
+     * @ownership Borrowed from this store; callers must not delete or retain it.
+     * @nullable Null when the index is outside the latest query range.
+     * @lifetime Until the next query/mutation/restore or store destruction.
+     */
     const Rule* queryAt(int index) const;
 
+    /**
+     * @brief Sets the maximum number of retained lifecycle events.
+     * @param capacity `0` keeps unlimited retention (default). Positive values discard
+     *        the oldest events once the cap is exceeded. Negative values are rejected.
+     * @return Applied, or InvalidArgument when capacity is negative.
+     */
+    [[nodiscard]] eve::Result<void> setEventCapacity(int capacity);
+    /** @brief Returns the event retention capacity; `0` means unlimited. */
+    [[nodiscard]] int eventCapacity() const noexcept { return eventCapacity_; }
     /** @brief Returns retained authority event count. */
     int eventCount() const;
-    /** @brief Returns a retained event, or nullptr. */
+    /**
+     * @brief Returns a retained event, or nullptr.
+     * @ownership Borrowed from this store's retained event deque.
+     * @nullable Null when the index is outside the retained range.
+     * @lifetime Until `clearEvents`, capacity trim, restore, or destruction; do not
+     *           retain it across those calls.
+     */
     const Event* eventAt(int index) const;
     /** @brief Clears retained events without resetting sequence allocation. */
     void clearEvents();
@@ -121,6 +218,7 @@ public:
      * @brief Captures this store in the common versioned snapshot envelope.
      * @param hashProvider Explicit content-digest provider; it is never defaulted silently.
      * @return A sealed snapshot, or a structured serialization/hash failure.
+     * @cost Allocates and hashes the full rule set; amortize across save / sync boundaries.
      */
     [[nodiscard]] eve::Result<eve::SnapshotEnvelope> snapshot(const eve::SnapshotHashProvider& hashProvider) const;
 
@@ -150,31 +248,47 @@ public:
                                                         const eve::SnapshotHashProvider& hashProvider);
 
 private:
-    std::string add(RuleEffect effect, const std::string& actor, const std::string& scope,
-                    const std::string& capability, const std::string& source, int priority, double duration);
-    void        emit(EventKind kind, const Rule& rule, const std::string& reason = {});
+    [[nodiscard]] eve::Result<std::string> add(RuleEffect effect, const std::string& actor, const std::string& scope,
+                                               const std::string& capability, const std::string& source, int priority,
+                                               double duration);
+    void                                   emit(EventKind kind, const Rule& rule, const std::string& reason = {});
+    void                                   trimEvents();
+    void                                   indexInsert(const Rule& rule);
+    void                                   indexErase(const Rule& rule);
+    void                                   rebuildIndex();
+    [[nodiscard]] static std::string       exactKey(const std::string& actor, const std::string& scope,
+                                                    const std::string& capability);
+    [[nodiscard]] static bool ruleMatches(const Rule& rule, const std::string& actor, const std::string& scope,
+                                          const std::string& capability);
+    [[nodiscard]] static bool hasWildcard(const Rule& rule);
+    [[nodiscard]] int revokeMatching(const std::string& reason, const std::function<bool(const Rule&)>& predicate);
 
-    uint64_t                 nextId_       = 1;
-    uint64_t                 nextOrder_    = 1;
-    uint64_t                 nextSequence_ = 1;
-    eve::PersistentId        instanceId_;
-    eve::Revision            revision_;
-    eve::SimulationTick      tick_;
-    std::deque<Rule>         rules_;
-    std::deque<Event>        events_;
-    std::vector<const Rule*> query_;
+    uint64_t                                                  nextId_        = 1;
+    uint64_t                                                  nextOrder_     = 1;
+    uint64_t                                                  nextSequence_  = 1;
+    int                                                       eventCapacity_ = 0;
+    eve::PersistentId                                         instanceId_;
+    eve::Revision                                             revision_;
+    eve::SimulationTick                                       tick_;
+    std::deque<Rule>                                          rules_;
+    std::deque<Event>                                         events_;
+    std::vector<const Rule*>                                  query_;
+    std::unordered_map<std::string, std::vector<std::string>> exactIndex_;
+    std::vector<std::string>                                  wildcardIds_;
 };
 
 /** @brief Returns the stable lowercase name of a rule effect. */
 std::string effectName(RuleEffect effect);
 /** @brief Returns the stable lowercase name of an event kind. */
-std::string eventKindName(EventKind kind);
+EVENGINE_API_FOUNDATION std::string eventKindName(EventKind kind);
 
 /** @brief Script module factory for generic authority stores. */
 class Authority : public Module {
 public:
     Module_REG(Authority);
+    /** @brief Constructs a Authority. */
     Authority()           = default;
+    /** @brief Releases Authority resources. */
     ~Authority() override = default;
 
     /**

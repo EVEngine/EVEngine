@@ -11,16 +11,11 @@ Combat 模块提供不依赖具体角色类的伤害、韧性、战斗属性、�
 runtime 内部复用下述 C++ 权威实现，不在脚本层复制生命值或移动状态。runtime 随脚本对象 GC 销毁，
 `ownership()` 返回 `owned`。
 
-同一个 runtime 还内建并注册 `standardCombatAbilities()` 的 20 个定义。`grantAbility`、
-`activateAbility`、`advanceAbilities`、`cancelAbility`、`abilityGrant` 和 `matchingAbilities` 直接投影
-`AbilityRuntime`；冷却与 Action phase 只使用调用者注入的 tick/delta，不读取墙钟。`advanceAbilities`
-推进所有活跃 execution、递减冷却并同步终态链接，脚本不应另外保存 active/cooldown 状态。
-`registerTimelineAbility` 接收 `ActionTimelineEditor.snapshotJson()` 的规范 schema，将 timeline 的 actionId、
-总时长和 physical split 映射为同一个 `ActionDefinition` 的 phase timing；同时显式设置 cooldown、
-instancing、activation group 和可选 gameplay-event trigger。注册失败不会留下部分 definition。
-`replaceTimelineAbility` 使用相同参数事务式热替换已有定义：grant、per-owner instance 与剩余冷却保持不变；
-已激活 execution 继续持有提交时的旧快照，下一次激活才读取新的 timeline 与 actionId。
-已有 grant 时不能热切换 instancing policy，避免悄悄改变 instance 身份语义。
+同一个 runtime 内嵌并复用 action 模块的 `ScriptActionRuntime`（不自建第二套 AbilityRuntime，也不复制
+timeline/step 投影）。启动时通过 `registerAbilityDefinition` 注册 `standardCombatAbilities()` 的 20 个定义。
+`grantAbility`、`activateAbility`、`advanceAbilities`、`cancelAbility`、`abilityGrant`、
+`matchingAbilities`、`registerTimelineAbility` / `replaceTimelineAbility` 均转发到该共享投影面；冷却与
+Action phase 只使用调用者注入的 tick/delta。脚本不应另外保存 active/cooldown 状态。
 
 ## 角色移动与导航
 
@@ -54,6 +49,51 @@ TileLayer revision 或代价改变会在下一步重新规划。不可达目标�
 更久，或者在销毁前调用 `clearNavigationProvider`；若清除时仍有活动目标，后续 `advance` 会明确失败，目标不会
 被悄悄丢弃。到达目标会返回 owning `CombatLocomotionEventKind::Arrived` 事件。
 
+## 动作战斗基础（3A 竖切积木）
+
+下列运行时与 Action Timeline 窗口一起构成动作战斗竖切基础，均不引入 CombatActor 大根类：
+
+| 运行时 / 窗口 | 职责 |
+|---|---|
+| `MeleeHitRuntime` | Hitbox 目录 + Hurtbox + 扫掠命中；可选部位倍率后提交 `DamageRuntime` |
+| `CombatActionWindowState` | Montage hitbox/invuln 窗口；可借用 `MeleeHitRuntime` 自动 arm/disarm |
+| `CombatCharacterRuntime` | 3D 跑/跳/闪避 i-frame / 锁敌相对闪避 / 攻击 Root Motion / 硬直击退 / 死亡；可选地面与胶囊探针 |
+| `CombatCharacterPoseSource` | 把角色位置/朝向变成 melee pose（局部 +Z 为面朝方向） |
+| `CombatMotionWarp` | 攻击中向 lock-on 目标做有预算的水平校正 |
+| `CombatCameraFraming` | 锁定镜头数学（eye/lookAt）；camera 模块只负责 apply |
+| `CombatCancelResolver` | 输入缓冲 + cancel/combo 窗口 + `ComboGraph` 一帧解析（不激活 Ability） |
+| `CombatLoopRuntime` | 一帧顺序焊接 steering/cancel → warp → character → hurtbox → melee → dodge/guard/feel/reaction → camera |
+| `HitFeelRuntime` | 命中停顿与受击硬直时长（注入仿真时间） |
+| `GuardWindowState` | `combat:guard-window`（`block`/`parry`）并改写伤害请求 |
+| `ActionCancelWindowState` + `ActionInputBuffer` | `input:cancel-window` 允许列表与确定性输入缓冲 |
+| `ComboGraph` | 显式 Ability 转移图（与 cancel/combo 窗口联用） |
+| `CombatTargetRuntime` | Soft/hard lock-on 与切换 |
+| `CombatEnemyIntentSource` | 近距环攻击；Mid/Far 接近 steering；可选 Telegraph / Recover 惩罚窗 |
+| `BodyPartDamageRule` | 按部位倍率的 `IDamageRule` |
+
+`CombatCharacterRuntime` 默认落在平面 `y = 0`。游戏可以借用 `ICombatGroundProvider`
+（高度采样）和 `ICombatMoveProbe`（胶囊推进），缺省时行为与第一版平面控制器相同。
+`dodgeRelative` 按 lock-on 目标在 XZ 上解析前/后/左/右闪避。`applyImpulse` /
+`applyDamageReaction` 把击退写入速度；`Stunned` 期间仍积分水平滑动与重力，不再冻结位姿。
+`HitFeelRuntime` 的 hitstop 通过 `setTimeFrozen` 暂停角色积分，时长权威仍在 feel。
+
+`CombatCancelResolver` 消费缓冲输入、匹配 cancel（与可选 combo）窗口，再查询
+`ComboGraph`；缺匹配返回 `NotFound`，调用方再提交 `AbilityIntent`。
+
+`CombatLoopRuntime` 只排序借用对象，不引入 CombatActor。可选敌人 `nextSteering`
+在 Idle 的 Mid/Far 环写入 `setMoveIntent`；闪避 i-frame 命中记为 `perfectDodges` 且不结算伤害；
+其余命中走 guard → damage → feel → `applyDamageReaction`。`MeleeHitboxDefinition` 的
+`knockbackSpeed` / `knockbackLift` 沿接触法线写入 `DamageRequest.knockback`。Motion warp 仅在
+`Attacking` 且存在 lock-on 时生效；超出 per-tick 预算的 warp 被跳过而不是静默吸附。
+`CombatCameraFraming` 属于 combat（L2）；`CameraController` 的 `lockon` 模式只消费
+世界坐标（`setTarget` + `setSecondaryTarget`），不依赖 combat 头文件。
+
+Timeline 新增内建窗口：`input:cancel-window`（payload `allows`，可选 `priority`）与
+`combat:guard-window`（payload `mode=block|parry`）。近战武器 `MeleeLogic::fire` 会推送与远程一致的
+`WeaponEventType::Fire` 事件，几何命中仍由 `MeleeHitRuntime` 拥有。
+
+可玩组合烟测见 `examples/combat-arena`；更细的几何/取消/锁定/循环契约见 `test/combat_*.cpp`。
+
 ## 组合边界
 
 移动状态应由表现层投射到 Scene/Physics，由 Ability Active 阶段决定冲刺、闪避等动作何时写入移动意图。
@@ -63,8 +103,8 @@ Ability 生命周期仍由 `AbilityRuntime`/`ActionRuntime` 唯一拥有，伤�
 ## 通用结算接入
 
 `DamageRuntime` 的血量入账统一经过 `settlement::SettlementPipeline`，血量和韧性作为
-一次 PreparedApply 提交，事件写入失败时一起回滚。`preview` 执行隔离副本的同一流程，
-返回已限幅的实际伤害。`DamageOutcome.settlement` 包含 applied、critical、阶段解释和规范事件；
+一次 PreparedApply 提交，事件写入失败时一起回滚。`previewSettlement` 执行隔离副本的同一流程，
+返回已限幅的实际伤害。`DamageOutcome.settlementResult` 包含 applied、critical、阶段解释和规范事件；
 `appliedHealthDamage` 是兼容输出投影，新显示代码读取 settlement.applied。
 
 脚本签名：

@@ -48,7 +48,7 @@ for (local i = 0; i < tree.getResultCount(); i++) {
 - `getResultId` 在新的 `query*` 之后仍使用旧循环变量——结果缓冲已被覆盖。
 - 根包围盒过小：树/BSP 构造时给出的世界范围应覆盖所有可能插入的 AABB。
 
-## API 快查
+## 绑定与行为说明
 
 - 模块：`getName()`、`newQuadTree()`、`newOctree()`、`newSpatialHash2D()`、`newSpatialHash3D()`、`newBSPTree2D()`、`newBSPTree3D()`
 - 共用：`clear()`、`insert()`、`remove()`、`update()`、`contains()`、`getCount()`、`getResultCount()`、`getResultId()`
@@ -65,4 +65,8 @@ for (local i = 0; i < tree.getResultCount(); i++) {
 
 **源码：** [`src/modules/spatial/`](../../../src/modules/spatial/)  
 **设计文档：** [`docs/dev/空间索引模块设计.md`](../../dev/空间索引模块设计.md)  
-**相关测试：** [`test/spatial.cpp`](../../../test/spatial.cpp)
+**相关测试：** [`test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp`](../../../test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp)
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](spatial/api-reference.md)，使用前先确认本章的前置条件与生命周期。

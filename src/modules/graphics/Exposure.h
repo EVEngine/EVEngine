@@ -33,7 +33,9 @@ public:
      * @param meterSource Optional pre-bloom HDR source used for luminance metering.
      * @param deltaSeconds Frame delta used by eye adaptation.
      * @return Full-resolution pre-exposed linear HDR texture.
-     * @lifetime The returned texture is owned by this Exposure until the next target resize.
+     * @ownership Borrows a Graphics-owned target; render thread only, no callbacks.
+     * @lifetime Contents are replaced by a later apply; resize or Graphics teardown invalidates the texture.
+     * The canonical pipeline uses frame-slot targets; standalone effects retain a shared output.
      */
     Texture *apply(Texture *source, float manualExposure, bool automatic, float minEV,
                    float maxEV, const glm::vec3& colorFilter, const glm::vec3& lift,

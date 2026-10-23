@@ -21,17 +21,17 @@
 ## Combat 的唯一结算路径
 
 `DamageRuntime::apply` → `settlement::SettlementPipeline::settle` → 调用局部的
-`CombatSettlementPolicy` → `PreparedApply`。健康与韧性仍只存在于调用者的 `CombatState`。
+`DamageSettlementPolicy` → `PreparedApply`。健康与韧性仍只存在于调用者的 `CombatState`。
 策略持有的 before/candidate 仅为同步事务准备与回滚，不建立第二个运行时属性存储。
-默认路径与自定义 pipeline 路径共用实现；preview 在隔离的 CombatState 副本上执行同一
+默认路径与自定义 pipeline 路径共用实现；previewSettlement 在隔离的 CombatState 副本上执行同一
 canonical pipeline，因此返回实际可应用的、已限幅的血量与韧性伤害。
 
-原 `IDamageRule` 在 TargetMitigation 阶段执行，provider 缺席使用请求值；成功与失败
-均保持原 Result 责任。护甲/护盾没有凭空增加一套 CombatState 字段，游戏可以配置公共
+`IDamageRule` 按上游约定在进入 pipeline 前解析，provider 缺席使用请求值；成功与失败
+均保持原 Result 责任。保留上游规则配置、目标减伤、护盾消耗与派生事件；游戏可以配置公共
 pipeline 的阶段。生命和韧性原子提交；Trigger 失败不提交，EventLog append 失败回滚。
 受击优先级维持 Death → Knockdown → Stagger → Flinch。
 
-`DamageOutcome.settlement` 是规范数值结果与版本化事件，旧 `appliedHealthDamage`
+`DamageOutcome.settlementResult` 是规范数值结果与版本化事件，旧 `appliedHealthDamage`
 只保留为兼容的输出快照（来自 settlement.applied），不参与任何入账。
 `DamageRequest.critical` 是调用方确定的标记，伤害请求已经包含暴击倍率，避免再乘一次。
 `tick` 由调用方注入，动作通知从 ActionNotifyContext 传入，不读取墙钟。
@@ -44,7 +44,7 @@ codec，而非独立维护字段映射。`applyTimelineDamage` 使用最近一�
   当作裁剪证据。minimal + combat + font + devtools 是本次集成构建配置。
 - R-COHESION-1/6：流程、限幅、事件、回滚的 owner 是 settlement；战斗策略实现其接口，
   不反向依赖 combat，也不新建 provider registry。
-- R-FACE-1..5：模块边界条目登记在 architecture_contracts.json。新增交换是结算
+- R-FACE-1..5：沿用 dev 的代码契约门禁，热路径登记于 HOT_PATH_GLOBS，不恢复退役 JSON 目录。新增交换是结算
   E2 硬依赖、E4 canonical result event 和 E5 脚本结果；不添加 ECS 或 Link。
 - R-MECH-1：每次命中、单一已知目标、多阶段必须原子提交，因此使用同步 policy +
   PreparedApply；显示请求由游戏在提交成功之后单向投递。
@@ -86,3 +86,18 @@ codec，而非独立维护字段映射。`applyTimelineDamage` 使用最近一�
 
 最终源码门禁：`make check CI_BASE=434ae72e4c5715e84c8a8623311e76a459a00f5b`
 退出码 0，`source-quality gate passed`，仓库脚本测试 180/180 通过。
+
+## PR #649 合并 dev 后的适配
+
+合并 `e8bafd176`，保留上游 DamageRuntime 的规则配置、护盾、治疗、派生事件与
+`settlementRequest` / `settlementResult` 审计。移除重复的 DamageSettlement.cpp，
+保留 critical/tick 元数据和可注入 pipeline/event log 的事务入口。
+脚本沿用共享 ScriptActionRuntime；新增测试迁入 unit/integration 目录并登记分类。
+契约检查沿用代码门禁，不恢复退役 JSON 目录。
+
+合并后的无渲染飘字核心测试通过；combat、presentation 与组合测试翻译单元通过 C++20
+编译检查。完整宿主构建在上游 ECS 子模块补丁步骤被阻塞：干净子模块应用
+`ecs-shared-default-table`、`ecs-view-preparation` 后，`ecs-idle-commit.patch` 无法应用。
+因此前一节的宿主运行/截图结果属于合并前版本，不作为合并后运行验证。
+
+合并后完整 `make check`（base=origin/dev）通过，463 个脚本测试成功；未增加豁免。

@@ -6,7 +6,7 @@ namespace eve::graphics::shaders {
  * @thread Safe for concurrent reads.
  */
 inline constexpr const char *kHairFragWgsl=R"wgsl(
-struct Light3D{posRadius:vec4f,color:vec4f};struct Frame{mvp:mat4x4f,model:mat4x4f,lightDir:vec4f,lightColor:vec4f,tint:vec4f,cameraPos:vec4f,ambient:vec4f,lights:array<Light3D,8>,texBomb:vec4f,parallax:vec4f,surface:vec4f,view:mat4x4f,clipInfo:vec4f,cloud:vec4f,cloudWind:vec4f};struct Params{data:array<vec4f,8>};
+struct Light3D{posRadius:vec4f,color:vec4f,spot:vec4f};struct Frame{mvp:mat4x4f,model:mat4x4f,lightDir:vec4f,lightColor:vec4f,tint:vec4f,cameraPos:vec4f,ambient:vec4f,lights:array<Light3D,8>,texBomb:vec4f,parallax:vec4f,surface:vec4f,view:mat4x4f,clipInfo:vec4f,cloud:vec4f,cloudWind:vec4f};struct Params{data:array<vec4f,8>};
 struct FSIn{@location(0)vNormal:vec3f,@location(1)vUV:vec2f,@location(2)vTint:vec4f,@location(3)vWorldPos:vec3f,@location(4)vCameraPos:vec3f,@location(5)vViewPos:vec3f,@builtin(position)fragCoord:vec4f};
 @group(0)@binding(0)var<uniform>ubo:Frame;@group(0)@binding(1)var albedo:texture_2d<f32>;@group(0)@binding(7)var samp:sampler;@group(0)@binding(15)var<uniform>hp:Params;fn p(i:u32)->f32{return hp.data[i/4u][i%4u];}
 fn kajiya(T:vec3f,L:vec3f,V:vec3f,e:f32)->f32{let tl=dot(T,L);let tv=dot(T,V);return pow(max(sqrt(max(1.-tl*tl,0.))*sqrt(max(1.-tv*tv,0.))+tl*tv,0.),e);}

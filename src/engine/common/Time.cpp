@@ -1,4 +1,5 @@
 #include "common/Time.h"
+#include "common/Assert.h"
 
 #include <cmath>
 #include <limits>
@@ -8,7 +9,7 @@ namespace eve {
 namespace {
 
 Diagnostic invalidTime(std::string message) {
-    return Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message));
+    return Diagnostic::error(DiagnosticCode::InvalidArgument, message);
 }
 
 }  // namespace

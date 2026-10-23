@@ -1,15 +1,18 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file Tactics.h @brief Tactics domain composition profile facade. */
 
-#include "common/Module.h"
 #include "common/GameplayControl.h"
+#include "common/GameplayInstanceCatalog.h"
+#include "common/Module.h"
 #include "common/SquirrelOwnership.h"
+#include "tactics/Interaction.h"
+#include "tactics/Presentation.h"
 #include "tactics/TacticsBattle.h"
 #include "tactics/TacticsPersistence.h"
 #include "tactics/TacticsReplay.h"
-#include "tactics/Interaction.h"
-#include "tactics/Presentation.h"
 
 #include <cstddef>
 #include <vector>
@@ -29,6 +32,7 @@ using TacticsBattleSessionRef = script::RuntimeHandleRef<TacticsBattleSessionTag
  * generations before release, so module-first and proxy-first destruction are safe.
  */
 struct TacticsBattleSession {
+    /** @brief Releases TacticsBattleSession resources. */
     ~TacticsBattleSession() noexcept;
 
     ecs::EntityHandle battle{};
@@ -45,7 +49,7 @@ struct TacticsBattleSession {
  *
  * All methods are simulation-thread-affine and invoke no unknown callbacks.
  */
-class Tactics : public Module, public IGameplayControlProvider {
+class EVENGINE_API_DOMAINS Tactics : public Module, public IGameplayControlProvider, public IGameplayInstanceCatalog {
 public:
     Module_REG(Tactics);
 
@@ -55,22 +59,31 @@ public:
     ~Tactics() override;
 
     /** @copydoc IGameplayControlProvider::gameplayDomain */
+    /** @brief Gameplay domain. */
     [[nodiscard]] std::string_view gameplayDomain() const noexcept override;
+    /** @copydoc IGameplayInstanceCatalog::gameplayInstances */
+    /** @brief Gameplay instances. */
+    [[nodiscard]] std::vector<SubjectRef> gameplayInstances() const override;
     /** @copydoc IGameplayControlProvider::observeGameplay */
+    /** @brief Observe gameplay. */
     [[nodiscard]] Result<GameplayObservation> observeGameplay(const GameplaySession& session,
                                                                SubjectRef instance) const override;
     /** @copydoc IGameplayControlProvider::availableGameplayActions */
+    /** @brief Available gameplay actions. */
     [[nodiscard]] Result<std::vector<GameplayActionDescriptor>> availableGameplayActions(
         const GameplaySession& session, SubjectRef instance, SubjectRef subject) const override;
     /** @copydoc IGameplayControlProvider::submitGameplay */
+    /** @brief Submit gameplay. */
     [[nodiscard]] Result<GameplayCommandReceipt> submitGameplay(const GameplaySession& session,
                                                                  SubjectRef instance,
                                                                  const GameplayCommand& command) override;
     /** @copydoc IGameplayControlProvider::advanceGameplay */
+    /** @brief Advance gameplay. */
     [[nodiscard]] Result<GameplayObservation> advanceGameplay(const GameplaySession& session,
                                                                SubjectRef instance,
                                                                const SimulationStep& step) override;
     /** @copydoc IGameplayControlProvider::gameplayEvents */
+    /** @brief Gameplay events. */
     [[nodiscard]] Result<std::vector<GameplayEvent>> gameplayEvents(const GameplaySession& session,
                                                                      SubjectRef instance,
                                                                      std::uint64_t afterSequence) const override;

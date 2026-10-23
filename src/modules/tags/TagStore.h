@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "tags/GameplayTag.h"
 
@@ -22,7 +24,7 @@ struct TagChangeEvent {
 };
 
 /** @brief Deterministic storage for generic tags and capabilities. */
-class TagStore {
+class EVENGINE_API_FOUNDATION TagStore {
 public:
     /** @brief Adds a tag to a subject. @return True only when the set changed. */
     bool addTag(const SubjectId& subject, const std::string& tag);

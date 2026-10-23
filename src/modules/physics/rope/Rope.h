@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Result.h"
@@ -10,7 +12,7 @@ namespace eve::physics {
 class Rope3D;
 
 /** @brief Optional physics satellite that owns rope construction, schema, and script bindings. */
-class Rope final : public Module {
+class EVENGINE_API_DOMAINS Rope final : public Module {
 public:
     Module_REG(Rope);
 

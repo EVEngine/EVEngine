@@ -13,6 +13,7 @@ namespace eve::economy {
 class IEconomy {
 public:
     static constexpr const char* capabilityName = "IEconomy";
+    /** @brief Releases IEconomy resources. */
     virtual ~IEconomy() = default;
 
     /**

@@ -1,6 +1,12 @@
 #pragma once
+#include "common/Export.h"
 
-/** @file ActionCameraBlock.h @brief Typed camera-cue action block contract. */
+
+/** @file ActionCameraBlock.h
+ *  @brief Typed camera-cue action block contract.
+ *  @remarks L1 typed payload contract only — no domain mutation;
+ *           providers own handlers/sinks (`IActionNotifyProvider` / capabilities).
+ */
 
 #include "action/ActionNotifyRegistry.h"
 
@@ -9,7 +15,7 @@
 namespace eve::action {
 
 /** @brief Owning validated camera impulse shared by action runtime and camera targets. */
-struct ActionCameraCueBinding {
+struct EVENGINE_API_PLATFORM ActionCameraCueBinding {
     /** @brief Stable project-defined cue identity used for target selection. */
     LogicalId cue;
     /** @brief Positional shake amplitude in world units. */
@@ -23,6 +29,7 @@ struct ActionCameraCueBinding {
     /** @brief Stable deterministic noise seed. */
     std::uint32_t seed = 0;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionCameraCueBinding&) const = default;
 
     /**
@@ -42,6 +49,7 @@ struct ActionCameraCueBinding {
 class IActionCameraCueSink {
 public:
     static constexpr const char* capabilityName = "eve.action.camera-cue-sink";
+    /** @brief Releases IActionCameraCueSink resources. */
     virtual ~IActionCameraCueSink() = default;
 
     /** @brief Whether this sink owns the supplied stable cue identity. */

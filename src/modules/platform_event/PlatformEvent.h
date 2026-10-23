@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <functional>
@@ -20,7 +22,9 @@ class Class;
 namespace eve {
 namespace platform_event {
 
+/** @brief Variant public API. */
 struct Variant {
+    /** @brief Type public API. */
     enum class Type { Nil, Int, String, Ptr };
     Type                  type = Type::Nil;
     int64_t               i    = 0;
@@ -53,6 +57,7 @@ struct Variant {
     }
     /** @brief Constructs an owning pointer variant deleted with the message. */
     template <class T>
+    /** @brief Make owned ptr. */
     static Variant makeOwnedPtr(T* v) {
         Variant x;
         x.type = Type::Ptr;
@@ -69,7 +74,7 @@ struct Variant {
  * Pushed messages are heap-allocated; the queue owns them until polled,
  * after which the caller is responsible for deleting them.
  */
-class Message {
+class EVENGINE_API_FOUNDATION Message {
 public:
     /**
      * @brief Creates an event message.
@@ -77,15 +82,18 @@ public:
      * @param vargs Optional payload values.
      */
     Message(const std::string& name, const std::vector<Variant>& vargs = {});
+    /** @brief Message. */
     ~Message();
 
     const std::string          name;
     const std::vector<Variant> args;
 };
 
-class PlatformEvent : public Module {
+/** @brief EVENGINE_API_FOUNDATION public API. */
+class EVENGINE_API_FOUNDATION PlatformEvent : public Module {
 public:
     Module_REG(PlatformEvent);
+    /** @brief Platform event. */
     virtual ~PlatformEvent();
 
     /**
@@ -173,6 +181,7 @@ protected:
     std::mutex                           queueMu_;
     std::queue<std::unique_ptr<Message>> queue;
     std::string                          lastData_;
+    /** @brief Void. */
     std::function<void(const Message&)>  pollObserver_;
     eve::Observer<Message>               pollObservers_;
     eve::Subscription                    legacyPollSubscription_;

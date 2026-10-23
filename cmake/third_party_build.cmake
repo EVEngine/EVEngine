@@ -174,9 +174,14 @@ function(check_third_party_project name repo)
     # Comma encoding keeps one CMake argument intact across ExternalProject's
     # list expansion on POSIX, Ninja, MSBuild and Emscripten.
     string(JOIN "," _eve_tp_groups_arg ${EVE_THIRDPARTY_GROUPS})
+    set(_eve_tp_build_jolt OFF)
+    if(EVENGINE_BUILD_JOLT AND "jolt" IN_LIST EVE_THIRDPARTY_GROUPS)
+        set(_eve_tp_build_jolt ON)
+    endif()
     list(APPEND _eve_tp_cmake_args
         -DEVENGINE_THIRD_PARTY_GROUPS=${_eve_tp_groups_arg}
-        -DEVENGINE_BUILD_HOST=${EVENGINE_BUILD_HOST})
+        -DEVENGINE_BUILD_HOST=${EVENGINE_BUILD_HOST}
+        -DEVENGINE_BUILD_JOLT=${_eve_tp_build_jolt})
     # ExternalProject configures the dependency aggregate in a separate CMake
     # process, so non-MSVC builds must receive the parent's compiler launcher
     # explicitly. LIST_SEPARATOR preserves compound launchers such as
@@ -203,16 +208,7 @@ function(check_third_party_project name repo)
         # supplied launcher or, on MSVC, cannot execute our .cmd wrapper.
         list(APPEND _eve_tp_cmake_args -DASSIMP_BUILD_USE_CCACHE=OFF)
     endif()
-    # Windows only: force md/mdd before any add_subdirectory so squirrel/OpenAL
-    # match the names the engine already links. Do not set these on Apple/Linux.
-    if(WIN32)
-        list(APPEND _eve_tp_cmake_args
-            -DCMAKE_DEBUG_POSTFIX=mdd
-            -DCMAKE_RELEASE_POSTFIX=md
-            -DCMAKE_MINSIZEREL_POSTFIX=md
-            -DCMAKE_RELWITHDEBINFO_POSTFIX=md
-        )
-    endif()
+    # Library ABI defaults are owned by third-party/cmake/release_defaults.cmake.
     if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
         list(APPEND _eve_tp_cmake_args
             -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
@@ -222,13 +218,19 @@ function(check_third_party_project name repo)
             -DANDROID_NDK=${ANDROID_NDK}
             -DCMAKE_SYSTEM_NAME=Android
         )
+        # NDK 27 exposes arm_neon.h even for x86 targets, which makes this
+        # OpenAL Soft version mis-detect NEON and compile ARM intrinsics with
+        # an x86 compiler. Preserve NEON for the release arm64 build.
+        if(ANDROID_ABI MATCHES "^x86(_64)?$")
+            list(APPEND _eve_tp_cmake_args -DALSOFT_CPUEXT_NEON=OFF)
+        endif()
         if(CMAKE_MAKE_PROGRAM)
             list(APPEND _eve_tp_cmake_args -DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM})
         endif()
         message(STATUS "third-party Android toolchain: ABI=${ANDROID_ABI} PLATFORM=${ANDROID_PLATFORM}")
     elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS")
         find_program(_eve_ninja ninja REQUIRED)
-        set(_eve_ios_tp_toolchain "${CMAKE_SOURCE_DIR}/cmake/ios.toolchain.cmake")
+        set(_eve_ios_tp_toolchain "${CMAKE_SOURCE_DIR}/third-party/cmake/ios.toolchain.cmake")
         list(APPEND _eve_tp_cmake_args
             -DCMAKE_TOOLCHAIN_FILE=${_eve_ios_tp_toolchain}
             -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
@@ -275,100 +277,16 @@ function(check_third_party_project name repo)
         endif()
     endif()
 
+    if(EVENGINE_NATIVE_ARM64)
+        # Check the dependency compiler independently after EVEngineDeps project().
+        # This also catches a wrong cl.exe selected from a caller's environment.
+        list(APPEND _eve_tp_cmake_args
+            -DEVENGINE_NATIVE_ARM64=ON
+            -DCMAKE_PROJECT_EVEngineDeps_INCLUDE=${CMAKE_SOURCE_DIR}/cmake/native_arm64.cmake)
+    endif()
+
     # --config is required for multi-config generators (VS); ignored by Ninja.
     set(_eve_tp_build_cmd ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}/ --target install --config ${_eve_tp_build_type} --parallel 8)
-
-    # Tracked patch applied at build time (never by mutating the checkout at
-    # configure time). Paths in the patch are relative to the medialoader
-    # submodule root. See cmake/patch_third_party.cmake.
-    set(_eve_tp_patch_cmd ${CMAKE_COMMAND}
-        -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/medialoader-smooth-normals.patch
-        -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/medialoader
-        -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Independent image fixtures cover memory-backed BMP and GIF first-frame decoding.
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/medialoader-image-formats.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/medialoader
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/medialoader-audio-gapless.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/medialoader
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Second patch: export squirrel/ssq symbols from the win32 host binary
-    # (paths relative to the third-party aggregate root).
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/third-party-squirrel-ssq-export.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Third patch: ssq class allocators must translate C++ exceptions from
-    # module constructors into Squirrel errors. Without this, a throwing ctor
-    # (e.g. Audio with no audio device) escapes the native call, corrupts the
-    # VM's exception state and hangs during sq_close (SQInstance::Release).
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/simplesquirrel-constructor-exceptions.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Fourth patch: SimpleSquirrel's Object move constructor swaps an
-    # uninitialized `weak` flag. Optimized arm64 builds can observe that UB
-    # when script bindings pass Array/Object wrappers by value.
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/simplesquirrel-object-move-init.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Fifth patch: mpg123's K&R-style signal handler type is rejected by GCC
-    # 15; use the POSIX void(int) signature accepted by sigaction.
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/mpg123-signal-handler.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/medialoader
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Sixth patch: SDL2's Android sensor loop uses ALooper_pollAll, which the
-    # NDK 27+ headers mark unavailable (obsoleted in Android 1). Use the
-    # equivalent ALooper_pollOnce (same non-blocking semantics at timeout 0).
-    # This is upstream SDL's own fix for libsdl-org/SDL#9792 (the exact NDK-27
-    # build failure): commit 558630d "Use ALooper_pollOnce() instead of
-    # ALooper_pollAll()" notes the existing draining loop already handles all
-    # events, so no events are lost. SDL2 2.0.x never adopted it, hence the patch.
-    # The sensor looper is dedicated (not the Android UI message loop), so this
-    # cannot affect the main UI looper.
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/sdl2-android-alooper-pollonce.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Seventh patch: Binding Contract constraints describe the argument as a
-    # whole. Consume them at the expression's first factor so a string result
-    # does not reject numeric literals nested in concatenations or ternaries.
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/squirrel-binding-contract-expression-scope.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Eighth patch: RTTI hash_code is not stable across macOS dynamic-library
-    # boundaries. Use a type-name hash so returned native objects retain their
-    # registered Squirrel class when producer and consumer live in different modules.
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/simplesquirrel-stable-type-hash.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Ninth patch: preserve an outer signature while nested binding discovery grows its storage.
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/squirrel-nested-call-signature-lifetime.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Tenth patch: avoid an invalid fixed-point plus NEON64 mpg123 configuration on Apple Silicon.
-    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
-        COMMAND ${CMAKE_COMMAND}
-            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/mpg123-apple-fpu-detection.patch
-            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/medialoader
-            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
 
     # Stamp the git versions into the install tree after every install so
     # prebuilt-mode consumers (and eve's build info) can report exactly which
@@ -389,7 +307,6 @@ function(check_third_party_project name repo)
             CMAKE_GENERATOR "Ninja"
             LIST_SEPARATOR "|"
             CMAKE_ARGS ${_eve_tp_cmake_args}
-            PATCH_COMMAND ${_eve_tp_patch_cmd}
             BUILD_COMMAND ${_eve_tp_build_cmd} COMMAND ${_eve_tp_version_cmd}
             BUILD_ALWAYS 0
             EXCLUDE_FROM_ALL 1
@@ -402,7 +319,6 @@ function(check_third_party_project name repo)
             BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}
             LIST_SEPARATOR "|"
             CMAKE_ARGS ${_eve_tp_cmake_args}
-            PATCH_COMMAND ${_eve_tp_patch_cmd}
             BUILD_COMMAND ${_eve_tp_build_cmd} COMMAND ${_eve_tp_version_cmd}
             BUILD_ALWAYS 0
             EXCLUDE_FROM_ALL 1
@@ -421,6 +337,14 @@ function(check_third_party_project name repo)
         ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/include)
     target_link_directories(eve_engine_includes INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/lib)
+    # Recorded for cmake/thirdparty_libs.cmake: on ELF/Mach-O the archive route has
+    # to select a third-party archive by path, because the linker prefers the
+    # same-named shared library that also lives in this directory.
+    set(EVENGINE_TP_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}"
+        CACHE INTERNAL "Effective third-party install prefix" FORCE)
+    set(EVENGINE_TP_LIB_DIR
+        "${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/lib"
+        CACHE INTERNAL "Third-party install lib directory")
 endfunction()
 
 # Load third party project from github
@@ -443,6 +367,9 @@ function(load_third_party)
     else()
         set(_eve_tp_platform ${BUILD_PLATFORM})
     endif()
+    if(EVENGINE_NATIVE_ARM64)
+        string(APPEND _eve_tp_platform "-arm64")
+    endif()
     set(TP_BUILD_PATH ${_eve_tp_platform}${DEBUG_APPENDIX})
     message("Third Party Build Path: ${TP_BUILD_PATH}")
 
@@ -450,6 +377,15 @@ function(load_third_party)
     # even when the compiled libraries come from a prebuilt install tree. Keep
     # the pinned checkout available on fresh CI runners as well as local builds.
     ensure_third_party_checkout()
+
+    # The aggregate owns these patches; engine-owned external/* patches stay here.
+    execute_process(COMMAND "${CMAKE_COMMAND}"
+        -P "${CMAKE_SOURCE_DIR}/third-party/cmake/apply_patches.cmake"
+        COMMAND_ERROR_IS_FATAL ANY)
+    include("${CMAKE_SOURCE_DIR}/cmake/third_party_release.cmake")
+    eve_resolve_third_party_release()
+    set(EVENGINE_THIRD_PARTY_BINARY_ONLY OFF CACHE INTERNAL
+        "Use installed third-party prefix" FORCE)
 
     if(EVENGINE_THIRD_PARTY_BINARY_DIR)
         cmake_path(ABSOLUTE_PATH EVENGINE_THIRD_PARTY_BINARY_DIR NORMALIZE
@@ -460,9 +396,15 @@ function(load_third_party)
                 "EVENGINE_THIRD_PARTY_BINARY_DIR must contain include/ and lib/: ${_eve_prebuilt_tp}")
         endif()
         message(STATUS "third-party: using read-only prebuilt install ${_eve_prebuilt_tp}")
-        target_include_directories(eve_engine_includes INTERFACE "${_eve_prebuilt_tp}/include")
+        # The install ships the pinned vulkan.hpp. Keep it ahead of the host SDK
+        # for every TU so the shared Vulkan-Hpp dispatcher has one layout.
+        target_include_directories(eve_engine_includes BEFORE INTERFACE "${_eve_prebuilt_tp}/include")
         eve_external_include("${_eve_prebuilt_tp}/include")
         target_link_directories(eve_engine_includes INTERFACE "${_eve_prebuilt_tp}/lib")
+        set(EVENGINE_TP_INSTALL_PREFIX "${_eve_prebuilt_tp}" CACHE INTERNAL
+            "Effective third-party install prefix" FORCE)
+        set(EVENGINE_TP_LIB_DIR "${_eve_prebuilt_tp}/lib" CACHE INTERNAL
+            "Third-party install lib directory")
         set(EVENGINE_THIRD_PARTY_BINARY_ONLY ON CACHE INTERNAL
             "Use installed third-party prefix" FORCE)
         # Read the install tree's version stamp (written by
@@ -530,7 +472,7 @@ function(load_third_party)
     #
     # Normal generation for assets without authored normals: medialoader maps
     # generateNormalsIfMissing to aiProcess_GenNormals (per-face, flat shading).
-    # A tracked patch (cmake/patches/medialoader-smooth-normals.patch) switches
+    # A tracked patch (third-party/cmake/patches/medialoader-smooth-normals.patch) switches
     # it to aiProcess_GenSmoothNormals, so sphere-like models shade smoothly
     # while hard edges (default smoothing angle 80 degrees) keep seams. The
     # patch is applied by the third-party ExternalProject's PATCH_COMMAND at

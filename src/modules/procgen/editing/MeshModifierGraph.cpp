@@ -236,7 +236,7 @@ GraphConnectionDecision MeshModifierGraphDomain::canConnect(const GraphPinRecord
     return decision;
 }
 
-EditorResult<GraphNodeRecord> MeshModifierGraphDomain::makeNode(const GraphNodeId& id,
+Result<GraphNodeRecord> MeshModifierGraphDomain::makeNode(const GraphNodeId& id,
                                                                 const std::string& operation) const {
     if (id.empty() || procgen::MeshModifierGraph::operationInputCount(operation) < 0)
         return eve::editing::failed<GraphNodeRecord>(EditorStatus::Rejected,

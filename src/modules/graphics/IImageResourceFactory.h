@@ -14,6 +14,7 @@ class Texture;
 /** @brief Backend-owned RGBA8 texture upload and release operations. */
 class IImageResourceFactory {
 public:
+    /** @brief Releases IImageResourceFactory resources. */
     virtual ~IImageResourceFactory() = default;
 
     /**
@@ -43,6 +44,7 @@ public:
         (void)height;
         (void)levels;
         (void)pixels;
+        /** @brief Failure. */
         return Result<Texture*>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
                                                            "image factory does not support explicit mips", {}, {},
                                                            "graphics.image.mips"));
@@ -67,6 +69,7 @@ public:
         (void)height;
         (void)depth;
         (void)pixels;
+        /** @brief Failure. */
         return Result<Texture*>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
                                                            "image factory does not support RGBA8 volumes", {}, {},
                                                            "graphics.image.volume"));

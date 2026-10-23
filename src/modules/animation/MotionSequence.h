@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /**
  * @file MotionSequence.h
@@ -21,13 +22,18 @@ namespace eve::animation {
  * @ownership Does not own the runtime; borrows Animation's MotionRuntime.
  * @thread Main-thread animation API only.
  */
-class MotionSequenceHandle {
+class EVENGINE_API_WORLD MotionSequenceHandle {
 public:
+    /** @brief Motion sequence handle. */
     MotionSequenceHandle() = default;
+    /** @brief Motion sequence handle. */
     MotionSequenceHandle(MotionRuntime *runtime, std::vector<MotionHandle> children);
 
+    /** @brief True when active. */
     [[nodiscard]] bool isActive() const noexcept;
+    /** @brief Child count. */
     [[nodiscard]] int childCount() const noexcept { return static_cast<int>(children_.size()); }
+    /** @brief Child. */
     [[nodiscard]] MotionHandle child(int index) const;
 
     /** @brief Complete every still-active child (fires onComplete). */
@@ -53,26 +59,40 @@ private:
  *
  * @ownership Borrows MotionRuntime; does not spawn until run().
  */
-class MotionSequence {
+class EVENGINE_API_WORLD MotionSequence {
 public:
+    /** @brief Motion sequence. */
     explicit MotionSequence(MotionRuntime &runtime);
 
+    /** @brief Append. */
     [[nodiscard]] eve::Result<void> append(MotionBuilder &&builder);
+    /** @brief Append. */
     [[nodiscard]] eve::Result<void> append(MotionVec2Builder &&builder);
+    /** @brief Append. */
     [[nodiscard]] eve::Result<void> append(MotionVec3Builder &&builder);
 
+    /** @brief Join. */
     [[nodiscard]] eve::Result<void> join(MotionBuilder &&builder);
+    /** @brief Join. */
     [[nodiscard]] eve::Result<void> join(MotionVec2Builder &&builder);
+    /** @brief Join. */
     [[nodiscard]] eve::Result<void> join(MotionVec3Builder &&builder);
 
+    /** @brief Inserts . */
     [[nodiscard]] eve::Result<void> insert(float atSeconds, MotionBuilder &&builder);
+    /** @brief Inserts . */
     [[nodiscard]] eve::Result<void> insert(float atSeconds, MotionVec2Builder &&builder);
+    /** @brief Inserts . */
     [[nodiscard]] eve::Result<void> insert(float atSeconds, MotionVec3Builder &&builder);
 
+    /** @brief Append interval. */
     [[nodiscard]] eve::Result<void> appendInterval(float seconds);
 
+    /** @brief Cursor. */
     [[nodiscard]] float cursor() const noexcept { return cursor_; }
+    /** @brief Duration. */
     [[nodiscard]] float duration() const noexcept { return duration_; }
+    /** @brief Item count. */
     [[nodiscard]] int itemCount() const noexcept { return static_cast<int>(items_.size()); }
 
     /** @brief Spawn every scheduled item into the runtime. */

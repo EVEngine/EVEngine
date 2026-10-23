@@ -8,7 +8,7 @@ namespace {
 eve::Status lifecycleConflict(std::string message) {
     return eve::Status::failure(
         eve::StatusCode::Conflict,
-        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move(message), "resource.transaction"));
+        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, message, "resource.transaction"));
 }
 
 eve::Result<void> forwardFailure(eve::Result<void>& result) { return eve::Result<void>::failure(result.status()); }

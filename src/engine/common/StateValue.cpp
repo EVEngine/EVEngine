@@ -35,6 +35,49 @@ bool parseSegment(const std::string& seg, std::string& key, std::vector<size_t>&
 
 }  // namespace
 
+Value toCanonicalStateValue(const StateValue& value) {
+    switch (value.kind()) {
+        case StateValue::Kind::Null: return Value::null();
+        case StateValue::Kind::Int: return Value::integer(value.asInt());
+        case StateValue::Kind::Float: return Value::number(value.asDouble());
+        case StateValue::Kind::Bool: return Value::boolean(value.asBool());
+        case StateValue::Kind::String: return Value::string(value.asString());
+        case StateValue::Kind::Array: {
+            Value::Array array;
+            array.reserve(value.arraySize());
+            for (size_t i = 0; i < value.arraySize(); ++i) array.push_back(toCanonicalStateValue(value.at(i)));
+            return Value::array(std::move(array));
+        }
+        case StateValue::Kind::Object: {
+            Value::Object object;
+            for (const auto& key : value.keys()) object.emplace(key, toCanonicalStateValue(*value.find(key)));
+            return Value::object(std::move(object));
+        }
+    }
+    return Value::null();
+}
+
+StateValue toLegacyStateValue(const Value& value) {
+    switch (value.type()) {
+        case Value::Type::Null: return StateValue::null();
+        case Value::Type::Int64: return StateValue::integer(value.asInt());
+        case Value::Type::Double: return StateValue::number(value.asDouble());
+        case Value::Type::Bool: return StateValue::boolean(value.asBool());
+        case Value::Type::String: return StateValue::string(value.asString());
+        case Value::Type::Array: {
+            StateValue array = StateValue::array();
+            for (size_t i = 0; i < value.arraySize(); ++i) array.pushBack(toLegacyStateValue(value.at(i)));
+            return array;
+        }
+        case Value::Type::Object: {
+            StateValue object = StateValue::object();
+            for (const auto& key : value.keys()) object.set(key, toLegacyStateValue(*value.find(key)));
+            return object;
+        }
+    }
+    return StateValue::null();
+}
+
 StateValue StateValue::integer(int64_t v) {
     StateValue sv(Kind::Int);
     sv.i_ = v;

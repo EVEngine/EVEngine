@@ -151,9 +151,27 @@ struct RTSMatchSnapshot {
     Match::Events events;
 };
 
-/** @brief Complete RTS-owned root state; shared provider state remains with its canonical modules. */
+/**
+ * @brief Stable pacing-group membership; entity handles and derived speed factors are excluded.
+ * @cost Linear in group member count; copied only in RTS snapshot capture/restore.
+ */
+struct RTSMovementGroupSnapshot {
+    /** @brief Stable member identity and the exact command whose lifetime binds membership. */
+    struct Member {
+        SubjectRef  subject;
+        std::string orderId;
+    };
+    std::vector<Member> members;
+    float               leadDistance = 2.f;
+};
+
+/**
+ * @brief Complete RTS-owned state; v2 adds movement groups, v1 imports with no groups.
+ * @cost Linear in saved entity and relationship counts; capture/restore copies owned snapshot vectors at checkpoint boundaries.
+ */
 struct RTSStateSnapshot {
-    std::uint32_t version = 1;
+    std::uint32_t                         version = 2;
+    std::vector<RTSMovementGroupSnapshot> movementGroups;
     std::vector<RTSUnitSnapshot> units;
     std::vector<RTSBuildingSnapshot> buildings;
     std::vector<RTSResourceNodeSnapshot> resourceNodes;

@@ -1,4 +1,5 @@
 #include "common/Module.h"
+#include "ModuleRegistryState.h"
 #include "common/Assert.h"
 #include "common/ECS.h"
 #include "common/Runtime.h"
@@ -19,7 +20,7 @@ namespace eve
 {
 
 struct ModuleBindAccess {
-    static auto& modules() { return ModuleManager::inst().registered_modules; }
+    static auto& modules() { return ModuleManager::inst().state_->registered_modules; }
 };
 
 namespace {
@@ -107,6 +108,17 @@ void bindUntilKeyExists(HSQUIRRELVM vm, SQInteger tableIdx, const char* key, ssq
         runExposer(it->second, table, name.c_str());
         if (eveRawHas(vm, tableIdx, key)) return;
     }
+    // A name can be provided by a post-ECS hook rather than by any module exposer
+    // (eve.SceneEntity is: the Scene module registers a hook at static-init that
+    // creates it). Hooks only run once the script ECS base exists -- flushPostEcsHooks
+    // is gated on it -- so a first lazy access to such a name scanned every module
+    // without ever injecting that base and then failed with "the index
+    // 'SceneEntity' does not exist", which is exactly the natural opening line
+    // `class MyThing extends eve.SceneEntity`. Inject the base script as the last
+    // step: every module has had its chance by now, so ensureScriptEcsInTable()'s
+    // precedence rules (it replaces a module-provided eve.System with the canonical
+    // one) are applied in the right order.
+    if (!eveRawHas(vm, tableIdx, key)) ensureScriptEcsInTable(table);
 }
 
 void bindOnDemand(HSQUIRRELVM vm, SQInteger tableIdx, const char* key) {
@@ -166,103 +178,8 @@ void installLazyClassGet(ssq::Table& eveTable) {
 }  // namespace
 
 
-
-ModuleManager& ModuleManager::inst() {
-    static ModuleManager instance;
-    return instance;
-}
-
-Module* ModuleManager::find(const char* name) {
-    EV_PARAM_CHECK(name != nullptr, "module name must not be null");
-    auto p = inst().registered_modules.find(name);
-    if (p == inst().registered_modules.end() || p->second.instance == nullptr) return nullptr;
-    return p->second.instance;
-}
-
-Module* ModuleManager::getInstanceRaw(const char* name) {
-    EV_PARAM_CHECK(name != nullptr, "module name must not be null");
-    return inst().registered_modules[name].instance;
-}
-
-Module* ModuleManager::requireInstanceRaw(const char* name) {
-    EV_PARAM_CHECK(name != nullptr, "module name must not be null");
-    auto& module = inst().registered_modules[name];
-    if (module.instance) return module.instance;
-    return module.creator();
-}
-
-void ModuleManager::insert(const char* name, Module* instance) {
-    EV_PARAM_CHECK(name != nullptr, "module name must not be null");
-    EV_PARAM_CHECK(instance != nullptr, "module instance must not be null");
-    inst().registered_modules[name].instance = instance;
-}
-
-void ModuleManager::requireAll() {
-    for (auto& entry : inst().registered_modules) {
-        if (!entry.second.instance && entry.second.creator)
-            entry.second.instance = entry.second.creator();
-    }
-}
-
-void ModuleManager::register_module(const char* name, creator_t c, exposer_t e) {
-    EV_PARAM_CHECK(name != nullptr, "module name must not be null");
-    const bool hasCreator = c != nullptr;  // function pointers can't be printed by zeroerr
-    EV_PARAM_CHECK(hasCreator, "module creator must not be null");
-    auto p = inst().registered_modules.find(name);
-    if (inst().plugin_registration_active_ && p != inst().registered_modules.end()) {
-        if (inst().plugin_registration_error_.empty())
-            inst().plugin_registration_error_ =
-                std::string("module name already registered: ") + name;
-        return;
-    }
-    if (p == inst().registered_modules.end()) {
-        inst().registered_modules.insert(
-            std::make_pair(std::string(name), ModuleInfo{c, e, nullptr}));
-        if (inst().plugin_registration_active_)
-            inst().plugin_registration_added_.emplace_back(name);
-    } else {
-        p->second = {c, e, nullptr};
-    }
-}
-
-eve::Result<void> ModuleManager::beginPluginRegistration() {
-    auto& manager = inst();
-    if (manager.plugin_registration_active_)
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Conflict, "a plugin registration transaction is already active", {}, {}, "module"));
-    manager.plugin_registration_active_ = true;
-    manager.plugin_registration_added_.clear();
-    manager.plugin_registration_error_.clear();
-    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
-}
-
-eve::Result<void> ModuleManager::finishPluginRegistration(bool commit) {
-    auto& manager = inst();
-    if (!manager.plugin_registration_active_)
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Conflict, "no plugin registration transaction is active", {}, {}, "module"));
-
-    const std::string error = manager.plugin_registration_error_;
-    if (!commit || !error.empty()) {
-        for (const auto& name : manager.plugin_registration_added_) {
-            auto it = manager.registered_modules.find(name);
-            if (it == manager.registered_modules.end())
-                continue;
-            delete it->second.instance;
-            manager.registered_modules.erase(it);
-        }
-    }
-    manager.plugin_registration_active_ = false;
-    manager.plugin_registration_added_.clear();
-    manager.plugin_registration_error_.clear();
-    if (!error.empty())
-        return eve::Result<void>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, error, {}, {}, "module"));
-    return eve::Result<void>::success(eve::Status::success(commit ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
-}
-
 void ModuleManager::exposeVM(ssq::VM& vm) {
-    for (auto& entry : inst().registered_modules) entry.second.exposed = false;
+    for (auto& entry : inst().state_->registered_modules) entry.second.exposed = false;
     prepareEcsScriptInjection();
 
     ssq::Table table;
@@ -274,34 +191,32 @@ void ModuleManager::exposeVM(ssq::VM& vm) {
     // domain-module convenience. Expose it before module constructors run so
     // every checked binding observes the same `eve.result` helper.
     script::exposeResultBindings(table);
+    // Script-side provider publication is the same kind of common contract: it is
+    // how user script answers a native extension point, and it must exist before
+    // any module constructor declares a capability seam.
+    script::exposeProviderBindings(table);
     installLazyClassGet(table);
     table.addFunc("_bindAllNativeClasses", []() { return ModuleManager::exposeAllForCompatibility(); });
     table.addFunc("_ensureScriptECS", []() { return ModuleManager::ensureScriptEcs(); });
 }
 
 void ModuleManager::expose(Runtime& runtime) {
-    inst().active_runtime_ = &runtime;
+    inst().state_->active_runtime_ = &runtime;
     exposeVM(runtime.vm());
 }
 
 void ModuleManager::expose(ssq::VM& vm) {
-    inst().active_runtime_ = nullptr;
+    inst().state_->active_runtime_ = nullptr;
     exposeVM(vm);
 }
-
-Runtime* ModuleManager::runtime() { return inst().active_runtime_; }
 
 ssq::VM* ModuleManager::vm() {
     Runtime* active = runtime();
     return active ? &active->vm() : nullptr;
 }
 
-void ModuleManager::detach(Runtime* runtime) {
-    if (inst().active_runtime_ == runtime) inst().active_runtime_ = nullptr;
-}
-
 int ModuleManager::expose_pending() {
-    Runtime* active = inst().active_runtime_;
+    Runtime* active = inst().state_->active_runtime_;
     if (!active)
         return -1;
     int count = 0;
@@ -309,7 +224,7 @@ int ModuleManager::expose_pending() {
         auto scope = active->enter();
         auto stack = active->guard();
         ssq::Table table = active->table("eve");
-        for (auto& D : inst().registered_modules) {
+        for (auto& D : inst().state_->registered_modules) {
             if (D.second.exposed || !D.second.exposer)
                 continue;
             D.second.exposer(table);
@@ -324,7 +239,7 @@ int ModuleManager::expose_pending() {
 }
 
 int ModuleManager::ensureScriptEcs() {
-    Runtime* active = inst().active_runtime_;
+    Runtime* active = inst().state_->active_runtime_;
     if (!active) return -1;
     try {
         auto scope = active->enter();
@@ -343,11 +258,5 @@ int ModuleManager::exposeAllForCompatibility() {
     if (ensureScriptEcs() < 0) return -1;
     return count;
 }
-
-ModuleRegister::ModuleRegister(const char* name,
-    ModuleManager::creator_t c, ModuleManager::exposer_t e) {
-    ModuleManager::register_module(name, c, e);
-}
-
 
 } // namespace eve

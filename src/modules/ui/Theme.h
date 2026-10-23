@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include <cstdint>
 #include <string>
@@ -28,6 +29,8 @@ struct ThemeLayout {
     float sectionSpacingY = 6.f;
     float searchMinWidth = 120.f;
     float searchIconGap = 7.f;
+    float tabBarHeight      = 32.f;
+    float panelHeaderHeight = 28.f;
 };
 
 /**
@@ -35,7 +38,7 @@ struct ThemeLayout {
  * Applied to ImGui each frame via applyThemeToImGui; metrics are design-time
  * units at uiScale=1 and are multiplied by the current UI scale.
  */
-struct Theme {
+struct EVENGINE_API_WORLD Theme {
     /** CSS-like component layout defaults; explicit widget metrics override them. */
     ThemeLayout layout;
 
@@ -122,6 +125,7 @@ struct Theme {
 
     /** @brief Built-in presets with matching geometry; only colors differ. */
     static Theme dark();
+    /** @brief Light. */
     static Theme light();
 };
 
@@ -161,45 +165,52 @@ enum class StyleClassStatus : uint8_t {
  * @thread UI thread only.
  * @reentrancy Does not invoke callbacks.
  */
-[[nodiscard]] StyleClassStatus defineStyleClass(const std::string &name,
-                                                const std::string &parent = "");
+[[nodiscard]] EVENGINE_API_WORLD StyleClassStatus defineStyleClass(const std::string &name,
+                                                                   const std::string &parent = "");
 /** @brief Sets text/background/border/accent RGBA on an existing style class. */
-[[nodiscard]] StyleClassStatus setStyleClassColor(const std::string &name,
-                                                 const std::string &property, float r, float g,
-                                                 float b, float a);
+[[nodiscard]] EVENGINE_API_WORLD StyleClassStatus setStyleClassColor(const std::string &name,
+                                                                     const std::string &property, float r, float g,
+                                                                     float b, float a);
 /** @brief Sets padding, rounding, or alpha on an existing style class. */
-[[nodiscard]] StyleClassStatus setStyleClassMetric(const std::string &name,
-                                                  const std::string &property, float x,
-                                                  float y = 0.f);
+[[nodiscard]] EVENGINE_API_WORLD StyleClassStatus setStyleClassMetric(const std::string &name,
+                                                                      const std::string &property, float x,
+                                                                      float y = 0.f);
 /** @brief Resolves inheritance into a sparse class and reports an explicit lookup status. */
-[[nodiscard]] StyleClassStatus resolveStyleClass(const std::string &name, StyleClass *out);
+[[nodiscard]] EVENGINE_API_WORLD StyleClassStatus resolveStyleClass(const std::string &name, StyleClass *out);
 /** @brief Clears user-defined style classes. Intended for runtime/test teardown. */
-void clearStyleClasses();
+EVENGINE_API_WORLD void clearStyleClasses();
 /** @brief Stable script-facing spelling of a mutation status. */
 const char *styleClassStatusName(StyleClassStatus status);
 
-Theme &globalTheme();
+/** @brief Global theme. */
+EVENGINE_API_WORLD Theme &globalTheme();
 /** @brief Current preset name: "dark", "light", or "custom". */
-const std::string &globalThemeName();
+EVENGINE_API_WORLD const std::string &globalThemeName();
 
-void setGlobalTheme(const Theme &theme);
-void setGlobalTheme(const Theme &theme, const std::string &name);
+/** @brief Sets the global theme. */
+EVENGINE_API_WORLD void setGlobalTheme(const Theme &theme);
+/** @brief Sets the global theme. */
+EVENGINE_API_WORLD void setGlobalTheme(const Theme &theme, const std::string &name);
 
 /** @brief Apply a named preset ("dark" / "light"). Case-insensitive. Returns false if unknown. */
 bool setThemeByName(const std::string &name);
 
 /** @brief Logical (point-space) UI scale. Default 1.0. */
-void setThemeUiScale(float scale);
-float themeUiScale();
+EVENGINE_API_WORLD void  setThemeUiScale(float scale);
+/** @brief Theme ui scale. */
+EVENGINE_API_WORLD float themeUiScale();
 
 /** Display DPI ratio (e.g. 1.5 on Windows at 150%, 2.0 on Retina). The font
  *  atlas is rasterized at this resolution so glyphs stay crisp; UI scale and
  *  FontGlobalScale then preserve the intended logical size per platform. */
+/** @brief Sets the theme dpi scale. */
 void setThemeDpiScale(float dpiScale);
+/** @brief Theme dpi scale. */
 float themeDpiScale();
 
 /** @brief Push tokens into ImGui style. Metrics are multiplied by uiScale (default: themeUiScale()). */
-void applyThemeToImGui(const Theme &theme);
-void applyThemeToImGui(const Theme &theme, float uiScale);
+EVENGINE_API_WORLD void applyThemeToImGui(const Theme &theme);
+/** @brief Applies theme to im gui. */
+EVENGINE_API_WORLD void applyThemeToImGui(const Theme &theme, float uiScale);
 
 }  // namespace eve::ui

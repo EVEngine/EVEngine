@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief 载具模块数据模型：载具模板 / 命令 / 载具实体。
@@ -47,10 +49,11 @@ enum class VehicleOrderType : uint8_t { Move, AttackMove, Attack, Stop, Hold };
  * @thread Thread-safe because the characters are immutable.
  * @reentrancy Does not invoke callbacks.
  */
-const char* vehicleOrderTypeName(VehicleOrderType type);
+EVENGINE_API_DOMAINS const char* vehicleOrderTypeName(VehicleOrderType type);
 
 /** @brief Writes the stable vehicle-order protocol name. */
 inline std::ostream& operator<<(std::ostream& stream, VehicleOrderType type) {
+    /** @brief Vehicle order type name. */
     return stream << vehicleOrderTypeName(type);
 }
 
@@ -95,9 +98,9 @@ struct MountDef {
     std::string aimMode   = "auto";  // "auto" | "manual"
 };
 
-/** @brief 3D 悬架车轮配置（raycast 悬架用）。 */
+/** @brief Wheel mount for 3D ray suspension or 2D top-down tire contact. */
 struct SuspensionWheel {
-    /** @brief 相对车体原点的局部偏移（米，+Y 向上）。 */
+    /** @brief Local mount in meters: 3D uses +Y up; top-down 2D uses XY with z = 0. */
     float x          = 0.f;
     float y          = 0.f;
     float z          = 0.f;
@@ -109,7 +112,7 @@ struct SuspensionWheel {
     bool  steer      = true;
 };
 
-/** @brief 3D 悬架参数（车辆模板的一部分）。 */
+/** @brief Suspension and tire parameters owned by the immutable vehicle definition. */
 struct SuspensionConfig {
     /** @brief 悬架最大行程（米）。 */
     float maxTravel = 0.3f;
@@ -117,6 +120,18 @@ struct SuspensionConfig {
     float driveForce = 2000.f;
     /** @brief 侧向抓地系数（越大越不容易侧滑）。 */
     float                        lateralGrip = 12.f;
+    /** @brief Tire inertia in kg*m^2; all wheels use this definition value. */
+    float wheelInertia = .01f;
+    /** @brief Tire friction coefficient and longitudinal / cornering stiffness in N. */
+    float tireFriction = 1.f, longitudinalStiffness = 10000.f, corneringStiffness = 10000.f;
+    /** @brief Rolling-resistance coefficient and maximum brake torque per wheel in Nm. */
+    float rollingResistance = .015f, brakeTorque = 1000.f;
+    /** @brief Steering wheel deflection limit in radians, in [0, 1.4]. */
+    float maxSteerAngle = .6f;
+    /** @brief Virtual support acceleration for top-down XY tires in m/s^2; zero means airborne.
+     * Independent of planar world gravity: no vertical ground exists in the top-down model.
+     */
+    float                        supportAcceleration2D = 9.81f;
     std::vector<SuspensionWheel> wheels;
 };
 
@@ -170,10 +185,12 @@ struct VehicleEvent {
 };
 
 /** @brief 载具实体：数据全部在组件里，行为在 VehicleSystem。 */
-class VehicleEntity : public ecs::Entity {
+class EVENGINE_API_DOMAINS VehicleEntity : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(VehicleEntity, ecs::Entity)
 
+    /** @brief Release. */
     void release() override { ecs::DestroyEntity(this); }
 
     /** @brief 稳定实例 id / 模板 id / 阵营。 */
@@ -248,7 +265,7 @@ public:
      * `current` remain as a compatibility projection for existing consumers;
      * VehicleSystem is the only writer and callers must not mutate them.
      */
-    struct Orders {
+    struct EVENGINE_API_DOMAINS Orders {
         std::vector<VehicleOrder> queue;
         int                       current = -1;
 
@@ -290,9 +307,14 @@ public:
         std::string                            space;  // "2d" | "3d" | ""
     };
 
-    /** @brief 悬架运行时状态（与模板 wheels 一一对应）。 */
+    /** @brief Completed wheel state in configured mount order, or the generated default layout order. */
     struct SuspensionState {
+        /** @brief WheelState public API. */
         struct WheelState {
+            /** @brief Completed wheel angular velocity in rad/s; pending steps do not publish this state. */
+            double angularVelocity = 0;
+            /** @brief Last completed SI contact diagnostics, derived from the submitted tire impulse. */
+            double longitudinalForce = 0, lateralForce = 0, normalLoad = 0, slipRatio = 0, slipAngle = 0;
             float prevCompression = 0.f;
             bool  grounded        = false;
         };
@@ -351,6 +373,7 @@ class IVehicleDamageModifier {
 public:
     static constexpr const char* capabilityName = "IVehicleDamageModifier";
 
+    /** @brief Releases IVehicleDamageModifier resources. */
     virtual ~IVehicleDamageModifier() = default;
 
     /** @brief 返回修正后的伤害（默认原值；装甲区倍率在修饰器之后应用）。 */

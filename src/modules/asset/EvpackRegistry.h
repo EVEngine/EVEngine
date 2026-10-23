@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file EvpackRegistry.h
@@ -20,6 +22,7 @@ struct EvpackHandle {
     PersistentId buildId;
     std::uint64_t generation = 0;
 
+    /** @brief Operator ==. */
     friend bool operator==(const EvpackHandle&, const EvpackHandle&) noexcept = default;
 };
 
@@ -56,6 +59,7 @@ struct EvpackRegistryEvent {
 /** @brief Opaque identity used to cancel a registry subscription. */
 struct EvpackRegistrySubscription {
     std::uint64_t value = 0;
+    /** @brief Operator ==. */
     friend bool operator==(const EvpackRegistrySubscription&,
                            const EvpackRegistrySubscription&) noexcept = default;
 };
@@ -72,7 +76,9 @@ struct EvpackUnmountReceipt {
  */
 class PreparedEvpackMount {
 public:
+    /** @brief Constructs a PreparedEvpackMount. */
     PreparedEvpackMount(PreparedEvpackMount&&) noexcept = default;
+    /** @brief Operator =. */
     PreparedEvpackMount& operator=(PreparedEvpackMount&&) noexcept = default;
     PreparedEvpackMount(const PreparedEvpackMount&) = delete;
     PreparedEvpackMount& operator=(const PreparedEvpackMount&) = delete;
@@ -83,8 +89,9 @@ public:
     [[nodiscard]] const PersistentId& buildId() const noexcept { return pack_->buildId(); }
 
 private:
-    friend Result<PreparedEvpackMount> prepareEvpackMount(
-        std::span<const std::uint8_t>, const EvpackLimits&, const EvpackTrust&);
+    friend EVENGINE_API_FOUNDATION Result<PreparedEvpackMount> prepareEvpackMount(std::span<const std::uint8_t>,
+                                                                                  const EvpackLimits&,
+                                                                                  const EvpackTrust&);
     friend class EvpackRegistry;
     explicit PreparedEvpackMount(std::shared_ptr<const Evpack> pack) : pack_(std::move(pack)) {}
     std::shared_ptr<const Evpack> pack_;
@@ -98,12 +105,11 @@ private:
  * @thread Worker-safe.
  * @reentrancy Does not invoke callbacks.
  */
-[[nodiscard]] Result<PreparedEvpackMount> prepareEvpackMount(
-    std::span<const std::uint8_t> bytes, const EvpackLimits& limits = {},
-    const EvpackTrust& trust = {});
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<PreparedEvpackMount> prepareEvpackMount(
+    std::span<const std::uint8_t> bytes, const EvpackLimits& limits = {}, const EvpackTrust& trust = {});
 
 /** @brief Thread-safe owner of current runtime package generations. */
-class EvpackRegistry {
+class EVENGINE_API_FOUNDATION EvpackRegistry {
 public:
     using Callback = std::function<Result<void>(const EvpackRegistryEvent&)>;
 

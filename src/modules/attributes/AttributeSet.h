@@ -1,9 +1,12 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 
 #include <cstdint>
 #include <functional>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -57,10 +60,11 @@ struct ParsedAttributeOperation {
  * @brief Parse a built-in operation spelling used by existing data and APIs.
  * @return A normalized operation, or a rejected Result for an unknown spelling.
  */
-[[nodiscard]] eve::Result<ParsedAttributeOperation> parseAttributeOperation(std::string_view operation, double value);
+[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<ParsedAttributeOperation> parseAttributeOperation(
+    std::string_view operation, double value);
 
 /** @brief Registry for explicitly named custom attribute policies. */
-class AttributeOperationRegistry {
+class EVENGINE_API_FOUNDATION AttributeOperationRegistry {
 public:
     using Function = std::function<double(double current, double value)>;
 
@@ -89,7 +93,7 @@ private:
  * assigned by AttributeSet and breaks equal-priority ties. For Custom,
  * `policyId` names a registered AttributeOperationRegistry policy.
  */
-struct AttributeModifier {
+struct EVENGINE_API_FOUNDATION AttributeModifier {
     ModifierId         id;
     AttributeId        attribute;
     SourceId           source;
@@ -99,19 +103,28 @@ struct AttributeModifier {
     ModifierSequence   sequence  = 0;
     std::string        policyId;
 
+    /** @brief Attribute modifier. */
     AttributeModifier() = default;
 
     /** @brief Construct a canonical modifier with an explicit operation. */
     AttributeModifier(ModifierId modifierId, AttributeId attributeId, SourceId sourceId,
                       AttributeOperation operationValue, double modifierValue, ModifierPriority priorityValue = 0,
                       ModifierSequence sequenceValue = 0, std::string policy = {})
+        /** @brief Id. */
         : id(std::move(modifierId)),
+          /** @brief Attribute. */
           attribute(std::move(attributeId)),
+          /** @brief Source. */
           source(std::move(sourceId)),
+          /** @brief Operation. */
           operation(operationValue),
+          /** @brief Value. */
           value(modifierValue),
+          /** @brief Priority. */
           priority(priorityValue),
+          /** @brief Sequence. */
           sequence(sequenceValue),
+          /** @brief Policy id. */
           policyId(std::move(policy)) {}
 
     /**
@@ -138,14 +151,18 @@ struct AttributeValue {
  * MultiplicativePercent factors, then priority/sequence ordered Override and
  * Clamp operations. Custom policies participate in the final ordered phase.
  */
-[[nodiscard]] double computeAttributeValue(const AttributeValue&             attribute,
-                                           const AttributeOperationRegistry* customOperations = nullptr);
+[[nodiscard]] EVENGINE_API_FOUNDATION double computeAttributeValue(
+    const AttributeValue& attribute, const AttributeOperationRegistry* customOperations = nullptr);
+
+class AttributeSetStateAdapter;
 
 /** @brief Generic owning collection of canonical attributes and modifiers. */
-class AttributeSet {
+class EVENGINE_API_FOUNDATION AttributeSet {
 public:
     /** @brief Construct a set associated with an optional stable subject id. */
     explicit AttributeSet(std::string subject = {});
+    /** @brief Withdraw world-state capability listeners. */
+    ~AttributeSet();
     /** @brief Copy a set while rebuilding its internal borrowed enumeration view. */
     AttributeSet(const AttributeSet& other);
     /** @brief Copy a set while rebuilding its internal borrowed enumeration view. */
@@ -211,6 +228,8 @@ public:
 private:
     void rebuildOrder() const;
     static bool isValidOperation(const AttributeModifier& modifier) noexcept;
+    void        publishWorldAdapter();
+    void        withdrawWorldAdapter();
 
     std::string                                     subject_;
     std::unordered_map<AttributeId, AttributeValue> values_;
@@ -218,6 +237,7 @@ private:
     mutable bool                                    orderDirty_     = true;
     ModifierSequence                                nextSequence_   = 1;
     ModifierSequence                                nextModifierId_ = 1;
+    std::unique_ptr<AttributeSetStateAdapter>       worldAdapter_;
 };
 
 }  // namespace eve::attributes

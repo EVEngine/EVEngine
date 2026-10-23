@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "image/ImageData.h"
@@ -17,14 +19,15 @@ namespace image
  * This module does not know how to draw images on screen; only love.graphics
  * knows that.
  **/
-class Image : public Module
-{
+class EVENGINE_API_PLATFORM Image : public Module {
 public:
 	using FormatHandler = medialoader::FormatHandler;
 
     Module_REG(Image);
 
+	/** @brief Image. */
 	Image();
+	/** @brief Image. */
 	virtual ~Image();
 
 	/**
@@ -76,10 +79,13 @@ public:
 	 **/
 	bool isCompressed(Data *data);
 
-	std::vector<ref<ImageData>> newCubeFaces(ImageData *src);
-	std::vector<ref<ImageData>> newVolumeLayers(ImageData *src);
+        /** @brief Creates a cube faces. @ownership Caller deletes unless documented otherwise. */
+        std::vector<script::Owned<ImageData>> newCubeFaces(ImageData *src);
+        /** @brief Creates a volume layers. @ownership Caller deletes unless documented otherwise. */
+        std::vector<script::Owned<ImageData>> newVolumeLayers(ImageData *src);
 
-	const std::list<FormatHandler *> &getFormatHandlers() const;
+        /** @brief Returns the format handlers. */
+        const std::list<FormatHandler *> &getFormatHandlers() const;
 
 private:
 
@@ -88,7 +94,7 @@ private:
 	// Image format handlers we can use for decoding and encoding ImageData.
 	std::list<FormatHandler *> formatHandlers;
 
-}; // Image
+};  // Image
 
 } // image
 } // eve

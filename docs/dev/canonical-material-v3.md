@@ -1,6 +1,6 @@
 # Canonical material v3
 
-Historical format contract: the current format is [material v6](canonical-material-v6.md).
+Historical format contract: the current write format is [material v15](canonical-material-v15.md).
 V3 remains its N-1 input/runtime compatibility format; the v3/v2 window described
 below belongs to the preceding tool version.
 

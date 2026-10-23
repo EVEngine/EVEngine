@@ -1,10 +1,11 @@
 #include "devtools/AiPanel.hpp"
 #include "devtools/ConsolePanel.hpp"
+#include "devtools/FrameStatsPanel.hpp"
 
 #include <imgui.h>
 #include <imgui_internal.h>
 
-// Desktop-only host registration: draws the DevTools AI / console ImGui windows.
+// Desktop-only host registration: draws the DevTools AI / console / stats ImGui windows.
 // Kept outside EVDevTools (which avoids imgui.h inlines → MSVC 65535 export
 // bloat); compiled into the `eve` host executable, where imgui is linked.
 //
@@ -97,10 +98,25 @@ void drawConsoleWindow(ConsolePanel& panel) {
     if (!visible) panel.setVisible(false);
 }
 
+void drawFrameStatsWindow(FrameStatsPanel& panel) {
+    if (!panel.isVisible() || !GImGui || !GImGui->WithinFrameScope) return;
+    bool visible = panel.isVisible();
+    ImGui::SetNextWindowBgAlpha(0.72f);
+    if (ImGui::Begin("Frame stats", &visible,
+                     ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing |
+                         ImGuiWindowFlags_NoNav)) {
+        ImGui::TextUnformatted(panel.format().c_str());
+        if (ImGui::Button("Hide")) panel.setVisible(false);
+    }
+    ImGui::End();
+    if (!visible) panel.setVisible(false);
+}
+
 struct HostPanels {
     HostPanels() {
         AiPanel::setImGuiDrawer(&drawAiWindow);
         ConsolePanel::setImGuiDrawer(&drawConsoleWindow);
+        FrameStatsPanel::setImGuiDrawer(&drawFrameStatsWindow);
     }
 };
 

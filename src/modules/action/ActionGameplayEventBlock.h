@@ -1,6 +1,12 @@
 #pragma once
+#include "common/Export.h"
 
-/** @file ActionGameplayEventBlock.h @brief Typed instantaneous gameplay-event action contract. */
+
+/** @file ActionGameplayEventBlock.h
+ *  @brief Typed instantaneous gameplay-event action contract.
+ *  @remarks L1 typed payload contract only — no domain mutation;
+ *           providers own handlers/sinks (`IActionNotifyProvider` / capabilities).
+ */
 
 #include "action/ActionNotifyRegistry.h"
 
@@ -10,7 +16,7 @@
 namespace eve::action {
 
 /** @brief Owning validated event request authored on an action timeline. */
-struct ActionGameplayEventBinding {
+struct EVENGINE_API_PLATFORM ActionGameplayEventBinding {
     /** @brief Canonical gameplay-tag event topic. */
     std::string tag;
     /** @brief Optional target index; absence routes the event to the source subject. */
@@ -31,6 +37,7 @@ struct ActionGameplayEventBinding {
 class IActionGameplayEventSink {
 public:
     static constexpr const char* capabilityName = "eve.action.gameplay-event-sink";
+    /** @brief Releases IActionGameplayEventSink resources. */
     virtual ~IActionGameplayEventSink() = default;
 
     /** @brief Emit one validated event or return a structured domain failure. */

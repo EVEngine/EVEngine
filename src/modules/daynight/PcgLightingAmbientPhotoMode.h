@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/PcgPhotoModeApply.h"
 #include "daynight/DayNight.h"
@@ -10,8 +12,9 @@ namespace eve::daynight {
  * @lifetime The borrowed DayNight target must outlive this authority or be detached first.
  * @thread Game thread only; assignments are synchronous and invoke no callbacks or scripts.
  */
-class PcgLightingAmbientPhotoMode final : public IPhotoModeFieldSink {
+class EVENGINE_API_WORLD PcgLightingAmbientPhotoMode final : public IPhotoModeFieldSink {
 public:
+    /** @brief Pcg lighting ambient photo mode. */
     ~PcgLightingAmbientPhotoMode() override;
     /** @brief Attach a borrowed DayNight target and seed local state from it. */
     void setTarget(DayNight *target) noexcept;

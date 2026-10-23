@@ -18,19 +18,19 @@ using eve::resource::ReservationId;
 using eve::resource::ResourceId;
 
 eve::Diagnostic invalidArgument(std::string message, std::string path = {}) {
-    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message), std::move(path));
+    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message, path);
 }
 
 eve::Diagnostic unsupported(std::string message, std::string path = {}) {
-    return eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, std::move(message), std::move(path));
+    return eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, message, path);
 }
 
 eve::Diagnostic conflict(std::string message, std::string path = {}) {
-    return eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move(message), std::move(path));
+    return eve::Diagnostic::error(eve::DiagnosticCode::Conflict, message, path);
 }
 
 eve::Diagnostic invariantFailure(std::string message, std::string path = {}) {
-    return eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, std::move(message), std::move(path));
+    return eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, message, path);
 }
 
 eve::Result<void> validateCost(const CostSpec& cost) {
@@ -50,7 +50,7 @@ eve::Status insufficientStatus(const Affordability& affordability) {
     return eve::Status::failure(
         eve::StatusCode::Rejected,
         eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "resource cost exceeds available balance",
-                               "cost", std::move(details)));
+                               "cost", details));
 }
 
 eve::Status unknownReservationStatus() {
@@ -131,6 +131,12 @@ eve::Result<void> EconomyLedgerResourceAccount::validateLedgerRange(const CostSp
             return eve::Result<void>::failure(eve::Status::failure(
                 eve::StatusCode::Unsupported,
                 unsupported("EconomyLedger cannot represent this resource amount", item.resource.value())));
+        const int counter =
+            debit ? ledger_.getExpense(item.resource.value()) : ledger_.getIncome(item.resource.value());
+        if (counter < 0 || item.amount.value() > std::numeric_limits<int>::max() - counter)
+            return eve::Result<void>::failure(eve::Status::failure(
+                eve::StatusCode::Failed,
+                invariantFailure("economy ledger accounting counter would overflow", item.resource.value())));
         if (debit) continue;
 
         auto balance = balanceOf(item.resource);

@@ -4,24 +4,60 @@
 #include "animation/AnimPlayer.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
+#include "animation/RootMotionPolicy.h"
 
 #include <algorithm>
 #include <cmath>
 #include <set>
+#include <unordered_map>
 #include <utility>
 
 namespace eve::animation {
+
+/**
+ * @brief Immutable lookup topology built before a montage is published.
+ *
+ * The indices borrow no source objects: they remain valid until the next
+ * successful prepare or split replacement. Runtime presentation only reads
+ * this object, so section/clip resolution performs no allocation.
+ */
+class PreparedMontage {
+public:
+    struct Section {
+        Duration    start;
+        Duration    end;
+        std::size_t clipIndex          = 0;
+        bool        contiguousPrevious = false;
+        bool        contiguousNext     = false;
+    };
+
+    std::vector<Section>                        sections;
+    std::vector<std::pair<Duration, Duration>> physicalSections;
+    std::unordered_map<std::string, std::size_t> clipIndices;
+};
+
 namespace {
 
-TransformTRS filtered(TransformTRS delta, MontageRootMotionMask mask) {
-    if (!mask.translationX) delta.px = 0.0f;
-    if (!mask.translationY) delta.py = 0.0f;
-    if (!mask.translationZ) delta.pz = 0.0f;
-    if (!mask.rotation) {
-        delta.qx = delta.qy = delta.qz = 0.0f;
-        delta.qw                       = 1.0f;
-    }
-    return delta;
+template <class T>
+Result<T> invalid(std::string message, std::string path) {
+    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
+}
+
+RootMotionLockAxes locksFromMask(MontageRootMotionMask mask) noexcept {
+    RootMotionLockAxes locks = RootMotionLockAxes::None;
+    if (!mask.translationX) locks = locks | RootMotionLockAxes::X;
+    if (!mask.translationY) locks = locks | RootMotionLockAxes::Y;
+    if (!mask.translationZ) locks = locks | RootMotionLockAxes::Z;
+    return locks;
+}
+
+MontageRootMotionMask maskFromPolicy(const RootMotionPolicy& policy) noexcept {
+    MontageRootMotionMask mask;
+    mask.translationX = !hasLock(policy.lockAxes, RootMotionLockAxes::X);
+    mask.translationY = !hasLock(policy.lockAxes, RootMotionLockAxes::Y);
+    mask.translationZ = !hasLock(policy.lockAxes, RootMotionLockAxes::Z);
+    mask.rotation     = !policy.lockRotation;
+    return mask;
 }
 
 void multiplyRotation(TransformTRS& total, float x, float y, float z, float w) {
@@ -35,10 +71,44 @@ void multiplyRotation(TransformTRS& total, float x, float y, float z, float w) {
     total.qw       = tw * w - tx * x - ty * y - tz * z;
 }
 
+Result<std::unique_ptr<PreparedMontage>> buildPreparedMontage(const action::ActionTimeline& timeline,
+                                                               const std::vector<MontageClipAsset>& clips) {
+    auto prepared = std::make_unique<PreparedMontage>();
+    prepared->clipIndices.reserve(clips.size());
+    for (std::size_t index = 0; index < clips.size(); ++index)
+        prepared->clipIndices.emplace(clips[index].uri, index);
+
+    prepared->sections.reserve(timeline.animationSections.size());
+    for (std::size_t index = 0; index < timeline.animationSections.size(); ++index) {
+        const auto& section = timeline.animationSections[index];
+        const auto  clip    = prepared->clipIndices.find(section.animationUri);
+        if (clip == prepared->clipIndices.end())
+            return invalid<std::unique_ptr<PreparedMontage>>("animation section clip was not supplied",
+                                                             "animationSections[" + std::to_string(index) +
+                                                                 "].animationUri");
+        prepared->sections.push_back(
+            {section.start, section.end, clip->second,
+             index > 0 && timeline.animationSections[index - 1].end == section.start,
+             index + 1 < timeline.animationSections.size() &&
+                 timeline.animationSections[index + 1].start == section.end});
+    }
+
+    prepared->physicalSections.reserve(timeline.splitTimestamps.size() + 1U);
+    Duration start = Duration::zero();
+    for (const Duration split : timeline.splitTimestamps) {
+        prepared->physicalSections.emplace_back(start, split);
+        start = split;
+    }
+    prepared->physicalSections.emplace_back(start, timeline.duration);
+    return Result<std::unique_ptr<PreparedMontage>>::success(std::move(prepared));
+}
+
 }  // namespace
 
 MontagePlayer::MontagePlayer(AnimSkeleton& skeleton)
-    : skeleton_(skeleton), player_(std::make_unique<AnimPlayer>(&skeleton)) {}
+    : skeleton_(skeleton), player_(std::make_unique<AnimPlayer>(&skeleton)) {
+    pushRootMotionPolicyToPlayer();
+}
 
 MontagePlayer::~MontagePlayer() = default;
 
@@ -93,22 +163,23 @@ Result<void> MontagePlayer::prepare(action::ActionTimeline timeline, std::vector
                 "animationSections[" + std::to_string(index) + "].sourceStartNs"));
     }
 
+    auto prepared = buildPreparedMontage(timeline, clips);
+    if (!prepared) return Result<void>::failure(prepared.status());
+
     timeline_      = std::move(timeline);
     clips_         = std::move(clips);
+    prepared_      = std::move(prepared).takeValue();
     activeSection_ = nullptr;
     player_->stop();
-    time_                        = Duration::zero();
-    lastTick_                    = SimulationTick::zero();
-    hasLastTick_                 = false;
-    started_                     = false;
-    playing_                     = false;
-    blendingOut_                 = false;
-    weight_                      = 1.0;
-    executionId_                 = {};
-    rootMotionMask_.translationX = timeline_->montage.rootMotionHorizontal;
-    rootMotionMask_.translationZ = timeline_->montage.rootMotionHorizontal;
-    rootMotionMask_.translationY = timeline_->montage.rootMotionVertical;
-    rootMotionMask_.rotation     = timeline_->montage.rootMotionRotation;
+    time_        = Duration::zero();
+    lastTick_    = SimulationTick::zero();
+    hasLastTick_ = false;
+    started_     = false;
+    playing_     = false;
+    blendingOut_ = false;
+    weight_      = 1.0;
+    executionId_ = {};
+    applyTimelineRootMotionChannels();
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
@@ -130,7 +201,8 @@ Result<void> MontagePlayer::reloadClips(IMontageClipProvider& provider) {
     auto          validated = candidate.prepare(*timeline_, std::move(replacements));
     if (!validated) return validated;
 
-    clips_ = std::move(candidate.clips_);
+    clips_    = std::move(candidate.clips_);
+    prepared_ = std::move(candidate.prepared_);
     player_->stop();
     activeSection_ = nullptr;
     if ((playing_ || blendingOut_) && time_ < timeline_->duration) {
@@ -148,11 +220,8 @@ Result<void> MontagePlayer::setSettings(action::ActionMontageSettings settings) 
     candidate.montage = settings;
     auto valid        = candidate.validate();
     if (!valid) return Result<void>::failure(valid.status());
-    timeline_->montage           = std::move(settings);
-    rootMotionMask_.translationX = timeline_->montage.rootMotionHorizontal;
-    rootMotionMask_.translationZ = timeline_->montage.rootMotionHorizontal;
-    rootMotionMask_.translationY = timeline_->montage.rootMotionVertical;
-    rootMotionMask_.rotation     = timeline_->montage.rootMotionRotation;
+    timeline_->montage = std::move(settings);
+    applyTimelineRootMotionChannels();
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
@@ -164,7 +233,10 @@ Result<void> MontagePlayer::setSectionSplits(std::vector<Duration> splitTimestam
     candidate.splitTimestamps = std::move(splitTimestamps);
     auto valid                = candidate.validate();
     if (!valid) return Result<void>::failure(valid.status());
+    auto prepared = buildPreparedMontage(candidate, clips_);
+    if (!prepared) return Result<void>::failure(prepared.status());
     timeline_->splitTimestamps = std::move(candidate.splitTimestamps);
+    prepared_                   = std::move(prepared).takeValue();
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
@@ -245,28 +317,71 @@ void MontagePlayer::stop() noexcept {
     executionId_   = {};
 }
 
-AnimClip* MontagePlayer::clipFor(std::string_view uri) const noexcept {
-    const auto found = std::find_if(clips_.begin(), clips_.end(), [&](const auto& asset) { return asset.uri == uri; });
-    return found == clips_.end() ? nullptr : found->clip.get();
+std::optional<std::size_t> MontagePlayer::sectionIndexAt(Duration time) const noexcept {
+    if (!prepared_ || prepared_->sections.empty()) return std::nullopt;
+    const auto found = std::upper_bound(
+        prepared_->sections.begin(), prepared_->sections.end(), time,
+        [](Duration value, const PreparedMontage::Section& section) { return value < section.start; });
+    if (found == prepared_->sections.begin()) return std::nullopt;
+    const auto candidate = std::prev(found);
+    if (time < candidate->start || time >= candidate->end) return std::nullopt;
+    return static_cast<std::size_t>(std::distance(prepared_->sections.begin(), candidate));
+}
+
+std::optional<Duration> MontagePlayer::nextSectionStartAfter(Duration time) const noexcept {
+    if (!prepared_) return std::nullopt;
+    const auto found = std::upper_bound(
+        prepared_->sections.begin(), prepared_->sections.end(), time,
+        [](Duration value, const PreparedMontage::Section& section) { return value < section.start; });
+    return found == prepared_->sections.end() ? std::nullopt : std::optional<Duration>(found->start);
 }
 
 const action::ActionAnimationSection* MontagePlayer::sectionAt(Duration time) const noexcept {
-    if (!timeline_) return nullptr;
-    for (const auto& section : timeline_->animationSections)
-        if (time >= section.start && time < section.end) return &section;
-    return nullptr;
+    const auto index = sectionIndexAt(time);
+    return index && timeline_ ? &timeline_->animationSections[*index] : nullptr;
+}
+
+double MontagePlayer::sectionEnvelopeAt(Duration time) const noexcept {
+    if (!timeline_ || !prepared_ || prepared_->sections.empty()) return 0.0;
+    auto index = sectionIndexAt(time);
+    if (!index && time == prepared_->sections.back().end) index = prepared_->sections.size() - 1U;
+    if (!index) return 0.0;
+    const auto& section  = timeline_->animationSections[*index];
+    const auto& topology = prepared_->sections[*index];
+    double      envelope = 1.0;
+    if (!topology.contiguousPrevious && !section.blendIn.isZero()) {
+        const auto elapsed = Duration::fromNanoseconds(time.nanoseconds() - section.start.nanoseconds());
+        envelope =
+            action::evaluateActionBlendCurve(section.blendInCurve, elapsed.seconds() / section.blendIn.seconds());
+    }
+    if (!topology.contiguousNext && !section.blendOut.isZero()) {
+        const auto remaining = Duration::fromNanoseconds(section.end.nanoseconds() - time.nanoseconds());
+        envelope *=
+            action::evaluateActionBlendCurve(section.blendOutCurve, remaining.seconds() / section.blendOut.seconds());
+    }
+    return envelope;
 }
 
 void MontagePlayer::activate(const action::ActionAnimationSection& section, Duration localTime) {
-    AnimClip*   clip            = clipFor(section.animationUri);
+    const auto sectionIndex = static_cast<std::size_t>(&section - timeline_->animationSections.data());
+    AnimClip*   clip         = clips_[prepared_->sections[sectionIndex].clipIndex].clip.get();
     const float authoredSeconds = static_cast<float>(
         Duration::fromNanoseconds(section.end.nanoseconds() - section.start.nanoseconds()).seconds());
     const float sourceStart = static_cast<float>(section.sourceStart.seconds());
     const float sourceEnd =
         section.sourceEnd.isZero() ? clip->getDuration() : static_cast<float>(section.sourceEnd.seconds());
     const float speed = (sourceEnd - sourceStart) / authoredSeconds;
-    player_->setBlendCurve(section.blendCurve == action::ActionBlendCurve::Linear ? AnimBlendCurve::Linear
-                                                                                  : AnimBlendCurve::EaseInOut);
+    const auto blendCurve = [](action::ActionBlendCurve curve) {
+        switch (curve) {
+            case action::ActionBlendCurve::Linear: return AnimBlendCurve::Linear;
+            case action::ActionBlendCurve::EaseIn: return AnimBlendCurve::EaseIn;
+            case action::ActionBlendCurve::EaseOut: return AnimBlendCurve::EaseOut;
+            case action::ActionBlendCurve::EaseInOut: return AnimBlendCurve::EaseInOut;
+            case action::ActionBlendCurve::SmoothStep: return AnimBlendCurve::SmoothStep;
+        }
+        return AnimBlendCurve::Linear;
+    };
+    player_->setBlendCurve(blendCurve(section.blendInCurve));
     if (!player_->isPlaying())
         player_->play(clip);
     else
@@ -285,13 +400,62 @@ void MontagePlayer::accumulateRootMotion(TransformTRS& total) const {
                      player_->getRootMotionRotationZ(), player_->getRootMotionRotationW());
 }
 
+void MontagePlayer::pushRootMotionPolicyToPlayer() noexcept {
+    player_->setRootMotionPolicy(rootMotionPolicy_)
+        .ignore("montage root-motion policy sync uses an already-validated policy snapshot");
+}
+
+void MontagePlayer::applyTimelineRootMotionChannels() noexcept {
+    MontageRootMotionMask mask;
+    mask.translationX = timeline_->montage.rootMotionHorizontal;
+    mask.translationZ = timeline_->montage.rootMotionHorizontal;
+    mask.translationY = timeline_->montage.rootMotionVertical;
+    mask.rotation     = timeline_->montage.rootMotionRotation;
+    rootMotionMask_                 = mask;
+    rootMotionPolicy_.lockAxes      = locksFromMask(mask);
+    rootMotionPolicy_.lockRotation  = !mask.rotation;
+    pushRootMotionPolicyToPlayer();
+}
+
+void MontagePlayer::setRootMotionMask(MontageRootMotionMask mask) noexcept {
+    rootMotionMask_                = mask;
+    rootMotionPolicy_.lockAxes     = locksFromMask(mask);
+    rootMotionPolicy_.lockRotation = !mask.rotation;
+    pushRootMotionPolicyToPlayer();
+}
+
+Result<void> MontagePlayer::setRootMotionPolicy(const RootMotionPolicy& policy) {
+    auto validated = validateRootMotionPolicy(policy);
+    if (!validated) return validated;
+    rootMotionPolicy_ = policy;
+    rootMotionMask_   = maskFromPolicy(policy);
+    auto pushed       = player_->setRootMotionPolicy(policy);
+    if (!pushed) return pushed;
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<void> MontagePlayer::setRootMotionCharacterYaw(float yawRadians) {
+    auto applied = player_->setRootMotionCharacterYaw(yawRadians);
+    if (!applied) return applied;
+    rootMotionPolicy_.characterYaw = yawRadians;
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
 Result<MontageAdvance> MontagePlayer::present(const action::ActionAdvance& advance, SimulationTick tick) {
-    if (!timeline_)
-        return Result<MontageAdvance>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage has not been prepared", "montage"));
-    if (!playing_)
-        return Result<MontageAdvance>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage is not playing", "montage"));
+    return presentImpl(advance, advance.timelineEvents, advance.activeBlocks, tick);
+}
+
+Result<MontageAdvance> MontagePlayer::present(action::ActionAdvance&& advance, SimulationTick tick) {
+    auto events       = std::move(advance.timelineEvents);
+    auto activeBlocks = std::move(advance.activeBlocks);
+    return presentImpl(advance, std::move(events), std::move(activeBlocks), tick);
+}
+
+Result<MontageAdvance>
+MontagePlayer::presentImpl(const action::ActionAdvance& advance, std::vector<action::ActionTimelineEvent> events,
+                           std::vector<MontageActiveBlock> activeBlocks, SimulationTick tick) {
+    if (!timeline_) return invalid<MontageAdvance>("montage has not been prepared", "montage");
+    if (!playing_) return invalid<MontageAdvance>("montage is not playing", "montage");
     if (advance.id != executionId_)
         return Result<MontageAdvance>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "action advance belongs to another execution", "advance.id"));
@@ -315,10 +479,8 @@ Result<MontageAdvance> MontagePlayer::present(const action::ActionAdvance& advan
     while (cursor < result.current) {
         const action::ActionAnimationSection* section = sectionAt(cursor);
         if (!section) {
-            auto next = std::find_if(timeline_->animationSections.begin(), timeline_->animationSections.end(),
-                                     [&](const auto& candidate) { return candidate.start > cursor; });
-            cursor =
-                next == timeline_->animationSections.end() ? result.current : std::min(next->start, result.current);
+            const auto next = nextSectionStartAfter(cursor);
+            cursor          = next ? std::min(*next, result.current) : result.current;
             activeSection_ = nullptr;
             if (gapPolicy_ == MontageGapPolicy::BindPose) player_->stop();
             continue;
@@ -333,8 +495,8 @@ Result<MontageAdvance> MontagePlayer::present(const action::ActionAdvance& advan
         if (cursor == section->end) activeSection_ = nullptr;
     }
 
-    result.events               = advance.timelineEvents;
-    result.activeBlocks         = advance.activeBlocks;
+    result.events               = std::move(events);
+    result.activeBlocks         = std::move(activeBlocks);
     result.sectionId            = activeSection_ ? std::optional<LogicalId>(activeSection_->id) : std::nullopt;
     result.completed            = advance.phase == action::ActionPhase::Completed;
     const double currentSeconds = result.current.seconds();
@@ -353,8 +515,9 @@ Result<MontageAdvance> MontagePlayer::present(const action::ActionAdvance& advan
             weight_ = std::min(weight_, 1.0 - t * t * (3.0 - 2.0 * t));
         }
     }
-    result.weight     = weight_;
-    result.rootMotion = filtered(result.rootMotion, rootMotionMask_);
+    weight_ *= sectionEnvelopeAt(result.current);
+    result.weight = weight_;
+    // Root motion is already policy-filtered (locks / facing / rotation) by the owned AnimPlayer.
     if (receiver_) receiver_->applyMontageRootMotion(result.rootMotion);
 
     time_        = result.current;
@@ -426,48 +589,44 @@ Result<MontageAdvance> MontagePlayer::jumpToTime(action::ActionExecutionId execu
 
 Result<MontageAdvance> MontagePlayer::jumpToSection(action::ActionExecutionId executionId, std::size_t sectionIndex,
                                                     SimulationTick tick) {
-    if (!timeline_)
-        return Result<MontageAdvance>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage has not been prepared", "montage"));
-    auto range = timeline_->sectionRange(sectionIndex);
-    if (!range) return Result<MontageAdvance>::failure(range.status());
-    return jumpToTime(executionId, range.value().first, tick);
+    if (!timeline_) return invalid<MontageAdvance>("montage has not been prepared", "montage");
+    if (!prepared_ || sectionIndex >= prepared_->physicalSections.size())
+        return invalid<MontageAdvance>("physical section index is out of range", "sectionIndex");
+    return jumpToTime(executionId, prepared_->physicalSections[sectionIndex].first, tick);
 }
 
 Result<MontageAdvance> MontagePlayer::evaluateSectionProgress(action::ActionExecutionId executionId,
                                                               std::size_t sectionIndex, double progress,
                                                               SimulationTick tick) {
     if (!std::isfinite(progress) || progress < 0.0 || progress > 1.0)
-        return Result<MontageAdvance>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "physical section progress must be in [0, 1]", "progress"));
-    if (!timeline_)
-        return Result<MontageAdvance>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage has not been prepared", "montage"));
-    auto range = timeline_->sectionRange(sectionIndex);
-    if (!range) return Result<MontageAdvance>::failure(range.status());
-    const auto     span   = range.value().second.nanoseconds() - range.value().first.nanoseconds();
-    const Duration target = Duration::fromNanoseconds(range.value().first.nanoseconds() +
+        return invalid<MontageAdvance>("physical section progress must be in [0, 1]", "progress");
+    if (!timeline_) return invalid<MontageAdvance>("montage has not been prepared", "montage");
+    if (!prepared_ || sectionIndex >= prepared_->physicalSections.size())
+        return invalid<MontageAdvance>("physical section index is out of range", "sectionIndex");
+    const auto&    range  = prepared_->physicalSections[sectionIndex];
+    const auto     span   = range.second.nanoseconds() - range.first.nanoseconds();
+    const Duration target = Duration::fromNanoseconds(range.first.nanoseconds() +
                                                       static_cast<std::int64_t>(std::llround(span * progress)));
     return jumpToTime(executionId, target, tick);
 }
 
 Result<std::size_t> MontagePlayer::physicalSectionIndex() const {
-    if (!timeline_)
-        return Result<std::size_t>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage has not been prepared", "montage"));
-    const auto found = std::upper_bound(timeline_->splitTimestamps.begin(), timeline_->splitTimestamps.end(), time_);
-    return Result<std::size_t>::success(
-        static_cast<std::size_t>(std::distance(timeline_->splitTimestamps.begin(), found)));
+    if (!timeline_) return invalid<std::size_t>("montage has not been prepared", "montage");
+    const auto found = std::upper_bound(prepared_->physicalSections.begin(), prepared_->physicalSections.end(), time_,
+                                        [](Duration value, const auto& range) { return value < range.second; });
+    const auto index = found == prepared_->physicalSections.end()
+                           ? prepared_->physicalSections.size() - 1U
+                           : static_cast<std::size_t>(std::distance(prepared_->physicalSections.begin(), found));
+    return Result<std::size_t>::success(index);
 }
 
 Result<double> MontagePlayer::physicalSectionProgress(std::size_t sectionIndex) const {
-    if (!timeline_)
-        return Result<double>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage has not been prepared", "montage"));
-    auto range = timeline_->sectionRange(sectionIndex);
-    if (!range) return Result<double>::failure(range.status());
-    const double span    = static_cast<double>(range.value().second.nanoseconds() - range.value().first.nanoseconds());
-    const double elapsed = static_cast<double>(time_.nanoseconds() - range.value().first.nanoseconds());
+    if (!timeline_) return invalid<double>("montage has not been prepared", "montage");
+    if (!prepared_ || sectionIndex >= prepared_->physicalSections.size())
+        return invalid<double>("physical section index is out of range", "sectionIndex");
+    const auto&  range   = prepared_->physicalSections[sectionIndex];
+    const double span    = static_cast<double>(range.second.nanoseconds() - range.first.nanoseconds());
+    const double elapsed = static_cast<double>(time_.nanoseconds() - range.first.nanoseconds());
     return Result<double>::success(std::clamp(elapsed / span, 0.0, 1.0));
 }
 

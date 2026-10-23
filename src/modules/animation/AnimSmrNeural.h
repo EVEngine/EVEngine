@@ -50,6 +50,7 @@ class ISmrNeuralRetarget {
 public:
     static constexpr const char* capabilityName = "animation.ISmrNeuralRetarget";
 
+    /** @brief Releases ISmrNeuralRetarget resources. */
     virtual ~ISmrNeuralRetarget() = default;
 
     /** @brief Stable backend label describing the live execution path. */

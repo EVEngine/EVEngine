@@ -46,7 +46,7 @@ Result<float> parseFloat(std::string_view text, std::string path) {
     const float value = std::strtof(owned.c_str(), &end);
     if (errno != 0 || end != owned.c_str() + owned.size() || !std::isfinite(value))
         return Result<float>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unity numeric value is invalid",
-                                                        std::move(path), {}, "asset.import"));
+                                                        path, {}, "asset.import"));
     return Result<float>::success(value);
 }
 

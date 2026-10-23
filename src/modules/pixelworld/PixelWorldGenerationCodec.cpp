@@ -47,7 +47,7 @@ using Array = Poco::JSON::Array;
 eve::Result<PixelWorldGenerationRequest> malformed(std::string message,
                                                    std::string path = "document") {
     return eve::Result<PixelWorldGenerationRequest>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::SerializationError, std::move(message), std::move(path), {},
+        eve::DiagnosticCode::SerializationError, message, path, {},
         "pixelworld.generation-codec"));
 }
 

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/PointSet.h"
 #include "procgen/heightmap/Heightmap.h"
@@ -30,8 +32,9 @@ struct SpatialBounds {
  * coupling the procgen module to scene or rendering types. Values are cheap to
  * copy and composite operations retain immutable copies of their operands.
  */
-class SpatialData {
+class EVENGINE_API_DOMAINS SpatialData {
 public:
+    /** @brief Kind public API. */
     enum class Kind {
         Empty,
         Points,

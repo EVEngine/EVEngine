@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief 武器模块数据模型：武器模板 / 武器实体 / 挂点实体 / 手持位实体。
@@ -39,10 +41,10 @@ enum class WeaponKind : uint8_t { Melee, Ranged, Magic, Missile, Custom };
  * @thread Thread-safe because the characters are immutable.
  * @reentrancy Does not invoke callbacks.
  */
-const char* weaponKindName(WeaponKind kind);
+EVENGINE_API_WORLD const char* weaponKindName(WeaponKind kind);
 
 /** @brief 从字符串解析武器形态；未知名字回退 Ranged。 */
-WeaponKind weaponKindFromName(const std::string& name);
+EVENGINE_API_WORLD WeaponKind weaponKindFromName(const std::string& name);
 
 /** @brief 触发资源的类型。 */
 enum class ResourceKind : uint8_t { None, Ammo, Mana, Charges, Stamina };
@@ -271,10 +273,12 @@ struct Resource {
 };
 
 /** @brief 武器实体：数据全部在组件里，行为在 WeaponSystem。 */
-class WeaponEntity : public ecs::Entity {
+class EVENGINE_API_WORLD WeaponEntity : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(WeaponEntity, ecs::Entity)
 
+    /** @brief Release. */
     void release() override { ecs::DestroyEntity(this); }
 
     /** @brief 稳定实例 id / 模板 id / 游戏侧拥有者。 */
@@ -379,8 +383,10 @@ public:
 /** @brief 武器挂点实体：可持有武器并限制旋转（炮塔 / 机枪座 / 固定挂架）。 */
 class WeaponMountEntity : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(WeaponMountEntity, ecs::Entity)
 
+    /** @brief Release. */
     void release() override { ecs::DestroyEntity(this); }
 
     /** @brief 挂点 id / 场景节点路径 / 类型（"turret" | "pintle" | "fixed"）。 */
@@ -428,8 +434,10 @@ public:
 /** @brief 手持位实体：面向 ARPG/RPG 角色手持武器（剑/法杖/步枪），无炮塔限位。 */
 class WeaponRigEntity : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(WeaponRigEntity, ecs::Entity)
 
+    /** @brief Release. */
     void release() override { ecs::DestroyEntity(this); }
 
     /** @brief 手持位 id / 场景节点路径 / 握持类型。 */
@@ -472,8 +480,10 @@ public:
 /** @brief 共享弹药池实体：多把武器共用的备用弹药，装填时从池中取。 */
 class AmmoPoolEntity : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(AmmoPoolEntity, ecs::Entity)
 
+    /** @brief Release. */
     void release() override { ecs::DestroyEntity(this); }
 
     /** @brief 弹药池 id / 弹药类型（"pistol" | "rifle" | "shell"…）。 */

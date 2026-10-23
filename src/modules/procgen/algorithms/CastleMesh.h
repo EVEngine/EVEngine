@@ -20,8 +20,9 @@ class MeshRecipeRegistry;
  * towerRadius, towerSides, towerHeight, towerSpacing, ringInset,
  * ringHeightStep, keepWidth, keepDepth, keepFloors, floorHeight, stairWidth,
  * stepHeight, merlonWidth, gateWidth, courtyardBuildings, detail (0..2), scale.
+ * This bool-returning entry point is the compatibility facade used by the mesh recipe registry.
  */
-bool generateCastleMesh(const Params &params, MeshBuild &out, std::string &error);
+EVENGINE_API_DOMAINS bool generateCastleMesh(const Params &params, MeshBuild &out, std::string &error);
 
 /** @brief Register mesh.castle in the built-in mesh recipe registry. */
 void registerCastleMeshRecipe(MeshRecipeRegistry &registry);

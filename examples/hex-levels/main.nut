@@ -195,13 +195,28 @@ function applyLevelBootConfig() {
         cam.setZoom(1.0);
         camZoom = 1.0;
     }
-    if ("light" in meta && torchLight != null) {
-        local L = meta.light;
-        if ("radius" in L) torchLight.setRadius(L.radius);
-        if ("color" in L && L.color.len() >= 4)
-            torchLight.setColor(L.color[0], L.color[1], L.color[2], L.color[3]);
-        if (("type" in L) && L.type == "point")
-            torchLight.setType("point");
+    if (torchLight != null) {
+        // Reset every boot so a prior spot level cannot leak into the next.
+        torchLight.setType("point");
+        torchLight.setColor(1.0, 0.78, 0.45, 2.0);
+        torchLight.setRadius(160.0);
+        torchLight.setSpotAngle(30.0);
+        torchLight.setSpotSoftness(0.35);
+        torchLight.setDirection(1.0, 0.0);
+        if ("light" in meta) {
+            local L = meta.light;
+            if ("radius" in L) torchLight.setRadius(L.radius);
+            if ("color" in L && L.color.len() >= 4)
+                torchLight.setColor(L.color[0], L.color[1], L.color[2], L.color[3]);
+            if ("type" in L) {
+                if (L.type == "spot" || L.type == "point" || L.type == "dir")
+                    torchLight.setType(L.type);
+            }
+            if ("spotAngle" in L) torchLight.setSpotAngle(L.spotAngle);
+            if ("spotSoftness" in L) torchLight.setSpotSoftness(L.spotSoftness);
+            if ("dir" in L && L.dir.len() >= 2)
+                torchLight.setDirection(L.dir[0], L.dir[1]);
+        }
     }
     if ("cellCost" in meta) {
         cellCostValue = meta.cellCost.cost;
@@ -429,12 +444,19 @@ function syncHeroVisuals() {
     local lightOn = featureEnabled("light", level == 0 || level >= 3);
     if (torchLight != null) {
         torchLight.setPosition(pos.x + 4.0, pos.y - 2.0);
+        // Spot flashlights follow FOV facing when present; otherwise keep authored dir.
+        if (torchLight.getType() == "spot") {
+            local rad = facingDeg * 3.14159265 / 180.0;
+            torchLight.setDirection(cos(rad), sin(rad));
+        }
         torchLight.setEnabled(lightOn);
         if (lightOn)
             cam.setAmbient(0.04, 0.04, 0.06);
         else
             cam.setAmbient(0.16, 0.16, 0.20);
     }
+    if (layer != null)
+        layer.setReceiveLight(lightOn);
     local fxOn = featureEnabled("particles", level == 0 || level >= 5);
     if (torchFx != null) {
         torchFx.setPosition(pos.x + 4.0, pos.y - 6.0);
@@ -647,6 +669,10 @@ function tryMove(dx, dy) {
     if (pf == null || !pf.isWalkable(nx, ny)) return false;
     playerTx = nx;
     playerTy = ny;
+    if (dx != 0 || dy != 0) {
+        // Screen Y-down; atan2(dy, dx) matches Light2D / FOV facing degrees.
+        facingDeg = atan2(dy, dx) * 180.0 / 3.14159265;
+    }
     rebuildPath();
     if (level == 0 || featureEnabled("fov", level >= 2)) refreshFov();
     syncHeroVisuals();

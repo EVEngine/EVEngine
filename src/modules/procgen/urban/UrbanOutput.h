@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 
@@ -25,12 +27,13 @@ bool parseUrbanOptions(const Params& params, UrbanOptions& opts, std::string& er
 
 /** @brief Register "urban.parcels" (Grid2D) and "mesh.urban" (MeshBuild) builtins. */
 void registerUrbanGenerators(GeneratorRegistry& registry);
+/** @brief Registers urban mesh recipes. */
 void registerUrbanMeshRecipes(MeshRecipeRegistry& registry);
 
 /** @brief Grid2D rasterization of the urban layout (Semantic::Road/Floor/Wall + parcel detail). */
-bool generateUrbanGrid(const Params& params, Grid2D& out, std::string& error);
+EVENGINE_API_DOMAINS bool generateUrbanGrid(const Params& params, Grid2D& out, std::string& error);
 /** @brief MeshBuild of parcel blocks + street ribbons (flat or extruded, Y-up). */
-bool generateUrbanMesh(const Params& params, MeshBuild& out, std::string& error);
+EVENGINE_API_DOMAINS bool generateUrbanMesh(const Params& params, MeshBuild& out, std::string& error);
 
 }  // namespace urban
 }  // namespace eve::procgen

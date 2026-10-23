@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "pixelworld/PixelWorld.h"
@@ -28,6 +30,7 @@ struct PixelChunkTransferPart {
     eve::pixelworld::PixelChunkRegion interest{};
     eve::pixelworld::PixelChunkBatch batch;
 
+    /** @brief Operator ==. */
     friend bool operator==(const PixelChunkTransferPart&, const PixelChunkTransferPart&) = default;
 };
 
@@ -60,7 +63,7 @@ struct PixelChunkReceiveReceipt {
  * messages, another socket, or deterministic tests. Cursor state advances only after a transfer
  * fits the bounded in-flight window. Repeated `pendingParts()` calls are intentional retransmits.
  */
-class ReliablePixelChunkSender {
+class EVENGINE_API_PLATFORM ReliablePixelChunkSender {
 public:
     /** @brief Validate policy and create a fresh nonzero stream session. */
     [[nodiscard]] static eve::Result<ReliablePixelChunkSender> create(
@@ -100,8 +103,17 @@ private:
  * committed through `applyChunkBatch`; only then does the cumulative ACK advance. Failure leaves
  * both replica and expected transfer id unchanged.
  */
-class ReliablePixelChunkReceiver {
+class EVENGINE_API_PLATFORM ReliablePixelChunkReceiver {
 public:
+    // Class-level dllexport instantiates every member; `buffered_` holds an
+    // Assembly with a vector<unique_ptr>, so the implicit copy assignment would be
+    // a hard C2280. Moves stay available (create() returns by value).
+    ReliablePixelChunkReceiver(const ReliablePixelChunkReceiver&)            = delete;
+    ReliablePixelChunkReceiver& operator=(const ReliablePixelChunkReceiver&) = delete;
+    /** @brief Reliable pixel chunk receiver. */
+    ReliablePixelChunkReceiver(ReliablePixelChunkReceiver&&)                 = default;
+    /** @brief Operator =. */
+    ReliablePixelChunkReceiver& operator=(ReliablePixelChunkReceiver&&)      = default;
     /** @brief Validate policy and create a receiver for one nonzero stream session. */
     [[nodiscard]] static eve::Result<ReliablePixelChunkReceiver> create(
         std::uint64_t streamId, PixelChunkTransportConfig config = {});

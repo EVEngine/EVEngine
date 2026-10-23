@@ -15,14 +15,14 @@ namespace {}  // namespace
 StylizeRecipeRuntime::StylizeRecipeRuntime()  = default;
 StylizeRecipeRuntime::~StylizeRecipeRuntime() = default;
 
-EditorResult<void> StylizeRecipeRuntime::publish(const StylizeRecipeTarget& document, graphics::Graphics* graphics) {
+Result<void> StylizeRecipeRuntime::publish(const StylizeRecipeTarget& document, graphics::Graphics* graphics) {
     if (!graphics)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.stylize.graphics"),
                                           "Stylize publication requires Graphics");
     const auto diagnostics = document.validate();
     for (const auto& d : diagnostics)
         if (d.severity() == DiagnosticSeverity::Error)
-            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
+            return Result<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
     std::vector<std::unique_ptr<stylize::StyleInstance>> instances;
     auto                                                 recipe = std::make_unique<stylize::StyleRecipe>();
     try {
@@ -44,7 +44,7 @@ EditorResult<void> StylizeRecipeRuntime::publish(const StylizeRecipeTarget& docu
     revision_                          = document.revision();
     return eve::editing::applied<void>(diagnostics);
 }
-EditorResult<void> StylizeRecipeRuntime::apply(graphics::Graphics* graphics, graphics::Texture* source,
+Result<void> StylizeRecipeRuntime::apply(graphics::Graphics* graphics, graphics::Texture* source,
                                                graphics::Canvas* destination, Revision expectedRevision) const {
     if (expectedRevision != revision_)
         return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.stylize.stale"),

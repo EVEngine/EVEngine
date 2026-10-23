@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "asset/CanonicalMesh.h"
 #include "asset/import/AssetImporter.h"
@@ -144,7 +145,7 @@ struct UnityVegetationBatchImportRequest {
  * @return Complete detached material-property candidate or a checked syntax, duplicate, or budget failure.
  * @thread Worker-safe and reentrant; no IO, callbacks, shared mutation, or retained pointers.
  */
-[[nodiscard]] Result<VegetationConversionCandidate> decodeUnityVegetationConversionCandidate(
+[[nodiscard]] EVENGINE_API_PLATFORM Result<VegetationConversionCandidate> decodeUnityVegetationConversionCandidate(
     std::span<const std::uint8_t> yaml, std::string sourcePath, std::uint64_t maximumBytes = 16ull * 1024ull * 1024ull);
 
 /**
@@ -156,7 +157,7 @@ struct UnityVegetationBatchImportRequest {
  * @remarks This is the single bridge back into prepareUnityVegetationMaterial; only the four TVE 12.6 target
  * shader families admitted by that importer are accepted.
  */
-[[nodiscard]] Result<std::vector<std::uint8_t>> encodeUnityVegetationConversionMaterial(
+[[nodiscard]] EVENGINE_API_PLATFORM Result<std::vector<std::uint8_t>> encodeUnityVegetationConversionMaterial(
     const VegetationConversionCandidate& candidate, std::uint64_t maximumBytes = 16ull * 1024ull * 1024ull);
 
 /**
@@ -169,10 +170,9 @@ struct UnityVegetationBatchImportRequest {
  * @return Owning context whose property, texture, and keyword sets agree with the candidate.
  * @thread Worker-safe and reentrant; no callbacks, IO, shared mutation, or retained pointers.
  */
-[[nodiscard]] VegetationPresetContext makeVegetationPresetContext(const VegetationConversionCandidate& candidate,
-                                                                  std::string shaderName, std::string materialName,
-                                                                  std::string           shaderPipeline,
-                                                                  std::set<std::string> outputOptions = {});
+[[nodiscard]] EVENGINE_API_PLATFORM VegetationPresetContext makeVegetationPresetContext(
+    const VegetationConversionCandidate& candidate, std::string shaderName, std::string materialName,
+    std::string shaderPipeline, std::set<std::string> outputOptions = {});
 
 /**
  * @brief Decode, resolve and evaluate a library of canonical TVE preset definitions.
@@ -184,7 +184,7 @@ struct UnityVegetationBatchImportRequest {
  * @thread Worker-safe and reentrant; no callbacks, IO, mutation or retained pointers.
  * @remarks Include cycles, missing includes, unknown predicates and malformed argument types reject the whole plan.
  */
-[[nodiscard]] Result<std::vector<VegetationPresetCommand>> evaluateVegetationPreset(
+[[nodiscard]] EVENGINE_API_PLATFORM Result<std::vector<VegetationPresetCommand>> evaluateVegetationPreset(
     const std::map<std::string, Value>& definitions, std::string_view root, const VegetationPresetContext& context);
 
 /**
@@ -194,7 +194,7 @@ struct UnityVegetationBatchImportRequest {
  * @return Complete owning candidate, or a checked failure with the caller's baseline unchanged.
  * @thread Worker-safe and reentrant; no callbacks, IO or shared mutation.
  */
-[[nodiscard]] Result<VegetationConversionCandidate> applyVegetationPreset(
+[[nodiscard]] EVENGINE_API_PLATFORM Result<VegetationConversionCandidate> applyVegetationPreset(
     VegetationConversionCandidate source, const std::vector<VegetationPresetCommand>& commands);
 
 /**
@@ -206,12 +206,12 @@ struct UnityVegetationBatchImportRequest {
  * @thread Worker-safe and reentrant; no IO, callbacks, GPU work or retained pointers.
  * @remarks Output dimensions are the largest source dimensions in each recipe. Sampling is bilinear and clamped.
  */
-[[nodiscard]] Result<std::map<std::string, VegetationPresetImage>> executeVegetationTexturePacks(
+[[nodiscard]] EVENGINE_API_PLATFORM Result<std::map<std::string, VegetationPresetImage>> executeVegetationTexturePacks(
     const VegetationConversionCandidate& candidate, const std::map<std::string, VegetationPresetImage>& sources,
     std::uint64_t maximumPixels = 16ull * 1024ull * 1024ull);
 
 /** @brief Execute texture recipes with a canonical mesh for object/tangent normal-space transforms. */
-[[nodiscard]] Result<std::map<std::string, VegetationPresetImage>> executeVegetationTexturePacks(
+[[nodiscard]] EVENGINE_API_PLATFORM Result<std::map<std::string, VegetationPresetImage>> executeVegetationTexturePacks(
     const VegetationConversionCandidate& candidate, const std::map<std::string, VegetationPresetImage>& sources,
     const asset::CanonicalMeshData& mesh, std::uint64_t maximumPixels = 16ull * 1024ull * 1024ull);
 
@@ -223,11 +223,11 @@ struct UnityVegetationBatchImportRequest {
  * @return Complete owning canonical mesh candidate, or a checked failure without partial publication.
  * @thread Worker-safe and reentrant; no IO, callbacks, global RNG or retained pointers.
  */
-[[nodiscard]] Result<asset::CanonicalMeshData> executeVegetationMeshRules(
+[[nodiscard]] EVENGINE_API_PLATFORM Result<asset::CanonicalMeshData> executeVegetationMeshRules(
     const VegetationConversionCandidate& candidate, asset::CanonicalMeshData source, float variationSeed = 1.f);
 
 /** @brief Execute mesh rules with RGBA8 textures keyed by source material property. */
-[[nodiscard]] Result<asset::CanonicalMeshData> executeVegetationMeshRules(
+[[nodiscard]] EVENGINE_API_PLATFORM Result<asset::CanonicalMeshData> executeVegetationMeshRules(
     const VegetationConversionCandidate& candidate, asset::CanonicalMeshData source,
     const std::map<std::string, VegetationPresetImage>& textures, float variationSeed = 1.f);
 
@@ -243,7 +243,7 @@ struct UnityVegetationBatchImportRequest {
  * @return Detached complete result; failure publishes no candidate, mesh or packed texture.
  * @thread Worker-safe and reentrant; no IO, callbacks, shared mutation or retained pointers.
  */
-[[nodiscard]] Result<VegetationConversionResult> executeVegetationConversion(
+[[nodiscard]] EVENGINE_API_PLATFORM Result<VegetationConversionResult> executeVegetationConversion(
     VegetationConversionCandidate source, const std::vector<VegetationPresetCommand>& commands,
     std::optional<asset::CanonicalMeshData> mesh, const std::map<std::string, VegetationPresetImage>& textures,
     float variationSeed = 1.f, const std::optional<std::array<float, 16>>& sourceToWorld = {},
@@ -255,7 +255,7 @@ struct UnityVegetationBatchImportRequest {
  * @return Complete detached material, mesh, texture, bounds, and readability result; no partial stage escapes.
  * @thread Worker-safe and reentrant when the request is not mutated concurrently; no IO, callbacks, or shared state.
  */
-[[nodiscard]] Result<VegetationConversionResult> executeUnityVegetationConversion(
+[[nodiscard]] EVENGINE_API_PLATFORM Result<VegetationConversionResult> executeUnityVegetationConversion(
     const UnityVegetationConversionRequest& request);
 
 /**
@@ -266,7 +266,7 @@ struct UnityVegetationBatchImportRequest {
  * @remarks Referenced source textures and metadata are supplied through sourceFiles. Packed images receive stable
  * Unity-style GUIDs and are routed through the normal Unity image and TVE material importers.
  */
-[[nodiscard]] Result<PreparedAssetImport> prepareUnityVegetationConversionImport(
+[[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareUnityVegetationConversionImport(
     const UnityVegetationAssetImportRequest& request);
 
 /**
@@ -275,7 +275,7 @@ struct UnityVegetationBatchImportRequest {
  * @return One owning candidate with namespaced entrypoints/mappings, or a conflict/budget failure without output.
  * @thread Worker-safe and reentrant when the request is not mutated concurrently; no IO, callbacks, or shared state.
  */
-[[nodiscard]] Result<PreparedAssetImport> prepareUnityVegetationConversionBatch(
+[[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareUnityVegetationConversionBatch(
     const UnityVegetationBatchImportRequest& request);
 
 }  // namespace eve::asset_import

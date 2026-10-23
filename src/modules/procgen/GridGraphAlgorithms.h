@@ -9,6 +9,7 @@
 
 namespace eve::procgen::gridgraph {
 
+/** @brief GenerateSettings public API. */
 struct GenerateSettings {
     int           width    = 32;
     int           height   = 32;
@@ -21,9 +22,12 @@ struct GenerateSettings {
     float         y        = 0.f;
 };
 
+/** @brief Generate. */
 [[nodiscard]] Result<Grid2D> generate(std::string_view operation, const GenerateSettings& settings);
+/** @brief Select. */
 [[nodiscard]] Result<Grid2D> select(const Grid2D& input, std::string_view operation, int mode, int count, float weight,
                                     std::uint64_t seed, std::string_view rule);
+/** @brief Finds path. */
 [[nodiscard]] Result<Grid2D> findPath(const Grid2D& navigation, const Grid2D& starts, const Grid2D& targets,
                                       int semantic);
 

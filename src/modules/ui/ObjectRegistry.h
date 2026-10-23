@@ -28,7 +28,7 @@ struct UiObjectHandleTag {};
 using ObjectHandle = eve::RuntimeHandle<UiObjectHandleTag>;
 
 /** @brief One registered live script instance. */
-struct EVENGINE_API ObjectEntry {
+struct EVENGINE_API_WORLD_INLINE ObjectEntry {
     /** @brief Generation-qualified handle for the live registry slot. */
     ObjectHandle handle = ObjectHandle::invalid();
     /** @brief Reflected script class used to group this entry. */
@@ -53,7 +53,7 @@ struct EVENGINE_API ObjectEntry {
  * observations and do not extend an entry's lifetime. Runtime shutdown releases
  * remaining roots before the Squirrel VM is destroyed.
  */
-class EVENGINE_API ObjectRegistry {
+class EVENGINE_API_WORLD ObjectRegistry {
 public:
     ObjectRegistry(const ObjectRegistry&) = delete;
     ObjectRegistry& operator=(const ObjectRegistry&) = delete;

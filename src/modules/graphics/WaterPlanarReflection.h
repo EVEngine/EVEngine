@@ -61,10 +61,10 @@ struct WaterPlanarReflectionPlan {
  * @return A complete plan, or InvalidArgument without publishing partial state.
  * @thread Pure, deterministic and reentrant for the supplied inputs.
  */
-[[nodiscard]] Result<WaterPlanarReflectionPlan> buildWaterPlanarReflectionPlan(
+[[nodiscard]] EVENGINE_API_BACKENDS Result<WaterPlanarReflectionPlan> buildWaterPlanarReflectionPlan(
     const WaterPlanarReflectionSettings& settings, const WaterPlanarReflectionInput& input);
 
 /** @brief Register planar water-reflection value types and checked planner with the VM owner thread. */
-void exposeWaterPlanarReflectionBindings(ssq::Table& table);
+EVENGINE_API_BACKENDS void exposeWaterPlanarReflectionBindings(ssq::Table& table);
 
 }  // namespace eve::graphics

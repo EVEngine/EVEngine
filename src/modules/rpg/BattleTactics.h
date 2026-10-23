@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file BattleTactics.h @brief Strict ordered battle-action policies for companions and AI. */
 
@@ -27,7 +29,7 @@ struct BattleTacticsDefinition {
 };
 
 /** @brief Process-local strict catalogue that selects and queues companion/AI actions. */
-class BattleTacticsCatalogue {
+class EVENGINE_API_PLATFORM BattleTacticsCatalogue {
 public:
     /**
      * @brief Validate and atomically replace all tactic definitions.
@@ -37,6 +39,7 @@ public:
      */
     [[nodiscard]] static eve::Result<int> replaceFromJsonStrict(const std::string &json);
     static void clear();
+    /** @brief Returns the number of . */
     static int count();
     /**
      * @brief Select the first matching rule and queue it through Battle's canonical checked API.

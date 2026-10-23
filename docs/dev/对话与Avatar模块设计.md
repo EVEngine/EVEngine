@@ -176,8 +176,8 @@ src/modules/dialogue/
 src/modules/graphics/Mesh.h / Mesh.cpp   // morph CPU 数据
 examples/dialogue/
 examples/live2d-backend-plugin/
-test/avatar.cpp
-test/dialogue.cpp
+test/integration/script-api/script_api_graphics_tests_tests.cpp
+test/integration/render-presentation/render_presentation_graphics_Xray_tests.cpp
 ```
 
 ## 验收清单

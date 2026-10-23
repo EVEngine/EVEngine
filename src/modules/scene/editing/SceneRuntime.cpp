@@ -94,7 +94,7 @@ void* SceneHostEditorTarget::queryCapability(const CapabilityId& capability) {
     return SceneTargetBase::queryCapability(capability);
 }
 
-EditorResult<std::vector<SceneComponentLinkSnapshot>> SceneHostEditorTarget::componentLinks(
+Result<std::vector<SceneComponentLinkSnapshot>> SceneHostEditorTarget::componentLinks(
     const ObjectId& object) const {
     auto* live = host();
     if (!live)
@@ -116,14 +116,14 @@ EditorResult<std::vector<SceneComponentLinkSnapshot>> SceneHostEditorTarget::com
     return eve::editing::applied<std::vector<SceneComponentLinkSnapshot>>(std::move(result));
 }
 
-EditorResult<void> SceneHostEditorTarget::applyDomainOperation(const DomainOperation& operation) {
+Result<void> SceneHostEditorTarget::applyDomainOperation(const DomainOperation& operation) {
     if (staging_) return SceneTargetBase::applyDomainOperation(operation);
     auto candidate = cloneDomainState();
     auto* staged = dynamic_cast<SceneHostEditorTarget*>(candidate.get());
     if (!staged)
         return eve::editing::failed<void>(EditorStatus::Failed, RuleId("editor.scene.live-stage-failed"),
                                           "Could not stage live scene operation");
-    EditorResult<void> applied = staged->SceneTargetBase::applyDomainOperation(operation);
+    Result<void> applied = staged->SceneTargetBase::applyDomainOperation(operation);
     if (!applied.ok()) return applied;
     return commitDomainState(std::move(candidate));
 }
@@ -139,7 +139,7 @@ scene::SceneHost* SceneHostEditorTarget::host() const {
     return dynamic_cast<scene::SceneHost*>(ecs::try_get(hostHandle_));
 }
 
-EditorResult<void> SceneHostEditorTarget::synchronizeHost(const SceneTargetBase& desiredTarget) {
+Result<void> SceneHostEditorTarget::synchronizeHost(const SceneTargetBase& desiredTarget) {
     auto* live = host();
     if (!live)
         return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.scene.live-host-required"),
@@ -161,7 +161,7 @@ EditorResult<void> SceneHostEditorTarget::synchronizeHost(const SceneTargetBase&
     }
     // Validate the whole candidate before publishing any host mutation.
     auto valid = desiredTarget.makeRestore(desiredTarget.snapshotValue());
-    if (!valid.ok()) return EditorResult<void>::failure(valid.status());
+    if (!valid.ok()) return Result<void>::failure(valid.status());
     scene::SceneHost::Tree  candidate;
     std::map<ObjectId, int> indices;
     for (const auto& [id, object] : desired) {
@@ -203,13 +203,13 @@ EditorResult<void> SceneHostEditorTarget::synchronizeHost(const SceneTargetBase&
     return editing::applied<void>();
 }
 
-EditorResult<void> SceneHostEditorTarget::commitDomainState(
+Result<void> SceneHostEditorTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* staged = dynamic_cast<SceneHostEditorTarget*>(candidate.get());
     if (!staged || staged->targetId() != targetId())
         return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.scene.live-candidate-mismatch"),
                                           "Live scene candidate has an incompatible type");
-    EditorResult<void> synchronized = synchronizeHost(*staged);
+    Result<void> synchronized = synchronizeHost(*staged);
     if (!synchronized.ok()) return synchronized;
     auto committed = SceneTargetBase::commitDomainState(std::move(candidate));
     if (!committed.ok()) return committed;

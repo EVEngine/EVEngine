@@ -10,12 +10,12 @@ namespace eve::avatar_editing {
 namespace {}  // namespace
 AvatarDocumentRuntime::AvatarDocumentRuntime()  = default;
 AvatarDocumentRuntime::~AvatarDocumentRuntime() = default;
-EditorResult<void> AvatarDocumentRuntime::publish(const AvatarDocumentTarget&   document,
+Result<void> AvatarDocumentRuntime::publish(const AvatarDocumentTarget&   document,
                                                   const IAvatarTextureResolver* textures) {
     const auto diagnostics = document.validate();
     for (const auto& d : diagnostics)
         if (d.severity() == DiagnosticSeverity::Error)
-            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
+            return Result<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
     std::vector<graphics::Texture*> resolved;
     resolved.reserve(document.layers().size());
     for (const auto& layer : document.layers()) {
@@ -23,7 +23,7 @@ EditorResult<void> AvatarDocumentRuntime::publish(const AvatarDocumentTarget&   
             return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.avatar.textures"),
                                               "Image layers require an Avatar texture resolver");
         auto texture = textures->texture(layer.textureAsset);
-        if (!texture.ok()) return EditorResult<void>::failure(texture.status());
+        if (!texture.ok()) return Result<void>::failure(texture.status());
         if (!texture.value())
             return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.avatar.texture"),
                                               "Avatar texture resolver returned no texture");
@@ -35,7 +35,7 @@ EditorResult<void> AvatarDocumentRuntime::publish(const AvatarDocumentTarget&   
                                           "Live2D backend rejected the Avatar model");
     if (document.kind() == "vroid") {
         auto imported = candidate->loadVroidModel(document.sourceAsset());
-        if (!imported.ok()) return EditorResult<void>::failure(imported.status());
+        if (!imported.ok()) return Result<void>::failure(imported.status());
     }
     for (std::size_t i = 0; i < document.layers().size(); ++i) {
         const auto& layer = document.layers()[i];

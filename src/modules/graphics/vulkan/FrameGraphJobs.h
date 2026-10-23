@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "vkbuilder.hpp"
 #include "vkbuilder/framegraph.hpp"
@@ -15,6 +17,17 @@ class JobSystem;
 
 namespace eve::graphics::vulkan {
 
+/** @brief Render-thread-owned recording cost history; reset when graph topology changes.
+ * @ownership Stored by Graphics; no callbacks or borrowed job handles are retained. */
+struct FrameGraphRecordingState {
+    std::chrono::nanoseconds serialCost{};
+    uint32_t                 parallelFrames = 0;
+
+    /** @brief Whether the measured graph justifies worker scheduling this frame.
+     * Periodically remeasure serial cost so a shrinking workload returns to inline recording. */
+    bool isParallelWorthwhile() const { return serialCost >= std::chrono::microseconds(500) && parallelFrames < 60; }
+};
+
 /**
  * @brief Build a vkb::PassRecordExecutor backed by the engine JobSystem.
  *
@@ -26,11 +39,11 @@ namespace eve::graphics::vulkan {
  * @param jobs Engine JobSystem; must have an active beginFrame()/endFrame()
  *             bracket. May be null, in which case recording is serial.
  */
-vkb::PassRecordExecutor jobSystemPassExecutor(eve::thread::JobSystem *jobs);
+EVENGINE_API_BACKENDS vkb::PassRecordExecutor jobSystemPassExecutor(eve::thread::JobSystem *jobs);
 
 /**
  * @brief Record a vkb::FrameGraph with the engine JobSystem as the parallel
- * recording executor.
+ * recording executor, with measured-cost selection for small graphs.
  *
  * vkb::FrameGraph groups independent passes into layers; passes inside one
  * layer share no dependency edge, so their command buffers can be recorded
@@ -45,7 +58,11 @@ vkb::PassRecordExecutor jobSystemPassExecutor(eve::thread::JobSystem *jobs);
  * @param graph  Compiled FrameGraph whose passes should be recorded.
  * @param jobs   Engine JobSystem; must have an active beginFrame()/endFrame()
  *               bracket. May be null, in which case recording is serial.
+ * @param state Render-thread-owned cost history, reset on graph rebuild; no job handles escape.
+ * @cost Recording scales with submitted draws; worker dispatch is amortized only for graphs
+ * whose last inline recording exceeded 500 microseconds. Remeasured after 60 parallel frames.
  */
-void recordFrameGraphWithJobSystem(vkb::FrameGraph &graph, eve::thread::JobSystem *jobs);
+void recordFrameGraphWithJobSystem(vkb::FrameGraph &graph, eve::thread::JobSystem *jobs,
+                                   FrameGraphRecordingState &state);
 
 }  // namespace eve::graphics::vulkan

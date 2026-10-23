@@ -25,7 +25,7 @@ Result<const Value::Object*> asObject(const Value& value, std::string path) {
     const auto* object = value.getIf<Value::Object>();
     if (!object)
         return Result<const Value::Object*>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "play-trace value must be an object", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "play-trace value must be an object", path));
     return Result<const Value::Object*>::success(object);
 }
 

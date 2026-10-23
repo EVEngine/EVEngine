@@ -1,25 +1,33 @@
 #include "physics/Physics.h"
+#include "common/SdfField3D.h"
 #include "physics/Body.h"
 #include "physics/Body3D.h"
-#include "physics/Joint3D.h"
 #include "physics/DistanceField3D.h"
-#include "physics/softbody/SoftBody3D.h"
-#include "physics/softbody/graphics/SoftBody3DRenderer.h"
+#include "physics/DistanceField3DSdf.h"
 #include "physics/Fixture.h"
 #include "physics/Fluid2D.h"
+#include "physics/Joint2D.h"
+#include "physics/Joint3D.h"
+#include "physics/Mechanism2D.h"
+#include "physics/Mechanism3D.h"
 #include "physics/PhysicsCapabilities.h"
 #include "physics/Shape3D.h"
+#include "physics/TerrainLoadGravity.h"
 #include "physics/World.h"
 #include "physics/World3D.h"
-#include "physics/TerrainLoadGravity.h"
+#include "physics/forces/ForceBindings.h"
+#include "physics/mechanics/Coupling3DBindings.h"
+#include "physics/mechanics/Joint2DBindings.h"
+#include "physics/softbody/SoftBody3D.h"
+#include "physics/softbody/graphics/SoftBody3DRenderer.h"
 
 #include "common/Exception.h"
 #include "common/SquirrelBinding.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
-#include <vector>
 #include <algorithm>
+#include <vector>
 
 namespace eve::physics {
 
@@ -28,66 +36,50 @@ Physics::Physics() { registerPhysicsCapabilities(); }
 Module_IMPL(Physics, new Physics());
 
 void Physics::setMeter(float pixelsPerMeter) {
-    if (pixelsPerMeter <= 0.f)
-        throw Exception("Physics.setMeter: pixelsPerMeter must be > 0");
+    if (pixelsPerMeter <= 0.f) throw Exception("Physics.setMeter: pixelsPerMeter must be > 0");
     meter_ = pixelsPerMeter;
 }
 
 float Physics::getMeter() const { return meter_; }
 
-World *Physics::newWorld(float gravityX, float gravityY, bool sleep) {
-    return new World(gravityX, gravityY, sleep, meter_);
+DistanceField3D* Physics::newDistanceField3D(int width, int height, int depth, float cellSize, float originX,
+                                             float originY, float originZ, float outsideDistance) {
+    return new DistanceField3D(width, height, depth, cellSize, originX, originY, originZ, outsideDistance);
 }
 
-World3D *Physics::newWorld3D(float gravityX, float gravityY, float gravityZ, bool sleep) {
-    return new World3D(gravityX, gravityY, gravityZ, sleep);
-}
-
-DistanceField3D *Physics::newDistanceField3D(int width, int height, int depth, float cellSize,
-                                             float originX, float originY, float originZ,
-                                             float outsideDistance) {
-    return new DistanceField3D(width, height, depth, cellSize, originX, originY, originZ,
-                               outsideDistance);
-}
-
-SoftBody3D *Physics::newSoftBody3D(int cols, int rows, int layers, float spacing,
-                                    float originX, float originY, float originZ) {
+SoftBody3D* Physics::newSoftBody3D(int cols, int rows, int layers, float spacing, float originX, float originY,
+                                   float originZ) {
     auto created = SoftBody3D::create(cols, rows, layers, spacing, originX, originY, originZ);
     if (!created) throw Exception("%s", created.status().describe().c_str());
     return std::move(created).takeValue().release();
 }
 
-SoftBody3DRenderer *Physics::newSoftBody3DRenderer(SoftBody3D *body) {
-    return new SoftBody3DRenderer(body);
-}
+SoftBody3DRenderer* Physics::newSoftBody3DRenderer(SoftBody3D* body) { return new SoftBody3DRenderer(body); }
 
 Fluid2D *Physics::newFluid2D(int capacity) { return new Fluid2D(capacity); }
 
 void Physics::expose(ssq::Table &table) {
+    exposeForceBindings(table);
+    exposeJoint2DBindings(table);
+    exposeCoupling3DBindings(table);
     auto cls = table.addClass(name, Physics::create, false);
     expose(cls);
     auto terrainLoadState = table.addClass<TerrainLoadGravityState>("TerrainLoadGravityState");
     terrainLoadState.addFunc("isMonitoring", &TerrainLoadGravityState::isMonitoring);
-    terrainLoadState.addFunc("isActivationScheduled",
-                             &TerrainLoadGravityState::isActivationScheduled);
+    terrainLoadState.addFunc("isActivationScheduled", &TerrainLoadGravityState::isActivationScheduled);
     terrainLoadState.addFunc("isCompleted", &TerrainLoadGravityState::isCompleted);
     terrainLoadState.addFunc("getDelayElapsed", &TerrainLoadGravityState::getDelayElapsed);
     table.addFunc("beginTerrainLoadGravity",
-                  [vm = table.getHandle()](TerrainLoadGravityState* state, Body3D* body,
-                                           bool terrainFound) {
-        return eve::script::projectResult(vm,
-                                          beginTerrainLoadGravity(state, body, terrainFound));
-    });
-    table.addFunc("advanceTerrainLoadGravity",
-                  [vm = table.getHandle()](TerrainLoadGravityState* state, Body3D* body,
-                                           bool terrainLoaded, float dt, float delay) {
-        return eve::script::projectResult(
-            vm, advanceTerrainLoadGravity(state, body, terrainLoaded, dt, delay),
-            [](bool activated) { return eve::Value(activated); });
+                  [vm = table.getHandle()](TerrainLoadGravityState* state, Body3D* body, bool terrainFound) {
+                      return eve::script::projectResult(vm, beginTerrainLoadGravity(state, body, terrainFound));
+                  });
+    table.addFunc("advanceTerrainLoadGravity", [vm = table.getHandle()](TerrainLoadGravityState* state, Body3D* body,
+                                                                        bool terrainLoaded, float dt, float delay) {
+        return eve::script::projectResult(vm, advanceTerrainLoadGravity(state, body, terrainLoaded, dt, delay),
+                                          [](bool activated) { return eve::Value(activated); });
     });
 
-    auto world = table.addClass<World>(
-        "World", std::function<World *()>([]() -> World * { return nullptr; }), true);
+    auto world = table.addClass<World>("World", std::function<World*()>([]() -> World* { return nullptr; }), true);
     world.addFunc("update", &World::update);
     world.addFunc("updateFull", &World::updateFull);
     world.addFunc("setGravity", &World::setGravity);
@@ -96,6 +88,16 @@ void Physics::expose(ssq::Table &table) {
     world.addFunc("setMeter", &World::setMeter);
     world.addFunc("getMeter", &World::getMeter);
     world.addFunc("newBody", &World::newBody);
+    world.addFunc("newDistanceJoint", &World::newDistanceJoint);
+    world.addFunc("newRevoluteJoint", &World::newRevoluteJoint);
+    world.addFunc("newPrismaticJoint", &World::newPrismaticJoint);
+    world.addFunc("newWeldJoint", &World::newWeldJoint);
+    world.addFunc("newWheelJoint", &World::newWheelJoint);
+    world.addFunc("newMotorJoint", &World::newMotorJoint);
+    world.addFunc("newGearJoint", &World::newGearJoint);
+    world.addFunc("newShaft", &World::newShaft);
+    world.addFunc("newRatchet", &World::newRatchet);
+    world.addFunc("newCrankSlider", &World::newCrankSlider);
     world.addFunc("destroyBody", &World::destroyBody);
     world.addFunc("destroy", &World::destroy);
     world.addFunc("drawDebug", &World::drawDebug);
@@ -134,8 +136,8 @@ void Physics::expose(ssq::Table &table) {
     world.addFunc("getImpactTangentImpulse", &World::getImpactTangentImpulse);
     world.addFunc("clearContactEvents", &World::clearContactEvents);
 
-    auto world3 = table.addClass<World3D>(
-        "World3D", std::function<World3D *()>([]() -> World3D * { return nullptr; }), true);
+    auto world3 =
+        table.addClass<World3D>("World3D", std::function<World3D*()>([]() -> World3D* { return nullptr; }), true);
     world3.addFunc("update", &World3D::update);
     world3.addFunc("updateFull", &World3D::updateFull);
     world3.addFunc("setGravity", &World3D::setGravity);
@@ -165,18 +167,12 @@ void Physics::expose(ssq::Table &table) {
     world3.addFunc("explode", &World3D::explode);
     world3.addFunc("getExplosionResultCount", &World3D::getExplosionResultCount);
     world3.addFunc("getExplosionResultBodyId", &World3D::getExplosionResultBodyId);
-    world3.addFunc("getExplosionResultDeltaVelocityX",
-                   &World3D::getExplosionResultDeltaVelocityX);
-    world3.addFunc("getExplosionResultDeltaVelocityY",
-                   &World3D::getExplosionResultDeltaVelocityY);
-    world3.addFunc("getExplosionResultDeltaVelocityZ",
-                   &World3D::getExplosionResultDeltaVelocityZ);
-    world3.addFunc("getExplosionResultDeltaAngularVelocityX",
-                   &World3D::getExplosionResultDeltaAngularVelocityX);
-    world3.addFunc("getExplosionResultDeltaAngularVelocityY",
-                   &World3D::getExplosionResultDeltaAngularVelocityY);
-    world3.addFunc("getExplosionResultDeltaAngularVelocityZ",
-                   &World3D::getExplosionResultDeltaAngularVelocityZ);
+    world3.addFunc("getExplosionResultDeltaVelocityX", &World3D::getExplosionResultDeltaVelocityX);
+    world3.addFunc("getExplosionResultDeltaVelocityY", &World3D::getExplosionResultDeltaVelocityY);
+    world3.addFunc("getExplosionResultDeltaVelocityZ", &World3D::getExplosionResultDeltaVelocityZ);
+    world3.addFunc("getExplosionResultDeltaAngularVelocityX", &World3D::getExplosionResultDeltaAngularVelocityX);
+    world3.addFunc("getExplosionResultDeltaAngularVelocityY", &World3D::getExplosionResultDeltaAngularVelocityY);
+    world3.addFunc("getExplosionResultDeltaAngularVelocityZ", &World3D::getExplosionResultDeltaAngularVelocityZ);
     world3.addFunc("getBoundsMinX", &World3D::getBoundsMinX);
     world3.addFunc("getBoundsMinY", &World3D::getBoundsMinY);
     world3.addFunc("getBoundsMinZ", &World3D::getBoundsMinZ);
@@ -206,6 +202,13 @@ void Physics::expose(ssq::Table &table) {
     world3.addFunc("newPrismaticJoint", &World3D::newPrismaticJoint);
     world3.addFunc("newSphericalJoint", &World3D::newSphericalJoint);
     world3.addFunc("newWheelJoint", &World3D::newWheelJoint);
+    world3.addFunc("newWeldJoint", &World3D::newWeldJoint);
+    world3.addFunc("newMotorJoint", &World3D::newMotorJoint);
+    world3.addFunc("newParallelJoint", &World3D::newParallelJoint);
+    world3.addFunc("newFilterJoint", &World3D::newFilterJoint);
+    world3.addFunc("newShaft", &World3D::newShaft);
+    world3.addFunc("newRatchet", &World3D::newRatchet);
+    world3.addFunc("newCrankSlider", &World3D::newCrankSlider);
     world3.addFunc("destroyBody", &World3D::destroyBody);
     world3.addFunc("destroy", &World3D::destroy);
     world3.addFunc("rayCast", &World3D::rayCast);
@@ -276,8 +279,7 @@ void Physics::expose(ssq::Table &table) {
     world3.addFunc("getShapeCastResultShapeId", &World3D::getShapeCastResultShapeId);
     world3.addFunc("getShapeCastResultShapeTag", &World3D::getShapeCastResultShapeTag);
     world3.addFunc("getShapeCastResultMaterialId", &World3D::getShapeCastResultMaterialId);
-    world3.addFunc("getShapeCastResultTriangleIndex",
-                   &World3D::getShapeCastResultTriangleIndex);
+    world3.addFunc("getShapeCastResultTriangleIndex", &World3D::getShapeCastResultTriangleIndex);
     world3.addFunc("getShapeCastResultX", &World3D::getShapeCastResultX);
     world3.addFunc("getShapeCastResultY", &World3D::getShapeCastResultY);
     world3.addFunc("getShapeCastResultZ", &World3D::getShapeCastResultZ);
@@ -387,9 +389,7 @@ void Physics::expose(ssq::Table &table) {
     world3.addFunc("clearQueryIgnores", &World3D::clearQueryIgnores);
 
     auto sdf = table.addClass<DistanceField3D>(
-        "DistanceField3D", std::function<DistanceField3D *()>([]() -> DistanceField3D * {
-            return nullptr;
-        }), true);
+        "DistanceField3D", std::function<DistanceField3D*()>([]() -> DistanceField3D* { return nullptr; }), true);
     sdf.addFunc("setDistances", [](DistanceField3D *field, ssq::Array values) {
         std::vector<float> distances;
         distances.reserve(values.size());
@@ -398,13 +398,11 @@ void Physics::expose(ssq::Table &table) {
         field->setDistances(distances);
     });
     sdf.addFunc("setDistanceRegion",
-                [](DistanceField3D *field, int x, int y, int z, int width, int height, int depth,
-                   ssq::Array values) {
+                [](DistanceField3D* field, int x, int y, int z, int width, int height, int depth, ssq::Array values) {
                     std::vector<float> distances;
-                    const size_t count = values.size();
+                    const size_t       count = values.size();
                     distances.reserve(count);
-                    for (size_t i = 0; i < count; ++i)
-                        distances.push_back(values.get<float>(i));
+                    for (size_t i = 0; i < count; ++i) distances.push_back(values.get<float>(i));
                     field->setDistanceRegion(x, y, z, width, height, depth, distances);
                 });
     sdf.addFunc("fill", &DistanceField3D::fill);
@@ -464,8 +462,7 @@ void Physics::expose(ssq::Table &table) {
     sdf.addFunc("getMoverGroundDot", &DistanceField3D::getMoverGroundDot);
     sdf.addFunc("didMoverHitWall", &DistanceField3D::didMoverHitWall);
 
-    auto body = table.addClass<Body>(
-        "Body", std::function<Body *()>([]() -> Body * { return nullptr; }), true);
+    auto body = table.addClass<Body>("Body", std::function<Body*()>([]() -> Body* { return nullptr; }), true);
     body.addFunc("getId", &Body::getId);
     body.addFunc("setPosition", &Body::setPosition);
     body.addFunc("getX", &Body::getX);
@@ -500,8 +497,29 @@ void Physics::expose(ssq::Table &table) {
     body.addFunc("newCircleFixture", &Body::newCircleFixture);
     body.addFunc("destroy", &Body::destroy);
 
-    auto body3 = table.addClass<Body3D>(
-        "Body3D", std::function<Body3D *()>([]() -> Body3D * { return nullptr; }), true);
+
+    auto mechanism2 = table.addClass<Mechanism2D>(
+        "Mechanism2D", std::function<Mechanism2D*()>([]() -> Mechanism2D* { return nullptr; }), true);
+    mechanism2.addFunc("getId", &Mechanism2D::getId);
+    mechanism2.addFunc("getKind", &Mechanism2D::getKind);
+    mechanism2.addFunc("isValid", &Mechanism2D::isValid);
+    mechanism2.addFunc("getDriveJoint", &Mechanism2D::getDriveJoint);
+    mechanism2.addFunc("getCrankPinJoint", &Mechanism2D::getCrankPinJoint);
+    mechanism2.addFunc("getSliderPinJoint", &Mechanism2D::getSliderPinJoint);
+    mechanism2.addFunc("getSliderJoint", &Mechanism2D::getSliderJoint);
+    mechanism2.addFunc("getDriveAngle", &Mechanism2D::getDriveAngle);
+    mechanism2.addFunc("getSliderTranslation", &Mechanism2D::getSliderTranslation);
+    mechanism2.addFunc("getSpinSpeed", &Mechanism2D::getSpinSpeed);
+    mechanism2.addFunc("setDrive", &Mechanism2D::setDrive);
+    mechanism2.addFunc("clearDrive", &Mechanism2D::clearDrive);
+    mechanism2.addFunc("isDriveEnabled", &Mechanism2D::isDriveEnabled);
+    mechanism2.addFunc("setRatchetDirection", &Mechanism2D::setRatchetDirection);
+    mechanism2.addFunc("getRatchetDirection", &Mechanism2D::getRatchetDirection);
+    mechanism2.addFunc("setRatchetEngagementTorque", &Mechanism2D::setRatchetEngagementTorque);
+    mechanism2.addFunc("getRatchetEngagementTorque", &Mechanism2D::getRatchetEngagementTorque);
+    mechanism2.addFunc("destroy", &Mechanism2D::destroy);
+
+    auto body3 = table.addClass<Body3D>("Body3D", std::function<Body3D*()>([]() -> Body3D* { return nullptr; }), true);
     body3.addFunc("getId", &Body3D::getId);
     body3.addFunc("setPosition", &Body3D::setPosition);
     body3.addFunc("getX", &Body3D::getX);
@@ -591,61 +609,49 @@ void Physics::expose(ssq::Table &table) {
         for (size_t i = 0; i < values.size(); ++i) vertices.push_back(values.get<float>(i));
         return body->newConvexHullShape(vertices, maxVertices);
     });
-    body3.addFunc("newTriangleMeshShape",
-                  [](Body3D *body, ssq::Array vertexValues, ssq::Array indexValues) {
-                      std::vector<float> vertices;
+    body3.addFunc("newTriangleMeshShape", [](Body3D* body, ssq::Array vertexValues, ssq::Array indexValues) {
+        std::vector<float>   vertices;
+        std::vector<int32_t> indices;
+        vertices.reserve(vertexValues.size());
+        indices.reserve(indexValues.size());
+        for (size_t i = 0; i < vertexValues.size(); ++i) vertices.push_back(vertexValues.get<float>(i));
+        for (size_t i = 0; i < indexValues.size(); ++i) indices.push_back(indexValues.get<int32_t>(i));
+        return body->newTriangleMeshShape(vertices, indices);
+    });
+    body3.addFunc("newTriangleMeshShapeFull",
+                  [](Body3D* body, ssq::Array vertexValues, ssq::Array indexValues, bool weldVertices,
+                     float weldTolerance, bool identifyEdges, bool useMedianSplit) {
+                      std::vector<float>   vertices;
                       std::vector<int32_t> indices;
                       vertices.reserve(vertexValues.size());
                       indices.reserve(indexValues.size());
-                      for (size_t i = 0; i < vertexValues.size(); ++i)
-                          vertices.push_back(vertexValues.get<float>(i));
-                      for (size_t i = 0; i < indexValues.size(); ++i)
-                          indices.push_back(indexValues.get<int32_t>(i));
-                      return body->newTriangleMeshShape(vertices, indices);
+                      for (size_t i = 0; i < vertexValues.size(); ++i) vertices.push_back(vertexValues.get<float>(i));
+                      for (size_t i = 0; i < indexValues.size(); ++i) indices.push_back(indexValues.get<int32_t>(i));
+                      return body->newTriangleMeshShape(vertices, indices, weldVertices, weldTolerance, identifyEdges,
+                                                        useMedianSplit);
                   });
-    body3.addFunc(
-        "newTriangleMeshShapeFull",
-        [](Body3D *body, ssq::Array vertexValues, ssq::Array indexValues, bool weldVertices,
-           float weldTolerance, bool identifyEdges, bool useMedianSplit) {
-            std::vector<float> vertices;
-            std::vector<int32_t> indices;
-            vertices.reserve(vertexValues.size());
-            indices.reserve(indexValues.size());
-            for (size_t i = 0; i < vertexValues.size(); ++i)
-                vertices.push_back(vertexValues.get<float>(i));
-            for (size_t i = 0; i < indexValues.size(); ++i)
-                indices.push_back(indexValues.get<int32_t>(i));
-            return body->newTriangleMeshShape(vertices, indices, weldVertices, weldTolerance,
-                                              identifyEdges, useMedianSplit);
-        });
-    body3.addFunc("newHeightFieldShape",
-                  [](Body3D *body, int countX, int countZ, float cellSizeX, float cellSizeZ,
-                     ssq::Array values) {
+    body3.addFunc("newHeightFieldShape", [](Body3D* body, int countX, int countZ, float cellSizeX, float cellSizeZ,
+                                            ssq::Array values) {
+        std::vector<float> heights;
+        heights.reserve(values.size());
+        for (size_t i = 0; i < values.size(); ++i) heights.push_back(values.get<float>(i));
+        if (heights.empty()) throw eve::Exception("Body3D.newHeightFieldShape: heights is empty");
+        const auto range = std::minmax_element(heights.begin(), heights.end());
+        return body->newHeightFieldShape(countX, countZ, cellSizeX, cellSizeZ, heights, *range.first, *range.second);
+    });
+    body3.addFunc("newHeightFieldShapeFull",
+                  [](Body3D* body, int countX, int countZ, float cellSizeX, float cellSizeZ, ssq::Array values,
+                     float globalMin, float globalMax, bool clockwiseWinding) {
                       std::vector<float> heights;
                       heights.reserve(values.size());
-                      for (size_t i = 0; i < values.size(); ++i)
-                          heights.push_back(values.get<float>(i));
-                      if (heights.empty())
-                          throw eve::Exception("Body3D.newHeightFieldShape: heights is empty");
-                      const auto range = std::minmax_element(heights.begin(), heights.end());
-                      return body->newHeightFieldShape(countX, countZ, cellSizeX, cellSizeZ,
-                                                       heights, *range.first, *range.second);
+                      for (size_t i = 0; i < values.size(); ++i) heights.push_back(values.get<float>(i));
+                      return body->newHeightFieldShape(countX, countZ, cellSizeX, cellSizeZ, heights, globalMin,
+                                                       globalMax, clockwiseWinding);
                   });
-    body3.addFunc(
-        "newHeightFieldShapeFull",
-        [](Body3D *body, int countX, int countZ, float cellSizeX, float cellSizeZ,
-           ssq::Array values, float globalMin, float globalMax, bool clockwiseWinding) {
-            std::vector<float> heights;
-            heights.reserve(values.size());
-            for (size_t i = 0; i < values.size(); ++i)
-                heights.push_back(values.get<float>(i));
-            return body->newHeightFieldShape(countX, countZ, cellSizeX, cellSizeZ, heights,
-                                             globalMin, globalMax, clockwiseWinding);
-        });
     body3.addFunc("destroy", &Body3D::destroy);
 
-    auto joint3 = table.addClass<Joint3D>(
-        "Joint3D", std::function<Joint3D *()>([]() -> Joint3D * { return nullptr; }), true);
+    auto joint3 =
+        table.addClass<Joint3D>("Joint3D", std::function<Joint3D*()>([]() -> Joint3D* { return nullptr; }), true);
     joint3.addFunc("getId", &Joint3D::getId);
     joint3.addFunc("getKind", &Joint3D::getKind);
     joint3.addFunc("getBodyAId", &Joint3D::getBodyAId);
@@ -695,10 +701,52 @@ void Physics::expose(ssq::Table &table) {
     joint3.addFunc("getWheelSpinTorque", &Joint3D::getWheelSpinTorque);
     joint3.addFunc("getWheelSteeringAngle", &Joint3D::getWheelSteeringAngle);
     joint3.addFunc("getWheelSteeringTorque", &Joint3D::getWheelSteeringTorque);
+    joint3.addFunc("setWeldLinearSpring", &Joint3D::setWeldLinearSpring);
+    joint3.addFunc("setWeldAngularSpring", &Joint3D::setWeldAngularSpring);
+    joint3.addFunc("getWeldLinearHertz", &Joint3D::getWeldLinearHertz);
+    joint3.addFunc("getWeldLinearDampingRatio", &Joint3D::getWeldLinearDampingRatio);
+    joint3.addFunc("getWeldAngularHertz", &Joint3D::getWeldAngularHertz);
+    joint3.addFunc("getWeldAngularDampingRatio", &Joint3D::getWeldAngularDampingRatio);
+    joint3.addFunc("setMotorLinearVelocity", &Joint3D::setMotorLinearVelocity);
+    joint3.addFunc("setMotorAngularVelocity", &Joint3D::setMotorAngularVelocity);
+    joint3.addFunc("setMotorVelocityLimits", &Joint3D::setMotorVelocityLimits);
+    joint3.addFunc("setMotorLinearSpring", &Joint3D::setMotorLinearSpring);
+    joint3.addFunc("setMotorAngularSpring", &Joint3D::setMotorAngularSpring);
+    joint3.addFunc("getMotorLinearVelocityX", &Joint3D::getMotorLinearVelocityX);
+    joint3.addFunc("getMotorLinearVelocityY", &Joint3D::getMotorLinearVelocityY);
+    joint3.addFunc("getMotorLinearVelocityZ", &Joint3D::getMotorLinearVelocityZ);
+    joint3.addFunc("getMotorAngularVelocityX", &Joint3D::getMotorAngularVelocityX);
+    joint3.addFunc("getMotorAngularVelocityY", &Joint3D::getMotorAngularVelocityY);
+    joint3.addFunc("getMotorAngularVelocityZ", &Joint3D::getMotorAngularVelocityZ);
+    joint3.addFunc("setParallelSpring", &Joint3D::setParallelSpring);
+    joint3.addFunc("getParallelHertz", &Joint3D::getParallelHertz);
+    joint3.addFunc("getParallelDampingRatio", &Joint3D::getParallelDampingRatio);
+    joint3.addFunc("getParallelMaxTorque", &Joint3D::getParallelMaxTorque);
     joint3.addFunc("destroy", &Joint3D::destroy);
 
-    auto fixture = table.addClass<Fixture>(
-        "Fixture", std::function<Fixture *()>([]() -> Fixture * { return nullptr; }), true);
+    auto mechanism3 = table.addClass<Mechanism3D>(
+        "Mechanism3D", std::function<Mechanism3D*()>([]() -> Mechanism3D* { return nullptr; }), true);
+    mechanism3.addFunc("getId", &Mechanism3D::getId);
+    mechanism3.addFunc("getKind", &Mechanism3D::getKind);
+    mechanism3.addFunc("isValid", &Mechanism3D::isValid);
+    mechanism3.addFunc("getDriveJoint", &Mechanism3D::getDriveJoint);
+    mechanism3.addFunc("getCrankPinJoint", &Mechanism3D::getCrankPinJoint);
+    mechanism3.addFunc("getSliderPinJoint", &Mechanism3D::getSliderPinJoint);
+    mechanism3.addFunc("getSliderJoint", &Mechanism3D::getSliderJoint);
+    mechanism3.addFunc("getDriveAngle", &Mechanism3D::getDriveAngle);
+    mechanism3.addFunc("getSliderTranslation", &Mechanism3D::getSliderTranslation);
+    mechanism3.addFunc("getSpinSpeed", &Mechanism3D::getSpinSpeed);
+    mechanism3.addFunc("setDrive", &Mechanism3D::setDrive);
+    mechanism3.addFunc("clearDrive", &Mechanism3D::clearDrive);
+    mechanism3.addFunc("isDriveEnabled", &Mechanism3D::isDriveEnabled);
+    mechanism3.addFunc("setRatchetDirection", &Mechanism3D::setRatchetDirection);
+    mechanism3.addFunc("getRatchetDirection", &Mechanism3D::getRatchetDirection);
+    mechanism3.addFunc("setRatchetEngagementTorque", &Mechanism3D::setRatchetEngagementTorque);
+    mechanism3.addFunc("getRatchetEngagementTorque", &Mechanism3D::getRatchetEngagementTorque);
+    mechanism3.addFunc("destroy", &Mechanism3D::destroy);
+
+    auto fixture =
+        table.addClass<Fixture>("Fixture", std::function<Fixture*()>([]() -> Fixture* { return nullptr; }), true);
     fixture.addFunc("setSensor", &Fixture::setSensor);
     fixture.addFunc("isSensor", &Fixture::isSensor);
     fixture.addFunc("setFriction", &Fixture::setFriction);
@@ -720,8 +768,8 @@ void Physics::expose(ssq::Table &table) {
     fixture.addFunc("testPoint", &Fixture::testPoint);
     fixture.addFunc("destroy", &Fixture::destroy);
 
-    auto shape3 = table.addClass<Shape3D>(
-        "Shape3D", std::function<Shape3D *()>([]() -> Shape3D * { return nullptr; }), true);
+    auto shape3 =
+        table.addClass<Shape3D>("Shape3D", std::function<Shape3D*()>([]() -> Shape3D* { return nullptr; }), true);
     shape3.addFunc("getId", &Shape3D::getId);
     shape3.addFunc("setTag", &Shape3D::setTag);
     shape3.addFunc("getTag", &Shape3D::getTag);
@@ -734,80 +782,61 @@ void Physics::expose(ssq::Table &table) {
     shape3.addFunc("setBoxSize", &Shape3D::setBoxSize);
     shape3.addFunc("setSphereRadius", &Shape3D::setSphereRadius);
     shape3.addFunc("setCapsuleSize", &Shape3D::setCapsuleSize);
-    shape3.addFunc("setConvexHullVertices",
-                   [](Shape3D *shape, ssq::Array values, int maxVertices) {
-                       std::vector<float> vertices;
-                       vertices.reserve(values.size());
-                       for (size_t i = 0; i < values.size(); ++i)
-                           vertices.push_back(values.get<float>(i));
-                       shape->setConvexHullVertices(vertices, maxVertices);
-                   });
+    shape3.addFunc("setConvexHullVertices", [](Shape3D* shape, ssq::Array values, int maxVertices) {
+        std::vector<float> vertices;
+        vertices.reserve(values.size());
+        for (size_t i = 0; i < values.size(); ++i) vertices.push_back(values.get<float>(i));
+        shape->setConvexHullVertices(vertices, maxVertices);
+    });
     shape3.addFunc("getConvexHullPointCount", &Shape3D::getConvexHullPointCount);
     shape3.addFunc("getConvexHullMaxVertices", &Shape3D::getConvexHullMaxVertices);
-    shape3.addFunc("setTriangleMeshData",
-                   [](Shape3D *shape, ssq::Array vertexValues, ssq::Array indexValues) {
-                       std::vector<float> vertices;
-                       std::vector<int32_t> indices;
-                       vertices.reserve(vertexValues.size());
-                       indices.reserve(indexValues.size());
-                       for (size_t i = 0; i < vertexValues.size(); ++i)
-                           vertices.push_back(vertexValues.get<float>(i));
-                       for (size_t i = 0; i < indexValues.size(); ++i)
-                           indices.push_back(indexValues.get<int32_t>(i));
-                       shape->setTriangleMeshData(vertices, indices);
-                   });
+    shape3.addFunc("setTriangleMeshData", [](Shape3D* shape, ssq::Array vertexValues, ssq::Array indexValues) {
+        std::vector<float>   vertices;
+        std::vector<int32_t> indices;
+        vertices.reserve(vertexValues.size());
+        indices.reserve(indexValues.size());
+        for (size_t i = 0; i < vertexValues.size(); ++i) vertices.push_back(vertexValues.get<float>(i));
+        for (size_t i = 0; i < indexValues.size(); ++i) indices.push_back(indexValues.get<int32_t>(i));
+        shape->setTriangleMeshData(vertices, indices);
+    });
     shape3.addFunc(
-        "setTriangleMeshDataFull",
-        [](Shape3D *shape, ssq::Array vertexValues, ssq::Array indexValues, bool weldVertices,
-           float weldTolerance, bool identifyEdges, bool useMedianSplit) {
-            std::vector<float> vertices;
+        "setTriangleMeshDataFull", [](Shape3D* shape, ssq::Array vertexValues, ssq::Array indexValues,
+                                      bool weldVertices, float weldTolerance, bool identifyEdges, bool useMedianSplit) {
+            std::vector<float>   vertices;
             std::vector<int32_t> indices;
             vertices.reserve(vertexValues.size());
             indices.reserve(indexValues.size());
-            for (size_t i = 0; i < vertexValues.size(); ++i)
-                vertices.push_back(vertexValues.get<float>(i));
-            for (size_t i = 0; i < indexValues.size(); ++i)
-                indices.push_back(indexValues.get<int32_t>(i));
-            shape->setTriangleMeshData(vertices, indices, weldVertices, weldTolerance,
-                                       identifyEdges, useMedianSplit);
+            for (size_t i = 0; i < vertexValues.size(); ++i) vertices.push_back(vertexValues.get<float>(i));
+            for (size_t i = 0; i < indexValues.size(); ++i) indices.push_back(indexValues.get<int32_t>(i));
+            shape->setTriangleMeshData(vertices, indices, weldVertices, weldTolerance, identifyEdges, useMedianSplit);
         });
     shape3.addFunc("getTriangleMeshVertexCount", &Shape3D::getTriangleMeshVertexCount);
     shape3.addFunc("getTriangleMeshTriangleCount", &Shape3D::getTriangleMeshTriangleCount);
     shape3.addFunc("setTriangleMeshMaterialIndices", [](Shape3D *shape, ssq::Array values) {
         std::vector<int32_t> indices;
         indices.reserve(values.size());
-        for (size_t i = 0; i < values.size(); ++i)
-            indices.push_back(values.get<int32_t>(i));
+        for (size_t i = 0; i < values.size(); ++i) indices.push_back(values.get<int32_t>(i));
         shape->setTriangleMeshMaterialIndices(indices);
     });
-    shape3.addFunc("getTriangleMeshMaterialIndex",
-                   &Shape3D::getTriangleMeshMaterialIndex);
-    shape3.addFunc("getTriangleMeshMaterialCount",
-                   &Shape3D::getTriangleMeshMaterialCount);
+    shape3.addFunc("getTriangleMeshMaterialIndex", &Shape3D::getTriangleMeshMaterialIndex);
+    shape3.addFunc("getTriangleMeshMaterialCount", &Shape3D::getTriangleMeshMaterialCount);
     shape3.addFunc("setTriangleMeshMaterial", &Shape3D::setTriangleMeshMaterial);
-    shape3.addFunc("getTriangleMeshMaterialFriction",
-                   &Shape3D::getTriangleMeshMaterialFriction);
-    shape3.addFunc("getTriangleMeshMaterialRestitution",
-                   &Shape3D::getTriangleMeshMaterialRestitution);
-    shape3.addFunc("getTriangleMeshMaterialRollingResistance",
-                   &Shape3D::getTriangleMeshMaterialRollingResistance);
+    shape3.addFunc("getTriangleMeshMaterialFriction", &Shape3D::getTriangleMeshMaterialFriction);
+    shape3.addFunc("getTriangleMeshMaterialRestitution", &Shape3D::getTriangleMeshMaterialRestitution);
+    shape3.addFunc("getTriangleMeshMaterialRollingResistance", &Shape3D::getTriangleMeshMaterialRollingResistance);
     shape3.addFunc("getTriangleMeshMaterialId", &Shape3D::getTriangleMeshMaterialId);
     shape3.addFunc("setHeightFieldHeights", [](Shape3D *shape, ssq::Array values) {
         std::vector<float> heights;
         heights.reserve(values.size());
-        for (size_t i = 0; i < values.size(); ++i)
-            heights.push_back(values.get<float>(i));
+        for (size_t i = 0; i < values.size(); ++i) heights.push_back(values.get<float>(i));
         shape->setHeightFieldHeights(heights);
     });
-    shape3.addFunc("setHeightFieldRegion",
-                   [](Shape3D *shape, int x, int z, int width, int depth,
-                      ssq::Array values) {
-                       std::vector<float> heights;
-                       heights.reserve(values.size());
-                       for (size_t i = 0; i < values.size(); ++i)
-                           heights.push_back(values.get<float>(i));
-                       shape->setHeightFieldRegion(x, z, width, depth, heights);
-                   });
+    shape3.addFunc("setHeightFieldRegion", [](Shape3D* shape, int x, int z, int width, int depth, ssq::Array values) {
+        std::vector<float> heights;
+        heights.reserve(values.size());
+        for (size_t i = 0; i < values.size(); ++i) heights.push_back(values.get<float>(i));
+        shape->setHeightFieldRegion(x, z, width, depth, heights);
+    });
     shape3.addFunc("getHeightFieldHeight", &Shape3D::getHeightFieldHeight);
     shape3.addFunc("getHeightFieldCountX", &Shape3D::getHeightFieldCountX);
     shape3.addFunc("getHeightFieldCountZ", &Shape3D::getHeightFieldCountZ);
@@ -852,18 +881,12 @@ void Physics::expose(ssq::Table &table) {
     shape3.addFunc("getRestitutionCombineMode", &Shape3D::getRestitutionCombineMode);
     shape3.addFunc("setDensity", &Shape3D::setDensity);
     shape3.addFunc("getDensity", &Shape3D::getDensity);
-    shape3.addFunc("setCategoryBits", [](Shape3D *shape, int64_t bits) {
-        shape->setCategoryBits(static_cast<uint64_t>(bits));
-    });
-    shape3.addFunc("getCategoryBits", [](Shape3D *shape) {
-        return static_cast<int64_t>(shape->getCategoryBits());
-    });
-    shape3.addFunc("setMaskBits", [](Shape3D *shape, int64_t bits) {
-        shape->setMaskBits(static_cast<uint64_t>(bits));
-    });
-    shape3.addFunc("getMaskBits", [](Shape3D *shape) {
-        return static_cast<int64_t>(shape->getMaskBits());
-    });
+    shape3.addFunc("setCategoryBits",
+                   [](Shape3D* shape, int64_t bits) { shape->setCategoryBits(static_cast<uint64_t>(bits)); });
+    shape3.addFunc("getCategoryBits", [](Shape3D* shape) { return static_cast<int64_t>(shape->getCategoryBits()); });
+    shape3.addFunc("setMaskBits",
+                   [](Shape3D* shape, int64_t bits) { shape->setMaskBits(static_cast<uint64_t>(bits)); });
+    shape3.addFunc("getMaskBits", [](Shape3D* shape) { return static_cast<int64_t>(shape->getMaskBits()); });
     shape3.addFunc("setGroupIndex", &Shape3D::setGroupIndex);
     shape3.addFunc("getGroupIndex", &Shape3D::getGroupIndex);
     shape3.addFunc("getBody", [](Shape3D *shape) { return shape->getBody(); });
@@ -921,14 +944,14 @@ void Physics::expose(ssq::Table &table) {
     soft3.addFunc("destroy", &SoftBody3D::destroy);
 
     auto soft3Renderer = table.addClass<SoftBody3DRenderer>(
-        "SoftBody3DRenderer",
-        std::function<SoftBody3DRenderer *()>([]() -> SoftBody3DRenderer * { return nullptr; }), true);
+        "SoftBody3DRenderer", std::function<SoftBody3DRenderer*()>([]() -> SoftBody3DRenderer* { return nullptr; }),
+        true);
     soft3Renderer.addFunc("setBody", &SoftBody3DRenderer::setBody);
     soft3Renderer.addFunc("setColor", &SoftBody3DRenderer::setColor);
     soft3Renderer.addFunc("draw", &SoftBody3DRenderer::draw);
 
-    auto fluid = table.addClass<Fluid2D>(
-        "Fluid2D", std::function<Fluid2D *()>([]() -> Fluid2D * { return nullptr; }), true);
+    auto fluid =
+        table.addClass<Fluid2D>("Fluid2D", std::function<Fluid2D*()>([]() -> Fluid2D* { return nullptr; }), true);
     fluid.addFunc("update", &Fluid2D::update);
     fluid.addFunc("setGravity", &Fluid2D::setGravity);
     fluid.addFunc("getGravityX", &Fluid2D::getGravityX);
@@ -964,12 +987,35 @@ void Physics::expose(ssq::Table &table) {
 }
 
 void Physics::expose(ssq::Class &cls) {
+    const auto vm = cls.getHandle();
     cls.addFunc("getName", &Physics::getName);
     cls.addFunc("setMeter", &Physics::setMeter);
     cls.addFunc("getMeter", &Physics::getMeter);
     cls.addFunc("newWorld", &Physics::newWorld);
     cls.addFunc("newWorld3D", &Physics::newWorld3D);
+    cls.addFunc("newWorld3DWithBackend", &Physics::newWorld3DWithBackend);
     cls.addFunc("newDistanceField3D", &Physics::newDistanceField3D);
+    cls.addFunc("distanceField3DFromSdfBlob", [vm](Physics*, ssq::Object object) -> DistanceField3D* {
+        auto value = script::valueFromSquirrel(object);
+        if (!value) throw Exception("Physics.distanceField3DFromSdfBlob: invalid Value");
+        auto blob = decodeSdfField3DBlob(value.value());
+        if (!blob) throw Exception("Physics.distanceField3DFromSdfBlob: invalid SDF blob");
+        auto field = distanceFieldFromSdfField3DBlob(blob.value());
+        if (!field) throw Exception("Physics.distanceField3DFromSdfBlob: cannot import VertexGrid blob");
+        (void)vm;
+        return new DistanceField3D(std::move(field).takeValue());
+    });
+    cls.addFunc("sdfField3DBlobFromDistanceField", [vm](Physics*, DistanceField3D* field) {
+        if (!field)
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Missing distance field",
+                                                      "physics.sdf.field3d")));
+        auto blob = sdfField3DBlobFromDistanceField(*field);
+        if (!blob) return script::projectStatusResult(vm, blob.status());
+        auto encoded = encodeSdfField3DBlob(blob.value());
+        if (!encoded) return script::projectStatusResult(vm, encoded.status());
+        return script::projectStatusResult(vm, Status::success(), std::move(encoded).takeValue());
+    });
     cls.addFunc("newSoftBody3D", &Physics::newSoftBody3D);
     cls.addFunc("newSoftBody3DRenderer", &Physics::newSoftBody3DRenderer);
     cls.addFunc("newFluid2D", &Physics::newFluid2D);

@@ -14,8 +14,12 @@ void exposeAnimCurveLibraryBindings(ssq::Table& table);
 void exposeMotionMatcherBindings(ssq::Table& table);
 /** @brief Register the owning AnimInertializer Squirrel surface. */
 void exposeAnimInertializerBindings(ssq::Table& table);
+/** @brief Register the owning OrientationWarping Squirrel surface. */
+void exposeOrientationWarpingBindings(ssq::Table& table);
 
 /** @brief Register playback, sampling and event inspection for AnimPlayer. */
 void exposeAnimPlayerBindings(ssq::Table& table);
+/** @brief Register the impulse/balance pose overlay Squirrel surface. */
+void exposePhysicalBalancePoseBindings(ssq::Table& table);
 
 }  // namespace eve::animation

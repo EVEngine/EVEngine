@@ -39,21 +39,22 @@ struct MaterialPreviewRenderResult {
 /** @brief Host boundary that owns creation and teardown of an isolated preview scene. */
 class IMaterialPreviewRenderer {
 public:
+    /** @brief Releases IMaterialPreviewRenderer resources. */
     virtual ~IMaterialPreviewRenderer() = default;
     /** @brief Render one immutable request without reading or mutating the live game scene. */
     virtual MaterialPreviewRenderResult render(const MaterialPreviewRenderRequest& request) = 0;
 };
 
 /** @brief Revision-safe material preview request and publication service. */
-class MaterialPreviewService {
+class EVENGINE_API_EDITORS MaterialPreviewService {
 public:
     /** @brief Validate and render a material snapshot in a unique isolated scene. */
-    EditorResult<TaskId> render(const DocumentId& document, const MaterialDocumentTarget& material,
+    Result<TaskId> render(const DocumentId& document, const MaterialDocumentTarget& material,
                                 MaterialPreviewSettings settings, IMaterialPreviewRenderer& renderer);
     /** @brief Return one immutable render result. */
-    EditorResult<MaterialPreviewRenderResult> result(const TaskId& task) const;
+    Result<MaterialPreviewRenderResult> result(const TaskId& task) const;
     /** @brief Publish only a successful result matching the current document revision. */
-    EditorResult<void> publish(const DocumentId& document, Revision currentRevision, const TaskId& task);
+    Result<void> publish(const DocumentId& document, Revision currentRevision, const TaskId& task);
     /** @brief Return the most recently published artifact for a document. */
     std::string publishedArtifact(const DocumentId& document) const;
 

@@ -90,6 +90,7 @@ struct GameplayEvent {
 class IGameplayControlProvider {
 public:
     static constexpr const char* capabilityName = "IGameplayControlProvider";
+    /** @brief Releases IGameplayControlProvider resources. */
     virtual ~IGameplayControlProvider() = default;
 
     /** @brief Stable provider domain used for discovery and routing. */

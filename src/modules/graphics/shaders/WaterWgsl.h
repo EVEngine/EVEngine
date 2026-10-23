@@ -4,7 +4,7 @@ namespace eve::graphics::shaders {
 
 /** @brief Vertex-displaced low-frequency water layers for the WebGPU backend. */
 inline constexpr char kWaterVertWgsl[] = R"wgsl(
-struct Light3D{posRadius:vec4f,color:vec4f};
+struct Light3D{posRadius:vec4f,color:vec4f,spot:vec4f};
 struct Frame{mvp:mat4x4f,model:mat4x4f,lightDir:vec4f,lightColor:vec4f,tint:vec4f,cameraPos:vec4f,ambient:vec4f,lights:array<Light3D,8>,texBomb:vec4f,parallax:vec4f,surface:vec4f,view:mat4x4f,clipInfo:vec4f,cloud:vec4f,cloudWind:vec4f,envProbeCenter:vec4f,envProbeExtent:vec4f,skinInfo:vec4f,reflectionProbeCenter:array<vec4f,2>,reflectionProbeExtent:array<vec4f,2>};
 struct Params{data:array<vec4f,8>};
 struct VSIn{@location(0)pos:vec3f,@location(1)normal:vec3f,@location(2)uv:vec2f};
@@ -27,14 +27,18 @@ fn waveHeight(inputXZ:vec2f)->f32{
  let dz=(waveHeight(baseWorld.xz+vec2f(0,eps))-waveHeight(baseWorld.xz-vec2f(0,eps)))/(2.0*eps);
  let localPos=in.pos+vec3f(0,height,0);let world=frame.model*vec4f(localPos,1.0);
  var out:VSOut;out.pos=frame.mvp*vec4f(localPos,1.0);out.pos.y=-out.pos.y;
- out.normal=normalize(mat3x3f(frame.model[0].xyz,frame.model[1].xyz,frame.model[2].xyz)*normalize(vec3f(-dx,1,-dz)));
+ let meshN=select(vec3f(0.0,1.0,0.0),normalize(in.normal),length(in.normal)>1e-5);
+ let waveN=normalize(vec3f(-dx,1.0,-dz));
+ let waveW=clamp(p(2u)/0.08,0.0,1.0);
+ let localN=normalize(mix(meshN,waveN,waveW));
+ out.normal=normalize(mat3x3f(frame.model[0].xyz,frame.model[1].xyz,frame.model[2].xyz)*localN);
  out.uv=in.uv;out.tint=frame.tint;out.worldPos=world.xyz;out.cameraPos=frame.cameraPos.xyz;out.viewPos=(frame.view*world).xyz;return out;
 }
 )wgsl";
 
 /** @brief Backend-parity stylized-water WGSL source with depth foam and scene-color refraction. */
 inline constexpr char kWaterFragWgsl[] = R"wgsl(
-struct Light3D{posRadius:vec4f,color:vec4f};
+struct Light3D{posRadius:vec4f,color:vec4f,spot:vec4f};
 struct Frame{mvp:mat4x4f,model:mat4x4f,lightDir:vec4f,lightColor:vec4f,tint:vec4f,cameraPos:vec4f,ambient:vec4f,lights:array<Light3D,8>,texBomb:vec4f,parallax:vec4f,surface:vec4f,view:mat4x4f,clipInfo:vec4f,cloud:vec4f,cloudWind:vec4f,envProbeCenter:vec4f,envProbeExtent:vec4f,skinInfo:vec4f,reflectionProbeCenter:array<vec4f,2>,reflectionProbeExtent:array<vec4f,2>};
 struct FSIn{@builtin(position)pos:vec4f,@location(0)normal:vec3f,@location(1)uv:vec2f,@location(2)tint:vec4f,@location(3)worldPos:vec3f,@location(4)cameraPos:vec3f,@location(5)viewPos:vec3f};
 struct Params{data:array<vec4f,8>};

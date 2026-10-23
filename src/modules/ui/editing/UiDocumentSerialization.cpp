@@ -34,7 +34,7 @@ EditorValue UiDocumentTarget::layoutValue(const UiLayoutValue& layout) {
     return EditorValue(std::move(value));
 }
 
-EditorResult<UiLayoutValue> UiDocumentTarget::parseLayout(const EditorValue& value) {
+Result<UiLayoutValue> UiDocumentTarget::parseLayout(const EditorValue& value) {
     const double* x = numberField(value, "x");
     const double* y = numberField(value, "y");
     const double* width = numberField(value, "width");
@@ -64,7 +64,7 @@ EditorValue UiDocumentTarget::styleValue(const UiStyleValue& style) {
         {"justify", style.justify}};
 }
 
-EditorResult<UiStyleValue> UiDocumentTarget::parseStyle(const EditorValue& value) {
+Result<UiStyleValue> UiDocumentTarget::parseStyle(const EditorValue& value) {
     UiStyleValue style;
     double* outputs[]{&style.marginLeft, &style.marginTop, &style.marginRight, &style.marginBottom,
                       &style.paddingLeft, &style.paddingTop, &style.paddingRight, &style.paddingBottom,
@@ -112,7 +112,7 @@ EditorValue UiDocumentTarget::contentValue(const UiContentValue& content) {
         {"imageFit", content.imageFit}, {"clip", content.clip}};
 }
 
-EditorResult<UiContentValue> UiDocumentTarget::parseContent(const EditorValue& value) {
+Result<UiContentValue> UiDocumentTarget::parseContent(const EditorValue& value) {
     UiContentValue content;
     const EditorValue* fontAssetValue = field(value, "fontAsset");
     const EditorValue* horizontalValue = field(value, "horizontalAlign");
@@ -166,7 +166,7 @@ EditorValue UiDocumentTarget::widgetValue(const UiWidgetSnapshot& widget) {
     return EditorValue(std::move(value));
 }
 
-EditorResult<UiWidgetSnapshot> UiDocumentTarget::parseWidget(const EditorValue& value) {
+Result<UiWidgetSnapshot> UiDocumentTarget::parseWidget(const EditorValue& value) {
     const EditorValue* idValue = field(value, "id");
     const EditorValue* parentValue = field(value, "parent");
     const EditorValue* typeValue = field(value, "type");
@@ -227,7 +227,7 @@ EditorValue UiDocumentTarget::snapshotValue() const {
     return EditorValue(std::move(root));
 }
 
-EditorResult<void> UiDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> UiDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
     const EditorValue* versionValue = field(snapshot, "schemaVersion");
     const EditorValue* widgetsValue = field(snapshot, "widgets");
     const auto* version = versionValue ? versionValue->getIf<int64_t>() : nullptr;

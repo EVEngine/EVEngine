@@ -1,0 +1,21 @@
+AUTO_BRIDGE_GENERATED type=beam vertices=8168 groups=12
+AUTO_BRIDGE_CAPTURED type=beam path=renders/beam.png
+AUTO_BRIDGE_GENERATED type=slab vertices=816 groups=9
+AUTO_BRIDGE_CAPTURED type=slab path=renders/slab.png
+AUTO_BRIDGE_GENERATED type=arch vertices=6816 groups=11
+AUTO_BRIDGE_CAPTURED type=arch path=renders/arch.png
+AUTO_BRIDGE_GENERATED type=tiedArch vertices=25832 groups=13
+AUTO_BRIDGE_CAPTURED type=tiedArch path=renders/tiedArch.png
+AUTO_BRIDGE_GENERATED type=throughTruss vertices=47344 groups=12
+AUTO_BRIDGE_CAPTURED type=throughTruss path=renders/throughTruss.png
+AUTO_BRIDGE_GENERATED type=deckTruss vertices=93976 groups=13
+AUTO_BRIDGE_CAPTURED type=deckTruss path=renders/deckTruss.png
+AUTO_BRIDGE_GENERATED type=suspension vertices=51632 groups=18
+AUTO_BRIDGE_CAPTURED type=suspension path=renders/suspension.png
+AUTO_BRIDGE_GENERATED type=cableStayed vertices=18608 groups=13
+AUTO_BRIDGE_CAPTURED type=cableStayed path=renders/cableStayed.png
+AUTO_BRIDGE_GENERATED type=cantilever vertices=127320 groups=13
+AUTO_BRIDGE_CAPTURED type=cantilever path=renders/cantilever.png
+AUTO_BRIDGE_GENERATED type=trestle vertices=9168 groups=9
+AUTO_BRIDGE_CAPTURED type=trestle path=renders/trestle.png
+AUTO_BRIDGE_GALLERY_COMPLETE count=10
