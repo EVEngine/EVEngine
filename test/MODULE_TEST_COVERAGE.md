@@ -1424,8 +1424,8 @@ Source directory: `src/modules/sensing`. Status: **local-rules-recorded**. Local
 
 - Unit: [unit/sensing/sensing_unit.cpp](unit/sensing/sensing_unit.cpp)
 - Integration task `script-api`: [script_api_graphics_scene_tests.cpp](integration/script-api/script_api_graphics_scene_tests.cpp)
-- Integration task `sensing`: [sensing_spatial_cells.cpp](integration/sensing/sensing_spatial_cells.cpp)
-- Direct header evidence: [concurrency_graphics_tests.cpp](integration/concurrency/concurrency_graphics_tests.cpp), [physics_simulation_graphics_physics_rigid_backend_tests.cpp](integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp), [rts_performance_semantics.cpp](integration/rts-crowd/rts_performance_semantics.cpp), [script_api_graphics_scene_tests.cpp](integration/script-api/script_api_graphics_scene_tests.cpp), [sensing_spatial_cells.cpp](integration/sensing/sensing_spatial_cells.cpp), [npc_ai_tests.cpp](unit/npc_ai/npc_ai_tests.cpp), [physics_tests.cpp](unit/physics/physics_tests.cpp), [sensing_unit.cpp](unit/sensing/sensing_unit.cpp), [tactics_tests.cpp](unit/tactics/tactics_tests.cpp)
+- Integration task `sensing`: [sensing_spatial_cells.cpp](integration/sensing/sensing_spatial_cells.cpp), [environment_query_tests.cpp](integration/sensing/environment_query_tests.cpp)
+- Direct header evidence: [concurrency_graphics_tests.cpp](integration/concurrency/concurrency_graphics_tests.cpp), [physics_simulation_graphics_physics_rigid_backend_tests.cpp](integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp), [rts_performance_semantics.cpp](integration/rts-crowd/rts_performance_semantics.cpp), [script_api_graphics_scene_tests.cpp](integration/script-api/script_api_graphics_scene_tests.cpp), [environment_query_tests.cpp](integration/sensing/environment_query_tests.cpp), [sensing_spatial_cells.cpp](integration/sensing/sensing_spatial_cells.cpp), [npc_ai_tests.cpp](unit/npc_ai/npc_ai_tests.cpp), [physics_tests.cpp](unit/physics/physics_tests.cpp), [sensing_unit.cpp](unit/sensing/sensing_unit.cpp), [tactics_tests.cpp](unit/tactics/tactics_tests.cpp)
 
 ### settlement
 
@@ -1970,8 +1970,9 @@ Cases: 2. Referenced/owning modules: `common`, `window`.
 
 ### sensing
 
-Cases: 1. Referenced/owning modules: `rts`, `sensing`.
+Cases: 22. Referenced/owning modules: `card`, `common`, `npc_ai`, `physics`, `rts`, `sensing`.
 
+- [environment_query_tests.cpp](integration/sensing/environment_query_tests.cpp)
 - [sensing_spatial_cells.cpp](integration/sensing/sensing_spatial_cells.cpp)
 
 ### ui-workflows
