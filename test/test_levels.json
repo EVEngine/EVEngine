@@ -5900,6 +5900,7 @@
           "UI.componentScheduling.coalescesAndPreservesReentrantEdits",
           "UI.componentScheduling.failedBatchRetainsRemainingWork",
           "UI.editorKit.desktopCompositionRenders",
+          "UI.editorKit.textControlsInteraction",
           "UI.layout.measureNestedFlexAndWindowContent",
           "UI.p1.statsAfterHeadlessRender",
           "UI.p1.scrollListHeadlessRenderLarge",
@@ -6799,7 +6800,22 @@
           "decision.condition.legacyCodecExpandsDomainLeaves",
           "common.sdfField3D.blobRoundTripPreservesSamples",
           "common.sdfField3D.blobRejectsUnknownSchemaAndBadCounts",
-          "common.sdfField3D.capabilityInterfaceSamplesGradient"
+          "common.sdfField3D.capabilityInterfaceSamplesGradient",
+          "ecs.viewPreparationPreservesWordAndPrefixBoundaries",
+          "ecs.viewPreparationRetriesThrowingConstruction",
+          "ecs.viewPreparationObservesConstructorChangesWithinWord",
+          "ecs.viewPreparationKeepsInheritanceDeferAndTableIsolation",
+          "ecs.viewPreparationDoesNotRequireDefaultConstruction",
+          "ecs.idleCommitKeepsNestedAndExplicitPublication",
+          "ecs.idleCommitCancelsStagedAndRearmsAfterReuse",
+          "ecs.failedViewPreparationReleasesItsDeferScope",
+          "ecs.failedNestedViewPreservesTheOuterDeferScope",
+          "ecs.entityOnlyViewKeepsDeferredIterationAndEmptyComparison",
+          "ecs.viewPreparationSkipsDeadSlotsAndInitializesReuse",
+          "ecs.viewPreparationKeepsStagingAndSkipsCancelledEntities",
+          "ecs.viewPreparationObservesDestructionDuringConstruction",
+          "ecs.viewPreparationInvalidatesCachedSparsePass",
+          "ecs.viewPreparationDoesNotCacheConstructorSideEffects"
         ],
         "test-framework": [
           "common.zeroerr.preservesExpressionAndSource",
@@ -6845,7 +6861,8 @@
         "xml.cpp",
         "capability_owned.cpp",
         "condition.cpp",
-        "sdf_field3d.cpp"
+        "sdf_field3d.cpp",
+        "ecs_view_preparation.cpp"
       ]
     },
     "unit/crowd/crowd_tests.cpp": {
@@ -10443,6 +10460,7 @@
           "UI.scriptStyleBuilder.mountBuildAs",
           "UI.editorKit.declarativeComponents",
           "UI.editorKit.scriptBuilderAndSerialization",
+          "UI.editorKit.textToolsRoundTripAndReconcile",
           "UI.adv.sliderProgressInputCollapseChild",
           "UI.adv.builderScriptWidgets",
           "UI.adv.wantCaptureAPI",
@@ -12203,6 +12221,63 @@
       "module": "climbing",
       "task": "physics-simulation"
     },
+    "integration/projectile-behavior/continuous_solver.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "carrierSolver.remainderMultipleBouncesAndFramePartition",
+          "carrierSolver.intervalDistanceAndExpirySurviveBounce",
+          "carrierSolver.budgetsAndLaterProviderFailureRollbackWholeFrame",
+          "carrierSolver.substepBoundsSnapshotAndCallbackRemainder",
+          "carrierSolver.zeroProgressAndMalformedContactsAreBounded",
+          "carrierSolver.thresholdTimesAndDeferredChildren",
+          "carrierSolver.predictiveSamplesOncePerOuterUpdate",
+          "carrierSolver.pierceDeduplicatesAcrossSubstepsAndRestore",
+          "carrierSolver.impactSpeedCrossingAndLaterCallbackFailure",
+          "carrierSolver.optionalCollisionAndWorldSweep"
+        ]
+      },
+      "module": "weapon",
+      "task": "projectile-behavior"
+    },
+    "integration/projectile-behavior/advanced_carrier.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "advancedCarrier.customMotionAtomicityReplayAndReentrancy",
+          "advancedCarrier.customMotionCollisionAndClampedLifetime",
+          "advancedCarrier.rotationDragAndSignedAcceleration",
+          "advancedCarrier.antiparallelHomingAndOrbitProviderContract",
+          "advancedCarrier.seededWanderSnapshotReplayAndCodec",
+          "advancedCarrier.distanceSpeedApexAndLifetimeTriggers",
+          "advancedCarrier.bounceContactAndInvalidSnapshotRollback",
+          "advancedCarrier.predictiveLeadAndStoppedSpeedRecovery",
+          "advancedCarrier.intervalBudgetRecipeMutationAndExpiryBoundaries",
+          "advancedCarrier.curvesRemainBoundedAcrossManyPeriods",
+          "advancedCarrier.roughBounceReplayAndSnapshotVersionValidation",
+          "advancedCarrier.invalidOperatorAndTriggerCompositionIsRejected",
+          "advancedCarrier.triggerChronologyAndBouncePathRespectContact"
+        ]
+      },
+      "module": "weapon",
+      "task": "projectile-behavior"
+    },
+    "integration/projectile-behavior/world_sweep.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "carrierWorldSweep.box3dContractAndRestore",
+          "carrierWorldSweep.joltContractAndRestore",
+          "carrierWorldSweep.bodyDestructionAndBudget",
+          "carrierWorldSweep.carrierPierceSnapshotAndFailure"
+        ]
+      },
+      "module": "physics",
+      "task": "projectile-behavior"
+    },
     "integration/weather-lightning/weather_lightning_runtime.cpp": {
       "role": "tests",
       "default": "render-window",
@@ -12213,6 +12288,70 @@
       },
       "module": "weather",
       "task": "weather-lightning"
+    },
+    "unit/procgen/procgen_everyday_materials.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "module": "procgen",
+      "cases": {
+        "local-logic": [
+          "procgen.everyday.familiesDeterminismAndPhysicalChannels",
+          "procgen.everyday.boundedParametersAndRegistryParity",
+          "procgen.everyday.pigmentDoesNotEmbossMarble",
+          "procgen.everyday.seedAndTintHaveObservableEffects",
+          "procgen.everyday.sharedCavityMatchesReference",
+          "procgen.everyday.microstructureIsPeriodicAtBothSeams",
+          "procgen.everyday.resolutionDoesNotRescaleFeatures",
+          "procgen.everyday.requestedSurfacesHaveReliefAndRoughness"
+        ]
+      }
+    },
+    "integration/script-api/procgen_everyday_material_optics.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "module": "procgen",
+      "cases": {
+        "script-binding": [
+          "procgen.everyday.scriptOpticsMatchNative"
+        ]
+      },
+      "task": "script-api"
+    },
+    "integration/sensing/environment_query_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "sensing.environment.compiledPlanOwnsDefinitionAndInstancesOwnContexts",
+          "sensing.environment.validatesTypesContextsAndBudgets",
+          "sensing.environment.ringAndGridGenerateLocationsWithoutSubjects",
+          "sensing.environment.multiContextFilterAndAggregateAreIndependent",
+          "sensing.environment.contributionsNormalizeOnceAndExplainRejection",
+          "sensing.environment.weightsAndReferencePreferenceChangeRanking",
+          "sensing.environment.optionsOnlyAdvanceOnEmptyNotErrors",
+          "sensing.environment.bestDefersExpensiveFilterAndMatchesExhaustive",
+          "sensing.environment.relativeScoresAndCustomBarriersDisableUnsafeDeferral",
+          "sensing.environment.traceCapAndTraceOffDoNotChangeResults",
+          "sensing.environment.worldCompositionPublishesTraceAndKeepsLegacyResults",
+          "sensing.pipeline.collectsBeforeFilteringAndPublishesOnlyOnSuccess",
+          "sensing.environment.spatialInputIdentityAndTiesAreStable",
+          "sensing.environment.optimizationParityAcrossCandidateSets",
+          "sensing.pipeline.compiledPlanSurvivesRegistryAndPresetReplacement",
+          "sensing.environment.world3DAndGridKeepTheirCoordinateTags",
+          "sensing.pipeline.implicitDistanceOrderPrecedesTruncation",
+          "sensing.environment.providerExceptionsBecomeFailedDiagnostics",
+          "sensing.environment.constantPopulationUsesIdentityTieBreak",
+          "sensing.environment.costSortPreservesScoreAccumulationOrder"
+        ],
+        "script-binding": [
+          "sensing.environment.scriptPositionsUseCanonicalExecutor"
+        ]
+      },
+      "module": "sensing",
+      "origins": [
+        "sensing_environment.cpp"
+      ],
+      "task": "sensing"
     }
   }
 }

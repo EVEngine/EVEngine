@@ -55,7 +55,7 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
             ("windows-release", "Build win32 release"): 210,
             ("android", "Build android debug"): 85,
             ("macos", "Build macosx debug"): 75,
-            ("macos", "Run macosx unit tests"): 60,
+            ("macos", "Run macosx unit tests"): 90,
             ("macos", "Build native Dawn Metal lane"): 75,
             ("windows", "Build native Dawn parity lane"): 150,
             ("linux-release", "Build linux release"): 105,

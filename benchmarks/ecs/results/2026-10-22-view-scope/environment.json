@@ -1,0 +1,26 @@
+{
+  "schema": "ecs-view-investigation-v1",
+  "date": "2026-10-22",
+  "os": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "compiler": "GCC 14.2.0",
+  "before_header_sha256": "94be15f597c6b84b6fee34bc1f09030f5e9c6a8e526784f58298b102ab2ef120",
+  "final_header_sha256": "2ccbd1433c67f7d12855fc6c7acbb1edf9bf261606bb820621452138c7fe99bf",
+  "before_binary_sha256": "2da026183718b6f704609a0d62312418c781280183bbbbf63144c3f7effe78bf",
+  "candidate_binary_sha256": "d0f8aee16e56e4793805da07e7e59e9d920cce66d140db2dba2dcb4e45644d74",
+  "final_binary_sha256": "708edc0262b80138f4f577430a972d280f6f349c4f02ce567a69d00868261b66",
+  "candidate_affinity": {
+    "cpu": 4,
+    "note": "Benchmark runner and children pinned; frequency and host contention not controlled; source quality checks active."
+  },
+  "candidate_note": "after in candidate.csv is the rejected member-ScopedDefer / short-circuit-fold candidate, NOT the final correctness fix. Do not attribute candidate timings to shipped code. Shared VM; source-quality checks active.",
+  "final_note": "Final View retains its original fields, destructor and nonempty component comparison; catch restores the defer level on preparation failure; an if-constexpr branch supports the empty component pack.",
+  "validation": {
+    "ctest": "14/14 passed",
+    "core_contracts": "13 cases / 1012 assertions per native/OBJECT/SHARED route",
+    "strict_cpp17": "passed, extensions disabled, -pedantic-errors",
+    "asan_ubsan": "passed; LeakSanitizer disabled under ptrace",
+    "final_million_smoke": "10/10 scenarios passed; not a performance comparison",
+    "source_quality": "make check passed; 313 tests; base origin/dev",
+    "patch_sequence": "initial application/reapply/full replay passed"
+  }
+}
