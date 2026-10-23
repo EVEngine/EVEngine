@@ -7,6 +7,7 @@
 #include "common/EditorAutomation.h"
 #include "common/Value.h"
 #include "editing/EditingValueJson.h"
+#include "editing/PropertySchemaJson.h"
 #include "editor/Editor.h"
 #include "editor/EditorTargetCoordinator.h"
 #include "zeroerr/assert.h"
@@ -201,4 +202,20 @@ TEST_CASE("editor.controlRig.automation.oldOwnerCannotRemoveReplacement") {
     REQUIRE(api != nullptr);
     CHECK(api->invoke("execute", request(changed(replacement, 2))).find("applied") != std::string::npos);
     CHECK(x(replacement) == 2);
+}
+
+TEST_CASE("editor.controlRig.automation.nestedSchemaUsesSharedProjection") {
+    eve::editing::PropertySchema schema;
+    schema.typeId         = "rig-document";
+    schema.documentSchema = eve::Value::Object{{"type", "object"}, {"additionalProperties", false}};
+    auto projected        = eve::editing::propertySchemaToJsonSchema(schema, "rig-document");
+    REQUIRE(projected.ok());
+    CHECK(eve::editing::editorValueToJson(projected.value()) == eve::editing::editorValueToJson(schema.documentSchema));
+    eve::editing::PropertyDescriptor property;
+    property.path = eve::editing::PropertyPath("conflicting");
+    schema.properties.push_back(property);
+    CHECK(!eve::editing::propertySchemaToJsonSchema(schema, "rig-document").ok());
+    schema.properties.clear();
+    schema.documentSchema = 1;
+    CHECK(!eve::editing::propertySchemaToJsonSchema(schema, "rig-document").ok());
 }

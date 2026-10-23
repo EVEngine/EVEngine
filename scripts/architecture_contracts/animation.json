@@ -14,11 +14,10 @@
         "docs/dev/plans/2026-10-23-control-rig-limits.md"
       ],
       "tests": [
-        "test/animation_control_rig.cpp",
-        "test/editor_control_rig.cpp",
-        "test/editor_control_rig_automation.cpp",
-        "test/animation_control_rig_limits.cpp",
-        "test/editor_control_rig_limits.cpp"
+        "test/unit/animation/animation_tests.cpp",
+        "test/integration/control-rig/editor_control_rig.cpp",
+        "test/integration/control-rig/editor_control_rig_automation.cpp",
+        "test/integration/control-rig/editor_control_rig_limits.cpp"
       ],
       "id": "animation-control-rig-api-shape",
       "rule": "api-shape",
@@ -39,11 +38,10 @@
         "docs/dev/plans/2026-10-23-control-rig-limits.md"
       ],
       "tests": [
-        "test/animation_control_rig.cpp",
-        "test/editor_control_rig.cpp",
-        "test/editor_control_rig_automation.cpp",
-        "test/animation_control_rig_limits.cpp",
-        "test/editor_control_rig_limits.cpp"
+        "test/unit/animation/animation_tests.cpp",
+        "test/integration/control-rig/editor_control_rig.cpp",
+        "test/integration/control-rig/editor_control_rig_automation.cpp",
+        "test/integration/control-rig/editor_control_rig_limits.cpp"
       ],
       "id": "animation-control-rig-state-owner",
       "rule": "state-owner",
@@ -64,11 +62,10 @@
         "docs/dev/plans/2026-10-23-control-rig-limits.md"
       ],
       "tests": [
-        "test/animation_control_rig.cpp",
-        "test/editor_control_rig.cpp",
-        "test/editor_control_rig_automation.cpp",
-        "test/animation_control_rig_limits.cpp",
-        "test/editor_control_rig_limits.cpp"
+        "test/unit/animation/animation_tests.cpp",
+        "test/integration/control-rig/editor_control_rig.cpp",
+        "test/integration/control-rig/editor_control_rig_automation.cpp",
+        "test/integration/control-rig/editor_control_rig_limits.cpp"
       ],
       "id": "animation-control-rig-api-lifetime",
       "rule": "api-lifetime",
@@ -91,11 +88,10 @@
         "docs/dev/plans/2026-10-23-control-rig-limits.md"
       ],
       "tests": [
-        "test/animation_control_rig.cpp",
-        "test/editor_control_rig.cpp",
-        "test/editor_control_rig_automation.cpp",
-        "test/animation_control_rig_limits.cpp",
-        "test/editor_control_rig_limits.cpp"
+        "test/unit/animation/animation_tests.cpp",
+        "test/integration/control-rig/editor_control_rig.cpp",
+        "test/integration/control-rig/editor_control_rig_automation.cpp",
+        "test/integration/control-rig/editor_control_rig_limits.cpp"
       ],
       "id": "animation-control-rig-persistence",
       "rule": "persistence",
@@ -118,11 +114,10 @@
         "docs/dev/plans/2026-10-23-control-rig-limits.md"
       ],
       "tests": [
-        "test/animation_control_rig.cpp",
-        "test/editor_control_rig.cpp",
-        "test/editor_control_rig_automation.cpp",
-        "test/animation_control_rig_limits.cpp",
-        "test/editor_control_rig_limits.cpp"
+        "test/unit/animation/animation_tests.cpp",
+        "test/integration/control-rig/editor_control_rig.cpp",
+        "test/integration/control-rig/editor_control_rig_automation.cpp",
+        "test/integration/control-rig/editor_control_rig_limits.cpp"
       ],
       "id": "animation-control-rig-backend-contract",
       "rule": "backend-contract",
@@ -144,11 +139,10 @@
         "docs/dev/plans/2026-10-23-control-rig-limits.md"
       ],
       "tests": [
-        "test/animation_control_rig.cpp",
-        "test/editor_control_rig.cpp",
-        "test/editor_control_rig_automation.cpp",
-        "test/animation_control_rig_limits.cpp",
-        "test/editor_control_rig_limits.cpp"
+        "test/unit/animation/animation_tests.cpp",
+        "test/integration/control-rig/editor_control_rig.cpp",
+        "test/integration/control-rig/editor_control_rig_automation.cpp",
+        "test/integration/control-rig/editor_control_rig_limits.cpp"
       ],
       "id": "animation-control-rig-module-interface",
       "rule": "module-interface",

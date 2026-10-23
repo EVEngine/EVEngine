@@ -12,8 +12,8 @@
         "src/modules/editor/EditorTargetCoordinator.h"
       ],
       "tests": [
-        "test/editor_control_rig_automation.cpp",
-        "test/editor_automation_v2.cpp"
+        "test/integration/control-rig/editor_control_rig_automation.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp"
       ],
       "id": "editor-automation-shared-history-api-shape",
       "rule": "api-shape",
@@ -32,8 +32,8 @@
         "src/modules/editor/EditorTargetCoordinator.h"
       ],
       "tests": [
-        "test/editor_control_rig_automation.cpp",
-        "test/editor_automation_v2.cpp"
+        "test/integration/control-rig/editor_control_rig_automation.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp"
       ],
       "id": "editor-automation-shared-history-api-lifetime",
       "rule": "api-lifetime",
@@ -44,7 +44,7 @@
       "lock_callback_policy": "No locks or callbacks in solving or editing."
     },
     {
-      "scope": "src/modules/editor/EditorCommandService.h",
+      "scope": "src/modules/editing/PropertySchemaJson.*",
       "owner": "editor",
       "issue": "EVENGINE-CONTROL-RIG-AUTHORING",
       "reason": "Expose command input schemas and borrow existing authoring transaction history through the existing coordinator.",
@@ -54,8 +54,8 @@
         "src/modules/editor/EditorTargetCoordinator.h"
       ],
       "tests": [
-        "test/editor_control_rig_automation.cpp",
-        "test/editor_automation_v2.cpp"
+        "test/integration/control-rig/editor_control_rig_automation.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp"
       ],
       "id": "editor-automation-command-schema-api-shape",
       "rule": "api-shape",
@@ -64,7 +64,7 @@
       "pointer_policy": "Owned Pimpl and unique_ptr compiled artifacts; synchronous references only."
     },
     {
-      "scope": "src/modules/editor/EditorCommandService.h",
+      "scope": "src/modules/editing/PropertySchemaJson.*",
       "owner": "editor",
       "issue": "EVENGINE-CONTROL-RIG-AUTHORING",
       "reason": "Expose command input schemas and borrow existing authoring transaction history through the existing coordinator.",
@@ -74,8 +74,8 @@
         "src/modules/editor/EditorTargetCoordinator.h"
       ],
       "tests": [
-        "test/editor_control_rig_automation.cpp",
-        "test/editor_automation_v2.cpp"
+        "test/integration/control-rig/editor_control_rig_automation.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp"
       ],
       "id": "editor-automation-command-schema-api-lifetime",
       "rule": "api-lifetime",
@@ -86,7 +86,7 @@
       "lock_callback_policy": "No locks or callbacks in solving or editing."
     },
     {
-      "scope": "src/modules/editing/EditingCommandRegistry.h",
+      "scope": "src/modules/editing/EditingProperty.h",
       "owner": "editor",
       "issue": "EVENGINE-CONTROL-RIG-AUTHORING",
       "reason": "Expose command input schemas and borrow existing authoring transaction history through the existing coordinator.",
@@ -96,8 +96,8 @@
         "src/modules/editor/EditorTargetCoordinator.h"
       ],
       "tests": [
-        "test/editor_control_rig_automation.cpp",
-        "test/editor_automation_v2.cpp"
+        "test/integration/control-rig/editor_control_rig_automation.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp"
       ],
       "id": "editor-automation-editing-schema-api-shape",
       "rule": "api-shape",
@@ -106,7 +106,7 @@
       "pointer_policy": "Owned Pimpl and unique_ptr compiled artifacts; synchronous references only."
     },
     {
-      "scope": "src/modules/editing/EditingCommandRegistry.h",
+      "scope": "src/modules/editing/EditingProperty.h",
       "owner": "editor",
       "issue": "EVENGINE-CONTROL-RIG-AUTHORING",
       "reason": "Expose command input schemas and borrow existing authoring transaction history through the existing coordinator.",
@@ -116,8 +116,8 @@
         "src/modules/editor/EditorTargetCoordinator.h"
       ],
       "tests": [
-        "test/editor_control_rig_automation.cpp",
-        "test/editor_automation_v2.cpp"
+        "test/integration/control-rig/editor_control_rig_automation.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp"
       ],
       "id": "editor-automation-editing-schema-api-lifetime",
       "rule": "api-lifetime",
@@ -137,8 +137,8 @@
         "src/modules/editor/EditorTargetCoordinator.h"
       ],
       "tests": [
-        "test/editor_control_rig_automation.cpp",
-        "test/editor_automation_v2.cpp"
+        "test/integration/control-rig/editor_control_rig_automation.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp"
       ],
       "id": "editor-automation-shared-history-interface",
       "rule": "module-interface",

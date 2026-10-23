@@ -6208,7 +6208,16 @@
           "animation.skinned.gpuPaletteOwnsAndValidatesMatrices",
           "animation.skinned.worldMatrixMatchesTRS",
           "animation.smr.sensorCloudTagsBodyParts",
-          "animation.smr.preservesHandTorsoProximityAcrossScale"
+          "animation.smr.preservesHandTorsoProximityAcrossScale",
+          "animation.controlRig.fkTimelineBakeAndOwnedSkeleton",
+          "animation.controlRig.rejectsCyclesAndPreservesOutputOnFailure",
+          "animation.controlRig.ikAndReparent",
+          "animation.controlRig.aimComposesOverInputAndFailsAtomically",
+          "animation.controlRig.quaternionShortestPathAndBakeEndpoints",
+          "animation.controlRig.limits.axesExtensionAndInvalidConfiguration",
+          "animation.controlRig.limits.referenceRotationAndInterpolation",
+          "animation.controlRig.limits.codecMigrationSamplingAndBake",
+          "animation.controlRig.limits.ikCannotBypassLockedJoints"
         ]
       },
       "module": "animation",
@@ -6227,7 +6236,9 @@
         "animation_retarget_compression.cpp",
         "animation_root_motion_policy.cpp",
         "animation_skinned.cpp",
-        "animation_smr_retarget.cpp"
+        "animation_smr_retarget.cpp",
+        "animation_control_rig.cpp",
+        "animation_control_rig_limits.cpp"
       ]
     },
     "unit/archspace/archspace_space_query.cpp": {
@@ -12177,6 +12188,52 @@
       },
       "module": "weather",
       "task": "weather-lightning"
+    },
+    "integration/control-rig/editor_control_rig.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "editor.controlRig.transactionHistoryAndRoundTrip",
+          "editor.controlRig.documentRejectsForeignPublication",
+          "editor.controlRig.genericGraphRoundTripAndStaleRevision",
+          "editor.controlRig.dragPreviewDoesNotMutateHistory",
+          "editor.controlRig.matchPoseIsOneUndoableEdit",
+          "editor.controlRig.failedHistoryPreviewRestoresDocument"
+        ],
+        "script-binding": [
+          "editor.controlRig.scriptFacadeProjectsNumericTimeAndOwnedResults"
+        ]
+      },
+      "module": "animation",
+      "task": "control-rig"
+    },
+    "integration/control-rig/editor_control_rig_automation.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "editor.controlRig.automation.sharedDocumentHistoryAndSchema",
+          "editor.controlRig.automation.plansRejectStaleAndInvalidAtomically",
+          "editor.controlRig.automation.lifecycleAndAbsentHost",
+          "editor.controlRig.automation.keysNodesAndGeneration",
+          "editor.controlRig.automation.oldOwnerCannotRemoveReplacement",
+          "editor.controlRig.automation.nestedSchemaUsesSharedProjection"
+        ]
+      },
+      "module": "animation",
+      "task": "control-rig"
+    },
+    "integration/control-rig/editor_control_rig_limits.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "editor.controlRig.limits.sharedHistoryAndAtomicRejection"
+        ]
+      },
+      "module": "animation",
+      "task": "control-rig"
     }
   }
 }

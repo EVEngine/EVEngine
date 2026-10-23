@@ -30,3 +30,7 @@ RigDefinition 是唯一权威数据；参考 TRS 是约束自身持有的校准�
 ### 重影修复
 
 用户发现的重影存在于原始 PNG：热重载丢弃脚本引用后，旧 ECS Renderable3D 仍存在，新建模型与旧姿态叠绘。此前只验证文档恢复，未验证预览对象生命周期，视觉验收不足。现在保留预览表并复用模型部件和相机，仅重建动画/蒙皮绑定。单一干净进程连续两次重载，9 个实体 ID/generation 不变，文档相等，重新运行 MCP 流程通过。新原始帧已人工检查，`build/control-rig-limits/limits-no-ghost.gif` 是重录的 20 帧约 7.1 秒证据，替代旧重影录制。
+
+### PR 同步 dev（2026-10-23）
+
+已合并 dev 0dade008d。命令 schema 接入现有 PropertySchema.documentSchema，Host catalogue 与 MCP 使用同一投影；扁平属性和嵌套文档 schema 互斥，增加对应回归。测试按最新测试目录和分类契约归并，更新生成覆盖率证据。此前 22 项测试与原生演示证据属于上述旧基线；合并后本机预编译依赖版本与 dev 新 pin 不匹配，CMake 拒绝新头文件链接旧库，因此新基线编译和运行结果以 PR CI 为准。未豁免架构规则。
