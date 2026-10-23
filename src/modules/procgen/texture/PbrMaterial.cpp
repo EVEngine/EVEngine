@@ -1,6 +1,7 @@
 #include "procgen/texture/PbrMaterial.h"
-#include "procgen/texture/ColorRamp.h"
 #include "procgen/texture/CableTextures.h"
+#include "procgen/texture/ColorRamp.h"
+#include "procgen/texture/EverydayMaterials.h"
 #include "procgen/texture/FloorTextures.h"
 #include "procgen/texture/NoiseField.h"
 
@@ -94,6 +95,30 @@ void PbrRecipeRegistry::registerPbrBuiltins() {
     }
     registerFloorPbrRecipes(*this);
     registerCablePbrRecipes(*this);
+    // Existing registry/script entry points project the canonical Result factory.
+    const char *names[] = {"wood",  "metal",    "rubber",    "cloth",  "plastic", "steel", "glass",
+                           "paper", "aluminum", "cast_iron", "cement", "paint",   "marble"};
+    for (size_t i = 0; i < 13; ++i) {
+        auto schema =
+            RecipeDescriptor::grid(std::string("pbr.everyday.") + names[i], names[i], "Everyday Material", 1, 1);
+        for (auto &parameter : schema.params) {
+            if (parameter.key == "width" || parameter.key == "height") parameter.maximum = 2048;
+        }
+        schema.params.push_back(ParamDescriptor::floating("scale", "Pattern Repeats", 4.f, 1.f, 32.f, 1.f));
+        schema.params.push_back(ParamDescriptor::floating("detail", "Surface Detail", .5f, 0.f, 1.f, .01f));
+        schema.params.push_back(ParamDescriptor::floating("finish", "Polish", .5f, 0.f, 1.f, .01f));
+        schema.params.push_back(ParamDescriptor::floating("variation", "Color Variation", .4f, 0.f, 1.f, .01f));
+        registerPbrRecipe(std::move(schema),
+                          [family = static_cast<EverydayMaterial>(i)](const Params &p, std::string &error) {
+                              auto result = EverydayMaterials::generate(family, p);
+                              if (!result.ok()) {
+                                  error = "Everyday material generation failed: unsupported family or size";
+                                  return std::unique_ptr<PbrTextureSet>{};
+                              }
+                              error.clear();
+                              return std::move(result).takeValue();
+                          });
+    }
     builtinsRegistered_ = true;
 }
 
@@ -132,38 +157,60 @@ std::unique_ptr<PbrTextureSet> generatePbrSet(const TextureRecipeDef &def, const
 
     auto set    = std::make_unique<PbrTextureSet>();
     set->albedo = new image::ImageData(w, h, "RGBA8");
-    paintHeightToImage(*set->albedo, height, w, h, def.albedo, ctx.colors, ctx.pixelSize);
+    std::vector<float> pigment;
+    if (def.colorField) fillHeightField(ctx, def.colorField, pigment);
+    paintHeightToImage(*set->albedo, def.colorField ? pigment : height, w, h, def.albedo, ctx.colors, ctx.pixelSize);
     set->normal = heightToNormalImage(height, w, h, pbr.normalStrength, ctx.seamless).release();
 
+    std::vector<float> microfacet;
+    if (def.roughnessField) fillHeightField(ctx, def.roughnessField, microfacet);
     std::vector<float> rough(size_t(w * h));
     std::vector<float> heightMap(size_t(w * h));
     std::vector<float> ao(size_t(w * h));
     const int r = std::max(1, std::min(w, h) / 64);  // cavity sampling radius
+    // Separable sliding box mean: O(w*h), including wrapped or clipped boundaries.
+    // This is the same cavity footprint as the original nested neighbourhood scan.
+    std::vector<float> horizontal(height.size()), neighbourhood(height.size());
+    auto               wrap = [](int coordinate, int extent) { return (coordinate % extent + extent) % extent; };
+    for (int y = 0; y < h; ++y) {
+        double sum    = 0.0;
+        int    count  = 0;
+        auto   update = [&](int x, int sign) {
+            if (!ctx.seamless && (x < 0 || x >= w)) return;
+            sum += sign * double(height[size_t(y) * size_t(w) + size_t(wrap(x, w))]);
+            count += sign;
+        };
+        for (int x = -r; x <= r; ++x) update(x, 1);
+        for (int x = 0; x < w; ++x) {
+            horizontal[size_t(y) * size_t(w) + size_t(x)] = float(sum / count);
+            update(x - r, -1);
+            update(x + r + 1, 1);
+        }
+    }
+    for (int x = 0; x < w; ++x) {
+        double sum    = 0.0;
+        int    count  = 0;
+        auto   update = [&](int y, int sign) {
+            if (!ctx.seamless && (y < 0 || y >= h)) return;
+            sum += sign * double(horizontal[size_t(wrap(y, h)) * size_t(w) + size_t(x)]);
+            count += sign;
+        };
+        for (int y = -r; y <= r; ++y) update(y, 1);
+        for (int y = 0; y < h; ++y) {
+            neighbourhood[size_t(y) * size_t(w) + size_t(x)] = float(sum / count);
+            update(y - r, -1);
+            update(y + r + 1, 1);
+        }
+    }
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
             const size_t i = size_t(y) * size_t(w) + size_t(x);
             const float  hh = height[i];
             rough[size_t(i)] =
-                pbr.roughnessLow + (pbr.roughnessHigh - pbr.roughnessLow) * hh;
+                pbr.roughnessLow + (pbr.roughnessHigh - pbr.roughnessLow) * (def.roughnessField ? microfacet[i] : hh);
             heightMap[i] = std::clamp(0.5f + (hh - 0.5f) * pbr.heightStrength, 0.f, 1.f);
 
-            // Cavity AO: darker where a pixel sits below its neighbourhood mean.
-            float sum = 0.f;
-            int   cnt = 0;
-            for (int dy = -r; dy <= r; ++dy) {
-                for (int dx = -r; dx <= r; ++dx) {
-                    int xx = x + dx, yy = y + dy;
-                    if (ctx.seamless) {
-                        xx = ((xx % w) + w) % w;
-                        yy = ((yy % h) + h) % h;
-                    } else {
-                        if (xx < 0 || yy < 0 || xx >= w || yy >= h) continue;
-                    }
-                    sum += height[size_t(yy) * size_t(w) + size_t(xx)];
-                    ++cnt;
-                }
-            }
-            const float local = cnt > 0 ? sum / float(cnt) : hh;
+            const float local = neighbourhood[i];
             ao[i] = std::clamp(1.f - pbr.aoStrength * std::max(0.f, local - hh), 0.f, 1.f);
         }
     }
