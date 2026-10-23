@@ -24,10 +24,16 @@ file(MAKE_DIRECTORY "${_eve_bin}")
 
 # --- Vulkan loader ----------------------------------------------------------
 set(_eve_vulkan_dll "")
+if(DEFINED ENV{EVE_VULKAN_LOADER})
+    if(NOT EXISTS "$ENV{EVE_VULKAN_LOADER}")
+        message(FATAL_ERROR "Configured EVE_VULKAN_LOADER does not exist")
+    endif()
+    set(_eve_vulkan_dll "$ENV{EVE_VULKAN_LOADER}")
+endif()
 foreach(_cand IN ITEMS
         "$ENV{VULKAN_SDK}/Bin/vulkan-1.dll"
         "$ENV{VULKAN_SDK}/bin/vulkan-1.dll")
-    if(EXISTS "${_cand}")
+    if(NOT _eve_vulkan_dll AND EXISTS "${_cand}")
         set(_eve_vulkan_dll "${_cand}")
     endif()
 endforeach()
@@ -54,6 +60,11 @@ if(NOT EXISTS "${_eve_vulkan_dll}")
         "Packaged games will need a Vulkan loader from the user's GPU driver.")
 else()
     file(INSTALL "${_eve_vulkan_dll}" DESTINATION "${_eve_bin}")
+    if(DEFINED ENV{EVE_VULKAN_LOADER})
+        get_filename_component(_eve_loader_dir "$ENV{EVE_VULKAN_LOADER}" DIRECTORY)
+        file(INSTALL "${_eve_loader_dir}/LICENSE.txt"
+            DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eve/licenses/Vulkan-Loader")
+    endif()
     message(STATUS "win32 bundle: vulkan-1.dll -> ${_eve_bin}")
 endif()
 

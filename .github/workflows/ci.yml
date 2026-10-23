@@ -311,7 +311,7 @@ jobs:
         run: |
           cmake/with-msvc.cmd --arm64 cmake -G Ninja -S .github/scripts/vulkan-probe -B build/arm64-vulkan-probe -DCMAKE_BUILD_TYPE=Release
           cmake/with-msvc.cmd --arm64 cmake --build build/arm64-vulkan-probe
-          build/arm64-vulkan-probe/vulkan_probe.exe "$PWD/build/arm64-swiftshader-runtime/vk_swiftshader.dll" "$VULKAN_SDK/Bin/vulkan-1.dll"
+          build/arm64-vulkan-probe/vulkan_probe.exe "$PWD/build/arm64-swiftshader-runtime/vk_swiftshader.dll" "$EVE_VULKAN_LOADER"
 
       - name: Build Windows ARM64
         timeout-minutes: 190
@@ -323,6 +323,9 @@ jobs:
           if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
           make "build/win32-arm64${suffix}" JOBS=4 \
             CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+          # Executable-local lookup precedes any system Vulkan loader.
+          cp "$EVE_VULKAN_LOADER" "build/win32-arm64${suffix}/test/vulkan-1.dll"
+          cp "$EVE_VULKAN_LOADER" "build/win32-arm64${suffix}/src/engine/vulkan-1.dll"
 
       - name: Probe real SDL Vulkan window with loader diagnostics
         timeout-minutes: 5
@@ -433,6 +436,8 @@ jobs:
         run: |
           suffix=""
           if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          g++ -std=c++20 -g .github/scripts/vulkan-probe/blas.cpp -lvulkan -o build/arm64-blas-probe
+          gdb --batch --return-child-result -ex run -ex 'thread apply all bt' --args build/arm64-blas-probe
           python3 .github/scripts/probe-raytracing.py "build/linux-arm64${suffix}"
 
       - name: Run Linux ARM64 tests

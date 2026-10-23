@@ -3,6 +3,16 @@ description: Select Lavapipe on Linux or build a pinned native SwiftShader on Wi
 runs:
   using: composite
   steps:
+    - name: Restore native Windows loader
+      if: runner.os == 'Windows'
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: build/arm64-vulkan-loader
+        key: vulkan-loader-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.github/scripts/setup-arm64-vulkan-loader.ps1') }}
+    - name: Build and select native Windows loader
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: .github/scripts/setup-arm64-vulkan-loader.ps1
     - name: Restore native Windows ICD
       if: runner.os == 'Windows'
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
