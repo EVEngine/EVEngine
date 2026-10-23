@@ -67,7 +67,7 @@ Result<Value> propertySchemaToJsonSchema(const PropertySchema& schema, std::stri
         return failed<Value>(Status::Rejected, RuleId("editing.schema.empty-id"),
                              "JSON Schema projection requires a non-empty schema id");
 
-    if (!schema.documentSchema.isNull()) {
+    if (schema.documentSchema.type() != Value::Type::Null) {
         if (!schema.documentSchema.getIf<Value::Object>() || !schema.properties.empty())
             return failed<Value>(Status::Rejected, RuleId("editing.schema.conflicting-shapes"),
                                  "Document schema must be an object and cannot coexist with flat properties");

@@ -207,7 +207,7 @@ TEST_CASE("editor.controlRig.automation.oldOwnerCannotRemoveReplacement") {
 TEST_CASE("editor.controlRig.automation.nestedSchemaUsesSharedProjection") {
     eve::editing::PropertySchema schema;
     schema.typeId         = "rig-document";
-    schema.documentSchema = eve::Value::Object{{"type", "object"}, {"additionalProperties", false}};
+    schema.documentSchema = eve::editing::Value::Object{{"type", "object"}, {"additionalProperties", false}};
     auto projected        = eve::editing::propertySchemaToJsonSchema(schema, "rig-document");
     REQUIRE(projected.ok());
     CHECK(eve::editing::editorValueToJson(projected.value()) == eve::editing::editorValueToJson(schema.documentSchema));
