@@ -1742,8 +1742,10 @@ TEST_CASE("common.zeroerr.preservesAssertionCounters") {
     CHECK(after == before + 1);
     auto knownFailure = [reporter = &_ZEROERR_TEST_CONTEXT->reporter] {
         zeroerr::TestContext context(*reporter);
-        auto*                _ZEROERR_TEST_CONTEXT = &context;
-        CHECK(2 == 3);
+        zeroerr::AssertionData failure(__FILE__, __LINE__, "2 == 3",
+                                       {zeroerr::assert_level::ZEROERR_WARN_l, zeroerr::assert_throw::no_throw, false});
+        failure.setResult({false, "2 == 3"});
+        zeroerr::detail::context_helper<zeroerr::TestContext*, false>::setContext(failure, &context);
         return context.warning_as;
     };
     CHECK(knownFailure() == 1);
