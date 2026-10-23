@@ -5,7 +5,7 @@ function buildCheck(condition, message) {
     print("PASS whitebox build: " + message + "\n");
 }
 levelHandleAction("build:flat");
-buildCheck(level.terrain.heightScale > 0.0 && fabs(terrainHeightAt(0.0, 0.0)) < 0.001,
+buildCheck(level.terrain.heightScale > 0.0 && fabs(terrainHeightAt(0, 0)) < 0.001,
     "flat surface remains sculptable and serializable");
 level.piece = "prototype.cube";
 local before = level.objects.len();

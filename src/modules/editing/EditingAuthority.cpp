@@ -103,6 +103,10 @@ Result<TransactionReceipt> LocalWorldAuthority::commit(const AuthorityPlan& plan
                 commitOrder_.pop_back();
                 throw;
             }
+            // Publication may advance an external store revision independently
+            // of the detached candidate (for example script component storage).
+            receipt.afterRevision                           = target_->revision();
+            committed_.at(receipt.id).receipt.afterRevision = receipt.afterRevision;
             ++receiptSequence_;
             return eve::editing::applied<TransactionReceipt>(std::move(receipt));
         } catch (const std::exception& exception) {

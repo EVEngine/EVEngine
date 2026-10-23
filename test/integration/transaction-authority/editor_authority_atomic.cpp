@@ -54,13 +54,14 @@ public:
             return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("test.candidate.identity"),
                                               "Candidate belongs to another target");
         value_    = staged->value_;
-        revision_ = staged->revision_;
+        revision_ = staged->revision_ + publicationRevisionStep;
         dirty_    = staged->dirty_;
         return eve::editing::applied<void>();
     }
 
     int  value() const { return value_; }
     bool failCandidateCommit = false;
+    unsigned publicationRevisionStep = 0;
 
 private:
     std::string        id_;
@@ -119,6 +120,7 @@ TEST_CASE("editor.atomic.candidate_failure_preserves_revision_and_history") {
 
 TEST_CASE("editor.atomic.publish_failure_has_no_effect_and_can_retry") {
     IntegerOperationTarget target("atomic");
+    target.publicationRevisionStep = 3;
     LocalWorldAuthority    authority(&target);
     auto                   operation = setInteger(target, 0, 7);
     auto                   plan      = authority.preflight(transaction(target, "publish"), {&operation, 1});
@@ -132,6 +134,10 @@ TEST_CASE("editor.atomic.publish_failure_has_no_effect_and_can_retry") {
     auto committed             = authority.commit(plan.value());
     REQUIRE(committed.ok());
     CHECK_EQ(target.value(), 7);
+    CHECK_EQ(committed.value().afterRevision, target.revision());
+    auto undone = authority.compensate(committed.value());
+    REQUIRE(undone.ok());
+    CHECK_EQ(target.value(), 0);
 }
 
 TEST_CASE("editor.atomic.two_agents_same_revision_only_one_commits") {
