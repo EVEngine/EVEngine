@@ -1,27 +1,27 @@
-
-
 #include "Image.h"
+#include <cmath>
+#include <limits>
+#include <simplesquirrel/simplesquirrel.hpp>
 #include "UvPaintRegion.h"
 #include "UvPaintSession.h"
 #include "WebPHandler.h"
+#include "common/Diagnostic.h"
 #include "common/Exception.h"
 #include "common/Resource.h"
 #include "common/SquirrelBinding.h"
 #include "common/SquirrelOwnership.h"
 #include "common/config.h"
-
-#include "medialoader/image/EXRHandler.h"
-#include "medialoader/image/PNGHandler.h"
-#include "medialoader/image/STBHandler.h"
-
+#include "image/ImageData.h"
 #include "medialoader/image/ASTCHandler.h"
+#include "medialoader/image/EXRHandler.h"
 #include "medialoader/image/KTXHandler.h"
 #include "medialoader/image/PKMHandler.h"
+#include "medialoader/image/PNGHandler.h"
 #include "medialoader/image/PVRHandler.h"
+#include "medialoader/image/STBHandler.h"
 #include "medialoader/image/ddsHandler.h"
 
-#include <simplesquirrel/simplesquirrel.hpp>
-
+// Image.cpp
 namespace eve {
 namespace image {
 
@@ -168,7 +168,8 @@ std::vector<eve::script::Owned<ImageData>> Image::newVolumeLayers(ImageData* src
 }
 
 void Image::expose(ssq::Table& table) {
-    auto cls = table.addClass(name, Image::create, false);
+    const HSQUIRRELVM vm  = table.getHandle();
+    auto              cls = table.addClass(name, Image::create, false);
     expose(cls);
 
     // Single ImageData class for every module that hands image::ImageData*
@@ -185,6 +186,27 @@ void Image::expose(ssq::Table& table) {
     img.addFunc("clone", &image::ImageData::clone);
     img.addFunc("paste", &image::ImageData::paste);
     img.addFunc("rotate", &image::ImageData::rotate);
+    // scalePcg takes its filter as a C++ enum; scripts name it as a string (Squirrel has
+    // no enums), the same shape ImageData::rotate already uses for its filter. An
+    // unrecognised name is forwarded as a value that is neither Point nor Bilinear so
+    // ImageData::scalePcg keeps ownership of validating it (and of the message) and the
+    // image is left untouched, which is what a caller expects from a rejected filter.
+    const auto projectPixels = [](int pixels) { return Value::integer(int64_t(pixels)); };
+    img.addFunc("scalePcg", [vm, projectPixels](image::ImageData* self, int newWidth, int newHeight,
+                                                const std::string& filter) {
+        if (!self)
+            return script::projectResult(
+                vm,
+                eve::Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                            "Pcg texture scale requires an image", "image.scalePcg")),
+                projectPixels);
+        image::ImageScaleFilter resolved = static_cast<image::ImageScaleFilter>(2);
+        if (filter == "point")
+            resolved = image::ImageScaleFilter::Point;
+        else if (filter == "bilinear")
+            resolved = image::ImageScaleFilter::Bilinear;
+        return script::projectResult(vm, self->scalePcg(newWidth, newHeight, resolved), projectPixels);
+    });
     img.addFunc("getPixelR", [](image::ImageData* self, int x, int y) -> float {
         if (!self) return 0.f;
         return self->getPixel(x, y).r;
@@ -291,3 +313,57 @@ void Image::expose(ssq::Class& cls) {
 
 }  // namespace image
 }  // namespace eve
+
+// ImageScale.cpp
+namespace eve::image {
+
+Result<int> ImageData::scalePcg(int newWidth, int newHeight, ImageScaleFilter filter) {
+    const auto invalid = [](const char* message) {
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message, "image.scalePcg"));
+    };
+    if (newWidth <= 0 || newHeight <= 0) return invalid("Pcg texture scale requires positive destination dimensions");
+    if (filter != ImageScaleFilter::Point && filter != ImageScaleFilter::Bilinear)
+        return invalid("Pcg texture scale requires point or bilinear filtering");
+    if (getWidth() <= 0 || getHeight() <= 0) return invalid("Pcg texture scale requires a non-empty source image");
+    if (filter == ImageScaleFilter::Bilinear && (getWidth() < 2 || getHeight() < 2))
+        return invalid("Pcg bilinear scale requires both source dimensions to be at least two");
+    const auto count = std::uint64_t(newWidth) * std::uint64_t(newHeight);
+    if (count > std::uint64_t(std::numeric_limits<int>::max()))
+        return invalid("Pcg texture scale destination exceeds the supported pixel count");
+
+    ImageData   candidate(newWidth, newHeight, getFormat());
+    const float ratioX = filter == ImageScaleFilter::Bilinear ? float(getWidth() - 1) / float(newWidth)
+                                                              : float(getWidth()) / float(newWidth);
+    const float ratioY = filter == ImageScaleFilter::Bilinear ? float(getHeight() - 1) / float(newHeight)
+                                                              : float(getHeight()) / float(newHeight);
+    const auto  lerp   = [](const Colorf& first, const Colorf& second, float amount) {
+        return Colorf{first.r + (second.r - first.r) * amount, first.g + (second.g - first.g) * amount,
+                      first.b + (second.b - first.b) * amount, first.a + (second.a - first.a) * amount};
+    };
+    for (int y = 0; y < newHeight; ++y) {
+        if (filter == ImageScaleFilter::Point) {
+            const int sourceY = int(ratioY * float(y));
+            for (int x = 0; x < newWidth; ++x) candidate.setPixel(x, y, getPixel(int(ratioX * float(x)), sourceY));
+            continue;
+        }
+        const float sourceY = float(y) * ratioY;
+        const int   yFloor  = int(std::floor(sourceY));
+        const float yLerp   = sourceY - float(yFloor);
+        for (int x = 0; x < newWidth; ++x) {
+            const float sourceX     = float(x) * ratioX;
+            const int   xFloor      = int(std::floor(sourceX));
+            const float xLerp       = sourceX - float(xFloor);
+            const auto  topLeft     = getPixel(xFloor, yFloor);
+            const auto  topRight    = getPixel(xFloor + 1, yFloor);
+            const auto  bottomLeft  = getPixel(xFloor, yFloor + 1);
+            const auto  bottomRight = getPixel(xFloor + 1, yFloor + 1);
+            const auto  top         = lerp(topLeft, topRight, xLerp);
+            const auto  bottom      = lerp(bottomLeft, bottomRight, xLerp);
+            candidate.setPixel(x, y, lerp(top, bottom, yLerp));
+        }
+    }
+    adopt(candidate);
+    return Result<int>::success(int(count));
+}
+
+}  // namespace eve::image

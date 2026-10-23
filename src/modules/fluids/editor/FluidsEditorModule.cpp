@@ -1,9 +1,11 @@
 #include "fluids/editor/FluidsEditorModule.h"
 
 #include "common/Capability.h"
+#include "editing/EditorPackage.h"
 #include "fluids/editing/FluidTarget.h"
 #include "fluids/editing/SurfaceFluidTarget.h"
 #include "fluids/editing/VolumeFluidTarget.h"
+#include "fluids/editor/FluidsEditorPackage.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -54,11 +56,15 @@ editor::Result<editor::AutomationOwnedTarget> FluidsAutomationTargetFactory::cre
 
 Module_IMPL(FluidsEditorModule, new FluidsEditorModule());
 
-FluidsEditorModule::FluidsEditorModule() : factory_(std::make_unique<FluidsAutomationTargetFactory>()) {
+FluidsEditorModule::FluidsEditorModule()
+    : factory_(std::make_unique<FluidsAutomationTargetFactory>()),
+      packageProvider_(std::make_unique<FluidsEditorPackageProvider>()) {
     eve::cap::addListener<editor::IEditorAutomationTargetFactory>(factory_.get());
+    eve::cap::addListener<editing::IEditorPackageProvider>(packageProvider_.get());
 }
 
 FluidsEditorModule::~FluidsEditorModule() {
+    eve::cap::removeListener<editing::IEditorPackageProvider>(packageProvider_.get());
     eve::cap::removeListener<editor::IEditorAutomationTargetFactory>(factory_.get());
 }
 

@@ -7,6 +7,7 @@
 #include "common/ScriptCompiler.h"
 #include "common/ScriptError.h"
 #include "common/ScriptModule.h"
+#include "common/ScriptProvider.h"
 #include "common/SquirrelOwnership.h"
 #include "common/config.h"
 
@@ -314,6 +315,21 @@ SQInteger scriptErrorHook(HSQUIRRELVM vm) {
 
 }  // namespace
 
+namespace script {
+
+void installScriptErrorHook(HSQUIRRELVM vm) {
+    if (!vm) return;
+    // Line numbers in sq_stackinfos require debug info at compile time.
+    sq_enabledebuginfo(vm, SQTrue);
+    // Call the hook for try/catch as well, while the throw-site stack is live.
+    // load.nut's eve_frame catch would otherwise print only the error string.
+    sq_notifyallexceptions(vm, SQTrue);
+    sq_newclosure(vm, &scriptErrorHook, 0);  // pushes the closure
+    sq_seterrorhandler(vm);                  // pops the closure
+}
+
+}  // namespace script
+
 struct Runtime::ScriptRecord {
     ScriptInfo info;
     std::string source_text;
@@ -466,14 +482,7 @@ void Runtime::initialize() {
 
 void Runtime::installErrorHandler() {
     if (!vm_) return;
-    HSQUIRRELVM vm = handle();
-    // Line numbers in sq_stackinfos require debug info at compile time.
-    sq_enabledebuginfo(vm, SQTrue);
-    // Call the hook for try/catch as well, while the throw-site stack is live.
-    // load.nut's eve_frame catch would otherwise print only the error string.
-    sq_notifyallexceptions(vm, SQTrue);
-    sq_newclosure(vm, &scriptErrorHook, 0);  // pushes the closure
-    sq_seterrorhandler(vm);  // pops the closure
+    script::installScriptErrorHook(handle());
 }
 
 void Runtime::shutdown() noexcept {
@@ -499,6 +508,9 @@ void Runtime::shutdown() noexcept {
     initialized_ = false;
     script_compiler_.reset();
     script_modules_.reset();
+    // A published script provider holds a rooted ssq::Object, which must not outlive
+    // its VM: release every one before the VM goes away.
+    ScriptProviderRegistry::instance().clearAll();
     vm_.reset();
     stopped_ = true;
     shutting_down_ = false;

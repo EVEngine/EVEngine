@@ -53,7 +53,11 @@ for apk_file in "${apk_files[@]}"; do
   "$apksigner" verify "$signed_apk"
 
   adb logcat -c
-  adb install -r "$signed_apk"
+  echo "Emulator data partition before $apk_name:"
+  adb shell df -h /data
+  # Fully install each artifact; incremental staging can retain backing data
+  # between large APKs even after the prior package has been uninstalled.
+  adb install --no-incremental -r "$signed_apk"
   adb shell am force-stop com.evengine.example || true
   adb shell am start -W -n com.evengine.example/.EVEngineActivity
 
@@ -76,4 +80,10 @@ for apk_file in "${apk_files[@]}"; do
     exit 1
   fi
   echo "OK: $apk_name printed $success_marker on the emulator"
+  # Each host builds the same package. Release APKs contain large native libs;
+  # retaining the previous install while staging its replacement can exhaust
+  # the emulator's data partition. Release it only after runtime proof passed.
+  adb shell am force-stop com.evengine.example
+  adb uninstall com.evengine.example
+  rm -f "$aligned_apk" "$signed_apk"
 done

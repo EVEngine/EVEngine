@@ -103,7 +103,7 @@ Play Host 的 `step` 必须显式选择 `kind`：
 
 规则：
 
-- 未知根字段失败，不静默忽略（与 `GameplayControlJson` 相同）。
+- 未知根字段失败，不静默忽略（与 `GameplayControlJson` 相同）。契约**不**承载世界简述：静态文案 Agent 可直接读仓库文件；「当前装了哪些系统 / 是什么世界」走运行时 MCP（`eve_game_world` / `eve://game-world` / `eve_play` `op=status.gameWorld`），由 `config.modules`、已实例化模块、gameplay domains，以及脚本在 init 后调用的 `eve.dev.publishWorldContext(table)` 组成。
 - `observations.kind` 第一版只允许：`gameplay-domain`（走 `observeGameplay`）、`script-root`（走已 `markStateRoot` 的快照投影，**不是任意 eval**）、`editor-target`（走 editing 查询）。
 - `actions.source` 为 `gameplay-domain` 时，动作集合必须来自 `availableGameplayActions`；脚本游戏可用 `script-map`，但每条动作仍要有稳定 `id` 和 Result 回执，禁止开放 `eve_run_script` 当主路径。
 - `capture.backend` 只能是引擎 `IRenderCapture`。Xvfb / 桌面 framebuffer 不是合法证据。
@@ -141,7 +141,7 @@ Play Host 的 `step` 必须显式选择 `kind`：
 
 | op | 含义 | 权威系统 |
 | --- | --- | --- |
-| `status` | 暂停否、当前 host frame、活跃 gameplay domains、契约摘要 | Debugger + cap 查询 + `game.agent.json` |
+| `status` | 暂停否、当前 host frame、活跃 gameplay domains、契约摘要、`gameWorld` 运行时世界快照 | Debugger + cap 查询 + 脚本 `publishWorldContext` + 已配置/已实例化模块 |
 | `clock` | `pause` / `play` | Debugger，与现有 `eve_pause` / `eve_continue` 同一条路径 |
 | `step` | 推进 `count` 个 `frame` 或一次 `gameplay` | Host loop 或 `advanceGameplay` |
 | `observe` | 按契约 id 取 owning 快照 | GameplayControl / marked script root / editing query |
@@ -273,7 +273,7 @@ VibeGame 的污染风险成立：错误经验写进源码会伤害后续项目�
 ### P0 — Play 门面（最小可教路径） — 已落地
 
 - `evengine.play-request` v1：`status` / `clock` / `step(frame)` / `observe(script-root)` / `capture` / `checkpoint` / `batch`
-- MCP `eve_play` + `test/play_host.cpp`（无 `IRenderCapture` 时 `Unsupported`）
+- MCP `eve_play` + `test/integration/runtime-lifecycle/runtime_lifecycle_graphics_tests.cpp`（无 `IRenderCapture` 时 `Unsupported`）
 - `examples/ai-game/game.agent.json`；`agent_demo.py` 改走 `eve_play`
 - 文档：`Agent游戏开发范式.md` 的 Discover 改为先读契约
 
@@ -313,7 +313,7 @@ VibeGame 的污染风险成立：错误经验写进源码会伤害后续项目�
 
 ## 12. 测试与架构门
 
-- 新协议走 `test/play_host.cpp`、`test/play_trace.cpp`（过程隔离），不塞进共享 test main。
+- 新协议走 `test/integration/runtime-lifecycle/runtime_lifecycle_graphics_tests.cpp`、`test/unit/devtools/devtools_tests.cpp`（过程隔离），不塞进共享 test main。
 - 每个 `IGameplayControlProvider` 的现有合同测试保持；Play 只增加「经 Host 调用与直连 JSON 门面等价」一条。
 - `game.agent.json` / play-request / play-trace 列入 schema 与未知字段拒绝测试。
 - 可选图形：无 `IRenderCapture` 的测试必须看到 `Unsupported`，不能 skip 成通过。

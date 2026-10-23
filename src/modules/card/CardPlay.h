@@ -8,14 +8,15 @@
  */
 
 #include "card/CardTypes.h"
+#include "common/Condition.h"
 #include "common/Container.h"
-#include "decision/Condition.h"
 #include "transaction/AtomicResourcePayment.h"
 
 #include <functional>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 namespace eve::card {
 
@@ -30,7 +31,7 @@ struct CardPlayConditionQueries {
     using Resource  = std::function<std::optional<eve::Value>(std::string_view key)>;
     using Authority = std::function<std::optional<bool>(std::string_view scope)>;
     using Policy =
-        std::function<std::optional<decision::ConditionResult>(std::string_view name, const eve::Value& arguments)>;
+        std::function<std::optional<condition::ConditionResult>(std::string_view name, const eve::Value& arguments)>;
 
     Resource  resource;
     Authority authority;
@@ -44,7 +45,7 @@ struct CardPlayConditionQueries {
  * attributes expose the definition's cost/attack/health, while resource,
  * authority and policy lookups are supplied by the owning game/profile.
  */
-class CardPlayConditionContext final : public decision::EvaluationContext {
+class CardPlayConditionContext final : public condition::EvaluationContext {
 public:
     /**
      * @brief Bind a card instance and definition for one evaluation.
@@ -55,28 +56,13 @@ public:
     CardPlayConditionContext(const CardData* card, const CardDefinition& definition,
                              CardPlayConditionQueries queries = {});
 
-    /** @copydoc decision::EvaluationContext::value */
+    /** @copydoc condition::EvaluationContext::value */
     /** @brief Value. */
     [[nodiscard]] std::optional<eve::Value> value(std::string_view key) const override;
-    /** @copydoc decision::EvaluationContext::hasTag */
-    /** @brief True when tag. */
-    [[nodiscard]] std::optional<bool> hasTag(std::string_view tag) const override;
-    /** @copydoc decision::EvaluationContext::attribute */
-    /** @brief Attribute. */
-    [[nodiscard]] std::optional<eve::Value> attribute(std::string_view key) const override;
-    /** @copydoc decision::EvaluationContext::resource */
-    /** @brief Resource. */
-    [[nodiscard]] std::optional<eve::Value> resource(std::string_view key) const override;
-    /** @copydoc decision::EvaluationContext::state */
-    /** @brief State. */
-    [[nodiscard]] std::optional<eve::Value> state(std::string_view key) const override;
-    /** @copydoc decision::EvaluationContext::authority */
-    /** @brief Authority. */
-    [[nodiscard]] std::optional<bool> authority(std::string_view scope) const override;
-    /** @copydoc decision::EvaluationContext::policy */
+    /** @copydoc condition::EvaluationContext::policy */
     /** @brief Policy. */
-    [[nodiscard]] std::optional<decision::ConditionResult> policy(std::string_view  name,
-                                                                  const eve::Value& arguments) const override;
+    [[nodiscard]] std::optional<condition::ConditionResult> policy(std::string_view  name,
+                                                                   const eve::Value& arguments) const override;
 
 private:
     const CardData*          card_       = nullptr;
@@ -95,9 +81,9 @@ public:
      * @param queries Optional read-only resource, authority and policy providers.
      * @return A stable explanation suitable for UI rejection text.
      */
-    [[nodiscard]] static decision::ConditionResult evaluate(const CardData* card, const CardDefinition& definition,
-                                                            const decision::Condition& condition,
-                                                            CardPlayConditionQueries   queries = {});
+    [[nodiscard]] static condition::ConditionResult evaluate(const CardData* card, const CardDefinition& definition,
+                                                             const condition::Condition& condition,
+                                                             CardPlayConditionQueries    queries = {});
 };
 
 /**
@@ -108,10 +94,14 @@ public:
  * card or an account.  The card is borrowed for the synchronous transaction
  * call and must remain live on the owner thread.
  */
-class CardPlayParticipant final : public eve::transaction::ITransactionParticipant {
+class EVENGINE_API_WORLD CardPlayParticipant final : public eve::transaction::ITransactionParticipant {
 public:
     /** @brief Bind one card effect whose state transition is played. */
     explicit CardPlayParticipant(CardData& card);
+    CardPlayParticipant(const CardPlayParticipant&)            = delete;
+    CardPlayParticipant& operator=(const CardPlayParticipant&) = delete;
+    CardPlayParticipant(CardPlayParticipant&&)                 = delete;
+    CardPlayParticipant& operator=(CardPlayParticipant&&)      = delete;
 
     /** @brief Stable transaction diagnostic name. */
     [[nodiscard]] std::string_view name() const noexcept override { return "card-play-effect"; }
@@ -129,7 +119,14 @@ public:
     [[nodiscard]] eve::Result<void> compensate(const eve::transaction::TransactionContext& context) override;
 
 private:
-    CardData& card_;
+    ecs::EntityHandle card_;
+    /** @brief Resolve the generation handle before a lifecycle mutation.
+     * @ownership Borrowed entity owned by its Card facade/ECS table.
+     * @lifetime Valid only through the synchronous lifecycle call.
+     * @nullable Returns null after entity destruction or table replacement.
+     * @thread Simulation owner thread; no callbacks or reentry.
+     */
+    CardData* resolve() const;
     CardState previousState_ = CardState::Hand;
     bool      prepared_      = false;
     bool      committed_     = false;
@@ -151,6 +148,18 @@ struct CardPlayComposition {
     std::optional<eve::container::SlotIndex>   sourceSlot;
     std::optional<eve::container::SlotIndex>   destinationSlot;
     eve::transaction::ITransactionParticipant* effect = nullptr;
+    /**
+     * @brief Optional owning ruleset cost replacing definition Mana; empty uses Mana.
+     * @remarks An engaged invalid CostSpec is rejected, never treated as free.
+     * This is a per-play input and does not change the registered definition.
+     */
+    std::optional<eve::resource::CostSpec> paymentCost;
+    /**
+     * @brief Additional borrowed effects committed after effect in listed order.
+     * @remarks Participants must be unique, non-null and live for the synchronous
+     * owner-thread call. Callbacks must not reenter play on the same card/account.
+     */
+    std::vector<eve::transaction::ITransactionParticipant*> additionalEffects;
 };
 
 /**

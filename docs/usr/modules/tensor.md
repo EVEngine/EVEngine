@@ -99,8 +99,8 @@ WebGPU 对重复输入共用一个存储声明，例如 `sdpa(q, q, q)`，避免
 ### 跑一个真实的 mini LLM（TinyStories-gpt2-3M）
 
 用预训练权重实测整个推理管线：`calum/tinystories-gpt2-3M`（8 层、d=64、16 头、
-GPT-2 BPE 词表 50257，TinyStories 语料训练）。测试 [test/tensor_llm.cpp]
-(../../../test/tensor_llm.cpp) 用 TF 算子逐层搭出完整 GPT-2 图：
+GPT-2 BPE 词表 50257，TinyStories 语料训练）。测试 [test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp]
+(../../../test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp) 用 TF 算子逐层搭出完整 GPT-2 图：
 `embedding`（token + 位置）→ 8 × { `layernormWB` → 多头 `sdpaMasked`（因果 mask）
 → 残差 → MLP(`gelu`) → 残差 } → `layernormWB` → `matmul(lm_head)` → `argmax`
 贪婪采样。验证结果：
@@ -217,3 +217,7 @@ GPU 错误明确返回，不会自动改用 CPU 重试。
 **源码：** [`src/modules/tensor/`](../../../src/modules/tensor/)（含
 `Optimizer` 图优化/融合、`KernelGen` 专用 kernel 生成、`GpuBackend` GPU 运行时）
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `tensor`。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](tensor/api-reference.md)，使用前先确认本章的前置条件与生命周期。

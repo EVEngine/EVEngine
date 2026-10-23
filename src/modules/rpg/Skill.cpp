@@ -1,14 +1,22 @@
 #include "rpg/Skill.h"
-
-#include "common/Json.h"
-#include "common/Value.h"
-#include "rpg/SkillConditionCodec.h"
-
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <set>
+#include <string>
 #include <unordered_map>
+#include <utility>
+#include "common/ConditionCodec.h"
+#include "common/ConditionKeys.h"
+#include "common/Json.h"
+#include "common/Value.h"
+#include "rpg/AttributeSystem.h"
+#include "rpg/RPGActor.h"
+#include "rpg/SkillAction.h"
+#include "rpg/SkillCondition.h"
+#include "rpg/SkillConditionCodec.h"
 
+// Skill.cpp
 namespace eve::rpg {
 
 using eve::json::Value;
@@ -58,18 +66,18 @@ eve::Result<std::string> canonicalJson(const SkillDefinition& def) {
 
 }  // namespace
 
-bool SkillDefinition::hasTag(const std::string &tag) const {
+bool SkillDefinition::hasTag(const std::string& tag) const {
     return std::find(tags.begin(), tags.end(), tag) != tags.end();
 }
 
-std::unordered_map<std::string, SkillDefinition> &table() {
+std::unordered_map<std::string, SkillDefinition>& table() {
     static std::unordered_map<std::string, SkillDefinition> t;
     return t;
 }
 
 eve::definitions::DefinitionRegistry& SkillRegistry::definitionRegistry() { return canonicalSkillRegistry(); }
 
-void SkillRegistry::registerSkill(const SkillDefinition &def) {
+void SkillRegistry::registerSkill(const SkillDefinition& def) {
     if (def.id.empty()) return;
     auto json = canonicalJson(def);
     if (!json) {
@@ -87,9 +95,9 @@ void SkillRegistry::registerSkill(const SkillDefinition &def) {
     table()[def.id] = def;
 }
 
-const SkillDefinition *SkillRegistry::find(const std::string &id) {
-    auto &t = table();
-    auto it = t.find(id);
+const SkillDefinition* SkillRegistry::find(const std::string& id) {
+    auto& t  = table();
+    auto  it = t.find(id);
     return it == t.end() ? nullptr : &it->second;
 }
 
@@ -118,17 +126,17 @@ namespace {
 SkillDefinition parseSkillObject(Value o, std::string* error) {
     SkillDefinition def;
     if (!o.isObject()) return def;
-    def.id = o.getString("id");
-    def.cooldown = o.getFloat("cooldown", 0.f);
-    def.castTime = o.getFloat("castTime", 0.f);
-    def.targetType = o.getString("targetType", "self");
+    def.id             = o.getString("id");
+    def.cooldown       = o.getFloat("cooldown", 0.f);
+    def.castTime       = o.getFloat("castTime", 0.f);
+    def.targetType     = o.getString("targetType", "self");
     def.grantedEffects = o.getStringArray("grantedEffects");
-    def.tags = o.getStringArray("tags");
+    def.tags           = o.getStringArray("tags");
 
-    const Value costs = o.get("costs");
+    const Value                              costs = o.get("costs");
     std::vector<eve::resource::ResourceCost> costItems;
     for (size_t i = 0; i < costs.size(); ++i) {
-        const Value co = costs.at(i);
+        const Value       co       = costs.at(i);
         const std::string resource = co.getString("attribute");
         const double      amount   = co.getDouble("amount", 0.0);
         // Keep the legacy JSON shape, but do not silently truncate a value
@@ -160,8 +168,8 @@ SkillDefinition parseSkillObject(Value o, std::string* error) {
 
 }  // namespace
 
-int SkillRegistry::loadFromJson(const std::string &json, std::string *error) {
-    std::string err;
+int SkillRegistry::loadFromJson(const std::string& json, std::string* error) {
+    std::string               err;
     const eve::json::Document doc = eve::json::Document::parse(json, &err);
     if (!doc.valid()) {
         if (error) *error = err.empty() ? "invalid json" : err;
@@ -169,7 +177,7 @@ int SkillRegistry::loadFromJson(const std::string &json, std::string *error) {
     }
 
     const Value root = doc.root();
-    int n = 0;
+    int         n    = 0;
     if (root.isArray()) {
         for (size_t i = 0; i < root.size(); ++i) {
             SkillDefinition def = parseSkillObject(root.at(i), error);
@@ -185,6 +193,188 @@ int SkillRegistry::loadFromJson(const std::string &json, std::string *error) {
         }
     }
     return n;
+}
+
+}  // namespace eve::rpg
+
+// SkillAction.cpp
+namespace eve::rpg {
+namespace {
+
+eve::Result<eve::LogicalId> skillActionId(const SkillDefinition& skill) {
+    if (skill.id.empty())
+        return eve::Result<eve::LogicalId>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "skill id must not be empty", "skill.id"));
+    const auto id = eve::LogicalId::fromParts("rpg", "skill." + skill.id);
+    if (!id)
+        return eve::Result<eve::LogicalId>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "skill id cannot form a valid action logical id", "skill.id"));
+    return eve::Result<eve::LogicalId>::success(*id);
+}
+
+eve::Result<eve::Duration> seconds(float value, const char* path) {
+    auto duration = eve::Duration::fromSeconds(static_cast<double>(value));
+    if (!duration) {
+        const eve::Status status = duration.status();
+        (void)status;
+        return eve::Result<eve::Duration>::failure(duration.status());
+    }
+    if (duration.value().nanoseconds() < 0)
+        return eve::Result<eve::Duration>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "skill action duration must be non-negative", path));
+    return duration;
+}
+
+}  // namespace
+
+eve::Result<action::ActionDefinition> SkillActionAdapter::makeDefinition(const SkillDefinition& skill) {
+    auto id = skillActionId(skill);
+    if (!id) return eve::Result<action::ActionDefinition>::failure(id.status());
+    auto windup = seconds(skill.castTime, "skill.castTime");
+    if (!windup) return eve::Result<action::ActionDefinition>::failure(windup.status());
+    auto cooldown = seconds(skill.cooldown, "skill.cooldown");
+    if (!cooldown) return eve::Result<action::ActionDefinition>::failure(cooldown.status());
+
+    action::ActionDefinition definition;
+    definition.id            = std::move(id).takeValue();
+    definition.timing.windup = std::move(windup).takeValue();
+    definition.condition     = skill.castCondition;
+    definition.targetingMode =
+        skill.targetType == "self" ? action::TargetingMode::None : action::TargetingMode::Explicit;
+    definition.cost      = skill.cost;
+    definition.effectIds = skill.grantedEffects;
+    // A skill is an Active operation even when it currently has no effect id;
+    // the injected executor may emit a settlement/event for that operation.
+    definition.activeExecutionRequired = true;
+    definition.metadata.emplace("cooldown", eve::Value(cooldown.value().seconds()));
+    definition.metadata.emplace("targetType", eve::Value(skill.targetType));
+    definition.metadata.emplace("skillId", eve::Value(skill.id));
+
+    auto valid = definition.validate();
+    if (!valid) return eve::Result<action::ActionDefinition>::failure(valid.status());
+    return eve::Result<action::ActionDefinition>::success(std::move(definition));
+}
+
+eve::Result<action::ActionRequest> SkillActionAdapter::makeRequest(const SkillDefinition&           skill,
+                                                                   std::optional<ecs::EntityHandle> source,
+                                                                   std::optional<ecs::EntityHandle> target,
+                                                                   eve::SimulationTick              requestedTick) {
+    auto definition = makeDefinition(skill);
+    if (!definition) return eve::Result<action::ActionRequest>::failure(definition.status());
+    auto checkedDefinition = std::move(definition).takeValue();
+
+    if (checkedDefinition.targetingMode == action::TargetingMode::None && target)
+        return eve::Result<action::ActionRequest>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "self skill request cannot carry an explicit target", "target"));
+    if (checkedDefinition.targetingMode == action::TargetingMode::Explicit && !target)
+        return eve::Result<action::ActionRequest>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                   "non-self skill request requires an explicit target", "target"));
+
+    action::ActionRequest request;
+    request.actionId      = checkedDefinition.id;
+    request.source        = std::move(source);
+    request.requestedTick = requestedTick;
+    if (target) request.targetEntities.push_back(*target);
+    auto valid = request.validate(checkedDefinition);
+    if (!valid) return eve::Result<action::ActionRequest>::failure(valid.status());
+    return eve::Result<action::ActionRequest>::success(std::move(request));
+}
+
+eve::Result<action::ActionExecutionId> SkillActionAdapter::submit(action::ActionRuntime&           runtime,
+                                                                  const SkillDefinition&           skill,
+                                                                  std::optional<ecs::EntityHandle> source,
+                                                                  std::optional<ecs::EntityHandle> target,
+                                                                  eve::SimulationTick              requestedTick) {
+    auto definition = makeDefinition(skill);
+    if (!definition) return eve::Result<action::ActionExecutionId>::failure(definition.status());
+    auto request = makeRequest(skill, std::move(source), std::move(target), requestedTick);
+    if (!request) return eve::Result<action::ActionExecutionId>::failure(request.status());
+    return runtime.submit(std::move(definition).takeValue(), std::move(request).takeValue());
+}
+
+}  // namespace eve::rpg
+
+// SkillCondition.cpp
+namespace eve::rpg {
+namespace {
+
+std::optional<eve::Value> skillValue(const RPGActor* actor, const SkillDefinition& definition, std::string_view key) {
+    if (!actor) return std::nullopt;
+    auto*       mutableActor = const_cast<RPGActor*>(actor);
+    const auto* runtime      = [&]() -> const SkillRuntime* {
+        const auto it = mutableActor->skills()->known.find(definition.id);
+        return it == mutableActor->skills()->known.end() ? nullptr : &it->second;
+    }();
+    if (key == "skill.id") return eve::Value(definition.id);
+    if (key == "skill.targetType") return eve::Value(definition.targetType);
+    if (key == "skill.known") return eve::Value(runtime != nullptr);
+    if (key == "skill.casting") return eve::Value(mutableActor->skills()->casting.active);
+    if (key == "skill.cooldown") return eve::Value(runtime ? runtime->cooldownRemaining : 0.0);
+    if (key == "skill.phase") return eve::Value(mutableActor->skills()->casting.active ? "casting" : "idle");
+    return std::nullopt;
+}
+
+}  // namespace
+
+SkillConditionContext::SkillConditionContext(const RPGActor* actor, const SkillDefinition& definition,
+                                             SkillConditionQueries queries)
+    : actor_(actor), definition_(&definition), queries_(std::move(queries)) {}
+
+std::optional<eve::Value> SkillConditionContext::value(std::string_view key) const {
+    if (auto tag = condition::stripPrefix(key, condition::kTagPrefix)) {
+        if (!actor_) return std::nullopt;
+        if (definition_->hasTag(std::string(*tag))) return eve::Value(true);
+        return eve::Value(const_cast<RPGActor*>(actor_)->hasStatusTag(std::string(*tag)));
+    }
+    auto attributeOf = [this](std::string_view name) -> std::optional<eve::Value> {
+        if (!actor_ || name.empty()) return std::nullopt;
+        auto* mutableActor = const_cast<RPGActor*>(actor_);
+        if (!AttributeSystem::hasAttribute(mutableActor, std::string(name))) return std::nullopt;
+        return eve::Value(AttributeSystem::getFinal(mutableActor, std::string(name)));
+    };
+    if (auto attr = condition::stripPrefix(key, condition::kAttrPrefix)) return attributeOf(*attr);
+    if (auto resource = condition::stripPrefix(key, condition::kResourcePrefix)) {
+        // RPG resources are attributes by design (mana, stamina, and game-defined
+        // resources use the same canonical AttributeSet source).
+        return attributeOf(*resource);
+    }
+    if (auto state = condition::stripPrefix(key, condition::kStatePrefix)) {
+        return skillValue(actor_, *definition_, *state);
+    }
+    return skillValue(actor_, *definition_, key);
+}
+
+std::optional<condition::ConditionResult> SkillConditionContext::policy(std::string_view  name,
+                                                                        const eve::Value& arguments) const {
+    if (auto authority = condition::resolveAuthorityAllow(name, arguments, [this](std::string_view scope) {
+            if (!queries_.authority) return std::optional<bool>{};
+            return queries_.authority(scope);
+        })) {
+        return authority;
+    }
+    if (!queries_.policy) return std::nullopt;
+    return queries_.policy(name, arguments);
+}
+
+condition::ConditionResult SkillConditionAdapter::evaluate(const RPGActor* actor, const SkillDefinition& definition,
+                                                           const condition::Condition& condition,
+                                                           SkillConditionQueries       queries) {
+    SkillConditionContext context(actor, definition, std::move(queries));
+    return condition.evaluate(context);
+}
+
+}  // namespace eve::rpg
+
+// SkillConditionCodec.cpp
+namespace eve::rpg {
+
+eve::Result<eve::Value> encodeSkillCondition(const eve::condition::Condition& condition) {
+    return eve::condition::encodeCondition(condition);
+}
+
+eve::Result<eve::condition::Condition> decodeSkillCondition(const eve::Value& value) {
+    return eve::condition::decodeCondition(value);
 }
 
 }  // namespace eve::rpg

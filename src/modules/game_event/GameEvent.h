@@ -10,6 +10,7 @@
 #include "common/SchemaVersion.h"
 #include "common/Snapshot.h"
 #include "common/Time.h"
+#include "common/UuidV7.h"
 
 #include <cstdint>
 #include <deque>

@@ -19,6 +19,7 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <any>
+#include <cmath>
 #include <cstdint>
 #include <functional>
 #include <memory>

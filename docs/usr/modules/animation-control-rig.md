@@ -62,8 +62,9 @@ its lifetime token. Re-enable against a new host to retain the same document/his
 Reinitialization while registered is rejected; disable first. Automation is optional and
 returns an explicit unsupported result when no Editor host is available.
 
-The generic command descriptor now carries optional `inputSchema` metadata. Older commands
-continue to report null; validation remains the registered planner's responsibility.
+The command uses the existing `PropertySchema` projection shared by host catalogues and MCP.
+Nested document schemas use its owned `documentSchema`, mutually exclusive with flat properties;
+validation remains the registered planner's responsibility.
 
 ## 控制点自由度与关节范围
 

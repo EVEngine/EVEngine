@@ -18,7 +18,7 @@ eve_declare_module(NAME physics_softbody_cook DIR physics/softbody/cook LAYER 4
 eve_declare_module(NAME physics LAYER 4 SCRIPT Physics SLOT physics
                    DEPS physics_backend physics_softbody physics_softbody_graphics platform_event graphics gpgpu sensing
                    OPTIONAL_DEPS scene
-                   THIRDPARTY box2d box3d
+                   THIRDPARTY box2d box3d jolt
                    GROUP 2d 3d web)
 
 # L5 -- physics
@@ -47,6 +47,7 @@ eve_declare_module(NAME physics_destruction DIR physics/destruction LIB EVPhysic
 # allowed; nested DIR physics/destruction/cook is excluded from the host scan.
 eve_declare_module(NAME physics_destruction_cook DIR physics/destruction/cook
                    LIB EVPhysicsDestruction_cook LAYER 5
+                   SCRIPT DestructionCook SLOT destructionCook
                    DEPS asset physics_destruction
                    GROUP 3d web)
 
@@ -80,6 +81,12 @@ eve_declare_module(NAME physics_editing LAYER 5
 
 eve_declare_module(NAME physics_softbody_editing DIR physics/softbody/editing LAYER 5
                    DEPS editing physics_softbody
+                   GROUP 3d web)
+
+# Optional offline gas cache and depth-aware destruction smoke.
+eve_declare_module(NAME physics_destruction_dust DIR physics/destruction/fx
+                   LAYER 5 SCRIPT DestructionDust SLOT destructionDust
+                   DEPS fluids graphics physics_destruction
                    GROUP 3d web)
 
 # L7 -- physics

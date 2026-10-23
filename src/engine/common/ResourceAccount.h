@@ -47,7 +47,7 @@ public:
      * @param text Non-empty stable name without whitespace or control characters.
      * @return The validated id, or a rejected Result with a diagnostic.
      */
-    [[nodiscard]] static eve::Result<ResourceId> parse(std::string_view text);
+    [[nodiscard]] static EVENGINE_API_FOUNDATION eve::Result<ResourceId> parse(std::string_view text);
 
     /** @brief Whether this id passed the resource-name validation. */
     [[nodiscard]] bool isValid() const noexcept { return !value_.empty(); }

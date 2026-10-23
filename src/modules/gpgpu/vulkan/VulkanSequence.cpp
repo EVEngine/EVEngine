@@ -177,6 +177,17 @@ void vulkanSequenceRecordDispatch(VulkanSequence *seq, ComputeShader *shader,
     if (groupsY <= 0) groupsY = 1;
     if (groupsZ <= 0) groupsZ = 1;
 
+    // Resident vertex producers must execute on the consuming graphics queue.
+    // All uploads and dispatches in this sequence follow that queue, and the
+    // barrier also orders previous frame vertex reads before producer writes.
+    for (int binding = 0; binding < ComputeShader::kMaxBindings; ++binding) {
+        const auto *buffer = shader->getBoundBuffer(binding);
+        if (buffer && buffer->getUsage() == "storage_vertex") {
+            seq->queue = seq->vkg->getDevice().getQueue(vkb::QueueType::graphics);
+            fullMemoryBarrier(seq);
+            break;
+        }
+    }
     auto &device = seq->vkg->getDevice();
     vs->flushDescriptors(device);
     if (std::find(seq->usedShaders.begin(), seq->usedShaders.end(), vs) == seq->usedShaders.end()) {

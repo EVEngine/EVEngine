@@ -90,6 +90,9 @@ eve_declare_module(NAME plugins LAYER 0 SCRIPT Plugins
 eve_declare_module(NAME database LAYER 0 SCRIPT Database
                    THIRDPARTY poco_data poco)
 # L1 -- gameplay domain adapter
+eve_declare_module(NAME crowd_thread LIB EVCrowdThread LAYER 1
+                   DEPS crowd thread
+                   GROUP 2d 3d web)
 eve_declare_module(NAME pixelworld_thread LAYER 1
                    DEPS pixelworld thread
                    GROUP 2d 3d web)
@@ -100,22 +103,20 @@ eve_declare_module(NAME pixelworld_streaming LAYER 1
                    DEPS asset pixelworld
                    GROUP 2d 3d web)
 eve_declare_module(NAME rpg LIB EVRPG LAYER 1 SCRIPT RPG
-                   DEPS action attributes decision definitions dnut_interpreter effects inventory production settlement transaction)
+                   DEPS action attributes definitions dnut_interpreter effects inventory production settlement transaction)
 # L0 -- foundation (continued)
 eve_declare_module(NAME inventory LAYER 0 SCRIPT Inventory
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME economy LAYER 0 SCRIPT Economy SLOT economy
+                   DEPS transaction
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME attributes LAYER 0 SCRIPT Attributes SLOT attributes
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME authority LAYER 0 SCRIPT Authority SLOT authority
                    GROUP minimal 2d 3d web)
-eve_declare_module(NAME decision LAYER 0 SCRIPT Decision SLOT decision
-                   GROUP minimal 2d 3d web)
 # Indexed emergent rule triggers (watch-key inverted index + deferred activations).
-# Reuses decision::Condition; economy actions go through IEconomy capability.
+# Reuses common Condition AST; economy actions go through IEconomy capability.
 eve_declare_module(NAME emergence LAYER 0 SCRIPT Emergence SLOT emergence
-                   DEPS decision
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME definitions LAYER 0 SCRIPT Definitions SLOT definitions
                    DEPS schema
@@ -140,16 +141,16 @@ eve_declare_module(NAME production LAYER 0 SCRIPT Production SLOT production
 eve_declare_module(NAME sensing LAYER 1 SCRIPT Sensing SLOT sensing
                    DEPS spatial
                    GROUP minimal 2d 3d web)
-# Data-oriented NPC AI orchestration. Domain adapters provide navigation,
-# animation, combat and smart-object tasks without making the core depend on
-# those higher-level modules.
-eve_declare_module(NAME npc_ai LAYER 1 SCRIPT NpcAi SLOT npc_ai
+# Data-oriented NPC AI orchestration. Also owns DecisionContext (blackboard /
+# FSM / utility / influence grids) previously in the dissolved decision module.
+# Shared Condition AST lives in engine common (not a separate module).
+eve_declare_module(NAME npc_ai LAYER 1 SCRIPT NpcAi Decision SLOT npc_ai decision
                    GROUP minimal 2d 3d web)
 # Renderer- and ruleset-neutral gameplay action lifecycle. Domain adapters
 # (RPG Skill, Weapon Attack, Card Play, RTS Command) depend on this protocol;
-# the core depends on sensing/decision values but never on a gameplay domain.
+# the core depends on sensing values / common Condition but never on a gameplay domain.
 eve_declare_module(NAME action LIB EVAction LAYER 1 SCRIPT Action SLOT action
-                   DEPS decision sensing tags transaction
+                   DEPS sensing tags transaction
                    GROUP minimal 2d 3d web)
 # `.dnut` authored-sequence language. Owns the shared lexer, the registry-driven
 # compiler, the compiled sequence model and the cross-frame interpreter. Domain

@@ -44,7 +44,7 @@ function basic() {
     // 2D rigid-body collision binding.
     local w = p.newWorld(0.0, 0.0, true);
     local ground = w.newBody("static", 400.0, 390.0);
-    ground.newRectangleFixture(800.0, 20.0);
+    ground.newRectangleFixture(800.0, 20.0, 1.0, 0.2, 0.0);
     c.setCollideWorld(w);
     check(c.getCollideWorld() != null, "2d collide world set");
     c.update(1.0 / 60.0);
@@ -110,7 +110,7 @@ function basic() {
     // 3D rigid-body collision binding.
     local w3 = p.newWorld3D(0.0, -9.8, 0.0, true);
     local g3 = w3.newBody("static", 0.0, -0.5, 0.0);
-    g3.newBoxShape(8.0, 1.0, 8.0);
+    g3.newBoxShape(8.0, 1.0, 8.0, 1.0, 0.2, 0.0);
     c3.setCollideWorld(w3);
     check(c3.getCollideWorld() != null, "3d collide world set");
     c3.update(1.0 / 60.0);
@@ -174,5 +174,20 @@ function basic() {
     check(floorId > 0 && sphereId > floorId, "rope collider stable ids");
     check(rope.moveSphereCollider(sphereId, 1.5, 2.2, 0.0), "rope moving collider");
     check(rope.removeCollider(sphereId), "rope remove collider");
+    return true;
+}
+
+function layered() {
+    local clothModule = eve.Cloth();
+    local layered = eve.LayeredCloth3D(3, 3, 3, 0.25, 0.08, 0.0, 2.0, 0.0);
+    check(layered.getLayerCount() == 3, "layer count");
+    layered.setSolver(2, 2);
+    layered.setWindVelocity(0.5, 0.2, 0.0);
+    layered.update(1.0 / 120.0);
+    layered.setInterCollision(false);
+    check(!layered.getInterCollision(), "inter collision toggle");
+    layered.reset();
+    check(layered.getContactCount() == 0, "reset contact count");
+
     return true;
 }

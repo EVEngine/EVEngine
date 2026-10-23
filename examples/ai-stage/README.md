@@ -15,6 +15,12 @@ build/win32-debug/src/engine/eve.exe run --debug --mcp-port=7529 examples/ai-sta
 ## Agent 接入
 
 ```bash
+# 快速白盒：批量搭景 + 自动注入输入游玩测试
+cd tools/whitebox-playtest
+python -m whitebox_playtest recipes/corridor.json --port 7529 --trace
+# 干跑（无需引擎）
+python -m whitebox_playtest --dry-run --trace
+
 # 一句话剧情 → 搭台 → 质检迭代 → 报告 + 截图
 cd tools/story-scene-agent
 python -m story_scene_agent.cli "月光下骑士与巨龙在古堡前对峙" --port 7529 --out-dir stage_duel
@@ -22,4 +28,5 @@ python -m story_scene_agent.cli "月光下骑士与巨龙在古堡前对峙" --p
 python -m story_scene_agent.cli "月光下骑士与巨龙在古堡前对峙" --dry-run
 ```
 
-详见 [`docs/dev/AI场景导演.md`](../../docs/dev/AI场景导演.md)。
+详见 [`docs/dev/AI场景导演.md`](../../docs/dev/AI场景导演.md) 与
+[`tools/whitebox-playtest/README.md`](../../tools/whitebox-playtest/README.md)。

@@ -3,9 +3,12 @@
 #include "common/Capability.h"
 #include "editing/EditingCommandRegistry.h"
 #include "editor/EditorAutomationTargetFactory.h"
+#include "editor/EditorScriptProjection.h"
+#include "editor/EditorValueJson.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/material/editing/MaterialEditingCommands.h"
 #include "graphics/material/editing/MaterialTarget.h"
+#include "graphics/material/editor/MaterialEditor.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -123,7 +126,73 @@ MaterialEditorModule::~MaterialEditorModule() {
         registry->unregisterOwner("material_editing").ignore("material editor adapter shutdown");
 }
 
-void MaterialEditorModule::expose(ssq::Table& table) { table.addClass(name, MaterialEditorModule::create, false); }
+namespace {
+class ScriptMaterialEditor {
+public:
+    explicit ScriptMaterialEditor(std::string id) : editor_(std::move(id)) {}
+    MaterialEditor& editor() { return editor_; }
+
+private:
+    MaterialEditor editor_;
+};
+}  // namespace
+
+void MaterialEditorModule::expose(ssq::Table& table) {
+    auto                     module = table.addClass(name, MaterialEditorModule::create, false);
+    const editor::ScriptBind bind{table.getHandle(), "editor.material.squirrel"};
+    auto                     cls = editor::addScriptClass<ScriptMaterialEditor>(table, "MaterialEditor");
+    editor::registerEditorOwnedCreate<ScriptMaterialEditor, MaterialEditorModule>(module, bind,
+                                                                                  "Material id is required");
+    editor::registerEditorWorkspace<ScriptMaterialEditor>(cls, bind, "Material editor and workspace are required");
+    editor::registerEditorHistory<ScriptMaterialEditor>(cls, bind, "Material editor is required");
+    cls.addFunc("set", [bind](ScriptMaterialEditor* self, const std::string& path, ssq::Object value) {
+        if (!self) return bind.fail(DiagnosticCode::InvalidArgument, "Material editor is required");
+        auto converted = script::valueFromSquirrel(value);
+        if (!converted.ok()) return editor::project(bind.vm(), converted, Value{});
+        return editor::project(bind.vm(), self->editor().setProperty(path, editing::toEditingValue(converted.value())));
+    });
+    cls.addFunc("patch", [bind](ScriptMaterialEditor* self, ssq::Object properties) {
+        if (!self) return bind.fail(DiagnosticCode::InvalidArgument, "Material editor is required");
+        auto converted = script::valueFromSquirrel(properties);
+        if (!converted.ok()) return editor::project(bind.vm(), converted, Value{});
+        auto  patch  = editing::toEditingValue(converted.value());
+        auto* object = patch.getIf<editing::Value::Object>();
+        if (!object) return bind.fail(DiagnosticCode::InvalidArgument, "Patch requires a path-to-value table");
+        return editor::project(bind.vm(), self->editor().setProperties(*object));
+    });
+    cls.addFunc("read", [bind](ScriptMaterialEditor* self, const std::string& path) {
+        if (!self) return bind.fail(DiagnosticCode::InvalidArgument, "Material editor is required");
+        auto result = self->editor().read(path);
+        return editor::project(bind.vm(), result, result.ok() ? editing::toPresentationValue(result.value()) : Value{});
+    });
+    cls.addFunc("schema", [bind](ScriptMaterialEditor* self) {
+        if (!self) return bind.fail(DiagnosticCode::InvalidArgument, "Material editor is required");
+        return script::projectStatusResult(bind.vm(), eve::Status::success(),
+                                           editing::toPresentationValue(self->editor().schema()));
+    });
+    cls.addFunc("snapshot", [bind](ScriptMaterialEditor* self) {
+        if (!self) return bind.fail(DiagnosticCode::InvalidArgument, "Material editor is required");
+        return script::projectStatusResult(bind.vm(), eve::Status::success(),
+                                           editing::toPresentationValue(self->editor().snapshot()));
+    });
+    cls.addFunc("restore", [bind](ScriptMaterialEditor* self, ssq::Object snapshot) {
+        if (!self) return bind.fail(DiagnosticCode::InvalidArgument, "Material editor is required");
+        auto converted = script::valueFromSquirrel(snapshot);
+        if (!converted.ok()) return editor::project(bind.vm(), converted, Value{});
+        return editor::project(bind.vm(), self->editor().restore(editing::toEditingValue(converted.value())));
+    });
+    cls.addFunc("toJson", [bind](ScriptMaterialEditor* self) {
+        if (!self) return bind.fail(DiagnosticCode::InvalidArgument, "Material editor is required");
+        return script::projectStatusResult(bind.vm(), eve::Status::success(),
+                                           Value(editor::editorValueToJson(self->editor().snapshot())));
+    });
+    cls.addFunc("fromJson", [bind](ScriptMaterialEditor* self, const std::string& json) {
+        if (!self) return bind.fail(DiagnosticCode::InvalidArgument, "Material editor is required");
+        auto parsed = editor::editorValueFromJson(json);
+        if (!parsed.ok()) return editor::project(bind.vm(), parsed, Value{});
+        return editor::project(bind.vm(), self->editor().restore(parsed.value()));
+    });
+}
 void MaterialEditorModule::expose(ssq::Class&) {}
 
 }  // namespace eve::material_editor

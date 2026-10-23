@@ -3,12 +3,14 @@
 // Re-split from the merged dev single-TU Graphics.cpp (pure move;
 // dev changes preserved). Shared helpers live in GraphicsInternal.h.
 
+#include "common/Profile.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/Light.h"
 #include "graphics/PrimitiveDrawList.h"
 #include "graphics/PrimitiveTessellator.h"
 #include "graphics/RenderControl.h"
 #include "graphics/vulkan/Canvas.h"
+#include "graphics/vulkan/FrameReadback.h"
 #include "graphics/vulkan/GlslCompiler.h"
 #include "graphics/vulkan/Graphics.h"
 
@@ -190,36 +192,9 @@ bool Graphics::recordSwapchainReadback(vk::CommandBuffer cb) {
     // pass has already transitioned the image back to PresentSrcKHR, and the
     // copy runs in the same submit+present — no extra queue submit, no
     // waitIdle, no per-frame buffer allocation.
-    vk::ImageMemoryBarrier toTransfer{};
-    toTransfer.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    toTransfer.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    toTransfer.oldLayout = vk::ImageLayout::ePresentSrcKHR;
-    toTransfer.newLayout = vk::ImageLayout::eTransferSrcOptimal;
-    toTransfer.image = image;
-    toTransfer.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1};
-    // The render pass has already transitioned the image to PresentSrcKHR, but
-    // there is no fence between it and this copy — the barrier must order the
-    // render-pass color writes against the transfer explicitly.
-    toTransfer.srcAccessMask = vk::AccessFlagBits::eColorAttachmentWrite;
-    toTransfer.dstAccessMask = vk::AccessFlagBits::eTransferRead;
-    cb.pipelineBarrier(vk::PipelineStageFlagBits::eColorAttachmentOutput,
-                       vk::PipelineStageFlagBits::eTransfer, {}, 0, nullptr, 0, nullptr, 1,
-                       &toTransfer);
-
-    vk::BufferImageCopy region{};
-    region.imageSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0, 1};
-    region.imageExtent = vk::Extent3D{uint32_t(pixelWidth), uint32_t(pixelHeight), 1};
-    cb.copyImageToBuffer(image, vk::ImageLayout::eTransferSrcOptimal,
-                         screenReadbackSlots[slot].staging.buffer, region);
-
-    vk::ImageMemoryBarrier toPresent = toTransfer;
-    toPresent.oldLayout = vk::ImageLayout::eTransferSrcOptimal;
-    toPresent.newLayout = vk::ImageLayout::ePresentSrcKHR;
-    toPresent.srcAccessMask = vk::AccessFlagBits::eTransferRead;
-    toPresent.dstAccessMask = vk::AccessFlagBits::eMemoryRead;
-    cb.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
-                       vk::PipelineStageFlagBits::eBottomOfPipe, {}, 0, nullptr, 0, nullptr, 1,
-                       &toPresent);
+    detail::recordFrameReadback(cb, image, screenReadbackSlots[slot].staging.buffer,
+                                vk::Extent2D{uint32_t(pixelWidth), uint32_t(pixelHeight)},
+                                vk::ImageAspectFlagBits::eColor, 0, vk::ImageLayout::ePresentSrcKHR);
     return true;
 }
 
@@ -264,6 +239,7 @@ void Graphics::syncReadbackCpu() {
 }
 
 void Graphics::destroyReadbackResources() {
+    destroyFrameCapture();
     for (auto &slot : screenReadbackSlots) {
         if (slot.mapped) {
             slot.staging.unmap();
@@ -454,18 +430,12 @@ image::ImageData *Graphics::readGBufferToImageData(const std::string &attachment
     vkb::GenericBuffer staging(device, vk::BufferUsageFlagBits::eTransferDst, byteSize,
                                vk::MemoryPropertyFlagBits::eHostVisible |
                                    vk::MemoryPropertyFlagBits::eHostCoherent);
-    vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
-                            [&](vk::CommandBuffer cb) {
-                                transitionSampledColorForTransfer(
-                                    cb, *src, vk::ImageLayout::eTransferSrcOptimal);
-                                vk::BufferImageCopy region{};
-                                region.imageSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0, 1};
-                                region.imageExtent = vk::Extent3D{w, h, 1};
-                                cb.copyImageToBuffer(src->image(), vk::ImageLayout::eTransferSrcOptimal,
-                                                     staging.buffer, region);
-                                transitionSampledColorForTransfer(
-                                    cb, *src, vk::ImageLayout::eShaderReadOnlyOptimal);
-                            });
+    vkb::executeImmediately(
+        device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics), [&](vk::CommandBuffer cb) {
+            detail::recordFrameReadback(cb, src->image(), staging.buffer, vk::Extent2D{w, h},
+                                        vk::ImageAspectFlagBits::eColor, 0, vk::ImageLayout::eShaderReadOnlyOptimal);
+            src->setCurrentLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
+        });
 
     auto *img = new image::ImageData(int(w), int(h), "RGBA8");
     void *mapped = staging.map();
@@ -1318,6 +1288,7 @@ void Graphics::abortOpen3DFrame() {
             const bool captured = screenReadbackEnabled
                                       ? recordSwapchainReadback(presentRecording.commandBuffer())
                                       : false;
+            submitGpuTimingPrefix();
             presentRecording.end().submitAndPresent();
             presentRecording = {};
             if (captured) {
@@ -1339,6 +1310,7 @@ void Graphics::abortOpen3DFrame() {
 }
 
 void Graphics::flushToSwapchain() {
+    EV_PROFILE_MODULE("graphics", "Present.Flush");
     if (flushingSwapchain_) return;
     flushingSwapchain_ = true;
     bool completed = false;
@@ -1493,6 +1465,7 @@ void Graphics::flushToSwapchain() {
     const bool litAvailable = lit2dPipeline || (presentComposeActive_ && hdrOffscreenLitPipeline);
 
     auto drawTextured = [&](TexturedBatch &tb, bool toneMapScene = false) {
+        EV_PROFILE_MODULE("graphics", "Present.DrawTextured");
         if (tb.batch.empty() || !tb.texture || !tb.texture->gpuHandle) return;
         auto *gpu = static_cast<GpuTexture *>(tb.texture->gpuHandle);
         vk::DescriptorSet texSet = gpu->descriptorSet;
@@ -1711,8 +1684,13 @@ void Graphics::flushToSwapchain() {
     const bool captured =
         screenReadbackEnabled ? recordSwapchainReadback(presentRecording.commandBuffer()) : false;
     writeGpuTimestampEnd();
-    presentRecording.end().submitAndPresent();
-    readGpuFrameTiming();
+    recordFrameCapture(presentRecording.commandBuffer());
+    {
+        EV_PROFILE_MODULE("graphics", "Frame.SubmitPresent");
+        submitGpuTimingPrefix();
+        presentRecording.end().submitAndPresent();
+    }
+    markFrameCaptureSubmitted();
     presentRecording = {};
     if (captured) {
         hasPresentedFrame = true;

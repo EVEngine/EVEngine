@@ -11,44 +11,9 @@
 
 namespace eve::procgen_editing {
 namespace detail {
+using RoadCodecValue = EditorValue;
+#include "procgen/road/RoadValueReaders.inc"
 
-const EditorValue* field(const EditorValue& value, const char* name) {
-    const auto* object = value.getIf<EditorValue::Object>();
-    if (!object) return nullptr;
-    const auto found = object->find(name);
-    return found == object->end() ? nullptr : &found->second;
-}
-
-bool readId(const EditorValue& value, const char* name, std::uint32_t& output) {
-    const auto* item = field(value, name);
-    const auto* id   = item ? item->getIf<std::int64_t>() : nullptr;
-    if (!id || *id <= 0 || *id > std::numeric_limits<std::uint32_t>::max()) return false;
-    output = static_cast<std::uint32_t>(*id);
-    return true;
-}
-
-bool readNumber(const EditorValue& value, const char* name, float& output) {
-    const auto* item   = field(value, name);
-    const auto* number = item ? item->getIf<double>() : nullptr;
-    if (!number || !std::isfinite(*number) || *number < -std::numeric_limits<float>::max() ||
-        *number > std::numeric_limits<float>::max())
-        return false;
-    output = static_cast<float>(*number);
-    return true;
-}
-
-bool readOptionalNumber(const EditorValue& value, const char* name, float& output) {
-    return field(value, name) == nullptr || readNumber(value, name, output);
-}
-
-bool readOptionalBool(const EditorValue& value, const char* name, bool& output) {
-    const auto* item = field(value, name);
-    if (!item) return true;
-    const auto* boolean = item->getIf<bool>();
-    if (!boolean) return false;
-    output = *boolean;
-    return true;
-}
 
 bool readSmallInt(const EditorValue& value, const char* name, int minimum, int maximum, int& output);
 
@@ -66,10 +31,15 @@ Result<RoadIntersection> findUniqueInteriorIntersection(const procgen::road::Roa
         path.setClosed(false);
         for (const auto& point : edge.controlPoints) {
             procgen::SplinePoint splinePoint;
-            splinePoint.x = point.x;
-            splinePoint.y = point.y;
-            splinePoint.z = point.z;
-            auto added = path.addPointResult(splinePoint);
+            splinePoint.alignStraightStart = point.alignStraightStart;
+            splinePoint.alignStraightEnd   = point.alignStraightEnd;
+            splinePoint.circularFromEnd    = point.circularFromEnd;
+            splinePoint.spanControl        = static_cast<eve::procgen::SplineSpanControl>(point.pathControl);
+            splinePoint.spanStrength       = point.splineStrength;
+            splinePoint.x                  = point.x;
+            splinePoint.y                  = point.y;
+            splinePoint.z                  = point.z;
+            auto added                     = path.addPointResult(splinePoint);
             if (!added.ok()) return Result<std::vector<ParameterSample>>::failure(added.status());
         }
         const int intervals = std::min(4096, std::max(32, path.segmentCount() * 24));
@@ -156,133 +126,9 @@ bool decodeNodeControl(const EditorValue& value, std::uint32_t& id,
     return true;
 }
 
-EditorValue encodeEdge(std::uint32_t id, const std::vector<procgen::road::RoadControlPoint>& points) {
-    EditorValue::Array encoded;
-    encoded.reserve(points.size());
-    for (const auto& point : points)
-        encoded.emplace_back(EditorValue::Array{EditorValue(point.x), EditorValue(point.y), EditorValue(point.z)});
-    return EditorValue::Object{{"id", std::int64_t{id}}, {"points", std::move(encoded)}};
-}
-
-EditorValue encodeStyle(std::uint32_t id, const procgen::road::RoadStyle& style) {
-    return EditorValue::Object{{"id", std::int64_t{id}},
-                               {"laneWidth", style.laneWidth},
-                               {"curbWidth", style.curbWidth},
-                               {"curbHeight", style.curbHeight},
-                               {"sidewalkWidth", style.sidewalkWidth},
-                               {"sidewalkHeight", style.sidewalkHeight},
-                               {"deckThickness", style.deckThickness},
-                               {"pierWidth", style.pierWidth},
-                               {"pierDepth", style.pierDepth},
-                               {"pierSpacing", style.pierSpacing},
-                               {"pierClearance", style.pierClearance},
-                               {"markingWidth", style.markingWidth},
-                               {"dashLength", style.dashLength},
-                               {"dashGap", style.dashGap},
-                               {"uvMeters", style.uvMeters},
-                               {"speedLimitMps", style.speedLimitMps},
-                               {"trafficPriority", std::int64_t{style.trafficPriority}},
-                               {"sideObjectStartOffset", style.sideObjectStartOffset},
-                               {"sideObjectEndOffset", style.sideObjectEndOffset},
-                               {"sideObjectsLeft", style.sideObjectsLeft},
-                               {"sideObjectsRight", style.sideObjectsRight}};
-}
-
-bool decodeStyle(const EditorValue& value, std::uint32_t& id, procgen::road::RoadStyle& style) {
-    return readId(value, "id", id) && readNumber(value, "laneWidth", style.laneWidth) &&
-           readNumber(value, "curbWidth", style.curbWidth) && readNumber(value, "curbHeight", style.curbHeight) &&
-           readNumber(value, "sidewalkWidth", style.sidewalkWidth) &&
-           readNumber(value, "sidewalkHeight", style.sidewalkHeight) &&
-           readNumber(value, "deckThickness", style.deckThickness) && readNumber(value, "pierWidth", style.pierWidth) &&
-           readNumber(value, "pierDepth", style.pierDepth) && readNumber(value, "pierSpacing", style.pierSpacing) &&
-           readNumber(value, "pierClearance", style.pierClearance) &&
-           readNumber(value, "markingWidth", style.markingWidth) && readNumber(value, "dashLength", style.dashLength) &&
-           readNumber(value, "dashGap", style.dashGap) && readNumber(value, "uvMeters", style.uvMeters) &&
-           readNumber(value, "speedLimitMps", style.speedLimitMps) &&
-           readSmallInt(value, "trafficPriority", 0, 255, style.trafficPriority) &&
-           readOptionalNumber(value, "sideObjectStartOffset", style.sideObjectStartOffset) &&
-           readOptionalNumber(value, "sideObjectEndOffset", style.sideObjectEndOffset) &&
-           readOptionalBool(value, "sideObjectsLeft", style.sideObjectsLeft) &&
-           readOptionalBool(value, "sideObjectsRight", style.sideObjectsRight);
-}
-
-bool decodeEdge(const EditorValue& value, std::uint32_t& id, std::vector<procgen::road::RoadControlPoint>& points) {
-    if (!readId(value, "id", id)) return false;
-    const auto* item  = field(value, "points");
-    const auto* array = item ? item->getIf<EditorValue::Array>() : nullptr;
-    if (!array || array->size() < 2 || array->size() > 4096) return false;
-    points.clear();
-    points.reserve(array->size());
-    for (const auto& encoded : *array) {
-        const auto* xyz = encoded.getIf<EditorValue::Array>();
-        if (!xyz || xyz->size() != 3) return false;
-        float values[3]{};
-        for (int i = 0; i < 3; ++i) {
-            const auto* number = (*xyz)[static_cast<std::size_t>(i)].getIf<double>();
-            if (!number || !std::isfinite(*number) || std::fabs(*number) > std::numeric_limits<float>::max())
-                return false;
-            values[i] = static_cast<float>(*number);
-        }
-        points.push_back({values[0], values[1], values[2]});
-    }
-    return true;
-}
-
-EditorValue encodeNodeRecord(const procgen::road::RoadNode& node) {
-    return EditorValue::Object{{"id", std::int64_t{node.id}},
-                               {"x", node.x},
-                               {"y", node.y},
-                               {"z", node.z},
-                               {"junctionRadius", node.junctionRadius},
-                               {"junctionControl", std::int64_t{static_cast<int>(node.junctionControl)}}};
-}
-
-bool decodeNodeRecord(const EditorValue& value, procgen::road::RoadNode& node) {
-    if (!readId(value, "id", node.id) || !readNumber(value, "x", node.x) || !readNumber(value, "y", node.y) ||
-        !readNumber(value, "z", node.z) || !readNumber(value, "junctionRadius", node.junctionRadius))
-        return false;
-    const auto* encoded = field(value, "junctionControl");
-    if (!encoded) {
-        node.junctionControl = procgen::road::RoadJunctionControl::Uncontrolled;
-        return true;
-    }
-    int control = 0;
-    if (!readSmallInt(value, "junctionControl", 0, 3, control)) return false;
-    node.junctionControl = static_cast<procgen::road::RoadJunctionControl>(control);
-    return true;
-}
-
-bool readSmallInt(const EditorValue& value, const char* name, int minimum, int maximum, int& output) {
-    const auto* item   = field(value, name);
-    const auto* number = item ? item->getIf<std::int64_t>() : nullptr;
-    if (!number || *number < minimum || *number > maximum) return false;
-    output = static_cast<int>(*number);
-    return true;
-}
-
-EditorValue encodeLink(const procgen::road::RoadLaneConnection& link) {
-    return EditorValue::Object{{"inEdge", std::int64_t{link.inEdge}},
-                               {"inLane", std::int64_t{link.inLane}},
-                               {"outEdge", std::int64_t{link.outEdge}},
-                               {"outLane", std::int64_t{link.outLane}},
-                               {"inDirection", std::int64_t{static_cast<int>(link.inDirection)}},
-                               {"outDirection", std::int64_t{static_cast<int>(link.outDirection)}}};
-}
-
-bool decodeLink(const EditorValue& value, procgen::road::RoadLaneConnection& link) {
-    int inDirection = 0, outDirection = 0;
-    if (!readId(value, "inEdge", link.inEdge) || !readSmallInt(value, "inLane", 0, 7, link.inLane) ||
-        !readId(value, "outEdge", link.outEdge) || !readSmallInt(value, "outLane", 0, 7, link.outLane) ||
-        !readSmallInt(value, "inDirection", 0, 1, inDirection) ||
-        !readSmallInt(value, "outDirection", 0, 1, outDirection))
-        return false;
-    link.inDirection  = static_cast<procgen::road::RoadLaneDirection>(inDirection);
-    link.outDirection = static_cast<procgen::road::RoadLaneDirection>(outDirection);
-    return true;
-}
 
 EditorValue encodeBlockedLink(const procgen::road::RoadLaneConnection& link, bool restoreActive) {
-    auto object = *encodeLink(link).getIf<EditorValue::Object>();
+    auto object             = *encodeLink(link).getIf<EditorValue::Object>();
     object["restoreActive"] = restoreActive;
     return object;
 }
@@ -696,63 +542,8 @@ bool decodeIntersectionDisconnect(const EditorValue& value, procgen::road::RoadE
     return true;
 }
 
-EditorValue encodeEdgeRecord(const procgen::road::RoadEdge&                        edge,
-                             const std::vector<procgen::road::RoadLaneConnection>& links,
-                             const std::vector<procgen::road::RoadLaneConnection>& blockedLinks) {
-    auto object             = *encodeEdge(edge.id, edge.controlPoints).getIf<EditorValue::Object>();
-    object["from"]          = std::int64_t{edge.from};
-    object["to"]            = std::int64_t{edge.to};
-    object["lanesForward"]  = std::int64_t{edge.lanesForward};
-    object["lanesBackward"] = std::int64_t{edge.lanesBackward};
-    object["style"]         = encodeStyle(edge.id, edge.style);
-    EditorValue::Array encodedLinks;
-    encodedLinks.reserve(links.size());
-    for (const auto& link : links) encodedLinks.push_back(encodeLink(link));
-    object["laneLinks"] = std::move(encodedLinks);
-    EditorValue::Array encodedBlocked;
-    encodedBlocked.reserve(blockedLinks.size());
-    for (const auto& link : blockedLinks) encodedBlocked.push_back(encodeLink(link));
-    object["blockedLaneLinks"] = std::move(encodedBlocked);
-    return object;
-}
 
-bool decodeEdgeRecord(const EditorValue& value, procgen::road::RoadEdge& edge,
-                      std::vector<procgen::road::RoadLaneConnection>& links,
-                      std::vector<procgen::road::RoadLaneConnection>* blockedLinks) {
-    if (!decodeEdge(value, edge.id, edge.controlPoints) || !readId(value, "from", edge.from) ||
-        !readId(value, "to", edge.to) || !readSmallInt(value, "lanesForward", 0, 8, edge.lanesForward) ||
-        !readSmallInt(value, "lanesBackward", 0, 8, edge.lanesBackward))
-        return false;
-    const auto*   encodedStyle = field(value, "style");
-    std::uint32_t styleEdgeId  = 0;
-    if (!encodedStyle || !decodeStyle(*encodedStyle, styleEdgeId, edge.style) || styleEdgeId != edge.id) return false;
-    const auto* encodedLinks = field(value, "laneLinks");
-    const auto* array        = encodedLinks ? encodedLinks->getIf<EditorValue::Array>() : nullptr;
-    const auto* encodedBlocked = field(value, "blockedLaneLinks");
-    const auto* blockedArray = encodedBlocked ? encodedBlocked->getIf<EditorValue::Array>() : nullptr;
-    if (!array || array->size() > 65536 || (blockedArray && blockedArray->size() > 65536) ||
-        (!blockedLinks && blockedArray && !blockedArray->empty()))
-        return false;
-    links.clear();
-    links.reserve(array->size());
-    for (const auto& encoded : *array) {
-        procgen::road::RoadLaneConnection link;
-        if (!decodeLink(encoded, link)) return false;
-        links.push_back(link);
-    }
-    if (blockedLinks) {
-        blockedLinks->clear();
-        if (blockedArray) {
-            blockedLinks->reserve(blockedArray->size());
-            for (const auto& encoded : *blockedArray) {
-                procgen::road::RoadLaneConnection link;
-                if (!decodeLink(encoded, link)) return false;
-                blockedLinks->push_back(link);
-            }
-        }
-    }
-    return true;
-}
+#include "procgen/road/RoadRecordCodec.inc"
 
 editing::GizmoPrimitive linePrimitive(std::string id, const procgen::road::RoadControlPoint& from,
                                       const procgen::road::RoadControlPoint& to) {

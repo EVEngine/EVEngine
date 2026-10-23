@@ -87,6 +87,7 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/engine/common/"
     FILES_MATCHING
         PATTERN "*.h"
         PATTERN "*.hpp"
+        PATTERN "ModuleRegistryState.h" EXCLUDE
 )
 install(FILES "${CMAKE_BINARY_DIR}/src/engine/common/config.h"
     DESTINATION include/eve/common
@@ -193,6 +194,12 @@ endforeach()
 # back to the embedded demo.
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/examples/basic"
     DESTINATION share/eve/examples
+)
+
+# ---- Reusable rendering styles -------------------------------------------
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/assets/styles/"
+    DESTINATION share/eve/styles
+    COMPONENT styles
 )
 
 # ---- Agent knowledge pack (this SDK build, no engine git tree required) ----
@@ -329,6 +336,11 @@ install(CODE "
         endforeach()
     endif()
 ")
+
+# Plugins use the same member and stateless binding templates as the engine.
+install(DIRECTORY "${CMAKE_BINARY_DIR}/generated/simplesquirrel/simplesquirrel"
+    DESTINATION include)
+install(FILES "${CMAKE_BINARY_DIR}/generated/ecs/ECS.hpp" DESTINATION include OPTIONAL)
 
 # ---- Marker files ----
 install(CODE "

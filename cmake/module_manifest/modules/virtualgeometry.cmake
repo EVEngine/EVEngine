@@ -9,9 +9,6 @@ eve_declare_module(NAME virtualgeometry LIB EVVirtualGeometry LAYER 5 SCRIPT Vir
                    DEPS data gpgpu graphics
                    GROUP 3d web)
 
-# L7 -- virtualgeometry
-eve_declare_module(NAME virtualgeometry_editor LAYER 7 DEPS editor virtualgeometry_editing GROUP 3d)
-
 # L6 -- virtualgeometry
 eve_declare_module(NAME virtualgeometry_editing LAYER 6
                    DEPS editing virtualgeometry

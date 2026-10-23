@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "factory": "GameEvent",
+  "bindings": {
+    "newLog": {"role":"event_log","resultClass":"GameEventLog"},
+    "GameEventLog.at": {"role":"event_read","resultClass":"GameEventRecord"},
+    "GameEventLog.append": {"role":"event_emit","identityArgument":1,"relatedArgument":3},
+    "GameEventRecord.getType": {"role":"event_type"},
+    "GameEventRecord.getSubject": {"role":"event_subject"}
+  }
+}

@@ -1,10 +1,12 @@
 #include "action/editor/ActionEditorModule.h"
 
 #include "action/editor/ActionEditingCommands.h"
+#include "action/editor/ActionEditorPackage.h"
 #include "action/editor/ActionTimelineEditor.h"
 #include "action/editor/ActionTimelineScriptBindings.h"
 #include "common/Capability.h"
 #include "editing/EditingCommandRegistry.h"
+#include "editing/EditorPackage.h"
 #include "editor/EditorAutomationTargetFactory.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -68,14 +70,17 @@ public:
 
 Module_IMPL(ActionEditorModule, new ActionEditorModule());
 
-ActionEditorModule::ActionEditorModule() : factory_(std::make_unique<TargetFactory>()) {
+ActionEditorModule::ActionEditorModule()
+    : factory_(std::make_unique<TargetFactory>()), packageProvider_(std::make_unique<ActionEditorPackageProvider>()) {
     auto* registry = eve::cap::query<editing::IEditingCommandRegistry>();
     if (!registry || !registerEditingCommands(*registry).ok())
         throw std::runtime_error("Failed to register action editing commands");
     eve::cap::addListener<editor::IEditorAutomationTargetFactory>(factory_.get());
+    eve::cap::addListener<editing::IEditorPackageProvider>(packageProvider_.get());
 }
 
 ActionEditorModule::~ActionEditorModule() {
+    eve::cap::removeListener<editing::IEditorPackageProvider>(packageProvider_.get());
     eve::cap::removeListener<editor::IEditorAutomationTargetFactory>(factory_.get());
     if (auto* registry = eve::cap::query<editing::IEditingCommandRegistry>())
         registry->unregisterOwner("action_editor").ignore("action editor adapter shutdown");

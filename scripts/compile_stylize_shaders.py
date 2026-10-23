@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SHADER_DIR = ROOT / "src" / "modules" / "stylize" / "shaders"
 
 FRAGS = [
+    "impasto_mesh.frag",
     "ysa_mesh.frag",
     "anime_mesh.frag",
     "cartoon_post.frag",
@@ -37,7 +38,8 @@ FRAGS = [
 # Dedicated vertex sources owned by the stylize module. Materials that reuse
 # graphics/mesh3d_toon.vert (ink, ported effect shaders, ...) are not listed.
 VERTS = [
-    "ysa_mesh.vert",
+    "impasto_mesh.vert",
+    "stylize_mesh.vert",
 ]
 
 

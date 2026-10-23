@@ -104,6 +104,11 @@ void mcpToolFilterReloadForTest() {
 std::vector<std::string> mcpToolTags(std::string_view name) {
     std::vector<std::string> tags;
     auto                     add = [&](const char* tag) { tags.emplace_back(tag); };
+    if (startsWith(name, "eve_frame_")) {
+        add("core");
+        add("scene");
+        return tags;
+    }
 
     if (startsWith(name, "eve_host_")) {
         add("host");
@@ -113,13 +118,19 @@ std::vector<std::string> mcpToolTags(std::string_view name) {
         add("editor");
         return tags;
     }
-    if (startsWith(name, "eve_input_")) {
+    if (startsWith(name, "eve_input_") || name == "eve_whitebox_playtest") {
         add("input");
         add("play");
+        add("scene");
         return tags;
     }
     if (startsWith(name, "eve_agent_")) {
         add("agent");
+        return tags;
+    }
+    if (name == "eve_game_world") {
+        add("core");
+        add("play");
         return tags;
     }
     if (startsWith(name, "eve_pixelworld_") || name == "eve_play" || name == "eve_gameplay" ||
@@ -152,6 +163,7 @@ std::vector<std::string> mcpToolTags(std::string_view name) {
 }
 
 bool mcpToolMutates(std::string_view name) {
+    if (name == "eve_frame_capture_export") return true;
     if (startsWith(name, "eve_input_")) return name != "eve_input_poll" && name != "eve_input_status";
     if (name == "eve_eval" || name == "eve_run_script" || name == "eve_restart") return true;
     if (name == "eve_pause" || name == "eve_continue" || startsWith(name, "eve_step_")) return true;
@@ -159,8 +171,9 @@ bool mcpToolMutates(std::string_view name) {
         startsWith(name, "eve_watch_") || startsWith(name, "eve_snapshot_"))
         return true;
     if (name == "eve_ui_click" || name == "eve_play" || name == "eve_gameplay") return true;
-    if (name == "eve_scene_modify" || name == "eve_scene_reset" || name == "eve_scene_node_set" ||
-        name == "set_camera_pose" || name == "eve_camera_generate")
+    if (name == "eve_scene_modify" || name == "eve_scene_batch" || name == "eve_scene_reset" ||
+        name == "eve_scene_node_set" || name == "set_camera_pose" || name == "eve_camera_generate" ||
+        name == "eve_whitebox_playtest")
         return true;
     if (startsWith(name, "eve_editor_") &&
         (name.find("execute") != std::string_view::npos || name.find("commit") != std::string_view::npos ||

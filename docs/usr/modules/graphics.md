@@ -2,17 +2,31 @@
 
 [English](../../en/usr/modules/graphics.md)
 
+游戏 `config.nut` 支持布尔配置 `vsync`，默认 `true`；设置 `vsync = false` 请求关闭垂直同步。
+启动时会在普通窗口或编辑器宿主创建窗口前应用，修改配置后重启游戏生效。
+`gfx.getVSyncCount()` 返回当前请求值（关闭为 0，开启为 1）；`gfx.setVSyncCount(0)` / `gfx.setVSyncCount(1)`
+可在运行时更新请求。Vulkan 开启时优先 Mailbox、其次 FIFO；关闭时优先 Immediate，
+不支持时按原有后端策略回退 Mailbox/FIFO，所以关闭不保证所有平台都能解除显示同步。
+
+`Mesh.getLocalBounds()` 返回标准 Result，其 value 为 `[minX,minY,minZ,maxX,maxY,maxZ]`。
+结果由 CPU 顶点计算，CPU morph baking 会更新边界；GPU 蒙皮和着色器位移不包含在内。
+无有限顶点时返回 NotFound。
+`eve.destroyRenderable3D(entityId,generation)` 在 render/owner thread 销毁当前世界的指定实体，
+不存在或 generation 过期返回 NotFound，不销毁 mesh。成功后不得再访问该实体脚本引用。
+场景链接保留完整世界矩阵，直接 TRS setter 切回本地模式；链接下一次推送重新更新派生矩阵。
+
 **脚本入口：** `eve.Graphics()`
 
 清屏、2D 图元、纹理、Canvas、摄像机和 3D 渲染。Camera2D/Camera3D 提供屏幕与世界坐标换算，供 2D/3D 拾取使用；形状命中测试见 [Math](math.md)，物理体查询见 [Physics](physics.md)。
 
 高级光照 / AO / GI / AA / 体积雾等见 [高级渲染与屏幕空间效果](graphics/rendering-effects.md)。实时雾气专册见 [graphics_fog](graphics_fog.md)。
 
-## 0.6 已知边界
+## 当前源码的能力边界
 
-下列能力在 0.6 **可以宣称并写进游戏**；未完成项保持显式 Unsupported / 文档边界，不得静默假实现。
+当前源码提供下列接口；实际可用性取决于构建和设备。此表不是发布版本或画面验收报告，
+未完成项保持显式 Unsupported / 文档边界，不得静默假实现。
 
-| 主题 | 0.6 已支持 | 已知边界（勿当作完成） |
+| 主题 | 当前接口 | 已知边界（勿当作完成） |
 |------|------------|------------------------|
 | 光照模式 | `RenderControl.setLightingMode("forwardPlus"\|"hybrid")`；桌面 preset 可切 Hybrid；半透明仍 Forward+ | ClassicScenes 像素对比与 FrameGraph 录制仍待补；Lavapipe/CI 默认 ForwardPlus |
 | 体积雾 / 体积光 | `Volumetric`、[实时雾气](graphics_fog.md)（MAC / ray march / froxel） | 可选：Froxel 绑真实 CSM shadow map、物体空间 AO / RTAO |
@@ -99,7 +113,9 @@ layer.setReceiveLight(true);
 
 初始化时创建 mesh、shader 和 renderable，设置 camera、ambient 和 directional light；每帧只更新 transform/material 参数，最后调用 `render3D()`。阴影开关、bias 和 strength 应逐场景调节。
 
-`Light3D` 支持 `point` / `dir` / `spot`。聚光用 `setType("spot")`、`setSpotAngle` / `setSpotSoftness`（与 2D 锥体语义相同）。实时阴影通过 `setCastShadow(true)` 与 `setShadowMethod("auto"|"none"|"csm"|"perspective"|"cube")` / `getShadowMethod()` 选择技术；有向光走 CSM，聚光走 perspective 本地 atlas。进程级方案用 `gfx.setShadowSchemeDirectionalEnabled` / `setShadowSchemeSpotEnabled` / `setShadowSchemePointEnabled`、`setShadowSchemeMaxSpotCasters` / `getShadowSchemeMaxSpotCasters`，以及本地分页 `setShadowSchemePagingEnabled`、`setShadowSchemeMaxLocalUpdates` / `getShadowSchemeMaxLocalUpdates`、`setShadowSchemeHysteresisBonus`（固定 atlas 槽位按重要性租用，更新预算可时间切片重绘）。
+`Light3D` 支持 `point` / `dir` / `spot`。聚光用 `setType("spot")`、`setSpotAngle` / `setSpotSoftness`（与 2D 锥体语义相同）。实时阴影通过 `setCastShadow(true)` 与 `setShadowMethod("auto"|"none"|"csm"|"perspective"|"cube")` / `getShadowMethod()` 选择技术；有向光走 CSM，聚光走 perspective 本地 atlas。进程级方案用 `gfx.setShadowSchemeDirectionalEnabled` / `setShadowSchemeSpotEnabled` / `setShadowSchemePointEnabled`、`setShadowSchemeMaxSpotCasters` / `getShadowSchemeMaxSpotCasters`，以及本地分页 `setShadowSchemePagingEnabled`、`setShadowSchemeMaxLocalUpdates` / `getShadowSchemeMaxLocalUpdates`、`setShadowSchemeHysteresisBonus`（固定 atlas 槽位按重要性租用，更新预算可时间切片重绘）。动态阴影分辨率有两层：
+1. **质量档 / atlas 预算**：`setShadowSchemeDirectionalMapSize` / `setShadowSchemeLocalMapSize`（边长钳制到 256/512/1024/2048/4096，GPU depth array 取两者较大值，变更时在下一帧 ensure 路径重建 atlas）、`getShadowSchemeAtlasMapSize`，以及 CSM 覆盖距离 `setShadowSchemeDirectionalMaxDistance` / `getShadowSchemeDirectionalMaxDistance`（默认 64 m）。
+2. **按距离与屏幕覆盖自适应分配**（默认开启）：`setShadowSchemeAdaptiveCascadeResolution`。近距 cascade 与屏幕覆盖大（阴影边缘/轮廓更明显）的 cascade 获得更高有效分辨率，远处 cascade 用更小 viewport；Vulkan 数组层尺寸必须统一，因此物理纹理仍是同一 atlas，采样通过 `cascadeUvScale` 重映射到各 cascade 的左上角子区域。
 
 `Camera3D` 默认使用透视投影。等距视图可调用 `setOrthographic(height)`，其中
 `height` 是世界空间中的垂直可视范围；`setPerspective()` 恢复透视投影。
@@ -273,6 +289,11 @@ r.clearPartSortPriority(0);         // 恢复使用 Material.getSortPriority()
 local effectiveOrder = r.getPartSortPriority(0);
 ```
 
+`mat.copyPbrSurfaceFrom(sourceMaterial)` 返回 Result，通过同一个原生 PbrSurface 校验入口复制
+导入材质的扩展 PBR 描述并启用相同渲染路径，适合让程序化服装和导入人物采用一致着色。
+不会复制 tint / roughness 等独立字段，也不共享可变材质状态；贴图仍由原 Graphics owner 拥有，
+需覆盖目标材质及绘制的生命周期。调用在渲染 / VM 所属线程同步执行，不保留 sourceMaterial 指针。
+
 遮罩材质使用 `setSurfaceMode("masked")`、`setAlphaCutoff()` 和
 `setAlphaTechnique("cutoff" | "dither" | "coverage")`。对应查询接口为
 `getSurfaceMode()`、`getBlendMode()`、`getDepthWrite()`、`getDoubleSided()`、
@@ -282,11 +303,17 @@ local effectiveOrder = r.getPartSortPriority(0);
 `Texture.setAlphaConvention("straight" | "premultiplied")` 声明，并通过
 `Texture.getAlphaConvention()` 查询。
 
-虚拟纹理材质通过 `setVirtualTexture(albedoAtlas, normalAtlas, pageTable,
-pageCountX, pageCountY, borderFraction)` 显式启用 atlas/page-table 路径；
-`usesVirtualTexture()` 可查询当前模式，`clearVirtualTexture()` 恢复传统材质贴图路径。
-三个纹理对象必须至少存活到材质停止使用它们为止；
-参数校验失败时 `setVirtualTexture()` 会抛出包含诊断信息的脚本异常。
+虚拟纹理由材质拥有并在绑定时自动流式驻留（对齐 UE5 RVT）。脚本只编写图层：
+
+```squirrel
+material.enableVirtualTexture(width, height, tileSize, borderSize, residentCapacity, maxDecodesPerUpdate);
+material.addVirtualTextureLayer(albedo, normal, uvScale, constantWeight, heightContrast);
+// 可选带权重图：addVirtualTextureLayerWeighted(albedo, normal, weight, ...)
+```
+
+`usesVirtualTexture()` 查询是否已进入 atlas/page-table 采样；`clearVirtualTexture()` 关闭。
+页反馈、解码、上传与页表发布不向外暴露，由 `render3D` → `Material.bind` 驱动。
+详见 `examples/virtual-texture-blending` 与 `docs/dev/virtual-texture-material-blending.md`。
 
 ### 高级渲染与屏幕空间效果
 
@@ -830,7 +857,7 @@ PcgWaterPhotoModeAuthority 通过 setAuthority 管理唯一 Water 字段租约�
 
 ### Pcg PhotoMode Graphics 权威配置
 
-`PcgGraphicsPhotoModeAuthority` 绑定 Graphics、RenderControl 与 Camera3D 后，以显式租约接收 LOD bias、anti-aliasing、shadow distance、shadow resolution 和 shadow cascades。LOD bias 直接缩放所有 Renderable3D 网格 LOD 的选择距离；AA 枚举切换真实 FXAA、SMAA、TAA 或关闭合成；阴影距离写入 Camera3D 每层 caster 裁剪。完整分辨率和级联设置保存在同一状态中，供阴影资源配置使用。
+`PcgGraphicsPhotoModeAuthority` 绑定 Graphics、RenderControl 与 Camera3D 后，以显式租约接收 LOD bias、anti-aliasing、shadow distance、shadow resolution 和 shadow cascades。LOD bias 直接缩放所有 Renderable3D 网格 LOD 的选择距离；AA 枚举切换真实 FXAA、SMAA、TAA 或关闭合成；阴影距离写入 Camera3D 每层 caster 裁剪，并投影到 `ShadowSchemeSettings::directionalMaxDistance`（钳制到 \[8, 256\] m）以扩展 CSM 覆盖。`m_shadowResolution`（0..3）映射为 atlas 边长 512/1024/2048/4096 并写入 scheme，触发动态阴影分辨率重建；级联数量目前仍为编译期 3 级（`m_shadowCascades` 保存在状态中供后续扩展）。
 
 状态读取方法为 getAuthority、getReflectionEnabled、getReflectionDistance、getReflectionResolution、getReflectionLodBias、getFogDensity、getFogDistance、getFogRed、getFogGreen 和 getFogBlue。WaterPlanarReflectionSettings 也公开 lodBias。
 
@@ -886,3 +913,66 @@ RGBA 模式任一通道命中即启用。`setMask(imageData)` 会复制像素，
 - `updateMeshVertices` 是显式动态上传：每次调用仍有线性转换/上传成本，内部复用转换数组与 GPU 缓冲容量，不扫描全数组判断是否相同。源数据的 owner 应只在数据变化时调用；无需额外 token/commit。
 - Groom 的 `update(dt)` 完整推进模拟；参数与可见性修改只记录变化。视图准备阶段（或直接 `draw` 的准备边界）合并几何刷新并复用同一网格。`getMesh` 等 getter 不触发刷新，返回最后发布结果；`rebuild` 是兼容的显式同步刷新。`Representation::None` 隐藏但保留网格以供再次显示复用。显式可见性掩码属于调用者当前视图，多视图时在各视图绘制前更新，不能跨视图复用最后一次掩码。
 - Groom 必须在其 Graphics owner 销毁前析构；析构移除准备回调。网格、纹理与 shader 仍由 Graphics 统一回收，不产生第二套所有权。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](graphics/api-reference.md)，使用前先确认本章的前置条件与生命周期。
+
+## 集成任务：从资源到一帧
+
+先在 init 解码 CPU 图像并创建 Texture，update 只改角色状态，render 按背景、世界、HUD 顺序提交。窗口 resize 后使用实际视口尺寸，设备重建后重建 GPU 资源。教程使用程序化纹理避免外部文件条件。3D 则先准备 Camera/Light/Renderable，再提交同一场景；曝光、阴影和后处理参数放在创建/设置阶段。昂贵的探针捕获和资源 upload 不混入每实体的 draw。
+
+完整项目：[examples/game-tutorial](../../../examples/game-tutorial/README.md)，
+其 [main.nut](../../../examples/game-tutorial/main.nut) 展示实际生命周期。
+先验证现有资产可加载，再换成自己的资源。测试失败、取消、资源缺失和旧 revision，
+不能只以脚本没有语法错误作为渲染或玩法正确的证据。
+详细流程：[专题](graphics/rendering-effects.md)。
+### AI 候选遮挡测量
+
+`eve.prepareSceneVisibility(request)` 返回 owning 单次查询，`query.measure(gfx)` 返回结构化 Result。
+MCP 可直接调用 `eve_scene_modify(action="visibility", target="object", params={width=256,height=256})`，
+或 `params={preview=true}` 测量现有物理摆放候选，无需提交或移动实时场景。
+结果包含 visibleFraction、fullPixels、visiblePixels、occluders 的 ObjectId/比例和深度歧义。
+只有 Measured 状态可作测量证据；少于四像素为 Unmeasurable，Unsupported 不得替代为包围盒估计。
+支持静态无贴图不透明网格，具体范围、预算和 schema 见 [遮挡接口](../../dev/2026-10-11-scene-visibility-validation.md)。
+
+visibility-request v2 支持对象局部区域 target（v1 字符串 target 仍支持），证据为 v2；
+区域用实际目标 depth 还原局部表面点筛选，多个区域复用对象 full pass。
+参见 [区域协议与验证](../../dev/2026-10-11-scene-regions-validation.md)。
+
+## 投影轮廓重叠
+
+作者文档 v4 支持 projected_overlap(subject, reference, minimum, maximum)，可附 reference 的 local_box region。测量两个对象独立真实投影 mask 的交集/reference 像素数；前后顺序及第三者遮挡不改变该构图指标。visibility-evidence v3 的 projectedOverlaps 返回交集像素、双方像素数及比例；任一 mask 少于 4 像素不可测。关系通过原有 relations/relation_begin/relation_check/relation_commit 正式路径使用，提交重新测量并一次撤销。详见 [契约与验证](../../dev/2026-10-12-scene-projected-overlap-validation.md)。
+
+## 同帧 SceneColor 与实例草坪
+
+`gfx.captureMesh3DSceneColor()` 在 `gfx.render3D()` 后、消费该图像的自定义绘制前调用，返回
+`captured` / `scheduled` / `explicitOverride` / `historyReuse` / `unavailable`。
+它是渲染线程操作，不调用脚本回调；快照及绑定 18 的纹理由 Graphics 持有，使用期内不向脚本转移所有权。
+代价约为一次全分辨率 GPU 颜色复制，应每帧捕获一次供所有草簇共享，不能每簇捕获。
+`historyReuse` 明确表示使用历史帧，不能当作同帧证据；当前 Vulkan 同帧复制要求单采样场景通道。
+
+实例资源 shader 允许在 **fragment stage** 使用 `set=0,binding=18` 的普通 `sampler2D`
+读取已完成快照；vertex stage 和其他未登记的绑定仍被拒绝。实例矩阵仍在
+`set=1,binding=33`，不改变已有 ABI。
+
+`examples/stylized-meadow` 在绘制草之前捕获已受光、含阴影的地表颜色，按草根投影位置的亮度
+决定整簇颜色。输入是画面中该位置实际可见的表面；根部被其他物体遮挡时会读取遮挡物的颜色，
+并非无限制的离屏地表查询。输出不反馈到快照中。
+
+边界变更仅扩展 graphics 的既有脚本和 shader 资源面；没有 capability、ECS/Link、事件或工具协议变更。
+复用现有后端状态枚举，无全局附加状态、无跨模块 include，也未宣称新增裁剪等级。
+
+### 可复用默认草坪 Style
+
+[Stylized Grass](../../../assets/styles/stylized-grass/README.md) 提供三阶草色、CPU 生成的两组四帧遮罩、分组慢速摇曳与地面补色。复制目录并调用 `StylizedGrassStyle`；`examples/stylized-meadow` 使用同一份 style。要求原生 Vulkan 单采样与同帧 SceneColor 支持，接入、成本和实例数据契约见 style 文档。
+
+### CPU 生成的默认草坪（无部署素材）
+
+`gfx.buildStylizedGrassPoints(radius, extent, seed)` 在 CPU 上生成 Bridson 蓝噪声，返回结构化 Result，value 为交错 x/z 数值数组。初始化时调用；固定种子可复现，半径及半边长为正有限数，radius 至少 extent/1000、seed 非负、最多 49,999 点。
+
+`gfx.buildStylizedGrassShader(records, pass)` 是初始化 builder：`pass` 为 `grass` 或 `ground`，records 是内存中的列主序仿射矩阵平坦数组，最多 64 MiB。返回 Result.value 中 Graphics 拥有的 shader 借用句柄；所有输入同步复制，调用后可释放。无调用方指针跨帧保留；限定渲染/VM 线程，不调用脚本回调或持有跨回调锁。非法矩阵、未知 pass、非 Vulkan 后端明确失败。失败不返回部分 style。
+
+@cost 蓝噪声生成、CPU 矢量轮廓栅格化及 GPU 上传远高于普通参数更新，应在初始化阶段完成并跨帧摊销。草 pass 在 CPU 内存生成两种草型、各四帧遮罩，再上传纹理；地面 pass 不生成纹理。shader 已内嵌，无需外部 PNG/RGBA/SPIR-V/草根文件。每帧仍一次地面补色、一次 GPU 草实例绘制与一张同帧场景快照。
+
+脚本封装、根点 ABI、参数和部署要求见 [默认草坪 style](../../../assets/styles/stylized-grass/README.md)。场景高度与剔除回调由脚本初始化时同步执行；没有每帧逐草簇脚本更新。

@@ -1,3 +1,5 @@
+#include "common/SquirrelBinding.h"
+
 #include <cstring>
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -110,17 +112,9 @@ eve.SceneComponent <- class {
 }  // namespace
 
 void injectSceneComponentClass(ssq::Table &eveTable) {
-    HSQUIRRELVM     vm  = eveTable.getHandle();
-    const SQInteger top = sq_gettop(vm);
-    if (SQ_FAILED(sq_compilebuffer(vm, kSceneComponentScript,
-                                   static_cast<SQInteger>(std::strlen(kSceneComponentScript)), "SceneComponent.nut",
-                                   SQTrue))) {
-        sq_settop(vm, top);
-        return;
-    }
-    sq_pushroottable(vm);
-    sq_call(vm, 1, SQFalse, SQTrue);
-    sq_settop(vm, top);
+    // A failed run used to be discarded, so a broken SceneComponent.nut left
+    // eve.SceneComponent missing with no signal from the engine.
+    (void)script::compileAndRunChunk(eveTable.getHandle(), "SceneComponent.nut", kSceneComponentScript);
 }
 
 }  // namespace eve::scene::detail

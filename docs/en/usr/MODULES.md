@@ -10,6 +10,8 @@ English guides are maintained by hand with Chinese as the authoritative source. 
 
 Use `has_module("slot")` for optional features. Project module selection and source-build trimming are different; see [EveScript](EVESCRIPT.md) and [module trimming](TRIMMING.md).
 
+[SCAD and LDraw model import](modules/asset-structured-models.md) converts procedural solids and part assemblies into canonical native static prefabs.
+
 ## Runtime and input
 
 - [Window](modules/window.md): window dimensions, resizing and DPI.
@@ -108,3 +110,12 @@ Use `has_module("slot")` for optional features. Project module selection and sou
 - [Built-in demo — Chinese](../../usr/modules/demo.md): runtime installation checks.
 
 For player persistence, start with [Saving games across modules](SAVE.md). Additional guides remain indexed by the [Chinese handbook](../../usr/MODULES.md).
+
+## Extended gameplay and advanced guides (Chinese)
+
+The [expanded Chinese navigation](../../usr/MODULES.md) includes Economy, Attributes, Decision,
+Definitions, Tags, GameEvent, PolicyRegistry, Transaction and RTS; it also covers provider/editor
+satellites, editable targets, RayTracing, StylizeAction, Fluids and native asset workflows.
+Start with the [complete game tutorial](../../usr/GAME_DEVELOPMENT.md), then follow those
+module chapters for tasks, initialization, lifetime and failure handling. Supplementary signatures
+are generated from source; they are not a platform execution report.

@@ -1,0 +1,49 @@
+file=cold.log
+schema=ecs-benchmark-v1 config=Release compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=256 warmup=1 samples=3 iterations=1 dt=0.015625
+engine_revision=10f6faa7509e4a108ee5f2e6b6e3be357e99af26 ecs_revision=9949054f1871ff7ea3c2b9a250d417d62a732f53 ecs_header_sha256=94be15f597c6b84b6fee34bc1f09030f5e9c6a8e526784f58298b102ab2ef120 rss_before_bytes=1921024
+validation=passed checked=3000000 ticks=4 checksum=1.91862e+09
+
+file=deferred.log
+schema=ecs-benchmark-v1 config=Release compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=1 samples=3 iterations=1 dt=0.015625
+engine_revision=10f6faa7509e4a108ee5f2e6b6e3be357e99af26 ecs_revision=9949054f1871ff7ea3c2b9a250d417d62a732f53 ecs_header_sha256=94be15f597c6b84b6fee34bc1f09030f5e9c6a8e526784f58298b102ab2ef120 rss_before_bytes=1921024
+validation=passed checked=3000000 ticks=4 checksum=1.91884e+09
+
+file=dense.log
+schema=ecs-benchmark-v1 config=Release compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=1 samples=3 iterations=1 dt=0.015625
+engine_revision=10f6faa7509e4a108ee5f2e6b6e3be357e99af26 ecs_revision=9949054f1871ff7ea3c2b9a250d417d62a732f53 ecs_header_sha256=94be15f597c6b84b6fee34bc1f09030f5e9c6a8e526784f58298b102ab2ef120 rss_before_bytes=1925120
+validation=passed checked=3000000 ticks=4 checksum=1.91862e+09
+
+file=dense4.log
+schema=ecs-benchmark-v1 config=Release compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=48 cold_payload_bytes=0 warmup=1 samples=3 iterations=1 dt=0.015625
+engine_revision=10f6faa7509e4a108ee5f2e6b6e3be357e99af26 ecs_revision=9949054f1871ff7ea3c2b9a250d417d62a732f53 ecs_header_sha256=94be15f597c6b84b6fee34bc1f09030f5e9c6a8e526784f58298b102ab2ef120 rss_before_bytes=1929216
+validation=passed checked=3000000 ticks=4 checksum=1.91862e+09
+
+file=holes50.log
+schema=ecs-benchmark-v1 config=Release compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=1 samples=3 iterations=1 dt=0.015625
+engine_revision=10f6faa7509e4a108ee5f2e6b6e3be357e99af26 ecs_revision=9949054f1871ff7ea3c2b9a250d417d62a732f53 ecs_header_sha256=94be15f597c6b84b6fee34bc1f09030f5e9c6a8e526784f58298b102ab2ef120 rss_before_bytes=1929216
+validation=passed checked=1500000 ticks=4 checksum=9.58559e+08
+
+file=holes90.log
+schema=ecs-benchmark-v1 config=Release compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=1 samples=3 iterations=1 dt=0.015625
+engine_revision=10f6faa7509e4a108ee5f2e6b6e3be357e99af26 ecs_revision=9949054f1871ff7ea3c2b9a250d417d62a732f53 ecs_header_sha256=94be15f597c6b84b6fee34bc1f09030f5e9c6a8e526784f58298b102ab2ef120 rss_before_bytes=1929216
+validation=passed checked=300000 ticks=4 checksum=1.91712e+08
+
+file=inheritance.log
+schema=ecs-benchmark-v1 config=Release compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=1 samples=3 iterations=1 dt=0.015625
+engine_revision=10f6faa7509e4a108ee5f2e6b6e3be357e99af26 ecs_revision=9949054f1871ff7ea3c2b9a250d417d62a732f53 ecs_header_sha256=94be15f597c6b84b6fee34bc1f09030f5e9c6a8e526784f58298b102ab2ef120 rss_before_bytes=1925120
+validation=passed checked=3000000 ticks=4 checksum=1.91862e+09
+
+file=prepare.log
+schema=ecs-benchmark-v1 config=Release compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=1 samples=3 iterations=1 dt=0.015625
+engine_revision=10f6faa7509e4a108ee5f2e6b6e3be357e99af26 ecs_revision=9949054f1871ff7ea3c2b9a250d417d62a732f53 ecs_header_sha256=94be15f597c6b84b6fee34bc1f09030f5e9c6a8e526784f58298b102ab2ef120 rss_before_bytes=1925120
+validation=passed checked=3000000 ticks=0 checksum=1.91838e+09
+
+file=refill.log
+schema=ecs-benchmark-v1 config=Release compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=1 samples=3 iterations=1 dt=0.015625
+engine_revision=10f6faa7509e4a108ee5f2e6b6e3be357e99af26 ecs_revision=9949054f1871ff7ea3c2b9a250d417d62a732f53 ecs_header_sha256=94be15f597c6b84b6fee34bc1f09030f5e9c6a8e526784f58298b102ab2ef120 rss_before_bytes=1929216
+validation=passed checked=3000000 ticks=4 checksum=1.91862e+09
+
+file=vector.log
+schema=ecs-benchmark-v1 config=Release compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=1 samples=3 iterations=1 dt=0.015625
+engine_revision=10f6faa7509e4a108ee5f2e6b6e3be357e99af26 ecs_revision=9949054f1871ff7ea3c2b9a250d417d62a732f53 ecs_header_sha256=94be15f597c6b84b6fee34bc1f09030f5e9c6a8e526784f58298b102ab2ef120 rss_before_bytes=1929216
+validation=passed checked=3000000 ticks=4

@@ -25,7 +25,7 @@ On Windows, use the equivalent absolute `eve.exe` path. These script examples do
 
 ## Learn the basics
 
-- [Basic](basic/README.en.md): the bundled starting point; edit scripts, draw, and try the UI variants.
+- [Basic](basic/README.en.md): six bundled lessons: rectangle, image, movement, physics, particles and fire; then try the UI variants.
 - [DevLab](devlab/README.en.md): console, pause, stepping, snapshots and hot reload. Run with `--debug`.
 
 ## Choose a showcase
@@ -45,4 +45,8 @@ Start with [AI and MCP setup](../docs/en/usr/AI-MCP.md), then choose:
 - [AI Game](ai-game/README.en.md): structured gameplay actions, observations, deterministic stepping and checkpoints.
 - [AI Editor](ai-editor/README.en.md): create a live editor, change its model, observe events and verify rendering.
 
+- [Modern balcony](modern-balcony/README.md): SCAD architecture, procedural garden, two skinned animated cats, atmospheric sky and KHR ray tracing / portable reflections.
+
 Both include Python drivers that exercise the protocol without an LLM. Graphical verification still needs a working desktop graphics environment. For startup problems and version mismatches, see the [FAQ](../docs/en/usr/FAQ.md).
+
+- [SCAD warm modern living room](scad-living-room/README.md): original procedural interior, warm lights, PBR, shadows, volumetrics, AO/SSGI/SSR/TAA and automatic hardware RT reflections.

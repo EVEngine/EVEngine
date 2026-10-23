@@ -71,25 +71,16 @@ RPGActor : ecs::Entity
 游戏可以直接用 `RPGActor`，也可以从它派生出 `Player`/`Monster` 等子类并追加自己的
 组件——三大组件与配套 System 天然复用。
 
-`RPGActor::createActor()` 是推荐的工厂方法：除了创建实体外，还会把它加入
-`RPGActor::liveActors()` 跟踪列表，`StatusSystem::update` / `SkillSystem::update`
-靠这份列表逐帧推进（ECS `View` 目前不回传 `Entity*`，见
-`external/ECS.hpp/docs/API.md`，因此周期 tick / 技能释放事件需要携带 actor 身份时改用
-这份显式列表而非 `View`）。`release()` 会让 actor 从该列表中自然消失。
+`RPGActor::createActor()` 是推荐的工厂方法：创建实体并预热组件槽位。
+`RPGActor::liveActors()` 由 `ecs::View<RPGActor, Attributes>` +
+`ViewIterator::entity()` 收集当前 Table 中的存活 actor（含派生类），供
+`StatusSystem::update` / `SkillSystem::update` 逐帧推进。也可在系统内直接使用
+`it.entity()` / `it.row()`，不必再维护第二份注册表。
 
-> **坑 / 设计约束：** 这份跟踪列表内部存的是 `ecs::EntityHandle`（id + generation），
-> 而不是裸 `RPGActor*`。原因：`ecs::DestroyEntity` 在非 deferred 模式下会立刻
-> `reclaim` 槽位，槽位对应的内存会被**下一个** `createActor()` 复用（同地址、
-> generation 递增），并且复用时会用 `T{}` 重新构造，把 `flags` 清零。也就是说，
-> 一个已销毁 actor 的裸指针在槽位被复用后，`ecs::is_entity_visible(ptr)` 会重新
-> 变为 `true`——旧指针"看起来又活了"，导致 `liveActors()` 把同一块内存返回两次
-> （一份是新 actor 自己 push 的，一份是上一个已销毁 actor 遗留、从未被清理的
-> stale 条目），进而使 `StatusSystem::update` / `SkillSystem::update` 对同一个
-> actor 重复跑一遍 tick 逻辑（duration 类 buff 会提前双倍衰减到期、冷却双倍扣减等）。
-> 修复方式是用 `ecs::handle_of(actor)` 存 handle、用 `ecs::try_get(handle)` 解析
-> ——它会同时校验 id 与 generation，槽位被复用后旧 handle 会正确解析为
-> `nullptr` 并被 `liveActors()` 清理掉。**结论：任何跨帧持有 `Entity*` 的场景都应该
-> 优先使用 `EntityHandle` 而不是裸指针**，除非能保证在实体销毁的同一帧内完成清理。
+> **坑 / 设计约束：** 跨帧持有身份应使用 `ecs::EntityHandle`（id + generation），
+> 而不是裸 `RPGActor*`。`DestroyEntity` 会 reclaim 槽位，下一个 `create` 可能复用
+> 同地址并递增 generation；裸指针 + `is_entity_visible` 无法区分这种复用。
+> `try_get(handle)` 会同时校验 generation。View 迭代本身不会把已销毁槽位当成活实体。
 
 ### 属性（`AttributeTypes.h` / `AttributeSystem.h`）
 
@@ -198,7 +189,7 @@ enable/disable、调整已注册阶段的优先级，但不能新增原生阶段
 
 ## 测试
 
-`test/rpg.cpp`：属性纯函数计算（各 op / 自定义 op / 优先级）、`AttributeSystem` 的
+`test/unit/rpg/rpg_tests.cpp`：属性纯函数计算（各 op / 自定义 op / 优先级）、`AttributeSystem` 的
 增删查与缓存失效、`EffectRegistry` 的注册与 JSON 加载（含 `extra`）、`StatusSystem` 的
 instant/duration/infinite/周期 tick/四种叠加策略、施加条件拒绝、自定义 stackPolicy、
 生命周期钩子与变更事件、Buff API 别名、`SkillSystem` 的
