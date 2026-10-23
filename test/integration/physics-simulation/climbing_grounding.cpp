@@ -16,7 +16,7 @@ public:
     COMPONENT(eve::climbing::ClimbingLinks, links)
 };
 
-eve::climbing::ClimbingBody crossStep(float stepHeight, bool lowCeiling) {
+eve::climbing::ClimbingBody crossStep(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, float stepHeight, bool lowCeiling) {
     ecs::Table            table;
     ecs::ScopedTable      tableScope(table);
     eve::physics::World3D world(0.f, 0.f, 0.f, false);
@@ -64,7 +64,7 @@ eve::climbing::ClimbingBody crossStep(float stepHeight, bool lowCeiling) {
 }  // namespace
 
 TEST_CASE("climbing.grounding.lowStepUsesProductionMotor") {
-    const auto body = crossStep(0.2f, false);
+    const auto body = crossStep(_ZEROERR_TEST_CONTEXT, 0.2f, false);
     REQUIRE_GT(body.feet.x, 0.f);
     REQUIRE_GT(body.feet.y, 0.15f);
     REQUIRE(body.grounded);
@@ -72,14 +72,14 @@ TEST_CASE("climbing.grounding.lowStepUsesProductionMotor") {
 }
 
 TEST_CASE("climbing.grounding.tallStepRemainsBlocked") {
-    const auto body = crossStep(0.8f, false);
+    const auto body = crossStep(_ZEROERR_TEST_CONTEXT, 0.8f, false);
     REQUIRE_LT(body.feet.x, -0.3f);
     REQUIRE_LT(body.feet.y, 0.1f);
     REQUIRE(body.grounded);
 }
 
 TEST_CASE("climbing.grounding.lowCeilingRejectsStepWithoutPublishingRaisedPose") {
-    const auto body = crossStep(0.2f, true);
+    const auto body = crossStep(_ZEROERR_TEST_CONTEXT, 0.2f, true);
     REQUIRE_LT(body.feet.x, 0.f);
     REQUIRE_LT(body.feet.y, 0.1f);
     REQUIRE(body.grounded);

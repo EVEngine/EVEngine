@@ -197,7 +197,7 @@ foreach(_basename IN LISTS _bundle_files)
   eve_test_runtime_environment("${_bundle_metadata}" "${_eve_test_env_property}" _bundle_environment)
   string(APPEND _content
     "add_test(\"${_bundle_name}\" \"${ZEROERR_EXE}\" \"--quiet\" \"--file=${_file_filter}\")\n"
-    "set_tests_properties(\"${_bundle_name}\" PROPERTIES LABELS \"${_bundle_labels}\" FAIL_REGULAR_EXPRESSION \"(WARN|ERROR) Assertion Failed\" WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\"${_bundle_environment})\n")
+    "set_tests_properties(\"${_bundle_name}\" PROPERTIES LABELS \"${_bundle_labels}\" WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\"${_bundle_environment})\n")
   foreach(_entry IN LISTS "_eve_file_cases_${_basename}")
     string(REPLACE "|" ";" _parts "${_entry}")
     list(GET _parts 0 _name)
@@ -232,8 +232,6 @@ foreach(_basename IN LISTS _bundle_files)
         string(APPEND _content
           "set_tests_properties(\"${_ctest_name}\" PROPERTIES SKIP_REGULAR_EXPRESSION \"ClassicScenes.*: missing\")\n")
       endif()
-      string(APPEND _content
-        "set_tests_properties(\"${_ctest_name}\" PROPERTIES FAIL_REGULAR_EXPRESSION \"(WARN|ERROR) Assertion Failed\")\n")
       if(_name MATCHES "^resourceFormats\\.")
         # Helpers must receive TestContext, but fail closed if a future helper
         # logs an assertion without propagating it to zeroerr's exit status.

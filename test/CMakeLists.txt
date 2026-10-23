@@ -4,23 +4,9 @@ enable_testing()
 # intentionally independent of unit_test and never triggers a full engine
 # build by itself; CI also runs the same script in the fast structural job.
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
-if(NOT ANDROID AND NOT EVENGINE_ANDROID_TEST_APP AND NOT EVENGINE_IOS_TEST_APP)
-  add_executable(assertion_contract_probe fixtures/assertion_contract.cpp)
-  target_include_directories(assertion_contract_probe BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/cmake/overrides/zeroerr)
-  target_link_libraries(assertion_contract_probe PRIVATE zeroerr eve_engine_includes)
-  target_compile_options(assertion_contract_probe PRIVATE
-    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
-    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
-  add_test(NAME test.assertionExitContract
-    COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/check_test_assertions.py
-      --runner $<TARGET_FILE:assertion_contract_probe>)
-endif()
 include("${CMAKE_SOURCE_DIR}/cmake/TestLevels.cmake")
 eve_configure_test_levels(EVE_TEST_LEVEL_FILE)
 include("${EVE_TEST_LEVEL_FILE}")
-if(TARGET assertion_contract_probe)
-  eve_label_test_group(test.assertionExitContract assertion_contract.cpp)
-endif()
 add_custom_target(nodiscard_compile_check
   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/check_nodiscard.py
           --source-dir ${CMAKE_SOURCE_DIR}

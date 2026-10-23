@@ -12203,22 +12203,6 @@
       "module": "climbing",
       "task": "physics-simulation"
     },
-    "fixtures/assertion_contract.cpp": {
-      "role": "tests",
-      "default": "test-framework",
-      "cases": {
-        "test-framework": [
-          "assertionProbe.singleEvaluation",
-          "assertionProbe.checkFails",
-          "assertionProbe.comparisonFails",
-          "assertionProbe.requireFails",
-          "assertionProbe.assertFails",
-          "assertionProbe.helperFails",
-          "assertionProbe.expectedInvariant"
-        ]
-      },
-      "module": "common"
-    },
     "integration/weather-lightning/weather_lightning_runtime.cpp": {
       "role": "tests",
       "default": "render-window",

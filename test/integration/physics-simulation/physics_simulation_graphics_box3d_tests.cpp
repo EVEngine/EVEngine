@@ -1206,7 +1206,8 @@ TEST_CASE("box3d.world.explosionUsesGeometryFalloffMaskAndReportsVelocityDelta")
     Body3D *staticBody = world->newBody("static", 1.f, 0.f, -2.f);
     staticBody->newSphereShape(0.25f)->setCategoryBits(1);
 
-    CHECK_EQ(world->explode(0.f, 0.f, 0.f, 1.f, 4.f, 10.f, 1), 2);
+    const int repelled = world->explode(0.f, 0.f, 0.f, 1.f, 4.f, 10.f, 1);
+    CHECK_EQ(repelled, 2);
     CHECK_EQ(world->getExplosionResultCount(), 2);
     CHECK_EQ(world->getExplosionResultBodyId(0), nearBody->getId());
     CHECK_EQ(world->getExplosionResultBodyId(1), farBody->getId());
@@ -1218,9 +1219,11 @@ TEST_CASE("box3d.world.explosionUsesGeometryFalloffMaskAndReportsVelocityDelta")
 
     nearBody->setLinearVelocity(0.f, 0.f, 0.f);
     farBody->setLinearVelocity(0.f, 0.f, 0.f);
-    CHECK_EQ(world->explode(0.f, 0.f, 0.f, 1.f, 4.f, -10.f, 1), 2);
+    const int attracted = world->explode(0.f, 0.f, 0.f, 1.f, 4.f, -10.f, 1);
+    CHECK_EQ(attracted, 2);
     CHECK_LT(nearBody->getLinearVelocityX(), 0.f);
-    CHECK_EQ(world->explode(0.f, 0.f, 0.f, 1.f, 4.f, 0.f, 1), 0);
+    const int untouched = world->explode(0.f, 0.f, 0.f, 1.f, 4.f, 0.f, 1);
+    CHECK_EQ(untouched, 0);
     CHECK_EQ(world->getExplosionResultCount(), 0);
     CHECK_THROWS((world->explode(0.f, 0.f, 0.f, -1.f, 0.f, 1.f), false));
     CHECK_THROWS((world->explode(0.f, 0.f, 0.f, 1.f, -1.f, 1.f), false));
