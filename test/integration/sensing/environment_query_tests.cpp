@@ -343,7 +343,7 @@ TEST_CASE("sensing.environment.scriptPositionsUseCanonicalExecutor") {
             query.value.ranked[0].subject == null && query.value.ranked[0].location.space == "world2d") result = "ok";
         eve.result.ignore(world.release(), "test cleanup");
     )"));
-    CHECK_EQ(vm.find("result").toString(), std::string("ok"));
+    REQUIRE_EQ(vm.find("result").toString(), std::string("ok"));
 }
 
 TEST_CASE("sensing.pipeline.collectsBeforeFilteringAndPublishesOnlyOnSuccess") {

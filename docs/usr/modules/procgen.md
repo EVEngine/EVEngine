@@ -384,6 +384,9 @@ local ao = maps.getAo();
 maps.destroy();
 ```
 
+日常材质专用生成器与参数见 [日常材质生成](procgen/everyday-materials.md)。
+`ProcgenPbrMaterial.getTransmission()` 和 `getIor()` 分别返回透射率和折射率。
+
 当前 `Material` 可直接使用 albedo、normal、height 纹理以及 scalar roughness / metallic。
 roughness、metallic、AO 图仍可导出或交给自定义 shader；默认材质还没有对应纹理槽。
 

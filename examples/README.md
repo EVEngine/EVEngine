@@ -216,6 +216,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [realtime-fog](realtime-fog/README.md) | MAC 流体雾 + SceneWind + 球体交互器，同步到 froxel 合成 |
 | [flame-jet](flame-jet/README.md) | 火焰射流：白热火芯、橙红火舌、火星与烟雾 |
 | [particle-playback-lab](particle-playback-lab/README.md) | 粒子回放实验室：确定性播放、版本化多发射器与视觉验证 |
+| [unit-surface-effects](unit-surface-effects/README.md) | 26 种单位表面特效：同模型参考、材质/发光/附加几何分层、逐项时间序列对照 |
 | [attack-vfx](attack-vfx/README.md) | AttackVfx 综合演示：一份配方覆盖 mesh/trail/particles/camera/distortion/decal/audio/prefab，anticipate→impact→release，三套 elemental skin 自动轮播 |
 | [rendering-chain-lab](rendering-chain-lab/README.md) | 渲染链运行时对比：TAA / SSR / RTGI 与自动反射链开关（Space / R） |
 | [lighting-showcase](lighting-showcase/README.md) | 光照展示：环境光、有向光 CSM、聚光灯 perspective 阴影、彩色发光体，以及可选硬件光追 / 便携反射链 |
@@ -253,6 +254,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [combat-action-editor](combat-action-editor/README.md) | 战斗动作编辑示例：用 UI 无关编辑器 SDK 组装项目专属工作区 |
 | [combat-arena](combat-arena/README.md) | 动作战斗竖切：移动/闪避/伤害/锁定与敌人近距攻击的组合烟测 |
 | [companion-tactics](companion-tactics/README.md) | 队友协作战术沙场：原生 AI 状态机、能力评分、治疗预约、保护吸伤、动态站位与玩家指挥 |
+| [squad-boss-3d](squad-boss-3d/README.md) | 3D 四人打 BOSS：EQS 站位/躲避、GAS 玩家技能、多队友协同（治疗预约/指挥/原生 AI） |
 | [procgen-script-editor](procgen-script-editor/README.md) | 宿主封装 Squirrel generator（`generators/forest.nut`）的程序化生成编辑器 |
 | [ui-theme-editor](ui-theme-editor/README.md) | UI 主题编辑示例：组装命名 Theme 工作区 + 实时预览 |
 | [material-editor](material-editor/README.md) | 材质编辑器：高层脚本创建、复杂测试球、模型导入、可切换天空盒与 IBL、完整参数及撤销保存 |

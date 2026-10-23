@@ -1,0 +1,192 @@
+{
+  "device": "NVIDIA GeForce RTX 3090",
+  "driver": "595.99.02",
+  "engine_host": "cached worktree 1782 linux-debug; not a full current engine build",
+  "generator": "current workspace sources",
+  "cpu_tests": {
+    "cases": 9,
+    "assertions": 73708,
+    "asan_ubsan": "passed"
+  },
+  "same_room_before_after": true,
+  "flat_normal_pixel_mean_absolute_rgb_difference": {
+    "RUBBER": 1.679604938271605,
+    "CLOTH": 4.473244444444444,
+    "CAST IRON": 6.219753086419753,
+    "CEMENT": 4.671762962962963
+  },
+  "map_stats": {
+    "paint": {
+      "normal_mean_degrees": 5.099,
+      "normal_p95_degrees": 12.454,
+      "height_range": [
+        106,
+        148
+      ],
+      "height_above128_fraction": 0.44777870178222656,
+      "height_below127_fraction": 0.4478273391723633,
+      "roughness_range": [
+        60,
+        75
+      ]
+    },
+    "cast_iron": {
+      "normal_mean_degrees": 22.36,
+      "normal_p95_degrees": 42.833,
+      "height_range": [
+        46,
+        227
+      ],
+      "height_above128_fraction": 0.41672706604003906,
+      "height_below127_fraction": 0.5546350479125977,
+      "roughness_range": [
+        234,
+        247
+      ]
+    },
+    "cement": {
+      "normal_mean_degrees": 14.963,
+      "normal_p95_degrees": 29.013,
+      "height_range": [
+        66,
+        193
+      ],
+      "height_above128_fraction": 0.4707345962524414,
+      "height_below127_fraction": 0.49085426330566406,
+      "roughness_range": [
+        240,
+        250
+      ]
+    },
+    "cloth": {
+      "normal_mean_degrees": 21.207,
+      "normal_p95_degrees": 32.527,
+      "height_range": [
+        93,
+        162
+      ],
+      "height_above128_fraction": 0.5896339416503906,
+      "height_below127_fraction": 0.3521728515625,
+      "roughness_range": [
+        242,
+        253
+      ]
+    },
+    "rubber": {
+      "normal_mean_degrees": 8.798,
+      "normal_p95_degrees": 19.074,
+      "height_range": [
+        101,
+        155
+      ],
+      "height_above128_fraction": 0.45258235931396484,
+      "height_below127_fraction": 0.4619569778442383,
+      "roughness_range": [
+        244,
+        253
+      ]
+    },
+    "marble": {
+      "normal_mean_degrees": 0.0,
+      "normal_p95_degrees": 0.0,
+      "height_range": [
+        127,
+        128
+      ],
+      "height_above128_fraction": 0.0,
+      "height_below127_fraction": 0.0,
+      "roughness_range": [
+        24,
+        29
+      ]
+    }
+  },
+  "source_sha256": {
+    "src/modules/procgen/texture/EverydayMaterials.cpp": "6434b4e0f1a4007cfe81cd5ede08a6252b1a94d614d552850b463e458710f64d",
+    "src/modules/procgen/texture/EverydayPatterns.cpp": "94fe824f002ca0212f7c1b0b2179d9d5cb20f6ebe50bb70944c62e646d0998c8",
+    "tools/procgen-material-lookdev/main.nut": "cb477acc606edeca695be1831107ae06ffea1fbb8b3e9ba5745aba3bc2b614fa",
+    "tools/procgen-material-lookdev/shaders/scene-depth.frag.spv": "3a95c4a56e98cb91ee832f8b86a07be437e44c1566bd226a6979053b2a5fa370",
+    "tools/procgen-material-lookdev/shaders/studio-backdrop.frag": "b33e7c427ba57a6f7bee1e0e6be8de30b984922ef8e41276a2617082c59400b3",
+    "tools/procgen-material-lookdev/shaders/studio-backdrop.frag.spv": "32b6fa0eb4bbe724add24d558ad03ad4213535bae345aabc87f3c3ab8b7d0b3b",
+    "tools/procgen-material-lookdev/shaders/studio-pedestal.frag": "b70a920c16a262a072b754760a5d8d8adbc8600c5706b67d87e2192cdad8a9c2",
+    "tools/procgen-material-lookdev/shaders/solid-sphere-glass.frag.spv": "bfa5ec625d5fdbb3d09850c8597e3f122e2649b21d0260c872b7f6c496c5ea96",
+    "tools/procgen-material-lookdev/shaders/studio-pedestal.frag.spv": "3fb76272b29ed857753f2f9a54338684bb3ecdc0f71f2577a3c571a8cb61f617",
+    "tools/procgen-material-lookdev/shaders/solid-sphere-glass.frag": "5765668495f458c652af6be1b59316077eab19703686d06a70b798d9d19b71a8",
+    "tools/procgen-material-lookdev/shaders/studio-room.frag.spv": "e795ab9348d0803bbf9f4986d5fb267c104a01c10ae5a8cada160cacf4109e1a",
+    "tools/procgen-material-lookdev/shaders/display-linear.frag": "d6a92a658600a0a8716a219e50a372a18b4aaca61f5611dd4a0f87e1ac9fb1e3",
+    "tools/procgen-material-lookdev/shaders/display-linear.frag.spv": "ec8be0f98dc836c1c16ab1f2e18a06bacdfe38005eb6ce6a4294e9d0a0d72bdd",
+    "tools/procgen-material-lookdev/shaders/scene-depth.frag": "a509bd2ace5f1c28ed4249e17d30cff65f952dc759e4e5ac72855cbb3d2b0f69",
+    "tools/procgen-material-lookdev/shaders/studio-room.frag": "3e95dcae3d207faaecfee5da1b19609a0d061aeeae65c1d3c62af0a4f7a86b74"
+  },
+  "limits": [
+    "glass assumes unit solid sphere and finite screen depth trace",
+    "no arbitrary mesh transmission or caustics",
+    "native canvas general shadows and AO not validated",
+    "full engine build and hosted release not validated"
+  ],
+  "same_room_before_after_hashes": {
+    "main.nut": {
+      "sha256": "cb477acc606edeca695be1831107ae06ffea1fbb8b3e9ba5745aba3bc2b614fa",
+      "equal": true
+    },
+    "config.nut": {
+      "sha256": "785b4a9b8c89f3e8c367f2ff5e035c15620198636708a93838bdb8750d9fe76a",
+      "equal": true
+    },
+    "shaders/studio-room.frag": {
+      "sha256": "3e95dcae3d207faaecfee5da1b19609a0d061aeeae65c1d3c62af0a4f7a86b74",
+      "equal": true
+    },
+    "shaders/studio-room.frag.spv": {
+      "sha256": "e795ab9348d0803bbf9f4986d5fb267c104a01c10ae5a8cada160cacf4109e1a",
+      "equal": true
+    },
+    "shaders/studio-backdrop.frag.spv": {
+      "sha256": "32b6fa0eb4bbe724add24d558ad03ad4213535bae345aabc87f3c3ab8b7d0b3b",
+      "equal": true
+    },
+    "shaders/studio-backdrop.frag": {
+      "sha256": "b33e7c427ba57a6f7bee1e0e6be8de30b984922ef8e41276a2617082c59400b3",
+      "equal": true
+    },
+    "shaders/studio-pedestal.frag.spv": {
+      "sha256": "3fb76272b29ed857753f2f9a54338684bb3ecdc0f71f2577a3c571a8cb61f617",
+      "equal": true
+    },
+    "shaders/studio-pedestal.frag": {
+      "sha256": "b70a920c16a262a072b754760a5d8d8adbc8600c5706b67d87e2192cdad8a9c2",
+      "equal": true
+    },
+    "shaders/scene-depth.frag": {
+      "sha256": "a509bd2ace5f1c28ed4249e17d30cff65f952dc759e4e5ac72855cbb3d2b0f69",
+      "equal": true
+    },
+    "shaders/scene-depth.frag.spv": {
+      "sha256": "3a95c4a56e98cb91ee832f8b86a07be437e44c1566bd226a6979053b2a5fa370",
+      "equal": true
+    },
+    "shaders/display-linear.frag.spv": {
+      "sha256": "ec8be0f98dc836c1c16ab1f2e18a06bacdfe38005eb6ce6a4294e9d0a0d72bdd",
+      "equal": true
+    },
+    "shaders/display-linear.frag": {
+      "sha256": "d6a92a658600a0a8716a219e50a372a18b4aaca61f5611dd4a0f87e1ac9fb1e3",
+      "equal": true
+    },
+    "shaders/solid-sphere-glass.frag": {
+      "sha256": "5765668495f458c652af6be1b59316077eab19703686d06a70b798d9d19b71a8",
+      "equal": true
+    },
+    "shaders/solid-sphere-glass.frag.spv": {
+      "sha256": "bfa5ec625d5fdbb3d09850c8597e3f122e2649b21d0260c872b7f6c496c5ea96",
+      "equal": true
+    }
+  },
+  "source_gate": {
+    "command": "make check CI_BASE=HEAD",
+    "result": "passed",
+    "python_tests": 181,
+    "default_origin_dev_gate": "not established; prior historical findings remain"
+  },
+  "shader_source_binary_match": "all six shaders recompiled and byte compared"
+}
