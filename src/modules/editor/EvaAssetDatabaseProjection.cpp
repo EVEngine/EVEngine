@@ -21,7 +21,7 @@ AssetGuid guid(const AssetRef& asset) { return AssetGuid(asset.id().format()); }
 
 }  // namespace
 
-EditorResult<std::vector<AssetRecord>> publishEvaAssetProjection(
+Result<std::vector<AssetRecord>> publishEvaAssetProjection(
     MemoryAssetDatabase& database, const asset::EvaManifest& manifest, std::string archiveUri,
     std::string importerId) {
     if (archiveUri.empty() || importerId.empty())

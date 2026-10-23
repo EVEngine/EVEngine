@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file CardDefinitionRuntime.h
@@ -43,7 +45,7 @@ struct CardRuntimeState {
  * owner-thread affine and synchronous. Reload prepares the complete typed
  * state before changing its identity; a failure leaves both unchanged.
  */
-class CardDefinitionRuntime final {
+class EVENGINE_API_WORLD CardDefinitionRuntime final {
 public:
     /**
      * @brief Create a card runtime from the current typed definition.

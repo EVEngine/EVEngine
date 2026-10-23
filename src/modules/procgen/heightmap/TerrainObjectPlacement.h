@@ -47,7 +47,7 @@ struct TerrainObjectInstanceSettings {
 };
 
 /** @brief Deterministic Pcg SetTerrainGameObjects scan, collision and resource configuration. */
-struct TerrainObjectPlacementSettings {
+struct EVENGINE_API_DOMAINS TerrainObjectPlacementSettings {
     float originX = 0, originZ = 0, width = 1, depth = 1, heightScale = 1;
     float spacing = 10, spawnDensity = 1, jitterPercent = 0.5F;
     float startOffsetX = 0, startOffsetZ = 0;
@@ -71,32 +71,35 @@ struct TerrainObjectPlacementSettings {
  * @param fitness Finite normalized distribution raster spanning the terrain rectangle.
  * @param heights Finite normalized terrain-height raster; its resolution is independent from fitness.
  * @param settings Explicit prototype, child resources, world domain, seed, collision and transform rules.
+ * @note Collision space is reserved only after at least one child is emitted; rejected empty prototypes reserve none.
+ * @cost Linear in bounded scan candidates and emitted children; prepare resource settings once per explicit spawn.
  * @return Emitted child instance count or structured InvalidArgument diagnostic.
  * @ownership Retains no input, callback, asset or scene object. Caller serializes access on its owner thread.
  * Candidate traversal uses one Pcg XorshiftPlus stream and no time source. Stable identities derive from namespace,
  * candidate cell, resource index and child ordinal. Asset resolution and scene ownership remain downstream.
  */
-[[nodiscard]] Result<int> exportTerrainObjectPoints(PointSet& output, const Heightmap& fitness,
-                                                    const Heightmap& heights,
-                                                    const TerrainObjectPlacementSettings& settings);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> exportTerrainObjectPoints(
+    PointSet& output, const Heightmap& fitness, const Heightmap& heights,
+    const TerrainObjectPlacementSettings& settings);
 
 /**
  * @brief Remove matching prototype points wherever fitness is strictly above removalStrength.
  * @return Removed count; output and all attributes are published atomically on success.
  */
-[[nodiscard]] Result<int> removeTerrainObjectPoints(PointSet& output, const PointSet& input,
-                                                    const Heightmap& fitness,
-                                                    const TerrainObjectPlacementSettings& settings,
-                                                    float removalStrength);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> removeTerrainObjectPoints(PointSet& output, const PointSet& input,
+                                                                         const Heightmap&                      fitness,
+                                                                         const TerrainObjectPlacementSettings& settings,
+                                                                         float removalStrength);
 
 /** @brief One exclusively borrowed terrain object owner and its immutable height source. */
 struct TerrainObjectTile {
     std::string name;
     PointSet* objects = nullptr;
     const Heightmap* heights = nullptr;
-    double originX = 0, originZ = 0, width = 1, depth = 1;
-    int objectResolutionX = 0, objectResolutionY = 0;
-    bool worldMap = false;
+    double           originX = 0, originZ = 0, width = 1, depth = 1;
+    int              objectResolutionX = 0, objectResolutionY = 0;
+    bool             worldMap = false;
+    double originY = 0;  ///< Added to sampled terrain height; explicit sea/custom height modes remain world absolute.
 };
 
 /**
@@ -104,19 +107,25 @@ struct TerrainObjectTile {
  * @return Mapping report whose changedSamples counts emitted or removed child objects.
  * @ownership PointSet owners must be distinct and remain valid for the call. No pointer is retained.
  * One injected seed drives a single RNG stream in mapping order; accepted centers collide across tile seams.
+ * @note Reject continuous out-of-tile child coordinates before nearest-even pixel lookup. Empty candidates reserve no
+ * collision space.
+ * @cost Linear in mapped scan candidates and emitted children; reuse prepared rules and tile descriptors per spawn.
  */
-[[nodiscard]] Result<TerrainMultiTileReport> applyTerrainObjectsMultiTile(
+[[nodiscard]] EVENGINE_API_DOMAINS Result<TerrainMultiTileReport> applyTerrainObjectsMultiTile(
     const std::vector<TerrainObjectTile>& tiles, const Heightmap& operationFitness,
     const TerrainObjectPlacementSettings& settings, const TerrainStampSettings& operationSettings,
-    TerrainObjectOperationMode mode, bool worldMapOperation,
-    const std::vector<std::string>& validTerrainNames = {});
+    TerrainObjectOperationMode mode, bool worldMapOperation, const std::vector<std::string>& validTerrainNames = {});
 
 /** @brief Owning transactional multi-terrain object workspace with undo and redo snapshots. */
-class TerrainMultiObjectWorkspace {
+class EVENGINE_API_DOMAINS TerrainMultiObjectWorkspace {
 public:
+    /** @brief Terrain multi object workspace. */
     TerrainMultiObjectWorkspace();
+    /** @brief Terrain multi object workspace. */
     ~TerrainMultiObjectWorkspace();
+    /** @brief Terrain multi object workspace. */
     TerrainMultiObjectWorkspace(TerrainMultiObjectWorkspace&&) noexcept;
+    /** @brief Operator =. */
     TerrainMultiObjectWorkspace& operator=(TerrainMultiObjectWorkspace&&) noexcept;
     TerrainMultiObjectWorkspace(const TerrainMultiObjectWorkspace&) = delete;
     TerrainMultiObjectWorkspace& operator=(const TerrainMultiObjectWorkspace&) = delete;

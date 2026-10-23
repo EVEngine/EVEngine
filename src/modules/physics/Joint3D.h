@@ -1,25 +1,41 @@
 #pragma once
+#include <array>
+#include "common/Export.h"
+#include "common/Result.h"
+
 
 #include "physics/PhysicsHandles.h"
 
-#include <box3d/id.h>
+#include <memory>
+#include "physics/backend/JointBackend3D.h"
 
 #include <string>
 
 namespace eve::physics {
+namespace box3d {
+struct Access;
+}
+namespace box3d {
+class WorldBackend;
+}
 
 class Body3D;
 class World3D;
 
-/** @brief Script-facing Box3D joint owned by a World3D. */
-class Joint3D {
+
+/** @brief Script-facing joint owned by a World3D. Legacy scalar/void methods adapt the checked backend contract. */
+class EVENGINE_API_WORLD Joint3D {
 public:
-    /** @brief Supported joint geometry. */
-    enum class Kind { Distance, Revolute, Prismatic, Spherical, Wheel };
+    /** @brief Supported joint geometry.
+     * @remarks Stress-event kind codes append new values; keep this order stable:
+     *          0 Distance, 1 Revolute, 2 Prismatic, 3 Spherical, 4 Wheel,
+     *          5 Weld, 6 Motor, 7 Parallel, 8 Filter.
+     */
+    using Kind = JointKind3D;
 
     /** @brief Internal wrapper constructor; use World3D::new*Joint. */
-    Joint3D(World3D *world, Body3D *bodyA, Body3D *bodyB, b3JointId jointId, PhysicsJointHandle runtimeHandle,
-            Kind kind, int id);
+    Joint3D(World3D *world, Body3D *bodyA, Body3D *bodyB, std::unique_ptr<IJointBackend3D> backend,
+            PhysicsJointHandle runtimeHandle, Kind kind, int id);
     ~Joint3D();
 
     Joint3D(const Joint3D &) = delete;
@@ -29,7 +45,7 @@ public:
     int getId() const { return id_; }
     /** @brief Process-local generation-qualified handle owned by World3D. */
     [[nodiscard]] PhysicsJointHandle runtimeHandle() const noexcept { return runtimeHandle_; }
-    /** @brief Joint kind: "distance", "revolute", "prismatic", "spherical", or "wheel". */
+    /** @brief Joint kind string for script/debug ("distance", "revolute", …, "filter"). */
     std::string getKind() const;
     /** @brief Stable ID of attached body A, or -1 after invalidation. */
     int getBodyAId() const;
@@ -37,6 +53,16 @@ public:
     int getBodyBId() const;
     /** @brief Owning world, or null after joint destruction. */
     [[nodiscard]] World3D *getWorld() const noexcept { return world_; }
+    /**
+     * @brief Reads both body-local constraint frames without exposing native IDs.
+     * @return Owning frame values, or StaleHandle after joint invalidation.
+     * @ownership The result owns all frame components.
+     * @lifetime Independent of later joint or world destruction.
+     * @thread Call on the owning simulation thread, between steps.
+     * @reentrancy Does not invoke callbacks or mutate the solver.
+     */
+    [[nodiscard]] eve::Result<JointFrames3D> localFrames() const;
+
     /** @brief Enables or disables collision between the attached bodies. */
     void setCollideConnected(bool collide);
     /** @brief Whether attached bodies may collide. */
@@ -137,25 +163,70 @@ public:
     /** @brief Current steering torque in newton-metres. */
     float getWheelSteeringTorque() const;
 
+    /** @brief Configures weld linear spring stiffness and damping; 0 hertz is rigid. */
+    void setWeldLinearSpring(float hertz, float dampingRatio);
+    /** @brief Configures weld angular spring stiffness and damping; 0 hertz is rigid. */
+    void setWeldAngularSpring(float hertz, float dampingRatio);
+    /** @brief Weld linear stiffness in Hertz. */
+    float getWeldLinearHertz() const;
+    /** @brief Weld linear damping ratio. */
+    float getWeldLinearDampingRatio() const;
+    /** @brief Weld angular stiffness in Hertz. */
+    float getWeldAngularHertz() const;
+    /** @brief Weld angular damping ratio. */
+    float getWeldAngularDampingRatio() const;
+
+    /** @brief Sets motor-joint relative linear velocity in metres/second. */
+    void setMotorLinearVelocity(float vx, float vy, float vz);
+    /** @brief Sets motor-joint relative angular velocity in radians/second. */
+    void setMotorAngularVelocity(float wx, float wy, float wz);
+    /** @brief Sets motor velocity force/torque limits. */
+    void setMotorVelocityLimits(float maxForce, float maxTorque);
+    /** @brief Configures motor linear position spring. */
+    void setMotorLinearSpring(float hertz, float dampingRatio, float maxForce);
+    /** @brief Configures motor angular position spring. */
+    void setMotorAngularSpring(float hertz, float dampingRatio, float maxTorque);
+    /** @brief Desired motor linear velocity X in metres/second. */
+    float getMotorLinearVelocityX() const;
+    /** @brief Desired motor linear velocity Y in metres/second. */
+    float getMotorLinearVelocityY() const;
+    /** @brief Desired motor linear velocity Z in metres/second. */
+    float getMotorLinearVelocityZ() const;
+    /** @brief Desired motor angular velocity X in radians/second. */
+    float getMotorAngularVelocityX() const;
+    /** @brief Desired motor angular velocity Y in radians/second. */
+    float getMotorAngularVelocityY() const;
+    /** @brief Desired motor angular velocity Z in radians/second. */
+    float getMotorAngularVelocityZ() const;
+
+    /** @brief Configures parallel-joint spring stiffness, damping and torque cap. */
+    void setParallelSpring(float hertz, float dampingRatio, float maxTorque);
+    /** @brief Parallel spring stiffness in Hertz. */
+    float getParallelHertz() const;
+    /** @brief Parallel spring damping ratio. */
+    float getParallelDampingRatio() const;
+    /** @brief Parallel maximum spring torque in newton-metres. */
+    float getParallelMaxTorque() const;
+
     /** @brief Destroys the backend joint and invalidates this wrapper. */
     void destroy();
     /** @brief Whether the backend joint still exists. */
     bool isValid() const;
     /** @brief Internal invalidation used by body/world destruction. */
     void invalidate();
-    /** @brief Internal raw Box3D identifier. */
-    b3JointId raw() const { return jointId_; }
 
 private:
+    friend struct box3d::Access;
+    friend class box3d::WorldBackend;
     friend struct WorldSnapshotAccess;
+    friend struct PortableWorldSnapshotAccess;
     friend class Body3D;
     friend class World3D;
-    void requireKind(Kind expected, const char *operation) const;
 
     World3D *world_ = nullptr;
     Body3D *bodyA_ = nullptr;
     Body3D *bodyB_ = nullptr;
-    b3JointId jointId_{};
+    std::unique_ptr<IJointBackend3D> backend_{};
     PhysicsJointHandle runtimeHandle_ = PhysicsJointHandle::invalid();
     Kind kind_ = Kind::Distance;
     int id_ = 0;

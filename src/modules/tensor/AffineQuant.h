@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 
@@ -30,15 +32,15 @@ struct ByteView {
  * @return Owning uint8 values, scale, zero point; InvalidArgument for nonfinite input.
  * @note CPU, thread-safe, no callbacks; nearest-even rounding independent of fenv.
  */
-[[nodiscard]] Result<QuantizedActivation> dynamicQuantize(std::span<const float> input);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<QuantizedActivation> dynamicQuantize(std::span<const float> input);
 
 /**
  * @brief Affine quantization to int8/uint8 bytes, saturating and rounding ties to even.
  * @return Owning packed bytes; rejects invalid scale, zero point or nonfinite input.
  * @note CPU, thread-safe; spans are borrowed only during the call.
  */
-[[nodiscard]] Result<std::vector<uint8_t>> quantize(std::span<const float> input, float scale, int zeroPoint,
-                                                    bool signedValues);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<uint8_t>> quantize(std::span<const float> input, float scale,
+                                                                         int zeroPoint, bool signedValues);
 
 /**
  * @brief Affine dequantization using scalar or per-axis scale/zero point.
@@ -55,8 +57,9 @@ struct ByteView {
  * @param compute Optional borrowed GPU provider; null selects CPU. No retry on GPU failure.
  * @note Synchronous. CPU is thread-safe; GPU uses the provider thread. Weights remain packed.
  */
-[[nodiscard]] Result<std::vector<int32_t>> matmul(ByteView a, ByteView b, size_t m, size_t k, size_t n, int aZero = 0,
-                                                  int bZero = 0, OnnxCompute* compute = nullptr);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<int32_t>> matmul(ByteView a, ByteView b, size_t m, size_t k,
+                                                                       size_t n, int aZero = 0, int bZero = 0,
+                                                                       OnnxCompute* compute = nullptr);
 
 /** @brief Explicit 1D/2D NCHW convolution geometry; missing 1D height is one. */
 struct ConvShape {
@@ -72,6 +75,7 @@ struct ConvShape {
  * @param compute Optional borrowed GPU provider; null selects CPU. No retry on GPU failure.
  * @note Synchronous. CPU is thread-safe; GPU uses the provider thread. Padding represents real zero.
  */
-[[nodiscard]] Result<std::vector<int32_t>> conv(ByteView x, ByteView w, const ConvShape& shape, int xZero,
-                                                std::span<const int32_t> wZeros, OnnxCompute* compute = nullptr);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<int32_t>> conv(ByteView x, ByteView w, const ConvShape& shape,
+                                                                     int xZero, std::span<const int32_t> wZeros,
+                                                                     OnnxCompute* compute = nullptr);
 }  // namespace eve::tensor::affine

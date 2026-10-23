@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 // 建筑定义注册表：数据驱动的 BuildingDefinition（C++ 注册或 JSON 批量加载）。
 
@@ -9,12 +11,18 @@
 
 namespace eve::building {
 
-class BuildingRegistry {
+/** @brief EVENGINE_API_WORLD public API. */
+class EVENGINE_API_WORLD BuildingRegistry {
 public:
+    /** @brief Registers building. */
     static void registerBuilding(const BuildingDefinition &def);
+    /** @brief Finds . */
     static const BuildingDefinition *find(const std::string &id);
+    /** @brief Removes . */
     static bool remove(const std::string &id);
+    /** @brief Clears . */
     static void clear();
+    /** @brief Returns the number of . */
     static int count();
 
     /**

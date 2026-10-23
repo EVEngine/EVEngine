@@ -5,12 +5,12 @@ namespace eve::voxel_editing {
 namespace {}  // namespace
 VoxelPaletteRuntime::VoxelPaletteRuntime()  = default;
 VoxelPaletteRuntime::~VoxelPaletteRuntime() = default;
-EditorResult<std::vector<VoxelPalettePublishedEntry>> VoxelPaletteRuntime::publish(
+Result<std::vector<VoxelPalettePublishedEntry>> VoxelPaletteRuntime::publish(
     const VoxelPaletteTarget& document) {
     const auto diagnostics = document.validate();
     for (const auto& d : diagnostics)
         if (d.severity() == DiagnosticSeverity::Error)
-            return EditorResult<std::vector<VoxelPalettePublishedEntry>>::failure(
+            return Result<std::vector<VoxelPalettePublishedEntry>>::failure(
                 eve::Status(EditorStatus::Rejected, diagnostics));
     auto                                    candidate = std::make_unique<voxel::CubeTypeRegistry>();
     std::vector<VoxelPalettePublishedEntry> published;

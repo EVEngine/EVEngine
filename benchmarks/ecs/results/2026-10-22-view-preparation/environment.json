@@ -1,0 +1,33 @@
+{
+  "schema": "ecs-optimization-run-v1",
+  "date": "2026-10-22",
+  "engine_revision": "10f6faa7509e4a108ee5f2e6b6e3be357e99af26",
+  "ecs_revision": "9949054f1871ff7ea3c2b9a250d417d62a732f53",
+  "os": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "compiler": "GCC 14.2.0",
+  "flags": "-O3 -DNDEBUG; before -std=c++20, after CMake -std=gnu++20 (no GNU-only source features)",
+  "entities": 1000000,
+  "samples": 11,
+  "warmup": 3,
+  "iterations": 3,
+  "before_header_sha256": "8b19ddfaa64b3c6cbdcb3c6525017a179fb8c6910c9d59c3b7d3321c0932938c",
+  "word_only_header_sha256": "36a165a81b17ec53b96bcf553cc0f556287aadf745caed746fcb75494d259055",
+  "combined_header_sha256": "d8be1de076bfbf276fd992a623fa083516e2f74b827f0cbe4761acc48f44befe",
+  "benchmark_source_sha256": "622ae25492649bd45327f1c339cdbc8e136c0e94bc62c27d66f73d7e03cb582b",
+  "before_binary_sha256": "7ff30db825e7b77c3b9413c0b99a02762e24d55e3ba0876aab2d26a66050be90",
+  "word_only_binary_sha256": "dcb13adea7706737e0c319a60073b8a5d2720090992523ee3801e8d5de935656",
+  "cpu": "Intel Xeon Platinum 8573C; shared VM",
+  "cpu_quota": "400000 100000",
+  "memory_limit_bytes": "17179869184",
+  "note": "All runs single-threaded; independent process per variant/scenario; before/after ordering alternates by round. Source quality checks overlapped; no frequency control. Combined results precede adding standalone shared/OBJECT tests and applying the shared-default-table patch, which does not change these explicitly selected Table kernels without EVENGINE_MODULE_DLL. Table ABI changes require a complete rebuild.",
+  "final_effective_header_sha256": "94be15f597c6b84b6fee34bc1f09030f5e9c6a8e526784f58298b102ab2ef120",
+  "final_binary_sha256": "2da026183718b6f704609a0d62312418c781280183bbbbf63144c3f7effe78bf",
+  "validation": {
+    "ctest": "13/13 passed",
+    "contracts": "10 cases / 733 assertions, native plus OBJECT and SHARED routes",
+    "asan_ubsan": "passed, LSan disabled under ptrace",
+    "scale_smoke": "10 scenarios x 3000000 requested entities, passed",
+    "source_quality": "make check passed; 313 script tests; base origin/dev",
+    "patch_sequence": "initial application / repeat / full sequence replay passed"
+  }
+}

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/heightmap/TerrainAsset.h"
 
@@ -12,6 +14,7 @@
 
 namespace eve::procgen {
 
+/** @brief TerrainStreamStats public API. */
 struct TerrainStreamStats {
     int loaded = 0;
     int evicted = 0;
@@ -20,6 +23,7 @@ struct TerrainStreamStats {
     int resident = 0;
 };
 
+/** @brief TerrainSample public API. */
 struct TerrainSample {
     float height = 0.f, flowAccumulation = 0.f, lakeDepth = 0.f;
     float flowVectorX = 0.f, flowVectorY = 0.f;
@@ -44,7 +48,7 @@ struct TerrainStreamingWindow {
  * `maxLoads`, allowing a game to spread decompression across frames. Chunks
  * outside the requested circular radius are evicted before new chunks load.
  */
-class TerrainStreamingCache {
+class EVENGINE_API_DOMAINS TerrainStreamingCache {
 public:
     /** @brief Compatibility operation that opens EVTR and clears decoded chunks. */
     bool open(const uint8_t *data, size_t size, std::string *error = nullptr);
@@ -91,7 +95,9 @@ public:
     bool buildWindow(int originX, int originY, int width, int height,
                      TerrainStreamingWindow &out) const;
 
+    /** @brief Returns the resident count. */
     int getResidentCount() const { return int(resident_.size()); }
+    /** @brief Asset. */
     const TerrainAsset &asset() const { return asset_; }
 
 private:

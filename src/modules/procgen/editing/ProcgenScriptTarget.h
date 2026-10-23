@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "editing/EditingProperty.h"
@@ -14,8 +16,7 @@ namespace eve::procgen_editing {
 using EditorDiagnostic = editing::Diagnostic;
 using EditorStatus     = editing::Status;
 using EditorValue      = editing::Value;
-template <class T>
-using EditorResult = editing::Result<T>;
+using editing::Result;
 
 /**
  * @brief Authored identity and reflected parameter schema for one script generator.
@@ -40,23 +41,29 @@ struct ProcgenScriptModuleSpec {
  * @threadaffinity Owner thread only.
  * @reentrancy No unknown callbacks.
  */
-class ProcgenScriptDocumentTarget final : public virtual editing::IEditableTarget,
-                                          public editing::IDomainOperationTarget,
-                                          public editing::IDomainOperationTargetStaging,
-                                          public editing::IPropertyProvider {
+class EVENGINE_API_ORCHESTRATION ProcgenScriptDocumentTarget final : public virtual editing::IEditableTarget,
+                                                                     public editing::IDomainOperationTarget,
+                                                                     public editing::IDomainOperationTargetStaging,
+                                                                     public editing::IPropertyProvider {
 public:
     /** @brief Construct an empty generator document. @param id Stable target identity. */
     explicit ProcgenScriptDocumentTarget(std::string id);
 
     /** @brief Capability identity published by describe() for Inspector editing. */
     static editing::CapabilityId propertyCapabilityId() {
+        /** @brief Capability id. */
         return editing::CapabilityId("eve.editor.target.procgen-script-properties");
     }
 
+    /** @brief Target id. */
     editing::TargetId targetId() const override { return editing::TargetId(id_); }
+    /** @brief Revision. */
     std::uint64_t     revision() const override { return revision_; }
+    /** @brief Dirty region. */
     editing::EditRegion dirtyRegion() const override { return dirty_; }
+    /** @brief Clears dirty region. */
     void              clearDirtyRegion() override { dirty_.clear(); }
+    /** @brief Describe. */
     editing::TargetDescriptor describe() const override;
     /**
      * @brief Query Inspector property capability.
@@ -64,34 +71,48 @@ public:
      * @lifetime Valid until this target is destroyed or replaced by commitDomainState.
      */
     void* queryCapability(const editing::CapabilityId&) override;
-    EditorResult<void> applyDomainOperation(const editing::DomainOperation&) override;
+    /** @brief Applies domain operation. */
+    Result<void> applyDomainOperation(const editing::DomainOperation&) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<editing::IDomainOperationTarget> cloneDomainState() const override;
-    EditorResult<void> commitDomainState(std::unique_ptr<editing::IDomainOperationTarget>) override;
+    /** @brief Commits domain state. */
+    Result<void> commitDomainState(std::unique_ptr<editing::IDomainOperationTarget>) override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision> currentRevision(const editing::SelectionSnapshot&) const override;
+    /** @brief Schema. */
     editing::PropertySchema schema(const editing::SelectionSnapshot&) const override;
+    /** @brief Reads . */
     editing::PropertyReadResult read(const editing::SelectionSnapshot&,
                                      const editing::PropertyPath&) const override;
-    EditorResult<editing::DomainOperation> makeSet(const editing::SelectionSnapshot&,
+    /** @brief Make set. */
+    Result<editing::DomainOperation> makeSet(const editing::SelectionSnapshot&,
                                                    const editing::PropertyPath&, const EditorValue&,
                                                    editing::PropertySetMode) const override;
-    EditorResult<editing::DomainOperation> makeReset(const editing::SelectionSnapshot&,
+    /** @brief Make reset. */
+    Result<editing::DomainOperation> makeReset(const editing::SelectionSnapshot&,
                                                      const editing::PropertyPath&) const override;
 
     /**
      * @brief Parse a schema array into a module spec.
      * @param schema Array of parameter objects with key/kind/default metadata.
      */
-    static EditorResult<ProcgenScriptModuleSpec> parseSpec(std::string uri, std::string id, std::string displayName,
+    static Result<ProcgenScriptModuleSpec> parseSpec(std::string uri, std::string id, std::string displayName,
                                                            std::string kind, const EditorValue& schema);
 
     /** @brief Replace module identity and schema, remapping values (drop unknown, fill defaults). */
-    EditorResult<editing::DomainOperation> makeLoadModule(ProcgenScriptModuleSpec spec) const;
+    Result<editing::DomainOperation> makeLoadModule(ProcgenScriptModuleSpec spec) const;
 
+    /** @brief Uri. */
     const std::string&              uri() const { return uri_; }
+    /** @brief Module id. */
     const std::string&              moduleId() const { return moduleId_; }
+    /** @brief Display name. */
     const std::string&              displayName() const { return displayName_; }
+    /** @brief Kind. */
     const std::string&              kind() const { return kind_; }
+    /** @brief Params. */
     const std::vector<procgen::ParamDescriptor>& params() const { return params_; }
+    /** @brief Values. */
     const EditorValue::Object&      values() const { return values_; }
     /**
      * @brief Find one reflected parameter by stable key.
@@ -103,16 +124,25 @@ public:
      */
     const procgen::ParamDescriptor* findParam(const std::string& key) const;
 
+    /** @brief Validate. */
     std::vector<EditorDiagnostic> validate() const;
+    /** @brief Snapshot value. */
     EditorValue                   snapshotValue() const;
-    EditorResult<void>            loadSnapshot(const EditorValue&);
+    /** @brief Loads snapshot. */
+    Result<void>            loadSnapshot(const EditorValue&);
 
 private:
+    /** @brief Matches. */
     bool matches(const editing::SelectionSnapshot&) const;
+    /** @brief Content value. */
     EditorValue contentValue() const;
+    /** @brief Schema value. */
     EditorValue schemaValue() const;
+    /** @brief Default value. */
     static EditorValue defaultValue(const procgen::ParamDescriptor& param);
+    /** @brief Property type. */
     static editing::PropertyType propertyType(procgen::ParamKind kind);
+    /** @brief Applies spec. */
     void applySpec(ProcgenScriptModuleSpec spec);
 
     std::string                         id_;

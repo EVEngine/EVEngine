@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file AssetImporter.h
@@ -98,7 +100,7 @@ struct PreparedAssetImport {
  * @thread Worker-safe.
  * @reentrancy Does not execute callbacks or perform filesystem/network access.
  */
-[[nodiscard]] Result<PreparedAssetImport> prepareImageImport(const ImageImportRequest& request);
+[[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareImageImport(const ImageImportRequest& request);
 
 /**
  * @brief Decode triangle primitives from glTF 2.0 into canonical typed mesh blobs.
@@ -106,7 +108,7 @@ struct PreparedAssetImport {
  * @thread Worker-safe.
  * @reentrancy Does not execute extensions, scripts, callbacks, filesystem or network access.
  * @remarks v1 accepts float POSITION/NORMAL/TEXCOORD_0 and unsigned scalar indices;
- * Unsupported primitive modes, sparse/compressed accessors, matrix skeletal nodes,
+ * Unsupported primitive modes, sparse/compressed accessors, non-decomposable skeletal matrices,
  * non-LINEAR skeletal channels and
  * morph animation fail explicitly. All contiguous
  * weight sets (FLOAT or normalized unsigned bytes/shorts) are
@@ -114,6 +116,6 @@ struct PreparedAssetImport {
  * coordinates; ancestor nodes are retained in
  * parent-before-child order.
  */
-[[nodiscard]] Result<PreparedAssetImport> prepareGltfImport(const GltfImportRequest& request);
+[[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareGltfImport(const GltfImportRequest& request);
 
 }  // namespace eve::asset_import

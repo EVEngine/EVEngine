@@ -19,7 +19,7 @@ constexpr float kNotifyWidth  = 8.0f;
 constexpr std::size_t kMaximumWaveformBuckets = 512;
 constexpr std::size_t kMaximumCurveSegments   = 128;
 
-EditorResult<void> widgetError(std::string rule, std::string message, EditorStatus status = EditorStatus::Rejected) {
+Result<void> widgetError(std::string rule, std::string message, EditorStatus status = EditorStatus::Rejected) {
     return eve::editing::failed<void>(status, RuleId(std::move(rule)), std::move(message));
 }
 
@@ -44,7 +44,11 @@ std::optional<ItemView> findItem(const action::ActionTimeline& timeline, const L
             *LogicalId::fromParts("animation", "section"),
             section.start,
             section.end,
-            {{"animationUri", Value(section.animationUri)}, {"blendInNs", Value(section.blendIn.nanoseconds())}},
+            {{"animationUri", Value(section.animationUri)},
+             {"blendInNs", Value(section.blendIn.nanoseconds())},
+             {"blendOutNs", Value(section.blendOut.nanoseconds())},
+             {"blendInCurve", Value(std::string(action::actionBlendCurveName(section.blendInCurve)))},
+             {"blendOutCurve", Value(std::string(action::actionBlendCurveName(section.blendOutCurve)))}},
             true,
             false,
             true};
@@ -66,9 +70,9 @@ Duration difference(Duration left, Duration right) {
     return Duration::fromNanoseconds(left.nanoseconds() - right.nanoseconds());
 }
 
-EditorResult<void> adapt(const EditorResult<std::size_t>& result, std::string rule, std::string message) {
+Result<void> adapt(const Result<std::size_t>& result, std::string rule, std::string message) {
     if (result.ok()) return eve::editing::applied<void>();
-    if (!result.diagnostics().empty()) return EditorResult<void>::failure(result.status());
+    if (!result.diagnostics().empty()) return Result<void>::failure(result.status());
     return eve::editing::failed<void>(result.code(), RuleId(std::move(rule)), std::move(message));
 }
 
@@ -90,8 +94,8 @@ TimelineItemVisual visualFor(std::string_view type) {
     if (type == "gameplay:prefab-spawn") return TimelineItemVisual::Prefab;
     if (type == "presentation:camera") return TimelineItemVisual::Camera;
     if (type == "combat:hitbox-window") return TimelineItemVisual::Hitbox;
-    if (type == "combat:invulnerability-window") return TimelineItemVisual::Defense;
-    if (type == "input:combo-window") return TimelineItemVisual::Input;
+    if (type == "combat:invulnerability-window" || type == "combat:guard-window") return TimelineItemVisual::Defense;
+    if (type == "input:combo-window" || type == "input:cancel-window") return TimelineItemVisual::Input;
     if (type == "collision:ignore-window") return TimelineItemVisual::Collision;
     if (type == "movement:root-motion-window") return TimelineItemVisual::Movement;
     if (type == "presentation:parameter-curve") return TimelineItemVisual::Curve;
@@ -120,6 +124,8 @@ std::string detailFor(std::string_view type, const Value::Object& payload) {
     if (type == "presentation:camera") return payloadText(payload, "cue");
     if (type == "combat:hitbox-window") return payloadText(payload, "hitbox");
     if (type == "input:combo-window") return payloadText(payload, "input");
+    if (type == "input:cancel-window") return payloadText(payload, "allows");
+    if (type == "combat:guard-window") return payloadText(payload, "mode");
     if (type == "collision:ignore-window") return payloadText(payload, "channel");
     if (type == "movement:root-motion-window") return payloadText(payload, "mode");
     if (type == "presentation:parameter-curve") return payloadText(payload, "target");
@@ -164,7 +170,7 @@ std::string_view timelineItemVisualName(TimelineItemVisual visual) noexcept {
 ActionTimelineWidget::ActionTimelineWidget(ActionTimelineEditor& editor, const action::ActionNotifyRegistry& registry)
     : editor_(editor), registry_(registry) {}
 
-EditorResult<void> ActionTimelineWidget::setViewport(float width, float rowHeight, float labelWidth) {
+Result<void> ActionTimelineWidget::setViewport(float width, float rowHeight, float labelWidth) {
     if (!std::isfinite(width) || !std::isfinite(rowHeight) || !std::isfinite(labelWidth) || width <= 0.0f ||
         rowHeight < 12.0f || labelWidth < 0.0f || labelWidth + 16.0f >= width)
         return widgetError("editor.action.timeline.widget.viewport", "Timeline widget dimensions are invalid");
@@ -174,14 +180,14 @@ EditorResult<void> ActionTimelineWidget::setViewport(float width, float rowHeigh
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> ActionTimelineWidget::setSnapInterval(Duration interval) {
+Result<void> ActionTimelineWidget::setSnapInterval(Duration interval) {
     if (interval < Duration::zero())
         return widgetError("editor.action.timeline.widget.snap", "Timeline snap interval must be non-negative");
     snapInterval_ = interval;
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> ActionTimelineWidget::setVisibleRange(Duration start, Duration end) {
+Result<void> ActionTimelineWidget::setVisibleRange(Duration start, Duration end) {
     const Duration duration = editor_.target().timeline().duration;
     if (start < Duration::zero() || end <= start || end > duration)
         return widgetError("editor.action.timeline.widget.visible-range",
@@ -191,7 +197,7 @@ EditorResult<void> ActionTimelineWidget::setVisibleRange(Duration start, Duratio
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> ActionTimelineWidget::zoom(double factor, double normalizedAnchor) {
+Result<void> ActionTimelineWidget::zoom(double factor, double normalizedAnchor) {
     if (!std::isfinite(factor) || factor <= 0.0 || !std::isfinite(normalizedAnchor) || normalizedAnchor < 0.0 ||
         normalizedAnchor > 1.0)
         return widgetError("editor.action.timeline.widget.zoom", "Timeline zoom factor or anchor is invalid");
@@ -210,7 +216,7 @@ EditorResult<void> ActionTimelineWidget::zoom(double factor, double normalizedAn
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> ActionTimelineWidget::pan(Duration delta) {
+Result<void> ActionTimelineWidget::pan(Duration delta) {
     const Duration duration = editor_.target().timeline().duration;
     const Duration start    = visibleEnd_ > visibleStart_ ? visibleStart_ : Duration::zero();
     const Duration end      = visibleEnd_ > visibleStart_ ? visibleEnd_ : duration;
@@ -388,6 +394,38 @@ void ActionTimelineWidget::draw(IEditorOverlay& overlay) const {
             item.selected ? 0xf2b84bffU : (animationSection ? 0xa66bd4ffU : (item.state ? 0x568bd7ffU : 0x61c28bffU));
         overlay.rectangle({item.minimumX, item.minimumY, 0.0f}, {item.maximumX, item.maximumY, 0.0f},
                           {color, 1.0f, true});
+        if (animationSection) {
+            const auto section = std::find_if(timeline.animationSections.begin(), timeline.animationSections.end(),
+                                              [&](const auto& value) { return value.id == item.itemId; });
+            if (section != timeline.animationSections.end()) {
+                constexpr int gradientSteps = 12;
+                const auto drawEnvelope = [&](float minimum, float maximum, action::ActionBlendCurve curve,
+                                              bool outgoing) {
+                    if (maximum <= minimum) return;
+                    const float step = (maximum - minimum) / static_cast<float>(gradientSteps);
+                    for (int index = 0; index < gradientSteps; ++index) {
+                        const double input = (static_cast<double>(index) + 0.5) / gradientSteps;
+                        const double weight = action::evaluateActionBlendCurve(curve, outgoing ? 1.0 - input : input);
+                        const auto alpha = static_cast<unsigned int>(std::clamp((1.0 - weight) * 150.0, 0.0, 150.0));
+                        overlay.rectangle({minimum + step * index, item.minimumY, 0.0f},
+                                          {minimum + step * (index + 1), item.maximumY, 0.0f},
+                                          {alpha, 1.0f, true});
+                    }
+                };
+                if (!section->blendIn.isZero()) {
+                    const Duration blendEnd = Duration::fromNanoseconds(
+                        std::min(section->end.nanoseconds(),
+                                 section->start.nanoseconds() + section->blendIn.nanoseconds()));
+                    drawEnvelope(item.minimumX, timeToX(blendEnd), section->blendInCurve, false);
+                }
+                if (!section->blendOut.isZero()) {
+                    const Duration blendStart = Duration::fromNanoseconds(
+                        std::max(section->start.nanoseconds(),
+                                 section->end.nanoseconds() - section->blendOut.nanoseconds()));
+                    drawEnvelope(timeToX(blendStart), item.maximumX, section->blendOutCurve, true);
+                }
+            }
+        }
         if (item.maximumX - item.minimumX >= 48.0f)
             overlay.text({item.minimumX + 5.0f, item.minimumY + 3.0f, 0.0f}, item.displayName,
                          {0xffffffffU, 1.0f, false});
@@ -494,7 +532,7 @@ std::optional<TimelineHit> ActionTimelineWidget::hitTest(float x, float y) const
     return std::nullopt;
 }
 
-EditorResult<void> ActionTimelineWidget::pointerDown(float x, float y, bool additiveSelection) {
+Result<void> ActionTimelineWidget::pointerDown(float x, float y, bool additiveSelection) {
     if (drag_) return widgetError("editor.action.timeline.widget.drag-active", "A timeline drag is already active");
     const auto hit = hitTest(x, y);
     if (!hit) {
@@ -514,7 +552,7 @@ EditorResult<void> ActionTimelineWidget::pointerDown(float x, float y, bool addi
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> ActionTimelineWidget::updateDrag(float x) {
+Result<void> ActionTimelineWidget::updateDrag(float x) {
     if (!drag_) return widgetError("editor.action.timeline.widget.drag-missing", "No timeline drag is active");
     const Duration cursor   = xToTime(x);
     const Duration duration = editor_.target().timeline().duration;
@@ -571,9 +609,9 @@ EditorResult<void> ActionTimelineWidget::updateDrag(float x) {
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> ActionTimelineWidget::pointerMove(float x) { return updateDrag(x); }
+Result<void> ActionTimelineWidget::pointerMove(float x) { return updateDrag(x); }
 
-EditorResult<void> ActionTimelineWidget::pointerUp(float x) {
+Result<void> ActionTimelineWidget::pointerUp(float x) {
     auto updated = updateDrag(x);
     if (!updated.ok()) return updated;
     const DragState completed = *drag_;
@@ -599,13 +637,13 @@ EditorResult<void> ActionTimelineWidget::pointerUp(float x) {
     return editor_.moveItem(completed.itemId, difference(completed.previewStart, completed.originalStart));
 }
 
-EditorResult<void> ActionTimelineWidget::seek(float x) { return editor_.seek(xToTime(x)); }
+Result<void> ActionTimelineWidget::seek(float x) { return editor_.seek(xToTime(x)); }
 
-EditorResult<void> ActionTimelineWidget::inspectSelection(IEditorInspector& inspector) {
+Result<void> ActionTimelineWidget::inspectSelection(IEditorInspector& inspector) {
     const auto selected = editor_.selectedItemIds();
     if (selected.size() > 1) {
         auto range = editor_.selectionRange();
-        if (!range.ok()) return EditorResult<void>::failure(range.status());
+        if (!range.ok()) return Result<void>::failure(range.status());
         float       startSeconds = static_cast<float>(range.value().start.seconds());
         float       endSeconds   = static_cast<float>(range.value().end.seconds());
         const float maximum = static_cast<float>(editor_.target().timeline().duration.seconds());
@@ -636,41 +674,50 @@ EditorResult<void> ActionTimelineWidget::inspectSelection(IEditorInspector& insp
                                "Animation section no longer exists", EditorStatus::Conflict);
         float       startSeconds       = static_cast<float>(section->start.seconds());
         float       endSeconds         = static_cast<float>(section->end.seconds());
-        float       blendSeconds       = static_cast<float>(section->blendIn.seconds());
+        float       blendInSeconds     = static_cast<float>(section->blendIn.seconds());
+        float       blendOutSeconds    = static_cast<float>(section->blendOut.seconds());
         float       sourceStartSeconds = static_cast<float>(section->sourceStart.seconds());
         float       sourceEndSeconds   = static_cast<float>(section->sourceEnd.seconds());
         std::string animationUri       = section->animationUri;
-        std::string blendCurve         = std::string(action::actionBlendCurveName(section->blendCurve));
+        std::string blendInCurve       = std::string(action::actionBlendCurveName(section->blendInCurve));
+        std::string blendOutCurve      = std::string(action::actionBlendCurveName(section->blendOutCurve));
         const float maximum            = static_cast<float>(editor_.target().timeline().duration.seconds());
         inspector.beginGroup("action.timeline.animation-section", "Animation Section");
         bool changed = inspector.scalar("start", "Start", startSeconds, 0.0f, maximum);
         changed      = inspector.scalar("end", "End", endSeconds, 0.0f, maximum) || changed;
-        changed      = inspector.scalar("blendIn", "Blend In", blendSeconds, 0.0f, maximum) || changed;
+        changed      = inspector.scalar("blendIn", "Blend In", blendInSeconds, 0.0f, maximum) || changed;
+        changed      = inspector.scalar("blendOut", "Blend Out", blendOutSeconds, 0.0f, maximum) || changed;
         changed =
             inspector.scalar("sourceStart", "Trim In", sourceStartSeconds, 0.0f, std::numeric_limits<float>::max()) ||
             changed;
         changed = inspector.scalar("sourceEnd", "Trim Out (0 = clip end)", sourceEndSeconds, 0.0f,
                                    std::numeric_limits<float>::max()) ||
                   changed;
-        changed = inspector.string("blendCurve", "Blend Curve", blendCurve) || changed;
+        changed = inspector.string("blendInCurve", "Blend In Curve", blendInCurve) || changed;
+        changed = inspector.string("blendOutCurve", "Blend Out Curve", blendOutCurve) || changed;
         changed = inspector.string("animationUri", "Animation", animationUri) || changed;
         inspector.endGroup();
         if (!changed) return eve::editing::applied<void>();
         auto start       = Duration::fromSeconds(startSeconds);
         auto end         = Duration::fromSeconds(endSeconds);
-        auto blend       = Duration::fromSeconds(blendSeconds);
+        auto blendIn     = Duration::fromSeconds(blendInSeconds);
+        auto blendOut    = Duration::fromSeconds(blendOutSeconds);
         auto sourceStart = Duration::fromSeconds(sourceStartSeconds);
         auto sourceEnd   = Duration::fromSeconds(sourceEndSeconds);
-        auto parsedCurve = action::actionBlendCurveFromName(blendCurve);
-        if (!start || !end || !blend || !sourceStart || !sourceEnd || !parsedCurve)
+        auto parsedInCurve  = action::actionBlendCurveFromName(blendInCurve);
+        auto parsedOutCurve = action::actionBlendCurveFromName(blendOutCurve);
+        if (!start || !end || !blendIn || !blendOut || !sourceStart || !sourceEnd || !parsedInCurve ||
+            !parsedOutCurve)
             return widgetError("editor.action.timeline.widget.time-invalid", "Animation section time is invalid");
         action::ActionAnimationSection edited = *section;
         edited.start                          = start.value();
         edited.end                            = end.value();
-        edited.blendIn                        = blend.value();
+        edited.blendIn                        = blendIn.value();
+        edited.blendOut                       = blendOut.value();
         edited.sourceStart                    = sourceStart.value();
         edited.sourceEnd                      = sourceEnd.value();
-        edited.blendCurve                     = *parsedCurve;
+        edited.blendInCurve                   = *parsedInCurve;
+        edited.blendOutCurve                  = *parsedOutCurve;
         edited.animationUri                   = std::move(animationUri);
         return editor_.editAnimationSectionFull(std::move(edited));
     }
@@ -793,7 +840,7 @@ std::vector<TimelineWidgetCommandDescriptor> ActionTimelineWidget::commands() co
             {TimelineWidgetCommand::PlayPause, editor_.playing() ? "Pause" : "Play", "Space", true}};
 }
 
-EditorResult<void> ActionTimelineWidget::invoke(TimelineWidgetCommand command) {
+Result<void> ActionTimelineWidget::invoke(TimelineWidgetCommand command) {
     switch (command) {
         case TimelineWidgetCommand::Copy: {
             const auto selected = editor_.selectedItemIds();
@@ -820,12 +867,12 @@ EditorResult<void> ActionTimelineWidget::invoke(TimelineWidgetCommand command) {
         case TimelineWidgetCommand::Undo: {
             auto result = editor_.undo();
             if (result.ok()) return eve::editing::applied<void>();
-            return EditorResult<void>::failure(result.status());
+            return Result<void>::failure(result.status());
         }
         case TimelineWidgetCommand::Redo: {
             auto result = editor_.redo();
             if (result.ok()) return eve::editing::applied<void>();
-            return EditorResult<void>::failure(result.status());
+            return Result<void>::failure(result.status());
         }
         case TimelineWidgetCommand::PlayPause:
             if (editor_.playing())
@@ -838,7 +885,7 @@ EditorResult<void> ActionTimelineWidget::invoke(TimelineWidgetCommand command) {
                        EditorStatus::Unsupported);
 }
 
-EditorResult<void> ActionTimelineWidget::handleShortcut(std::string_view shortcut) {
+Result<void> ActionTimelineWidget::handleShortcut(std::string_view shortcut) {
     if (shortcut == "Ctrl+C") return invoke(TimelineWidgetCommand::Copy);
     if (shortcut == "Ctrl+V") return invoke(TimelineWidgetCommand::Paste);
     if (shortcut == "Delete" || shortcut == "Backspace") return invoke(TimelineWidgetCommand::DeleteSelection);
@@ -866,7 +913,7 @@ LogicalId ActionTimelineWidget::generatedItemId() {
     }
 }
 
-EditorResult<void> ActionTimelineWidget::addNotifyAtCursor(const LogicalId& trackId, std::string_view type,
+Result<void> ActionTimelineWidget::addNotifyAtCursor(const LogicalId& trackId, std::string_view type,
                                                            Value::Object payload) {
     auto parsed = LogicalId::parse(type);
     if (!parsed) return widgetError("editor.action.timeline.widget.type-invalid", "Notify type is invalid");
@@ -877,7 +924,7 @@ EditorResult<void> ActionTimelineWidget::addNotifyAtCursor(const LogicalId& trac
     return editor_.addNotify(trackId, {event.itemId, event.type, event.time, std::move(payload)});
 }
 
-EditorResult<void> ActionTimelineWidget::addStateAtCursor(const LogicalId& trackId, std::string_view type,
+Result<void> ActionTimelineWidget::addStateAtCursor(const LogicalId& trackId, std::string_view type,
                                                           Duration duration, Value::Object payload) {
     if (duration < Duration::zero())
         return widgetError("editor.action.timeline.widget.state-duration", "Notify-state duration is negative");

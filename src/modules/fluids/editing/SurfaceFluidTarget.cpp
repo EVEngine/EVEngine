@@ -87,7 +87,7 @@ std::vector<EditorDiagnostic> validateSettings(const SurfaceFluidSettings& s) {
                                  "Wet specular is lower than dry specular"));
     return out;
 }
-EditorResult<SurfaceFluidSettings> parse(const EditorValue& value) {
+Result<SurfaceFluidSettings> parse(const EditorValue& value) {
     SurfaceFluidSettings s;
     const auto           number = [&](const char* key, double& destination) {
         const auto* entry = field(value, key);
@@ -215,7 +215,7 @@ PropertyReadResult SurfaceFluidTarget::read(const SelectionSnapshot& s, const Pr
     const auto* v = field(settingsValue(settings_), p.value());
     return v ? PropertyReadResult{PropertyReadState::Value, *v, {}} : PropertyReadResult{};
 }
-EditorResult<DomainOperation> SurfaceFluidTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
+Result<DomainOperation> SurfaceFluidTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
                                                           const EditorValue& v, PropertySetMode m) const {
     if (m == PropertySetMode::Reset) return makeReset(s, p);
     auto d = schema(s).find(p);
@@ -223,11 +223,11 @@ EditorResult<DomainOperation> SurfaceFluidTarget::makeSet(const SelectionSnapsho
         return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.surface-fluid.set"),
                                                      "Surface fluid property requires a matching absolute edit");
     auto checked = validatePropertyValue(*d, v);
-    if (!checked.ok()) return EditorResult<DomainOperation>::failure(checked.status());
+    if (!checked.ok()) return Result<DomainOperation>::failure(checked.status());
     EditorValue candidate                                = settingsValue(settings_);
     (*candidate.getIf<EditorValue::Object>())[p.value()] = v;
     auto parsed                                          = parse(candidate);
-    if (!parsed.ok()) return EditorResult<DomainOperation>::failure(parsed.status());
+    if (!parsed.ok()) return Result<DomainOperation>::failure(parsed.status());
     DomainOperation op;
     op.type        = "surface-fluid.settings.replace.v1";
     op.inverseType = op.type;
@@ -239,19 +239,19 @@ EditorResult<DomainOperation> SurfaceFluidTarget::makeSet(const SelectionSnapsho
     op.mergeKey = "surface-fluid:" + id_ + ":" + p.value();
     return eve::editing::applied<DomainOperation>(std::move(op));
 }
-EditorResult<DomainOperation> SurfaceFluidTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
+Result<DomainOperation> SurfaceFluidTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
     auto d = schema(s).find(p);
     if (!d)
         return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.surface-fluid.property"),
                                                      "Unknown surface fluid property");
     return makeSet(s, p, d->defaultValue, PropertySetMode::Absolute);
 }
-EditorResult<void> SurfaceFluidTarget::applyDomainOperation(const DomainOperation& op) {
+Result<void> SurfaceFluidTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "surface-fluid.settings.replace.v1")
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.surface-fluid.operation"),
                                           "Surface fluid operation mismatch");
     auto parsed = parse(op.payload);
-    if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
+    if (!parsed.ok()) return Result<void>::failure(parsed.status());
     settings_ = std::move(parsed.value());
     bumpRevision();
     widenDirty(0, 0);
@@ -261,14 +261,14 @@ std::vector<EditorDiagnostic> SurfaceFluidTarget::validate() const { return vali
 EditorValue                   SurfaceFluidTarget::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"settings", settingsValue(settings_)}};
 }
-EditorResult<void> SurfaceFluidTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> SurfaceFluidTarget::loadSnapshot(const EditorValue& snapshot) {
     const auto *v = field(snapshot, "schemaVersion"), *s = field(snapshot, "settings");
     const auto* version = v ? v->getIf<int64_t>() : nullptr;
     if (!version || *version != 1 || !s)
         return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.surface-fluid.snapshot"),
                                           "Unsupported surface fluid snapshot");
     auto parsed = parse(*s);
-    if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
+    if (!parsed.ok()) return Result<void>::failure(parsed.status());
     settings_ = std::move(parsed.value());
     bumpRevision();
     clearDirtyRegion();

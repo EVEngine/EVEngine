@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/heightmap/Heightmap.h"
 
@@ -9,11 +11,14 @@
 
 namespace eve::procgen {
 
+/** @brief ThermalErosionSettings public API. */
 struct ThermalErosionSettings { int iterations = 20; float talus = 0.02f; float strength = 0.35f; };
+/** @brief HydraulicErosionSettings public API. */
 struct HydraulicErosionSettings {
     int iterations = 60; float rainfall = 0.012f; float evaporation = 0.08f;
     float capacity = 2.f; float erosion = 0.18f; float deposition = 0.12f;
 };
+/** @brief FluvialErosionSettings public API. */
 struct FluvialErosionSettings {
     int iterations = 8;
     float riverThreshold = 0.015f;
@@ -26,11 +31,13 @@ struct FluvialErosionSettings {
     float coordinateScale = 1.f;
 };
 
+/** @brief Biome public API. */
 enum class Biome : uint8_t {
     Ocean, Beach, Desert, Grassland, Forest, Rainforest, Tundra, Taiga, Alpine,
     River, Lake, Wetland
 };
 
+/** @brief HydrologyMap public API. */
 struct HydrologyMap {
     int width = 0, height = 0;
     std::vector<int8_t> flowDirection; ///< D8 neighbour index, or -1 for a sink.
@@ -41,6 +48,7 @@ struct HydrologyMap {
     std::vector<uint8_t> streamOrder; ///< Strahler order; zero outside the resolved river network.
 };
 
+/** @brief ClimateMap public API. */
 struct ClimateMap {
     int width = 0, height = 0;
     std::vector<float> temperature, moisture;
@@ -48,7 +56,7 @@ struct ClimateMap {
 };
 
 /** @brief Per-cell diagnostic outputs produced by an erosion stage. */
-struct TerrainErosionMap {
+struct EVENGINE_API_DOMAINS TerrainErosionMap {
     int width = 0, height = 0;
     std::vector<float> wear;       ///< Gross material removed, in heightmap units.
     std::vector<float> deposition; ///< Material deposited after transport, in heightmap units.
@@ -66,13 +74,18 @@ struct TerrainErosionMap {
 };
 
 /** @brief Script-friendly ownership wrapper for baked hydrology and climate layers. */
-class TerrainLayers {
+class EVENGINE_API_DOMAINS TerrainLayers {
 public:
+    /** @brief Terrain layers. */
     TerrainLayers() = default;
+    /** @brief Terrain layers. */
     TerrainLayers(HydrologyMap hydrology, ClimateMap climate);
 
+    /** @brief Returns the width. */
     int getWidth() const;
+    /** @brief Returns the height. */
     int getHeight() const;
+    /** @brief Returns the flow accumulation. */
     float getFlowAccumulation(int x, int y) const;
     /** @brief Return the D8 receiver direction for one cell, or -1 at an outlet/out of bounds. */
     int getFlowDirection(int x, int y) const;
@@ -80,6 +93,7 @@ public:
     float getFlowVectorX(int x, int y) const;
     /** @brief Return the continuous normalized downslope Y component. */
     float getFlowVectorY(int x, int y) const;
+    /** @brief True when river. */
     bool isRiver(int x, int y) const;
     /** @brief Return Strahler river order, or zero outside the river network. */
     int getStreamOrder(int x, int y) const;
@@ -87,12 +101,18 @@ public:
     float getLakeDepth(int x, int y) const;
     /** @brief Return whether the cell belongs to a resolved closed-basin lake. */
     bool isLake(int x, int y, float minimumDepth = 0.001f) const;
+    /** @brief Returns the temperature. */
     float getTemperature(int x, int y) const;
+    /** @brief Returns the moisture. */
     float getMoisture(int x, int y) const;
+    /** @brief Returns the biome. */
     int getBiome(int x, int y) const;
+    /** @brief Returns the biome name. */
     std::string getBiomeName(int x, int y) const;
 
+    /** @brief Hydrology. */
     const HydrologyMap &hydrology() const { return hydrology_; }
+    /** @brief Climate. */
     const ClimateMap &climate() const { return climate_; }
 
 private:
@@ -102,7 +122,7 @@ private:
 };
 
 /** @brief Deterministic CPU terrain baking stages shared by editors and runtime tools. */
-class TerrainPipeline {
+class EVENGINE_API_DOMAINS TerrainPipeline {
 public:
     /** @brief Relax slopes exceeding the configured talus angle while conserving mass. */
     static void erodeThermal(Heightmap &heightmap, const ThermalErosionSettings &settings = {});

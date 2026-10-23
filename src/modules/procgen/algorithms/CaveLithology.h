@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 
@@ -29,6 +31,6 @@ struct CaveLithologySample {
  * @param input Normalized cave position, passage flow exposure, heterogeneity, and seed.
  * @return Bounded selective retreat and observable lithology fields.
  */
-[[nodiscard]] CaveLithologySample sampleCaveLithology(const CaveLithologyInput& input);
+[[nodiscard]] EVENGINE_API_DOMAINS CaveLithologySample sampleCaveLithology(const CaveLithologyInput& input);
 
 }  // namespace eve::procgen

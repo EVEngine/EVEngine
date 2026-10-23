@@ -1,85 +1,64 @@
-// Scene picking entry points that need a complete Camera3D.
+// Provides the scene camera projection capability.
 //
 // scene/Scene.cpp used to implement pickScreenAt / collectFrustumIdsAt, which
-// forced scene (L1) to include graphics headers (L3) — an upward dependency.
-// The two entry points still belong to the Scene script API, but the camera
-// projection they need is graphics' business, so the implementations live
-// here, in the graphics module (graphics -> scene is a legal downward edge).
+// forced scene (L1) to include graphics headers (L3) -- an upward dependency.
+// The camera math those entry points need (screen ray, clip matrix) is still
+// graphics' business, but defining scene's members here also made scene's own
+// object files reference a symbol only graphics defines, which a per-layer DLL
+// split cannot link. So scene keeps the entry points and this file provides
+// ISceneCameraProjection instead; scene queries it through common/Capability.h.
+//
 // The file is excluded from the build when scene is disabled (same rule as
 // SceneLinks.cpp), so graphics keeps working without scene.
 
 #include "graphics/ClipSpace.h"
 #include "graphics/RenderSystem3D.h"
-#include "scene/Scene.h"
-#include "scene/SceneBounds.h"
+#include "scene/SceneCameraProjection.h"
+
+#include "common/Capability.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <limits>
-#include <string>
-#include <vector>
+#include <optional>
 
-namespace eve::scene {
+namespace eve::graphics {
+namespace {
 
-std::string Scene::pickScreenAt(const std::string &hostName, graphics::Camera3D *cam,
-                                float screenX, float screenY, float viewW,
-                                float viewH) const {
-    if (!cam) return {};
-    cam->screenToRay(screenX, screenY, viewW, viewH);
-    return pickRayAt(hostName, cam->getScreenRayOriginX(), cam->getScreenRayOriginY(),
-                     cam->getScreenRayOriginZ(), cam->getScreenRayDirX(),
-                     cam->getScreenRayDirY(), cam->getScreenRayDirZ());
-}
-
-std::vector<std::string> Scene::collectFrustumIdsAt(const std::string &hostName,
-                                                    graphics::Camera3D *cam, float viewW,
-                                                    float viewH) const {
-    SceneHost *h = resolveHost(hostName);
-    std::vector<std::string> out;
-    if (!h || !cam || viewW <= 0.f || viewH <= 0.f) return out;
-    auto d = cam->data();
-    const glm::vec3 eye(d->eyeX, d->eyeY, d->eyeZ);
-    const glm::vec3 target(d->targetX, d->targetY, d->targetZ);
-    const glm::vec3 up(d->upX, d->upY, d->upZ);
-    const glm::mat4 viewM = glm::lookAtRH(eye, target, up);
-    const glm::mat4 projM = graphics::cameraProjectionVulkanRH_ZO(
-        d->orthographic, glm::radians(d->fovYDeg), d->orthoHeight,
-        viewW / viewH, d->nearZ, d->farZ);
-    const glm::mat4 clip = projM * viewM;
-    const glm::mat4 invClip = glm::inverse(clip);
-
-    h->walkDepthFirst([&](SceneHost *, int, SceneNode &n) {
-        if (!n.hasBounds) return;
-        if (aabbIntersectsFrustum(clip, invClip, worldBoundsOf(n))) {
-            out.push_back(n.id);
-        }
-    });
-    return out;
-}
-
-Result<int> Scene::applyPcgTerrainCullingAt(const std::string &hostName,graphics::Camera3D *cam,
-                                             float viewW,float viewH,const std::string &tag) {
-    SceneHost *host=resolveHost(hostName);
-    if(!host||!cam||!std::isfinite(viewW)||!std::isfinite(viewH)||viewW<=0.f||viewH<=0.f||tag.empty())
-        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-            "Pcg terrain culling requires host, camera, positive viewport and tag","scene.pcgTerrainCulling"));
-    auto d=cam->data();
-    const glm::mat4 view=glm::lookAtRH(glm::vec3(d->eyeX,d->eyeY,d->eyeZ),
-        glm::vec3(d->targetX,d->targetY,d->targetZ),glm::vec3(d->upX,d->upY,d->upZ));
-    const glm::mat4 projection=graphics::cameraProjectionVulkanRH_ZO(d->orthographic,
-        glm::radians(d->fovYDeg),d->orthoHeight,viewW/viewH,d->nearZ,d->farZ);
-    const glm::mat4 clip=projection*view, inverse=glm::inverse(clip);
-    std::vector<std::pair<std::string,bool>> changes;
-    host->walkDepthFirst([&](SceneHost*,int,SceneNode& node){
-        if(!node.hasBounds||std::find(node.tags.begin(),node.tags.end(),tag)==node.tags.end()) return;
-        const bool visible=aabbIntersectsFrustum(clip,inverse,worldBoundsOf(node));
-        if(node.visible!=visible) changes.emplace_back(node.id,visible);
-    });
-    for(const auto& [id,visible]:changes) {
-        auto node=host->findById(id); if(!node) continue;
-        node.value()->visible=visible; host->markSubtreeDirtyById(id);
+class CameraProjection final : public eve::scene::ISceneCameraProjection {
+public:
+    std::optional<eve::scene::ScreenRay> screenRay(Camera3D &cam, float screenX, float screenY, float viewW,
+                                                   float viewH) const override {
+        cam.screenToRay(screenX, screenY, viewW, viewH);
+        eve::scene::ScreenRay ray;
+        ray.origin    = {cam.getScreenRayOriginX(), cam.getScreenRayOriginY(), cam.getScreenRayOriginZ()};
+        ray.direction = {cam.getScreenRayDirX(), cam.getScreenRayDirY(), cam.getScreenRayDirZ()};
+        return ray;
     }
-    return Result<int>::success(static_cast<int>(changes.size()));
-}
 
-}  // namespace eve::scene
+    std::optional<eve::scene::CameraClip> clipForViewport(Camera3D &cam, float viewW, float viewH) const override {
+        if (!(viewW > 0.f) || !(viewH > 0.f)) return std::nullopt;
+        auto            d = cam.data();
+        const glm::mat4 view =
+            glm::lookAtRH(glm::vec3(d->eyeX, d->eyeY, d->eyeZ), glm::vec3(d->targetX, d->targetY, d->targetZ),
+                          glm::vec3(d->upX, d->upY, d->upZ));
+        const glm::mat4 projection = graphics::cameraProjectionVulkanRH_ZO(
+            d->orthographic, glm::radians(d->fovYDeg), d->orthoHeight, viewW / viewH, d->nearZ, d->farZ);
+        eve::scene::CameraClip clip;
+        clip.clip    = projection * view;
+        clip.inverse = glm::inverse(clip.clip);
+        return clip;
+    }
+};
+
+CameraProjection g_cameraProjection;
+
+// A static registrar, like the link-kind registration right next door in
+// SceneLinks.cpp: the picking entry points must work for callers that build a
+// Camera3D without constructing the Graphics module (test/scene.cpp does), and
+// the adapter holds no state, so there is nothing to tear down.
+struct RegisterCameraProjection {
+    RegisterCameraProjection() { eve::cap::provide<eve::scene::ISceneCameraProjection>(&g_cameraProjection); }
+} g_registerCameraProjection;
+
+}  // namespace
+}  // namespace eve::graphics

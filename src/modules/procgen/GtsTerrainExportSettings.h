@@ -89,12 +89,12 @@ struct GtsTerrainExportLodSettings {
 };
 
 /** @brief Construct the exact GTS impostor preset for a zero-based LOD index. */
-[[nodiscard]] Result<GtsTerrainExportLodSettings> makeGtsTerrainImpostorLod(int level);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<GtsTerrainExportLodSettings> makeGtsTerrainImpostorLod(int level);
 /** @brief Construct the exact GTS low-poly preset for a zero-based LOD index. */
-[[nodiscard]] Result<GtsTerrainExportLodSettings> makeGtsTerrainLowPolyLod(int level);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<GtsTerrainExportLodSettings> makeGtsTerrainLowPolyLod(int level);
 
 /** @brief Schema-versioned source/impostor terrain export profile. */
-class GtsTerrainExportSettings {
+class EVENGINE_API_DOMAINS GtsTerrainExportSettings {
 public:
     /** @brief Atomically configure all top-level conversion and collider workflow controls. */
     [[nodiscard]] Result<void> configureWorkflow(const GtsTerrainExportWorkflow& workflow);
@@ -143,9 +143,9 @@ private:
  * @param subTiles Equal X/Z split-plane count in the original editor range 0 through 5.
  * @return Applied result or a structured failure without partial output.
  */
-[[nodiscard]] Result<void> buildGtsTerrainExportLodsFromHeightmapInto(
-    GtsTerrainLodSet& output,const Heightmap& heightmap,const GtsTerrainExportSettings& settings,
-    float sizeX,float sizeY,float sizeZ,int subTiles,GtsMeshPivot pivot=GtsMeshPivot::None);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<void> buildGtsTerrainExportLodsFromHeightmapInto(
+    GtsTerrainLodSet& output, const Heightmap& heightmap, const GtsTerrainExportSettings& settings, float sizeX,
+    float sizeY, float sizeZ, int subTiles, GtsMeshPivot pivot = GtsMeshPivot::None);
 
 /**
  * @brief Build the independently sampled and simplified MeshCollider geometry requested by a workflow.
@@ -154,9 +154,9 @@ private:
  * @param workflow Borrowed value settings consumed synchronously.
  * @return Final triangle mesh, or a structured failure without partial output.
  */
-[[nodiscard]] Result<void> buildGtsTerrainColliderMeshFromHeightmapInto(
-    MeshBuild& output,const Heightmap& heightmap,const GtsTerrainExportWorkflow& workflow,
-    float sizeX,float sizeY,float sizeZ);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<void> buildGtsTerrainColliderMeshFromHeightmapInto(
+    MeshBuild& output, const Heightmap& heightmap, const GtsTerrainExportWorkflow& workflow, float sizeX, float sizeY,
+    float sizeZ);
 
 /**
  * @brief Encode the original Pcg unmasked terrain OBJ coordinate, UV and face convention.
@@ -165,8 +165,10 @@ private:
  * @param faceMode Triangle or quad face output.
  * @return Deterministic UTF-8 Wavefront OBJ text or a structured validation failure.
  */
-[[nodiscard]] Result<std::string> encodeGtsTerrainObj(const Heightmap& heightmap,
-    GtsTerrainSaveResolution resolution,float sizeX,float sizeY,float sizeZ,GtsTerrainObjFaceMode faceMode);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::string> encodeGtsTerrainObj(const Heightmap&         heightmap,
+                                                                           GtsTerrainSaveResolution resolution,
+                                                                           float sizeX, float sizeY, float sizeZ,
+                                                                           GtsTerrainObjFaceMode faceMode);
 
 /**
  * @brief Encode Pcg's cell-classified masked terrain OBJ convention.
@@ -176,9 +178,9 @@ private:
  * @param invert Select the outside mesh when true and the inside mesh otherwise.
  * @return Deterministic UTF-8 Wavefront OBJ text or a structured validation failure.
  */
-[[nodiscard]] Result<std::string> encodeGtsMaskedTerrainObj(const Heightmap& heightmap,const Heightmap& maskmap,
-    GtsTerrainSaveResolution resolution,float sizeX,float sizeY,float sizeZ,GtsTerrainObjFaceMode faceMode,
-    float threshold=0.2f,bool invert=false);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::string> encodeGtsMaskedTerrainObj(
+    const Heightmap& heightmap, const Heightmap& maskmap, GtsTerrainSaveResolution resolution, float sizeX, float sizeY,
+    float sizeZ, GtsTerrainObjFaceMode faceMode, float threshold = 0.2f, bool invert = false);
 
 /**
  * @brief Apply Pcg low-poly edge processing and baked texture vertex colors atomically.
@@ -190,8 +192,8 @@ private:
  * @param linearize Convert sampled sRGB RGB channels to linear values for an orthographic SRP bake.
  * @return Output vertex count or a structured failure with output unchanged.
  */
-[[nodiscard]] Result<int> bakeGtsTerrainVertexColorsInto(MeshBuild& output,const MeshBuild& source,
-    const image::ImageData& bakedTexture,GtsTerrainNormalEdgeMode edgeMode,int smoothingIterations,
-    float terrainSizeX,float terrainSizeZ,bool linearize=false);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> bakeGtsTerrainVertexColorsInto(
+    MeshBuild& output, const MeshBuild& source, const image::ImageData& bakedTexture, GtsTerrainNormalEdgeMode edgeMode,
+    int smoothingIterations, float terrainSizeX, float terrainSizeZ, bool linearize = false);
 
 }  // namespace eve::procgen

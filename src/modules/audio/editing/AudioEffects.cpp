@@ -25,7 +25,7 @@ bool numberIn(const EditorValue::Object& parameters, const char* key, double min
     const auto* number = found == parameters.end() ? nullptr : found->second.getIf<double>();
     return number && std::isfinite(*number) && *number >= minimum && *number <= maximum;
 }
-EditorResult<AudioEffectRecord> parseEffect(const EditorValue& value) {
+Result<AudioEffectRecord> parseEffect(const EditorValue& value) {
     const auto *idEntry = field(value, "id"), *typeEntry = field(value, "type"), *bypassEntry = field(value, "bypass"),
                *mixEntry = field(value, "mix"), *parametersEntry = field(value, "parameters");
     const auto* id         = idEntry ? idEntry->getIf<std::string>() : nullptr;
@@ -56,7 +56,7 @@ EditorValue orderValue(const std::vector<StableId>& order) {
     for (const auto& id : order) result.push_back(id.value());
     return result;
 }
-EditorResult<std::vector<StableId>> parseOrder(const EditorValue& value) {
+Result<std::vector<StableId>> parseOrder(const EditorValue& value) {
     const auto* array = value.getIf<EditorValue::Array>();
     if (!array)
         return eve::editing::failed<std::vector<StableId>>(
@@ -96,13 +96,13 @@ void* AudioEffectChainTarget::queryCapability(const CapabilityId& capability) {
     return capability == CapabilityId("eve.editor.target.audio-effects") ? static_cast<AudioEffectChainTarget*>(this)
                                                                          : nullptr;
 }
-EditorResult<void> AudioEffectChainTarget::applyDomainOperation(const DomainOperation& op) {
+Result<void> AudioEffectChainTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.audio.effect-target"),
                                           "Effect operation targets another chain");
     if (op.type == "audio.effect.set.v1") {
         auto parsed = parseEffect(op.payload);
-        if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
+        if (!parsed.ok()) return Result<void>::failure(parsed.status());
         if (!effects_.contains(parsed.value().id)) order_.push_back(parsed.value().id);
         effects_.insert_or_assign(parsed.value().id, parsed.value());
     } else if (op.type == "audio.effect.delete.v1") {
@@ -129,7 +129,7 @@ EditorResult<void> AudioEffectChainTarget::applyDomainOperation(const DomainOper
 std::unique_ptr<IDomainOperationTarget> AudioEffectChainTarget::cloneDomainState() const {
     return std::make_unique<AudioEffectChainTarget>(*this);
 }
-EditorResult<void> AudioEffectChainTarget::commitDomainState(
+Result<void> AudioEffectChainTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<AudioEffectChainTarget*>(candidate.get());
     if (!typed || typed->id_ != id_)
@@ -143,16 +143,16 @@ std::vector<AudioEffectRecord> AudioEffectChainTarget::effects() const {
     for (const auto& id : order_) result.push_back(effects_.at(id));
     return result;
 }
-EditorResult<DomainOperation> AudioEffectChainTarget::makeSet(const AudioEffectRecord& effect) const {
+Result<DomainOperation> AudioEffectChainTarget::makeSet(const AudioEffectRecord& effect) const {
     auto parsed = parseEffect(effectValue(effect));
-    if (!parsed.ok()) return EditorResult<DomainOperation>::failure(parsed.status());
+    if (!parsed.ok()) return Result<DomainOperation>::failure(parsed.status());
     const auto found = effects_.find(effect.id);
     return eve::editing::applied<DomainOperation>(operation(
         "audio.effect.set.v1", found == effects_.end() ? "audio.effect.delete.v1" : "audio.effect.set.v1", id_,
         effectValue(effect), found == effects_.end() ? EditorValue(effect.id.value()) : effectValue(found->second),
         effect.id));
 }
-EditorResult<DomainOperation> AudioEffectChainTarget::makeDelete(const StableId& id) const {
+Result<DomainOperation> AudioEffectChainTarget::makeDelete(const StableId& id) const {
     const auto found = effects_.find(id);
     if (found == effects_.end())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.audio.effect-not-found"),
@@ -160,7 +160,7 @@ EditorResult<DomainOperation> AudioEffectChainTarget::makeDelete(const StableId&
     return eve::editing::applied<DomainOperation>(
         operation("audio.effect.delete.v1", "audio.effect.set.v1", id_, id.value(), effectValue(found->second), id));
 }
-EditorResult<DomainOperation> AudioEffectChainTarget::makeReorder(const std::vector<StableId>& order) const {
+Result<DomainOperation> AudioEffectChainTarget::makeReorder(const std::vector<StableId>& order) const {
     if (order.size() != effects_.size()) {
         return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.audio.effect-order"),
                                                      "Effect order must contain every effect");
@@ -193,7 +193,7 @@ EditorValue AudioEffectChainTarget::snapshotValue() const {
     for (const auto& effect : this->effects()) effects.push_back(effectValue(effect));
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"effects", std::move(effects)}};
 }
-EditorResult<void> AudioEffectChainTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> AudioEffectChainTarget::loadSnapshot(const EditorValue& snapshot) {
     const auto *versionEntry = field(snapshot, "schemaVersion"), *effectsEntry = field(snapshot, "effects");
     const auto* version = versionEntry ? versionEntry->getIf<int64_t>() : nullptr;
     const auto* effects = effectsEntry ? effectsEntry->getIf<EditorValue::Array>() : nullptr;
@@ -221,7 +221,7 @@ EditorResult<void> AudioEffectChainTarget::loadSnapshot(const EditorValue& snaps
     widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
-EditorResult<DomainOperation> AudioEffectChainTarget::makeAssignToBus(const AudioMixerTarget& mixer,
+Result<DomainOperation> AudioEffectChainTarget::makeAssignToBus(const AudioMixerTarget& mixer,
                                                                       const ObjectId&         busId) const {
     const auto diagnostics = validate();
     if (std::any_of(diagnostics.begin(), diagnostics.end(), [](const EditorDiagnostic& diagnostic) {
@@ -230,13 +230,13 @@ EditorResult<DomainOperation> AudioEffectChainTarget::makeAssignToBus(const Audi
         return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.audio.effect-budget"),
                                                      "Invalid effect chain cannot be assigned");
     auto bus = mixer.bus(busId);
-    if (!bus.ok()) return EditorResult<DomainOperation>::failure(bus.status());
+    if (!bus.ok()) return Result<DomainOperation>::failure(bus.status());
     bus.value().effects = EditorValue::Array{};
     auto* array         = bus.value().effects.getIf<EditorValue::Array>();
     for (const auto& effect : effects()) array->push_back(effectValue(effect));
     return mixer.makeReplace(bus.value());
 }
-EditorResult<void> AudioEffectChainPublisher::publish(const AudioEffectChainTarget& chain, Revision expected,
+Result<void> AudioEffectChainPublisher::publish(const AudioEffectChainTarget& chain, Revision expected,
                                                       IAudioEffectChainSink& sink) const {
     if (chain.revision() != expected)
         return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.audio.effect-stale"),
@@ -244,7 +244,7 @@ EditorResult<void> AudioEffectChainPublisher::publish(const AudioEffectChainTarg
     const auto diagnostics = chain.validate();
     for (const auto& diagnostic : diagnostics)
         if (diagnostic.severity() == DiagnosticSeverity::Error)
-            return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
+            return Result<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
     return sink.publish(chain.targetId().value(), chain.revision(), chain.effects());
 }
 }  // namespace eve::audio_editing

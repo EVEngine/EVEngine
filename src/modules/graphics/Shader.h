@@ -1,9 +1,12 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <array>
 #include <cstddef>
 #include <cstdint>
 #include <map>
+#include <span>
 #include <string>
 #include <vector>
 #include "common/Result.h"
@@ -34,12 +37,13 @@ class Graphics;
  * **Stylized grass** (`newGrassShader`): Mesh3D layout + CSM shadow bindings.
  *   Alpha-tested billboards (depth write on). See graphics/Grass.h.
  */
-class Shader {
+class EVENGINE_API_BACKENDS Shader {
 public:
     static constexpr int kMaxFloats = 32;
     static constexpr std::size_t kMaxMeshTextures = 4;
     static constexpr uint32_t kPushConstantBytes = uint32_t(kMaxFloats * sizeof(float));
 
+    /** @brief Kind public API. */
     enum class Kind { eSprite2D, eMesh3D };
 
     enum ShaderType {
@@ -100,7 +104,21 @@ public:
     int getUniformFloatCount(const std::string &name) const;
 
     const float *pushConstantData() const { return floats_.data(); }
+    /** @brief Replace the entire fixed push-constant ABI without name lookup or allocation.
+     * @param values
+     * Borrowed values copied immediately; no storage is retained.
+     * @thread Graphics thread only, before draw
+     * submission. Existing named slots retain their offsets;
+     * the complete block is reserved and no further named
+     * slots can be declared. */
+    void     setPushConstantBlock(const std::array<float, kMaxFloats> &values) noexcept;
     uint32_t pushConstantSize() const { return uint32_t(usedFloats_ * sizeof(float)); }
+    /** @brief Replace all declared float slots atomically without name lookup.
+     * @param values Finite values matching usedFloats(); borrowed only until return.
+     * @return Success or InvalidArgument, preserving old values on failure.
+     * @thread Graphics-owner thread only, non-reentrant, no callbacks or retained input.
+     */
+    [[nodiscard]] Result<void> sendFloatBlock(std::span<const float> values);
     int usedFloats() const { return usedFloats_; }
 
     /**

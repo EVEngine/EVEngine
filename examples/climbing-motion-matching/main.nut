@@ -12,6 +12,12 @@ persist mannequin = null
 persist skeleton = null
 persist matcher = null
 persist motionDb = null
+persist orientationWarp = null
+persist displayPose = null
+persist prevRootX = 0.0
+persist prevRootZ = 0.0
+persist hasPrevRoot = false
+persist lastWarpAngle = 0.0
 persist characterParts = []
 persist characterSkins = []
 persist scenery = []
@@ -62,10 +68,31 @@ function keyEither(lower, upper) {
     return keyboard.isDown(lower) || keyboard.isDown(upper);
 }
 
+function absf(value) {
+    return value < 0.0 ? -value : value;
+}
+
 function findAnimation(model, name) {
     for (local i = 0; i < model.getAnimationCount(); ++i)
         if (model.getAnimationName(i) == name) return i;
     throw "KayKit animation not found: " + name;
+}
+
+function findFirstBone(sk, names) {
+    foreach (name in names) {
+        local index = sk.findBone(name);
+        if (index >= 0) return index;
+    }
+    return -1;
+}
+
+function collectBones(sk, names) {
+    local bones = [];
+    foreach (name in names) {
+        local index = sk.findBone(name);
+        if (index >= 0) bones.push(index);
+    }
+    return bones;
 }
 
 function clipFrom(model, name, loop) {
@@ -186,6 +213,22 @@ function loadCharacterAndMotion() {
     matcher.setTrajectoryWeight(1.0);
     matcher.setPoseWeight(0.42);
     matcher.setVelocityWeight(0.8);
+
+    displayPose = animation.newPose(skeleton.getBoneCount());
+    orientationWarp = eve.OrientationWarping();
+    local warpRoot = findFirstBone(skeleton, ["hip", "pelvis", "Hips", "root"]);
+    if (warpRoot < 0) warpRoot = motionDb.getRootBone();
+    local spine = collectBones(skeleton, ["spine", "spine.001", "spine.002", "torso", "chest", "neck"]);
+    local configured = orientationWarp.configure(skeleton, warpRoot, spine, []);
+    if (!configured.ok) throw configured.message;
+    local alpha = orientationWarp.setDistributedAlpha(spine.len() > 0 ? 0.5 : 0.0);
+    if (!alpha.ok) throw alpha.message;
+    local interp = orientationWarp.setRotationInterpSpeed(8.0);
+    if (!interp.ok) throw interp.message;
+    local threshold = orientationWarp.setAngleThreshold(2.35619449);
+    if (!threshold.ok) throw threshold.message;
+    matcher.search();
+    displayPose.copyFrom(matcher.getPose());
 
     actionPlayer = animation.newPlayer(skeleton);
     for (local mesh = 0; mesh < mannequin.getMeshCount(); ++mesh) {
@@ -359,6 +402,9 @@ function resetCourse() {
     lastContactAdvance = null;
     playerFeet = [lane == 1 ? -2.8 : (lane == 2 ? 0.0 : 2.8), 0.0, 0.0];
     activeAction = "";
+    hasPrevRoot = false;
+    lastWarpAngle = 0.0;
+    if (orientationWarp != null) orientationWarp.reset();
     status = "lane " + lane + " ready";
 }
 
@@ -377,6 +423,9 @@ function beginClimbingAction() {
                  (activeAction == "parkour:vault_high" ? clips.vaultHigh : clips.mantle);
     actionPlayer.play(clip);
     actionPlayer.setLoop(false);
+    hasPrevRoot = false;
+    lastWarpAngle = 0.0;
+    if (orientationWarp != null) orientationWarp.reset();
     status = activeAction;
 }
 
@@ -396,10 +445,28 @@ function updateLocomotion(dt) {
     matcher.setDesiredVelocity(vx, vz);
     matcher.setDesiredYaw(0.0);
     matcher.update(dt);
+    local matched = matcher.getPose();
+    displayPose.copyFrom(matched);
+    matched.computeWorld(skeleton);
+    local root = motionDb.getRootBone();
+    local rx = matched.getWorldPositionX(root);
+    local rz = matched.getWorldPositionZ(root);
+    local animVx = vx;
+    local animVz = vz;
+    if (hasPrevRoot && dt > 0.0) {
+        animVx = (rx - prevRootX) / dt;
+        animVz = (rz - prevRootZ) / dt;
+    }
+    prevRootX = rx;
+    prevRootZ = rz;
+    hasPrevRoot = true;
+    local warped = orientationWarp.apply(displayPose, vx, vz, animVx, animVz, dt);
+    if (!warped.ok) throw warped.message;
+    lastWarpAngle = orientationWarp.getAppliedAngle();
     playerFeet[0] = clampf(playerFeet[0] + vx * dt, -4.1, 4.1);
     playerFeet[2] = clampf(playerFeet[2] + vz * dt, -1.0, 27.0);
-    status = length > 0.0 ? (running ? "motion matching: run" : "motion matching: walk") :
-                            "motion matching: idle blend";
+    local gait = length > 0.0 ? (running ? "run" : "walk") : "idle";
+    status = "motion matching: " + gait + " · warp " + (absf(lastWarpAngle) * 57.2957795) + " deg";
 }
 
 function updateAction() {
@@ -429,7 +496,12 @@ function updateAction() {
     }
     status = activeAction + " · " + advanced.value.phase;
     if (advanced.value.phase == "completed" || advanced.value.phase == "cancelled" ||
-        advanced.value.phase == "failed") activeAction = "";
+        advanced.value.phase == "failed") {
+        activeAction = "";
+        hasPrevRoot = false;
+        lastWarpAngle = 0.0;
+        if (orientationWarp != null) orientationWarp.reset();
+    }
 }
 
 function applyCharacterPose() {
@@ -443,7 +515,7 @@ function applyCharacterPose() {
     }
     local cosine = cos(yaw);
     local sine = sin(yaw);
-    local basePose = activeAction == "" ? matcher.getPose() : actionPlayer.getPose();
+    local basePose = activeAction == "" ? displayPose : actionPlayer.getPose();
     contactPose.copyFrom(basePose);
     contactConstraints.clear();
     for (local i = 0; i < 4; ++i) {
@@ -477,6 +549,7 @@ function applyCharacterPose() {
         }
     }
     local pose = contactPose;
+    pose.computeWorld(skeleton);
     foreach (binding in characterSkins)
         binding.skin.applyToMesh(gfx, binding.part.getMesh(), pose);
     foreach (part in characterParts) {
@@ -498,6 +571,7 @@ function fixedUpdate() {
         else {
             matcher.setDesiredVelocity(0.0, 0.0);
             matcher.update(FIXED_DT);
+            displayPose.copyFrom(matcher.getPose());
         }
     } else updateAction();
     local events = runtime.drainEvents();
@@ -569,7 +643,12 @@ eve_render = function() {
     gfx.drawSolidRect(62.0, 30.0, 390.0, 8.0, 0.18, 0.24, 0.32, 1.0);
     gfx.drawSolidRect(62.0, 30.0, 390.0 * (playerFeet[2] + 1.0) / 28.0, 8.0,
                       color[0], color[1], color[2], 1.0);
-    gfx.drawSolidRect(62.0, 52.0, debugMotion ? 180.0 : 55.0, 8.0,
+    local warpT = orientationWarp != null && orientationWarp.getAngleThreshold() > 0.0
+                      ? clampf(absf(lastWarpAngle) / orientationWarp.getAngleThreshold(), 0.0, 1.0)
+                      : 0.0;
+    gfx.drawSolidRect(62.0, 46.0, 390.0, 8.0, 0.18, 0.24, 0.32, 1.0);
+    gfx.drawSolidRect(62.0, 46.0, 390.0 * warpT, 8.0, 0.95, 0.72, 0.18, 1.0);
+    gfx.drawSolidRect(62.0, 70.0, debugMotion ? 180.0 : 55.0, 8.0,
                       debugMotion ? 0.25 : 0.32, debugMotion ? 0.86 : 0.36, 0.48, 1.0);
     for (local i = 0; i < contactBlend.len(); ++i)
         gfx.drawSolidRect(30.0 + i * 110.0, 80.0, 100.0 * contactBlend[i].weight, 6.0,

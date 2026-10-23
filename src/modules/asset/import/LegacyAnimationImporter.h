@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file LegacyAnimationImporter.h @brief Migration of legacy `*.anim.txt` fixtures to `.eva`. */
 
@@ -18,7 +20,7 @@ struct LegacyAnimationImportRequest {
  * @brief Convert a legacy text fixture into canonical skeleton and animation-clip assets.
  * @remarks Converts centimeters to meters and reflects source +Z into canonical -Z.
  */
-[[nodiscard]] Result<PreparedAssetImport> prepareLegacyAnimationImport(
+[[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareLegacyAnimationImport(
     const LegacyAnimationImportRequest& request);
 
 }  // namespace eve::asset_import

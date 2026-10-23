@@ -33,6 +33,11 @@ function whiteboxGenerateMesh(piece, schema) {
     local created = procgen.newParams();
     if (!created.ok) { level.status = created.status.summary; return null; }
     local params = created.value;
+    foreach(key,value in piece.values) {
+        local known=false;
+        for(local i=0;i<schema.getParamCount();++i) if(schema.getParamKey(i)==key) known=true;
+        if(!known) { level.status="Unknown recipe parameter: " + key;return null; }
+    }
     local applied = procgen.applyMeshRecipeDefaults(piece.recipe, params);
     if (!applied.ok) { level.status = applied.status.summary; return null; }
     for (local i = 0; i < schema.getParamCount(); ++i) {
@@ -45,32 +50,16 @@ function whiteboxGenerateMesh(piece, schema) {
         else if (kind == "bool") params.setBool(key, text.tointeger() != 0);
         else params.setString(key, text);
     }
-    local generated = procgen.generateMesh(piece.recipe, params, gfx);
-    if (!generated.ok) { level.status = generated.status.summary; return null; }
+    local built=procgen.buildMesh(piece.recipe,params);
+    if(!built.ok) { level.status=built.status.summary;return null; }
+    local cpu=built.value, vertices=[], indices=[];
+    for(local i=0;i<cpu.getVertexCount();++i)
+        vertices.extend([cpu.getPositionX(i),cpu.getPositionY(i),cpu.getPositionZ(i)]);
+    for(local i=0;i<cpu.getIndexCount();++i) indices.push(cpu.getIndex(i));
+    local generated=procgen.uploadMesh(cpu,gfx);
+    if(!generated.ok) { level.status=generated.status.summary;return null; }
+    piece.geometry <- {vertices=vertices,indices=indices};
     return generated.value;
-}
-
-function whiteboxValue(piece, key, fallback) {
-    if (!(key in piece.values)) return fallback;
-    return piece.values[key].tofloat();
-}
-
-/**
- * @brief Bounding half-extents used for the play-mode collider.
- *
- * Prototype pieces share a common parameter vocabulary, so the box collider is
- * taken from width/height/depth when the recipe exposes them. Pieces without
- * those parameters (or with stepped silhouettes) fall back to their declared
- * footprint, which is documented as an approximation for whitebox geometry.
- */
-function whiteboxHalfExtents(piece) {
-    local width = whiteboxValue(piece, "width", 1.0);
-    local height = whiteboxValue(piece, "height", 1.0);
-    local depth = whiteboxValue(piece, "depth", width);
-    if (width <= 0.0) width = 1.0;
-    if (height <= 0.0) height = 1.0;
-    if (depth <= 0.0) depth = width;
-    return {x = width * 0.5, y = height * 0.5, z = depth * 0.5};
 }
 
 function whiteboxCreateRenderable(piece, schema) {
@@ -83,41 +72,47 @@ function whiteboxCreateRenderable(piece, schema) {
         piece.entity.setReceiveShadow(true);
     }
     piece.entity.setMesh(mesh);
+    local bounds = mesh.getLocalBounds();
+    if (!bounds.ok) { level.status = bounds.status.summary; return false; }
+    piece.bounds = bounds.value;
+    piece.half = {x=(piece.bounds[3]-piece.bounds[0])*0.5,
+        y=(piece.bounds[4]-piece.bounds[1])*0.5,z=(piece.bounds[5]-piece.bounds[2])*0.5};
+    piece.entity.setTint(piece.motion == "dynamic" ? 0.87 : 0.59,
+        piece.motion == "dynamic" ? 0.55 : 0.68, piece.motion == "dynamic" ? 0.25 : 0.78, 1.0);
     piece.entity.setVisible(true);
     return true;
 }
 
 function whiteboxApplyTransform(piece, object) {
     if (piece.entity == null || object == null) return;
-    local world = scene.localToWorldAt(levelHost(), object.id, 0.0, 0.0, 0.0);
-    piece.entity.setPosition(world[0], world[1], world[2]);
-    local t = object.transform;
-    piece.entity.setRotation(t.rotationY, t.rotationX, t.rotationZ);
-    piece.entity.setScale(t.scaleX, t.scaleY, t.scaleZ);
+    local t = levelTransformRelativeTo(object.id, "");
+    piece.entity.setPosition(t.x,t.y,t.z);
+    piece.entity.setRotation(t.rotationY,t.rotationX,t.rotationZ);
+    piece.entity.setScale(t.scaleX,t.scaleY,t.scaleZ);
+    if(piece.bounds!=null) {
+        local b=piece.bounds;
+        if(!scene.setNodeBoundsAt(levelHost(),object.id,b[0],b[1],b[2],b[3],b[4],b[5]))
+            throw "Picking bounds rejected: " + object.id;
+    }
+
 }
 
 /** @brief Place the palette's active piece at a world point. */
 function whiteboxPlace(recipe, worldX, worldY, worldZ) {
     local schema = whiteboxSchema(recipe);
     if (schema == null) return "";
-    local id = levelNextId("piece");
-    local placed = levelCommand("scene.object.create.v1", {
-        object = id,
-        name = schema.getDisplayName(),
-        parent = levelObject("root") != null ? "root" : "",
-        position = [worldX, worldY, worldZ]
-    });
-    if (!placed) return "";
-    local piece = {
-        recipe = recipe,
-        values = whiteboxDefaultValues(schema),
-        entity = null,
-        half = null
-    };
-    level.pieces[id] <- piece;
-    if (!whiteboxCreateRenderable(piece, schema)) return "";
-    piece.half = whiteboxHalfExtents(piece);
-    level.selected = id;
+    local piece={recipe=recipe,values=whiteboxDefaultValues(schema),entity=null,
+        half=null,bounds=null,motion="static"};
+    if(!whiteboxCreateRenderable(piece,schema)) { levelReleaseRenderable(piece.entity);return ""; }
+    piece.entity.setVisible(false);
+    local id=levelNextId("piece");
+    local position=scene.worldToLocalAt(levelHost(),level.scope,worldX,worldY,worldZ);
+    if(!levelCommand("scene.object.create.v1",{object=id,name=schema.getDisplayName(),parent=level.scope,position=position})) {
+        levelReleaseRenderable(piece.entity);return "";
+    }
+    level.pieces[id] <- piece;piece.entity.setVisible(true);
+    whiteboxApplyTransform(piece,levelObject(id));
+    levelSelect(id);
     levelSyncGizmo();
     level.status = "placed " + schema.getDisplayName();
     return id;
@@ -129,7 +124,7 @@ function whiteboxRebuildPiece(id) {
     local schema = whiteboxSchema(piece.recipe);
     if (schema == null) return;
     whiteboxCreateRenderable(piece, schema);
-    piece.half = whiteboxHalfExtents(piece);
+
 }
 
 /** @brief Rebuild every piece whose recipe parameters changed. */
@@ -139,14 +134,9 @@ function whiteboxRebuildAll() {
 
 /** @brief Drop pieces whose scene object no longer exists. */
 function whiteboxReconcile() {
-    local stale = [];
+    // Keep semantic records while scene history can resurrect their stable IDs.
     foreach (id, piece in level.pieces)
-        if (levelObject(id) == null) stale.push(id);
-    foreach (id in stale) {
-        local piece = level.pieces[id];
-        if (piece.entity != null) piece.entity.setVisible(false);
-        delete level.pieces[id];
-    }
+        if (piece.entity != null) piece.entity.setVisible(levelObject(id) != null);
 }
 
 function whiteboxSyncTransforms() {
@@ -158,16 +148,20 @@ function whiteboxBuildCollider(world, id) {
     local piece = (id in level.pieces) ? level.pieces[id] : null;
     local object = levelObject(id);
     if (piece == null || object == null || piece.entity == null) return null;
-    local half = piece.half != null ? piece.half : whiteboxHalfExtents(piece);
-    local t = object.transform;
-    local body = world.newBody("static", t.x, t.y, t.z);
-    local shape = body.newBoxShape(half.x * 2.0, half.y * 2.0, half.z * 2.0, 1.0, 0.7, 0.0);
-    if (shape == null) return null;
-    // Prototype pieces sit on their own base, so the box is lifted by half its
-    // height along the node's own up axis before the rotation is applied.
-    local up = scene.localToWorldAt(levelHost(), id, 0.0, half.y, 0.0);
-    local rotation = levelEulerQuaternion(t.rotationX, t.rotationY, t.rotationZ);
-    body.setRotation(rotation[0], rotation[1], rotation[2], rotation[3]);
-    body.setPosition(up[0], up[1], up[2]);
+    local t=levelTransformRelativeTo(id, ""), vertices=[];
+    for(local i=0;i<piece.geometry.vertices.len();i+=3)
+        vertices.extend([piece.geometry.vertices[i]*t.scaleX,piece.geometry.vertices[i+1]*t.scaleY,
+            piece.geometry.vertices[i+2]*t.scaleZ]);
+    local body=world.newBody(piece.motion,t.x,t.y,t.z);
+    local shape=null;
+    try {
+        shape=piece.motion=="static"
+            ? body.newTriangleMeshShape(vertices,piece.geometry.indices)
+            : body.newConvexHullShape(vertices,64);
+        if(shape==null) throw "Piece collider creation failed: " + id;
+        local rotation=levelEulerQuaternion(t.rotationX,t.rotationY,t.rotationZ);
+        body.setRotation(rotation[0],rotation[1],rotation[2],rotation[3]);
+        body.setLinearDamping(0.12);body.setAngularDamping(0.25);
+    } catch(error) { body.destroy();throw error; }
     return body;
 }

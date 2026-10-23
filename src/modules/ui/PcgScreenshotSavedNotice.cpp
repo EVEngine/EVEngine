@@ -1,11 +1,205 @@
 #include "ui/PcgScreenshotSavedNotice.h"
-#include "common/SquirrelBinding.h"
-#include <simplesquirrel/simplesquirrel.hpp>
 #include <cmath>
-namespace eve::ui {namespace {Result<void> bad(const char*m){return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,m,"ui.pcgScreenshotSavedNotice"));}}
-Result<void> PcgScreenshotSavedNotice::configure(bool enabled,float seconds){if(!std::isfinite(seconds)||seconds<0)return bad("show duration must be finite and non-negative");enabled_=enabled;duration_=seconds;if(!enabled_){visible_=false;pending_=false;}return Result<void>::success();}
-Result<void> PcgScreenshotSavedNotice::request(const std::string& path){if(path.find('\0')!=std::string::npos)return bad("saved path contains a null character");visible_=false;pending_=false;if(!enabled_)return Result<void>::success();path_=path;pending_=true;return Result<void>::success();}
-Result<void> PcgScreenshotSavedNotice::endFrame(float now){if(!std::isfinite(now)||now<0)return bad("time must be finite and non-negative");if(pending_&&enabled_){pending_=false;visible_=true;hideAt_=now+duration_;}return Result<void>::success();}
-Result<void> PcgScreenshotSavedNotice::tick(float now){if(!std::isfinite(now)||now<0)return bad("time must be finite and non-negative");if(visible_&&now>=hideAt_)visible_=false;return Result<void>::success();}
-void exposePcgScreenshotSavedNoticeBindings(ssq::Table&t){auto c=t.addClass("PcgScreenshotSavedNotice",ssq::Class::Ctor<PcgScreenshotSavedNotice()>());auto vm=t.getHandle();c.addFunc("configure",[vm](PcgScreenshotSavedNotice*s,bool e,float d){return eve::script::projectResult(vm,s->configure(e,d));});c.addFunc("request",[vm](PcgScreenshotSavedNotice*s,const std::string&p){return eve::script::projectResult(vm,s->request(p));});c.addFunc("endFrame",[vm](PcgScreenshotSavedNotice*s,float n){return eve::script::projectResult(vm,s->endFrame(n));});c.addFunc("tick",[vm](PcgScreenshotSavedNotice*s,float n){return eve::script::projectResult(vm,s->tick(n));});c.addFunc("getVisible",[](const PcgScreenshotSavedNotice*s){return s->getVisible();});c.addFunc("getPathVisible",[](const PcgScreenshotSavedNotice*s){return s->getPathVisible();});c.addFunc("getPath",[](const PcgScreenshotSavedNotice*s){return s->getPath();});c.addFunc("getPending",[](const PcgScreenshotSavedNotice*s){return s->getPending();});}
+#include <simplesquirrel/simplesquirrel.hpp>
+#include "common/SquirrelBinding.h"
+#include "ui/PcgTooltip.h"
+
+// PcgScreenshotSavedNotice.cpp
+namespace eve::ui {
+Result<void> PcgScreenshotSavedNotice::configure(bool enabled, float seconds) {
+    if (!std::isfinite(seconds) || seconds < 0)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "show duration must be finite and non-negative",
+                                                       "ui.pcgScreenshotSavedNotice"));
+    enabled_  = enabled;
+    duration_ = seconds;
+    if (!enabled_) {
+        visible_ = false;
+        pending_ = false;
+    }
+    return Result<void>::success();
 }
+Result<void> PcgScreenshotSavedNotice::request(const std::string& path) {
+    if (path.find('\0') != std::string::npos)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "saved path contains a null character", "ui.pcgScreenshotSavedNotice"));
+    visible_ = false;
+    pending_ = false;
+    if (!enabled_) return Result<void>::success();
+    path_    = path;
+    pending_ = true;
+    return Result<void>::success();
+}
+Result<void> PcgScreenshotSavedNotice::endFrame(float now) {
+    if (!std::isfinite(now) || now < 0)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "time must be finite and non-negative", "ui.pcgScreenshotSavedNotice"));
+    if (pending_ && enabled_) {
+        pending_ = false;
+        visible_ = true;
+        hideAt_  = now + duration_;
+    }
+    return Result<void>::success();
+}
+Result<void> PcgScreenshotSavedNotice::tick(float now) {
+    if (!std::isfinite(now) || now < 0)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "time must be finite and non-negative", "ui.pcgScreenshotSavedNotice"));
+    if (visible_ && now >= hideAt_) visible_ = false;
+    return Result<void>::success();
+}
+void exposePcgScreenshotSavedNoticeBindings(ssq::Table& t) {
+    auto c  = t.addClass("PcgScreenshotSavedNotice", ssq::Class::Ctor<PcgScreenshotSavedNotice()>());
+    auto vm = t.getHandle();
+    c.addFunc("configure", [vm](PcgScreenshotSavedNotice* s, bool e, float d) {
+        return eve::script::projectResult(vm, s->configure(e, d));
+    });
+    c.addFunc("request", [vm](PcgScreenshotSavedNotice* s, const std::string& p) {
+        return eve::script::projectResult(vm, s->request(p));
+    });
+    c.addFunc("endFrame",
+              [vm](PcgScreenshotSavedNotice* s, float n) { return eve::script::projectResult(vm, s->endFrame(n)); });
+    c.addFunc("tick",
+              [vm](PcgScreenshotSavedNotice* s, float n) { return eve::script::projectResult(vm, s->tick(n)); });
+    c.addFunc("getVisible", [](const PcgScreenshotSavedNotice* s) { return s->getVisible(); });
+    c.addFunc("getPathVisible", [](const PcgScreenshotSavedNotice* s) { return s->getPathVisible(); });
+    c.addFunc("getPath", [](const PcgScreenshotSavedNotice* s) { return s->getPath(); });
+    c.addFunc("getPending", [](const PcgScreenshotSavedNotice* s) { return s->getPending(); });
+}
+}  // namespace eve::ui
+
+// PcgTooltip.cpp
+namespace eve::ui {
+namespace {}
+Result<void> PcgTooltipManager::configure(int mode, int theme, float delay, float bottom, float top, int wrap) {
+    if (mode < 0 || mode > 2 || theme < 0 || theme > 1 || !std::isfinite(delay) || !std::isfinite(bottom) ||
+        !std::isfinite(top) || delay < 0 || bottom < 0 || top < 0 || wrap < 0)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid tooltip configuration", "ui.pcgTooltip"));
+    mode_         = mode;
+    theme_        = theme;
+    delay_        = delay;
+    bottomOffset_ = bottom;
+    topOffset_    = top;
+    wrapLimit_    = wrap;
+    hide();
+    return Result<void>::success();
+}
+Result<void> PcgTooltipManager::addTooltip(const std::string& id, const std::string& header, const std::string& text) {
+    if (id.empty())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "tooltip id must not be empty", "ui.pcgTooltip"));
+    entries_.push_back({id, header, text});
+    return Result<void>::success();
+}
+Result<bool> PcgTooltipManager::removeTooltip(const std::string& q) {
+    if (q.empty())
+        return Result<bool>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "tooltip query must not be empty", "ui.pcgTooltip"));
+    for (auto it = entries_.begin(); it != entries_.end(); ++it)
+        if (it->id.find(q) != std::string::npos) {
+            entries_.erase(it);
+            return Result<bool>::success(true);
+        }
+    return Result<bool>::success(false);
+}
+bool PcgTooltipManager::accepts(int source) const noexcept {
+    return source >= 0 && source <= 1 && (mode_ == 2 || mode_ == source);
+}
+Result<bool> PcgTooltipManager::enter(int source, const std::string& q, float now) {
+    if (!std::isfinite(now) || now < 0 || q.empty() || source < 0 || source > 1)
+        return Result<bool>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid tooltip enter request", "ui.pcgTooltip"));
+    pending_ = false;
+    if (!accepts(source)) return Result<bool>::success(false);
+    for (const auto& e : entries_)
+        if (e.id.find(q) != std::string::npos) {
+            source_  = source;
+            header_  = e.header;
+            text_    = e.text;
+            showAt_  = now + delay_;
+            pending_ = true;
+            return Result<bool>::success(true);
+        }
+    return Result<bool>::success(false);
+}
+Result<void> PcgTooltipManager::enterText(int source, const std::string& content, const std::string& header,
+                                          float now) {
+    if (!std::isfinite(now) || now < 0 || source < 0 || source > 1)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid tooltip enter request", "ui.pcgTooltip"));
+    pending_ = false;
+    if (!accepts(source)) return Result<void>::success();
+    source_  = source;
+    header_  = header;
+    text_    = content;
+    showAt_  = now + delay_;
+    pending_ = true;
+    return Result<void>::success();
+}
+Result<void> PcgTooltipManager::exit(int source) {
+    if (source < 0 || source > 1)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "tooltip source must be UI or scene", "ui.pcgTooltip"));
+    if (accepts(source)) {
+        pending_ = false;
+        visible_ = false;
+    }
+    return Result<void>::success();
+}
+Result<void> PcgTooltipManager::tick(float now, float x, float y, float sw, float sh, bool input) {
+    if (!std::isfinite(now) || !std::isfinite(x) || !std::isfinite(y) || !std::isfinite(sw) || !std::isfinite(sh) ||
+        now < 0 || sw <= 0 || sh <= 0)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid tooltip frame input", "ui.pcgTooltip"));
+    pivotX_          = x / sw;
+    float normalized = y / sh;
+    pivotY_          = normalized * (y <= sh * .5f ? bottomOffset_ : topOffset_);
+    if (input) {
+        hide();
+        return Result<void>::success();
+    }
+    if (pending_ && now >= showAt_) {
+        pending_ = false;
+        visible_ = true;
+    }
+    return Result<void>::success();
+}
+void exposePcgTooltipBindings(ssq::Table& t) {
+    auto c  = t.addClass("PcgTooltipManager", ssq::Class::Ctor<PcgTooltipManager()>());
+    auto vm = t.getHandle();
+    c.addFunc("configure", [vm](PcgTooltipManager* s, int m, int th, float d, float b, float top, int w) {
+        return eve::script::projectResult(vm, s->configure(m, th, d, b, top, w));
+    });
+    c.addFunc("addTooltip",
+              [vm](PcgTooltipManager* s, const std::string& i, const std::string& h, const std::string& x) {
+                  return eve::script::projectResult(vm, s->addTooltip(i, h, x));
+              });
+    c.addFunc("removeTooltip", [vm](PcgTooltipManager* s, const std::string& q) {
+        return eve::script::projectResult(vm, s->removeTooltip(q), [](bool v) { return v; });
+    });
+    c.addFunc("enter", [vm](PcgTooltipManager* s, int src, const std::string& q, float n) {
+        return eve::script::projectResult(vm, s->enter(src, q, n), [](bool v) { return v; });
+    });
+    c.addFunc("enterText",
+              [vm](PcgTooltipManager* s, int src, const std::string& text, const std::string& header, float n) {
+                  return eve::script::projectResult(vm, s->enterText(src, text, header, n));
+              });
+    c.addFunc("exit", [vm](PcgTooltipManager* s, int src) { return eve::script::projectResult(vm, s->exit(src)); });
+    c.addFunc("tick", [vm](PcgTooltipManager* s, float n, float x, float y, float w, float h, bool i) {
+        return eve::script::projectResult(vm, s->tick(n, x, y, w, h, i));
+    });
+    c.addFunc("hide", [](PcgTooltipManager* s) { s->hide(); });
+    c.addFunc("getVisible", [](const PcgTooltipManager* s) { return s->getVisible(); });
+    c.addFunc("getPending", [](const PcgTooltipManager* s) { return s->getPending(); });
+    c.addFunc("getHeader", [](const PcgTooltipManager* s) { return s->getHeader(); });
+    c.addFunc("getText", [](const PcgTooltipManager* s) { return s->getText(); });
+    c.addFunc("getHeaderVisible", [](const PcgTooltipManager* s) { return s->getHeaderVisible(); });
+    c.addFunc("getWrapEnabled", [](const PcgTooltipManager* s) { return s->getWrapEnabled(); });
+    c.addFunc("getPivotX", [](const PcgTooltipManager* s) { return s->getPivotX(); });
+    c.addFunc("getPivotY", [](const PcgTooltipManager* s) { return s->getPivotY(); });
+    c.addFunc("getBackgroundR", [](const PcgTooltipManager* s) { return s->getBackgroundR(); });
+    c.addFunc("getForeground", [](const PcgTooltipManager* s) { return s->getForeground(); });
+    c.addFunc("getCount", [](const PcgTooltipManager* s) { return s->getCount(); });
+}
+}  // namespace eve::ui

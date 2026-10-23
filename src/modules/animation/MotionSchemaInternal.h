@@ -9,6 +9,7 @@
 
 namespace eve::animation { class AnimClip; }
 namespace eve::animation::detail {
+/** @brief MotionSchemaState public API. */
 struct MotionSchemaState {
     MotionFeatureLayout layout;
     std::vector<int> offsets;
@@ -31,8 +32,10 @@ inline std::array<float, 3> schemaRotate(const std::array<float, 3>& p, const Tr
     return {result.px, result.py, result.pz};
 }
 inline std::array<float, 3> schemaDifference(const TransformTRS& a, const TransformTRS& b, const TransformTRS& root) {
+    /** @brief Schema rotate. */
     return schemaRotate({a.px - b.px, a.py - b.py, a.pz - b.pz}, root, true);
 }
+/** @brief Schema encode. */
 inline void schemaEncode(std::span<float> output, const MotionFeatureChannel& channel, std::array<float, 3> value, float lengthScale) {
     if (channel.kind == MotionFeatureKind::Velocity && channel.normalizeVelocity) {
         const float divisor = std::max(.01f, std::sqrt(value[0]*value[0] + value[1]*value[1] + value[2]*value[2]));
@@ -44,6 +47,7 @@ inline void schemaEncode(std::span<float> output, const MotionFeatureChannel& ch
 }
 inline std::array<float, 3> schemaHeading(const TransformTRS& bone, const TransformTRS& root, int axis) {
     std::array<float, 3> direction{}; direction[axis] = 1.f;
+    /** @brief Schema rotate. */
     return schemaRotate(schemaRotate(direction, bone), root, true);
 }
 }  // namespace eve::animation::detail

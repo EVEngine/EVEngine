@@ -46,6 +46,7 @@ namespace eve {
 inline LONG WINAPI crashHandler(EXCEPTION_POINTERS *ep) {
     // DbgHelp must be initialized before StackWalk64, otherwise the walk
     // produces garbage frames. Ignore the "already initialized" failure.
+    /** @brief Sym initialize. */
     SymInitialize(GetCurrentProcess(), nullptr, TRUE);
     std::ostringstream report;
     report << "[crash] code=0x" << std::hex << std::setw(8) << std::setfill('0')
@@ -66,8 +67,11 @@ inline LONG WINAPI crashHandler(EXCEPTION_POINTERS *ep) {
         report << "[crash] backtrace unavailable\n";
     }
     const std::string text = report.str();
+    /** @brief Fputs. */
     std::fputs(text.c_str(), stderr);
+    /** @brief Fflush. */
     std::fflush(stderr);
+    /** @brief Record crash event. */
     eve::recordCrashEvent(text);
     return EXCEPTION_CONTINUE_SEARCH;
 }
@@ -83,6 +87,7 @@ inline LONG WINAPI crashHandler(EXCEPTION_POINTERS *ep) {
  * and keep abort's _CALL_REPORTFAULT bit so dumps still get collected.
  */
 inline void installCrashHandler() {
+    /** @brief Sets the error mode. */
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOOPENFILEERRORBOX);
     DWORD werFlags = 0;
     if (FAILED(WerGetFlags(GetCurrentProcess(), &werFlags))) {
@@ -91,9 +96,12 @@ inline void installCrashHandler() {
     (void)WerSetFlags((werFlags | WER_FAULT_REPORTING_NO_UI) &
                       ~static_cast<DWORD>(WER_FAULT_REPORTING_ALWAYS_SHOW_UI));
 #if defined(_MSC_VER)
+    /** @brief Sets the error mode. */
     _set_error_mode(_OUT_TO_STDERR);
+    /** @brief Sets the abort behavior. */
     _set_abort_behavior(0, _WRITE_ABORT_MSG);
 #endif
+    /** @brief Sets the unhandled exception filter. */
     SetUnhandledExceptionFilter(&crashHandler);
 }
 

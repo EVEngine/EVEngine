@@ -1,6 +1,7 @@
 #version 450
 
 #extension GL_GOOGLE_include_directive : enable
+#include "light3d_spot.glsl"
 #include "tex_cell_bomb.glsl"
 #include "parallax_map.glsl"
 #include "virtual_texture.glsl"
@@ -34,8 +35,9 @@ layout(set = 0, binding = 0, std140) uniform Frame {
 } ubo;
 
 struct Light3D {
-    vec4 posRadius;
-    vec4 color;
+    vec4 posRadius; // xyz = point/spot OR dir; w = radius (0 => directional)
+    vec4 color;     // rgb * intensity; a = spotBias when spot
+    vec4 spot;      // xyz = beam dir; w = spotScale (<=0 => not a spot)
 };
 
 layout(set = 0, binding = 1) uniform sampler2D albedoSampler;
@@ -63,6 +65,12 @@ layout(set = 0, binding = 7, std140) uniform ShadowFrame {
     vec4 bias;
     vec4 cascadeBias;
     vec4 cascadeTexel;
+    vec4 cascadeUvScale;
+    mat4 localVP[4];
+    vec4 localSlot01;
+    vec4 localSlot23;
+    vec4 localBias;
+    vec4 localMeta;
 } shadow;
 
 layout(set = 0, binding = 8) uniform sampler2DArrayShadow shadowMap;
@@ -175,6 +183,8 @@ vec3 shadeLight(vec3 N, vec3 V, vec3 albedo, float metallic, float roughness, ve
     return (kD * albedo * diffuse + specular * NdotL) * radiance;
 }
 
+#include "shadow_cascade_uv.glsl"
+
 /** Hardware-PCF shadow lookup for a single cascade. Returns lit fraction in [0,1]. */
 float blockerPenumbra(vec3 worldPos, int cascade, float bias) {
     vec4 lightClip = shadow.lightVP[cascade] * vec4(worldPos, 1.0);
@@ -182,7 +192,9 @@ float blockerPenumbra(vec3 worldPos, int cascade, float bias) {
     vec2 uv = ndc.xy * 0.5 + 0.5;
     if (any(lessThan(uv, vec2(0.0))) || any(greaterThan(uv, vec2(1.0))))
         return 0.5;
-    vec2 texel = 1.0 / vec2(textureSize(shadowMapRaw, 0).xy);
+    float uvScale = eveCascadeUvScale(cascade);
+    float mapSize = eveCascadeMapSize(cascade);
+    vec2 texel = vec2(1.0 / mapSize);
     const vec2 searchOffsets[8] = vec2[8](
         vec2(-1.0, -1.0), vec2(0.0, -1.5), vec2(1.0, -1.0), vec2(-1.5, 0.0),
         vec2(1.5, 0.0), vec2(-1.0, 1.0), vec2(0.0, 1.5), vec2(1.0, 1.0));
@@ -190,9 +202,8 @@ float blockerPenumbra(vec3 worldPos, int cascade, float bias) {
     float blockerCount = 0.0;
     float receiver = ndc.z - bias;
     for (int i = 0; i < 8; ++i) {
-        float blocker = texture(shadowMapRaw,
-                                vec3(clamp(uv + searchOffsets[i] * texel * 1.5,
-                                           vec2(0.0), vec2(1.0)), float(cascade))).r;
+        vec2 s = clamp(uv + searchOffsets[i] * texel * 1.5, vec2(0.0), vec2(1.0));
+        float blocker = texture(shadowMapRaw, vec3(s * uvScale, float(cascade))).r;
         if (blocker < receiver) {
             blockerSum += blocker;
             blockerCount += 1.0;
@@ -201,7 +212,6 @@ float blockerPenumbra(vec3 worldPos, int cascade, float bias) {
     if (blockerCount < 0.5) return 0.5;
     float averageBlocker = blockerSum / blockerCount;
     float separation = max(receiver - averageBlocker, 0.0);
-    float mapSize = float(textureSize(shadowMapRaw, 0).x);
     return clamp(0.5 + separation * mapSize * max(shadow.bias.w, 0.0), 0.5, 4.0);
 }
 
@@ -214,7 +224,8 @@ float sampleShadowCascade(vec3 worldPos, int cascade, float bias, float filterRa
     if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0 || depth < 0.0 || depth > 1.0)
         return 1.0;
 
-    vec2 texel = 1.0 / vec2(textureSize(shadowMap, 0).xy);
+    float uvScale = eveCascadeUvScale(cascade);
+    vec2 texel = vec2(1.0 / eveCascadeMapSize(cascade));
     // Tight rotated 3x3. Wider taps (1–1.2 texels) plus hardware 2x2 PCF ate
     // indoor creases: empty / unoccluded taps read as lit and drew a bright
     // rim on the left and top of Cornell umbrae.
@@ -231,13 +242,13 @@ float sampleShadowCascade(vec3 worldPos, int cascade, float bias, float filterRa
     float sum = 0.0;
     float zref = depth - bias;
     for (int i = 0; i < 9; ++i) {
-        vec2 s = uv + rotation * kPoisson[i] * texel * filterRadius;
+        vec2 sCascade = uv + rotation * kPoisson[i] * texel * filterRadius;
         // Clamp-to-edge on a cleared border texel is depth=1 → fully lit.
         // Count out-of-cascade taps as shadowed so frustum-edge walls
         // (Cornell left/ceiling) do not leak.
-        if (s.x < 0.0 || s.x > 1.0 || s.y < 0.0 || s.y > 1.0)
+        if (sCascade.x < 0.0 || sCascade.x > 1.0 || sCascade.y < 0.0 || sCascade.y > 1.0)
             continue;
-        sum += texture(shadowMap, vec4(s, float(cascade), zref));
+        sum += texture(shadowMap, vec4(sCascade * uvScale, float(cascade), zref));
     }
     return sum / 9.0;
 }
@@ -330,7 +341,10 @@ void main() {
                 vTint;
     if (ubo.texBomb.w > 0.5 && ubo.texBomb.w < 1.5 && base.a < ubo.parallax.w)
         discard;
-    float alphaHash = fract(dot(floor(gl_FragCoord.xy), vec2(0.06711056, 0.00583715)));
+    // Screen-space primary; UV secondary so coverage still varies if fragment
+    // position is degenerate.
+    float alphaHash = fract(dot(floor(gl_FragCoord.xy), vec2(0.06711056, 0.00583715)) +
+                            dot(uv * 64.0, vec2(0.7548777, 0.5698403)));
     if (ubo.texBomb.w > 2.5 && base.a < alphaHash)
         discard;
     vec3 albedo = base.rgb;
@@ -375,6 +389,18 @@ void main() {
         vec3 L = toL / max(dist, 1e-4);
         float atten = clamp(1.0 - dist / max(Lgt.posRadius.w, 1e-3), 0.0, 1.0);
         atten *= atten;
+        atten *= spotAttenuation3D(-L, Lgt.spot, Lgt.color.a);
+        int si = spotLocalShadowSlot(Lgt.spot);
+        if (si >= 0 && shadow.bias.z > 0.5) {
+            vec4 lc = shadow.localVP[si] * vec4(vWorldPos, 1.0);
+            vec3 proj = lc.xyz / max(lc.w, 1e-4);
+            vec2 uv = proj.xy * 0.5 + 0.5;
+            float zref = proj.z - shadow.localBias[si];
+            float vis = 1.0;
+            if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0 && lc.w > 0.0)
+                vis = texture(shadowMap, vec4(uv, float(3 + si), zref));
+            atten *= mix(1.0 - shadow.splits.w, 1.0, vis);
+        }
         radiance *= atten;
         Lo += shadeLight(N, V, albedo, metallic, roughness, L, radiance);
     }

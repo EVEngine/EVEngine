@@ -1,5 +1,7 @@
 # Result 检查与不得丢弃返回值规范
 
+[English](../en/dev/RESULT-CONTRACTS.md)
+
 日期：2026-08-26
 状态：已确认的架构要求
 
@@ -10,7 +12,7 @@
 - 编译期：通过 `[[nodiscard]]` 提醒调用方不得直接丢弃返回值。
 - Debug 运行期：跟踪 Result 是否在生命周期结束前被观察；未检查即析构时触发 `EV_ASSERT`。
 
-Release 不保留运行期检查成本，但 `[[nodiscard]]` 始终生效。
+Release 取消运行期断言检查，但保留同一观察/移动标记更新规则；`[[nodiscard]]` 始终生效。
 
 ## Result 类型要求
 
@@ -294,7 +296,7 @@ stage/create API。Procgen 不再提供 `buildArtifactChecked`、
 - [ ] 移动后仅目标承担检查责任，moved-from 不断言。
 - [ ] 移动赋值覆盖未检查目标时断言。
 - [ ] 从函数多层返回/转发后最终消费者承担责任。
-- [ ] Release 构建不包含 observation 字段和分支。
+- [ ] Release 与断言启用的消费者保留相同 observation 字段和移动/观察更新；只有断言检查按构建策略消失。
 - [ ] 绑定层投影后 C++ Result 不产生未检查断言。
 - [ ] 组合条件用 `everyResultValid` 或逐个观察，不用 `!a || !b` 短路链（见“多个 Result 的组合条件”）。
 
@@ -315,10 +317,12 @@ stage/create API。Procgen 不再提供 `buildArtifactChecked`、
 
 Result 类型本身使用 class-level `[[nodiscard]]`，因此所有返回以下类型的 API 自动受约束：
 
-- 未来公共 `Result<T>` / `Result<void>`
-- 迁移后的 `EditorResult<T>`
-- `presentation::WriteResult`
-- `statepatch::PatchResult` 或其公共 Result 替代
+- 公共 `Result<T>` / `Result<void>`（含 `IPropertyAccess::write` / `validatePropertyValue`）
+- 迁移后的 `EditorResult<T>`（`editing::Result` 别名）
+- `Store::commit` → `Result<PatchCommitInfo>`（`PatchResult` 仅脚本兼容投影）
+- `IRenderCapture::savePng` → `Result<CaptureImageInfo>`；`entityIdMaskPng` / `gbufferPng` → `Result<void>`
+- `ISceneQuery::getNode` / `getNodeIn` → `Result<SceneNodeInfo>`；`setNodeTransform` / `setNodeVisible` → `Result<void>`
+- `IProcgenQuery::generateMap` / `buildMesh` → `Result<std::string>`
 - ConditionResult、SettlementResult、TransferResult、CompileResult 等包含状态/诊断的结果
 
 现有 Editor API 全部属于这一类，包括但不限于：
@@ -336,7 +340,7 @@ Result 类型本身使用 class-level `[[nodiscard]]`，因此所有返回以下
 
 ### 必须标记：事务、异步、订阅和生命周期 token
 
-- `presentation::IPropertyModel::subscribe`
+- `property_access::IPropertyAccess::subscribe`
 - `rx::Observable::subscribe` 的全部重载
 - 后续所有 GameEvent、Capability、Asset reload listener 的 Subscription 返回值
 - `EditorTaskService::submit` 返回的 TaskId/TaskHandle
@@ -477,3 +481,13 @@ Result 使用 class-level `[[nodiscard]]`，不会因 override 丢失。对于 b
 6. 创建后必须保留的对象/资源/registration ID。
 
 第二批再处理 Resource、Container、Orders、Effects、Scene mutation 和 Physics query；普通 getter 不进入批量标记计划。
+
+
+## 成功状态与提交阶段分配
+
+Status 的成功值不构造 diagnostics vector；创建、复制和移动成功值不分配诊断工作空间。
+非空诊断存储为不可变共享 owning value，复制后替换原 Status 不会破坏副本的诊断。
+公开 diagnostics()/primaryDiagnostic() 查询形状不变，借用寿命仍限于其 Status 被销毁或替换前。
+只读空诊断观察由 common 库初始化，避免首次成功提交创建 Debug STL iterator proxy。
+该私有表示改变影响动态库值布局，必须重编译所有消费者，不能只重链一部分 TU。
+OBJECT 全局 new 探针与 SHARED 语义测试分别取证，不声称 EXE 的 allocator 替换可覆盖 DLL。

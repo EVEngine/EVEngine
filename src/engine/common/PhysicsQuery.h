@@ -7,7 +7,7 @@
 namespace eve {
 
 /** @brief Ray-cast result (value type). */
-struct EVENGINE_API RayHitInfo {
+struct EVENGINE_API_FOUNDATION_INLINE RayHitInfo {
     bool hit = false;
     int bodyId = 0;
     float x = 0.f, y = 0.f;
@@ -16,10 +16,11 @@ struct EVENGINE_API RayHitInfo {
 };
 
 /** @brief 2D physics world query surface (provided by the physics module). */
-class EVENGINE_API IPhysicsQuery {
+class EVENGINE_API_FOUNDATION_INLINE IPhysicsQuery {
 public:
     static constexpr const char* capabilityName = "IPhysicsQuery";
 
+    /** @brief I physics query. */
     virtual ~IPhysicsQuery() = default;
 
     /** @brief Create a world with the given gravity; returns a non-negative id. */

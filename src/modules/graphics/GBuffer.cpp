@@ -11,6 +11,8 @@ bool GBuffer::hasBuffer(const std::string &name) const {
     if (name == "hwDepth") return hwDepth_ != nullptr;
     if (name == "normal") return normal_ != nullptr;
     if (name == "albedo") return albedo_ != nullptr;
+    if (name == "pbrParams") return pbrParams_ != nullptr;
+    if (name == "emissive") return emissive_ != nullptr;
     if (name == "velocity") return depth_ != nullptr;
     return false;
 }
@@ -20,18 +22,22 @@ Texture *GBuffer::getBuffer(const std::string &name) const {
     if (name == "hwDepth") return hwDepth_;
     if (name == "normal") return normal_;
     if (name == "albedo") return albedo_;
+    if (name == "pbrParams") return pbrParams_;
+    if (name == "emissive") return emissive_;
     if (name == "velocity") return depth_;
     return nullptr;
 }
 
-void GBuffer::setTargets(int width, int height, Texture *depth, Texture *normal, Texture *albedo,
-                         Texture *hwDepth) {
+void GBuffer::setTargets(int width, int height, Texture* depth, Texture* normal, Texture* albedo, Texture* hwDepth,
+                         Texture* pbrParams, Texture* emissive) {
     width_ = width;
     height_ = height;
     depth_ = depth;
     hwDepth_ = hwDepth;
     normal_ = normal;
     albedo_ = albedo;
+    pbrParams_ = pbrParams;
+    emissive_  = emissive;
 }
 
 void GBuffer::clear() {
@@ -41,6 +47,8 @@ void GBuffer::clear() {
     hwDepth_ = nullptr;
     normal_ = nullptr;
     albedo_ = nullptr;
+    pbrParams_ = nullptr;
+    emissive_  = nullptr;
 }
 
 }  // namespace eve::graphics

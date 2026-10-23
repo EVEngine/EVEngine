@@ -1,4 +1,5 @@
 #include "common/Json.h"
+#include "common/StringMapInstances.h"
 
 #include "common/Value.h"
 
@@ -520,6 +521,16 @@ bool appendCanonicalJson(const eve::Value& value, std::string& output) {
                 return true;
             } else if constexpr (std::is_same_v<T, double>) {
                 if (!std::isfinite(current)) return false;
+#if defined(_MSC_VER)
+                char buffer[64];
+                const auto [end, error] =
+                    std::to_chars(buffer, buffer + sizeof(buffer), current, std::chars_format::general,
+                                  std::numeric_limits<double>::max_digits10);
+                if (error != std::errc()) return false;
+                const std::string_view number(buffer, static_cast<std::size_t>(end - buffer));
+                output.append(buffer, end);
+                if (number.find_first_of(".eE") == std::string_view::npos) output += ".0";
+#else
                 std::ostringstream stream;
                 stream.imbue(std::locale::classic());
                 stream.precision(std::numeric_limits<double>::max_digits10);
@@ -527,6 +538,7 @@ bool appendCanonicalJson(const eve::Value& value, std::string& output) {
                 const std::string number = stream.str();
                 output += number;
                 if (number.find_first_of(".eE") == std::string_view::npos) output += ".0";
+#endif
                 return true;
             } else if constexpr (std::is_same_v<T, std::string>) {
                 appendEscapedString(current, output);

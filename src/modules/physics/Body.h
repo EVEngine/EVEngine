@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "physics/PhysicsHandles.h"
 
@@ -16,10 +18,11 @@ class Fixture;
  * @brief 2D rigid body (Box2D) in pixel-space coordinates.
  * Owned by a World; create shapes with newRectangleFixture/newCircleFixture.
  */
-class Body {
+class EVENGINE_API_WORLD Body {
 public:
     /** @brief Internal: wraps a Box2D body (use World::newBody). */
     Body(World *world, b2Body *body, int id, PhysicsBodyHandle runtimeHandle);
+    /** @brief Body. */
     ~Body();
 
     Body(const Body &)            = delete;
@@ -30,16 +33,21 @@ public:
 
     /** @brief Position in pixels. */
     void  setPosition(float x, float y);
+    /** @brief Returns the x. */
     float getX() const;
+    /** @brief Returns the y. */
     float getY() const;
 
     /** @brief Rotation in radians. */
     void  setAngle(float radians);
+    /** @brief Returns the angle. */
     float getAngle() const;
 
     /** @brief Linear velocity in pixels/s. */
     void  setLinearVelocity(float vx, float vy);
+    /** @brief Returns the linear velocity x. */
     float getLinearVelocityX() const;
+    /** @brief Returns the linear velocity y. */
     float getLinearVelocityY() const;
     /** @brief Magnitude of the linear velocity. */
     float getLinearSpeed() const;
@@ -47,10 +55,12 @@ public:
     float getMass() const;
     /** @brief World center of mass in pixels. */
     float getWorldCenterX() const;
+    /** @brief Returns the world center y. */
     float getWorldCenterY() const;
 
     /** @brief Angular velocity in radians/s. */
     void  setAngularVelocity(float omega);
+    /** @brief Returns the angular velocity. */
     float getAngularVelocity() const;
 
     /** @brief Force (pixels/s² * kg) applied at the center of mass. */
@@ -64,22 +74,27 @@ public:
 
     /** @brief "static" | "kinematic" | "dynamic". */
     void        setType(const std::string &bodyType);
+    /** @brief Returns the type. */
     std::string getType() const;
 
     /** @brief Locks rotation so the body cannot spin. */
     void setFixedRotation(bool fixed);
+    /** @brief True when fixed rotation. */
     bool isFixedRotation() const;
 
     /** @brief Disables/enables the body and its fixtures. */
     void setActive(bool active);
+    /** @brief True when active. */
     bool isActive() const;
 
     /** @brief CCD bullet mode (recommended for fast small bodies). */
     void setBullet(bool bullet);
+    /** @brief True when bullet. */
     bool isBullet() const;
 
     /** @brief Wakes / sleeps the body manually. */
     void setAwake(bool awake);
+    /** @brief True when awake. */
     bool isAwake() const;
 
     /**
@@ -192,6 +207,7 @@ public:
 
 private:
     friend struct WorldSnapshotAccess;
+    friend struct PortableWorldSnapshotAccess;
     friend class World;
     friend class Fixture;
 

@@ -33,12 +33,12 @@ SpriteStackLayerArtifact artifact(const image::ImageData& image, int index) {
 SpriteStackBakeRuntime::SpriteStackBakeRuntime()  = default;
 SpriteStackBakeRuntime::~SpriteStackBakeRuntime() = default;
 
-EditorResult<std::vector<SpriteStackLayerArtifact>> SpriteStackBakeRuntime::bake(
+Result<std::vector<SpriteStackLayerArtifact>> SpriteStackBakeRuntime::bake(
     const SpriteStackDocumentTarget& document, const ISpriteStackModelResolver* resolver) {
     const auto diagnostics = document.validate();
     for (const auto& d : diagnostics)
         if (d.severity() == DiagnosticSeverity::Error)
-            return EditorResult<std::vector<SpriteStackLayerArtifact>>::failure(
+            return Result<std::vector<SpriteStackLayerArtifact>>::failure(
                 eve::Status(EditorStatus::Rejected, diagnostics));
     std::vector<image::ImageData*> raw;
     try {
@@ -51,7 +51,7 @@ EditorResult<std::vector<SpriteStackLayerArtifact>> SpriteStackBakeRuntime::bake
                     "Model SpriteStack bake requires an asset resolver");
             auto resolved = resolver->resolveModel(document.value().source);
             if (!resolved.ok() || !resolved.value())
-                return EditorResult<std::vector<SpriteStackLayerArtifact>>::failure(resolved.status());
+                return Result<std::vector<SpriteStackLayerArtifact>>::failure(resolved.status());
             raw = spritestack::sliceModelToLayers(resolved.value(), document.value().bake);
         }
     } catch (const std::exception& exception) {
@@ -81,7 +81,7 @@ EditorResult<std::vector<SpriteStackLayerArtifact>> SpriteStackBakeRuntime::bake
     return eve::editing::applied<std::vector<SpriteStackLayerArtifact>>(std::move(artifacts), diagnostics);
 }
 
-EditorResult<spritestack::SpriteStack2D*> SpriteStackBakeRuntime::publish(graphics::Graphics* graphics,
+Result<spritestack::SpriteStack2D*> SpriteStackBakeRuntime::publish(graphics::Graphics* graphics,
                                                                           Revision expectedRevision) {
     if (expectedRevision != revision_)
         return eve::editing::failed<spritestack::SpriteStack2D*>(

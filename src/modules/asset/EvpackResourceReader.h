@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file EvpackResourceReader.h @brief Typed capability-aware runtime access to admitted packs. */
 
@@ -24,10 +26,20 @@ struct RuntimeAssetPayload {
 };
 
 /** @brief Immutable reader retaining an admitted pack by shared ownership. */
-class EvpackResourceReader {
+class EVENGINE_API_FOUNDATION EvpackResourceReader {
 public:
     /** @brief Bind an admitted package; null is rejected by `read`. */
     explicit EvpackResourceReader(std::shared_ptr<const Evpack> pack) : pack_(std::move(pack)) {}
+    /** @brief Copy the deterministic build identity of the admitted immutable package.
+     * @return Owning identity or InvalidArgument for an unbound reader.
+     * @thread Worker-safe and reentrant; constant-time, with no IO or callbacks.
+     */
+    [[nodiscard]] Result<PersistentId> buildId() const {
+        if (!pack_)
+            return Result<PersistentId>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "asset reader has no admitted package"));
+        return Result<PersistentId>::success(pack_->buildId());
+    }
 
     /**
      * @brief Resolve, type-check, variant-select and decode a canonical runtime asset.

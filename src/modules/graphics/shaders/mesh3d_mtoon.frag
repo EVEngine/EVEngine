@@ -5,7 +5,11 @@ layout(location=2) in vec4 vTint;
 layout(location=3) in vec3 vWorldPos;
 layout(location=4) in vec3 vCameraPos;
 layout(location=5) in vec3 vViewPos;
-struct Light3D { vec4 posRadius; vec4 color; };
+struct Light3D {
+    vec4 posRadius;
+    vec4 color;
+    vec4 spot;
+};
 layout(set=0,binding=0,std140) uniform Frame {
     mat4 mvp; mat4 model; vec4 lightDirIntensity; vec4 lightColor;
     vec4 tint; vec4 cameraPos; vec4 ambient; Light3D lights[8];
@@ -39,9 +43,10 @@ vec4 sampleSlot(int slot,vec2 uv,vec4 missing) {
 }
 vec3 pushed(int n) { return vec3(u.data[n],u.data[n+1],u.data[n+2]); }
 layout(set=0,binding=4,std140) uniform ShadowFrame {
-    mat4 lightVP[3]; vec4 splits; vec4 bias; vec4 cascadeBias; vec4 cascadeTexel;
+    mat4 lightVP[3]; vec4 splits; vec4 bias; vec4 cascadeBias; vec4 cascadeTexel; vec4 cascadeUvScale;
 } shadow;
 layout(set=0,binding=5) uniform sampler2DArrayShadow shadowMap;
+#include "shadow_cascade_uv.glsl"
 float visibility() {
     if(shadow.bias.y<.5 || shadow.bias.z<.5 || shadow.splits.w<=0) return 1;
     float depth=-vViewPos.z;
@@ -50,10 +55,14 @@ float visibility() {
     vec3 p=clip.xyz/max(clip.w,1e-6); p.xy=p.xy*.5+.5;
     if(any(lessThan(p,vec3(0))) || any(greaterThan(p,vec3(1)))) return 1;
     float bias=max(shadow.cascadeBias[cascade],shadow.bias.x);
-    vec2 texel=1.0/vec2(textureSize(shadowMap,0).xy);
+    float uvScale=eveCascadeUvScale(cascade);
+    vec2 texel=vec2(1.0/eveCascadeMapSize(cascade));
     float sum=0;
-    for(int x=-1;x<=1;++x) for(int y=-1;y<=1;++y)
-        sum+=texture(shadowMap,vec4(p.xy+vec2(x,y)*texel,float(cascade),p.z-bias));
+    for(int x=-1;x<=1;++x) for(int y=-1;y<=1;++y) {
+        vec2 s=p.xy+vec2(x,y)*texel;
+        if(any(lessThan(s,vec2(0))) || any(greaterThan(s,vec2(1)))) continue;
+        sum+=texture(shadowMap,vec4(s*uvScale,float(cascade),p.z-bias));
+    }
     return mix(1,sum/9,clamp(shadow.splits.w,0,1));
 }
 void main() {

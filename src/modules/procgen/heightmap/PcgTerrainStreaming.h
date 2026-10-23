@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/PcgPhotoModeApply.h"
 #include "procgen/heightmap/TerrainStreaming.h"
@@ -20,8 +22,9 @@ struct PcgTerrainStreamingState {
  * @lifetime The target cache must outlive this authority or be detached with setTarget(nullptr, scale).
  * @thread Game thread only; callbacks and scripts are not invoked.
  */
-class PcgTerrainStreamingAuthority final : public IPhotoModeFieldSink {
+class EVENGINE_API_DOMAINS PcgTerrainStreamingAuthority final : public IPhotoModeFieldSink {
 public:
+    /** @brief Pcg terrain streaming authority. */
     ~PcgTerrainStreamingAuthority() override;
 
     /** @brief Attach a borrowed cache and define the world size of one terrain sample. */
@@ -39,7 +42,9 @@ public:
     /** @brief Select the runtime representation for a world-space distance. */
     PcgTerrainStreamingTier tierForDistance(float worldDistance) const noexcept;
 
+    /** @brief Accepts photo mode field. */
     PhotoModeFieldAcceptance acceptsPhotoModeField(const PhotoModeAssignment& assignment) const noexcept override;
+    /** @brief Applies photo mode field. */
     [[nodiscard]] Result<void> applyPhotoModeField(const PhotoModeAssignment& assignment) override;
 
 private:

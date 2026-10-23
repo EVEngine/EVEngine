@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorAssetDatabase.h"
 
@@ -22,7 +24,7 @@ struct DiskAssetScanResult {
  * host-driven so desktop editors, games and MCP hosts can choose their own
  * watcher/event loop without changing indexing semantics.
  */
-class DiskAssetCatalog {
+class EVENGINE_API_ORCHESTRATION DiskAssetCatalog {
 public:
     /**
      * @brief Create a host-driven disk asset catalog.
@@ -31,12 +33,12 @@ public:
      */
     DiskAssetCatalog(std::filesystem::path projectRoot, MemoryAssetDatabase* database);
     /** @brief Create/replace a sidecar for a Content-relative source file. */
-    EditorResult<void> writeSidecar(const std::filesystem::path& contentRelativePath, AssetGuid guid,
+    Result<void> writeSidecar(const std::filesystem::path& contentRelativePath, AssetGuid guid,
                                     std::string typeId, std::uint32_t schemaVersion = 1);
     /** @brief Scan every sidecar and atomically publish valid records. */
-    EditorResult<DiskAssetScanResult> scan();
+    Result<DiskAssetScanResult> scan();
     /** @brief Rescan and report only content/sidecar fingerprints that changed. */
-    EditorResult<DiskAssetScanResult> poll();
+    Result<DiskAssetScanResult> poll();
 
 private:
     std::filesystem::path resolveContent(const std::filesystem::path& relative) const;

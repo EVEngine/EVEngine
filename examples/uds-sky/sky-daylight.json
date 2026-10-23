@@ -1,0 +1,95 @@
+{
+  "schema": "eve.sky-profile",
+  "version": 5,
+  "mode": "atmosphere",
+  "clock": {
+    "initialHour": 5,
+    "hoursPerSecond": 0.1
+  },
+  "weather": {
+    "cloudCoverage": 0,
+    "fog": 0,
+    "rain": 0,
+    "snow": 0,
+    "windXZ": [
+      0,
+      0
+    ]
+  },
+  "sun": {
+    "pitchDegrees": 30,
+    "yawDegrees": 0,
+    "irradiance": [
+      5,
+      5,
+      5
+    ]
+  },
+  "atmosphere": {
+    "rayleigh": [
+      0.0067450796,
+      0.0163137194,
+      0.04
+    ],
+    "rayleighHeightKm": 8,
+    "mieScattering": [
+      0.0112259542,
+      0.0123162284,
+      0.013996
+    ],
+    "mieHeightKm": 1.2,
+    "mieAbsorption": [
+      0.000444,
+      0.000444,
+      0.000444
+    ],
+    "mieAnisotropy": 0.75,
+    "ozoneAbsorption": [
+      0.001794476,
+      0.002,
+      0.000190614
+    ],
+    "ozoneCenterKm": 25,
+    "ozoneHalfWidthKm": 15,
+    "groundRadiusKm": 6360,
+    "atmosphereHeightKm": 60,
+    "groundAlbedo": [
+      0.40197778,
+      0.40197778,
+      0.40197778
+    ],
+    "multiScatteringFactor": 1
+  },
+  "heightFog": {
+    "densityPerMetre": 0.0005510000046342611,
+    "heightFalloffPerMetre": 0.005999999865889549,
+    "baseHeightMetres": -1.5,
+    "startDistanceMetres": 73.4803369140625,
+    "inscattering": [
+      0,
+      0,
+      0
+    ],
+    "maximumOpacity": 1,
+    "directionalInscattering": [
+      0.788097620010376,
+      0.6424473524093628,
+      0.5554451942443848
+    ],
+    "directionalExponent": 5,
+    "directionalStartDistanceMetres": 100,
+    "atmosphereContribution": 2.3,
+    "skyDistanceMetres": 100000,
+    "directionalElevationRange": [
+      0,
+      0.2
+    ]
+  },
+  "wispsAsset": "assets/wisps-moon.json",
+  "cloudMotion": {
+    "phase": 0,
+    "speed": 0,
+    "timeScale": 1,
+    "windMultiplier": 1
+  }
+}

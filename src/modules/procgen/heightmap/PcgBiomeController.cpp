@@ -16,10 +16,6 @@ bool contains(const PcgBiomeLoadingBounds& bounds, double x, double y, double z)
            std::abs(z - bounds.centerZ) <= bounds.sizeZ * 0.5;
 }
 
-Result<void> invalidController(const char* message) {
-    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message, {}, {},
-                                                    "procgen.pcgBiomeController"));
-}
 }  // namespace
 
 Result<void> PcgBiomeController::publish(double x, double y, double z, double range,
@@ -29,14 +25,16 @@ Result<void> PcgBiomeController::publish(double x, double y, double z, double ra
         !std::isfinite(impostorLoadingRange) || range < 0.0 || impostorLoadingRange < 0.0 ||
         modeValue < static_cast<int>(PcgBiomeLoadMode::Disabled) ||
         modeValue > static_cast<int>(PcgBiomeLoadMode::RuntimeAlways)) {
-        return invalidController("finite position, non-negative ranges, and a valid load mode are required");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "finite position, non-negative ranges, and a valid load mode are required", {}, {},
+                                                    "procgen.pcgBiomeController"));
     }
 
     PcgBiomeLoadingBounds regular;
     PcgBiomeLoadingBounds impostor;
     if (mode != PcgBiomeLoadMode::Disabled) {
         const double width = range * 2.0 - 0.5;
-        if (width < 0.0) return invalidController("enabled biome range must be at least 0.25 world units");
+        if (width < 0.0) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "enabled biome range must be at least 0.25 world units", {}, {},
+                                                    "procgen.pcgBiomeController"));
         regular = {x, y, z, width, width, width};
         impostor.centerX = x;
         impostor.centerY = y;
@@ -68,7 +66,8 @@ Result<void> PcgBiomeController::configure(double x, double y, double z, double 
 Result<void> PcgBiomeController::fitToTerrain(double minX, double originY, double minZ,
                                                double sizeX, double sizeY, double sizeZ) {
     if (!finiteBounds(minX, originY, minZ, sizeX, sizeY, sizeZ))
-        return invalidController("finite terrain origin and non-negative terrain size are required");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "finite terrain origin and non-negative terrain size are required", {}, {},
+                                                    "procgen.pcgBiomeController"));
     return publish(minX + sizeX * 0.5, originY, minZ + sizeZ * 0.5, sizeX * 0.5,
                    impostorLoadingRange_, mode_);
 }
@@ -76,7 +75,8 @@ Result<void> PcgBiomeController::fitToTerrain(double minX, double originY, doubl
 Result<void> PcgBiomeController::fitToAllTerrains(double minX, double minY, double minZ,
                                                    double sizeX, double sizeY, double sizeZ) {
     if (!finiteBounds(minX, minY, minZ, sizeX, sizeY, sizeZ))
-        return invalidController("finite world bounds and non-negative world size are required");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "finite world bounds and non-negative world size are required", {}, {},
+                                                    "procgen.pcgBiomeController"));
     return publish(minX + sizeX * 0.5, minY + sizeY * 0.5, minZ + sizeZ * 0.5, sizeX * 0.5,
                    impostorLoadingRange_, mode_);
 }

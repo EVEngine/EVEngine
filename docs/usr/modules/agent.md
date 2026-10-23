@@ -101,7 +101,7 @@ foreach (trace in trained.value.findings) {
 
 回放使用实际动作和初始 seed，比较每步观察、合法动作、覆盖与终止状态，不依赖训练策略。数值使用显式 tolerance，其余字段精确匹配。
 
-## API 快查
+## 绑定与行为说明
 
 - `getName()`：模块名。
 - `getBackends()`：Result，value 为实际可用后端标签数组。

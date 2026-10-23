@@ -16,14 +16,18 @@ namespace eve::graphics::vulkan {
  */
 class ComputePass {
 public:
+    /** @brief Constructs a ComputePass. */
     ComputePass() = default;
     ComputePass(const ComputePass &) = delete;
     ComputePass &operator=(const ComputePass &) = delete;
+    /** @brief Constructs a ComputePass. */
     ComputePass(ComputePass &&o) noexcept : device_(o.device_), pipeline_(o.pipeline_) {
         o.device_ = nullptr;
         o.pipeline_ = nullptr;
     }
+    /** @brief Operator =. */
     ComputePass &operator=(ComputePass &&o) noexcept;
+    /** @brief Releases ComputePass resources. */
     ~ComputePass();
 
     /** @brief Create from embedded SPIR-V words; layout must outlive the pass. */
@@ -34,6 +38,7 @@ public:
     void record(vk::CommandBuffer cb, uint32_t groupsX, uint32_t groupsY = 1,
                 uint32_t groupsZ = 1) const;
 
+    /** @brief Pipeline. */
     vk::Pipeline pipeline() const { return pipeline_; }
 
 private:

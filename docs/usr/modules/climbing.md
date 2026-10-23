@@ -64,37 +64,23 @@ foreach (event in events.value) gameEvents.publish(event);
 
 `desiredDelta` 是轨迹/动画希望得到的位移，`actualDelta` 是物理胶囊体真正允许的位移，`warpResidual` 是两者之差。超过 profile 的 `maxWarpResidual` 时 phase 变为 `failed`，不会穿透障碍。
 
-## API 快查
+## 绑定与行为说明
 
 - `Climbing.getName()` → `"Climbing"`
 - `Climbing.newRuntime()` → `Result<owned ClimbingRuntime>`
 - `Climbing.newAnchorGraphJson(json, world, body)` → `Result<owned ClimbingAnchorGraph>`
 - `Climbing.bakeAnchorGraphJson(requestJson)` → `Result<{ graphJson, buildSettingsHash, ledgeNodeCount, ladderNodeCount }>`
 - `Climbing.inspectAnchorGraphJson(graphJson)` → renderer-neutral owning editor overlay
-- `ClimbingAnchorGraph.node(nodeId)` / `generation()` / `reservationCount()`
 - `ClimbingAnchorGraph.planRoute(startNodeId, goalNodeId, avoidFull, agentId, executionId, maxVisitedNodes)`：在当前 graph generation 上返回确定性最短 owning route；owner id 必须同时为零或同时非零
 - `ClimbingAnchorGraph.reloadJson(json)`：原子发布新图并返回 `invalidatedOccupants`
-- `ClimbingAnchorGraph.release()` / `isStale()`
 - `ClimbingRuntime.ownership()` → `"owned"`
-- `ClimbingRuntime.setProfile(radius, height, skin, probeDistance, obstacleHeight, minTopNormalY, maxWarpResidual, maskBits)`
 - `ClimbingRuntime.setProfileJson(json)` / `reloadProfileJson(json)`：规范 profile JSON 的初始安装与原子热重载
-- `ClimbingRuntime.upsertAction(id, minHeight, maxHeight, minSpeed, duration, landingForward, apexHeight, selectionBias)`
-- `ClimbingRuntime.upsertActionKind(id, kind, ..., hangBodyOffset, hangFeetBelowLedge, handSpacing, cancelStart, cancelEnd)`
-- `ClimbingRuntime.validateActionClip(actionId, clip)`
-- `ClimbingRuntime.tryBegin(world, feetX, feetY, feetZ, forwardX, forwardZ, speed, ignoredBodyId, tick)`
-- `ClimbingRuntime.tryBeginMode(world, ..., ignoredBodyId, verticalSpeed, grounded, tick)`
-- `ClimbingRuntime.tryBeginAnchor(graph, world, nodeId, agentId, actionId, ..., tick)`
-- `ClimbingRuntime.transitionAnchor(graph, world, targetNodeId, edgeKind, actionId, tick)`
 - `ClimbingRuntime.currentAnchor()` → `{ graphId, nodeId, graphGeneration }`
-- `ClimbingRuntime.advance(world, tick, fixedDt)`
-- `ClimbingRuntime.climbUp(tick)` / `drop(tick)`
 - `ClimbingRuntime.cancel(reason, tick)`：稳定值包括 `player_request`、`drop_requested`、`link_stale`、`anchor_stale`、`motion_blocked`、`warp_budget_exceeded`、`definition_reloaded`
 - `ClimbingRuntime.drainEvents()`：仿真后原子取走 owning 事件批次；事件含稳定 kind、actionId、tick 与 executionId
 - `ClimbingRuntime.inspect()` → owning debug snapshot
 - `ClimbingRuntime.setDebugCapture(enabled)`：关闭时立即释放候选、query、cost 与 motion evidence
-- `ClimbingRuntime.snapshotJson()` / `restoreJson(json, world)`
 - `ClimbingRuntime.definitionGeneration()` → 十进制字符串（避免脚本整数溢出）
-- `ClimbingRuntime.release()` / `isStale()`
 
 ## C++ definition 与存档契约
 

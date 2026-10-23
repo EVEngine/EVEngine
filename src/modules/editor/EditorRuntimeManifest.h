@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorAssetDatabase.h"
 #include "editor/EditorExtension.h"
@@ -27,7 +29,7 @@ struct RuntimeEditorPackage {
 };
 
 /** @brief Validates an explicit manifest and resolves its runtime dependency closure. */
-class RuntimeEditorPublisher {
+class EVENGINE_API_ORCHESTRATION RuntimeEditorPublisher {
 public:
     /**
      * @brief Build a deny-by-default runtime package.
@@ -37,7 +39,7 @@ public:
      * @param assets Asset index used to close hard/build/soft runtime dependencies.
      * @return A package or a diagnostic when any selected identity is unavailable.
      */
-    EditorResult<RuntimeEditorPackage> publish(const RuntimeEditorManifest&   manifest,
+    Result<RuntimeEditorPackage> publish(const RuntimeEditorManifest&   manifest,
                                                const EditorCommandService&    commands,
                                                const EditorExtensionRegistry& extensions,
                                                const MemoryAssetDatabase&     assets) const;

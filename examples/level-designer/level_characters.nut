@@ -75,8 +75,8 @@ function levelFindClip(library, name) {
 }
 
 /** @brief Build (or fetch) the rigged character + motion database for a set. */
-function levelBuildRig(characterName, motionSetName) {
-    local cacheKey = characterName + "|" + motionSetName;
+function levelBuildRig(characterName, motionSetName, instanceKey = "") {
+    local cacheKey = characterName + "|" + motionSetName + "|" + instanceKey;
     if (cacheKey in level.rigCache) return level.rigCache[cacheKey];
 
     local preset = levelCharacterPreset(characterName);

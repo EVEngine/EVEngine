@@ -1,5 +1,6 @@
 #include "agent/Agent.h"
 #include "agent/Learning.h"
+#include "common/Assert.h"
 #include "common/Capability.h"
 
 #include <algorithm>
@@ -72,11 +73,6 @@ bool matches(const Observation& a, const Observation& b, double tolerance) {
     for (std::size_t i = 0; i < a.features.size(); ++i)
         if (!std::isfinite(b.features[i]) || std::abs(double(a.features[i]) - b.features[i]) > tolerance) return false;
     return true;
-}
-
-Result<void> divergence() {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::Conflict, "Replay observation diverged", {}, {}, "agent"));
 }
 
 }  // namespace
@@ -282,11 +278,13 @@ Result<void> replay(const Trace& trace, IEnvironment& environment, double tolera
     }
     auto reset = environment.reset(trace.environmentSeed);
     if (!reset) return Result<void>::failure(reset.status());
-    if (!matches(trace.initial, reset.value(), tolerance)) return divergence();
+    if (!matches(trace.initial, reset.value(), tolerance)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::Conflict, "Replay observation diverged", {}, {}, "agent"));
     for (const auto& step : trace.steps) {
         auto result = environment.step(step.action, trace.dt);
         if (!result) return Result<void>::failure(result.status());
-        if (!matches(step.observation, result.value(), tolerance)) return divergence();
+        if (!matches(step.observation, result.value(), tolerance)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::Conflict, "Replay observation diverged", {}, {}, "agent"));
     }
     return Result<void>::success();
 }

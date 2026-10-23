@@ -49,10 +49,12 @@ PROFILES = (
     "procgen-core-only",
     "physics-core-only",
     "asset-core-only",
+    "crowd-core-only",
+    "crowd-thread-core-only",
     "headless",
     "server",
 )
-HOSTLESS = {"procgen-core-only", "physics-core-only", "asset-core-only", "headless", "server"}
+HOSTLESS = {"procgen-core-only", "physics-core-only", "asset-core-only", "crowd-core-only", "crowd-thread-core-only", "headless", "server"}
 RUNTIME_ONLY = {"runtime-3d"}
 _MODULE_DIRS: dict[str, str] | None = None
 
@@ -68,6 +70,8 @@ CORE_SEEDS = {
     "procgen-core-only": ("common",),
     "physics-core-only": ("common", "platform_event"),
     "asset-core-only": ("common", "data", "asset"),
+    "crowd-core-only": ("common", "crowd"),
+    "crowd-thread-core-only": ("common", "crowd", "crowd_thread"),
     "headless": ("common", "data", "platform_event", "timer"),
     "server": (
         "common",
@@ -76,7 +80,6 @@ CORE_SEEDS = {
         "timer",
         "network",
         "authority",
-        "decision",
         "definitions",
         "effects",
         "game_event",
@@ -100,12 +103,27 @@ PHYSICS_CORE_SOURCES = (
     "physics/Body3D.cpp",
     "physics/Fixture.cpp",
     "physics/Joint3D.cpp",
+    "physics/box3d/Box3DJoint.cpp",
+    "physics/box3d/Box3DBody.cpp",
+    "physics/box3d/Box3DShape.cpp",
+    "physics/box3d/Box3DShapeCook.cpp",
+    "physics/box3d/Box3DWorld.cpp",
+    "physics/box3d/Box3DWorldJoints.cpp",
+    "physics/box3d/Box3DWorldQueries.cpp",
+    "physics/box3d/Box3DWorldMover.cpp",
+    "physics/box3d/Box3DWorldContacts.cpp",
     "physics/PhysicsHandles.cpp",
     "physics/PhysicsLink.cpp",
     "physics/Shape3D.cpp",
     "physics/backend/SimulationBackend.cpp",
     "physics/World.cpp",
     "physics/World3D.cpp",
+    "physics/World3DJoints.cpp",
+    "physics/World3DQueries.cpp",
+    "physics/World3DMover.cpp",
+    "physics/World3DContacts.cpp",
+    "physics/WorldSnapshot.cpp",
+    "physics/WorldSnapshotParsing.cpp",
 )
 
 

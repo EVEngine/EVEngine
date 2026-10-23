@@ -1,11 +1,12 @@
 #include "profiler/editing/ProfilerModel.h"
-
 #include <algorithm>
 #include <cmath>
 #include <map>
 #include <tuple>
 #include <utility>
+#include "profiler/Profiler.h"
 
+// ProfilerModel.cpp
 namespace eve::profiler_editing {
 namespace {
 
@@ -19,10 +20,9 @@ bool contains(const std::string& value, const std::string& filter) {
 
 EditorProfilerModel::EditorProfilerModel() = default;
 
-EditorResult<void> EditorProfilerModel::configure(EditorProfilerBudgets budgets) {
+Result<void> EditorProfilerModel::configure(EditorProfilerBudgets budgets) {
     if (!finiteNonNegative(budgets.cpuFrameMs) || !finiteNonNegative(budgets.gpuFrameMs) ||
-        !finiteNonNegative(budgets.zoneSelfMs) || budgets.historyFrames < 2 ||
-        budgets.historyFrames > 36000) {
+        !finiteNonNegative(budgets.zoneSelfMs) || budgets.historyFrames < 2 || budgets.historyFrames > 36000) {
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.profiler.invalid-budgets"),
                                           "Profiler budgets or history capacity are invalid");
     }
@@ -31,9 +31,9 @@ EditorResult<void> EditorProfilerModel::configure(EditorProfilerBudgets budgets)
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> EditorProfilerModel::ingest(EditorProfilerFrame frame) {
-    if (frame.sequence == 0 || !finiteNonNegative(frame.cpuFrameMs) ||
-        !finiteNonNegative(frame.gpuFrameMs) || frame.zones.size() > 100000) {
+Result<void> EditorProfilerModel::ingest(EditorProfilerFrame frame) {
+    if (frame.sequence == 0 || !finiteNonNegative(frame.cpuFrameMs) || !finiteNonNegative(frame.gpuFrameMs) ||
+        frame.zones.size() > 100000) {
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.profiler.invalid-frame"),
                                           "Profiler frame shape or timing is invalid");
     }
@@ -42,9 +42,8 @@ EditorResult<void> EditorProfilerModel::ingest(EditorProfilerFrame frame) {
                                           "Profiler frame sequence is stale");
     }
     for (const auto& zone : frame.zones) {
-        if (zone.module.empty() || zone.name.empty() || zone.thread.empty() ||
-            !finiteNonNegative(zone.selfMs) || !finiteNonNegative(zone.totalMs) ||
-            zone.selfMs > zone.totalMs || zone.count < 1 || zone.depth < 0) {
+        if (zone.module.empty() || zone.name.empty() || zone.thread.empty() || !finiteNonNegative(zone.selfMs) ||
+            !finiteNonNegative(zone.totalMs) || zone.selfMs > zone.totalMs || zone.count < 1 || zone.depth < 0) {
             return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.profiler.invalid-zone"),
                                               "Profiler zone identity or timing is invalid");
         }
@@ -56,8 +55,7 @@ EditorResult<void> EditorProfilerModel::ingest(EditorProfilerFrame frame) {
 
 void EditorProfilerModel::clear() { history_.clear(); }
 
-std::vector<EditorProfilerZone> EditorProfilerModel::query(
-    const EditorProfilerQuery& options) const {
+std::vector<EditorProfilerZone> EditorProfilerModel::query(const EditorProfilerQuery& options) const {
     std::vector<EditorProfilerZone> result;
     if (history_.empty() || options.limit == 0) return result;
     for (const auto& zone : history_.back().zones) {
@@ -72,8 +70,7 @@ std::vector<EditorProfilerZone> EditorProfilerModel::query(
             case EditorProfilerSort::TotalTime: return left.totalMs < right.totalMs;
             case EditorProfilerSort::Count: return left.count < right.count;
             case EditorProfilerSort::Name:
-                return std::tie(left.module, left.name, left.thread) <
-                       std::tie(right.module, right.name, right.thread);
+                return std::tie(left.module, left.name, left.thread) < std::tie(right.module, right.name, right.thread);
         }
         return false;
     };
@@ -88,7 +85,7 @@ std::vector<EditorProfilerModuleSummary> EditorProfilerModel::moduleSummary() co
     std::map<std::string, EditorProfilerModuleSummary> grouped;
     if (!history_.empty()) {
         for (const auto& zone : history_.back().zones) {
-            auto& summary = grouped[zone.module];
+            auto& summary  = grouped[zone.module];
             summary.module = zone.module;
             summary.selfMs += zone.selfMs;
             summary.totalMs += zone.totalMs;
@@ -110,28 +107,56 @@ std::vector<EditorDiagnostic> EditorProfilerModel::diagnostics() const {
     if (history_.empty()) return result;
     const auto& frame = history_.back();
     if (budgets_.cpuFrameMs > 0.0 && frame.cpuFrameMs > budgets_.cpuFrameMs) {
-        result.push_back(eve::editing::ruleDiagnostic(
-            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.profiler.cpu-budget"),
-            DiagnosticSeverity::Warning, "CPU frame time exceeds the editor budget"));
+        result.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::PreconditionViolation,
+                                                      RuleId("editor.profiler.cpu-budget"), DiagnosticSeverity::Warning,
+                                                      "CPU frame time exceeds the editor budget"));
     }
-    if (frame.gpuTimingAvailable && budgets_.gpuFrameMs > 0.0 &&
-        frame.gpuFrameMs > budgets_.gpuFrameMs) {
-        result.push_back(eve::editing::ruleDiagnostic(
-            eve::DiagnosticCode::PreconditionViolation, RuleId("editor.profiler.gpu-budget"),
-            DiagnosticSeverity::Warning, "GPU frame time exceeds the editor budget"));
+    if (frame.gpuTimingAvailable && budgets_.gpuFrameMs > 0.0 && frame.gpuFrameMs > budgets_.gpuFrameMs) {
+        result.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::PreconditionViolation,
+                                                      RuleId("editor.profiler.gpu-budget"), DiagnosticSeverity::Warning,
+                                                      "GPU frame time exceeds the editor budget"));
     }
     if (budgets_.zoneSelfMs > 0.0) {
         for (const auto& zone : frame.zones) {
             if (zone.selfMs > budgets_.zoneSelfMs) {
                 result.push_back(eve::editing::ruleDiagnostic(
-                    eve::DiagnosticCode::PreconditionViolation,
-                    RuleId("editor.profiler.zone-budget"), DiagnosticSeverity::Warning,
-                    "Profiler zone exceeds its self-time budget: " + zone.module + "/" +
-                        zone.name));
+                    eve::DiagnosticCode::PreconditionViolation, RuleId("editor.profiler.zone-budget"),
+                    DiagnosticSeverity::Warning,
+                    "Profiler zone exceeds its self-time budget: " + zone.module + "/" + zone.name));
             }
         }
     }
     return result;
+}
+
+}  // namespace eve::profiler_editing
+
+// ProfilerRuntime.cpp
+namespace eve::profiler_editing {
+
+Result<void> EditorProfilerCollector::collect(const profiler::Profiler& profiler, EditorProfilerModel& model) const {
+    auto captured = profiler.captureFrame();
+    if (!captured.hasValue()) {
+        std::vector<EditorDiagnostic> diagnostics;
+        for (const auto& diagnostic : captured.diagnostics())
+            diagnostics.push_back(eve::editing::ruleDiagnostic(diagnostic.code(), RuleId("editor.profiler.capture"),
+                                                               DiagnosticSeverity::Error, diagnostic.message()));
+        const EditorStatus status =
+            captured.code() == eve::StatusCode::NotFound ? EditorStatus::NotFound : EditorStatus::Failed;
+        return Result<void>::failure(eve::Status(status, std::move(diagnostics)));
+    }
+    auto                runtimeFrame = std::move(captured).takeValue();
+    EditorProfilerFrame frame;
+    frame.sequence           = runtimeFrame.sequence;
+    frame.cpuFrameMs         = runtimeFrame.cpuFrameMs;
+    frame.gpuFrameMs         = runtimeFrame.gpuFrameMs;
+    frame.gpuTimingAvailable = runtimeFrame.gpuTimingAvailable;
+    frame.zones.reserve(runtimeFrame.zones.size());
+    for (auto& zone : runtimeFrame.zones) {
+        frame.zones.push_back({std::move(zone.module), std::move(zone.name), std::move(zone.thread), zone.selfMs,
+                               zone.totalMs, zone.count, zone.depth});
+    }
+    return model.ingest(std::move(frame));
 }
 
 }  // namespace eve::profiler_editing

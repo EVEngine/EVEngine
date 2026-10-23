@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file Combat.h @brief Script-facing combat composition module. */
 
@@ -13,10 +15,12 @@ namespace eve::combat {
  * damage rules to CombatLocomotionRuntime and DamageRuntime. The module itself
  * stores no arena state.
  */
-class Combat final : public Module {
+class EVENGINE_API_BACKENDS Combat final : public Module {
 public:
     Module_REG(Combat);
+    /** @brief Combat. */
     Combat()           = default;
+    /** @brief Combat. */
     ~Combat() override = default;
 };
 

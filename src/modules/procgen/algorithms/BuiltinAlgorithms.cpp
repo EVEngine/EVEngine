@@ -1,6 +1,7 @@
 #include "procgen/GeneratorRegistry.h"
 #include "procgen/Semantic.h"
 #include "procgen/algorithms/DtlHelpers.h"
+#include "procgen/algorithms/HexTerrainBindings.h"
 #include "procgen/algorithms/RoguelikeGenerator.h"
 #include "procgen/urban/UrbanOutput.h"
 
@@ -259,6 +260,7 @@ void GeneratorRegistry::registerBuiltins() {
     registerWfcSimple(*this);
     registerRoguelikeGenerator(*this);
     registerTerrainHeightmapAlgorithm(*this);
+    registerHexTerrainAlgorithms(*this);
     urban::registerUrbanGenerators(*this);
     builtinsRegistered_ = true;
 }

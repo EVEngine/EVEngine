@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /** @file CanonicalVolumeTextureCook.h @brief Bounded R8 volume conversion to runtime EVVOL. */
 
@@ -23,7 +24,7 @@ struct CookedCanonicalVolumeTexture {
  * @return Owning unpublished runtime candidate or structured failure.
  * @thread Worker-safe, synchronous and reentrant; no callbacks or retained pointers.
  */
-[[nodiscard]] Result<CookedCanonicalVolumeTexture> cookCanonicalVolumeTextureRgba8(
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<CookedCanonicalVolumeTexture> cookCanonicalVolumeTextureRgba8(
     std::span<const std::uint8_t> definition, std::span<const std::uint8_t> sourceR8,
     std::uint64_t maximumDecodedBytes);
 

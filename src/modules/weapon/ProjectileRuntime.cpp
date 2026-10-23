@@ -14,10 +14,6 @@ constexpr std::uint32_t kDefaultCapacity = 128;
 constexpr std::uint32_t kMaximumCapacity = 1024 * 1024;
 constexpr double        kPi              = 3.14159265358979323846;
 
-Result<void> projectileError(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 bool finite(const ProjectilePoint& value) {
     return std::isfinite(value.x) && std::isfinite(value.y) && std::isfinite(value.z);
 }
@@ -57,21 +53,17 @@ ProjectileVector steer(ProjectileVector velocity, ProjectileVector desired, doub
 }  // namespace
 
 Result<void> ProjectileDefinition::validate() const {
-    if (!id.isValid()) return projectileError(DiagnosticCode::InvalidArgument, "Projectile id must not be empty", "id");
+    if (!id.isValid()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Projectile id must not be empty", "id"));
     if (!std::isfinite(speed) || speed <= 0.0)
-        return projectileError(DiagnosticCode::InvalidArgument, "Projectile speed must be finite and positive",
-                               "speed");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Projectile speed must be finite and positive", "speed"));
     if (!std::isfinite(gravity) || gravity < 0.0)
-        return projectileError(DiagnosticCode::InvalidArgument, "Projectile gravity must be finite and non-negative",
-                               "gravity");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Projectile gravity must be finite and non-negative", "gravity"));
     if (!std::isfinite(maxTurnRateDegrees) || maxTurnRateDegrees < 0.0)
-        return projectileError(DiagnosticCode::InvalidArgument, "Projectile turn rate must be finite and non-negative",
-                               "maxTurnRateDegrees");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Projectile turn rate must be finite and non-negative", "maxTurnRateDegrees"));
     if (lifetime <= Duration::zero())
-        return projectileError(DiagnosticCode::InvalidArgument, "Projectile lifetime must be positive", "lifetime");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Projectile lifetime must be positive", "lifetime"));
     if (mode == ProjectileMode::Homing && maxTurnRateDegrees <= 0.0)
-        return projectileError(DiagnosticCode::InvalidArgument, "Homing projectile turn rate must be positive",
-                               "maxTurnRateDegrees");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Homing projectile turn rate must be positive", "maxTurnRateDegrees"));
     return Result<void>::success();
 }
 
@@ -79,10 +71,9 @@ ProjectileRuntime::ProjectileRuntime() : slots_(kDefaultCapacity) {}
 
 Result<void> ProjectileRuntime::configurePool(std::uint32_t capacity) {
     if (activeCount_ != 0)
-        return projectileError(DiagnosticCode::Conflict, "Projectile pool cannot be resized while active");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "Projectile pool cannot be resized while active", {}));
     if (capacity == 0 || capacity > kMaximumCapacity)
-        return projectileError(DiagnosticCode::InvalidArgument, "Projectile pool capacity must be in 1..1048576",
-                               "capacity");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Projectile pool capacity must be in 1..1048576", "capacity"));
     slots_.assign(capacity, Slot{});
     return Result<void>::success();
 }
@@ -92,12 +83,11 @@ Result<void> ProjectileRuntime::validateSpawn(const ProjectileDefinition&   defi
     auto valid = definition.validate();
     if (!valid) return valid;
     if (!finite(request.position) || !finite(request.direction))
-        return projectileError(DiagnosticCode::InvalidArgument, "Projectile transform must contain finite values",
-                               "request");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Projectile transform must contain finite values", "request"));
     if (length(request.direction) <= 1e-12)
-        return projectileError(DiagnosticCode::InvalidArgument, "Projectile direction must be non-zero", "direction");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Projectile direction must be non-zero", "direction"));
     if (definition.mode == ProjectileMode::Homing && !request.target)
-        return projectileError(DiagnosticCode::InvalidArgument, "Homing projectile requires a target", "target");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Homing projectile requires a target", "target"));
     return Result<void>::success();
 }
 
@@ -174,7 +164,7 @@ Result<ProjectileUpdate> ProjectileRuntime::update(Duration delta, const IProjec
 Result<void> ProjectileRuntime::release(ProjectileHandle handle) {
     if (handle.slot >= slots_.size() || !slots_[handle.slot].state ||
         slots_[handle.slot].generation != handle.generation)
-        return projectileError(DiagnosticCode::StaleHandle, "Projectile handle is stale");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "Projectile handle is stale", {}));
     slots_[handle.slot].state.reset();
     --activeCount_;
     return Result<void>::success();
@@ -204,8 +194,7 @@ ProjectileRuntimeSnapshot ProjectileRuntime::snapshot() const {
 
 Result<void> ProjectileRuntime::restore(const ProjectileRuntimeSnapshot& snapshot) {
     if (snapshot.slots.empty() || snapshot.slots.size() > 1048576)
-        return projectileError(DiagnosticCode::InvalidArgument,
-                               "Projectile snapshot pool capacity is outside 1..1048576");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Projectile snapshot pool capacity is outside 1..1048576", {}));
     std::vector<Slot> staged(snapshot.slots.size());
     std::size_t active = 0;
     for (std::size_t index = 0; index < snapshot.slots.size(); ++index) {
@@ -225,8 +214,7 @@ Result<void> ProjectileRuntime::restore(const ProjectileRuntimeSnapshot& snapsho
             !std::isfinite(state.maxTurnRateDegrees) || state.maxTurnRateDegrees < 0.0 ||
             state.age.nanoseconds() < 0 || state.lifetime.nanoseconds() <= 0 || state.age >= state.lifetime ||
             (state.mode == ProjectileMode::Homing && !state.target))
-            return projectileError(DiagnosticCode::InvalidArgument,
-                                   "Projectile snapshot contains an invalid live slot");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Projectile snapshot contains an invalid live slot", {}));
         staged[index].state = state;
         ++active;
     }

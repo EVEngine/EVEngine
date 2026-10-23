@@ -26,7 +26,7 @@ if (arrived) queue.complete(idResult.value);
 只在优先级允许时抢占 active 命令。所有 Result 都必须检查，负数/非有限 `dt`、空 kind
 和非法状态迁移不会静默成功。
 
-## API 快查
+## 绑定与行为说明
 
 | 对象 | API | 说明 |
 |---|---|---|

@@ -20,7 +20,7 @@ enum class SkillMeshEffectKind { WeaponSlash, ImpactFlash, ChargeAura, BurningBo
  * dt, resolve the target through its authoritative owner, then submit effect()
  * and trail().buildMesh() through MeshEffectRenderer on the render thread.
  */
-class SkillMeshEffect {
+class EVENGINE_API_WORLD SkillMeshEffect {
 public:
     /** @brief Construct one built-in composition with validated preset data. */
     explicit SkillMeshEffect(SkillMeshEffectKind kind);
@@ -49,6 +49,8 @@ public:
     void stop(float fadeOutSeconds = 0.f);
     /** @brief Advance all owned deterministic runtime state. */
     void update(float dtSeconds);
+    /** @brief True when primary effect playback has stopped or finished. */
+    [[nodiscard]] bool isFinished() const noexcept;
     /** @brief Append one blade-edge sample or throw if the recipe has no trail. */
     [[nodiscard]] TrailAppendResult appendBlade(glm::vec3 root, glm::vec3 tip);
 

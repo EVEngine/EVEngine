@@ -3,7 +3,7 @@
 config = {
     width = 1280
     height = 800
-    title = "EVEngine Hex Planet"
+    title = "Hex Planet / Civilisation"
     debug = false
-    hotReload = true
+    hotReload = false
 };

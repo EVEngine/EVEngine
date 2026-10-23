@@ -1,5 +1,7 @@
 # 声明式 UI模块
 
+[English](../../en/usr/modules/ui.md)
+
 **脚本入口：** `eve.UI()`
 
 构建并挂载保留式控件树，通过稳定 ID 消费点击和更改事件。
@@ -50,8 +52,8 @@ ui.mountBuildAs("hud");
 `setItemGridColumnSpan()` 设置最后一个子项的跨列数，`setItemAspectRatio()` 可让 Flex
 或 Grid 根据宽高比推导另一轴尺寸。
 
-`saveTreeJson()` 写出 `schema: "eve.ui.tree"` 与当前 `version: 4`。加载器把无版本文档
-视为版本 1，接受版本 1–4，拒绝未知 schema 和未来版本；未知字段会被忽略，新增字段
+`saveTreeJson()` 写出 `schema: "eve.ui.tree"` 与当前 `version: 5`。加载器把无版本文档
+视为版本 1，接受版本 1–5，拒绝未知 schema 和未来版本；未知字段会被忽略，新增字段
 均有向后兼容默认值。
 
 ```squirrel
@@ -74,6 +76,12 @@ class Counter extends eve.UIComponent {
     }
 }
 ```
+
+> **陷阱**：在 `eve.UIComponent` 的子类方法里，请写 `this.ui()`（等同 `ui()`），**不要**
+> 裸写 `ui.beginBuild()`。裸名 `ui` 在子类里解析到的是 `ui()` 这个**访问器方法本身**，
+> 而不是它的返回值，于是报 `the index 'beginBuild' does not exist`，错误信息指不到真正
+> 原因。访问器本身已经优先返回你设的全局槽位（`::ui`），所以 `this.ui()` 与你自己的全局
+> `ui` 语义一致——只有"不带调用"的裸名会踩到。
 
 ## `.9.png` 九宫格资源
 
@@ -122,6 +130,13 @@ ui.end();
 稳定 Host ID 自动写入和恢复 ini 布局。无标题 Overlay 的不透明度由
 `setHostOverlayAlpha(0..1)` 控制。
 
+系统化的编辑器壳优先用固定布局组件，而不是为每个面板开一个可任意拖动的 Window host：
+
+- `beginAppFrame` — 工具栏 + 主体 + 状态栏的固定外框
+- `beginDockArea(region)` — left/right/top/bottom/center 填充槽
+- `beginPanelFrame(title)` — 带标题的面板框（不是自由浮动 Window）
+- `beginTabBar` / `addTab` / `beginTabContainer` — 同一区域内多面板页签堆叠
+
 ```squirrel
 ui.beginToolbar("toolbar");
 ui.iconButton("save", "", "save");
@@ -143,6 +158,34 @@ ui.sectionHeader("Inspector", "inspector");
 ui.end();
 ui.end();
 ```
+
+```squirrel
+ui.beginAppFrame("shell");
+ui.beginToolbar("toolbar");
+ui.badge("EDIT", "mode");
+ui.end();
+ui.beginDockArea("center", "center");
+ui.beginTabContainer("viewport", "tabs");
+ui.beginTabBar("tabs/bar");
+ui.addTab("Viewport", "viewport", true);
+ui.addTab("Graph", "graph", false);
+ui.end();
+ui.beginPanelFrame("Viewport", "viewport");
+ui.text("Preview", "preview");
+ui.end();
+ui.beginPanelFrame("Graph", "graph");
+ui.text("Nodes", "nodes");
+ui.end();
+ui.end();
+ui.end();
+ui.beginStatusBar("status");
+ui.text("Ready", "ready");
+ui.end();
+ui.end();
+```
+
+`EditorWorkspace` 描述符可由 `UiEditorModule.mountWorkspaceShell(ui, workspace, hostName)`
+映射到上述固定壳（`WorkspaceLayoutShell`）；见 `examples/editor-workspace-shell`。
 
 ### 使用内置编辑器图标
 
@@ -268,8 +311,33 @@ ImGui 样式栈自然作用于子树；子节点只覆盖自己声明的 token�
 原生控件原语，因此尺寸、禁用态和编辑结果语义一致。文本输入持有 UTF-8 `std::string` 并在
 ImGui 请求扩容时增长，不再使用 1 KiB/512 字节固定缓冲；SDL/ImGui 后端继续负责平台 IME。
 
-轻量动效可用 `animateItemOpacity(id, target, durationMs)`；它只改节点瞬态 opacity，不污染
-JSON 资产或 StyleClass 注册表。`getLayoutDiagnostics()` 输出各节点测量尺寸和横纵溢出，
+轻量动效由 `UiTweenDriver` 驱动，在 `beginFrameAndRender()` / `tickTweens(nowMs)` 中推进：
+
+- `animateHostPos(x, y, durationMs, ease = "smoothstep", delayMs = 0)` — 宿主窗口位置
+- `animateHostSize(w, h, durationMs, ease, delayMs)` — 宿主显式尺寸
+- `animateHostOverlayAlpha(alpha, durationMs, ease, delayMs)` — 叠加层背景透明度
+- `animateItemOpacity(id, opacity, durationMs, ease, delayMs)` — 节点瞬态 opacity（不写 JSON / StyleClass）
+- `animateItemPos(id, x, y, durationMs, ease, delayMs)` — 绝对定位节点偏移（自动 `absolute`）
+
+`durationMs <= 0` 且无 delay 时立即跳到终点；再次对同一属性调用会替换未完成的补间。
+`cancelHostTweens()` / `cancelItemTweens(id)` / `cancelAllTweens()` 取消选中宿主上的待定补间。
+缓动名与 Motion/Math 对齐（`smoothstep` 为默认，另有 linear、Quad/Cubic/Sine/Expo、Back/Elastic/Bounce）；
+未知名称按 linear 处理。
+
+需要 loops / Sequence / Punch，或与 `SimulationStep` 同拍时，用 `eve.Animation()` 的 Motion
+经 UI 侧 sink 推送写回（animation 模块启用时编译 `UiMotionSinks`）：
+
+```cpp
+UiHostPosSink posSink(hostHandle);
+UiNodeOpacitySink opacitySink(hostHandle, "panel");
+anim->motionVec2({0,0}, {120,60}, 0.35f).ease("outQuad").bind(posSink);
+anim->motion(0.f, 1.f, 0.25f).ease("outCubic").bind(opacitySink);
+anim->advance(step);  // 与游戏时钟同泵
+```
+
+无 animation 的裁剪构建仍保留上方 `animate*` 便利路径；sink 桥接 TU 会被排除。
+
+`getLayoutDiagnostics()` 输出各节点测量尺寸和横纵溢出，
 `getAccessibilitySnapshot()` 输出语义节点的 role/name/description、enabled 与 focused 状态，
 供调试器和自动化读取而不触碰 ImGui 内部对象。
 
@@ -279,19 +347,12 @@ JSON 资产或 StyleClass 注册表。`getLayoutDiagnostics()` 输出各节点�
 - 多个控件使用同一 ID。
 - 未循环消费全部 click/change，队列在后续帧才清空。
 
-## API 快查
+## 绑定与行为说明
 
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
-
-- `beginBuild()`、`beginCard()`、`beginChild()`、`beginCollapsing()`、`beginColumn()`、`beginFlex()`、`beginFrameAndRender()`、`beginGroup()`、`beginList()`、`beginMenu()`、`beginMenuBar()`、`beginNinePatch()`、`beginRow()`、`beginSidebar()`、`beginSplitPane()`、`beginStatusBar()`、`beginScrollList()`、`beginToolbar()`、`beginToolbox()`、`beginWindow()`、`bindOwner()`
-- `animateHostPos()`、`animateItemOpacity()`、`badge()`、`button()`、`checkbox()`、`colorPalette()`、`combo()`、`consumeChange()`、`consumeClick()`、`consumeDrop()`、`dispatchEvents()`、`dragDropSupport()`、`end()`、`getChecked()`、`getColorA()`、`getColorB()`、`getColorG()`、`getColorR()`、`getDropOrigin()`、`getDropSource()`、`getDropText()`、`getDropType()`、`getName()`
-- `getFocusedId()`、`getScale()`、`getTheme()`、`getValue()`、`getValueText()`、`icon()`、`iconButton()`、`initBackend()`、`inputText()`、`isBackendReady()`、`listItem()`、`mountBuild()`、`moveFocus()`
-- `menuItem()`、`mountBuildAs()`、`mountSimple()`、`progress()`、`remountBuildAs()`、`sameLine()`、`searchField()`、`sectionHeader()`、`select()`、`separator()`、`setChecked()`
-- `requestFocus()`、`setEnabled()`、`setFlexAlign()`、`setFlexJustify()`、`setHostAnchor()`、`setHostLayer()`、`setHostModal()`、`setHostMovable()`、`setHostOverlay()`、`setHostOverlayAlpha()`、`setHostPercent()`、`setHostPos()`、`setHostResizable()`、`setHostSize()`、`setHostVisible()`、`setHostWorldAnchor()`、`clearHostWorldAnchor()`、`setHostWorldEdgePolicy()`、`setHostWorldDistanceScale()`、`setHostWorldOverlap()`、`getHostWorldState()`、`getHostWorldScreenX()`、`getHostWorldScreenY()`、`setImageCornerRadius()`、`setImageNinePatch()`、`setImageTint()`、`setImageUv()`、`setItemAbsolute()`、`setItemAccessibility()`、`setItemAlignSelf()`、`setItemDragSource()`、`setItemDropTarget()`、`setItemEnabled()`、`setItemSelected()`、`setItemFlexBasis()`、`setItemFlexGrow()`、`setItemFlexShrink()`、`setItemFocusMode()`、`setItemFocusNeighbors()`、`setItemFocusOrder()`、`setItemMargin()`、`setItemMaxSize()`、`setItemMinSize()`、`setItemMouseFilter()`、`setItemPadding()`、`setItemPercent()`、`setItemSize()`、`setItemTabIndex()`、`setItemTheme()`、`setItemTooltip()`、`setNavGamepad()`、`setNavKeyboard()`、`setScale()`、`setText()`
-- `setTextWrap()`、`setTheme()`、`setThemeDark()`、`setThemeLight()`、`setThemeScope()`、`defineStyleClass()`、`setStyleClassColor()`、`setStyleClassMetric()`、`clearStyleClasses()`、`setItemStyleClass()`、`setStyleScope()`、`setColor()`、`setValue()`、`setValueText()`、`setVisible()`、`slider()`、`spacer()`、`switch()`、`text()`、`textWrapped()`、`wantCaptureKeyboard()`
-- `wantCaptureMouse()`、`registerTexture()`、`unregisterTexture()`、`setImageTextureId()`、`setImageNinePatchFile()`
-- `image()`、`imageButton()`、`ninePatch()`、`onClick()`、`onChange()`、`saveTreeJson()`、`loadTreeJson()`、`getStats()`、`getLayoutDiagnostics()`、`getAccessibilitySnapshot()`
-- `viewport()`、`viewportCanvas()`、`viewportHovered()`、`viewportActive()`、`viewportMouseX()`、`viewportMouseY()`、`viewportDragDX()`、`viewportDragDY()`、`viewportWheel()`
+`propertySchema(instance)` 返回脚本实例经反射派生的属性 schema 表（`typeId` /
+`version` / `properties[]`，含 `path`、`kind`、`displayName`、`readOnly`、数值约束与
+`choices`）。`editor="color"|"vec2"|"vec3"|"vec4"|slider|combo` 等 attribute 决定 kind；
+可编辑面板请用 `inspectObject(instance)`，不要把 schema 表当成第二权威状态。
 
 ## 引擎纹理控件
 
@@ -390,7 +451,6 @@ Canvas 和目标时，FullScreen 输出原始 `canvasHeight`；`partScreen=true`
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/ui/`](../../../src/modules/ui/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `ui`。
@@ -489,3 +549,40 @@ PcgPhotoModeApplyPlan 比较两个完整 PcgPhotoModeValues 快照，按 Pcg 源
 ### Pcg Lighting profile 身份
 
 PhotoMode 的 `m_isUsingPcgLighting` 与 `m_selectedPcgLightingProfile` 由 `PcgPhotoModePhotoAuthority` 作为持久化身份联合保存。`lightingProfileMatches(currentProfile)` 同时比较 profile 索引和 Pcg/custom 模式；`PcgPhotoModeSession.begin()` 也使用这两个条件与场景名、渲染管线共同决定是否允许加载旧设置。
+
+### 组件修改自动合并
+
+C++ `Component::markDirty()` / `setState()` 将组件加入一次性弱注册队列；`UISystem::render` 在开始 host/widget 遍历前刷新。脚本 `UIComponent` 沿用自动队列。重复标脏合并一次；`build()` 内再次标脏留到下一批，失败保留脏状态与剩余队列，组件销毁取消注册。简单 `setText` 直接更新节点，相同文本跳过赋值。
+
+Getter 不构建树。`rebuild(forceFull)` 保留为兼容的显式同步入口，其成本是完整描述树构建；常规代码只修改状态。组件不可复制或移动，不允许在其 `build()` 回调中销毁自己。
+
+## 工具界面的文本与提示
+
+版本 5 增加 `link`、`helpText`、`disabledReason`、`multiline`、`readOnly` 和
+`placeholder`。旧文档中的这些属性默认分别为空字符串或 `false`；未知字段继续忽略。
+
+```squirrel
+ui.link("使用说明", "https://example.com/manual", "manual");
+ui.setItemTooltip("打开使用说明");
+ui.inputText("备注", "", "notes");
+ui.setItemTextInput(true, false, "");
+ui.setItemHelp("支持多行纯文本", "当前文档不可编辑");
+```
+
+链接是独立的可聚焦文本控件，可以与普通文本通过 `sameLine` 组合；不解析 Markdown
+或 HTML。`valueText` 保存目标 URI。鼠标或键盘激活后走已有的 click 事件／C++ `onClick`
+回调，由工具决定如何导航；控件自身不启动浏览器或外部进程。自动化快照提供 `target`
+和 `link` 角色，自动化点击沿用现有接口。回调沿用 UI 线程事件派发与生命周期约定。
+
+C++ 使用 `link(label, target, id, onClick)`、
+`inputText(...).withTextInput(multiline, readOnly, placeholder)` 和
+`.withHelp(helpText, disabledReason)`。只读文本仍可选择和复制；placeholder 用于单行
+输入。帮助文本常驻显示在控件下方；禁用原因优先于普通 tooltip，并支持悬停禁用控件
+时显示。可聚焦控件在获得键盘焦点时也显示 tooltip。
+
+EditorHost JSON 使用 `{"type":"link","id":"manual","label":"使用说明","target":"..."}`；
+激活产生携带 target 的 click 事件。其 `input` 同样支持 `multiline`、`readOnly`、
+`placeholder`，各控件支持 `helpText`、`disabledReason`、`tooltip`。
+
+工具的进度、就绪／错误状态和取消／重试操作继续使用已有的 `progress`、`badge`、
+`statusBar` 和按钮，由工具根据自身执行结果设置文本与可用状态。

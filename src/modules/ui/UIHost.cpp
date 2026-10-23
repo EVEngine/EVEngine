@@ -10,6 +10,7 @@ uint32_t g_anonHostSeq = 0;
 
 bool focusableType(NodeType type) {
     switch (type) {
+        case NodeType::Link:
         case NodeType::Button:
         case NodeType::Checkbox:
         case NodeType::Slider:
@@ -130,7 +131,7 @@ eve::OptionalRef<UINode> UIHost::findByKey(const std::string &key) {
 }
 
 void UIHost::setTextById(const std::string &id, const std::string &text) {
-    if (auto n = findById(id)) n->get().text = text;
+    if (auto n = findById(id); n && n->get().text != text) n->get().text = text;
 }
 
 void UIHost::setVisibleById(const std::string &id, bool visible) {

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "stylize/MeshParticleEmitter.h"
 #include "stylize/TrailEffect.h"
@@ -36,7 +38,7 @@ struct MotionEchoAdvanceReport {
  * The trail owns positions and ages. update() interpolates missed samples for
  * high-speed movement and performs deferred expiration after aging all points.
  */
-class ProjectileTrailEffect {
+class EVENGINE_API_WORLD ProjectileTrailEffect {
 public:
     /** @brief Construct with sanitized positive timing/capacity limits. */
     explicit ProjectileTrailEffect(ProjectileTrailConfig config = {});
@@ -90,7 +92,7 @@ struct AfterimageEffectConfig {
  * Stable IDs remain valid until each snapshot expires. The class owns no mesh,
  * shader or target handle and is therefore safe to update outside rendering.
  */
-class AfterimageEffect {
+class EVENGINE_API_WORLD AfterimageEffect {
 public:
     /** @brief Construct with sanitized timing/capacity limits. */
     explicit AfterimageEffect(AfterimageEffectConfig config = {});

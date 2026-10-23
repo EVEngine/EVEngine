@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <string>
@@ -45,7 +47,7 @@ struct [[nodiscard]] AgentDevelopmentResult {
  * game, Editor, renderer, filesystem, or test-runner state; evidence is an immutable
  * receipt that refers to those authoritative systems.
  */
-class AgentDevelopmentSession final {
+class EVENGINE_API_FOUNDATION AgentDevelopmentSession final {
 public:
     /** @brief Return the process-lifetime session authority. */
     static AgentDevelopmentSession& instance();
@@ -95,7 +97,7 @@ private:
 };
 
 /** @brief Stable JSON protocol name for a development phase. */
-std::string_view agentDevelopmentPhaseName(AgentDevelopmentPhase phase);
+EVENGINE_API_FOUNDATION std::string_view agentDevelopmentPhaseName(AgentDevelopmentPhase phase);
 /** @brief Parse a stable JSON protocol phase name. */
 [[nodiscard]] AgentDevelopmentResult parseAgentDevelopmentPhase(std::string_view name,
                                                                 AgentDevelopmentPhase* phase);

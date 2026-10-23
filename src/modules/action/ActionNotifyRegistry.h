@@ -1,6 +1,15 @@
 #pragma once
+#include "common/Export.h"
 
-/** @file ActionNotifyRegistry.h @brief Extensible notify descriptors, validation and runtime routing. */
+
+/** @file ActionNotifyRegistry.h
+ *  @brief Extensible notify descriptors, validation and runtime routing.
+ *
+ *  Descriptor ownership lives here. Typed payload schemas live in the
+ *  `Action*Block.h` / `ActionNotifyContracts.h` catalogue (L1, no domain mutation).
+ *  Presentation and combat modules install handlers through `IActionNotifyProvider`
+ *  or capability sinks; missing providers fail observably at dispatch.
+ */
 
 #include "action/Action.h"
 #include "common/AttachmentPoint.h"
@@ -65,6 +74,7 @@ struct ActionNotifyContext {
  */
 class IActionNotifyHandler {
 public:
+    /** @brief Releases IActionNotifyHandler resources. */
     virtual ~IActionNotifyHandler() = default;
     /**
      * @brief Consume one already validated event.
@@ -114,6 +124,7 @@ public:
 class IActionNotifyProvider {
 public:
     static constexpr const char* capabilityName = "eve.action.notify-provider";
+    /** @brief Releases IActionNotifyProvider resources. */
     virtual ~IActionNotifyProvider() = default;
 
     /**
@@ -131,7 +142,7 @@ public:
  * registry so plugin unload cannot leave a raw pointer. All methods are
  * owner-thread-only; unregister before unloading handler code.
  */
-class ActionNotifyRegistry {
+class EVENGINE_API_PLATFORM ActionNotifyRegistry {
 public:
     /** @brief Build a registry containing the engine's standard semantic notify types. */
     [[nodiscard]] static Result<ActionNotifyRegistry> withBuiltins();

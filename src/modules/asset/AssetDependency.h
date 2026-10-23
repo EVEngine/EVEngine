@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file AssetDependency.h @brief Typed dependency closure validation for `.eva`. */
 
@@ -22,7 +24,7 @@ struct EvaDependencyValidation {
 };
 
 /** @brief Validate local/external references, expected types and required-edge acyclicity. */
-[[nodiscard]] Result<EvaDependencyValidation> validateEvaDependencies(
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<EvaDependencyValidation> validateEvaDependencies(
     const EvaManifest& manifest, std::span<const AvailableAssetDependency> available = {});
 
 }  // namespace eve::asset

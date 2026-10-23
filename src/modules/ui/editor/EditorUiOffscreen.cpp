@@ -4,7 +4,7 @@
 
 namespace eve::editor {
 
-EditorResult<OffscreenPreviewArtifact> UiOffscreenPreviewRenderer::render(const UiDocumentTarget& document, int width,
+Result<OffscreenPreviewArtifact> UiOffscreenPreviewRenderer::render(const UiDocumentTarget& document, int width,
                                                                           int height) const {
     if (!previews_ || !rectangles_)
         return eve::editing::failed<OffscreenPreviewArtifact>(
@@ -17,13 +17,13 @@ EditorResult<OffscreenPreviewArtifact> UiOffscreenPreviewRenderer::render(const 
     UiDocumentPreviewService layout;
     const UiPreviewSnapshot  snapshot = layout.build(document, width, height);
     if (snapshot.status != EditorStatus::Applied)
-        return EditorResult<OffscreenPreviewArtifact>::failure(
+        return Result<OffscreenPreviewArtifact>::failure(
             Status(snapshot.status, snapshot.diagnostics));
     UiSkinDrawPlan skinPlan;
     if (assets_ && skins_) {
         skinPlan = UiSkinPreviewPlanner().build(document, snapshot, *assets_);
         if (skinPlan.status != EditorStatus::Applied)
-            return EditorResult<OffscreenPreviewArtifact>::failure(
+            return Result<OffscreenPreviewArtifact>::failure(
                 Status(skinPlan.status, skinPlan.diagnostics));
     }
     OffscreenPreviewRequest request;

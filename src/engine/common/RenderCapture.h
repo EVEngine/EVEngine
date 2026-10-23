@@ -13,7 +13,7 @@
 namespace eve {
 
 /** @brief Render surface / frame state snapshot (value type). */
-struct EVENGINE_API RenderStatusInfo {
+struct EVENGINE_API_FOUNDATION_INLINE RenderStatusInfo {
     int width = 0, height = 0, pixelWidth = 0, pixelHeight = 0;
     bool had3DThisFrame = false;
     bool readbackEnabled = false;
@@ -21,7 +21,7 @@ struct EVENGINE_API RenderStatusInfo {
 };
 
 /** @brief Generation-qualified snapshot of one live field-backed Renderable3D. */
-struct EVENGINE_API Renderable3DInfo {
+struct EVENGINE_API_FOUNDATION_INLINE Renderable3DInfo {
     std::uint32_t entityId = 0;
     std::uint32_t generation = 0;
     float x = 0.f, y = 0.f, z = 0.f;
@@ -31,19 +31,30 @@ struct EVENGINE_API Renderable3DInfo {
     bool hasPackedMaterial = false, hasTexture = false, hasShader = false;
 };
 
+/** @brief Pixel size reported by a successful frame/image capture. */
+struct EVENGINE_API_FOUNDATION_INLINE CaptureImageInfo {
+    int width  = 0;
+    int height = 0;
+};
+
 /** @brief Frame capture + camera + visible-entity inspection (graphics). */
-class EVENGINE_API IRenderCapture {
+class EVENGINE_API_FOUNDATION_INLINE IRenderCapture {
 public:
     static constexpr const char* capabilityName = "IRenderCapture";
 
+    /** @brief I render capture. */
     virtual ~IRenderCapture() = default;
 
+    /** @brief Status. */
     virtual RenderStatusInfo status() const = 0;
     /** @brief Enable/disable full-frame readback for subsequent presents. */
     virtual void setReadbackEnabled(bool enabled) = 0;
-    /** @brief Capture the last presented frame and write a PNG. */
-    virtual bool savePng(const std::string& path, int* outWidth, int* outHeight,
-                         std::string* err) = 0;
+    /**
+     * @brief Capture the last presented frame and write a PNG.
+     * @param path Destination filesystem path.
+     * @return Pixel size on success; Failed/Unsupported with diagnostics otherwise.
+     */
+    [[nodiscard]] virtual Result<CaptureImageInfo> savePng(const std::string& path) = 0;
     /** @brief Capture the last presented frame as a base64 PNG data URL. */
     virtual std::string capturePngDataUrl() = 0;
 
@@ -74,11 +85,17 @@ public:
                                               float tz, float fovYDeg, bool* ok) = 0;
     /** @brief Per-pixel entity-ID mask JSON (id -> node map). */
     virtual std::string entityIdMaskJson(int* outWidth, int* outHeight, bool* ok) = 0;
-    /** @brief Render the entity-ID mask and write it as a PNG. */
-    virtual bool entityIdMaskPng(const std::string& path, std::string* err) = 0;
-    /** @brief Save a G-buffer attachment ("depth"|"normal") as PNG. */
-    virtual bool gbufferPng(const std::string& name, const std::string& path,
-                            std::string* err) = 0;
+    /**
+     * @brief Render the entity-ID mask and write it as a PNG.
+     * @param path Destination filesystem path.
+     */
+    [[nodiscard]] virtual Result<void> entityIdMaskPng(const std::string& path) = 0;
+    /**
+     * @brief Save a G-buffer attachment ("depth"|"normal") as PNG.
+     * @param name Attachment name.
+     * @param path Destination filesystem path.
+     */
+    [[nodiscard]] virtual Result<void> gbufferPng(const std::string& name, const std::string& path) = 0;
 };
 
 }  // namespace eve

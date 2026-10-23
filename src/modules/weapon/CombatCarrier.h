@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file CombatCarrier.h
@@ -119,6 +121,7 @@ struct CarrierHandle {
     std::uint32_t slot       = 0;
     std::uint32_t generation = 0;
 
+    /** @brief Operator ==. */
     friend bool operator==(const CarrierHandle&, const CarrierHandle&) = default;
 };
 
@@ -218,6 +221,7 @@ struct CarrierRuntimeSnapshot {
  */
 class ICarrierHitProbe {
 public:
+    /** @brief Releases ICarrierHitProbe resources. */
     virtual ~ICarrierHitProbe() = default;
 
     /** @brief Owning contact reported between previous and current motion. */
@@ -258,6 +262,7 @@ struct CarrierBodyDefenseSample {
  */
 class ICarrierBodyDefenseProvider {
 public:
+    /** @brief Releases ICarrierBodyDefenseProvider resources. */
     virtual ~ICarrierBodyDefenseProvider() = default;
 
     /**
@@ -275,8 +280,8 @@ public:
  * OnHit→EmitHit+Release. Homing requires a positive turn rate already validated
  * by ProjectileDefinition.
  */
-[[nodiscard]] Result<CarrierRecipe> carrierRecipeFromProjectile(const ProjectileDefinition& definition,
-                                                                double damage = 0.0);
+[[nodiscard]] EVENGINE_API_WORLD Result<CarrierRecipe> carrierRecipeFromProjectile(
+    const ProjectileDefinition& definition, double damage = 0.0);
 
 /**
  * @brief Owner-thread deterministic carrier simulator with composable behaviors.
@@ -285,8 +290,9 @@ public:
  * all target/hit lookups succeed. Child spawns are attempted at frame end; pool
  * exhaustion fails the whole frame without partial publish.
  */
-class CombatCarrierRuntime {
+class EVENGINE_API_WORLD CombatCarrierRuntime {
 public:
+    /** @brief Combat carrier runtime. */
     CombatCarrierRuntime();
 
     /** @brief Resize the pool while empty; capacity must be in 1..1048576. */
@@ -317,6 +323,7 @@ public:
     [[nodiscard]] Result<std::vector<CarrierHandle>> spawnVolley(const LogicalId&           recipeId,
                                                                  const CarrierSpawnRequest& request,
                                                                  const CarrierVolleySpec&   volley);
+    /** @brief Spawn volley. */
     [[nodiscard]] Result<std::vector<CarrierHandle>> spawnVolley(const CarrierRecipe&       recipe,
                                                                  const CarrierSpawnRequest& request,
                                                                  const CarrierVolleySpec&   volley);

@@ -43,6 +43,7 @@ struct VirtualTextureBlendStats {
 struct VirtualTexturePageId {
     int  x                                                   = 0;
     int  y                                                   = 0;
+    /** @brief Operator ==. */
     bool operator==(const VirtualTexturePageId& other) const = default;
 };
 
@@ -76,7 +77,7 @@ struct VirtualTextureResidentSet {
  * @thread Not thread-safe; create, mutate, and request pages on one authoring/render thread.
  * @reentrancy Does not invoke callbacks.
  */
-class VirtualTextureBlend {
+class EVENGINE_API_BACKENDS VirtualTextureBlend {
 public:
     /** @brief Validate configuration and create an empty virtual texture. */
     [[nodiscard]] static eve::Result<std::unique_ptr<VirtualTextureBlend>> create(
@@ -119,8 +120,11 @@ public:
     /** @brief Snapshot current cache counters. */
     VirtualTextureBlendStats stats() const;
 
+    /** @brief Page count x. */
     int                              pageCountX(int mipLevel = 0) const;
+    /** @brief Page count y. */
     int                              pageCountY(int mipLevel = 0) const;
+    /** @brief Config. */
     const VirtualTextureBlendConfig& config() const { return config_; }
 
 private:
@@ -130,9 +134,11 @@ private:
         int       y                                      = 0;
         int       mip                                    = 0;
         Attribute attribute                              = Attribute::Albedo;
+        /** @brief Operator ==. */
         bool      operator==(const PageKey& other) const = default;
     };
     struct PageKeyHash {
+        /** @brief Operator . */
         std::size_t operator()(const PageKey& key) const noexcept;
     };
     struct CacheEntry {

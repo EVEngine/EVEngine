@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "thread/Task.h"
 
@@ -21,16 +23,21 @@ class Channel;
  * @brief Fixed-size worker pool. Owns worker std::threads; tasks run FIFO.
  * Squirrel VM is not thread-safe — do not call into scripts from workers.
  */
-class ThreadPool {
+class EVENGINE_API_FOUNDATION ThreadPool {
 public:
+    /** @brief Thread pool. */
     explicit ThreadPool(int workerCount);
+    /** @brief Thread pool. */
     ~ThreadPool();
 
     ThreadPool(const ThreadPool &) = delete;
     ThreadPool &operator=(const ThreadPool &) = delete;
 
+    /** @brief Returns the worker count. */
     int getWorkerCount() const;
+    /** @brief Returns the pending count. */
     int getPendingCount() const;
+    /** @brief True when running. */
     bool isRunning() const;
 
     /** @brief Submit a C++ callable. Caller owns the Task wrapper; work owns its shared state. */

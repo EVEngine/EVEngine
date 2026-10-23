@@ -1,6 +1,8 @@
 #pragma once
 
 #include "common/Module.h"
+#include "stylize/AttackVfxRecipe.h"
+#include "stylize/AttackVfxRuntime.h"
 #include "stylize/MeshEffect.h"
 #include "stylize/MeshEffectRenderer.h"
 #include "stylize/MeshVfxAsset.h"
@@ -36,6 +38,7 @@ class StyleRecipe;
  *   - "watercolor" — paper / bleed post
  *   - "ink"        — ink-wash post (+ mesh)
  *   - "pixel"      — pixel-art post
+ *   - "impasto"   — UV brush normals, stepped light and oily reflections (mesh)
  *   - "xray"       — depth-aware mesh technique
  *
  * Extension points (keep these stable):
@@ -49,15 +52,21 @@ class StyleRecipe;
  *
  * Script: `stylize <- eve.Stylize();`
  */
-class Stylize : public Module {
+class EVENGINE_API_WORLD Stylize : public Module {
 public:
     Module_REG(Stylize);
-    Stylize() = default;
-    ~Stylize() override = default;
+    /** @brief Stylize. */
+    Stylize();
+    /** @brief Stylize. */
+    ~Stylize() override;
 
+    /** @brief Returns the style count. */
     int         getStyleCount() const;
+    /** @brief Returns the style id. */
     std::string getStyleId(int index) const;
+    /** @brief True when style. */
     bool        hasStyle(const std::string &style) const;
+    /** @brief True when mesh style. */
     bool        hasMeshStyle(const std::string &style) const;
 
     /**
@@ -72,6 +81,7 @@ public:
 
     /** @brief Introspect built-in post param names (empty for unknown / custom-only ids). */
     int         getStyleParamCount(const std::string &style) const;
+    /** @brief Returns the style param name. */
     std::string getStyleParamName(const std::string &style, int index) const;
 
     /** @brief Create a mutable parameter instance of an immutable style definition. */
@@ -89,6 +99,8 @@ public:
     [[nodiscard]] std::unique_ptr<SkillMeshEffect> createSkillMeshEffect(SkillMeshEffectKind kind);
     /** @brief Instantiate all runtime layers, reporting incompatible authored style parameters. */
     [[nodiscard]] eve::Result<std::unique_ptr<MeshVfxAssetInstance>> createMeshVfxAssetInstance(const MeshVfxAsset& asset);
+    /** @brief Create an empty AttackVfxRuntime pool for layered attack presentation recipes. */
+    [[nodiscard]] std::unique_ptr<AttackVfxRuntime> createAttackVfxRuntime();
 
     /** @brief Post-process StylePass (shader owned by Graphics). */
     StylePass *newPass(graphics::Graphics *gfx, const std::string &style);
@@ -101,6 +113,7 @@ public:
     StylePass *newPassFromShader(const std::string &styleId, graphics::Shader *shader);
 
     /** Empty multi-pass chain (caller adds StylePass*). */
+    /** @brief Creates a chain. @ownership Caller deletes unless documented otherwise. */
     StyleChain *newChain();
 
     /** @brief Raw post Shader with defaults (owned by Graphics). */

@@ -1,6 +1,7 @@
 #include "climbing/Climbing.h"
 
 #include "climbing/ClimbingCodec.h"
+#include "climbing/ClimbingEventValue.h"
 #include "physics/World3D.h"
 
 #include <charconv>
@@ -139,70 +140,7 @@ bool readPhase(std::string_view value, ClimbingPhase& output) {
     return true;
 }
 
-std::string_view eventKindName(ClimbingEventKind kind) {
-    switch (kind) {
-        case ClimbingEventKind::Started: return "started";
-        case ClimbingEventKind::AnchorTransitionStarted: return "anchor_transition_started";
-        case ClimbingEventKind::AnchorReached: return "anchor_reached";
-        case ClimbingEventKind::ContactLeftHand: return "contact_left_hand";
-        case ClimbingEventKind::ContactRightHand: return "contact_right_hand";
-        case ClimbingEventKind::Landed: return "landed";
-        case ClimbingEventKind::Hanging: return "hanging";
-        case ClimbingEventKind::Dropped: return "dropped";
-        case ClimbingEventKind::Completed: return "completed";
-        case ClimbingEventKind::Cancelled: return "cancelled";
-        case ClimbingEventKind::Failed: return "failed";
-    }
-    return "failed";
-}
-
-bool readEventKind(std::string_view value, ClimbingEventKind& output) {
-    if (value == "started")
-        output = ClimbingEventKind::Started;
-    else if (value == "anchor_transition_started")
-        output = ClimbingEventKind::AnchorTransitionStarted;
-    else if (value == "anchor_reached")
-        output = ClimbingEventKind::AnchorReached;
-    else if (value == "contact_left_hand")
-        output = ClimbingEventKind::ContactLeftHand;
-    else if (value == "contact_right_hand")
-        output = ClimbingEventKind::ContactRightHand;
-    else if (value == "landed")
-        output = ClimbingEventKind::Landed;
-    else if (value == "hanging")
-        output = ClimbingEventKind::Hanging;
-    else if (value == "dropped")
-        output = ClimbingEventKind::Dropped;
-    else if (value == "completed")
-        output = ClimbingEventKind::Completed;
-    else if (value == "cancelled")
-        output = ClimbingEventKind::Cancelled;
-    else if (value == "failed")
-        output = ClimbingEventKind::Failed;
-    else
-        return false;
-    return true;
-}
-
-eve::Value eventValue(const ClimbingEvent& event) {
-    eve::Value::Array metadata;
-    metadata.reserve(event.metadata.size());
-    for (const std::string& value : event.metadata) metadata.emplace_back(value);
-    return eve::Value::object({
-        {"kind", std::string(eventKindName(event.kind))},
-        {"actionId", event.actionId},
-        {"tick", std::to_string(event.tick.value())},
-        {"executionId", std::to_string(event.executionId.value())},
-        {"metadata", eve::Value(std::move(metadata))},
-    });
-}
-
-eve::Value eventArrayValue(const std::vector<ClimbingEvent>& events) {
-    eve::Value::Array values;
-    values.reserve(events.size());
-    for (const auto& event : events) values.push_back(eventValue(event));
-    return eve::Value(std::move(values));
-}
+eve::Value eventArrayValue(const std::vector<ClimbingEvent>& events) { return climbingEventArrayValue(events); }
 
 eve::Result<std::vector<ClimbingEvent>> readEvents(const eve::Value& value, std::uint64_t nextExecutionId) {
     const auto* array = value.getIf<eve::Value::Array>();
@@ -220,7 +158,8 @@ eve::Result<std::vector<ClimbingEvent>> readEvents(const eve::Value& value, std:
         std::string   kind;
         std::uint64_t tick = 0;
         std::uint64_t executionId = 0;
-        if (!object || !readString(*object, "kind", kind) || !readEventKind(kind, event.kind) ||
+        if (!object || !readString(*object, "kind", kind) ||
+            parseClimbingEventKind(kind, event.kind) != EventKindParse::Parsed ||
             !readString(*object, "actionId", event.actionId) || event.actionId.empty() ||
             !readUint64String(*object, "tick", tick) || !readUint64String(*object, "executionId", executionId) ||
             executionId == 0 || executionId >= nextExecutionId)

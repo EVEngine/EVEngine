@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <vector>
@@ -11,6 +13,7 @@ class AnimSkeleton;
 /** @brief Read-only spatial force provider sampled by dynamic bone particles. */
 class DynamicBoneForceField {
 public:
+    /** @brief Releases DynamicBoneForceField resources. */
     virtual ~DynamicBoneForceField() = default;
     /** @brief Sample model-space acceleration. @param x Position X. @param y Position Y. @param z Position Z. @param time Simulation time. @param outX Output X. @param outY Output Y. @param outZ Output Z. */
     virtual void sampleForce(float x, float y, float z, float time, float &outX, float &outY, float &outZ) const = 0;
@@ -31,12 +34,15 @@ struct DynamicBoneUpdateStats { int activeChains=0,sleepingChains=0,particles=0,
  * The skeleton is borrowed and must outlive the solver. All methods are main-thread only.
  * Simulation is tolerance-bounded, not bit-exact across floating-point platforms.
  */
-class DynamicBoneSolver {
+class EVENGINE_API_WORLD DynamicBoneSolver {
 public:
     /** @brief Construct for a borrowed skeleton, which may be null. */
     explicit DynamicBoneSolver(AnimSkeleton *skeleton);
+    /** @brief Dynamic bone solver. */
     ~DynamicBoneSolver();
+    /** @brief Dynamic bone solver. */
     DynamicBoneSolver(const DynamicBoneSolver &)            = default;
+    /** @brief Operator =. */
     DynamicBoneSolver &operator=(const DynamicBoneSolver &) = default;
 
     /** @brief Rebind the borrowed skeleton; changing it clears index-dependent state. */
@@ -178,6 +184,7 @@ private:
         bool inside = false;
     };
     struct Chain {
+        /** @brief ParticleParameters public API. */
         struct ParticleParameters {
             float stiffness = 0.5f, damping = 0.7f, inertia = 0.9f;
             float gravityScale = 1.f, radius = 0.f;

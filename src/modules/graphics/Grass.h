@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "common/PcgPhotoModeApply.h"
@@ -62,12 +64,13 @@ struct TerrainDetailOverwriteSettings {
 enum class TerrainDetailQuality { VeryLow64, Low32, Medium16, High8, VeryHigh4, Ultra2 };
 
 /** @brief Classify a Unity terrain detail patch resolution with Pcg's exact default mapping. */
-TerrainDetailQuality terrainDetailQuality(int resolutionPerPatch) noexcept;
+EVENGINE_API_BACKENDS TerrainDetailQuality terrainDetailQuality(int resolutionPerPatch) noexcept;
 
 /** @brief Validate and copy TerrainDetailOverwrite distances/density into a foliage profile atomically. */
-[[nodiscard]] Result<int> applyTerrainDetailOverwrite(GrassFoliageSettings &foliage,
-                                                      const TerrainDetailOverwriteSettings &settings);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<int> applyTerrainDetailOverwrite(
+    GrassFoliageSettings &foliage, const TerrainDetailOverwriteSettings &settings);
 
+/** @brief Point public API. */
 struct Point {
     glm::vec3 position{0.f};
     glm::vec3 normal{0.f, 1.f, 0.f};
@@ -79,6 +82,7 @@ struct Point {
     glm::vec3 tint{-1.f};
 };
 
+/** @brief SampleParams public API. */
 struct SampleParams {
     float    radius    = 0.14f;
     int      maxPoints = 8192;
@@ -87,6 +91,7 @@ struct SampleParams {
     float minSlopeDot = 0.25f;
 };
 
+/** @brief BillboardMesh public API. */
 struct BillboardMesh {
     std::vector<float>    posXYZ;
     std::vector<float>    nrmXYZ;
@@ -95,12 +100,14 @@ struct BillboardMesh {
 };
 
 /** @brief Fast Poisson-disk / dart-throwing blue noise on a triangle mesh. */
-std::vector<Point> samplePoisson(const float *posXYZ, const float *nrmXYZ, int vertexCount, const uint32_t *indices,
-                                 int indexCount, const SampleParams &params = {});
+EVENGINE_API_BACKENDS std::vector<Point> samplePoisson(const float *posXYZ, const float *nrmXYZ, int vertexCount,
+                                                       const uint32_t *indices, int indexCount,
+                                                       const SampleParams &params = {});
 
 /** @brief Area-weighted Halton samples (deterministic, evenly spread). */
-std::vector<Point> sampleHalton(const float *posXYZ, const float *nrmXYZ, int vertexCount, const uint32_t *indices,
-                                int indexCount, int count, uint32_t seed = 1, float minSlopeDot = 0.25f);
+EVENGINE_API_BACKENDS std::vector<Point> sampleHalton(const float *posXYZ, const float *nrmXYZ, int vertexCount,
+                                                      const uint32_t *indices, int indexCount, int count,
+                                                      uint32_t seed = 1, float minSlopeDot = 0.25f);
 
 /**
  * @brief Expand a unit rectangle per point. Vertex layout:
@@ -114,20 +121,23 @@ std::vector<Point> sampleHalton(const float *posXYZ, const float *nrmXYZ, int ve
  *   The shader derives animation identity from the local root for tinted points, so model
  * transforms do not change the wind phase. Alpha remains texture-owned.
  */
-BillboardMesh buildBillboards(const std::vector<Point> &points, float width = 0.62f, float height = 0.95f,
-                              bool alwaysDark = false);
+EVENGINE_API_BACKENDS BillboardMesh buildBillboards(const std::vector<Point> &points, float width = 0.62f,
+                                                    float height = 0.95f, bool alwaysDark = false);
 
 /** @brief Discrete 4-frame index with a per-instance phase offset. */
-int swayFrame(float time, float frameDuration, uint32_t instanceId, int frameCount = 4);
+EVENGINE_API_BACKENDS int swayFrame(float time, float frameDuration, uint32_t instanceId, int frameCount = 4);
 
 /**
  * @brief Procedural 4-frame fallback atlas (horizontal strip). GPU paths should load
  * authored 2x2 PNG masks via packSwayAtlasRGBA / createSwayAtlasFromFiles.
  */
-void makeSwayAtlasRGBA(int frameW, int frameH, int frames, std::vector<uint8_t> &rgbaOut);
-int  swayAtlasWidth(int frameW, int frames);
-int  swayAtlasHeight(int frameH);
+EVENGINE_API_BACKENDS void makeSwayAtlasRGBA(int frameW, int frameH, int frames, std::vector<uint8_t> &rgbaOut);
+/** @brief Sway atlas width. */
+EVENGINE_API_BACKENDS int  swayAtlasWidth(int frameW, int frames);
+/** @brief Sway atlas height. */
+EVENGINE_API_BACKENDS int  swayAtlasHeight(int frameH);
 
+/** @brief Creates sway atlas. */
 Texture *createSwayAtlas(Graphics *gfx, int frameW = 64, int frameH = 64, int frames = 4);
 
 /** @brief Layout of a packed 2x2-per-variant sway atlas (4 grass + 2 leaf typical). */
@@ -143,26 +153,36 @@ struct PackedAtlasInfo {
 };
 
 /** @brief Load white-on-black (or RGBA) 2x2 sway PNGs and pack them into one atlas. */
-void     packSwayAtlasRGBA(const std::vector<std::string> &grassFiles, const std::vector<std::string> &leafFiles,
-                           std::vector<uint8_t> &rgbaOut, PackedAtlasInfo &info);
+EVENGINE_API_BACKENDS void packSwayAtlasRGBA(const std::vector<std::string> &grassFiles,
+                                             const std::vector<std::string> &leafFiles, std::vector<uint8_t> &rgbaOut,
+                                             PackedAtlasInfo &info);
+/** @brief Creates sway atlas from files. */
 Texture *createSwayAtlasFromFiles(Graphics *gfx, const std::vector<std::string> &grassFiles,
                                   const std::vector<std::string> &leafFiles, PackedAtlasInfo *infoOut = nullptr);
 
+/** @brief Creates shader. */
 Shader *createShader(Graphics *gfx);
-void    bindDefaults(Shader *shader);
-void    bindLayer(Shader *shader, bool alwaysDark);
+/** @brief Binds defaults. */
+EVENGINE_API_BACKENDS void bindDefaults(Shader *shader);
+/** @brief Binds layer. */
+EVENGINE_API_BACKENDS void bindLayer(Shader *shader, bool alwaysDark);
+/** @brief Binds atlas layout. */
 void    bindAtlasLayout(Shader *shader, const PackedAtlasInfo &info);
 /** @brief Select the static foliage profile and copy its validated surface parameters. */
-void    bindFoliage(Shader *shader, const GrassFoliageSettings &settings);
+EVENGINE_API_BACKENDS void bindFoliage(Shader *shader, const GrassFoliageSettings &settings);
+/** @brief Sets the time. */
 void    setTime(Shader *shader, float seconds);
+/** @brief Sets the frame duration. */
 void    setFrameDuration(Shader *shader, float seconds);
 
-int         paramCount();
-std::string paramName(int index);
+/** @brief Param count. */
+EVENGINE_API_BACKENDS int paramCount();
+/** @brief Param name. */
+EVENGINE_API_BACKENDS std::string paramName(int index);
 
 /** @brief Unit XZ plane (Y-up) for tests / demos. */
-void makePlane(float sizeX, float sizeZ, int segX, int segZ, std::vector<float> &posXYZ, std::vector<float> &nrmXYZ,
-               std::vector<uint32_t> &indices);
+EVENGINE_API_BACKENDS void makePlane(float sizeX, float sizeZ, int segX, int segZ, std::vector<float> &posXYZ,
+                                     std::vector<float> &nrmXYZ, std::vector<uint32_t> &indices);
 
 }  // namespace grass
 
@@ -170,8 +190,9 @@ void makePlane(float sizeX, float sizeZ, int segX, int segZ, std::vector<float> 
  * @brief Dense grass + sparse dark tufts on a mesh. Caller owns GrassField*;
  * GPU Mesh / Shader / Texture are owned by Graphics.
  */
-class GrassField : public IPhotoModeFieldSink {
+class EVENGINE_API_BACKENDS GrassField : public IPhotoModeFieldSink {
 public:
+    /** @brief BakeParams public API. */
     struct BakeParams {
         /** @brief Poisson spacing. Keep this well below `width` so tufts overlap. */
         float    denseRadius  = 0.14f;

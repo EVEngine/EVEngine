@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorTransactionConsumer.h"
 
@@ -8,7 +10,7 @@
 namespace eve::editor {
 
 /** @brief Executes, groups, rolls back and replays arbitrary edit commands. */
-class EditorTransactions {
+class EVENGINE_API_ORCHESTRATION EditorTransactions {
 public:
     /** @brief Begin a canonical checked transaction. */
     [[nodiscard]] eve::Result<TransactionId> beginTransaction(TransactionSpec specification);
@@ -37,11 +39,17 @@ public:
     bool undo();
     /** @brief Compatibility-only boolean projection of redoTransaction(). */
     bool redo();
+    /** @brief Clears . */
     void clear();
+    /** @brief True when active. */
     bool isActive() const { return consumer_.active(); }
+    /** @brief Can undo. */
     bool canUndo() const { return consumer_.canUndo(); }
+    /** @brief Can redo. */
     bool canRedo() const { return consumer_.canRedo(); }
+    /** @brief Undo count. */
     int  undoCount() const { return static_cast<int>(consumer_.undoCount()); }
+    /** @brief Redo count. */
     int  redoCount() const { return static_cast<int>(consumer_.redoCount()); }
 
 private:

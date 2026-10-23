@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file ResourceAccountParticipant.h
@@ -32,7 +34,7 @@ enum class ResourceDebitState : std::uint8_t {
  * owns no account balance; the referenced account and CostSpec remain
  * caller-owned and must outlive the synchronous Coordinator call.
  */
-class ResourceDebitParticipant final : public ITransactionParticipant {
+class EVENGINE_API_FOUNDATION ResourceDebitParticipant final : public ITransactionParticipant {
 public:
     /**
      * @brief Bind one debit cost to an account.
@@ -52,15 +54,19 @@ public:
     [[nodiscard]] std::string_view name() const noexcept override { return name_; }
 
     /** @copydoc ITransactionParticipant::prepare */
+    /** @brief Prepare. */
     [[nodiscard]] eve::Result<void> prepare(const TransactionContext& context) override;
 
     /** @copydoc ITransactionParticipant::commit */
+    /** @brief Commits . */
     [[nodiscard]] eve::Result<void> commit(const TransactionContext& context) override;
 
     /** @copydoc ITransactionParticipant::rollback */
+    /** @brief Rollback. */
     [[nodiscard]] eve::Result<void> rollback(const TransactionContext& context) override;
 
     /** @copydoc ITransactionParticipant::compensate */
+    /** @brief Compensate. */
     [[nodiscard]] eve::Result<void> compensate(const TransactionContext& context) override;
 
     /** @brief Return the participant lifecycle state for diagnostics/tests. */

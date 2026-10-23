@@ -5,6 +5,7 @@
 
 #define VKB_IMPL
 #include "graphics/vulkan/Graphics.h"
+#include "common/Profile.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/GlobalIllumination.h"
@@ -34,12 +35,14 @@
 #endif
 
 #include "common/BootWarmup.h"
+#include "common/Capability.h"
 #include "common/CrashLog.h"
 #include "common/Exception.h"
 #include "common/StartupTiming.h"
 #include "common/config.h"
 #include "filesystem/Filesystem.h"
 #include "graphics/GraphicsCapabilities.h"
+#include "graphics/IRayTracing.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "zeroerr/assert.h"
@@ -99,6 +102,8 @@ std::vector<const char*> collectFastInstanceExtensions(const std::vector<vk::Ext
                                                        vk::InstanceCreateFlags*                    flagsOut) {
     std::vector<const char*> exts;
     addIfAvailable(exts, props, "VK_KHR_surface");
+    // Required before surface formats report HDR10 / extended-sRGB color spaces.
+    addIfAvailable(exts, props, "VK_EXT_swapchain_colorspace");
 #if defined(_WIN32)
     addIfAvailable(exts, props, "VK_KHR_win32_surface");
 #elif defined(__ANDROID__)
@@ -132,9 +137,22 @@ void initVulkanDispatcher() {
     }
 }
 
+uint32_t negotiatedInstanceApiVersion() {
+    // Vulkan 1.0 loaders do not expose vkEnumerateInstanceVersion. Newer
+    // loaders let us advertise the highest core version used by this backend,
+    // capped at 1.2 because that is the newest feature struct queried below.
+    uint32_t loaderVersion = VK_API_VERSION_1_0;
+    if (VULKAN_HPP_DEFAULT_DISPATCHER.vkEnumerateInstanceVersion) {
+        if (VULKAN_HPP_DEFAULT_DISPATCHER.vkEnumerateInstanceVersion(&loaderVersion) != VK_SUCCESS)
+            loaderVersion = VK_API_VERSION_1_0;
+    }
+    return std::min(loaderVersion, static_cast<uint32_t>(VK_API_VERSION_1_2));
+}
+
 vkb::Instance createInstanceFast() {
     initVulkanDispatcher();
     disableImplicitLayersIfSafe();
+    const uint32_t apiVersion = negotiatedInstanceApiVersion();
     // Enumerate instance extensions only. vk-bootstrap's SystemInfo::query() also
     // walks every implicit layer (and each layer's extensions), which is the
     // bulk of "instance + surface" on a Windows SDK install.
@@ -144,7 +162,7 @@ vkb::Instance createInstanceFast() {
 
     if (wantVulkanValidation()) {
         vkb::InstanceBuilder builder;
-        builder.require_api_version(1, 0);
+        builder.require_api_version(VK_API_VERSION_MAJOR(apiVersion), VK_API_VERSION_MINOR(apiVersion));
         builder.request_validation_layers();
         builder.use_default_debug_messenger();
         for (auto* e : exts) builder.enable_extension(e);
@@ -159,7 +177,7 @@ vkb::Instance createInstanceFast() {
     vk::ApplicationInfo app{};
     app.pApplicationName = "EVEngine";
     app.pEngineName      = "EVEngine";
-    app.apiVersion       = VK_MAKE_VERSION(1, 0, 0);
+    app.apiVersion       = apiVersion;
 
     vk::InstanceCreateInfo ci{};
     ci.flags                   = flags;
@@ -276,8 +294,9 @@ void VmaAllocatorOwner::create(const vkb::Instance& instance, const vkb::Physica
         throw Exception("VMA could not resolve vkGetDeviceProcAddr");
     }
     createInfo.pVulkanFunctions = &vulkanFunctions;
-    // InstanceBuilder requests Vulkan 1.0. VMA requires this value to describe
-    // the application's instance contract, not the physical device maximum.
+    // VMA is compiled with VMA_VULKAN_VERSION=1.0 so Android never statically
+    // imports newer core entry points. Keep the allocator on that contract even
+    // when the application instance negotiates a newer API version.
     createInfo.vulkanApiVersion = VK_API_VERSION_1_0;
     const VkResult result       = vmaCreateAllocator(&createInfo, &allocator_);
     if (result != VK_SUCCESS) throw Exception("vmaCreateAllocator failed: %d", int(result));
@@ -289,7 +308,12 @@ std::string Graphics::getBackendName() const { return "vulkan"; }
 
 bool Graphics::supportsRuntimeGlslCompilation() const { return glslRuntimeCompilationAvailable(); }
 
-Graphics::Graphics() = default;
+Graphics::Graphics() {
+    FrameCaptureCapabilities caps;
+    caps.backend = "vulkan";
+    for (int i = 0; i < 11; ++i) caps.attachments.push_back(static_cast<FrameAttachment>(i));
+    frameCaptures().configure(std::move(caps));
+}
 
 Graphics::~Graphics() {
     retireResourceLifetime();
@@ -302,10 +326,16 @@ Graphics::~Graphics() {
         return;
     }
     device->waitIdle();
+    // Drop optional RT resources while the logical device is still valid.
+    if (auto* rt = eve::cap::query<eve::graphics::IRayTracing>()) rt->detachFromGraphics();
     destroyPbrResources();
     deferredFileTextures_.clear();
     if (gpuQueryPool_) device->destroyQueryPool(gpuQueryPool_);
     gpuQueryPool_ = nullptr;
+    gpuTimingReady_ = false;
+    gpuFrameMs_     = 0.f;
+    gpuTimingPrefix_.fill(vk::CommandBuffer{});
+    gpuTimingPrefixSubmitted_.fill(false);
     // Pipeline objects hold raw Shader* owned by ownedShaders. Drop them
     // first so their destructors do not see freed shader pointers.
     pipelineAA_.reset();
@@ -313,20 +343,27 @@ Graphics::~Graphics() {
     pipelineGI_.reset();
     renderControl_.reset();
     destroyGpuParticleResources();
+    for (auto& slots : framePostTargets_) slots.clear();
+    for (auto& target : sharedFramePostTargets_) target = nullptr;
+    spatialAAResolve_ = nullptr;
     ownedCanvases.clear();
     ownedMeshes.clear();
     ownedGpuMeshes.clear();
     ownedTextures.clear();
     for (auto& g : ownedGpuTextures) {
-        if (g->sampler) device->destroySampler(g->sampler);
+        if (g->sampler && !g->sharedSampler) device->destroySampler(g->sampler);
     }
     ownedGpuTextures.clear();
+    cachedSamplers_.clear();
+    samplerChangesPending_ = false;
     texturesByPath.clear();
     for (auto& g : ownedGpuShaders) {
         if (g->swapchainPipeline) device->destroyPipeline(g->swapchainPipeline);
         if (g->offscreenPipeline) device->destroyPipeline(g->offscreenPipeline);
         if (g->swapchainOpaquePipeline) device->destroyPipeline(g->swapchainOpaquePipeline);
         if (g->offscreenOpaquePipeline) device->destroyPipeline(g->offscreenOpaquePipeline);
+        if (g->hdrOffscreenPipeline) device->destroyPipeline(g->hdrOffscreenPipeline);
+        if (g->hdrOffscreenOpaquePipeline) device->destroyPipeline(g->hdrOffscreenOpaquePipeline);
         if (g->mesh3dPipeline) device->destroyPipeline(g->mesh3dPipeline);
         if (g->mesh3dXrayPipeline) device->destroyPipeline(g->mesh3dXrayPipeline);
         if (g->mesh3dOffscreenPipeline) device->destroyPipeline(g->mesh3dOffscreenPipeline);
@@ -384,7 +421,15 @@ Graphics::~Graphics() {
     }
     clusteredStorages.clear();
     if (lit2dPipeline) device->destroyPipeline(lit2dPipeline);
+    if (lit2dAdditivePipeline) device->destroyPipeline(lit2dAdditivePipeline);
+    if (lit2dPremultipliedPipeline) device->destroyPipeline(lit2dPremultipliedPipeline);
+    if (lit2dMultiplyPipeline) device->destroyPipeline(lit2dMultiplyPipeline);
+    if (lit2dOpaquePipeline) device->destroyPipeline(lit2dOpaquePipeline);
     if (offscreenLitPipeline) device->destroyPipeline(offscreenLitPipeline);
+    if (offscreenLitAdditivePipeline) device->destroyPipeline(offscreenLitAdditivePipeline);
+    if (offscreenLitPremultipliedPipeline) device->destroyPipeline(offscreenLitPremultipliedPipeline);
+    if (offscreenLitMultiplyPipeline) device->destroyPipeline(offscreenLitMultiplyPipeline);
+    if (offscreenLitOpaquePipeline) device->destroyPipeline(offscreenLitOpaquePipeline);
     if (lit2dPipelineLayout) device->destroyPipelineLayout(lit2dPipelineLayout);
     lit2dSetLayoutUnique.reset();
     for (auto& m : lit2dSets) m.clear();
@@ -404,6 +449,22 @@ Graphics::~Graphics() {
     if (offscreenRenderPass) device->destroyRenderPass(offscreenRenderPass);
     if (hdrOffscreenTexPipeline) device->destroyPipeline(hdrOffscreenTexPipeline);
     if (hdrOffscreenOpaqueTexPipeline) device->destroyPipeline(hdrOffscreenOpaqueTexPipeline);
+    if (hdrOffscreenAdditiveTexPipeline) device->destroyPipeline(hdrOffscreenAdditiveTexPipeline);
+    if (hdrOffscreenPremultipliedTexPipeline) device->destroyPipeline(hdrOffscreenPremultipliedTexPipeline);
+    if (hdrOffscreenMultiplyTexPipeline) device->destroyPipeline(hdrOffscreenMultiplyTexPipeline);
+    if (hdrOffscreenSolidPipeline) device->destroyPipeline(hdrOffscreenSolidPipeline);
+    if (hdrOffscreenSolidAlphaPipeline) device->destroyPipeline(hdrOffscreenSolidAlphaPipeline);
+    if (hdrOffscreenAdditiveSolidPipeline) device->destroyPipeline(hdrOffscreenAdditiveSolidPipeline);
+    if (hdrOffscreenPremultipliedSolidPipeline) device->destroyPipeline(hdrOffscreenPremultipliedSolidPipeline);
+    if (hdrOffscreenMultiplySolidPipeline) device->destroyPipeline(hdrOffscreenMultiplySolidPipeline);
+    if (hdrOffscreenLitPipeline) device->destroyPipeline(hdrOffscreenLitPipeline);
+    if (hdrOffscreenLitAdditivePipeline) device->destroyPipeline(hdrOffscreenLitAdditivePipeline);
+    if (hdrOffscreenLitPremultipliedPipeline) device->destroyPipeline(hdrOffscreenLitPremultipliedPipeline);
+    if (hdrOffscreenLitMultiplyPipeline) device->destroyPipeline(hdrOffscreenLitMultiplyPipeline);
+    if (hdrOffscreenLitOpaquePipeline) device->destroyPipeline(hdrOffscreenLitOpaquePipeline);
+    if (hdrOffscreenTonemapPipeline) device->destroyPipeline(hdrOffscreenTonemapPipeline);
+    if (hdrOffscreenParticleDistortionPipeline) device->destroyPipeline(hdrOffscreenParticleDistortionPipeline);
+    destroyPresentComposeResources();
     if (hdrOffscreenRenderPass) device->destroyRenderPass(hdrOffscreenRenderPass);
     texSetLayoutUnique.reset();
     if (descriptorPool) device->destroyDescriptorPool(descriptorPool);
@@ -443,6 +504,15 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
 #if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
         selector.add_required_extension("VK_KHR_portability_subset");
 #endif
+        // Soft-request KHR ray tracing. Devices without these extensions remain
+        // selectable; supported ones get the extensions into extensions_to_enable.
+        selector.add_desired_extension(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME);
+        selector.add_desired_extension(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME);
+        selector.add_desired_extension(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);
+        selector.add_desired_extension(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
+        selector.add_desired_extension(VK_KHR_SPIRV_1_4_EXTENSION_NAME);
+        selector.add_desired_extension(VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME);
+        selector.add_desired_extension(VK_KHR_RAY_QUERY_EXTENSION_NAME);
         auto phys = selector.select();
         {
             // Record the GPU identity into the crash/error log before any Vulkan
@@ -485,12 +555,15 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
             // universal, so treat it as present.
             gpuDrivenCaps_ = GpuDrivenCaps{};
             vk::PhysicalDeviceVulkan12Features vk12{};
-            vk::PhysicalDeviceFeatures2        features2{};
-            vk12.sType      = vk::StructureType::ePhysicalDeviceVulkan12Features;
-            features2.sType = vk::StructureType::ePhysicalDeviceFeatures2;
-            features2.pNext = &vk12;
-            phys->getFeatures2(&features2);
-            gpuDrivenCaps_.api12             = phys.properties.apiVersion >= VK_API_VERSION_1_2;
+            gpuDrivenCaps_.api12 = negotiatedInstanceApiVersion() >= VK_API_VERSION_1_2 &&
+                                   phys.properties.apiVersion >= VK_API_VERSION_1_2;
+            if (gpuDrivenCaps_.api12) {
+                vk::PhysicalDeviceFeatures2 features2{};
+                vk12.sType      = vk::StructureType::ePhysicalDeviceVulkan12Features;
+                features2.sType = vk::StructureType::ePhysicalDeviceFeatures2;
+                features2.pNext = &vk12;
+                phys->getFeatures2(&features2);
+            }
             gpuDrivenCaps_.computeShader     = true;
             gpuDrivenCaps_.multiDrawIndirect = supported.multiDrawIndirect == VK_TRUE;
             gpuDrivenCaps_.shaderSampledImageArrayDynamicIndexing =
@@ -505,25 +578,124 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
                 phys.features.multiDrawIndirect                       = VK_TRUE;
             }
         }
+        // Optional KHR ray tracing: soft-request extensions via desired list
+        // (already added before select). Probe features here; enable them only
+        // when every required extension is present on the physical device.
+        // extensions_to_enable is private to vk-bootstrap — re-enumerate instead.
+        rayTracingCaps_ = RayTracingCaps{};
+        vk::PhysicalDeviceAccelerationStructureFeaturesKHR rtAsEnable{};
+        vk::PhysicalDeviceRayTracingPipelineFeaturesKHR    rtPipeEnable{};
+        vk::PhysicalDeviceRayQueryFeaturesKHR              rtQueryEnable{};
+        bool                                               enableRtFeatures = false;
+        {
+            const auto extProps = phys->enumerateDeviceExtensionProperties();
+            auto       hasExt   = [&](const char* name) {
+                for (const auto& p : extProps) {
+                    if (std::strcmp(p.extensionName, name) == 0) return true;
+                }
+                return false;
+            };
+            const bool extsOk  = hasExt(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME) &&
+                                 hasExt(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME) &&
+                                 hasExt(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);
+            const bool api12   = phys.properties.apiVersion >= VK_API_VERSION_1_2;
+            const bool bdaExt  = hasExt(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME) || api12;
+            const bool spirv14 = hasExt(VK_KHR_SPIRV_1_4_EXTENSION_NAME) || api12;
+
+            vk::PhysicalDeviceBufferDeviceAddressFeatures bdaFeat{};
+            bdaFeat.sType = vk::StructureType::ePhysicalDeviceBufferDeviceAddressFeatures;
+            vk::PhysicalDeviceAccelerationStructureFeaturesKHR asFeat{};
+            asFeat.sType = vk::StructureType::ePhysicalDeviceAccelerationStructureFeaturesKHR;
+            asFeat.pNext = &bdaFeat;
+            vk::PhysicalDeviceRayTracingPipelineFeaturesKHR rtFeat{};
+            rtFeat.sType = vk::StructureType::ePhysicalDeviceRayTracingPipelineFeaturesKHR;
+            rtFeat.pNext = &asFeat;
+            vk::PhysicalDeviceFeatures2 features2Rt{};
+            features2Rt.sType = vk::StructureType::ePhysicalDeviceFeatures2;
+            features2Rt.pNext = &rtFeat;
+            phys->getFeatures2(&features2Rt);
+
+            vk::PhysicalDeviceRayQueryFeaturesKHR rqFeat{};
+            rqFeat.sType = vk::StructureType::ePhysicalDeviceRayQueryFeaturesKHR;
+            if (hasExt(VK_KHR_RAY_QUERY_EXTENSION_NAME)) {
+                // Probe rayQuery separately so its feature struct is not required
+                // on devices that only expose the acceleration-structure path.
+                vk::PhysicalDeviceFeatures2 features2Rq{};
+                features2Rq.sType = vk::StructureType::ePhysicalDeviceFeatures2;
+                features2Rq.pNext = &rqFeat;
+                phys->getFeatures2(&features2Rq);
+            }
+
+            const bool featuresOk = rtFeat.rayTracingPipeline == VK_TRUE && asFeat.accelerationStructure == VK_TRUE &&
+                                    bdaFeat.bufferDeviceAddress == VK_TRUE;
+
+            if (extsOk && bdaExt && spirv14 && featuresOk) {
+                rayTracingCaps_.accelerationStructure = true;
+                rayTracingCaps_.rayTracingPipeline    = true;
+                rayTracingCaps_.bufferDeviceAddress   = true;
+                rayTracingCaps_.available             = true;
+                if (hasExt(VK_KHR_RAY_QUERY_EXTENSION_NAME) && rqFeat.rayQuery == VK_TRUE)
+                    rayTracingCaps_.rayQuery = true;
+
+                vk::PhysicalDeviceRayTracingPipelinePropertiesKHR rtProps{};
+                rtProps.sType = vk::StructureType::ePhysicalDeviceRayTracingPipelinePropertiesKHR;
+                vk::PhysicalDeviceProperties2 props2{};
+                props2.sType = vk::StructureType::ePhysicalDeviceProperties2;
+                props2.pNext = &rtProps;
+                phys->getProperties2(&props2);
+                rayTracingCaps_.shaderGroupHandleSize      = rtProps.shaderGroupHandleSize;
+                rayTracingCaps_.shaderGroupBaseAlignment   = rtProps.shaderGroupBaseAlignment;
+                rayTracingCaps_.shaderGroupHandleAlignment = rtProps.shaderGroupHandleAlignment;
+                rayTracingCaps_.maxRecursionDepth          = rtProps.maxRayRecursionDepth;
+
+                // VUID-02830: do not chain VkPhysicalDeviceBufferDeviceAddressFeatures
+                // alongside VkPhysicalDeviceVulkan12Features. Enable BDA via the 1.2
+                // feature struct below; only AS / RT pipeline / optional rayQuery here.
+                rtAsEnable.sType                 = vk::StructureType::ePhysicalDeviceAccelerationStructureFeaturesKHR;
+                rtAsEnable.accelerationStructure = VK_TRUE;
+                rtPipeEnable.sType               = vk::StructureType::ePhysicalDeviceRayTracingPipelineFeaturesKHR;
+                rtPipeEnable.rayTracingPipeline  = VK_TRUE;
+                if (rayTracingCaps_.rayQuery) {
+                    rtQueryEnable.sType    = vk::StructureType::ePhysicalDeviceRayQueryFeaturesKHR;
+                    rtQueryEnable.rayQuery = VK_TRUE;
+                }
+                enableRtFeatures = true;
+            }
+            // When features are missing, desired RT extensions may still be
+            // listed on the device; they stay inert without the feature bits.
+        }
+
         vkb::DeviceBuilder deviceBuilder = phys.createDevice();
-        // Vulkan 1.2 feature: vkCmdDrawIndirectCount (VG cluster draws).
+        // Vulkan 1.2 feature: vkCmdDrawIndirectCount (VG cluster draws) and BDA for RT.
         vk::PhysicalDeviceVulkan12Features vk12Enable{};
         vk12Enable.sType = vk::StructureType::ePhysicalDeviceVulkan12Features;
         if (gpuDrivenCaps_.drawIndirectCount) vk12Enable.drawIndirectCount = VK_TRUE;
-        deviceBuilder.add_pNext(&vk12Enable);
+        if (enableRtFeatures) {
+            vk12Enable.bufferDeviceAddress = VK_TRUE;
+            // DeviceBuilder reconstructs the chain from individually registered
+            // structures, overwriting any prelinked pNext pointers.
+            deviceBuilder.add_pNext(&rtPipeEnable);
+            deviceBuilder.add_pNext(&rtAsEnable);
+            if (rayTracingCaps_.rayQuery) deviceBuilder.add_pNext(&rtQueryEnable);
+        }
+        if (gpuDrivenCaps_.api12) deviceBuilder.add_pNext(&vk12Enable);
         device = deviceBuilder.build();
+        // Load device-level extension entry points (needed for KHR RT).
+        VULKAN_HPP_DEFAULT_DISPATCHER.init(device.instance);
 #if defined(VKB_ENABLE_VMA)
         vmaAllocatorOwner_.create(inst, phys, device);
 #endif
         maxSamplerAnisotropy = device.caps.maxSamplerAnisotropy;
-        eve::recordLogEvent("info", "gpu: logical device created (gpuDriven=" +
-                                        std::string(gpuDrivenCaps_.gpuDrivenAvailable() ? "on" : "off") +
+        eve::recordLogEvent("info",
+                            "gpu: logical device created (gpuDriven=" +
+                                std::string(gpuDrivenCaps_.gpuDrivenAvailable() ? "on" : "off") +
+                                ", rayTracing=" + std::string(rayTracingCaps_.rayTracingAvailable() ? "on" : "off") +
 #if defined(VKB_ENABLE_VMA)
-                                        ", allocator=VMA" +
+                                ", allocator=VMA" +
 #else
-                                        ", allocator=native" +
+                                ", allocator=native" +
 #endif
-                                        ", maxAniso=" + std::to_string(maxSamplerAnisotropy) + ")");
+                                ", maxAniso=" + std::to_string(maxSamplerAnisotropy) + ")");
     }
 }
 
@@ -577,7 +749,7 @@ void Graphics::initHeadless(int width, int height) {
 
     initialized = true;
     {
-        StartupStage stage("  vulkan: shadow resources (3x2048^2 maps + pipelines)");
+        StartupStage stage("  vulkan: shadow resources (CSM atlas + pipelines)");
         createShadowResources();
     }
     {
@@ -659,7 +831,7 @@ void Graphics::initWithWindow(void* nativeWindow) {
     }
     initialized = true;
     {
-        StartupStage stage("  vulkan: shadow resources (3x2048^2 maps + pipelines)");
+        StartupStage stage("  vulkan: shadow resources (CSM atlas + pipelines)");
         createShadowResources();
     }
     {
@@ -744,7 +916,10 @@ vkb::FrameSlot Graphics::frameToken() const {
     return vkb::FrameSlot::gpuIdle();
 }
 
-void Graphics::waitForSharedGpuResources() { presentModel.waitForAllFrames(); }
+void Graphics::waitForSharedGpuResources() {
+    EV_PROFILE_MODULE("graphics", "GpuResources.WaitAllFrames");
+    presentModel.waitForAllFrames();
+}
 
 void Graphics::invalidateTextureBindings() {
     for (auto& frame : mesh3dFrameSlots) frame.sets.clear();
@@ -875,10 +1050,19 @@ bool Graphics::rebuildSwapchainIfNeeded() {
 }
 
 bool Graphics::beginPresentCommandBuffer() {
+    pollFrameCapture();
     for (int attempt = 0; attempt < 3; ++attempt) {
         if (!rebuildSwapchainIfNeeded()) return false;
-        presentRecording = presentModel.begin();
+        {
+            EV_PROFILE_MODULE("graphics", "Frame.Acquire");
+            const bool newFrame = !presentRecording;
+            presentRecording    = presentModel.begin();
+            // A slot can recur after empty frames. Its number is not a frame identity.
+            if (presentRecording && newFrame) deferredGraphRecorded_ = false;
+        }
         if (presentRecording) {
+            pollFrameCapture();
+            readGpuFrameTiming();
             writeGpuTimestampBegin();
             return true;
         }
@@ -894,17 +1078,14 @@ bool Graphics::beginPresentCommandBuffer() {
 }
 
 bool Graphics::isRenderSurfaceReady() const {
-#if defined(EVENGINE_ANDROID) || defined(EVENGINE_IOS)
     auto* window = static_cast<SDL_Window*>(sdlWindow);
     if (!window) return false;
-    // During background/resume and orientation changes the native window is
-    // torn down and rebuilt; SDL reports a zero drawable size until it settles.
+    // Mobile background/resume and desktop minimize can report a zero drawable
+    // size until the native window settles — skip present rather than touching
+    // an invalid swapchain.
     int pw = 0, ph = 0;
     SDL_Vulkan_GetDrawableSize(window, &pw, &ph);
     return pw > 0 && ph > 0;
-#else
-    return true;
-#endif
 }
 
 bool Graphics::isRenderSurfaceStable() {
@@ -972,6 +1153,7 @@ void Graphics::recreateSurfaceForResume() {
 }
 
 void Graphics::present() {
+    pollFrameCapture();
     if (!initialized) return;
     if (headless_) return;
     if (!isActive()) return;
@@ -995,41 +1177,76 @@ void Graphics::draw(Canvas*, const glm::mat4&) const {}
 // ---- GPU frame timing ------------------------------------------------------
 
 void Graphics::initGpuTiming() {
+    if (const char* setting = std::getenv("EVENGINE_GPU_TIMING"); setting && std::strcmp(setting, "0") == 0) return;
     if (gpuQueryPool_) return;
     try {
         timestampPeriod_ = device.physical_device.properties.limits.timestampPeriod;
         vk::QueryPoolCreateInfo ci;
         ci.queryType    = vk::QueryType::eTimestamp;
-        ci.queryCount   = 2;
+        ci.queryCount      = 2 * kAsyncResourceCopies;
         gpuQueryPool_   = device->createQueryPool(ci);
+        const auto buffers = device->allocateCommandBuffers(
+            vk::CommandBufferAllocateInfo{uploadPool, vk::CommandBufferLevel::ePrimary, kAsyncResourceCopies});
+        std::copy(buffers.begin(), buffers.end(), gpuTimingPrefix_.begin());
+        gpuTimingPrefixSubmitted_.fill(false);
         gpuTimingReady_ = true;
     } catch (...) {
         gpuTimingReady_ = false;
+        if (gpuQueryPool_) device->destroyQueryPool(gpuQueryPool_);
         gpuQueryPool_   = nullptr;
     }
 }
 
 void Graphics::writeGpuTimestampBegin() {
     if (!gpuTimingReady_ || !presentRecording) return;
-    vk::CommandBuffer cb = presentRecording.commandBuffer();
-    cb.resetQueryPool(gpuQueryPool_, 0, 2);
-    cb.writeTimestamp(vk::PipelineStageFlagBits::eTopOfPipe, gpuQueryPool_, 0);
+    const uint32_t slot = uint32_t(currentFrameSlot() % kAsyncResourceCopies);
+    auto           cb   = gpuTimingPrefix_[slot];
+    cb.reset();
+    cb.begin(vk::CommandBufferBeginInfo{});
+    cb.resetQueryPool(gpuQueryPool_, slot * 2, 2);
+    cb.writeTimestamp(vk::PipelineStageFlagBits::eTopOfPipe, gpuQueryPool_, slot * 2);
+    cb.end();
+    gpuTimingPrefixSubmitted_[slot] = false;
+}
+
+void Graphics::submitGpuTimingPrefix() {
+    if (!gpuTimingReady_ || !presentRecording) return;
+    const uint32_t slot = uint32_t(currentFrameSlot() % kAsyncResourceCopies);
+    if (gpuTimingPrefixSubmitted_[slot]) return;
+    EV_PROFILE_MODULE("graphics", "GpuTiming.SubmitPrefix");
+    vk::SubmitInfo info{};
+    info.commandBufferCount = 1;
+    info.pCommandBuffers    = &gpuTimingPrefix_[slot];
+    const auto result       = device.getQueue(vkb::QueueType::graphics).submit(1, &info, vk::Fence{});
+    if (result != vk::Result::eSuccess) throw Exception("GPU timing prefix submission failed");
+    gpuTimingPrefixSubmitted_[slot] = true;
 }
 
 void Graphics::writeGpuTimestampEnd() {
     if (!gpuTimingReady_ || !presentRecording) return;
     vk::CommandBuffer cb = presentRecording.commandBuffer();
-    cb.writeTimestamp(vk::PipelineStageFlagBits::eBottomOfPipe, gpuQueryPool_, 1);
+    const uint32_t    first = uint32_t(currentFrameSlot() % kAsyncResourceCopies) * 2;
+    cb.writeTimestamp(vk::PipelineStageFlagBits::eBottomOfPipe, gpuQueryPool_, first + 1);
 }
 
 void Graphics::readGpuFrameTiming() {
+    EV_PROFILE_MODULE("graphics", "GpuTiming.Readback");
     if (!gpuTimingReady_ || !gpuQueryPool_) return;
-    // drawFrame() waits on the in-flight fence, so results are valid here.
-    std::array<uint64_t, 2> ts{};
-    const auto r = device->getQueryPoolResults(gpuQueryPool_, 0, 2, sizeof(ts), ts.data(), sizeof(uint64_t),
-                                               vk::QueryResultFlagBits::e64 | vk::QueryResultFlagBits::eWait);
-    if (r == vk::Result::eSuccess && ts[1] > ts[0])
-        gpuFrameMs_ = float(double(ts[1] - ts[0]) * double(timestampPeriod_) / 1'000'000.0);
+    // Called after acquiring this frame slot (its prior fence has completed),
+    // before resetting its query pair. Never wait for the just-submitted frame
+    // or race a different in-flight slot's reset. GPU values are delayed.
+    const uint32_t slot = uint32_t(currentFrameSlot() % kAsyncResourceCopies);
+    if (!gpuTimingPrefixSubmitted_[slot]) {
+        gpuFrameMs_ = 0.f;
+        return;
+    }
+    const uint32_t          first = slot * 2;
+    std::array<uint64_t, 4> ts{};
+    const auto              result =
+        device->getQueryPoolResults(gpuQueryPool_, first, 2, sizeof(ts), ts.data(), 2 * sizeof(uint64_t),
+                                    vk::QueryResultFlagBits::e64 | vk::QueryResultFlagBits::eWithAvailability);
+    if (result == vk::Result::eSuccess && ts[1] && ts[3] && ts[2] > ts[0])
+        gpuFrameMs_ = float(double(ts[2] - ts[0]) * double(timestampPeriod_) / 1'000'000.0);
     else
         gpuFrameMs_ = 0.f;
 }

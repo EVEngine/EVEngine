@@ -1,11 +1,14 @@
 #include "procgen/ShapeGrammar.h"
-
 #include <algorithm>
 #include <cctype>
 #include <cmath>
 #include <cstdlib>
+#include <functional>
+#include <simplesquirrel/simplesquirrel.hpp>
 #include <sstream>
+#include "procgen/ShapeGrammarScript.h"
 
+// ShapeGrammar.cpp
 namespace eve::procgen {
 namespace {
 
@@ -20,8 +23,8 @@ float grammarUnit(uint32_t seed) { return float(mixGrammar(seed) >> 8u) * (1.f /
 float polylineLength(const PointSet& points) {
     float result = 0.f;
     for (size_t i = 1; i < points.points().size(); ++i) {
-        const auto& a = points.points()[i - 1];
-        const auto& b = points.points()[i];
+        const auto& a  = points.points()[i - 1];
+        const auto& b  = points.points()[i];
         const float dx = b.x - a.x;
         const float dy = b.y - a.y;
         const float dz = b.z - a.z;
@@ -33,11 +36,11 @@ float polylineLength(const PointSet& points) {
 bool samplePolyline(const PointSet& points, float distance, ProcgenPoint& output) {
     float cursor = 0.f;
     for (size_t i = 1; i < points.points().size(); ++i) {
-        const auto& a = points.points()[i - 1];
-        const auto& b = points.points()[i];
-        const float dx = b.x - a.x;
-        const float dy = b.y - a.y;
-        const float dz = b.z - a.z;
+        const auto& a      = points.points()[i - 1];
+        const auto& b      = points.points()[i];
+        const float dx     = b.x - a.x;
+        const float dy     = b.y - a.y;
+        const float dz     = b.z - a.z;
         const float length = std::sqrt(dx * dx + dy * dy + dz * dz);
         if (length <= 0.f) continue;
         if (distance <= cursor + length || i + 1 == points.points().size()) {
@@ -81,7 +84,7 @@ bool ShapeGrammar::removeModule(const std::string& symbol) {
     return true;
 }
 bool        ShapeGrammar::hasModule(const std::string& symbol) const { return modules_.find(symbol) != modules_.end(); }
-int ShapeGrammar::getModuleCount() const { return int(moduleOrder_.size()); }
+int         ShapeGrammar::getModuleCount() const { return int(moduleOrder_.size()); }
 std::string ShapeGrammar::getModuleSymbol(int index) const {
     return index >= 0 && index < int(moduleOrder_.size()) ? moduleOrder_[size_t(index)] : std::string();
 }
@@ -104,7 +107,7 @@ float ShapeGrammar::getVariantLength(const std::string& symbol, int index) const
 
 bool ShapeGrammar::validate(const std::string& grammar) {
     error_.clear();
-    Parser parser{grammar};
+    Parser     parser{grammar};
     const auto parsed = parser.sequence();
     if (!parser.error.empty()) {
         error_ = parser.error;
@@ -139,7 +142,7 @@ PointSet* ShapeGrammar::generate(const std::string& grammar, PointSet* controlPo
         return nullptr;
     }
     if (!validate(grammar)) return nullptr;
-    Parser parser{grammar};
+    Parser     parser{grammar};
     const auto parsed = parser.sequence();
     lastSplineLength_ = polylineLength(*controlPoints);
     if (!acceptIncomplete && sequenceMinLength(parsed) > lastSplineLength_ + 0.0001f) {
@@ -147,14 +150,14 @@ PointSet* ShapeGrammar::generate(const std::string& grammar, PointSet* controlPo
         return nullptr;
     }
     std::vector<std::string> symbols;
-    float used = 0.f;
+    float                    used = 0.f;
     if (!expandSequence(parsed, lastSplineLength_, symbols, used)) {
         error_ = "grammar expansion failed";
         return nullptr;
     }
 
     PointSet output;
-    float cursor = 0.f;
+    float    cursor = 0.f;
     for (size_t i = 0; i < symbols.size(); ++i) {
         const auto* variant = chooseVariant(symbols[i], mixGrammar(seed ^ uint32_t(i)));
         if (!variant || cursor + variant->length > lastSplineLength_ + 0.0001f) {
@@ -166,7 +169,7 @@ PointSet* ShapeGrammar::generate(const std::string& grammar, PointSet* controlPo
         }
         ProcgenPoint point;
         if (!samplePolyline(*controlPoints, cursor + variant->length * 0.5f, point)) break;
-        point.seed = mixGrammar(seed ^ uint32_t(i));
+        point.seed           = mixGrammar(seed ^ uint32_t(i));
         const int pointIndex = output.appendPoint(std::move(point));
         output.trySetStringAttribute(pointIndex, "module", symbols[i]).expect("shape grammar module metadata schema");
         output.trySetStringAttribute(pointIndex, "asset", variant->asset).expect("shape grammar asset metadata schema");
@@ -280,15 +283,15 @@ float ShapeGrammar::sequenceMinLength(const std::vector<Element>& sequence, size
 bool ShapeGrammar::expandSequence(const std::vector<Element>& sequence, float available,
                                   std::vector<std::string>& symbols, float& used) const {
     for (size_t i = 0; i < sequence.size(); ++i) {
-        const auto& element = sequence[i];
-        float unitLength = !element.symbol.empty() ? elementMinLength(Element{element.symbol, {}, 1, 1})
-                                                   : sequenceMinLength(element.children);
+        const auto& element    = sequence[i];
+        float       unitLength = !element.symbol.empty() ? elementMinLength(Element{element.symbol, {}, 1, 1})
+                                                         : sequenceMinLength(element.children);
         if (unitLength <= 0.f) return false;
         const float reservedAfter = sequenceMinLength(sequence, i + 1);
-        int repeats = element.repeatMin;
+        int         repeats       = element.repeatMin;
         if (element.repeatMax < 0) {
             const float room = std::max(0.f, available - used - reservedAfter);
-            repeats = std::max(element.repeatMin, int(std::floor(room / unitLength)));
+            repeats          = std::max(element.repeatMin, int(std::floor(room / unitLength)));
         } else {
             repeats = element.repeatMax;
         }
@@ -319,6 +322,29 @@ const ShapeModuleVariant* ShapeGrammar::chooseVariant(const std::string& symbol,
         if (choice <= 0.f) return &variant;
     }
     return &found->second.back();
+}
+
+}  // namespace eve::procgen
+
+// ShapeGrammarScript.cpp
+namespace eve::procgen {
+
+void exposeShapeGrammar(ssq::Table& table) {
+    auto grammar = table.addClass<ShapeGrammar>(
+        "ProcgenShapeGrammar", std::function<ShapeGrammar*()>([]() -> ShapeGrammar* { return nullptr; }), true);
+    grammar.addFunc("clear", &ShapeGrammar::clear);
+    grammar.addFunc("addModule", &ShapeGrammar::addModule);
+    grammar.addFunc("removeModule", &ShapeGrammar::removeModule);
+    grammar.addFunc("hasModule", &ShapeGrammar::hasModule);
+    grammar.addFunc("getModuleCount", &ShapeGrammar::getModuleCount);
+    grammar.addFunc("getModuleSymbol", &ShapeGrammar::getModuleSymbol);
+    grammar.addFunc("getVariantCount", &ShapeGrammar::getVariantCount);
+    grammar.addFunc("getVariantAsset", &ShapeGrammar::getVariantAsset);
+    grammar.addFunc("getVariantLength", &ShapeGrammar::getVariantLength);
+    grammar.addFunc("validate", &ShapeGrammar::validate);
+    grammar.addFunc("generate", &ShapeGrammar::generate);
+    grammar.addFunc("getError", &ShapeGrammar::getError);
+    grammar.addFunc("debugReport", &ShapeGrammar::debugReport);
 }
 
 }  // namespace eve::procgen

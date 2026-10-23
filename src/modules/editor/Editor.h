@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "editing/EditingExtension.h"
@@ -33,6 +35,7 @@ class PaintIntVolumeOperation;
 class VolumeBrushTool;
 class EditorAutomationProvider;
 class EditorTargetCoordinator;
+class EditorHost;
 
 /**
  * @brief Editor building blocks — not a shipped 3D/map editor app.
@@ -41,10 +44,12 @@ class EditorTargetCoordinator;
  * Provides transform gizmos, map brushes, and UI shell helpers so games/tools
  * can assemble their own editors (Love2D-style runtime tooling).
  */
-class Editor : public Module {
+class EVENGINE_API_ORCHESTRATION Editor : public Module {
 public:
     Module_REG(Editor);
+    /** @brief Editor. */
     Editor();
+    /** @brief Editor. */
     ~Editor() override;
 
     /** @brief Create a transform gizmo. @ownership Unique ownership transfers to the caller. */
@@ -70,8 +75,15 @@ public:
      * @return Applied unique workspace, or Rejected when id is empty.
      * @ownership Success transfers unique ownership to the caller.
      */
-    [[nodiscard]] EditorResult<std::unique_ptr<EditorWorkspace>> newWorkspace(const std::string& id,
+    [[nodiscard]] Result<std::unique_ptr<EditorWorkspace>> newWorkspace(const std::string& id,
                                                                               const std::string& title);
+    /**
+     * @brief Create a package-discovering EditorHost bound to this module.
+     * @param id Stable host/workspace identity; empty values are rejected.
+     * @param title User-facing title; empty title uses id.
+     * @ownership Success transfers unique ownership to the caller.
+     */
+    [[nodiscard]] Result<std::unique_ptr<EditorHost>> newHost(const std::string& id, const std::string& title);
     /** @brief Return the UI- and script-neutral command registry owned by this editor module. */
     EditorCommandService& commandService() { return commandService_; }
     /** @brief Return the immutable command registry owned by this editor module. */
@@ -86,19 +98,19 @@ public:
      * @return Applied, NoOp for the same registration, or structured diagnostics.
      * @thread Owner-thread only.
      */
-    [[nodiscard]] EditorResult<void> registerEditingTarget(IEditableTarget& target);
+    [[nodiscard]] Result<void> registerEditingTarget(IEditableTarget& target);
     /**
      * @brief Remove a borrowed editing target and its local transaction history.
      * @return Applied when removed, or NoOp when the target was not registered.
      */
-    [[nodiscard]] EditorResult<void> unregisterEditingTarget(const TargetId& target);
+    [[nodiscard]] Result<void> unregisterEditingTarget(const TargetId& target);
     /**
      * @brief Bind a registered target to a host session without exposing the coordinator.
      * @param session Session owned by the caller.
      * @param target Registered target identity.
      * @return Applied or a structured lookup failure.
      */
-    [[nodiscard]] EditorResult<void> bindEditingTarget(EditorSession& session, const TargetId& target);
+    [[nodiscard]] Result<void> bindEditingTarget(EditorSession& session, const TargetId& target);
     /**
      * @brief Create a script-backed implementation of the IEditorTool protocol.
      * @ownership Unique ownership transfers to the caller.

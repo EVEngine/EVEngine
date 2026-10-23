@@ -127,9 +127,11 @@ inline void ssdmScreenOffset(float height01, float viewNdcX, float viewNdcY, flo
  */
 inline float ssdmCoverage(float baseU, float baseV, float offsetU, float offsetV,
                           float padding = 0.f) {
+    /** @brief Sil pom coverage. */
     return silPomCoverage(baseU + offsetU, baseV + offsetV, padding);
 }
 
+/** @brief Clamp parallax params. */
 inline void clampParallaxParams(ParallaxParams &p) {
     if (p.scale < 0.f) p.scale = 0.f;
     if (p.scale > 0.25f) p.scale = 0.25f;

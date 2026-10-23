@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditConstraint.h"
 #include "editor/EditorCommandService.h"
@@ -25,9 +27,11 @@ class EditorTargetCoordinator;
  * Tool callbacks may re-enter the session; lifecycle state is detached before
  * cancellation or deactivation callbacks are invoked.
  */
-class EditorSession {
+class EVENGINE_API_ORCHESTRATION EditorSession {
 public:
+    /** @brief Editor session. */
     EditorSession();
+    /** @brief Editor session. */
     ~EditorSession() noexcept;
 
     EditorSession(const EditorSession&)            = delete;
@@ -40,13 +44,18 @@ public:
     /** @brief Remove all tools and release any pointer capture. */
     void clearTools();
 
+    /** @brief Returns the tool count. */
     int          getToolCount() const;
+    /** @brief Returns the tool. */
     IEditorTool* getTool(int index) const;
+    /** @brief Finds tool. */
     IEditorTool* findTool(const std::string& id) const;
 
     /** @brief Activate a registered tool by id. Empty id deactivates all tools. */
     bool         activateTool(const std::string& id);
+    /** @brief Active tool. */
     IEditorTool* activeTool() const { return activeTool_; }
+    /** @brief Active tool id. */
     std::string  activeToolId() const;
 
     /** @brief Route input to the active tool and apply pointer-capture response. */
@@ -62,9 +71,13 @@ public:
     /** @brief Cancel its gesture and clear pointer capture. */
     void cancelActiveTool();
 
+    /** @brief True when pointer capture. */
     bool                 hasPointerCapture() const { return capturedPointerId_ >= 0; }
+    /** @brief Captured pointer id. */
     int                  capturedPointerId() const { return capturedPointerId_; }
+    /** @brief Context. */
     EditorContext&       context() { return context_; }
+    /** @brief Context. */
     const EditorContext& context() const { return context_; }
     /**
      * @brief Bind a caller-managed editable target available to every tool callback.
@@ -80,12 +93,14 @@ public:
     IEditableTarget* target() const;
     /** @brief Return the identity of the current binding without dereferencing the target. */
     const TargetId&         boundTargetId() const noexcept { return boundTargetId_; }
+    /** @brief Transactions. */
     EditorTransactions&     transactions() { return transactions_; }
+    /** @brief Constraints. */
     EditConstraintPipeline& constraints() { return constraints_; }
     /** @brief Validate then execute a command in the active transaction. */
     bool execute(std::unique_ptr<IEditCommand> command);
     /** @brief Validate and execute a command while preserving constraint and transaction diagnostics. */
-    [[nodiscard]] EditorResult<void> executeChecked(std::unique_ptr<IEditCommand> command);
+    [[nodiscard]] Result<void> executeChecked(std::unique_ptr<IEditCommand> command);
 
     /** @brief Bind a non-owning V2 command service that must outlive this binding. */
     void bindCommandService(EditorCommandService& service) { commandService_ = &service; }
@@ -114,17 +129,17 @@ public:
      * by execution policy.
      * @return Structured status, value and diagnostics.
      */
-    EditorResult<EditorValue> executeCommand(const CommandId& id, const EditorValue& payload = {},
+    Result<EditorValue> executeCommand(const CommandId& id, const EditorValue& payload = {},
                                              CommandSource source = CommandSource::Api);
     /** @brief Plan a registered command without applying target mutations. */
-    EditorResult<CommandPlan> planCommand(const CommandId& id, const EditorValue& payload = {},
+    Result<CommandPlan> planCommand(const CommandId& id, const EditorValue& payload = {},
                                           CommandSource           source           = CommandSource::Api,
                                           std::optional<Revision> expectedRevision = std::nullopt) const;
     /** @brief Execute a previously returned plan through its registered executor. */
-    EditorResult<TransactionReceipt> executePlan(const CommandPlan& plan, const EditorValue& payload = {},
+    Result<TransactionReceipt> executePlan(const CommandPlan& plan, const EditorValue& payload = {},
                                                  CommandSource source = CommandSource::Api);
     /** @brief Execute a legacy-compatible command and return a V2 transaction receipt. */
-    EditorResult<TransactionReceipt> executeCommandReceipt(const CommandId& id, const EditorValue& payload = {},
+    Result<TransactionReceipt> executeCommandReceipt(const CommandId& id, const EditorValue& payload = {},
                                                            CommandSource source = CommandSource::Api);
     /** @brief Return commands visible through this session's host profile. */
     std::vector<CommandDescriptor> availableCommands() const;
@@ -133,13 +148,13 @@ public:
      * @return Stable
      * plan id suitable for script and UI frontends.
      */
-    EditorResult<PlanId> retainPlan(const CommandId& id, const EditorValue& payload = {},
+    Result<PlanId> retainPlan(const CommandId& id, const EditorValue& payload = {},
                                     CommandSource           source           = CommandSource::Api,
                                     std::optional<Revision> expectedRevision = std::nullopt);
     /** @brief Execute a retained plan. Successful plans are consumed exactly once. */
-    EditorResult<TransactionReceipt> executeRetainedPlan(const PlanId& id, CommandSource source = CommandSource::Api);
+    Result<TransactionReceipt> executeRetainedPlan(const PlanId& id, CommandSource source = CommandSource::Api);
     /** @brief Discard one retained plan without executing it. */
-    EditorResult<void> cancelRetainedPlan(const PlanId& id);
+    Result<void> cancelRetainedPlan(const PlanId& id);
     /** @brief Discard all retained plans, for example after replacing a document or target. */
     void clearRetainedPlans();
 
@@ -158,7 +173,7 @@ public:
      * @param document Stable identity already opened by DocumentService.
      * @return Bound document snapshot or a structured lookup failure.
      */
-    EditorResult<DocumentSnapshot> bindDocument(const DocumentId& document);
+    Result<DocumentSnapshot> bindDocument(const DocumentId& document);
     /** @brief Stop coordinating the active document without closing it. */
     void unbindDocument();
     /** @brief Return the active document identity, or an empty id. */
@@ -169,14 +184,14 @@ public:
      * @param expectedRevision Optional edit revision used to reject stale writers.
      * @return Updated document snapshot or a structured conflict.
      */
-    EditorResult<DocumentSnapshot> editDocument(EditorValue             content,
+    Result<DocumentSnapshot> editDocument(EditorValue             content,
                                                 std::optional<Revision> expectedRevision = std::nullopt);
     /** @brief Persist the current active revision through the document CAS store. */
-    EditorResult<DocumentSnapshot> saveDocument();
+    Result<DocumentSnapshot> saveDocument();
     /** @brief Write the active dirty revision to its separate autosave draft. */
-    EditorResult<StoredDocument> autosaveDocument();
+    Result<StoredDocument> autosaveDocument();
     /** @brief Detect external disk changes, adopting only when the document is clean. */
-    EditorResult<DocumentSnapshot> pollDocumentChanges();
+    Result<DocumentSnapshot> pollDocumentChanges();
     /** @brief Configure draft cadence. @param seconds Interval in seconds; zero disables automatic drafts. */
     void setAutosaveInterval(float seconds);
     /** @brief Configure external-store polling cadence. @param seconds Interval in seconds; zero disables polling. */

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ActionComboWindowState.h @brief Semantic input matching for active Montage combo windows. */
 
@@ -34,10 +36,11 @@ struct ActionComboMatch {
  * script input adapters map their source into the same semantic input string and
  * query this owner before choosing the next action. All methods are owner-thread-only.
  */
-class ActionComboWindowState final : public IActionStateWindowSink {
+class EVENGINE_API_BACKENDS ActionComboWindowState final : public IActionStateWindowSink {
 public:
     /** @brief Construct with a synchronous stable-subject resolver. */
     explicit ActionComboWindowState(ComboSubjectResolver resolver);
+    /** @brief Action combo window state. */
     ~ActionComboWindowState() override;
 
     /** @brief Opt this state owner into or out of Action window dispatch. */
@@ -45,12 +48,15 @@ public:
     /** @brief Return whether this exact owner is registered. */
     [[nodiscard]] bool enabled() const;
     /** @copydoc IActionStateWindowSink::supports */
+    /** @brief Supports. */
     [[nodiscard]] bool supports(ActionStateWindowKind kind) const noexcept override;
     /** @copydoc IActionStateWindowSink::enter */
+    /** @brief Enter. */
     [[nodiscard]] Result<void> enter(const ActionStateWindowBinding& binding,
                                      const ActionTimelineEvent& event,
                                      const ActionNotifyContext& context) override;
     /** @copydoc IActionStateWindowSink::exit */
+    /** @brief Exit. */
     [[nodiscard]] Result<void> exit(const ActionStateWindowBinding& binding,
                                     const ActionTimelineEvent& event,
                                     const ActionNotifyContext& context) override;
