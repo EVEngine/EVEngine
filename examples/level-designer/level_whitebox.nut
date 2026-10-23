@@ -63,6 +63,9 @@ function whiteboxGenerateMesh(piece, schema) {
 }
 
 function whiteboxCreateRenderable(piece, schema) {
+    if (!("bounds" in piece)) piece.bounds <- null;
+    if (!("half" in piece)) piece.half <- null;
+    if (!("motion" in piece)) piece.motion <- "static";
     local mesh = whiteboxGenerateMesh(piece, schema);
     if (mesh == null) return false;
     if (piece.entity == null) {
@@ -85,11 +88,14 @@ function whiteboxCreateRenderable(piece, schema) {
 
 function whiteboxApplyTransform(piece, object) {
     if (piece.entity == null || object == null) return;
-    local t = levelTransformRelativeTo(object.id, "");
+    // Candidates have no live node yet. Existing nodes use the hierarchy-aware
+    // projection, which also incorporates the active gizmo preview.
+    local live = levelObject(object.id);
+    local t = live == null ? object.transform : levelTransformRelativeTo(object.id, "");
     piece.entity.setPosition(t.x,t.y,t.z);
     piece.entity.setRotation(t.rotationY,t.rotationX,t.rotationZ);
     piece.entity.setScale(t.scaleX,t.scaleY,t.scaleZ);
-    if(piece.bounds!=null) {
+    if(live != null && piece.bounds!=null) {
         local b=piece.bounds;
         if(!scene.setNodeBoundsAt(levelHost(),object.id,b[0],b[1],b[2],b[3],b[4],b[5]))
             throw "Picking bounds rejected: " + object.id;
@@ -98,24 +104,45 @@ function whiteboxApplyTransform(piece, object) {
 }
 
 /** @brief Place the palette's active piece at a world point. */
-function whiteboxPlace(recipe, worldX, worldY, worldZ) {
+function whiteboxPlace(recipe, worldX, worldY, worldZ, scale = null) {
+    if (scale == null) scale = [1.0, 1.0, 1.0];
     local schema = whiteboxSchema(recipe);
     if (schema == null) return "";
-    local piece={recipe=recipe,values=whiteboxDefaultValues(schema),entity=null,
-        half=null,bounds=null,motion="static"};
-    if(!whiteboxCreateRenderable(piece,schema)) { levelReleaseRenderable(piece.entity);return ""; }
-    piece.entity.setVisible(false);
-    local id=levelNextId("piece");
-    local position=scene.worldToLocalAt(levelHost(),level.scope,worldX,worldY,worldZ);
-    if(!levelCommand("scene.object.create.v1",{object=id,name=schema.getDisplayName(),parent=level.scope,position=position})) {
-        levelReleaseRenderable(piece.entity);return "";
+    local piece = {
+        recipe = recipe, values = whiteboxDefaultValues(schema), entity = null, half = null
+    };
+    if (!whiteboxCreateRenderable(piece, schema)) { levelReleaseRenderable(piece.entity); return ""; }
+    local position = scene.worldToLocalAt(levelHost(), level.scope, worldX, worldY, worldZ);
+    local result = whiteboxPublishPrepared(piece, levelNextId("piece"), schema.getDisplayName(),
+        position, [0.0, 0.0, 0.0], scale, level.scope);
+    if (!result.ok) { level.status = result.message; return ""; }
+    return result.object;
+}
+
+/** @brief Publish an already generated mesh through the canonical scene command.
+ * @details Main thread only; no callbacks. Scene owns TRS; pieces owns recipe data.
+ * Failed scene publication hides the staged renderer and leaves no scene node.
+ */
+function whiteboxPublishPrepared(piece, id, name, position, rotation, scale, parent = "root") {
+    local result = level.session.execute("scene.object.create.v1", {
+        object = id, name = name,
+        parent = levelObject(parent) != null ? parent : "",
+        position = position, rotation = rotation, scale = scale
+    });
+    if (!result.ok) {
+        levelReleaseRenderable(piece.entity);
+        return {ok = false, code = "scene_rejected", message = result.status.summary};
     }
-    level.pieces[id] <- piece;piece.entity.setVisible(true);
-    whiteboxApplyTransform(piece,levelObject(id));
+    level.pieces[id] <- piece;
+    levelRefreshObjects();
     levelSelect(id);
     levelSyncGizmo();
-    level.status = "placed " + schema.getDisplayName();
-    return id;
+    scene.updateTransformsAll();
+    whiteboxApplyTransform(piece, levelObject(id));
+    piece.entity.setVisible(true);
+    level.status = "placed " + name;
+    levelMarkPanelsDirty();
+    return {ok = true, object = id};
 }
 
 function whiteboxRebuildPiece(id) {
@@ -134,9 +161,23 @@ function whiteboxRebuildAll() {
 
 /** @brief Drop pieces whose scene object no longer exists. */
 function whiteboxReconcile() {
-    // Keep semantic records while scene history can resurrect their stable IDs.
+    local restored = [];
+    foreach (id, piece in level.pieceHistory) {
+        if (levelObject(id) == null) continue;
+        level.pieces[id] <- piece;
+        if (piece.entity != null) piece.entity.setVisible(true);
+        restored.push(id);
+    }
+    foreach (id in restored) delete level.pieceHistory[id];
+    local stale = [];
     foreach (id, piece in level.pieces)
-        if (piece.entity != null) piece.entity.setVisible(levelObject(id) != null);
+        if (levelObject(id) == null) stale.push(id);
+    foreach (id in stale) {
+        local piece = level.pieces[id];
+        if (piece.entity != null) piece.entity.setVisible(false);
+        level.pieceHistory[id] <- piece;
+        delete level.pieces[id];
+    }
 }
 
 function whiteboxSyncTransforms() {

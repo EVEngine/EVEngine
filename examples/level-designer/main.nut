@@ -14,12 +14,15 @@ dofile("level_terrain.nut");
 dofile("level_pick.nut");
 dofile("level_characters.nut");
 dofile("level_whitebox.nut");
+dofile("level_build.nut");
 dofile("level_spawn.nut");
 dofile("level_play.nut");
 dofile("level_document.nut");
 dofile("level_blocks.nut");
 dofile("level_sculpt.nut");
 dofile("level_ui.nut");
+dofile("level_agent.nut");
+dofile("level_transactions.nut");
 dofile("level_demo.nut");
 
 function levelBuildSceneHost() {
@@ -238,6 +241,7 @@ function levelPointer() {
     local gizmo = level.gizmo;
     local pointer = levelViewportPointer();
     if (pointer == null) {
+        if (released) whiteboxCancelDrag();
         if (gizmo.isDragging()) gizmo.endDrag();
         return;
     }
@@ -271,7 +275,7 @@ function levelPointer() {
             gizmo.beginDrag(axis, ax, ay, az, lx, ly, lz);
         } else if (level.tool == "whitebox") {
             local hit = terrainRayPick(ox, oy, oz, dx, dy, dz, 6000.0);
-            if (hit != null) whiteboxPlace(level.piece, hit.x, hit.y + 0.05, hit.z);
+            if (hit != null) whiteboxBeginDrag(hit);
             levelMarkPanelsDirty();
         } else if (level.tool == "blocks") {
             local hit = terrainRayPick(ox,oy,oz,dx,dy,dz,6000.0);
@@ -287,6 +291,14 @@ function levelPointer() {
                 levelSelect(picked,levelKeyEither("lctrl","LCtrl") || levelKeyEither("rctrl","RCtrl"));
             }
         }
+    }
+    if (level.buildDrag != null) {
+        local hit = terrainRayPick(ox, oy, oz, dx, dy, dz, 6000.0);
+        if (hit != null) whiteboxUpdateDrag(hit);
+        if (released) {
+            if (hit != null) whiteboxCommitDrag(); else whiteboxCancelDrag();
+        }
+        return;
     }
     if (down && gizmo.isDragging()) {
         gizmo.updateDrag(ax, ay, az, lx, ly, lz);
@@ -314,6 +326,7 @@ function levelPointer() {
 }
 
 function levelEditInput() {
+    if (levelKeyPressed("Escape")) whiteboxCancelDrag();
     if(ui.wantCaptureKeyboard()) return;
     local control=levelKeyEither("lctrl","LCtrl") || levelKeyEither("rctrl","RCtrl");
     if(control) {
@@ -445,6 +458,7 @@ eve_init = function() {
     if (terrainBuild(terrainDefaultReference()) == null) throw level.status;
     levelFrameTerrain();
     level.recipes = whiteboxRecipes();
+    whiteboxRegisterAgentTools();
     levelRefreshPanels();
 
     print("level-designer: terrain " + level.terrain.width + "x" + level.terrain.height +
@@ -462,6 +476,7 @@ eve_update = function(dt) {
     // world transforms fresh. Every projection below reads world transforms, so
     // refresh them once per frame before anything else runs.
     scene.updateTransformsAll();
+    if (level.mode != "edit" || level.tool != "whitebox") whiteboxCancelDrag();
     if (level.mode == "play") {
         levelPlayInput();
         if (level.mode == "play") levelUpdatePlay(dt);
@@ -477,6 +492,8 @@ eve_update = function(dt) {
     terrainSculptPointer(dt);
     whiteboxSyncTransforms();
     spawnSyncTransforms();
+    // Apply transient gizmo transforms after committed scene transforms.
+    levelPreviewSelection();
     levelDrawGizmo();
 };
 
