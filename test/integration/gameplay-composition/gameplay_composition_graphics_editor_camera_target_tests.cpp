@@ -364,9 +364,9 @@ TEST_CASE("editor.biome.adapter_registers_commands_and_owns_automation_targets")
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_building_target)
 #include "PrivateTestScope.h"
 #include "building/BuildingDef.h"
+#include "building/BuildingSnapshot.h"
 #include "building/PlacementSystem.h"
 #include "building/PlacementWorld.h"
-#include "building/BuildingSnapshot.h"
 #include "building/editing/BuildingTarget.h"
 #include "editing/EditingAuthority.h"
 #include "zeroerr/assert.h"

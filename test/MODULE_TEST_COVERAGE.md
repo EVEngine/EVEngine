@@ -7,12 +7,12 @@ and task ownership. References are header/API-name evidence, not measured behavi
 coverage. Missing local-rule coverage is reported explicitly; no empty assertion
 or placeholder test is counted as coverage.
 
-Declared modules: **196**. Task groups: **35**.
+Declared modules: **196**. Task groups: **36**.
 
 - api-symbol-in-other-tests: 3
 - local-rules-recorded: 92
-- referenced-by-other-tests: 56
-- task-tests-recorded: 45
+- referenced-by-other-tests: 55
+- task-tests-recorded: 46
 
 ## Gaps requiring behavioral review
 
@@ -36,7 +36,7 @@ Declared modules: **196**. Task groups: **35**.
 - `avatar_editor` (`avatar/editor`): referenced-by-other-tests; 3 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `biome_editing` (`procgen/biome/editing`): referenced-by-other-tests; 2 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `biome_editor` (`procgen/biome/editor`): referenced-by-other-tests; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `building_editing` (`building/editing`): referenced-by-other-tests; 2 direct header references; 2 API-name references. A composition/adapter reference does not prove local rules are tested.
+- `building_editing` (`building/editing`): task-tests-recorded; 3 direct header references; 3 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `building_editor` (`building/editor`): referenced-by-other-tests; 2 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `camera_editing` (`camera/editing`): referenced-by-other-tests; 2 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `combat_navigation` (`combat/navigation`): task-tests-recorded; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
@@ -366,14 +366,16 @@ Source directory: `src/modules/procgen/biome/editor`. Status: **referenced-by-ot
 Source directory: `src/modules/building`. Status: **local-rules-recorded**. Local cases: **37**.
 
 - Unit: [unit/building/building.cpp](unit/building/building.cpp)
+- Integration task `building-workflow`: [building_assembly.cpp](integration/building-workflow/building_assembly.cpp), [building_roof_support.cpp](integration/building-workflow/building_roof_support.cpp)
 - Integration task `physics-simulation`: [physics_simulation_graphics_physics_rigid_backend_tests.cpp](integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp)
-- Direct header evidence: [gameplay_composition_graphics_buildingfx_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_buildingfx_tests.cpp), [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp), [physics_simulation_graphics_physics_rigid_backend_tests.cpp](integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp), [render_presentation_graphics_procgen_tests.cpp](integration/render-presentation/render_presentation_graphics_procgen_tests.cpp), [script_api_graphics_ScriptECS_tests.cpp](integration/script-api/script_api_graphics_ScriptECS_tests.cpp), [building.cpp](unit/building/building.cpp), [building_placement_regression_unit.cpp](unit/buildingfx/building_placement_regression_unit.cpp)
+- Direct header evidence: [building_assembly.cpp](integration/building-workflow/building_assembly.cpp), [building_roof_support.cpp](integration/building-workflow/building_roof_support.cpp), [editor_building_assembly.cpp](integration/building-workflow/editor_building_assembly.cpp), [gameplay_composition_graphics_buildingfx_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_buildingfx_tests.cpp), [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp), [physics_simulation_graphics_physics_rigid_backend_tests.cpp](integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp), [render_presentation_graphics_procgen_tests.cpp](integration/render-presentation/render_presentation_graphics_procgen_tests.cpp), [script_api_graphics_ScriptECS_tests.cpp](integration/script-api/script_api_graphics_ScriptECS_tests.cpp), [building.cpp](unit/building/building.cpp), [building_placement_regression_unit.cpp](unit/buildingfx/building_placement_regression_unit.cpp)
 
 ### building_editing
 
-Source directory: `src/modules/building/editing`. Status: **referenced-by-other-tests**. Local cases: **0**.
+Source directory: `src/modules/building/editing`. Status: **task-tests-recorded**. Local cases: **0**.
 
-- Direct header evidence: [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
+- Integration task `building-workflow`: [editor_building_assembly.cpp](integration/building-workflow/editor_building_assembly.cpp)
+- Direct header evidence: [editor_building_assembly.cpp](integration/building-workflow/editor_building_assembly.cpp), [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
 
 ### building_editor
 
@@ -613,7 +615,7 @@ Source directory: `src/modules/editing`. Status: **local-rules-recorded**. Local
 - Unit: [unit/editing/editing_tests.cpp](unit/editing/editing_tests.cpp)
 - Integration task `gameplay-composition`: [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
 - Integration task `transaction-authority`: [editor_authority_atomic.cpp](integration/transaction-authority/editor_authority_atomic.cpp)
-- Direct header evidence: [gameplay_composition_graphics_buildingfx_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_buildingfx_tests.cpp), [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp), [gameplay_composition_graphics_editor_material_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_material_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp), [gameplay_composition_graphics_gameplay_action_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_gameplay_action_tests.cpp), [gameplay_composition_graphics_procgen_road_editing_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_procgen_road_editing_tests.cpp), [gameplay_composition_graphics_rts_script_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_rts_script_tests.cpp), [procgen_road_authoring.cpp](integration/gameplay-composition/procgen_road_authoring.cpp), [procgen_road_connections.cpp](integration/gameplay-composition/procgen_road_connections.cpp), [procgen_road_extensions.cpp](integration/gameplay-composition/procgen_road_extensions.cpp), [procgen_road_junction_style.cpp](integration/gameplay-composition/procgen_road_junction_style.cpp), [procgen_road_profile_editing.cpp](integration/gameplay-composition/procgen_road_profile_editing.cpp), [procgen_road_recipe_snapshot.cpp](integration/gameplay-composition/procgen_road_recipe_snapshot.cpp), [procgen_road_reference.cpp](integration/gameplay-composition/procgen_road_reference.cpp), [procgen_road_spacing_portals.cpp](integration/gameplay-composition/procgen_road_spacing_portals.cpp), [editor_authority_atomic.cpp](integration/transaction-authority/editor_authority_atomic.cpp), [public_headers_domains.cpp](profile/public_headers_domains.cpp), [editing_tests.cpp](unit/editing/editing_tests.cpp), [material_editor_tests.cpp](unit/material_editor/material_editor_tests.cpp)
+- Direct header evidence: [editor_building_assembly.cpp](integration/building-workflow/editor_building_assembly.cpp), [gameplay_composition_graphics_buildingfx_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_buildingfx_tests.cpp), [gameplay_composition_graphics_editor_camera_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp), [gameplay_composition_graphics_editor_material_target_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_material_target_tests.cpp), [gameplay_composition_graphics_editor_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp), [gameplay_composition_graphics_gameplay_action_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_gameplay_action_tests.cpp), [gameplay_composition_graphics_procgen_road_editing_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_procgen_road_editing_tests.cpp), [gameplay_composition_graphics_rts_script_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_rts_script_tests.cpp), [procgen_road_authoring.cpp](integration/gameplay-composition/procgen_road_authoring.cpp), [procgen_road_connections.cpp](integration/gameplay-composition/procgen_road_connections.cpp), [procgen_road_extensions.cpp](integration/gameplay-composition/procgen_road_extensions.cpp), [procgen_road_junction_style.cpp](integration/gameplay-composition/procgen_road_junction_style.cpp), [procgen_road_profile_editing.cpp](integration/gameplay-composition/procgen_road_profile_editing.cpp), [procgen_road_recipe_snapshot.cpp](integration/gameplay-composition/procgen_road_recipe_snapshot.cpp), [procgen_road_reference.cpp](integration/gameplay-composition/procgen_road_reference.cpp), [procgen_road_spacing_portals.cpp](integration/gameplay-composition/procgen_road_spacing_portals.cpp), [editor_authority_atomic.cpp](integration/transaction-authority/editor_authority_atomic.cpp), [public_headers_domains.cpp](profile/public_headers_domains.cpp), [editing_tests.cpp](unit/editing/editing_tests.cpp), [material_editor_tests.cpp](unit/material_editor/material_editor_tests.cpp)
 
 ### editor
 
@@ -1717,6 +1719,14 @@ Cases: 12. Referenced/owning modules: `common`, `data`, `demo`, `filesystem`, `f
 Cases: 1. Referenced/owning modules: `avatar`, `common`, `graphics`.
 
 - [avatar_appearance_script.cpp](integration/avatar-appearance/avatar_appearance_script.cpp)
+
+### building-workflow
+
+Cases: 10. Referenced/owning modules: `building`, `building_editing`, `data`, `editing`, `npc_ai`.
+
+- [building_assembly.cpp](integration/building-workflow/building_assembly.cpp)
+- [building_roof_support.cpp](integration/building-workflow/building_roof_support.cpp)
+- [editor_building_assembly.cpp](integration/building-workflow/editor_building_assembly.cpp)
 
 ### card-rts-payment
 

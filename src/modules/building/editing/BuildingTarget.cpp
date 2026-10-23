@@ -84,9 +84,9 @@ BuildingPlacementTarget::BuildingPlacementTarget(std::string id, std::unique_ptr
                                                  unsigned long long revision)
     : EditableTargetState(revision), id_(std::move(id)), world_(world.get()), ownedWorld_(std::move(world)) {}
 
-BuildingPlacementTarget::BuildingPlacementTarget(BuildingPlacementTarget&&) noexcept = default;
+BuildingPlacementTarget::BuildingPlacementTarget(BuildingPlacementTarget&&) noexcept            = default;
 BuildingPlacementTarget& BuildingPlacementTarget::operator=(BuildingPlacementTarget&&) noexcept = default;
-BuildingPlacementTarget::~BuildingPlacementTarget() = default;
+BuildingPlacementTarget::~BuildingPlacementTarget()                                             = default;
 
 TargetDescriptor BuildingPlacementTarget::describe() const {
     TargetDescriptor result;

@@ -285,7 +285,7 @@ Result<DomainOperation> BuildingPlacementTarget::makeUpdateEdgeCubicBezier(
 }
 
 Result<BuildingEdgeCurvePoint> BuildingPlacementTarget::curveLogicalPointFromWorld(double worldX, double worldY,
-                                                                                         double worldZ) const {
+                                                                                   double worldZ) const {
     if (!world_ || !std::isfinite(worldX) || !std::isfinite(worldY) || !std::isfinite(worldZ))
         return eve::editing::failed<BuildingEdgeCurvePoint>(
             EditorStatus::Rejected, RuleId("editor.building.curve-world-point-invalid"),

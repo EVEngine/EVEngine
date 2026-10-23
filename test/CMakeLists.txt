@@ -464,9 +464,9 @@ else()
   # The same house contract runs with and without authoring/renderer satellites.
   if(TARGET EVBuilding)
     eve_add_test_executable(building_workflow_test EXCLUDE_FROM_ALL
-      profile/gltf_animation_main.cpp building_assembly.cpp building_roof_support.cpp)
+      profile/gltf_animation_main.cpp integration/building-workflow/building_assembly.cpp integration/building-workflow/building_roof_support.cpp)
     if(TARGET EVBuilding_editing)
-      eve_target_test_sources(building_workflow_test PRIVATE editor_building_assembly.cpp editor_building_target.cpp)
+      eve_target_test_sources(building_workflow_test PRIVATE integration/building-workflow/editor_building_assembly.cpp editor_building_target.cpp)
     endif()
     if(TARGET EVMap)
       eve_target_test_sources(building_workflow_test PRIVATE building.cpp)

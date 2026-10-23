@@ -17,11 +17,12 @@ class BuildingAssemblyTarget final : public editing::EditableTargetState,
                                      public editing::IDomainOperationTarget,
                                      public editing::IDomainOperationTargetStaging {
 public:
-    /** @brief Bind a host-owned world that outlives this target. */
+    /** @brief Bind a host-owned world that outlives this target. @cost One small state allocation per target. */
     BuildingAssemblyTarget(std::string id, building::PlacementWorld& world);
+    /** @brief Release owned staging state. @cost Linear in staged world size when destroying a clone. */
     ~BuildingAssemblyTarget() override;
     /** @brief Return the stable target identity. @cost Copies the identity string per query. */
-    editing::TargetId         targetId() const override;
+    editing::TargetId targetId() const override;
     /** @brief Describe this transaction target. @cost Copies descriptor strings per inspection. */
     editing::TargetDescriptor describe() const override;
     /**

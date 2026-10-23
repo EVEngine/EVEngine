@@ -604,8 +604,8 @@ BuildingDefinition parseBuildingObject(Value o) {
     def.freeFootprintHeightCells = o.getFloat("freeFootprintHeightCells", 0.f);
     def.freeFootprintVertices    = o.getFloatArray("freeFootprintVertices");
     def.connectionGroup          = o.getString("connectionGroup");
-    def.edgeThicknessCells = o.getFloat("edgeThicknessCells", 0.f);
-    def.blockedByEdgeChannels = o.getStringArray("blockedByEdgeChannels");
+    def.edgeThicknessCells       = o.getFloat("edgeThicknessCells", 0.f);
+    def.blockedByEdgeChannels    = o.getStringArray("blockedByEdgeChannels");
     def.structuralRole           = o.getString("structuralRole");
     def.supportMode              = o.getString("supportMode", "none");
     def.supportTag               = o.getString("supportTag");

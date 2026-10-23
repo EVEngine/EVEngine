@@ -38,10 +38,9 @@ Result<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::previewCurren
 }
 
 Result<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::beginDrag(double rayOriginX, double rayOriginY,
-                                                                                   double rayOriginZ,
-                                                                                   double rayDirectionX,
-                                                                                   double rayDirectionY,
-                                                                                   double rayDirectionZ) {
+                                                                             double rayOriginZ, double rayDirectionX,
+                                                                             double rayDirectionY,
+                                                                             double rayDirectionZ) {
     cancelDrag();
     if (!target_ || memberInstanceId_ <= 0 || controls_.size() != 4)
         return eve::editing::failed<BuildingEdgeCurveDragPreview>(
@@ -87,9 +86,10 @@ Result<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::beginDrag(dou
     return previewCurrent();
 }
 
-Result<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::updateDrag(
-    double rayOriginX, double rayOriginY, double rayOriginZ, double rayDirectionX, double rayDirectionY,
-    double rayDirectionZ) {
+Result<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::updateDrag(double rayOriginX, double rayOriginY,
+                                                                              double rayOriginZ, double rayDirectionX,
+                                                                              double rayDirectionY,
+                                                                              double rayDirectionZ) {
     if (!dragging_ || !target_)
         return eve::editing::failed<BuildingEdgeCurveDragPreview>(
             EditorStatus::Rejected, RuleId("editor.building.curve-drag-not-active"), "Curve drag has not begun");

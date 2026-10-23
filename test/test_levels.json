@@ -12331,7 +12331,7 @@
       ],
       "task": "sensing"
     },
-    "building_assembly.cpp": {
+    "integration/building-workflow/building_assembly.cpp": {
       "role": "tests",
       "module": "building",
       "default": "module-composition",
@@ -12345,9 +12345,10 @@
           "building.assembly.staleIndexesAndRemodelMemberKeys",
           "building.assembly.protocolRejectsOversizeReceiptBeforeMutation"
         ]
-      }
+      },
+      "task": "building-workflow"
     },
-    "building_roof_support.cpp": {
+    "integration/building-workflow/building_roof_support.cpp": {
       "role": "tests",
       "module": "building",
       "default": "module-composition",
@@ -12356,9 +12357,10 @@
           "building.roof.everyCellRequiresSupportAtEveryRotation",
           "building.roof.assemblyRemodelRejectsMissingSupportAtomically"
         ]
-      }
+      },
+      "task": "building-workflow"
     },
-    "editor_building_assembly.cpp": {
+    "integration/building-workflow/editor_building_assembly.cpp": {
       "role": "tests",
       "module": "building_editing",
       "default": "module-composition",
@@ -12366,7 +12368,8 @@
         "module-composition": [
           "editing.buildingAssembly.atomicStagingUndoRedo"
         ]
-      }
+      },
+      "task": "building-workflow"
     }
   }
 }
