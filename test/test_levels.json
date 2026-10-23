@@ -12167,6 +12167,60 @@
       ],
       "task": "avatar-appearance"
     },
+    "integration/physics-simulation/physics_collision_regression.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "physics-backend": [
+          "physics.collision.ccd.sphereStopsAtThinWall",
+          "physics.collision.ccd.dynamicPairMaintainsOrderWithFourSubsteps",
+          "physics.collision.stack.remainsSupportedAfterTenSeconds",
+          "physics.collision.query.primitiveHitsHaveNoSourceTriangle"
+        ]
+      },
+      "module": "physics",
+      "task": "physics-simulation"
+    },
+    "integration/physics-simulation/physics_collision_benchmark.cpp": {
+      "role": "tests",
+      "default": "performance",
+      "cases": {
+        "performance": [
+          "physics.benchmark.collision.grid1000"
+        ]
+      },
+      "module": "physics",
+      "task": "physics-simulation"
+    },
+    "integration/physics-simulation/physics_mover_grounding.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "physics-backend": [
+          "physics.mover.grounding.leavingLedgeClearsSupportAtDestination",
+          "physics.mover.grounding.horizontalMotionHasUsableSupportNormal",
+          "physics.mover.grounding.jumpingClearsStartingFloorContact",
+          "physics.mover.grounding.kinematicSupportRemovalIsObservedImmediately",
+          "physics.mover.grounding.destinationProbeHonorsSensorAndBodyExclusions",
+          "physics.mover.grounding.sensorWallDoesNotBlockCapsuleTravel"
+        ]
+      },
+      "module": "physics",
+      "task": "physics-simulation"
+    },
+    "integration/physics-simulation/climbing_grounding.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "climbing.grounding.lowStepUsesProductionMotor",
+          "climbing.grounding.tallStepRemainsBlocked",
+          "climbing.grounding.lowCeilingRejectsStepWithoutPublishingRaisedPose"
+        ]
+      },
+      "module": "climbing",
+      "task": "physics-simulation"
+    },
     "integration/projectile-behavior/continuous_solver.cpp": {
       "role": "tests",
       "default": "module-composition",
