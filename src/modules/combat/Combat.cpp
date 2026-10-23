@@ -117,6 +117,7 @@ public:
         auto advanced = locomotion_.advance(
             {SimulationTick(static_cast<std::uint64_t>(tick)), std::move(delta).takeValue()});
         if (!advanced) return Result<Value>::failure(advanced.status());
+        lastTick_ = SimulationTick(static_cast<std::uint64_t>(tick));
         Value::Array events;
         events.reserve(advanced.value().events.size());
         for (const auto& event : advanced.value().events) {
@@ -133,9 +134,10 @@ public:
     }
 
     Result<Value> applyDamage(const std::string& sourceText, const std::string& targetText,
-                              const std::string& damageType, double healthDamage,
-                              double poiseDamage, double knockbackX, double knockbackY,
-                              double knockbackZ) {
+                              const std::string& damageType, double healthDamage, double poiseDamage, double knockbackX,
+                              double knockbackY, double knockbackZ, bool critical, std::int64_t tick) {
+        if (tick < 0)
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "negative tick", "tick"));
         auto source = parseSubject(sourceText, "source");
         if (!source) return Result<Value>::failure(source.status());
         auto target = parseSubject(targetText, "target");
@@ -151,6 +153,8 @@ public:
         request.healthDamage = healthDamage;
         request.poiseDamage  = poiseDamage;
         request.knockback    = {knockbackX, knockbackY, knockbackZ};
+        request.critical     = critical;
+        request.tick         = SimulationTick(static_cast<std::uint64_t>(tick));
         auto outcome = damage_.apply(found->second, request);
         if (!outcome) return Result<Value>::failure(outcome.status());
         Value::Object result;
@@ -161,6 +165,10 @@ public:
         result["appliedHealthDamage"] = outcome.value().appliedHealthDamage;
         result["appliedPoiseDamage"] = outcome.value().appliedPoiseDamage;
         result["reaction"] = reactionName(outcome.value().reaction);
+        // Reuse the canonical event payload codec, including schema-owned stage explanations.
+        auto payload = Value::fromJson(outcome.value().settlement.event->payload);
+        if (!payload) return Result<Value>::failure(payload.status());
+        result["settlement"] = std::move(payload).takeValue();
         return Result<Value>::success(Value(std::move(result)), Status::success(StatusCode::Applied));
     }
 
@@ -176,8 +184,8 @@ public:
         auto binding = action::ActionDamageBinding::fromPayload(*payload);
         if (!binding) return Result<Value>::failure(binding.status());
         return applyDamage(sourceText, targetText, binding.value().damageType, binding.value().amount,
-                           binding.value().poiseAmount, binding.value().knockback.x,
-                           binding.value().knockback.y, binding.value().knockback.z);
+                           binding.value().poiseAmount, binding.value().knockback.x, binding.value().knockback.y,
+                           binding.value().knockback.z, false, static_cast<std::int64_t>(lastTick_.value()));
     }
 
     Result<Value> grantAbility(const std::string& ownerId, const std::string& definitionText) {
@@ -438,6 +446,7 @@ private:
     DirectCombatNavigationProvider navigation_;
     CombatLocomotionRuntime        locomotion_;
     DamageRuntime                  damage_;
+    SimulationTick                                  lastTick_ = SimulationTick::zero();
     std::map<std::string, CombatState, std::less<>> states_;
     action::ActionRuntime                         actions_;
     action::AbilityRuntime                        abilities_{actions_};
@@ -504,8 +513,9 @@ void Combat::expose(ssq::Table& table) {
                                                                            {}, "combat.squirrel")));
     });
     runtime.addFunc("applyDamage", [vm](ScriptCombatRuntime* self, const std::string& source, const std::string& target,
-                                        const std::string& type, float health, float poise, float x, float y, float z) {
-        return project(vm, self ? self->applyDamage(source, target, type, health, poise, x, y, z)
+                                        const std::string& type, float health, float poise, float x, float y, float z,
+                                        bool critical, std::int64_t tick) {
+        return project(vm, self ? self->applyDamage(source, target, type, health, poise, x, y, z, critical, tick)
                                 : Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                                            "combat runtime must not be null", "runtime",
                                                                            {}, "combat.squirrel")));

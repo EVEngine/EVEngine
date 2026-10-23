@@ -69,7 +69,10 @@ Cannot chdir
 Cannot open root
 failed to load:
 EOF
-mapfile -t MARKERS <<<"$MARKERS_SCRIPT"
+MARKERS=()
+while IFS= read -r marker; do
+  MARKERS+=("$marker")
+done <<<"$MARKERS_SCRIPT"
 
 # Runnable examples = dirs containing a main.nut.  scripts/check_examples.py
 # guarantees that every non-exempt example directory has one, so this set is the

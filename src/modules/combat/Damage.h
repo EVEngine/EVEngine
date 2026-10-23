@@ -3,8 +3,10 @@
 /** @file Damage.h @brief Deterministic damage, poise, hit-reaction and knockback resolution. */
 
 #include "action/Action.h"
+#include "common/BorrowedRef.h"
 #include "common/Result.h"
 #include "common/SubjectRef.h"
+#include "settlement/Settlement.h"
 
 #include <optional>
 #include <string>
@@ -50,6 +52,10 @@ struct DamageRequest {
     double                                   healthDamage = 0.0;
     double                                   poiseDamage  = 0.0;
     Impulse3                                 knockback;
+    /** @brief Injected simulation tick copied into the canonical settlement event. */
+    SimulationTick tick = SimulationTick::zero();
+    /** @brief Presentation metadata; the requested amount already includes any critical multiplier. */
+    bool critical = false;
 
     /** @brief Validate target, canonical gameplay-tag damage type and finite amounts. */
     [[nodiscard]] Result<void> validate() const;
@@ -93,17 +99,20 @@ struct DamageOutcome {
     double           health              = 0.0;
     double           previousPoise       = 0.0;
     double           poise               = 0.0;
+    /** @brief Compatibility projection of settlement.applied; never used as mutable authority. */
     double           appliedHealthDamage = 0.0;
     double           appliedPoiseDamage  = 0.0;
     Impulse3         knockback;
     HitReaction      reaction   = HitReaction::None;
     DamageRuleSource ruleSource = DamageRuleSource::Default;
+    /** @brief Owning canonical result including stages, actual damage and result event. */
+    settlement::SettlementResult settlement;
 };
 
 /**
  * @brief Owner-thread deterministic damage coordinator.
  *
- * `apply` prepares and validates the complete outcome before one assignment to
+ * `apply` uses the common settlement pipeline to prepare and commit one assignment to
  * target state. It uses no clock or RNG. IEEE-754 results are deterministic for
  * identical inputs on supported backends; replay comparison uses exact stored
  * doubles produced by this single resolution path.
@@ -114,10 +123,22 @@ public:
     explicit DamageRuntime(const IDamageRule* rule = nullptr, HitReactionPolicy policy = {})
         : rule_(rule), policy_(policy) {}
 
-    /** @brief Resolve final damage amounts without mutating the target, for authoritative tactical prediction. */
+    /** @brief Run canonical settlement on an isolated copy and return actual, clamped damage for tactical prediction.
+     */
     [[nodiscard]] Result<DamageAmounts> preview(const CombatState& target, const DamageRequest& request) const;
     /** @brief Resolve and atomically commit one damage request. */
     [[nodiscard]] Result<DamageOutcome> apply(CombatState& target, const DamageRequest& request) const;
+    /**
+     * @brief Run an explicitly configured common pipeline and optionally append its result event.
+     * @param target Borrowed authority; valid for this synchronous owner-thread call.
+     * @param request Borrowed immutable input; never retained.
+     * @param pipeline Borrowed pipeline; custom stages must not mutate target or reenter this runtime.
+     * @param events Optional borrowed log; event failure rolls back health and poise together.
+     * @return Owning outcome, or failure with target and log unchanged. No references escape.
+     */
+    [[nodiscard]] Result<DamageOutcome> apply(CombatState& target, const DamageRequest& request,
+                                              const settlement::SettlementPipeline& pipeline,
+                                              OptionalRef<game_event::GameEventLog> events = {}) const;
     /** @brief Restore an explicit poise amount, clamped to maxPoise. */
     [[nodiscard]] Result<double> recoverPoise(CombatState& target, double amount) const;
 

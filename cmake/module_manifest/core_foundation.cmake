@@ -161,7 +161,7 @@ eve_declare_module(NAME action_input DIR action/input LAYER 2
                    GROUP minimal 2d 3d web)
 # L2 -- combat resolution consuming the action protocol
 eve_declare_module(NAME combat LIB EVCombat LAYER 2 SCRIPT Combat SLOT combat
-                   DEPS action attributes tags
+                   DEPS action attributes tags settlement
                    GROUP minimal 2d 3d web)
 # Shared fixed-step/backend contract extracted from the physics host so
 # independently switchable simulation satellites do not depend back upward.

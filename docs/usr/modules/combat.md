@@ -59,3 +59,23 @@ TileLayer revision 或代价改变会在下一步重新规划。不可达目标�
 移动状态应由表现层投射到 Scene/Physics，由 Ability Active 阶段决定冲刺、闪避等动作何时写入移动意图。
 Ability 生命周期仍由 `AbilityRuntime`/`ActionRuntime` 唯一拥有，伤害仍通过 `DamageRuntime` 或
 `CombatActionDamageSink` 提交；不要在角色 Controller 中复制冷却、动作阶段或生命值。
+
+## 通用结算接入
+
+`DamageRuntime` 的血量入账统一经过 `settlement::SettlementPipeline`，血量和韧性作为
+一次 PreparedApply 提交，事件写入失败时一起回滚。`preview` 执行隔离副本的同一流程，
+返回已限幅的实际伤害。`DamageOutcome.settlement` 包含 applied、critical、阶段解释和规范事件；
+`appliedHealthDamage` 是兼容输出投影，新显示代码读取 settlement.applied。
+
+脚本签名：
+
+```squirrel
+local result = arena.applyDamage(sourceUuid, targetUuid, "Damage.Physical.Slash",
+    amount, poiseAmount, knockbackX, knockbackY, knockbackZ, critical, tick);
+if (!result.ok) throw result.status.summary;
+local applied = result.value.settlement.applied;
+```
+
+`critical` 仅标记本次结果，amount 必须已经包含倍率；tick 是注入的非负仿真帧号。
+旧脚本调用需要添加这两个末尾参数。`applyTimelineDamage` 沿用原参数，使用最近一次
+`advance` 的 tick（尚未 advance 时为零）。

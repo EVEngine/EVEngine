@@ -347,6 +347,8 @@ def _sha256(path: Path) -> str:
 
 
 def _validate_result(result: dict, request: dict, staging_output: Path) -> list[dict]:
+    # Compare resolved dependencies against the same canonical root (including macOS /var aliases).
+    staging_output = staging_output.resolve()
     allowed = {"schema", "status", "engineVersion", "artifacts", "diagnostics"}
     unknown = sorted(set(result) - allowed)
     if unknown:

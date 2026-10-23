@@ -24,11 +24,11 @@ TEST_CASE("combatScript.runtimeOwnsMovementAndDamageState") {
         moved <- arena.setMoveIntent(player, 1.0, 0.0, 1.0);
         advanced <- arena.advance(1, 0.25);
         playerState <- arena.state(player);
-        damaged <- arena.applyDamage(player, enemy, "Damage.Physical.Slash", 18.0, 10.0, 0.0, 0.0, 0.0);
+        damaged <- arena.applyDamage(player, enemy, "Damage.Physical.Slash", 18.0, 10.0, 0.0, 0.0, 0.0, true, 2);
         timelineDamage <- arena.applyTimelineDamage(player, enemy,
             "{\"damageType\":\"Damage.Physical.Slash\",\"amount\":7,\"poiseAmount\":2}");
         enemyState <- arena.state(enemy);
-        invalid <- arena.applyDamage("bad", enemy, "Damage.Physical.Slash", 1.0, 0.0, 0.0, 0.0, 0.0);
+        invalid <- arena.applyDamage("bad", enemy, "Damage.Physical.Slash", 1.0, 0.0, 0.0, 0.0, 0.0, false, 2);
         grantedAbility <- arena.grantAbility("fighter:player", "combat-ability:light-attack");
         grantId <- grantedAbility.value.grantId;
         activatedAbility <- arena.activateAbility(grantId, 2);
@@ -44,10 +44,13 @@ TEST_CASE("combatScript.runtimeOwnsMovementAndDamageState") {
         readySeconds <- readyGrant.value.cooldownSeconds;
         playerX <- playerState.value.position.x;
         enemyHealth <- enemyState.value.health;
+        arenaOwnership <- arena.ownership();
         damageReaction <- damaged.value.reaction;
+        actualDamage <- damaged.value.settlement.applied;
+        criticalHit <- damaged.value.settlement.critical;
     )"));
     CHECK(vm.find("created").toTable().get<bool>("ok"));
-    CHECK_EQ(vm.find("arena").toTable().get<std::string>("ownership"), std::string("owned"));
+    CHECK_EQ(vm.find("arenaOwnership").toString(), std::string("owned"));
     CHECK(vm.find("registeredPlayer").toTable().get<bool>("ok"));
     CHECK(vm.find("registeredEnemy").toTable().get<bool>("ok"));
     CHECK(vm.find("moved").toTable().get<bool>("ok"));
@@ -55,6 +58,8 @@ TEST_CASE("combatScript.runtimeOwnsMovementAndDamageState") {
     CHECK(vm.find("playerX").toFloat() > 0.0f);
     CHECK_EQ(vm.find("enemyHealth").toFloat(), 55.0f);
     CHECK(vm.find("timelineDamage").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("actualDamage").toFloat(), 18.0f);
+    CHECK(vm.find("criticalHit").toBool());
     CHECK_EQ(vm.find("damageReaction").toString(), std::string("flinch"));
     CHECK(!vm.find("invalid").toTable().get<bool>("ok"));
     CHECK(vm.find("grantedAbility").toTable().get<bool>("ok"));

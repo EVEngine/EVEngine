@@ -593,6 +593,193 @@
       ],
       "removal_condition": "remove the debt entry when the corresponding migration or documentation is complete; expiry forces review before renewal.",
       "max_net_growth": 0
+    },
+    {
+      "rule": "module-interface",
+      "owner": "engine-maintainers",
+      "issue": "EVENGINE-COMBAT-SETTLEMENT-PRESENTATION",
+      "reason": "Declare the changed combat/graphics composition boundaries and their executable evidence.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/combat-settlement-damage-numbers.md"
+      ],
+      "provides": [
+        {
+          "capability": "action::IActionDamageSink",
+          "impl": "CombatActionDamageSink",
+          "absent_behavior": "No combat sink handles action damage."
+        },
+        {
+          "capability": "action::IActionStateWindowSink",
+          "impl": "CombatActionWindowState",
+          "absent_behavior": "No combat window projection is registered."
+        }
+      ],
+      "requires": [
+        {
+          "capability": "settlement::SettlementPipeline",
+          "required": true,
+          "linkage": "hard",
+          "fallback": "None: declared DEPS settlement in manifest."
+        },
+        {
+          "capability": "IDamageRule",
+          "required": false,
+          "linkage": "injected",
+          "fallback": "Default request amounts; provider status exposed as ruleSource."
+        }
+      ],
+      "emits": [
+        {
+          "event": "settlement.result",
+          "ordering": "Canonical stage order; committed only after all stages succeed.",
+          "dispatch_phase": "Synchronous result; optional log append rolls back state on failure."
+        }
+      ],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.CombatRuntime",
+          "methods": [
+            "ownership",
+            "registerFighter",
+            "setMoveIntent",
+            "navigateTo",
+            "stop",
+            "advance",
+            "applyDamage",
+            "applyTimelineDamage",
+            "grantAbility",
+            "registerTimelineAbility",
+            "replaceTimelineAbility",
+            "activateAbility",
+            "advanceAbilities",
+            "cancelAbility",
+            "abilityGrant",
+            "matchingAbilities",
+            "state"
+          ]
+        },
+        {
+          "script_class": "eve.Combat",
+          "methods": [
+            "getName",
+            "newRuntime"
+          ]
+        }
+      ],
+      "protocol": [],
+      "thread_affinity": "Owner thread; rendering only in render phase; no asynchronous callbacks.",
+      "cost_notes": [],
+      "id": "combat-settlement-module-interface",
+      "scope": "src/modules/combat/**",
+      "tests": [
+        "test/combat_settlement.cpp",
+        "test/combat_damage.cpp",
+        "test/combat_script.cpp"
+      ],
+      "trim": {
+        "absent_profile": "minimal with EVENGINE_MODULE_COMBAT=OFF",
+        "verified_profile": "minimal + combat + font + devtools",
+        "level": "L2",
+        "evidence": "eve_combat_presentation_check links actual modules; no claim that combat can omit settlement."
+      },
+      "hot_path": [
+        "src/modules/combat/DamageSettlement.cpp",
+        "src/modules/combat/CombatLocomotion.cpp"
+      ]
+    },
+    {
+      "rule": "module-interface",
+      "owner": "engine-maintainers",
+      "issue": "EVENGINE-COMBAT-SETTLEMENT-PRESENTATION",
+      "reason": "Declare the changed combat/graphics composition boundaries and their executable evidence.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/combat-settlement-damage-numbers.md"
+      ],
+      "provides": [],
+      "requires": [
+        {
+          "capability": "Graphics::drawText / Font",
+          "required": true,
+          "linkage": "render-adapter hard dependency",
+          "fallback": "Rendering requires caller-owned matching graphics/font; core update/snapshot link independently."
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "eve.Graphics",
+          "methods": [
+            "newDamageNumbers"
+          ]
+        },
+        {
+          "script_class": "eve.DamageNumbers",
+          "methods": [
+            "spawn",
+            "setStyle",
+            "update",
+            "clear",
+            "count",
+            "snapshot",
+            "render"
+          ]
+        },
+        {
+          "script_class": "eve.DamageNumberStyle",
+          "methods": [
+            "lifetime",
+            "velocityY",
+            "gravity",
+            "scale",
+            "pop",
+            "shake",
+            "r",
+            "g",
+            "b",
+            "outline",
+            "fadeIn",
+            "fadeOut",
+            "mergeWindow",
+            "mergeRadius",
+            "decimals",
+            "compact"
+          ]
+        }
+      ],
+      "protocol": [],
+      "thread_affinity": "Owner thread; rendering only in render phase; no asynchronous callbacks.",
+      "cost_notes": [
+        {
+          "api": "DamageNumbers::snapshot",
+          "shape": "owned-result",
+          "why": "Explicit linear copies for observation; normal render traverses live entries directly."
+        },
+        {
+          "api": "DamageNumbers::render",
+          "shape": "named-draw",
+          "why": "Up to six glyph passes per live popup, bounded to 256 entries."
+        }
+      ],
+      "id": "graphics-damage-numbers-module-interface",
+      "scope": "src/modules/graphics/DamageNumbers*",
+      "tests": [
+        "test/graphics_damage_numbers.cpp",
+        "test/graphics_damage_numbers_script.cpp",
+        "test/combat_damage_numbers.cpp"
+      ],
+      "trim": {
+        "absent_profile": "test/damage_numbers renderer-free core",
+        "level": "L2",
+        "evidence": "make check/damage-numbers links DamageNumbers.cpp without renderer/font/combat/settlement; this is a component claim, not whole-graphics trimming."
+      },
+      "hot_path": [
+        "src/modules/graphics/DamageNumbers.cpp",
+        "src/modules/graphics/DamageNumbersRender.cpp"
+      ]
     }
   ]
 }

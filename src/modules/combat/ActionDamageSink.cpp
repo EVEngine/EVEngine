@@ -65,6 +65,7 @@ Result<void> CombatActionDamageSink::apply(const action::ActionDamageBinding& bi
     request.source = source;
     request.target = target->get().subject;
     request.actionExecution = context.executionId;
+    request.tick            = context.tick;
     request.damageType = binding.damageType;
     request.healthDamage = binding.amount;
     request.poiseDamage = binding.poiseAmount;

@@ -56,6 +56,7 @@ RULES = (
     "optional-capability",
     "backend-contract",
     "debt-metadata",
+    "module-interface",
 )
 
 COMMON_REQUIRED = {
@@ -67,6 +68,8 @@ COMMON_REQUIRED = {
     "tests",
 }
 RULE_REQUIRED = {
+    "module-interface": {"provides", "requires", "emits", "observes", "binds", "protocol",
+                         "thread_affinity", "trim", "hot_path", "cost_notes"},
     "api-shape": {"result_policy", "nodiscard_policy", "pointer_policy"},
     "link": {"symbols", "create", "ownership", "destroy_order", "restore", "stale"},
     "state-owner": {"state", "authoritative_owner", "projections"},
