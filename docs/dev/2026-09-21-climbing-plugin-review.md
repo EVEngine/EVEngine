@@ -51,9 +51,9 @@ v4 及旧版本迁移为历史的 target-only 表现，活动动作的窗口不�
 
 ## 架构规则与门禁
 
-- R-FACE-2：`scripts/architecture_contracts.json` 增加 climbing 的 module-interface；
-  提供/消费能力、脚本类、事件、线程、热路径和成本明确声明。既有 ECS/Link 条目按
-  scope 复用，没有第二份状态契约。
+- R-FACE-2：同步 2026-10-14 的代码真源门禁，删除旧 JSON catalogue 及其辅助器。
+  climbing 热路径直接登记在 `check_architecture_contracts.py` 的 `HOT_PATH_GLOBS`；
+  能力、脚本、ECS 和生命周期以源码与运行时测试为准，不恢复废弃的重复登记表。
 - R-MECH-1/2：每角色、每 tick、已知消费者、同步预检后应用；沿用 owning projection
   与 Animation adapter。新增热路径不查询字符串服务。每脚最多一个物理 query，计入
   active budget；没有新 provider 依赖。
@@ -66,8 +66,8 @@ v4 及旧版本迁移为历史的 target-only 表现，活动动作的窗口不�
 - R-BOUND-3：`make profile PROFILE=headless PROFILE_PLATFORM=macosx
   PROFILE_BUILD_ROOT=/tmp/eve-climbing-profile PROFILE_JOBS=2` 的 configure/build/smoke
   已通过；manifest 闭包不含 climbing。这里只声明 L1 编译裁剪，不声明 L2/L3/L4。
-- 新检查器验证能力名字、脚本类、Observer、可选依赖探针、manifest absent profile 和
-  新增热路径 lookup；回归用例覆盖缺失/错误声明。scope 扫描限制到声明路径前缀。
+- 沿用最新 dev 的 api-shape、所有权/生命周期、热路径和成本代码 lint。
+  旧 catalogue 专用检查器与测试随门禁退役移除，运行时契约测试继续保留。
 
 没有申请或采用架构规则例外。
 
@@ -114,3 +114,16 @@ v4 及旧版本迁移为历史的 target-only 表现，活动动作的窗口不�
   当前分支落后 591 个提交。原基线通过不能代表最新 dev 集成通过。
 - 因此以草稿 PR 提交，合并前仍需同步最新 dev、解决冲突并重跑构建和门禁。
   上文动画、裁剪和视觉证据属于此前开发验证，本次未重跑这些项目。
+
+## 2026-10-23 同步最新 dev
+
+合并 `0dade008d0878445921c9ca805ae03b0cb225cc7`，按 dev 的新布局处理冲突：
+四肢姿态实现迁入 `ClimbingInput.cpp`；不恢复已退役的 JSON 架构登记表；
+保留 OrientationWarping 的 display pose，再叠加接触 IK。新增测试迁到集成测试目录，
+补齐 `test_levels.json`、域归属及生成的模块覆盖记录。
+
+使用新固定依赖 `477333b3e4045a2c09a9ef8cf761acb94e9eb6f6` 的已校验发布包，
+从空的 macOS Debug 构建目录完成引擎与测试程序构建。旧依赖和构建目录已保留，
+没有复用旧对象文件。新版 `make check` 对 `origin/dev` 通过（463 项脚本测试），
+climbing 与 animation 原生回归 324/324 通过；默认示例 8 秒 smoke 通过，
+八场景循环中两种转角和背跳到达目标，爬上落点与四肢端点断言通过。

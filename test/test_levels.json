@@ -12177,6 +12177,52 @@
       },
       "module": "weather",
       "task": "weather-lightning"
+    },
+    "integration/gameplay-composition/climbing_contact_presentation.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "climbing.contactPresentation.fixedStepBlendReleasesAndRejectsAtomically"
+        ]
+      },
+      "module": "climbing",
+      "task": "gameplay-composition"
+    },
+    "integration/gameplay-composition/climbing_pose_contacts.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "climbing.poseContacts.nonHandContactsDoNotPinReleasedHands",
+          "climbing.poseContacts.disabledHandsAreNoOp",
+          "climbing.poseContacts.rejectsNonfiniteInputBeforeChangingEitherHand",
+          "climbing.poseContacts.rejectsDisconnectedChainAndMismatchedPose",
+          "climbing.poseContacts.aggregateOnlyContactRespectsModelPlacement",
+          "climbing.poseContacts.feetRequireTargetsAndRemainIndependent",
+          "climbing.poseContacts.invalidFootRejectsBeforeHandMutation"
+        ]
+      },
+      "module": "climbing",
+      "task": "gameplay-composition"
+    },
+    "integration/physics-simulation/climbing_foot_contacts.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "physics-backend": [
+          "climbing.footContacts.narrowWallSupportsOnlyOneFoot",
+          "climbing.footContacts.overheadLedgeLeavesFeetFree",
+          "climbing.footContacts.ladderSocketsFollowMovingBody",
+          "climbing.footContacts.ladderSocketsFollowBodyRotation",
+          "climbing.footContacts.destroyedBodyDoesNotPublishStaleContacts",
+          "climbing.contactTransfer.staggeredHandsRestoreTheirSource",
+          "climbing.corner.outerRightAngleKeepsCapsuleOutsideWall",
+          "climbing.corner.innerRightAngleKeepsCapsuleOutsideBothWalls"
+        ]
+      },
+      "module": "climbing",
+      "task": "physics-simulation"
     }
   }
 }

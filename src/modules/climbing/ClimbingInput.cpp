@@ -194,9 +194,9 @@ eve::Result<ClimbingPoseResult> applyClimbingPose(animation::AnimSkeleton& skele
         return poseFailure("contact weights must be finite", "advance.contactWeights");
 
     ClimbingPoseResult result;
-    const float legacyWeight = std::clamp(advance.contactWeight, 0.f, 1.f);
-    const float authoredLeft = std::clamp(advance.leftHandWeight, 0.f, 1.f);
-    const float authoredRight = std::clamp(advance.rightHandWeight, 0.f, 1.f);
+    const float        legacyWeight  = std::clamp(advance.contactWeight, 0.f, 1.f);
+    const float        authoredLeft  = std::clamp(advance.leftHandWeight, 0.f, 1.f);
+    const float        authoredRight = std::clamp(advance.rightHandWeight, 0.f, 1.f);
     // contactWeight summarizes all limbs, including feet and pelvis. Only old
     // aggregate-only callers use it as a hand weight.
     const bool hasLimbWeights = advance.leftHandWeight != 0.f || advance.rightHandWeight != 0.f ||

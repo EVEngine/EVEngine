@@ -271,6 +271,7 @@ set(EVE_TEST_PREFIX_DOMAIN
     "state_value;rpg"
 
     "climbing_playground;climbing"
+    "=climbing_contact_presentation;climbing"
     "crowd_script;npc_ai"
     "dialogue_proc_script;dialogue"
     "rts_;tactics_rts"

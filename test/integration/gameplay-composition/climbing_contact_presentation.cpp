@@ -7,8 +7,8 @@
 #include <sstream>
 
 TEST_CASE("climbing.contactPresentation.fixedStepBlendReleasesAndRejectsAtomically") {
-    const auto path =
-        std::filesystem::path(__FILE__).parent_path().parent_path() / "examples/climbing-motion-matching/main.nut";
+    const auto path = std::filesystem::path(__FILE__).parent_path().parent_path().parent_path().parent_path() /
+                      "examples/climbing-motion-matching/main.nut";
     std::ifstream input(path, std::ios::binary);
     REQUIRE(input.is_open());
     std::ostringstream buffer;
