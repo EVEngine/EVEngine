@@ -138,6 +138,8 @@ float cloudShadowFactor(vec3 worldPos) {
     return 1.0 - clamp(covered, 0.0, 1.0) * clamp(ubo.cloud.x, 0.0, 1.0);
 }
 
+#include "shadow_cascade_uv.glsl"
+
 #ifdef EVE_RAW_SHADOW_MAP
 float blockerPenumbra(vec3 worldPos, int cascade, float bias) {
     vec4 lightClip = shadow.lightVP[cascade] * vec4(worldPos, 1.0);
@@ -145,7 +147,9 @@ float blockerPenumbra(vec3 worldPos, int cascade, float bias) {
     vec2 uv = ndc.xy * 0.5 + 0.5;
     if (any(lessThan(uv, vec2(0.0))) || any(greaterThan(uv, vec2(1.0))))
         return 0.5;
-    vec2 texel = 1.0 / vec2(textureSize(shadowMapRaw, 0).xy);
+    float uvScale = eveCascadeUvScale(cascade);
+    float mapSize = eveCascadeMapSize(cascade);
+    vec2 texel = vec2(1.0 / mapSize);
     const vec2 searchOffsets[8] = vec2[8](
         vec2(-1.0, -1.0), vec2(0.0, -1.5), vec2(1.0, -1.0), vec2(-1.5, 0.0),
         vec2(1.5, 0.0), vec2(-1.0, 1.0), vec2(0.0, 1.5), vec2(1.0, 1.0));
@@ -153,9 +157,8 @@ float blockerPenumbra(vec3 worldPos, int cascade, float bias) {
     float blockerCount = 0.0;
     float receiver = ndc.z - bias;
     for (int i = 0; i < 8; ++i) {
-        float blocker = texture(shadowMapRaw,
-                                vec3(clamp(uv + searchOffsets[i] * texel * 1.5,
-                                           vec2(0.0), vec2(1.0)), float(cascade))).r;
+        vec2 s = clamp(uv + searchOffsets[i] * texel * 1.5, vec2(0.0), vec2(1.0));
+        float blocker = texture(shadowMapRaw, vec3(s * uvScale, float(cascade))).r;
         if (blocker < receiver) {
             blockerSum += blocker;
             blockerCount += 1.0;
@@ -164,7 +167,6 @@ float blockerPenumbra(vec3 worldPos, int cascade, float bias) {
     if (blockerCount < 0.5) return 0.5;
     float averageBlocker = blockerSum / blockerCount;
     float separation = max(receiver - averageBlocker, 0.0);
-    float mapSize = float(textureSize(shadowMapRaw, 0).x);
     return clamp(0.5 + separation * mapSize * max(shadow.bias.w, 0.0), 0.5, 4.0);
 }
 #else
@@ -181,7 +183,8 @@ float sampleShadowCascade(vec3 worldPos, int cascade, float bias, float filterRa
     float depth = ndc.z;
     if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0 || depth < 0.0 || depth > 1.0)
         return 1.0;
-    vec2 texel = 1.0 / vec2(textureSize(shadowMap, 0).xy);
+    float uvScale = eveCascadeUvScale(cascade);
+    vec2 texel = vec2(1.0 / eveCascadeMapSize(cascade));
     const vec2 kPoisson[9] = vec2[9](
         vec2(0.0), vec2(-0.326, -0.406), vec2(-0.840, -0.074),
         vec2(-0.696, 0.457), vec2(-0.203, 0.621), vec2(0.473, -0.480),
@@ -195,10 +198,10 @@ float sampleShadowCascade(vec3 worldPos, int cascade, float bias, float filterRa
     float sum = 0.0;
     float zref = depth - bias;
     for (int i = 0; i < 9; ++i) {
-        vec2 s = uv + rotation * kPoisson[i] * texel * filterRadius;
-        if (s.x < 0.0 || s.x > 1.0 || s.y < 0.0 || s.y > 1.0)
+        vec2 sCascade = uv + rotation * kPoisson[i] * texel * filterRadius;
+        if (sCascade.x < 0.0 || sCascade.x > 1.0 || sCascade.y < 0.0 || sCascade.y > 1.0)
             continue;
-        sum += texture(shadowMap, vec4(s, float(cascade), zref));
+        sum += texture(shadowMap, vec4(sCascade * uvScale, float(cascade), zref));
     }
     return sum / 9.0;
 }

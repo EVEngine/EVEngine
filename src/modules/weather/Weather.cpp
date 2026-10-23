@@ -1,4 +1,5 @@
 #include "weather/Weather.h"
+#include "weather/Lightning.h"
 #include "weather/ThunderStrike.h"
 #include "weather/shaders/WeatherWgsl.h"
 
@@ -14,6 +15,7 @@
 #include <cmath>
 #include <cstdint>
 #include <cstring>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -156,111 +158,6 @@ graphics::Mesh *buildFieldMesh(graphics::Graphics *gfx, Lcg &rng, int count, flo
                                   idxCount);
 }
 
-struct Pt {
-    float x = 0, y = 0, z = 0;
-};
-
-void displacePath(std::vector<Pt> &path, Lcg &rng, float amount) {
-    std::vector<Pt> refined;
-    refined.reserve(path.size() * 2 - 1);
-    for (size_t i = 0; i + 1 < path.size(); ++i) {
-        const Pt &a = path[i];
-        const Pt &b = path[i + 1];
-        refined.push_back(a);
-        refined.push_back({(a.x + b.x) * 0.5f + rng.range(-amount, amount),
-                           (a.y + b.y) * 0.5f,
-                           (a.z + b.z) * 0.5f + rng.range(-amount, amount)});
-    }
-    refined.push_back(path.back());
-    path.swap(refined);
-}
-
-// Fractal midpoint displacement is the classic inexpensive lightning model.
-// Crossed tapered ribbons keep the channel visible from every camera angle.
-graphics::Mesh *buildBoltMesh(graphics::Graphics *gfx, Lcg &rng, Pt top, Pt ground) {
-    std::vector<Pt> pts{top, ground};
-    float displacement = 3.2f;
-    for (int level = 0; level < 5; ++level) {
-        displacePath(pts, rng, displacement);
-        displacement *= 0.48f;
-    }
-
-    std::vector<std::vector<Pt>> paths{pts};
-    const int branchStarts[] = {7, 12, 18, 23};
-    for (int start : branchStarts) {
-        if (start >= int(pts.size()) - 2) continue;
-        const Pt origin = pts[start];
-        const float side = (rng.unit() < 0.5f) ? -1.f : 1.f;
-        Pt tip{origin.x + side * rng.range(2.5f, 5.0f),
-               origin.y - rng.range(2.5f, 5.5f),
-               origin.z + rng.range(-3.5f, 3.5f)};
-        if (tip.y < 0.5f) tip.y = 0.5f;
-        std::vector<Pt> branch{origin, tip};
-        float branchDisp = 1.1f;
-        for (int level = 0; level < 3; ++level) {
-            displacePath(branch, rng, branchDisp);
-            branchDisp *= 0.45f;
-        }
-        paths.push_back(branch);
-    }
-
-    std::vector<Pt> all;
-    std::vector<float> allUv;
-    auto emitStrip = [&](const std::vector<Pt> &path, float wTop, float wBottom, int plane) {
-        const int n = int(path.size()) - 1;
-        for (int i = 0; i < n; ++i) {
-            Pt a = path[i], b = path[i + 1];
-            float sx = plane == 0 ? 1.f : 0.f;
-            float sz = plane == 0 ? 0.f : 1.f;
-            float w = wBottom + (wTop - wBottom) * (float(i) / float(n));
-            Pt p0 = {a.x + sx * w, a.y, a.z + sz * w};
-            Pt p1 = {a.x - sx * w, a.y, a.z - sz * w};
-            Pt p2 = {b.x - sx * w, b.y, b.z - sz * w};
-            Pt p3 = {b.x + sx * w, b.y, b.z + sz * w};
-            all.push_back(p0);
-            all.push_back(p1);
-            all.push_back(p2);
-            all.push_back(p3);
-            allUv.insert(allUv.end(), {-1.f, float(i) / n, 1.f, float(i) / n,
-                                       1.f, float(i + 1) / n, -1.f, float(i + 1) / n});
-        }
-    };
-
-    const float wMain = 0.20f;
-    for (size_t p = 0; p < paths.size(); ++p) {
-        const float scale = p == 0 ? 1.f : 0.55f;
-        emitStrip(paths[p], wMain * scale, wMain * 0.10f * scale, 0);
-        emitStrip(paths[p], wMain * scale, wMain * 0.10f * scale, 1);
-    }
-
-    const int vertCount = int(all.size());
-    const int idxCount = vertCount / 4 * 6;
-    std::vector<float> pos(vertCount * 3);
-    std::vector<float> nrm(vertCount * 3, 0.f);
-    std::vector<float> uv(vertCount * 2, 0.f);
-    std::vector<uint32_t> idx(idxCount);
-
-    for (int i = 0; i < vertCount; ++i) {
-        pos[i * 3 + 0] = all[i].x;
-        pos[i * 3 + 1] = all[i].y;
-        pos[i * 3 + 2] = all[i].z;
-        nrm[i * 3 + 1] = 1.f;
-        uv[i * 2 + 0] = allUv[i * 2 + 0];
-        uv[i * 2 + 1] = allUv[i * 2 + 1];
-    }
-    for (int q = 0; q < vertCount / 4; ++q) {
-        const uint32_t base = uint32_t(q * 4);
-        idx[q * 6 + 0] = base + 0;
-        idx[q * 6 + 1] = base + 1;
-        idx[q * 6 + 2] = base + 2;
-        idx[q * 6 + 3] = base + 0;
-        idx[q * 6 + 4] = base + 2;
-        idx[q * 6 + 5] = base + 3;
-    }
-
-    return gfx->newMeshFromArrays(pos.data(), nrm.data(), uv.data(), vertCount, idx.data(),
-                                  idxCount);
-}
 
 }  // namespace
 
@@ -428,11 +325,21 @@ void Weather::init(graphics::Graphics *gfx) {
 
     // ---- lightning bolts ----
     for (int i = 0; i < kBoltCount; ++i) {
-        Pt top{impl_->rng.range(-4.f, 4.f), kBoxY, impl_->rng.range(-4.f, 4.f)};
-        Pt ground{impl_->rng.range(-3.f, 3.f), 0.f, impl_->rng.range(-3.f, 3.f)};
-        graphics::Mesh *m = buildBoltMesh(gfx, impl_->rng, top, ground);
+        LightningSettings settings;
+        settings.width        = 0.20f;
+        settings.displacement = 3.2f;
+        settings.seed         = static_cast<int>(impl_->rng.next() & 0x7fffffffu);
+        auto geometry         = buildLightningGeometry(settings, 0);
+        if (!geometry) throw std::runtime_error("Invalid weather lightning geometry");
+        auto                   &g = geometry.value();
+        graphics::Mesh         *m = gfx->newMeshFromArrays(g.positions.data(), g.normals.data(), g.uv.data(),
+                                                           static_cast<int>(g.positions.size() / 3), g.indices.data(),
+                                                           static_cast<int>(g.indices.size()));
         graphics::Renderable3D *b = graphics::Renderable3D::create();
         b->setMesh(m);
+        b->setPosition(impl_->rng.range(-4.f, 4.f), kBoxY, impl_->rng.range(-4.f, 4.f));
+        b->setRotation(0.f, 3.14159265f, 0.f);
+        b->setScale(1.f, kBoxY, 1.f);
         graphics::Material *mm = gfx->newMaterial();
         mm->setShadingModel("unlit");
         mm->setReceiveLight(false);
@@ -655,18 +562,7 @@ void Weather::update(float dt, graphics::Graphics *gfx) {
     if (impl_->activeBolt >= 0) {
         impl_->boltLife += dt;
         impl_->flashTimer -= dt;
-        // Return-stroke profile: bright leader, dark gap, weaker second pulse.
-        float f;
-        if (impl_->boltLife < 0.055f) {
-            f = 1.f - impl_->boltLife * 4.f;
-        } else if (impl_->boltLife < 0.095f) {
-            f = 0.06f;
-        } else if (impl_->boltLife < 0.19f) {
-            f = 0.72f * (1.f - (impl_->boltLife - 0.095f) / 0.095f);
-        } else {
-            f = std::max(0.f, 0.22f * (1.f - (impl_->boltLife - 0.19f) / 0.31f));
-        }
-        impl_->flash = std::clamp(f, 0.f, 1.f);
+        impl_->flash = lightningEnvelope(impl_->boltLife / 0.5f);
 
         const int bi = impl_->activeBolt;
         impl_->bolts[bi]->setVisible(impl_->flash > 0.02f);
@@ -706,6 +602,7 @@ void Weather::update(float dt, graphics::Graphics *gfx) {
 void Weather::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Weather::create, false);
     expose(cls);
+    exposeLightning(table, cls);
     auto interior = table.addClass("PcgInteriorWeatherVolume", ssq::Class::Ctor<PcgInteriorWeatherVolume()>());
     interior.addFunc("configureBox", [vm=table.getHandle()](PcgInteriorWeatherVolume* self,
         float x,float y,float z,float sx,float sy,float sz,int mode,int insideReverb,int outsideReverb) {
@@ -730,9 +627,14 @@ void Weather::expose(ssq::Table &table) {
         const ThunderStrikeSettings* settings, float x, float y, float z, std::uint32_t seed) {
         auto result=state&&settings?triggerThunderStrike(*state,*settings,x,y,z,seed)
             :Result<ThunderStrikeReceipt>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,"state and settings required"));
-        return eve::script::projectResult(vm,std::move(result),[](const ThunderStrikeReceipt& value) {
-            return Value::Object{{"x",value.x},{"y",value.y},{"z",value.z},{"intensity",value.intensity},
-                {"radius",value.radius},{"volume",value.volume},{"audioClipIndex",value.audioClipIndex}};
+        return eve::script::projectResult(vm, std::move(result), [](const ThunderStrikeReceipt &value) {
+            return Value::object({{"x", value.x},
+                                  {"y", value.y},
+                                  {"z", value.z},
+                                  {"intensity", value.intensity},
+                                  {"radius", value.radius},
+                                  {"volume", value.volume},
+                                  {"audioClipIndex", value.audioClipIndex}});
         });
     });
     table.addFunc("advanceThunderStrike", [vm=table.getHandle()](ThunderStrikeState* state,float dt) {

@@ -26,36 +26,37 @@ class RoadNetworkEditTarget final : public virtual editing::IEditableTarget,
                                     public editing::IDomainOperationTargetStaging,
                                     public editing::IEditingSnapshotProvider {
 public:
-    static constexpr const char* kMoveNode        = "road.node.move.v1";
-    static constexpr const char* kSetNodeRadius   = "road.node.set-radius.v1";
-    static constexpr const char* kSetNodeControl  = "road.node.set-junction-control.v1";
-    static constexpr const char* kSetEdgePoints   = "road.edge.set-control-points.v1";
-    static constexpr const char* kSetEdgeStyle    = "road.edge.set-style.v1";
-    static constexpr const char* kSetEdgeLanes    = "road.edge.set-lanes.v1";
-    static constexpr const char* kReverseEdge     = "road.edge.reverse.v1";
-    static constexpr const char* kReconnectEdgeEndpoint = "road.edge.reconnect-endpoint.v1";
-    static constexpr const char* kDetachEdgeEndpoint = "road.edge.detach-endpoint.v1";
-    static constexpr const char* kReattachEdgeEndpoint = "road.edge.reattach-endpoint.v1";
-    static constexpr const char* kSplitEdge       = "road.edge.split.v1";
-    static constexpr const char* kSplitEdgeAtPosition = "road.edge.split-at-position.v1";
-    static constexpr const char* kUnsplitEdge     = "road.edge.unsplit.v1";
-    static constexpr const char* kMergeNodes      = "road.node.merge.v1";
-    static constexpr const char* kMergeNodesAndConnect = "road.node.merge-and-connect.v1";
-    static constexpr const char* kUnmergeNodes    = "road.node.unmerge.v1";
-    static constexpr const char* kConnectNodeAtPosition = "road.node.connect-at-position.v1";
-    static constexpr const char* kDisconnectNodeAtPosition = "road.node.disconnect-at-position.v1";
-    static constexpr const char* kConnectEdgeIntersection = "road.edge.connect-intersection.v1";
+    static constexpr const char* kMoveNode                   = "road.node.move.v1";
+    static constexpr const char* kSetNodeConnection          = "road.node.connection.set.v1";
+    static constexpr const char* kSetNodeRadius              = "road.node.set-radius.v1";
+    static constexpr const char* kSetNodeControl             = "road.node.set-junction-control.v1";
+    static constexpr const char* kSetEdgePoints              = "road.edge.set-control-points.v1";
+    static constexpr const char* kSetEdgeStyle               = "road.edge.set-style.v1";
+    static constexpr const char* kSetEdgeLanes               = "road.edge.set-lanes.v1";
+    static constexpr const char* kReverseEdge                = "road.edge.reverse.v1";
+    static constexpr const char* kReconnectEdgeEndpoint      = "road.edge.reconnect-endpoint.v1";
+    static constexpr const char* kDetachEdgeEndpoint         = "road.edge.detach-endpoint.v1";
+    static constexpr const char* kReattachEdgeEndpoint       = "road.edge.reattach-endpoint.v1";
+    static constexpr const char* kSplitEdge                  = "road.edge.split.v1";
+    static constexpr const char* kSplitEdgeAtPosition        = "road.edge.split-at-position.v1";
+    static constexpr const char* kUnsplitEdge                = "road.edge.unsplit.v1";
+    static constexpr const char* kMergeNodes                 = "road.node.merge.v1";
+    static constexpr const char* kMergeNodesAndConnect       = "road.node.merge-and-connect.v1";
+    static constexpr const char* kUnmergeNodes               = "road.node.unmerge.v1";
+    static constexpr const char* kConnectNodeAtPosition      = "road.node.connect-at-position.v1";
+    static constexpr const char* kDisconnectNodeAtPosition   = "road.node.disconnect-at-position.v1";
+    static constexpr const char* kConnectEdgeIntersection    = "road.edge.connect-intersection.v1";
     static constexpr const char* kDisconnectEdgeIntersection = "road.edge.disconnect-intersection.v1";
-    static constexpr const char* kRestoreNode     = "road.node.restore.v1";
-    static constexpr const char* kRemoveNode      = "road.node.remove.v1";
-    static constexpr const char* kRestoreEdge     = "road.edge.restore.v1";
-    static constexpr const char* kRemoveEdge      = "road.edge.remove.v1";
-    static constexpr const char* kRestoreLaneLink = "road.lane-link.restore.v1";
-    static constexpr const char* kRemoveLaneLink  = "road.lane-link.remove.v1";
-    static constexpr const char* kBlockLaneLink   = "road.lane-link.block.v1";
-    static constexpr const char* kUnblockLaneLink = "road.lane-link.unblock.v1";
-    static constexpr const char* kRestoreLaneLinks = "road.lane-links.restore.v1";
-    static constexpr const char* kRemoveLaneLinks  = "road.lane-links.remove.v1";
+    static constexpr const char* kRestoreNode                = "road.node.restore.v1";
+    static constexpr const char* kRemoveNode                 = "road.node.remove.v1";
+    static constexpr const char* kRestoreEdge                = "road.edge.restore.v1";
+    static constexpr const char* kRemoveEdge                 = "road.edge.remove.v1";
+    static constexpr const char* kRestoreLaneLink            = "road.lane-link.restore.v1";
+    static constexpr const char* kRemoveLaneLink             = "road.lane-link.remove.v1";
+    static constexpr const char* kBlockLaneLink              = "road.lane-link.block.v1";
+    static constexpr const char* kUnblockLaneLink            = "road.lane-link.unblock.v1";
+    static constexpr const char* kRestoreLaneLinks           = "road.lane-links.restore.v1";
+    static constexpr const char* kRemoveLaneLinks            = "road.lane-links.remove.v1";
 
     /**
      * @brief Bind an editor target to an externally owned road network.
@@ -67,10 +68,10 @@ public:
     /** @brief Create an editor-owned empty road target for automation/composition hosts. */
     [[nodiscard]] static EVENGINE_API_ORCHESTRATION std::unique_ptr<RoadNetworkEditTarget> createOwned(std::string id);
 
-    editing::TargetId         targetId() const override { return editing::TargetId(id_); }
-    std::uint64_t             revision() const override { return network_->revision(); }
-    editing::EditRegion       dirtyRegion() const override { return dirty_; }
-    void                      clearDirtyRegion() override { dirty_.clear(); }
+    editing::TargetId          targetId() const override { return editing::TargetId(id_); }
+    std::uint64_t              revision() const override { return network_->revision(); }
+    editing::EditRegion        dirtyRegion() const override { return dirty_; }
+    void                       clearDirtyRegion() override { dirty_.clear(); }
     EVENGINE_API_ORCHESTRATION editing::TargetDescriptor describe() const override;
     EVENGINE_API_ORCHESTRATION void* queryCapability(const editing::CapabilityId& capability) override;
 
@@ -99,6 +100,16 @@ public:
      * @cost Linear in graph size with bounded node, edge, control-point, and lane-link counts.
      */
     [[nodiscard]] EVENGINE_API_ORCHESTRATION EditorResult<void> loadSnapshot(const EditorValue& snapshot);
+    /**
+     * @brief Build an owning undoable custom connection replacement after validating its mesh and bound seams.
+     * @param nodeId Stable live node identity.
+     * @param connection Owning local mesh, port sections and bindings; empty restores procedural construction.
+     * @return Owning operation/inverse or structured rejection; no live mutation.
+     * @cost Copies bounded connection geometry for candidate and inverse; amortized per authoring transaction.
+     * @note Synchronous owner-thread call; retains no input pointers and invokes no callbacks.
+     */
+    [[nodiscard]] EVENGINE_API_ORCHESTRATION EditorResult<editing::DomainOperation> makeSetNodeConnection(
+        std::uint32_t nodeId, procgen::road::RoadConnection connection) const;
 
     [[nodiscard]] EVENGINE_API_ORCHESTRATION EditorResult<void> applyDomainOperation(
         const editing::DomainOperation& operation) override;
@@ -109,6 +120,7 @@ public:
 
     /**
      * @brief Create an undoable stable-id node move operation.
+     * @cost Linear in the author graph for private geometry preflight; prepare once per planned move.
      * @param nodeId Stable node identity.
      * @param x New finite world X coordinate.
      * @param y New finite world Y coordinate.
@@ -192,7 +204,8 @@ public:
      * @param edgeId Stable road edge identity.
      * @param fromEndpoint True for the authored start endpoint, false for the end endpoint.
      * @param nodeId Existing replacement node identity.
-     * @return Forward/inverse pair that also restores lane connections pruned from the old junction.
+     * @return Forward/inverse pair that also restores pruned connections; already-connected returns successful NoOp
+     * with an idempotent pair.
      * @cost Linear in network lane-link count; intended for authoring transactions.
      */
     [[nodiscard]] EVENGINE_API_ORCHESTRATION EditorResult<editing::DomainOperation> makeReconnectEdgeEndpoint(
@@ -202,7 +215,8 @@ public:
      * @param edgeId Stable road edge identity.
      * @param fromEndpoint True for the authored start endpoint, false for the end endpoint.
      * @param nodeId Existing replacement node identity.
-     * @return Reconnect operation whose inverse restores the old junction connections exactly.
+     * @return Reconnect or turn-batch operation with exact inverse; an unchanged endpoint still adds missing turns,
+     * otherwise successful NoOp.
      * @cost Linear in topology plus quadratic in new-junction incident edges times lane count; authoring only.
      */
     [[nodiscard]] EVENGINE_API_ORCHESTRATION EditorResult<editing::DomainOperation> makeReconnectEdgeEndpointAndConnect(
@@ -351,7 +365,11 @@ public:
     /**
      * @brief Plan all missing legal turn links at one node as one atomic undoable operation.
      * @param nodeId Stable junction node identity.
-     * @return Batch restore/remove operation containing only newly generated links.
+     * @return Batch restore/remove operation containing only newly generated links; successful NoOp carries an empty
+     * batch.
+     * @cost Linear graph copy plus quadratic incident-lane enumeration, paid at the explicit authoring plan boundary.
+     * @note Synchronous owner-thread call; payload owns its data, no mutation/callback or retained borrows. Command
+     * adapters omit NoOp operations.
      */
     [[nodiscard]] EVENGINE_API_ORCHESTRATION EditorResult<editing::DomainOperation> makeConnectAllTurns(
         std::uint32_t nodeId) const;
@@ -360,8 +378,7 @@ private:
     RoadNetworkEditTarget(std::string id, std::unique_ptr<procgen::road::RoadNetwork> candidate);
     [[nodiscard]] EditorResult<editing::DomainOperation> makeMergeNodesImpl(std::uint32_t keepNodeId,
                                                                             std::uint32_t removeNodeId,
-                                                                            float maxDistance,
-                                                                            bool connectTurns) const;
+                                                                            float maxDistance, bool connectTurns) const;
 
     std::string                                 id_;
     std::unique_ptr<procgen::road::RoadNetwork> candidate_;

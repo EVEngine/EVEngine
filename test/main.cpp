@@ -2,6 +2,11 @@
 #include "common/CrashHandler.h"
 
 #include <cstdlib>
+#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS_TEST_APP)
+#define SDL_MAIN_HANDLED
+#include <SDL2/SDL.h>
+#include <cstdio>
+#endif
 
 #if defined(EVENGINE_ANDROID)
 #include <SDL2/SDL.h>
@@ -126,6 +131,13 @@ std::string escapeRegex(const std::string &s) {
 // iOS: SDL's UIKit main calls it). A `const char**` parameter would become a
 // C++ overload and be mangled.
 int main(int argc, char **argv) {
+#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS_TEST_APP)
+    const bool noRender = std::getenv("EVENGINE_TEST_NO_RENDER") != nullptr;
+    if (noRender && SDL_WasInit(SDL_INIT_VIDEO) != 0) {
+        std::fprintf(stderr, "Unit test process initialized SDL video before running cases\n");
+        return 1;
+    }
+#endif
 #if defined(EVENGINE_WINDOWS) || defined(_WIN32)
     // Same symbolized crash backtrace as the engine binary (main.cpp), so a
     // crashing test prints a stack trace instead of a bare access-violation
@@ -208,7 +220,13 @@ int main(int argc, char **argv) {
     }
 #endif  // EVENGINE_ANDROID / EVENGINE_IOS_TEST_APP
 
-    const int result = zeroerr::UnitTest().parseArgs(argc, const_cast<const char **>(argv)).run();
+    int result = zeroerr::UnitTest().parseArgs(argc, const_cast<const char **>(argv)).run();
+#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS_TEST_APP)
+    if (noRender && SDL_WasInit(SDL_INIT_VIDEO) != 0) {
+        std::fprintf(stderr, "Unit test process initialized SDL video\n");
+        result = 1;
+    }
+#endif
 #if defined(EVENGINE_WINDOWS) || defined(_WIN32)
     // Process-isolated CTest cases have already reported and released their
     // test-local state here. Some Release-only process-lifetime services block

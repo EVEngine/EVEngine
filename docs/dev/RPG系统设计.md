@@ -189,7 +189,7 @@ enable/disable、调整已注册阶段的优先级，但不能新增原生阶段
 
 ## 测试
 
-`test/rpg.cpp`：属性纯函数计算（各 op / 自定义 op / 优先级）、`AttributeSystem` 的
+`test/unit/rpg/rpg_tests.cpp`：属性纯函数计算（各 op / 自定义 op / 优先级）、`AttributeSystem` 的
 增删查与缓存失效、`EffectRegistry` 的注册与 JSON 加载（含 `extra`）、`StatusSystem` 的
 instant/duration/infinite/周期 tick/四种叠加策略、施加条件拒绝、自定义 stackPolicy、
 生命周期钩子与变更事件、Buff API 别名、`SkillSystem` 的

@@ -22,6 +22,15 @@ SPEC.loader.exec_module(checker)
 
 
 class CaseNameTests(unittest.TestCase):
+    def test_merged_sources_use_their_own_fixture(self):
+        source = (
+            'UnitSciptTest(First, first_content);\n'
+            'TestScript(basic)\n'
+            'UnitReloadScriptTest(Second, second_content);\n'
+            'TestScript(basic)\n'
+        )
+        self.assertEqual(self.names(source), ["First.basic", "Second.basic"])
+
     def names(self, source: str) -> list[str]:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "case.cpp"

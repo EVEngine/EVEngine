@@ -919,11 +919,10 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
     } else if (type == "input") {
         std::string buf = varString(cur("value", strOf(w, "value")));
         const bool multi = boolOf(w, "multiline", false);
-        const bool changed =
-            controls::inputText(widgetIdLabel(w).c_str(), buf, multi,
-                                ImVec2(floatOf(w, "width", 0.f),
-                                       floatOf(w, "height", 96.f))) ==
-            controls::ControlEdit::Changed;
+        const bool  changed = controls::inputText(widgetIdLabel(w).c_str(), buf, multi,
+                                                  ImVec2(floatOf(w, "width", 0.f), floatOf(w, "height", 96.f)),
+                                                  boolOf(w, "readOnly", false),
+                                                  strOf(w, "placeholder").c_str()) == controls::ControlEdit::Changed;
         if (enabled && changed && !id.empty()) {
             setWidgetValue(I, ed, id, Var(buf));
         }
@@ -986,6 +985,10 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
                                                       intOf(w, "heightItems", -1));
         if (enabled && changed && !id.empty() && idx >= 0 && idx < static_cast<int>(opts.size()))
             setWidgetValue(I, ed, id, Var(opts[static_cast<size_t>(idx)]));
+        recordRect(ed, id);
+    } else if (type == "link") {
+        if (controls::textLink(widgetIdLabel(w).c_str()) == controls::ControlEdit::Changed && enabled)
+            emitEvent(ed, "click", id, Var(strOf(w, "target")));
         recordRect(ed, id);
     } else if (type == "button") {
         if (enabled &&
@@ -1099,8 +1102,12 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
         }
     }
 
-    const std::string tip = strOf(w, "tooltip");
-    if (!tip.empty() && ImGui::IsItemHovered()) ImGui::SetTooltip("%s", tip.c_str());
+    const std::string tip =
+        !enabled && !strOf(w, "disabledReason").empty() ? strOf(w, "disabledReason") : strOf(w, "tooltip");
+    if (!tip.empty() && (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) || ImGui::IsItemFocused()))
+        ImGui::SetTooltip("%s", tip.c_str());
+    const std::string help = strOf(w, "helpText");
+    if (!help.empty()) ImGui::TextDisabled("%s", help.c_str());
     if (!enabled) {
         ImGui::PopItemFlag();
         ImGui::PopStyleVar();

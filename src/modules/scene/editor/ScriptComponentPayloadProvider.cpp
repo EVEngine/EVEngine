@@ -191,9 +191,11 @@ std::unique_ptr<scene_editing::IDomainOperationTarget> ScriptComponentOperationT
     auto candidate      = std::make_unique<ScriptComponentOperationTarget>(*this);
     candidate->staging_ = true;
     // 候选从**权威状态**重新克隆字段：撤销/重做要整份发布候选，所以它必须握有一份完整字段，
-    // 而不是绑定当时那份可能已经过期的拷贝。数据已经不在了就留着绑定时的拷贝，发布时会被拒绝。
+    // 而不是绑定当时那份可能已经过期的拷贝。数据已移除时不保留旧字段，候选写入返回 NotFound。
     const Value* stored = eve::findScriptComponentValues(ScriptComponentStoreKey{entityId_, name_, version_});
     if (stored != nullptr && stored->isObject()) candidate->fields_ = *stored->getIf<Value::Object>();
+    else
+        candidate->fields_.clear();
     return candidate;
 }
 

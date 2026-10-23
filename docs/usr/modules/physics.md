@@ -104,6 +104,11 @@ if (nearest >= 0) {
 程序化洞穴和预烘焙距离场。世界坐标查询使用三线性插值；碰撞后可读取最小间隙、接触位置和
 由中心差分估计的表面法线。
 
+跨模块共享采样走 `eve::ISdfField3D`（`physics::DistanceField3DSdf` 适配器）。可移植资产用
+`eve.sdf.field3d` v1 blob：`physics.sdfField3DBlobFromDistanceField(field)` 导出，
+`physics.distanceField3DFromSdfBlob(blob)` 导入（与 fluids `MeshSdf` /
+`fluids.sdfField3DBlobFromModel` 互通；场外策略导入后变为常量 `outsideDistance`）。
+
 ```squirrel
 // 16³ 个网格顶点，间距 0.5m，原点在 (-4,-4,-4)，地图外视为空间。
 local sdf = physics.newDistanceField3D(16, 16, 16, 0.5, -4, -4, -4, 1000);
@@ -1077,8 +1082,418 @@ Body3D 都由调用者持有，函数不保存指针、不调用未知回调；�
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
 
 **源码：** [`src/modules/physics/`](../../../src/modules/physics/)
-**相关测试：** [`test/box2d.cpp`](../../../test/box2d.cpp)、[`test/box3d.cpp`](../../../test/box3d.cpp)、[`test/softbody.cpp`](../../../test/softbody.cpp)
+**相关测试：** [`test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp`](../../../test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp)、[`test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp`](../../../test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp)、[`test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp`](../../../test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp)
 
 ## 补充绑定参考
 
 参数与接收者见 [源码生成参考](physics/api-reference.md)，使用前先确认本章的前置条件与生命周期。
+## 场效果、空气动力学和轮胎
+
+`physics/forces/ForceModels.h` 提供无状态、可组合的实时力模型；同一计算可用于 2D XY
+平面和 3D。脚本先实例化 `eve.Physics()`，随后使用下列 `eve.*` 类和函数。
+全部输入采用 SI：米、秒、kg、N、Nm、弧度。2D 刚体的位置/速度需除以
+`world.getMeter()`；`applyForceSI2D` 在施力时自动转换回像素单位。
+
+| 值对象 | 字段及含义 |
+| --- | --- |
+| `ForceVector` | `x`, `y`, `z`，默认零。2D 使用 `z=0`。 |
+| `FieldRegion` | `kind`（global/sphere/rectangle/box）、`center`、`radius`（sphere 负数无限范围）、`halfExtents`、`edgeWidth`（内侧线性衰减带宽）。 |
+| `DirectionalField` | `region`, `acceleration`，按质量换算为力的方向加速度场。 |
+| `DirectionalForceField` | `region`, `force`，恒力场（N），不随刚体质量变化。 |
+| `RadialField` | `region`, `strength`（正吸引/负排斥，m³/s²）, `softening`（正的核心半径）, `maxAcceleration`（m/s²）, `maxForce`（N）。两个上限均为有限非负数，零表示不施力；默认取数值类型最大值。 |
+| `BuoyancyModel` | `gravity`, `fluidDensity`, `displacedVolume`（实际浸没排水体积 m³）。 |
+| `DampingModel` | `linear`（kg/s）, `quadratic`（kg/m）；系数必须非负。 |
+| `AngularDampingModel` | 非负 `linear`（kg·m²/s）、`quadratic`（kg·m²），以相对角速度计算阻尼力矩。 |
+| `WingModel` | 世界空间单位正交 `chord`/`normal`，`density`, `area`, `liftSlope`, `zeroLiftAngle`, `stallAngle`, `baseDrag`, `aspectRatio`, `efficiency`。 |
+| `FrictionModel` | `staticCoefficient >= kineticCoefficient >= 0`。 |
+| `TireModel` | `radius`, `inertia`, `friction`, `longitudinalStiffness`, `corneringStiffness`, `rollingResistance`, `minimumSlipSpeed`。 |
+| `TireInput` | `longitudinalVelocity`, `lateralVelocity`（接地点相对地面的接触坐标系速度），`angularVelocity`, `normalLoad`, `driveTorque`, `brakeTorque`, `longitudinalInverseMass`, `lateralInverseMass`（非负接触有效逆质量 1/kg；零表示规定车身速度）。 |
+
+这些对象由脚本 VM 拥有。C++ 对应对象按值拥有数据。嵌套向量/区域建议先构造，再赋值
+给模型字段；不要假定 getter 返回可长期修改的引用。所有调用同步完成，不保留输入或刚体。
+
+| 脚本函数 | Result.value |
+| --- | --- |
+| `sampleDirectionalConstantForce(model, position)` | 世界空间 `{x,y,z}`，N，不使用质量。 |
+| `sampleDirectionalForce(model, position, mass)` | 世界空间 `{x,y,z}`，N。 |
+| `sampleRadialForce(model, position, mass)` | 软化的反平方吸引/排斥力；中心为零，范围外为零。 |
+| `sampleCircleImmersion2D(center, radius, thickness, surfaceY)` | `{volume,fraction,centroid}`，圆截面浸没量和浮心。 |
+| `sampleRectangleImmersion2D(center, width, height, thickness, surfaceY)` | 同上，轴对齐矩形。 |
+| `sampleSphereImmersion3D(center, radius, surfaceY)` | 同上，球体。 |
+| `sampleBoxImmersion3D(center, size, surfaceY)` | 同上，轴对齐盒体，size 为完整 XYZ 尺寸。 |
+| `sampleBuoyancyForce(model)` | `-fluidDensity * displacedVolume * gravity`。 |
+| `sampleDampingForce(model, relativeVelocity, mass, dt)` | 线性+平方阻力的隐式单步等效力。 |
+| `sampleAngularDamping2D(model, relativeAngularVelocity, inertia, dt)` | 标量力矩 Nm；正转动惯量 kg·m²、正步长 s。 |
+| `sampleAngularDamping3D(model, relativeAngularVelocity, principalInertia, dt)` | 惯量主轴系中的 `{x,y,z}` 力矩 Nm；三个主惯量都必须为正。 |
+| `sampleWingForce(model, relativeVelocity)` | `{force, angleOfAttack, liftCoefficient, dragCoefficient}`。 |
+| `sampleFrictionForce(model, tangentVelocity, demandedForce, normalLoad)` | 静止时抵消静摩擦限度内的切向外力；滑动时反向动摩擦。 |
+| `stepTire(model, input, dt)` | `{longitudinalForce,lateralForce,slipRatio,slipAngle,angularVelocity,reactionTorque,resistanceTorque}`。 |
+| `applyForceSI2D(body, fx, fy, px, py)` | 无值成功，在世界坐标施力点施加力并唤醒刚体。 |
+| `applyForceSI3D(body, fx, fy, fz, px, py, pz)` | 无值成功，支持偏心力矩。 |
+
+函数统一返回 Result 表，必须先检查 `ok`。非有限数、负质量/密度/载荷、非正时间、
+无效轴、数值溢出等返回 `InvalidArgument`；失效刚体返回 `StaleHandle`。
+施力只接受有效、启用的动态刚体，并在所有检查完成后修改。采样是纯计算，可以在任意
+线程使用不变输入；施力只在物理 owner 线程、固定 step 前执行，不能在回调中重入。
+没有新增 ECS System、对象注册表或跨帧借用。长时间保存刚体身份仍使用已有 PhysicsLink。
+
+### 计算与边界
+
+- 方向场模拟恒定加速度；真实排水浮力单独计算。浮力的排水体积和浮心由几何/水面
+  调用者提供，2D 也必须指定有厚度的物理体积。它不自动切割碰撞体或求水面。
+- “黑洞”是游戏用软化引力，公式为 `m * strength * delta / (r² + softening²)^(3/2)`，
+  不包含相对论、事件视界或自动销毁。多个场按固定顺序加和；负强度给出斥力。
+- 阻尼使用 `c=linear+quadratic*|v|`、`F=-c*v/(1+c*dt/m)`，避免单独阻尼使速度
+  在一个时间步内穿零反向。速度是物体减介质速度；可以表达风、水流或其他介质。
+- 机翼按弦向/法向截面的相对流速计算；翼展方向气流不产生截面力。升力方向垂直气流，
+  阻力方向逆气流。使用 `q=ρv²/2`、线性升力斜率、连续失速衰减，诱导阻力系数
+  `Cl²/(π*aspectRatio*efficiency)`。力应作用于气动中心；其点速度必须包含机体角速度。
+  这是可调游戏模型，不是实测翼型、完整飞机、超声速或 CFD 模型。
+- 摩擦模型要求调用者已经投影到接触切平面。它不是碰撞约束求解器；不要对已有
+  Box2D/Box3D 接触摩擦重复施加。同样不要同时为同一物体重复启用等效 solver 阻尼。
+- 轮胎按轮平面的纵向/横向接触速度求 slip，纵横合力限制在 `μN` 摩擦圆内。
+  `reactionTorque=-Fx*radius`；驱动、反作用、制动和滚阻共同更新轮速。零载荷无接地力，
+  但仍响应驱动/制动。刹车和滚阻本身不导致反转。计算不修改 `TireInput`；调用者在
+  检查成功后提交一次 `angularVelocity`，将接触坐标力转到世界空间作用于接地点。
+  悬架、地面查询、法向载荷、轮胎接地点、转向坐标与车身状态由车辆调用者提供。
+  刚性大或惯量小时需缩短固定子步；不承诺任意 dt 下的轮胎能量稳定性。
+
+时间由调用者注入，无全局时钟和 RNG；相同输入/顺序的浮点容差契约为相对 `1e-5`、
+绝对 `1e-6`，不承诺跨平台位一致。当前接口只提供进程内值计算，没有新增持久化格式。
+模型参数和轮速若需存档，应进入调用方版本化 schema，恢复后重新采样，不能保存待施加力
+再重复提交。world step 失败时调用者不得重复累计已提交的力，应恢复/重建自己的完整仿真步。
+
+公式依据：[NASA 升力](https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/lift-equation/)、
+[NASA 诱导阻力](https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/induced-drag-coefficient/)、
+[MathWorks 轮胎转动与组合滑移](https://www.mathworks.com/help/vdynblks/ref/combinedslipwheel2dof.html)。
+失速曲线和摩擦圆饱和是本实现明确选择的实时近似，并非复制该产品的完整轮胎模型。
+
+示例：[physics-force-lab](../../../examples/physics-force-lab/README.md)。
+测试：`physics.forces.*` 覆盖纯模型、真实 2D/3D 刚体、单位转换及 Squirrel Result 投影。
+
+## 2D 机械关节
+
+`Joint2D` 已提供独立的 owning wrapper。C++ 使用 `Joint2D::create(world, bodyA, bodyB, settings)`
+和 `Joint2D::createGear(world, first, second, ratio)`，返回 `Result<unique_ptr<Joint2D>>`。
+脚本使用 `eve.createJoint2D(world, bodyA, bodyB, settings)` 和
+`eve.createGearJoint2D(world, first, second, ratio)`；检查 Result.ok 后保存 value。
+VM GC 释放 wrapper 会移除 backend 约束，必须在需要约束存活期间持有 value。
+
+`eve.JointPoint2D()` 的 x/y 是米；`eve.Joint2DSettings()` 的 `kind` 支持
+`revolute`、`prismatic`、`distance`、`pulley`、`wheel`、`weld`。
+`anchorA`/`anchorB` 是世界空间施约束点，`axis` 为滑轨/悬架方向；
+`groundA`/`groundB` 为滑轮固定支点；`length` 是距离约束长度；`ratio` 是滑轮长度比例；
+`springHertz` 和 `dampingRatio` 设置距离、车轮、焊接的软约束；
+`collideConnected` 设置相连刚体是否仍碰撞。
+
+`Joint2D.getId()` 返回 world 内持久拓扑编号（空实例返回 0），`Joint2D.isValid()` 查询存活；`setMotor(enabled,speed,maximumForce)`、
+`setLimits(enabled,lower,upper)`、`destroy()` 都返回 Result。
+电机支持 revolute/wheel（rad/s、Nm）和 prismatic（m/s、N）；限位支持 revolute/prismatic。
+`sample(dt)` 返回 Result.value，包含 `anchorA`、`anchorB`、`reactionForce`、`reactionTorque`、
+`coordinate` 与 `secondaryCoordinate`。coordinate 分别为转角、平移、距离、齿轮比或滑轮 A 段长度；
+滑轮 B 段长度位于 secondaryCoordinate。dt 为刚完成的正物理步长，用于冲量转反作用力。
+
+齿轮通过两条已有 revolute/prismatic 关节约束 `coordinate1 + ratio*coordinate2`；
+两条关节的 bodyB 必须是不同的动态刚体。源关节先销毁会先销毁从属齿轮；
+齿轮先销毁不影响源关节。body/world 先销毁使剩余 wrapper 失效，不能继续访问 backend。
+所有操作和析构限物理 owner 线程、solver 回调外。非法参数/错误 world 在创建前拒绝；
+不支持的操作返回 Unsupported，已销毁对象返回 StaleHandle，锁定 world 返回 PreconditionViolation。
+
+2D world snapshot 使用 schema v3，保存七种关节的稳定编号、端点、局部锚点、
+转轴参考角、滑轨/车轮局部轴、电机、限位、弹簧、滑轮参考绳长和碰撞策略。
+齿轮以源关节编号保存依赖，同时保留四个端点的创建参考姿态，用于重建原始传动相位；
+这些是不可变的构造参数，不是第二套运行时 transform。恢复先在隔离世界创建普通关节，
+再创建齿轮，因此输入顺序不影响依赖解析。未知字段、非法参数或缺少源关节会拒绝，
+不会改变当前 world。未注册到引擎的 backend 关节不能静默保存。
+
+v2 迁移为没有关节的 v3；v1 已超出在线迁移窗口，返回 UnknownVersion。
+成功恢复会使旧对象和运行时 handle 失效，C++ 用 `World::resolveJoint2D(id)`
+解析新关节，再通过 PhysicsJointLink 保存运行时引用。恢复创建的关节 wrapper 由 world 持有；
+原先 `create` 返回的 wrapper 仍由调用方/VM 持有，恢复后处于失效状态。
+求解器的 warm-start 冲量缓存不保存，不能承诺逐位一致的重放。
+脚本调用 `eve.resolveJoint2D(world,id)` 返回 Result，value 为 `Joint2DReference`，
+提供与 Joint2D 相同的 getId/isValid/sample/setMotor/setLimits/destroy 方法，
+也能作为 createGearJoint2D 的源关节。该对象只持有 world 弱生命周期与代际 Link，
+每次调用重新解析；再次恢复、源关节销毁或 world 销毁后返回 StaleHandle。
+回收引用不会销毁关节，显式 destroy 才移除 solver 约束；失效引用的 destroy 也返回 StaleHandle。
+由 create 返回的 owning Joint2D 则维持重复 destroy 成功的原有语义。
+2D v3 同时保存 fixture 密度、摩擦、恢复系数、sensor、category/mask/group 和 tag，
+以及刚体线性/角阻尼、重力倍率、刚体与 world 休眠开关。质量与惯量由恢复后的 fixture
+密度和形状计算；恢复前校验过滤位宽和质量数值范围，错误输入不会触发 solver 断言。
+v2 没有这些字段，迁移时显式采用原恢复路径的默认值：密度 1（chain 为 0）、摩擦 0.2、
+恢复系数 0、非 sensor、category 1、mask 65535、group 0、空 tag；阻尼 0、重力倍率 1、
+刚体允许休眠、world 禁用休眠。这些默认值不能还原旧存档从未记录的自定义设置。
+底层直接设置的自定义质量、待积分外力和求解缓存不在当前格式中；3D 机械状态仍属于
+计划 A 的后续工作，不能将此阶段视为完整物理存档交付。
+
+### 3D 齿轮与滑轮耦合
+
+`eve.createGearCoupling3D(world, firstJoint, secondJoint, settings)` 和
+`eve.createPulleyCoupling3D(world, bodyA, bodyB, settings)` 返回 Result；成功时
+`value` 是 VM 独占的 `Coupling3D`。必须保存它，GC/VM 释放会移除约束，源刚体和关节继续存在。
+世界、源关节或源刚体先销毁，会使该包装器失效。所有操作与销毁在物理世界所属线程进行，
+不得在求解回调或 World3D.step 期间调用。工厂验证参数类型、同世界归属、存活状态和有限数值；
+失败返回结构化诊断，不修改刚体。创建涉及端点查找和分配，应在初始化时进行。
+
+- `eve.CouplingPoint3D()`：x/y/z，单位米。
+- `eve.CouplingLimits3D()`：positionCorrection（默认 0.2，范围 0–1）、
+  maxCorrectionSpeed（默认 10）、maxForce（默认 1000000），后两项要求有限正数。
+- `eve.GearCoupling3DSettings()`：ratio（默认 1，有限非零）和 limits。
+  两个源可为转轴或滑轨，保持 q1 + ratio*q2 的创建时相位；混合时 ratio 含长度单位。
+- `eve.PulleyCoupling3DSettings()`：localAnchorA、localAnchorB 是刚体局部连接点，groundA、groundB 是固定世界导向点，
+  ratio 为正，length 是加权总绳长，关系为 lA + ratio*lB = length。
+  tensionOnly 默认为 false；设为 true 时绳索只拉不推，允许松弛。limits 控制修正和力上限。
+
+`Coupling3D.getId()` 返回世界内编号；`isValid()` 查询存活；
+`setEnabled(enabled)` 返回 Result，禁用期间停止施力但继续跟踪相位；
+`destroy()` 返回 Result，重复销毁成功；`sample()` 返回 Result，其 value 包含
+coordinateA、coordinateB、error、impulse、active 和 saturated。
+impulse 是最近一次成功物理步的广义冲量，saturated 表示达到了力上限。
+错误类型的工厂输入或方法接收者安全拒绝；无效接收者 getId 返回 0、isValid 返回 false。
+
+实现采用原生求解之前的速度投影和有界相位修正，后端拒绝本步时回滚投影。
+角度展开要求每步相对转动小于 pi；采用小固定步长。误差修正可能使瞬时速度比例略偏离理想值。
+本模型不计算齿面接触，原生接触与电机组合精度仍在验证。3D v3 存档包含耦合参数和多圈相位，
+恢复时先重建原生关节与运行时句柄，再解析源引用。
+
+3D 读档创建的 Body3D、Shape3D 和 Joint3D 包装器由世界持有；失败候选全部释放，成功时统一接管。
+通过查找接口取得的是借用对象，不能 delete 或重新交给 owning 智能指针。
+它们的借用有效期截止于对象销毁、下一次成功恢复或世界销毁；跨读档应重新解析句柄。
+调用者原先创建并持有的包装器在成功恢复后失效，但仍由原调用者释放。
+
+3D 世界存档现使用 schema v3，保存五种原生关节的完整局部连接坐标与 parameters 对象：
+电机开关/速度/最大作用力、弹簧开关/频率/阻尼/目标、限位、碰撞连接标志、约束调节和破坏阈值。
+距离关节另保存静止长度和弹簧力区间；球形关节保存锥角、扭转、目标四元数及电机角速度；
+车轮保存悬挂、旋转电机和转向设置。数值字段使用固定长度数组，开关使用布尔值。
+未知、缺失、越界、错误类型和非法四元数在候选世界中拒绝，失败不改变当前世界。
+v2 不含 parameters，迁移为构造默认参数；v1 继续沿用依赖当前拓扑的迁移规则。
+此格式不保存求解器热启动缓存。couplings 数组保存稳定编号、源对象编号、参数、启停状态、
+上次成功冲量及饱和标志；齿轮保存参考相位和多圈坐标，滑轮保存连接点、绳长和松绳设置。
+旧版迁移为空耦合集合。C++ 可用 World3D::resolveCoupling3D(id) 取得 ResultRef 借用，
+恢复的耦合包装器由世界持有；借用不能删除，成功恢复后必须重新查询。脚本通过 eve.resolveCoupling3D(world,id) 获取恢复后的观察引用。
+
+World3D 步进期间拒绝存档与恢复（包含 provider 回调内重入）。恢复的新运行时句柄和索引
+在候选世界中准备，成功提交时统一替换；候选准备或后端恢复失败不会消耗当前世界的句柄序列。
+
+
+`eve.resolveCoupling3D(world,id)` 返回 Result，成功 value 为 `Coupling3DReference`，提供
+getId、isValid、sample、setEnabled 和 destroy；GC 只释放这个观察对象，不移除世界中的约束。
+引用同时校验世界和该约束实例的弱生命周期，成功读档、源销毁或约束销毁后立即失效，
+不会因为相同编号被重新创建而重新指向新对象。此时 getId 保留原编号，isValid 返回 false，
+其他方法返回 StaleHandle；需要重新查询。通过有效引用 destroy 会移除约束，重复调用引用的
+ destroy 返回 StaleHandle。工厂返回的 owning Coupling3D 则仍支持重复 destroy 成功。
+所有操作限物理所属线程，禁止在步进回调中改变约束；错误类型输入安全拒绝。
+
+3D v3 刚体的 dynamics 保存 linearDamping、angularDamping、gravityScale、sleepThreshold 和
+allowSleep，世界层也保存 allowSleep。阻尼与休眠阈值要求有限非负，重力倍率允许有限负数。
+恢复先完成形状和关节，再设置速度与休眠，避免创建关节时的唤醒覆盖存档状态。
+v1/v2 缺少这些字段时显式使用固定后端的默认刚体参数，世界休眠开关沿用旧恢复路径的 false；
+旧版意外携带这些新字段会被拒绝。
+
+3D v3 形状记录的 localTransform 保存局部平移与单位四元数，共 7 个数值；恢复会重建碰撞几何，
+再恢复刚体速度。未知形状字段、非法数组、非单位四元数及超 float 范围输入均拒绝。
+v1/v2 使用旧格式的单位局部变换。恢复后的形状事件索引按持久编号重建，稀疏编号不会变成创建顺序编号。
+3D v3 还保存形状密度、表面摩擦/反弹/滚动阻力、切向速度、64 位材质标识与碰撞掩码、
+分组、标签、传感器和事件开关、单向接触平面、爆炸响应及网格逐三角形材质槽。
+恢复在独立候选世界中执行；密度提交前检查质量、惯量及求逆的有限范围，非法输入不改变原世界。
+世界级按 Body/Shape 配对的碰撞忽略规则尚未纳入这一保存范围。
+
+### C++ 批量 SI 外力
+
+`physics/forces/ForceBatch.h` 提供 `ForceLoad` 和一次性 `ForceBatch`。
+每条请求包含 `PhysicsLink`、世界坐标作用点（米）、力（牛顿）和额外力矩（牛顿米）。
+2D 使用 XY 力和 Z 力矩，直接进入后端 SI 单位，结果不依赖 world 的像素比例。
+
+先用 `ForceBatch::prepare(world, loads)` 校验并复制请求，再检查 Result 后调用
+`batch.commit(world, step)`。准备不改变世界；提交再次解析所有句柄，按当前质心计算偏心力矩，
+将同一刚体的合力与合力矩统一提交。静态/禁用/失效/跨世界目标、非有限值和 float 范围溢出
+会在任何施力前拒绝整批。批次只持有数值与句柄，删除刚体或恢复世界会使旧目标失效。
+移动会转移提交权；成功提交后再次提交被拒绝。调用须在仿真 owner 线程、solver 回调之外。
+
+这一步不推进仿真；随后 solver 失败时回执保持 pending，使用原步重试，已提交批次不可重新提交。
+后端既有外力仍按其累计规则保留，因此不能与不受限的 raw backend 外力累计混用。
+准备和提交都以请求数量承担 O(n log n) 聚合成本及线性存储；按固定仿真步组织批次。
+脚本场集合可以创建并提交该批次；通用脚本外力批次与车辆接入仍在后续计划中。
+
+径向场先计算软化反平方衰减与区域边缘淡出，再同时限制力和加速度；两个上限取更严格者。
+中心点返回零力，正负 strength 保持吸引/排斥对称。极小软化半径使用对数幅值计算，
+使限幅在中间数值溢出之前生效。方向恒力场与方向加速度场使用不同类型，避免单位混用。
+
+`FieldRegion.kind` 可取 `"global"`、`"sphere"`、`"rectangle"`、`"box"`。
+`sphere` 使用 radius，负半径表示全局；二维 XY 切片自然得到圆形。
+`rectangle` 使用 halfExtents 的正 X/Y 半尺寸，Z 半尺寸必须为零，并忽略采样点 Z；
+`box` 使用三个正半尺寸，均为世界轴对齐。center 和尺寸单位为米。
+edgeWidth 是内侧淡出宽度，不超过最小有效半尺寸；按距最近边界的距离线性淡出，
+边界及范围外权重为零。零宽度表示硬边界。未知 kind 和非法尺寸返回失败 Result。
+这套范围共同用于方向加速度、方向恒力和径向场；对象过滤与场集合仍待接入。
+
+### C++ 场集合与对象过滤
+
+`physics/forces/FieldSet.h` 的 `FieldDefinition` 包含方向加速度、方向恒力或径向场，
+以及 `FieldFilter.includeAny/excludeAny` 两个 64 位类别掩码。
+`FieldTarget` 包含 `PhysicsLink` 与调用方指定的 categories：至少命中一个 includeAny 位，
+且没有命中任何 excludeAny 位，才受该场影响。类别为零不匹配任何场；排除优先。
+这些类别用于场效果，不读取或修改碰撞过滤规则。
+
+`FieldSet::build(definitions)` 校验并复制全部定义，包括暂时没有匹配对象的场。
+创建后集合不可修改，按定义顺序计算并叠加，允许跨步复用。
+`set.prepare(world, targets)` 读取动态刚体当前质量与 SI 质心，在质心采样所有匹配场，
+返回一个待提交的 `ForceBatch`；然后检查 Result 并调用 `commit(world)`。
+重复目标、失效句柄、静态或禁用刚体、非法输出会拒绝整批，准备不会唤醒刚体。
+提交前再次校验目标，合力和力矩均为零时不唤醒。字段集合本身不持有 world 或 body 指针。
+
+准备捕获当前质量、位置和类别，须在改变这些状态或推进仿真之前及时提交；
+场按质心作用，不代替按浸没体积采样的浮力。构建成本按定义数量线性增长；
+每步准备成本为场数乘目标数，再加目标聚合成本。脚本集合接口见下节。
+
+### 脚本场集合与一次性提交
+
+所有函数位于 `eve`，返回必须检查 `ok` 的 Result 表。
+`FieldSetBuilder()` 与 `FieldTargets()` 由 VM 持有；FieldSet/ForceBatch 只能从成功 Result 获取。
+类别掩码必须是无符号十进制字符串（0 至 18446744073709551615），不能用浮点数替代。
+
+| 函数 | 行为 |
+| --- | --- |
+| `addDirectionalField(builder, model, includeAny, excludeAny)` | 校验后追加方向加速度场的副本。 |
+| `addDirectionalConstantField(builder, model, includeAny, excludeAny)` | 校验后追加恒力场副本。 |
+| `addRadialField(builder, model, includeAny, excludeAny)` | 校验后追加径向场副本。 |
+| `buildFieldSet(builder)` | value 为不可变 FieldSet，后续修改 builder 或 model 不影响它。 |
+| `addFieldTarget2D(targets, body, categories)` | 保存 2D PhysicsLink 与类别副本，不持有 body。 |
+| `addFieldTarget3D(targets, body, categories)` | 保存 3D PhysicsLink 与类别副本，不持有 body。 |
+| `prepareFieldForces2D(set, world, targets)` | value 为按当前状态准备的 ForceBatch，不施力。 |
+| `prepareFieldForces3D(set, world, targets)` | 同上，针对 3D 世界。 |
+| `commitForceBatch2D(batch, world, tick, nanoseconds)` | 一次性提交 2D 批次，返回 `ForceReceipt`；重复或错误世界提交失败。 |
+| `commitForceBatch3D(batch, world, tick, nanoseconds)` | 一次性提交 3D 批次，返回 `ForceReceipt`；重复或错误世界提交失败。 |
+
+添加失败不改变构建器/目标列表。重复目标在 prepare 时拒绝。
+构建器和目标列表可复用；需要替换配置时新建容器。FieldSet/ForceBatch 不保留世界裸指针，
+销毁或恢复后的旧目标通过代际句柄检查拒绝。GC 只释放配置/批次，不会施力或销毁刚体。
+全部世界操作在 owner 线程执行；准备后应及时提交，之后再推进固定仿真步。
+
+### 规则几何浸没与浮心
+
+C++ `BuoyancyGeometry` 和上述四个脚本函数按水平液面 `y <= surfaceY` 计算，约定 +Y 向上。
+返回实际排水体积 volume（m³）、体积分数 fraction 和世界坐标浮心 centroid（m）。
+2D 的厚度必须显式为正，center.z 必须为零；矩形/盒体只支持世界轴对齐。
+圆和球不受旋转影响。干燥时体积和比例为零，浮心返回原中心作为占位值。
+非法尺寸、非有限输入及不可表示的体积/浮心返回 InvalidArgument。
+
+将 volume 填入 BuoyancyModel.displacedVolume，计算浮力后在 centroid 处施加，
+即可获得偏心力矩。几何函数是纯计算，不读取或修改刚体，也不会自动匹配 collider。
+圆弓形和球冠使用解析积分，近乎干燥的圆使用小角展开避免相减损失精度。
+任意旋转多面体裁切、波浪液面和流体动力求解不在这四个原语接口的范围内。
+
+### 角阻尼与转动惯量
+
+角阻尼使用 body-minus-medium 相对角速度（rad/s），不是线速度。
+令 c = linear + quadratic * |relativeAngularVelocity|，每个惯量主轴上的等效力矩为
+`-c * omega / (1 + c * dt / I)`，其中 I 为对应转动惯量。
+在没有其他力矩的单步积分中，它减小相对旋转能量且不会单独造成旋转反向。
+2D 返回绕 Z 的标量力矩。3D 输入速度与主惯量必须在同一主轴系；输出力矩也在该系，
+调用者须旋转到世界系后通过 ForceLoad.torque 提交。一般非对角惯量不能直接把矩阵对角项当主惯量。
+介质旋转较快时，阻尼可以加快刚体的世界角速度，但仍减小相对于介质的旋转。
+该模型不包含陀螺项或其他力矩，也不会自动修改 backend damping 配置。
+
+### 多翼面、尾翼与舵面组合
+
+C++ `WingSurface` 以刚体局部坐标描述气动中心 center（米）和 WingModel 的单位 chord/normal。
+`WingAssembly::build(surfaces)` 验证并复制这些值，生成不可变集合。
+`prepare(world, bodyLink, deflections, wind)` 读取刚体实际姿态，转换翼面方向和气动中心，
+在各中心读取包含 `omega cross r` 的点速度，减去世界风速后计算气动力。
+结果是一个 ForceBatch；检查成功后统一提交，偏心力矩按实际质心累加。
+
+每个翼面都有对应的有限偏转角（rad），固定翼面也提供零。
+正角将 chord 向 normal 旋转，同时旋转 normal，不只是修改升力数值。
+通过多个局部位置和独立角度，可组合机翼、尾翼、升降舵和差动副翼。
+2D 要求局部中心、chord/normal、wind 的 Z 为零；3D 自动使用完整刚体旋转。
+集合不拥有刚体，不保存控制输入指针；准备后在改变姿态/控制/风或步进前提交。
+配置验证按翼面数线性增长，每步采样与批次准备也按翼面数付费。
+该截面模型不包含翼面间尾流、下洗相互作用或 CFD。
+
+| 脚本函数 | 行为 |
+| --- | --- |
+| `addWingSurface(builder, model, center)` | 向 WingAssemblyBuilder 追加已验证的 WingModel 与局部气动中心副本。 |
+| `buildWingAssembly(builder)` | Result.value 为 VM 拥有的不可变 WingAssembly。 |
+| `addWingDeflection(controls, angle)` | 按翼面顺序向 WingControls 追加弧度偏转角。 |
+| `setWingDeflection(controls, index, angle)` | 更新现有角度；越界或非有限值返回失败。 |
+| `prepareWingForces2D(assembly, world, body, controls, wind)` | Result.value 为尚未施力的 2D ForceBatch。 |
+| `prepareWingForces3D(assembly, world, body, controls, wind)` | Result.value 为尚未施力的 3D ForceBatch。 |
+
+脚本用 `eve.WingAssemblyBuilder()` 和 `eve.WingControls()` 创建配置容器，
+控制角数量必须与翼面数量一致；采用已有 `commitForceBatch2D/3D` 提交。
+所有操作返回 Result。添加失败不改变构建器；无效翼面、错误维度、失效目标或任一采样失败
+不会部分施力。模型和中心使用值副本，VM 回收集合或未提交批次不会改变物理世界。
+
+### 轮胎低速与接触冲量
+
+轮胎现采用隐式滑移冲量，轮速和车身反作用使用同一纵向冲量。
+输入 longitudinalInverseMass/lateralInverseMass 描述接触切线方向的对角有效逆质量；
+零表示该方向的车身速度由调用方规定，正值则预测该接触力引起的速度变化。
+接地点偏离质心时，有效质量应包含刚体转动响应，不能一律使用质量倒数。
+一般接触响应的交叉项不在这两个标量输入中，车辆适配仍需显式处理。
+
+每步以预测自由轮速冻结滑移分母/刚度，隐式求纵向和侧向冲量，再限制联合摩擦圆。
+制动与滚阻作为有界旋转阻力，使用固定最多 64 次的单调求解，在容量允许时锁止轮速。
+起步驱动和滚阻都在当步反馈到接触力，不延迟一帧。
+resistanceTorque 是实际施加的有符号制动/滚阻扭矩，reactionTorque 为 -Fx*radius；
+结合 driveTorque 可核对输出轮速的角冲量一致性。slipRatio/slipAngle 表示预测步末滑移。
+这仍是固定步长的游戏轮胎模型，需要通过子步收敛验证精度；数值不可表示或锁止求解
+未达到容差时返回失败，不发布部分结果。模型不自动推进车身或提交轮速。
+
+### 外力批次的步进回执
+
+`ForceBatch::commit(world, SimulationStep)` 成功返回 `Result<ForceReceipt>`，批次被消费。
+所有尚未完成的批次必须绑定同一个 tick 和纳秒步长（大于 0，最多 50 ms）。
+世界拒绝不同 tick 或步长的步进，拒绝重复提交已消费的批次。
+后端失败保留已提交的力和 `Pending` 回执；重试原来的 `world.step(step)`，不要重新施力。
+只有该步成功后，世界才将回执改为 `Applied`。轮胎调用方应届时发布预测轮速。
+多个批次共享该世界步的完成状态，查询不调用脚本，不保留世界或刚体指针。
+
+成功 restore 或 destroy 将未完成回执变为 `Cancelled`；失败 restore 保持回执和原状态。
+已完成的回执不随后续世界销毁改变。回执可以比世界活得更久，但只能在仿真线程查询。
+回执证明世界步成功，不证明提交后被调用方主动销毁的目标仍存在；发布车辆状态前仍须解析 PhysicsLink。
+快照拒绝存在待处理批次的世界；回执是瞬时状态，不进入持久化格式。
+批次只负责自己的提交，不允许绕过 World 直接步进、清除外力或关闭 Box2D 自动清力；
+也不要与无界的原始后端外力累加混用。
+
+脚本的 `tick` 和 `nanoseconds` 使用无符号十进制字符串，避免浮点时间取整或 64 位精度丢失。
+以下函数都返回结构化 Result 表：
+
+| 函数 | 行为 |
+| --- | --- |
+| `forceReceiptStatus(receipt)` | `.value` 为 `pending`、`applied` 或 `cancelled`。 |
+| `stepPhysicsWorld2D(world, tick, nanoseconds, velocityIterations, positionIterations)` | 使用精确时间推进 2D 世界，返回求解结果。 |
+| `stepPhysicsWorld3D(world, tick, nanoseconds, subStepCount)` | 使用精确时间推进 3D 世界，返回求解结果。 |
+
+```squirrel
+local submitted = eve.commitForceBatch3D(prepared.value, world, "1", "10000000");
+assert(submitted.ok);
+local advanced = eve.stepPhysicsWorld3D(world, "1", "10000000", 4);
+assert(advanced.ok);
+assert(eve.forceReceiptStatus(submitted.value).value == "applied");
+```
+
+
+### 合并后的后端支持边界
+
+2D 像素坐标工厂与 SI Joint2D 工厂共享一套关节注册表、句柄及销毁规则。
+Motor 关节也参与 2D 快照；兼容 C++ destroy() 抛出失败，规范 destroyChecked() 返回 Result。
+World 拥有求解器关节及恢复生成的包装对象，普通工厂包装对象由调用者或 VM 拥有。
+
+3D 通用外力、力场和翼面通过后端接口支持 Box3D/Jolt。
+Coupling3D 齿轮/滑轮耦合当前仅支持 Box3D，Jolt 创建时返回 Unsupported。
+Box3D 使用包含耦合与完整原生参数的 v3 快照；Jolt 保留上游 portable v2 快照。
+两种格式不承诺跨后端互换，也不保存求解器热启动缓存。
+
+### module-interface: World3D projectile sweep integration
+
+`World3D.queryToken()` returns an opaque process-local token for an optional projectile query binding.
+`CombatCarrierRuntime.bindWorld3D(token, radius, categoryBits, maskBits, ignoredBodyId)` checks a Result and
+creates a physics-owned query session; `clearWorld3D()` removes it only while the pool is empty.
+See [weapon World3D integration](weapon.md) and the runnable `world-sweep-ballistics` example.
+The `IWorldSphereSweepFactory` capability is published by physics and consumed only at binding time.
+The owning query session resolves authoritative world handles on the simulation thread and never stores a raw world pointer.
+Successful world restore increments the query epoch; stale bindings, including stale excluded bodies, fail explicitly.
+No new ECS System or tool protocol is introduced. Physics collision results retain body/shape provenance,
+while gameplay entity mapping remains with the game. The existing backend provides the shape query;
+filter parameters are scoped, results are owning, and overflow is an error rather than a truncated hit list.

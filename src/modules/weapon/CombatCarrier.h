@@ -1,5 +1,6 @@
 #pragma once
 #include "common/Export.h"
+#include "common/WorldSphereSweep.h"
 
 
 /**
@@ -29,13 +30,19 @@ namespace eve::weapon {
 
 /** @brief Ordered ballistic operators applied each simulation step. */
 enum class CarrierMotionOpKind : std::uint8_t {
-    SteerHoming,       /**< Rotate velocity toward a target; does not integrate. */
-    SteerAvoidBody,    /**< Deflect around injected body/shield samples; does not integrate. */
-    ApplyGravity,      /**< Subtract gravity from velocity.y. */
-    Accelerate,        /**< Increase speed along the current velocity direction. */
-    CurveSway,         /**< Add sinusoidal lateral velocity (curve modifier); does not integrate. */
-    CurveHelix,        /**< Add rotating lateral velocity (corkscrew); does not integrate. */
-    IntegrateLinear    /**< Integrate position from velocity. */
+    SteerHoming,     /**< Rotate velocity toward a target; does not integrate. */
+    SteerAvoidBody,  /**< Deflect around injected body/shield samples; does not integrate. */
+    ApplyGravity,    /**< Subtract gravity from velocity.y. */
+    Accelerate,      /**< Increase speed along the current velocity direction. */
+    CurveSway,       /**< Add sinusoidal lateral velocity (curve modifier); does not integrate. */
+    CurveHelix,      /**< Add rotating lateral velocity (corkscrew); does not integrate. */
+    IntegrateLinear, /**< Integrate position from velocity. */
+    RotateVelocity,  /**< Rotate velocity about a fixed simulation-space axis. */
+    SteerOrbit,      /**< Steer tangentially around a target with radial correction. */
+    ApplyDrag,       /**< Exponential speed damping; never reverses velocity. */
+    SpeedOscillate,  /**< Set speed to recipe speed plus a sinusoidal offset. */
+    SteerWander,     /**< Seeded smooth random steering, independent of global RNG. */
+    SteerPredictive  /**< Lead a moving target from consecutive position samples. */
 };
 
 /** @brief When an impact may fire. */
@@ -44,7 +51,10 @@ enum class CarrierTriggerKind : std::uint8_t {
     OnFuse,       /**< Age crossed fuse time this step. */
     OnInterval,   /**< Periodic while alive. */
     OnHit,        /**< Hit probe reported contact. */
-    OnProximity   /**< Homing/proximity target entered radius. */
+    OnProximity,  /**< Target is within radius (level-triggered). */
+    OnDistance,   /**< Accumulated integrated path crossed distance. */
+    OnSpeedBelow, /**< Speed crossed threshold downwards. */
+    OnApex        /**< Vertical velocity crossed from positive to non-positive. */
 };
 
 /** @brief What happens when a matching trigger fires. */
@@ -54,7 +64,8 @@ enum class CarrierImpactKind : std::uint8_t {
     Pierce,     /**< Consume pierce budget and suppress release for this trigger. */
     Bounce,     /**< Reflect velocity by contact normal; suppress release. */
     Release,    /**< Request carrier release unless suppressed. */
-    SpawnChild  /**< Queue a child spawn using childRecipeId. */
+    SpawnChild, /**< Queue a child spawn using childRecipeId. */
+    EmitTrigger /**< Emit a notification without damage or automatic response. */
 };
 
 /** @brief One ballistic operator plus its parameters. */
@@ -73,6 +84,20 @@ struct CarrierMotionOp {
     double curveAmplitude = 0.0;
     /** @brief CurveSway/CurveHelix: oscillation frequency in Hz (>0). */
     double curveFrequencyHz = 0.0;
+    /** @brief RotateVelocity/SteerOrbit axis; finite and nonzero. */
+    ProjectileVector axis{0.0, 1.0, 0.0};
+    /** @brief RotateVelocity/SteerOrbit signed angular rate in degrees/second. */
+    double angularRateDegrees = 0.0;
+    /** @brief SteerOrbit desired radius in simulation units (>0). */
+    double orbitRadius = 1.0;
+    /** @brief ApplyDrag exponential damping coefficient in inverse seconds (>=0). */
+    double drag = 0.0;
+    /** @brief SteerWander deterministic stream seed; mixed with carrier slot/generation. */
+    int randomSeed = 0;
+    /** @brief SteerPredictive maximum extrapolation horizon in seconds (>0). */
+    double predictionSeconds = 1.0;
+    /** @brief Compare complete operator specifications, including stream identity. */
+    friend bool operator==(const CarrierMotionOp&, const CarrierMotionOp&) = default;
 };
 
 /** @brief One trigger specification. */
@@ -81,6 +106,10 @@ struct CarrierTrigger {
     Duration           fuse            = Duration::zero();
     Duration           interval        = Duration::zero();
     double             proximityRadius = 0.0;
+    /** @brief OnDistance path length, or OnSpeedBelow speed threshold; positive. */
+    double threshold = 0.0;
+    /** @brief Compare trigger specifications. */
+    friend bool operator==(const CarrierTrigger&, const CarrierTrigger&) = default;
 };
 
 /** @brief One impact bound to a trigger kind. */
@@ -95,6 +124,14 @@ struct CarrierImpact {
     LogicalId         childRecipeId;
     std::string       damageType;
     std::string       element;
+    /** @brief Bounce tangential velocity loss in [0,1]; restitution scales the remaining vector. */
+    double bounceFriction = 0.0;
+    /** @brief Seeded bounce cone half-angle in degrees [0,90]; zero is exact specular reflection. */
+    double bounceSpreadDegrees = 0.0;
+    /** @brief Nonnegative bounce random-stream seed, independent of wander streams. */
+    int randomSeed = 0;
+    /** @brief Compare impact specifications. */
+    friend bool operator==(const CarrierImpact&, const CarrierImpact&) = default;
 };
 
 /**
@@ -112,8 +149,17 @@ struct CarrierRecipe {
     std::vector<CarrierTrigger>   triggers;
     std::vector<CarrierImpact>    impacts;
 
+    /** @brief Master collision switch; disabled skips all OnHit queries and actions. */
+    bool collisionEnabled = true;
+    /** @brief Select the optional physics-world probe instead of the ordinary hit probe.
+     * Inactive when collisionEnabled is false or no OnHit trigger is present.
+     */
+    bool physicsWorldSweep = false;
+
     /** @brief Validate finite parameters and composition constraints. */
     [[nodiscard]] Result<void> validate() const;
+    /** @brief Compare complete immutable recipe content. */
+    friend bool operator==(const CarrierRecipe&, const CarrierRecipe&) = default;
 };
 
 /** @brief Generation-qualified reference to one pooled carrier slot. */
@@ -168,10 +214,27 @@ struct CarrierState {
     int                              bounceRemaining = 0;
     std::optional<ecs::EntityHandle> target;
     ecs::EntityHandle                source{};
+    /** @brief Last nonzero heading, retained through a stop so speed operators can restart. */
+    ProjectileVector heading{1.0, 0.0, 0.0};
+    /** @brief Previous step's curve velocity contribution, removed before the next motion stack. */
+    ProjectileVector curveVelocity{};
+    /** @brief Previous owning target sample; predictive steering never retains provider references. */
+    std::optional<ProjectilePoint> previousTargetPosition;
+
+    /** @brief Integrated path length; owned by this runtime and restored for trigger replay. */
+    double distanceTravelled = 0.0;
+    /** @brief Age at the previous outer-update target sample, for variable-dt predictive steering. */
+    Duration previousTargetSampleAge = Duration::zero();
+    /** @brief Generation-qualified targets already pierced; a carrier damages each of these only once. */
+    std::vector<ecs::EntityHandle> piercedTargets;
+    /** @brief Physics contacts already pierced, using world/body generations rather than fabricated ECS IDs. */
+    std::vector<eve::WorldSweepIdentity> piercedWorldBodies;
 };
 
 /** @brief Owning event emitted by an impact. */
 struct CarrierEvent {
+    /** @brief Physics provenance, independent of an optional ECS gameplay target. */
+    std::optional<eve::WorldSphereContact> worldContact;
     CarrierHandle     carrier;
     LogicalId         recipeId;
     CarrierTriggerKind trigger = CarrierTriggerKind::OnExpire;
@@ -184,6 +247,8 @@ struct CarrierEvent {
     double            splashRadius = 0.0;
     std::string       damageType;
     std::string       element;
+    /** @brief Carrier age at the event, including substep/contact timing. */
+    Duration age = Duration::zero();
 };
 
 /** @brief Deferred child spawn recorded during update. */
@@ -207,16 +272,36 @@ struct CarrierSlotSnapshot {
     std::optional<CarrierState>  state;
 };
 
+/**
+ * @brief Bounded simulation work per carrier per outer update.
+ * Zero maxStep preserves caller-supplied fixed steps; positive values subdivide automatically.
+ * Exhaustion fails the whole update without consuming time. No elapsed time is dropped.
+ */
+struct CarrierSimulationSettings {
+    Duration      maxStep           = Duration::zero();
+    std::uint32_t maxIterations     = 256;
+    std::uint32_t maxCollisions     = 64;
+    std::uint32_t maxTriggerFirings = 4096;
+    /** @brief Validate finite work budgets and a nonnegative step duration. */
+    [[nodiscard]] EVENGINE_API_WORLD Result<void> validate() const;
+    friend bool operator==(const CarrierSimulationSettings&, const CarrierSimulationSettings&) = default;
+};
+
 /** @brief Complete deterministic carrier-pool state for rollback/save. */
 struct CarrierRuntimeSnapshot {
     std::vector<CarrierSlotSnapshot> slots;
+    /** @brief Schema 4 adds generation-qualified pierced physics bodies; other versions are rejected. */
+    std::uint32_t schemaVersion = 4;
+    /** @brief Owning recipe context; restore rejects missing or modified active recipes. */
+    std::vector<CarrierRecipe> recipes;
+    CarrierSimulationSettings  simulation;
 };
 
 /**
  * @brief Optional swept-hit boundary used only by OnHit triggers.
  *
  * Implementations are called synchronously without locks and must not retain
- * motion references across calls. Missing probe with an OnHit trigger is a
+ * motion references across calls. The selected probe is required only for collision-enabled OnHit recipes; absence is a
  * structured update failure.
  */
 class ICarrierHitProbe {
@@ -229,6 +314,13 @@ public:
         ecs::EntityHandle target{};
         ProjectilePoint   point{};
         ProjectileVector  normal{0.0, 1.0, 0.0};
+        /** @brief Canonical normalized impact time in [0,1] along this swept segment.
+         * Legacy probes may omit it: compatibility-only projection from point supplies the inward time.
+         * point is the carrier center at impact; normal points out of the obstacle.
+         */
+        std::optional<double> fraction;
+        /** @brief Optional physics provenance; target stays empty unless a gameplay adapter maps it. */
+        std::optional<eve::WorldSphereContact> worldContact;
     };
 
     /**
@@ -284,10 +376,35 @@ public:
     const ProjectileDefinition& definition, double damage = 0.0);
 
 /**
+ * @brief Synchronous custom motion strategy, invoked per proposed segment before collisions.
+ * @ownership Borrowed only during updateWithMotion; arguments are borrowed for evaluate only.
+ * @remarks Owner thread only, without locks. Do not mutate the runtime or external state from evaluate.
+ * Replay requires the same pure function and inputs; callbacks are not stored in snapshots.
+ */
+class ICarrierMotionFunction {
+public:
+    /** @brief Destroy the caller-owned strategy. */
+    virtual ~ICarrierMotionFunction() = default;
+    /**
+     * @brief Return final position and velocity, or failure to abort the whole frame.
+     * @param before Pre-step state, including stable handle and age.
+     * @param proposed Built-in motion at the end of this step; return it to keep the result.
+     * @param step Proposed segment dt, clamped to remaining time, lifetime and configured maxStep.
+     * @return Owning motion with finite coordinates and velocity.
+     */
+    [[nodiscard]] virtual Result<CarrierMotion> evaluate(const CarrierState& before, const CarrierMotion& proposed,
+                                                         Duration step) const = 0;
+};
+
+/**
  * @brief Owner-thread deterministic carrier simulator with composable behaviors.
  *
  * update stages every live carrier on a candidate copy and publishes only after
- * all target/hit lookups succeed. Child spawns are attempted at frame end; pool
+ * all target/hit lookups succeed. Providers are borrowed only for the synchronous
+ * call, must not mutate this runtime reentrantly, and may be destroyed after it
+ * returns. Same-backend replay requires identical dt/provider inputs and recipe
+ * context; cross-backend floating-point comparisons use 1e-6 simulation units.
+ * Child spawns are attempted at frame end; pool
  * exhaustion fails the whole frame without partial publish.
  */
 class EVENGINE_API_WORLD CombatCarrierRuntime {
@@ -299,7 +416,15 @@ public:
     [[nodiscard]] Result<void> configurePool(std::uint32_t capacity);
 
     /**
-     * @brief Register or replace a recipe by id.
+     * @brief Copy validated solver settings while the pool is empty; conflicts fail atomically.
+     * @ownership Caller retains settings; no references are retained.
+     * @remarks Owner thread only; reentrant mutation is rejected. Snapshots include these settings.
+     */
+    [[nodiscard]] Result<void> configureSimulation(const CarrierSimulationSettings& settings);
+
+    /**
+     * @brief Register a recipe, or replace it only when no live carrier uses the id.
+     * Equal registration is a no-op; conflicting live replacement fails atomically.
      * @ownership Runtime copies the recipe; callers may discard their instance.
      */
     [[nodiscard]] Result<void> registerRecipe(const CarrierRecipe& recipe);
@@ -331,13 +456,29 @@ public:
     /**
      * @brief Atomically advance all live carriers by supplied deterministic time.
      * @param targets Optional provider required when any live recipe uses homing/proximity.
-     * @param hits Optional probe required when any live recipe uses OnHit.
+     * @param hits Ordinary collision probe for enabled OnHit recipes without physicsWorldSweep.
+     * @param worldSweep Optional physics-world adapter for enabled OnHit recipes selecting physicsWorldSweep.
+     * @ownership Probes are borrowed for this call only, on the owner thread, without locks.
+     * The world adapter owns shape/filter/body-to-entity mapping; no physics dependency is required otherwise.
      * @param bodies Optional provider required when any live recipe uses SteerAvoidBody.
      */
-    [[nodiscard]] Result<CarrierFrame> update(Duration                           delta,
-                                              const IProjectileTargetProvider*    targets = nullptr,
-                                              const ICarrierHitProbe*            hits    = nullptr,
-                                              const ICarrierBodyDefenseProvider* bodies  = nullptr);
+    [[nodiscard]] Result<CarrierFrame> update(Duration delta, const IProjectileTargetProvider* targets = nullptr,
+                                              const ICarrierHitProbe*            hits       = nullptr,
+                                              const ICarrierBodyDefenseProvider* bodies     = nullptr,
+                                              const ICarrierHitProbe*            worldSweep = nullptr);
+
+    /**
+     * @brief Advance using a caller-owned custom motion function, before hits and triggers.
+     * @ownership All providers are borrowed synchronously and never retained.
+     * @remarks Owner thread only. Reentrant mutation fails; callback failures abort publication.
+     * Custom distance is the swept chord length. Return proposed to retain built-in curve bookkeeping.
+     * @cost One user function call per live carrier per step, amortized by fixed simulation ticks.
+     */
+    [[nodiscard]] Result<CarrierFrame> updateWithMotion(Duration delta, const ICarrierMotionFunction& motion,
+                                                        const IProjectileTargetProvider*   targets    = nullptr,
+                                                        const ICarrierHitProbe*            hits       = nullptr,
+                                                        const ICarrierBodyDefenseProvider* bodies     = nullptr,
+                                                        const ICarrierHitProbe*            worldSweep = nullptr);
 
     /** @brief Explicitly release one live handle; stale handles are rejected. */
     [[nodiscard]] Result<void> release(CarrierHandle handle);
@@ -361,6 +502,13 @@ public:
     [[nodiscard]] std::size_t capacity() const noexcept { return slots_.size(); }
 
 private:
+    [[nodiscard]] Result<CarrierFrame> updateImpl(Duration delta, const IProjectileTargetProvider* targets,
+                                                  const ICarrierHitProbe*            hits,
+                                                  const ICarrierBodyDefenseProvider* bodies,
+                                                  const ICarrierMotionFunction*      motion,
+                                                  const ICarrierHitProbe*            worldSweep);
+    bool                               updating_ = false;
+    CarrierSimulationSettings          simulation_;
     struct Slot {
         std::uint32_t               generation = 0;
         std::optional<CarrierState> state;

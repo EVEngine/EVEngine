@@ -1,0 +1,67 @@
+diff --git a/src/ECS.hpp b/src/ECS.hpp
+--- a/src/ECS.hpp
++++ b/src/ECS.hpp
+@@ -166,9 +166,12 @@
+     std::map<std::type_index, IComponentManager *> staging_managers_;
+     int defer_depth_ = 0;
+     std::vector<PendingDestroy> pending_destroys_;
++    bool has_pending_main_staging_ = false;
+ 
+     friend void begin_defer(Table &);
+     friend void end_defer(Table &);
++    template <typename T, typename... Args>
++    friend T *CreateEntity(Table &, bool, Args &&...);
+     friend void DestroyEntity(Entity *);
+   };
+ 
+@@ -951,20 +954,26 @@
+   {
+     // Deferred creates are reserved directly in main storage with kEntityStaging.
+     // Commit promotes them in place so EntityHandle id/generation stay stable.
+-    for (auto &[type, cm] : managers_)
+-    {
+-      (void)type;
+-      if (cm == nullptr || cm->registy == nullptr)
+-        continue;
+-      auto *reg = dynamic_cast<IRegistryComponentBuffer *>(cm->registy);
+-      if (reg == nullptr)
+-        continue;
+-      for (uint32_t id = 0; id < reg->entity_count(); ++id)
+-      {
+-        Entity *e = reg->entity_at(id);
+-        if (e == nullptr || (e->flags & kEntityDead) != 0)
++    // Creation is the only owner of staging admission. An idle View exit
++    // must not scan every entity merely to clear flags that were never set.
++    if (has_pending_main_staging_)
++    {
++      has_pending_main_staging_ = false;
++      for (auto &[type, cm] : managers_)
++      {
++        (void)type;
++        if (cm == nullptr || cm->registy == nullptr)
+           continue;
+-        e->flags &= ~kEntityStaging;
++        auto *reg = dynamic_cast<IRegistryComponentBuffer *>(cm->registy);
++        if (reg == nullptr)
++          continue;
++        for (uint32_t id = 0; id < reg->entity_count(); ++id)
++        {
++          Entity *e = reg->entity_at(id);
++          if (e == nullptr || (e->flags & kEntityDead) != 0)
++            continue;
++          e->flags &= ~kEntityStaging;
++        }
+       }
+     }
+ 
+@@ -1026,7 +1035,10 @@
+     inst.table = &table;
+     inst.storage = &cm;
+     if (mark_staging)
++    {
+       inst.flags |= kEntityStaging;
++      table.has_pending_main_staging_ = true;
++    }
+     if (inst.generation == 0)
+       inst.generation = 1;
+ 

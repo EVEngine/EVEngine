@@ -81,19 +81,31 @@ struct VolumeFluidCoupling::Impl {
         physics::PhysicsLink link;
         VolumeFluidCollider  shape;
     };
+    struct SdfBinding {
+        physics::PhysicsLink   link;
+        VolumeFluidSdfCollider local;
+    };
     std::vector<Binding>                     bindings;
+    std::vector<SdfBinding>                  sdfBindings;
     std::vector<physics::Body3D*>            bodies;
     std::vector<VolumeFluidCollider>         samples;
+    std::vector<VolumeFluidSdfCollider>      sdfSamples;
     std::vector<glm::vec3>                   centers, linear, angular;
     std::vector<std::pair<unsigned, size_t>> labels;
     float                                    maximumLinearDelta = 20.f, maximumAngularDelta = 100.f;
     unsigned                                 clampedBodyCount = 0;
+
+    bool labelTaken(unsigned label) const {
+        return std::any_of(bindings.begin(), bindings.end(),
+                           [label](const auto& b) { return b.shape.label == label; }) ||
+               std::any_of(sdfBindings.begin(), sdfBindings.end(),
+                           [label](const auto& b) { return b.local.label == label; });
+    }
 };
 VolumeFluidCoupling::VolumeFluidCoupling() : impl_(std::make_unique<Impl>()) {}
 VolumeFluidCoupling::~VolumeFluidCoupling() = default;
 Result<void> VolumeFluidCoupling::attach(physics::Body3D& body, const VolumeFluidCollider& localShape) {
-    if (impl_->bindings.size() >= 1024 || std::any_of(impl_->bindings.begin(), impl_->bindings.end(),
-                                                      [&](const auto& b) { return b.shape.label == localShape.label; }))
+    if (impl_->bindings.size() + impl_->sdfBindings.size() >= 1024 || impl_->labelTaken(localShape.label))
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                        "Duplicate coupling label or binding limit exceeded",
                                                        "fluids.volume.coupling"));
@@ -106,8 +118,24 @@ Result<void> VolumeFluidCoupling::attach(physics::Body3D& body, const VolumeFlui
     impl_->bindings.push_back({link.value(), localShape});
     return Result<void>::success();
 }
+Result<void> VolumeFluidCoupling::attachSdf(physics::Body3D& body, const VolumeFluidSdfCollider& localSdf) {
+    if (impl_->bindings.size() + impl_->sdfBindings.size() >= 1024 || impl_->sdfBindings.size() >= 16 ||
+        impl_->labelTaken(localSdf.label))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "Duplicate coupling label or SDF binding limit exceeded",
+                                                       "fluids.volume.coupling"));
+    auto link = physics::PhysicsLink::fromBody(body);
+    if (!link) return Result<void>::failure(link.status());
+    auto validator = VolumeFluid::create(VolumeFluidSettings{.capacity = 1});
+    if (!validator) return Result<void>::failure(validator.status());
+    auto valid = validator.value()->setSdfColliders(std::span(&localSdf, 1));
+    if (!valid) return valid;
+    impl_->sdfBindings.push_back({link.value(), localSdf});
+    return Result<void>::success();
+}
 void VolumeFluidCoupling::detach(unsigned label) {
     std::erase_if(impl_->bindings, [label](const auto& b) { return b.shape.label == label; });
+    std::erase_if(impl_->sdfBindings, [label](const auto& b) { return b.local.label == label; });
 }
 Result<void> VolumeFluidCoupling::setImpulseLimits(float maximumLinearDelta, float maximumAngularDelta) {
     if (!std::isfinite(maximumLinearDelta) || maximumLinearDelta < .01f || maximumLinearDelta > 1000.f ||
@@ -124,18 +152,22 @@ Result<unsigned> VolumeFluidCoupling::step(physics::World3D& world, VolumeFluid&
     if (!world.isValid())
         return Result<unsigned>::failure(
             Diagnostic::error(DiagnosticCode::StaleHandle, "Rigid world is no longer valid", "fluids.volume.coupling"));
-    auto& bodies  = impl_->bodies;
-    auto& samples = impl_->samples;
-    auto& centers = impl_->centers;
-    auto& labels  = impl_->labels;
+    auto& bodies     = impl_->bodies;
+    auto& samples    = impl_->samples;
+    auto& sdfSamples = impl_->sdfSamples;
+    auto& centers    = impl_->centers;
+    auto& labels     = impl_->labels;
     bodies.clear();
     samples.clear();
+    sdfSamples.clear();
     centers.clear();
     labels.clear();
-    bodies.reserve(impl_->bindings.size());
+    const size_t totalBindings = impl_->bindings.size() + impl_->sdfBindings.size();
+    bodies.reserve(totalBindings);
     samples.reserve(impl_->bindings.size());
-    centers.reserve(impl_->bindings.size());
-    labels.reserve(impl_->bindings.size());
+    sdfSamples.reserve(impl_->sdfBindings.size());
+    centers.reserve(totalBindings);
+    labels.reserve(totalBindings);
     for (const auto& binding : impl_->bindings) {
         auto resolved = binding.link.resolve(world);
         if (!resolved) return Result<unsigned>::failure(resolved.status());
@@ -158,13 +190,37 @@ Result<unsigned> VolumeFluidCoupling::step(physics::World3D& world, VolumeFluid&
         samples.push_back(sample);
         centers.push_back({body->getWorldCenterX(), body->getWorldCenterY(), body->getWorldCenterZ()});
     }
+    for (const auto& binding : impl_->sdfBindings) {
+        auto resolved = binding.link.resolve(world);
+        if (!resolved) return Result<unsigned>::failure(resolved.status());
+        auto*           body = resolved.value();
+        const glm::quat orientation(body->getRotW(), body->getRotX(), body->getRotY(), body->getRotZ());
+        auto            sample = binding.local;
+        const auto      origin = body->localToWorldPointOwned(sample.position.x, sample.position.y, sample.position.z);
+        if (!origin) return Result<unsigned>::failure(origin.status());
+        const auto velocity = body->getLocalPointVelocityOwned(sample.position.x, sample.position.y, sample.position.z);
+        if (!velocity) return Result<unsigned>::failure(velocity.status());
+        sample.position        = {origin.value().x, origin.value().y, origin.value().z};
+        sample.velocity        = {velocity.value().x, velocity.value().y, velocity.value().z};
+        sample.angularVelocity = {body->getAngularVelocityX(), body->getAngularVelocityY(),
+                                  body->getAngularVelocityZ()};
+        const auto q =
+            orientation * glm::quat(sample.rotation.w, sample.rotation.x, sample.rotation.y, sample.rotation.z);
+        sample.rotation = {q.x, q.y, q.z, q.w};
+        labels.emplace_back(sample.label, bodies.size());
+        bodies.push_back(body);
+        sdfSamples.push_back(std::move(sample));
+        centers.push_back({body->getWorldCenterX(), body->getWorldCenterY(), body->getWorldCenterZ()});
+    }
     std::sort(labels.begin(), labels.end());
     // Allocate all output aggregation before advancing either domain.
     auto& linear  = impl_->linear;
     auto& angular = impl_->angular;
     linear.assign(bodies.size(), glm::vec3(0.f));
     angular.assign(bodies.size(), glm::vec3(0.f));
-    auto advanced = fluid.stepWithColliders(dt, substeps, samples, rules);
+    Result<void> advanced = impl_->sdfBindings.empty()
+                                ? fluid.stepWithColliders(dt, substeps, samples, rules)
+                                : fluid.stepWithColliders(dt, substeps, samples, sdfSamples, rules);
     if (!advanced) return Result<unsigned>::failure(advanced.status());
     const auto contacts = fluid.contacts();
     for (const auto& contact : contacts) {

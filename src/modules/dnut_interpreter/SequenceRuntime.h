@@ -77,7 +77,7 @@ public:
      * @brief Evaluates one authored condition value.
      *
      * Consumers adapt their own condition system (for example
-     * `eve::decision::Condition`) to this contract, so the language core does
+     * `eve::condition::Condition`) to this contract, so the language core does
      * not depend on any domain or decision module.
      */
     using ConditionEvaluator = std::function<SequenceConditionOutcome(const eve::Value&)>;

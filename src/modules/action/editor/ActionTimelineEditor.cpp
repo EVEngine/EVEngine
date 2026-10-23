@@ -535,8 +535,24 @@ Result<void> ActionTimelineEditor::editAnimationSectionSource(const LogicalId& s
         return rejected("editor.action.timeline.animation-section-not-found", "Animation section was not found");
     found->sourceStart = sourceStart;
     found->sourceEnd   = sourceEnd;
-    found->blendCurve  = blendCurve;
+    found->blendInCurve = blendCurve;
     return commit(std::move(candidate), "Edit montage clip trim", "action.timeline.animation-section.trim");
+}
+
+Result<void> ActionTimelineEditor::editAnimationSectionEnvelope(
+    const LogicalId& sectionId, Duration blendIn, Duration blendOut, action::ActionBlendCurve blendInCurve,
+    action::ActionBlendCurve blendOutCurve) {
+    action::ActionTimeline candidate = target_.timeline();
+    auto found = std::find_if(candidate.animationSections.begin(), candidate.animationSections.end(),
+                              [&](const auto& section) { return section.id == sectionId; });
+    if (found == candidate.animationSections.end())
+        return rejected("editor.action.timeline.animation-section-not-found", "Animation section was not found");
+    found->blendIn       = blendIn;
+    found->blendOut      = blendOut;
+    found->blendInCurve  = blendInCurve;
+    found->blendOutCurve = blendOutCurve;
+    return commit(std::move(candidate), "Edit montage animation envelopes",
+                  "action.timeline.animation-section.envelope");
 }
 
 Result<void> ActionTimelineEditor::editAnimationSectionFull(action::ActionAnimationSection section) {

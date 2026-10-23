@@ -2,6 +2,7 @@
 #include "common/Assert.h"
 #include "common/Capability.h"
 #include "common/Exception.h"
+#include "common/Profile.h"
 #include "common/RenderTrace.h"
 #include "common/Status.h"
 #include "graphics/AmbientOcclusion.h"
@@ -705,6 +706,8 @@ SkinInfluenceLimit skinInfluenceLimit(int count) {
 }  // namespace
 
 void RenderSystem3D::render(Graphics& gfx) {
+    eve::debug::rtFrameBegin();
+    EV_PROFILE_MODULE("graphics", "Render3D");
     eve::debug::RenderPassScope pass3d("RenderSystem3D");
     Camera3D*                   defaultCam = findDefaultCamera3D();
 
@@ -1721,7 +1724,22 @@ void RenderSystem3D::render(Graphics& gfx) {
 
 void RenderSystem3D::renderToCanvas(Graphics& gfx, Canvas* target, Camera3D* camera, uint32_t reflectionCaptureMask,
                                     float lodDistanceScale, bool includeTransparent, bool useClusteredLighting,
-                                    Texture* skyFaceTexture, Mesh* skyQuad, float skyFaceTextureScale) {
+                                    Texture* skyFaceTexture, Mesh* skyQuad, float skyFaceTextureScale,
+                                    bool includePrimitives) {
+    renderToCanvasImpl(gfx, target, camera, reflectionCaptureMask, lodDistanceScale, includeTransparent,
+                       useClusteredLighting, skyFaceTexture, skyQuad, skyFaceTextureScale, CanvasShadows::Disabled,
+                       includePrimitives);
+}
+
+void RenderSystem3D::renderWithShadowsToCanvas(Graphics& gfx, Canvas& target, Camera3D& camera) {
+    renderToCanvasImpl(gfx, &target, &camera, 0xffffffffu, 1.f, true, true, nullptr, nullptr, 1.f,
+                       CanvasShadows::Directional, false);
+}
+
+void RenderSystem3D::renderToCanvasImpl(Graphics& gfx, Canvas* target, Camera3D* camera, uint32_t reflectionCaptureMask,
+                                        float lodDistanceScale, bool includeTransparent, bool useClusteredLighting,
+                                        Texture* skyFaceTexture, Mesh* skyQuad, float skyFaceTextureScale,
+                                        CanvasShadows shadows, bool includePrimitives) {
     if (!target || !camera) return;
     auto        cd     = camera->data();
     const float aspect = target->getWidth() > 0 ? float(target->getWidth()) / float(target->getHeight()) : 1.f;
@@ -1735,78 +1753,13 @@ void RenderSystem3D::renderToCanvas(Graphics& gfx, Canvas* target, Camera3D* cam
         cameraProjectionVulkanRH_ZO(cd->orthographic, fovRad, cd->orthoHeight, aspect, cd->nearZ, cd->farZ);
     auto prepared = detail::prepareViewResources(gfx, projM * viewM, eye);
     if (!prepared) throw eve::Exception("%s", prepared.status().describe().c_str());
-    // Preview-quality forward pass: no shadow / G-buffer / AO passes.
-    gfx.begin3DFrameToCanvas(target);
-    gfx.setMesh3DViewProj(projM * viewM);
-    gfx.setMesh3DView(viewM);
-    gfx.setMesh3DClip(cd->nearZ, cd->farZ);
-    gfx.setMesh3DCameraPos(eye);
-    gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);
-    gfx.setMesh3DEnvProbe(cd->envProbeCenter, cd->envProbeExtent);
-    gfx.setMesh3DReflectionProbes(selectReflectionProbes(*cd, eye));
-    gfx.setSceneExposure(std::exp2(cd->exposureEV));
-    gfx.setSceneAutoExposure(cd->autoExposure, cd->autoExposureMinEV, cd->autoExposureMaxEV);
-    gfx.setSceneBloom(cd->bloomIntensity, cd->bloomThreshold);
-    gfx.setSceneDepthOfField(cd->dofFocusDistance, cd->dofMaxBlurPx, cd->dofFocusRange, cd->nearZ,
-                             cd->farZ);
-
-    // Lighting: real lights (if any) + camera ambient; shadows/clustered off.
+    // Collect lights before staging optional directional preview shadows.
     std::vector<PackedLight3D> packed;
     collectLights3D(packed, size_t(ClusteredLightConfig::kMaxLights));
     promoteDirectional(packed);
-    bool clusteredCapture = false;
-    if (useClusteredLighting && packed.size() > size_t(Lighting3DPack::kMaxLights)) {
-        std::vector<ClusteredLightGpu> clusteredPoints;
-        std::vector<ClusteredLightGpu> clusteredDirections;
-        splitLights(packed, clusteredPoints, clusteredDirections);
-        if (clusteredDirections.empty()) {
-            ClusteredLightGpu direction{};
-            direction.posRadius = glm::vec4(gLightDir, 0.f);
-            direction.color     = glm::vec4(gLightColor, 1.f);
-            clusteredDirections.push_back(direction);
-        }
-        ClusteredLightingUpload clustered = buildClusteredLighting(
-            clusteredPoints, clusteredDirections, viewM, cd->nearZ, cd->farZ, target->getWidth(), target->getHeight(),
-            cd->fovYDeg * 0.017453292519943295f, glm::vec4(cd->ambientR, cd->ambientG, cd->ambientB, 0.f));
-        clusteredCapture = clustered.active;
-        gfx.setMesh3DClusteredLighting(clustered);
-    } else {
-        ClusteredLightingUpload noClustered{};
-        noClustered.active = false;
-        gfx.setMesh3DClusteredLighting(noClustered);
-    }
-    gfx.setMesh3DLighting(packLights3D(packed, cd.operator->()));
-    ShadowUpload noShadow{};
-    noShadow.active = false;
-    gfx.setMesh3DShadows(noShadow);
-
-    if (skyFaceTexture && skyQuad) {
-        const float distance = std::max(cd->farZ * 0.999f, cd->nearZ * 2.f);
-        glm::mat4   skyModel = glm::inverse(viewM);
-        skyModel             = glm::translate(skyModel, glm::vec3(0.f, 0.f, -distance));
-        skyModel             = glm::scale(skyModel, glm::vec3(distance * aspect * 1.01f, distance * 1.01f, 1.f));
-        Lighting3DPack unlit{};
-        unlit.ambient = glm::vec4(1.f, 1.f, 1.f, 0.f);
-        gfx.setMesh3DClusteredActive(false);
-        gfx.setMesh3DLighting(unlit);
-        gfx.setMesh3DEnv(nullptr, 0.f);
-        gfx.setMesh3DSurface(SurfaceMode::Opaque, BlendMode::Opaque, true, false, 0.5f);
-        gfx.setMesh3DMaterial(0.f, 1.f);
-        gfx.setMesh3DShadowReceive(false);
-        const float skyScale = std::max(skyFaceTextureScale, 0.f);
-        gfx.drawMeshShader(skyQuad, skyModel, skyFaceTexture, Color(skyScale, skyScale, skyScale, 1.f), nullptr);
-        gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);
-        gfx.setMesh3DClusteredActive(clusteredCapture);
-        gfx.setMesh3DLighting(packLights3D(packed, cd.operator->()));
-    }
-
     const glm::mat4 captureViewProj = projM * viewM;
-    if (ecs::current()->getManager<Renderable3D>() != nullptr) {
-        const glm::mat4 captureView =
-            glm::lookAtRH(eye, glm::vec3(cd->targetX, cd->targetY, cd->targetZ), glm::vec3(cd->upX, cd->upY, cd->upZ));
-        const glm::mat4 captureProjection =
-            perspectiveVulkanRH_ZO(cd->fovYDeg * 0.017453292519943295f, aspect, cd->nearZ, cd->farZ);
-        const FrustumPlanes captureFrustum = extractFrustum(captureProjection * captureView);
+    {
+        const FrustumPlanes captureFrustum = extractFrustum(captureViewProj);
         struct CanvasItem {
             Renderable3D::MeshRenderer* mr       = nullptr;
             Mesh*                       mesh     = nullptr;
@@ -1821,83 +1774,84 @@ void RenderSystem3D::renderToCanvas(Graphics& gfx, Canvas* target, Camera3D* cam
             int                         skinInfluenceLimit = 4;
             int                         lightProbeUsage = 0;
             glm::vec3                   worldCenter{0.f};
+            bool                        inView = true;
         };
         std::vector<CanvasItem> canvasItems;
-        auto                    view = ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
-        for (auto it = view.begin(); it != view.end(); ++it) {
-            auto [xf, mr] = *it;
-            if (!mr->visible || (mr->reflectionCaptureMask & reflectionCaptureMask) == 0u)
-                continue;
-            if (mr->instances) {
-                auto valid = detail::validateInstancedRenderable(*mr);
-                if (!valid) throw eve::Exception("%s", valid.status().describe().c_str());
-            }
-            const glm::mat4 model = modelFromTransform(*xf);
-            const float     maxScale  = detail::sphereStretch(*xf);
-            const float dx = xf->x - eye.x;
-            const float dy = xf->y - eye.y;
-            const float dz = xf->z - eye.z;
-            const float distance2 = dx * dx + dy * dy + dz * dz;
-            auto append = [&](Mesh* mesh, Material* material, bool hair, float lodWeight,
-                              int skinInfluenceLimit = 4, int lightProbeUsage = 0,
-                              bool lodFadeReverse = false) {
-                if (!mesh) return;
-                glm::vec3 worldCenter(xf->x, xf->y, xf->z);
+        if (ecs::current()->getManager<Renderable3D>() != nullptr) {
+            auto view = ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
+            for (auto it = view.begin(); it != view.end(); ++it) {
+                auto [xf, mr] = *it;
+                if (!mr->visible || (mr->reflectionCaptureMask & reflectionCaptureMask) == 0u) continue;
                 if (mr->instances) {
-                    if (!meshInstanceRangeVisible(*mr->instances, model, captureProjection * captureView, eye)) return;
-                } else if (mesh->hasBounds()) {
-                    const glm::vec4 transformedCenter =
-                        model * glm::vec4(mesh->boundsCx, mesh->boundsCy, mesh->boundsCz, 1.f);
-                    worldCenter = glm::vec3(transformedCenter);
-                    if (!captureFrustum.sphereVisible(worldCenter, mesh->boundsRadius * maxScale)) return;
+                    auto valid = detail::validateInstancedRenderable(*mr);
+                    if (!valid) throw eve::Exception("%s", valid.status().describe().c_str());
                 }
-                SurfaceMode surface =
-                    material ? material->surfaceMode() : (hair ? SurfaceMode::Transparent : SurfaceMode::Opaque);
-                lodWeight = std::clamp(lodWeight, 0.f, 1.f);
-                const bool speedTreeFade = mr->lodFadeMode == 1 && lodWeight < 0.9999f &&
-                                           !(material && material->effectiveShader());
-                if (lodWeight < 0.9999f && !speedTreeFade) surface = SurfaceMode::Transparent;
-                if (surface == SurfaceMode::Transparent && !includeTransparent) return;
-                const int sortPriority = material ? material->getSortPriority() : 0;
-                canvasItems.push_back(
-                    CanvasItem{mr, mesh, material, model, distance2, surface, sortPriority, lodWeight,
-                               lodFadeReverse, speedTreeFade, skinInfluenceLimit, lightProbeUsage,
-                               worldCenter});
-            };
-            if (mr->usesParts()) {
-                for (int part = 0; part < mr->partCount; ++part) {
-                    Material* material = mr->parts[part].material ? mr->parts[part].material : mr->material;
-                    append(mr->parts[part].mesh, material,
-                           material ? material->isTransparentHair() : mr->isHair, 1.f);
+                const glm::mat4 model     = modelFromTransform(*xf);
+                const float     maxScale  = detail::sphereStretch(*xf);
+                const float     dx        = xf->x - eye.x;
+                const float     dy        = xf->y - eye.y;
+                const float     dz        = xf->z - eye.z;
+                const float     distance2 = dx * dx + dy * dy + dz * dz;
+                auto            append    = [&](Mesh* mesh, Material* material, bool hair, float lodWeight,
+                                  int skinInfluenceLimit = 4, int lightProbeUsage = 0, bool lodFadeReverse = false) {
+                    if (!mesh) return;
+                    glm::vec3 worldCenter(xf->x, xf->y, xf->z);
+                    bool      inView = true;
+                    if (mr->instances) {
+                        inView = meshInstanceRangeVisible(*mr->instances, model, captureViewProj, eye);
+                    } else if (mesh->hasBounds()) {
+                        const glm::vec4 transformedCenter =
+                            model * glm::vec4(mesh->boundsCx, mesh->boundsCy, mesh->boundsCz, 1.f);
+                        worldCenter = glm::vec3(transformedCenter);
+                        inView = captureFrustum.sphereVisible(worldCenter, mesh->boundsRadius * maxScale);
+                    }
+                    if (!inView && shadows == CanvasShadows::Disabled) return;
+                    SurfaceMode surface =
+                        material ? material->surfaceMode() : (hair ? SurfaceMode::Transparent : SurfaceMode::Opaque);
+                    lodWeight = std::clamp(lodWeight, 0.f, 1.f);
+                    const bool speedTreeFade =
+                        mr->lodFadeMode == 1 && lodWeight < 0.9999f && !(material && material->effectiveShader());
+                    if (lodWeight < 0.9999f && !speedTreeFade) surface = SurfaceMode::Transparent;
+                    if (surface == SurfaceMode::Transparent && !includeTransparent) return;
+                    const int sortPriority = material ? material->getSortPriority() : 0;
+                    canvasItems.push_back(CanvasItem{mr, mesh, material, model, distance2, surface, sortPriority,
+                                                     lodWeight, lodFadeReverse, speedTreeFade, skinInfluenceLimit,
+                                                     lightProbeUsage, worldCenter, inView});
+                };
+                if (mr->usesParts()) {
+                    for (int part = 0; part < mr->partCount; ++part) {
+                        Material* material = mr->parts[part].material ? mr->parts[part].material : mr->material;
+                        append(mr->parts[part].mesh, material, material ? material->isTransparentHair() : mr->isHair,
+                               1.f);
+                    }
+                } else {
+                    const float distance = std::sqrt(distance2) * std::max(lodDistanceScale, 0.01f);
+                    int         primary = -1, secondary = -1;
+                    float       secondaryWeight = 0.f;
+                    mr->lodBlendForDistance(distance, primary, secondary, secondaryWeight);
+                    auto meshAt = [&](int level) -> Mesh* {
+                        if (mr->lodCount <= 0) return level >= 0 ? mr->mesh : nullptr;
+                        return level >= 0 && level < mr->lodCount ? mr->lodMeshes[level] : nullptr;
+                    };
+                    const bool hair      = mr->material ? mr->material->isTransparentHair() : mr->isHair;
+                    auto       qualityAt = [&](int level) {
+                        if (level < 0 || level >= mr->lodCount || !mr->lodRendererStates[level].configured ||
+                            mr->lodRendererStates[level].skinQuality == 0)
+                            return 4;
+                        return mr->lodRendererStates[level].skinQuality;
+                    };
+                    auto lightProbeAt = [&](int level) {
+                        if (level < 0 || level >= mr->lodCount || !mr->lodRendererStates[level].configured) return 0;
+                        return mr->lodRendererStates[level].lightProbeUsage;
+                    };
+                    append(meshAt(primary), mr->material, hair, 1.f - secondaryWeight, qualityAt(primary),
+                           lightProbeAt(primary));
+                    if (secondaryWeight > 0.f)
+                        append(meshAt(secondary), mr->material, hair, secondaryWeight, qualityAt(secondary),
+                               lightProbeAt(secondary), true);
                 }
-            } else {
-                const float distance = std::sqrt(distance2) * std::max(lodDistanceScale, 0.01f);
-                int primary = -1, secondary = -1;
-                float secondaryWeight = 0.f;
-                mr->lodBlendForDistance(distance, primary, secondary, secondaryWeight);
-                auto meshAt = [&](int level) -> Mesh* {
-                    if (mr->lodCount <= 0) return level >= 0 ? mr->mesh : nullptr;
-                    return level >= 0 && level < mr->lodCount ? mr->lodMeshes[level] : nullptr;
-                };
-                const bool hair = mr->material ? mr->material->isTransparentHair() : mr->isHair;
-                auto qualityAt = [&](int level) {
-                    if (level < 0 || level >= mr->lodCount || !mr->lodRendererStates[level].configured ||
-                        mr->lodRendererStates[level].skinQuality == 0)
-                        return 4;
-                    return mr->lodRendererStates[level].skinQuality;
-                };
-                auto lightProbeAt = [&](int level) {
-                    if (level < 0 || level >= mr->lodCount || !mr->lodRendererStates[level].configured) return 0;
-                    return mr->lodRendererStates[level].lightProbeUsage;
-                };
-                append(meshAt(primary), mr->material, hair, 1.f - secondaryWeight, qualityAt(primary),
-                       lightProbeAt(primary));
-                if (secondaryWeight > 0.f)
-                    append(meshAt(secondary), mr->material, hair, secondaryWeight, qualityAt(secondary),
-                           lightProbeAt(secondary), true);
             }
         }
-
         std::stable_sort(canvasItems.begin(), canvasItems.end(), [](const CanvasItem& a, const CanvasItem& b) {
             const bool transparentA = a.surface == SurfaceMode::Transparent;
             const bool transparentB = b.surface == SurfaceMode::Transparent;
@@ -1910,8 +1864,105 @@ void RenderSystem3D::renderToCanvas(Graphics& gfx, Canvas* target, Camera3D* cam
             return a.mesh < b.mesh;
         });
 
+        ShadowUpload   shadowUpload{};
+        Light3D::Data* caster = nullptr;
+        if (shadows == CanvasShadows::Directional && ShadowSchemeSettings::current().enableDirectionalCsm) {
+            for (const auto& light : packed) {
+                if (!light.isPoint && light.data->castShadow && light.data->shadowMethod != 1) {
+                    caster = light.data;
+                    break;
+                }
+            }
+        }
+        if (caster) {
+            prioritizeShadowCaster(packed, caster);
+            glm::vec3 direction(caster->dx, caster->dy, caster->dz);
+            direction    = glm::length(direction) < 1e-6f ? glm::vec3(0.f, 1.f, 0.f) : glm::normalize(direction);
+            shadowUpload = buildDirectionalCSM(direction, eye, look, up, fovRad, aspect, cd->nearZ, cd->farZ,
+                                               caster->shadowBias, caster->shadowStrength);
+            gfx.setMesh3DShadows(shadowUpload);
+            for (int cascade = 0; cascade < ShadowConfig::kCascades; ++cascade) {
+                gfx.beginShadowPass(cascade);
+                for (const CanvasItem& item : canvasItems) {
+                    if (!item.mr->effectiveCastShadow() || (item.material && !item.material->getCastShadow())) continue;
+                    if (item.surface == SurfaceMode::Transparent) continue;
+                    const float limit = cd->shadowLayerCullDistances[size_t(item.mr->layer)];
+                    if (limit > 0.f && item.distance2 > limit * limit) continue;
+                    const bool doubleSided = item.material && item.material->getDoubleSided();
+                    gfx.setMesh3DSkinInfluenceLimit(skinInfluenceLimit(item.skinInfluenceLimit));
+                    if (item.surface == SurfaceMode::Masked)
+                        gfx.drawMeshShadowAlpha(item.mesh, shadowUpload.ubo.lightVP[cascade] * item.model,
+                                                item.material ? item.material->getAlbedoTexture() : item.mr->texture,
+                                                doubleSided, item.lodWeight, item.lodFadeReverse, item.speedTreeFade);
+                    else
+                        gfx.drawMeshShadow(item.mesh, shadowUpload.ubo.lightVP[cascade] * item.model, doubleSided);
+                }
+                gfx.endShadowPass();
+            }
+        }
+        // Offscreen backends consume staged shadows before opening color.
+        gfx.setMesh3DShadows(shadowUpload);
+        gfx.begin3DFrameToCanvas(target);
+        gfx.setMesh3DViewProj(projM * viewM);
+        gfx.setMesh3DView(viewM);
+        gfx.setMesh3DClip(cd->nearZ, cd->farZ);
+        gfx.setMesh3DCameraPos(eye);
+        gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);
+        gfx.setMesh3DEnvProbe(cd->envProbeCenter, cd->envProbeExtent);
+        gfx.setMesh3DReflectionProbes(selectReflectionProbes(*cd, eye));
+        gfx.setSceneExposure(std::exp2(cd->exposureEV));
+        gfx.setSceneAutoExposure(cd->autoExposure, cd->autoExposureMinEV, cd->autoExposureMaxEV);
+        gfx.setSceneBloom(cd->bloomIntensity, cd->bloomThreshold);
+        gfx.setSceneDepthOfField(cd->dofFocusDistance, cd->dofMaxBlurPx, cd->dofFocusRange, cd->nearZ, cd->farZ);
+
+        bool clusteredCapture = false;
+        if (useClusteredLighting && packed.size() > size_t(Lighting3DPack::kMaxLights)) {
+            std::vector<ClusteredLightGpu> clusteredPoints;
+            std::vector<ClusteredLightGpu> clusteredDirections;
+            splitLights(packed, clusteredPoints, clusteredDirections);
+            if (clusteredDirections.empty()) {
+                ClusteredLightGpu direction{};
+                direction.posRadius = glm::vec4(gLightDir, 0.f);
+                direction.color     = glm::vec4(gLightColor, 1.f);
+                clusteredDirections.push_back(direction);
+            }
+            ClusteredLightingUpload clustered =
+                buildClusteredLighting(clusteredPoints, clusteredDirections, viewM, cd->nearZ, cd->farZ,
+                                       target->getWidth(), target->getHeight(), cd->fovYDeg * 0.017453292519943295f,
+                                       glm::vec4(cd->ambientR, cd->ambientG, cd->ambientB, 0.f));
+            clusteredCapture = clustered.active;
+            gfx.setMesh3DClusteredLighting(clustered);
+        } else {
+            ClusteredLightingUpload noClustered{};
+            noClustered.active = false;
+            gfx.setMesh3DClusteredLighting(noClustered);
+        }
+        gfx.setMesh3DLighting(packLights3D(packed, cd.operator->()));
+        gfx.setMesh3DShadows(shadowUpload);
+
+        if (skyFaceTexture && skyQuad) {
+            const float distance = std::max(cd->farZ * 0.999f, cd->nearZ * 2.f);
+            glm::mat4   skyModel = glm::inverse(viewM);
+            skyModel             = glm::translate(skyModel, glm::vec3(0.f, 0.f, -distance));
+            skyModel             = glm::scale(skyModel, glm::vec3(distance * aspect * 1.01f, distance * 1.01f, 1.f));
+            Lighting3DPack unlit{};
+            unlit.ambient = glm::vec4(1.f, 1.f, 1.f, 0.f);
+            gfx.setMesh3DClusteredActive(false);
+            gfx.setMesh3DLighting(unlit);
+            gfx.setMesh3DEnv(nullptr, 0.f);
+            gfx.setMesh3DSurface(SurfaceMode::Opaque, BlendMode::Opaque, true, false, 0.5f);
+            gfx.setMesh3DMaterial(0.f, 1.f);
+            gfx.setMesh3DShadowReceive(false);
+            const float skyScale = std::max(skyFaceTextureScale, 0.f);
+            gfx.drawMeshShader(skyQuad, skyModel, skyFaceTexture, Color(skyScale, skyScale, skyScale, 1.f), nullptr);
+            gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);
+            gfx.setMesh3DClusteredActive(clusteredCapture);
+            gfx.setMesh3DLighting(packLights3D(packed, cd.operator->()));
+        }
+
         bool lightingEnabled = true;
         for (const CanvasItem& item : canvasItems) {
+            if (!item.inView) continue;
             Renderable3D::MeshRenderer* mr     = item.mr;
             Texture*                    albedo = mr->texture;
             Color                       tint(mr->r, mr->g, mr->b, mr->a);
@@ -1971,7 +2022,8 @@ void RenderSystem3D::renderToCanvas(Graphics& gfx, Canvas* target, Camera3D* cam
             else if (item.speedTreeFade)
                 gfx.setMesh3DSurface(SurfaceMode::Masked, BlendMode::Alpha, true,
                                      item.material && item.material->getDoubleSided(), 0.5f, "cutoff");
-            gfx.setMesh3DShadowReceive(false);
+            gfx.setMesh3DShadowReceive(shadowUpload.active && mr->receiveShadow &&
+                                       (!item.material || item.material->getReceiveShadow()));
             eve::debug::rtDraw("drawMeshShader", shader ? "custom" : "default");
             if (mr->instances) {
                 const auto &range = *mr->instances;
@@ -1988,6 +2040,19 @@ void RenderSystem3D::renderToCanvas(Graphics& gfx, Canvas* target, Camera3D* cam
     for (const CaptureExtraDrawerEntry& entry : captureDrawers) {
         if ((entry.mask & reflectionCaptureMask) == 0u || !entry.drawer) continue;
         entry.drawer(gfx, *cd, captureViewProj, aspect, reflectionCaptureMask);
+    }
+
+    if (includePrimitives) {
+        SceneDrawContext context;
+        context.view           = viewM;
+        context.projection     = projM;
+        context.cameraPosition = eye;
+        context.viewportSize   = glm::ivec2(target->getWidth(), target->getHeight());
+        context.nearPlane      = cd->nearZ;
+        context.farPlane       = cd->farZ;
+        PrimitiveSceneCanvas3D primitives(context);
+        gfx.getPrimitiveScene()->render(primitives);
+        if (!primitives.commands().empty() || !primitives.triangles().empty()) gfx.drawPrimitiveScene(primitives);
     }
 
     gfx.end3DFrameToCanvas();

@@ -196,6 +196,12 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/examples/basic"
     DESTINATION share/eve/examples
 )
 
+# ---- Reusable rendering styles -------------------------------------------
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/assets/styles/"
+    DESTINATION share/eve/styles
+    COMPONENT styles
+)
+
 # ---- Agent knowledge pack (this SDK build, no engine git tree required) ----
 # eve-api.json / eve-api.d.ts are generated next to BindingContracts.generated.cpp.
 install(FILES

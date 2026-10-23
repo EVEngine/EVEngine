@@ -1,0 +1,26 @@
+{
+  "schema": "eve.action.timeline",
+  "schemaVersion": 4,
+  "actionId": "arena-action:light-attack",
+  "durationNs": 800000000,
+  "animationUri": "",
+  "animationSections": [],
+  "splitTimestampsNs": [
+    180000000,
+    420000000
+  ],
+  "metadata": {},
+  "tracks": [],
+  "montage": {
+    "basePlayRate": 1.0,
+    "looping": false,
+    "footIk": false,
+    "animationLayer": 0,
+    "defaultBlendInNs": 0,
+    "defaultBlendOutNs": 0,
+    "blendOutOffsetNs": 0,
+    "rootMotionHorizontal": false,
+    "rootMotionVertical": false,
+    "rootMotionRotation": false
+  }
+}

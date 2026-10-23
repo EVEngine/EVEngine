@@ -160,6 +160,8 @@ eve_console_read { "sinceSeq": 0, "limit": 200, "level": "error" }
 的相对路径按项目根解析，响应返回绝对路径、字节数、像素尺寸；`eve_screenshot_image` 直接
 返回 MCP image content（`maxBytes` 默认 2 MiB，超出时返回 `image-too-large` 而不截断图片）。
 
+需要同时检查深度、法线、材质和阴影时，使用[同帧附件捕获工具](mcp-frame-capture.md)：一次请求生成不可变快照，再按 token 获取预览、原始像素或导出文件。
+
 ### 软重启（AI 调试不要反复杀进程）
 
 反复 `eve run` 会重新解码贴图/模型等资源，冷启动很慢。`eve_restart` 在**同一进程**里把游戏

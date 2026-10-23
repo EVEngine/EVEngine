@@ -43,6 +43,8 @@ function(eve_prepare_simplesquirrel_headers)
         endif()
     endforeach()
     set(_source "${_snapshot}/simplesquirrel/include/simplesquirrel")
+    # The aggregate applies its own patches before this function runs; its
+    # release archive contains those same installed headers.
     foreach(_header IN LISTS _headers)
         if(NOT _header STREQUAL "class.hpp" AND NOT _header STREQUAL "table.hpp")
             configure_file("${_source}/${_header}" "${_root}/simplesquirrel/${_header}" COPYONLY)

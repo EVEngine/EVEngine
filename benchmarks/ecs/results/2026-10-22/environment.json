@@ -1,0 +1,31 @@
+{
+  "schema": "ecs-benchmark-run-v1",
+  "date": "2026-10-22",
+  "os": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+  "cpu_quota": "400000 100000",
+  "memory_limit_bytes": "17179869184",
+  "engine_revision": "10f6faa7509e4a108ee5f2e6b6e3be357e99af26",
+  "ecs_revision": "9949054f1871ff7ea3c2b9a250d417d62a732f53",
+  "ecs_header_sha256": "8b19ddfaa64b3c6cbdcb3c6525017a179fb8c6910c9d59c3b7d3321c0932938c",
+  "matrix_binary_sha256": "d0d1bb0440211b00d2bcd9522fec749134122009c26e7541115f6ff0c5e0fe09",
+  "matrix_build": "g++ -std=c++20 -O3 -DNDEBUG -Wall -Wextra -Wpedantic -Werror -Iexternal/ECS.hpp/src -DECS_BENCH_CONFIG=Release-direct benchmarks/ecs/main.cpp",
+  "matrix_sizes": [
+    10000,
+    100000,
+    1000000,
+    3000000
+  ],
+  "warmup": 5,
+  "samples": 21,
+  "iterations": 3,
+  "concurrency_note": "Exploratory matrix overlapped build/source checks and one extra dense run. Shared VM; no production latency claim. Repeats use CMake Release, rotated scenario order.",
+  "changes": "New benchmark/docs uncommitted at run time; ECS header unchanged. Matrix binary predates output hash metadata and an additional Energy validation check; timed kernels unchanged.",
+  "repeat_binary_sha256": "e8cdc1846dc11c0b28b712f1b2444909b0230cb9af18904af4422e6b55510bfe",
+  "repeat_build": "CMake Release, GCC 14.2.0; flags -O3 -DNDEBUG -Wall -Wextra -Wpedantic -Werror -std=gnu++20",
+  "repeat_sizes": [
+    1000000
+  ],
+  "repeat_rounds": 3,
+  "repeat_note": "Independent processes, rotated dense/holes90/vector order; no other ECS benchmark or compile in parallel, source-quality checks remained active; shared VM."
+}

@@ -1,46 +1,16 @@
 #include "procgen/road/RoadRecipes.h"
-#include <algorithm>
-#include <cmath>
-#include "common/Diagnostic.h"
+#include "procgen/road/BridgeGenerator.h"
+#include "procgen/road/RoadNetworkCodec.h"
+
 #include "image/ImageData.h"
 #include "procgen/ParamSchema.h"
 #include "procgen/algorithms/MarchingCubes.h"
-#include "procgen/road/RoadTypes.h"
 #include "procgen/texture/TextureRecipe.h"
 
-// RoadRecipes.cpp
+#include <algorithm>
+#include <cmath>
+
 namespace eve::procgen::road {
-namespace {
-
-RoadBakeOptions bakeOptionsFromParams(const Params& params) {
-    RoadBakeOptions options;
-    options.pathSegmentsPerEdge = std::max(4, params.getInt("pathSegments", 48));
-    options.turnSamples         = std::max(4, params.getInt("turnSamples", 12));
-    options.includePiers        = params.getBool("piers", true);
-    options.includeMarkings     = params.getBool("markings", true);
-    options.includeNavigation   = params.getBool("navigation", true);
-    options.includeJunctions    = params.getBool("junctions", true);
-    options.includePlacements   = params.getBool("placements", true);
-    options.junctionChordError  = params.getFloat("junctionChordError", 0.10f);
-    options.sideObjectSpacing   = params.getFloat("sideObjectSpacing", 8.f);
-    options.sideObjectOffset    = params.getFloat("sideObjectOffset", 0.5f);
-    options.sideObjectClearance = params.getFloat("sideObjectClearance", 1.5f);
-    return options;
-}
-
-Result<RoadNetwork> networkFromParams(const Params& params) {
-    const std::string scene = params.getString("scene", "straight");
-    return RoadNetwork::makeScene(scene, params.getFloat("span", 36.f), params.getFloat("bridgeHeight", 6.f),
-                                  std::max(1, params.getInt("lanes", 2)), params.getSeed());
-}
-
-}  // namespace
-
-Result<RoadBakeResult> bakeRoadNetworkRecipe(const Params& params) {
-    auto network = networkFromParams(params);
-    if (!network.ok()) return Result<RoadBakeResult>::failure(network.status());
-    return bakeRoadNetwork(network.value(), bakeOptionsFromParams(params));
-}
 
 bool generateRoadNetworkMesh(const Params& params, MeshBuild& out, std::string& error) {
     auto baked = bakeRoadNetworkRecipe(params);
@@ -59,7 +29,7 @@ Result<RoadOverlay> generateRoadNetworkOverlay(const Params& params) {
 }
 
 std::unique_ptr<image::ImageData> generateRoadMarkingsTexture(const Params& params, std::string& error) {
-    const int   width  = std::clamp(params.getWidth() > 0 ? params.getWidth() : params.getInt("width", 256), 8, 2048);
+    const int width = std::clamp(params.getWidth() > 0 ? params.getWidth() : params.getInt("deckWidth", 256), 8, 2048);
     const int   height = std::clamp(params.getHeight() > 0 ? params.getHeight() : params.getInt("height", 64), 8, 2048);
     const float dashPeriod = std::max(0.05f, params.getFloat("dashPeriod", 0.18f));
     const float dashDuty   = std::clamp(params.getFloat("dashDuty", 0.45f), 0.05f, 0.95f);
@@ -141,6 +111,115 @@ void registerRoadMeshRecipes(MeshRecipeRegistry& registry) {
     schema.params.push_back(ParamDescriptor::floating("chunkSize", "Render Chunk Size", 64.f, 4.f, 1024.f, 1.f));
     schema.params.push_back(ParamDescriptor::integer("lodCount", "LOD Count", 3, 1, 4));
     registry.registerRecipe(std::move(schema), generateRoadNetworkMesh);
+
+    RecipeDescriptor bridge{"mesh.autoBridge", "Automatic Bridge", "Mesh", {}};
+    auto             reference = bridgePreset(BridgeKind::Beam);
+    const auto&      defaults  = reference.value();
+    for (const auto& axis : {"X", "Y", "Z"}) {
+        const std::string suffix(axis);
+        bridge.params.push_back(ParamDescriptor::floating(
+            "start" + suffix, "Start " + suffix,
+            suffix == "X" ? defaults.start.x : (suffix == "Y" ? defaults.start.y : defaults.start.z), -10000.f, 10000.f,
+            .5f));
+        bridge.params.push_back(ParamDescriptor::floating(
+            "end" + suffix, "End " + suffix,
+            suffix == "X" ? defaults.end.x : (suffix == "Y" ? defaults.end.y : defaults.end.z), -10000.f, 10000.f,
+            .5f));
+    }
+    bridge.params.push_back(ParamDescriptor::floating("deckWidth", "Driving Width", defaults.width, 1.f, 32.f, .5f));
+    bridge.params.push_back(ParamDescriptor::choice("bridgeType", "Bridge Type", "beam",
+                                                    {"beam", "slab", "arch", "tiedArch", "throughTruss", "deckTruss",
+                                                     "suspension", "cableStayed", "cantilever", "trestle"}));
+    bridge.params.push_back(ParamDescriptor::integer("spans", "Spans / Bents", defaults.spans, 1, 64));
+    bridge.params.push_back(ParamDescriptor::integer("panels", "Structural Panels", defaults.panels, 2, 64));
+    bridge.params.push_back(
+        ParamDescriptor::integer("curveSegments", "Curve Segments", defaults.curveSegments, 4, 128));
+    bridge.params.push_back(ParamDescriptor::integer("cableSides", "Cable Sides", defaults.cableSides, 3, 16));
+    bridge.params.push_back(
+        ParamDescriptor::floating("groundY", "Foundation Level", defaults.groundY, -10000.f, 10000.f, .5f));
+    bridge.params.push_back(
+        ParamDescriptor::floating("memberWidth", "Structural Member Width", defaults.memberWidth, .01f, 10.f, .05f));
+    bridge.params.push_back(ParamDescriptor::floating("archRise", "Arch Rise", defaults.archRise, .1f, 100.f, .5f));
+    bridge.params.push_back(
+        ParamDescriptor::floating("towerHeight", "Tower Height", defaults.towerHeight, 1.f, 100.f, .5f));
+    bridge.params.push_back(
+        ParamDescriptor::floating("trussHeight", "Truss Height", defaults.trussHeight, .1f, 100.f, .5f));
+    bridge.params.push_back(
+        ParamDescriptor::floating("cableRadius", "Cable Radius", defaults.cableRadius, .01f, 2.f, .01f));
+    bridge.params.push_back(
+        ParamDescriptor::floating("cableSag", "Cable Sag Ratio", defaults.cableSag, .05f, .95f, .05f));
+    bridge.params.push_back(
+        ParamDescriptor::floating("towerInset", "Tower Inset Ratio", defaults.towerInset, .15f, .4f, .01f));
+    bridge.params.push_back(ParamDescriptor::floating("towerTopWidthRatio", "Tower Top Width Ratio",
+                                                      defaults.towerTopWidthRatio, .05f, 1.f, .05f));
+    bridge.params.push_back(ParamDescriptor::boolean("railings", "Railings", true));
+    bridge.params.push_back(ParamDescriptor::boolean("crossBracing", "Cross Bracing", true));
+    bridge.params.push_back(
+        ParamDescriptor::floating("deckThickness", "Deck Thickness", defaults.deckThickness, .1f, 5.f, .05f));
+    bridge.params.push_back(ParamDescriptor::floating("pierWidth", "Pier Width", defaults.pierWidth, .1f, 10.f, .1f));
+    bridge.params.push_back(ParamDescriptor::floating("pierDepth", "Pier Depth", defaults.pierDepth, .1f, 10.f, .1f));
+    bridge.params.push_back(
+        ParamDescriptor::floating("railingHeight", "Railing Height", defaults.railingHeight, .1f, 3.f, .1f));
+    bridge.params.push_back(
+        ParamDescriptor::floating("railingWidth", "Railing Width", defaults.railingWidth, .1f, 2.f, .05f));
+    bridge.params.push_back(
+        ParamDescriptor::floating("sidewalkWidth", "Sidewalk Width", defaults.sidewalkWidth, 0.f, 5.f, .1f));
+    bridge.params.push_back(ParamDescriptor::boolean("piers", "Piers", true));
+    bridge.params.push_back(ParamDescriptor::boolean("markings", "Markings", true));
+    bridge.params.push_back(ParamDescriptor::choice("railingType", "Railing Construction", "metal",
+                                                    {"metal", "concrete", "masonry", "timber"}));
+    bridge.params.push_back(ParamDescriptor::boolean("connectionDetails", "Gusset Plates and Bolts", true));
+    bridge.params.push_back(ParamDescriptor::integer("railingBars", "Horizontal Rails", defaults.railingBars, 1, 8));
+    bridge.params.push_back(ParamDescriptor::integer("plankCount", "Timber Deck Planks", defaults.plankCount, 8, 2048));
+    bridge.params.push_back(
+        ParamDescriptor::floating("memberDepth", "Structural Section Depth", defaults.memberDepth, 0.01f, 10.f, 0.05f));
+    bridge.params.push_back(ParamDescriptor::floating("girderHeight", "Longitudinal Girder Height",
+                                                      defaults.girderHeight, 0.1f, 10.f, 0.1f));
+    bridge.params.push_back(
+        ParamDescriptor::floating("archRibWidth", "Arch Rib Width", defaults.archRibWidth, 0.1f, 10.f, 0.1f));
+    bridge.params.push_back(
+        ParamDescriptor::floating("archRibDepth", "Arch Rib Depth", defaults.archRibDepth, 0.1f, 10.f, 0.1f));
+    bridge.params.push_back(ParamDescriptor::floating("foundationHeight", "Foundation Step Height",
+                                                      defaults.foundationHeight, 0.1f, 5.f, 0.1f));
+    bridge.params.push_back(ParamDescriptor::floating("foundationScale", "Foundation Width Scale",
+                                                      defaults.foundationScale, 1.f, 5.f, 0.1f));
+    bridge.params.push_back(
+        ParamDescriptor::floating("pierCapHeight", "Pier Capital Height", defaults.pierCapHeight, 0.1f, 5.f, 0.1f));
+    bridge.params.push_back(
+        ParamDescriptor::floating("abutmentDepth", "Abutment Depth", defaults.abutmentDepth, 0.1f, 10.f, 0.1f));
+    bridge.params.push_back(ParamDescriptor::floating("wingWallLength", "Retaining Wing Length",
+                                                      defaults.wingWallLength, 0.1f, 20.f, 0.5f));
+    bridge.params.push_back(
+        ParamDescriptor::floating("uvMeters", "Texture Repeat Metres", defaults.uvMeters, 0.01f, 20.f, 0.1f));
+    bridge.params.push_back(
+        ParamDescriptor::floating("portalInset", "Sloped Truss End Ratio", defaults.portalInset, 0.f, 0.2f, 0.01f));
+    bridge.params.push_back(ParamDescriptor::floating("cantileverCenterRatio", "Suspended Center Depth Ratio",
+                                                      defaults.cantileverCenterRatio, 0.1f, 0.7f, 0.05f));
+    bridge.params.push_back(
+        ParamDescriptor::floating("towerLegWidth", "Tower Leg Width", defaults.towerLegWidth, 0.1f, 10.f, 0.1f));
+    registry.registerRecipe(std::move(bridge), [](const Params& params, MeshBuild& out, std::string& error) {
+        if (params.has("networkSnapshot")) {
+            error = "mesh.autoBridge accepts endpoints, not networkSnapshot";
+            return false;
+        }
+        auto decoded = bridgeParametersFromParams(params);
+        if (!decoded.ok()) {
+            error = decoded.status().describe();
+            return false;
+        }
+        auto plan = planBridge(decoded.value());
+        if (!plan.ok()) {
+            error = plan.status().describe();
+            return false;
+        }
+        auto mesh = bakeBridge(plan.value());
+        if (!mesh.ok()) {
+            error = mesh.status().describe();
+            return false;
+        }
+        out = std::move(mesh).takeValue();
+        return true;
+    });
 }
 
 void registerRoadTextureRecipes(TextureRecipeRegistry& registry) {
@@ -149,90 +228,6 @@ void registerRoadTextureRecipes(TextureRecipeRegistry& registry) {
     schema.params.push_back(ParamDescriptor::floating("dashDuty", "Dash Duty", 0.45f, 0.05f, 0.95f, 0.01f));
     schema.params.push_back(ParamDescriptor::boolean("zebra", "Zebra Ends", true));
     registry.registerRecipe(std::move(schema), generateRoadMarkingsTexture);
-}
-
-}  // namespace eve::procgen::road
-
-// RoadProfile.cpp
-namespace eve::procgen::road {
-namespace {
-
-Result<void> validateStyle(const RoadStyle& style) {
-    const float values[] = {style.laneWidth,      style.curbWidth,     style.curbHeight,   style.sidewalkWidth,
-                            style.sidewalkHeight, style.deckThickness, style.pierWidth,    style.pierDepth,
-                            style.pierSpacing,    style.pierClearance, style.markingWidth, style.dashLength,
-                            style.dashGap,        style.uvMeters};
-    for (float v : values) {
-        if (!std::isfinite(v) || v < 0.f)
-            return Result<void>::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "road style values must be finite and non-negative", "style"));
-    }
-    if (style.laneWidth <= 1e-4f)
-        return Result<void>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "laneWidth must be positive", "laneWidth"));
-    if (style.uvMeters <= 1e-4f)
-        return Result<void>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "uvMeters must be positive", "uvMeters"));
-    return Result<void>::success();
-}
-
-void pushPoint(RoadProfile& profile, float side, float up, RoadMaterial material) {
-    profile.points.push_back(RoadProfilePoint{side, up, material});
-}
-
-}  // namespace
-
-const char* roadMaterialGroup(RoadMaterial material) noexcept {
-    switch (material) {
-        case RoadMaterial::Asphalt: return "asphalt";
-        case RoadMaterial::Curb: return "curb";
-        case RoadMaterial::Sidewalk: return "sidewalk";
-        case RoadMaterial::Deck: return "deck";
-        case RoadMaterial::Pier: return "pier";
-        case RoadMaterial::Marking: return "marking";
-        case RoadMaterial::MarkingYellow: return "markingYellow";
-        case RoadMaterial::Nav: return "nav";
-    }
-    return "asphalt";
-}
-
-Result<RoadProfile> makeRoadProfile(const RoadStyle& style, int lanesForward, int lanesBackward) {
-    auto ok = validateStyle(style);
-    if (!ok.ok()) return Result<RoadProfile>::failure(ok.status());
-    if (lanesForward < 0 || lanesForward > 8)
-        return Result<RoadProfile>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "lanesForward must be in [0,8]", "lanesForward"));
-    if (lanesBackward < 0 || lanesBackward > 8)
-        return Result<RoadProfile>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "lanesBackward must be in [0,8]", "lanesBackward"));
-    if (lanesForward + lanesBackward < 1)
-        return Result<RoadProfile>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "road must contain at least one directional lane", "lanes"));
-
-    const float asphaltHalf   = 0.5f * style.laneWidth * static_cast<float>(lanesForward + lanesBackward);
-    const float barrierInner  = asphaltHalf;
-    const float barrierOuter  = asphaltHalf + style.curbWidth;
-    const float sidewalkOuter = barrierOuter + style.sidewalkWidth;
-    const float barrierTop    = style.curbHeight;
-    const float walkH         = style.sidewalkHeight;
-
-    RoadProfile profile;
-    profile.halfWidth = sidewalkOuter;
-
-    // Jersey-barrier U-channel matching the reference interchange look:
-    // sidewalk → tall barrier outer/top/inner → asphalt deck → mirror.
-    pushPoint(profile, -sidewalkOuter, walkH, RoadMaterial::Sidewalk);
-    pushPoint(profile, -barrierOuter, walkH, RoadMaterial::Sidewalk);
-    pushPoint(profile, -barrierOuter, barrierTop, RoadMaterial::Curb);
-    pushPoint(profile, -barrierInner, barrierTop, RoadMaterial::Curb);
-    pushPoint(profile, -barrierInner, 0.f, RoadMaterial::Curb);
-    pushPoint(profile, barrierInner, 0.f, RoadMaterial::Asphalt);
-    pushPoint(profile, barrierInner, barrierTop, RoadMaterial::Curb);
-    pushPoint(profile, barrierOuter, barrierTop, RoadMaterial::Curb);
-    pushPoint(profile, barrierOuter, walkH, RoadMaterial::Sidewalk);
-    pushPoint(profile, sidewalkOuter, walkH, RoadMaterial::Sidewalk);
-
-    return Result<RoadProfile>::success(std::move(profile));
 }
 
 }  // namespace eve::procgen::road
