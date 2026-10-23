@@ -2554,6 +2554,8 @@ TEST_CASE("scriptCompiler.metadataIgnoresCommentedLanguageForms") {
         "/* export function hidden() {}\n"
         "persist ignored = 1 */\n"
         "local text = \"// await remains text\"\n"
+        "local escaped = \"\\\" await remains text too\"\n"
+        "local single = 'await'\n"
         "import { answer } from \"game:/real.nut\"\n",
         "game:/comments.nut");
     CHECK_EQ(metadata.imports.size(), size_t(1));
@@ -2561,6 +2563,10 @@ TEST_CASE("scriptCompiler.metadataIgnoresCommentedLanguageForms") {
     CHECK(metadata.exports.empty());
     CHECK(metadata.persistRoots.empty());
     CHECK(metadata.awaitLocations.empty());
+    const auto withAwait = script::ScriptCompiler::analyze("local text = \"await\"\nawait task()\n", "game:/await.nut");
+    REQUIRE_EQ(withAwait.awaitLocations.size(), size_t(1));
+    CHECK_EQ(withAwait.awaitLocations[0].line, size_t(2));
+    CHECK_EQ(withAwait.awaitLocations[0].column, size_t(1));
 }
 
 
