@@ -3,6 +3,7 @@
 #include "climbing/Climbing.h"
 
 #include <algorithm>
+#include <cmath>
 
 namespace eve::climbing::detail {
 
@@ -16,16 +17,33 @@ inline Vec3 interpolate(Vec3 start, Vec3 end, float amount) noexcept {
             start.z + (end.z - start.z) * amount};
 }
 
+// Join the two support planes in the horizontal plane. Each eased leg stays
+// on its own support plane; a direct chord can cut through a convex corner.
+inline Vec3 cornerPathPoint(Vec3 start, Vec3 end, Vec3 sourceNormal, Vec3 targetNormal, float normalizedTime) noexcept {
+    const float determinant = sourceNormal.x * targetNormal.z - sourceNormal.z * targetNormal.x;
+    const float t           = std::clamp(normalizedTime, 0.f, 1.f);
+    if (std::abs(determinant) < 1e-4f) return interpolate(start, end, smoothStep(t));
+    const float sourcePlane = sourceNormal.x * start.x + sourceNormal.z * start.z;
+    const float targetPlane = targetNormal.x * end.x + targetNormal.z * end.z;
+    const Vec3  join{(sourcePlane * targetNormal.z - sourceNormal.z * targetPlane) / determinant,
+                    (start.y + end.y) * 0.5f,
+                    (sourceNormal.x * targetPlane - sourcePlane * targetNormal.x) / determinant};
+    return t < 0.5f ? interpolate(start, join, smoothStep(t * 2.f))
+                    : interpolate(join, end, smoothStep((t - 0.5f) * 2.f));
+}
+
 /**
  * Internal deterministic path shared by candidate validation and authoritative execution.
  * Mantles and wall-contact vaults rise clear of the lip before crossing it.
  * Vaults with takeoff clearance and ledge
  * approaches retain an arc.
  */
-inline Vec3 trajectoryPoint(Vec3 start, const ClimbingCandidate& candidate,
-                            const ClimbingActionDefinition& action, const ClimbingProfileDefinition& profile,
-                            float normalizedTime) noexcept {
+inline Vec3 trajectoryPoint(Vec3 start, const ClimbingCandidate& candidate, const ClimbingActionDefinition& action,
+                            const ClimbingProfileDefinition& profile, float normalizedTime,
+                            Vec3 sourceNormal = {}) noexcept {
     const float t = std::clamp(normalizedTime, 0.f, 1.f);
+    if (action.kind == ClimbingActionKind::CornerInner || action.kind == ClimbingActionKind::CornerOuter)
+        return cornerPathPoint(start, candidate.landingFeet, sourceNormal, candidate.surfaceNormal, t);
     const bool surfaceFollow = action.trajectory == ClimbingTrajectoryKind::SurfaceFollow ||
                                action.trajectory == ClimbingTrajectoryKind::AnchorToAnchor;
     const bool ballistic = action.trajectory == ClimbingTrajectoryKind::BallisticArc;

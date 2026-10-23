@@ -593,6 +593,153 @@
       ],
       "removal_condition": "remove the debt entry when the corresponding migration or documentation is complete; expiry forces review before renewal.",
       "max_net_growth": 0
+    },
+    {
+      "id": "climbing-module-interface",
+      "rule": "module-interface",
+      "module": "climbing",
+      "scope": "src/modules/climbing/**",
+      "owner": "climbing::ClimbingRuntime",
+      "issue": "EVENGINE-ARCH-CLIMBING-CONTRACTS",
+      "reason": "Physics owns support geometry; runtime owns contact targets, action windows and generation-checked anchor references; Animation and scripts consume owning projections.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/climbing/ClimbingExecution.cpp",
+        "src/modules/climbing/ClimbingBindings.cpp",
+        "src/modules/climbing/ClimbingPose.cpp",
+        "docs/dev/2026-09-21-climbing-plugin-review.md"
+      ],
+      "tests": [
+        "test/climbing_foot_contacts.cpp",
+        "test/climbing_pose_contacts.cpp",
+        "test/climbing_services.cpp",
+        "test/climbing_ecs.cpp"
+      ],
+      "provides": [
+        {
+          "capability": "IGameplayControlProvider",
+          "impl": "ClimbingControl",
+          "absent_behavior": "No climbing subject is published when control is not composed."
+        }
+      ],
+      "requires": [
+        {
+          "capability": "IClimbingConditionAuthority",
+          "required": false,
+          "fallback": "Required action tags reject start if the provider is absent.",
+          "present_test": "test/climbing_services.cpp",
+          "absent_test": "test/climbing_services.cpp"
+        },
+        {
+          "capability": "IClimbingStaminaAuthority",
+          "required": false,
+          "fallback": "RequireProvider rejects; permissive policy returns ProviderAbsent.",
+          "present_test": "test/climbing_services.cpp",
+          "absent_test": "test/climbing_services.cpp"
+        },
+        {
+          "capability": "IClimbingEventSink",
+          "required": false,
+          "fallback": "Explicit ProviderAbsent/NoOp.",
+          "present_test": "test/climbing_services.cpp",
+          "absent_test": "test/climbing_services.cpp"
+        },
+        {
+          "capability": "IClimbingPoseAdapter",
+          "required": false,
+          "fallback": "Explicit ProviderAbsent/NoOp; built-in Animation adapter remains a separate overload.",
+          "present_test": "test/climbing_services.cpp",
+          "absent_test": "test/climbing_services.cpp"
+        }
+      ],
+      "emits": [
+        {
+          "event": "ClimbingEvent",
+          "ordering": "Bounded owning queue in simulation-tick order; drain by consumer.",
+          "dispatch_phase": "PostPhysics consumer dispatch, no callbacks while runtime mutates."
+        }
+      ],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "ClimbingAnchorGraph",
+          "methods": [
+            "ownership",
+            "isStale",
+            "release",
+            "node",
+            "reloadJson",
+            "planRoute",
+            "generation",
+            "reservationCount"
+          ]
+        },
+        {
+          "script_class": "ClimbingRuntime",
+          "methods": [
+            "ownership",
+            "isStale",
+            "release",
+            "setProfileJson",
+            "reloadProfileJson",
+            "setProfile",
+            "upsertAction",
+            "upsertActionKind",
+            "validateActionClip",
+            "probeMode",
+            "tryBegin",
+            "tryBeginMode",
+            "tryBeginAnchor",
+            "transitionAnchor",
+            "currentAnchor",
+            "cancel",
+            "drainEvents",
+            "drop",
+            "climbUp",
+            "snapshotJson",
+            "restoreJson",
+            "definitionGeneration",
+            "setDebugCapture",
+            "inspect"
+          ]
+        },
+        {
+          "script_class": "Climbing",
+          "methods": [
+            "getName",
+            "newRuntime",
+            "newAnchorGraphJson",
+            "bakeAnchorGraphJson",
+            "inspectAnchorGraphJson"
+          ]
+        }
+      ],
+      "protocol": [],
+      "thread_affinity": "Owner simulation thread; borrowed physics and animation inputs live for the synchronous call. No callbacks under locks.",
+      "trim": {
+        "absent_profile": "headless",
+        "level": "L1",
+        "evidence": "headless eve_profile_smoke compiles without climbing; full macOS climbing tests are composition evidence. No L2/L3/L4 claim."
+      },
+      "cost_notes": [
+        {
+          "api": "ClimbingRuntime::advance",
+          "shape": "owned-result",
+          "why": "Bounded per-tick queries: at most two additional foot rays only for requested contacts; Active query budget applies."
+        },
+        {
+          "api": "applyClimbingPose",
+          "shape": "owned-result",
+          "why": "Up to four short two-bone chains on the evaluated pose; all targets validated before pose mutation."
+        }
+      ],
+      "hot_path": [
+        "src/modules/climbing/ClimbingExecution.cpp",
+        "src/modules/climbing/ClimbingPose.cpp",
+        "src/modules/climbing/ClimbingECS.h",
+        "src/modules/climbing/ClimbingServices.cpp",
+        "src/modules/climbing/ClimbingInput.cpp"
+      ]
     }
   ]
 }

@@ -117,9 +117,9 @@ C++ 输入适配层提交 `ClimbingCommand::Climb`，所有公开模块与类型
 候选准备成功后才消费输入并提交 `ClimbingExecutionId`，所以预检失败不会吞键或部分改变
 权威状态。
 
-`ClimbingRuntime::snapshot()` 输出 `evengine.climbing-runtime` v4，并包含当前 profile、
+`ClimbingRuntime::snapshot()` 输出 `evengine.climbing-runtime` v5，并包含当前 profile、
 definition generation、活动 action snapshot 与尚未派发的事件队列。`restore(value, world)` 支持
-v4 与 N-1（v3；历史 v2/v1/v0 仍可迁移），
+v5 与 N-1（v4；历史 v3/v2/v1/v0 仍可迁移），
 并在发布前重新解析 profile、pinned action、candidate、计时、动态平台 body/shape/world 句柄；
 未知新版本或 stale link 都不会部分改变当前 runtime。Physics 句柄是
 进程内身份，跨进程存档需要场景层先通过持久 ID 重建 Physics world，再调用 restore。
@@ -136,6 +136,13 @@ Climbing 直接验证 `AnimClip` 的语义 notify，但不会跨帧持有 clip �
 `contactWeight` 交给 Animation 内置 `TwoBoneIK` constraint stack。它不保存 skeleton/pose
 裸指针；游戏应在动画图输出 base pose 后、skinning 前调用。最终角色位移始终使用 Physics
 返回的 `actualDelta`。
+
+手部适配器遵守左右手独立接触窗口：脚或骨盆仍有接触时，不会把汇总的
+`contactWeight` 当作双手权重。只有所有独立权重均为零的旧式 aggregate-only
+输入，才保留使用 `contactWeight` 驱动双手的兼容语义。禁用的手不计入返回的
+`weight`；没有启用且有权重的手时返回 `NoOp`。骨骼链必须具有连续的父子关系，
+pose 与 skeleton 的骨骼数必须一致；非有限权重、模型位置或有效手部目标在修改
+任一手臂前返回结构化错误。
 
 `ClimbingMotionInput` 可为每个 fixed tick 提交动画 root translation、root yaw、朝向与
 pelvis offset。Definition 用 `warpWindows` 显式开启 horizontal、vertical、facing
@@ -180,7 +187,7 @@ tag 顺序；重复 identity、悬空 edge、非正交 frame 或越界 slot 会�
 新候选，再一次发布并返回排序后的 `invalidatedOccupants`，由 gameplay 在安全窗口取消
 或显式迁移；旧 node reference 与 reservation token 均立即 stale。
 
-runtime v4 snapshot 保存 graph handle/epoch、node identity、slot、occupant 与 reservation claim
+runtime v5 snapshot 保存 graph handle/epoch、node identity、slot、occupant 与 reservation claim
 generation。恢复到另一个 runtime 时，仍存活的 claim 会原子转移并使旧 runtime 的凭证 stale；
 旧 runtime 已析构时只会重获原 slot，不会挤掉已有占用。重复恢复同一旧 snapshot 返回 conflict，
 因此任意时刻只有一个 runtime 能释放该 slot。graph 与 Physics handle 仍是进程内 identity；
@@ -234,3 +241,35 @@ Squirrel 对应入口为
 恢复普通移动与地面检测。此入口只负责运动消费，动画窗口与骨骼约束属于适配层。
 
 `runtime.probeMode(world, feetX, feetY, feetZ, facingX, facingZ, speed, verticalSpeed, grounded)` evaluates a traversal candidate for the supplied movement state without starting execution; inspect `ok` and diagnostics before consuming `value`.
+
+
+## 四肢接触目标与挂点转移
+
+`ClimbingAdvance` 的 `leftFootAnchor/rightFootAnchor` 是当 tick 的世界空间目标，
+只有各自 `hasLeftFootAnchor/hasRightFootAnchor` 为真时才可使用。左右脚可以分别有/无支撑。
+梯子使用每 tick 重新解析的 body-local `feetSocket` 作为中心，沿 tangent 两侧各偏移
+`capsuleRadius / 2`。其他挂点仅在脚部接触窗口有权重时逐脚探测支撑面；每脚一次
+owning ray query，遵守 profile filter，计入 active query budget。不会因脚部权重存在
+就虚构脚底目标。C++ pose binding 的腿部默认禁用，指定连续的 hip/knee/ankle 链并启用后，
+使用与手部相同的 TwoBoneIK 和预检。
+
+Anchor Graph 转移期间，runtime 保存源 node 的 generation-qualified 观察引用；目标
+reservation 仍是唯一占用凭证，源节点不会被重复占用。源和目标 socket 在每次 advance
+中一起从平台空间解析。每只手在自身第一个正权重 contact window 的 start/end 之间
+以 smoothstep 从源 socket 移到目标 socket；窗口前输出源点，窗口后输出目标点。
+没有该手窗口的旧动作使用整个动作时段。窗口同时仍控制 IK 权重，项目可据动作编排
+先移动朝向运动方向的手，避免交叉；运行时不会交换左右手 identity。
+
+runtime snapshot v5 的 `execution.sourceAnchor` 保存图 ID、node ID 和 generation，
+无转移时为 null。恢复时先检查源与目标属于同一图同一代，并解析源点存在性，再转移
+reservation 和发布状态。v4 及旧存档迁移为无源点的历史表现；新动作 definition 热重载
+不改变活动 execution 固定的接触窗口。图热重载或 body 销毁沿用 stale/cancel 行为。
+到达目标后清除源引用。`sourceAnchor` 中未知字段忽略，已知字段无效则整份恢复失败。
+脚部目标是每 tick 重建的投影，不写入存档。
+
+### 实体转角路径
+
+图驱动的 `CornerInner` / `CornerOuter` 使用两侧水平支撑平面的交点分段绕行，
+预检与执行共享轨迹函数，双手目标同样绕过墙角。近似平行法线退回直接插值，
+仍受完整路径碰撞预检约束。示例包含真实直角墙和向身后墙面的 `LedgeJump`；
+角色转向为展示层，不能替代调用方自身的动画朝向集成。

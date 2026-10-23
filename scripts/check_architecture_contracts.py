@@ -41,6 +41,7 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 import utf8_stdio
+import module_interface_contracts
 
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_METADATA = ROOT / "scripts" / "architecture_contracts.json"
@@ -56,6 +57,7 @@ RULES = (
     "optional-capability",
     "backend-contract",
     "debt-metadata",
+    "module-interface",
 )
 
 COMMON_REQUIRED = {
@@ -67,6 +69,10 @@ COMMON_REQUIRED = {
     "tests",
 }
 RULE_REQUIRED = {
+    "module-interface": {
+        "provides", "requires", "emits", "observes", "binds", "protocol",
+        "thread_affinity", "trim", "cost_notes", "hot_path",
+    },
     "api-shape": {"result_policy", "nodiscard_policy", "pointer_policy"},
     "link": {"symbols", "create", "ownership", "destroy_order", "restore", "stale"},
     "state-owner": {"state", "authoritative_owner", "projections"},
@@ -165,6 +171,17 @@ def nonempty_string(value: Any) -> bool:
     return isinstance(value, str) and bool(value.strip())
 
 
+def scoped_files(scope: str) -> list[Path]:
+    """Walk the literal scope prefix, avoiding unrelated downloaded dependencies."""
+    prefix = re.split(r"[*?\[]", scope, maxsplit=1)[0]
+    candidate = ROOT / prefix
+    search_root = candidate if prefix.endswith("/") else candidate.parent
+    if not search_root.resolve().is_relative_to(ROOT.resolve()):
+        return []
+    candidates = [candidate] if candidate.is_file() else search_root.rglob("*")
+    return [path for path in candidates if path.is_file() and path_matches(relative(path), scope)]
+
+
 def nonempty_list(value: Any) -> bool:
     return isinstance(value, list) and bool(value) and all(nonempty_string(item) for item in value)
 
@@ -224,12 +241,8 @@ def validate_catalogue(metadata: Any, today: date | None = None) -> list[str]:
                 errors.append(f"{prefix}.{field} must be a non-empty string")
         scope = entry.get("scope")
         if nonempty_string(scope):
-            scoped_files = [
-                candidate
-                for candidate in ROOT.rglob("*")
-                if candidate.is_file() and path_matches(relative(candidate), scope)
-            ]
-            if not scoped_files:
+            matched_files = scoped_files(scope)
+            if not matched_files:
                 errors.append(f"{prefix}.scope matches no repository file: {scope}")
             if rule in {"link", "ecs-system"} and scope in {"src/**", "src/*", "src/**/*"}:
                 errors.append(f"{prefix}.{rule} scope must be path-specific, not {scope}")
@@ -241,11 +254,13 @@ def validate_catalogue(metadata: Any, today: date | None = None) -> list[str]:
                 else:
                     source_text = "\n".join(
                         candidate.read_text(encoding="utf-8", errors="replace")
-                        for candidate in scoped_files
+                        for candidate in matched_files
                     )
                     for name in names:
                         if re.search(r"\b" + re.escape(name) + r"\b", source_text) is None:
                             errors.append(f"{prefix}.{names_field} symbol not found in scope: {name}")
+            if rule == "module-interface":
+                errors.extend(module_interface_contracts.validate(entry, matched_files, ROOT, prefix))
         for field in ("evidence", "tests"):
             if not nonempty_list(entry.get(field)):
                 errors.append(f"{prefix}.{field} must be a non-empty string array")
@@ -609,6 +624,8 @@ def lint_contract_coverage(lines: list[SourceLine], metadata: Mapping[str, Any])
     seen: set[tuple[str, str]] = set()
     for item in lines:
         text = item.text
+        for message in module_interface_contracts.lint_line(item.path, text, entries):
+            findings.append(Finding("module-interface", "boundary-contract", item.path, item.line, message))
         triggers: list[tuple[str, str]] = []
         if re.search(r"\b(?:struct|class)\s+[A-Za-z_]\w*Link\b|\busing\s+\w*Link\b", text):
             triggers.append(("link", "new Link declaration"))

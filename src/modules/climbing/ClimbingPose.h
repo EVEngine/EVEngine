@@ -29,14 +29,21 @@ struct ClimbingPoseBinding {
     float             modelYawRadians = 0.f;
     bool              enableLeftHand  = true;
     bool              enableRightHand = true;
+    /** @brief Optional legs; disabled until the caller supplies its rig's chains. */
+    ClimbingLimbChain leftLeg;
+    ClimbingLimbChain rightLeg;
+    bool              enableLeftFoot  = false;
+    bool              enableRightFoot = false;
 };
 
-/** @brief Observable result of applying built-in hand constraints. */
+/** @brief Observable result of applying built-in hand and foot constraints. */
 struct ClimbingPoseResult {
     bool        leftHandApplied  = false;
     bool        rightHandApplied = false;
     float       weight           = 0.f;
     std::string provider         = "animation.two_bone";
+    bool        leftFootApplied  = false;
+    bool        rightFootApplied = false;
 };
 
 /**

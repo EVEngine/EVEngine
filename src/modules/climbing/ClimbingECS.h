@@ -113,6 +113,11 @@ struct ClimbingPoseProjection {
     float                rightFootWeight = 0.f;
     float                pelvisWeight = 0.f;
     bool                 compactCollision = false;
+    /** @brief Transient world-space supported targets copied from the current advance. */
+    Vec3 leftFootAnchor;
+    Vec3 rightFootAnchor;
+    bool hasLeftFootAnchor  = false;
+    bool hasRightFootAnchor = false;
 };
 
 /** @brief Bounded owning post-simulation event batch safe to dispatch after the ECS View closes. */
@@ -468,6 +473,10 @@ public:
             pose->rightHandAnchor = state->lastAdvance.rightHandAnchor;
             pose->leftHandWeight = state->lastAdvance.leftHandWeight;
             pose->rightHandWeight = state->lastAdvance.rightHandWeight;
+            pose->leftFootAnchor     = state->lastAdvance.leftFootAnchor;
+            pose->rightFootAnchor    = state->lastAdvance.rightFootAnchor;
+            pose->hasLeftFootAnchor  = state->lastAdvance.hasLeftFootAnchor;
+            pose->hasRightFootAnchor = state->lastAdvance.hasRightFootAnchor;
             pose->leftFootWeight = state->lastAdvance.leftFootWeight;
             pose->rightFootWeight = state->lastAdvance.rightFootWeight;
             pose->pelvisWeight = state->lastAdvance.pelvisWeight;

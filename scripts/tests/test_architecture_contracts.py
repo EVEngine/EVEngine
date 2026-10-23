@@ -12,10 +12,54 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import check_architecture_contracts as contracts  # noqa: E402
+import module_interface_contracts as interfaces  # noqa: E402
 
 
 class ArchitectureContractTests(unittest.TestCase):
-    def test_repository_catalogue_covers_all_ten_rules(self):
+    def test_scope_walk_preserves_exact_and_recursive_matches(self):
+        exact = ROOT / "src/modules/climbing/Climbing.h"
+        self.assertEqual([exact], contracts.scoped_files("src/modules/climbing/Climbing.h"))
+        expected = {path for path in (ROOT / "src/modules/climbing").rglob("*") if path.is_file()}
+        self.assertEqual(expected, set(contracts.scoped_files("src/modules/climbing/**")))
+        self.assertEqual([], contracts.scoped_files("../outside/**"))
+
+    def test_module_boundary_requires_exact_capability_name(self):
+        entry = {"rule": "module-interface", "scope": "src/modules/demo/**",
+                 "provides": [{"capability": "IKnown"}], "requires": [], "hot_path": []}
+        path = "src/modules/demo/Module.cpp"
+        self.assertEqual([], interfaces.lint_line(path, "cap::provide<IKnown>(this);", [entry]))
+        self.assertTrue(interfaces.lint_line(path, "cap::provide<IOther>(this);", [entry]))
+        self.assertTrue(interfaces.lint_line(path, "cap::query<IKnown>();", [entry]))
+        self.assertTrue(interfaces.lint_line(path, "cap::query<IKnown>();", []))
+
+    def test_hot_path_rejects_even_declared_capability_lookup(self):
+        path = "src/modules/demo/Tick.cpp"
+        entry = {"rule": "module-interface", "scope": "src/modules/demo/**",
+                 "requires": [{"capability": "IKnown"}], "hot_path": [path]}
+        for text in ("cap::query<IKnown>();", "getModInst(Animation);",
+                     "requireModInst(Physics);", "ModuleManager::getInstance();"):
+            with self.subTest(text=text):
+                self.assertTrue(interfaces.lint_line(path, text, [entry]))
+        self.assertEqual([], interfaces.lint_line(path, "boundPhysics.advance();", [entry]))
+
+    def test_module_boundary_cross_checks_bindings_optional_tests_and_trim(self):
+        metadata = contracts.load_json(ROOT / "scripts/architecture_contracts.json")
+        original = next(item for item in metadata["entries"] if item["id"] == "climbing-module-interface")
+        files = list((ROOT / "src/modules/climbing").glob("*"))
+        self.assertEqual([], interfaces.validate(original, files, ROOT, "climbing"))
+        for field, replacement, expected in (
+            ("binds", [], "script class"),
+            ("requires", [{"capability": "IClimbingPoseAdapter", "required": False}], "present_test"),
+            ("trim", {"absent_profile": "3d"}, "still selects"),
+            ("hot_path", ["src/modules/climbing/Missing.cpp"], "matches no scoped file"),
+            ("observes", None, "must be an array"),
+        ):
+            with self.subTest(field=field):
+                entry = copy.deepcopy(original)
+                entry[field] = replacement
+                self.assertTrue(any(expected in error for error in interfaces.validate(entry, files, ROOT, "climbing")))
+
+    def test_repository_catalogue_covers_all_rules(self):
         metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
         self.assertEqual([], contracts.validate_catalogue(metadata, today=date(2026, 8, 26)))
 
