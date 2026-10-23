@@ -12177,6 +12177,22 @@
       },
       "module": "weather",
       "task": "weather-lightning"
+    },
+    "fixtures/assertion_contract.cpp": {
+      "role": "tests",
+      "default": "test-framework",
+      "cases": {
+        "test-framework": [
+          "assertionProbe.singleEvaluation",
+          "assertionProbe.checkFails",
+          "assertionProbe.comparisonFails",
+          "assertionProbe.requireFails",
+          "assertionProbe.assertFails",
+          "assertionProbe.helperFails",
+          "assertionProbe.expectedInvariant"
+        ]
+      },
+      "module": "common"
     }
   }
 }
