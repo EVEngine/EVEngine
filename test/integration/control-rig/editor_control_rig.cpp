@@ -182,5 +182,5 @@ TEST_CASE("editor.controlRig.scriptFacadeProjectsNumericTimeAndOwnedResults") {
     CHECK(vm.find("timeType").toString() == "float");
     CHECK(vm.find("durationType").toString() == "float");
     for (const char* name : {"initialized", "edited", "sought", "restored", "copied", "baked"})
-        CHECK(vm.find(name).toTable().get<bool>("ok"));
+        REQUIRE(vm.find(name).toTable().get<bool>("ok"));
 }
