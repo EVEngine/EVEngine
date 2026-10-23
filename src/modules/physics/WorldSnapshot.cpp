@@ -258,6 +258,7 @@ eve::Result<void> World3D::restore(const eve::SnapshotEnvelope&     snapshotValu
     auto restoredObservation = simulation_->restoreObservation(observation.value().value);
     if (!restoredObservation) return restoredObservation;
     WorldSnapshotAccess::adopt(*this, *prepared.value());
+    ++queryEpoch_;
     clearContactEvents();
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
@@ -282,7 +283,8 @@ eve::Result<void> World3D::prepareRuntimeHandleRefresh(std::size_t bodyCount, st
     const auto bodyAvailable = static_cast<std::uint64_t>(PhysicsBodyHandle::invalidIndex) - nextBodyHandleIndex_;
     const auto shapeAvailable = static_cast<std::uint64_t>(PhysicsShapeHandle::invalidIndex) - nextShapeHandleIndex_;
     const auto jointAvailable = static_cast<std::uint64_t>(PhysicsJointHandle::invalidIndex) - nextJointHandleIndex_;
-    if (bodyCount > bodyAvailable || shapeCount > shapeAvailable || jointCount > jointAvailable)
+    if (queryEpoch_ == UINT64_MAX || bodyCount > bodyAvailable || shapeCount > shapeAvailable ||
+        jointCount > jointAvailable)
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvariantViolation, "3D physics handle space cannot represent restored links",
             "physics.world3d.restore.handles"));
@@ -290,6 +292,7 @@ eve::Result<void> World3D::prepareRuntimeHandleRefresh(std::size_t bodyCount, st
 }
 
 void World3D::refreshRuntimeHandlesAfterRestore() {
+    ++queryEpoch_;
     shapeRecords_.clear();
     shapeHandles_.clear();
     shapeRawHandles_.clear();
