@@ -5,9 +5,14 @@ function buildCheck(condition, message) {
     print("PASS whitebox build: " + message + "\n");
 }
 levelHandleAction("build:flat");
+buildCheck(level.terrain.heightScale > 0.0 && fabs(terrainHeightAt(0.0, 0.0)) < 0.001,
+    "flat surface remains sculptable and serializable");
 level.piece = "prototype.cube";
 local before = level.objects.len();
 whiteboxBeginDrag({x = -4.0, y = 0.0, z = -3.0});
+buildCheck(level.buildDrag.preview.motion == "static" && level.buildDrag.preview.bounds != null &&
+    level.buildDrag.half.x > 0.0 && level.buildDrag.half.z > 0.0,
+    "preview initializes studio metadata and mesh bounds");
 whiteboxUpdateDrag({x = 3.0, y = 0.0, z = 2.0});
 buildCheck(level.objects.len() == before, "preview does not mutate scene");
 whiteboxCancelDrag();
