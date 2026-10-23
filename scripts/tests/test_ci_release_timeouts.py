@@ -121,6 +121,18 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
                     block[start:build],
                 )
 
+    def test_benchmark_upload_distinguishes_a_skipped_sample(self) -> None:
+        for job in ("windows-release", "macos-release", "linux-release"):
+            with self.subTest(job=job):
+                block = job_block(self.workflow, job)
+                sample = block.split("      - name: Sample settlement release benchmark\n", 1)[1]
+                sample = sample.split("      - name:", 1)[0]
+                self.assertIn("id: settlement-benchmark", sample)
+                upload = block.split("      - name: Upload settlement benchmark sample\n", 1)[1]
+                upload = upload.split("      - name:", 1)[0]
+                self.assertIn("steps.settlement-benchmark.outcome != 'skipped'", upload)
+                self.assertIn("if-no-files-found: error", upload)
+
     def test_benchmark_filter_is_part_of_the_ctest_command(self) -> None:
         for job in ("windows-release", "macos-release", "linux-release"):
             with self.subTest(job=job):

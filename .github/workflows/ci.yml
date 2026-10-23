@@ -1033,6 +1033,7 @@ jobs:
           LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
 
       - name: Sample settlement release benchmark
+        id: settlement-benchmark
         timeout-minutes: 5
         env:
           ALSOFT_DRIVERS: "null"
@@ -1045,7 +1046,7 @@ jobs:
             | tee build/settlement-benchmark-macos.log
 
       - name: Upload settlement benchmark sample
-        if: always()
+        if: ${{ always() && steps.settlement-benchmark.outcome != 'skipped' }}
         uses: actions/upload-artifact@v7
         with:
           name: settlement-benchmark-macos-release
@@ -1481,6 +1482,7 @@ jobs:
         run: xvfb-run -a -s "-screen 0 1280x800x24" make test/linux
 
       - name: Sample settlement release benchmark
+        id: settlement-benchmark
         timeout-minutes: 5
         env:
           ALSOFT_DRIVERS: "null"
@@ -1493,7 +1495,7 @@ jobs:
             | tee build/settlement-benchmark-linux.log
 
       - name: Upload settlement benchmark sample
-        if: always()
+        if: ${{ always() && steps.settlement-benchmark.outcome != 'skipped' }}
         uses: actions/upload-artifact@v7
         with:
           name: settlement-benchmark-linux-release
