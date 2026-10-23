@@ -15,6 +15,8 @@ struct EditingCommandDescriptor {
     std::string displayName;
     std::string category;
     bool        automationAllowed = true;
+    /** @brief JSON Schema describing command payload; null for legacy commands. */
+    Value inputSchema;
 };
 
 /** @brief Side-effect-free planner invoked with the resolved target. */

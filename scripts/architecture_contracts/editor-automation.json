@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "scope": "src/modules/editor/EditorTargetCoordinator.*",
+      "owner": "editor",
+      "issue": "EVENGINE-CONTROL-RIG-AUTHORING",
+      "reason": "Expose command input schemas and borrow existing authoring transaction history through the existing coordinator.",
+      "expiry": "2027-10-22",
+      "evidence": [
+        "docs/dev/plans/2026-10-22-control-rig-authoring.md",
+        "src/modules/editor/EditorTargetCoordinator.h"
+      ],
+      "tests": [
+        "test/editor_control_rig_automation.cpp",
+        "test/editor_automation_v2.cpp"
+      ],
+      "id": "editor-automation-shared-history-api-shape",
+      "rule": "api-shape",
+      "result_policy": "Fallible mutations and compilation return common Result; query booleans are only predicates.",
+      "nodiscard_policy": "All new fallible APIs are nodiscard.",
+      "pointer_policy": "Owned Pimpl and unique_ptr compiled artifacts; synchronous references only."
+    },
+    {
+      "scope": "src/modules/editor/EditorTargetCoordinator.*",
+      "owner": "editor",
+      "issue": "EVENGINE-CONTROL-RIG-AUTHORING",
+      "reason": "Expose command input schemas and borrow existing authoring transaction history through the existing coordinator.",
+      "expiry": "2027-10-22",
+      "evidence": [
+        "docs/dev/plans/2026-10-22-control-rig-authoring.md",
+        "src/modules/editor/EditorTargetCoordinator.h"
+      ],
+      "tests": [
+        "test/editor_control_rig_automation.cpp",
+        "test/editor_automation_v2.cpp"
+      ],
+      "id": "editor-automation-shared-history-api-lifetime",
+      "rule": "api-lifetime",
+      "thread_affinity": "One owner thread per editor/instance.",
+      "reentrancy": "Synchronous owner-thread access; registry does not call scripts under a lock.",
+      "ownership_contract": "Command metadata owns its schema value; shared-history target and backend remain caller-owned.",
+      "lifetime": "Unregister before target/backend destruction. Weak coordinator token expires before coordinator teardown. Existing session generation checks invalidate plans and bindings.",
+      "lock_callback_policy": "No locks or callbacks in solving or editing."
+    },
+    {
+      "scope": "src/modules/editor/EditorCommandService.h",
+      "owner": "editor",
+      "issue": "EVENGINE-CONTROL-RIG-AUTHORING",
+      "reason": "Expose command input schemas and borrow existing authoring transaction history through the existing coordinator.",
+      "expiry": "2027-10-22",
+      "evidence": [
+        "docs/dev/plans/2026-10-22-control-rig-authoring.md",
+        "src/modules/editor/EditorTargetCoordinator.h"
+      ],
+      "tests": [
+        "test/editor_control_rig_automation.cpp",
+        "test/editor_automation_v2.cpp"
+      ],
+      "id": "editor-automation-command-schema-api-shape",
+      "rule": "api-shape",
+      "result_policy": "Fallible mutations and compilation return common Result; query booleans are only predicates.",
+      "nodiscard_policy": "All new fallible APIs are nodiscard.",
+      "pointer_policy": "Owned Pimpl and unique_ptr compiled artifacts; synchronous references only."
+    },
+    {
+      "scope": "src/modules/editor/EditorCommandService.h",
+      "owner": "editor",
+      "issue": "EVENGINE-CONTROL-RIG-AUTHORING",
+      "reason": "Expose command input schemas and borrow existing authoring transaction history through the existing coordinator.",
+      "expiry": "2027-10-22",
+      "evidence": [
+        "docs/dev/plans/2026-10-22-control-rig-authoring.md",
+        "src/modules/editor/EditorTargetCoordinator.h"
+      ],
+      "tests": [
+        "test/editor_control_rig_automation.cpp",
+        "test/editor_automation_v2.cpp"
+      ],
+      "id": "editor-automation-command-schema-api-lifetime",
+      "rule": "api-lifetime",
+      "thread_affinity": "One owner thread per editor/instance.",
+      "reentrancy": "Synchronous owner-thread access; registry does not call scripts under a lock.",
+      "ownership_contract": "Command metadata owns its schema value; shared-history target and backend remain caller-owned.",
+      "lifetime": "Unregister before target/backend destruction. Weak coordinator token expires before coordinator teardown. Existing session generation checks invalidate plans and bindings.",
+      "lock_callback_policy": "No locks or callbacks in solving or editing."
+    },
+    {
+      "scope": "src/modules/editing/EditingCommandRegistry.h",
+      "owner": "editor",
+      "issue": "EVENGINE-CONTROL-RIG-AUTHORING",
+      "reason": "Expose command input schemas and borrow existing authoring transaction history through the existing coordinator.",
+      "expiry": "2027-10-22",
+      "evidence": [
+        "docs/dev/plans/2026-10-22-control-rig-authoring.md",
+        "src/modules/editor/EditorTargetCoordinator.h"
+      ],
+      "tests": [
+        "test/editor_control_rig_automation.cpp",
+        "test/editor_automation_v2.cpp"
+      ],
+      "id": "editor-automation-editing-schema-api-shape",
+      "rule": "api-shape",
+      "result_policy": "Fallible mutations and compilation return common Result; query booleans are only predicates.",
+      "nodiscard_policy": "All new fallible APIs are nodiscard.",
+      "pointer_policy": "Owned Pimpl and unique_ptr compiled artifacts; synchronous references only."
+    },
+    {
+      "scope": "src/modules/editing/EditingCommandRegistry.h",
+      "owner": "editor",
+      "issue": "EVENGINE-CONTROL-RIG-AUTHORING",
+      "reason": "Expose command input schemas and borrow existing authoring transaction history through the existing coordinator.",
+      "expiry": "2027-10-22",
+      "evidence": [
+        "docs/dev/plans/2026-10-22-control-rig-authoring.md",
+        "src/modules/editor/EditorTargetCoordinator.h"
+      ],
+      "tests": [
+        "test/editor_control_rig_automation.cpp",
+        "test/editor_automation_v2.cpp"
+      ],
+      "id": "editor-automation-editing-schema-api-lifetime",
+      "rule": "api-lifetime",
+      "thread_affinity": "One owner thread per editor/instance.",
+      "reentrancy": "Synchronous owner-thread access; registry does not call scripts under a lock.",
+      "ownership_contract": "Command metadata owns its schema value; shared-history target and backend remain caller-owned.",
+      "lifetime": "Unregister before target/backend destruction. Weak coordinator token expires before coordinator teardown. Existing session generation checks invalidate plans and bindings.",
+      "lock_callback_policy": "No locks or callbacks in solving or editing."
+    },
+    {
+      "scope": "src/modules/editor/EditorTargetCoordinator.*",
+      "owner": "editor",
+      "issue": "EVENGINE-CONTROL-RIG-AUTHORING",
+      "reason": "Existing coordinator may borrow a domain-owned backend to share UI and Agent history.",
+      "expiry": "2027-10-22",
+      "evidence": [
+        "src/modules/editor/EditorTargetCoordinator.h"
+      ],
+      "tests": [
+        "test/editor_control_rig_automation.cpp",
+        "test/editor_automation_v2.cpp"
+      ],
+      "id": "editor-automation-shared-history-interface",
+      "rule": "module-interface",
+      "provides": [
+        {
+          "capability": "editing::IEditingCommandRegistry",
+          "kind": "existing command registry"
+        }
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [
+        "eve_editor_commands inputSchema",
+        "eve_editor_plan/commit/execute/undo/redo"
+      ],
+      "thread_affinity": "owner thread; independent compiled rigs can solve independently",
+      "trim": {
+        "absent_profile": "Runtime-only profiles omit editor authoring; Rig runtime unchanged. No new trim claim."
+      },
+      "cost_notes": [
+        "Target registration is per session; command schema is copied only during discovery."
+      ],
+      "hot_path": []
+    }
+  ]
+}

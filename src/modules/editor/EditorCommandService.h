@@ -34,6 +34,8 @@ struct CommandDescriptor {
     HostFeature requiredFeatures   = HostFeature::None;
     bool        createsTransaction = true;
     bool        automationAllowed  = true;
+    /** @brief JSON Schema describing command payload; null for legacy commands. */
+    EditorValue inputSchema;
 };
 
 using EditorCommandHandler = std::function<Result<EditorValue>(const CommandContext&, const EditorValue&)>;

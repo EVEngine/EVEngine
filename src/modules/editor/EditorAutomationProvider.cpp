@@ -399,6 +399,7 @@ std::string EditorAutomationProvider::commandsJson() {
         descriptor["displayName"] = command.displayName;
         descriptor["category"]    = command.category;
         descriptor["owner"]       = command.ownerModule;
+        descriptor["inputSchema"] = command.inputSchema;
         descriptor["planned"]     = commands_->supportsPlanning(command.id);
         descriptors.emplace_back(std::move(descriptor));
     }

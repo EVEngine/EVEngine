@@ -132,7 +132,7 @@ endif()
 # to real runtime clips and state machines.
 eve_module_enabled(animation _has_animation_editor_bridge)
 if(NOT _has_animation_editor_bridge)
-  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES AnimationGraphRuntime.cpp AnimationClipRuntime.cpp SkeletonOverlayRuntime.cpp)
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES AnimationGraphRuntime.cpp AnimationClipRuntime.cpp SkeletonOverlayRuntime.cpp ControlRigDocument.cpp)
 endif()
 
 # UI document style/layout preview stays standalone. Runtime publication is
