@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "building/BuildingSnapshot.h"
 #include "common/Identity.h"
@@ -68,7 +69,7 @@ struct BuildingAssembly {
  * @lifetime Independent of the world; commit rejects a destroyed/replaced owner's epoch.
  * @thread Owner-thread only; pure validation may run during preparation; observers run after commit.
  */
-class PreparedAssembly {
+class EVENGINE_API_WORLD PreparedAssembly {
 public:
     PreparedAssembly(PreparedAssembly&&) noexcept;
     PreparedAssembly& operator=(PreparedAssembly&&) noexcept;
@@ -97,7 +98,7 @@ struct AssemblyReceipt {
  * @reentrancy Validation rules must be pure; committed events observe complete world state.
  * @ownership Worlds own members and assembly records; all results own their payloads.
  */
-class AssemblyService {
+class EVENGINE_API_WORLD AssemblyService {
 public:
     /**
      * @brief Capture an explicit, structurally closed selection relative to a grid vertex.

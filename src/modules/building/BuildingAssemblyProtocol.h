@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 #include "common/Result.h"
 #include "common/Value.h"
 namespace eve::building {
@@ -11,5 +12,5 @@ class PlacementWorld;
  * @cost Capture/save copy selected/world state; preview/mutations stage a whole world once per gesture.
  * @return Structured result; mutations return exact before/after receipt endpoints.
  */
-[[nodiscard]] Result<Value> executeHouseRequest(PlacementWorld& world, const Value& request);
+[[nodiscard]] EVENGINE_API_WORLD Result<Value> executeHouseRequest(PlacementWorld& world, const Value& request);
 }  // namespace eve::building

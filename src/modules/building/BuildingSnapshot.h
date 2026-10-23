@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include <cstdint>
 #include <map>
@@ -82,19 +83,20 @@ struct EdgeCurvePayload {
 };
 
 /** @brief Encode one complete curve group in linear time; no world mutation. */
-Value edgeCurveValue(const EdgeCurveGroup& group, const std::vector<BuildingInstanceSnapshot>& instances);
+EVENGINE_API_WORLD Value edgeCurveValue(const EdgeCurveGroup&                        group,
+                                        const std::vector<BuildingInstanceSnapshot>& instances);
 /** @brief Decode one complete curve with structured failure and independent ownership. */
-[[nodiscard]] Result<EdgeCurvePayload> parseEdgeCurve(const Value& value);
+[[nodiscard]] EVENGINE_API_WORLD Result<EdgeCurvePayload> parseEdgeCurve(const Value& value);
 
 /** @brief Encode a complete owning instance; pure, caller-thread, linear in instance metadata. */
-Value instanceValue(const BuildingInstanceSnapshot& instance);
+EVENGINE_API_WORLD Value instanceValue(const BuildingInstanceSnapshot& instance);
 /** @brief Decode legacy/current instance fields without mutating a world; owning result. */
-[[nodiscard]] Result<BuildingInstanceSnapshot> parseInstance(const Value& value);
+[[nodiscard]] EVENGINE_API_WORLD Result<BuildingInstanceSnapshot> parseInstance(const Value& value);
 /** @brief Decode a nonempty instance batch with unique identities; pure owning result. */
-[[nodiscard]] Result<std::vector<BuildingInstanceSnapshot>> parseInstances(const Value& value);
+[[nodiscard]] EVENGINE_API_WORLD Result<std::vector<BuildingInstanceSnapshot>> parseInstances(const Value& value);
 /** @brief Copy a runtime instance into its canonical owning persistence record. */
-BuildingInstanceSnapshot snapshot(const PlacedBuilding& placed);
+EVENGINE_API_WORLD BuildingInstanceSnapshot snapshot(const PlacedBuilding& placed);
 /** @brief Decode a previously validated snapshot into an owning runtime candidate. */
-PlacedBuilding runtime(const BuildingInstanceSnapshot& value);
+EVENGINE_API_WORLD PlacedBuilding runtime(const BuildingInstanceSnapshot& value);
 }  // namespace codec
 }  // namespace eve::building

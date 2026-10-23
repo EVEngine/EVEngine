@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include "common/Export.h"
 #include "editing/EditableTarget.h"
 #include "editing/EditingTargetOperations.h"
 namespace eve::building {
@@ -13,9 +14,9 @@ namespace eve::building_editing {
  * @thread Owner/editor thread only; staging does not publish observer callbacks.
  * @lifetime Prepared operations own snapshots; they never retain the target/world.
  */
-class BuildingAssemblyTarget final : public editing::EditableTargetState,
-                                     public editing::IDomainOperationTarget,
-                                     public editing::IDomainOperationTargetStaging {
+class EVENGINE_API_DOMAINS BuildingAssemblyTarget final : public editing::EditableTargetState,
+                                                          public editing::IDomainOperationTarget,
+                                                          public editing::IDomainOperationTargetStaging {
 public:
     /** @brief Bind a host-owned world that outlives this target. @cost One small state allocation per target. */
     BuildingAssemblyTarget(std::string id, building::PlacementWorld& world);
