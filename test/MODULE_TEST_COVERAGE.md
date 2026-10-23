@@ -1425,7 +1425,7 @@ Source directory: `src/modules/sensing`. Status: **local-rules-recorded**. Local
 
 - Unit: [unit/sensing/sensing_unit.cpp](unit/sensing/sensing_unit.cpp)
 - Integration task `script-api`: [script_api_graphics_scene_tests.cpp](integration/script-api/script_api_graphics_scene_tests.cpp)
-- Integration task `sensing`: [sensing_spatial_cells.cpp](integration/sensing/sensing_spatial_cells.cpp), [environment_query_tests.cpp](integration/sensing/environment_query_tests.cpp)
+- Integration task `sensing`: [environment_query_tests.cpp](integration/sensing/environment_query_tests.cpp), [sensing_spatial_cells.cpp](integration/sensing/sensing_spatial_cells.cpp)
 - Direct header evidence: [concurrency_graphics_tests.cpp](integration/concurrency/concurrency_graphics_tests.cpp), [physics_simulation_graphics_physics_rigid_backend_tests.cpp](integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp), [rts_performance_semantics.cpp](integration/rts-crowd/rts_performance_semantics.cpp), [script_api_graphics_scene_tests.cpp](integration/script-api/script_api_graphics_scene_tests.cpp), [environment_query_tests.cpp](integration/sensing/environment_query_tests.cpp), [sensing_spatial_cells.cpp](integration/sensing/sensing_spatial_cells.cpp), [npc_ai_tests.cpp](unit/npc_ai/npc_ai_tests.cpp), [physics_tests.cpp](unit/physics/physics_tests.cpp), [sensing_unit.cpp](unit/sensing/sensing_unit.cpp), [tactics_tests.cpp](unit/tactics/tactics_tests.cpp)
 
 ### settlement
@@ -1664,7 +1664,7 @@ Source directory: `src/modules/voxel/voxelworld_target`. Status: **api-symbol-in
 Source directory: `src/modules/weapon`. Status: **local-rules-recorded**. Local cases: **39**.
 
 - Unit: [unit/weapon/weapon_tests.cpp](unit/weapon/weapon_tests.cpp)
-- Integration task `projectile-behavior`: [continuous_solver.cpp](integration/projectile-behavior/continuous_solver.cpp), [advanced_carrier.cpp](integration/projectile-behavior/advanced_carrier.cpp)
+- Integration task `projectile-behavior`: [advanced_carrier.cpp](integration/projectile-behavior/advanced_carrier.cpp), [continuous_solver.cpp](integration/projectile-behavior/continuous_solver.cpp)
 - Integration task `script-api`: [script_api_graphics_terrain_probe_tests.cpp](integration/script-api/script_api_graphics_terrain_probe_tests.cpp)
 - Direct header evidence: [gameplay_composition_graphics_animation_inertializer_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_animation_inertializer_tests.cpp), [gameplay_composition_graphics_buildingfx_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_buildingfx_tests.cpp), [gameplay_composition_graphics_gameplay_action_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_gameplay_action_tests.cpp), [gameplay_composition_graphics_procgen_road_editing_tests.cpp](integration/gameplay-composition/gameplay_composition_graphics_procgen_road_editing_tests.cpp), [advanced_carrier.cpp](integration/projectile-behavior/advanced_carrier.cpp), [continuous_solver.cpp](integration/projectile-behavior/continuous_solver.cpp), [world_sweep.cpp](integration/projectile-behavior/world_sweep.cpp), [script_api_graphics_ScriptECS_tests.cpp](integration/script-api/script_api_graphics_ScriptECS_tests.cpp), [script_api_graphics_terrain_probe_tests.cpp](integration/script-api/script_api_graphics_terrain_probe_tests.cpp), [combat_tests.cpp](unit/combat/combat_tests.cpp), [vehicle_unit.cpp](unit/vehicle/vehicle_unit.cpp), [weapon_tests.cpp](unit/weapon/weapon_tests.cpp)
 
