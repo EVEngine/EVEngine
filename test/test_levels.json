@@ -6738,6 +6738,7 @@
           "UI.componentScheduling.coalescesAndPreservesReentrantEdits",
           "UI.componentScheduling.failedBatchRetainsRemainingWork",
           "UI.editorKit.desktopCompositionRenders",
+          "UI.editorKit.textControlsInteraction",
           "UI.layout.measureNestedFlexAndWindowContent",
           "UI.p1.statsAfterHeadlessRender",
           "UI.p1.scrollListHeadlessRenderLarge",
@@ -7703,6 +7704,21 @@
           "common.sdfField3D.blobRoundTripPreservesSamples",
           "common.sdfField3D.blobRejectsUnknownSchemaAndBadCounts",
           "common.sdfField3D.capabilityInterfaceSamplesGradient",
+          "ecs.viewPreparationPreservesWordAndPrefixBoundaries",
+          "ecs.viewPreparationRetriesThrowingConstruction",
+          "ecs.viewPreparationObservesConstructorChangesWithinWord",
+          "ecs.viewPreparationKeepsInheritanceDeferAndTableIsolation",
+          "ecs.viewPreparationDoesNotRequireDefaultConstruction",
+          "ecs.idleCommitKeepsNestedAndExplicitPublication",
+          "ecs.idleCommitCancelsStagedAndRearmsAfterReuse",
+          "ecs.failedViewPreparationReleasesItsDeferScope",
+          "ecs.failedNestedViewPreservesTheOuterDeferScope",
+          "ecs.entityOnlyViewKeepsDeferredIterationAndEmptyComparison",
+          "ecs.viewPreparationSkipsDeadSlotsAndInitializesReuse",
+          "ecs.viewPreparationKeepsStagingAndSkipsCancelledEntities",
+          "ecs.viewPreparationObservesDestructionDuringConstruction",
+          "ecs.viewPreparationInvalidatesCachedSparsePass",
+          "ecs.viewPreparationDoesNotCacheConstructorSideEffects",
           "scriptCompiler.bindingContractSearchSplitsSlashAndDot"
         ],
         "test-framework": [
@@ -7749,7 +7765,8 @@
         "xml.cpp",
         "capability_owned.cpp",
         "condition.cpp",
-        "sdf_field3d.cpp"
+        "sdf_field3d.cpp",
+        "ecs_view_preparation.cpp"
       ]
     },
     "unit/crowd/crowd_tests.cpp": {
@@ -11786,6 +11803,7 @@
           "UI.scriptStyleBuilder.mountBuildAs",
           "UI.editorKit.declarativeComponents",
           "UI.editorKit.scriptBuilderAndSerialization",
+          "UI.editorKit.textToolsRoundTripAndReconcile",
           "UI.adv.sliderProgressInputCollapseChild",
           "UI.adv.builderScriptWidgets",
           "UI.adv.wantCaptureAPI",

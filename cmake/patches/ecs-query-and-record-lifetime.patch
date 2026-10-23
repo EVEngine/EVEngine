@@ -1,0 +1,724 @@
+diff --git a/src/ECS.hpp b/src/ECS.hpp
+--- a/src/ECS.hpp
++++ b/src/ECS.hpp
+@@ -464,8 +464,8 @@
+         // Construct the record in place from the staging value. The staging
+         // buffers are destroyed immediately after publish_staging() returns,
+         // so moving is both safe and the only requirement placed on B.
+-        uint32_t mid = m_reg->emplace(std::move(s_reg->container[sid]));
+-        B &me = m_reg->container[mid];
++        uint32_t mid = m_reg->emplace(std::move(*static_cast<B *>(s_reg->entity_at(sid))));
++        B &me = *static_cast<B *>(m_reg->entity_at(mid));
+         me.id = mid;
+         me.flags &= ~(kEntityStaging | kEntityDead);
+         me.storage = this;
+@@ -749,30 +749,38 @@
+   class EntityIterator : public IEntityIterator
+   {
+   public:
+-    EntityIterator(typename std::deque<T>::iterator it) : it(it) {}
+-    typename std::deque<T>::iterator it;
++    EntityIterator(IRegistryComponentBuffer *registry, uint32_t index)
++        : registry_(registry), index_(index), end_(registry->entity_count())
++    {
++      skip_unconstructed();
++    }
+ 
+     IEntityIterator &operator++(int) override
+     {
+-      it++;
++      if (index_ < end_)
++        ++index_;
++      skip_unconstructed();
+       return *this;
+     }
+ 
+     bool operator==(const IEntityIterator &other) override
+     {
+       auto *o = dynamic_cast<const EntityIterator<T> *>(&other);
+-      if (o == nullptr)
+-        return false;
+-      return it == o->it;
+-    }
+-
+-    bool operator!=(const IEntityIterator &other) override
+-    {
+-      return !(*this == other);
+-    }
+-
+-    Entity *operator->() override { return &*it; }
+-    Entity &operator*() override { return *it; }
++      return o && registry_ == o->registry_ && index_ == o->index_;
++    }
++    bool operator!=(const IEntityIterator &other) override { return !(*this == other); }
++    Entity *operator->() override { return registry_->entity_at(index_); }
++    Entity &operator*() override { return *operator->(); }
++
++  private:
++    void skip_unconstructed()
++    {
++      while (index_ < end_ && registry_->entity_at(index_) == nullptr)
++        ++index_;
++    }
++    IRegistryComponentBuffer *registry_;
++    uint32_t index_;
++    uint32_t end_;
+   };
+ 
+   /**
+@@ -790,8 +798,8 @@
+                                   public IRegistryComponentBuffer
+   {
+   public:
+-    std::deque<T> container;
+-    std::vector<uint32_t> freelist_;
++    RegistryComponentBuffer(const RegistryComponentBuffer &) = delete;
++    RegistryComponentBuffer &operator=(const RegistryComponentBuffer &) = delete;
+ 
+     RegistryComponentBuffer(IComponentManager *cm, IComponentBuffer *pcb)
+     {
+@@ -813,12 +821,24 @@
+       }
+     }
+ 
++    ~RegistryComponentBuffer() override
++    {
++      for (uint32_t id = 0; id < size(); ++id)
++        if (constructed(id))
++          std::destroy_at(record(id));
++    }
++
+     /**
+      * @brief Constructs one entity record in a fresh or recycled slot.
+      * @param args Forwarded to T's constructor; no argument means T().
+-     * @return The slot id the new record occupies.
+-     * @remarks A recycled slot keeps the retired incarnation's generation so
+-     *          handles to it stay stale.
++     * @return The slot id the new record occupies; the registry owns the value.
++     * @thread Call on the Table owner thread.
++     * @reentrancy Record constructors/destructors must not structurally reenter
++     *             the same registry.
++     * @throws Propagates allocation or record-construction failures. A failed
++     *         reuse leaves an unconstructed, retryable slot, never a live value.
++     * @remarks A recycled slot preserves the retired incarnation's generation.
++     * @cost Amortized constant storage work plus T construction/destruction.
+      */
+     template <typename... Args>
+     uint32_t emplace(Args &&...args)
+@@ -826,66 +846,107 @@
+       ++this->manager->entity_revision_;
+       if (!freelist_.empty())
+       {
+-        uint32_t id = freelist_.back();
++        const RetiredSlot retired = freelist_.back();
+         freelist_.pop_back();
+-        T &slot = container[id];
+-        const uint32_t preserved_gen = slot.generation;
+-        slot.~T();
+-        new (&slot) T(std::forward<Args>(args)...);
+-        slot.generation = preserved_gen;
+-        return id;
+-      }
+-      container.emplace_back(std::forward<Args>(args)...);
+-      return static_cast<uint32_t>(container.size() - 1);
+-    }
+-
+-    uint32_t size() const override { return static_cast<uint32_t>(container.size()); }
+-
++        if (constructed(retired.id))
++        {
++          set_constructed(retired.id, false);
++          std::destroy_at(record(retired.id));
++        }
++        try
++        {
++          new (static_cast<void *>(container_[retired.id].bytes)) T(std::forward<Args>(args)...);
++        }
++        catch (...)
++        {
++          // pop_back retained capacity; restoring this entry cannot allocate
++          // under the no-structural-reentry record-construction contract.
++          freelist_.push_back(retired);
++          throw;
++        }
++        set_constructed(retired.id, true);
++        record(retired.id)->generation = retired.generation;
++        return retired.id;
++      }
++      const uint32_t id = size();
++      // Allocate the lifetime bit before constructing user state.
++      constructed_.resize((static_cast<size_t>(id) >> 6) + 1, 0);
++      container_.emplace_back();
++      try
++      {
++        new (static_cast<void *>(container_[id].bytes)) T(std::forward<Args>(args)...);
++      }
++      catch (...)
++      {
++        container_.pop_back();
++        throw;
++      }
++      set_constructed(id, true);
++      return id;
++    }
++
++    uint32_t size() const override { return static_cast<uint32_t>(container_.size()); }
+     const std::type_info &getType() const override { return typeid(T); }
+ 
+-    /** @brief Returns the record at @p id, or nullptr; never creates a slot. */
++    /** @brief Borrows a constructed record, or nullptr; never creates a slot. */
+     Entity *getEntity(uint32_t id) override
+     {
+-      if (id >= container.size())
+-        return nullptr;
+-      return &container[id];
++      return constructed(id) ? record(id) : nullptr;
+     }
+ 
+     IEntityIteratorPtr beginEntity() override
+     {
+-      return IEntityIteratorPtr(new EntityIterator<T>(this->container.begin()));
+-    }
+-
++      return IEntityIteratorPtr(new EntityIterator<T>(this, 0));
++    }
+     IEntityIteratorPtr endEntity() override
+     {
+-      return IEntityIteratorPtr(new EntityIterator<T>(this->container.end()));
++      return IEntityIteratorPtr(new EntityIterator<T>(this, size()));
+     }
+ 
+     void reclaim(uint32_t id) override
+     {
+-      if (id >= this->container.size())
++      if (!constructed(id))
+         return;
+-
+-      freelist_.push_back(id);
+-
++      freelist_.push_back({id, record(id)->generation});
+       for (auto &[key, buf] : this->manager->components)
+       {
+         (void)key;
+         buf->reset_slot(id);
+       }
+-
+-    }
+-
+-    uint32_t entity_count() const override
+-    {
+-      return static_cast<uint32_t>(this->container.size());
+-    }
+-
+-    Entity *entity_at(uint32_t index) override
+-    {
+-      if (index >= this->container.size())
+-        return nullptr;
+-      return &this->container[index];
++    }
++
++    uint32_t entity_count() const override { return size(); }
++    Entity *entity_at(uint32_t index) override { return getEntity(index); }
++
++  private:
++    struct RetiredSlot
++    {
++      uint32_t id;
++      uint32_t generation;
++    };
++    // Raw slots keep entity stride/address stability; the bitmap owns C++
++    // object lifetime, independently of dead/staging gameplay visibility.
++    std::deque<SlotStorage<T>> container_;
++    std::vector<uint64_t> constructed_;
++    std::vector<RetiredSlot> freelist_;
++
++    bool constructed(uint32_t id) const
++    {
++      const size_t word = static_cast<size_t>(id) >> 6;
++      return id < size() && word < constructed_.size() &&
++             (constructed_[word] & (uint64_t(1) << (id & 63u))) != 0;
++    }
++    void set_constructed(uint32_t id, bool value)
++    {
++      const uint64_t bit = uint64_t(1) << (id & 63u);
++      if (value)
++        constructed_[static_cast<size_t>(id) >> 6] |= bit;
++      else
++        constructed_[static_cast<size_t>(id) >> 6] &= ~bit;
++    }
++    T *record(uint32_t id)
++    {
++      return std::launder(reinterpret_cast<T *>(container_[id].bytes));
+     }
+   };
+ 
+@@ -1071,7 +1132,7 @@
+ 
+     auto *registry = cm.template getOrCreateRegistryComponentBuffer<T>();
+     uint32_t id = registry->emplace(std::forward<Args>(args)...);
+-    T &inst = registry->container[id];
++    T &inst = *static_cast<T *>(registry->entity_at(id));
+     inst.id = id;
+     inst.table = &table;
+     inst.storage = &cm;
+@@ -1179,7 +1240,7 @@
+     using CBType = ComponentBuffer<std::remove_const_t<T>>;
+ 
+     BufferIterator() {}
+-    BufferIterator(CBType *_cb)
++    BufferIterator(CBType *_cb) : root_(_cb)
+     {
+       setCB(_cb);
+     }
+@@ -1254,24 +1315,20 @@
+       if (cb == nullptr)
+         return;
+       if (cb->children != nullptr)
+-      {
+         setCB(dynamic_cast<CBType *>(cb->children));
+-      }
+-      else if (cb->next != nullptr)
+-      {
+-        setCB(dynamic_cast<CBType *>(cb->next));
+-      }
+       else
+       {
+-        while (cb->parent != nullptr && cb->parent->next == nullptr)
++        while (cb != root_ && cb->next == nullptr)
+           cb = dynamic_cast<CBType *>(cb->parent);
+-        if (cb != nullptr && cb->parent != nullptr)
+-          setCB(dynamic_cast<CBType *>(cb->parent->next));
++        if (cb == root_)
++          cb = nullptr;
+         else
+-          cb = nullptr;
+-      }
+-    }
+-
++          setCB(dynamic_cast<CBType *>(cb->next));
++      }
++    }
++
++    template <typename B, typename... Cs> friend class ViewIterator;
++    CBType *root_ = nullptr;
+     CBType *cb = nullptr;
+     uint32_t index_ = 0;
+     uint32_t end_index_ = 0;
+@@ -1282,7 +1339,7 @@
+   {
+   public:
+     RegistryBufferIterator() {}
+-    RegistryBufferIterator(IComponentBuffer *_cb) { setCB(_cb); }
++    RegistryBufferIterator(IComponentBuffer *_cb) : root_(_cb) { setCB(_cb); }
+ 
+     RegistryBufferIterator &operator++()
+     {
+@@ -1338,7 +1395,19 @@
+         hop();
+     }
+ 
++    /** @brief Borrows a registry and restarts within its inheritance subtree. */
+     void setCB(IComponentBuffer *_cb)
++    {
++      root_ = _cb;
++      set_current_buffer(_cb);
++    }
++
++    IComponentBuffer *registry_cb() const { return cb; }
++
++  private:
++    template <typename B, typename... Cs> friend class ViewIterator;
++
++    void set_current_buffer(IComponentBuffer *_cb)
+     {
+       if (_cb != nullptr)
+       {
+@@ -1358,32 +1427,24 @@
+       }
+     }
+ 
+-    IComponentBuffer *registry_cb() const { return cb; }
+-
+-  private:
+     void hop()
+     {
+       if (cb == nullptr)
+         return;
+       if (cb->children != nullptr)
+-      {
+-        setCB(cb->children);
+-      }
+-      else if (cb->next != nullptr)
+-      {
+-        setCB(cb->next);
+-      }
++        set_current_buffer(cb->children);
+       else
+       {
+-        while (cb->parent != nullptr && cb->parent->next == nullptr)
+-          setCB(cb->parent);
+-        if (cb != nullptr && cb->parent != nullptr)
+-          setCB(cb->parent->next);
++        while (cb != root_ && cb->next == nullptr)
++          cb = cb->parent;
++        if (cb == root_)
++          set_current_buffer(nullptr);
+         else
+-          setCB(nullptr);
+-      }
+-    }
+-
++          set_current_buffer(cb->next);
++      }
++    }
++
++    IComponentBuffer *root_ = nullptr;
+     IComponentBuffer *cb = nullptr;
+     IRegistryComponentBuffer *rcb = nullptr;
+     uint32_t index_ = 0;
+@@ -1466,8 +1527,17 @@
+ 
+     void step_all()
+     {
++      auto *previous = RegistryBufferIterator<B>::registry_cb();
+       RegistryBufferIterator<B>::operator++();
+-      (BufferIterator<Ts>::operator++(), ...);
++      auto *registry = RegistryBufferIterator<B>::registry_cb();
++      if (registry != previous)
++      {
++        // Bind by concrete Manager once per registry transition. Component
++        // trees may have been created in a different order from registries.
++        (BufferIterator<Ts>::setCB(registry ? registry->manager->template
++            getOrCreateComponentBuffer<std::remove_const_t<Ts>>() : nullptr), ...);
++      }
++      ((BufferIterator<Ts>::index_ = RegistryBufferIterator<B>::index_), ...);
+     }
+ 
+     bool current_components_present() const
+@@ -1596,17 +1666,17 @@
+     void ensure_space(IComponentBuffer *cur)
+     {
+       IComponentManager *cm = cur->manager;
++      [[maybe_unused]]
+       const uint32_t n = cur->size();
++      [[maybe_unused]]
+       auto *registry = dynamic_cast<IRegistryComponentBuffer *>(cur);
+       (void)std::initializer_list<int>{
+           (engageEntitySlots<std::remove_const_t<Ts>>(
+                cm->template getOrCreateComponentBuffer<std::remove_const_t<Ts>>(), n, registry),
+            0)...};
+ 
+-      if (cur->children != nullptr)
+-        ensure_space(cur->children);
+-      if (cur->next != nullptr)
+-        ensure_space(cur->next);
++      for (auto *child = cur->children; child != nullptr; child = child->next)
++        ensure_space(child);
+     }
+ 
+     ViewIterator<B, Ts...> begin()
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -41,3 +41,10 @@
+ # generators (Visual Studio) so `ctest -C Debug` finds the binary.
+ add_test(NAME ecs_test COMMAND $<TARGET_FILE:ecs_test>)
+ 
++
++# Independent C++17 regression runner; does not depend on zeroerr macro support.
++add_executable(ecs_query_lifetime_test test/query_lifetime.cpp)
++target_include_directories(ecs_query_lifetime_test PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
++foreach(_case scope alignment reuse)
++    add_test(NAME ecs_query_lifetime.${_case} COMMAND ecs_query_lifetime_test ${_case})
++endforeach()
+diff --git a/docs/API.md b/docs/API.md
+--- a/docs/API.md
++++ b/docs/API.md
+@@ -243,3 +243,36 @@
+ ```
+ 
+ `CreateEntity` / `View` / `DestroyEntity` always operate on a concrete `Table` (explicit or current).
++
++## Query alignment and failed record construction
++
++A `View<B, ...>` visits B and its descendants only. It neither visits nor prepares
++components for B's siblings. Parent component-buffer links may still be created
++to maintain inheritance metadata. Entity-only Views obey the same subtree boundary.
++Entity and component columns use one concrete-registry slot cursor; each component
++buffer is bound from that registry's Manager once per type transition. Component
++initialization order does not define query order or row identity. Standalone
++component-buffer iteration is also bounded by its starting subtree.
++
++Registry storage owns raw slots and a separate constructed-object bitmap. This
++bitmap describes C++ object lifetime; entity dead/staging flags still describe
++visibility. A destroyed record may remain constructed until reuse or Table teardown.
++If replacement construction throws, the old record has already been destroyed:
++this is a basic exception guarantee, not restoration of the old entity. The empty
++slot is excluded by `getEntity`, `entity_at`, raw entity iterators and Views. Its
++retired generation remains with the reusable slot, so failed attempts and a later
++successful retry cannot revive an old Handle. Table destruction skips empty slots.
++Fresh-construction failure does not publish a record.
++
++Call construction, destruction and queries on the owning Table thread. Entity
++record constructors/destructors must not structurally reenter the same registry.
++Component construction during View preparation retains its existing callback and
++exception-retry behavior. No locks are taken around user constructors. Borrowed
++record/component addresses remain tied to their owning slot; use Handles across
++structural mutations and frames.
++
++Registry containers are private lifetime-managed storage. Consumers should use
++`IRegistryComponentBuffer` access/iteration rather than directly indexing a deque
++of entity objects. Raw slot stride remains `sizeof(T)`; the lifetime bitmap adds
++one bit per reserved slot, and freelist entries retain an id and generation.
++These internal layout changes require all header consumers to rebuild together.
+diff --git a/docs/testing.md b/docs/testing.md
+--- a/docs/testing.md
++++ b/docs/testing.md
+@@ -131,3 +131,22 @@
+ | Nested defer depth | `defer_commit.cpp` |
+ | Inheritance within one table | `table_world.cpp`, `view_systems.cpp` |
+ | Staging publish components | `defer_commit.cpp`, `view_systems.cpp` |
++
++## Query/lifetime regressions (C++17, no test-framework dependency)
++
++`test/query_lifetime.cpp` is a separate executable covering branched subtype scope,
++component/registry creation-order permutations, unequal column sizes, const and
++non-default components, entity-only Views, and constructor failures during fresh,
++recycled and deferred creation. Repeated failed reuse must preserve stale-handle
++rejection, resource lifetime and retryability, including Table teardown immediately
++after failure.
++
++```sh
++cmake -S . -B build -DCMAKE_CXX_COMPILER=g++
++cmake --build build --target ecs_query_lifetime_test
++ctest --test-dir build -R ecs_query_lifetime --output-on-failure
++```
++
++This target builds independently of the legacy zeroerr `_Pragma` limitation above.
++For memory checking, compile the runner with `-fsanitize=address,undefined` and run
++all three cases; constructor-failure tests must not report invalid destruction.
+diff --git a/test/query_lifetime.cpp b/test/query_lifetime.cpp
+new file mode 100644
+--- /dev/null
++++ b/test/query_lifetime.cpp
+@@ -0,0 +1,220 @@
++#include <ECS.hpp>
++
++#include <iostream>
++#include <stdexcept>
++#include <string>
++#include <vector>
++
++namespace {
++void require(bool value, const char* message) {
++    if (!value) throw std::runtime_error(message);
++}
++class Root : public ecs::Entity {
++public:
++    ENTITY(Root, ecs::Entity)
++    void release() override { ecs::DestroyEntity(this); }
++};
++class Left : public Root {
++public:
++    ENTITY(Left, Root)
++};
++class Leaf : public Left {
++public:
++    ENTITY(Leaf, Left)
++};
++class Right : public Root {
++public:
++    ENTITY(Right, Root)
++};
++struct Value {
++    int owner = 0;
++};
++struct Explicit {
++    explicit Explicit(int input) : owner(input) {}
++    int owner;
++};
++template <typename T, typename C = Value>
++int count(ecs::Table& table) {
++    int result = 0;
++    for (auto row : ecs::View<T, C>(table)) {
++        (void)row;
++        require(++result < 100, "query did not terminate within its subtree");
++    }
++    return result;
++}
++void scope() {
++    for (bool reverse : {false, true}) {
++        ecs::Table table;
++        Root::create(table);
++        if (reverse) {
++            Right::create(table);
++            Leaf::create(table);
++        } else {
++            Leaf::create(table);
++            Right::create(table);
++        }
++        Left::create(table);
++        require(count<Left>(table) == 2, "subtype query escaped its subtree");
++        require(count<Leaf>(table) == 1, "leaf query escaped its subtree");
++        require(count<Right>(table) == 1, "sibling query escaped its subtree");
++        require(table.getOrCreateManager<Root>().getComponentBuffer<Value>() != nullptr,
++                "parent component link missing");
++        require(count<Root>(table) == 4, "base query missed descendants");
++        int entities = 0;
++        for (auto it = ecs::View<Left>(table).begin(); it != ecs::View<Left>(table).end(); ++it) {
++            require(dynamic_cast<Left*>(static_cast<ecs::Entity*>(it.entity())) != nullptr,
++                    "entity-only query returned wrong dynamic type");
++            require(++entities < 100, "entity-only query did not terminate");
++        }
++        require(entities == 2, "entity-only subtype scope incorrect");
++    }
++    {
++        ecs::Table table;
++        Left::create(table);
++        Right::create(table);
++        ecs::RegistryBufferIterator<Right> cursor;
++        cursor.setCB(table.getOrCreateManager<Right>().getOrCreateRegistryComponentBuffer<Right>());
++        int records = 0;
++        while (!cursor.at_end()) {
++            require(dynamic_cast<Right*>(cursor.entity()) != nullptr, "restarted registry cursor escaped its subtree");
++            require(++records < 100, "registry cursor did not terminate");
++            ++cursor;
++        }
++        require(records == 1, "restarted registry cursor scope incorrect");
++    }
++    ecs::Table isolated;
++    Left::create(isolated);
++    Right::create(isolated);
++    require(count<Left>(isolated) == 1, "isolated subtype count incorrect");
++    require(isolated.getOrCreateManager<Right>().getComponentBuffer<Value>() == nullptr,
++            "query prepared a sibling's components");
++}
++void alignment() {
++    for (bool reverse : {false, true}) {
++        ecs::Table table;
++        auto*      left  = Left::create(table);
++        auto*      right = Right::create(table);
++        Right::create(table);
++        auto initialize = [&](ecs::Entity* entity, int owner) {
++            auto* buffer = entity->getComponentManager().getOrCreateComponentBuffer<Value>();
++            buffer->emplace(entity->id);
++            buffer->at(entity->id).owner = owner;
++        };
++        if (reverse) {
++            initialize(left, 1);
++            initialize(right, 2);
++        } else {
++            initialize(right, 2);
++            initialize(left, 1);
++        }
++        int  rows = 0;
++        auto view = ecs::View<Root, const Value>(table);
++        for (auto it = view.begin(); it != view.end(); ++it) {
++            auto [entity, value] = it.row();
++            require(value != nullptr, "query returned absent component");
++            const int expected = dynamic_cast<Left*>(entity) ? 1 : (entity->id == 0 ? 2 : 0);
++            require(value->owner == expected, "entity/component columns are misaligned");
++            require(++rows < 100, "misaligned columns prevented query termination");
++        }
++        require(rows == 3, "query missed an entity with uneven registry sizes");
++        auto* explicitBuffer = left->getComponentManager().getOrCreateComponentBuffer<Explicit>();
++        explicitBuffer->emplace(left->id, 17);
++        require(count<Root, Explicit>(table) == 1, "non-default component filter incorrect");
++        auto* leftBuffer = left->getComponentManager().getComponentBuffer<Value>();
++        int   slots      = 0;
++        for (auto it = leftBuffer->begin(); it != leftBuffer->end(); ++it) {
++            require(++slots < 100, "component iterator escaped its subtree");
++        }
++        require(slots == 1, "standalone component iterator included a sibling");
++    }
++}
++struct Resource {
++    inline static int alive = 0;
++    Resource() { ++alive; }
++    Resource(Resource&&) { ++alive; }
++    ~Resource() { --alive; }
++};
++class Fallible : public ecs::Entity {
++public:
++    ENTITY(Fallible, ecs::Entity)
++    Resource         resource;
++    std::vector<int> data = std::vector<int>(8, 42);
++    explicit Fallible(bool fail) {
++        if (fail) throw std::runtime_error("injected entity construction failure");
++    }
++    Fallible(const Fallible&) = delete;
++    Fallible(Fallible&&)      = default;
++    void release() override { ecs::DestroyEntity(this); }
++};
++void expectFailure(ecs::Table& table) {
++    bool threw = false;
++    try {
++        Fallible::create(table, true);
++    } catch (const std::runtime_error&) {
++        threw = true;
++    }
++    require(threw, "entity constructor did not throw");
++}
++void reuse() {
++    require(Resource::alive == 0, "resource state leaked from another case");
++    {
++        ecs::Table table;
++        expectFailure(table);
++        require(count<Fallible>(table) == 0, "failed fresh construction published an entity");
++        auto*      entity = Fallible::create(table, false);
++        const auto handle = ecs::handle_of(entity);
++        const auto id     = entity->id;
++        ecs::DestroyEntity(entity);
++        for (int attempt = 0; attempt < 2; ++attempt) {
++            expectFailure(table);
++            require(ecs::try_get(handle) == nullptr, "failed reuse revived a stale handle");
++            require(count<Fallible>(table) == 0, "failed reuse became query-visible");
++            auto* registry = table.getOrCreateManager<Fallible>().getOrCreateRegistryComponentBuffer<Fallible>();
++            auto  begin    = registry->beginEntity();
++            auto  end      = registry->endEntity();
++            require(*begin == *end, "raw entity iterator exposed an unconstructed slot");
++            require(Resource::alive == 0, "failed construction leaked a resource");
++        }
++        auto* replacement = Fallible::create(table, false);
++        require(replacement->id == id, "failed reuse lost its reusable slot");
++        require(ecs::try_get(handle) == nullptr, "successful retry revived a stale handle");
++        require(replacement->data.front() == 42, "retry lost constructor arguments or resources");
++        const auto replacementHandle = ecs::handle_of(replacement);
++        ecs::DestroyEntity(replacement);
++        {
++            ecs::ScopedDefer defer(table);
++            expectFailure(table);
++            auto*      staged       = Fallible::create(table, false);
++            const auto stagedHandle = ecs::handle_of(staged);
++            require(ecs::try_get(stagedHandle) == staged, "staged retry handle is invalid");
++            require(count<Fallible>(table) == 0, "staged retry became visible before commit");
++            require(ecs::try_get(replacementHandle) == nullptr, "staged retry revived old generation");
++        }
++        require(count<Fallible>(table) == 1, "staged retry was not published");
++    }
++    require(Resource::alive == 0, "Table destruction leaked or destroyed resources twice");
++    {
++        ecs::Table table;
++        ecs::DestroyEntity(Fallible::create(table, false));
++        expectFailure(table);
++        // Destruction directly after failed reuse must also be safe.
++    }
++    require(Resource::alive == 0, "failed-slot Table destruction corrupted resource lifetime");
++}
++}  // namespace
++
++int main(int argc, char** argv) {
++    try {
++        const std::string selected = argc > 1 ? argv[1] : "all";
++        if (selected == "scope" || selected == "all") scope();
++        if (selected == "alignment" || selected == "all") alignment();
++        if (selected == "reuse" || selected == "all") reuse();
++        require(selected == "scope" || selected == "alignment" || selected == "reuse" || selected == "all",
++                "unknown regression case");
++        std::cout << selected << ": passed\n";
++        return 0;
++    } catch (const std::exception& error) {
++        std::cerr << error.what() << '\n';
++        return 1;
++    }
++}

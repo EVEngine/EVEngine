@@ -24,7 +24,7 @@ Declared modules: **196**. Task groups: **32**.
 - `animation_tensor` (`animation/tensor`): task-tests-recorded; 2 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `archspace_editing` (`archspace/editing`): referenced-by-other-tests; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `archspace_editor` (`archspace/editor`): referenced-by-other-tests; 2 direct header references; 5 API-name references. A composition/adapter reference does not prove local rules are tested.
-- `asset_import` (`asset/import`): task-tests-recorded; 22 direct header references; 14 API-name references. A composition/adapter reference does not prove local rules are tested.
+- `asset_import` (`asset/import`): task-tests-recorded; 22 direct header references; 15 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `asset_physics` (`asset/physics`): referenced-by-other-tests; 1 direct header references; 1 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `asset_procgen` (`asset/procgen`): task-tests-recorded; 13 direct header references; 4 API-name references. A composition/adapter reference does not prove local rules are tested.
 - `asset_scene` (`asset/scene`): task-tests-recorded; 4 direct header references; 4 API-name references. A composition/adapter reference does not prove local rules are tested.
@@ -451,7 +451,7 @@ Source directory: `src/modules/combat/navigation`. Status: **task-tests-recorded
 
 ### common
 
-Source directory: `src/engine/common`. Status: **local-rules-recorded**. Local cases: **155**.
+Source directory: `src/engine/common`. Status: **local-rules-recorded**. Local cases: **170**.
 
 - Unit: [unit/common/common_tests.cpp](unit/common/common_tests.cpp)
 - Integration task `asset-pipeline`: [asset_pipeline_graphics_asset_import_unity_vegetation_material_tests.cpp](integration/asset-pipeline/asset_pipeline_graphics_asset_import_unity_vegetation_material_tests.cpp)
@@ -1585,7 +1585,7 @@ Source directory: `src/modules/transaction`. Status: **local-rules-recorded**. L
 
 ### ui
 
-Source directory: `src/modules/ui`. Status: **local-rules-recorded**. Local cases: **99**.
+Source directory: `src/modules/ui`. Status: **local-rules-recorded**. Local cases: **100**.
 
 - Unit: [unit/ui/ui_tests.cpp](unit/ui/ui_tests.cpp)
 - Integration task `file-io`: [file_io_graphics_tensor_llm_tests.cpp](integration/file-io/file_io_graphics_tensor_llm_tests.cpp)
@@ -1976,7 +1976,7 @@ Cases: 1. Referenced/owning modules: `rts`, `sensing`.
 
 ### ui-workflows
 
-Cases: 13. Referenced/owning modules: `animation`, `card`, `common`, `crowd`, `dialogue`, `dnut_interpreter`, `editor`, `inventory`, `physics_destruction`, `physics_destruction_dust`, `scene`, `ui`.
+Cases: 14. Referenced/owning modules: `animation`, `card`, `common`, `crowd`, `dialogue`, `dnut_interpreter`, `editor`, `inventory`, `physics_destruction`, `physics_destruction_dust`, `scene`, `ui`.
 
 - [ui_workflows_graphics_tests.cpp](integration/ui-workflows/ui_workflows_graphics_tests.cpp)
 
