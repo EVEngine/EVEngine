@@ -155,12 +155,12 @@ TEST_CASE("procgen.everyday.microstructureIsPeriodicAtBothSeams") {
                 const auto  x1 = detail::sampleEveryday(f, 1.f, t, 42, 4, bandwidth);
                 const auto  y0 = detail::sampleEveryday(f, t, 0.f, 42, 4, bandwidth);
                 const auto  y1 = detail::sampleEveryday(f, t, 1.f, 42, 4, bandwidth);
-                CHECK(std::abs(x0.pigment - x1.pigment) < .001f);
-                CHECK(std::abs(x0.relief - x1.relief) < .001f);
-                CHECK(std::abs(x0.roughness - x1.roughness) < .001f);
-                CHECK(std::abs(y0.pigment - y1.pigment) < .001f);
-                CHECK(std::abs(y0.relief - y1.relief) < .001f);
-                CHECK(std::abs(y0.roughness - y1.roughness) < .001f);
+                REQUIRE(std::abs(x0.pigment - x1.pigment) < .001f);
+                REQUIRE(std::abs(x0.relief - x1.relief) < .001f);
+                REQUIRE(std::abs(x0.roughness - x1.roughness) < .001f);
+                REQUIRE(std::abs(y0.pigment - y1.pigment) < .001f);
+                REQUIRE(std::abs(y0.relief - y1.relief) < .001f);
+                REQUIRE(std::abs(y0.roughness - y1.roughness) < .001f);
             }
         }
 }

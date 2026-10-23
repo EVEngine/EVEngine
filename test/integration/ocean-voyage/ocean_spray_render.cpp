@@ -99,9 +99,9 @@ TEST_CASE("fluids.ocean.sprayScriptBuildersSurviveGc") {
         local next=checked(step.build());alive <- checked(next.summary()).alive;
         step=null;collectgarbage();retained <- checked(next.summary()).alive==alive;
     )"));
-    CHECK(vm.find("duplicateRejected").toBool());
-    CHECK(vm.find("alive").toInt() > 0);
-    CHECK(vm.find("retained").toBool());
+    REQUIRE(vm.find("duplicateRejected").toBool());
+    REQUIRE(vm.find("alive").toInt() > 0);
+    REQUIRE(vm.find("retained").toBool());
 }
 
 #if !defined(EVENGINE_WEBGPU)

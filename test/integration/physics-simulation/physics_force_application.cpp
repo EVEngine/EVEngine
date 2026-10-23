@@ -50,8 +50,8 @@ TEST_CASE("physics.forces.application3DForceAndOffCenterTorque") {
 TEST_CASE("physics.forces.applicationRejectsStaticWithoutMutation") {
     World                 world(0, 0, false, 30);
     std::unique_ptr<Body> body(world.newBody("static", 0, 0));
-    CHECK(!applyForceSI(*body, {1, 0, 0}, {}).ok());
-    CHECK_EQ(body->getLinearVelocityX(), 0);
+    REQUIRE(!applyForceSI(*body, {1, 0, 0}, {}).ok());
+    REQUIRE_EQ(body->getLinearVelocityX(), 0);
 }
 
 TEST_CASE("physics.forces.batch2DAtomicityAndCoupleAreMeterIndependent") {

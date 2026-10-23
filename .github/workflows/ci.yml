@@ -155,11 +155,6 @@ jobs:
           echo "Source-quality comparison base: $base"
           make check CI_BASE="$base"
 
-      - name: Report dependency graph
-        timeout-minutes: 5
-        if: always()
-        run: python3 scripts/module_depgraph.py
-
   profile-matrix:
     name: Profile ${{ matrix.profile }}
     # Pull requests already run the toolchain-free profile contract check in
