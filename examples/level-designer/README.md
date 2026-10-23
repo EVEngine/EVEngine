@@ -145,7 +145,7 @@ make check
 
 ## Agent / MCP 搭建接口
 
-启动编辑器后，agent 可以通过标准 MCP `tools/list` 发现 8 个项目工具；创建后的模型实时出现在
+以 `--debug` 启动编辑器后，agent 可以通过标准 MCP `tools/list` 发现 9 个项目工具；创建后的模型实时出现在
 同一个 3D 视口中，可以继续鼠标编辑。此路径不需要 `eve_eval` 或 `eve_run_script`。
 
 ```powershell
@@ -156,7 +156,9 @@ $env:PATH = "$PWD/build/win32-debug;$env:PATH"
 
 将 `mcp.example.json` 中桥接脚本的路径替换为实际仓库路径，加入调用方 agent 的 MCP 配置。
 桥接器是仓库已有的 `tools/eve-mcp/server.js`，连接正在运行的编辑器；端口必须一致。
-不要让多个引擎共享同一端口。工具注册失败会使启动失败，不会静默降级。
+不要让多个引擎共享同一端口。未启用 MCP 时保留普通 UI 编辑，并打印启用方式；
+MCP 已启用时，工具注册失败仍会使启动失败，不会静默降级。
+诊断脚本 `agent_registration_smoke.nut` 覆盖无 MCP、正常注册九个工具及注册失败三个分支。
 
 - `whitebox_catalog_v1`：不带参数列出 recipe；传 `recipe` 返回原模型库的参数类型、默认值、边界和选项。
 - `whitebox_scene_v1`：返回模型 ID、recipe、参数、TRS 和场景 revision；可按 `object` 查询。

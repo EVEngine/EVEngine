@@ -12199,6 +12199,63 @@
       ],
       "task": "avatar-appearance"
     },
+    "integration/projectile-behavior/continuous_solver.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "carrierSolver.remainderMultipleBouncesAndFramePartition",
+          "carrierSolver.intervalDistanceAndExpirySurviveBounce",
+          "carrierSolver.budgetsAndLaterProviderFailureRollbackWholeFrame",
+          "carrierSolver.substepBoundsSnapshotAndCallbackRemainder",
+          "carrierSolver.zeroProgressAndMalformedContactsAreBounded",
+          "carrierSolver.thresholdTimesAndDeferredChildren",
+          "carrierSolver.predictiveSamplesOncePerOuterUpdate",
+          "carrierSolver.pierceDeduplicatesAcrossSubstepsAndRestore",
+          "carrierSolver.impactSpeedCrossingAndLaterCallbackFailure",
+          "carrierSolver.optionalCollisionAndWorldSweep"
+        ]
+      },
+      "module": "weapon",
+      "task": "projectile-behavior"
+    },
+    "integration/projectile-behavior/advanced_carrier.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "advancedCarrier.customMotionAtomicityReplayAndReentrancy",
+          "advancedCarrier.customMotionCollisionAndClampedLifetime",
+          "advancedCarrier.rotationDragAndSignedAcceleration",
+          "advancedCarrier.antiparallelHomingAndOrbitProviderContract",
+          "advancedCarrier.seededWanderSnapshotReplayAndCodec",
+          "advancedCarrier.distanceSpeedApexAndLifetimeTriggers",
+          "advancedCarrier.bounceContactAndInvalidSnapshotRollback",
+          "advancedCarrier.predictiveLeadAndStoppedSpeedRecovery",
+          "advancedCarrier.intervalBudgetRecipeMutationAndExpiryBoundaries",
+          "advancedCarrier.curvesRemainBoundedAcrossManyPeriods",
+          "advancedCarrier.roughBounceReplayAndSnapshotVersionValidation",
+          "advancedCarrier.invalidOperatorAndTriggerCompositionIsRejected",
+          "advancedCarrier.triggerChronologyAndBouncePathRespectContact"
+        ]
+      },
+      "module": "weapon",
+      "task": "projectile-behavior"
+    },
+    "integration/projectile-behavior/world_sweep.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "carrierWorldSweep.box3dContractAndRestore",
+          "carrierWorldSweep.joltContractAndRestore",
+          "carrierWorldSweep.bodyDestructionAndBudget",
+          "carrierWorldSweep.carrierPierceSnapshotAndFailure"
+        ]
+      },
+      "module": "physics",
+      "task": "projectile-behavior"
+    },
     "integration/weather-lightning/weather_lightning_runtime.cpp": {
       "role": "tests",
       "default": "render-window",
@@ -12209,6 +12266,42 @@
       },
       "module": "weather",
       "task": "weather-lightning"
+    },
+    "integration/sensing/environment_query_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "sensing.environment.compiledPlanOwnsDefinitionAndInstancesOwnContexts",
+          "sensing.environment.validatesTypesContextsAndBudgets",
+          "sensing.environment.ringAndGridGenerateLocationsWithoutSubjects",
+          "sensing.environment.multiContextFilterAndAggregateAreIndependent",
+          "sensing.environment.contributionsNormalizeOnceAndExplainRejection",
+          "sensing.environment.weightsAndReferencePreferenceChangeRanking",
+          "sensing.environment.optionsOnlyAdvanceOnEmptyNotErrors",
+          "sensing.environment.bestDefersExpensiveFilterAndMatchesExhaustive",
+          "sensing.environment.relativeScoresAndCustomBarriersDisableUnsafeDeferral",
+          "sensing.environment.traceCapAndTraceOffDoNotChangeResults",
+          "sensing.environment.worldCompositionPublishesTraceAndKeepsLegacyResults",
+          "sensing.pipeline.collectsBeforeFilteringAndPublishesOnlyOnSuccess",
+          "sensing.environment.spatialInputIdentityAndTiesAreStable",
+          "sensing.environment.optimizationParityAcrossCandidateSets",
+          "sensing.pipeline.compiledPlanSurvivesRegistryAndPresetReplacement",
+          "sensing.environment.world3DAndGridKeepTheirCoordinateTags",
+          "sensing.pipeline.implicitDistanceOrderPrecedesTruncation",
+          "sensing.environment.providerExceptionsBecomeFailedDiagnostics",
+          "sensing.environment.constantPopulationUsesIdentityTieBreak",
+          "sensing.environment.costSortPreservesScoreAccumulationOrder"
+        ],
+        "script-binding": [
+          "sensing.environment.scriptPositionsUseCanonicalExecutor"
+        ]
+      },
+      "module": "sensing",
+      "origins": [
+        "sensing_environment.cpp"
+      ],
+      "task": "sensing"
     }
   }
 }

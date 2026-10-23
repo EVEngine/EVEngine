@@ -1,5 +1,7 @@
 # EVEngine Examples
 
+- [galaxy](galaxy/README.md): procedural spiral galaxy with a 3D star cloud, four arms, warm core, dust lanes, and interactive viewing controls.
+
 [中文 — complete example catalog](README.md) · [Render gallery](../docs/images/examples/README.en.md) · [User guide](../docs/en/usr/README.md)
 
 This is a curated English starting point. Chinese documentation remains authoritative. Examples demonstrate the source revision they accompany; a screenshot from `dev` does not guarantee that an older released SDK includes that capability.

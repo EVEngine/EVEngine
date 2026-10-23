@@ -233,6 +233,10 @@ function wbRegister(name, description, properties, required, handler) {
 }
 
 function whiteboxRegisterAgentTools() {
+    if (!("mcp" in eve)) {
+        print("level-designer: agent tools unavailable; launch with --debug to enable MCP\n");
+        return;
+    }
     local text = {type = "string"};
     local number = {type = "number"};
     local revision = {type = "integer", minimum = 0};

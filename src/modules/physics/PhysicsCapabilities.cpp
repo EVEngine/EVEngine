@@ -2,12 +2,14 @@
 #include "common/Capability.h"
 #include "common/PhysicsQuery.h"
 #include "common/ProcgenWorldQuery.h"
+#include "common/WorldSphereSweep.h"
 #include "physics/ArtifactProvider.h"
 #include "physics/Physics.h"
 #include "physics/PhysicsWorldQueries.h"
 #include "physics/TargetingLineOfSightAdapter.h"
 #include "physics/World.h"
 #include "physics/World3D.h"
+#include "physics/WorldSphereSweep.h"
 #include "sensing/LineOfSightRouter.h"
 
 #include <algorithm>
@@ -79,6 +81,7 @@ private:
 
 void registerPhysicsCapabilities() {
     static PhysicsQueryImpl impl;
+    eve::cap::provide<eve::IWorldSphereSweepFactory>(&worldSphereSweepFactory());
     eve::cap::provide<eve::IPhysicsQuery>(&impl);
     eve::cap::provide<eve::IProcgenWorldQuery>(&procgenWorldQuery());
     eve::cap::provide<eve::ICameraObstructionQuery>(&cameraObstructionQuery());
