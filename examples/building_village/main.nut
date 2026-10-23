@@ -285,7 +285,7 @@ eve_init <- function() {
         ui.setScale(1.0);ui.setTheme("dark");ui.beginBuild();
         ui.beginWindow("House workshop / village","root");
         ui.beginColumn("panel",1.0);
-        
+
         ui.beginRow("viewControls",8.0);ui.button("3D / Plan","view");ui.button("Cutaway / Full walls","cutaway");ui.end();
         ui.button("Run complete workflow demo","demo");
         ui.button("1. Workshop: build parts","workshop");ui.button("2. Capture + save blueprint","capture");
