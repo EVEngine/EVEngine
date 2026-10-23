@@ -345,7 +345,7 @@ jobs:
           sudo apt-get update -o Acquire::Retries=2 \
             -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30
           sudo apt-get install -y --no-install-recommends \
-            build-essential cmake ninja-build \
+            build-essential cmake ninja-build lld \
             libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
             libxrandr-dev libxinerama-dev libxext-dev libxss-dev \
             libgl1-mesa-dev libbz2-dev libpng-dev \

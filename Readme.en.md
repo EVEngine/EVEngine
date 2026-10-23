@@ -23,7 +23,10 @@ Windows SDK, Ninja, Git Bash, and Vulkan headers, shader tools and ARM64 loader
 libraries. The Makefile invokes `cmake/with-msvc.cmd --arm64` for every configure
 and build, selecting the native ARM64 MSVC environment. Linux requires native
 GCC/G++, Ninja and the same development packages as the standard Linux build,
-installed for aarch64. No cross toolchain file is used.
+installed for aarch64. Also install `lld` (`sudo apt-get install lld`) for the
+monolithic OBJECT test executable: it supplies range-extension thunks for the
+large ARM64 link. Compilation still uses GCC/G++; the engine executable and
+shared/domain test links keep their existing linker. No cross toolchain file is used.
 
 The existing CMake entry point also accepts `-DEVENGINE_NATIVE_ARM64=ON` together
 with `-DEVENGINE_BUILD_PLATFORM=win32` or `linux`. On Windows invoke CMake through
