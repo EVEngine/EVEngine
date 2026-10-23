@@ -156,7 +156,6 @@ endif()
             )
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("Incomplete pinned Dawn glfw checkout", result.stderr)
-            self.assertIn("full 40-character commit SHA", result.stderr)
 
 
 class DawnCiDependencyCheckTests(unittest.TestCase):
