@@ -1,8 +1,8 @@
+#include "particles/ParticleEventJournal.h"
 #include "physics/bake/particle_capture/ParticleBakeCapture.h"
 #include <cmath>
 #include <map>
 #include <set>
-#include "particles/ParticleEventJournal.h"
 #include "physics/bake/BakeRecipe.h"
 namespace eve::physics {
 namespace {
