@@ -52,6 +52,9 @@ struct SolvedHit {
 struct JointState;
 /** @brief Initializes the process-owned allocator and type factory before constructing any native members. */
 void initializeRuntime();
+// Jolt SIMD members require alignment padding on MSVC ARM64.
+JPH_SUPPRESS_WARNING_PUSH
+JPH_MSVC_SUPPRESS_WARNING(4324)
 struct State {
     Layers                                                      layers;
     JPH::TempAllocatorMalloc                                    allocator;
@@ -86,6 +89,7 @@ struct BodyState {
     }
     JPH::BodyInterface& api() const { return world.lock()->system.GetBodyInterface(); }
 };
+JPH_SUPPRESS_WARNING_POP
 struct ShapeState {
     std::weak_ptr<BodyState>       body;
     Shape3D*                       owner = nullptr;

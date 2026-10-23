@@ -12251,6 +12251,34 @@
       },
       "module": "common"
     },
+    "unit/procgen/procgen_everyday_materials.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "module": "procgen",
+      "cases": {
+        "local-logic": [
+          "procgen.everyday.familiesDeterminismAndPhysicalChannels",
+          "procgen.everyday.boundedParametersAndRegistryParity",
+          "procgen.everyday.pigmentDoesNotEmbossMarble",
+          "procgen.everyday.seedAndTintHaveObservableEffects",
+          "procgen.everyday.sharedCavityMatchesReference",
+          "procgen.everyday.microstructureIsPeriodicAtBothSeams",
+          "procgen.everyday.resolutionDoesNotRescaleFeatures",
+          "procgen.everyday.requestedSurfacesHaveReliefAndRoughness"
+        ]
+      }
+    },
+    "integration/script-api/procgen_everyday_material_optics.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "module": "procgen",
+      "cases": {
+        "script-binding": [
+          "procgen.everyday.scriptOpticsMatchNative"
+        ]
+      },
+      "task": "script-api"
+    },
     "integration/sensing/environment_query_tests.cpp": {
       "role": "tests",
       "default": "module-composition",
