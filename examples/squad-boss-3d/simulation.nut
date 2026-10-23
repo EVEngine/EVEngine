@@ -427,10 +427,16 @@ class SquadBossSimulation {
                 auto = false;
                 move(hero, hero.x + input.x * 4.0, hero.z + input.z * 4.0, 3.2, dt);
             } else if (auto) {
-                move(hero, -2.4 + sin(time * 0.35) * 1.4, 1.2 + cos(time * 0.28) * 0.9, 1.4, dt);
-                if (tick % 90 == 30) activatePlayerSkill(0);
-                if (tick % 180 == 90) activatePlayerSkill(2);
-                if (tick % 150 == 60) activatePlayerSkill(1);
+                local boss = units[bossId];
+                // Close to melee range so the GAS showcase lands; weave slightly on approach.
+                local ax = boss.x + cos(time * 0.7) * 2.2;
+                local az = boss.z + sin(time * 0.55) * 2.2;
+                move(hero, ax, az, 2.6, dt);
+                if (sbDistanceXZ(hero, boss) < 2.8) {
+                    if (tick % 90 == 30) activatePlayerSkill(0);
+                    if (tick % 180 == 90) activatePlayerSkill(2);
+                    if (tick % 150 == 60) activatePlayerSkill(1);
+                }
             }
             if (input.attack) activatePlayerSkill(0);
         }
