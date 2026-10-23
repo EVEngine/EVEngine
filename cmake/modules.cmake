@@ -223,7 +223,7 @@ function(eve_resolve_modules)
         set(EVENGINE_PROFILE "full")
     endif()
 
-    set(_valid full minimal 2d 3d runtime-3d web procgen-core-only physics-core-only asset-core-only headless server)
+    set(_valid full minimal 2d 3d runtime-3d web procgen-core-only physics-core-only asset-core-only crowd-core-only crowd-thread-core-only headless server)
     if(NOT EVENGINE_PROFILE IN_LIST _valid)
         message(FATAL_ERROR "EVENGINE_PROFILE must be one of: ${_valid} (got: ${EVENGINE_PROFILE})")
     endif()
@@ -243,13 +243,23 @@ function(eve_resolve_modules)
             "Core boundary selected by the active profile" FORCE)
     elseif(EVENGINE_PROFILE STREQUAL "physics-core-only")
         set(_hostless_profile TRUE)
-        set(_profile_seed common event)
+        set(_profile_seed common platform_event)
         set(EVENGINE_PROFILE_CORE_KIND physics CACHE INTERNAL
             "Core boundary selected by the active profile" FORCE)
     elseif(EVENGINE_PROFILE STREQUAL "asset-core-only")
         set(_hostless_profile TRUE)
         set(_profile_seed common data asset)
         set(EVENGINE_PROFILE_CORE_KIND asset CACHE INTERNAL
+            "Core boundary selected by the active profile" FORCE)
+    elseif(EVENGINE_PROFILE STREQUAL "crowd-core-only")
+        set(_hostless_profile TRUE)
+        set(_profile_seed common crowd)
+        set(EVENGINE_PROFILE_CORE_KIND crowd CACHE INTERNAL
+            "Core boundary selected by the active profile" FORCE)
+    elseif(EVENGINE_PROFILE STREQUAL "crowd-thread-core-only")
+        set(_hostless_profile TRUE)
+        set(_profile_seed common crowd crowd_thread)
+        set(EVENGINE_PROFILE_CORE_KIND crowd CACHE INTERNAL
             "Core boundary selected by the active profile" FORCE)
     elseif(EVENGINE_PROFILE STREQUAL "headless")
         set(_hostless_profile TRUE)
@@ -259,7 +269,7 @@ function(eve_resolve_modules)
     elseif(EVENGINE_PROFILE STREQUAL "server")
         set(_hostless_profile TRUE)
         set(_profile_seed
-            common data event timer network authority decision definitions effects
+            common data event timer network authority definitions effects
             emergence game_event orders schema social statepatch tags transaction
             economy attributes sensing spatial action settlement tactics pixelworld)
         set(EVENGINE_PROFILE_CORE_KIND server CACHE INTERNAL

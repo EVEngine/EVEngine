@@ -1,0 +1,4 @@
+.inspection-cache/
+screenshots/*.log
+inspection/eve.log
+tools/__pycache__/

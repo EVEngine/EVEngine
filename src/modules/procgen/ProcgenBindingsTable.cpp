@@ -5,6 +5,7 @@
 #include "common/Capability.h"
 #include "common/SquirrelBinding.h"
 #include "procgen/BiomeScript.h"
+#include "procgen/GenerationStageScript.h"
 #include "procgen/GridMeshGraphScript.h"
 #include "procgen/ModuleAssemblyScript.h"
 #include "procgen/PointGraphScript.h"
@@ -54,6 +55,7 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <charconv>
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -74,6 +76,7 @@ void Procgen::expose(ssq::Table& table) {
     exposeMeshModifierGraph(table);
     exposeGridMeshGraphs(table);
     housegen::exposeHouseGeneration(table);
+    exposeGenerationStages(table);
     exposeShapeGrammar(table);
     exposePcgFrameRateManagerBindings(table);
     exposePcgTaskQueueBindings(table);

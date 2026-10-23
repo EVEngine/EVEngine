@@ -13,14 +13,15 @@
  */
 
 #include "attributes/AttributeProjection.h"
+#include "combat/Damage.h"
 #include "common/ECS.h"
 #include "common/Identity.h"
 #include "common/Result.h"
+#include "common/RuntimeHandle.h"
 #include "common/SubjectRef.h"
-#include "combat/Damage.h"
 #include "common/Time.h"
-#include "rts/RTSEffects.h"
 #include "production/Production.h"
+#include "rts/RTSEffects.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -31,6 +32,10 @@
 #include <string>
 #include <string_view>
 #include <vector>
+
+namespace eve::crowd {
+struct CrowdAgentTag;
+}
 
 namespace eve::orders {
 class CommandQueue;
@@ -480,6 +485,7 @@ public:
 
 private:
     friend class RTSProductionActionAdapter;
+    friend class RTS;
     [[nodiscard]] production::WorkQueue* queueForComposition() noexcept;
 
     struct Impl;
@@ -539,6 +545,9 @@ public:
         CrowdLink link;
         float     radius  = 0.5f;
         float     heading = 0.0f;
+        RuntimeHandle<eve::crowd::CrowdAgentTag> runtimeAgent;
+        std::uint64_t                            runtimeOwner = 0;
+        std::string                              runtimeBindingKey;  ///< Derived cache; never serialized as authority.
     };
     /** @brief Weapon entity link. */
     struct Weapon {
@@ -580,6 +589,9 @@ public:
         bool                       unreachableReported = false;
         float formationSpeedFactor = 1.f;  ///< Rebuilt movement-group projection; never an independent speed authority.
         std::optional<WorldPosition> formationTarget;  ///< Derived moving slot; rebuilt each step, excluded from saves.
+        std::optional<WorldPosition>
+             combatSlotTarget;  ///< Derived infantry melee approach slot; expires each step, excluded from saves.
+        bool combatSlotWaiting = false;  ///< Derived rear-row admission; suppresses melee firing, not physical contact.
         std::optional<WorldPosition> trafficRecoveryTarget;  ///< Derived evacuation step; does not replace the order.
     };
     /** @brief Vision contribution projected into a faction-owned canonical map FOV provider. */
@@ -611,7 +623,7 @@ public:
         ecs::EntityHandle target{};
         CombatStance      stance           = CombatStance::Defensive;
         float             acquisitionRange = 0.0f;
-        float             engagementRange  = 0.0f;
+        float engagementRange = 0.0f;  ///< Cached effective firing range; zero while the selected target is occluded.
         float             leashRange       = 0.0f;
         float             guardX           = 0.0f;
         float             guardY           = 0.0f;

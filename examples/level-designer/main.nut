@@ -18,9 +18,12 @@ dofile("level_build.nut");
 dofile("level_spawn.nut");
 dofile("level_play.nut");
 dofile("level_document.nut");
+dofile("level_blocks.nut");
+dofile("level_sculpt.nut");
 dofile("level_ui.nut");
 dofile("level_agent.nut");
 dofile("level_transactions.nut");
+dofile("level_demo.nut");
 
 function levelBuildSceneHost() {
     scene.beginBuild();
@@ -52,6 +55,9 @@ function levelUpdateOrbitCamera() {
         focusY + level.distance * sin(level.pitch),
         focusZ + level.distance * cos(level.pitch) * cos(level.yaw));
     level.camera.setTarget(focusX, focusY, focusZ);
+    // Play controllers write a view-relative up vector. Restore world up when
+    // orbiting so returning to the editor cannot retain the previous view's roll.
+    level.camera.setUp(0.0, 1.0, 0.0);
 }
 
 /**
@@ -157,6 +163,21 @@ function levelClearGizmoPrims() {
 function levelDrawGizmo() {
     levelClearGizmoPrims();
     if (level.mode == "play") return;
+    if(level.tool=="terrain") {
+        local hit=terrainPickAtMouse();
+        if(hit!=null) {
+            local points=[];
+            for(local i=0;i<64;++i) {
+                local angle=i*6.28318530718/64.0;
+                local x=hit.x+cos(angle)*level.brushRadius,z=hit.z+sin(angle)*level.brushRadius;
+                points.extend([x,terrainSnapHeight(x,z)+0.08,z]);
+            }
+            local ring=gfx.newPrimitivePolyline3D(points,true,0.35,0.95,0.75,1.0,2.0);
+            if(!levelChecked(ring)) return;
+            level.gizmoPrims.push(ring.value);
+        }
+        return;
+    }
     local object = levelObject(level.selected);
     if (object == null || level.gizmo == null) return;
     local gizmo = level.gizmo;
@@ -224,6 +245,7 @@ function levelPointer() {
         if (gizmo.isDragging()) gizmo.endDrag();
         return;
     }
+    if (level.tool == "terrain") return;
     local object = levelObject(level.selected);
     level.camera.screenToRay(pointer.x, pointer.y, pointer.w, pointer.h);
     local ox = level.camera.getScreenRayOriginX();
@@ -248,23 +270,25 @@ function levelPointer() {
     lx /= length; ly /= length; lz /= length;
 
     if (pressed) {
-        local axis = object == null || level.tool == "whitebox" ? "" : gizmo.pick(ax, ay, az, lx, ly, lz);
+        local axis = object == null || level.tool != "select" ? "" : gizmo.pick(ax, ay, az, lx, ly, lz);
         if (axis != "") {
             gizmo.beginDrag(axis, ax, ay, az, lx, ly, lz);
         } else if (level.tool == "whitebox") {
             local hit = terrainRayPick(ox, oy, oz, dx, dy, dz, 6000.0);
             if (hit != null) whiteboxBeginDrag(hit);
             levelMarkPanelsDirty();
+        } else if (level.tool == "blocks") {
+            local hit = terrainRayPick(ox,oy,oz,dx,dy,dz,6000.0);
+            if(hit!=null) levelPlaceBlock(level.blockIndex,hit.x,hit.y,hit.z);
+            levelMarkPanelsDirty();
         } else if (level.tool == "spawn") {
             local hit = terrainRayPick(ox, oy, oz, dx, dy, dz, 6000.0);
             if (hit != null) spawnPlace(hit.x, hit.y, hit.z, level.yaw);
             levelMarkPanelsDirty();
         } else {
-            local picked = scene.pickRayAt(levelHost(), ox, oy, oz, dx, dy, dz);
-            if (picked != level.selected) {
-                level.selected = picked;
-                levelSyncGizmo();
-                levelMarkPanelsDirty();
+            local picked = levelScopedPick(scene.pickRayAt(levelHost(), ox, oy, oz, dx, dy, dz));
+            if (picked != level.selected || levelKeyEither("lctrl","LCtrl") || levelKeyEither("rctrl","RCtrl")) {
+                levelSelect(picked,levelKeyEither("lctrl","LCtrl") || levelKeyEither("rctrl","RCtrl"));
             }
         }
     }
@@ -278,6 +302,13 @@ function levelPointer() {
     }
     if (down && gizmo.isDragging()) {
         gizmo.updateDrag(ax, ay, az, lx, ly, lz);
+        if(levelIsGroup(level.selected) && level.gizmoMode=="scale") {
+            local initial=object.transform.scaleX;
+            local factor=gizmo.getScaleX();
+            if(fabs(gizmo.getScaleY()-initial)>fabs(factor-initial)) factor=gizmo.getScaleY();
+            if(fabs(gizmo.getScaleZ()-initial)>fabs(factor-initial)) factor=gizmo.getScaleZ();
+            factor=levelClamp(factor,0.05,100.0);gizmo.setScale(factor,factor,factor);
+        }
         levelPreviewSelection();
     }
     if (released && gizmo.isDragging()) {
@@ -296,6 +327,20 @@ function levelPointer() {
 
 function levelEditInput() {
     if (levelKeyPressed("Escape")) whiteboxCancelDrag();
+    if(ui.wantCaptureKeyboard()) return;
+    local control=levelKeyEither("lctrl","LCtrl") || levelKeyEither("rctrl","RCtrl");
+    if(control) {
+        if(levelKeyPressed("g")) levelHandleAction("group");
+        if(levelKeyPressed("d")) levelHandleAction("duplicate");
+        if(levelKeyPressed("z")) levelHandleAction("undo");
+        if(levelKeyPressed("y")) levelHandleAction("redo");
+        if(levelKeyPressed("s")) levelHandleAction("save");
+        return;
+    }
+    if(levelKeyPressed("Return")) levelHandleAction("enter");
+    if(levelKeyPressed("Backspace")) levelHandleAction("leave");
+    if(levelKeyPressed("4")) levelHandleAction("tool:terrain");
+    if(levelKeyPressed("5")) levelHandleAction("tool:blocks");
     if (levelKeyPressed("F5")) { levelStartPlay(); return; }
     if (levelKeyPressed("Delete")) {
         levelHandleAction("delete");
@@ -347,6 +392,7 @@ function levelEditInput() {
 
 function levelPlayInput() {
     if (levelKeyPressed("Escape") || levelKeyPressed("F5")) { levelStopPlay(); return; }
+    if (levelKeyPressed("Space")) level.play.inputJump = true;
     if (levelKeyPressed("F1")) {
         local names = levelCharacterNames();
         for (local i = 0; i < names.len(); ++i)
@@ -400,8 +446,14 @@ eve_init = function() {
     gfx.setBackgroundColor(0.045, 0.052, 0.068, 1.0);
     gfx.setDirectionalLight(-0.42, -1.0, -0.30, 1.25, 1.18, 1.05);
     ui.setTheme("dark");
+    if("dev" in eve) {
+        eve.dev.console.setVisible(false);eve.dev.ai.setVisible(false);eve.dev.stats.setVisible(false);
+    }
     levelSetupCamera();
     levelConfigureWorkspace();
+    level.keyLight <- eve.Light3D();level.keyLight.setType("dir");
+    level.keyLight.setDirection(-0.5,1.0,0.4);level.keyLight.setColor(1.0,0.93,0.82,1.0);
+    level.keyLight.setCastShadow(true);
 
     if (terrainBuild(terrainDefaultReference()) == null) throw level.status;
     levelFrameTerrain();
@@ -415,10 +467,11 @@ eve_init = function() {
           " (toolbar/outliner/viewport/inspector/palette)\n");
     print("level-designer: 1/2/3 tools | W/R/T gizmo | LMB place/select | RMB orbit | MMB pan | wheel/Q/E zoom | F focus | F5 play\n");
     print("level-designer: in play: mouse look (viewport) | WASD+Shift | Q/E zoom | F1/F2 character/motion | Esc stop\n");
-    level.status = "ready: drag a recipe into the viewport, or drag on terrain to size";
+    levelBuildDemo();
 };
 
 eve_update = function(dt) {
+    if(level.layoutWidth!=win.getWidth() || level.layoutHeight!=win.getHeight()) levelMarkPanelsDirty();
     // Overriding eve_update replaces the engine default, which keeps scene node
     // world transforms fresh. Every projection below reads world transforms, so
     // refresh them once per frame before anything else runs.
@@ -436,6 +489,7 @@ eve_update = function(dt) {
     if (level.panelsDirty) levelMountPanels();
     levelEditInput();
     levelPointer();
+    terrainSculptPointer(dt);
     whiteboxSyncTransforms();
     spawnSyncTransforms();
     // Apply transient gizmo transforms after committed scene transforms.

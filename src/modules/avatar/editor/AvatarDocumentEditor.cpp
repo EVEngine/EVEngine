@@ -1,18 +1,22 @@
 #include "avatar/editor/AvatarDocumentEditor.h"
-
-#include "editor/EditorProtocol.h"
-
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <simplesquirrel/simplesquirrel.hpp>
+#include <string>
 #include <utility>
+#include "avatar/editor/AvatarDocumentEditorScriptBindings.h"
+#include "avatar/editor/AvatarEditorModule.h"
+#include "editor/EditorProtocol.h"
+#include "editor/EditorScriptProjection.h"
+#include "editor/EditorWorkspace.h"
 
+// AvatarDocumentEditor.cpp
 namespace eve::avatar_editor {
 namespace {
 
 template <class T = void>
-avatar_editing::Result<T> editorError(avatar_editing::EditorStatus status, std::string rule,
-                                            std::string message) {
+avatar_editing::Result<T> editorError(avatar_editing::EditorStatus status, std::string rule, std::string message) {
     return eve::editing::failed<T>(status, avatar_editing::RuleId(std::move(rule)), std::move(message));
 }
 
@@ -23,14 +27,10 @@ avatar_editing::EditorValue color(float r, float g, float b, float a) {
 
 avatar_editing::EditorValue layerValue(const char* id, const char* name, const char* texture, int z, bool visible,
                                        float ox, float oy, float w, float h, float r, float g, float bl, float a) {
-    return avatar_editing::EditorValue::Object{{"id", std::string(id)},
-                                               {"name", std::string(name)},
-                                               {"texture", std::string(texture)},
-                                               {"z", std::int64_t{z}},
-                                               {"visible", visible},
-                                               {"offset", floats(ox, oy)},
-                                               {"size", floats(w, h)},
-                                               {"color", color(r, g, bl, a)}};
+    return avatar_editing::EditorValue::Object{
+        {"id", std::string(id)}, {"name", std::string(name)},  {"texture", std::string(texture)},
+        {"z", std::int64_t{z}},  {"visible", visible},         {"offset", floats(ox, oy)},
+        {"size", floats(w, h)},  {"color", color(r, g, bl, a)}};
 }
 
 }  // namespace
@@ -39,8 +39,7 @@ AvatarDocumentEditor::AvatarDocumentEditor(std::string targetId)
     : target_(std::move(targetId)), authority_(&target_), transactions_(&authority_) {
     seedPreviewDocument();
     auto previewed = refreshPreview();
-    if (!previewed.ok())
-        previewed.ignore("avatar editor keeps an empty composite when the seeded preview is rejected");
+    if (!previewed.ok()) previewed.ignore("avatar editor keeps an empty composite when the seeded preview is rejected");
 }
 
 void AvatarDocumentEditor::seedPreviewDocument() {
@@ -74,8 +73,7 @@ void AvatarDocumentEditor::seedPreviewDocument() {
     if (!loaded.ok()) loaded.ignore("avatar editor keeps defaults when the preview snapshot is rejected");
 }
 
-avatar_editing::Result<void> AvatarDocumentEditor::configureWorkspace(
-    editor::EditorWorkspace& workspace) const {
+avatar_editing::Result<void> AvatarDocumentEditor::configureWorkspace(editor::EditorWorkspace& workspace) const {
     editor::EditorWorkspace candidate = workspace;
     struct Panel {
         const char* id;
@@ -120,16 +118,14 @@ editor::SelectionSnapshot AvatarDocumentEditor::selection() const {
 
 avatar_editing::Result<void> AvatarDocumentEditor::commit(
     avatar_editing::Result<avatar_editing::DomainOperation> operation, std::string label) {
-    if (!operation.ok())
-        return avatar_editing::Result<void>::failure(operation.status());
+    if (!operation.ok()) return avatar_editing::Result<void>::failure(operation.status());
     editor::TransactionSpec spec;
     spec.id           = editor::TransactionId("avatar.document.tx." + std::to_string(++txSequence_));
     spec.label        = std::move(label);
     spec.target       = editor::TargetId(target_.targetId());
     spec.baseRevision = target_.revision();
     auto begun        = transactions_.begin(std::move(spec));
-    if (!begun.ok())
-        return editorError(begun.code(), "editor.avatar.begin", "Could not begin the avatar transaction");
+    if (!begun.ok()) return editorError(begun.code(), "editor.avatar.begin", "Could not begin the avatar transaction");
     auto appended = transactions_.append(std::move(operation).takeValue());
     if (!appended.ok()) {
         auto discarded = transactions_.discard();
@@ -137,8 +133,7 @@ avatar_editing::Result<void> AvatarDocumentEditor::commit(
         return avatar_editing::Result<void>::failure(appended.status());
     }
     auto committed = transactions_.commit();
-    if (!committed.ok())
-        return avatar_editing::Result<void>::failure(committed.status());
+    if (!committed.ok()) return avatar_editing::Result<void>::failure(committed.status());
     return refreshPreview();
 }
 
@@ -165,8 +160,8 @@ avatar_editing::Result<void> AvatarDocumentEditor::refreshPreview() {
         rect.selected = layer.id.value() == selectedId_;
         next.push_back(std::move(rect));
     }
-    preview_          = std::move(next);
-    previewRevision_  = target_.revision();
+    preview_         = std::move(next);
+    previewRevision_ = target_.revision();
     return eve::editing::applied<void>();
 }
 
@@ -226,8 +221,7 @@ avatar_editing::Result<void> AvatarDocumentEditor::pointerDown(float x, float y)
                            "Pointer coordinates must be finite");
     for (int i = static_cast<int>(preview_.size()) - 1; i >= 0; --i) {
         const auto& rect = preview_[static_cast<std::size_t>(i)];
-        if (x >= rect.x && y >= rect.y && x <= rect.x + rect.w && y <= rect.y + rect.h)
-            return selectLayer(rect.id);
+        if (x >= rect.x && y >= rect.y && x <= rect.x + rect.w && y <= rect.y + rect.h) return selectLayer(rect.id);
     }
     return eve::editing::applied<void>();
 }
@@ -245,10 +239,10 @@ avatar_editing::Result<void> AvatarDocumentEditor::setLayerZ(int zIndex) {
     if (selectedType_ != "avatar.layer")
         return editorError(avatar_editing::EditorStatus::Rejected, "editor.avatar.selection",
                            "A layer must be selected to change z-order");
-    return commit(target_.makeSet(selection(), avatar_editing::PropertyPath("layer.z"),
-                                  avatar_editing::EditorValue(std::int64_t{zIndex}),
-                                  avatar_editing::PropertySetMode::Absolute),
-                  "Set layer z");
+    return commit(
+        target_.makeSet(selection(), avatar_editing::PropertyPath("layer.z"),
+                        avatar_editing::EditorValue(std::int64_t{zIndex}), avatar_editing::PropertySetMode::Absolute),
+        "Set layer z");
 }
 
 avatar_editing::Result<void> AvatarDocumentEditor::setParameterValue(double value) {
@@ -305,8 +299,7 @@ avatar_editing::Result<void> AvatarDocumentEditor::deleteSelectedParameter() {
                            "A parameter must be selected to delete it");
     const auto previous = preview_;
     const auto revision = previewRevision_;
-    auto       deleted =
-        commit(target_.makeDeleteParameter(avatar_editing::ObjectId(selectedId_)), "Delete parameter");
+    auto       deleted = commit(target_.makeDeleteParameter(avatar_editing::ObjectId(selectedId_)), "Delete parameter");
     if (!deleted.ok()) {
         preview_         = previous;
         previewRevision_ = revision;
@@ -341,8 +334,7 @@ avatar_editing::Result<editor::TransactionReceipt> AvatarDocumentEditor::undo() 
     auto result = transactions_.undo();
     if (!result.ok()) return result;
     auto previewed = refreshPreview();
-    if (!previewed.ok())
-        return avatar_editing::Result<editor::TransactionReceipt>::failure(previewed.status());
+    if (!previewed.ok()) return avatar_editing::Result<editor::TransactionReceipt>::failure(previewed.status());
     return result;
 }
 
@@ -350,8 +342,7 @@ avatar_editing::Result<editor::TransactionReceipt> AvatarDocumentEditor::redo() 
     auto result = transactions_.redo();
     if (!result.ok()) return result;
     auto previewed = refreshPreview();
-    if (!previewed.ok())
-        return avatar_editing::Result<editor::TransactionReceipt>::failure(previewed.status());
+    if (!previewed.ok()) return avatar_editing::Result<editor::TransactionReceipt>::failure(previewed.status());
     return result;
 }
 
@@ -481,6 +472,187 @@ const avatar_editing::AvatarParameterValue* AvatarDocumentEditor::parameterAt(in
 const avatar_editing::AvatarExpressionValue* AvatarDocumentEditor::expressionAt(int index) const {
     if (index < 0 || static_cast<std::size_t>(index) >= target_.expressions().size()) return nullptr;
     return &target_.expressions()[static_cast<std::size_t>(index)];
+}
+
+}  // namespace eve::avatar_editor
+
+// AvatarDocumentEditorScriptBindings.cpp
+namespace eve::avatar_editor {
+namespace {
+
+constexpr const char* kBindingSource = "editor.avatar.document.squirrel";
+
+class ScriptAvatarDocumentEditor {
+public:
+    explicit ScriptAvatarDocumentEditor(std::string targetId) : editor_(std::move(targetId)) {}
+
+    AvatarDocumentEditor&       editor() noexcept { return editor_; }
+    const AvatarDocumentEditor& editor() const noexcept { return editor_; }
+
+private:
+    AvatarDocumentEditor editor_;
+};
+
+}  // namespace
+
+void exposeAvatarDocumentEditorScriptBindings(ssq::Table& table, ssq::Class& moduleClass) {
+    const editor::ScriptBind bind{table.getHandle(), kBindingSource};
+    auto avatarEditor = editor::addScriptClass<ScriptAvatarDocumentEditor>(table, "AvatarDocumentEditor");
+    editor::registerEditorWorkspace<ScriptAvatarDocumentEditor>(avatarEditor, bind,
+                                                                "avatar editor and workspace must not be null");
+    avatarEditor.addFunc("selectLayer", [bind](ScriptAvatarDocumentEditor* self, const std::string& id) {
+        return bind.checked(self, "avatar editor must not be null", [&] { return self->editor().selectLayer(id); });
+    });
+    avatarEditor.addFunc("selectParameter", [bind](ScriptAvatarDocumentEditor* self, const std::string& id) {
+        return bind.checked(self, "avatar editor must not be null", [&] { return self->editor().selectParameter(id); });
+    });
+    avatarEditor.addFunc("selectExpression", [bind](ScriptAvatarDocumentEditor* self, const std::string& id) {
+        return bind.checked(self, "avatar editor must not be null",
+                            [&] { return self->editor().selectExpression(id); });
+    });
+    avatarEditor.addFunc("pointerDown", [bind](ScriptAvatarDocumentEditor* self, float x, float y) {
+        return bind.checked(self, "avatar editor must not be null", [&] { return self->editor().pointerDown(x, y); });
+    });
+    avatarEditor.addFunc("setLayerVisible", [bind](ScriptAvatarDocumentEditor* self, bool visible) {
+        return bind.checked(self, "avatar editor must not be null",
+                            [&] { return self->editor().setLayerVisible(visible); });
+    });
+    avatarEditor.addFunc("setLayerZ", [bind](ScriptAvatarDocumentEditor* self, int zIndex) {
+        return bind.checked(self, "avatar editor must not be null", [&] { return self->editor().setLayerZ(zIndex); });
+    });
+    avatarEditor.addFunc("setParameterValue", [bind](ScriptAvatarDocumentEditor* self, float value) {
+        return bind.checked(self, "avatar editor must not be null",
+                            [&] { return self->editor().setParameterValue(static_cast<double>(value)); });
+    });
+    avatarEditor.addFunc("createLayer",
+                         [bind](ScriptAvatarDocumentEditor* self, const std::string& id, const std::string& name) {
+                             return bind.checked(self, "avatar editor must not be null",
+                                                 [&] { return self->editor().createLayer(id, name); });
+                         });
+    avatarEditor.addFunc("deleteSelectedLayer", [bind](ScriptAvatarDocumentEditor* self) {
+        return bind.checked(self, "avatar editor must not be null",
+                            [&] { return self->editor().deleteSelectedLayer(); });
+    });
+    avatarEditor.addFunc("createParameter",
+                         [bind](ScriptAvatarDocumentEditor* self, const std::string& id, const std::string& name) {
+                             return bind.checked(self, "avatar editor must not be null",
+                                                 [&] { return self->editor().createParameter(id, name); });
+                         });
+    avatarEditor.addFunc("deleteSelectedParameter", [bind](ScriptAvatarDocumentEditor* self) {
+        return bind.checked(self, "avatar editor must not be null",
+                            [&] { return self->editor().deleteSelectedParameter(); });
+    });
+    avatarEditor.addFunc("createExpression",
+                         [bind](ScriptAvatarDocumentEditor* self, const std::string& id, const std::string& name) {
+                             return bind.checked(self, "avatar editor must not be null",
+                                                 [&] { return self->editor().createExpression(id, name); });
+                         });
+    avatarEditor.addFunc("deleteSelectedExpression", [bind](ScriptAvatarDocumentEditor* self) {
+        return bind.checked(self, "avatar editor must not be null",
+                            [&] { return self->editor().deleteSelectedExpression(); });
+    });
+    editor::registerEditorHistory<ScriptAvatarDocumentEditor>(avatarEditor, bind, "avatar editor must not be null");
+    avatarEditor.addFunc("getPreviewRevision", [](ScriptAvatarDocumentEditor* self) {
+        return self ? static_cast<int>(self->editor().previewRevision()) : 0;
+    });
+    avatarEditor.addFunc("getKind",
+                         [](ScriptAvatarDocumentEditor* self) { return self ? self->editor().kind() : std::string{}; });
+    avatarEditor.addFunc("getSelectedId", [](ScriptAvatarDocumentEditor* self) {
+        return self ? self->editor().selectedId() : std::string{};
+    });
+    avatarEditor.addFunc("getSelectedType", [](ScriptAvatarDocumentEditor* self) {
+        return self ? self->editor().selectedType() : std::string{};
+    });
+    avatarEditor.addFunc("getLayerCount",
+                         [](ScriptAvatarDocumentEditor* self) { return self ? self->editor().layerCount() : 0; });
+    avatarEditor.addFunc("getLayerId", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self ? self->editor().layerId(index) : std::string{};
+    });
+    avatarEditor.addFunc("getLayerName", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self ? self->editor().layerName(index) : std::string{};
+    });
+    avatarEditor.addFunc("getLayerVisible", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self && self->editor().layerVisible(index);
+    });
+    avatarEditor.addFunc("getLayerZ", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self ? self->editor().layerZ(index) : 0;
+    });
+    avatarEditor.addFunc("getLayerSelected", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self && self->editor().isLayerSelected(index);
+    });
+    avatarEditor.addFunc("getPreviewLayerCount", [](ScriptAvatarDocumentEditor* self) {
+        return self ? self->editor().previewLayerCount() : 0;
+    });
+    avatarEditor.addFunc("getPreviewX", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self ? self->editor().previewX(index) : 0.0f;
+    });
+    avatarEditor.addFunc("getPreviewY", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self ? self->editor().previewY(index) : 0.0f;
+    });
+    avatarEditor.addFunc("getPreviewW", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self ? self->editor().previewW(index) : 0.0f;
+    });
+    avatarEditor.addFunc("getPreviewH", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self ? self->editor().previewH(index) : 0.0f;
+    });
+    avatarEditor.addFunc("getPreviewR", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self ? self->editor().previewR(index) : 0.0f;
+    });
+    avatarEditor.addFunc("getPreviewG", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self ? self->editor().previewG(index) : 0.0f;
+    });
+    avatarEditor.addFunc("getPreviewB", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self ? self->editor().previewB(index) : 0.0f;
+    });
+    avatarEditor.addFunc("getPreviewA", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self ? self->editor().previewA(index) : 0.0f;
+    });
+    avatarEditor.addFunc("getPreviewSelected", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self && self->editor().isPreviewSelected(index);
+    });
+    avatarEditor.addFunc("getPreviewName", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self ? self->editor().previewName(index) : std::string{};
+    });
+    avatarEditor.addFunc("getParameterCount",
+                         [](ScriptAvatarDocumentEditor* self) { return self ? self->editor().parameterCount() : 0; });
+    avatarEditor.addFunc("getParameterId", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self ? self->editor().parameterId(index) : std::string{};
+    });
+    avatarEditor.addFunc("getParameterName", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self ? self->editor().parameterName(index) : std::string{};
+    });
+    avatarEditor.addFunc("getParameterValue", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self ? self->editor().parameterValue(index) : 0.0f;
+    });
+    avatarEditor.addFunc("getParameterMinimum", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self ? self->editor().parameterMinimum(index) : 0.0f;
+    });
+    avatarEditor.addFunc("getParameterMaximum", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self ? self->editor().parameterMaximum(index) : 1.0f;
+    });
+    avatarEditor.addFunc("getParameterSelected", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self && self->editor().isParameterSelected(index);
+    });
+    avatarEditor.addFunc("getExpressionCount",
+                         [](ScriptAvatarDocumentEditor* self) { return self ? self->editor().expressionCount() : 0; });
+    avatarEditor.addFunc("getExpressionId", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self ? self->editor().expressionId(index) : std::string{};
+    });
+    avatarEditor.addFunc("getExpressionName", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self ? self->editor().expressionName(index) : std::string{};
+    });
+    avatarEditor.addFunc("getExpressionSelected", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self && self->editor().isExpressionSelected(index);
+    });
+    avatarEditor.addFunc("getExpressionChannelCount", [](ScriptAvatarDocumentEditor* self, int index) {
+        return self ? self->editor().expressionChannelCount(index) : 0;
+    });
+    avatarEditor.addFunc("getExpressionChannelName", [](ScriptAvatarDocumentEditor* self, int expression, int channel) {
+        return self ? self->editor().expressionChannelName(expression, channel) : std::string{};
+    });
+
+    editor::registerEditorOwnedCreate<ScriptAvatarDocumentEditor, AvatarEditorModule>(
+        moduleClass, bind, "avatar target id must not be empty");
 }
 
 }  // namespace eve::avatar_editor

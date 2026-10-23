@@ -61,7 +61,7 @@ inline std::string mcpJsonEscape(const std::string& value) {
  * @return Object with `ok=false` plus the optional recovery fields.
  */
 inline Poco::JSON::Object::Ptr mcpFailureObject(const std::string& error, const std::string& hint = {},
-                                                bool                             retryable = false,
+                                                bool                            retryable = false,
                                                 const std::vector<std::string>& nextTools = {}) {
     Poco::JSON::Object::Ptr out = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
     out->set("ok", false);

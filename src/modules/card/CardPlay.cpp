@@ -1,5 +1,7 @@
 #include "card/CardPlay.h"
 
+#include "common/ConditionKeys.h"
+
 #include <algorithm>
 #include <exception>
 #include <string>
@@ -29,45 +31,46 @@ CardPlayConditionContext::CardPlayConditionContext(const CardData* card, const C
     : card_(card), definition_(&definition), queries_(std::move(queries)) {}
 
 std::optional<eve::Value> CardPlayConditionContext::value(std::string_view key) const {
+    if (auto tag = condition::stripPrefix(key, condition::kTagPrefix)) {
+        if (!card_) return std::nullopt;
+        return eve::Value(std::find(definition_->tags.begin(), definition_->tags.end(), *tag) !=
+                          definition_->tags.end());
+    }
+    if (auto attr = condition::stripPrefix(key, condition::kAttrPrefix)) {
+        if (!card_) return std::nullopt;
+        if (*attr == "cost" || *attr == "card.cost") return eve::Value(definition_->cost);
+        if (*attr == "attack" || *attr == "card.attack") return eve::Value(definition_->attack);
+        if (*attr == "health" || *attr == "card.health") return eve::Value(definition_->health);
+        return std::nullopt;
+    }
+    if (auto resource = condition::stripPrefix(key, condition::kResourcePrefix)) {
+        if (!queries_.resource) return std::nullopt;
+        return queries_.resource(*resource);
+    }
+    if (auto state = condition::stripPrefix(key, condition::kStatePrefix)) {
+        return cardValue(card_, *definition_, *state);
+    }
+    if (queries_.resource) {
+        if (auto resource = queries_.resource(key)) return resource;
+    }
     return cardValue(card_, *definition_, key);
 }
 
-std::optional<bool> CardPlayConditionContext::hasTag(std::string_view tag) const {
-    if (!card_) return std::nullopt;
-    return std::find(definition_->tags.begin(), definition_->tags.end(), tag) != definition_->tags.end();
-}
-
-std::optional<eve::Value> CardPlayConditionContext::attribute(std::string_view key) const {
-    if (!card_) return std::nullopt;
-    if (key == "cost" || key == "card.cost") return eve::Value(definition_->cost);
-    if (key == "attack" || key == "card.attack") return eve::Value(definition_->attack);
-    if (key == "health" || key == "card.health") return eve::Value(definition_->health);
-    return std::nullopt;
-}
-
-std::optional<eve::Value> CardPlayConditionContext::resource(std::string_view key) const {
-    if (!queries_.resource) return std::nullopt;
-    return queries_.resource(key);
-}
-
-std::optional<eve::Value> CardPlayConditionContext::state(std::string_view key) const {
-    return cardValue(card_, *definition_, key);
-}
-
-std::optional<bool> CardPlayConditionContext::authority(std::string_view scope) const {
-    if (!queries_.authority) return std::nullopt;
-    return queries_.authority(scope);
-}
-
-std::optional<decision::ConditionResult> CardPlayConditionContext::policy(std::string_view  name,
-                                                                          const eve::Value& arguments) const {
+std::optional<condition::ConditionResult> CardPlayConditionContext::policy(std::string_view  name,
+                                                                           const eve::Value& arguments) const {
+    if (auto authority = condition::resolveAuthorityAllow(name, arguments, [this](std::string_view scope) {
+            if (!queries_.authority) return std::optional<bool>{};
+            return queries_.authority(scope);
+        })) {
+        return authority;
+    }
     if (!queries_.policy) return std::nullopt;
     return queries_.policy(name, arguments);
 }
 
-decision::ConditionResult CardPlayConditionAdapter::evaluate(const CardData* card, const CardDefinition& definition,
-                                                             const decision::Condition& condition,
-                                                             CardPlayConditionQueries   queries) {
+condition::ConditionResult CardPlayConditionAdapter::evaluate(const CardData* card, const CardDefinition& definition,
+                                                              const condition::Condition& condition,
+                                                              CardPlayConditionQueries    queries) {
     CardPlayConditionContext context(card, definition, std::move(queries));
     return condition.evaluate(context);
 }
@@ -260,12 +263,14 @@ private:
 
 }  // namespace
 
-CardPlayParticipant::CardPlayParticipant(CardData& card) : card_(card) {}
+CardPlayParticipant::CardPlayParticipant(CardData& card) : card_(ecs::handle_of(&card)) {}
 
 eve::Result<void> CardPlayParticipant::prepare(const eve::transaction::TransactionContext& context) {
     (void)context;
     if (prepared_ || committed_) return cardLifecycleConflict("card play participant is already in flight or terminal");
-    auto state = card_.state();
+    auto* card = resolve();
+    if (!card) return cardLifecycleConflict("card handle is stale");
+    auto state = card->state();
     if (state->phase == CardState::Played || state->phase == CardState::Discarded ||
         state->phase == CardState::Disabled)
         return cardLifecycleConflict("card is not playable in its current state");
@@ -277,7 +282,9 @@ eve::Result<void> CardPlayParticipant::prepare(const eve::transaction::Transacti
 eve::Result<void> CardPlayParticipant::commit(const eve::transaction::TransactionContext& context) {
     (void)context;
     if (!prepared_ || committed_) return cardLifecycleConflict("card play participant has no uncommitted stage");
-    auto state = card_.state();
+    auto* card = resolve();
+    if (!card) return cardLifecycleConflict("card handle is stale");
+    auto state = card->state();
     // A preceding container-transfer participant deliberately projects the
     // card's destination phase during the same synchronous transaction. The
     // play participant is the final authority and publishes Played once all
@@ -298,11 +305,17 @@ eve::Result<void> CardPlayParticipant::rollback(const eve::transaction::Transact
 eve::Result<void> CardPlayParticipant::compensate(const eve::transaction::TransactionContext& context) {
     (void)context;
     if (!committed_) return cardLifecycleConflict("card play participant has no committed effect to compensate");
-    auto state   = card_.state();
+    auto* card = resolve();
+    if (!card) return cardLifecycleConflict("card handle is stale");
+    auto state   = card->state();
     state->phase = previousState_;
     committed_   = false;
     prepared_    = false;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+CardData* CardPlayParticipant::resolve() const {
+    return card_.table == ecs::current() ? dynamic_cast<CardData*>(ecs::try_get(card_)) : nullptr;
 }
 
 eve::Result<std::optional<eve::resource::CostSpec>> CardPlayPaymentAdapter::manaCost(const CardDefinition& definition) {
@@ -344,7 +357,7 @@ eve::Result<eve::transaction::TransactionReceipt> CardPlayPaymentAdapter::play(C
                                                               request.composition.conditionQueries);
     if (!condition.passed()) {
         DiagnosticDetails details;
-        details.emplace_back("reason", decision::conditionReasonCodeName(condition.reasonCode()));
+        details.emplace_back("reason", condition::conditionReasonCodeName(condition.reasonCode()));
         return eve::Result<eve::transaction::TransactionReceipt>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "card play condition was rejected",
                                    "condition", details));
@@ -352,10 +365,12 @@ eve::Result<eve::transaction::TransactionReceipt> CardPlayPaymentAdapter::play(C
 
     auto cost = manaCost(definition);
     if (!cost) return eve::Result<eve::transaction::TransactionReceipt>::failure(cost.status());
+    if (request.composition.paymentCost)
+        cost = eve::Result<std::optional<eve::resource::CostSpec>>::success(request.composition.paymentCost);
     if (cost.value() && request.playerAccount == nullptr)
         return eve::Result<eve::transaction::TransactionReceipt>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                   "a mana-bearing card play requires a player account", "playerAccount"));
+                                   "a resource-bearing card play requires a player account", "playerAccount"));
     if (request.transactionId.empty()) request.transactionId = "card.play." + definition.id;
 
     CardPlayParticipant                                     state(card);
@@ -370,6 +385,8 @@ eve::Result<eve::transaction::TransactionReceipt> CardPlayPaymentAdapter::play(C
     }
     participants.push_back(&state);
     if (request.composition.effect != nullptr) participants.push_back(request.composition.effect);
+    participants.insert(participants.end(), request.composition.additionalEffects.begin(),
+                        request.composition.additionalEffects.end());
 
     eve::transaction::TransactionContext context(std::move(request.transactionId));
     if (cost.value())

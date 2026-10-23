@@ -65,6 +65,8 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | 名称 | 用途 |
 |------|------|
 | `eve_status` | 附着 / 暂停 / 端口 / callgraph 摘要 |
+| `eve_script_components` | 引擎侧**脚本组件数据**的 JSON 视图：每个实体的已登记组件及其当前字段值（权威存储，不是脚本槽位）。未登记组件不出现；没有数据时是空列表 |
+| `eve_game_world` | Discover：当前运行时是什么世界（`config.title` / `config.modules` + 已实例化模块 + gameplay domains；可选 `eve.dev.publishWorldContext` 补 summary 等叙述字段）；等价资源 `eve://game-world`，也出现在 `eve_play` `op=status.gameWorld`。静态长文直接读仓库文件，不经契约转发 |
 | `eve_api_search` / `eve_api_get` | 查询本构建的 EveScript Binding Contracts（先查再写脚本；见 [AI 知识补偿](AI知识补偿.md)） |
 | `eve_ui_tree` / `eve_ui_get` / `eve_ui_click` | 普通游戏 retained UI 的语义树查询、控件状态读取和按 ID 点击；与 `eve_host_*` 编辑器宿主互补 |
 | `eve_eval` | 求值表达式 |
@@ -78,7 +80,7 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | `eve_restart` | **软重启**：不杀掉进程、不卸载 `ResourceManager` 缓存，重新跑 `eve_init`（可选 `args` → `eve.restartArgs`）；AI 调试时优先用它而不是反复 `eve run` |
 | `eve_ai_note` / `eve_ai_log` | 写入 / 读取 DevTools AI 日志 |
 | `eve_scene_status` / `eve_scene_nodes` / `eve_scene_node_get` / `eve_scene_node_set` | 运行时场景 / 实体查询与变换 |
-| `eve_scene_director_install` / `eve_scene_director_status` / `eve_scene_reset` / `eve_scene_modify` / `eve_scene_info` / `eve_camera_generate` | AI 场景导演：搭台 kit 安装 / 状态 / 清场 / 摆物调光摄像机 / 场景真值 / 生成机位（见 [AI 场景导演](AI场景导演.md)） |
+| `eve_scene_director_install` / `eve_scene_director_status` / `eve_scene_reset` / `eve_scene_modify` / `eve_scene_batch` / `eve_scene_info` / `eve_camera_generate` / `eve_whitebox_playtest` | AI 场景导演：搭台 kit / 单步与批量摆物 / 快速白盒游玩测试（见 [AI 场景导演](AI场景导演.md)、[`tools/whitebox-playtest`](../../tools/whitebox-playtest/)） |
 | `eve_procgen_recipes` / `eve_procgen_map` / `eve_procgen_mesh` | 程序化生成：算法/配方枚举、生成地图网格、构建网格 |
 | `eve_physics_new_world` / `eve_physics_list_worlds` / `eve_physics_raycast` / `eve_physics_remove_world` | 2D 物理世界与射线检测 |
 | `eve_render_status` / `eve_screenshot` | 渲染状态、当前帧截图（PNG）；相对路径按项目根解析并返回绝对路径与字节数 |
@@ -157,6 +159,8 @@ eve_console_read { "sinceSeq": 0, "limit": 200, "level": "error" }
 等一帧后重试即可——这是可重试状态而不是失败，无人值守循环应继续轮询。`eve_screenshot`
 的相对路径按项目根解析，响应返回绝对路径、字节数、像素尺寸；`eve_screenshot_image` 直接
 返回 MCP image content（`maxBytes` 默认 2 MiB，超出时返回 `image-too-large` 而不截断图片）。
+
+需要同时检查深度、法线、材质和阴影时，使用[同帧附件捕获工具](mcp-frame-capture.md)：一次请求生成不可变快照，再按 token 获取预览、原始像素或导出文件。
 
 ### 软重启（AI 调试不要反复杀进程）
 

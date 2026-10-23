@@ -1,3 +1,4 @@
+#include "common/Profile.h"
 // Vulkan backend implementation — swapchain and pipeline creation.
 //
 // Re-split from the merged dev single-TU Graphics.cpp (pure move;
@@ -169,6 +170,8 @@ void Graphics::createSwapchainAndPipeline() {
     // them down before replacing the swapchain (destroy() waitIdles first).
     presentRecording = {};
     swapchainPass = {};
+    presentModel.waitForAllFrames();
+    destroyFrameCapture();
     presentModel.destroy();
     presentModel = vkb::Present{};
 
@@ -212,21 +215,19 @@ void Graphics::createSwapchainAndPipeline() {
         vkb::RenderPassBuilder rpBuilder{device};
         renderpass =
             rpBuilder.addPresentAttachment(swapchain.image_format, vk::AttachmentLoadOp::eClear)
-                .addDepthAttachment(depthFormat, vk::AttachmentLoadOp::eClear,
-                                    vk::AttachmentStoreOp::eDontCare)
+                .addDepthAttachment(depthFormat, vk::AttachmentLoadOp::eClear, vk::AttachmentStoreOp::eDontCare)
                 .addSubpass(vkb::SubpassBuilder()
                                 .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
-                                .setDepthStencilAttachment(
-                                    1, vk::ImageLayout::eDepthStencilAttachmentOptimal))
-                .addDependency(VK_SUBPASS_EXTERNAL, 0,
-                               vk::PipelineStageFlagBits::eColorAttachmentOutput |
-                                   vk::PipelineStageFlagBits::eEarlyFragmentTests,
-                               vk::PipelineStageFlagBits::eColorAttachmentOutput |
-                                   vk::PipelineStageFlagBits::eEarlyFragmentTests,
-                               {},
-                               vk::AccessFlagBits::eColorAttachmentRead |
-                                   vk::AccessFlagBits::eColorAttachmentWrite |
-                                   vk::AccessFlagBits::eDepthStencilAttachmentWrite)
+                                .setDepthStencilAttachment(1, vk::ImageLayout::eDepthStencilAttachmentOptimal))
+                .addDependency(
+                    VK_SUBPASS_EXTERNAL, 0,
+                    vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests |
+                        vk::PipelineStageFlagBits::eLateFragmentTests,
+                    vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests,
+                    vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
+                    vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite |
+                        vk::AccessFlagBits::eDepthStencilAttachmentRead |
+                        vk::AccessFlagBits::eDepthStencilAttachmentWrite)
                 .build();
         presentAttachmentFormat_ = swapchain.image_format;
     }
@@ -623,6 +624,7 @@ void Graphics::destroyShadowResources() {
         }
     }
     shadowMaps.clear();
+    allocatedShadowMapSize = 0;
     if (shadowSampler) {
         device->destroySampler(shadowSampler);
         shadowSampler = vkb::DepthSampler{};
@@ -695,6 +697,7 @@ void Graphics::destroyGBufferResources() {
 }
 
 void Graphics::destroySceneColorResources() {
+    releaseFramePostTargets();
     sceneColorPassOpen = false;
     sceneColorHistoryValid = false;
     if (device.instance) device->waitIdle();
@@ -1335,8 +1338,26 @@ void Graphics::createSceneColorResources(int sceneW, int sceneH) {
     const bool msaa = samples != vk::SampleCountFlagBits::e1;
 
     sceneColorSlots.resize(kAsyncResourceCopies);
+    // Every scene slot can also be the destination of a same-frame snapshot.
+    struct CopyableSceneColor : vkb::ColorAttachmentImage {
+        CopyableSceneColor(vkb::Device &targetDevice, uint32_t width, uint32_t height, vk::Format format) {
+            vk::ImageCreateInfo info{};
+            info.imageType   = vk::ImageType::e2D;
+            info.format      = format;
+            info.extent      = vk::Extent3D{width, height, 1};
+            info.mipLevels   = 1;
+            info.arrayLayers = 1;
+            info.samples     = vk::SampleCountFlagBits::e1;
+            info.tiling      = vk::ImageTiling::eOptimal;
+            info.usage       = vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled |
+                         vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst;
+            info.sharingMode   = vk::SharingMode::eExclusive;
+            info.initialLayout = vk::ImageLayout::eUndefined;
+            create(targetDevice, info, vk::ImageViewType::e2D, vk::ImageAspectFlagBits::eColor, false);
+        }
+    };
     for (auto &slot : sceneColorSlots) {
-        slot.color = device.createColorTarget(w, h, colorFmt);
+        slot.color = CopyableSceneColor(device, w, h, colorFmt);
         if (msaa) {
             slot.msaaColor = device.createColorTarget(w, h, colorFmt, samples);
             slot.depth = device.createDepthTarget(w, h, depthFmt, false, samples);
@@ -1404,21 +1425,26 @@ void Graphics::createSceneColorResources(int sceneW, int sceneH) {
                 .setPColorAttachments(&colorRef)
                 .setPDepthStencilAttachment(&depthRef);
         std::array<vk::SubpassDependency, 2> dependencies{};
+        // Match addExternalShaderReadDependencies() exactly: dependencies are
+        // part of render-pass compatibility with existing pipelines/framebuffers.
+        // The copy is synchronized explicitly outside these compatible passes.
         dependencies[0] = vk::SubpassDependency()
                               .setSrcSubpass(VK_SUBPASS_EXTERNAL)
                               .setDstSubpass(0)
-                              .setSrcStageMask(vk::PipelineStageFlagBits::eTransfer)
+                              .setSrcStageMask(vk::PipelineStageFlagBits::eFragmentShader)
                               .setDstStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput |
                                                vk::PipelineStageFlagBits::eEarlyFragmentTests)
-                              .setSrcAccessMask(vk::AccessFlagBits::eTransferRead)
+                              .setSrcAccessMask(vk::AccessFlagBits::eShaderRead)
                               .setDstAccessMask(vk::AccessFlagBits::eColorAttachmentWrite |
-                                                vk::AccessFlagBits::eDepthStencilAttachmentRead);
+                                                vk::AccessFlagBits::eDepthStencilAttachmentWrite);
         dependencies[1] = vk::SubpassDependency()
                               .setSrcSubpass(0)
                               .setDstSubpass(VK_SUBPASS_EXTERNAL)
-                              .setSrcStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput)
+                              .setSrcStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput |
+                                               vk::PipelineStageFlagBits::eLateFragmentTests)
                               .setDstStageMask(vk::PipelineStageFlagBits::eFragmentShader)
-                              .setSrcAccessMask(vk::AccessFlagBits::eColorAttachmentWrite)
+                              .setSrcAccessMask(vk::AccessFlagBits::eColorAttachmentWrite |
+                                                vk::AccessFlagBits::eDepthStencilAttachmentWrite)
                               .setDstAccessMask(vk::AccessFlagBits::eShaderRead);
         const vk::RenderPassCreateInfo resumeInfo =
             vk::RenderPassCreateInfo()
@@ -1678,6 +1704,7 @@ void Graphics::queueSceneColorResolve() {
 }
 
 void Graphics::materializeSceneColorResolve() {
+    EV_PROFILE_MODULE("graphics", "Present.SceneResolve");
     Texture *src = pendingSceneResolveSource;
     pendingSceneResolveSource = nullptr;
     if (!src || !src->gpuHandle) return;
@@ -1731,10 +1758,16 @@ void Graphics::materializeSceneColorResolve() {
 }
 
 void Graphics::createShadowResources() {
-    if (!shadowMaps.empty()) return;
+    const int wantSize = ShadowSchemeSettings::current().resolvedAtlasMapSize();
+    if (!shadowMaps.empty()) {
+        if (allocatedShadowMapSize == wantSize) return;
+        // Resolution changed: drop the old atlas + deferred graphs that import it.
+        destroyShadowResources();
+    }
 
-    const uint32_t size = uint32_t(ShadowConfig::kMapSize);
+    const uint32_t size    = uint32_t(wantSize);
     const uint32_t layers = uint32_t(ShadowConfig::kTotalLayers);
+    allocatedShadowMapSize = wantSize;
 
     shadowMaps.resize(kAsyncResourceCopies);
     for (auto &slot : shadowMaps)
@@ -1938,6 +1971,7 @@ void Graphics::createShadowResources() {
 
 void Graphics::ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, size_t indicesBytes) {
     auto &st = currentClusteredStorage();
+    bool  reallocated = false;
     auto ensure = [&](vkb::GenericBuffer &buf, size_t &cap, size_t need) {
         if (need == 0) need = 4;
         if (cap >= need && buf.buffer) return;
@@ -1948,13 +1982,14 @@ void Graphics::ensureClusteredBuffers(size_t lightsBytes, size_t tableBytes, siz
                      vk::MemoryPropertyFlagBits::eHostVisible |
                          vk::MemoryPropertyFlagBits::eHostCoherent);
         cap = alloc;
+        reallocated = true;
     };
     ensure(st.lightsBuf, st.lightsCap, lightsBytes);
     ensure(st.tableBuf, st.tableCap, tableBytes);
     ensure(st.indicesBuf, st.indicesCap, indicesBytes);
     // Reallocated handles invalidate this frame's cached descriptor sets; drop
     // them so mesh3dClusteredSetFor rebinds against the new buffers.
-    currentMesh3dClusteredFrameSlots().sets.clear();
+    if (reallocated) currentMesh3dClusteredFrameSlots().sets.clear();
 }
 
 void Graphics::uploadClusteredLighting(const ClusteredLightingUpload &upload) {

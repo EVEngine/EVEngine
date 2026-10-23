@@ -31,6 +31,12 @@ sys.bindFields(1, "vel", ["x", "y"])
 
 ## Lifecycle
 
-Queries return entities matching the component composition. Plan lifetime before retaining references. Prefer small components and systems over an all-purpose Actor. Do not hide side effects in component data. When hot reload replaces class definitions, migrate retained instances instead of mixing old and new layouts.
+Script queries select entity types, including subclasses; eve.view(Type) returns an array and System.entities() uses its declared type scope. Do not infer an automatic component intersection from the native ECS. Plan lifetime before retaining references. Prefer small components and systems over an all-purpose Actor. Do not hide side effects in component data. When hot reload replaces class definitions, migrate retained instances instead of mixing old and new layouts.
 
 See [API conventions](../API-CONVENTIONS.md). The ECS base classes are script-defined, so the C++ reference alone does not describe all their methods. [Source](../../../../src/engine/common/ECS.cpp).
+
+For a complete movement/lifecycle example, use the [expanded Chinese ECS guide](../../../usr/modules/entity.md).
+It executes in userDocs.ecsLifecycle: create Position/Velocity, explicitly order systems, collect
+structural changes during iteration, then destroy entities after the view loop. Check isAlive before
+using retained references; the script getComponent/hasComponent APIs are defined by ECS.cpp.
+CPU/GPU authority, upload/readback policy and hot-reload rebuilding must be explicit.

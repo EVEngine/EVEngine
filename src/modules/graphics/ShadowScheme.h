@@ -47,8 +47,15 @@ struct ShadowPagingView {
 /**
  * @brief Process-wide defaults for creating shadows per light family.
  *
- * Controllers (RenderControl / script) mutate this; RenderSystem3D reads it
- * each frame when selecting casters and allocating atlas slots.
+ * Controllers (RenderControl / script / PhotoMode) mutate this; RenderSystem3D
+ * and Graphics backends read it each frame when selecting casters, building
+ * CSM, and allocating/resizing the depth-array atlas.
+ *
+ * Directional CSM and local spot shadows currently share one depth array, so
+ * `resolvedAtlasMapSize()` (max of the clamped directional/local sizes) is the
+ * GPU extent. Changing map size recreates shadow GPU resources on the next
+ * ensure/create path (`@cost` relative magnitude: full atlas realloc + deferred
+ * FrameGraph rebuild; amortized across frames until the next size change).
  *
  * Local spot shadows use a fixed atlas (`kLocalSlots`). When more casters
  * request shadows than slots, paging scores by intensity / distance / soft
@@ -61,8 +68,15 @@ struct EVENGINE_API_BACKENDS ShadowSchemeSettings {
     bool enableDirectionalCsm = true;
     bool enableSpotPerspective = true;
     bool enablePointCube = false;  // GPU atlas path lands later; keep off by default
+    /** @brief Preferred directional CSM atlas edge length (texels); clamped to {256..4096}². */
     int  directionalMapSize = ShadowConfig::kMapSize;
+    /** @brief Preferred local-spot atlas edge length; shares the directional array today. */
     int  localMapSize = 1024;
+    /**
+     * @brief Practical CSM far distance (camera-forward meters).
+     * Camera far is clamped to this so large scenes keep usable texel density.
+     */
+    float directionalMaxDistance = ShadowConfig::kMaxDistance;
     /** @brief Max local atlas occupants this frame (≤ kLocalSlots). */
     int  maxSpotShadowCasters = ShadowConfig::kLocalSlots;
     int  maxPointShadowCasters = 0;
@@ -81,9 +95,104 @@ struct EVENGINE_API_BACKENDS ShadowSchemeSettings {
     /** @brief Drop candidates below this score when paging view is valid. */
     float minPageScore = 1e-4f;
 
+    /**
+     * @brief Allocate different effective resolutions per CSM cascade from
+     * camera distance and screen coverage (shadow-edge / silhouette importance).
+     * Vulkan depth arrays require uniform layer extent, so the GPU still allocates
+     * one atlas edge; each cascade renders into a top-left viewport of its size
+     * and shaders remap UVs via `ShadowUBO::cascadeUvScale`.
+     */
+    bool enableAdaptiveCascadeResolution = true;
+    /**
+     * @brief Extra weight for cascades that cover more of the screen (edges /
+     * silhouettes that span the frame). 0 disables the screen term.
+     */
+    float adaptiveScreenWeight = 0.65f;
+    /** @brief Extra weight for near-camera distance (1/midSplit). */
+    float adaptiveDistanceWeight = 1.f;
+    /**
+     * @brief Hysteresis: only change a cascade size when the new candidate
+     * differs by at least this ratio (reduces flicker when scores wobble).
+     */
+    float adaptiveSizeHysteresis = 0.2f;
+
     /** @brief Borrow the process-wide settings object. */
     [[nodiscard]] static ShadowSchemeSettings& current();
+
+    /**
+     * @brief Atlas edge length actually allocated for GPU shadow maps.
+     * @return Power-of-two size in [kMinMapSize, kMaxMapSize].
+     */
+    [[nodiscard]] int resolvedAtlasMapSize() const;
+
+    /**
+     * @brief CSM far clamp used by `buildDirectionalCSM`.
+     * @return Positive finite meters (falls back to `ShadowConfig::kMaxDistance`).
+     */
+    [[nodiscard]] float resolvedDirectionalMaxDistance() const;
 };
+
+/**
+ * @brief Per-cascade effective map sizes chosen for one CSM build.
+ * @ownership Value type; copied into ShadowUpload for the frame.
+ */
+struct AdaptiveCascadeAllocation {
+    int sizes[ShadowConfig::kCascades]{ShadowConfig::kMapSize, ShadowConfig::kMapSize, ShadowConfig::kMapSize};
+    int atlasSize = ShadowConfig::kMapSize;
+};
+
+/**
+ * @brief Distribute atlas resolution across cascades by distance + screen coverage.
+ * @param atlasSize Shared depth-array edge length.
+ * @param splitEnds Camera-forward split ends (near..far); borrowed for the call only.
+ * @param screenCoverage Per-cascade projected screen area in [0,1] (0 = unknown); borrowed.
+ * @param settings Scheme toggles / weights / hysteresis.
+ * @ownership Caller retains `splitEnds` / `screenCoverage`; no pointer is retained.
+ * @lifetime Inputs must remain valid for the duration of the call.
+ * @cost Cheap CPU; no GPU work. May read/update process-wide size hysteresis cache.
+ */
+[[nodiscard]] EVENGINE_API_BACKENDS AdaptiveCascadeAllocation allocateAdaptiveCascadeResolutions(
+    int atlasSize, const float (&splitEnds)[ShadowConfig::kCascades + 1],
+    const float (&screenCoverage)[ShadowConfig::kCascades], const ShadowSchemeSettings& settings);
+
+/**
+ * @brief Estimate how much of the screen a cascade frustum slice covers.
+ * @return Area fraction in [0,1] of the NDC square covered by the projected slice.
+ */
+[[nodiscard]] EVENGINE_API_BACKENDS float estimateCascadeScreenCoverage(const glm::vec3& eye, const glm::vec3& target,
+                                                                        const glm::vec3& up, float fovYRad,
+                                                                        float aspect, float nearZ, float farZ);
+
+/** @brief Smallest supported shadow-map edge length. */
+inline constexpr int kMinShadowMapSize = 256;
+/** @brief Largest supported shadow-map edge length. */
+inline constexpr int kMaxShadowMapSize = 4096;
+
+/**
+ * @brief Clamp/round a requested map size to an allowed power-of-two.
+ * @param size Requested edge length in texels (any positive int).
+ * @return Nearest allowed size in [kMinShadowMapSize, kMaxShadowMapSize].
+ */
+[[nodiscard]] EVENGINE_API_BACKENDS int clampShadowMapSize(int size);
+
+/**
+ * @brief Map PhotoMode `m_shadowResolution` (0..3) to an atlas edge length.
+ * @param resolutionTier 0=512, 1=1024, 2=2048, 3=4096.
+ */
+[[nodiscard]] EVENGINE_API_BACKENDS int shadowMapSizeForResolutionTier(int resolutionTier);
+
+/**
+ * @brief Apply directional (and optional local) map sizes with validation.
+ * @cost Cheap CPU clamp; GPU recreate happens later on the Graphics ensure path.
+ * @return Failure when sizes are non-positive.
+ */
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> setShadowSchemeMapSizes(int directionalMapSize, int localMapSize = -1);
+
+/**
+ * @brief Apply CSM max distance with validation.
+ * @return Failure when distance is non-finite or ≤ 0.
+ */
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> setShadowSchemeDirectionalMaxDistance(float meters);
 
 /**
  * @brief One allocated local (spot/point-face) shadow slot for the frame.

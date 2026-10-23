@@ -7,6 +7,51 @@
 
 namespace eve::procgen_editing {
 using namespace detail;
+namespace {
+using DetachedConnections = std::vector<std::pair<std::uint32_t, procgen::road::RoadConnection>>;
+Result<DetachedConnections> detachUndoBindings(procgen::road::RoadNetwork&          candidate,
+                                               std::initializer_list<std::uint32_t> edgeIds) {
+    DetachedConnections owned;
+    const auto          affected = [&](std::uint32_t id) {
+        return std::find(edgeIds.begin(), edgeIds.end(), id) != edgeIds.end();
+    };
+    for (const auto& node : candidate.nodes()) {
+        const auto& connection = node.connection;
+        if (std::any_of(connection.ports.begin(), connection.ports.end(),
+                        [&](const auto& p) { return affected(p.edgeId); }) ||
+            std::any_of(connection.facilityRoutes.begin(), connection.facilityRoutes.end(),
+                        [&](const auto& r) { return affected(r.firstEdge) || affected(r.secondEdge); }))
+            owned.emplace_back(node.id, connection);
+    }
+    // Iterate owning copies: setNodeConnection atomically replaces candidate's graph storage.
+    for (const auto& [id, connection] : owned) {
+        (void)connection;
+        auto cleared = candidate.setNodeConnection(id, {});
+        if (!cleared.ok()) return Result<DetachedConnections>::failure(cleared.status());
+    }
+    return Result<DetachedConnections>::success(std::move(owned));
+}
+Result<void> restoreUndoBindings(procgen::road::RoadNetwork& candidate, DetachedConnections owned,
+                                 std::initializer_list<std::pair<std::uint32_t, std::uint32_t>> replacements) {
+    auto remap = [&](std::uint32_t& edge) {
+        for (const auto& [oldId, newId] : replacements)
+            if (edge == oldId) {
+                edge = newId;
+                return;
+            }
+    };
+    for (auto& [id, connection] : owned) {
+        for (auto& p : connection.ports) remap(p.edgeId);
+        for (auto& r : connection.facilityRoutes) {
+            remap(r.firstEdge);
+            remap(r.secondEdge);
+        }
+        auto restored = candidate.setNodeConnection(id, std::move(connection));
+        if (!restored.ok()) return restored;
+    }
+    return Result<void>::success();
+}
+}  // namespace
 
 EditorResult<void> RoadNetworkEditTarget::applyDomainOperation(const editing::DomainOperation& operation) {
     if (operation.target != targetId())
@@ -19,15 +64,23 @@ EditorResult<void> RoadNetworkEditTarget::applyDomainOperation(const editing::Do
             return reject<void>("editor.road.node-payload", "Road node payload is invalid");
         auto moved = network_->setNodePosition(nodeId, x, y, z);
         if (!moved.ok()) return roadFailure<void>(moved.status());
+    } else if (operation.type == kSetNodeConnection) {
+        std::uint32_t                 nodeId = 0;
+        procgen::road::RoadConnection connection;
+        const auto*                   encoded = field(operation.payload, "connection");
+        if (!readId(operation.payload, "id", nodeId) || !encoded || !decodeConnection(*encoded, connection))
+            return reject<void>("editor.road.connection-payload", "custom connection payload is invalid");
+        auto changed = network_->setNodeConnection(nodeId, std::move(connection));
+        if (!changed.ok()) return roadFailure<void>(changed.status());
     } else if (operation.type == kSetNodeRadius) {
-        std::uint32_t nodeId = 0;
-        float junctionRadius = 0.f;
+        std::uint32_t nodeId         = 0;
+        float         junctionRadius = 0.f;
         if (!decodeNodeRadius(operation.payload, nodeId, junctionRadius))
             return reject<void>("editor.road.node-radius-payload", "Road node radius payload is invalid");
         auto changed = network_->setNodeJunctionRadius(nodeId, junctionRadius);
         if (!changed.ok()) return roadFailure<void>(changed.status());
     } else if (operation.type == kSetNodeControl) {
-        std::uint32_t nodeId = 0;
+        std::uint32_t                      nodeId  = 0;
         procgen::road::RoadJunctionControl control = procgen::road::RoadJunctionControl::Uncontrolled;
         if (!decodeNodeControl(operation.payload, nodeId, control))
             return reject<void>("editor.road.node-control-payload", "Road node control payload is invalid");
@@ -35,11 +88,11 @@ EditorResult<void> RoadNetworkEditTarget::applyDomainOperation(const editing::Do
         if (!changed.ok()) return roadFailure<void>(changed.status());
     } else if (operation.type == kMergeNodes || operation.type == kMergeNodesAndConnect) {
         std::uint32_t keepNodeId = 0, removeNodeId = 0;
-        float maxDistance = 0.f;
+        float         maxDistance = 0.f;
         if (!decodeMergeNodes(operation.payload, keepNodeId, removeNodeId, maxDistance))
             return reject<void>("editor.road.merge-payload", "Road node merge payload is invalid");
         auto candidate = *network_;
-        auto merged = candidate.mergeNodes(keepNodeId, removeNodeId, maxDistance);
+        auto merged    = candidate.mergeNodes(keepNodeId, removeNodeId, maxDistance);
         if (!merged.ok()) return roadFailure<void>(merged.status());
         if (operation.type == kMergeNodesAndConnect) {
             auto connected = candidate.connectAllTurns(keepNodeId);
@@ -49,14 +102,13 @@ EditorResult<void> RoadNetworkEditTarget::applyDomainOperation(const editing::Do
         if (!valid.ok()) return roadFailure<void>(valid.status());
         *network_ = std::move(candidate);
     } else if (operation.type == kUnmergeNodes) {
-        procgen::road::RoadNode removedNode;
-        std::vector<procgen::road::RoadEdge> affectedEdges;
+        procgen::road::RoadNode                        removedNode;
+        std::vector<procgen::road::RoadEdge>           affectedEdges;
         std::vector<procgen::road::RoadLaneConnection> affectedLinks;
         std::vector<procgen::road::RoadLaneConnection> affectedBlockedLinks;
-        if (!decodeUnmergeNodes(operation.payload, removedNode, affectedEdges, affectedLinks,
-                                affectedBlockedLinks))
+        if (!decodeUnmergeNodes(operation.payload, removedNode, affectedEdges, affectedLinks, affectedBlockedLinks))
             return reject<void>("editor.road.unmerge-payload", "Road node unmerge payload is invalid");
-        auto candidate = *network_;
+        auto candidate    = *network_;
         auto restoredNode = candidate.restoreNode(removedNode);
         if (!restoredNode.ok()) return roadFailure<void>(restoredNode.status());
         for (const auto& edge : affectedEdges) {
@@ -91,8 +143,8 @@ EditorResult<void> RoadNetworkEditTarget::applyDomainOperation(const editing::Do
         auto changed = network_->setEdgeStyle(edgeId, style);
         if (!changed.ok()) return roadFailure<void>(changed.status());
     } else if (operation.type == kSetEdgeLanes) {
-        std::uint32_t                                edgeId = 0;
-        int                                          lanesForward = 0, lanesBackward = 0;
+        std::uint32_t                                  edgeId       = 0;
+        int                                            lanesForward = 0, lanesBackward = 0;
         std::vector<procgen::road::RoadLaneConnection> restoreLinks;
         std::vector<procgen::road::RoadLaneConnection> restoreBlockedLinks;
         if (!decodeLaneCounts(operation.payload, edgeId, lanesForward, lanesBackward, restoreLinks,
@@ -114,18 +166,33 @@ EditorResult<void> RoadNetworkEditTarget::applyDomainOperation(const editing::Do
         std::uint32_t edgeId = 0;
         if (!readId(operation.payload, "id", edgeId))
             return reject<void>("editor.road.reverse-payload", "Road edge reverse payload is invalid");
-        auto reversed = network_->reverseEdge(edgeId);
+        auto candidate = *network_;
+        auto reversed  = candidate.reverseEdge(edgeId);
         if (!reversed.ok()) return roadFailure<void>(reversed.status());
+        if (const auto* encoded = field(operation.payload, "restoreStyle")) {
+            std::uint32_t            restoredId = 0;
+            procgen::road::RoadStyle style;
+            if (!decodeStyle(*encoded, restoredId, style) || restoredId != edgeId)
+                return reject<void>("editor.road.reverse-authoring", "Reverse inverse authoring is invalid");
+            auto restored = candidate.setEdgeStyle(edgeId, std::move(style));
+            if (!restored.ok()) return roadFailure<void>(restored.status());
+        }
+        *network_ = std::move(candidate);
     } else if (operation.type == kReconnectEdgeEndpoint) {
-        std::uint32_t edgeId = 0, nodeId = 0;
-        bool fromEndpoint = false;
+        std::uint32_t                                  edgeId = 0, nodeId = 0;
+        bool                                           fromEndpoint = false;
         std::vector<procgen::road::RoadLaneConnection> restoreLinks;
         std::vector<procgen::road::RoadLaneConnection> restoreBlockedLinks;
         if (!decodeReconnectEndpoint(operation.payload, edgeId, fromEndpoint, nodeId, restoreLinks,
                                      restoreBlockedLinks))
             return reject<void>("editor.road.reconnect-payload", "Road endpoint reconnect payload is invalid");
+        if (restoreLinks.empty() && restoreBlockedLinks.empty()) {
+            auto edge = network_->edgeResult(edgeId);
+            if (!edge.ok()) return roadFailure<void>(edge.status());
+            if ((fromEndpoint ? edge.value().from : edge.value().to) == nodeId) return editing::noOp();
+        }
         auto candidate = *network_;
-        auto changed = candidate.reconnectEdgeEndpoint(edgeId, fromEndpoint, nodeId);
+        auto changed   = candidate.reconnectEdgeEndpoint(edgeId, fromEndpoint, nodeId);
         if (!changed.ok()) return roadFailure<void>(changed.status());
         for (const auto& link : restoreLinks) {
             auto restored = candidate.addLaneLink(link);
@@ -140,23 +207,23 @@ EditorResult<void> RoadNetworkEditTarget::applyDomainOperation(const editing::Do
         *network_ = std::move(candidate);
     } else if (operation.type == kDetachEdgeEndpoint) {
         std::uint32_t edgeId = 0, nodeId = 0;
-        bool fromEndpoint = false;
+        bool          fromEndpoint = false;
         if (!decodeDetachEndpoint(operation.payload, edgeId, fromEndpoint, nodeId))
             return reject<void>("editor.road.detach-payload", "Road endpoint detach payload is invalid");
         auto candidate = *network_;
-        auto detached = candidate.detachEdgeEndpoint(edgeId, fromEndpoint, nodeId);
+        auto detached  = candidate.detachEdgeEndpoint(edgeId, fromEndpoint, nodeId);
         if (!detached.ok()) return roadFailure<void>(detached.status());
         *network_ = std::move(candidate);
     } else if (operation.type == kReattachEdgeEndpoint) {
-        std::uint32_t edgeId = 0, oldNodeId = 0, detachedNodeId = 0;
-        bool fromEndpoint = false;
+        std::uint32_t                                  edgeId = 0, oldNodeId = 0, detachedNodeId = 0;
+        bool                                           fromEndpoint = false;
         std::vector<procgen::road::RoadLaneConnection> restoreLinks;
         std::vector<procgen::road::RoadLaneConnection> restoreBlockedLinks;
-        if (!decodeReattachEndpoint(operation.payload, edgeId, fromEndpoint, oldNodeId, detachedNodeId,
-                                    restoreLinks, restoreBlockedLinks))
+        if (!decodeReattachEndpoint(operation.payload, edgeId, fromEndpoint, oldNodeId, detachedNodeId, restoreLinks,
+                                    restoreBlockedLinks))
             return reject<void>("editor.road.reattach-payload", "Road endpoint reattach payload is invalid");
         auto candidate = *network_;
-        auto changed = candidate.reconnectEdgeEndpoint(edgeId, fromEndpoint, oldNodeId);
+        auto changed   = candidate.reconnectEdgeEndpoint(edgeId, fromEndpoint, oldNodeId);
         if (!changed.ok()) return roadFailure<void>(changed.status());
         for (const auto& link : restoreLinks) {
             auto restored = candidate.addLaneLink(link);
@@ -173,44 +240,41 @@ EditorResult<void> RoadNetworkEditTarget::applyDomainOperation(const editing::Do
         *network_ = std::move(candidate);
     } else if (operation.type == kSplitEdge) {
         std::uint32_t edgeId = 0, nodeId = 0, secondEdgeId = 0;
-        std::size_t controlPointIndex = 0;
-        float junctionRadius = 0.f;
+        std::size_t   controlPointIndex = 0;
+        float         junctionRadius    = 0.f;
         if (!decodeSplit(operation.payload, edgeId, controlPointIndex, junctionRadius, nodeId, secondEdgeId))
             return reject<void>("editor.road.split-payload", "Road split payload is invalid");
         auto candidate = *network_;
-        auto split = candidate.splitEdge(edgeId, controlPointIndex, junctionRadius, nodeId, secondEdgeId);
+        auto split     = candidate.splitEdge(edgeId, controlPointIndex, junctionRadius, nodeId, secondEdgeId);
         if (!split.ok()) return roadFailure<void>(split.status());
         if (split.value().nodeId != nodeId || split.value().secondEdgeId != secondEdgeId)
             return reject<void>("editor.road.split-identity", "Road split reserved identities no longer match",
                                 EditorStatus::Conflict);
         *network_ = std::move(candidate);
     } else if (operation.type == kSplitEdgeAtPosition) {
-        std::uint32_t edgeId = 0, nodeId = 0, secondEdgeId = 0;
+        std::uint32_t                   edgeId = 0, nodeId = 0, secondEdgeId = 0;
         procgen::road::RoadControlPoint position;
-        float maxDistance = 0.f, junctionRadius = 0.f;
+        float                           maxDistance = 0.f, junctionRadius = 0.f;
         if (!decodePositionSplit(operation.payload, edgeId, position, maxDistance, junctionRadius, nodeId,
                                  secondEdgeId))
             return reject<void>("editor.road.split-position-payload", "Road position split payload is invalid");
         auto candidate = *network_;
-        auto split = candidate.splitEdgeAtPosition(edgeId, position, maxDistance, junctionRadius, nodeId,
-                                                   secondEdgeId);
+        auto split = candidate.splitEdgeAtPosition(edgeId, position, maxDistance, junctionRadius, nodeId, secondEdgeId);
         if (!split.ok()) return roadFailure<void>(split.status());
         if (split.value().nodeId != nodeId || split.value().secondEdgeId != secondEdgeId)
             return reject<void>("editor.road.split-position-identity",
                                 "Road position split reserved identities no longer match", EditorStatus::Conflict);
         *network_ = std::move(candidate);
     } else if (operation.type == kConnectNodeAtPosition) {
-        std::uint32_t edgeId = 0, nodeId = 0, secondEdgeId = 0;
+        std::uint32_t                   edgeId = 0, nodeId = 0, secondEdgeId = 0;
         procgen::road::RoadControlPoint position;
-        procgen::road::RoadEdge branch;
-        float maxDistance = 0.f, junctionRadius = 0.f;
+        procgen::road::RoadEdge         branch;
+        float                           maxDistance = 0.f, junctionRadius = 0.f;
         if (!decodeConnectAtPosition(operation.payload, edgeId, position, maxDistance, junctionRadius, nodeId,
                                      secondEdgeId, branch))
-            return reject<void>("editor.road.connect-position-payload",
-                                "Road branch connection payload is invalid");
+            return reject<void>("editor.road.connect-position-payload", "Road branch connection payload is invalid");
         auto candidate = *network_;
-        auto split = candidate.splitEdgeAtPosition(edgeId, position, maxDistance, junctionRadius, nodeId,
-                                                   secondEdgeId);
+        auto split = candidate.splitEdgeAtPosition(edgeId, position, maxDistance, junctionRadius, nodeId, secondEdgeId);
         if (!split.ok()) return roadFailure<void>(split.status());
         auto restoredBranch = candidate.restoreEdge(branch);
         if (!restoredBranch.ok()) return roadFailure<void>(restoredBranch.status());
@@ -220,15 +284,17 @@ EditorResult<void> RoadNetworkEditTarget::applyDomainOperation(const editing::Do
         if (!valid.ok()) return roadFailure<void>(valid.status());
         *network_ = std::move(candidate);
     } else if (operation.type == kDisconnectNodeAtPosition) {
-        procgen::road::RoadEdge original;
+        procgen::road::RoadEdge                        original;
         std::vector<procgen::road::RoadLaneConnection> originalLinks;
         std::vector<procgen::road::RoadLaneConnection> originalBlockedLinks;
-        std::uint32_t nodeId = 0, secondEdgeId = 0, branchEdgeId = 0;
+        std::uint32_t                                  nodeId = 0, secondEdgeId = 0, branchEdgeId = 0;
         if (!decodeDisconnectAtPosition(operation.payload, original, originalLinks, originalBlockedLinks, nodeId,
                                         secondEdgeId, branchEdgeId))
             return reject<void>("editor.road.disconnect-position-payload",
                                 "Road branch disconnection payload is invalid");
         auto candidate = *network_;
+        auto bindings  = detachUndoBindings(candidate, {original.id, secondEdgeId});
+        if (!bindings.ok()) return roadFailure<void>(bindings.status());
         auto removedBranch = candidate.removeEdge(branchEdgeId);
         if (!removedBranch.ok()) return roadFailure<void>(removedBranch.status());
         auto removedSecond = candidate.removeEdge(secondEdgeId);
@@ -239,6 +305,9 @@ EditorResult<void> RoadNetworkEditTarget::applyDomainOperation(const editing::Do
         if (!removedNode.ok()) return roadFailure<void>(removedNode.status());
         auto restoredOriginal = candidate.restoreEdge(original);
         if (!restoredOriginal.ok()) return roadFailure<void>(restoredOriginal.status());
+        auto restoredBindings =
+            restoreUndoBindings(candidate, std::move(bindings).takeValue(), {{secondEdgeId, original.id}});
+        if (!restoredBindings.ok()) return roadFailure<void>(restoredBindings.status());
         for (const auto& link : originalLinks) {
             auto restoredLink = candidate.addLaneLink(link);
             if (!restoredLink.ok()) return roadFailure<void>(restoredLink.status());
@@ -251,18 +320,18 @@ EditorResult<void> RoadNetworkEditTarget::applyDomainOperation(const editing::Do
         if (!valid.ok()) return roadFailure<void>(valid.status());
         *network_ = std::move(candidate);
     } else if (operation.type == kConnectEdgeIntersection) {
-        std::uint32_t firstEdgeId = 0, secondEdgeId = 0, firstNodeId = 0, firstSecondEdgeId = 0;
-        std::uint32_t secondNodeId = 0, secondSecondEdgeId = 0;
+        std::uint32_t                   firstEdgeId = 0, secondEdgeId = 0, firstNodeId = 0, firstSecondEdgeId = 0;
+        std::uint32_t                   secondNodeId = 0, secondSecondEdgeId = 0;
         procgen::road::RoadControlPoint mergedPoint;
-        float firstParameter = 0.f, secondParameter = 0.f;
-        float maximumHeightDelta = 0.f, junctionRadius = 0.f;
-        if (!decodeIntersectionConnect(operation.payload, firstEdgeId, secondEdgeId, firstParameter,
-                                       secondParameter, mergedPoint, maximumHeightDelta, junctionRadius, firstNodeId,
-                                       firstSecondEdgeId, secondNodeId, secondSecondEdgeId))
+        float                           firstParameter = 0.f, secondParameter = 0.f;
+        float                           maximumHeightDelta = 0.f, junctionRadius = 0.f;
+        if (!decodeIntersectionConnect(operation.payload, firstEdgeId, secondEdgeId, firstParameter, secondParameter,
+                                       mergedPoint, maximumHeightDelta, junctionRadius, firstNodeId, firstSecondEdgeId,
+                                       secondNodeId, secondSecondEdgeId))
             return reject<void>("editor.road.intersection-payload", "Road intersection payload is invalid");
-        auto candidate = *network_;
-        auto firstSplit = candidate.splitEdgeAtSplineParameter(firstEdgeId, firstParameter, junctionRadius,
-                                                               firstNodeId, firstSecondEdgeId);
+        auto candidate  = *network_;
+        auto firstSplit = candidate.splitEdgeAtSplineParameter(firstEdgeId, firstParameter, junctionRadius, firstNodeId,
+                                                               firstSecondEdgeId);
         if (!firstSplit.ok()) return roadFailure<void>(firstSplit.status());
         auto secondSplit = candidate.splitEdgeAtSplineParameter(secondEdgeId, secondParameter, junctionRadius,
                                                                 secondNodeId, secondSecondEdgeId);
@@ -279,16 +348,16 @@ EditorResult<void> RoadNetworkEditTarget::applyDomainOperation(const editing::Do
         if (!valid.ok()) return roadFailure<void>(valid.status());
         *network_ = std::move(candidate);
     } else if (operation.type == kDisconnectEdgeIntersection) {
-        procgen::road::RoadEdge first, second;
+        procgen::road::RoadEdge                        first, second;
         std::vector<procgen::road::RoadLaneConnection> originalLinks;
         std::vector<procgen::road::RoadLaneConnection> originalBlockedLinks;
-        std::uint32_t sharedNodeId = 0, firstSecondEdgeId = 0, secondSecondEdgeId = 0;
+        std::uint32_t                                  sharedNodeId = 0, firstSecondEdgeId = 0, secondSecondEdgeId = 0;
         if (!decodeIntersectionDisconnect(operation.payload, first, second, originalLinks, originalBlockedLinks,
-                                          sharedNodeId,
-                                          firstSecondEdgeId, secondSecondEdgeId))
-            return reject<void>("editor.road.intersection-inverse",
-                                "Road intersection inverse payload is invalid");
+                                          sharedNodeId, firstSecondEdgeId, secondSecondEdgeId))
+            return reject<void>("editor.road.intersection-inverse", "Road intersection inverse payload is invalid");
         auto candidate = *network_;
+        auto bindings  = detachUndoBindings(candidate, {first.id, second.id, firstSecondEdgeId, secondSecondEdgeId});
+        if (!bindings.ok()) return roadFailure<void>(bindings.status());
         for (const auto edgeId : {firstSecondEdgeId, secondSecondEdgeId, first.id, second.id}) {
             auto removed = candidate.removeEdge(edgeId);
             if (!removed.ok()) return roadFailure<void>(removed.status());
@@ -299,6 +368,9 @@ EditorResult<void> RoadNetworkEditTarget::applyDomainOperation(const editing::Do
         if (!restoredFirst.ok()) return roadFailure<void>(restoredFirst.status());
         auto restoredSecond = candidate.restoreEdge(second);
         if (!restoredSecond.ok()) return roadFailure<void>(restoredSecond.status());
+        auto restoredBindings = restoreUndoBindings(candidate, std::move(bindings).takeValue(),
+                                                    {{firstSecondEdgeId, first.id}, {secondSecondEdgeId, second.id}});
+        if (!restoredBindings.ok()) return roadFailure<void>(restoredBindings.status());
         for (const auto& link : originalLinks) {
             auto restored = candidate.addLaneLink(link);
             if (!restored.ok()) return roadFailure<void>(restored.status());
@@ -314,10 +386,12 @@ EditorResult<void> RoadNetworkEditTarget::applyDomainOperation(const editing::Do
         procgen::road::RoadEdge                        edge;
         std::vector<procgen::road::RoadLaneConnection> links;
         std::vector<procgen::road::RoadLaneConnection> blockedLinks;
-        std::uint32_t nodeId = 0, secondEdgeId = 0;
+        std::uint32_t                                  nodeId = 0, secondEdgeId = 0;
         if (!decodeUnsplit(operation.payload, edge, links, blockedLinks, nodeId, secondEdgeId))
             return reject<void>("editor.road.unsplit-payload", "Road unsplit payload is invalid");
         auto candidate = *network_;
+        auto bindings  = detachUndoBindings(candidate, {edge.id, secondEdgeId});
+        if (!bindings.ok()) return roadFailure<void>(bindings.status());
         auto removedSecond = candidate.removeEdge(secondEdgeId);
         if (!removedSecond.ok()) return roadFailure<void>(removedSecond.status());
         auto removedFirst = candidate.removeEdge(edge.id);
@@ -326,6 +400,9 @@ EditorResult<void> RoadNetworkEditTarget::applyDomainOperation(const editing::Do
         if (!removedNode.ok()) return roadFailure<void>(removedNode.status());
         auto restoredEdge = candidate.restoreEdge(edge);
         if (!restoredEdge.ok()) return roadFailure<void>(restoredEdge.status());
+        auto restoredBindings =
+            restoreUndoBindings(candidate, std::move(bindings).takeValue(), {{secondEdgeId, edge.id}});
+        if (!restoredBindings.ok()) return roadFailure<void>(restoredBindings.status());
         for (const auto& link : links) {
             auto restoredLink = candidate.addLaneLink(link);
             if (!restoredLink.ok()) return roadFailure<void>(restoredLink.status());
@@ -384,16 +461,15 @@ EditorResult<void> RoadNetworkEditTarget::applyDomainOperation(const editing::Do
         if (!decodeLink(operation.payload, link))
             return reject<void>("editor.road.lane-link-payload", "Road lane-link payload is invalid");
         auto candidate = *network_;
-        auto changed   = operation.type == kRestoreLaneLink ? candidate.addLaneLink(link)
-                                                            : candidate.removeLaneLink(link);
+        auto changed =
+            operation.type == kRestoreLaneLink ? candidate.addLaneLink(link) : candidate.removeLaneLink(link);
         if (!changed.ok()) return roadFailure<void>(changed.status());
         *network_ = std::move(candidate);
     } else if (operation.type == kBlockLaneLink || operation.type == kUnblockLaneLink) {
         procgen::road::RoadLaneConnection link;
-        bool restoreActive = false;
+        bool                              restoreActive = false;
         if (!decodeBlockedLink(operation.payload, link, restoreActive))
-            return reject<void>("editor.road.lane-link-block-payload",
-                                "Road lane-link block payload is invalid");
+            return reject<void>("editor.road.lane-link-block-payload", "Road lane-link block payload is invalid");
         auto candidate = *network_;
         if (operation.type == kBlockLaneLink) {
             auto changed = candidate.blockLaneLink(link);
@@ -411,10 +487,11 @@ EditorResult<void> RoadNetworkEditTarget::applyDomainOperation(const editing::Do
         std::vector<procgen::road::RoadLaneConnection> links;
         if (!decodeLinks(operation.payload, links))
             return reject<void>("editor.road.lane-links-payload", "Road lane-link batch payload is invalid");
+        if (links.empty()) return editing::noOp();
         auto candidate = *network_;
         for (const auto& link : links) {
-            auto changed = operation.type == kRestoreLaneLinks ? candidate.addLaneLink(link)
-                                                               : candidate.removeLaneLink(link);
+            auto changed =
+                operation.type == kRestoreLaneLinks ? candidate.addLaneLink(link) : candidate.removeLaneLink(link);
             if (!changed.ok()) return roadFailure<void>(changed.status());
         }
         *network_ = std::move(candidate);

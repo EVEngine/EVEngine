@@ -74,6 +74,42 @@ print(sh.childCount());
 
 Ease 扩展：`in/out/inOut` + `Back` / `Elastic` / `Bounce`。
 
+把每个采样值**推给一个脚本对象**（不用逐帧 `value()` 轮询）：
+
+```squirrel
+class MoveSink {
+    function write(value) { myBar.width = value }   // 每次求值调一次
+}
+local sink = MoveSink();
+
+local h = anim.newMotion(0, 100, 0.5).bind(sink);   // bind = 绑上并开跑
+// 或者先只绑不跑（放进 sequence 时用）：builder.to(sink); seq.append(builder);
+```
+
+- `write(value)` 的失败**不会被吞**：motion 会按 `cancelOnError`（默认开）取消，本次 `advance()`
+  也会返回失败；连初始化值都拒绝的 sink 会让 `bind()` 自己失败。
+- 序列里用：`local b = anim.newMotion(0, 1, 0.3); b.to(sink); seq.append(b);`
+- 脚本 sink 与原生 sink（`FloatPointerSink` 等）是同一个接口的两个实现，行为一致。
+
+向量/颜色/四元数形状也有脚本 builder 与脚本 sink（值用表传进 builder，逐帧按位置参数推给 sink）：
+
+```squirrel
+local off  = anim.newMotionVec2({ x = 0, y = 0 }, { x = 8, y = 4 }, 0.4).bind(offsetSink)   // write(x, y)
+local move = anim.newMotionVec3({ x = 0, y = 0, z = 0 }, { x = 1, y = 2, z = 3 }, 0.8).bind(moveSink) // write(x, y, z)
+local tint = anim.newMotionColor({ r = 1, g = 1, b = 1, a = 1 }, { r = 1, g = 0, b = 0, a = 1 }, 0.2)
+                 .bind(colorSink)                                                          // write(r, g, b, a)
+local turn = anim.newMotionQuat({ x = 0, y = 0, z = 0, w = 1 }, { x = 0, y = 0, z = 0.7071068, w = 0.7071068 }, 0.5)
+                 .bind(quatSink)                                                           // write(x, y, z, w)
+```
+
+- **builder 收表、sink 收位置参数**：builder 是一次性配置，表更好读（`{x=,y=}` / `{r,g,b,a}`）；
+  sink 在逐帧路径上，所以按位置给数（vec2 两个、vec3 三个、color 四个、quat 四个），不给每帧造表。
+- 表缺字段或不是数会**明确抛错**，不会按 0 静默跑一条动画。
+- vec2/vec3 builder 有 `stylePunch/styleShake/frequency/dampingRatio/seed`；color/quat 的描述里没有这些
+  字段，所以那两个 builder **不注册**这些方法（调用会报"没有这个方法"，而不是静默忽略）。
+- 四元数按 **slerp** 插值：端点请给单位四元数，否则插到的位置不是你以为的那个。
+- 这四种形状目前**还不支持放进 `MotionSequence`**（`MotionSequence` 的脚本侧只接了 float 的 builder）。
+
 Punch / Shake（有限时长阻尼正弦；`to`/`strength` 为振幅）与 Color/Quat：
 
 ```cpp
@@ -904,3 +940,16 @@ Unknown versions, trailing data, invalid names, nonfinite/unsorted keys and
 resource limits are rejected. Regenerate older contact script tables using
 `scripts/build_unreal_contact_curves.py --library ...`; the binary layout and
 limits are documented in `tools/unreal-uasset-converter/README.md`.
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](animation/api-reference.md)，使用前先确认本章的前置条件与生命周期。
+
+## 集成任务：从动作到角色属性
+
+先加载同一 Skeleton 对应的 Clip，创建 Animator/播放状态，update 用唯一模拟 dt 求值，再把姿态交给对应渲染角色。Tween/Motion 只计算或投影值，不自动移动你的实体；保存 playback handle，取消角色时取消播放和回调。组合 upper-body/lower-body 时检查骨骼 mask 与基准姿态，不能每帧重建 skeleton。事件在规定阶段消费；热更候选 clip 验证完成后再替换，旧借用停止后释放资源。
+
+完整项目：[examples/layered-animation](../../../examples/layered-animation/README.md)，
+其 [main.nut](../../../examples/layered-animation/main.nut) 展示实际生命周期。
+先验证现有资产可加载，再换成自己的资源。测试失败、取消、资源缺失和旧 revision，
+不能只以脚本没有语法错误作为渲染或玩法正确的证据。

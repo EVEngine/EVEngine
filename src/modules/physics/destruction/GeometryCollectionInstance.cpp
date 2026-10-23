@@ -1,7 +1,9 @@
 #include "physics/destruction/GeometryCollectionInstance.h"
 
 #include "physics/Body3D.h"
+#include "physics/Joint3D.h"
 #include "physics/World3D.h"
+#include "physics/destruction/FractureGeometry.h"
 #include "physics/destruction/GeometryCollectionSnapshot.h"
 
 #include <algorithm>
@@ -37,14 +39,45 @@ GeometryCollectionInstance::~GeometryCollectionInstance() { releaseBodies(); }
 
 eve::Result<std::unique_ptr<GeometryCollectionInstance>> GeometryCollectionInstance::create(
     World3D& world, const GeometryCollectionAsset& asset, float originX, float originY, float originZ) {
+    return createInternal(world, asset, {}, originX, originY, originZ);
+}
+std::shared_ptr<const FractureGeometry> GeometryCollectionInstance::fragmentGeometry() const noexcept {
+    return geometry_;
+}
+eve::Result<std::unique_ptr<GeometryCollectionInstance>> GeometryCollectionInstance::createFractured(
+    World3D& world, const GeometryCollectionAsset& asset, const FractureGeometry& geometry, float x, float y, float z) {
+    auto valid = geometry.validate();
+    if (!valid) return eve::Result<std::unique_ptr<GeometryCollectionInstance>>::failure(valid.status());
+    if (geometry.fragments.size() != asset.bones.size())
+        return eve::Result<std::unique_ptr<GeometryCollectionInstance>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "fragment count does not match bones", "geometry"));
+    for (std::size_t i = 0; i < geometry.fragments.size(); ++i) {
+        const auto& b = asset.bones[i];
+        const auto& f = geometry.fragments[i];
+        for (std::size_t v = 0; v < f.positions.size(); v += 3)
+            if (std::abs(f.positions[v]) > b.halfExtentX + 1e-5f ||
+                std::abs(f.positions[v + 1]) > b.halfExtentY + 1e-5f ||
+                std::abs(f.positions[v + 2]) > b.halfExtentZ + 1e-5f)
+                return eve::Result<std::unique_ptr<GeometryCollectionInstance>>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "fragment vertices exceed declared bounds", "geometry"));
+    }
+    return createInternal(world, asset, std::make_shared<const FractureGeometry>(geometry), x, y, z);
+}
+eve::Result<std::unique_ptr<GeometryCollectionInstance>> GeometryCollectionInstance::createInternal(
+    World3D& world, const GeometryCollectionAsset& asset, std::shared_ptr<const FractureGeometry> geometry,
+    float originX, float originY, float originZ) {
     auto valid = asset.validate();
     if (!valid) return eve::Result<std::unique_ptr<GeometryCollectionInstance>>::failure(valid.status());
+    if (!std::isfinite(originX) || !std::isfinite(originY) || !std::isfinite(originZ))
+        return eve::Result<std::unique_ptr<GeometryCollectionInstance>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "instance origin must be finite", "origin"));
     if (!world.isValid())
         return eve::Result<std::unique_ptr<GeometryCollectionInstance>>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::StaleHandle, "geometry-collection create requires a live World3D", "world"));
 
     auto instance = std::unique_ptr<GeometryCollectionInstance>(
         new GeometryCollectionInstance(world.runtimeHandle(), originX, originY, originZ));
+    instance->geometry_ = std::move(geometry);
     instance->bones_.reserve(asset.bones.size());
     instance->edges_.reserve(asset.edges.size());
 
@@ -71,8 +104,21 @@ eve::Result<std::unique_ptr<GeometryCollectionInstance>> GeometryCollectionInsta
             return eve::Result<std::unique_ptr<GeometryCollectionInstance>>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::Failed, "geometry-collection failed to create a bone body", "body"));
         }
-        body->newBoxShape(boneDef.halfExtentX * 2.f, boneDef.halfExtentY * 2.f, boneDef.halfExtentZ * 2.f,
-                          boneDef.density, boneDef.friction, boneDef.restitution);
+        try {
+            if (instance->geometry_) {
+                const auto& fragment = instance->geometry_->fragments[instance->bones_.size()];
+                body->newConvexHullShape(fragment.positions, 254, boneDef.density, boneDef.friction,
+                                         boneDef.restitution);
+            } else {
+                body->newBoxShape(boneDef.halfExtentX * 2.f, boneDef.halfExtentY * 2.f, boneDef.halfExtentZ * 2.f,
+                                  boneDef.density, boneDef.friction, boneDef.restitution);
+            }
+        } catch (const std::exception& error) {
+            body->destroy();
+            rollback();
+            return eve::Result<std::unique_ptr<GeometryCollectionInstance>>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, error.what(), "fragmentCollider"));
+        }
         auto link = PhysicsLink::fromBody(*body);
         if (!link) {
             rollback();
@@ -100,6 +146,17 @@ eve::Result<std::unique_ptr<GeometryCollectionInstance>> GeometryCollectionInsta
         instance->edges_.push_back(edge);
     }
 
+    if (instance->geometry_) {
+        auto constraints = instance->stageConstraints(instance->edges_);
+        if (!constraints) {
+            rollback();
+            return eve::Result<std::unique_ptr<GeometryCollectionInstance>>::failure(constraints.status());
+        }
+        instance->ownedJoints_ = std::move(constraints).takeValue();
+        for (std::size_t i = 0; i < instance->edges_.size(); ++i)
+            instance->edges_[i].joint =
+                instance->ownedJoints_[i] ? instance->ownedJoints_[i]->runtimeHandle() : PhysicsJointHandle::invalid();
+    }
     return eve::Result<std::unique_ptr<GeometryCollectionInstance>>::success(std::move(instance));
 }
 
@@ -241,6 +298,9 @@ void GeometryCollectionInstance::breakEdge(int edgeIndex, std::uint64_t tick, De
     auto& edge = edges_[static_cast<std::size_t>(edgeIndex)];
     if (edge.broken) return;
     edge.broken = true;
+    if (static_cast<std::size_t>(edgeIndex) < ownedJoints_.size())
+        ownedJoints_[static_cast<std::size_t>(edgeIndex)].reset();
+    edge.joint = PhysicsJointHandle::invalid();
     ++receipt.edgesBroken;
 
     BoneDetachEvent event;
@@ -504,6 +564,12 @@ eve::Result<void> GeometryCollectionInstance::restoreSnapshot(const GeometryColl
     std::vector<Body3D*>     bodies(snapshot.bones.size(), nullptr);
     for (std::size_t i = 0; i < snapshot.bones.size(); ++i) {
         const auto& src = snapshot.bones[i];
+        if (geometry_ && (src.halfExtentX != bones_[i].halfExtentX || src.halfExtentY != bones_[i].halfExtentY ||
+                          src.halfExtentZ != bones_[i].halfExtentZ || src.clusterId != bones_[i].clusterId ||
+                          src.fractureLevel != bones_[i].fractureLevel))
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                       "snapshot cannot replace immutable fragment metadata", "snapshot"));
         stagedBones[i].state         = static_cast<BoneRuntimeState>(src.state);
         stagedBones[i].anchored      = src.anchored;
         stagedBones[i].clusterId     = src.clusterId;
@@ -525,6 +591,14 @@ eve::Result<void> GeometryCollectionInstance::restoreSnapshot(const GeometryColl
         stagedEdges[i].broken            = src.broken;
     }
 
+    if (geometry_) {
+        auto stagedJoints = stageConstraints(stagedEdges);
+        if (!stagedJoints) return eve::Result<void>::failure(stagedJoints.status());
+        releaseConstraints();
+        ownedJoints_ = std::move(stagedJoints).takeValue();
+        for (std::size_t i = 0; i < stagedEdges.size(); ++i)
+            stagedEdges[i].joint = ownedJoints_[i] ? ownedJoints_[i]->runtimeHandle() : PhysicsJointHandle::invalid();
+    }
     for (std::size_t i = 0; i < stagedBones.size(); ++i) {
         Body3D* body = bodies[i];
         switch (stagedBones[i].state) {
@@ -564,6 +638,7 @@ void GeometryCollectionInstance::destroyOwnedBodies(World3D& world) {
 }
 
 void GeometryCollectionInstance::releaseBodies() {
+    releaseConstraints();
     if (World3D* world = resolveWorld()) {
         destroyOwnedBodies(*world);
     } else {

@@ -7,8 +7,13 @@ add_subdirectory("${EVE_ROOT}/external/zeroerr" zeroerr)
 target_compile_definitions(zeroerr PUBLIC ZEROERR_NO_MAIN)
 add_executable(transaction_contracts
     main.cpp
-    "${EVE_ROOT}/test/editor_authority_atomic.cpp"
+    "${EVE_ROOT}/test/integration/transaction-authority/editor_authority_atomic.cpp"
+    "${EVE_ROOT}/src/modules/editing/EditingValue.cpp"
     "${EVE_ROOT}/src/modules/editing/EditingAuthority.cpp"
+    "${EVE_ROOT}/src/modules/editing/EditingResult.cpp"
+    "${EVE_ROOT}/src/engine/common/Diagnostic.cpp"
+    "${EVE_ROOT}/src/engine/common/Result.cpp"
+    "${EVE_ROOT}/src/engine/common/Status.cpp"
     "${EVE_ROOT}/src/engine/common/Identity.cpp")
 target_include_directories(transaction_contracts PRIVATE
     "${EVE_ROOT}/src/engine" "${EVE_ROOT}/src/modules")

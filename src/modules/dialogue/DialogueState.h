@@ -7,9 +7,9 @@
  * @brief Dialogue's state boundary, condition adapter, and command request protocol.
  */
 
+#include "common/Condition.h"
 #include "common/StateAccess.h"
 #include "common/StateValue.h"
-#include "decision/Condition.h"
 #include "dialogue/DialoguePayment.h"
 
 #include <cstdint>
@@ -83,7 +83,7 @@ using CommandRequestHandler = std::function<CommandResponse(const CommandRequest
  * query, the context checks the registered `IStateQuery` capability/listeners.
  * A known false result is never confused with an unavailable provider.
  */
-class StateEvaluationContext final : public eve::decision::EvaluationContext {
+class EVENGINE_API_ORCHESTRATION StateEvaluationContext final : public eve::condition::EvaluationContext {
 public:
     /** @brief Construct a context for a stable subject id and optional provider. */
     explicit StateEvaluationContext(std::string subject = {}, eve::IStateQuery* provider = nullptr);
@@ -94,37 +94,22 @@ public:
     void setProvider(eve::IStateQuery* provider) noexcept { provider_ = provider; }
     /** @brief Install a read-only policy callback without retaining its arguments. */
     void setPolicyEvaluator(
-        std::function<std::optional<eve::decision::ConditionResult>(std::string_view, const eve::Value&)> evaluator) {
+        std::function<std::optional<eve::condition::ConditionResult>(std::string_view, const eve::Value&)> evaluator) {
         policyEvaluator_ = std::move(evaluator);
     }
 
-    /** @copydoc eve::decision::EvaluationContext::value */
+    /** @copydoc eve::condition::EvaluationContext::value */
     /** @brief Value. */
     [[nodiscard]] std::optional<eve::Value> value(std::string_view key) const override;
-    /** @copydoc eve::decision::EvaluationContext::hasTag */
-    /** @brief True when tag. */
-    [[nodiscard]] std::optional<bool> hasTag(std::string_view tag) const override;
-    /** @copydoc eve::decision::EvaluationContext::attribute */
-    /** @brief Attribute. */
-    [[nodiscard]] std::optional<eve::Value> attribute(std::string_view key) const override;
-    /** @copydoc eve::decision::EvaluationContext::resource */
-    /** @brief Resource. */
-    [[nodiscard]] std::optional<eve::Value> resource(std::string_view key) const override;
-    /** @copydoc eve::decision::EvaluationContext::state */
-    /** @brief State. */
-    [[nodiscard]] std::optional<eve::Value> state(std::string_view key) const override;
-    /** @copydoc eve::decision::EvaluationContext::authority */
-    /** @brief Authority. */
-    [[nodiscard]] std::optional<bool> authority(std::string_view scope) const override;
-    /** @copydoc eve::decision::EvaluationContext::policy */
+    /** @copydoc eve::condition::EvaluationContext::policy */
     /** @brief Policy. */
-    [[nodiscard]] std::optional<eve::decision::ConditionResult> policy(std::string_view  name,
-                                                                       const eve::Value& arguments) const override;
+    [[nodiscard]] std::optional<eve::condition::ConditionResult> policy(std::string_view  name,
+                                                                        const eve::Value& arguments) const override;
 
 private:
     std::string       subject_;
     eve::IStateQuery* provider_ = nullptr;
-    std::function<std::optional<eve::decision::ConditionResult>(std::string_view, const eve::Value&)> policyEvaluator_;
+    std::function<std::optional<eve::condition::ConditionResult>(std::string_view, const eve::Value&)> policyEvaluator_;
 };
 
 /**
@@ -151,7 +136,7 @@ public:
     void setMutationProvider(eve::IStateMutation* provider) noexcept { mutationProvider_ = provider; }
     /** @brief Install a read-only policy evaluator used by PolicyCall conditions. */
     void setPolicyEvaluator(
-        std::function<std::optional<eve::decision::ConditionResult>(std::string_view, const eve::Value&)> evaluator) {
+        std::function<std::optional<eve::condition::ConditionResult>(std::string_view, const eve::Value&)> evaluator) {
         policyEvaluator_ = std::move(evaluator);
     }
 
@@ -166,12 +151,12 @@ public:
     /** @brief Query one persistent state value. */
     [[nodiscard]] std::optional<eve::Value> state(std::string_view key) const;
 
-    /** @brief Compile a canonical condition specification to decision::Condition. */
-    [[nodiscard]] eve::Result<eve::decision::Condition> compileCondition(const eve::Value& specification) const;
+    /** @brief Compile a canonical condition specification to condition::Condition. */
+    [[nodiscard]] eve::Result<eve::condition::Condition> compileCondition(const eve::Value& specification) const;
     /** @brief Evaluate an already compiled shared condition with explanation. */
-    [[nodiscard]] eve::decision::ConditionResult evaluate(const eve::decision::Condition& condition) const;
+    [[nodiscard]] eve::condition::ConditionResult evaluate(const eve::condition::Condition& condition) const;
     /** @brief Compile and evaluate a canonical condition specification. */
-    [[nodiscard]] eve::decision::ConditionResult evaluate(const eve::Value& specification) const;
+    [[nodiscard]] eve::condition::ConditionResult evaluate(const eve::Value& specification) const;
 
     /** @brief Apply a complete mutation set through one authoritative provider. */
     [[nodiscard]] eve::Result<eve::MutationReceipt> apply(std::span<const eve::StateMutation> mutations,
@@ -183,7 +168,7 @@ private:
     std::string          subject_;
     eve::IStateQuery*    queryProvider_    = nullptr;
     eve::IStateMutation* mutationProvider_ = nullptr;
-    std::function<std::optional<eve::decision::ConditionResult>(std::string_view, const eve::Value&)> policyEvaluator_;
+    std::function<std::optional<eve::condition::ConditionResult>(std::string_view, const eve::Value&)> policyEvaluator_;
 };
 
 }  // namespace eve::dialogue

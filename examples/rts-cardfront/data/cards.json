@@ -1,0 +1,26 @@
+[
+  {
+    "id": "grenade",
+    "name": "BREACH",
+    "kind": "skill",
+    "cost": 10
+  },
+  {
+    "id": "reinforcement",
+    "name": "REINFORCE",
+    "kind": "production",
+    "cost": 8
+  },
+  {
+    "id": "repair",
+    "name": "FIELD REPAIR",
+    "kind": "skill",
+    "cost": 6
+  },
+  {
+    "id": "stim",
+    "name": "OVERDRIVE",
+    "kind": "skill",
+    "cost": 6
+  }
+]

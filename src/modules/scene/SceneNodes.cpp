@@ -4,6 +4,7 @@
 // (Scene.cpp) and the node manipulation methods live in separate
 // translation units. Pure move: no behavior change.
 
+#include "common/SquirrelBinding.h"
 #include "scene/Scene.h"
 #include "scene/SceneBounds.h"
 #include "scene/SceneInternal.h"
@@ -294,10 +295,7 @@ bool Scene::setNodeQuaternionAt(const std::string &hostName, const std::string &
     SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     if (!h || !n) return false;
     glm::quat q(qw, qx, qy, qz);
-    glm::vec3 e = glm::eulerAngles(q);  // pitch(x), yaw(y), roll(z)
-    n->yaw = e.y;
-    n->pitch = e.x;
-    n->roll = e.z;
+    eve::eulerYxzFromQuat(q, n->yaw, n->pitch, n->roll);
     h->markSubtreeDirtyById(nodeId);
     return true;
 }
@@ -327,10 +325,7 @@ bool Scene::setNodeLookAtAt(const std::string &hostName, const std::string &node
     glm::vec3 up2 = glm::normalize(glm::cross(f, right));
     glm::mat3 rot(right, up2, f);
     glm::quat q = glm::quat_cast(rot);
-    glm::vec3 e = glm::eulerAngles(q);
-    n->yaw = e.y;
-    n->pitch = e.x;
-    n->roll = e.z;
+    eve::eulerYxzFromQuat(q, n->yaw, n->pitch, n->roll);
     h->markSubtreeDirtyById(nodeId);
     return true;
 }
@@ -422,16 +417,10 @@ void Scene::callEventCallback(const std::string &hostName, const std::string &ac
     if (!vm_) return;
     auto it = eventCbs_.find(hostName);
     if (it == eventCbs_.end()) return;
-    const SQInteger top = sq_gettop(vm_);
-    sq_pushobject(vm_, it->second);
-    sq_pushstring(vm_, action.c_str(), -1);
-    sq_pushstring(vm_, nodeId.c_str(), -1);
-    sq_pushstring(vm_, parentId.c_str(), -1);
-    if (SQ_FAILED(sq_call(vm_, 3, SQFalse, SQTrue))) {
-        sq_settop(vm_, top);
-        return;
-    }
-    sq_settop(vm_, top);
+    // Handler shape is (action, nodeId, parentId) with the root table as receiver, the
+    // same shape UI's callScriptHandler() uses. The count is derived, so the earlier
+    // "handler received two arguments and never ran" defect cannot come back.
+    (void)script::callFunction(vm_, it->second, script::rootTable, action, nodeId, parentId);
 }
 
 // ---------------------------------------------------------------------------

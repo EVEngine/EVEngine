@@ -13,7 +13,7 @@ function whiteboxBuildPoint(hit) {
 
 function whiteboxCancelDrag() {
     if (level.buildDrag == null) return;
-    level.buildDrag.preview.entity.setVisible(false);
+    levelReleaseRenderable(level.buildDrag.preview.entity);
     level.buildDrag = null;
 }
 

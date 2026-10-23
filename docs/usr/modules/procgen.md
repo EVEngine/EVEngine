@@ -436,12 +436,12 @@ ID、在队列外执行任务，再调用 `resolveReady(finished)`。未完成�
 通用随机括号 L-system 引擎(`procgen.newLSystem()`)。给定 axiom 与产生式(可带权重随机),迭代若干次后用 3D 海龟解释:绘制 `/` 折返、`[ ]` 入/弹栈产生分支,枝条粗细随深度衰减。固定 seed 结果完全可复现。除 `mesh.lsystem` 网格配方外,`trace()` 可把枝段作为样条控制点输出(道路、二维布局)。
 
 ```squirrel
-local ls = procgen.newLSystem();
+local ls = procgen.newLSystem().value;
 ls.setAxiom("F");
 ls.addRule('F', "F[+F]F[-F]F");          // 确定性产生式
 // ls.addRules('A', ["F[+A]A", "FA"], [2.0, 1.0]);  // 加权随机产生式
 ls.setIterations(4); ls.setAngle(26.0); ls.setSeed(42);
-local road = procgen.newPointSet(); ls.trace(road);   // 枝段 → 控制点
+local road = procgen.newPointSet().value; ls.trace(road);   // 枝段 → 控制点
 ```
 
 `mesh.lsystem` 配方内置 `tree` / `fern` / `plant` / `weed` 预置,输出锥形枝干与叶片卡。
@@ -575,3 +575,27 @@ v1 无前驱迁移，不恢复 placement；调用成本随 JSON/连接器大小�
 房屋不定义专用图类型。`writeFootprintGrid` 输出 `Grid2D`，供现有 `GridGraph.grid.input` 使用；
 `writeComponentPoints` 输出 `PointSet`，供现有 `PointGraph.input` 使用。后续筛选、变换、合并、
 缓存与序列化全部由既有 graph 系统处理。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](procgen/api-reference.md)，使用前先确认本章的前置条件与生命周期。
+
+## 集成任务：生成、发布和失效处理
+
+按示例先加载生成脚本和输入参数，明确 seed、区域及算法版本；生成 CPU Output 后验证类型和非空内容，再发布图形/物理消费者。地图、mesh、image 的输出不是互换的。缓存键包含参数、种子与资源版本；不要在每帧噪声查询中重建整张地形。编辑热更使用候选 revision，晚到结果如果不匹配则丢弃；失败保留旧发布结果。GTS 渲染 LOD 与碰撞 LOD 分别选定，再共享同一世界变换。
+
+完整项目：[examples/procgen-script-pipeline](../../../examples/procgen-script-pipeline/README.md)，
+其 [main.nut](../../../examples/procgen-script-pipeline/main.nut) 展示实际生命周期。
+先验证现有资产可加载，再换成自己的资源。测试失败、取消、资源缺失和旧 revision，
+不能只以脚本没有语法错误作为渲染或玩法正确的证据。
+详细流程：[专题](procgen/guides.md)。
+
+房屋与三维洞穴的脚本分阶段生成见[可编辑生成流程](procgen/generation-stages.md)。
+
+### 原生道路作者地形策略
+
+`RoadStyle::terrainPolicy` 保存高度融合距离、最大高度差、纹理层和透明度、植被清理及隧道开孔规则；`enabled=false` 保留该道路的所有地形通道。策略随网络保存、预设父子继承及作者历史恢复。预设按整条策略覆盖，缺失则继承；执行预算不属于作者数据。
+
+原生调用 `RoadTerrainPlan::prepare(network, bakeOptions, sharedPolicy, maximumPreparedElements)` 从同一网络快照烘焙并按来源区间生成拥有网格的不可变计划。路段消费自己的策略，路口及网络派生几何消费显式 `sharedPolicy`；关闭共享策略可只应用路段。随后 `apply(workspace, maximumWork)` 或 `applyWorld(world, maximumWork)` 通过已有完整通道事务发布一次撤销记录，后续道路失败也不留下部分写回。准备之后的作者修改不会改变已有计划；加载作者数据后重新准备计划，不保存派生网格或运行时指针。
+
+准备包含完整道路烘焙和来源网格压缩，执行包含三角形覆盖及地形过滤；在明确重建/提交边界调用。生产网格未与其他作者网络按局部id拼接；来源顺序沿用烘焙顺序。共享区域及重叠道路的EasyRoads优先级仍未确认；此入口目前是原生API，不代表脚本或编辑器按钮已经接通。

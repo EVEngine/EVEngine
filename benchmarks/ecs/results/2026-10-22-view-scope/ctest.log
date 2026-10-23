@@ -1,0 +1,33 @@
+Test project /workspace/EVEngine/build/ecs-view-contracts
+      Start  1: ecs_benchmark.entity_only_cpp17
+ 1/14 Test  #1: ecs_benchmark.entity_only_cpp17 ...   Passed    0.01 sec
+      Start  2: ecs_benchmark.dense
+ 2/14 Test  #2: ecs_benchmark.dense ...............   Passed    0.01 sec
+      Start  3: ecs_benchmark.dense4
+ 3/14 Test  #3: ecs_benchmark.dense4 ..............   Passed    0.01 sec
+      Start  4: ecs_benchmark.cold
+ 4/14 Test  #4: ecs_benchmark.cold ................   Passed    0.01 sec
+      Start  5: ecs_benchmark.holes50
+ 5/14 Test  #5: ecs_benchmark.holes50 .............   Passed    0.01 sec
+      Start  6: ecs_benchmark.holes90
+ 6/14 Test  #6: ecs_benchmark.holes90 .............   Passed    0.01 sec
+      Start  7: ecs_benchmark.refill
+ 7/14 Test  #7: ecs_benchmark.refill ..............   Passed    0.01 sec
+      Start  8: ecs_benchmark.inheritance
+ 8/14 Test  #8: ecs_benchmark.inheritance .........   Passed    0.01 sec
+      Start  9: ecs_benchmark.deferred
+ 9/14 Test  #9: ecs_benchmark.deferred ............   Passed    0.01 sec
+      Start 10: ecs_benchmark.vector
+10/14 Test #10: ecs_benchmark.vector ..............   Passed    0.01 sec
+      Start 11: ecs_benchmark.prepare
+11/14 Test #11: ecs_benchmark.prepare .............   Passed    0.01 sec
+      Start 12: ecs_benchmark.contracts
+12/14 Test #12: ecs_benchmark.contracts ...........   Passed    0.01 sec
+      Start 13: ecs_benchmark.contracts_OBJECT
+13/14 Test #13: ecs_benchmark.contracts_OBJECT ....   Passed    0.01 sec
+      Start 14: ecs_benchmark.contracts_SHARED
+14/14 Test #14: ecs_benchmark.contracts_SHARED ....   Passed    0.01 sec
+
+100% tests passed out of 14
+
+Total Test time (real) =   0.12 sec

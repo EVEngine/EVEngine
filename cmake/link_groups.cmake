@@ -130,7 +130,11 @@ foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
     # only to give the target a source of its own.
     add_library(${_eve_group} SHARED "${CMAKE_SOURCE_DIR}/cmake/link_group.cpp")
     target_compile_definitions(${_eve_group} PRIVATE
-        EVE_LINK_GROUP_ANCHOR=eve_link_group_${_eve_group})
+        "EVENGINE_LINK_GROUP_ANCHOR=eve_link_group_anchor_${_eve_group}")
+    set(_eve_group_consumer "${CMAKE_BINARY_DIR}/link_group_consumers/${_eve_group}.cpp")
+    configure_file("${CMAKE_SOURCE_DIR}/cmake/link_group_consumer.cpp.in"
+                   "${_eve_group_consumer}" @ONLY)
+    target_sources(${_eve_group} INTERFACE "$<BUILD_INTERFACE:${_eve_group_consumer}>")
     target_link_libraries(${_eve_group} PRIVATE ${_eve_group_modules})
     target_link_libraries(${_eve_group} PRIVATE eve_engine_includes)
     if(TARGET eve_imgui)
@@ -143,8 +147,12 @@ foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
     # downward closure with no import cycle.
     target_link_libraries(${_eve_group} PRIVATE ${_eve_lower_groups})
     target_link_libraries(${_eve_group} PRIVATE
-        EVScripts zeroerr ${_eve_group_tp_libs} ${_eve_group_system_libs}
+        zeroerr ${_eve_group_tp_libs} ${_eve_group_system_libs}
         ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+    if(EVENGINE_BUILD_HOST)
+        # Built-in host resources are created later by src/scripts; core profiles do not create that archive.
+        target_link_libraries(${_eve_group} PRIVATE EVScripts)
+    endif()
     if(NOT EVENGINE_PROFILE_HOSTLESS)
         add_dependencies(${_eve_group} third-party)
         # The shared third-party runtime (SDL, box2d/box3d twins on Windows) is
@@ -216,4 +224,3 @@ foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
     list(LENGTH _eve_group_modules _eve_group_module_count)
     message(STATUS "Link group ${_eve_group}: ${_eve_group_module_count} modules -> one shared library")
 endforeach()
-include("${CMAKE_SOURCE_DIR}/cmake/link_group_imports.cmake")

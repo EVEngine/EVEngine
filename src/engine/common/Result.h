@@ -5,7 +5,6 @@
  * @brief Move-only, checked operation results for the common layer.
  */
 
-#include "common/Assert.h"
 #include "common/Status.h"
 
 #include <exception>
@@ -17,8 +16,42 @@
 #include <utility>
 #include <vector>
 
+#if !defined(ZEROERR_NO_ASSERT)
+#define EV_DETAIL_RESULT_ASSERT(cond, message) \
+    ::eve::detail::checkResultInvariant((cond), #cond, __FILE__, __LINE__, (message))
+#else
+#define EV_DETAIL_RESULT_ASSERT(cond, message) ((void)0)
+#endif
+
 namespace eve {
 namespace detail {
+
+/**
+ * @brief Check one Result invariant without instantiating the assertion backend in its caller.
+ * @param condition Invariant evaluated once by the caller.
+ * @param expression Original expression spelling.
+ * @param file Static-lifetime source file name containing the check.
+ * @param line Source line containing the check.
+ * @param message Synchronous failure context, borrowed only for this call.
+ * @throws zeroerr::AssertionData if the invariant fails.
+ * @note Runs on the calling thread; the exception borrows the static file name; invokes no callbacks.
+ */
+EVENGINE_API_FOUNDATION void checkResultInvariant(bool condition, const char* expression, const char* file,
+                                                  unsigned line, const char* message);
+
+/**
+ * @brief Report a failed expect operation with its Status and caller context.
+ * @param status Failed outcome, borrowed during this call.
+ * @param message Caller context, borrowed during this call.
+ * @param file Static-lifetime source file name containing the check.
+ * @param line Source line containing the check.
+ * @param assertionsEnabled Assertion policy selected by the calling translation unit.
+ * @throws zeroerr::AssertionData; terminates if assertions are disabled by the caller.
+ * @note Runs synchronously; the exception borrows the static file name; invokes no callbacks.
+ */
+[[noreturn]] EVENGINE_API_FOUNDATION void failResultExpectation(const Status& status, std::string_view message,
+                                                                const char* file, unsigned line,
+                                                                bool assertionsEnabled);
 
 /**
  * @brief Debug-only observation token shared by Result<T> specializations.
@@ -27,7 +60,7 @@ namespace detail {
  * responsibility after payload movement succeeds; a moved-from Result is
  * disarmed. The two bytes remain present in non-assert builds so Result keeps
  * one ABI when a Release engine library is consumed by an assertion-enabled
- * test or tool; the observation operations themselves compile to no-ops.
+ * test or tool; observation and move flags update consistently; only runtime checks disappear.
  */
 class ResultObservation {
 public:
@@ -39,14 +72,13 @@ public:
 
     /** @brief Start an inactive token used while a Result move is constructed. */
     struct InactiveTag {};
-    explicit ResultObservation(InactiveTag) noexcept {
-        mustObserve_ = false;
-    }
+    explicit ResultObservation(InactiveTag) noexcept { mustObserve_ = false; }
 
 #if !defined(ZEROERR_NO_ASSERT)
     ~ResultObservation() noexcept(false) {
         const bool observationSatisfied = !mustObserve_ || observed_;
-        EV_ASSERT(observationSatisfied, "Result destroyed without checking; inspect it or call ignore() explicitly");
+        EV_DETAIL_RESULT_ASSERT(observationSatisfied,
+                                "Result destroyed without checking; inspect it or call ignore() explicitly");
     }
 #else
     ~ResultObservation() noexcept = default;
@@ -54,45 +86,31 @@ public:
 
 protected:
     /** @brief Observe. */
-    void observe() const noexcept {
-#if !defined(ZEROERR_NO_ASSERT)
-        observed_ = true;
-#endif
-    }
+    void observe() const noexcept { observed_ = true; }
 
     /** @brief Assert can be overwritten. */
     void assertCanBeOverwritten() const {
 #if !defined(ZEROERR_NO_ASSERT)
         const bool observationSatisfied = !mustObserve_ || observed_;
         /** @brief Ev assert. */
-        EV_ASSERT(observationSatisfied, "move assignment would overwrite an unchecked Result");
+        EV_DETAIL_RESULT_ASSERT(observationSatisfied, "move assignment would overwrite an unchecked Result");
 #endif
     }
 
     /** @brief Adopt observation from. */
     void adoptObservationFrom(ResultObservation& other) noexcept {
-#if !defined(ZEROERR_NO_ASSERT)
         observed_          = other.observed_;
         mustObserve_       = other.mustObserve_;
         other.mustObserve_ = false;
-#else
-        (void)other;
-#endif
     }
 
     /** @brief Drop observation duty; used when a moved-from result is empty. */
-    void disarmObservation() noexcept {
-#if !defined(ZEROERR_NO_ASSERT)
-        mustObserve_ = false;
-#endif
-    }
+    void disarmObservation() noexcept { mustObserve_ = false; }
 
     /** @brief Require a fresh check after replacing the carried outcome. */
     void requireObservation() noexcept {
-#if !defined(ZEROERR_NO_ASSERT)
         observed_    = false;
         mustObserve_ = true;
-#endif
     }
 
 private:
@@ -114,9 +132,8 @@ using ResultReturn = std::invoke_result_t<T>;
  * into a mutable one. `void` is excluded; `Result<void>` is a separate type.
  */
 template <class From, class To>
-concept ResultConstConversion =
-    std::is_same_v<To, const From> ||
-    (std::is_pointer_v<From> && std::is_same_v<To, const std::remove_pointer_t<From>*>);
+concept ResultConstConversion = std::is_same_v<To, const From> ||
+                                (std::is_pointer_v<From> && std::is_same_v<To, const std::remove_pointer_t<From>*>);
 
 /**
  * @brief Replace `destination` with `source` even when `T` is not assignable.
@@ -148,6 +165,9 @@ void moveAssignOptional(std::optional<T>& destination, std::optional<U>&& source
  * makes `value()` yield a const view even from a non-const Result, so callers
  * cannot mutate through a read-only operation.
  *
+ * Observation belongs to one owner thread; synchronized handoff is supported,
+ * but concurrent checking of one shared Result is unsupported. No callbacks run.
+ *
  * @tparam T Owning value type. References and void use a different form.
  */
 template <class T>
@@ -166,7 +186,7 @@ public:
     /** @brief Construct a successful result with an explicit non-error status. */
     static Result success(T value, Status status) {
         /** @brief Ev assert. */
-        EV_ASSERT(status.isSuccess(), "Result::success requires a successful Status");
+        EV_DETAIL_RESULT_ASSERT(status.isSuccess(), "Result::success requires a successful Status");
         /** @brief Constructs a Result. */
         return Result(std::move(status), std::optional<T>(std::move(value)));
     }
@@ -174,7 +194,7 @@ public:
     /** @brief Construct a failed result from a structured status. */
     static Result failure(Status status) {
         /** @brief Ev assert. */
-        EV_ASSERT(status.isFailure(), "Result::failure requires a failure Status");
+        EV_DETAIL_RESULT_ASSERT(status.isFailure(), "Result::failure requires a failure Status");
         /** @brief Constructs a Result. */
         return Result(std::move(status), std::nullopt);
     }
@@ -308,9 +328,9 @@ public:
     const T& value() const& {
         /** @brief Observe. */
         observe();
-        const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
+        [[maybe_unused]] const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
         /** @brief Ev assert. */
-        EV_ASSERT(hasSuccessfulValue, "Result::value requires a successful Result with a value");
+        EV_DETAIL_RESULT_ASSERT(hasSuccessfulValue, "Result::value requires a successful Result with a value");
         return value_.value();
     }
 
@@ -318,9 +338,9 @@ public:
     T& value() & {
         /** @brief Observe. */
         observe();
-        const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
+        [[maybe_unused]] const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
         /** @brief Ev assert. */
-        EV_ASSERT(hasSuccessfulValue, "Result::value requires a successful Result with a value");
+        EV_DETAIL_RESULT_ASSERT(hasSuccessfulValue, "Result::value requires a successful Result with a value");
         return value_.value();
     }
 
@@ -328,9 +348,9 @@ public:
     T&& value() && {
         /** @brief Observe. */
         observe();
-        const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
+        [[maybe_unused]] const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
         /** @brief Ev assert. */
-        EV_ASSERT(hasSuccessfulValue, "Result::value requires a successful Result with a value");
+        EV_DETAIL_RESULT_ASSERT(hasSuccessfulValue, "Result::value requires a successful Result with a value");
         /** @brief Moves . */
         return std::move(value_.value());
     }
@@ -339,9 +359,9 @@ public:
     T takeValue() && {
         /** @brief Observe. */
         observe();
-        const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
+        [[maybe_unused]] const bool hasSuccessfulValue = status_.isSuccess() && value_.has_value();
         /** @brief Ev assert. */
-        EV_ASSERT(hasSuccessfulValue, "Result::takeValue requires a successful Result with a value");
+        EV_DETAIL_RESULT_ASSERT(hasSuccessfulValue, "Result::takeValue requires a successful Result with a value");
         T result = std::move(value_.value());
         value_.reset();
         return result;
@@ -406,13 +426,11 @@ public:
         /** @brief Observe. */
         observe();
         if (!status_.isSuccess() || !value_.has_value()) {
-            /** @brief Context. */
-            const std::string context(message);
-            const std::string detail = status_.describe();
-            /** @brief Ev assert. */
-            EV_ASSERT(false, "%s: %s", context.c_str(), detail.c_str());
-            /** @brief Terminate. */
-            std::terminate();
+#if !defined(ZEROERR_NO_ASSERT)
+            detail::failResultExpectation(status_, message, __FILE__, __LINE__, true);
+#else
+            detail::failResultExpectation(status_, message, __FILE__, __LINE__, false);
+#endif
         }
         /** @brief Moves . */
         return std::move(value_.value());
@@ -438,7 +456,7 @@ public:
     /** @brief Construct a successful void result with an explicit status. */
     static Result success(Status status) {
         /** @brief Ev assert. */
-        EV_ASSERT(status.isSuccess(), "Result::success requires a successful Status");
+        EV_DETAIL_RESULT_ASSERT(status.isSuccess(), "Result::success requires a successful Status");
         /** @brief Constructs a Result. */
         return Result(std::move(status));
     }
@@ -446,7 +464,7 @@ public:
     /** @brief Construct a failed void result from a structured status. */
     static Result failure(Status status) {
         /** @brief Ev assert. */
-        EV_ASSERT(status.isFailure(), "Result::failure requires a failure Status");
+        EV_DETAIL_RESULT_ASSERT(status.isFailure(), "Result::failure requires a failure Status");
         /** @brief Constructs a Result. */
         return Result(std::move(status));
     }
@@ -527,7 +545,7 @@ public:
         /** @brief Observe. */
         observe();
         /** @brief Ev assert. */
-        EV_ASSERT(status_.isSuccess(), "Result<void>::value requires a successful Result");
+        EV_DETAIL_RESULT_ASSERT(status_.isSuccess(), "Result<void>::value requires a successful Result");
     }
 
     /**
@@ -549,13 +567,11 @@ public:
         /** @brief Observe. */
         observe();
         if (!status_.isSuccess()) {
-            /** @brief Context. */
-            const std::string context(message);
-            const std::string detail = status_.describe();
-            /** @brief Ev assert. */
-            EV_ASSERT(false, "%s: %s", context.c_str(), detail.c_str());
-            /** @brief Terminate. */
-            std::terminate();
+#if !defined(ZEROERR_NO_ASSERT)
+            detail::failResultExpectation(status_, message, __FILE__, __LINE__, true);
+#else
+            detail::failResultExpectation(status_, message, __FILE__, __LINE__, false);
+#endif
         }
     }
 
@@ -589,3 +605,5 @@ template <typename... Results>
 }
 
 }  // namespace eve
+
+#undef EV_DETAIL_RESULT_ASSERT

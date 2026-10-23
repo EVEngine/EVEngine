@@ -1,4 +1,5 @@
 #include "common/Xml.h"
+#include "common/StringMapInstances.h"
 
 #include <cctype>
 #include <cstdlib>

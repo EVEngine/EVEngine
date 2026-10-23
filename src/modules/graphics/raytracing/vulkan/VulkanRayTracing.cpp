@@ -244,6 +244,8 @@ void VulkanRayTracing::detachDevice() {
 }
 
 void VulkanRayTracing::clearScene() {
+    // The previous present submission may still reference these BLAS/TLAS buffers.
+    if (device_ && graphicsQueue_ && (!meshes_.empty() || tlas_.handle)) graphicsQueue_.waitIdle();
     meshes_.clear();
     tlas_.release();
 }
@@ -790,6 +792,8 @@ Result<void> VulkanRayTracing::applyReflections(Graphics* gfx, Texture* sceneCol
         return Result<void>::failure(
         Diagnostic::error(DiagnosticCode::Failed, std::string("applyReflections") + ": " + "missing texture image view", "graphics.raytracing"));
 
+    // Descriptor contents are shared across frames; retire prior uses before update.
+    vkGfx->waitForSharedGpuResources();
     if (auto r = ensureDescriptorSets(outView, sceneView, depthView, normalView); !r.ok()) return r;
 
     PushConstants push{};
@@ -814,6 +818,13 @@ Result<void> VulkanRayTracing::applyReflections(Graphics* gfx, Texture* sceneCol
         cmd.traceRaysKHR(raygenRegion_, missRegion_, hitRegion_, callableRegion_, width, height, 1);
 
         // Copy RT storage result into the reflection canvas for composite sampling.
+        // GenericImage's GENERAL transition covers transfer writes, whereas this
+        // image was written by ray generation. Publish those writes before copy.
+        vk::MemoryBarrier traceToCopy{};
+        traceToCopy.srcAccessMask = vk::AccessFlagBits::eShaderWrite;
+        traceToCopy.dstAccessMask = vk::AccessFlagBits::eTransferRead;
+        cmd.pipelineBarrier(vk::PipelineStageFlagBits::eRayTracingShaderKHR, vk::PipelineStageFlagBits::eTransfer, {},
+                            traceToCopy, {}, {});
         outputImage_.setLayout(cmd, vk::ImageLayout::eTransferSrcOptimal);
         destCanvas->colorImage().setLayout(cmd, vk::ImageLayout::eTransferDstOptimal);
         vk::ImageCopy region{};

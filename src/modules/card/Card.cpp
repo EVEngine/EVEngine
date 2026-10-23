@@ -1,6 +1,7 @@
 #include "card/Card.h"
 #include "card/CardAttributes.h"
 #include "card/CardControl.h"
+#include "card/CardOwnerInternal.h"
 
 #include <cmath>
 
@@ -69,6 +70,7 @@ bool CardPlaneMapper::mapLayout(float x, float y) {
 }
 
 namespace {
+using card_internal::ownsCard;
 
 using eve::json::Value;
 
@@ -92,14 +94,6 @@ bool parseDefinition(Value o, std::unordered_map<std::string, CardDefinition> &d
 template <typename T>
 T *resolve(const ecs::EntityHandle &h) {
     return static_cast<T *>(ecs::try_get(h));
-}
-
-bool ownsCard(const std::vector<ecs::EntityHandle> &handles, const CardData &card) {
-    const auto live = ecs::handle_of(const_cast<CardData *>(&card));
-    return std::any_of(handles.begin(), handles.end(), [&live](const auto &handle) {
-        return handle.table == live.table && handle.type == live.type && handle.id == live.id &&
-               handle.generation == live.generation;
-    });
 }
 
 void destroyHandles(std::vector<ecs::EntityHandle> &hs) {
@@ -266,7 +260,7 @@ bool Card::removeCardDefinition(const std::string &id) {
     return true;
 }
 
-eve::Result<void> Card::setCardPlayCondition(const std::string &id, decision::Condition condition) {
+eve::Result<void> Card::setCardPlayCondition(const std::string& id, condition::Condition condition) {
     auto it = defs_.find(id);
     if (it == defs_.end())
         return eve::Result<void>::failure(
@@ -283,10 +277,10 @@ const CardDefinition *Card::findDef(const std::string &id) const {
     return it == defs_.end() ? nullptr : &it->second;
 }
 
-decision::ConditionResult Card::evaluatePlay(const CardData *card, CardPlayConditionQueries queries) const {
-    if (!card) return decision::ConditionResult::failed(decision::ConditionReasonCode::InvalidCondition);
+condition::ConditionResult Card::evaluatePlay(const CardData* card, CardPlayConditionQueries queries) const {
+    if (!card) return condition::ConditionResult::failed(condition::ConditionReasonCode::InvalidCondition);
     const auto *definition = findDef(const_cast<CardData *>(card)->identity()->definitionId);
-    if (!definition) return decision::ConditionResult::failed(decision::ConditionReasonCode::InvalidCondition);
+    if (!definition) return condition::ConditionResult::failed(condition::ConditionReasonCode::InvalidCondition);
     return CardPlayConditionAdapter::evaluate(card, *definition, definition->playCondition, std::move(queries));
 }
 
@@ -329,26 +323,6 @@ eve::Result<std::size_t> Card::step(const eve::SimulationStep &simulationStep) {
     }
     return eve::Result<std::size_t>::success(
         settled, eve::Status::success(settled == 0 ? eve::StatusCode::NoOp : eve::StatusCode::Applied));
-}
-
-eve::Result<eve::transaction::TransactionReceipt> Card::play(CardData                        &card,
-                                                             eve::resource::IResourceAccount &playerAccount,
-                                                             CardPlayComposition              composition,
-                                                             std::string                      transactionId) {
-    if (!ownsCard(cards_, card))
-        return eve::Result<eve::transaction::TransactionReceipt>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::StaleHandle, "card does not belong to this Card facade", "card"));
-    const auto *definition = findDef(card.identity()->definitionId);
-    if (definition == nullptr)
-        return eve::Result<eve::transaction::TransactionReceipt>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "card definition was not found", "definition"));
-    CardPlayRequest request;
-    request.card          = &card;
-    request.definition    = definition;
-    request.playerAccount = &playerAccount;
-    request.composition   = std::move(composition);
-    request.transactionId = std::move(transactionId);
-    return CardPlayPaymentAdapter::play(std::move(request));
 }
 
 std::string Card::getCardDefinitionName(const std::string &id) {
@@ -680,7 +654,7 @@ std::string Card::getEventReason(int index) const {
 
 void Card::expose(ssq::Table &table) {
     const auto vm = table.getHandle();
-    auto cls = table.addClass(name, Card::create, false);
+    auto       cls = table.addClass(name, ssq::Class::Ctor<Card()>(), true);
     expose(cls);
 
     // LayoutConfig —— 全部布局参数（UiCard Configs）
@@ -901,6 +875,7 @@ void Card::expose(ssq::Table &table) {
 }
 
 void Card::expose(ssq::Class &cls) {
+    card_internal::exposeStageBindings(cls);
     cls.addFunc("registerCardsFromJson", &Card::registerCardsFromJson);
     cls.addFunc("clearCardDefinitions", &Card::clearCardDefinitions);
     cls.addFunc("getCardDefinitionCount", &Card::getCardDefinitionCount);

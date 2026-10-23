@@ -135,7 +135,7 @@ public:
      * mutation.
      * @thread Owner thread only. No callbacks; the operation owns all input data.
      */
-    [[nodiscard]] Result<DomainOperation> makeRestore(const EditorValue& snapshot) const;
+    [[nodiscard]] virtual Result<DomainOperation> makeRestore(const EditorValue& snapshot) const;
 
 private:
     friend class ScenePropertyProvider;

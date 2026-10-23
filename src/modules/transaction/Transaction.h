@@ -5,6 +5,7 @@
 #include "common/Module.h"
 #include "common/Result.h"
 #include "common/Snapshot.h"
+#include "common/UuidV7.h"
 
 #include <cstddef>
 #include <cstdint>

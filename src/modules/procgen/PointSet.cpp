@@ -1,4 +1,5 @@
 #include "procgen/PointSet.h"
+#include "common/Assert.h"
 
 #include "common/Diagnostic.h"
 #include "procgen/Grid2D.h"

@@ -182,6 +182,21 @@ public:
     /** @brief Opens a two-child resizable split pane. */
     void beginSplitPane(const std::string &direction = "row", float ratio = 0.25f,
                         const std::string &id = "");
+    /** @brief Opens a horizontal tab strip. */
+    void beginTabBar(const std::string &id = "");
+    /**
+     * @brief Opens a tabbed page stack; activePageId selects the visible page.
+     * Add pages with beginPanelFrame / beginChild / beginGroup; each page id is its tab key.
+     */
+    void beginTabContainer(const std::string &activePageId, const std::string &id = "");
+    /** @brief Opens a fixed titled panel frame (not a free-floating Window host). */
+    void beginPanelFrame(const std::string &title, const std::string &id = "");
+    /** @brief Opens a named dock fill slot (region: left/right/top/bottom/center). */
+    void beginDockArea(const std::string &region, const std::string &id = "");
+    /** @brief Opens a fixed editor frame body that hosts toolbar/dock/status children. */
+    void beginAppFrame(const std::string &id = "");
+    /** @brief Adds a selectable tab label; pageId identifies the page to activate. */
+    void addTab(const std::string &label, const std::string &pageId, bool selected = false, const std::string &id = "");
     /** Virtualized scroll list; rows are the children added before end(). */
     /** @brief Begins scroll list. */
     void beginScrollList(const std::string &id = "", float height = 0.f, float itemHeight = 0.f);
@@ -247,6 +262,12 @@ public:
     /** @brief Adds combo. */
     void addCombo(const std::string &label, const std::string &options, int selected,
                   const std::string &id = "");
+    /** @brief Add clickable text; target is metadata and activation emits a click event. */
+    void addLink(const std::string &label, const std::string &target, const std::string &id);
+    /** @brief Configure the last control's plain-text editor options. */
+    void setItemTextInput(bool multiline, bool readOnly, const std::string &placeholder);
+    /** @brief Set the last control's help and disabled explanation. */
+    void setItemHelp(const std::string &help, const std::string &disabledReason);
     /** @brief Adds an editable text field. */
     void addInputText(const std::string &label, const std::string &value, const std::string &id = "");
     /** @brief Adds a compact search field. */

@@ -1,4 +1,5 @@
 #include "climbing/ClimbingAnchorGraph.h"
+#include "common/Assert.h"
 
 #include "physics/Body3D.h"
 #include "physics/World3D.h"

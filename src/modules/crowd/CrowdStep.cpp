@@ -1,14 +1,18 @@
 #include "common/Profile.h"
 #include "crowd/CrowdInternal.h"
 
+#include <chrono>
+
 namespace eve::crowd {
 
-Result<StepReport> Crowd::advance(float dt) {
+Result<StepReport> Crowd::advanceWorking(float dt, const AdvanceBudget& budget) {
     EV_PROFILE_MODULE("crowd", "Crowd::advance");
     if (!std::isfinite(dt) || dt < 0.f)
         return Result<StepReport>::failure(
             Diagnostic::error(DiagnosticCode::InvalidArgument, "Crowd dt must be finite and non-negative", "dt"));
     StepReport report;
+    report.navigation                = getFieldStatus();
+    report.navigationClassMismatches = impl_->navigationMismatchCount();
     if (dt == 0.f || impl_->xs.empty()) return Result<StepReport>::success(report, Status::success(StatusCode::NoOp));
 
     auto& d                = *impl_;
@@ -25,32 +29,44 @@ Result<StepReport> Crowd::advance(float dt) {
     // Float dt=1/60 rounds slightly upward. Do not create an extra substep for
     // representation error at an otherwise exact boundary.
     const double count = std::ceil(double(dt) / maxStep - 1e-6);
-    if (!std::isfinite(count) || count > 1024.0)
+    if (!std::isfinite(count) || count > budget.maxSubsteps)
         return Result<StepReport>::failure(Diagnostic::error(
-            DiagnosticCode::PreconditionViolation, "Crowd step exceeds 1024 substeps; reduce dt or speed", "dt"));
-    report.substeps     = std::max(1, static_cast<int>(count));
+            DiagnosticCode::PreconditionViolation, "Crowd step exceeds its substep budget; reduce dt or speed", "dt"));
+    report.substeps    = std::max(1, static_cast<int>(count));
+    d.workReport       = {};
+    const auto measure = [](std::int64_t& duration, auto&& work) {
+        const auto start = std::chrono::steady_clock::now();
+        work();
+        duration +=
+            std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start).count();
+    };
     const float substep = dt / float(report.substeps);
     for (int sub = 0; sub < report.substeps; ++sub) {
         d.simTime += substep;
-        d.rebuildGrid();
-        d.stepAgents(substep);
-        d.resolveWalls();
+        measure(report.gridNanoseconds, [&] { d.rebuildGrid(); });
+        measure(report.motionNanoseconds, [&] { d.stepAgents(substep); });
+        measure(report.wallNanoseconds, [&] { d.resolveWalls(); });
         if (d.resolveOverlaps) {
-            for (int pass = 0; pass < 12; ++pass) {
-                d.rebuildGrid();
-                const float penetration = d.resolveOverlapsPass();
-                d.resolveWalls();
+            for (int pass = 0; pass < budget.maxContactPasses; ++pass) {
+                measure(report.gridNanoseconds, [&] { d.rebuildGrid(); });
+                float penetration = 0.f;
+                measure(report.contactNanoseconds, [&] { penetration = d.resolveOverlapsPass(); });
+                measure(report.wallNanoseconds, [&] { d.resolveWalls(); });
                 if (penetration < 1e-4f) break;
             }
         }
     }
 
-    d.rebuildGrid();
-    const float maxRadius = *std::max_element(d.radii.begin(), d.radii.end());
+    measure(report.gridNanoseconds, [&] { d.rebuildGrid(); });
+    const auto  residualStart = std::chrono::steady_clock::now();
+    const float maxRadius     = *std::max_element(d.radii.begin(), d.radii.end());
     for (size_t i = 0; i < d.xs.size(); ++i) {
         d.forEachNeighbor(d.xs[i], d.ys[i], d.radii[i] + maxRadius, [&](int neighbor) {
             const size_t j = size_t(neighbor);
-            if (j <= i || !d.canInteract(i, j)) return;
+            if (j <= i || !d.canContact(i, j)) return;
+            if (report.residualPairsChecked >= budget.maxContactChecks - d.workReport.contactPairsChecked)
+                throw WorkLimit{"Crowd final contact inspection exceeds its contact budget"};
+            ++report.residualPairsChecked;
             const float depth     = d.radii[i] + d.radii[j] - std::hypot(d.xs[j] - d.xs[i], d.ys[j] - d.ys[i]);
             report.maxPenetration = std::max(report.maxPenetration, depth);
             if (depth > 0.001f) ++report.unresolvedContacts;
@@ -70,8 +86,28 @@ Result<StepReport> Crowd::advance(float dt) {
             if (outside || std::hypot(x - d.xs[i], y - d.ys[i]) > 0.001f) ++report.unresolvedWalls;
         }
     }
-    report.avoidanceChecks      = d.avoidanceChecks;
-    report.avoidanceTruncations = d.avoidanceTruncations;
+    report.residualNanoseconds =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - residualStart).count();
+    report.gridBuilds             = d.workReport.gridBuilds;
+    report.gridCellsPeak          = d.workReport.gridCellsPeak;
+    report.cellsVisited           = d.workReport.cellsVisited;
+    report.gridEntriesPeak        = d.workReport.gridEntriesPeak;
+    report.gridSortComparisons    = d.workReport.gridSortComparisons;
+    report.spatialVisits          = d.workReport.spatialVisits;
+    report.contactPairsPeak       = d.workReport.contactPairsPeak;
+    report.pairVisits             = d.workReport.pairVisits;
+    report.preferredVisits        = d.workReport.preferredVisits;
+    report.preferredNeighborsPeak = d.workReport.preferredNeighborsPeak;
+    report.candidatesVisited      = d.workReport.candidatesVisited;
+    report.contactPairsChecked    = d.workReport.contactPairsChecked;
+    report.contactPasses          = d.workReport.contactPasses;
+    report.avoidanceChecks        = d.avoidanceChecks;
+    report.avoidanceTruncations   = d.avoidanceTruncations;
+    std::uint32_t quality         = 0;
+    if (report.avoidanceTruncations > 0) quality |= static_cast<std::uint32_t>(SolveQuality::PredictionTruncated);
+    if (report.unresolvedContacts > 0) quality |= static_cast<std::uint32_t>(SolveQuality::ContactResidual);
+    if (report.unresolvedWalls > 0) quality |= static_cast<std::uint32_t>(SolveQuality::WallResidual);
+    report.quality = static_cast<SolveQuality>(quality);
     return Result<StepReport>::success(report, Status::success(StatusCode::Applied));
 }
 

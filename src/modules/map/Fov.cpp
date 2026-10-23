@@ -1,4 +1,5 @@
 #include "map/Fov.h"
+#include "common/Profile.h"
 
 #include "graphics/Graphics.h"
 #include "graphics/Texture.h"
@@ -8,6 +9,7 @@
 #include <cmath>
 #include <cstdint>
 #include <string>
+#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -237,10 +239,12 @@ struct Fov::Impl {
 
     std::vector<uint8_t> opaque;
     std::vector<float> elevation;
+    bool                                 unobstructedHeightmap = false;
     std::vector<CellState> state;
     std::vector<int> visibleList;
     std::unordered_set<uint32_t> opaqueGids;
     std::vector<Revealer> revealers;
+    std::unordered_map<int, std::size_t> revealerIndices;
     int nextRevealerId = 1;
 
     int index2(int x, int y) const { return y * width + x; }
@@ -380,17 +384,13 @@ struct Fov::Impl {
     }
 
     Revealer *findRevealer(int id) {
-        for (auto &r : revealers) {
-            if (r.id == id) return &r;
-        }
-        return nullptr;
+        const auto found = revealerIndices.find(id);
+        return found == revealerIndices.end() ? nullptr : &revealers[found->second];
     }
 
     const Revealer *findRevealerConst(int id) const {
-        for (const auto &r : revealers) {
-            if (r.id == id) return &r;
-        }
-        return nullptr;
+        const auto found = revealerIndices.find(id);
+        return found == revealerIndices.end() ? nullptr : &revealers[found->second];
     }
 
     bool losBresenham2(int x0, int y0, int x1, int y1, int zSlice, bool applyHeight) const {
@@ -471,7 +471,7 @@ struct Fov::Impl {
     }
 
     bool passesHeightToTarget(int ox, int oy, int tx, int ty) const {
-        if (mode != Mode::Heightmap) return true;
+        if (mode != Mode::Heightmap || unobstructedHeightmap) return true;
         return los2(ox, oy, tx, ty, 0, true);
     }
 
@@ -903,6 +903,14 @@ struct Fov::Impl {
     void compute() {
         if (layer && layerRevision != layer->tiles()->revision) syncFromLayer();
         if (!dirty) return;
+        // Prove that no terrain or opaque cell can block a height ray before bypassing it.
+        // Recomputed from authoritative cells on every dirty compute, including terrain edits.
+        unobstructedHeightmap = false;
+        if (mode == Mode::Heightmap && topology == Topology::Ortho && !elevation.empty() &&
+            std::none_of(opaque.begin(), opaque.end(), [](auto value) { return value != 0; })) {
+            const auto bounds     = std::minmax_element(elevation.begin(), elevation.end());
+            unobstructedHeightmap = *bounds.second < *bounds.first + eyeOffset + cliffBlock;
+        }
         resetVisibleKeepExplored();
         for (const auto &r : revealers) computeRevealer(r);
         dirty = false;
@@ -1070,25 +1078,39 @@ int Fov::addRevealer(int x, int y, int radius) { return addRevealer3(x, y, 0, ra
 
 int Fov::addRevealer3(int x, int y, int z, int radius) {
     Impl::Revealer r;
-    r.id = impl_->nextRevealerId++;
+    r.id             = impl_->nextRevealerId;
     r.x = x;
     r.y = y;
     r.z = z;
     r.radius = radius;
+    const auto index = impl_->revealers.size();
     impl_->revealers.push_back(r);
+    try {
+        impl_->revealerIndices.emplace(r.id, index);
+    } catch (...) {
+        impl_->revealers.pop_back();
+        throw;
+    }
+    ++impl_->nextRevealerId;
     impl_->dirty = true;
     return r.id;
 }
 
 void Fov::removeRevealer(int id) {
-    auto &v = impl_->revealers;
-    v.erase(std::remove_if(v.begin(), v.end(), [id](const Impl::Revealer &r) { return r.id == id; }),
-            v.end());
+    const auto found = impl_->revealerIndices.find(id);
+    if (found != impl_->revealerIndices.end()) {
+        const auto index = found->second;
+        impl_->revealers.erase(impl_->revealers.begin() + static_cast<std::ptrdiff_t>(index));
+        impl_->revealerIndices.erase(found);
+        for (std::size_t i = index; i < impl_->revealers.size(); ++i)
+            impl_->revealerIndices[impl_->revealers[i].id] = i;
+    }
     impl_->dirty = true;
 }
 
 void Fov::clearRevealers() {
     impl_->revealers.clear();
+    impl_->revealerIndices.clear();
     impl_->dirty = true;
 }
 
@@ -1098,6 +1120,7 @@ void Fov::setRevealerPosition(int id, int x, int y) {
 
 void Fov::setRevealerPosition3(int id, int x, int y, int z) {
     if (auto *r = impl_->findRevealer(id)) {
+        if (r->x == x && r->y == y && r->z == z) return;
         r->x = x;
         r->y = y;
         r->z = z;
@@ -1107,6 +1130,7 @@ void Fov::setRevealerPosition3(int id, int x, int y, int z) {
 
 void Fov::setRevealerRadius(int id, int radius) {
     if (auto *r = impl_->findRevealer(id)) {
+        if (r->radius == radius) return;
         r->radius = radius;
         impl_->dirty = true;
     }
@@ -1181,7 +1205,10 @@ bool Fov::canDetect3(int revealerId, int x, int y, int z, float targetStealth) c
 
 void Fov::markDirty() { impl_->dirty = true; }
 bool Fov::isDirty() const { return impl_->dirty; }
-void Fov::compute() { impl_->compute(); }
+void Fov::compute() {
+    EV_PROFILE_MODULE("map", "Fov::compute");
+    impl_->compute();
+}
 
 bool Fov::isVisible(int x, int y) const {
     if (impl_->mode == Mode::Volume) return isVisible3(x, y, 0);

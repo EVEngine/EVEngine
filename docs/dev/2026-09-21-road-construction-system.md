@@ -338,8 +338,26 @@ artifact/capability 机制，不为道路再造事件总线、registry 或生命
     自动测试分别把道路放在地形上方和下方，证明桥下净空与隧道覆土不会被 conform 改写。该诊断复用可恢复 receipt，不增加
     terrain/tunnel manager，旧的 changed-count 兼容入口保持不变。
 
+71. [已完成] 继续审计 `EasyRoads3D Pro v3 v3.2.4f5.unitypackage` 主包内的 `html/general_settings.html`、
+    `html/terrain_control.html` 和 `html/ERRoad.html`：其 Surrounding 明确表示从已整平边界到原始地形的实际过渡距离。
+    修正 `conformHeightmapToRoadWithReceipt` 将过渡半径向上取整后用于权重的问题；圈数现在只控制候选遍历，
+    覆盖判定和线性权重使用 `sqrt(dx²+dz²) * cellSize` 与原始 `blendDistance`，边界权重恰为零。
+    零距离只处理路面覆盖样本，小于一个 cell 的距离不会污染相邻样本，非整数距离不会膨胀到整圈。
+    距离仍从栅格化的路面样本计算，并非到连续三角形边界的精确距离；没有宣称已实现参考包的每 marker 左右独立
+    Indent/Surrounding 或地形平滑。回归覆盖三种 cell size、五种半径、对角线权重以及回执精确恢复。
+    保持单一 Heightmap 权威、结构化失败、原子提交、既有工作预算和无缓存的确定性 CPU 路径，不新增公共类型或跨模块依赖。
+
 类型预算：在通用路口完成前，除必要的值类型/枚举外不增加长期类；任何新抽象都必须同时减少重复代码、拥有至少
 两个真实调用方，并能删除等量或更多的专用逻辑。
 
+2026-10-14 后续补齐：prefab 三段变形/显式重复/兼容焊接、多臂设施配对、道路多通道地形保存历史，
+并将同一写回核心接入 TerrainWorldWorkspace 原生世界事务。具体数据结构、约束、撤销协议、构建与帧证据见
+[道路扩展说明](2026-10-14-road-prefabs-facility-routes-terrain.md)。
+
 确定性为相同输入/seed 下 CPU topology 与 mesh 索引 bit-exact；不同图形后端的最终像素采用容差比较。
 热路径只使用现有稳定 ID/revision，不执行字符串 capability lookup。无经批准的架构例外。
+
+
+2026-10-14 后续已补 prefab 平均/精确自动间距、平滑组与隧道首尾开孔，包含保存、拆分/反转、
+事务撤销及现有 terrain world 写回。当前契约见
+[自动间距、平滑组与入口洞口](2026-10-14-road-spacing-smoothing-portals.md)。

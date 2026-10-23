@@ -306,7 +306,7 @@ clear 和 module instance reload 的 stale 检测。Procgen 的创建/生成脚�
 
 ### 22. Condition / Rule / Expression
 
-- [x] 定义无副作用 Condition AST：All、Any、Not、Compare、HasTag、HasAttribute、HasResource、StateEquals、AuthorityCheck、PolicyCall。
+- [x] 定义无副作用 Condition AST：All、Any、Not、Compare、PolicyCall（tag/attr/resource/state/authority 为 Compare key 与 `authority.allow` PolicyCall 约定，见 `ConditionKeys.h`）。
 - [x] 统一 ConditionResult：passed、稳定 reason code、evidence/details。
 - [x] RPG Skill、Card Play、Dialogue Choice、RTS Command、Building Placement 共享条件结果协议。
 - [x] UI 使用同一结果展示“为什么不可用”。

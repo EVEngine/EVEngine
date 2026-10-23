@@ -103,6 +103,12 @@ const void* objectId(HSQUIRRELVM vm, SQInteger idx) {
     return reinterpret_cast<const void*>(obj._unVal.pRefCounted);
 }
 
+/** @brief True for the Squirrel kinds a state capture can represent without coercion. */
+bool isPlainDataType(SQObjectType t) {
+    return t == OT_NULL || t == OT_INTEGER || t == OT_FLOAT || t == OT_BOOL || t == OT_STRING || t == OT_TABLE ||
+           t == OT_ARRAY;
+}
+
 const char* sqTypeName(SQObjectType t) {
     switch (t) {
         case OT_CLOSURE: return "function";
@@ -118,12 +124,52 @@ const char* sqTypeName(SQObjectType t) {
     }
 }
 
-StateValue sqToStateValue(HSQUIRRELVM vm, SQInteger idx, SeenSet& seen, int depth, std::string* firstError) {
+/**
+ * @brief Collects the values a capture had to leave out, with their path.
+ *
+ * A closure or class instance inside a container is not state: the reloaded script
+ * recreates it. It used to abort the whole capture instead, so moving an entity from a
+ * global (`hero <- Hero()`, silently filtered) into a list (`squad <- [Hero()]`) flipped
+ * a working reload into a refused one -- and keeping an entity list is exactly what the
+ * script ECS encourages. The recorded paths make the omission visible instead.
+ *
+ * @note The list is capped so one huge table cannot grow the snapshot without bound.
+ */
+struct SkippedValues {
+    std::vector<std::string>* out = nullptr;
+
+    static constexpr std::size_t kMaxRecorded = 64;
+
+    void add(const std::string& path, SQObjectType type) {
+        if (!out || out->size() >= kMaxRecorded) return;
+        out->push_back(path + " (" + sqTypeName(type) + ")");
+    }
+};
+
+StateValue sqToStateValue(HSQUIRRELVM vm, SQInteger idx, SeenSet& seen, int depth, SkippedValues& skipped,
+                          const std::string& path) {
     if (depth > 32) return StateValue::null();
     if (idx < 0) idx = sq_gettop(vm) + idx + 1;
 
     const SQObjectType t = sq_gettype(vm, idx);
     switch (t) {
+        // Not state at any depth. Capturing a class instance's members as a plain object
+        // looked harmless, but restore pushes a table, so the value came back with a
+        // different type than the reloaded script declared (`squad[0]` was an instance
+        // before and a table after). Recorded here as well as at the callers, so no future
+        // path can quietly coerce one.
+        case OT_CLOSURE:
+        case OT_NATIVECLOSURE:
+        case OT_CLASS:
+        case OT_INSTANCE:
+        case OT_USERDATA:
+        case OT_USERPOINTER:
+        case OT_THREAD:
+        case OT_GENERATOR:
+        case OT_WEAKREF: {
+            skipped.add(path.empty() ? std::string("<value>") : path, t);
+            return StateValue::null();
+        }
         case OT_NULL: return StateValue::null();
         case OT_INTEGER: {
             SQInteger v = 0;
@@ -154,7 +200,16 @@ StateValue sqToStateValue(HSQUIRRELVM vm, SQInteger idx, SeenSet& seen, int dept
             for (SQInteger i = 0; i < size; ++i) {
                 sq_pushinteger(vm, i);
                 if (SQ_SUCCEEDED(sq_get(vm, idx))) {
-                    arr.pushBack(sqToStateValue(vm, -1, seen, depth + 1, firstError));
+                    const SQObjectType et        = sq_gettype(vm, -1);
+                    const std::string  childPath = path + "[" + std::to_string(i) + "]";
+                    if (isPlainDataType(et)) {
+                        arr.pushBack(sqToStateValue(vm, -1, seen, depth + 1, skipped, childPath));
+                    } else {
+                        // Recorded and replaced by null so the remaining indices keep their
+                        // position (the same reason a failed sq_get pushes null below).
+                        skipped.add(childPath, et);
+                        arr.pushBack(StateValue::null());
+                    }
                     sq_poptop(vm);
                 } else {
                     arr.pushBack(StateValue::null());
@@ -163,8 +218,7 @@ StateValue sqToStateValue(HSQUIRRELVM vm, SQInteger idx, SeenSet& seen, int dept
             sq_settop(vm, top);
             return arr;
         }
-        case OT_TABLE:
-        case OT_INSTANCE: {
+        case OT_TABLE: {
             const void* id = objectId(vm, idx);
             if (id && !seen.insert(id).second) return StateValue::null();
             StateValue      obj = StateValue::object();
@@ -179,11 +233,13 @@ StateValue sqToStateValue(HSQUIRRELVM vm, SQInteger idx, SeenSet& seen, int dept
                         if (vt == OT_CLOSURE || vt == OT_NATIVECLOSURE || vt == OT_CLASS || vt == OT_INSTANCE ||
                             vt == OT_USERDATA || vt == OT_USERPOINTER || vt == OT_THREAD || vt == OT_GENERATOR ||
                             vt == OT_WEAKREF) {
-                            if (firstError && firstError->empty()) {
-                                *firstError = std::string("'") + key + "' (" + sqTypeName(vt) + ")";
-                            }
+                            // Left out on purpose (the reloaded script recreates it), but
+                            // recorded so the omission is inspectable instead of silent.
+                            skipped.add(path.empty() ? std::string(key) : path + "." + key, vt);
                         } else {
-                            obj.set(std::string(key), sqToStateValue(vm, -1, seen, depth + 1, firstError));
+                            obj.set(std::string(key),
+                                    sqToStateValue(vm, -1, seen, depth + 1, skipped,
+                                                   path.empty() ? std::string(key) : path + "." + key));
                         }
                     }
                 }
@@ -386,8 +442,39 @@ bool Snapshot::captureState(HSQUIRRELVM vm, StateValue& out, std::string* error)
         return false;
     }
     try {
-        auto       rootNames = resolveRoots(vm);
-        StateValue roots     = StateValue::object();
+        // The omissions travel inside the captured state (`skipped`), so callers and the
+        // persisted file see them without a second out-parameter.
+        std::vector<std::string> skippedList;
+        SkippedValues            skip{&skippedList};
+        auto                     rootNames = resolveRoots(vm);
+
+        // Live objects at the root (`hero <- Hero()`, an ECS world) look like state but
+        // cannot be captured. The heuristic only *returns* plain-data roots, so without
+        // this pass they would vanish without a trace. Function and class definitions are
+        // ordinary script bindings -- naming every one of them would drown the list -- so
+        // only instances/userdata are reported, and only when the heuristic picked the
+        // roots (a caller who marked roots asked about those specific names).
+        if (marked_.empty()) {
+            const SQInteger scanTop = sq_gettop(vm);
+            sq_pushroottable(vm);
+            const SQInteger rootIdx = sq_gettop(vm);
+            sq_pushnull(vm);
+            while (SQ_SUCCEEDED(sq_next(vm, rootIdx))) {
+                if (sq_gettype(vm, -2) == OT_STRING) {
+                    const SQChar* key = nullptr;
+                    sq_getstring(vm, -2, &key);
+                    const SQObjectType vt = sq_gettype(vm, -1);
+                    if (key && (vt == OT_INSTANCE || vt == OT_USERDATA || vt == OT_USERPOINTER) && !isEngineName(key) &&
+                        std::find(transient_.begin(), transient_.end(), key) == transient_.end()) {
+                        skip.add(key, vt);
+                    }
+                }
+                sq_pop(vm, 2);
+            }
+            sq_settop(vm, scanTop);
+        }
+
+        StateValue roots = StateValue::object();
         for (const auto& name : rootNames) {
             SeenSet         seen;
             const SQInteger top = sq_gettop(vm);
@@ -398,36 +485,46 @@ bool Snapshot::captureState(HSQUIRRELVM vm, StateValue& out, std::string* error)
                 if (rt == OT_CLOSURE || rt == OT_NATIVECLOSURE || rt == OT_CLASS || rt == OT_INSTANCE ||
                     rt == OT_USERDATA || rt == OT_USERPOINTER || rt == OT_THREAD || rt == OT_GENERATOR ||
                     rt == OT_WEAKREF) {
-                    sq_settop(vm, top);
-                    if (error) {
-                        *error = "root '" + name + "' is a " + sqTypeName(rt) + " (state roots must be plain data)";
-                    }
-                    return false;
-                }
-                std::string firstError;
-                roots.set(name, sqToStateValue(vm, -1, seen, 0, &firstError));
-                if (!firstError.empty()) {
-                    sq_settop(vm, top);
-                    if (error) {
-                        *error = "root '" + name + "' contains non-serializable value: " + firstError;
-                    }
-                    return false;
+                    // Reachable for an explicitly marked root: left out and reported, the
+                    // same as an unserializable member. Failing here made a marked entity
+                    // root refuse the whole reload.
+                    skip.add(name, rt);
+                } else {
+                    roots.set(name, sqToStateValue(vm, -1, seen, 0, skip, name));
                 }
             }
             sq_settop(vm, top);
         }
 
         StateValue native = StateValue::object();
+        std::string nativeCaptureError;
         eve::cap::forEach<eve::caps::IStateProvider>([&](eve::caps::IStateProvider* p) {
             if (p->reloadPolicy() == eve::caps::StateReloadPolicy::Reset) return;
-            StateValue captured;
-            if (p->captureState(captured)) native.set(p->stateKind(), std::move(captured));
+            auto captured = p->capture();
+            if (captured.ok()) {
+                native.set(p->stateKind(), toLegacyStateValue(std::move(captured).takeValue()));
+            } else {
+                nativeCaptureError +=
+                    std::string(p->stateKind()) + ": " + captured.diagnostics().front().message() + "; ";
+            }
         });
+        if (!nativeCaptureError.empty()) {
+            if (error) *error = nativeCaptureError;
+            return false;
+        }
 
         out = StateValue::object();
         out.set("version", StateValue::integer(2));
         out.set("roots", std::move(roots));
         out.set("native", std::move(native));
+        // Kept in the snapshot so the omission is visible to whoever reads it (the tool
+        // response, the persisted eve_snapshot.json, ReloadSession's notice).
+        // restoreState() ignores this key.
+        if (!skippedList.empty()) {
+            StateValue list = StateValue::array();
+            for (const auto& entry : skippedList) list.pushBack(StateValue::string(entry));
+            out.set("skipped", std::move(list));
+        }
         return true;
     } catch (const std::exception& e) {
         if (error) *error = e.what();
@@ -481,20 +578,22 @@ bool Snapshot::restoreState(HSQUIRRELVM vm, const StateValue& state, std::string
         std::string       nativeErr;
         eve::cap::forEach<eve::caps::IStateProvider>([&](eve::caps::IStateProvider* p) {
             if (p->reloadPolicy() == eve::caps::StateReloadPolicy::Reset) {
-                if (!p->resetToDefaults()) {
+                auto reset = p->resetToDefaults();
+                if (!reset.ok()) {
                     failed = true;
-                    nativeErr += std::string(p->stateKind()) + ": reset failed; ";
+                    nativeErr += std::string(p->stateKind()) + ": " + reset.diagnostics().front().message() + "; ";
                 }
                 return;
             }
             if (native && native->isObject()) {
                 const StateValue* v = native->find(p->stateKind());
                 if (!v) return;  // provider not present in the snapshot
-                std::string perr;
-                if (!p->restoreState(*v, &perr)) {
+                auto restored = p->restore(toCanonicalStateValue(*v));
+                if (!restored.ok()) {
                     failed = true;
-                    nativeErr += std::string(p->stateKind()) + ": " + perr + "; ";
-                    p->resetToDefaults();
+                    nativeErr += std::string(p->stateKind()) + ": " + restored.diagnostics().front().message() + "; ";
+                    auto reset = p->resetToDefaults();
+                    if (!reset.ok()) nativeErr += "reset failed; ";
                 }
             }
         });

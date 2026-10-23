@@ -1,23 +1,26 @@
 #include "animation/OrientationWarping.h"
-
+#include <algorithm>
+#include <cmath>
+#include <functional>
+#include <simplesquirrel/simplesquirrel.hpp>
+#include <stdexcept>
+#include <string>
+#include <vector>
 #include "animation/AnimMath.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
-
+#include "animation/AnimationBindings.h"
 #include "common/Diagnostic.h"
+#include "common/SquirrelBindContext.h"
+#include "common/SquirrelBinding.h"
 
-#include <algorithm>
-#include <cmath>
-#include <vector>
-
+// OrientationWarping.cpp
 namespace eve::animation {
 namespace {
 constexpr int kMaxSpineBones = 32;
 constexpr int kMaxIkBones    = 16;
 
-eve::Result<void> ok(eve::StatusCode code) {
-    return eve::Result<void>::success(eve::Status::success(code));
-}
+eve::Result<void> ok(eve::StatusCode code) { return eve::Result<void>::success(eve::Status::success(code)); }
 
 float wrapPi(float radians) { return std::remainder(radians, 6.28318530718f); }
 
@@ -88,18 +91,24 @@ OrientationWarping::~OrientationWarping() = default;
 
 eve::Result<void> OrientationWarping::configure(AnimSkeleton& skeleton, int rootBone, std::span<const int> spineBones,
                                                 std::span<const int> ikBones) {
-    if (rootBone < 0 || rootBone >= skeleton.getBoneCount()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "root bone must belong to the skeleton",
-                                                             "orientationWarping", {}, "animation"));
+    if (rootBone < 0 || rootBone >= skeleton.getBoneCount())
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "root bone must belong to the skeleton",
+                                                                 "orientationWarping", {}, "animation"));
     if (!validBoneList(skeleton, rootBone, spineBones, kMaxSpineBones))
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "spine bones must be unique valid indices distinct from the root",
-                                                             "orientationWarping", {}, "animation"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "spine bones must be unique valid indices distinct from the root",
+            "orientationWarping", {}, "animation"));
     if (!validBoneList(skeleton, rootBone, ikBones, kMaxIkBones))
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "ik bones must be unique valid indices distinct from the root",
-                                                             "orientationWarping", {}, "animation"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "ik bones must be unique valid indices distinct from the root",
+            "orientationWarping", {}, "animation"));
     for (int spine : spineBones)
         for (int ik : ikBones)
-            if (spine == ik) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "a bone cannot be both spine and ik",
-                                                             "orientationWarping", {}, "animation"));
+            if (spine == ik)
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                         "a bone cannot be both spine and ik",
+                                                                         "orientationWarping", {}, "animation"));
     impl_->skeleton = &skeleton;
     impl_->rootBone = rootBone;
     impl_->spineBones.assign(spineBones.begin(), spineBones.end());
@@ -110,8 +119,10 @@ eve::Result<void> OrientationWarping::configure(AnimSkeleton& skeleton, int root
 }
 
 eve::Result<void> OrientationWarping::setDistributedAlpha(float alpha) {
-    if (!std::isfinite(alpha) || alpha < 0.f || alpha > 1.f) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "distributed alpha must be finite in [0,1]",
-                                                             "orientationWarping", {}, "animation"));
+    if (!std::isfinite(alpha) || alpha < 0.f || alpha > 1.f)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "distributed alpha must be finite in [0,1]",
+                                                                 "orientationWarping", {}, "animation"));
     impl_->distributedAlpha = alpha;
     return ok(eve::StatusCode::Applied);
 }
@@ -120,8 +131,9 @@ float OrientationWarping::getDistributedAlpha() const { return impl_->distribute
 
 eve::Result<void> OrientationWarping::setAngleThreshold(float radians) {
     if (!std::isfinite(radians) || radians <= 0.f || radians > 3.14159265359f + 1e-6f)
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "angle threshold must be finite in (0, pi]",
-                                                             "orientationWarping", {}, "animation"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "angle threshold must be finite in (0, pi]",
+                                                                 "orientationWarping", {}, "animation"));
     impl_->angleThreshold = radians;
     return ok(eve::StatusCode::Applied);
 }
@@ -130,8 +142,9 @@ float OrientationWarping::getAngleThreshold() const { return impl_->angleThresho
 
 eve::Result<void> OrientationWarping::setRotationInterpSpeed(float speed) {
     if (!std::isfinite(speed) || speed < 0.f || speed > 100.f)
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "rotation interp speed must be finite in [0,100]",
-                                                             "orientationWarping", {}, "animation"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "rotation interp speed must be finite in [0,100]",
+                                                                 "orientationWarping", {}, "animation"));
     impl_->interpSpeed = speed;
     return ok(eve::StatusCode::Applied);
 }
@@ -140,8 +153,9 @@ float OrientationWarping::getRotationInterpSpeed() const { return impl_->interpS
 
 eve::Result<void> OrientationWarping::setMinRootMotionSpeed(float metresPerSecond) {
     if (!std::isfinite(metresPerSecond) || metresPerSecond < 0.f || metresPerSecond > 100.f)
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "minimum root-motion speed must be finite in [0,100]",
-                                                             "orientationWarping", {}, "animation"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "minimum root-motion speed must be finite in [0,100]",
+                                                                 "orientationWarping", {}, "animation"));
     impl_->minSpeed = metresPerSecond;
     return ok(eve::StatusCode::Applied);
 }
@@ -158,20 +172,29 @@ void OrientationWarping::reset() {
 
 eve::Result<void> OrientationWarping::apply(AnimPose& pose, float locomotionX, float locomotionZ, float animatedX,
                                             float animatedZ, float dt) {
-    if (!impl_->skeleton) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "configure a skeleton before applying orientation warp",
-                                                             "orientationWarping", {}, "animation"));
-    if (pose.getBoneCount() != impl_->skeleton->getBoneCount()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "pose bone count must match the skeleton",
-                                                             "orientationWarping", {}, "animation"));
-    if (!std::isfinite(dt) || dt < 0.f || dt > 1.f) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dt must be finite in [0,1]",
-                                                             "orientationWarping", {}, "animation"));
+    if (!impl_->skeleton)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "configure a skeleton before applying orientation warp",
+            "orientationWarping", {}, "animation"));
+    if (pose.getBoneCount() != impl_->skeleton->getBoneCount())
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "pose bone count must match the skeleton",
+                                                                 "orientationWarping", {}, "animation"));
+    if (!std::isfinite(dt) || dt < 0.f || dt > 1.f)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "dt must be finite in [0,1]", "orientationWarping", {}, "animation"));
     for (float value : {locomotionX, locomotionZ, animatedX, animatedZ})
-        if (!std::isfinite(value)) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "locomotion and animated velocities must be finite",
-                                                             "orientationWarping", {}, "animation"));
+        if (!std::isfinite(value))
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "locomotion and animated velocities must be finite",
+                "orientationWarping", {}, "animation"));
     for (int i = 0; i < pose.getBoneCount(); ++i) {
         const auto& t = pose.local(i);
         for (float value : {t.px, t.py, t.pz, t.qx, t.qy, t.qz, t.qw, t.sx, t.sy, t.sz})
-            if (!std::isfinite(value)) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "pose locals must be finite",
-                                                             "orientationWarping", {}, "animation"));
+            if (!std::isfinite(value))
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                         "pose locals must be finite",
+                                                                         "orientationWarping", {}, "animation"));
     }
 
     float target = 0.f;
@@ -223,10 +246,78 @@ eve::Result<void> OrientationWarping::apply(AnimPose& pose, float locomotionX, f
     return ok(eve::StatusCode::Applied);
 }
 
-float OrientationWarping::getAppliedAngle() const { return impl_->appliedAngle; }
-float OrientationWarping::getTargetAngle() const { return impl_->targetAngle; }
+float         OrientationWarping::getAppliedAngle() const { return impl_->appliedAngle; }
+float         OrientationWarping::getTargetAngle() const { return impl_->targetAngle; }
 AnimSkeleton* OrientationWarping::getSkeleton() const { return impl_->skeleton; }
 int           OrientationWarping::getRootBone() const { return impl_->rootBone; }
 int           OrientationWarping::getSpineBoneCount() const { return static_cast<int>(impl_->spineBones.size()); }
 int           OrientationWarping::getIkBoneCount() const { return static_cast<int>(impl_->ikBones.size()); }
+}  // namespace eve::animation
+
+// OrientationWarpingBindings.cpp
+namespace eve::animation {
+namespace {
+
+constexpr const char* kSource = "animation.bindings";
+
+std::vector<int> copyBoneArray(ssq::Array values, const char* label, int maximum) {
+    if (values.size() > static_cast<std::size_t>(maximum))
+        throw std::runtime_error(std::string(label) + " exceeds the supported bone count");
+    std::vector<int> bones;
+    bones.reserve(values.size());
+    for (std::size_t i = 0; i < values.size(); ++i) bones.push_back(values.get<int>(i));
+    return bones;
+}
+
+}  // namespace
+
+void exposeOrientationWarpingBindings(ssq::Table& table) {
+    const script::BindContext bind{table.getHandle(), kSource};
+    auto                      cls = table.addClass<OrientationWarping>(
+        "OrientationWarping", std::function<OrientationWarping*()>([] { return new OrientationWarping(); }), true);
+    script::bindMethod(
+        cls, "configure",
+        [bind](OrientationWarping* self, AnimSkeleton* skeleton, int root, ssq::Array spine, ssq::Array ik) {
+            if (!skeleton) return bind.failInvalid("configure requires a skeleton");
+            try {
+                auto spineBones = copyBoneArray(spine, "spine bones", 32);
+                auto ikBones    = copyBoneArray(ik, "ik bones", 16);
+                return script::projectResult(bind.vm(), self->configure(*skeleton, root, spineBones, ikBones));
+            } catch (const std::exception& error) {
+                return bind.failInvalid(error.what());
+            }
+        });
+    script::bindMethod(cls, "setDistributedAlpha", [bind](OrientationWarping* self, float alpha) {
+        return script::projectResult(bind.vm(), self->setDistributedAlpha(alpha));
+    });
+    script::bindMethod(cls, "getDistributedAlpha", &OrientationWarping::getDistributedAlpha);
+    script::bindMethod(cls, "setAngleThreshold", [bind](OrientationWarping* self, float radians) {
+        return script::projectResult(bind.vm(), self->setAngleThreshold(radians));
+    });
+    script::bindMethod(cls, "getAngleThreshold", &OrientationWarping::getAngleThreshold);
+    script::bindMethod(cls, "setRotationInterpSpeed", [bind](OrientationWarping* self, float speed) {
+        return script::projectResult(bind.vm(), self->setRotationInterpSpeed(speed));
+    });
+    script::bindMethod(cls, "getRotationInterpSpeed", &OrientationWarping::getRotationInterpSpeed);
+    script::bindMethod(cls, "setMinRootMotionSpeed", [bind](OrientationWarping* self, float speed) {
+        return script::projectResult(bind.vm(), self->setMinRootMotionSpeed(speed));
+    });
+    script::bindMethod(cls, "getMinRootMotionSpeed", &OrientationWarping::getMinRootMotionSpeed);
+    script::bindMethod(cls, "setEnabled", &OrientationWarping::setEnabled);
+    script::bindMethod(cls, "isEnabled", &OrientationWarping::isEnabled);
+    script::bindMethod(cls, "reset", &OrientationWarping::reset);
+    script::bindMethod(cls, "apply",
+                       [bind](OrientationWarping* self, AnimPose* pose, float locomotionX, float locomotionZ,
+                              float animatedX, float animatedZ, float dt) {
+                           if (!pose) return bind.failInvalid("apply requires a pose");
+                           return script::projectResult(
+                               bind.vm(), self->apply(*pose, locomotionX, locomotionZ, animatedX, animatedZ, dt));
+                       });
+    script::bindMethod(cls, "getAppliedAngle", &OrientationWarping::getAppliedAngle);
+    script::bindMethod(cls, "getTargetAngle", &OrientationWarping::getTargetAngle);
+    script::bindMethod(cls, "getSkeleton", &OrientationWarping::getSkeleton);
+    script::bindMethod(cls, "getRootBone", &OrientationWarping::getRootBone);
+    script::bindMethod(cls, "getSpineBoneCount", &OrientationWarping::getSpineBoneCount);
+    script::bindMethod(cls, "getIkBoneCount", &OrientationWarping::getIkBoneCount);
+}
 }  // namespace eve::animation

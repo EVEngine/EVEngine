@@ -5,6 +5,7 @@
 #include "common/Result.h"
 #include "graphics/Drawable.h"
 
+#include <array>
 #include <cstdint>
 #include <map>
 #include <span>
@@ -64,9 +65,25 @@ public:
     /** @brief True when a valid bounding sphere is available for culling. */
     bool hasBounds() const { return boundsRadius > 0.f; }
 
+    /** @brief Copy CPU-uploaded mesh-local minimum XYZ and maximum XYZ.
+     * @return Owning bounds or NotFound when no finite vertex bounds are available.
+     * @thread Render thread only; no callbacks or retained references.
+     * @remarks CPU morph baking updates bounds; GPU skinning is excluded. Static placement uses bind geometry.
+     */
+    [[nodiscard]] Result<std::array<float, 6>> localBounds() const;
+
     /** @brief Compute the bounding sphere (centroid + max radius) from positions. */
     void computeBounds(const float *posXYZ, int vertexCount);
 
+    /** @brief Native upload generation; changes on each position upload, owner thread only. */
+    uint64_t geometryGeneration() const { return geometryGeneration_; }
+
+private:
+    uint64_t             geometryGeneration_ = 0;
+    std::array<float, 6> localBounds_{};
+    bool                 hasLocalBounds_ = false;
+
+public:
     /** @brief Draws . */
     void draw(Graphics * /*gfx*/, const glm::mat4 & /*matrix*/) const override {}
     /**
@@ -87,6 +104,12 @@ public:
     bool addMorphTarget(const std::string &name, const float *deltaPosXYZ);
     /** @brief Absolute morph (Assimp aiAnimMesh style): stored as delta from base. */
     bool addMorphTargetAbsolute(const std::string &name, const float *absPosXYZ);
+    /** @brief Copy normal deltas for an existing morph, or clear them with an empty span.
+     * Input is borrowed only during this call. Render-thread only, no callbacks.
+     * Missing targets, wrong counts and non-finite values leave the old target unchanged.
+     * @cost Copies three floats per vertex, once per authored target import.
+     */
+    [[nodiscard]] Result<void> setMorphNormalDeltas(std::string_view name, std::span<const float> deltas);
 
     /** @brief Returns the vertex count. */
     int getVertexCount() const;
@@ -229,6 +252,7 @@ private:
     struct MorphTarget {
         std::string name;
         std::vector<float> deltaPos;  // xyz packed, size = vertexCount*3
+        std::vector<float> deltaNrm;  // optional authored normal deltas
     };
 
     std::vector<float> basePos_;

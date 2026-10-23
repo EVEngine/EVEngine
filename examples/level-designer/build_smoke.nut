@@ -29,7 +29,19 @@ local probe = {
 };
 local preview = clone t;
 preview.x += 4.0;
-whiteboxApplyTransform({entity = probe}, {id = id, transform = preview});
+// Use the studio's owner of transient hierarchy previews.
+local realGizmo = level.gizmo;
+level.gizmo = {
+    isDragging = function() { return true; },
+    getPositionX = function() { return preview.x; }, getPositionY = function() { return preview.y; },
+    getPositionZ = function() { return preview.z; }, getRotationX = function() { return preview.rotationX; },
+    getRotationY = function() { return preview.rotationY; }, getRotationZ = function() { return preview.rotationZ; },
+    getScaleX = function() { return preview.scaleX; }, getScaleY = function() { return preview.scaleY; },
+    getScaleZ = function() { return preview.scaleZ; }
+};
+try { whiteboxApplyTransform({entity = probe, bounds = null}, {id = id, transform = preview}); }
+catch(error) { level.gizmo = realGizmo; throw error; }
+level.gizmo = realGizmo;
 buildCheck(fabs(observed.position[0] - preview.x) < 0.001,
     "move preview uses proposed position");
 buildCheck(levelObject(id).transform.x == t.x, "move preview does not commit scene");

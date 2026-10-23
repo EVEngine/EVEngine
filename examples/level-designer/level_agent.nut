@@ -190,8 +190,20 @@ function wbView(args) {
 function wbSurface(args) {
     wbEditable(args);
     local reference = terrainDefaultReference();
-    reference.heightScale = 0.0;
-    if (terrainRebuild(reference) == null) wbFail("generation_failed", level.status);
+    // Keep a positive scale so the studio's sculpt brush and document validator
+    // remain valid; flatness belongs to the height samples.
+    reference.heightScale = 1.0;
+    local created = procgen.newHeightmap(reference.width, reference.height);
+    if (!created.ok) wbFail("generation_failed", created.status.summary);
+    local hm = created.value;
+    for(local z=0;z<hm.getHeight();++z) for(local x=0;x<hm.getWidth();++x) hm.setHeight(x,z,0.0);
+    local encoded = level.heightmapTargets.encodeDocument(hm, reference.spacing, reference.spacing);
+    if (!encoded.ok) wbFail("generation_failed", encoded.status.summary);
+    local built = terrainBuild(reference, encoded.value, false);
+    if (built == null) wbFail("generation_failed", level.status);
+    terrainEndStroke();
+    terrainDispose();level.terrain=built;built.entity.setVisible(true);
+    level.terrainUndo.clear();level.terrainRedo.clear();level.terrainDraft=null;
     levelMarkPanelsDirty();
     return {surface = "flat", height = 0.0};
 }

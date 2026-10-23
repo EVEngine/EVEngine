@@ -4,6 +4,9 @@ enable_testing()
 # intentionally independent of unit_test and never triggers a full engine
 # build by itself; CI also runs the same script in the fast structural job.
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
+include("${CMAKE_SOURCE_DIR}/cmake/TestLevels.cmake")
+eve_configure_test_levels(EVE_TEST_LEVEL_FILE)
+include("${EVE_TEST_LEVEL_FILE}")
 add_custom_target(nodiscard_compile_check
   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/check_nodiscard.py
           --source-dir ${CMAKE_SOURCE_DIR}
@@ -23,18 +26,41 @@ set_tests_properties(cmake.third_party_patch_idempotence PROPERTIES LABELS "qual
 # reconfigures when an individual test/*.cpp is newer than that list (not when
 # anything under test/ is written).
 file(GLOB all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+file(GLOB_RECURSE organized_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/unit/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/integration/*.cpp")
+set(all_test_cpp ${EVE_TEST_DESKTOP_ORIGINS})
+list(REMOVE_ITEM all_test_cpp
+  "${CMAKE_CURRENT_SOURCE_DIR}/integration/crowd-runtime/CrowdThread.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/integration/rts-crowd/CrowdMotion.cpp")
+# These updated legacy sources run in cmake/crowd_check's process-isolated
+# Crowd/RTS executables. Their pre-reorganization cases also live in the
+# consolidated unit/integration files, so the main suite must not register
+# the same case names twice.
+list(FILTER all_test_cpp EXCLUDE REGEX "/(crowd_avoidance|result|rts_crowd|rts_crowd_production|rts_formation|rts_groups|value)\\.cpp$")
+eve_test_source_properties(physics_jolt.cpp physics_jolt_cooking.cpp physics_jolt_contacts.cpp PROPERTIES COMPILE_DEFINITIONS "EVENGINE_TEST_HAS_JOLT=$<BOOL:${EVENGINE_BUILD_JOLT}>")
 # Resource sharing must test the same optional validation provider as EVGraphics.
 get_target_property(_eve_graphics_definitions EVGraphics COMPILE_DEFINITIONS)
 if("EVENGINE_SPIRV_ASSET_VALIDATION=1" IN_LIST _eve_graphics_definitions)
-  set_property(SOURCE ShaderResourceSharing.cpp SkyTextureGpu.cpp SkyAtmospherePass.cpp SkyRuntime.cpp SkyWisps.cpp SkyScriptBindings.cpp BloomPyramid.cpp APPEND PROPERTY COMPILE_DEFINITIONS EVE_TEST_RESOURCE_VALIDATION=1)
+  eve_resolve_test_sources(_eve_validation_sources ShaderResourceSharing.cpp SkyTextureGpu.cpp
+    SkyAtmospherePass.cpp SkyRuntime.cpp SkyWisps.cpp SkyScriptBindings.cpp BloomPyramid.cpp)
+  set_property(SOURCE ${_eve_validation_sources} APPEND PROPERTY COMPILE_DEFINITIONS EVE_TEST_RESOURCE_VALIDATION=1)
 endif()
 # The legacy RNG oracle uses the same pinned DTL compatibility headers as procgen.
-set_source_files_properties(procgen_rng_contract.cpp PROPERTIES INCLUDE_DIRECTORIES
+eve_test_source_properties(procgen_rng_contract.cpp PROPERTIES INCLUDE_DIRECTORIES
   "${CMAKE_SOURCE_DIR}/src/modules/procgen/dtl_compat")
+eve_module_enabled(crowd_thread _eve_test_has_crowd_thread)
+if(_eve_test_has_crowd_thread)
+  list(APPEND all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/integration/crowd-runtime/CrowdThread.cpp")
+  eve_module_enabled(rts _eve_test_parallel_rts)
+  if(_eve_test_parallel_rts)
+    list(APPEND all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/integration/rts-crowd/CrowdMotion.cpp")
+  endif()
+endif()
 list(SORT all_test_cpp)
 set(_eve_test_src_txt "${CMAKE_CURRENT_BINARY_DIR}/test_src.txt")
 set(_eve_test_src_text "")
-foreach(_eve_test_cpp IN LISTS all_test_cpp)
+eve_resolve_test_sources(_eve_snapshot_sources ${all_test_cpp})
+list(SORT _eve_snapshot_sources)
+foreach(_eve_test_cpp IN LISTS _eve_snapshot_sources)
     file(TO_CMAKE_PATH "${_eve_test_cpp}" _eve_test_cpp)
     string(APPEND _eve_test_src_text "${_eve_test_cpp}\n")
 endforeach()
@@ -75,7 +101,7 @@ endif()
 # binary. Backend parity coverage lives in graphics_backend_parity.cpp.
 if(BUILD_PLATFORM STREQUAL "webgpu")
   foreach(_eve_vulkan_test IN ITEMS gpu_driven.cpp render_graph.cpp avatar_vrm_vulkan.cpp ShaderResourceSharing.cpp
-                                    shader_reload_vulkan.cpp)
+                                    shader_reload_vulkan.cpp physics_layered_cloth_gpu.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_vulkan_test}$")
   endforeach()
 endif()
@@ -133,6 +159,9 @@ if(NOT _eve_test_has_devtools)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_lsp_test}$")
   endforeach()
 endif()
+
+eve_test_origin_definitions(_eve_test_origin_definitions ${all_test_cpp})
+eve_resolve_test_sources(all_test_cpp ${all_test_cpp})
 
 # Partition the profile-filtered sources into one link unit per domain. The rule
 # lives in scripts/test_domains.py, which scripts/check_test_manifest.py also
@@ -203,6 +232,7 @@ if(EVENGINE_ANDROID_TEST_APP)
     ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
   )
   target_link_libraries(main eve_engine_includes)
+  target_include_directories(main PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 elseif(EVENGINE_IOS_TEST_APP)
   # The zeroerr runner replaces main.cpp inside the eve .app target created by
   # src/engine/CMakeLists.txt (which owns the bundle id/plist/signing, MoltenVK
@@ -215,12 +245,13 @@ elseif(EVENGINE_IOS_TEST_APP)
   add_custom_target(eve_nut_scripts ALL
     DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp)
   add_dependencies(eve eve_nut_scripts)
-  target_sources(eve PRIVATE
+  eve_target_test_sources(eve PRIVATE
     ${all_test_cpp}
     ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
     ios_test.mm
   )
-  set_source_files_properties(ios_test.mm PROPERTIES LANGUAGE OBJCXX)
+  eve_apply_test_origin_definitions(eve ${_eve_test_origin_definitions})
+  eve_test_source_properties(ios_test.mm PROPERTIES LANGUAGE OBJCXX)
   target_link_libraries(eve eve_engine_includes)
 else()
   # Desktop. The suite has two shapes, chosen by EVENGINE_TEST_DOMAIN_SPLIT:
@@ -260,6 +291,20 @@ else()
   set(EVENGINE_TEST_DOMAIN_SPLIT "${_eve_test_split_default}" CACHE BOOL
       "Build one test executable per domain instead of a single unit_test (default: on for SHARED, off for OBJECT)")
 
+  # Compile the heavy graphics fixture headers once across desktop test domains.
+  add_library(eve_graphics_window_fixtures STATIC GraphicsWindowFixtures.cpp)
+  # Fixtures.h reaches Assimp's generated config.h through Graphics.h.
+  add_dependencies(eve_graphics_window_fixtures third-party)
+  target_link_libraries(eve_graphics_window_fixtures PRIVATE eve_engine_includes zeroerr)
+  target_compile_options(eve_graphics_window_fixtures PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_compile_definitions(eve_graphics_window_fixtures PRIVATE
+      POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+  endif()
+  list(REMOVE_ITEM all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/GraphicsWindowFixtures.cpp")
+
   if(EVENGINE_TEST_DOMAIN_SPLIT)
     foreach(_eve_domain IN LISTS EVE_TEST_DOMAINS)
       if(NOT DEFINED EVE_TEST_DOMAIN_${_eve_domain}_SOURCES)
@@ -267,12 +312,18 @@ else()
         continue()
       endif()
       set(_eve_test_target "unit_test_${_eve_domain}")
-      add_executable(${_eve_test_target}
+      set(_eve_domain_helpers ${EVE_TEST_DOMAIN_${_eve_domain}_SHARED_SOURCES})
+      set(_eve_window_helper "${CMAKE_CURRENT_SOURCE_DIR}/GraphicsWindowFixtures.cpp")
+      list(REMOVE_ITEM _eve_domain_helpers "${_eve_window_helper}")
+      eve_add_test_executable(${_eve_test_target}
         ${EVE_TEST_DOMAIN_${_eve_domain}_SOURCES}
-        ${EVE_TEST_DOMAIN_${_eve_domain}_SHARED_SOURCES}
+        ${_eve_domain_helpers}
         ${_eve_test_runner}
       )
       target_link_libraries(${_eve_test_target} eve_engine_includes eve_nut_fixtures)
+      if("${_eve_window_helper}" IN_LIST EVE_TEST_DOMAIN_${_eve_domain}_SHARED_SOURCES)
+        target_link_libraries(${_eve_test_target} eve_graphics_window_fixtures)
+      endif()
       # CTest includes <target>_zeroerr_tests.cmake, which that target's POST_BUILD
       # discovery step writes. Seed an empty stub at configure time when it is
       # absent: otherwise ctest refuses to run at all ("include" error) until every
@@ -293,8 +344,8 @@ else()
     endif()
     message(STATUS "Test units: ${_eve_test_target_count} domain executables")
   else()
-    add_executable(unit_test ${all_test_cpp})
-    target_link_libraries(unit_test eve_engine_includes eve_nut_fixtures)
+    eve_add_test_executable(unit_test ${all_test_cpp})
+    target_link_libraries(unit_test eve_engine_includes eve_nut_fixtures eve_graphics_window_fixtures)
     set(_eve_test_discovery
       "${CMAKE_CURRENT_BINARY_DIR}/unit_test_zeroerr_tests.cmake")
     if(NOT EXISTS "${_eve_test_discovery}")
@@ -385,13 +436,21 @@ elseif(EVENGINE_IOS_TEST_APP)
     EVENGINE_IOS_TEST_APP=1)
 else()
   foreach(_eve_test_target IN LISTS EVE_TEST_TARGETS)
-    target_link_libraries(${_eve_test_target} ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+    # Third-party first, deliberately. The static Squirrel/SimpleSquirrel archives are
+    # compiled with `__declspec(dllexport)` (cmake/patches/third-party-squirrel-ssq-export.patch)
+    # so that the host binary can export that API to plugins. The group DLLs link the same
+    # archives, so they export the API too. A test executable links both, and the static
+    # definition must be the one the linker sees first: with `${EVELIBS}` first, MSVC selects
+    # the import-library thunk from a group DLL and then collides with the archive definition
+    # (LNK2005, 40 symbols). Ordering the third-party closure first keeps the static definition
+    # authoritative, which is also the order the OBJECT route effectively has.
+    target_link_libraries(${_eve_test_target} ${ThirdParty} ${EVELIBS} zeroerr ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
   endforeach()
   if(TARGET EVTensor AND NOT EVENGINE_WEBGPU)
-    add_executable(onnx_engine_probe EXCLUDE_FROM_ALL "${CMAKE_SOURCE_DIR}/examples/tensor/onnx/main.cpp")
+    eve_add_test_executable(onnx_engine_probe EXCLUDE_FROM_ALL "${CMAKE_SOURCE_DIR}/examples/tensor/onnx/main.cpp")
     target_compile_definitions(onnx_engine_probe PRIVATE EVE_ONNX_ENGINE_PROVIDER POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
     target_link_libraries(onnx_engine_probe eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
-    add_executable(onnx_gpu_contracts EXCLUDE_FROM_ALL main.cpp tensor_onnx_gpu.cpp)
+    eve_add_test_executable(onnx_gpu_contracts EXCLUDE_FROM_ALL main.cpp tensor_onnx_gpu.cpp)
     target_compile_definitions(onnx_gpu_contracts PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
     target_link_libraries(onnx_gpu_contracts eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
 
@@ -405,7 +464,7 @@ else()
   # Scene composition must also run in a trimmed host, where unrelated unit-test
   # translation units still reference disabled optional domains.
   if(TARGET EVScene_editor)
-    add_executable(scene_editor_component_test EXCLUDE_FROM_ALL
+    eve_add_test_executable(scene_editor_component_test EXCLUDE_FROM_ALL
       main.cpp scene_editing_commands.cpp scene_editor_session.cpp
       scene_editor_live_session.cpp scene_editor_script.cpp scene_editor_gizmo.cpp
       editor_scene_target_v2.cpp editor_scene_runtime.cpp)
@@ -421,8 +480,40 @@ else()
   endif()
   # Manual real-backend asset admission/visual probe; purchased inputs are never test fixtures.
   if(TARGET EVAsset_graphics AND TARGET EVAsset_scene)
-    add_executable(unity_graphics_probe EXCLUDE_FROM_ALL asset_import/UnityGraphicsProbe.cpp)
-    add_executable(unity_sprite_graphics_probe EXCLUDE_FROM_ALL asset_import/UnitySpriteGraphicsProbe.cpp)
+    if(TARGET EVAsset_import)
+      if(NOT ANDROID AND NOT EVENGINE_ANDROID AND NOT EVENGINE_IOS AND NOT IOS AND NOT EMSCRIPTEN)
+        eve_add_test_executable(scad_compiler_timeout_fixture asset_import/ScadCompilerTimeoutFixture.cpp)
+        target_compile_features(scad_compiler_timeout_fixture PRIVATE cxx_std_20)
+        eve_resolve_test_sources(_eve_scad_sources asset_import_structured_models.cpp)
+        set_property(SOURCE ${_eve_scad_sources} APPEND PROPERTY COMPILE_DEFINITIONS
+          EVE_SCAD_TEST_COMPILER="$<TARGET_FILE:scad_compiler_timeout_fixture>")
+        foreach(_eve_test_target IN LISTS EVE_TEST_TARGETS)
+          get_target_property(_eve_target_sources ${_eve_test_target} SOURCES)
+          foreach(_eve_scad_source IN LISTS _eve_scad_sources)
+            if(_eve_scad_source IN_LIST _eve_target_sources)
+              add_dependencies(${_eve_test_target} scad_compiler_timeout_fixture)
+            endif()
+          endforeach()
+        endforeach()
+      endif()
+      eve_add_test_executable(structured_model_graphics_probe EXCLUDE_FROM_ALL asset_import/StructuredModelGraphicsProbe.cpp)
+      target_link_libraries(structured_model_graphics_probe eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty}
+        ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+      if(WIN32)
+        target_link_libraries(structured_model_graphics_probe EVBacktrace)
+      endif()
+    endif()
+    eve_add_test_executable(unity_graphics_probe EXCLUDE_FROM_ALL asset_import/UnityGraphicsProbe.cpp)
+    if(TARGET EVAsset_import AND TARGET EVProcgen AND TARGET EVScene
+        AND NOT ANDROID AND NOT EVENGINE_ANDROID AND NOT EVENGINE_IOS AND NOT IOS AND NOT EMSCRIPTEN)
+      eve_add_test_executable(road_side_graphics_probe EXCLUDE_FROM_ALL asset_import/RoadSideGraphicsProbe.cpp)
+      target_link_libraries(road_side_graphics_probe eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty}
+        ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+      if(WIN32)
+        target_link_libraries(road_side_graphics_probe EVBacktrace)
+      endif()
+    endif()
+    eve_add_test_executable(unity_sprite_graphics_probe EXCLUDE_FROM_ALL asset_import/UnitySpriteGraphicsProbe.cpp)
     target_link_libraries(unity_sprite_graphics_probe eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty}
       ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
     target_link_libraries(unity_graphics_probe eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty}
@@ -612,7 +703,40 @@ include(${CMAKE_SOURCE_DIR}/cmake/ZeroErrDiscoverTests.cmake)
 # the union with per-case isolation unchanged. The label is the target name, which
 # is what `make test/<platform> DOMAIN=<domain>` selects on.
 foreach(_eve_test_target IN LISTS EVE_TEST_TARGETS)
+  eve_apply_test_origin_definitions(${_eve_test_target} ${_eve_test_origin_definitions})
   zeroerr_discover_tests(${_eve_test_target} LABEL "${_eve_test_target}")
 endforeach()
 endif()
 include(asset_shader/GraphicsProbe.cmake)
+if(NOT EVENGINE_ANDROID_TEST_APP AND NOT EVENGINE_IOS_TEST_APP)
+  include("${CMAKE_SOURCE_DIR}/cmake/TestImpact.cmake")
+  eve_enable_test_impact(TARGETS ${EVE_TEST_TARGETS})
+endif()
+
+# Focused composition proof for trimmed authoring hosts. The normal per-domain
+# suite still discovers these module-owned sources; this target avoids linking
+# unrelated optional-domain consumers into a minimal host.
+if(TARGET EVScene_editor AND TARGET EVGraphics AND NOT EVENGINE_ANDROID_TEST_APP AND NOT EVENGINE_IOS_TEST_APP)
+  eve_add_test_executable(scene_authoring_contract_test EXCLUDE_FROM_ALL
+    main.cpp scene_authoring.cpp scene_authoring_script.cpp graphics_authoring_projection.cpp
+    scene_relations.cpp
+    scene_regions.cpp scene_projected_overlap.cpp scene_visibility.cpp
+    scene_editing_commands.cpp scene_editor_session.cpp scene_editor_live_session.cpp)
+  if(TARGET EVDevTools)
+    eve_target_test_sources(scene_authoring_contract_test PRIVATE mcp_scene_literal.cpp)
+  endif()
+  target_link_libraries(scene_authoring_contract_test eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty}
+    ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+  target_compile_options(scene_authoring_contract_test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  if(WIN32)
+    target_link_libraries(scene_authoring_contract_test EVBacktrace)
+    target_compile_definitions(scene_authoring_contract_test PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+  endif()
+  if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/scene_authoring_contract_test_zeroerr_tests.cmake")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/scene_authoring_contract_test_zeroerr_tests.cmake" "# populated on focused build\n")
+  endif()
+  zeroerr_discover_tests(scene_authoring_contract_test LABEL "scene_authoring_contract_test"
+    NAME_PREFIX "authoring-contract/")
+endif()

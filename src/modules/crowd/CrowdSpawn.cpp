@@ -3,9 +3,6 @@
 #include <unordered_set>
 
 namespace eve::crowd {
-namespace {
-constexpr float tolerance = 0.001f;
-
 bool isTerrainClear(const CrowdField& field, bool clamp, float x, float y, float radius) {
     if (!field.valid()) return true;
     if (clamp && (x - radius < field.getOriginX() || y - radius < field.getOriginY() ||
@@ -14,8 +11,11 @@ bool isTerrainClear(const CrowdField& field, bool clamp, float x, float y, float
         return false;
     float projectedX = x, projectedY = y;
     field.resolvePenetration(projectedX, projectedY, radius);
-    return std::hypot(projectedX - x, projectedY - y) <= tolerance;
+    return std::hypot(projectedX - x, projectedY - y) <= 0.001f;
 }
+
+namespace {
+constexpr float tolerance = 0.001f;
 
 void projectTerrain(const CrowdField& field, bool clamp, float& x, float& y, float radius) {
     if (!field.valid()) return;
@@ -32,7 +32,9 @@ void projectTerrain(const CrowdField& field, bool clamp, float& x, float& y, flo
 }
 }  // namespace
 
-Result<SpawnReceipt> Crowd::applySpawnBatch(const SpawnBatch& batch) {
+Result<SpawnReceipt> Crowd::applySpawnBatch(const SpawnBatch& batch) { return createAgents(batch); }
+
+Result<SpawnReceipt> Crowd::createAgents(const AgentCreateBatch& batch) try {
     const auto failure = [](DiagnosticCode code, const char* message) {
         return Result<SpawnReceipt>::failure(Diagnostic::error(code, message, "spawnBatch"));
     };
@@ -48,19 +50,26 @@ Result<SpawnReceipt> Crowd::applySpawnBatch(const SpawnBatch& batch) {
     if (impl_->xs.size() + batch.agents.size() > size_t(std::max(impl_->maxAgents, 0)))
         return failure(DiagnosticCode::PreconditionViolation, "Crowd capacity cannot fit the batch");
     std::unordered_set<std::string> names;
+    std::unordered_set<std::uint64_t> tieKeys;
+    if (batch.agents.size() > std::numeric_limits<std::uint64_t>::max() - impl_->nextAnonymousTieKey)
+        return failure(DiagnosticCode::Conflict, "Crowd tie identity sequence exhausted");
     for (size_t i = 0; i < impl_->xs.size(); ++i)
         if (!std::isfinite(impl_->xs[i]) || !std::isfinite(impl_->ys[i]) || !std::isfinite(impl_->radii[i]) ||
             impl_->radii[i] < 0.f)
             return failure(DiagnosticCode::PreconditionViolation, "Existing crowd geometry is invalid");
     for (const auto& request : batch.agents) {
-        const auto& policy = request.interaction;
+        if ((request.movement.movement.value() == 0) != (request.movement.revision == 0))
+            return failure(DiagnosticCode::InvalidArgument, "Incomplete movement class binding");
+        const auto policy = request.policy.value_or(canonicalInteraction(request.interaction));
         if (request.stableId.empty() || !std::isfinite(request.x) || !std::isfinite(request.y) ||
             !std::isfinite(request.heading) || !std::isfinite(request.radius) || request.radius <= 0.f ||
-            !std::isfinite(policy.pushability) || policy.pushability < 0.f || policy.pushability > 1.f ||
-            policy.layer < 0 || policy.mask < 0)
+            !validInteraction(policy))
             return failure(DiagnosticCode::InvalidArgument, "Invalid spawn agent");
         if (impl_->namedAgents.contains(request.stableId) || !names.insert(request.stableId).second)
             return failure(DiagnosticCode::Conflict, "Spawn stable identifiers must be unique");
+        const auto tie = namedTieValue(request.stableId);
+        if (impl_->namedTieKeys.contains(tie) || !tieKeys.insert(tie).second)
+            return failure(DiagnosticCode::Conflict, "Spawn numeric identity hash collision");
     }
 
     // No callbacks or external mutations occur between the snapshot and swap.
@@ -78,14 +87,15 @@ Result<SpawnReceipt> Crowd::applySpawnBatch(const SpawnBatch& batch) {
         return true;
     };
     const auto isClear = [&](const SpawnRequest& request, float x, float y, bool checkAgents) {
+        const auto policy = request.policy.value_or(canonicalInteraction(request.interaction));
         if (!consume() || !std::isfinite(x) || !std::isfinite(y) ||
             !isTerrainClear(d.field, d.clampToField, x, y, request.radius))
             return false;
         if (!checkAgents) return true;
         for (size_t i = 0; i < d.xs.size(); ++i) {
             if (!consume()) return false;
-            if ((request.interaction.layer & d.interactions[i].mask) == 0 ||
-                (d.interactions[i].layer & request.interaction.mask) == 0)
+            if ((policy.contactLayer & d.interactions[i].contactMask) == 0 ||
+                (d.interactions[i].contactLayer & policy.contactMask) == 0)
                 continue;
             if (std::hypot(double(x) - d.xs[i], double(y) - d.ys[i]) < double(request.radius) + d.radii[i] - tolerance)
                 return false;
@@ -118,9 +128,13 @@ Result<SpawnReceipt> Crowd::applySpawnBatch(const SpawnBatch& batch) {
                 exhausted ? "Spawn work budget exhausted" : "No valid spawn placement within search distance");
         const int slot = staged.addNamedAgent(request.stableId, x, y, request.heading, request.radius);
         if (slot < 0) return failure(DiagnosticCode::InvariantViolation, "Validated spawn allocation rejected");
-        auto policy = staged.setAgentInteraction(slot, request.interaction);
+        staged.impl_->movements[size_t(slot)] = request.movement;
+        auto reference                        = staged.agentRef(slot);
+        if (!reference) return Result<SpawnReceipt>::failure(reference.status());
+        auto policy = staged.setInteractionPolicy(reference.value(),
+                                                  request.policy.value_or(canonicalInteraction(request.interaction)));
         if (!policy) return Result<SpawnReceipt>::failure(policy.status());
-        receipt.created.push_back({request.stableId, x, y});
+        receipt.created.push_back({request.stableId, x, y, reference.value()});
     }
 
     if (batch.policy == SpawnPolicy::PushNeighbors) {
@@ -139,7 +153,7 @@ Result<SpawnReceipt> Crowd::applySpawnBatch(const SpawnBatch& batch) {
                     if (j == i || (j < i && active[j])) continue;
                     if (!consume())
                         return failure(DiagnosticCode::PreconditionViolation, "Spawn work budget exhausted");
-                    if (!d.canInteract(i, j)) continue;
+                    if (!d.canContact(i, j)) continue;
                     double       dx = double(d.xs[j]) - d.xs[i], dy = double(d.ys[j]) - d.ys[i];
                     double       distance = std::hypot(dx, dy);
                     const double depth    = double(d.radii[i]) + d.radii[j] - distance;
@@ -194,9 +208,12 @@ Result<SpawnReceipt> Crowd::applySpawnBatch(const SpawnBatch& batch) {
             if (d.xs[i] != impl_->xs[i] || d.ys[i] != impl_->ys[i]) ++receipt.displacedAgents;
     }
     // Cached broadphase refers to pre-transaction positions; rebuild on the next advance.
-    d.gridW = d.gridH = 0;
+    d.spatialIndex.clear();
     impl_.swap(staged.impl_);
     return Result<SpawnReceipt>::success(std::move(receipt), Status::success(StatusCode::Applied));
+} catch (const std::bad_alloc&) {
+    return Result<SpawnReceipt>::failure(
+        Diagnostic::error(DiagnosticCode::Failed, "Cannot allocate agent creation transaction", "spawnBatch"));
 }
 
 }  // namespace eve::crowd

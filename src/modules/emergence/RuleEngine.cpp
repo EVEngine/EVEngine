@@ -322,7 +322,7 @@ eve::Result<bool> RuleEngine::setAuthority(std::string scope, bool granted) {
                                       eve::Status::success(changed ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
 }
 
-eve::Result<bool> RuleEngine::setPolicy(std::string name, decision::ConditionResult result) {
+eve::Result<bool> RuleEngine::setPolicy(std::string name, condition::ConditionResult result) {
     if (name.empty()) return eve::Result<bool>::failure(
         eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "policy name must be non-empty", "name", {}, "emergence.rule_engine"));
     const std::string wake    = makeFactKey(FactDomain::Policy, name);

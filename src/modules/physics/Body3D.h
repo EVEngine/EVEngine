@@ -10,21 +10,28 @@
 #include <vector>
 #include <cstdint>
 
-#include <box3d/id.h>
+#include <memory>
+#include "physics/backend/BodyBackend3D.h"
 
 namespace eve::physics {
+namespace box3d {
+class WorldBackend;
+}
 
+namespace box3d {
+struct Access;
+}
 class World3D;
 class Shape3D;
 
 /**
- * @brief 3D rigid body (Box3D) in meter-space coordinates (+Y up by convention).
+ * @brief Backend-neutral 3D rigid body in meter-space coordinates (+Y up by convention).
  * Owned by a World3D; create primitive or convex-hull shapes with the new*Shape APIs.
  */
 class EVENGINE_API_WORLD Body3D {
 public:
-    /** @brief Internal: wraps a Box3D body (use World3D::newBody). */
-    Body3D(World3D *world, b3BodyId bodyId, int id, PhysicsBodyHandle runtimeHandle);
+    /** @brief Internal: consumes an owning body backend (use World3D::newBody). */
+    Body3D(World3D *world, std::unique_ptr<IBodyBackend3D> backend, int id, PhysicsBodyHandle runtimeHandle);
     /** @brief Body 3 d. */
     ~Body3D();
 
@@ -345,8 +352,6 @@ public:
      * @reentrancy The accessor invokes no callbacks and is invalid across world mutation.
      */
     const World3D *getWorld() const { return world_; }
-    /** @brief Raw. */
-    b3BodyId  raw() const { return bodyId_; }
     /** @brief True while the underlying Box3D body is still alive. */
     bool      isValid() const;
 
@@ -360,12 +365,16 @@ public:
     void invalidate();
 
 private:
+    friend class box3d::WorldBackend;
+    friend struct box3d::Access;
     friend struct WorldSnapshotAccess;
+    friend struct PortableWorldSnapshotAccess;
     friend class World3D;
     friend class Shape3D;
 
+    Shape3D *createShape(ShapeGeometry3D geometry, float density, float friction, float restitution);
     World3D *world_  = nullptr;
-    b3BodyId bodyId_{};
+    std::unique_ptr<IBodyBackend3D> backend_{};
     int      id_ = 0;
     PhysicsBodyHandle runtimeHandle_ = PhysicsBodyHandle::invalid();
 };

@@ -1,17 +1,15 @@
-// This is the configuration for the game
-// If not specified, the default values are used
 config = {
-    // The width of the game
     width = 800
-    // The height of the game
     height = 600
-    // The title of the game
-    title = "game"
-    // The debug configuration
-    debug = true
-    // Soft script/asset hot reload (directory watch)
+    title = "Basic - step by step"
+    debug = false
     hotReload = true
-    // Instantiate only these script slots (plus boot: win/gfx/timer/fs/hot/…).
-    // Omit `modules` entirely to construct every module the SDK contains.
-    modules = ["physics", "particles"]
+
+    // 1 rectangle, 2 image, 3 movement, 4 physics, 5 particles, 6 fire.
+    // Restart after changing this number: the module list is a startup choice.
+    tutorialStep = 1
+    modules = []
 };
+if (config.tutorialStep == 3) config.modules.append("keyboard");
+if (config.tutorialStep >= 4) config.modules.append("physics");
+if (config.tutorialStep >= 5) config.modules.append("particles");

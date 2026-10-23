@@ -86,7 +86,7 @@ function wbTransaction(args) {
         touched[objectId] <- true;
         if (op.type == "create") {
             wbTransactionFields(op, ["type","id","recipe","name","position","rotation","scale","params"], ["recipe","position"]);
-            if (objectId in objects || objectId in history) wbFail("already_exists", "Object ID is reserved: " + objectId);
+            if (objectId in objects || objectId in history || objectId in pieces) wbFail("already_exists", "Object ID is reserved: " + objectId);
             if (level.recipes.find(op.recipe) == null) wbFail("not_found", "Unknown recipe");
             local schema = whiteboxSchema(op.recipe);
             if (schema == null) wbFail("generation_failed", level.status);
@@ -115,6 +115,7 @@ function wbTransaction(args) {
     }
     candidate.objects = [];
     foreach (key in levelSortedKeys(objects)) candidate.objects.push(objects[key]);
+    levelValidateHierarchyGeometry(candidate.objects);
     local receipt = {transactionId=id, baseRevision=args.expectedRevision, committedRevision=0,
         operations=args.operations.len(), presentationError=""};
     local nextReceipts = clone wbTransactions;

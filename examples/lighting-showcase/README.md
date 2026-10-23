@@ -38,7 +38,17 @@ Windows 上引擎可执行文件为 `build/win32-debug/src/engine/eve.exe`。
   `setShadowSchemeMaxSpotCasters`。本地阴影 atlas 固定 4 槽，候选更多时按屏幕重要性分页；
   `setShadowSchemePagingEnabled` / `setShadowSchemeMaxLocalUpdates` /
   `setShadowSchemeHysteresisBonus` 控制分页与每帧重绘预算。点光 cube 路径预留，默认关闭。
+  动态分辨率：`setShadowSchemeDirectionalMapSize` / `setShadowSchemeLocalMapSize`
+  （256–4096，GPU 取较大值并按需重建 atlas）、`setShadowSchemeDirectionalMaxDistance`
+  （CSM 覆盖距离，默认 64 m）。
 - **可选光追**：硬件 RTX 或 portable `reflectionChain`。按 `Space` 开关。
+
+硬件路径目前提供单次镜面反射：用 Vulkan 加速结构求交，再从当前画面的
+场景颜色读取命中处颜色。它会拒绝屏幕外或被前景遮挡的命中，避免把前景颜色
+错误映射到反射面；不是完整的离屏材质光照、路径追踪或硬件全局光照。
+反射按 G-buffer 的粗糙度、金属度和 Fresnel 权重合成。
+当前每帧重建最多 64 个可见不透明网格的加速结构，适合小场景验证，
+大场景性能和屏幕外反射仍需要后续完善。
 
 ## 操作
 

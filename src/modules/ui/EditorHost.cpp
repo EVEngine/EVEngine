@@ -73,6 +73,7 @@ void EditorHost::exposeScriptApi(ssq::VM&) {}
 #include "common/ScriptCompiler.h"
 #include "common/ScriptError.h"
 #include "common/ScriptModule.h"
+#include "common/SquirrelBinding.h"
 #include "filesystem/FileData.h"
 #include "graphics/Graphics.h"
 #include "image/ImageData.h"
@@ -326,9 +327,13 @@ std::string runSquirrel(HSQUIRRELVM vm, const std::string& source, const char* n
     if (SQ_FAILED(eve::script::ScriptCompiler::compileBuffer(vm, source.c_str(),
                                                              static_cast<SQInteger>(source.size()),
                                                              name, SQTrue))) {
-        std::string text = eve::script::formatLastScriptError(vm);
+        // A compile error never reaches the runtime error store, so it is read from the
+        // compiler's own context. Reporting only "compile failed" told the tool caller
+        // nothing about the file, line or reason.
+        const script::ScriptErrorContext context = script::captureCompileError(vm);
         sq_settop(vm, top);
-        return text.empty() ? "compile failed" : ("compile failed: " + text);
+        if (context.empty()) return "compile failed";
+        return "compile failed: " + script::formatScriptError(context);
     }
     if (Runtime* rt = ModuleManager::runtime()) {
         try {
@@ -339,21 +344,14 @@ std::string runSquirrel(HSQUIRRELVM vm, const std::string& source, const char* n
         }
     }
     sq_pushroottable(vm);
-    if (SQ_FAILED(sq_call(vm, 1, SQFalse, SQTrue))) {
-        std::string text = eve::script::formatLastScriptError(vm);
-        if (text.empty()) {
-            const SQChar* msg = nullptr;
-            if (sq_gettype(vm, -1) == OT_STRING) sq_getstring(vm, -1, &msg);
-            text = msg ? std::string(msg) : std::string{};
-        }
-        if (text.empty()) {
-            if (Runtime* rt = ModuleManager::runtime()) {
-                if (auto failure = rt->scriptModules().takeCompilationFailure()) text = *failure;
-            }
-        }
-        if (text.empty()) text = "unknown";
+    // The count is derived from the pushes (R-FACE-7): the compiled chunk plus its
+    // receiver. The failure report is consumed here because the caller needs the reason
+    // text for its own message.
+    const SQInteger params = sq_gettop(vm) - top - 1;  // receiver + arguments
+    if (SQ_FAILED(sq_call(vm, params, SQFalse, SQTrue))) {
+        const std::string detail = script::reportScriptCallFailure(vm, name);
         sq_settop(vm, top);
-        return "runtime failed: " + text;
+        return "runtime failed: " + detail;
     }
     sq_settop(vm, top);
     return {};
@@ -373,8 +371,11 @@ void callRootFunc(HSQUIRRELVM vm, const std::string& name, const std::vector<Var
     }
     sq_pushroottable(vm);
     for (const auto& a : args) pushVar(vm, a);
-    if (SQ_FAILED(sq_call(vm, static_cast<SQInteger>(args.size()) + 1, SQFalse, SQTrue)))
-        fprintf(stderr, "eve.host: %s() failed\n", name.c_str());
+    // `Var` is a runtime variant, so the shared helper's typed-argument form does not fit;
+    // the count is derived from the pushes instead -- the same rule (R-FACE-7). The report
+    // used to be a bare "%s() failed" that left out the reason the hook raised.
+    const SQInteger params = sq_gettop(vm) - top - 1;  // receiver + arguments
+    if (SQ_FAILED(sq_call(vm, params, SQFalse, SQTrue))) script::reportScriptCallFailure(vm, name.c_str());
     sq_settop(vm, top);
 }
 
@@ -387,8 +388,12 @@ bool callTableFunc(HSQUIRRELVM vm, const ssq::Table& tbl, const std::string& nam
         sq_pushobject(vm, fn.getRaw());
         sq_pushobject(vm, tbl.getRaw());
         for (const auto& a : args) pushVar(vm, a);
-        if (SQ_FAILED(sq_call(vm, static_cast<SQInteger>(args.size()) + 1, SQFalse, SQTrue))) {
-            if (err) *err = "runtime failed: " + name;
+        // Same runtime-variant exception as callRootFunc(): derive the count, and let the
+        // shared reporter produce the reason the callback raised.
+        const SQInteger params = sq_gettop(vm) - top - 1;  // receiver + arguments
+        if (SQ_FAILED(sq_call(vm, params, SQFalse, SQTrue))) {
+            const std::string detail = script::reportScriptCallFailure(vm, name.c_str());
+            if (err) *err = "runtime failed: " + name + ": " + detail;
             sq_settop(vm, top);
             return false;
         }
@@ -914,11 +919,10 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
     } else if (type == "input") {
         std::string buf = varString(cur("value", strOf(w, "value")));
         const bool multi = boolOf(w, "multiline", false);
-        const bool changed =
-            controls::inputText(widgetIdLabel(w).c_str(), buf, multi,
-                                ImVec2(floatOf(w, "width", 0.f),
-                                       floatOf(w, "height", 96.f))) ==
-            controls::ControlEdit::Changed;
+        const bool  changed = controls::inputText(widgetIdLabel(w).c_str(), buf, multi,
+                                                  ImVec2(floatOf(w, "width", 0.f), floatOf(w, "height", 96.f)),
+                                                  boolOf(w, "readOnly", false),
+                                                  strOf(w, "placeholder").c_str()) == controls::ControlEdit::Changed;
         if (enabled && changed && !id.empty()) {
             setWidgetValue(I, ed, id, Var(buf));
         }
@@ -981,6 +985,10 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
                                                       intOf(w, "heightItems", -1));
         if (enabled && changed && !id.empty() && idx >= 0 && idx < static_cast<int>(opts.size()))
             setWidgetValue(I, ed, id, Var(opts[static_cast<size_t>(idx)]));
+        recordRect(ed, id);
+    } else if (type == "link") {
+        if (controls::textLink(widgetIdLabel(w).c_str()) == controls::ControlEdit::Changed && enabled)
+            emitEvent(ed, "click", id, Var(strOf(w, "target")));
         recordRect(ed, id);
     } else if (type == "button") {
         if (enabled &&
@@ -1094,8 +1102,12 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
         }
     }
 
-    const std::string tip = strOf(w, "tooltip");
-    if (!tip.empty() && ImGui::IsItemHovered()) ImGui::SetTooltip("%s", tip.c_str());
+    const std::string tip =
+        !enabled && !strOf(w, "disabledReason").empty() ? strOf(w, "disabledReason") : strOf(w, "tooltip");
+    if (!tip.empty() && (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) || ImGui::IsItemFocused()))
+        ImGui::SetTooltip("%s", tip.c_str());
+    const std::string help = strOf(w, "helpText");
+    if (!help.empty()) ImGui::TextDisabled("%s", help.c_str());
     if (!enabled) {
         ImGui::PopItemFlag();
         ImGui::PopStyleVar();
@@ -1418,6 +1430,12 @@ void EditorHost::loadEditorsFromDisk() {
         if (!json.empty()) pending.emplace_back(id, json);
     }
     for (const auto& [id, json] : pending) {
+        // Every outcome is recorded, not just the happy path: a ViewModel that fails to
+        // load at startup used to be invisible (the result was discarded and the parse
+        // exception swallowed), so an MCP client asking hotReloadStatus() saw a healthy
+        // host while the editor had no working script behind it.
+        const std::string resource = "editors/" + id + ".editor.json";
+        std::string       result;
         try {
             Object::Ptr root = parseObject(json);
             const std::string vmName = strOf(root, "vm");
@@ -1425,11 +1443,17 @@ void EditorHost::loadEditorsFromDisk() {
                 std::ifstream ifs2(dir / (id + ".vm.nut"));
                 std::string src((std::istreambuf_iterator<char>(ifs2)),
                                 std::istreambuf_iterator<char>());
-                if (!src.empty()) registerVM(vmName, src, "game:/editors/" + id + ".vm.nut");
+                if (!src.empty()) result = registerVM(vmName, src, "game:/editors/" + id + ".vm.nut");
             }
+        } catch (const std::exception& e) {
+            result = std::string("error: ") + e.what();
         } catch (...) {
+            result = "error: editor manifest load failed";
         }
-        applyEditor(json);
+        if (result.rfind("error:", 0) == 0) recordHostResourceOutcome(resource, result);
+
+        const std::string applied = applyEditor(json);
+        if (applied.rfind("error:", 0) == 0) recordHostResourceOutcome(resource, applied);
     }
 }
 

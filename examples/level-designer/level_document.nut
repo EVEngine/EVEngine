@@ -1,13 +1,9 @@
 // Level document persistence.
 //
-// Schema: `eve.level3d`, version 1.
+// Schema: `eve.level3d`, version 2 (version 1 migrates with static pieces and an empty block library).
 //
-//   {"schema":"eve.level3d","schemaVersion":1,
-//    "terrain":{...terrain reference: mode/seed/sampler or asset path...},
-//    "scene":{...verbatim eve.scene.hierarchy v1 payload from the session...},
-//    "pieces":[{"object":..,"recipe":..,"values":{..}}],
-//    "spawns":[{"object":..,"yaw":..,"character":..,"motionSet":..}],
-//    "player":{"character":..,"motionSet":..}}
+// The v2 envelope adds actual terrain `surface`, reusable block `library`, and
+// per-piece `motion`; v1 loads with no library and static pieces.
 //
 // Ownership: the embedded `scene` payload stays the single authority for node
 // identity, parenting and TRS (it round-trips through SceneEditorSession), while
@@ -20,7 +16,7 @@
 // rejected with a diagnostic instead of being dropped silently.
 
 function levelDocumentSchema() { return "eve.level3d"; }
-function levelDocumentVersion() { return 1; }
+function levelDocumentVersion() { return 2; }
 
 function levelDocumentFilesystem() {
     local fs = eve.Filesystem();
@@ -34,10 +30,10 @@ function levelDocumentPath() { return level.saveName; }
 function levelDocumentBuild() {
     local pieces = [];
     foreach (id, piece in level.pieces)
-        pieces.push({object = id, recipe = piece.recipe, values = piece.values});
+        if (levelObject(id) != null) pieces.push({object = id, recipe = piece.recipe, values = piece.values, motion = piece.motion});
     local spawns = [];
     foreach (id, spawn in level.spawns)
-        spawns.push({object = id, yaw = spawn.yaw,
+        if (levelObject(id) != null) spawns.push({object = id, yaw = spawn.yaw,
                      character = spawn.character, motionSet = spawn.motionSet});
 
     local sceneText = level.session.saveJson();
@@ -45,6 +41,8 @@ function levelDocumentBuild() {
         schema = levelDocumentSchema(),
         schemaVersion = levelDocumentVersion(),
         terrain = level.terrain != null ? level.terrain.reference : terrainDefaultReference(),
+        surface = level.terrain != null ? terrainEncodeSurface(level.terrain) : null,
+        library = levelCopy(level.library),
         scene = levelJsonDecode(sceneText),
         pieces = pieces,
         spawns = spawns,
@@ -53,6 +51,7 @@ function levelDocumentBuild() {
 }
 
 function levelSaveDocument() {
+    terrainEndStroke();
     try {
         local text = levelJsonEncode(levelDocumentBuild());
         local fs = levelDocumentFilesystem();
@@ -83,7 +82,7 @@ function levelRequireArray(document, key) {
 function levelDocumentValidate(document) {
     foreach (key, value in document) {
         if (key == "schema" || key == "schemaVersion" || key == "terrain" || key == "scene" ||
-            key == "pieces" || key == "spawns" || key == "player") continue;
+            key == "pieces" || key == "spawns" || key == "player" || key == "surface" || key == "library") continue;
         throw "unknown field '" + key + "'";
     }
     if (!("schema" in document) || document.schema != levelDocumentSchema())
@@ -93,7 +92,7 @@ function levelDocumentValidate(document) {
     // JSON has one number type, so an integral float is accepted as a version.
     if (typeof version == "float" && version == version.tointeger().tofloat()) version = version.tointeger();
     if (typeof version != "integer") throw "'schemaVersion' must be an integer";
-    if (version != levelDocumentVersion())
+    if (version != 1 && version != levelDocumentVersion())
         throw "unsupported schemaVersion " + version +
               " (this build reads version " + levelDocumentVersion() + ")";
     levelRequireTable(document, "terrain");
@@ -107,6 +106,11 @@ function levelDocumentValidate(document) {
 /** @brief Reference table -> the terrain reference shape level_terrain expects. */
 function levelDocumentTerrainReference(raw) {
     local reference = terrainDefaultReference();
+    foreach(key,value in raw) if(!(key in reference)) throw "Unknown terrain reference field " + key;
+    if("sampler" in raw) {
+        if(typeof raw.sampler!="table") throw "Invalid terrain sampler";
+        foreach(key,value in raw.sampler) if(!(key in reference.sampler)) throw "Unknown terrain sampler field " + key;
+    }
     if ("mode" in raw) reference.mode = raw.mode;
     if ("path" in raw) reference.path = raw.path;
     if ("format" in raw) reference.format = raw.format;
@@ -129,62 +133,109 @@ function levelDocumentTerrainReference(raw) {
  * mutated, so a rejected document leaves the editor exactly as it was.
  */
 function levelDocumentApply(document) {
-    local terrainReference = levelDocumentTerrainReference(levelRequireTable(document, "terrain"));
-    local scenePayload = levelJsonEncode(levelRequireTable(document, "scene"));
-    local pieces = levelRequireArray(document, "pieces");
-    local spawns = levelRequireArray(document, "spawns");
-
-    // Validate the piece/spawn records before touching the session.
-    foreach (record in pieces) {
-        if (typeof record != "table") throw "piece records must be objects";
-        if (!("object" in record) || !("recipe" in record)) throw "piece record needs object and recipe";
-        if (!("values" in record) || typeof record.values != "table") throw "piece record needs a values object";
+    if(level.mode!="edit") throw "Stop Play before loading a document";
+    levelDocumentValidate(document);
+    local reference=levelDocumentTerrainReference(document.terrain);
+    if(reference.mode!="generated" && reference.mode!="asset") throw "Unknown terrain mode";
+    if(reference.width<2 || reference.height<2 || reference.width>1025 || reference.height>1025 ||
+        reference.spacing<=0.0 || reference.heightScale<=0.0) throw "Invalid terrain dimensions or scale";
+    local surface=("surface" in document) ? document.surface : null;
+    if(surface!=null && typeof surface!="string") throw "surface must be a terrain document string";
+    local library=("library" in document) ? document.library : [];
+    if(typeof library!="array" || library.len()>256) throw "Invalid block library";
+    local sceneText=levelJsonEncode(document.scene);
+    // Validate hierarchy offline, including cycles and TRS, before resource staging.
+    local opened=eve.SceneEditorModule().createSession("level.load.validation");
+    if(!opened.ok) throw opened.status.summary;
+    local checked=opened.value.restoreJson(sceneText);
+    if(!checked.ok) throw checked.status.summary;
+    levelValidateHierarchyGeometry(document.scene.objects);
+    local ids={},seen={};
+    foreach(object in document.scene.objects) ids[object.id] <- true;
+    function validateRecord(record,kind) {
+        if(typeof record!="table" || !("object" in record) || !(record.object in ids) || record.object=="root")
+            throw "Invalid " + kind + " scene object";
+        if(record.object in seen) throw "Duplicate semantic object " + record.object;
+        seen[record.object] <- true;
+        foreach(key,value in record) {
+            if(key=="object" || (kind=="piece" && (key=="recipe" || key=="values" || key=="motion")) ||
+                (kind=="spawn" && (key=="yaw" || key=="character" || key=="motionSet"))) continue;
+            throw "Unknown " + kind + " field: " + key;
+        }
+        if(kind=="piece") {
+            if(!("recipe" in record) || typeof record.recipe!="string" || record.recipe.find("prototype.")!=0 ||
+                !("values" in record) || typeof record.values!="table") throw "Invalid piece recipe";
+            if("motion" in record && record.motion!="static" && record.motion!="dynamic") throw "Invalid body motion";
+        } else {
+            if("yaw" in record && typeof record.yaw!="float" && typeof record.yaw!="integer") throw "Invalid spawn yaw";
+            if("character" in record && record.character!="" && levelCharacterNames().find(record.character)==null)
+                throw "Unknown spawn character";
+            if("motionSet" in record && record.motionSet!="" && levelMotionSetNames().find(record.motionSet)==null)
+                throw "Unknown spawn motion set";
+        }
     }
-    foreach (record in spawns) {
-        if (typeof record != "table") throw "spawn records must be objects";
-        if (!("object" in record)) throw "spawn record needs object";
+    foreach(record in document.pieces) validateRecord(record,"piece");
+    foreach(record in document.spawns) validateRecord(record,"spawn");
+    if("player" in document) {
+        foreach(key,value in document.player) {
+            if(key!="character" && key!="motionSet") throw "Unknown player field " + key;
+            if(key=="character" && levelCharacterNames().find(value)==null) throw "Unknown player character";
+            if(key=="motionSet" && levelMotionSetNames().find(value)==null) throw "Unknown player motion set";
+        }
     }
-
-    local restored = level.session.restoreJson(scenePayload);
-    if (!restored.ok) throw restored.status.summary;
-
-    terrainDispose();
-    if (terrainBuild(terrainReference) == null) throw level.status;
-
-    foreach (id, piece in level.pieces)
-        if (piece.entity != null) piece.entity.setVisible(false);
-    foreach (id, spawn in level.spawns) {
-        if (spawn.entity != null) spawn.entity.setVisible(false);
-        if (spawn.facing != null) spawn.facing.setVisible(false);
+    foreach(record in library) levelValidateBlockRecord(record);
+    local stagedTerrain=null,stagedPieces={};
+    try {
+        stagedTerrain=terrainBuild(reference,surface,false);
+        if(stagedTerrain==null) throw level.status;
+        foreach(record in document.pieces) {
+            local schema=whiteboxSchema(record.recipe);
+            if(schema==null) throw "Unknown recipe " + record.recipe;
+            local piece={recipe=record.recipe,values={},motion=("motion" in record) ? record.motion : "static",
+                entity=null,half=null,bounds=null};
+            foreach(key,value in record.values) piece.values[key] <- value.tostring();
+            stagedPieces[record.object] <- piece;
+            if(!whiteboxCreateRenderable(piece,schema)) throw level.status;
+            piece.entity.setVisible(false);
+        }
+        local restored=level.session.restoreJson(sceneText);
+        if(!restored.ok) throw restored.status.summary;
+    } catch(error) {
+        if(stagedTerrain!=null) levelReleaseRenderable(stagedTerrain.entity);
+        foreach(id,piece in stagedPieces) levelReleaseRenderable(piece.entity);
+        throw error;
     }
     whiteboxCancelDrag();
+    foreach(id,piece in level.pieceHistory) levelReleaseRenderable(piece.entity);
     level.pieceHistory = {};
-    level.pieces = {};
-    level.spawns = {};
-
-    levelRefreshObjects();
-    foreach (record in pieces) {
-        local piece = {recipe = record.recipe, values = {}, entity = null, half = null};
-        foreach (key, value in record.values) piece.values[key] <- value.tostring();
-        level.pieces[record.object] <- piece;
-        whiteboxRebuildPiece(record.object);
+    terrainDispose();level.terrain=stagedTerrain;stagedTerrain.entity.setVisible(true);
+    foreach(id,piece in level.pieces) levelReleaseRenderable(piece.entity);
+    foreach(id,spawn in level.spawns) {
+        spawnReleaseProjection(spawn);
     }
-    foreach (record in spawns) {
-        local spawn = spawnDefault();
-        if ("yaw" in record) spawn.yaw = record.yaw.tofloat();
-        if ("character" in record) spawn.character = record.character;
-        if ("motionSet" in record) spawn.motionSet = record.motionSet;
+    spawnReleaseRigCache();
+    level.pieces=stagedPieces;level.spawns={};level.library=levelCopy(library);
+    foreach(record in document.spawns) {
+        local spawn=spawnDefault();
+        if("yaw" in record) spawn.yaw=record.yaw;
+        if("character" in record) spawn.character=record.character;
+        if("motionSet" in record) spawn.motionSet=record.motionSet;
         level.spawns[record.object] <- spawn;
-        spawnBuildMarker(spawn, levelObject(record.object));
     }
-    if ("player" in document) {
-        local player = document.player;
-        if ("character" in player) level.characterName = player.character;
-        if ("motionSet" in player) level.motionSetName = player.motionSet;
+    if("player" in document) {
+        if("character" in document.player) level.characterName=document.player.character;
+        if("motionSet" in document.player) level.motionSetName=document.player.motionSet;
     }
-    level.selected = "";
-    whiteboxSyncTransforms();
-    spawnSyncTransforms();
+    level.selected="";level.selection.clear();level.scope="root";level.blockIndex=-1;
+    level.terrainUndo.clear();level.terrainRedo.clear();level.strokeBefore=null;level.terrainDraft=null;
+    scene.updateTransformsAll();levelRefreshObjects();
+    foreach(id,spawn in level.spawns) spawnBuildMarker(spawn,levelObject(id));
+    whiteboxReconcile();whiteboxSyncTransforms();spawnSyncTransforms();
+    // A load establishes a new editing baseline; old semantic records are released.
+    // Reopen on the loaded host to establish an empty command history.
+    local reopened=eve.SceneEditorModule().createLiveSession("level-designer.scene",levelHost());
+    if(!reopened.ok) throw reopened.status.summary;
+    level.session=reopened.value;
     return true;
 }
 
@@ -211,6 +262,7 @@ function levelLoadDocument() {
 
 /** @brief Discard authored content and start from an empty level. */
 function levelNewDocument() {
+    terrainEndStroke();
     if (level.mode == "play") levelStopPlay();
     // Delete authored nodes through the session so the hierarchy stays the single
     // authority. Deepest nodes go first: the session refuses to delete a node that
@@ -222,18 +274,25 @@ function levelNewDocument() {
         if (!removed.ok) level.status = removed.status.summary;
     }
     foreach (id, piece in level.pieces)
-        if (piece.entity != null) piece.entity.setVisible(false);
+        levelReleaseRenderable(piece.entity);
     foreach (id, spawn in level.spawns) {
-        if (spawn.entity != null) spawn.entity.setVisible(false);
-        if (spawn.facing != null) spawn.facing.setVisible(false);
+        spawnReleaseProjection(spawn);
     }
     whiteboxCancelDrag();
+    foreach(id,piece in level.pieceHistory) levelReleaseRenderable(piece.entity);
     level.pieceHistory = {};
+    spawnReleaseRigCache();
     level.pieces = {};
     level.spawns = {};
-    level.selected = "";
+    level.selected = ""; level.selection.clear(); level.scope = "root";
+    level.library.clear(); level.blockIndex = -1;
+    level.terrainUndo.clear(); level.terrainRedo.clear();
     terrainDispose();
     if (terrainBuild(terrainDefaultReference()) == null) { level.status = "terrain rebuild failed"; return; }
+    local reopened=eve.SceneEditorModule().createLiveSession("level-designer.scene",levelHost());
+    if(!reopened.ok) throw reopened.status.summary;
+    level.session=reopened.value;
+    level.terrainDraft=null;
     levelFrameTerrain();
     levelRefreshPanels();
     level.status = "new level";

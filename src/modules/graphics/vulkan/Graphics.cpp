@@ -5,6 +5,7 @@
 
 #define VKB_IMPL
 #include "graphics/vulkan/Graphics.h"
+#include "common/Profile.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/GlobalIllumination.h"
@@ -307,7 +308,12 @@ std::string Graphics::getBackendName() const { return "vulkan"; }
 
 bool Graphics::supportsRuntimeGlslCompilation() const { return glslRuntimeCompilationAvailable(); }
 
-Graphics::Graphics() = default;
+Graphics::Graphics() {
+    FrameCaptureCapabilities caps;
+    caps.backend = "vulkan";
+    for (int i = 0; i < 11; ++i) caps.attachments.push_back(static_cast<FrameAttachment>(i));
+    frameCaptures().configure(std::move(caps));
+}
 
 Graphics::~Graphics() {
     retireResourceLifetime();
@@ -326,6 +332,10 @@ Graphics::~Graphics() {
     deferredFileTextures_.clear();
     if (gpuQueryPool_) device->destroyQueryPool(gpuQueryPool_);
     gpuQueryPool_ = nullptr;
+    gpuTimingReady_ = false;
+    gpuFrameMs_     = 0.f;
+    gpuTimingPrefix_.fill(vk::CommandBuffer{});
+    gpuTimingPrefixSubmitted_.fill(false);
     // Pipeline objects hold raw Shader* owned by ownedShaders. Drop them
     // first so their destructors do not see freed shader pointers.
     pipelineAA_.reset();
@@ -333,6 +343,9 @@ Graphics::~Graphics() {
     pipelineGI_.reset();
     renderControl_.reset();
     destroyGpuParticleResources();
+    for (auto& slots : framePostTargets_) slots.clear();
+    for (auto& target : sharedFramePostTargets_) target = nullptr;
+    spatialAAResolve_ = nullptr;
     ownedCanvases.clear();
     ownedMeshes.clear();
     ownedGpuMeshes.clear();
@@ -642,11 +655,9 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
                 rtAsEnable.accelerationStructure = VK_TRUE;
                 rtPipeEnable.sType               = vk::StructureType::ePhysicalDeviceRayTracingPipelineFeaturesKHR;
                 rtPipeEnable.rayTracingPipeline  = VK_TRUE;
-                rtPipeEnable.pNext               = &rtAsEnable;
                 if (rayTracingCaps_.rayQuery) {
                     rtQueryEnable.sType    = vk::StructureType::ePhysicalDeviceRayQueryFeaturesKHR;
                     rtQueryEnable.rayQuery = VK_TRUE;
-                    rtAsEnable.pNext       = &rtQueryEnable;
                 }
                 enableRtFeatures = true;
             }
@@ -661,7 +672,11 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
         if (gpuDrivenCaps_.drawIndirectCount) vk12Enable.drawIndirectCount = VK_TRUE;
         if (enableRtFeatures) {
             vk12Enable.bufferDeviceAddress = VK_TRUE;
+            // DeviceBuilder reconstructs the chain from individually registered
+            // structures, overwriting any prelinked pNext pointers.
             deviceBuilder.add_pNext(&rtPipeEnable);
+            deviceBuilder.add_pNext(&rtAsEnable);
+            if (rayTracingCaps_.rayQuery) deviceBuilder.add_pNext(&rtQueryEnable);
         }
         if (gpuDrivenCaps_.api12) deviceBuilder.add_pNext(&vk12Enable);
         device = deviceBuilder.build();
@@ -734,7 +749,7 @@ void Graphics::initHeadless(int width, int height) {
 
     initialized = true;
     {
-        StartupStage stage("  vulkan: shadow resources (3x2048^2 maps + pipelines)");
+        StartupStage stage("  vulkan: shadow resources (CSM atlas + pipelines)");
         createShadowResources();
     }
     {
@@ -816,7 +831,7 @@ void Graphics::initWithWindow(void* nativeWindow) {
     }
     initialized = true;
     {
-        StartupStage stage("  vulkan: shadow resources (3x2048^2 maps + pipelines)");
+        StartupStage stage("  vulkan: shadow resources (CSM atlas + pipelines)");
         createShadowResources();
     }
     {
@@ -901,7 +916,10 @@ vkb::FrameSlot Graphics::frameToken() const {
     return vkb::FrameSlot::gpuIdle();
 }
 
-void Graphics::waitForSharedGpuResources() { presentModel.waitForAllFrames(); }
+void Graphics::waitForSharedGpuResources() {
+    EV_PROFILE_MODULE("graphics", "GpuResources.WaitAllFrames");
+    presentModel.waitForAllFrames();
+}
 
 void Graphics::invalidateTextureBindings() {
     for (auto& frame : mesh3dFrameSlots) frame.sets.clear();
@@ -1032,10 +1050,19 @@ bool Graphics::rebuildSwapchainIfNeeded() {
 }
 
 bool Graphics::beginPresentCommandBuffer() {
+    pollFrameCapture();
     for (int attempt = 0; attempt < 3; ++attempt) {
         if (!rebuildSwapchainIfNeeded()) return false;
-        presentRecording = presentModel.begin();
+        {
+            EV_PROFILE_MODULE("graphics", "Frame.Acquire");
+            const bool newFrame = !presentRecording;
+            presentRecording    = presentModel.begin();
+            // A slot can recur after empty frames. Its number is not a frame identity.
+            if (presentRecording && newFrame) deferredGraphRecorded_ = false;
+        }
         if (presentRecording) {
+            pollFrameCapture();
+            readGpuFrameTiming();
             writeGpuTimestampBegin();
             return true;
         }
@@ -1051,17 +1078,14 @@ bool Graphics::beginPresentCommandBuffer() {
 }
 
 bool Graphics::isRenderSurfaceReady() const {
-#if defined(EVENGINE_ANDROID) || defined(EVENGINE_IOS)
     auto* window = static_cast<SDL_Window*>(sdlWindow);
     if (!window) return false;
-    // During background/resume and orientation changes the native window is
-    // torn down and rebuilt; SDL reports a zero drawable size until it settles.
+    // Mobile background/resume and desktop minimize can report a zero drawable
+    // size until the native window settles — skip present rather than touching
+    // an invalid swapchain.
     int pw = 0, ph = 0;
     SDL_Vulkan_GetDrawableSize(window, &pw, &ph);
     return pw > 0 && ph > 0;
-#else
-    return true;
-#endif
 }
 
 bool Graphics::isRenderSurfaceStable() {
@@ -1129,6 +1153,7 @@ void Graphics::recreateSurfaceForResume() {
 }
 
 void Graphics::present() {
+    pollFrameCapture();
     if (!initialized) return;
     if (headless_) return;
     if (!isActive()) return;
@@ -1152,41 +1177,76 @@ void Graphics::draw(Canvas*, const glm::mat4&) const {}
 // ---- GPU frame timing ------------------------------------------------------
 
 void Graphics::initGpuTiming() {
+    if (const char* setting = std::getenv("EVENGINE_GPU_TIMING"); setting && std::strcmp(setting, "0") == 0) return;
     if (gpuQueryPool_) return;
     try {
         timestampPeriod_ = device.physical_device.properties.limits.timestampPeriod;
         vk::QueryPoolCreateInfo ci;
         ci.queryType    = vk::QueryType::eTimestamp;
-        ci.queryCount   = 2;
+        ci.queryCount      = 2 * kAsyncResourceCopies;
         gpuQueryPool_   = device->createQueryPool(ci);
+        const auto buffers = device->allocateCommandBuffers(
+            vk::CommandBufferAllocateInfo{uploadPool, vk::CommandBufferLevel::ePrimary, kAsyncResourceCopies});
+        std::copy(buffers.begin(), buffers.end(), gpuTimingPrefix_.begin());
+        gpuTimingPrefixSubmitted_.fill(false);
         gpuTimingReady_ = true;
     } catch (...) {
         gpuTimingReady_ = false;
+        if (gpuQueryPool_) device->destroyQueryPool(gpuQueryPool_);
         gpuQueryPool_   = nullptr;
     }
 }
 
 void Graphics::writeGpuTimestampBegin() {
     if (!gpuTimingReady_ || !presentRecording) return;
-    vk::CommandBuffer cb = presentRecording.commandBuffer();
-    cb.resetQueryPool(gpuQueryPool_, 0, 2);
-    cb.writeTimestamp(vk::PipelineStageFlagBits::eTopOfPipe, gpuQueryPool_, 0);
+    const uint32_t slot = uint32_t(currentFrameSlot() % kAsyncResourceCopies);
+    auto           cb   = gpuTimingPrefix_[slot];
+    cb.reset();
+    cb.begin(vk::CommandBufferBeginInfo{});
+    cb.resetQueryPool(gpuQueryPool_, slot * 2, 2);
+    cb.writeTimestamp(vk::PipelineStageFlagBits::eTopOfPipe, gpuQueryPool_, slot * 2);
+    cb.end();
+    gpuTimingPrefixSubmitted_[slot] = false;
+}
+
+void Graphics::submitGpuTimingPrefix() {
+    if (!gpuTimingReady_ || !presentRecording) return;
+    const uint32_t slot = uint32_t(currentFrameSlot() % kAsyncResourceCopies);
+    if (gpuTimingPrefixSubmitted_[slot]) return;
+    EV_PROFILE_MODULE("graphics", "GpuTiming.SubmitPrefix");
+    vk::SubmitInfo info{};
+    info.commandBufferCount = 1;
+    info.pCommandBuffers    = &gpuTimingPrefix_[slot];
+    const auto result       = device.getQueue(vkb::QueueType::graphics).submit(1, &info, vk::Fence{});
+    if (result != vk::Result::eSuccess) throw Exception("GPU timing prefix submission failed");
+    gpuTimingPrefixSubmitted_[slot] = true;
 }
 
 void Graphics::writeGpuTimestampEnd() {
     if (!gpuTimingReady_ || !presentRecording) return;
     vk::CommandBuffer cb = presentRecording.commandBuffer();
-    cb.writeTimestamp(vk::PipelineStageFlagBits::eBottomOfPipe, gpuQueryPool_, 1);
+    const uint32_t    first = uint32_t(currentFrameSlot() % kAsyncResourceCopies) * 2;
+    cb.writeTimestamp(vk::PipelineStageFlagBits::eBottomOfPipe, gpuQueryPool_, first + 1);
 }
 
 void Graphics::readGpuFrameTiming() {
+    EV_PROFILE_MODULE("graphics", "GpuTiming.Readback");
     if (!gpuTimingReady_ || !gpuQueryPool_) return;
-    // drawFrame() waits on the in-flight fence, so results are valid here.
-    std::array<uint64_t, 2> ts{};
-    const auto r = device->getQueryPoolResults(gpuQueryPool_, 0, 2, sizeof(ts), ts.data(), sizeof(uint64_t),
-                                               vk::QueryResultFlagBits::e64 | vk::QueryResultFlagBits::eWait);
-    if (r == vk::Result::eSuccess && ts[1] > ts[0])
-        gpuFrameMs_ = float(double(ts[1] - ts[0]) * double(timestampPeriod_) / 1'000'000.0);
+    // Called after acquiring this frame slot (its prior fence has completed),
+    // before resetting its query pair. Never wait for the just-submitted frame
+    // or race a different in-flight slot's reset. GPU values are delayed.
+    const uint32_t slot = uint32_t(currentFrameSlot() % kAsyncResourceCopies);
+    if (!gpuTimingPrefixSubmitted_[slot]) {
+        gpuFrameMs_ = 0.f;
+        return;
+    }
+    const uint32_t          first = slot * 2;
+    std::array<uint64_t, 4> ts{};
+    const auto              result =
+        device->getQueryPoolResults(gpuQueryPool_, first, 2, sizeof(ts), ts.data(), 2 * sizeof(uint64_t),
+                                    vk::QueryResultFlagBits::e64 | vk::QueryResultFlagBits::eWithAvailability);
+    if (result == vk::Result::eSuccess && ts[1] && ts[3] && ts[2] > ts[0])
+        gpuFrameMs_ = float(double(ts[2] - ts[0]) * double(timestampPeriod_) / 1'000'000.0);
     else
         gpuFrameMs_ = 0.f;
 }

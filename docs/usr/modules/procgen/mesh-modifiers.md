@@ -69,7 +69,7 @@ Result 诊断、计划统计和缓存约定，但 mesh pin 只传递 owning `Mes
 随时改参数或源，`isDirty` / `evaluate` / `getRevision` 驱动实时重算；
 `derivedMeshResult()` 返回 owning 派生快照（会话保持活跃，便于上传显示），
 源网格保持权威，`bakeToMesh` 可选冻结，`removeSetup` 结束会话，`isActive` 查询状态。
-完整并排示例见 [`examples/mesh-contact-fusion/`](../../../examples/mesh-contact-fusion/)。
+完整并排示例见 [`examples/mesh-contact-fusion/`](../../../../examples/mesh-contact-fusion/)。
 设计说明见 `docs/dev/superpowers/specs/2026-10-08-mesh-merge-adhere-plan.md`。
 
 连续、单消费者的逐顶点 deform 会编译成一个 CPU segment，一次遍历完成；smooth、append、
@@ -242,12 +242,14 @@ Mesh Slime 在相同 Session 中用 `applySlimeImpulse()` 向局部顶点速度�
 `MeshVertexAxisGizmoBuilder` 生成带稳定 `mesh.axis.x/y/z` 拾取 ID 的三色箭头快照。
 `pickAxisResult()` 把世界射线映射为轴名，最终位移仍通过 Session 的 `moveSelectedVerticesResult()`
 提交，因此渲染、拾取与可撤销变形之间没有第二份权威状态。
-完整 Box3D 集成见 [`examples/mesh-impact-lab/`](../../../examples/mesh-impact-lab/)：示例显式开启
+完整 Box3D 集成见 [`examples/mesh-impact-lab/`](../../../../examples/mesh-impact-lab/)：示例显式开启
 Shape3D hit events，按目标位于稳定 A/B 侧修正法线方向，过滤小冲量，并在 `Subdivide -> Weld`
 准备出的共享邻接网格上提交 Impact。渲染网格在命中后立即替换；静态碰撞代理采用 deferred
 策略，不在求解回调或同一物理 step 内重建。
 
-完整运行示例见 [`examples/mesh-modifier-lab/`](../../../examples/mesh-modifier-lab/)：它在同一场景中
+完整运行示例见 [`examples/mesh-modifier-lab/`](../../../../examples/mesh-modifier-lab/)：它在同一场景中
 渲染原网格、融合 Bend/Twist、Noise/Spherify、FFD、封口 Cut、Spline 和可撤销
 Sculpt 七种结果。
 
+
+对象指向提示可使用 [2D / 3D 箭头生成器](arrows.md)，支持 A→B 直线和弯曲网格。

@@ -9,6 +9,7 @@
 #include "ui/PcgDraggableWindow.h"
 #include "ui/PcgLoadingScreen.h"
 #include "ui/PcgPhotoModeApplyPlan.h"
+#include "ui/PcgPhotoModeApplySeam.h"
 #include "ui/PcgPhotoModeColorPicker.h"
 #include "ui/PcgPhotoModePanels.h"
 #include "ui/PcgPhotoModeRanges.h"
@@ -20,11 +21,11 @@
 #include "ui/UIAutomationCapabilities.h"
 
 #include "ui/Inspector.h"
+#include "ui/ParentScaler.h"
 #include "ui/ScenePanel.h"
 #include "ui/Theme.h"
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
-#include "ui/ParentScaler.h"
 
 #include "common/Capability.h"
 #include "common/Module.h"
@@ -213,20 +214,19 @@ void callScriptHandler(ssq::Function &fn, const std::string &kind, const UIEvent
     const SQInteger top = sq_gettop(vm);
     sq_pushobject(vm, fn.getRaw());
     sq_pushroottable(vm);  // env
-    if (kind == "click") {
-        if (SQ_FAILED(sq_call(vm, 1, SQFalse, SQTrue))) {
-            sq_settop(vm, top);
-            return;
-        }
-    } else {
+    if (kind != "click") {
         sq_pushstring(vm, kind.c_str(), -1);
         if (kind == "toggle") sq_pushbool(vm, ev.toggleValue ? SQTrue : SQFalse);
         else if (kind == "value") sq_pushfloat(vm, ev.floatValue);
         else sq_pushstring(vm, ev.textValue.c_str(), -1);
-        if (SQ_FAILED(sq_call(vm, 3, SQFalse, SQTrue))) {
-            sq_settop(vm, top);
-            return;
-        }
+    }
+    // The payload is a runtime variant (bool / float / string), so the shared helper's
+    // typed-argument form does not fit; the count is derived instead, which is the same
+    // rule (R-FACE-7). A handler that throws used to be dropped without a word -- the
+    // two branches below each turned the failure into a bare `return`.
+    const SQInteger params = sq_gettop(vm) - top - 1;  // receiver + arguments
+    if (SQ_FAILED(sq_call(vm, params, SQFalse, SQTrue))) {
+        script::reportScriptCallFailure(vm, "ui.handler");
     }
     sq_settop(vm, top);
 }
@@ -260,8 +260,10 @@ UI::UI() : backend_(createImGuiBackend()) {
     registerEditorHostCapabilities();
     registerUIAutomationCapabilities();
     bindUIEventSinkOwner(this);
+    declareScriptPhotoModeApplySeam();
 }
 UI::~UI() {
+    withdrawScriptPhotoModeApplySeam();
     bindUIEventSinkOwner(nullptr);
     shutdownBackend();
 }
@@ -532,6 +534,39 @@ void UI::beginSidebar(const std::string &id, float width) {
 
 void UI::beginStatusBar(const std::string &id) { pushOpen(statusBar({}, id)); }
 
+void UI::beginTabBar(const std::string &id) { pushOpen(tabBar({}, id)); }
+
+void UI::beginTabContainer(const std::string &activePageId, const std::string &id) {
+    WidgetDesc d;
+    d.type          = NodeType::TabContainer;
+    d.id            = id;
+    d.key           = id;
+    d.valueText     = activePageId;
+    d.flexDirection = FlexDirection::Column;
+    d.flexGrow      = 1.f;
+    pushOpen(std::move(d));
+}
+
+void UI::beginPanelFrame(const std::string &title, const std::string &id) { pushOpen(panelFrame(title, {}, id)); }
+
+void UI::beginDockArea(const std::string &region, const std::string &id) { pushOpen(dockArea(region, {}, id)); }
+
+void UI::beginAppFrame(const std::string &id) {
+    WidgetDesc d;
+    d.type          = NodeType::AppFrame;
+    d.id            = id;
+    d.key           = id;
+    d.flexDirection = FlexDirection::Column;
+    d.flexGrow      = 1.f;
+    d.percentW      = 1.f;
+    d.percentH      = 1.f;
+    pushOpen(std::move(d));
+}
+
+void UI::addTab(const std::string &label, const std::string &pageId, bool selected, const std::string &id) {
+    currentParent().children.push_back(tab(label, pageId, selected, id));
+}
+
 void UI::beginScrollList(const std::string &id, float height, float itemHeight) {
     pushOpen(scrollList(id, {}, height, itemHeight));
 }
@@ -603,6 +638,7 @@ AccessibilityRole parseAccessibilityRole(const std::string &role) {
     if (value == "checkbox") return AccessibilityRole::Checkbox;
     if (value == "slider") return AccessibilityRole::Slider;
     if (value == "text") return AccessibilityRole::Text;
+    if (value == "link") return AccessibilityRole::Link;
     if (value == "textinput" || value == "text-input") return AccessibilityRole::TextInput;
     if (value == "list") return AccessibilityRole::List;
     if (value == "listitem" || value == "list-item") return AccessibilityRole::ListItem;
@@ -760,6 +796,20 @@ void UI::addCombo(const std::string &label, const std::string &options, int sele
         start = end + 1;
     }
     currentParent().children.push_back(combo(label, items, selected, id));
+}
+
+void UI::addLink(const std::string &label, const std::string &target, const std::string &id) {
+    currentParent().children.push_back(link(label, target, id));
+}
+
+void UI::setItemTextInput(bool multiline, bool readOnly, const std::string &placeholder) {
+    auto &children = currentParent().children;
+    if (!children.empty()) children.back().withTextInput(multiline, readOnly, placeholder);
+}
+
+void UI::setItemHelp(const std::string &help, const std::string &disabledReason) {
+    auto &children = currentParent().children;
+    if (!children.empty()) children.back().withHelp(help, disabledReason);
 }
 
 void UI::addInputText(const std::string &label, const std::string &value, const std::string &id) {
@@ -1592,7 +1642,7 @@ std::string UI::saveTreeJson() const {
     auto               t = host->get().tree();
     Poco::JSON::Object root;
     root.set("schema", "eve.ui.tree");
-    root.set("version", 4);
+    root.set("version", 5);
     root.set("host", host->get().getName());
     if (t->root >= 0) nodeToJson(*t, t->nodes[size_t(t->root)], root);
     std::ostringstream oss;
@@ -1611,7 +1661,7 @@ bool UI::loadTreeJson(const std::string &json) {
         if (obj->has("schema") && obj->getValue<std::string>("schema") != "eve.ui.tree")
             return false;
         const int version = obj->optValue<int>("version", 1);
-        if (version < 1 || version > 4) return false;
+        if (version < 1 || version > 5) return false;
         WidgetDesc root = descFromJson(*obj);
         host->get().setTree(std::move(root));
         return true;
@@ -1626,11 +1676,12 @@ std::string UI::saveTreeJson() const {
     auto host = resolveSelected();
     if (!host) return "{}";
     static const char *types[] = {
-        "window", "text", "button", "sameLine", "group", "separator", "checkbox",
-        "slider", "progress", "inputText", "collapsingHeader", "child", "flex", "spacer",
-        "image", "imageButton", "combo", "scrollList", "viewport", "searchField", "switch",
-        "badge", "card", "sectionHeader", "menuBar", "menu", "menuItem", "toolbar", "toolbox",
-        "sidebar", "statusBar", "splitPane", "ninePatchPanel", "colorPalette", "grid"};
+        "window",  "text",        "button",        "sameLine",         "group",          "separator",    "checkbox",
+        "slider",  "progress",    "inputText",     "collapsingHeader", "child",          "flex",         "spacer",
+        "image",   "imageButton", "combo",         "scrollList",       "viewport",       "searchField",  "switch",
+        "badge",   "card",        "sectionHeader", "menuBar",          "menu",           "menuItem",     "toolbar",
+        "toolbox", "sidebar",     "statusBar",     "splitPane",        "ninePatchPanel", "colorPalette", "grid",
+        "tab",     "tabBar",      "tabContainer",  "panelFrame",       "dockArea",       "appFrame",     "link"};
     const auto tree = host->get().tree();
     std::function<eve::Value(int)> encode = [&](int index) -> eve::Value {
         const UINode &n = tree->nodes[size_t(index)];
@@ -1643,6 +1694,11 @@ std::string UI::saveTreeJson() const {
         if (!n.text.empty()) node.set("text", n.text);
         if (!n.valueText.empty()) node.set("valueText", n.valueText);
         if (!n.tooltip.empty()) node.set("tooltip", n.tooltip);
+        if (n.readOnly) node.set("readOnly", n.readOnly);
+        if (n.multiline) node.set("multiline", n.multiline);
+        if (!n.placeholder.empty()) node.set("placeholder", n.placeholder);
+        if (!n.disabledReason.empty()) node.set("disabledReason", n.disabledReason);
+        if (!n.helpText.empty()) node.set("helpText", n.helpText);
         if (!n.styleClass.empty()) node.set("styleClass", n.styleClass);
         node.set("visible", n.visible);
         node.set("enabled", n.enabled);
@@ -1679,7 +1735,7 @@ std::string UI::saveTreeJson() const {
     };
     eve::Value root = tree->root >= 0 ? encode(tree->root) : eve::Value::object({});
     root.set("schema", "eve.ui.tree");
-    root.set("version", 4);
+    root.set("version", 5);
     root.set("host", host->get().getName());
     auto encoded = eve::json::stringify(root);
     return encoded.ok() ? std::move(encoded).takeValue() : "{}";
@@ -1694,23 +1750,30 @@ bool UI::loadTreeJson(const std::string &text) {
     if (!document.valid() || !root.isObject()) return false;
     if (root.has("schema") && root.getString("schema") != "eve.ui.tree") return false;
     const int version = root.getInt("version", 1);
-    if (version < 1 || version > 4) return false;
+    if (version < 1 || version > 5) return false;
     static const char *types[] = {
-        "window", "text", "button", "sameLine", "group", "separator", "checkbox",
-        "slider", "progress", "inputText", "collapsingHeader", "child", "flex", "spacer",
-        "image", "imageButton", "combo", "scrollList", "viewport", "searchField", "switch",
-        "badge", "card", "sectionHeader", "menuBar", "menu", "menuItem", "toolbar", "toolbox",
-        "sidebar", "statusBar", "splitPane", "ninePatchPanel", "colorPalette", "grid"};
+        "window",  "text",        "button",        "sameLine",         "group",          "separator",    "checkbox",
+        "slider",  "progress",    "inputText",     "collapsingHeader", "child",          "flex",         "spacer",
+        "image",   "imageButton", "combo",         "scrollList",       "viewport",       "searchField",  "switch",
+        "badge",   "card",        "sectionHeader", "menuBar",          "menu",           "menuItem",     "toolbar",
+        "toolbox", "sidebar",     "statusBar",     "splitPane",        "ninePatchPanel", "colorPalette", "grid",
+        "tab",     "tabBar",      "tabContainer",  "panelFrame",       "dockArea",       "appFrame",     "link"};
     std::function<WidgetDesc(eve::json::Value)> decode = [&](eve::json::Value value) {
         WidgetDesc node;
         const std::string type = value.getString("type", "text");
         for (int i = 0; i < int(std::size(types)); ++i)
             if (type == types[i]) node.type = static_cast<NodeType>(i);
+        if (node.type == NodeType::Link) node.accessibilityRole = AccessibilityRole::Link;
         node.id = value.getString("id");
         node.key = value.getString("key");
         node.text = value.getString("text");
         node.valueText = value.getString("valueText");
         node.tooltip = value.getString("tooltip");
+        node.readOnly                   = value.getBool("readOnly", false);
+        node.multiline                  = value.getBool("multiline", false);
+        node.placeholder                = value.getString("placeholder");
+        node.disabledReason             = value.getString("disabledReason");
+        node.helpText                   = value.getString("helpText");
         node.styleClass = value.getString("styleClass");
         node.visible = value.getBool("visible", true);
         node.enabled = value.getBool("enabled", true);
@@ -1815,6 +1878,7 @@ const char *nodeTypeName(NodeType t) {
     switch (t) {
     case NodeType::Window: return "window";
     case NodeType::Text: return "text";
+    case NodeType::Link: return "link";
     case NodeType::Button: return "button";
     case NodeType::SameLine: return "sameLine";
     case NodeType::Group: return "group";
@@ -1848,6 +1912,12 @@ const char *nodeTypeName(NodeType t) {
     case NodeType::Sidebar: return "sidebar";
     case NodeType::StatusBar: return "statusBar";
     case NodeType::SplitPane: return "splitPane";
+    case NodeType::Tab: return "tab";
+    case NodeType::TabBar: return "tabBar";
+    case NodeType::TabContainer: return "tabContainer";
+    case NodeType::PanelFrame: return "panelFrame";
+    case NodeType::DockArea: return "dockArea";
+    case NodeType::AppFrame: return "appFrame";
     }
     return "text";
 }
@@ -1861,6 +1931,7 @@ NodeType nodeTypeFromName(const std::string &s) {
     if (s == "checkbox") return NodeType::Checkbox;
     if (s == "slider") return NodeType::Slider;
     if (s == "progress") return NodeType::Progress;
+    if (s == "link") return NodeType::Link;
     if (s == "inputText") return NodeType::InputText;
     if (s == "collapsingHeader") return NodeType::CollapsingHeader;
     if (s == "child") return NodeType::Child;
@@ -1887,6 +1958,12 @@ NodeType nodeTypeFromName(const std::string &s) {
     if (s == "sidebar") return NodeType::Sidebar;
     if (s == "statusBar") return NodeType::StatusBar;
     if (s == "splitPane") return NodeType::SplitPane;
+    if (s == "tab") return NodeType::Tab;
+    if (s == "tabBar") return NodeType::TabBar;
+    if (s == "tabContainer") return NodeType::TabContainer;
+    if (s == "panelFrame") return NodeType::PanelFrame;
+    if (s == "dockArea") return NodeType::DockArea;
+    if (s == "appFrame") return NodeType::AppFrame;
     return NodeType::Text;
 }
 
@@ -1897,6 +1974,11 @@ void nodeToJson(const UIHost::Tree &tree, const UINode &n, Poco::JSON::Object &o
     if (!n.text.empty()) o.set("text", n.text);
     if (!n.valueText.empty()) o.set("valueText", n.valueText);
     if (!n.tooltip.empty()) o.set("tooltip", n.tooltip);
+    if (n.readOnly) o.set("readOnly", n.readOnly);
+    if (n.multiline) o.set("multiline", n.multiline);
+    if (!n.placeholder.empty()) o.set("placeholder", n.placeholder);
+    if (!n.disabledReason.empty()) o.set("disabledReason", n.disabledReason);
+    if (!n.helpText.empty()) o.set("helpText", n.helpText);
     if (!n.visible) o.set("visible", false);
     if (!n.enabled) o.set("enabled", false);
     if (n.focusMode != FocusMode::All)
@@ -1920,6 +2002,7 @@ void nodeToJson(const UIHost::Tree &tree, const UINode &n, Poco::JSON::Object &o
             case AccessibilityRole::Checkbox: role = "checkbox"; break;
             case AccessibilityRole::Slider: role = "slider"; break;
             case AccessibilityRole::Text: role = "text"; break;
+            case AccessibilityRole::Link: role = "link"; break;
             case AccessibilityRole::TextInput: role = "text-input"; break;
             case AccessibilityRole::List: role = "list"; break;
             case AccessibilityRole::ListItem: role = "list-item"; break;
@@ -2013,10 +2096,16 @@ float fnum(const Poco::Dynamic::Var &v, float def = 0.f) {
 }
 
 void applyCommonFields(WidgetDesc &d, const Poco::JSON::Object &o) {
+    if (d.type == NodeType::Link) d.accessibilityRole = AccessibilityRole::Link;
     if (o.has("id")) d.id = o.getValue<std::string>("id");
     if (o.has("key")) d.key = o.getValue<std::string>("key");
     if (o.has("text")) d.text = o.getValue<std::string>("text");
     if (o.has("valueText")) d.valueText = o.getValue<std::string>("valueText");
+    if (o.has("helpText")) d.helpText = o.getValue<std::string>("helpText");
+    if (o.has("disabledReason")) d.disabledReason = o.getValue<std::string>("disabledReason");
+    if (o.has("placeholder")) d.placeholder = o.getValue<std::string>("placeholder");
+    if (o.has("multiline")) d.multiline = o.getValue<bool>("multiline");
+    if (o.has("readOnly")) d.readOnly = o.getValue<bool>("readOnly");
     if (o.has("tooltip")) d.tooltip = o.getValue<std::string>("tooltip");
     if (o.has("visible")) d.visible = o.getValue<bool>("visible");
     if (o.has("enabled")) d.enabled = o.getValue<bool>("enabled");
@@ -2234,8 +2323,11 @@ ssq::Object UI::callPickHandler() {
         sq_settop(squirrel, top);
         return {};
     }
-    sq_pushroottable(squirrel);  // environment
-    if (SQ_FAILED(sq_call(squirrel, 1, SQTrue, SQTrue))) {
+    // The handler is the value we just looked up; call it with the root table as receiver
+    // and keep its return value on top for the instance check below.
+    HSQOBJECT handler;
+    sq_getstackobj(squirrel, -1, &handler);
+    if (SQ_FAILED(script::callFunctionResult(squirrel, handler, script::rootTable))) {
         sq_settop(squirrel, top);
         return {};
     }
@@ -2451,9 +2543,12 @@ void UI::callScenePickHandler(const std::string &nodeId) {
         sq_settop(squirrel, top);
         return;
     }
-    sq_pushroottable(squirrel);                    // environment
-    sq_pushstring(squirrel, nodeId.c_str(), -1);   // node id argument
-    sq_call(squirrel, 2, SQFalse, SQTrue);
+    // Same shape as the inspector handler above: the looked-up closure, called with the
+    // root table as receiver and the node id as its argument. A failed call used to be
+    // discarded here too.
+    HSQOBJECT handler;
+    sq_getstackobj(squirrel, -1, &handler);
+    (void)script::callFunction(squirrel, handler, script::rootTable, nodeId);
     sq_settop(squirrel, top);
 }
 
@@ -2506,6 +2601,12 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("beginSidebar", &UI::beginSidebar);
     cls.addFunc("beginStatusBar", &UI::beginStatusBar);
     cls.addFunc("beginSplitPane", &UI::beginSplitPane);
+    cls.addFunc("beginTabBar", &UI::beginTabBar);
+    cls.addFunc("beginTabContainer", &UI::beginTabContainer);
+    cls.addFunc("beginPanelFrame", &UI::beginPanelFrame);
+    cls.addFunc("beginDockArea", &UI::beginDockArea);
+    cls.addFunc("beginAppFrame", &UI::beginAppFrame);
+    cls.addFunc("addTab", &UI::addTab);
     cls.addFunc("beginScrollList", &UI::beginScrollList);
     cls.addFunc("beginFlex", &UI::beginFlex);
     cls.addFunc("beginRow", &UI::beginRow);
@@ -2528,6 +2629,9 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("imageButton", &UI::addImageButton);
     cls.addFunc("viewport", &UI::addViewport);
     cls.addFunc("combo", &UI::addCombo);
+    cls.addFunc("link", &UI::addLink);
+    cls.addFunc("setItemTextInput", &UI::setItemTextInput);
+    cls.addFunc("setItemHelp", &UI::setItemHelp);
     cls.addFunc("inputText", &UI::addInputText);
     cls.addFunc("searchField", &UI::addSearchField);
     cls.addFunc("switch", &UI::addSwitch);

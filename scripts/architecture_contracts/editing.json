@@ -15,8 +15,8 @@
         "examples/level-designer/level_transactions.nut"
       ],
       "tests": [
-        "test/editor_authority_atomic.cpp",
-        "test/editor_transaction_v2.cpp",
+        "test/integration/transaction-authority/editor_authority_atomic.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_gameplay_action_tests.cpp",
         "examples/level-designer/transaction_check.py",
         "examples/level-designer/transaction_smoke.nut"
       ],

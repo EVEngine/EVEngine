@@ -1,10 +1,12 @@
 #pragma once
 
 #include "editing/EditableTarget.h"
+#include "editing/EditingProperty.h"
 
-#include <functional>
 #include <cstddef>
+#include <functional>
 #include <string>
+#include <vector>
 
 namespace eve::editing {
 
@@ -15,6 +17,17 @@ struct EditingCommandDescriptor {
     std::string displayName;
     std::string category;
     bool        automationAllowed = true;
+    /** @brief Target type names this command may bind (e.g. action-timeline). */
+    std::vector<std::string> targetKinds;
+    /**
+     * @brief Payload shape shared by Inspector forms and MCP inputSchema.
+     * @note Empty properties with typeId "emptyObject" means an explicit no-field payload.
+     */
+    PropertySchema payloadSchema;
+    /** @brief Workspace panel capability this command is bound to (panel-before-automation). */
+    std::string panelCapability;
+    /** @brief Workspace panel context slot (list/preview/inspector/timeline/…). */
+    std::string panelContext;
 };
 
 /** @brief Side-effect-free planner invoked with the resolved target. */

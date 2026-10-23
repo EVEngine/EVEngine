@@ -1,4 +1,5 @@
 #pragma once
+#include "common/StringMapInstances.h"
 
 // 状态（buff/debuff）系统的运行时兼容投影与 adapter metadata。
 //
