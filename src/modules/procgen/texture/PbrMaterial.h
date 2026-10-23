@@ -107,8 +107,9 @@ private:
 };
 
 /** @brief Builds a full PBR set from a texture definition and returns unique ownership. */
-[[nodiscard]] std::unique_ptr<PbrTextureSet> generatePbrSet(const TextureRecipeDef &def, const Params &params,
-                                                            std::string &error);
+[[nodiscard]] EVENGINE_API_DOMAINS std::unique_ptr<PbrTextureSet> generatePbrSet(const TextureRecipeDef &def,
+                                                                                 const Params           &params,
+                                                                                 std::string            &error);
 
 /** @brief Builds a grayscale RGBA8 image and returns unique ownership to the caller. */
 [[nodiscard]] std::unique_ptr<image::ImageData> grayscaleImage(const std::vector<float> &values, int w, int h);

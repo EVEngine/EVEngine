@@ -7,6 +7,7 @@
 #include "common/Result.h"
 #include "common/SensingQuery.h"
 #include "common/SquirrelOwnership.h"
+#include "common/Value.h"
 #include "spatial/SpatialHash2D.h"
 
 #include <cstdint>
@@ -23,6 +24,11 @@
 #include <vector>
 
 namespace eve::sensing {
+
+class EnvironmentQueryPlan;
+struct EnvironmentRequest;
+struct EnvironmentServices;
+struct EnvironmentQueryResult;
 
 /** @brief Mirrored gameplay facts used by candidate queries. */
 struct Subject {
@@ -147,7 +153,14 @@ private:
     std::vector<RankedCandidate> ranked_;
 };
 
-/** @brief Gameplay-facing 2D candidate query service; it never values or selects targets. */
+/** @brief Owning broad-phase output; collection never publishes or applies result limits. */
+struct CandidateCollection {
+    std::vector<RankedCandidate> candidates;
+    bool                         usedSpatial = false;
+    std::uint32_t                scanned     = 0;
+};
+
+/** @brief Mirrored 2D facts and query composition; consumers decide gameplay actions from results. */
 class EVENGINE_API_PLATFORM SensingWorld {
 public:
     /** @brief Inserts or replaces mirrored facts. CSV fields contain comma-separated stable keys. */
@@ -183,6 +196,36 @@ public:
      * @thread Call on the sensing world's owning simulation thread.
      */
     [[nodiscard]] eve::Result<CandidateQueryResult> query(const QueryOrigin& origin, const QuerySpec& spec);
+
+    /**
+     * @brief Collects matching facts without sorting, truncation or result-cache mutation.
+     * @return Owning candidates and broad-phase counters; invalid input is rejected.
+     * @cost Scans the broad-phase set once per request; use a bounded shape and reuse its output.
+     * @thread World simulation thread; no callbacks and no retained input references.
+     */
+    [[nodiscard]] eve::Result<CandidateCollection> collectCandidates(const QueryOrigin& origin,
+                                                                     const QuerySpec&   spec) const;
+
+    /** @brief Snapshots matching subjects as typed input for a compiled environment query.
+     * @cost One bounded broad-phase scan and owning projection per request; no result publication.
+     */
+    [[nodiscard]] Result<EnvironmentRequest> environmentInput(const QueryOrigin& origin, const QuerySpec& spec) const;
+    /** @brief Runs a prepared environment query and publishes its diagnostic trace for MCP.
+     * @ownership Inputs are owned values; services are borrowed only until return.
+     * @thread Simulation thread; does not mutate facts or the legacy resultAt cache.
+     * @reentrancy Provider callbacks must not re-enter this world.
+     * @cost Executes the compiled candidate/test plan once; retain plans between calls.
+     */
+    [[nodiscard]] Result<EnvironmentQueryResult> executeEnvironmentQuery(const EnvironmentQueryPlan& plan,
+                                                                         EnvironmentRequest          request,
+                                                                         const EnvironmentServices&  services);
+    /** @brief Script convenience for ring positions ranked by distance from the origin.
+     * @return Versioned owning result data, or structured input/provider failure.
+     * @cost Compiles and runs a ring query per call; C++ repeated callers should retain a plan.
+     * @thread Simulation thread; optional LOS is resolved at this composition boundary.
+     */
+    [[nodiscard]] Result<Value> queryPositions(float originX, float originY, float targetX, float targetY, float radius,
+                                               int samples, int limit, bool requireLineOfSight);
 
     /** @brief Queries a circle. Filters are CSV; empty fields disable that filter. */
     [[nodiscard]] eve::Result<int> circle(float x, float y, float radius, std::string_view requireTagsCsv,
@@ -268,6 +311,7 @@ private:
         std::vector<RankedCandidate> ranked;
     };
     LastQueryDebug lastQuery_;
+    std::string    lastEnvironmentQuery_ = "null";
 };
 
 /** @brief Handle domain for module-owned sensing worlds. */

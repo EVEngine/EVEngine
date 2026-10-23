@@ -78,7 +78,7 @@ struct TextureGenContext {
     float    warpAmp   = 1.f;
 
     /** @brief From params. */
-    static TextureGenContext fromParams(const Params &params);
+    static EVENGINE_API_DOMAINS TextureGenContext fromParams(const Params &params);
 };
 
 /** @brief Paint height to image. */
@@ -86,10 +86,10 @@ void paintHeightToImage(image::ImageData &img, const std::vector<float> &height,
                         const ColorRamp &ramp, int bands, int pixelSize);
 
 /** @brief Sample a height function over the full [w×h] grid into `height` (clamped to [0,1]). */
-void fillHeightField(const TextureGenContext &ctx,
-                     /** @brief Float. */
-                     const std::function<float(float, float, const NoiseField &)> &fn,
-                     std::vector<float> &height);
+EVENGINE_API_DOMAINS void fillHeightField(const TextureGenContext &ctx,
+                                          /** @brief Float. */
+                                          const std::function<float(float, float, const NoiseField &)> &fn,
+                                          std::vector<float>                                           &height);
 
 /**
  * @brief Builds a normal-map image and transfers its unique ownership to the caller.
