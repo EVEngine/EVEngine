@@ -63,6 +63,7 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
             ("android-release", "Build android release"): 120,
             ("profile-matrix", "Build independent profile smoke target"): 60,
             ("linux-asan", "Build linux RelWithDebInfo (ASan+UBSan)"): 180,
+            ("linux-coverage", "Run linux unit tests (coverage)"): 90,
             # Full example smoke under Lavapipe has reached the former 20-minute
             # guard after a green 150/150 PASS summary; keep margin.
             ("linux", "Smoke all examples (headless, >=2s alive each)"): 30,
@@ -76,7 +77,7 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
             "windows": 300,
             "android": 120,
             "macos": 240,
-            "linux-coverage": 150,
+            "linux-coverage": 210,
             "profile-matrix": 130,
             "linux-asan": 330,
         }

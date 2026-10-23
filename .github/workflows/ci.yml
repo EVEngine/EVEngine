@@ -1716,9 +1716,9 @@ jobs:
     needs: [source-quality]
     if: ${{ needs.source-quality.result == 'success' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
     runs-on: ubuntu-24.04
-    # The build plus half of the coverage test suite consumed the former
-    # 90-minute job budget in release run 35436382201.
-    timeout-minutes: 150
+    # Coverage reached 6409/7169 cases at its former 60-minute test guard.
+    # Leave room for the cold build, complete suite and report generation.
+    timeout-minutes: 210
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-coverage
@@ -1796,7 +1796,7 @@ jobs:
         run: sccache --show-stats
 
       - name: Run linux unit tests (coverage)
-        timeout-minutes: 60
+        timeout-minutes: 90
         env:
           ALSOFT_DRIVERS: "null"
         run: |
