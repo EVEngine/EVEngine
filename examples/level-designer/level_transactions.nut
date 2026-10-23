@@ -91,7 +91,6 @@ function wbTransaction(args) {
             local schema = whiteboxSchema(op.recipe);
             if (schema == null) wbFail("generation_failed", level.status);
             local piece = {recipe=op.recipe, values=wbValues(schema, "params" in op ? op.params : {}), entity=null, half=null};
-            piece.half = whiteboxHalfExtents(piece);
             local object = {id=objectId, parent="root" in objects ? "root" : "",
                 name="name" in op ? wbString(op.name,"name") : schema.getDisplayName(),
                 transform=wbTransactionTransform(op, {x=0.0,y=0.0,z=0.0,rotationX=0.0,rotationY=0.0,rotationZ=0.0,scaleX=1.0,scaleY=1.0,scaleZ=1.0})};

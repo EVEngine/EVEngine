@@ -25,7 +25,7 @@ function whiteboxBeginDrag(hit) {
     local preview = {recipe = level.piece, values = whiteboxDefaultValues(schema), entity = null};
     if (!whiteboxCreateRenderable(preview, schema)) return;
     level.buildDrag = {preview = preview, start = point, point = point,
-        half = whiteboxHalfExtents(preview), scale = [1.0, 1.0, 1.0]};
+        half = preview.half, scale = [1.0, 1.0, 1.0]};
     whiteboxUpdateDrag(hit);
 }
 

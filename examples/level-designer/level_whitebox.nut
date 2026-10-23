@@ -64,6 +64,7 @@ function whiteboxGenerateMesh(piece, schema) {
 
 function whiteboxCreateRenderable(piece, schema) {
     if (!("bounds" in piece)) piece.bounds <- null;
+    if (!("half" in piece)) piece.half <- null;
     if (!("motion" in piece)) piece.motion <- "static";
     local mesh = whiteboxGenerateMesh(piece, schema);
     if (mesh == null) return false;
@@ -133,7 +134,6 @@ function whiteboxPublishPrepared(piece, id, name, position, rotation, scale, par
         return {ok = false, code = "scene_rejected", message = result.status.summary};
     }
     level.pieces[id] <- piece;
-    piece.half = whiteboxHalfExtents(piece);
     levelRefreshObjects();
     levelSelect(id);
     levelSyncGizmo();

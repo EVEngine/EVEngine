@@ -117,7 +117,7 @@ function wbScene(args) {
 function wbCreate(args) {
     wbEditable(args);
     local id = wbString(args.id, "id");
-    if (levelObject(id) != null || id in level.pieceHistory)
+    if (levelObject(id) != null || id in level.pieceHistory || id in level.pieces)
         wbFail("already_exists", "Object id is present or reserved by undo history: " + id);
     if (level.recipes.find(args.recipe) == null) wbFail("not_found", "Unknown recipe");
     local position = wbVector(args, "position", [0, 0, 0], -10000, 10000);
