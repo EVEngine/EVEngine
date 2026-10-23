@@ -47,14 +47,14 @@ TEST_CASE("map.navigation.changeHintObservesLayerEditsWithoutCapturing") {
     Pathfinder       map(layer);
     map.blockGid(3);
     const auto before = map.getNavigationChangeStamp();
-    CHECK(map.getNavigationChangeStamp() == before);
+    REQUIRE(map.getNavigationChangeStamp() == before);
     layer->setTile(0, 0, 3);
     const auto edited = map.getNavigationChangeStamp();
-    CHECK(edited.configuration == before.configuration);
-    CHECK(edited.layer != before.layer);
+    REQUIRE(edited.configuration == before.configuration);
+    REQUIRE(edited.layer != before.layer);
     auto captured = map.captureNavigationGrid().takeValue();
-    CHECK_EQ(captured.costs()[0], 0.f);
-    CHECK(map.getNavigationChangeStamp() == edited);
+    REQUIRE_EQ(captured.costs()[0], 0.f);
+    REQUIRE(map.getNavigationChangeStamp() == edited);
     map.setCellCost(1, 1, 2.f);
-    CHECK(map.getNavigationChangeStamp().configuration > edited.configuration);
+    REQUIRE(map.getNavigationChangeStamp().configuration > edited.configuration);
 }

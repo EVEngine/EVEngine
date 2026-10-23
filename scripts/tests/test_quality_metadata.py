@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import json
 import sys
+import tempfile
 import unittest
 from datetime import date
 from pathlib import Path
@@ -23,10 +24,21 @@ def load_fixture(name: str):
 
 
 class QualityMetadataFixtureTest(unittest.TestCase):
+    def test_only_explicit_fallback_markers_are_debt(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "src").mkdir()
+            (root / "src" / "sample.cpp").write_text(
+                "// fallback to the default device\n"
+                "// FALLBACK: temporary implementation\n"
+                "int FALLBACK_COUNT = 0;\n",
+                encoding="utf-8",
+            )
+            findings = quality.discover_findings(root)
+            self.assertEqual([(f.kind, f.line) for f in findings], [("fallback", 2)])
+
     def findings(self):
-        return quality.discover_findings(
-            FIXTURE, FIXTURE / "scripts" / "check_bindings_gaps.txt"
-        )
+        return quality.discover_findings(FIXTURE)
 
     def test_fixture_passes_with_exact_baseline(self):
         errors, counts = quality.evaluate(
@@ -39,7 +51,6 @@ class QualityMetadataFixtureTest(unittest.TestCase):
         self.assertEqual(
             counts,
             {
-                "fixture-binding": 1,
                 "fixture-fallback": 1,
                 "fixture-soft-skip": 1,
                 "fixture-todo": 1,
