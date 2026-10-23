@@ -78,7 +78,7 @@ struct TextureGenContext {
     float    warpAmp   = 1.f;
 
     /** @brief From params. */
-    static TextureGenContext fromParams(const Params &params);
+    static EVENGINE_API_DOMAINS TextureGenContext fromParams(const Params &params);
 };
 
 /** @brief Paint height to image. */
@@ -86,10 +86,10 @@ void paintHeightToImage(image::ImageData &img, const std::vector<float> &height,
                         const ColorRamp &ramp, int bands, int pixelSize);
 
 /** @brief Sample a height function over the full [w×h] grid into `height` (clamped to [0,1]). */
-void fillHeightField(const TextureGenContext &ctx,
-                     /** @brief Float. */
-                     const std::function<float(float, float, const NoiseField &)> &fn,
-                     std::vector<float> &height);
+EVENGINE_API_DOMAINS void fillHeightField(const TextureGenContext &ctx,
+                                          /** @brief Float. */
+                                          const std::function<float(float, float, const NoiseField &)> &fn,
+                                          std::vector<float>                                           &height);
 
 /**
  * @brief Builds a normal-map image and transfers its unique ownership to the caller.
@@ -115,8 +115,8 @@ struct PbrParams {
 };
 
 /**
- * @brief A procedural texture is fully described by an albedo ramp + a displacement
- * field + PBR knobs. From one definition both an albedo recipe (ImageData) and
+ * @brief A procedural texture is described by an albedo ramp, displacement,
+ * optional independent PBR pigment field and PBR controls. Both an albedo recipe and
  * a full PBR set (albedo/normal/roughness/metallic/height/ao) are produced.
  */
 struct TextureRecipeDef {
@@ -125,6 +125,10 @@ struct TextureRecipeDef {
     /** @brief Float. */
     std::function<float(float, float, const NoiseField &)> height;  // clamped to [0,1]
     PbrParams   pbr;
+    /** @brief Optional pigment field, independent of physical relief; empty uses height. */
+    std::function<float(float, float, const NoiseField &)> colorField;
+    /** @brief Optional independent microfacet field, mapped through roughnessLow/High. */
+    std::function<float(float, float, const NoiseField &)> roughnessField;
 };
 
 /** @brief All built-in texture definitions (albedo + PBR). Populated lazily. */

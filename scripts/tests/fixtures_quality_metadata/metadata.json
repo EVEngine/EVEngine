@@ -2,16 +2,6 @@
   "schema_version": 1,
   "entries": [
     {
-      "id": "fixture-binding",
-      "kind": "binding_gap",
-      "scope": "scripts/check_bindings_gaps.txt",
-      "owner": "test-owner",
-      "issue": "TEST-1",
-      "reason": "fixture",
-      "expiry": "2099-12-31",
-      "max_net_growth": 0
-    },
-    {
       "id": "fixture-todo",
       "kind": "todo",
       "scope": "src/*",

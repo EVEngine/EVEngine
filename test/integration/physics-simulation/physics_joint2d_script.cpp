@@ -44,8 +44,8 @@ TEST_CASE("physics.joint2d.scriptResultAndOwningRelease") {
             assert(!saved.sample.call(settings, 0.01).ok);
             assert(!eve.createGearJoint2D(world(), saved, saved, 1.0).ok);
         )"));
-        CHECK_EQ(world.raw()->GetJointCount(), 1);
+        REQUIRE_EQ(world.raw()->GetJointCount(), 1);
     }
-    CHECK_EQ(world.raw()->GetJointCount(), 0);
-    CHECK(body->isValid());
+    REQUIRE_EQ(world.raw()->GetJointCount(), 0);
+    REQUIRE(body->isValid());
 }
