@@ -1,5 +1,6 @@
 """Exercise native Dawn dependency configuration without network or a GPU."""
 from pathlib import Path
+import os
 import shutil
 import subprocess
 import tempfile
@@ -164,7 +165,15 @@ class DawnCiDependencyCheckTests(unittest.TestCase):
         start = workflow.index("          dawn_tp=build/webgpu-macos/")
         end = workflow.index("          for attempt in", start)
         script = workflow[start:end] + "\ndawn_deps_ok\n"
-        return subprocess.run(["bash", "-c", script], cwd=root, check=False,
+        bash = "bash"
+        if os.name == "nt":
+            git = shutil.which("git")
+            if git is None:
+                raise RuntimeError("Git for Windows is required to run the CI Bash contract")
+            git_path = Path(git).resolve()
+            candidates = [parent / "bin" / "bash.exe" for parent in git_path.parents]
+            bash = str(next(path for path in candidates if path.is_file()))
+        return subprocess.run([bash, "-c", script], cwd=root, check=False,
                               capture_output=True, text=True, encoding="utf-8")
 
     def test_accepts_prepared_headers_outside_dawn_checkout(self):

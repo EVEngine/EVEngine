@@ -304,24 +304,24 @@ TEST_CASE("advancedCarrier.roughBounceReplayAndSnapshotVersionValidation") {
 TEST_CASE("advancedCarrier.invalidOperatorAndTriggerCompositionIsRejected") {
     CombatCarrierRuntime runtime;
     auto                 invalid = recipe({static_cast<CarrierMotionOpKind>(255)});
-    CHECK(!runtime.spawn(invalid, {{}, {1.0, 0.0, 0.0}}).ok());
+    REQUIRE(!runtime.spawn(invalid, {{}, {1.0, 0.0, 0.0}}).ok());
     invalid = recipe({CarrierMotionOpKind::IntegrateLinear});
-    CHECK(!runtime.spawn(invalid, {{}, {1.0, 0.0, 0.0}}).ok());
+    REQUIRE(!runtime.spawn(invalid, {{}, {1.0, 0.0, 0.0}}).ok());
     invalid.motionOps.resize(1);
     invalid.triggers.push_back({CarrierTriggerKind::OnExpire});
-    CHECK(!runtime.spawn(invalid, {{}, {1.0, 0.0, 0.0}}).ok());
+    REQUIRE(!runtime.spawn(invalid, {{}, {1.0, 0.0, 0.0}}).ok());
     invalid.triggers.resize(1);
     invalid.impacts.push_back({CarrierImpactKind::EmitHit, CarrierTriggerKind::OnApex});
-    CHECK(!runtime.spawn(invalid, {{}, {1.0, 0.0, 0.0}}).ok());
-    CHECK(runtime.activeCount() == 0);
+    REQUIRE(!runtime.spawn(invalid, {{}, {1.0, 0.0, 0.0}}).ok());
+    REQUIRE(runtime.activeCount() == 0);
     auto valid = recipe({CarrierMotionOpKind::IntegrateLinear});
     valid.motionOps.resize(1);
-    CHECK(!runtime.spawn(valid, {{}, {}}).ok());
-    CHECK(!runtime.findRecipe(valid.id).has_value());
+    REQUIRE(!runtime.spawn(valid, {{}, {}}).ok());
+    REQUIRE(!runtime.findRecipe(valid.id).has_value());
     CarrierVolleySpec invalidVolley;
     invalidVolley.count = 0;
-    CHECK(!runtime.spawnVolley(valid, {{}, {1.0, 0.0, 0.0}}, invalidVolley).ok());
-    CHECK(!runtime.findRecipe(valid.id).has_value());
+    REQUIRE(!runtime.spawnVolley(valid, {{}, {1.0, 0.0, 0.0}}, invalidVolley).ok());
+    REQUIRE(!runtime.findRecipe(valid.id).has_value());
 }
 
 TEST_CASE("advancedCarrier.triggerChronologyAndBouncePathRespectContact") {
