@@ -20,7 +20,8 @@ Evolutionary Vision Engine
 Windows 需要 Visual Studio ARM64 C++ 工具（含 `vcvarsarm64.bat`）、Windows SDK、
 Ninja、Git Bash，以及 Vulkan 头文件、着色器工具和 ARM64 loader 库。
 Windows 命令通过 `cmake/with-msvc.cmd --arm64` 选择原生 MSVC 环境。
-Linux 使用原生 GCC/G++、Ninja，安装与普通 Linux 构建相同的 aarch64 开发依赖。
+Linux 使用原生 GCC/G++、Ninja 和用于大型 Release 链接的 LLD，
+安装与普通 Linux 构建相同的 aarch64 开发依赖。
 这些入口不使用交叉编译工具链，会检查宿主、目标与编译器是否为 ARM64。
 
 third-party 同样从固定版本源码构建为 ARM64；构建入口会先完成依赖编译与安装。

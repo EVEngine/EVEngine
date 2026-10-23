@@ -22,7 +22,7 @@ Windows requires Visual Studio's ARM64 C++ tools (including `vcvarsarm64.bat`),
 Windows SDK, Ninja, Git Bash, and Vulkan headers, shader tools and ARM64 loader
 libraries. The Makefile invokes `cmake/with-msvc.cmd --arm64` for every configure
 and build, selecting the native ARM64 MSVC environment. Linux requires native
-GCC/G++, Ninja and the same development packages as the standard Linux build,
+GCC/G++, Ninja, LLD (for the large Release link) and the same development packages as the standard Linux build,
 installed for aarch64. No cross toolchain file is used.
 
 The existing CMake entry point also accepts `-DEVENGINE_NATIVE_ARM64=ON` together

@@ -304,6 +304,15 @@ jobs:
         timeout-minutes: 90
         uses: ./.github/actions/setup-arm64-vulkan
 
+      - name: Probe native Vulkan driver and loader surface extensions
+        timeout-minutes: 5
+        env:
+          VK_LOADER_DEBUG: error,warn
+        run: |
+          cmake/with-msvc.cmd --arm64 cmake -G Ninja -S .github/scripts/vulkan-probe -B build/arm64-vulkan-probe -DCMAKE_BUILD_TYPE=Release
+          cmake/with-msvc.cmd --arm64 cmake --build build/arm64-vulkan-probe
+          build/arm64-vulkan-probe/vulkan_probe.exe "$PWD/build/arm64-swiftshader-runtime/vk_swiftshader.dll" "$VULKAN_SDK/Bin/vulkan-1.dll"
+
       - name: Build Windows ARM64
         timeout-minutes: 190
         env:
@@ -314,6 +323,17 @@ jobs:
           if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
           make "build/win32-arm64${suffix}" JOBS=4 \
             CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+
+      - name: Probe real SDL Vulkan window with loader diagnostics
+        timeout-minutes: 5
+        env:
+          ALSOFT_DRIVERS: "null"
+          VK_LOADER_DEBUG: all
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          ctest --test-dir "build/win32-arm64${suffix}" --no-tests=error -V -R '^WindowTest\.basicWindow$'
 
       - name: Run Windows ARM64 tests
         timeout-minutes: 90
@@ -338,7 +358,9 @@ jobs:
         run: |
           suffix=""
           cmake --install "build/win32-arm64${suffix}" --prefix "dist/eve-sdk/win32-arm64${suffix}"
-          bash .github/scripts/test-sdk.sh "dist/eve-sdk/win32-arm64${suffix}" win32
+          version="$(cat "dist/eve-sdk/win32-arm64${suffix}/share/eve/VERSION")"
+          python3 .github/scripts/zip-sdk.py win32-arm64 ci
+          bash .github/scripts/test-arm64-sdk.sh artifacts/eve-sdk-win32-arm64-ci.zip win32 "$version"
 
       - name: Upload ARM64 test diagnostics
         if: failure()
@@ -380,13 +402,13 @@ jobs:
           sudo apt-get update -o Acquire::Retries=2 \
             -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30
           sudo apt-get install -y --no-install-recommends \
-            build-essential cmake ninja-build \
+            build-essential cmake ninja-build lld gdb \
             libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
             libxrandr-dev libxinerama-dev libxext-dev libxss-dev \
             libgl1-mesa-dev libbz2-dev libpng-dev \
             libwayland-dev libxkbcommon-dev libasound2-dev \
             libvulkan-dev glslc glslang-tools \
-            mesa-vulkan-drivers vulkan-tools xvfb xauth
+            mesa-vulkan-drivers vulkan-tools vulkan-validationlayers xvfb xauth
 
       - name: Setup native software Vulkan
         timeout-minutes: 90
@@ -402,6 +424,16 @@ jobs:
           if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
           make "build/linux-arm64${suffix}" JOBS=4 \
             CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+
+      - name: Probe ray tracing with validation and backtraces
+        timeout-minutes: 10
+        env:
+          ALSOFT_DRIVERS: "null"
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          python3 .github/scripts/probe-raytracing.py "build/linux-arm64${suffix}"
 
       - name: Run Linux ARM64 tests
         timeout-minutes: 90
@@ -426,7 +458,9 @@ jobs:
         run: |
           suffix=""
           cmake --install "build/linux-arm64${suffix}" --prefix "dist/eve-sdk/linux-arm64${suffix}"
-          xvfb-run -a bash .github/scripts/test-sdk.sh "dist/eve-sdk/linux-arm64${suffix}" linux
+          version="$(cat "dist/eve-sdk/linux-arm64${suffix}/share/eve/VERSION")"
+          python3 .github/scripts/zip-sdk.py linux-arm64 ci
+          xvfb-run -a bash .github/scripts/test-arm64-sdk.sh artifacts/eve-sdk-linux-arm64-ci.zip linux "$version"
 
       - name: Upload ARM64 test diagnostics
         if: failure()

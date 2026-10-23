@@ -58,7 +58,7 @@ jobs:
         run: |
           sudo apt-get update -o Acquire::Retries=2
           sudo apt-get install -y --no-install-recommends \
-            build-essential cmake ninja-build libx11-dev libxxf86vm-dev \
+            build-essential cmake ninja-build lld libx11-dev libxxf86vm-dev \
             libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev libxext-dev \
             libxss-dev libgl1-mesa-dev libbz2-dev libpng-dev libwayland-dev \
             libxkbcommon-dev libasound2-dev libvulkan-dev glslc glslang-tools \
