@@ -41,7 +41,7 @@ DamageNumbers::DamageNumbers() : impl_(std::make_unique<Impl>()) {
     critical.shake    = 4.f;
     critical.g        = 0.78f;
     critical.b        = 0.15f;
-    critical.lifetime = 1.35;
+    critical.lifetime = 1.35f;
     critical.pop      = 0.7f;
     auto& heal        = impl_->styles[2];
     heal.r            = 0.3f;
