@@ -12330,6 +12330,22 @@
         "sensing_environment.cpp"
       ],
       "task": "sensing"
+    },
+    "integration/audio-playback/PcmStream.cpp": {
+      "role": "tests",
+      "default": "platform-audio",
+      "cases": {
+        "script-binding": [
+          "audio.pcm.scriptResultAndOwnership"
+        ],
+        "platform-audio": [
+          "audio.pcm.validationAndBackpressureAreAtomic",
+          "audio.pcm.starvationPauseResumeAndDrain",
+          "audio.pcm.bothDestructionOrders"
+        ]
+      },
+      "module": "audio",
+      "task": "audio-playback"
     }
   }
 }
