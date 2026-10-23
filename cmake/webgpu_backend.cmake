@@ -52,6 +52,8 @@ function(load_webgpu_backend)
     FetchContent_MakeAvailable(dawn)
     include("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/dawn_spirv_headers.cmake")
     eve_prepare_dawn_spirv_headers("${dawn_SOURCE_DIR}")
+    include("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/dawn_support_dependencies.cmake")
+    eve_prepare_dawn_support_dependencies("${dawn_SOURCE_DIR}")
     add_subdirectory("${dawn_SOURCE_DIR}" "${dawn_BINARY_DIR}")
 
     if(TARGET dawn::webgpu_dawn)

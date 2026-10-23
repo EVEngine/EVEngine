@@ -1,0 +1,41 @@
+diff --git a/src/ECS.hpp b/src/ECS.hpp
+--- a/src/ECS.hpp
++++ b/src/ECS.hpp
+@@ -633,6 +633,8 @@
+     }
+ 
+   private:
++    friend class ComponentBuffer<T>;
++
+     void ensureWord(uint32_t id)
+     {
+       const size_t word = (static_cast<size_t>(id) >> 6) + 1;
+@@ -675,9 +677,25 @@
+     {
+       if (new_size > this->container.size())
+         this->container.resize(new_size);
+-      for (uint32_t id = 0; id < new_size; ++id)
+-        if (!this->has(id))
+-          this->emplace(id);
++      // A full presence word proves that its values need no construction.
++      // Re-read incomplete words slot by slot: constructors can change later
++      // slots, and retries after a throwing constructor must preserve order.
++      for (uint64_t first = 0; first < new_size; first += 64)
++      {
++        const uint32_t count = static_cast<uint32_t>(
++            std::min<uint64_t>(64, uint64_t(new_size) - first));
++        const uint64_t mask = count == 64 ? ~uint64_t(0)
++                                         : (uint64_t(1) << count) - 1;
++        const size_t word = static_cast<size_t>(first >> 6);
++        if (word < this->live_.size() && (this->live_[word] & mask) == mask)
++          continue;
++        for (uint32_t offset = 0; offset < count; ++offset)
++        {
++          const uint32_t id = static_cast<uint32_t>(first) + offset;
++          if (!this->has(id))
++            this->emplace(id);
++        }
++      }
+     }
+ 
+     BufferIterator<T> begin() { return BufferIterator<T>(this); }

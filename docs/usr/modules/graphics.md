@@ -2,6 +2,12 @@
 
 [English](../../en/usr/modules/graphics.md)
 
+游戏 `config.nut` 支持布尔配置 `vsync`，默认 `true`；设置 `vsync = false` 请求关闭垂直同步。
+启动时会在普通窗口或编辑器宿主创建窗口前应用，修改配置后重启游戏生效。
+`gfx.getVSyncCount()` 返回当前请求值（关闭为 0，开启为 1）；`gfx.setVSyncCount(0)` / `gfx.setVSyncCount(1)`
+可在运行时更新请求。Vulkan 开启时优先 Mailbox、其次 FIFO；关闭时优先 Immediate，
+不支持时按原有后端策略回退 Mailbox/FIFO，所以关闭不保证所有平台都能解除显示同步。
+
 `Mesh.getLocalBounds()` 返回标准 Result，其 value 为 `[minX,minY,minZ,maxX,maxY,maxZ]`。
 结果由 CPU 顶点计算，CPU morph baking 会更新边界；GPU 蒙皮和着色器位移不包含在内。
 无有限顶点时返回 NotFound。
@@ -107,7 +113,9 @@ layer.setReceiveLight(true);
 
 初始化时创建 mesh、shader 和 renderable，设置 camera、ambient 和 directional light；每帧只更新 transform/material 参数，最后调用 `render3D()`。阴影开关、bias 和 strength 应逐场景调节。
 
-`Light3D` 支持 `point` / `dir` / `spot`。聚光用 `setType("spot")`、`setSpotAngle` / `setSpotSoftness`（与 2D 锥体语义相同）。实时阴影通过 `setCastShadow(true)` 与 `setShadowMethod("auto"|"none"|"csm"|"perspective"|"cube")` / `getShadowMethod()` 选择技术；有向光走 CSM，聚光走 perspective 本地 atlas。进程级方案用 `gfx.setShadowSchemeDirectionalEnabled` / `setShadowSchemeSpotEnabled` / `setShadowSchemePointEnabled`、`setShadowSchemeMaxSpotCasters` / `getShadowSchemeMaxSpotCasters`，以及本地分页 `setShadowSchemePagingEnabled`、`setShadowSchemeMaxLocalUpdates` / `getShadowSchemeMaxLocalUpdates`、`setShadowSchemeHysteresisBonus`（固定 atlas 槽位按重要性租用，更新预算可时间切片重绘）。
+`Light3D` 支持 `point` / `dir` / `spot`。聚光用 `setType("spot")`、`setSpotAngle` / `setSpotSoftness`（与 2D 锥体语义相同）。实时阴影通过 `setCastShadow(true)` 与 `setShadowMethod("auto"|"none"|"csm"|"perspective"|"cube")` / `getShadowMethod()` 选择技术；有向光走 CSM，聚光走 perspective 本地 atlas。进程级方案用 `gfx.setShadowSchemeDirectionalEnabled` / `setShadowSchemeSpotEnabled` / `setShadowSchemePointEnabled`、`setShadowSchemeMaxSpotCasters` / `getShadowSchemeMaxSpotCasters`，以及本地分页 `setShadowSchemePagingEnabled`、`setShadowSchemeMaxLocalUpdates` / `getShadowSchemeMaxLocalUpdates`、`setShadowSchemeHysteresisBonus`（固定 atlas 槽位按重要性租用，更新预算可时间切片重绘）。动态阴影分辨率有两层：
+1. **质量档 / atlas 预算**：`setShadowSchemeDirectionalMapSize` / `setShadowSchemeLocalMapSize`（边长钳制到 256/512/1024/2048/4096，GPU depth array 取两者较大值，变更时在下一帧 ensure 路径重建 atlas）、`getShadowSchemeAtlasMapSize`，以及 CSM 覆盖距离 `setShadowSchemeDirectionalMaxDistance` / `getShadowSchemeDirectionalMaxDistance`（默认 64 m）。
+2. **按距离与屏幕覆盖自适应分配**（默认开启）：`setShadowSchemeAdaptiveCascadeResolution`。近距 cascade 与屏幕覆盖大（阴影边缘/轮廓更明显）的 cascade 获得更高有效分辨率，远处 cascade 用更小 viewport；Vulkan 数组层尺寸必须统一，因此物理纹理仍是同一 atlas，采样通过 `cascadeUvScale` 重映射到各 cascade 的左上角子区域。
 
 `Camera3D` 默认使用透视投影。等距视图可调用 `setOrthographic(height)`，其中
 `height` 是世界空间中的垂直可视范围；`setPerspective()` 恢复透视投影。
@@ -280,6 +288,11 @@ r.setPartSortPriority(0, 100);      // 每实例覆盖透明排序，不修改�
 r.clearPartSortPriority(0);         // 恢复使用 Material.getSortPriority()
 local effectiveOrder = r.getPartSortPriority(0);
 ```
+
+`mat.copyPbrSurfaceFrom(sourceMaterial)` 返回 Result，通过同一个原生 PbrSurface 校验入口复制
+导入材质的扩展 PBR 描述并启用相同渲染路径，适合让程序化服装和导入人物采用一致着色。
+不会复制 tint / roughness 等独立字段，也不共享可变材质状态；贴图仍由原 Graphics owner 拥有，
+需覆盖目标材质及绘制的生命周期。调用在渲染 / VM 所属线程同步执行，不保留 sourceMaterial 指针。
 
 遮罩材质使用 `setSurfaceMode("masked")`、`setAlphaCutoff()` 和
 `setAlphaTechnique("cutoff" | "dither" | "coverage")`。对应查询接口为
@@ -844,7 +857,7 @@ PcgWaterPhotoModeAuthority 通过 setAuthority 管理唯一 Water 字段租约�
 
 ### Pcg PhotoMode Graphics 权威配置
 
-`PcgGraphicsPhotoModeAuthority` 绑定 Graphics、RenderControl 与 Camera3D 后，以显式租约接收 LOD bias、anti-aliasing、shadow distance、shadow resolution 和 shadow cascades。LOD bias 直接缩放所有 Renderable3D 网格 LOD 的选择距离；AA 枚举切换真实 FXAA、SMAA、TAA 或关闭合成；阴影距离写入 Camera3D 每层 caster 裁剪。完整分辨率和级联设置保存在同一状态中，供阴影资源配置使用。
+`PcgGraphicsPhotoModeAuthority` 绑定 Graphics、RenderControl 与 Camera3D 后，以显式租约接收 LOD bias、anti-aliasing、shadow distance、shadow resolution 和 shadow cascades。LOD bias 直接缩放所有 Renderable3D 网格 LOD 的选择距离；AA 枚举切换真实 FXAA、SMAA、TAA 或关闭合成；阴影距离写入 Camera3D 每层 caster 裁剪，并投影到 `ShadowSchemeSettings::directionalMaxDistance`（钳制到 \[8, 256\] m）以扩展 CSM 覆盖。`m_shadowResolution`（0..3）映射为 atlas 边长 512/1024/2048/4096 并写入 scheme，触发动态阴影分辨率重建；级联数量目前仍为编译期 3 级（`m_shadowCascades` 保存在状态中供后续扩展）。
 
 状态读取方法为 getAuthority、getReflectionEnabled、getReflectionDistance、getReflectionResolution、getReflectionLodBias、getFogDensity、getFogDistance、getFogRed、getFogGreen 和 getFogBlue。WaterPlanarReflectionSettings 也公开 lodBias。
 

@@ -13,6 +13,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 ROOT = Path(__file__).parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -22,6 +23,21 @@ SPEC = importlib.util.spec_from_file_location(
 )
 checker = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(checker)
+
+
+class StrictCoverageTests(unittest.TestCase):
+    def test_missing_binding_has_no_legacy_exemption(self):
+        with mock.patch.object(sys, "argv", ["check_bindings", "--strict"]), \
+             mock.patch.object(checker.generate_binding_contracts, "source_files", return_value=[]), \
+             mock.patch.object(checker.generate_binding_contracts, "extract_contracts", return_value=([], [])), \
+             mock.patch.object(checker, "iter_modules", return_value=[("sample", ROOT, set())]), \
+             mock.patch.object(checker, "bound_names", return_value={"missing"}), \
+             mock.patch.object(checker, "doc_for", return_value=ROOT / "Readme.en.md"), \
+             mock.patch.object(checker, "doc_text", return_value=""), \
+             mock.patch.object(checker, "iter_module_cpp", return_value=[]), \
+             mock.patch.object(checker, "doc_only_names", return_value=[]), \
+             mock.patch("builtins.print"):
+            self.assertEqual(checker.main(), 1)
 
 
 class ScriptDefinedNamesTests(unittest.TestCase):

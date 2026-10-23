@@ -43,3 +43,26 @@ local clothGpu = clothModule.newClothGPU(40, 30, 8.0, 40.0, 30.0);
 保留 owner 或先解除绑定。退出时停止 update，解除 world/SDF 等借用，再释放 provider。
 烘焙录制只复制拥有型帧，录制后释放最后源引用不会影响已记录帧、冻结资产或播放器。
 此修复不新增 ECS System、事件、provider 或工具协议；工厂分配成本按网格顶点/约束数量增长。
+## 多层布料
+
+先创建 `eve.Cloth()` 以加载绑定，再构造
+`eve.LayeredCloth3D(count, cols, rows, spacing, gap, x, y, z)`。
+组拥有全部布料，不在脚本中暴露借用的层指针。`update(dt)` 仅接受有限的
+0–0.05 秒；推荐固定 1/120 秒、累积余时，不直接传入长帧。
+`setSolver(substeps, passes)` 配置子步和耦合轮数；`setInterCollision(bool)` /
+`getInterCollision()` 控制层间接触；`setWindVelocity(x,y,z)` 设置所有层空气速度；
+`getLayerCount()` 返回层数；`getContactCount()` 返回最近一步投影次数（含重复轮次）；
+`reset()` 恢复每层姿态，`draw(gfx)` 绘制全部层。
+
+C++ 可通过 `std::span<const ClothModel>` 构造不同拓扑的服装片，并以 `layer(index)`
+同步借用单层配置质量、skin、attachment、刚体世界和碰撞过滤；组是运行时唯一 owner。
+层间厚度是两层粒子半径之和，摩擦系数取两侧系数几何平均，默认不反弹。
+不应独立推进或销毁组内层。详情见 [设计与限制](../../dev/layered-cloth-design.md)。
+
+## Vulkan GPU 多层布料
+
+`eve.LayeredClothGPU(compute, gfx, layers, cols, rows, spacing, gap, x, y, z)` 创建真实计算后端；先加载 `eve.Cloth()` 和 `eve.Gpgpu()`。`update(dt)` 运行 GPU XPBD、运动散列和连续点面/边边接触，`draw()` 从驻留顶点缓冲绘制，不回读坐标。二者的 C++ Result 在脚本适配器中检查，失败抛出诊断，不切换到 CPU。
+
+控制方法：`setSolver(substeps, iterations)`、`setGravity(x,y,z)`、`setWind(x,y,z)`（统一加速度）、`setInterCollision(enabled)`、`setSelfCollision(enabled)`、`setContact(thickness, friction)`、`setFloor(y)`、`setParticleInverseMass(index, inverseMass)`、`getParticleCount()`、`reset()`。
+
+当前仅 Vulkan 和规则网格，已补容差有界的点面/边边连续接触及密集接触的 GPU 统一缩放；尚无成衣导入、持久接触流形和 CPU 高级功能的完整等价。`readPositions()` / `readDiagnostics()` 为 C++ 显式诊断读回，不在热路径调用。完整生命周期、渲染 ABI、GPU 溢出路径见 [GPU 设计](../../dev/layered-cloth-gpu.md) 和 [演示](../../../examples/layered-cloth-gpu/README.md)。

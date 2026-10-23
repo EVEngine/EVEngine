@@ -393,6 +393,7 @@ public:
     void destroy();
 
 private:
+    friend class LayeredCloth3D;
     struct Particle {
         float x = 0.f, y = 0.f, z = 0.f;
         float px = 0.f, py = 0.f, pz = 0.f;

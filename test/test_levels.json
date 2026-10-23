@@ -2,86 +2,37 @@
   "schema": "evengine.test-levels",
   "version": 1,
   "sources": {
-    "integration/material-studio/material_preview_shadows.cpp": {
+    "integration/transaction-authority/editor_authority_atomic.cpp": {
       "role": "tests",
-      "default": "render-offscreen",
+      "task": "transaction-authority",
+      "default": "module-composition",
       "cases": {
-        "render-offscreen": [
-          "editor.material.preview_shadows_affect_pixels_and_capture_path_stays_unshadowed"
+        "module-composition": [
+          "editor.atomic.candidate_failure_preserves_revision_and_history",
+          "editor.atomic.publish_failure_has_no_effect_and_can_retry",
+          "editor.atomic.two_agents_same_revision_only_one_commits",
+          "editor.atomic.forged_plan_target_rejected_before_mutation",
+          "editor.atomic.legacy_rollback_exception_is_reported_and_cleanup_continues"
         ]
       },
-      "module": "graphics",
-      "task": "material-studio"
+      "module": "editing"
     },
-    "integration/material-studio/material_studio_scripts.cpp": {
+    "integration/scene-editing/scene_transaction_observer.cpp": {
       "role": "tests",
-      "default": "script-binding",
+      "task": "scene-editing",
+      "default": "module-composition",
       "cases": {
-        "script-binding": [
-          "editor.material.facade_script_projects_owned_values_and_checked_failures",
-          "editor.material.studio_publication_clears_resources_and_preserves_preview_on_failure",
-          "editor.material.preview_geometry_has_recessed_rings_valid_normals_and_matching_sky_edges",
-          "editor.material.preview_selection_failures_preserve_active_resources_and_fit_shared_bounds"
+        "module-composition": [
+          "scene.transaction.observer_exception_does_not_reject_published_state"
         ]
       },
-      "module": "material_editor",
-      "task": "material-studio"
+      "module": "scene_editing"
     },
-    "unit/material_editor/material_editor_tests.cpp": {
-      "role": "tests",
+    "transaction_contracts/transaction_contracts_main.cpp": {
+      "role": "helper",
       "default": "local-logic",
-      "cases": {
-        "local-logic": [
-          "editor.material.facade_patch_is_one_undo_record",
-          "editor.material.facade_invalid_patch_preserves_document_and_history",
-          "editor.material.facade_cross_field_validation_is_candidate_first",
-          "editor.material.facade_snapshot_restore_is_undoable_and_migrates",
-          "editor.material.facade_noop_preserves_redo_and_revision",
-          "editor.material.facade_schema_and_workspace_are_detached"
-        ]
-      },
-      "module": "material_editor"
-    },
-    "integration/physics-bake/collapse_collision_reference.cpp": {
-      "role": "tests", "default": "module-composition",
-      "cases": {"module-composition": ["physics.bake.collapseCollisionReplayMatchesLiveReference"]}, "module": "physics_destruction", "task": "physics-bake"
-    },
-    "unit/physics_bake_collapse/physics_bake_collapse_values.cpp": {
-      "role": "tests", "default": "local-logic",
-      "cases": {"local-logic": ["physics.bake.collapseCaptureInterfaceRejectsWholeFrames", "physics.bake.collapseCaptureInterfaceOutlivesSource", "physics.bake.collapseRotationCrossesWrapWithoutStateAnticipation", "physics.bake.collapseFastRotationRequiresSufficientCadence"]},
-      "module": "physics_bake_collapse", "task": "physics-bake"
-    },
-    "integration/physics-bake/script_particle_presentation.cpp": {
-      "role": "tests", "default": "render-window",
-      "cases": {"render-window": ["physics.bake.scriptParticlePresentationBatchesMaterialsAndRejectsPartialDraw"]},
-      "module": "physics_bake_graphics_script", "task": "physics-bake"
-    },
-    "integration/physics-bake/script_deform_presentation.cpp": {
-      "role": "tests", "default": "render-window",
-      "cases": {"render-window": ["physics.bake.scriptDeformPresentationRendersAfterSourceAndPresenterRelease"]},
-      "module": "physics_bake_graphics_script", "task": "physics-bake"
-    },
-    "integration/physics-bake/script_presentation.cpp": {
-      "role": "tests", "default": "script-binding",
-      "cases": {"script-binding": ["physics.bake.scriptRigidPresentationBorrowsTargetsAndPreservesFailures"]},
-      "module": "physics_bake_graphics_script", "task": "physics-bake"
-    },
-    "integration/physics-bake/particle_script_recording.cpp": {
-      "role": "tests", "default": "script-binding",
-      "cases": {"script-binding": ["physics.bake.scriptParticleJournalsPublishRetryableMultiEmitterArchive", "physics.bake.scriptParticleAssetOutlivesProducerVmAndEcsSources"]},
-      "module": "physics_bake_particle_script", "task": "physics-bake"
-    },
-    "integration/physics-bake/script_recording.cpp": {
-      "role": "tests", "default": "script-binding",
-      "cases": {"script-binding": ["physics.bake.scriptRecordsLiveClothAndRopeThenReplaysWithoutSources", "physics.bake.scriptRigidRecordingUsesGenerationalBindings"]},
-      "module": "physics_bake_recording_script", "task": "physics-bake"
-    },
-    "integration/physics-bake/script_playback.cpp": {
-      "role": "tests",
-      "default": "script-binding",
-      "cases": {"script-binding": ["physics.bake.scriptRigidPlaybackOwnsLoadedTrackAndCoexistsWithLegacyRecipe", "physics.bake.scriptDeformSamplesOwnTopologyAndPositions", "physics.bake.scriptParticleSnapshotsPreserveBirthBoundariesAndIdentity"]},
-      "module": "physics_bake_script",
-      "task": "physics-bake"
+      "cases": {},
+      "module": "editing"
     },
     "integration/crowd-runtime/crowd_advance.cpp": {
       "role": "tests",
@@ -3761,6 +3712,7 @@
           "container.adaptersShareParityAndCanonicalLifecycleEnvelope",
           "fluids.volumeCoupling.attachmentReturnsGravityLoadAndTorque",
           "fluids.volumeCoupling.extremeMassRatioUsesObservableVelocityLimits",
+          "fluids.volumeCoupling.sdfObstacleTransfersImpulseToDynamicBody",
           "gameplay.control.climbingReprobesAuthorityForPlayerAndAutomation",
           "gameplay.control.climbingRejectsUnauthorizedCharacterWithoutProbeMutation",
           "procgen.physics.gtsTerrainCollider.replacesAtomicallyAndSurvivesWorldFirstTeardown",
@@ -4109,6 +4061,7 @@
           "tensor.gpu.quantizedWeightsMatchEager",
           "tensor.onnx.gpu.residentChain",
           "gpgpu.sequence.stagingSizeReuse",
+          "gpgpu.sequence.largeRebindingBatchesPreserveSnapshots",
           "gpgpu.sequence.cancelRecordingRetiresDescriptors",
           "tensor.onnx.gpu.sessionShapesAndLifetime",
           "tensor.onnx.gpu.parallelCompilation",
@@ -4153,8 +4106,16 @@
       ]
     },
     "integration/render-presentation/fluids_shore_backend_tests.cpp": {
-      "role": "tests", "default": "render-offscreen", "module": "fluids", "task": "render-presentation",
-      "cases": {"render-offscreen": ["fluids.shore.gpuMatchesCpuOnSlopingWetDryBed", "fluids.shore.scriptSurfaceSyncChecksInputsAndPublishesMesh"]}
+      "role": "tests",
+      "default": "render-offscreen",
+      "module": "fluids",
+      "task": "render-presentation",
+      "cases": {
+        "render-offscreen": [
+          "fluids.shore.gpuMatchesCpuOnSlopingWetDryBed",
+          "fluids.shore.scriptSurfaceSyncChecksInputsAndPublishesMesh"
+        ]
+      }
     },
     "integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp": {
       "role": "tests",
@@ -5971,6 +5932,7 @@
           "UI.componentScheduling.coalescesAndPreservesReentrantEdits",
           "UI.componentScheduling.failedBatchRetainsRemainingWork",
           "UI.editorKit.desktopCompositionRenders",
+          "UI.editorKit.textControlsInteraction",
           "UI.layout.measureNestedFlexAndWindowContent",
           "UI.p1.statsAfterHeadlessRender",
           "UI.p1.scrollListHeadlessRenderLarge",
@@ -6029,126 +5991,6 @@
       "default": "module-composition",
       "cases": {},
       "module": "common"
-    },
-    "integration/physics-bake/track_storage.cpp": {
-      "role": "tests",
-      "default": "platform-file",
-      "cases": {"platform-file": ["physics.bake.rigidAssetRoundTripAndPublication", "physics.bake.rigidAssetRejectsCorruptionAndMalformedPayload", "physics.bake.deformAssetRoundTripAndCheckedRestore", "physics.bake.particleAssetRoundTripAndMalformedEvents"]},
-      "module": "physics_bake",
-      "task": "physics-bake"
-    },
-    "integration/physics-bake/rigid_presentation.cpp": {
-      "role": "tests",
-      "default": "module-composition",
-      "cases": {"module-composition": ["physics.bake.rigidPresentationUsesRenderMatrixWithoutWorld", "physics.bake.planarPresentationPreservesPixelsAndScale"]},
-      "module": "physics_bake_graphics",
-      "task": "physics-bake"
-    },
-    "integration/physics-bake/particle_presentation.cpp": {
-      "role": "tests",
-      "default": "render-window",
-      "cases": {"render-window": ["physics.bake.particleSpritesRenderIndependentBirthIntervals"]},
-      "module": "physics_bake_graphics",
-      "task": "physics-bake"
-    },
-    "integration/physics-bake/graphics_owner_retirement.cpp": {
-      "role": "tests",
-      "default": "render-window",
-      "cases": {"render-window": ["physics.bake.deformPresentationSurvivesGraphicsOwnerReplacement"]},
-      "module": "physics_bake_graphics",
-      "task": "physics-bake"
-    },
-    "integration/physics-bake/deform_presentation.cpp": {
-      "role": "tests",
-      "default": "render-window",
-      "cases": {"render-window": ["physics.bake.deformMeshesRenderAndUpdateWithoutSimulation"]},
-      "module": "physics_bake_graphics",
-      "task": "physics-bake"
-    },
-    "integration/physics-bake/particle_reference.cpp": {
-      "role": "tests",
-      "default": "module-composition",
-      "cases": {"module-composition": ["physics.bake.particleReplayMatchesLiveAppearanceAndLifetime"]},
-      "module": "physics_bake_particle_capture",
-      "task": "physics-bake"
-    },
-    "integration/physics-bake/particle_capture.cpp": {
-      "role": "tests",
-      "default": "module-composition",
-      "cases": {"module-composition": ["physics.bake.particleEventsBecomeIndependentTrajectories"]},
-      "module": "physics_bake_particle_capture",
-      "task": "physics-bake"
-    },
-    "integration/physics-bake/particle_identity.cpp": {
-      "role": "tests",
-      "default": "module-composition",
-      "cases": {"module-composition": ["physics.bake.particleBirthIdentitySurvivesCompactionAndRestart", "physics.bake.particleAppearanceMatchesLiveSpriteModes", "physics.bake.particleJournalRejectsIncompleteRecording", "physics.bake.particleSimulationRecordsActualDeathsAndReset", "physics.bake.particleRecordingCapturesCollisionAndRejectsPolicyDrift", "physics.bake.subEmitterEventsKeepSourceBoundaryAcrossUpdateOrder"]},
-      "module": "particles",
-      "task": "physics-bake"
-    },
-    "integration/physics-bake/resampling_error.cpp": {
-      "role": "tests",
-      "default": "physics-backend",
-      "cases": {"physics-backend": ["physics.bake.deformResamplingErrorAgainstLiveReference", "physics.bake.rigidResamplingErrorAgainstLiveReference"]},
-      "module": "physics_bake",
-      "task": "physics-bake"
-    },
-    "integration/physics-bake/deform_capture.cpp": {
-      "role": "tests",
-      "default": "physics-backend",
-      "cases": {"physics-backend": ["physics.bake.ropeCaptureRejectsCutTopologyAfterSourceDestruction", "physics.bake.clothCaptureKeepsActualSurvivingTriangles"]},
-      "module": "physics_bake_deform_capture",
-      "task": "physics-bake"
-    },
-    "integration/physics-bake/rigid_capture.cpp": {
-      "role": "tests",
-      "default": "physics-backend",
-      "cases": {"physics-backend": ["physics.bake.capture2DPreservesPixelsAfterWorldDestruction", "physics.bake.capture3DPreservesMetresAfterWorldDestruction"]},
-      "module": "physics_bake_capture",
-      "task": "physics-bake"
-    },
-    "unit/physics_bake/physics_bake_values.cpp": {
-      "role": "tests",
-      "default": "local-logic",
-      "cases": {"local-logic": ["physics.bake.rigidTracksKeepStableIdentities", "physics.bake.rigidTracksRejectInvalidRecordings", "physics.bake.deformTopologyOwnsConnectivityIdentity", "physics.bake.deformTrackRejectsTopologyDriftAndSamplesWithoutSource", "physics.bake.deformPlayersShareClipButKeepAtomicIndependentOutput", "physics.bake.particleTracksRespectBirthDeathAndIdentity", "physics.bake.deformRecordingRejectsPartialFramesAndFreezesIndependentClips", "physics.bake.rigidRecordingPreservesRosterAndRejectsPartialFrames"]},
-      "module": "physics_bake"
-    },
-    "profile/physics_bake/durability.cpp": {
-      "role": "probe",
-      "default": "platform-file",
-      "cases": {},
-      "module": "physics_destruction",
-      "task": "house-collapse"
-    },
-    "profile/physics_bake/script_manifest.cpp": {
-      "role": "probe",
-      "default": "module-composition",
-      "cases": {},
-      "module": "physics_bake_script",
-      "task": "physics-bake"
-    },
-    "profile/physics_bake/manifest.cpp": {
-      "role": "probe", "default": "module-composition", "cases": {},
-      "module": "physics_bake", "task": "physics-bake"
-    },
-    "profile/physics_bake/allocation.cpp": {
-      "role": "probe", "default": "module-composition", "cases": {},
-      "module": "physics_bake_collapse", "task": "physics-bake"
-    },
-    "profile/physics_bake/collapse_error.cpp": {
-      "role": "probe", "default": "module-composition", "cases": {},
-      "module": "physics_bake_collapse", "task": "physics-bake"
-    },
-    "profile/physics_bake/measure.cpp": {
-      "role": "probe", "default": "module-composition", "cases": {},
-      "module": "physics_bake", "task": "physics-bake"
-    },
-    "profile/physics_bake/inspect.cpp": {
-      "role": "probe",
-      "default": "module-composition",
-      "cases": {},
-      "module": "physics_destruction",
-      "task": "house-collapse"
     },
     "profile/physics_mechanics/NoPlatformEvent.cpp": {
       "role": "helper",
@@ -6588,13 +6430,20 @@
           "avatar.vrm.parseVersionAndHumanoid",
           "avatar.vrm.rejectTruncatedAndUnknownVersion",
           "avatar.vrm.rejectInvalidNodeReference",
-          "avatar.vrm.failedLoadPreservesPath"
+          "avatar.vrm.failedLoadPreservesPath",
+          "avatar.appearance.signedChannelsAndCorrective",
+          "avatar.appearance.atomicWardrobeAndHistory",
+          "avatar.appearance.rejectInvalidStateAndDefinition",
+          "avatar.appearance.snapshotRoundTripAndProfileIsolation",
+          "avatar.appearance.morphProjectionValidatesBeforeWriting",
+          "avatar.appearance.morphNormalsBlendAndRejectAtomically"
         ]
       },
       "module": "avatar",
       "origins": [
         "avatar.cpp",
-        "avatar_vrm.cpp"
+        "avatar_vrm.cpp",
+        "avatar_appearance.cpp"
       ]
     },
     "unit/building/building.cpp": {
@@ -6980,7 +6829,25 @@
           "decision.condition.compoundsExplainFailureWithoutMutation",
           "decision.condition.scriptDeclarationIsExplicit",
           "decision.conditionUnavailableIsDifferentFromFalse",
-          "decision.condition.legacyCodecExpandsDomainLeaves"
+          "decision.condition.legacyCodecExpandsDomainLeaves",
+          "common.sdfField3D.blobRoundTripPreservesSamples",
+          "common.sdfField3D.blobRejectsUnknownSchemaAndBadCounts",
+          "common.sdfField3D.capabilityInterfaceSamplesGradient",
+          "ecs.viewPreparationPreservesWordAndPrefixBoundaries",
+          "ecs.viewPreparationRetriesThrowingConstruction",
+          "ecs.viewPreparationObservesConstructorChangesWithinWord",
+          "ecs.viewPreparationKeepsInheritanceDeferAndTableIsolation",
+          "ecs.viewPreparationDoesNotRequireDefaultConstruction",
+          "ecs.idleCommitKeepsNestedAndExplicitPublication",
+          "ecs.idleCommitCancelsStagedAndRearmsAfterReuse",
+          "ecs.failedViewPreparationReleasesItsDeferScope",
+          "ecs.failedNestedViewPreservesTheOuterDeferScope",
+          "ecs.entityOnlyViewKeepsDeferredIterationAndEmptyComparison",
+          "ecs.viewPreparationSkipsDeadSlotsAndInitializesReuse",
+          "ecs.viewPreparationKeepsStagingAndSkipsCancelledEntities",
+          "ecs.viewPreparationObservesDestructionDuringConstruction",
+          "ecs.viewPreparationInvalidatesCachedSparsePass",
+          "ecs.viewPreparationDoesNotCacheConstructorSideEffects"
         ],
         "test-framework": [
           "common.zeroerr.preservesExpressionAndSource",
@@ -7025,7 +6892,9 @@
         "versioned_registry.cpp",
         "xml.cpp",
         "capability_owned.cpp",
-        "condition.cpp"
+        "condition.cpp",
+        "sdf_field3d.cpp",
+        "ecs_view_preparation.cpp"
       ]
     },
     "unit/crowd/crowd_tests.cpp": {
@@ -7649,13 +7518,15 @@
       "role": "tests",
       "default": "local-logic",
       "module": "fluids",
-      "cases": {"local-logic": [
-        "fluids.shore.levelLakeStaysAtRestOverWetDrySlope",
-        "fluids.shore.invalidInitializationIsAtomic",
-        "fluids.shore.waveRunsUpAndReturnsWithoutNegativeDepth",
-        "fluids.shore.visualGainPreservesLevelRestSurface",
-        "fluids.shore.airAndDryLandCollidersDoNotCreateWater"
-      ]}
+      "cases": {
+        "local-logic": [
+          "fluids.shore.levelLakeStaysAtRestOverWetDrySlope",
+          "fluids.shore.invalidInitializationIsAtomic",
+          "fluids.shore.waveRunsUpAndReturnsWithoutNegativeDepth",
+          "fluids.shore.visualGainPreservesLevelRestSurface",
+          "fluids.shore.airAndDryLandCollidersDoNotCreateWater"
+        ]
+      }
     },
     "unit/fluids/fluids_solver_tests.cpp": {
       "role": "tests",
@@ -7672,6 +7543,7 @@
           "fluids.shallowWater.cpuMassStaysBoundedAfterSteps",
           "fluids.math.kernels",
           "fluids.sdf.sphere",
+          "fluids.sdf.sharedInterfaceAndDistanceFieldConvert",
           "fluids.sdf.triangleMesh",
           "fluids.cpu.surfaceFlowDownhill",
           "fluids.cpu.viscosityDampsRelativeMotion",
@@ -7866,6 +7738,8 @@
           "Camera3D.orthographicScreenRaysAreParallel",
           "RenderSystem3D.shadowExtraDrawerOwnerTokens",
           "Shadow.directionalCSM.clampsFarAndSplitsAreViewZ",
+          "Shadow.scheme.dynamicMapSizeAndMaxDistance",
+          "Shadow.scheme.adaptiveCascadeResolutionByDistanceAndCoverage",
           "graphics.shadow_scheme.parse_and_resolve_methods",
           "graphics.shadow_scheme.selects_spot_slots_and_builds_vp",
           "graphics.shadow_scheme.pages_more_spots_than_atlas_slots",
@@ -8658,6 +8532,7 @@
       "default": "local-logic",
       "cases": {
         "local-logic": [
+          "box3d.sdf.sharedInterfaceAndBlobRoundTrip",
           "box3d.sdf.interpolationNormalAndSphere",
           "box3d.sdf.boundaryNormalsUseOneSidedGradient",
           "box3d.sdf.bulkDataMetadataAndAtomicValidation",
@@ -8787,12 +8662,22 @@
           "PhysicsCloth.closedModelPreservesAndInflatesVolume",
           "PhysicsCloth.skinBackstopAndAnimatedReferenceConstrainParticles",
           "PhysicsCloth.attachmentTracksTargetAndDetachesWithVelocity",
-          "PhysicsCloth.runtimeTearingChangesAuthoritativeConstraintAndSurfaceTopology"
+          "PhysicsCloth.runtimeTearingChangesAuthoritativeConstraintAndSurfaceTopology",
+          "PhysicsLayeredCloth.separatesFacesAndConservesMassWeightedCentre",
+          "PhysicsLayeredCloth.respectsPinnedParticlesAndSymmetricFilter",
+          "PhysicsLayeredCloth.disabledAndZeroStepDoNotSeparate",
+          "PhysicsLayeredCloth.rejectsInvalidInputBeforeMutation",
+          "PhysicsLayeredCloth.threeLayerReplayRemainsFiniteAndResettable",
+          "PhysicsLayeredCloth.interiorFaceContactAndFriction",
+          "PhysicsLayeredCloth.coincidentAndFullyPinnedContactsStayFinite",
+          "PhysicsLayeredClothGPU.geometricDistanceOracleHandlesCrossingsAndDegeneracy"
         ]
       },
       "module": "physics_cloth",
       "origins": [
-        "physics_cloth.cpp"
+        "physics_cloth.cpp",
+        "physics_layered_cloth.cpp",
+        "physics_layered_cloth_gpu.cpp"
       ]
     },
     "unit/physics_destruction/physics_destruction_fracture_rules.cpp": {
@@ -10607,6 +10492,7 @@
           "UI.scriptStyleBuilder.mountBuildAs",
           "UI.editorKit.declarativeComponents",
           "UI.editorKit.scriptBuilderAndSerialization",
+          "UI.editorKit.textToolsRoundTripAndReconcile",
           "UI.adv.sliderProgressInputCollapseChild",
           "UI.adv.builderScriptWidgets",
           "UI.adv.wantCaptureAPI",
@@ -10978,7 +10864,8 @@
           "weather.ambientInRange",
           "weather.pcgSnowWindThreeAxisAndAtomicValidation",
           "weather.pcgInteriorVolumeShapesValidateAtomically",
-          "weather.pcgInteriorVolumeTransitionsAndReverb"
+          "weather.pcgInteriorVolumeTransitionsAndReverb",
+          "weather.lightning deterministic bounded geometry"
         ]
       },
       "module": "weather",
@@ -12129,6 +12016,24 @@
         ]
       }
     },
+    "unit/procgen/procgen_auto_bridge.cpp": {
+      "module": "procgen",
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "procgen.autoBridge.tenTopologiesHaveValidDistinctGeometry",
+          "procgen.autoBridge.planEditsAndInclinedEndpointsAreDeterministic",
+          "procgen.autoBridge.rejectsInvalidRequestsAndPlans",
+          "procgen.autoBridge.recipeSupportsAllTypesAndToggles",
+          "procgen.autoBridge.referencePresetsAndDefaultsShareOneContract",
+          "procgen.autoBridge.customSectionsRejectInvalidAndCollapsedGeometry"
+        ]
+      },
+      "origins": [
+        "procgen_auto_bridge.cpp"
+      ]
+    },
     "unit/procgen/procgen_arrow.cpp": {
       "role": "tests",
       "default": "local-logic",
@@ -12142,6 +12047,584 @@
         ]
       },
       "module": "procgen"
+    },
+    "integration/frame-recording/frame_recording_tests.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "graphics",
+      "modules": [
+        "graphics",
+        "thread",
+        "common",
+        "window"
+      ],
+      "task": "frame-recording",
+      "cases": {
+        "module-composition": [
+          "graphics.frameRecording.inlineBudgetAndPeriodicReprobe"
+        ],
+        "render-window": [
+          "graphics.frameRecording.fxaaSlotReuseResizeAndPersistentCanvas"
+        ]
+      }
+    },
+    "integration/profiler-capture/profile_capture_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "profiler.core.reportMeasuresCapturedSpan",
+          "profiler.core.sameNameDifferentStorageAggregates",
+          "profiler.capture.automaticFrameBeginIncludesEarlier3DWork"
+        ]
+      },
+      "module": "profiler",
+      "modules": [
+        "common",
+        "profiler"
+      ],
+      "task": "profiler-capture"
+    },
+    "integration/vsync-config/vsync_config_tests.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "graphics",
+      "modules": [
+        "graphics",
+        "window",
+        "common"
+      ],
+      "task": "vsync-config",
+      "cases": {
+        "render-window": [
+          "scriptConfig.vsyncDefaultsEnabled",
+          "scriptConfig.vsyncExplicitTrue",
+          "scriptConfig.vsyncFalseUsesUnsynchronizedPresent",
+          "scriptConfig.vsyncAppliedBeforeEditorWindow",
+          "scriptConfig.vsyncRejectsNonBoolean"
+        ]
+      }
+    },
+    "integration/material-studio/material_preview_shadows.cpp": {
+      "role": "tests",
+      "default": "render-offscreen",
+      "cases": {
+        "render-offscreen": [
+          "editor.material.preview_shadows_affect_pixels_and_capture_path_stays_unshadowed"
+        ]
+      },
+      "module": "graphics",
+      "task": "material-studio"
+    },
+    "integration/material-studio/material_studio_scripts.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "editor.material.facade_script_projects_owned_values_and_checked_failures",
+          "editor.material.studio_publication_clears_resources_and_preserves_preview_on_failure",
+          "editor.material.preview_geometry_has_recessed_rings_valid_normals_and_matching_sky_edges",
+          "editor.material.preview_selection_failures_preserve_active_resources_and_fit_shared_bounds"
+        ]
+      },
+      "module": "material_editor",
+      "task": "material-studio"
+    },
+    "unit/material_editor/material_editor_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "editor.material.facade_patch_is_one_undo_record",
+          "editor.material.facade_invalid_patch_preserves_document_and_history",
+          "editor.material.facade_cross_field_validation_is_candidate_first",
+          "editor.material.facade_snapshot_restore_is_undoable_and_migrates",
+          "editor.material.facade_noop_preserves_redo_and_revision",
+          "editor.material.facade_schema_and_workspace_are_detached"
+        ]
+      },
+      "module": "material_editor"
+    },
+    "integration/layered-cloth/physics_layered_cloth_gpu.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "render-window": [
+          "PhysicsLayeredClothGPU.freeFallMatchesReferenceAndKeepsResidentState",
+          "PhysicsLayeredClothGPU.pinnedPoseAndReset",
+          "PhysicsLayeredClothGPU.contactsReactByMassAndCanBeDisabled",
+          "PhysicsLayeredClothGPU.hashOverflowUsesExplicitGpuScan",
+          "PhysicsLayeredClothGPU.rendersComputeGeneratedVertices",
+          "PhysicsLayeredClothGPU.ccdPointFacePreservesStartingSide",
+          "PhysicsLayeredClothGPU.ccdEdgeInteriorsAndDegeneracy",
+          "PhysicsLayeredClothGPU.sweptHashAndScanKeepCrossingPointAboveFace",
+          "PhysicsLayeredClothGPU.sweptEdgesReactWithBalancedMass",
+          "PhysicsLayeredClothGPU.contactFrictionAndSelfFiltering",
+          "PhysicsLayeredClothGPU.stabilityAndSynchronousTimingBaseline",
+          "PhysicsLayeredClothGPU.denseContactsBoundCorrectionAndConserveCentre",
+          "PhysicsLayeredClothGPU.foldedSelfContactSeparatesWithoutCentreDrift",
+          "PhysicsLayeredClothGPU.fallingSheetsRemainSeparatedForOneSimulatedMinute"
+        ]
+      },
+      "module": "physics_cloth",
+      "task": "layered-cloth",
+      "origins": [
+        "physics_layered_cloth_gpu.cpp"
+      ]
+    },
+    "integration/layered-cloth/physics_layered_cloth_script.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "PhysicsLayeredCloth.scriptBindings"
+        ]
+      },
+      "module": "physics_cloth",
+      "task": "layered-cloth",
+      "origins": [
+        "physics_layered_cloth.cpp"
+      ]
+    },
+    "integration/avatar-appearance/avatar_appearance_script.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "avatar.appearance.scriptBoundaryUsesCheckedResults"
+        ]
+      },
+      "module": "avatar",
+      "origins": [
+        "avatar_appearance.cpp"
+      ],
+      "task": "avatar-appearance"
+    },
+    "integration/projectile-behavior/continuous_solver.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "carrierSolver.remainderMultipleBouncesAndFramePartition",
+          "carrierSolver.intervalDistanceAndExpirySurviveBounce",
+          "carrierSolver.budgetsAndLaterProviderFailureRollbackWholeFrame",
+          "carrierSolver.substepBoundsSnapshotAndCallbackRemainder",
+          "carrierSolver.zeroProgressAndMalformedContactsAreBounded",
+          "carrierSolver.thresholdTimesAndDeferredChildren",
+          "carrierSolver.predictiveSamplesOncePerOuterUpdate",
+          "carrierSolver.pierceDeduplicatesAcrossSubstepsAndRestore",
+          "carrierSolver.impactSpeedCrossingAndLaterCallbackFailure",
+          "carrierSolver.optionalCollisionAndWorldSweep"
+        ]
+      },
+      "module": "weapon",
+      "task": "projectile-behavior"
+    },
+    "integration/projectile-behavior/advanced_carrier.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "advancedCarrier.customMotionAtomicityReplayAndReentrancy",
+          "advancedCarrier.customMotionCollisionAndClampedLifetime",
+          "advancedCarrier.rotationDragAndSignedAcceleration",
+          "advancedCarrier.antiparallelHomingAndOrbitProviderContract",
+          "advancedCarrier.seededWanderSnapshotReplayAndCodec",
+          "advancedCarrier.distanceSpeedApexAndLifetimeTriggers",
+          "advancedCarrier.bounceContactAndInvalidSnapshotRollback",
+          "advancedCarrier.predictiveLeadAndStoppedSpeedRecovery",
+          "advancedCarrier.intervalBudgetRecipeMutationAndExpiryBoundaries",
+          "advancedCarrier.curvesRemainBoundedAcrossManyPeriods",
+          "advancedCarrier.roughBounceReplayAndSnapshotVersionValidation",
+          "advancedCarrier.invalidOperatorAndTriggerCompositionIsRejected",
+          "advancedCarrier.triggerChronologyAndBouncePathRespectContact"
+        ]
+      },
+      "module": "weapon",
+      "task": "projectile-behavior"
+    },
+    "integration/projectile-behavior/world_sweep.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "carrierWorldSweep.box3dContractAndRestore",
+          "carrierWorldSweep.joltContractAndRestore",
+          "carrierWorldSweep.bodyDestructionAndBudget",
+          "carrierWorldSweep.carrierPierceSnapshotAndFailure"
+        ]
+      },
+      "module": "physics",
+      "task": "projectile-behavior"
+    },
+    "integration/weather-lightning/weather_lightning_runtime.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "render-window": [
+          "weather.lightning weapon endpoints pulse and stale entity"
+        ]
+      },
+      "module": "weather",
+      "task": "weather-lightning"
+    },
+    "unit/procgen/procgen_everyday_materials.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "module": "procgen",
+      "cases": {
+        "local-logic": [
+          "procgen.everyday.familiesDeterminismAndPhysicalChannels",
+          "procgen.everyday.boundedParametersAndRegistryParity",
+          "procgen.everyday.pigmentDoesNotEmbossMarble",
+          "procgen.everyday.seedAndTintHaveObservableEffects",
+          "procgen.everyday.sharedCavityMatchesReference",
+          "procgen.everyday.microstructureIsPeriodicAtBothSeams",
+          "procgen.everyday.resolutionDoesNotRescaleFeatures",
+          "procgen.everyday.requestedSurfacesHaveReliefAndRoughness"
+        ]
+      }
+    },
+    "integration/script-api/procgen_everyday_material_optics.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "module": "procgen",
+      "cases": {
+        "script-binding": [
+          "procgen.everyday.scriptOpticsMatchNative"
+        ]
+      },
+      "task": "script-api"
+    },
+    "integration/sensing/environment_query_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "sensing.environment.compiledPlanOwnsDefinitionAndInstancesOwnContexts",
+          "sensing.environment.validatesTypesContextsAndBudgets",
+          "sensing.environment.ringAndGridGenerateLocationsWithoutSubjects",
+          "sensing.environment.multiContextFilterAndAggregateAreIndependent",
+          "sensing.environment.contributionsNormalizeOnceAndExplainRejection",
+          "sensing.environment.weightsAndReferencePreferenceChangeRanking",
+          "sensing.environment.optionsOnlyAdvanceOnEmptyNotErrors",
+          "sensing.environment.bestDefersExpensiveFilterAndMatchesExhaustive",
+          "sensing.environment.relativeScoresAndCustomBarriersDisableUnsafeDeferral",
+          "sensing.environment.traceCapAndTraceOffDoNotChangeResults",
+          "sensing.environment.worldCompositionPublishesTraceAndKeepsLegacyResults",
+          "sensing.pipeline.collectsBeforeFilteringAndPublishesOnlyOnSuccess",
+          "sensing.environment.spatialInputIdentityAndTiesAreStable",
+          "sensing.environment.optimizationParityAcrossCandidateSets",
+          "sensing.pipeline.compiledPlanSurvivesRegistryAndPresetReplacement",
+          "sensing.environment.world3DAndGridKeepTheirCoordinateTags",
+          "sensing.pipeline.implicitDistanceOrderPrecedesTruncation",
+          "sensing.environment.providerExceptionsBecomeFailedDiagnostics",
+          "sensing.environment.constantPopulationUsesIdentityTieBreak",
+          "sensing.environment.costSortPreservesScoreAccumulationOrder"
+        ],
+        "script-binding": [
+          "sensing.environment.scriptPositionsUseCanonicalExecutor"
+        ]
+      },
+      "module": "sensing",
+      "origins": [
+        "sensing_environment.cpp"
+      ],
+      "task": "sensing"
+    },
+    "integration/physics-bake/collapse_collision_reference.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "physics.bake.collapseCollisionReplayMatchesLiveReference"
+        ]
+      },
+      "module": "physics_destruction",
+      "task": "physics-bake"
+    },
+    "unit/physics_bake_collapse/physics_bake_collapse_values.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "physics.bake.collapseCaptureInterfaceRejectsWholeFrames",
+          "physics.bake.collapseCaptureInterfaceOutlivesSource",
+          "physics.bake.collapseRotationCrossesWrapWithoutStateAnticipation",
+          "physics.bake.collapseFastRotationRequiresSufficientCadence"
+        ]
+      },
+      "module": "physics_bake_collapse",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/script_particle_presentation.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "render-window": [
+          "physics.bake.scriptParticlePresentationBatchesMaterialsAndRejectsPartialDraw"
+        ]
+      },
+      "module": "physics_bake_graphics_script",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/script_deform_presentation.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "render-window": [
+          "physics.bake.scriptDeformPresentationRendersAfterSourceAndPresenterRelease"
+        ]
+      },
+      "module": "physics_bake_graphics_script",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/script_presentation.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "physics.bake.scriptRigidPresentationBorrowsTargetsAndPreservesFailures"
+        ]
+      },
+      "module": "physics_bake_graphics_script",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/particle_script_recording.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "physics.bake.scriptParticleJournalsPublishRetryableMultiEmitterArchive",
+          "physics.bake.scriptParticleAssetOutlivesProducerVmAndEcsSources"
+        ]
+      },
+      "module": "physics_bake_particle_script",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/script_recording.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "physics.bake.scriptRecordsLiveClothAndRopeThenReplaysWithoutSources",
+          "physics.bake.scriptRigidRecordingUsesGenerationalBindings"
+        ]
+      },
+      "module": "physics_bake_recording_script",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/script_playback.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "script-binding": [
+          "physics.bake.scriptRigidPlaybackOwnsLoadedTrackAndCoexistsWithLegacyRecipe",
+          "physics.bake.scriptDeformSamplesOwnTopologyAndPositions",
+          "physics.bake.scriptParticleSnapshotsPreserveBirthBoundariesAndIdentity"
+        ]
+      },
+      "module": "physics_bake_script",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/track_storage.cpp": {
+      "role": "tests",
+      "default": "platform-file",
+      "cases": {
+        "platform-file": [
+          "physics.bake.rigidAssetRoundTripAndPublication",
+          "physics.bake.rigidAssetRejectsCorruptionAndMalformedPayload",
+          "physics.bake.deformAssetRoundTripAndCheckedRestore",
+          "physics.bake.particleAssetRoundTripAndMalformedEvents"
+        ]
+      },
+      "module": "physics_bake",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/rigid_presentation.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "physics.bake.rigidPresentationUsesRenderMatrixWithoutWorld",
+          "physics.bake.planarPresentationPreservesPixelsAndScale"
+        ]
+      },
+      "module": "physics_bake_graphics",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/particle_presentation.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "render-window": [
+          "physics.bake.particleSpritesRenderIndependentBirthIntervals"
+        ]
+      },
+      "module": "physics_bake_graphics",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/graphics_owner_retirement.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "render-window": [
+          "physics.bake.deformPresentationSurvivesGraphicsOwnerReplacement"
+        ]
+      },
+      "module": "physics_bake_graphics",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/deform_presentation.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "render-window": [
+          "physics.bake.deformMeshesRenderAndUpdateWithoutSimulation"
+        ]
+      },
+      "module": "physics_bake_graphics",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/particle_reference.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "physics.bake.particleReplayMatchesLiveAppearanceAndLifetime"
+        ]
+      },
+      "module": "physics_bake_particle_capture",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/particle_capture.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "physics.bake.particleEventsBecomeIndependentTrajectories"
+        ]
+      },
+      "module": "physics_bake_particle_capture",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/particle_identity.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "physics.bake.particleBirthIdentitySurvivesCompactionAndRestart",
+          "physics.bake.particleAppearanceMatchesLiveSpriteModes",
+          "physics.bake.particleJournalRejectsIncompleteRecording",
+          "physics.bake.particleSimulationRecordsActualDeathsAndReset",
+          "physics.bake.particleRecordingCapturesCollisionAndRejectsPolicyDrift",
+          "physics.bake.subEmitterEventsKeepSourceBoundaryAcrossUpdateOrder"
+        ]
+      },
+      "module": "particles",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/resampling_error.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "physics-backend": [
+          "physics.bake.deformResamplingErrorAgainstLiveReference",
+          "physics.bake.rigidResamplingErrorAgainstLiveReference"
+        ]
+      },
+      "module": "physics_bake",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/deform_capture.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "physics-backend": [
+          "physics.bake.ropeCaptureRejectsCutTopologyAfterSourceDestruction",
+          "physics.bake.clothCaptureKeepsActualSurvivingTriangles"
+        ]
+      },
+      "module": "physics_bake_deform_capture",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/rigid_capture.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "physics-backend": [
+          "physics.bake.capture2DPreservesPixelsAfterWorldDestruction",
+          "physics.bake.capture3DPreservesMetresAfterWorldDestruction"
+        ]
+      },
+      "module": "physics_bake_capture",
+      "task": "physics-bake"
+    },
+    "unit/physics_bake/physics_bake_values.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-logic": [
+          "physics.bake.rigidTracksKeepStableIdentities",
+          "physics.bake.rigidTracksRejectInvalidRecordings",
+          "physics.bake.deformTopologyOwnsConnectivityIdentity",
+          "physics.bake.deformTrackRejectsTopologyDriftAndSamplesWithoutSource",
+          "physics.bake.deformPlayersShareClipButKeepAtomicIndependentOutput",
+          "physics.bake.particleTracksRespectBirthDeathAndIdentity",
+          "physics.bake.deformRecordingRejectsPartialFramesAndFreezesIndependentClips",
+          "physics.bake.rigidRecordingPreservesRosterAndRejectsPartialFrames"
+        ]
+      },
+      "module": "physics_bake"
+    },
+    "profile/physics_bake/durability.cpp": {
+      "role": "probe",
+      "default": "platform-file",
+      "cases": {},
+      "module": "physics_destruction",
+      "task": "house-collapse"
+    },
+    "profile/physics_bake/script_manifest.cpp": {
+      "role": "probe",
+      "default": "module-composition",
+      "cases": {},
+      "module": "physics_bake_script",
+      "task": "physics-bake"
+    },
+    "profile/physics_bake/manifest.cpp": {
+      "role": "probe",
+      "default": "module-composition",
+      "cases": {},
+      "module": "physics_bake",
+      "task": "physics-bake"
+    },
+    "profile/physics_bake/allocation.cpp": {
+      "role": "probe",
+      "default": "module-composition",
+      "cases": {},
+      "module": "physics_bake_collapse",
+      "task": "physics-bake"
+    },
+    "profile/physics_bake/collapse_error.cpp": {
+      "role": "probe",
+      "default": "module-composition",
+      "cases": {},
+      "module": "physics_bake_collapse",
+      "task": "physics-bake"
+    },
+    "profile/physics_bake/measure.cpp": {
+      "role": "probe",
+      "default": "module-composition",
+      "cases": {},
+      "module": "physics_bake",
+      "task": "physics-bake"
+    },
+    "profile/physics_bake/inspect.cpp": {
+      "role": "probe",
+      "default": "module-composition",
+      "cases": {},
+      "module": "physics_destruction",
+      "task": "house-collapse"
     },
     "integration/house-collapse/physics_bake_storage.cpp": {
       "role": "tests",

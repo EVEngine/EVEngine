@@ -68,13 +68,13 @@ TEST_CASE("crowd.registry.clearAndWrongOwnerCannotResolve") {
     Crowd      first, second;
     const auto old   = first.agentRef(first.addAgent(1.f, 0.f, 0.f, 1.f)).takeValue();
     const auto other = second.agentRef(second.addAgent(2.f, 0.f, 0.f, 1.f)).takeValue();
-    CHECK_EQ(old.handle, other.handle);
-    CHECK(old.owner != other.owner);
-    CHECK(!second.readAgent(old).ok());
+    REQUIRE_EQ(old.handle, other.handle);
+    REQUIRE(old.owner != other.owner);
+    REQUIRE(!second.readAgent(old).ok());
     first.clearAgents();
     const auto current = first.agentRef(first.addAgent(3.f, 0.f, 0.f, 1.f)).takeValue();
-    CHECK(!first.readAgent(old).ok());
-    CHECK(first.isAgentAlive(current));
+    REQUIRE(!first.readAgent(old).ok());
+    REQUIRE(first.isAgentAlive(current));
 }
 
 TEST_CASE("crowd.registry.spawnTransactionPreservesOwnerAndLiveReferences") {

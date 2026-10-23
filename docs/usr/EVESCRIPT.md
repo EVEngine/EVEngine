@@ -46,6 +46,7 @@ config <- {
     height = 540
     title = "EveScript Tutorial"
     hotReload = true
+    vsync = true // 默认开启；设为 false 请求关闭垂直同步。
     // 默认 ["."]。apps/<editor> 要监视父级 workflow 时写成 [".."]。
     // hotReloadWatch = ["."]
 
@@ -1150,3 +1151,18 @@ quit 取消订阅和释放游戏拥有的资源。回调默认在游戏线程执
 及 [编译器测试](../../test/integration/script-api/script_api_graphics_scene_tests.cpp)，模块见
 [模块测试](../../test/integration/script-api/script_api_graphics_scene_tests.cpp)，全局对象、辅助函数与帧循环见
 [load.nut](../../src/scripts/load.nut)。接口版本以所使用 SDK 的契约为准。
+
+### 原生 JSON 文档
+
+`eve.json.encode(value)` 和 `eve.json.decode(text)` 返回统一的 Result 表，先检查 `ok`，再读取 `value`。
+encode 接受普通 table / array / string / finite number / bool / null；decode 返回拥有自己数据的同类值。
+使用公共 Value 编解码器，拒绝循环容器、非字符串键、非有限数字、重复 JSON 键及超出深度 / 元素上限的数据。
+UTF-8 和 Unicode 转义经原生 JSON 解析。调用在 VM owner thread 同步完成，不调用用户回调、不保留借用引用；
+成本随文档字节和元素数量增长，适合显式保存、加载和快照边界，避免放到逐帧循环。
+
+```squirrel
+local encoded = eve.json.encode({schema="my.scene", version=1, name="庭院"});
+if (!encoded.ok) throw encoded.status.summary;
+local decoded = eve.json.decode(encoded.value);
+if (!decoded.ok) throw decoded.status.summary;
+```

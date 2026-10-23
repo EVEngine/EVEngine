@@ -1,0 +1,19 @@
+ZeroErr Unit Test
+TEST CASE [ecs_view_preparation.cpp:226] ecs.failedViewPreparationReleasesItsDeferScope  ❌
+
+    ERROR Assertion Failed:
+        !table.is_deferred()  expands to  false
+    (/workspace/EVEngine/test/ecs_view_preparation.cpp:241)
+
+
+TEST CASE [ecs_view_preparation.cpp:255] ecs.failedNestedViewPreservesTheOuterDeferScope  ❌
+
+    ERROR Assertion Failed:
+        !table.is_deferred()  expands to  false
+    (/workspace/EVEngine/test/ecs_view_preparation.cpp:274)
+
+
+----------------------------------------------------------------
+             PASSED   |   WARNING   |   FAILED   |   SKIPPED
+TEST CASE:        0             0            2             0
+ASSERTION:      134             0            2             0

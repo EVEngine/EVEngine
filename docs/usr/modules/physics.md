@@ -104,6 +104,11 @@ if (nearest >= 0) {
 程序化洞穴和预烘焙距离场。世界坐标查询使用三线性插值；碰撞后可读取最小间隙、接触位置和
 由中心差分估计的表面法线。
 
+跨模块共享采样走 `eve::ISdfField3D`（`physics::DistanceField3DSdf` 适配器）。可移植资产用
+`eve.sdf.field3d` v1 blob：`physics.sdfField3DBlobFromDistanceField(field)` 导出，
+`physics.distanceField3DFromSdfBlob(blob)` 导入（与 fluids `MeshSdf` /
+`fluids.sdfField3DBlobFromModel` 互通；场外策略导入后变为常量 `outsideDistance`）。
+
 ```squirrel
 // 16³ 个网格顶点，间距 0.5m，原点在 (-4,-4,-4)，地图外视为空间。
 local sdf = physics.newDistanceField3D(16, 16, 16, 0.5, -4, -4, -4, 1000);
@@ -1479,3 +1484,16 @@ World 拥有求解器关节及恢复生成的包装对象，普通工厂包装�
 Coupling3D 齿轮/滑轮耦合当前仅支持 Box3D，Jolt 创建时返回 Unsupported。
 Box3D 使用包含耦合与完整原生参数的 v3 快照；Jolt 保留上游 portable v2 快照。
 两种格式不承诺跨后端互换，也不保存求解器热启动缓存。
+
+### module-interface: World3D projectile sweep integration
+
+`World3D.queryToken()` returns an opaque process-local token for an optional projectile query binding.
+`CombatCarrierRuntime.bindWorld3D(token, radius, categoryBits, maskBits, ignoredBodyId)` checks a Result and
+creates a physics-owned query session; `clearWorld3D()` removes it only while the pool is empty.
+See [weapon World3D integration](weapon.md) and the runnable `world-sweep-ballistics` example.
+The `IWorldSphereSweepFactory` capability is published by physics and consumed only at binding time.
+The owning query session resolves authoritative world handles on the simulation thread and never stores a raw world pointer.
+Successful world restore increments the query epoch; stale bindings, including stale excluded bodies, fail explicitly.
+No new ECS System or tool protocol is introduced. Physics collision results retain body/shape provenance,
+while gameplay entity mapping remains with the game. The existing backend provides the shape query;
+filter parameters are scoped, results are owning, and overflow is an error rather than a truncated hit list.

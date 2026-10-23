@@ -12,15 +12,19 @@ class World3D;
 namespace eve::fluids {
 class VolumeFluid;
 struct VolumeFluidCollider;
+struct VolumeFluidSdfCollider;
 struct VolumeFluidThermalRule;
 
 /** @brief Process-local generation-checked bridge between fluid samples and rigid bodies.
  * @ownership Owns local collider descriptions and typed physics links, never world/body/solver pointers.
  * @thread Simulation-thread affine; no callbacks, concurrent mutation or reentrancy.
- * @details Step exclusively supplies the solver's collider set. Destroying this bridge
- * leaves both worlds alive; destroying a body/world makes the stored link stale.
- * After restore/hot reload, reconstruct links from application persistent identity.
- * This bridge has no serialized runtime handles and invokes no world.step callbacks.
+ * @details Step exclusively supplies the solver's analytic collider set. When any SDF
+ * binding is present, step also exclusively supplies the SDF collider set; otherwise
+ * previously owned static SDF obstacles on the fluid are left untouched. Destroying
+ * this bridge leaves both worlds alive; destroying a body/world makes the stored link
+ * stale. After restore/hot reload, reconstruct links from application persistent
+ * identity. This bridge has no serialized runtime handles and invokes no world.step
+ * callbacks.
  */
 class EVENGINE_API_DOMAINS VolumeFluidCoupling final {
 public:
@@ -32,6 +36,16 @@ public:
     VolumeFluidCoupling& operator=(const VolumeFluidCoupling&) = delete;
     /** @brief Registers a live body and local-space shape; labels must be unique, maximum 1024. */
     [[nodiscard]] Result<void> attach(physics::Body3D& body, const VolumeFluidCollider& localShape);
+    /**
+     * @brief Registers a live body and local-space mesh SDF collider.
+     * @details Labels must be unique across analytic and SDF bindings, maximum 1024
+     * total bindings and 16 SDF bindings. The MeshSdf stays in collider-local space;
+     * each step transforms `position`/`rotation`/`scale` into world space from the
+     * linked body. Bake once at setup — do not rebuild MeshSdf every frame.
+     * @cost Validates by cloning into a one-particle temporary solver; owns a copy of
+     * the MeshSdf sample buffer afterward.
+     */
+    [[nodiscard]] Result<void> attachSdf(physics::Body3D& body, const VolumeFluidSdfCollider& localSdf);
     /** @brief Removes a label; absent labels are a successful no-op. */
     void detach(unsigned label);
     /** @brief Sets per-step rigid velocity-change limits used after impulse aggregation.

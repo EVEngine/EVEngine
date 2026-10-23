@@ -155,11 +155,6 @@ jobs:
           echo "Source-quality comparison base: $base"
           make check CI_BASE="$base"
 
-      - name: Report dependency graph
-        timeout-minutes: 5
-        if: always()
-        run: python3 scripts/module_depgraph.py
-
   physics-bake-codec:
     name: Physics bake codec (${{ matrix.os }}, ${{ matrix.build_type }})
     needs: [source-quality]
@@ -303,6 +298,115 @@ jobs:
         timeout-minutes: 5
         run: cd tools/vision-prefilter && python3 -m pytest -q test
 
+  # Native ARM64 lanes compile and link the engine and test binaries. Runtime
+  # GPU/ICD coverage remains in the existing host lanes until validated on ARM64.
+  windows-arm64:
+    name: Windows ARM64 (${{ matrix.configuration }}, build)
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.windows == 'true' }}
+    runs-on: windows-11-arm
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: ${{ fromJSON(inputs.build_type == 'both' && '["debug","release"]' || inputs.build_type == 'release' && '["release"]' || '["debug"]') }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Verify native ARM64 runner
+        timeout-minutes: 5
+        shell: pwsh
+        run: |
+          if ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture -ne 'Arm64') {
+            throw 'This lane requires a native Windows ARM64 host'
+          }
+
+      - name: Install build tools
+        timeout-minutes: 15
+        shell: pwsh
+        run: |
+          choco install make ninja -y --no-progress
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Install native ARM64 Vulkan SDK
+        timeout-minutes: 20
+        # This pinned action selects the Windows ARM64 SDK from the host arch.
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Windows ARM64
+        timeout-minutes: 190
+        env:
+          CONFIGURATION: ${{ matrix.configuration }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          make "build/win32-arm64${suffix}" JOBS=4 \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+
+  linux-arm64:
+    name: Linux ARM64 (${{ matrix.configuration }}, build)
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.linux == 'true' }}
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: ${{ fromJSON(inputs.build_type == 'both' && '["debug","release"]' || inputs.build_type == 'release' && '["release"]' || '["debug"]') }}
+    env:
+      CC: gcc
+      CXX: g++
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Verify native ARM64 runner
+        timeout-minutes: 5
+        run: test "$(uname -m)" = aarch64
+
+      - name: Install native system packages
+        timeout-minutes: 25
+        # Preserve the ARM ports mirror supplied by the runner image.
+        run: |
+          sudo apt-get update -o Acquire::Retries=2 \
+            -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build \
+            libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
+            libxrandr-dev libxinerama-dev libxext-dev libxss-dev \
+            libgl1-mesa-dev libbz2-dev libpng-dev \
+            libwayland-dev libxkbcommon-dev libasound2-dev \
+            libvulkan-dev glslc glslang-tools
+
+      - name: Build Linux ARM64
+        timeout-minutes: 140
+        env:
+          CONFIGURATION: ${{ matrix.configuration }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          make "build/linux-arm64${suffix}" JOBS=4 \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+
   windows:
     name: Windows
     needs: [source-quality, change-scope]
@@ -424,16 +528,27 @@ jobs:
           key: ${{ steps.third-party-cache.outputs.cache-primary-key }}
 
       - name: Run win32 unit tests
-        # Run 35519931809 reached 5548/5550 passing cases when the 40-minute
-        # guard fired. Keep a bounded margin for the final structural tests and
-        # normal hosted-runner variance when CI/build files require a full run.
-        timeout-minutes: 50
+        # Run 39399072292 reached only 5042/7039 cases before the 50-minute
+        # guard fired. The expanded full suite needs room for the remaining
+        # cases; individual CTest timeouts still bound hung tests.
+        timeout-minutes: 90
         # Headless runners have no WASAPI endpoint (0x80070490); OpenAL Soft null backend.
         env:
           ALSOFT_DRIVERS: "null"
         run: >-
           make test/win32-debug
           LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
+
+      - name: Upload Windows test failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: windows-test-failure-logs
+          path: |
+            build/win32-debug/Testing/Temporary/LastTestsFailed.log
+            build/win32-debug/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Capture Vulkan parity artifacts
         timeout-minutes: 10
@@ -443,8 +558,8 @@ jobs:
         run: ctest --test-dir build/win32-debug -R '^graphics\.backendParity\.' --output-on-failure
 
       - name: Configure native Dawn parity lane
-        # Same googlesource shallow-clone flake as the macOS Metal lane: abseil
-        # can land without CMakeLists.txt. Retry after wiping the incomplete tree.
+        # CMake validates pinned dependency archives before configuring Dawn.
+        # Retry a failed download/configure using a fresh tree.
         timeout-minutes: 25
         shell: pwsh
         run: |
@@ -462,13 +577,11 @@ jobs:
               -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
             if ($LASTEXITCODE -ne 0) { throw "cmake configure exited $LASTEXITCODE" }
           }
-          $abseilCmake = 'build/webgpu-native/_deps/dawn-src/third_party/abseil-cpp/CMakeLists.txt'
           foreach ($attempt in 1..3) {
             Write-Host "Dawn parity configure attempt $attempt/3"
             try {
               Invoke-DawnConfigure
-              if (Test-Path $abseilCmake) { exit 0 }
-              Write-Host "Dawn abseil-cpp checkout incomplete" -ForegroundColor Yellow
+              exit 0
             } catch {
               Write-Host $_ -ForegroundColor Yellow
             }
@@ -879,7 +992,9 @@ jobs:
           CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
 
       - name: Run macosx unit tests
-        timeout-minutes: 60
+        # Run 39701509245 completed 6597/7063 cases at the 60m guard
+        # while tests were still progressing. Keep room for the full suite.
+        timeout-minutes: 90
         env:
           ALSOFT_DRIVERS: "null"
         run: >-
@@ -894,6 +1009,17 @@ jobs:
             sed -n '/NetHostPeers .*: .* ms/p' "$log"
           fi
 
+      - name: Upload macOS test failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: macos-test-failure-logs
+          path: |
+            build/macosx-debug/Testing/Temporary/LastTestsFailed.log
+            build/macosx-debug/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Setup Dawn generator Python
         if: ${{ needs.change-scope.outputs.dawn_metal == 'true' }}
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -902,14 +1028,8 @@ jobs:
 
       - name: Configure native Dawn Metal lane
         if: ${{ needs.change-scope.outputs.dawn_metal == 'true' }}
-        # Dawn's DAWN_FETCH_DEPENDENCIES shallow-clones abseil/glfw3/spirv-headers
-        # from chromium.googlesource.com. That clone can land an empty or absent
-        # directory without CMakeLists.txt (run 34850493956 / job 103997514884;
-        # glfw3 empty tree: run 37870280409 / job 113637632268; spirv-headers +
-        # absent abseil/glfw3: run 38841698543 / job 116791134347). A failed
-        # fetch can also leave dawn-src with a stale fetch stamp; reusing that
-        # tree repeats the same CMake error. Match the Windows Dawn lane: wipe
-        # the whole configure tree before retrying.
+        # CMake validates the exact DEPS revisions and generator imports.
+        # Retry a failed download/configure using a fresh tree.
         timeout-minutes: 30
         run: |
           set -euo pipefail
@@ -927,11 +1047,12 @@ jobs:
           dawn_deps_ok() {
             [[ -f "$dawn_tp/abseil-cpp/CMakeLists.txt" ]] &&
               [[ -f "$dawn_tp/glfw3/CMakeLists.txt" || -f "$dawn_tp/glfw3/src/CMakeLists.txt" ]] &&
-              [[ -f "$dawn_tp/spirv-headers/CMakeLists.txt" || -f "$dawn_tp/spirv-headers/src/CMakeLists.txt" ]]
+              [[ -f "$dawn_tp/spirv-headers/CMakeLists.txt" || -f "$dawn_tp/spirv-headers/src/CMakeLists.txt" ||
+                 -f build/webgpu-macos/_deps/eve_spirv_headers-src/CMakeLists.txt ]]
           }
           for attempt in 1 2 3; do
             echo "Dawn Metal configure attempt ${attempt}/3"
-            if configure_dawn && dawn_deps_ok; then
+            if configure_dawn; then
               exit 0
             fi
             echo "Dawn dependency checkout incomplete; clearing configure tree for retry" >&2
@@ -1335,7 +1456,9 @@ jobs:
         run: python3 scripts/resource_format_suite.py --report build/resource-format-inventory.json
 
       - name: Run linux unit tests
-        timeout-minutes: 30
+        # Run 39399072292 passed 6628/7045 cases before the 30-minute
+        # guard fired. Keep headroom for the expanded suite and runner variance.
+        timeout-minutes: 45
         env:
           ALSOFT_DRIVERS: "null"
           EVENGINE_FORMAT_EXPORT_DIR: "${{ github.workspace }}/build/resource-format-exports"
@@ -1345,6 +1468,17 @@ jobs:
           # SEGFAULT) that is not reproducible in isolation.
           xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-debug CTEST_JOBS=2 \
             LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
+
+      - name: Upload Linux test failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: linux-test-failure-logs
+          path: |
+            build/linux-debug/Testing/Temporary/LastTestsFailed.log
+            build/linux-debug/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Verify resource test results without skipped or warning-only cases
         timeout-minutes: 20

@@ -1,0 +1,180 @@
+newmtl deck@concrete
+Kd 0.62 0.61 0.59
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl asphalt.bridge@asphalt
+Kd 0.18 0.19 0.2
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl sidewalk@concrete
+Kd 0.62 0.61 0.59
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl marking@whitePaint
+Kd 0.9 0.89 0.83
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl marking@yellowPaint
+Kd 0.96 0.72 0.13
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl footing@concrete
+Kd 0.62 0.61 0.59
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl abutment@concrete
+Kd 0.62 0.61 0.59
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl cap@concrete
+Kd 0.62 0.61 0.59
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl railing@galvanizedSteel
+Kd 0.65 0.68 0.7
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl connection@paintedSteel
+Kd 0.4 0.47 0.5
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl girder@concrete
+Kd 0.62 0.61 0.59
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl pier@concrete
+Kd 0.62 0.61 0.59
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl railing@concrete
+Kd 0.62 0.61 0.59
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl deck@limestone
+Kd 0.67 0.65 0.6
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl sidewalk@limestone
+Kd 0.67 0.65 0.6
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl footing@limestone
+Kd 0.67 0.65 0.6
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl abutment@limestone
+Kd 0.67 0.65 0.6
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl cap@limestone
+Kd 0.67 0.65 0.6
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl railing@limestone
+Kd 0.67 0.65 0.6
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl arch@limestone
+Kd 0.67 0.65 0.6
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl pier@limestone
+Kd 0.67 0.65 0.6
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl arch@paintedSteel
+Kd 0.4 0.47 0.5
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl hanger@galvanizedSteel
+Kd 0.65 0.68 0.7
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl girder@paintedSteel
+Kd 0.4 0.47 0.5
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl truss@paintedSteel
+Kd 0.4 0.47 0.5
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl connection@galvanizedSteel
+Kd 0.65 0.68 0.7
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl tower@limestone
+Kd 0.67 0.65 0.6
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl cable@galvanizedSteel
+Kd 0.65 0.68 0.7
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl anchor@concrete
+Kd 0.62 0.61 0.59
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl tower@concrete
+Kd 0.62 0.61 0.59
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl deck@timber
+Kd 0.44 0.31 0.19
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl girder@timber
+Kd 0.44 0.31 0.19
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl cap@timber
+Kd 0.44 0.31 0.19
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl railing@timber
+Kd 0.44 0.31 0.19
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl pier@timber
+Kd 0.44 0.31 0.19
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30
+newmtl truss@timber
+Kd 0.44 0.31 0.19
+Ka 0.15 0.15 0.15
+Ks 0.2 0.2 0.2
+Ns 30

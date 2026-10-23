@@ -1,3 +1,7 @@
+#include "common/config.h"
+#ifndef EVENGINE_WEBGPU
+#include "graphics/vulkan/Graphics.h"
+#endif
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -44,12 +48,17 @@ TEST_CASE("graphics.frameCapture.sameFrameNativeAttachmentsAndFrozenSnapshots") 
     shadows.active = true;
     for (auto& matrix : shadows.ubo.lightVP) matrix = glm::mat4(1.f);
     gfx->setMesh3DShadows(shadows);
-    for (int frame = 0; frame < 2; ++frame) {
+    for (int frame = 0; frame < 4; ++frame) {
+        const int color = frame % 2;
+#ifndef EVENGINE_WEBGPU
+        auto*      backend      = static_cast<eve::graphics::vulkan::Graphics*>(gfx);
+        const auto producerSlot = backend->getSwapchain().current_frame;
+#endif
         auto queued = capture.request(request);
         REQUIRE(queued.ok());
         const auto  token = queued.value();
-        const float red   = frame == 0 ? 1.f : 0.f;
-        const float green = frame == 1 ? 1.f : 0.f;
+        const float red   = color == 0 ? 1.f : 0.f;
+        const float green = color == 1 ? 1.f : 0.f;
         gfx->setBackgroundColor(eve::graphics::Color(red, green, 0.f, 1.f));
         gfx->clear(eve::graphics::Color(red, green, 0.f, 1.f), std::nullopt, std::nullopt);
         for (int cascade = 0; cascade < 3; ++cascade) {
@@ -98,16 +107,16 @@ TEST_CASE("graphics.frameCapture.sameFrameNativeAttachmentsAndFrozenSnapshots") 
         }
         auto albedo = eve::frameCapturePixel(find(eve::FrameAttachment::Albedo), 32, 32);
         REQUIRE(albedo.ok());
-        REQUIRE(albedo.value().stored[static_cast<size_t>(frame)] > 247);
-        REQUIRE(albedo.value().stored[static_cast<size_t>(1 - frame)] < 8);
+        REQUIRE(albedo.value().stored[static_cast<size_t>(color)] > 247);
+        REQUIRE(albedo.value().stored[static_cast<size_t>(1 - color)] < 8);
         auto pbr = eve::frameCapturePixel(find(eve::FrameAttachment::PbrParams), 32, 32);
         REQUIRE(pbr.ok());
         REQUIRE((pbr.value().decoded[0] > 0.7 && pbr.value().decoded[0] < 0.8));
         REQUIRE((pbr.value().decoded[1] > 0.2 && pbr.value().decoded[1] < 0.3));
         auto final = eve::frameCapturePixel(find(eve::FrameAttachment::Final), 80, 60);
         REQUIRE(final.ok());
-        REQUIRE(final.value().decoded[static_cast<size_t>(frame)] >
-                final.value().decoded[static_cast<size_t>(1 - frame)] + 0.1);
+        REQUIRE(final.value().decoded[static_cast<size_t>(color)] >
+                final.value().decoded[static_cast<size_t>(1 - color)] + 0.1);
         for (auto shadow :
              {eve::FrameAttachment::Shadow0, eve::FrameAttachment::Shadow1, eve::FrameAttachment::Shadow2}) {
             auto center = eve::frameCapturePixel(find(shadow), 1024, 1024);
@@ -124,9 +133,15 @@ TEST_CASE("graphics.frameCapture.sameFrameNativeAttachmentsAndFrozenSnapshots") 
         REQUIRE(find(eve::FrameAttachment::Velocity).bytes == find(eve::FrameAttachment::Depth).bytes);
         gfx->clear(eve::graphics::Color(0.f, 0.f, 1.f, 1.f), std::nullopt, std::nullopt);
         gfx->present();
+#ifndef EVENGINE_WEBGPU
+        // Revisit precisely the producer slot after empty frames. A slot number
+        // must never make a later frame reuse this frame's recorded graph.
+        for (int idle = 0; idle < 3 && backend->getSwapchain().current_frame != producerSlot; ++idle) gfx->present();
+        REQUIRE_EQ(backend->getSwapchain().current_frame, producerSlot);
+#endif
         auto still = eve::frameCapturePixel(find(eve::FrameAttachment::Albedo), 32, 32);
         REQUIRE(still.ok());
-        REQUIRE(still.value().stored[static_cast<size_t>(frame)] > 247);
+        REQUIRE(still.value().stored[static_cast<size_t>(color)] > 247);
         auto released = capture.release(token);
         REQUIRE(released.ok());
     }

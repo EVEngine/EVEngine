@@ -1148,6 +1148,23 @@ public:
         return nullptr;
     }
 
+    /** @brief Draw a mesh using a producer-owned packed resident vertex stream.
+     * Stream ABI: 22 float words per vertex: XYZ, normal XYZ, UV, two packed
+     * joint words, weights4, color4, tangent4. No skinning is supported here.
+     * @ownership Mesh is Graphics-owned; source is borrowed and never retained by this API.
+     * @lifetime Producer keeps the native buffer alive until the submitted frame completes.
+     * Producer and Graphics must share a device and the graphics submission queue;
+     * source must have vertex-buffer usage and sizeBytes denotes total buffer capacity.
+     * @thread Render thread, inside an open 3D pass; no callbacks/reentrancy.
+     * @return Unsupported on other backends, InvalidArgument on layout/owner errors.
+     */
+    [[nodiscard]] virtual Result<void> drawMeshResidentVertices(Mesh &mesh, const GpuResidentBufferView &source) {
+        (void)mesh;
+        (void)source;
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "Resident mesh vertices require Vulkan", "graphics.residentMesh"));
+    }
+
     /** @brief Draw one mesh with model matrix. Requires begin3DFrame() (or an open swapchain pass). */
     virtual void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) = 0;
 
@@ -2278,6 +2295,16 @@ public:
     // &buffers, Texture *texture) = 0;
 
 protected:
+    friend class Exposure;
+    /** @brief Internal fully overwritten outputs; temporal histories are excluded. */
+    enum class FramePostTarget { SpatialAA, Exposure };
+    /** @brief Prepare a pipeline output for this acquired frame.
+     * @ownership Borrows backend-owned Canvas; render thread only, no callbacks.
+     * @lifetime Contents last until this output is rewritten; resize or graphics teardown invalidates it.
+     * @cost Allocates an HDR target per size/frame slot on first use; steady-state selection is constant time.
+     * Backends with synchronous offscreen work use the default shared target. Allocation failures throw. */
+    virtual Canvas                    &prepareFramePostTarget(FramePostTarget target, int width, int height);
+    Canvas                            *sharedFramePostTargets_[2]{};
     std::unique_ptr<FrameCaptureStore> frameCaptures_;
     /** @brief DeferredFileTexture public API. */
     struct DeferredFileTexture {
