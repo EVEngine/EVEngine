@@ -291,6 +291,7 @@ TEST_CASE("schema.registry.supportsMultipleVersionsAndExactResolution") {
     SchemaDefinition v2 = v1;
     v2.version          = 2;
     v2.title            = "Unit v2";
+    v2.fields[0].required = false;
 
     CHECK(registrationSucceeded(SchemaRegistry::registerVersioned(v1)));
     CHECK(registrationSucceeded(SchemaRegistry::registerVersioned(v2)));
@@ -303,6 +304,8 @@ TEST_CASE("schema.registry.supportsMultipleVersionsAndExactResolution") {
     CHECK_EQ(SchemaRegistry::resolve("unit", 2)->title, "Unit v2");
     CHECK_EQ(SchemaRegistry::find("unit")->version, 2);
     CHECK_EQ(SchemaRegistry::validate("unit", 1, R"({})")[0].code, "required");
+    CHECK(SchemaRegistry::validate("unit", 2, R"({})").empty());
+    CHECK(!SchemaRegistry::validate("unit", 2, R"({"legacy": 7})").empty());
     CHECK(SchemaRegistry::validate("unit", R"({})").empty());
 }
 

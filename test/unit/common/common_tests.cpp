@@ -3743,6 +3743,20 @@ TEST_CASE("Capability.leaseMovedFromIsEmpty") {
     CHECK(!lease.operator bool());
     CHECK(lease.handle().id.empty());
     CHECK_EQ(lease.handle().generation, std::uint64_t{0});
+
+    lease = std::move(moved);
+    REQUIRE(lease.operator bool());
+    CHECK_EQ(lease->value(), 21);
+    CHECK(lease.handle() == published.value());
+    CHECK(!moved.operator bool());
+    CHECK(moved.handle().id.empty());
+    CHECK_EQ(moved.handle().generation, std::uint64_t{0});
+    auto copy = lease;
+    CHECK(copy.get() == lease.get());
+    auto& self = lease;
+    lease      = std::move(self);
+    CHECK(lease.get() == copy.get());
+    CHECK(lease.handle() == copy.handle());
 }
 }  // namespace test_capability_owned
 #endif
