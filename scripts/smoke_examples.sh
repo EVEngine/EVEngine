@@ -68,8 +68,12 @@ present error
 Cannot chdir
 Cannot open root
 failed to load:
+engine build is missing the window or graphics module
 EOF
-mapfile -t MARKERS <<<"$MARKERS_SCRIPT"
+MARKERS=()
+while IFS= read -r marker; do
+  MARKERS+=("$marker")
+done <<<"$MARKERS_SCRIPT"
 
 # Runnable examples = dirs containing a main.nut.  scripts/check_examples.py
 # guarantees that every non-exempt example directory has one, so this set is the
@@ -135,6 +139,12 @@ for name in "${EXAMPLES[@]}"; do
         taskkill //F //IM "$(basename "$EVE_BIN")" >/dev/null 2>&1 || true
       fi
       kill "$pid" 2>/dev/null || true
+      # macOS has no GNU timeout by default; a GUI may defer SIGTERM while
+      # polling events. Bound teardown just like timeout -k on other hosts.
+      sleep 3
+      if kill -0 "$pid" 2>/dev/null; then
+        kill -KILL "$pid" 2>/dev/null || true
+      fi
     fi
     wait "$pid" 2>/dev/null
     rc=$?

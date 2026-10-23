@@ -77,6 +77,7 @@ void BuildingRegistry::registerBuilding(const BuildingDefinition &def) {
     if (copy.placementKind != "edge" && copy.placementKind != "corner" &&
         copy.placementKind != "free")
         copy.placementKind = "cell";
+    if (!std::isfinite(copy.edgeThicknessCells) || copy.edgeThicknessCells < 0.f) copy.edgeThicknessCells = 0.f;
     if (!std::isfinite(copy.freeRadiusCells) || copy.freeRadiusCells <= 0.f)
         copy.freeRadiusCells = 0.25f;
     if (!std::isfinite(copy.freeFootprintWidthCells) || copy.freeFootprintWidthCells <= 0.f ||
@@ -146,6 +147,8 @@ BuildingDefinition parseBuildingObject(Value o) {
     def.freeFootprintHeightCells = o.getFloat("freeFootprintHeightCells", 0.f);
     def.freeFootprintVertices = o.getFloatArray("freeFootprintVertices");
     def.connectionGroup = o.getString("connectionGroup");
+    def.edgeThicknessCells       = o.getFloat("edgeThicknessCells", 0.f);
+    def.blockedByEdgeChannels    = o.getStringArray("blockedByEdgeChannels");
     def.structuralRole = o.getString("structuralRole");
     def.supportMode = o.getString("supportMode", "none");
     def.supportTag = o.getString("supportTag");

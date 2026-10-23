@@ -25,6 +25,8 @@ struct GridConfig;
 namespace eve::building {
 
 class Ghost;
+class AssemblyService;
+struct AssemblyState;
 
 /** @brief 格子型建筑放置世界（脚本可直接操作）。 */
 class PlacementWorld {
@@ -280,6 +282,10 @@ public:
 
 private:
     friend class PlacementSystem;
+    friend class AssemblyService;
+
+    std::unique_ptr<AssemblyState> assemblyState_;
+    int                            instanceCounter_ = 0;
 
     int terrainFromGid(int cellX, int cellY) const;
     ChannelMap &edgeChannels(EdgeAxis axis, int level);

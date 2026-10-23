@@ -5,6 +5,7 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 
 namespace eve::building {
+void exposeHouseBindings(ssq::Table &table);
 
 Module_IMPL(Building, new Building());
 
@@ -204,6 +205,7 @@ float Building::getChangeEventRotation(int index) const {
 }
 
 void Building::expose(ssq::Table &table) {
+    exposeHouseBindings(table);
     auto cls = table.addClass(name, Building::create, false);
     expose(cls);
 

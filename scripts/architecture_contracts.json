@@ -22,6 +22,32 @@
       "pointer_policy": "A public pointer requires Doxygen ownership/lifetime wording or an explicit reviewed adapter contract."
     },
     {
+      "scope": "src/modules/building/*",
+      "owner": "building::AssemblyService / PlacementWorld",
+      "issue": "EVENGINE-BUILDING-HOUSE-VILLAGE",
+      "reason": "House recipes, independent instances and restore share one authoritative world and codec.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/building/BuildingAssembly.h",
+        "docs/usr/modules/building.md"
+      ],
+      "tests": [
+        "test/building_assembly.cpp",
+        "test/editor_building_assembly.cpp"
+      ],
+      "id": "building-assembly-identities",
+      "rule": "link",
+      "symbols": [
+        "AssemblyHandle",
+        "BuildingAssembly"
+      ],
+      "create": "Explicit caller-supplied AssemblyId and AssetGuid; monotonic local part keys and world-local record IDs allocated only in candidate.",
+      "ownership": "World owns group and parts; handle is a typed non-owning epoch/slot value.",
+      "destroy_order": "Group removal removes members atomically; member removal updates membership and removes empty groups; world destruction expires tokens by unique owner epoch.",
+      "restore": "Persistent house UUID and derived child identities survive. Runtime handle registry rebuilt with a new epoch; no runtime generation is serialized.",
+      "stale": "Resolve validates epoch and slot; prepared commit also compares canonical world, definition pins and derived admission indexes."
+    },
+    {
       "id": "gts-terrain-collider-link-contract",
       "rule": "link",
       "scope": "src/modules/procgen/physics/GtsTerrainColliderRuntime.cpp",
@@ -179,6 +205,38 @@
       "destroy_order": "Units release before sides and battles; either proxy-first or module-first destruction observes generations before release.",
       "restore": "Snapshot restore resolves persisted SubjectRef identities against live target entities and never serializes ECS/runtime handles.",
       "stale": "Every ECS use calls ecs::try_get and every script call resolves RuntimeHandleRef generation plus module owner epoch."
+    },
+    {
+      "scope": "src/modules/building/*",
+      "owner": "building::AssemblyService / PlacementWorld",
+      "issue": "EVENGINE-BUILDING-HOUSE-VILLAGE",
+      "reason": "House recipes, independent instances and restore share one authoritative world and codec.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/building/BuildingAssembly.h",
+        "docs/usr/modules/building.md"
+      ],
+      "tests": [
+        "test/building_assembly.cpp",
+        "test/editor_building_assembly.cpp"
+      ],
+      "id": "building-assembly-module-interface",
+      "rule": "state-owner",
+      "state": "Part addresses, structural state and house membership",
+      "authoritative_owner": "PlacementWorld owns PlacedBuilding records and AssemblyState. House records own membership only; rendering and editor views are projections.",
+      "projections": "PreparedAssembly preview, versioned Value snapshots and editor DomainOperation receipts are owning derived values.",
+      "module_interface": {
+        "module": "building",
+        "capability_in": "Existing pure PlacementSystem validation rules; no new provider dependency",
+        "capability_out": "AssemblyService and version-1 executeHouseRequest",
+        "ecs_links": "No ECS system or universal entity root; world-owned AssemblyId/member mapping and epoch-qualified AssemblyHandle",
+        "events": "One reset event after complete state installation; consumers rebuild projections",
+        "script": "eve.buildingHouseRequest(world, request) returns a checked common Result table",
+        "tool_protocol": "executeHouseRequest version 1 and BuildingAssemblyTarget exchange.v1 adapter",
+        "connection_axes": "One world owns many members; pure queries frequent, expensive edits gesture-driven; observers known via existing hooks; mutations atomic",
+        "hot_paths": "Rendering consumes cached projections; no new per-frame capability or module lookup",
+        "trim": "L2: runtime-3d + EVENGINE_MODULE_BUILDING=ON + EVENGINE_BUILD_DEMO=OFF, target building_workflow_test linked without EVBuilding_editing/EVBuilding_editor/EVBuildingFx/EVEditing/EVEditor objects; seven building.assembly cases run without these providers. Native renderer remains in the host profile; no renderer-free claim."
+      }
     },
     {
       "id": "state-owner-policy",
@@ -441,6 +499,27 @@
       "phase": "owner simulation thread after setup/command ingestion and before presentation"
     },
     {
+      "scope": "src/modules/building/*",
+      "owner": "building::AssemblyService / PlacementWorld",
+      "issue": "EVENGINE-BUILDING-HOUSE-VILLAGE",
+      "reason": "House recipes, independent instances and restore share one authoritative world and codec.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/building/BuildingAssembly.h",
+        "docs/usr/modules/building.md"
+      ],
+      "tests": [
+        "test/building_assembly.cpp",
+        "test/editor_building_assembly.cpp"
+      ],
+      "id": "building-assembly-determinism",
+      "rule": "time-rng",
+      "time_source": "No simulation time or wall clock is sampled.",
+      "rng_stream": "No RNG consumed; caller supplies asset and instance UUIDs.",
+      "determinism": "Integer quarter-turn domain transforms and saved exact members/curve controls define replay; receipts restore exact snapshots.",
+      "tolerance": "Free-domain transforms use float world coordinates; geometry uses existing placement tolerances. Replays use persisted values, not fresh sampling."
+    },
+    {
       "id": "time-rng-policy",
       "rule": "time-rng",
       "scope": "src/**",
@@ -460,6 +539,28 @@
       "rng_stream": "named seed/stream is supplied by the owning simulation context and is not global mutable state.",
       "determinism": "same inputs, tick and named streams produce replay/lockstep-identical results where declared deterministic.",
       "tolerance": "backend or floating-point paths declare an explicit tolerance rather than silently claiming bit identity."
+    },
+    {
+      "scope": "src/modules/building/*",
+      "owner": "building::AssemblyService / PlacementWorld",
+      "issue": "EVENGINE-BUILDING-HOUSE-VILLAGE",
+      "reason": "House recipes, independent instances and restore share one authoritative world and codec.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/building/BuildingAssembly.h",
+        "docs/usr/modules/building.md"
+      ],
+      "tests": [
+        "test/building_assembly.cpp",
+        "test/editor_building_assembly.cpp"
+      ],
+      "id": "building-assembly-lifetime",
+      "rule": "api-lifetime",
+      "thread_affinity": "World and registry owner thread only",
+      "reentrancy": "Validators are pure. Observer callbacks run after exchange and must queue subsequent mutations. Prepared tokens retain no world pointers.",
+      "ownership_contract": "World owns instances/membership; blueprint and receipts own all records; prepared tokens own detached candidates.",
+      "lifetime": "New owner epoch on construction and restore/assembly exchange. Old handles reject; tokens must match world/definitions/admission stamps.",
+      "lock_callback_policy": "No world lock is held while invoking hooks; hook registry is copied before iteration."
     },
     {
       "id": "public-api-lifetime-policy",
@@ -482,6 +583,28 @@
       "ownership_contract": "owned, borrowed, observer and transferred values are explicit.",
       "lifetime": "borrowed values are bounded by the documented call/frame/task lifetime; handles are stale-safe.",
       "lock_callback_policy": "release internal locks before invoking unknown callbacks or scripts."
+    },
+    {
+      "scope": "src/modules/building/*",
+      "owner": "building::AssemblyService / PlacementWorld",
+      "issue": "EVENGINE-BUILDING-HOUSE-VILLAGE",
+      "reason": "House recipes, independent instances and restore share one authoritative world and codec.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/building/BuildingAssembly.h",
+        "docs/usr/modules/building.md"
+      ],
+      "tests": [
+        "test/building_assembly.cpp",
+        "test/editor_building_assembly.cpp"
+      ],
+      "id": "building-assembly-persistence",
+      "rule": "persistence",
+      "schema": "eve.building.blueprint and eve.building.world",
+      "version": 1,
+      "migration": "Unknown versions reject; initial v1 has no earlier published migration. Existing editor instance codec remains the compatibility projection.",
+      "unknown_fields": "Unknown core fields reject in v1; no extension container is admitted. Known instance numeric fields are range checked.",
+      "restore_atomicity": "Parse definitions, identities, member and curve references, reconstruct occupancy/supports in a detached world, then exchange once. Failure preserves destination and emits no event."
     },
     {
       "id": "persistence-contract-policy",

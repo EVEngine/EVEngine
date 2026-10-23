@@ -1,3 +1,4 @@
+#include "building/BuildingSnapshot.h"
 #include "building/editing/BuildingTarget.h"
 
 #include "building/BuildingDef.h"

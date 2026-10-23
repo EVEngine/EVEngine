@@ -723,8 +723,8 @@ void Graphics::queueUiResolve() {
     auto *slot = currentUiColorSlot();
     if (!slot || !slot->colorTex.gpuHandle) return;
     TexturedBatch resolve{&slot->colorTex, nullptr, nullptr, BlendMode::Alpha, Batcher{}};
-    resolve.batch.addTexturedRect(0.f, 0.f, float(uiColorWidth), float(uiColorHeight),
-                                  Color(1.f, 1.f, 1.f, 1.f), 0.f, 0.f, 1.f, 1.f);
+    // The overlay texture is physical pixels; the compositing batch uses logical coordinates.
+    resolve.batch.addTexturedRect(0.f, 0.f, float(width), float(height), Color(1.f, 1.f, 1.f, 1.f), 0.f, 0.f, 1.f, 1.f);
     pendingUiResolve = std::move(resolve);
 }
 
