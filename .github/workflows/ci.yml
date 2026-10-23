@@ -252,14 +252,14 @@ jobs:
         timeout-minutes: 5
         run: cd tools/vision-prefilter && python3 -m pytest -q test
 
-  # Native ARM64 lanes compile and link the engine and test binaries. Runtime
-  # GPU/ICD coverage remains in the existing host lanes until validated on ARM64.
+  # Native ARM64 lanes build and run the same process-isolated test suite.
+  # Installed SDKs also compile a consumer plugin and run a packaged game.
   windows-arm64:
-    name: Windows ARM64 (${{ matrix.configuration }}, build)
+    name: Windows ARM64 (${{ matrix.configuration }}, build + test)
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.windows == 'true' }}
     runs-on: windows-11-arm
-    timeout-minutes: 240
+    timeout-minutes: 360
     strategy:
       fail-fast: false
       matrix:
@@ -300,6 +300,10 @@ jobs:
           cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Setup native software Vulkan
+        timeout-minutes: 90
+        uses: ./.github/actions/setup-arm64-vulkan
+
       - name: Build Windows ARM64
         timeout-minutes: 190
         env:
@@ -311,12 +315,45 @@ jobs:
           make "build/win32-arm64${suffix}" JOBS=4 \
             CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
 
+      - name: Run Windows ARM64 tests
+        timeout-minutes: 90
+        env:
+          ALSOFT_DRIVERS: "null"
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          make "test/win32-arm64${suffix}" JOBS=4 CTEST_JOBS=2 \
+            LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}' \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+
+      - name: Install and validate Windows ARM64 Release SDK
+        if: matrix.configuration == 'release'
+        timeout-minutes: 20
+        env:
+          ALSOFT_DRIVERS: "null"
+          SDK_TEST_ARCH: arm64
+          SDK_TEST_REQUIRE_RUN: "1"
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          cmake --install "build/win32-arm64${suffix}" --prefix "dist/eve-sdk/win32-arm64${suffix}"
+          bash .github/scripts/test-sdk.sh "dist/eve-sdk/win32-arm64${suffix}" win32
+
+      - name: Upload ARM64 test diagnostics
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: win32-arm64-${{ matrix.configuration }}-test-logs
+          path: build/win32-arm64*/Testing/Temporary/
+          if-no-files-found: ignore
+
   linux-arm64:
-    name: Linux ARM64 (${{ matrix.configuration }}, build)
+    name: Linux ARM64 (${{ matrix.configuration }}, build + test)
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.linux == 'true' }}
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 180
+    timeout-minutes: 300
     strategy:
       fail-fast: false
       matrix:
@@ -348,7 +385,12 @@ jobs:
             libxrandr-dev libxinerama-dev libxext-dev libxss-dev \
             libgl1-mesa-dev libbz2-dev libpng-dev \
             libwayland-dev libxkbcommon-dev libasound2-dev \
-            libvulkan-dev glslc glslang-tools
+            libvulkan-dev glslc glslang-tools \
+            mesa-vulkan-drivers vulkan-tools xvfb xauth
+
+      - name: Setup native software Vulkan
+        timeout-minutes: 90
+        uses: ./.github/actions/setup-arm64-vulkan
 
       - name: Build Linux ARM64
         timeout-minutes: 140
@@ -360,6 +402,39 @@ jobs:
           if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
           make "build/linux-arm64${suffix}" JOBS=4 \
             CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+
+      - name: Run Linux ARM64 tests
+        timeout-minutes: 90
+        env:
+          ALSOFT_DRIVERS: "null"
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          xvfb-run -a make "test/linux-arm64${suffix}" JOBS=4 CTEST_JOBS=2 \
+            LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}' \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+
+      - name: Install and validate Linux ARM64 Release SDK
+        if: matrix.configuration == 'release'
+        timeout-minutes: 20
+        env:
+          ALSOFT_DRIVERS: "null"
+          SDK_TEST_ARCH: arm64
+          SDK_TEST_REQUIRE_RUN: "1"
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          cmake --install "build/linux-arm64${suffix}" --prefix "dist/eve-sdk/linux-arm64${suffix}"
+          xvfb-run -a bash .github/scripts/test-sdk.sh "dist/eve-sdk/linux-arm64${suffix}" linux
+
+      - name: Upload ARM64 test diagnostics
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: linux-arm64-${{ matrix.configuration }}-test-logs
+          path: build/linux-arm64*/Testing/Temporary/
+          if-no-files-found: ignore
 
   windows:
     name: Windows

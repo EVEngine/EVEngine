@@ -1,0 +1,93 @@
+name: Native ARM64 SDKs
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        required: true
+        type: string
+      ref:
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  sdk:
+    name: ${{ matrix.platform }} ARM64 SDK
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: win32
+            runner: windows-11-arm
+          - platform: linux
+            runner: ubuntu-24.04-arm
+    defaults:
+      run:
+        shell: bash
+    env:
+      TAG: ${{ inputs.tag }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      ALSOFT_DRIVERS: "null"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || inputs.tag }}
+          submodules: recursive
+      - name: Install Windows build tools
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          choco install make ninja -y --no-progress
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Install native Windows Vulkan SDK
+        if: runner.os == 'Windows'
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        with:
+          vulkan_version: ${{ vars.VULKAN_VERSION || '1.4.304.1' }}
+          cache: true
+          cache_save_if: false
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install native Linux packages
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -o Acquire::Retries=2
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build libx11-dev libxxf86vm-dev \
+            libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev libxext-dev \
+            libxss-dev libgl1-mesa-dev libbz2-dev libpng-dev libwayland-dev \
+            libxkbcommon-dev libasound2-dev libvulkan-dev glslc glslang-tools \
+            mesa-vulkan-drivers vulkan-tools xvfb xauth
+      - name: Setup native software Vulkan
+        timeout-minutes: 90
+        uses: ./.github/actions/setup-arm64-vulkan
+      - name: Build and install Release SDK
+        timeout-minutes: 190
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          make "sdk/$PLATFORM-arm64" JOBS=4 \
+            CMAKE_EXTRA_ARGS="-DBUILD_TESTING=OFF -DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+      - name: Package SDK
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: python3 .github/scripts/zip-sdk.py "$PLATFORM-arm64" "$TAG"
+      - name: Validate archive as a native consumer (compile and run)
+        timeout-minutes: 15
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          command=(bash .github/scripts/test-arm64-sdk.sh "artifacts/eve-sdk-$PLATFORM-arm64-$TAG.zip" "$PLATFORM" "${TAG#v}")
+          if [ "$PLATFORM" = linux ]; then xvfb-run -a "${command[@]}"; else "${command[@]}"; fi
+      - name: Upload verified SDK
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sdk-${{ matrix.platform }}-arm64
+          path: artifacts/*.zip
+          if-no-files-found: error
+          retention-days: 14

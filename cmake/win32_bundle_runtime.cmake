@@ -17,6 +17,9 @@ if(NOT CMAKE_INSTALL_PREFIX)
 endif()
 
 set(_eve_bin "${CMAKE_INSTALL_PREFIX}/bin")
+if(NOT EVE_RUNTIME_ARCH MATCHES "^(x64|arm64)$")
+    message(FATAL_ERROR "win32 bundle: missing configured runtime architecture")
+endif()
 file(MAKE_DIRECTORY "${_eve_bin}")
 
 # --- Vulkan loader ----------------------------------------------------------
@@ -72,8 +75,8 @@ foreach(_eve_ms_root IN ITEMS
             file(GLOB _eve_redist_vers "${_eve_ed}/VC/Redist/MSVC/*")
             foreach(_eve_ver IN LISTS _eve_redist_vers)
                 file(GLOB _eve_crt_subs_now
-                    "${_eve_ver}/x64/Microsoft.VC*.CRT"
-                    "${_eve_ver}/x64/Microsoft.VC*.DebugCRT")
+                    "${_eve_ver}/${EVE_RUNTIME_ARCH}/Microsoft.VC*.CRT"
+                    "${_eve_ver}/${EVE_RUNTIME_ARCH}/Microsoft.VC*.DebugCRT")
                 list(APPEND _eve_crt_subs ${_eve_crt_subs_now})
             endforeach()
         endforeach()
@@ -108,6 +111,11 @@ set(_eve_crt_dlls
     vcruntime140.dll vcruntime140_1.dll concrt140.dll
     msvcp140d.dll vcruntime140d.dll vcruntime140_1d.dll ucrtbased.dll
     concrt140d.dll)
+if(EVE_RUNTIME_ARCH STREQUAL "arm64")
+    # VS also puts the x64 FH4 helper in its arm64 redist directory. Native
+    # ARM64 uses vcruntime140; copying the x64 helper mixes architectures.
+    list(REMOVE_ITEM _eve_crt_dlls vcruntime140_1.dll vcruntime140_1d.dll)
+endif()
 foreach(_eve_dll IN LISTS _eve_crt_dlls)
     set(_eve_src "")
     foreach(_eve_dir IN LISTS _eve_crt_subs)
