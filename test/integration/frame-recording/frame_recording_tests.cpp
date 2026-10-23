@@ -14,6 +14,7 @@
 #include "zeroerr/unittest.h"
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_vulkan.h>
 #include <chrono>
 #include <cstdio>
 #include <memory>
@@ -74,7 +75,20 @@ TEST_CASE("graphics.frameRecording.fxaaSlotReuseResizeAndPersistentCanvas") {
             settings.width  = 160;
             settings.height = 96;
             SDL_SetWindowSize(static_cast<SDL_Window *>(win->getHandle()), 160, 96);
-            gfx->setViewportSize(160, 96, 160, 96);
+            // Cocoa applies the CAMetalLayer resize through its event loop.
+            // Wait for the drawable, without consuming or retrying rendered frames.
+            auto      *window     = static_cast<SDL_Window *>(win->getHandle());
+            int        pixelWidth = 0, pixelHeight = 0;
+            const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+            do {
+                SDL_PumpEvents();
+                SDL_Vulkan_GetDrawableSize(window, &pixelWidth, &pixelHeight);
+                if (pixelWidth == 160 && pixelHeight == 96) break;
+                SDL_Delay(10);
+            } while (std::chrono::steady_clock::now() < deadline);
+            REQUIRE_EQ(pixelWidth, 160);
+            REQUIRE_EQ(pixelHeight, 96);
+            gfx->setViewportSize(160, 96, pixelWidth, pixelHeight);
         }
         entity->setTexture(frame % 2 ? greenTexture : redTexture);
         RenderSystem3D::render(*gfx);
@@ -84,6 +98,9 @@ TEST_CASE("graphics.frameRecording.fxaaSlotReuseResizeAndPersistentCanvas") {
         REQUIRE_EQ(image->getSize(), size_t(gfx->getWidth() * gfx->getHeight() * 4));
         const auto  *pixels = static_cast<const uint8_t *>(image->getData());
         const size_t center = size_t((gfx->getHeight() / 2) * gfx->getWidth() + gfx->getWidth() / 2) * 4;
+        std::fprintf(stderr, "FRAME_RECORDING frame=%d size=%dx%d centerRGBA=%u,%u,%u,%u\n", frame, gfx->getWidth(),
+                     gfx->getHeight(), unsigned(pixels[center]), unsigned(pixels[center + 1]),
+                     unsigned(pixels[center + 2]), unsigned(pixels[center + 3]));
         REQUIRE_GT(pixels[center + (frame % 2 ? 1 : 0)], pixels[center + (frame % 2 ? 0 : 1)]);
     }
     // Steady-state default post path must no longer drain every in-flight frame.

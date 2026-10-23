@@ -53,6 +53,7 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
         minimums = {
             ("windows", "Build win32 debug"): 100,
             ("windows-release", "Build win32 release"): 210,
+            ("windows-release", "Run win32 release unit tests"): 120,
             ("android", "Build android debug"): 85,
             ("macos", "Build macosx debug"): 75,
             ("macos", "Run macosx unit tests"): 90,
@@ -85,6 +86,18 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
                 match = re.search(r"^    timeout-minutes: (\d+)$", block, re.MULTILINE)
                 self.assertIsNotNone(match)
                 self.assertGreaterEqual(int(match.group(1)), minimum)
+
+    def test_all_jobs_check_out_the_requested_release_candidate(self) -> None:
+        # release.start moves the pre-release tag; checkout must use inputs.ref
+        # rather than actions/checkout's original event SHA, including tool jobs.
+        checkouts = re.findall(
+            r"^      - name: Checkout[^\n]*\n(.*?)(?=^      - name:|^  [a-z0-9-]+:|\Z)",
+            self.workflow,
+            re.MULTILINE | re.DOTALL,
+        )
+        self.assertGreater(len(checkouts), 10)
+        for checkout in checkouts:
+            self.assertIn("ref: ${{ inputs.ref || github.ref }}", checkout)
 
     def test_android_jobs_start_sccache_before_the_build(self) -> None:
         # Android uniquely starts sccache before the NDK build so a GHA/ghac

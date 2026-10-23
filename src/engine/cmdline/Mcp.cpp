@@ -9,7 +9,7 @@
 #include "filesystem/HotReload.h"
 #include "filesystem/physfs/FileApi.h"
 
-#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
+#if EVENGINE_CMDLINE_DEVTOOLS && !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
 #include "devtools/DevTool.hpp"
 #include "devtools/McpServer.hpp"
 #endif
@@ -81,10 +81,10 @@ struct McpArgs : Handler {
 CMD_REG(McpArgs);
 
 int Cmdline::McpHost(std::string path, int port) {
-#if defined(EVENGINE_ANDROID) || defined(EVENGINE_IOS) || defined(EVENGINE_WEBGPU)
+#if !EVENGINE_CMDLINE_DEVTOOLS || defined(EVENGINE_ANDROID) || defined(EVENGINE_IOS) || defined(EVENGINE_WEBGPU)
     (void)path;
     (void)port;
-    std::cerr << "eve mcp: headless MCP host is desktop-only" << std::endl;
+    std::cerr << "eve mcp: headless MCP host requires a desktop build with the devtools module" << std::endl;
     return 4;
 #else
     try {

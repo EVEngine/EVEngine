@@ -222,6 +222,8 @@ jobs:
       - name: Checkout
         timeout-minutes: 10
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
 
       - name: Install Python test dependencies
         timeout-minutes: 10
@@ -580,8 +582,9 @@ jobs:
         timeout-minutes: 5
         run: sccache --show-stats
 
+      # SwiftShader reached only 2992/7147 cases in the former 45-minute budget.
       - name: Run win32 release unit tests
-        timeout-minutes: 45
+        timeout-minutes: 120
         env:
           ALSOFT_DRIVERS: "null"
         run: >-
@@ -589,6 +592,7 @@ jobs:
           LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
 
       - name: Sample settlement release benchmark
+        id: settlement-benchmark
         timeout-minutes: 5
         env:
           ALSOFT_DRIVERS: "null"
@@ -601,7 +605,7 @@ jobs:
             | tee build/settlement-benchmark-windows.log
 
       - name: Upload settlement benchmark sample
-        if: always()
+        if: ${{ always() && steps.settlement-benchmark.outcome != 'skipped' }}
         uses: actions/upload-artifact@v7
         with:
           name: settlement-benchmark-windows-release
@@ -1619,6 +1623,7 @@ jobs:
         timeout-minutes: 10
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ inputs.ref || github.ref }}
           submodules: recursive
 
       - name: Install system packages
