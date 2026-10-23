@@ -1,0 +1,134 @@
+{
+  "effectFrames": 312,
+  "neutralFrames": 1,
+  "viewport": [
+    1280,
+    800
+  ],
+  "crop": [
+    330,
+    60,
+    950,
+    700
+  ],
+  "checksumsValid": true,
+  "allEffectsVary": true,
+  "neutralUnchanged": true,
+  "alignmentPresets": [
+    "overheat"
+  ],
+  "effects": [
+    {
+      "preset": "shield",
+      "distinctFrames": 12
+    },
+    {
+      "preset": "hit",
+      "distinctFrames": 12
+    },
+    {
+      "preset": "frost",
+      "distinctFrames": 12
+    },
+    {
+      "preset": "burn",
+      "distinctFrames": 12
+    },
+    {
+      "preset": "poison",
+      "distinctFrames": 12
+    },
+    {
+      "preset": "heal",
+      "distinctFrames": 12
+    },
+    {
+      "preset": "shock",
+      "distinctFrames": 5
+    },
+    {
+      "preset": "petrify",
+      "distinctFrames": 12
+    },
+    {
+      "preset": "stealth",
+      "distinctFrames": 12
+    },
+    {
+      "preset": "phase",
+      "distinctFrames": 12
+    },
+    {
+      "preset": "cleanse",
+      "distinctFrames": 12
+    },
+    {
+      "preset": "curse",
+      "distinctFrames": 12
+    },
+    {
+      "preset": "berserk",
+      "distinctFrames": 10
+    },
+    {
+      "preset": "holyArmor",
+      "distinctFrames": 12
+    },
+    {
+      "preset": "shadow",
+      "distinctFrames": 12
+    },
+    {
+      "preset": "charge",
+      "distinctFrames": 12
+    },
+    {
+      "preset": "overheat",
+      "distinctFrames": 12
+    },
+    {
+      "preset": "wet",
+      "distinctFrames": 12
+    },
+    {
+      "preset": "sand",
+      "distinctFrames": 12
+    },
+    {
+      "preset": "metallize",
+      "distinctFrames": 12
+    },
+    {
+      "preset": "bark",
+      "distinctFrames": 12
+    },
+    {
+      "preset": "fracture",
+      "distinctFrames": 12
+    },
+    {
+      "preset": "scan",
+      "distinctFrames": 12
+    },
+    {
+      "preset": "teleport",
+      "distinctFrames": 11
+    },
+    {
+      "preset": "slowTime",
+      "distinctFrames": 12
+    },
+    {
+      "preset": "lifesteal",
+      "distinctFrames": 12
+    }
+  ],
+  "finalResources": {
+    "style.nut": "4b47a928ed5e531446a5d378505fde77a6abb3d19d2916af889eeada9d85dd50",
+    "surface.vert": "8b43eb3b6246e86eed4b5c409e228b22611cdaaaf046447916b315e610d6ead2",
+    "surface.frag": "1646bbdc3aba3fc5d4c0785ded69554e61598c60de1fd5edbac16d0c1515f30c",
+    "surface.vert.spv": "48f339fda7cd19895cea313bb4653b4b5214e4f2bc9e569031dfec6902d82d28",
+    "surface.frag.spv": "eeeea77da45ca524c9e970fd6b43aa4e7b3c9b1157bb5cede0c2de0c90e0a4da"
+  },
+  "provenance": "Overheat recaptured after adding arm heat zones and animated upward surface flames. Other 25 modes retain previously validated raw frames."
+}
