@@ -254,6 +254,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [combat-action-editor](combat-action-editor/README.md) | 战斗动作编辑示例：用 UI 无关编辑器 SDK 组装项目专属工作区 |
 | [combat-arena](combat-arena/README.md) | 动作战斗竖切：移动/闪避/伤害/锁定与敌人近距攻击的组合烟测 |
 | [companion-tactics](companion-tactics/README.md) | 队友协作战术沙场：原生 AI 状态机、能力评分、治疗预约、保护吸伤、动态站位与玩家指挥 |
+| [squad-boss-3d](squad-boss-3d/README.md) | 3D 四人打 BOSS：EQS 站位/躲避、GAS 玩家技能、多队友协同（治疗预约/指挥/原生 AI） |
 | [procgen-script-editor](procgen-script-editor/README.md) | 宿主封装 Squirrel generator（`generators/forest.nut`）的程序化生成编辑器 |
 | [ui-theme-editor](ui-theme-editor/README.md) | UI 主题编辑示例：组装命名 Theme 工作区 + 实时预览 |
 | [material-editor](material-editor/README.md) | 材质编辑器：高层脚本创建、复杂测试球、模型导入、可切换天空盒与 IBL、完整参数及撤销保存 |
