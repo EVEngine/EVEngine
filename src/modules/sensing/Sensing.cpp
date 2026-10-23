@@ -520,11 +520,12 @@ void SensingWorld::publishResults(std::vector<RankedCandidate> ranked) {
     lastQuery_.accepted = static_cast<std::uint32_t>(ranked.size());
 }
 
-eve::Result<CandidateQueryResult> SensingWorld::query(const QueryOrigin& origin, const QuerySpec& spec) {
+eve::Result<CandidateCollection> SensingWorld::collectCandidates(const QueryOrigin& origin,
+                                                                 const QuerySpec&   spec) const {
     auto valid = spec.validate();
-    if (!valid) return eve::Result<CandidateQueryResult>::failure(valid.status());
+    if (!valid) return eve::Result<CandidateCollection>::failure(valid.status());
     if (!finite(origin.x) || !finite(origin.y)) {
-        return eve::Result<CandidateQueryResult>::failure(
+        return eve::Result<CandidateCollection>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "QueryOrigin coordinates must be finite",
                                    "query.origin", {}, "sensing"));
     }
@@ -558,6 +559,15 @@ eve::Result<CandidateQueryResult> SensingWorld::query(const QueryOrigin& origin,
         ranked.push_back(std::move(candidate));
     }
 
+    return eve::Result<CandidateCollection>::success(
+        CandidateCollection{std::move(ranked), usedSpatial, static_cast<std::uint32_t>(candidates.size())});
+}
+
+eve::Result<CandidateQueryResult> SensingWorld::query(const QueryOrigin& origin, const QuerySpec& spec) {
+    auto collected = collectCandidates(origin, spec);
+    if (!collected) return eve::Result<CandidateQueryResult>::failure(collected.status());
+    auto collection = std::move(collected).takeValue();
+    auto ranked     = std::move(collection.candidates);
     if (spec.sortKey == SortKey::DistanceAscending) {
         std::sort(ranked.begin(), ranked.end(), [](const RankedCandidate& a, const RankedCandidate& b) {
             if (a.distance != b.distance) return a.distance < b.distance;
@@ -582,8 +592,8 @@ eve::Result<CandidateQueryResult> SensingWorld::query(const QueryOrigin& origin,
                                    "candidate count violates QuerySpec count policy", "query.count", {}, "sensing"));
     }
 
-    lastQuery_.usedSpatial = usedSpatial;
-    lastQuery_.scanned     = static_cast<std::uint32_t>(candidates.size());
+    lastQuery_.usedSpatial = collection.usedSpatial;
+    lastQuery_.scanned     = collection.scanned;
     lastQuery_.originX     = origin.x;
     lastQuery_.originY     = origin.y;
     lastQuery_.shapeKind   = std::visit(
@@ -632,6 +642,11 @@ eve::Result<int> SensingWorld::executePreset(std::string_view presetId, float or
     auto rankedResult = std::move(executed).takeValue();
     std::vector<RankedCandidate> ranked(rankedResult.ranked().begin(), rankedResult.ranked().end());
     const int count = static_cast<int>(ranked.size());
+    lastQuery_.usedSpatial             = context.usedSpatial;
+    lastQuery_.scanned                 = context.scanned;
+    lastQuery_.originX                 = originX;
+    lastQuery_.originY                 = originY;
+    lastQuery_.shapeKind               = "preset";
     publishResults(std::move(ranked));
     return eve::Result<int>::success(count);
 }
@@ -659,7 +674,7 @@ std::string SensingWorld::debugLastQueryJson() const {
           << ",\"distance\":" << candidate.distance << ",\"score\":" << candidate.score
           << ",\"scoreReason\":" << quote(candidate.scoreReason) << '}';
     }
-    o << "]}";
+    o << "],\"environment\":" << lastEnvironmentQuery_ << '}';
     return o.str();
 }
 
@@ -708,6 +723,7 @@ eve::Result<void> SensingWorld::restoreJson(const std::string& j) {
     subjects_ = std::move(next.subjects_);
     results_.clear();
     lastQuery_ = {};
+    lastEnvironmentQuery_ = "null";
     if (spatialIndex_) rebuildSpatialIndex();
     return eve::Result<void>::success();
 }
@@ -889,6 +905,25 @@ void Sensing::expose(ssq::Table& t) {
                     eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world", {}, "sensing")),
                 [](int count) { return eve::Value(static_cast<std::int64_t>(count)); });
         return projectCount(world->executePreset(presetId, originX, originY, dirX, dirY));
+    });
+    w.addFunc("queryPositions", [vm](ScriptSensingWorld* value, float originX, float originY, float targetX,
+                                     float targetY, float radius, int samples, int limit, bool requireLineOfSight) {
+        if (!value)
+            return eve::script::projectResult(
+                vm,
+                Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "sensing world proxy is null",
+                                                         "world", {}, "sensing")),
+                [](Value data) { return data; });
+        auto world = Sensing::resolve(value->reference);
+        if (!world.isBound())
+            return eve::script::projectResult(
+                vm,
+                Result<Value>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "sensing world handle is stale",
+                                                         "world", {}, "sensing")),
+                [](Value data) { return data; });
+        return eve::script::projectResult(
+            vm, world->queryPositions(originX, originY, targetX, targetY, radius, samples, limit, requireLineOfSight),
+            [](Value data) { return data; });
     });
     w.addFunc("resultAt", [](ScriptSensingWorld* value, int i) -> Candidate* {
         if (!value) return nullptr;

@@ -50,10 +50,13 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 
 | 示例 | 演示能力 |
 |---|---|
+| [advanced-ballistics](advanced-ballistics/README.md) | 12 格高级弹道实验室：预瞄追踪、环绕、随机游走、变速、反弹和组合触发 |
+| [world-sweep-ballistics](world-sweep-ballistics/README.md) | World3D sphere sweeps, optional collision, ricochet, trigger-only contacts and custom-function piercing |
 | [ground-fissure](ground-fissure/README.md) | 参数化地裂：Voronoi 地块、分支传播、碎石扬尘、三种预设、调参与重播 |
 | [explosion-lab](explosion-lab/README.md) | 3D 爆炸物理、火球、上升烟雾、火星与冲击环 |
 | [ember-guard](ember-guard/README.md) | 焰卫：六枚环绕火球自主索敌、命中爆燃、返回护卫的俯视角特效场景 |
 | [game-tutorial](game-tutorial/README.md) | EveScript import、输入与碰撞、程序纹理、HUD、热重载及严格版本化存档 |
+| [railgun-3d](railgun-3d/README.md) | 超电磁炮 3D：瞬闪光束、黄红冷却弹道、等距烟圈与白蓝飘散粒子 |
 | [physics-workshop](physics-workshop/README.md) | 3D 悬索、气动布帆、双配重滑轮与共享阵风场综合模拟 |
 | [physics-force-lab](physics-force-lab/README.md) | 2D/3D 场效果、排水浮力、机翼升阻力与轮胎转动 |
 | [devlab](devlab/README.md) | 运行时即编辑器：`--debug` 下的控制台 / REPL、快照、暂停、热重载、错误切片、AI 面板（**旗舰示例，先跑这个**） |
@@ -79,6 +82,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 
 | 示例 | 演示能力 |
 |---|---|
+| [environment-query](environment-query/README.md) | 环境查询：圆环位置候选、评分诊断、消费者显式选点与移动。 |
 | [rpg](rpg/README.md) | RPG 五系统：属性 / 效果 / 状态 / 技能 / 结算（最小可玩动作 RPG） |
 | [rpg-classic](rpg-classic/README.md) | 经典回合制 RPG 纵向切片：`eve.RPG()` + `eve.Inventory()` + `map` 的数据驱动界面 |
 | [inventory](inventory/README.md) | 背包：物品定义、主背包 / 任务栏 / 仓库、装备穿脱、跨包转移 |
@@ -204,12 +208,14 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 
 | 示例 | 演示能力 |
 |---|---|
+| [galaxy](galaxy/README.md) | 程序化旋涡星系：三维星点、四条旋臂、暖色银核、尘埃带与交互观测 |
 | [outline](outline/README.md) | 屏幕空间描边（G-buffer 深度 + 法线） |
 | [waterfall-demo](waterfall-demo/README.md) | 瀑布流动着色器（条纹 / 湍流 / 泡沫） |
 | [silpom-ssdm-compare](silpom-ssdm-compare/README.md) | 平面 SilPOM vs SSDM：硬砖 heightfield、轮廓挤出与 FragDepth 取舍对比 |
 | [virtualgeometry](virtualgeometry/README.md) | 虚拟几何体：cluster DAG + GPU 剔除 + 软件光栅化（Vulkan/WebGPU） |
 | [atmospheric-fog](atmospheric-fog/README.md) | 大气 froxel 体积雾：最小的完整渲染路径与参数调试 |
 | [realtime-fog](realtime-fog/README.md) | MAC 流体雾 + SceneWind + 球体交互器，同步到 froxel 合成 |
+| [flame-jet](flame-jet/README.md) | 火焰射流：白热火芯、橙红火舌、火星与烟雾 |
 | [particle-playback-lab](particle-playback-lab/README.md) | 粒子回放实验室：确定性播放、版本化多发射器与视觉验证 |
 | [attack-vfx](attack-vfx/README.md) | AttackVfx 综合演示：一份配方覆盖 mesh/trail/particles/camera/distortion/decal/audio/prefab，anticipate→impact→release，三套 elemental skin 自动轮播 |
 | [rendering-chain-lab](rendering-chain-lab/README.md) | 渲染链运行时对比：TAA / SSR / RTGI 与自动反射链开关（Space / R） |
@@ -255,6 +261,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [blender_hot_reload](blender_hot_reload/README.md) | Blender 保存 → GLB → `SceneLoader.load` → 卸载旧 SceneHost 的热重载往返 |
 | [model-converter](model-converter/README.md) | 驱动 Blender 把 OBJ 转换成 GLB 并回载（modelconverter 插件） |
 | [archspace-editor](archspace-editor/README.md) | 户型文档烘焙：房间 / 走廊 / 门 / 窗 / 家具 → 带开洞的渲染器中立网格，经 `gfx.newMeshFromArrays` 上传 |
+| [archspace-floorplan](archspace-floorplan/README.md) | 完整户型：客厅 / 卧室 / 卫生间 / 厨房 / 门厅 + 多门窗与家具，鸟瞰烘焙截图 |
 
 ## 插件与脚本包（不是 eve run 项目）
 
