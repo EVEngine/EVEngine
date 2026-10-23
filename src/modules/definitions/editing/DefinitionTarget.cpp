@@ -36,7 +36,7 @@ TargetDescriptor DefinitionDocument::describe() const {
     return {TargetId(targetId_), "definition-document", revisionValue(), false, {}};
 }
 
-EditorResult<void> DefinitionDocument::applyDomainOperation(const DomainOperation& operation) {
+Result<void> DefinitionDocument::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(targetId_) || operation.type != "definition.field.set.v1")
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.definition.operation-mismatch"),
                                           "Definition field operation targets another document or type");
@@ -58,7 +58,7 @@ EditorResult<void> DefinitionDocument::applyDomainOperation(const DomainOperatio
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> DefinitionDocument::setJson(std::string json) {
+Result<void> DefinitionDocument::setJson(std::string json) {
     if (!looksLikeJsonValue(json))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.definition.invalid-json-shape"),
                                           "Definition payload must be a JSON object or array");
@@ -68,7 +68,7 @@ EditorResult<void> DefinitionDocument::setJson(std::string json) {
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> DefinitionDocument::setVersion(int version) {
+Result<void> DefinitionDocument::setVersion(int version) {
     if (version <= 0)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.definition.invalid-version"),
                                           "Definition schema version must be positive");
@@ -78,7 +78,7 @@ EditorResult<void> DefinitionDocument::setVersion(int version) {
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> DefinitionDocument::setReferences(std::vector<DefinitionReferenceField> references) {
+Result<void> DefinitionDocument::setReferences(std::vector<DefinitionReferenceField> references) {
     std::set<std::string> paths;
     for (const DefinitionReferenceField& reference : references)
         if (reference.path.empty() || !paths.insert(reference.path).second)
@@ -91,7 +91,7 @@ EditorResult<void> DefinitionDocument::setReferences(std::vector<DefinitionRefer
     return eve::editing::applied<void>();
 }
 
-EditorResult<DomainOperation> DefinitionDocument::makeSetField(const std::string& fieldName,
+Result<DomainOperation> DefinitionDocument::makeSetField(const std::string& fieldName,
                                                                const EditorValue& value) const {
     if (fieldName.empty())
         return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.definition.empty-field"),
@@ -164,7 +164,7 @@ EditorValue DefinitionDocument::snapshotValue() const {
                                {"references", std::move(references)}};
 }
 
-EditorResult<void> DefinitionDocument::loadSnapshot(const EditorValue& snapshot) {
+Result<void> DefinitionDocument::loadSnapshot(const EditorValue& snapshot) {
     const auto* schemaValue = field(snapshot, "schemaVersion");
     const auto* typeValue = field(snapshot, "type");
     const auto* idValue = field(snapshot, "id");

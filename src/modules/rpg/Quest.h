@@ -1,4 +1,7 @@
 #pragma once
+#include "common/Export.h"
+#include "common/StringMapInstances.h"
+
 
 /**
  * @file Quest.h
@@ -19,7 +22,7 @@
 namespace eve::rpg {
 
 /** @brief 数据驱动的任务模板。 */
-struct QuestDefinition {
+struct EVENGINE_API_PLATFORM QuestDefinition {
     std::string id;
     /** @brief "manual" | "auto"，缺省 "manual"。 */
     std::string startPolicy = "manual";
@@ -32,13 +35,16 @@ struct QuestDefinition {
     std::vector<std::string> tags;
     std::unordered_map<std::string, std::string> extra;
 
+    /** @brief True when tag. */
     bool hasTag(const std::string &tag) const;
+    /** @brief Returns the extra. */
     std::string getExtra(const std::string &key, const std::string &fallback = {}) const;
 };
 
 /** @brief 进程级任务定义注册表。 */
-class QuestRegistry {
+class EVENGINE_API_PLATFORM QuestRegistry {
 public:
+    /** @brief Registers quest. */
     static void registerQuest(const QuestDefinition &def);
     /**
      * @brief Find a registered quest definition by id.
@@ -49,8 +55,11 @@ public:
     static const QuestDefinition *find(const std::string &id);
     /** @brief Remove a quest by id (compatibility facade returning whether it was present). */
     static bool remove(const std::string &id);
+    /** @brief Clears . */
     static void clear();
+    /** @brief Returns the number of . */
     static int count();
+    /** @brief Ids. */
     static std::vector<std::string> ids();
     /** @brief Return whether one exact stable quest id is registered. */
     static bool contains(const std::string &id);

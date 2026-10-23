@@ -13,7 +13,7 @@ namespace {
 
 eve::Result<MaterialCatalog> invalidCatalog(std::string message, std::string path) {
     return eve::Result<MaterialCatalog>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::InvalidArgument, std::move(message), std::move(path), {}, "pixelworld.catalog"));
+        eve::DiagnosticCode::InvalidArgument, message, path, {}, "pixelworld.catalog"));
 }
 
 void hashBytes(std::uint64_t& hash, std::string_view bytes) noexcept {

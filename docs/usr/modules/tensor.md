@@ -99,8 +99,8 @@ WebGPU 对重复输入共用一个存储声明，例如 `sdpa(q, q, q)`，避免
 ### 跑一个真实的 mini LLM（TinyStories-gpt2-3M）
 
 用预训练权重实测整个推理管线：`calum/tinystories-gpt2-3M`（8 层、d=64、16 头、
-GPT-2 BPE 词表 50257，TinyStories 语料训练）。测试 [test/tensor_llm.cpp]
-(../../../test/tensor_llm.cpp) 用 TF 算子逐层搭出完整 GPT-2 图：
+GPT-2 BPE 词表 50257，TinyStories 语料训练）。测试 [test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp]
+(../../../test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp) 用 TF 算子逐层搭出完整 GPT-2 图：
 `embedding`（token + 位置）→ 8 × { `layernormWB` → 多头 `sdpaMasked`（因果 mask）
 → 残差 → MLP(`gelu`) → 残差 } → `layernormWB` → `matmul(lm_head)` → `argmax`
 贪婪采样。验证结果：
@@ -193,69 +193,20 @@ GPU 错误明确返回，不会自动改用 CPU 重试。
 - GPU 编译需要已初始化 Vulkan 或 WebGPU 设备（`gpgpu.isAvailable()` 为真）；否则回退 CPU。
 - `argmax`/`cast("int32")` 得到 int32 dtype 张量，脚本读取仍返回 float。
 
-## API 快查
+## 绑定与行为说明
 
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `Tensor`、
 `Func`、`CompiledFunction`）的方法也列在这里。
 
 ### TF（`tf.` 方法）
 
-- `abs()`、`add()`、`addScalar()`、`arange()`、`argmax()`
-- `avgpool2d()`、`cast()`、`clamp()`、`concat2()`、`concat3()`、`concat4()`
-- `constantScalar()`、`conv1d()`、`conv1dBias()`、`conv2d()`、`conv2dBias()`
-- `cos()`、`div()`、`divScalar()`、`embedding()`、`exp()`、`eye()`
-- `fill1()`、`fill2()`、`fill3()`、`fill4()`、`flatten()`、`func()`
-- `gelu()`、`getRandomSeed()`、`layernorm()`、`layernormWB()`、`linspace()`
-- `log()`、`logSoftmax()`、`matmul()`、`maxAxis()`、`maximumScalar()`
-- `maxpool2d()`、`meanAxis()`、`minAxis()`、`minimumScalar()`
-- `mulScalar()`、`multiply()`、`neg()`、`ones1()`、`ones2()`、`ones3()`
-- `ones4()`、`ones5()`、`ones6()`、`permute2()`、`permute3()`、`permute4()`
-- `permute5()`、`permute6()`、`powScalar()`、`rand1()`、`rand2()`、`rand3()`
-- `quantizeWeight()`、`rand4()`、`randn1()`、`randn2()`、`randn3()`、`randn4()`、`randomNormal1()`
-- `randomNormal2()`、`randomNormal3()`、`randomNormal4()`、`randomUniform1()`
-- `randomUniform2()`、`randomUniform3()`、`randomUniform4()`
-- `reduceMax()`、`reduceMean()`、`reduceMin()`、`reduceSum()`、`relu()`
-- `reshape1()`、`reshape2()`、`reshape3()`、`reshape4()`、`reshape5()`
-- `reshape6()`、`resize2d()`、`rmsnorm()`、`rmsnormW()`、`sdpa()`
-- `sdpaMasked()`、`setRandomSeed()`、`sigmoid()`、`silu()`、`sin()`
-- `slice()`、`softmax()`、`sqrt()`、`sub()`、`subScalar()`、`sumAxis()`
-- `tanh()`、`transpose()`、`where()`、`zeros1()`、`zeros2()`、`zeros3()`
-- `zeros4()`、`zeros5()`、`zeros6()`
 
 量化相关：`quantizeWeight(t, "fp16"/"fp8"/"fp4"/"int8"/"int4", group)`；
 `t.isQuantized()`；量化张量的 `get(i)` 返回反量化值。
-
-### Tensor（`tf.*` 返回对象的 `t.` 方法）
-
-- `abs()`、`add()`、`addInPlace()`、`addScalar()`、`addScalarInPlace()`
-- `clone()`、`copyFrom()`、`cos()`、`div()`、`divScalar()`、`dot()`
-- `exp()`、`fill()`、`flatten()`、`gelu()`、`get()`、`get1()`、`get2()`
-- `get3()`、`get4()`、`get5()`、`get6()`、`getDevice()`、`getDim()`
-- `getDim0()`、`getDim1()`、`getDim2()`、`getDim3()`、`getDim4()`、`getDim5()`
-- `getDtype()`、`getRank()`、`getSize()`、`isEager()`、`isSymbolic()`、`log()`
-- `matmul()`、`maximumScalar()`、`minimumScalar()`、`mulScalar()`
-- `mulScalarInPlace()`、`multiply()`、`multiplyInPlace()`、`neg()`
-- `powScalar()`、`reduceMax()`、`reduceMean()`、`reduceMin()`、`reduceSum()`
-- `relu()`、`reluInPlace()`、`reshape1()`、`reshape2()`、`reshape3()`
-- `reshape4()`、`reshape5()`、`reshape6()`、`set()`、`set1()`、`set2()`
-- `set3()`、`set4()`、`set5()`、`set6()`、`sigmoid()`、`silu()`、`sin()`
-- `sqrt()`、`sub()`、`subScalar()`、`tanh()`、`transpose()`
-
-### Func（`tf.func()` 返回对象的 `fn.` 方法）
-
-- `compile()`、`input1()`、`input2()`、`input3()`、`input4()`、`input5()`
-- `input6()`、`setOutput()`
-
-### CompiledFunction（`fn.compile()` 返回对象的 `c.` 方法）
-
-- `getDevice()`、`getPlaceholderCount()`、`run0()`、`run1()`、`run2()`
-- `run3()`、`run4()`、`run5()`、`run6()`
 
 ## 使用要点
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 - 张量支持 rank 1–6，dtype 为 float32 / int32；二元运算支持广播。
 - 原生 ONNX GPU 会话使用有界 shader 编译队列，`createOnnxGpuCompute(compilerWorkers)`
   可选 1–8 个 CPU 编译线程（默认 4）；同源码去重，编译器上下文和管线缓存均复用。
@@ -266,3 +217,7 @@ GPU 错误明确返回，不会自动改用 CPU 重试。
 **源码：** [`src/modules/tensor/`](../../../src/modules/tensor/)（含
 `Optimizer` 图优化/融合、`KernelGen` 专用 kernel 生成、`GpuBackend` GPU 运行时）
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `tensor`。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](tensor/api-reference.md)，使用前先确认本章的前置条件与生命周期。

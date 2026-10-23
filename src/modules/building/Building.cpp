@@ -1,9 +1,12 @@
 #include "building/Building.h"
+#include <algorithm>
+#include <cmath>
+#include <simplesquirrel/simplesquirrel.hpp>
 #include "building/BuildingDef.h"
 #include "building/PlacementSystem.h"
+#include "common/Json.h"
 
-#include <simplesquirrel/simplesquirrel.hpp>
-
+// Building.cpp
 namespace eve::building {
 void exposeHouseBindings(ssq::Table &table);
 
@@ -120,21 +123,13 @@ PlacementSession *Building::newSession() {
     return new PlacementSession();
 }
 
-bool Building::hasValidateRule(const std::string &ruleName) {
-    return PlacementSystem::hasValidateRule(ruleName);
-}
+bool Building::hasValidateRule(const std::string &ruleName) { return PlacementSystem::hasValidateRule(ruleName); }
 
-bool Building::hasSnapRule(const std::string &ruleName) {
-    return PlacementSystem::hasSnapRule(ruleName);
-}
+bool Building::hasSnapRule(const std::string &ruleName) { return PlacementSystem::hasSnapRule(ruleName); }
 
-bool Building::hasSurface(const std::string &surfaceName) {
-    return PlacementSystem::hasSurface(surfaceName);
-}
+bool Building::hasSurface(const std::string &surfaceName) { return PlacementSystem::hasSurface(surfaceName); }
 
-int Building::getSurfaceCount() {
-    return int(PlacementSystem::surfaceNames().size());
-}
+int Building::getSurfaceCount() { return int(PlacementSystem::surfaceNames().size()); }
 
 std::string Building::getSurfaceName(int index) {
     const auto names = PlacementSystem::surfaceNames();
@@ -212,9 +207,7 @@ void Building::expose(ssq::Table &table) {
     auto world = table.addClass<PlacementWorld>(
         "PlacementWorld",
         std::function<PlacementWorld *(int, int, float)>(
-            [](int w, int h, float cs) -> PlacementWorld * {
-                return new PlacementWorld(w, h, cs);
-            }),
+            [](int w, int h, float cs) -> PlacementWorld * { return new PlacementWorld(w, h, cs); }),
         true);
     world.addFunc("destroy", &PlacementWorld::destroy);
     world.addFunc("getId", &PlacementWorld::getId);
@@ -326,8 +319,8 @@ void Building::expose(ssq::Table &table) {
     world.addFunc("moveBuilding", &PlacementWorld::moveBuilding);
     world.addFunc("clearBuildings", &PlacementWorld::clearBuildings);
 
-    auto ghost = table.addClass<Ghost>(
-        "Ghost", std::function<Ghost *()>([]() -> Ghost * { return new Ghost(); }), true);
+    auto ghost =
+        table.addClass<Ghost>("Ghost", std::function<Ghost *()>([]() -> Ghost * { return new Ghost(); }), true);
     ghost.addFunc("destroy", &Ghost::destroy);
     ghost.addFunc("getBuildingId", &Ghost::getBuildingId);
     ghost.addFunc("setBuildingId", &Ghost::setBuildingId);
@@ -366,10 +359,8 @@ void Building::expose(ssq::Table &table) {
     ghost.addFunc("validate", &Ghost::validate);
 
     auto session = table.addClass<PlacementSession>(
-        "PlacementSession", std::function<PlacementSession *()>([]() -> PlacementSession * {
-            return new PlacementSession();
-        }),
-        true);
+        "PlacementSession",
+        std::function<PlacementSession *()>([]() -> PlacementSession * { return new PlacementSession(); }), true);
     session.addFunc("destroy", &PlacementSession::destroy);
     session.addFunc("startPlacement", &PlacementSession::startPlacement);
     session.addFunc("stopPlacement", &PlacementSession::stopPlacement);
@@ -396,13 +387,10 @@ void Building::expose(ssq::Table &table) {
     session.addFunc("executeEdgePath", &PlacementSession::executeEdgePath);
     session.addFunc("getEdgePathVertexCount", &PlacementSession::getEdgePathVertexCount);
     session.addFunc("beginEdgeCurve", &PlacementSession::beginEdgeCurve);
-    session.addFunc("appendEdgeCurveControlPoint",
-                    &PlacementSession::appendEdgeCurveControlPoint);
+    session.addFunc("appendEdgeCurveControlPoint", &PlacementSession::appendEdgeCurveControlPoint);
     session.addFunc("executeEdgeCurve", &PlacementSession::executeEdgeCurve);
-    session.addFunc("executeEdgeCurveOnSurface",
-                    &PlacementSession::executeEdgeCurveOnSurface);
-    session.addFunc("getEdgeCurveControlPointCount",
-                    &PlacementSession::getEdgeCurveControlPointCount);
+    session.addFunc("executeEdgeCurveOnSurface", &PlacementSession::executeEdgeCurveOnSurface);
+    session.addFunc("getEdgeCurveControlPointCount", &PlacementSession::getEdgeCurveControlPointCount);
     session.addFunc("getLastPlacedCount", &PlacementSession::getLastPlacedCount);
     session.addFunc("getLastPlacedId", &PlacementSession::getLastPlacedId);
     session.addFunc("executeMove", &PlacementSession::executeMove);
@@ -430,8 +418,7 @@ void Building::expose(ssq::Table &table) {
     session.addFunc("getPatternPreviewX", &PlacementSession::getPatternPreviewX);
     session.addFunc("getPatternPreviewY", &PlacementSession::getPatternPreviewY);
     session.addFunc("getPatternPreviewAxis", &PlacementSession::getPatternPreviewAxis);
-    session.addFunc("getPatternPreviewAccepted",
-                    &PlacementSession::getPatternPreviewAccepted);
+    session.addFunc("getPatternPreviewAccepted", &PlacementSession::getPatternPreviewAccepted);
     session.addFunc("getPatternPreviewReason", &PlacementSession::getPatternPreviewReason);
 }
 
@@ -477,6 +464,201 @@ void Building::expose(ssq::Class &cls) {
     cls.addFunc("getChangeEventOtherCellX", &Building::getChangeEventOtherCellX);
     cls.addFunc("getChangeEventOtherCellY", &Building::getChangeEventOtherCellY);
     cls.addFunc("getChangeEventRotation", &Building::getChangeEventRotation);
+}
+
+}  // namespace eve::building
+
+// BuildingDef.cpp
+namespace eve::building {
+
+using eve::json::Value;
+
+namespace {
+bool validConvexPolygon(const std::vector<float> &vertices);
+}
+
+bool BuildingDefinition::hasTag(const std::string &tag) const {
+    return std::find(tags.begin(), tags.end(), tag) != tags.end();
+}
+
+std::string BuildingDefinition::getExtra(const std::string &key, const std::string &fallback) const {
+    auto it = extra.find(key);
+    return it == extra.end() ? fallback : it->second;
+}
+
+std::string BuildingDefinition::getVisual2d(const std::string &key, const std::string &fallback) const {
+    auto it = visual2d.find(key);
+    return it == visual2d.end() ? fallback : it->second;
+}
+
+std::string BuildingDefinition::getVisual3d(const std::string &key, const std::string &fallback) const {
+    auto it = visual3d.find(key);
+    return it == visual3d.end() ? fallback : it->second;
+}
+
+int BuildingDefinition::getCost(const std::string &resource, int fallback) const {
+    auto it = cost.find(resource);
+    return it == cost.end() ? fallback : it->second;
+}
+
+bool BuildingDefinition::maskAt(int localX, int localY) const {
+    if (localX < 0 || localY < 0 || localX >= footprintW || localY >= footprintH) return false;
+    if (footprintMask.empty()) return true;
+    const size_t idx = size_t(localY) * size_t(footprintW) + size_t(localX);
+    if (idx >= footprintMask.size()) return false;
+    return footprintMask[idx] != 0;
+}
+
+bool PlacedBuilding::hasTag(const std::string &tag) const {
+    return std::find(tags.begin(), tags.end(), tag) != tags.end();
+}
+
+std::string PlacedBuilding::getProp(const std::string &key, const std::string &fallback) const {
+    auto it = props.find(key);
+    return it == props.end() ? fallback : it->second;
+}
+
+void PlacedBuilding::setProp(const std::string &key, const std::string &value) { props[key] = value; }
+
+std::unordered_map<std::string, BuildingDefinition> &BuildingRegistry::table() {
+    static std::unordered_map<std::string, BuildingDefinition> t;
+    return t;
+}
+
+void BuildingRegistry::registerBuilding(const BuildingDefinition &def) {
+    if (def.id.empty()) return;
+    BuildingDefinition copy = def;
+    if (copy.footprintW <= 0) copy.footprintW = 1;
+    if (copy.footprintH <= 0) copy.footprintH = 1;
+    if (copy.displayName.empty()) copy.displayName = copy.id;
+    if (copy.snapMode.empty()) copy.snapMode = "grid";
+    if (copy.rotationMode.empty()) copy.rotationMode = "cardinal";
+    if (copy.validateRule.empty()) copy.validateRule = "default";
+    if (copy.placementKind != "edge" && copy.placementKind != "corner" && copy.placementKind != "free")
+        copy.placementKind = "cell";
+    if (!std::isfinite(copy.edgeThicknessCells) || copy.edgeThicknessCells < 0.f) copy.edgeThicknessCells = 0.f;
+    if (!std::isfinite(copy.freeRadiusCells) || copy.freeRadiusCells <= 0.f) copy.freeRadiusCells = 0.25f;
+    if (!std::isfinite(copy.freeFootprintWidthCells) || copy.freeFootprintWidthCells <= 0.f ||
+        !std::isfinite(copy.freeFootprintHeightCells) || copy.freeFootprintHeightCells <= 0.f) {
+        copy.freeFootprintWidthCells  = 0.f;
+        copy.freeFootprintHeightCells = 0.f;
+    }
+    if (!copy.freeFootprintVertices.empty() && !validConvexPolygon(copy.freeFootprintVertices))
+        copy.freeFootprintVertices.clear();
+    if (copy.supportMode != "cell_below" && copy.supportMode != "corner_below") copy.supportMode = "none";
+    copy.maxSurfaceSlopeDegrees = std::clamp(copy.maxSurfaceSlopeDegrees, 0.f, 180.f);
+    const size_t expected       = size_t(copy.footprintW) * size_t(copy.footprintH);
+    if (!copy.footprintMask.empty() && copy.footprintMask.size() != expected) {
+        copy.footprintMask.clear();  // 长度不匹配时回退实心矩形
+    }
+    table()[copy.id] = std::move(copy);
+}
+
+const BuildingDefinition *BuildingRegistry::find(const std::string &id) {
+    auto &t  = table();
+    auto  it = t.find(id);
+    return it == t.end() ? nullptr : &it->second;
+}
+
+bool BuildingRegistry::remove(const std::string &id) { return table().erase(id) > 0; }
+
+void BuildingRegistry::clear() { table().clear(); }
+
+int BuildingRegistry::count() { return int(table().size()); }
+
+namespace {
+
+bool validConvexPolygon(const std::vector<float> &vertices) {
+    if (vertices.size() < 6 || vertices.size() % 2 != 0 || vertices.size() > 128) return false;
+    float        winding = 0.f;
+    const size_t count   = vertices.size() / 2;
+    for (size_t i = 0; i < count; ++i) {
+        const size_t next  = (i + 1) % count;
+        const size_t after = (i + 2) % count;
+        const float  ax    = vertices[next * 2] - vertices[i * 2];
+        const float  ay    = vertices[next * 2 + 1] - vertices[i * 2 + 1];
+        const float  bx    = vertices[after * 2] - vertices[next * 2];
+        const float  by    = vertices[after * 2 + 1] - vertices[next * 2 + 1];
+        if (!std::isfinite(vertices[i * 2]) || !std::isfinite(vertices[i * 2 + 1])) return false;
+        const float cross = ax * by - ay * bx;
+        if (std::fabs(cross) <= 1e-5f) continue;
+        if (winding == 0.f)
+            winding = cross;
+        else if (cross * winding < 0.f)
+            return false;
+    }
+    return winding != 0.f;
+}
+
+BuildingDefinition parseBuildingObject(Value o) {
+    BuildingDefinition def;
+    if (!o.isObject()) return def;
+    def.id                       = o.getString("id");
+    def.displayName              = o.getString("displayName", def.id);
+    def.category                 = o.getString("category");
+    def.channel                  = o.getString("channel");
+    def.renderMode               = o.getString("renderMode");
+    def.placementKind            = o.getString("placementKind", "cell");
+    def.freeRadiusCells          = o.getFloat("freeRadiusCells", 0.25f);
+    def.freeFootprintWidthCells  = o.getFloat("freeFootprintWidthCells", 0.f);
+    def.freeFootprintHeightCells = o.getFloat("freeFootprintHeightCells", 0.f);
+    def.freeFootprintVertices    = o.getFloatArray("freeFootprintVertices");
+    def.connectionGroup          = o.getString("connectionGroup");
+    def.edgeThicknessCells = o.getFloat("edgeThicknessCells", 0.f);
+    def.blockedByEdgeChannels = o.getStringArray("blockedByEdgeChannels");
+    def.structuralRole           = o.getString("structuralRole");
+    def.supportMode              = o.getString("supportMode", "none");
+    def.supportTag               = o.getString("supportTag");
+    def.footprintW               = o.getInt("footprintW", 1);
+    def.footprintH               = o.getInt("footprintH", 1);
+    def.snapMode                 = o.getString("snapMode", "grid");
+    def.rotationMode             = o.getString("rotationMode", "cardinal");
+    def.validateRule             = o.getString("validateRule", "default");
+    def.maxSurfaceSlopeDegrees   = o.getFloat("maxSurfaceSlopeDegrees", 180.f);
+    def.maxSurfaceHeightDelta    = o.getFloat("maxSurfaceHeightDelta", -1.f);
+    def.tags                     = o.getStringArray("tags");
+    def.requireTerrain           = o.getIntArray("requireTerrain");
+    def.forbidTerrain            = o.getIntArray("forbidTerrain");
+    def.requireAdjacentTag       = o.getString("requireAdjacentTag");
+    def.requireAdjacentTerrain   = o.getInt("requireAdjacentTerrain", -1);
+    def.cost                     = o.getIntMap("cost");
+    def.extra                    = o.getStringMap("extra");
+    def.visual2d                 = o.getStringMap("visual2d");
+    def.visual3d                 = o.getStringMap("visual3d");
+
+    const Value mask = o.get("footprintMask");
+    def.footprintMask.reserve(mask.size());
+    for (size_t i = 0; i < mask.size(); ++i) def.footprintMask.push_back(uint8_t(mask.at(i).asInt(0) != 0 ? 1 : 0));
+    return def;
+}
+
+}  // namespace
+
+int BuildingRegistry::loadFromJson(const std::string &json, std::string *error) {
+    std::string               err;
+    const eve::json::Document doc = eve::json::Document::parse(json, &err);
+    if (!doc.valid()) {
+        if (error) *error = err.empty() ? "invalid json" : err;
+        return 0;
+    }
+
+    const Value root = doc.root();
+    int         n    = 0;
+    if (root.isArray()) {
+        for (size_t i = 0; i < root.size(); ++i) {
+            BuildingDefinition def = parseBuildingObject(root.at(i));
+            if (def.id.empty()) continue;
+            registerBuilding(def);
+            ++n;
+        }
+    } else if (root.isObject()) {
+        BuildingDefinition def = parseBuildingObject(root);
+        if (!def.id.empty()) {
+            registerBuilding(def);
+            ++n;
+        }
+    }
+    return n;
 }
 
 }  // namespace eve::building

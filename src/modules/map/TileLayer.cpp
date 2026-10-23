@@ -526,6 +526,9 @@ int TileLayer::getLayer() { return draw()->layer; }
 void TileLayer::setVisible(bool visible) { draw()->visible = visible; }
 bool TileLayer::isVisible() { return draw()->visible; }
 
+void TileLayer::setReceiveLight(bool receive) { draw()->receiveLight = receive; }
+bool TileLayer::getReceiveLight() { return draw()->receiveLight; }
+
 void TileLayer::setTint(float r, float g, float b, float a) {
     draw()->tint = Color{r, g, b, a};
 }

@@ -6,10 +6,6 @@
 
 namespace eve::graphics {
 namespace {
-Result<void> missing() {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "water.system: non-null state, settings and scene required"));
-}
 }  // namespace
 
 void exposeWaterSystemBindings(ssq::Table& table) {
@@ -50,7 +46,8 @@ void exposeWaterSystemBindings(ssq::Table& table) {
                                            const WaterSceneConditions* scene, int initialDelay) {
                       auto result = state && settings && scene
                                         ? initializeWaterSystem(*state, *settings, *scene, initialDelay)
-                                        : missing();
+                                        : Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "water.system: non-null state, settings and scene required"));
                       return eve::script::projectResult(vm, std::move(result));
                   });
     table.addFunc("advanceWaterSystem",
@@ -59,13 +56,15 @@ void exposeWaterSystemBindings(ssq::Table& table) {
                                            int nextDelay) {
                       auto result = state && settings && scene
                                         ? advanceWaterSystem(*state, *settings, *scene, playerX, playerZ, dt, nextDelay)
-                                        : Result<bool>::failure(missing().status());
+                                        : Result<bool>::failure(Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "water.system: non-null state, settings and scene required")).status());
                       return eve::script::projectResult(vm, std::move(result), [](bool value) { return value; });
                   });
     table.addFunc("updateWaterSeaLevel", [vm = table.getHandle()](WaterSystemState* state, float seaLevel,
                                                                   bool regenerate) {
         auto result = state ? updateWaterSeaLevel(*state, seaLevel, regenerate)
-                            : Result<bool>::failure(missing().status());
+                            : Result<bool>::failure(Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "water.system: non-null state, settings and scene required")).status());
         return eve::script::projectResult(vm, std::move(result), [](bool value) { return value; });
     });
 }

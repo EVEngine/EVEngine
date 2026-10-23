@@ -24,8 +24,10 @@ enum class FaceDir : uint8_t {
     Count = 6,
 };
 
+/** @brief Face dir count. */
 inline constexpr int faceDirCount() { return int(FaceDir::Count); }
 
+/** @brief Face dir name. */
 inline const char *faceDirName(FaceDir d) {
     switch (d) {
         case FaceDir::PosX: return "posX";
@@ -38,6 +40,7 @@ inline const char *faceDirName(FaceDir d) {
     }
 }
 
+/** @brief Face dir from name. */
 inline bool faceDirFromName(const std::string &name, FaceDir &out) {
     if (name == "posX" || name == "+x") {
         out = FaceDir::PosX;

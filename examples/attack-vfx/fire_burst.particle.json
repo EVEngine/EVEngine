@@ -1,0 +1,79 @@
+{
+  "type": "eve.particle-effect",
+  "version": 1,
+  "parameters": { "intensity": 1.5 },
+  "emitters": [
+    {
+      "name": "core",
+      "emitter": {
+        "buffer": 200,
+        "emitterLife": 1.0,
+        "looping": false,
+        "emissionRate": 0.0,
+        "bursts": [[0.0, 36], [0.08, 24]],
+        "particleLifetime": [0.4, 0.8],
+        "particleSize": [26.0, 42.0],
+        "sizes": [1.5, 0.2],
+        "speed": [40.0, 120.0],
+        "spread": 6.2831853,
+        "damping": 0.2,
+        "blendMode": "additive",
+        "colorOverLifetime": [
+          [0.0, 1.0, 0.95, 0.55, 1.0],
+          [0.3, 1.0, 0.45, 0.08, 0.95],
+          [0.7, 0.85, 0.12, 0.02, 0.5],
+          [1.0, 0.25, 0.04, 0.01, 0.0]
+        ],
+        "parameterBindings": [
+          { "parameter": "intensity", "target": "size", "scale": 1.15 }
+        ]
+      }
+    },
+    {
+      "name": "sparks",
+      "offset": [0.0, -6.0],
+      "emitter": {
+        "buffer": 420,
+        "emitterLife": 1.0,
+        "looping": false,
+        "emissionRate": 0.0,
+        "bursts": [[0.0, 80], [0.15, 40]],
+        "particleLifetime": [0.55, 1.2],
+        "particleSize": [6.0, 16.0],
+        "sizes": [1.2, 0.12],
+        "speed": [90.0, 260.0],
+        "spread": 6.2831853,
+        "gravity": [0.0, 110.0],
+        "damping": 0.15,
+        "renderMode": "velocity",
+        "stretch": 0.09,
+        "blendMode": "additive",
+        "colorOverLifetime": [
+          [0.0, 1.0, 0.96, 0.65, 1.0],
+          [0.4, 1.0, 0.35, 0.05, 0.9],
+          [1.0, 0.25, 0.04, 0.01, 0.0]
+        ]
+      }
+    },
+    {
+      "name": "embers",
+      "emitter": {
+        "buffer": 120,
+        "emitterLife": 1.2,
+        "looping": false,
+        "emissionRate": 0.0,
+        "bursts": [[0.05, 28]],
+        "particleLifetime": [0.7, 1.4],
+        "particleSize": [4.0, 10.0],
+        "sizes": [1.0, 0.2],
+        "speed": [20.0, 70.0],
+        "direction": -1.5708,
+        "spread": 1.8,
+        "gravity": [0.0, -40.0],
+        "blendMode": "additive",
+        "colorStart": [0.35, 0.55, 1.0, 0.9],
+        "colorEnd": [0.1, 0.15, 0.4, 0.0]
+      }
+    }
+  ]
+}

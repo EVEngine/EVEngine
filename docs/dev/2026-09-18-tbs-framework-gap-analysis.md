@@ -89,7 +89,7 @@ worktree：`.worktrees/tbs-gap-analysis`
 ### 1.2 我们这边的一个重要前提
 
 创建 worktree 时（commit `dae6a644c`），主工作区里
-**`src/modules/hexmap`（31 文件）、`test/hexmap.cpp`、`docs/usr/modules/hexmap.md`、
+**`src/modules/hexmap`（31 文件）、`test/unit/hexmap/hexmap_tests.cpp`、`docs/usr/modules/hexmap.md`、
 `examples/hex-terrain-3d/` 全部是 untracked**，worktree 里一开始没有它们。
 本分析已把它们复制进 worktree 后再取证——否则会得出
 「我们没有六边形地图层」的错误结论。
@@ -141,7 +141,7 @@ worktree：`.worktrees/tbs-gap-analysis`
 仍未纳入本文证据基线的主工作区改动（对结论无影响，但需知悉）：
 `src/engine/common/Runtime.cpp`、`src/engine/common/SquirrelOwnership.h`、
 `src/modules/rpg/RPG.cpp`、`src/modules/ui/*`、
-被删除的 `scripts/check_bindings*.{py,json,txt}`、新增的 `test/rpg_script.cpp`。
+被删除的 `scripts/check_bindings*.{py,json,txt}`、新增的 `test/integration/script-api/script_api_graphics_mcp_tests.cpp`。
 **被删除的 `check_bindings*` 工具链值得单独注意**——它正是用来检测
 "脚本绑定缺口"的，而"绑定缺口"是本文 §5.6/§5.8 的核心议题。
 
@@ -464,7 +464,7 @@ IsReadyChanged}`、`SendMatchState(opCode, IDictionary)`、
 | 4 | 寻路/移动 | `PathQuery::reachable/path/cellsInRange`（确定性 tie-break，整数成本）；hexmap 有相位桶队列 A* | Dijkstra all-paths + 缓存 + 回溯；`AStar`/`Dijkstra` 两种 | ◐ 算法更好·**五套并存**（§5.2） |
 | 5 | 战斗/伤害 | `combat/{CombatAttributes,Damage}` + `rpg::SettlementPipeline` 可注册阶段（**无脚本出口；`combat` 在 src 内只被 rts 消费**） | `ICombatant` 6 个虚方法 + `CalculateDamageDealt/Taken/Total`，无内置公式 | ◐ |
 | 6 | 技能/能力 | `action::{ActionDefinition,AbilityDefinition,AbilityRuntime}`（冷却/实例化策略/激活组/事件触发）+ `combat::standardCombatAbilities()` 20 个（**脚本不可达；生产无调用方，仅测试**） | `IAbility` 12 个钩子 + `ICommand` 四件套；技能全在示例 | ◐ 内核更强·**未接线** |
-| 7 | AI | `npc_ai`（数据驱动层次状态机 + 黑板 + 感知记忆 + tick 预算 + trace + 快照，**但 src/ 内零消费者**）、`decision`（FSM/utility/影响图） | 行为树（**形状是代码**）+ 9 个位置/目标 evaluator，**专为战棋评分设计** | ○ 我们的是壳，它的是战棋专用 |
+| 7 | AI | `npc_ai`（数据驱动层次状态机 + 黑板 + 感知记忆 + tick 预算 + trace + 快照，**但 src/ 内零消费者**）（含原 `decision` 的 FSM/utility/影响图，现 `eve.Decision()`） | 行为树（**形状是代码**）+ 9 个位置/目标 evaluator，**专为战棋评分设计** | ○ 我们的是壳，它的是战棋专用 |
 | 8 | 迷雾/可见性 | hexmap：引用计数 `HexVisibility` + `explored` 单向闩锁 + `HexFogMesh` | **无** | **○**（tactics 无视野；hexmap 全未提交） |
 | 9 | 胜负/目标 | `ObjectiveKind{EliminateSide,SurviveRounds,OccupyCells}` 内置 3 种，`endsBattle` | `GameResult{Winners,Losers}` + 示例 `DominationVictoryCondition` | **●** |
 | 10 | 视线/掩体/高程 | `sensing::ILineOfSightQuery` 接口存在，只有 World3D physics 实现，**引擎内没有 2D/网格 LOS 实现**；候选 provider 只在测试里注册 | **全无** | ○ |
@@ -660,15 +660,15 @@ IsReadyChanged}`、`SendMatchState(opCode, IDictionary)`、
 
 | 组件 | 状态（已复核） |
 |---|---|
-| `npc_ai` 整个模块 | **`src/` 内零消费者**；只有 5 个测试文件 include 它（`test/npc_ai*.cpp`、`test/editor_behavior_graph.cpp`） |
+| `npc_ai` 整个模块 | **`src/` 内零消费者**；只有 5 个测试文件 include 它（`test/npc_ai*.cpp`、`test/integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp`） |
 | `NpcAiEcsSystem` / `NpcAiWorld` | `src/` 内除自身目录外**无任何引用** |
-| `npc_ai/editing/BehaviorGraph.cpp:32-105` | 编译出 `BehaviorInstruction`，**运行时无消费者**（仅 `test/editor_behavior_graph.cpp`） |
-| `INavigationProvider` | 无**生产**实现；唯一实现是 `test/npc_ai_navigation.cpp:19` 的 `FakeNavigationProvider` |
+| `npc_ai/editing/BehaviorGraph.cpp:32-105` | 编译出 `BehaviorInstruction`，**运行时无消费者**（仅 `test/integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp`） |
+| `INavigationProvider` | 无**生产**实现；唯一实现是 `test/integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp:19` 的 `FakeNavigationProvider` |
 | `AbilityRuntime::matchingGrants` | 只被自己的测试引用 |
 | `ActionNotifyRegistry::dispatch` | **连测试都没有调用方**——只有声明（`ActionNotifyRegistry.h:71`）与定义（`.cpp:106`）；`ActionRuntime::advance` 只返回 timeline 事件（`Action.cpp:507-517`） |
-| `combat::standardCombatAbilities()` | **只有测试调用**（`test/standard_combat_abilities.cpp`、`test/combat_framework_composition.cpp`），`src/` 内无生产调用方 |
+| `combat::standardCombatAbilities()` | **只有测试调用**（`test/integration/gameplay-composition/gameplay_composition_graphics_rts_script_tests.cpp`、`test/integration/gameplay-composition/gameplay_composition_graphics_buildingfx_tests.cpp`），`src/` 内无生产调用方 |
 | `combat` 模块整体 | `src/` 内**只被 `rts` 消费**（`#include "combat/` 仅出现在 `rts/`） |
-| `ISensingCandidateProvider` | 具体实现 `SensingCandidateProvider` 就在 `sensing/Targeting.h:435`，但**只在 `test/targeting.cpp` 里被实例化并 `cap::provide`**；**没有任何生产模块注册它** → 真实游戏里 `TargetingResolver::resolve` 会返回 `Unsupported`（`Targeting.cpp:339-340`） |
+| `ISensingCandidateProvider` | 具体实现 `SensingCandidateProvider` 就在 `sensing/Targeting.h:435`，但**只在 `test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp` 里被实例化并 `cap::provide`**；**没有任何生产模块注册它** → 真实游戏里 `TargetingResolver::resolve` 会返回 `Unsupported`（`Targeting.cpp:339-340`） |
 
 后果：脚本作者唯一的选择就是在 Squirrel 里重写。这不是"没做框架层"，
 而是"**做了但没开门，而且没接进调用路径**"。
@@ -761,7 +761,7 @@ IsReadyChanged}`、`SendMatchState(opCode, IDictionary)`、
 > 保留本节是为了记录两次误判的经过与方法论教训（§1.4、§10.5）。
 
 > **⚠️ 本节是本文档的一次自我纠错，请连同上一条方法论教训一起读。**
-> 本节初稿断言"`hexmap` 完全未落地、既不可构建也不可运行、`test/hexmap.cpp` 会链接失败"。
+> 本节初稿断言"`hexmap` 完全未落地、既不可构建也不可运行、`test/unit/hexmap/hexmap_tests.cpp` 会链接失败"。
 > **该断言是错的**，原因是我的取证方法有缺陷（见下）。正确结论如下。
 
 **事实（已在主工作区与现有构建产物中核对）**：
@@ -792,7 +792,7 @@ IsReadyChanged}`、`SendMatchState(opCode, IDictionary)`、
 | 内容 | git 状态 |
 |---|---|
 | `src/modules/hexmap/`（31 文件） | **untracked** |
-| `test/hexmap.cpp` | **untracked** |
+| `test/unit/hexmap/hexmap_tests.cpp` | **untracked** |
 | `docs/usr/modules/hexmap.md` | **untracked** |
 | `examples/hex-terrain-3d/`（含 shaders） | **untracked** |
 | `scripts/capture_hex_terrain_3d.sh` | **untracked** |
@@ -823,7 +823,7 @@ worktree/CI** 都会同时丢掉模块本体**和它的接线**。
   **没有任何 2D / 网格 LOS 实现**；
 - 它的候选提供方 `ISensingCandidateProvider` 有一个最小实现
   `SensingCandidateProvider`（就在 `sensing/Targeting.h:435`），
-  但**只在 `test/targeting.cpp` 里被注册**（`:122,158,173`），
+  但**只在 `test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp` 里被注册**（`:122,158,173`），
   **没有任何生产模块注册它**；缺失时 `TargetingResolver::resolve`
   返回 `Unsupported`（`Targeting.cpp:339-340`）。
   仓库自己的边界台账也把它记为零提供方
@@ -842,7 +842,7 @@ worktree/CI** 都会同时丢掉模块本体**和它的接线**。
 一堵薄墙只能通过 `moveCost` 阻断搜索来间接生效，
 无法表达"看得见但走不过去"或"能射到但看不见"——战棋常需要区分这两种。
 
-另外：**全仓库没有任何 FOV 对称性断言**。`test/map_fov.cpp` 的 24 个用例
+另外：**全仓库没有任何 FOV 对称性断言**。`test/integration/render-presentation/render_presentation_graphics_hex_level_simulation_tests.cpp` 的 24 个用例
 从不检查 a↔b 互相可见。对需要对称视野的战棋这是一个真实缺口。
 
 ### 5.15 迷雾只有两态
@@ -877,7 +877,7 @@ worktree/CI** 都会同时丢掉模块本体**和它的接线**。
   （`Attributes.h:18`、`Attributes.cpp:9,15-16`）→ 脚本侧泄漏。
 - `AttributeSetStateAdapter` 对 `hasTag`/`resource`/`authority` **故意返回 `nullopt`**
   （`StateAccessAdapter.h:29,33,39`），所以任何用
-  `HasTag`/`HasResource`/`AuthorityCheck` 的 `decision::Condition` 对它都会
+  `HasTag`/`HasResource`/`AuthorityCheck` 的 `condition::Condition` 对它都会
   报"不可用"。
 
 这些不影响 headline 结论，但会影响 Phase 1/2 的实现顺序：
@@ -886,7 +886,7 @@ worktree/CI** 都会同时丢掉模块本体**和它的接线**。
 
 ### 5.18 hexmap 生成器有一个被测试记录下来的已知缺陷
 
-`test/hexmap.cpp:729-733` 明确记录：程序化生成器**不产生河流**，
+`test/unit/hexmap/hexmap_tests.cpp:729-733` 明确记录：程序化生成器**不产生河流**，
 `CHECK(rivers > 0)` 是**刻意的建议性断言**并附了解释注释。
 这是本次扫描中唯一"已知失败被写进测试"的地方，
 说明生成器的水文步骤尚未完成（与 `docs/dev/hex-terrain-capability-audit.md:83-85`
@@ -927,7 +927,7 @@ worktree/CI** 都会同时丢掉模块本体**和它的接线**。
 | 项 | 动作 | 验收 |
 |---|---|---|
 | 0.1 | ~~提交 `hexmap`~~ ✅ **已完成（PR #417，已合入 dev）**。新基线下的替代条目：提交主工作区的球面六边形工作 | 从 HEAD 新建的 worktree 也能编译 hexmap（**已验证**：`origin/dev` 含 31 文件 + manifest 声明） |
-| 0.2 | `TacticsPath` 换用相位桶队列 scratch，`path()` 改真 A*，`cellsInRange` 走索引 | `test/tactics_path.cpp` 现有断言不变；新增规模基准 |
+| 0.2 | `TacticsPath` 换用相位桶队列 scratch，`path()` 改真 A*，`cellsInRange` 走索引 | `test/unit/tactics/tactics_tests.cpp` 现有断言不变；新增规模基准 |
 | 0.3 | 补 `BoardState` 的 edge facts（`EdgeKey{from,to}` + `EdgeState{passable,extraCost,tags,oneWay}`） | 新测试：斜向代价、方向性墙、单向边 |
 | 0.4 | 修行动经济：实现 `actionPoints` 消耗、让 `acted` 可读、明确 `endTurn` 自动触发条件 | 新测试：AP 归零自动结束回合；`acted` 查询 |
 | 0.5 | 修 `CombatAttributeRuntime::advance` 的部分变更路径，使其符合自己的头文件契约 | 失败注入测试：中途失败不留部分变更 |
@@ -953,7 +953,7 @@ worktree/CI** 都会同时丢掉模块本体**和它的接线**。
   `openReaction|acceptReaction|declineReaction` /
   `snapshot|restore|replay|commandsFrom`；并让 `addCell` 接受
   `height`/`passable`/`tags`（或提供分步 setter）。
-  验收：`test/tactics_script.cpp` 覆盖每条新绑定；反应窗口与回放可在
+  验收：`test/integration/script-api/script_api_graphics_scene_tests.cpp` 覆盖每条新绑定；反应窗口与回放可在
   Squirrel 里端到端跑通；`examples/tactics` 不再需要 `wait()` 代替 `endTurn`。
 
 - **1.2 `ITurnPolicy` 扩展点**（P0-G）
@@ -1043,9 +1043,9 @@ worktree/CI** 都会同时丢掉模块本体**和它的接线**。
 
 **Phase 1 交付面**（按仓库"六面边界"要求）：
 接口头文件 + `module-interface` 目录条目 + 每项独立测试文件
-（`test/tactics_interaction.cpp`、`test/tactics_presentation.cpp`、
-`test/tactics_turn_policy.cpp`、`test/tactics_line_of_sight.cpp`、
-`test/action_ability_script.cpp`、`test/fov_symmetry.cpp`）
+（`test/unit/tactics/tactics_tests.cpp`、`test/unit/tactics/tactics_tests.cpp`、
+`test/unit/tactics/tactics_tests.cpp`、`test/unit/tactics/tactics_tests.cpp`、
+`test/integration/script-api/script_api_graphics_ScriptECS_tests.cpp`、`test/fov_symmetry.cpp`）
 + 快照 schema 升到 v2 并给 v1→v2 迁移 + `docs/usr/modules/tactics.md` 更新
 + 裁剪 profile 验证（tactics 仍可在无 graphics 构建里通过）。
 
@@ -1069,7 +1069,7 @@ worktree/CI** 都会同时丢掉模块本体**和它的接线**。
 | 3.2 | 迷雾三态（未探索 / 记忆 / 当前可见）+ 可选面向视锥 | 无 |
 | 3.3 | 战棋遭遇编辑器：部署区、编队、目标、刷怪点、地形批量笔刷 | `GridHelper.cs`(31 KB)、`CellBrush`、`UnitBrush`、`GridCoordinatesGizmo` |
 | 3.4 | 表现件：伤害飘字、镜头聚焦/平移、回合转场 UI、路径确认双击、触屏优化控制 | `HealthBar`、`CameraPanning`、`TurnTransitionUI`、`PathConfirmationHighlighter`、`MoveAbilityImpl.WithConfirmation` |
-| 3.5 | 补 `hexmap` 生成器的水文步骤（河流），把 `test/hexmap.cpp:729-733` 的建议性断言变成强制断言 | `docs/dev/hex-terrain-capability-audit.md:83-85` |
+| 3.5 | 补 `hexmap` 生成器的水文步骤（河流），把 `test/unit/hexmap/hexmap_tests.cpp:729-733` 的建议性断言变成强制断言 | `docs/dev/hex-terrain-capability-audit.md:83-85` |
 | 3.6 | 绑定 `Timer::stepSimulation()`/`simulationClock()`，让脚本能驱动确定性固定步进时钟 | 无（我方自建） |
 
 ### 6.3 寻路收敛的具体建议
@@ -1122,11 +1122,11 @@ worktree/CI** 都会同时丢掉模块本体**和它的接线**。
 
 1. **确定性**：新框架层不得引入非注入时间/随机。
    快照字节级一致 + 命令回放一致。既有锚点可复用：
-   `test/tactics_turn.cpp:72-105`（精确的 `RoundStart → TurnStart → Acting`
+   `test/unit/tactics/tactics_tests.cpp:72-105`（精确的 `RoundStart → TurnStart → Acting`
    序列、initiative 20 先于 10、重复同 tick `advance` 返回 `Rejected`、
    no-op `faceUnit` 返回 `NoOp` 且 revision 不变）、
-   `test/tactics_replay.cpp`（回放后快照字节一致）、
-   `test/rts_composition.cpp:6124,6160`（lockstep 与规范状态哈希）。
+   `test/unit/tactics/tactics_tests.cpp`（回放后快照字节一致）、
+   `test/integration/gameplay-composition/gameplay_composition_graphics_rts_combat_tests.cpp:6124,6160`（lockstep 与规范状态哈希）。
 2. **无头可运行**：tactics 相关测试全部在无窗口进程内跑
    （`test/tactics_*.cpp` 已是这个形态，新测试保持）。
 3. **契约测试**：`ILineOfSightPolicy` / `ICoverPolicy` / `ITurnPolicy` /
@@ -1225,37 +1225,11 @@ worktree/CI** 都会同时丢掉模块本体**和它的接线**。
 > 这一点应视为设计选择而非缺陷。**但 `InitializeRng` 从未被调用仍然是缺陷**：
 > 后端就位也不会让随机数在各端一致。
 
-### 9.2b 子代理的联网调研产物
+### 9.2b 已移除的联网调研草稿
 
-详细的联网检索记录与 TBS 通用架构模式（回合调度 IGOUGO/CTB/ATB/WEGO、
-反应与打断、确定性/回放/回滚、AI 选型、网格几何与 LOS、迷雾、网络、持久化，
-外加一份 60 项"完整 TBS 框架能力清单"）在 `docs/dev/tbsf-research/`：
-
-| 文件 | 行数 | 状态 |
-|---|---|---|
-| `tbs-gap-analysis-research.md` | 587 | 汇总（两个 target + 置信度/缺口 + 60 项清单） |
-| `t1-tbsf-unity.md` | 266 | 完整 |
-| `t2a-turn-scheduling.md` | 760 | 完整（字节数与原件一致：71,458） |
-| `t2c-ai-grid-fog-persistence.md` | 385 | 完整（字节数与原件一致：78,139） |
-| `t2-mine.md` | 288 | 完整 |
-| `t2b-determinism-networking.md` | 458 | ⚠️ **仅部分重建** |
-
-**关于 `t2b` 的损失（必须知道）**：该文件原件 1,162 行，
-其中第 1–819 行（Topic A/B/C 的详细证据段与 **约 362 条仅存于此文件的 URL**）
-在文件被误删后**无法从上下文恢复，属永久丢失**。
-重建版已把缺失正文替换为**明确标注 "BODY NOT RECONSTRUCTED" 的标题索引 + 分节摘要**，
-并在 §5 列出损失清单。**该象限（确定性/反应/网络的细粒度引证）如需使用，
-必须从头重新调研**（约 25 次定向检索，或等有可用抓取通道）。
-
-**保真度核验**：我按删除前记录的文件字节数对照——
-`t1`（20,563）、`t2a`（71,458）、`t2c`（78,139）三者**与原件字节数完全一致**；
-`t2-mine` +804 B、汇总 −22 B（应为主题免责声明的措辞微调）；
-`t2b` 由 99,215 → 34,137 B，与"部分重建"一致。
-六者均经严格解码器校验为合法 UTF-8、无 BOM、无替换字符。
-
-⚠️ 该目录的内容**全部基于搜索结果片段**（每条标注 SNIPPET / TITLE / WEAK /
-INFER / UNVERIFIED），**没有任何一个页面正文被成功打开**，
-因此**不得**作为事实依据引用，只能作为"下一步该抓什么"的地图。
+曾存在 `docs/dev/tbsf-research/`（搜索片段拼凑、正文未成功抓取）。该目录已硬删，
+**不得**再作为事实依据；战棋差距以本文（源码 / unitypackage 实测）为准。
+若需补做厂商 FAQ / ReleaseNotes 等一手资料，见 §9.3。
 
 ### 9.3 仍需补做的联网工作（建议在有网络的环境按此顺序执行）
 
@@ -1316,7 +1290,7 @@ INFER / UNVERIFIED），**没有任何一个页面正文被成功打开**，
    ——否则会毁掉正在进行的球面六边形工作。
 4. 本地 `dev` 比 `origin/dev` **多 1 个提交**：`dae6a644c` 并不在 `origin/dev` 上。
 5. 刷新方式：删除 worktree 中我早先补拷的 untracked 副本
-   （`src/modules/hexmap`、`test/hexmap.cpp`、`docs/usr/modules/hexmap.md`、
+   （`src/modules/hexmap`、`test/unit/hexmap/hexmap_tests.cpp`、`docs/usr/modules/hexmap.md`、
    `examples/hex-terrain-3d`，上游均已提供权威版本），
    然后 `git reset --hard origin/dev`。分支无独有提交，分析产物（untracked）完好。
    跨 199 个提交的总体积：**1403 文件 / +178,908 −29,693**；
@@ -1520,9 +1494,9 @@ Phase 1.4/1.5 之后曾跑过 `tactics|gameplay` 子集 **91/91**。
 | 设计文档（含未实现承诺） | `docs/dev/战棋系统设计.md:143,146,179-191,304-305,319-321,450` |
 | 用户文档 | `docs/usr/modules/tactics.md`、`docs/usr/modules/hexmap.md`、`docs/usr/modules/grid.md` |
 | hexmap 搜索/相位桶队列 | `src/modules/hexmap/HexSearch.h:66-225` |
-| hexmap 已知缺陷（无河流） | `test/hexmap.cpp:729-733` |
+| hexmap 已知缺陷（无河流） | `test/unit/hexmap/hexmap_tests.cpp:729-733` |
 | hexmap 可见性（启发式） | `src/modules/hexmap/HexVisibility.h`、`HexSearch.h:208-225` |
-| hexmap 已接线但全未提交 | `cmake/module_manifest/rendering_simulation.cmake:53`（`M`）；`build/win32-debug/.../EVHexmap.dir/*.obj` 存在；31 个源文件与 `test/hexmap.cpp` 为 untracked |
+| hexmap 已接线但全未提交 | `cmake/module_manifest/rendering_simulation.cmake:53`（`M`）；`build/win32-debug/.../EVHexmap.dir/*.obj` 存在；31 个源文件与 `test/unit/hexmap/hexmap_tests.cpp` 为 untracked |
 | 模块脚本名机制 | `cmake/modules.cmake:105-106,451`；`src/scripts/load.nut:93-99` |
 | 能力系统（无脚本出口） | `src/modules/action/AbilitySystem.h:29-126` |
 | notify 未路由 | `src/modules/action/Action.cpp:507-517` |
@@ -1535,15 +1509,15 @@ Phase 1.4/1.5 之后曾跑过 `tactics|gameplay` 子集 **91/91**。
 | 唯一 LOS 实现（World3D） | `src/modules/physics/TargetingLineOfSightAdapter.h:25-28` |
 | candidate provider 孤儿 | `docs/dev/2026-09-15-模块边界审查台账.md:61,149` |
 | AI（数据驱动但 src/ 内零消费者） | `src/modules/npc_ai/NpcAi.h:74-140`、`npc_ai/editing/BehaviorGraph.cpp:32-105` |
-| 决策 | `src/modules/decision/Decision.h` |
+| 决策 | `src/modules/npc_ai/Decision.h` |
 | 通用寻路门面 | `src/modules/map/Pathfinder.h:18-68` |
-| 导航 provider 抽象（仅测试替身） | `src/modules/npc_ai/Navigation.h:44-73`、`test/npc_ai_navigation.cpp:19` |
+| 导航 provider 抽象（仅测试替身） | `src/modules/npc_ai/Navigation.h:44-73`、`test/integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp:19` |
 | Timer 脚本面 | `src/modules/timer/Timer.cpp:83-86` |
 | orders 缺 snapshot 绑定 | `src/modules/orders/CommandQueue.cpp:849,865` |
 | 示例（31 KB 脚本成本） | `examples/tactics/main.nut`、`examples/tactics/README.md` |
 | 第二个可玩回合示例 | `examples/rpg-classic/main.nut:1021,1188,1195-1203,1257,1261` |
 | 唯一 FOV 消费者 | `examples/hex-levels/main.nut:581-600` |
-| 测试锚点 | `test/tactics_turn.cpp:72-105`、`test/map_path.cpp:508-520,252-274`、`test/rts_composition.cpp:6124,6160` |
+| 测试锚点 | `test/unit/tactics/tactics_tests.cpp:72-105`、`test/map_path.cpp:508-520,252-274`、`test/integration/gameplay-composition/gameplay_composition_graphics_rts_combat_tests.cpp:6124,6160` |
 
 ### TBS Framework（路径相对 `.tbs-research/`）
 

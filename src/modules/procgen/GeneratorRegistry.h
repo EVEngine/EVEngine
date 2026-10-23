@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/Grid2D.h"
 #include "procgen/ParamSchema.h"
@@ -18,7 +20,7 @@ using GeneratorFn = std::function<bool(const Params &params, Grid2D &out, std::s
 using GeneratorDescriptor = RecipeDescriptor;
 
 /** @brief Registry for executable generators and their reflection metadata. */
-class GeneratorRegistry {
+class EVENGINE_API_DOMAINS GeneratorRegistry {
 public:
     /** @brief Return the process-wide generator registry. */
     static GeneratorRegistry &instance();

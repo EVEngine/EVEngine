@@ -10,7 +10,7 @@ namespace eve::building_editing {
 using building::codec::runtime;
 using building::codec::snapshot;
 using namespace target_detail;
-EditorResult<DomainOperation> BuildingPlacementTarget::makeEdgeCubicBezier(
+Result<DomainOperation> BuildingPlacementTarget::makeEdgeCubicBezier(
     const std::string& buildingId, const std::vector<BuildingEdgeCurvePoint>& controlPoints, int subdivisions) const {
     std::vector<building::PlacementSystem::EdgeCurvePoint> runtimeControls;
     runtimeControls.reserve(controlPoints.size());
@@ -47,7 +47,7 @@ EditorResult<DomainOperation> BuildingPlacementTarget::makeEdgeCubicBezier(
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<DomainOperation> BuildingPlacementTarget::makeEdgeCubicBezierOnSurface(
+Result<DomainOperation> BuildingPlacementTarget::makeEdgeCubicBezierOnSurface(
     const std::string& buildingId, const std::vector<BuildingEdgeCurvePoint>& controlPoints, int subdivisions,
     const std::string& surfaceName) const {
     if (!world_)
@@ -231,7 +231,7 @@ editing::GizmoSnapshot BuildingPlacementTarget::edgeCubicBezierGizmo(
     return gizmo;
 }
 
-EditorResult<DomainOperation> BuildingPlacementTarget::makeUpdateEdgeCubicBezier(
+Result<DomainOperation> BuildingPlacementTarget::makeUpdateEdgeCubicBezier(
     int memberInstanceId, const std::vector<BuildingEdgeCurvePoint>& controlPoints, int subdivisions) const {
     if (!world_)
         return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.building.world-required"),
@@ -284,7 +284,7 @@ EditorResult<DomainOperation> BuildingPlacementTarget::makeUpdateEdgeCubicBezier
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<BuildingEdgeCurvePoint> BuildingPlacementTarget::curveLogicalPointFromWorld(double worldX, double worldY,
+Result<BuildingEdgeCurvePoint> BuildingPlacementTarget::curveLogicalPointFromWorld(double worldX, double worldY,
                                                                                          double worldZ) const {
     if (!world_ || !std::isfinite(worldX) || !std::isfinite(worldY) || !std::isfinite(worldZ))
         return eve::editing::failed<BuildingEdgeCurvePoint>(

@@ -17,14 +17,23 @@ class ImageData;
 namespace eve::procgen {
 
 /**
- * @brief Full metallic-roughness PBR map set. All maps are caller-owned; call destroy()
- * (or delete each pointer) when done. Maps are derived from one shared
- * displacement field so albedo, normal, height, roughness, metallic and AO
- * line up pixel-for-pixel.
+ * @brief Owning metallic-roughness PBR map set; destruction releases all maps.
+ * Image accessors return borrows valid until destroy() or set destruction;
+ * callers must not delete individual images. Maps share one pixel/UV domain;
+ * pigment may vary independently of the physical displacement field.
+ * @thread Mutable maps require caller synchronization; no callbacks are invoked.
  */
-struct PbrTextureSet {
+struct EVENGINE_API_DOMAINS PbrTextureSet {
+    /** @brief Construct an empty owning map set. */
+    PbrTextureSet()                                 = default;
+    PbrTextureSet(const PbrTextureSet &)            = delete;
+    PbrTextureSet &operator=(const PbrTextureSet &) = delete;
     /** @brief Releases all generated maps when the owning set is destroyed. */
     ~PbrTextureSet();
+    /** @brief Optical transmission [0,1]; consumers must opt into transmission shading. */
+    float transmission = 0.f;
+    /** @brief Dielectric index of refraction; independent of alpha coverage. */
+    float             ior       = 1.5f;
     image::ImageData *albedo    = nullptr;  // RGBA8
     image::ImageData *normal    = nullptr;  // RGBA8 tangent-space normal
     image::ImageData *roughness = nullptr;  // RGBA8, grayscale 0=glossy 1=rough
@@ -32,6 +41,10 @@ struct PbrTextureSet {
     image::ImageData *height    = nullptr;  // RGBA8, grayscale displacement
     image::ImageData *ao        = nullptr;  // RGBA8, grayscale ambient occlusion
 
+    /** @brief Return optical transmission, independent of alpha coverage. @return Value in [0,1]. */
+    float getTransmission() const { return transmission; }
+    /** @brief Return dielectric index of refraction. @return Dimensionless index. */
+    float getIor() const { return ior; }
     /** @brief Return the generated albedo image. @return Borrowed image. */
     image::ImageData *getAlbedo() const { return albedo; }
     /** @brief Return the generated normal image. @return Borrowed image. */
@@ -51,7 +64,8 @@ struct PbrTextureSet {
 /** @brief Recipe returns a newly owned full PBR set, or null on failure. */
 using PbrRecipeFn = std::function<std::unique_ptr<PbrTextureSet>(const Params &params, std::string &error)>;
 
-class PbrRecipeRegistry {
+/** @brief EVENGINE_API_DOMAINS public API. */
+class EVENGINE_API_DOMAINS PbrRecipeRegistry {
 public:
     /** @brief Access the process-wide PBR registry. @return Registry instance. */
     static PbrRecipeRegistry &instance();
@@ -93,8 +107,9 @@ private:
 };
 
 /** @brief Builds a full PBR set from a texture definition and returns unique ownership. */
-[[nodiscard]] std::unique_ptr<PbrTextureSet> generatePbrSet(const TextureRecipeDef &def, const Params &params,
-                                                            std::string &error);
+[[nodiscard]] EVENGINE_API_DOMAINS std::unique_ptr<PbrTextureSet> generatePbrSet(const TextureRecipeDef &def,
+                                                                                 const Params           &params,
+                                                                                 std::string            &error);
 
 /** @brief Builds a grayscale RGBA8 image and returns unique ownership to the caller. */
 [[nodiscard]] std::unique_ptr<image::ImageData> grayscaleImage(const std::vector<float> &values, int w, int h);

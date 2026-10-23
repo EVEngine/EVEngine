@@ -1,5 +1,7 @@
 # Canonical material schema v8
 
+Historical schema: the current write format is [material v15](canonical-material-v15.md).
+
 Schema v8 adds the optional `vegetationDetail` object and three named image
 references: `detailAlbedoTexture`, `detailNormalTexture`, and
 `detailMaskTexture`. The detail object owns TVE secondary-layer UV selection,

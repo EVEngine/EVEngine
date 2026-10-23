@@ -1,3 +1,5 @@
+#include "common/Export.h"
+
 
 #include "common/config.h"
 
@@ -16,13 +18,13 @@ namespace eve
  * @brief Count UTF-8 code points in a string.
  * Invalid / truncated sequences stop the scan.
  */
-size_t utf8_codepoint_count(const std::string &s);
+EVENGINE_API_FOUNDATION size_t utf8_codepoint_count(const std::string &s);
 
 /**
  * @brief Byte offset of the N-th UTF-8 code point (0-based count of code points).
  * Returns s.size() if there are fewer than N code points.
  */
-size_t utf8_byte_offset_for_codepoints(const std::string &s, size_t codepoints);
+EVENGINE_API_FOUNDATION size_t utf8_byte_offset_for_codepoints(const std::string &s, size_t codepoints);
 
 #ifdef EVENGINE_WINDOWS
 

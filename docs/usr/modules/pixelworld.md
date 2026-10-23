@@ -118,7 +118,7 @@ simulation-thread 操作。它只扫描显式的 inclusive 有限区域，保留
 都会返回结构化失败且不写入。Physics/gameplay 可以持有 bitmap，但不得将其当作第二份
 可变地形权威状态。
 
-## API 快查
+## 绑定与行为说明
 
 - 模块：`newWorld()`。
 - 世界写入与推进：兼容 facade `setMaterial()`、`paintCircle()`、`step()`、`clear()`；
@@ -141,6 +141,6 @@ simulation-thread 操作。它只扫描显式的 inclusive 有限区域，保留
 示例：[`examples/pixelworld`](../../../examples/pixelworld/)。
 
 源码：[`src/modules/pixelworld/`](../../../src/modules/pixelworld/)。测试：
-[`test/pixelworld.cpp`](../../../test/pixelworld.cpp) 与
-[`test/pixelworld_control.cpp`](../../../test/pixelworld_control.cpp)、
-[`test/pixelworld_generation.cpp`](../../../test/pixelworld_generation.cpp)。
+[`test/unit/pixelworld/pixelworld_tests.cpp`](../../../test/unit/pixelworld/pixelworld_tests.cpp) 与
+[`test/unit/pixelworld/pixelworld_tests.cpp`](../../../test/unit/pixelworld/pixelworld_tests.cpp)、
+[`test/unit/pixelworld/pixelworld_tests.cpp`](../../../test/unit/pixelworld/pixelworld_tests.cpp)。

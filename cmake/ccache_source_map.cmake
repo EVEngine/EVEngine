@@ -1,0 +1,40 @@
+# Regenerate at build time so roots registered by another concurrently configured
+# worktree are available without forcing a reconfigure of this worktree.
+file(GLOB _eve_records "${REGISTRY}/*.json")
+set(_eve_roots "")
+foreach(_eve_path IN LISTS _eve_records)
+    file(READ "${_eve_path}" _eve_record)
+    string(JSON _eve_schema GET "${_eve_record}" schema)
+    string(JSON _eve_version GET "${_eve_record}" version)
+    if(NOT _eve_schema STREQUAL "evengine.ccache-source-root" OR NOT _eve_version EQUAL 1)
+        message(FATAL_ERROR "Unsupported ccache source-root record: ${_eve_path}")
+    endif()
+    string(JSON _eve_root GET "${_eve_record}" source_root)
+    if(NOT IS_ABSOLUTE "${_eve_root}")
+        message(FATAL_ERROR "Invalid ccache source root: ${_eve_path}")
+    endif()
+    list(APPEND _eve_roots "${_eve_root}")
+endforeach()
+# Keep child roots ahead of parents; sourceFileMap uses the first prefix match.
+# Do not use string(JSON SET): its key sorting would reverse this ordering.
+list(SORT _eve_roots ORDER DESCENDING)
+set(_eve_entries "")
+foreach(_eve_root IN LISTS _eve_roots)
+    list(APPEND _eve_entries "  \"${_eve_root}\": \"${SOURCE_ROOT}\"")
+endforeach()
+# /d1trimfile also makes PDB source paths root-relative. Map each immediate
+# directory prefix and root file explicitly; do not use an empty catch-all
+# prefix that could redirect unrelated system headers.
+file(GLOB _eve_children "${SOURCE_ROOT}/*")
+foreach(_eve_child IN LISTS _eve_children)
+    get_filename_component(_eve_name "${_eve_child}" NAME)
+    if(IS_DIRECTORY "${_eve_child}")
+        list(APPEND _eve_entries "  \"${_eve_name}/\": \"${SOURCE_ROOT}/${_eve_name}/\"")
+        list(APPEND _eve_entries "  \"${_eve_name}\\\\\": \"${SOURCE_ROOT}/${_eve_name}/\"")
+    else()
+        list(APPEND _eve_entries "  \"${_eve_name}\": \"${SOURCE_ROOT}/${_eve_name}\"")
+    endif()
+endforeach()
+string(JOIN ",\n" _eve_contents ${_eve_entries})
+file(WRITE "${OUTPUT}.tmp" "{\n${_eve_contents}\n}\n")
+file(RENAME "${OUTPUT}.tmp" "${OUTPUT}")

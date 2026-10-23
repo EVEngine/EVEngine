@@ -1,10 +1,12 @@
 #pragma once
+
+#include "common/Export.h"
 #include "common/Result.h"
 #include "ui/PcgUiStatus.h"
 namespace ssq { class Table; }
 namespace eve::ui {
 /** @brief Caller-owned state for Pcg's draggable photo-mode window. */
-class PcgDraggableWindow {
+class EVENGINE_API_WORLD PcgDraggableWindow {
 public:
     /** @brief Configure geometry and remember the exact reset position atomically. */
     [[nodiscard]] Result<void> configure(float x, float y, float width, float height,

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 namespace eve::graphics {
 class Graphics;
@@ -16,7 +18,7 @@ class SoftBody3D;
  * Graphics objects are borrowed, thread-affine, and are never retained by a
  * callback.
  */
-class SoftBody3DRenderer final {
+class EVENGINE_API_WORLD SoftBody3DRenderer final {
 public:
     /** @brief Construct a renderer observing a nullable soft-body runtime. */
     explicit SoftBody3DRenderer(SoftBody3D* body) noexcept : body_(body) {}

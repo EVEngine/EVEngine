@@ -12,7 +12,6 @@
 #include "common/Export.h"
 
 #include <array>
-#include <chrono>
 #include <compare>
 #include <cstddef>
 #include <cstdint>
@@ -27,16 +26,27 @@ namespace eve {
 
 namespace detail {
 
+/** @brief PersistentIdTag public API. */
 struct PersistentIdTag {};
+/** @brief ContentIdTag public API. */
 struct ContentIdTag {};
+/** @brief AssetGuidTag public API. */
 struct AssetGuidTag {};
+/** @brief DocumentIdTag public API. */
 struct DocumentIdTag {};
+/** @brief SceneObjectIdTag public API. */
 struct SceneObjectIdTag {};
+/** @brief ArtifactIdTag public API. */
 struct ArtifactIdTag {};
+/** @brief EventIdTag public API. */
 struct EventIdTag {};
+/** @brief CommandIdTag public API. */
 struct CommandIdTag {};
+/** @brief TransactionIdTag public API. */
 struct TransactionIdTag {};
+/** @brief OperationIdTag public API. */
 struct OperationIdTag {};
+/** @brief EffectIdTag public API. */
 struct EffectIdTag {};
 
 /** @brief Byte representation shared by every tagged 128-bit identity. */
@@ -97,6 +107,7 @@ public:
 };
 
 template <typename Tag>
+/** @brief Id128 public API. */
 class Id128 {
 public:
     using Bytes = std::array<std::uint8_t, 16>;
@@ -120,7 +131,9 @@ public:
      *          identities such as an asset and a scene object.
      */
     template <typename OtherTag>
+    /** @brief From uuid. */
     [[nodiscard]] static constexpr Id128 fromUuid(const Id128<OtherTag>& value) noexcept {
+        /** @brief Constructs a Id128. */
         return Id128(value.bytes());
     }
 
@@ -148,6 +161,7 @@ public:
         if (bytes.size() != 16) return std::nullopt;
         Bytes result{};
         for (std::size_t i = 0; i < result.size(); ++i) result[i] = bytes[i];
+        /** @brief Constructs a Id128. */
         return Id128(result);
     }
 
@@ -176,6 +190,7 @@ public:
      */
     [[nodiscard]] Id128 child(std::string_view role) const noexcept {
         if (isNil() || role.empty()) return Id128::nil();
+        /** @brief Constructs a Id128. */
         return Id128(childUuidBytes(bytes_, role));
     }
 
@@ -200,6 +215,7 @@ public:
         return result;
     }
 
+    /** @brief Operator ==. */
     friend constexpr bool operator==(const Id128&, const Id128&) noexcept = default;
 
     /** @brief Orders UUID bytes in network order for ordered containers. */
@@ -293,6 +309,7 @@ using EffectId = StrongUuid<detail::EffectIdTag>;
  * `uuid()`/`canonicalFormat()` and declare its schema migration policy.
  */
 template <typename Tag>
+/** @brief UuidIdAdapter public API. */
 class UuidIdAdapter {
 public:
     using Uuid  = StrongUuid<Tag>;
@@ -300,6 +317,10 @@ public:
 
     /** @brief Constructs an empty compatibility identifier. */
     UuidIdAdapter() = default;
+    UuidIdAdapter(const UuidIdAdapter&)                = default;
+    UuidIdAdapter& operator=(const UuidIdAdapter&)     = default;
+    UuidIdAdapter(UuidIdAdapter&&) noexcept            = default;
+    UuidIdAdapter& operator=(UuidIdAdapter&&) noexcept = default;
 
     /** @brief Constructs from a legacy spelling or canonical UUID text. */
     explicit UuidIdAdapter(const char* value) : UuidIdAdapter(std::string_view(value ? value : "")) {}
@@ -317,6 +338,7 @@ public:
      */
     [[nodiscard]] static std::optional<UuidIdAdapter> parse(std::string_view value) {
         if (value.empty()) return std::nullopt;
+        /** @brief Constructs a UuidIdAdapter. */
         return UuidIdAdapter(value);
     }
 
@@ -366,6 +388,7 @@ public:
     /** @brief Explicit boolean check for a non-empty identifier. */
     explicit operator bool() const noexcept { return !empty(); }
 
+    /** @brief Operator ==. */
     friend bool operator==(const UuidIdAdapter& lhs, const UuidIdAdapter& rhs) noexcept {
         return lhs.state_.uuid == rhs.state_.uuid;
     }
@@ -388,7 +411,7 @@ private:
  * case-sensitive ASCII (`[A-Za-z0-9][A-Za-z0-9_.-]*`). This prevents modules
  * from inventing incompatible namespace spellings at a persistence boundary.
  */
-class EVENGINE_API LogicalId {
+class EVENGINE_API_FOUNDATION LogicalId {
 public:
     /** @brief Constructs an empty, invalid logical ID. */
     LogicalId() = default;
@@ -435,67 +458,12 @@ private:
     std::string value_;
 };
 
-/**
- * @brief Entropy callback used by UUIDv7 generation.
- * @param bytes A writable span that the callback must fill completely on success.
- * @return true only when all requested bytes were filled with suitable entropy.
- * @remarks Callers must provide a seed; no implicit pseudo-random source or
- *          `random_device` path is used.
- *          Security-sensitive callers must inject a cryptographically secure source.
- */
-using UuidEntropySource = std::function<bool(std::span<std::uint8_t> bytes)>;
-
-/** @brief Clock callback used by the injectable UUIDv7 generator. */
-using UuidClock = std::function<std::chrono::system_clock::time_point()>;
-
-/**
- * @brief Injectable UUIDv7 generator.
- *
- * UUIDv7 contains a Unix-millisecond timestamp and random bits.  This class
- * assembles the value but does not provide entropy itself.  The caller owns
- * the security and availability properties of the injected entropy source.
- */
-class EVENGINE_API UuidV7Generator {
-public:
-    /**
-     * @brief Creates a generator with an injected entropy source and optional clock.
-     * @param entropy Source for the UUID random portion; an empty source makes generation fail.
-     * @param clock Source for the timestamp; an empty source uses system_clock at call time.
-     */
-    explicit UuidV7Generator(UuidEntropySource entropy, UuidClock clock = {});
-
-    /**
-     * @brief Generates a UUIDv7 using the injected clock.
-     * @return A generated PersistentId, or empty when entropy/time is unavailable or out of range.
-     */
-    [[nodiscard]] std::optional<PersistentId> generate() const;
-
-    /**
-     * @brief Generates a UUIDv7 for an explicit timestamp.
-     * @param timestamp Unix time used for the UUIDv7 millisecond field.
-     * @return A generated PersistentId, or empty when entropy/time is unavailable or out of range.
-     */
-    [[nodiscard]] std::optional<PersistentId> generate(std::chrono::system_clock::time_point timestamp) const;
-
-private:
-    UuidEntropySource entropy_;
-    UuidClock         clock_;
-};
-
-/**
- * @brief Constructs a UUIDv7 without owning a clock or generator object.
- * @param timestamp Unix time used for the UUIDv7 millisecond field.
- * @param entropy Source for the UUID random portion.
- * @return A generated PersistentId, or empty when entropy/time is unavailable or out of range.
- */
-[[nodiscard]] EVENGINE_API std::optional<PersistentId> generateUuidV7(std::chrono::system_clock::time_point timestamp,
-                                                                      const UuidEntropySource&              entropy);
-
 }  // namespace eve
 
 namespace std {
 
 template <typename Tag>
+/** @brief hash public API. */
 struct hash<eve::detail::Id128<Tag>> {
     /** @brief Hashes a strong 128-bit identity for standard hash containers. */
     std::size_t operator()(const eve::detail::Id128<Tag>& value) const noexcept {
@@ -504,6 +472,7 @@ struct hash<eve::detail::Id128<Tag>> {
 };
 
 template <typename Tag>
+/** @brief hash public API. */
 struct hash<eve::UuidIdAdapter<Tag>> {
     /** @brief Hashes a compatibility-aware UUID adapter for standard hash containers. */
     std::size_t operator()(const eve::UuidIdAdapter<Tag>& value) const noexcept {
@@ -512,6 +481,7 @@ struct hash<eve::UuidIdAdapter<Tag>> {
 };
 
 template <>
+/** @brief hash public API. */
 struct hash<eve::LogicalId> {
     /** @brief Hashes a logical ID for standard hash containers. */
     std::size_t operator()(const eve::LogicalId& value) const noexcept {

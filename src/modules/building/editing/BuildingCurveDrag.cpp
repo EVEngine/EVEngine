@@ -21,7 +21,7 @@ BuildingEdgeCurveDragSession::BuildingEdgeCurveDragSession(BuildingPlacementTarg
       subdivisions_(subdivisions),
       surfaceName_(std::move(surfaceName)) {}
 
-EditorResult<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::previewCurrent() const {
+Result<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::previewCurrent() const {
     if (!target_)
         return eve::editing::failed<BuildingEdgeCurveDragPreview>(EditorStatus::Rejected,
                                                                   RuleId("editor.building.curve-drag-target-required"),
@@ -37,7 +37,7 @@ EditorResult<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::preview
     return eve::editing::applied<BuildingEdgeCurveDragPreview>(std::move(result));
 }
 
-EditorResult<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::beginDrag(double rayOriginX, double rayOriginY,
+Result<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::beginDrag(double rayOriginX, double rayOriginY,
                                                                                    double rayOriginZ,
                                                                                    double rayDirectionX,
                                                                                    double rayDirectionY,
@@ -87,7 +87,7 @@ EditorResult<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::beginDr
     return previewCurrent();
 }
 
-EditorResult<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::updateDrag(
+Result<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::updateDrag(
     double rayOriginX, double rayOriginY, double rayOriginZ, double rayDirectionX, double rayDirectionY,
     double rayDirectionZ) {
     if (!dragging_ || !target_)
@@ -133,7 +133,7 @@ EditorResult<BuildingEdgeCurveDragPreview> BuildingEdgeCurveDragSession::updateD
     return preview;
 }
 
-EditorResult<DomainOperation> BuildingEdgeCurveDragSession::finishDrag() {
+Result<DomainOperation> BuildingEdgeCurveDragSession::finishDrag() {
     if (!dragging_ || !target_)
         return eve::editing::failed<DomainOperation>(
             EditorStatus::Rejected, RuleId("editor.building.curve-drag-not-active"), "Curve drag has not begun");

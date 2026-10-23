@@ -1,6 +1,12 @@
 #pragma once
+#include "common/Export.h"
 
-/** @file ActionPrefabBlock.h @brief Typed payload contract for prefab-spawn action states. */
+
+/** @file ActionPrefabBlock.h
+ *  @brief Typed payload contract for prefab-spawn action states.
+ *  @remarks L1 typed payload contract only — no domain mutation;
+ *           providers own handlers/sinks (`IActionNotifyProvider` / capabilities).
+ */
 
 #include "action/ActionSpatialBlock.h"
 #include "common/Time.h"
@@ -27,12 +33,13 @@ enum class PrefabSpawnLifecycle : std::uint8_t {
  * This is the renderer-neutral contract shared by editor validation and the
  * runtime provider. It stores no entity, scene-node, resource, or bone pointer.
  */
-struct ActionPrefabSpawnBinding {
+struct EVENGINE_API_PLATFORM ActionPrefabSpawnBinding {
     std::string           uri;
     PrefabSpawnLifecycle lifecycle = PrefabSpawnLifecycle::RecycleOnBlockExit;
     Duration              customDuration = Duration::zero();
     ActionSpatialBinding  spatial;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionPrefabSpawnBinding&) const = default;
 
     /**

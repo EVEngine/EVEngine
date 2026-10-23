@@ -20,7 +20,9 @@ public:
     /** @brief Bind a host-owned world that outlives this target. */
     BuildingAssemblyTarget(std::string id, building::PlacementWorld& world);
     ~BuildingAssemblyTarget() override;
+    /** @brief Return the stable target identity. @cost Copies the identity string per query. */
     editing::TargetId         targetId() const override;
+    /** @brief Describe this transaction target. @cost Copies descriptor strings per inspection. */
     editing::TargetDescriptor describe() const override;
     /**
      * @brief Consume a prepared house gesture into one reversible editor operation.

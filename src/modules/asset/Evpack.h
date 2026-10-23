@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file Evpack.h
@@ -46,6 +48,7 @@ struct EvpackSignature {
 /** @brief Tool-side provider that signs the authenticated 32-byte package metadata digest. */
 class EvpackSigner {
 public:
+    /** @brief Releases EvpackSigner resources. */
     virtual ~EvpackSigner() = default;
     /** @brief Produce a publisher signature without retaining the borrowed digest. */
     [[nodiscard]] virtual Result<EvpackSignature> sign(
@@ -55,6 +58,7 @@ public:
 /** @brief Runtime trust provider supplied by the application/project policy. */
 class EvpackSignatureVerifier {
 public:
+    /** @brief Releases EvpackSignatureVerifier resources. */
     virtual ~EvpackSignatureVerifier() = default;
     /** @brief Verify a detached signature against a trusted key identity. */
     [[nodiscard]] virtual Result<void> verify(
@@ -157,7 +161,7 @@ struct EvpackVariantSelection {
  * @brief Fully admitted owning runtime pack.
  * @remarks Chunk views remain valid until this object is moved, assigned, or destroyed.
  */
-class Evpack {
+class EVENGINE_API_FOUNDATION Evpack {
 public:
     /** @brief Stable package identity from the verified header. */
     [[nodiscard]] const PersistentId& packageId() const noexcept { return packageId_; }
@@ -186,8 +190,8 @@ public:
         std::size_t index, std::uint64_t maximumDecodedBytes) const;
 
 private:
-    friend Result<Evpack> parseEvpack(std::span<const std::uint8_t>, const EvpackLimits&,
-                                      const EvpackTrust&);
+    friend EVENGINE_API_FOUNDATION Result<Evpack> parseEvpack(std::span<const std::uint8_t>, const EvpackLimits&,
+                                                              const EvpackTrust&);
     friend Result<Evpack> parseEvpackMetadata(std::span<const std::uint8_t>, std::uint64_t,
                                               const EvpackLimits&, const EvpackTrust&);
     PersistentId                  packageId_;
@@ -200,13 +204,13 @@ private:
 };
 
 /** @brief Build deterministic little-endian `.evpack` bytes from validated Cook output. */
-[[nodiscard]] Result<std::vector<std::uint8_t>> buildEvpack(
-    EvpackBuild build, const EvpackLimits& limits = {});
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::vector<std::uint8_t>> buildEvpack(EvpackBuild         build,
+                                                                                    const EvpackLimits& limits = {});
 
 /** @brief Parse, bound-check and hash-verify a complete untrusted `.evpack`. */
-[[nodiscard]] Result<Evpack> parseEvpack(
-    std::span<const std::uint8_t> bytes, const EvpackLimits& limits = {},
-    const EvpackTrust& trust = {});
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<Evpack> parseEvpack(std::span<const std::uint8_t> bytes,
+                                                                 const EvpackLimits&           limits = {},
+                                                                 const EvpackTrust&            trust  = {});
 
 /**
  * @brief Admit only the contiguous header/manifest/TOC prefix of a range-readable package.
@@ -223,7 +227,7 @@ private:
  * @brief Select the first explicitly ordered variant satisfied by device capabilities.
  * @return Selected index and whether an ordered fallback after index zero was used.
  */
-[[nodiscard]] Result<EvpackVariantSelection> selectEvpackVariant(
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<EvpackVariantSelection> selectEvpackVariant(
     const Evpack& pack, const EvpackCapabilities& capabilities);
 
 }  // namespace eve::asset

@@ -12,6 +12,11 @@ int appendNode(UIHost::Tree &tree, WidgetDesc &&desc, int parent = -1) {
     node.text = std::move(desc.text);
     node.valueText = std::move(desc.valueText);
     node.tooltip = std::move(desc.tooltip);
+    node.helpText       = std::move(desc.helpText);
+    node.disabledReason = std::move(desc.disabledReason);
+    node.placeholder    = std::move(desc.placeholder);
+    node.multiline      = desc.multiline;
+    node.readOnly       = desc.readOnly;
     node.visible = desc.visible;
     node.enabled = desc.enabled;
     node.checked = desc.checked;
@@ -165,6 +170,11 @@ void patchProps(UIHost::Tree &tree, int nodeIndex, WidgetDesc &&desc) {
     n.text = std::move(desc.text);
     n.valueText = std::move(desc.valueText);
     n.tooltip = std::move(desc.tooltip);
+    n.helpText       = std::move(desc.helpText);
+    n.disabledReason = std::move(desc.disabledReason);
+    n.placeholder    = std::move(desc.placeholder);
+    n.multiline      = desc.multiline;
+    n.readOnly       = desc.readOnly;
     n.visible = desc.visible;
     n.enabled = desc.enabled;
     n.checked = desc.checked;
@@ -462,6 +472,18 @@ WidgetDesc inputText(std::string label, std::string value, std::string id,
     return d;
 }
 
+WidgetDesc link(std::string label, std::string target, std::string id, std::function<void()> onClick) {
+    WidgetDesc d;
+    d.type              = NodeType::Link;
+    d.accessibilityRole = AccessibilityRole::Link;
+    d.text              = std::move(label);
+    d.valueText         = std::move(target);
+    d.id                = std::move(id);
+    d.key               = d.id;
+    d.onClick           = std::move(onClick);
+    return d;
+}
+
 WidgetDesc searchField(std::string hint, std::string value, std::string id,
                        std::function<void(const std::string &)> onChange) {
     WidgetDesc d;
@@ -617,6 +639,105 @@ WidgetDesc splitPane(FlexDirection direction, WidgetDesc first, WidgetDesc secon
     d.onValue = std::move(onResize);
     d.children.push_back(std::move(first));
     d.children.push_back(std::move(second));
+    return d;
+}
+
+WidgetDesc tab(std::string label, std::string pageId, bool selected, std::string id, std::function<void()> onClick) {
+    WidgetDesc d;
+    d.type              = NodeType::Tab;
+    d.id                = id.empty() ? ("tab/" + pageId) : std::move(id);
+    d.key               = d.id;
+    d.text              = std::move(label);
+    d.valueText         = std::move(pageId);
+    d.checked           = selected;
+    d.accessibilityRole = AccessibilityRole::Tab;
+    d.onClick           = std::move(onClick);
+    return d;
+}
+
+WidgetDesc tabBar(std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type          = NodeType::TabBar;
+    d.id            = std::move(id);
+    d.key           = d.id;
+    d.flexDirection = FlexDirection::Row;
+    d.alignItems    = FlexAlign::Center;
+    d.children      = std::move(children);
+    return d;
+}
+
+WidgetDesc tabContainer(std::vector<WidgetDesc> pages, std::string activePageId, std::string id,
+                        std::function<void(const std::string &)> onSelect) {
+    WidgetDesc d;
+    d.type          = NodeType::TabContainer;
+    d.id            = std::move(id);
+    d.key           = d.id;
+    d.valueText     = activePageId;
+    d.flexDirection = FlexDirection::Column;
+    d.flexGrow      = 1.f;
+    d.onTextChange  = std::move(onSelect);
+
+    std::vector<WidgetDesc> tabs;
+    tabs.reserve(pages.size());
+    if (d.valueText.empty() && !pages.empty()) {
+        d.valueText = pages.front().id.empty() ? pages.front().key : pages.front().id;
+    }
+    for (auto &page : pages) {
+        const std::string pageId   = page.id.empty() ? page.key : page.id;
+        const std::string label    = page.text.empty() ? pageId : page.text;
+        const bool        selected = !d.valueText.empty() && pageId == d.valueText;
+        page.visible               = selected;
+        tabs.push_back(tab(label, pageId, selected));
+    }
+    d.children.push_back(tabBar(std::move(tabs), d.id.empty() ? "tabs" : d.id + "/bar"));
+    for (auto &page : pages) d.children.push_back(std::move(page));
+    return d;
+}
+
+WidgetDesc panelFrame(std::string title, std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type          = NodeType::PanelFrame;
+    d.id            = std::move(id);
+    d.key           = d.id;
+    d.text          = std::move(title);
+    d.flexDirection = FlexDirection::Column;
+    d.flexGrow      = 1.f;
+    d.overflow      = OverflowMode::Clip;
+    d.children      = std::move(children);
+    return d;
+}
+
+WidgetDesc dockArea(std::string region, std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type          = NodeType::DockArea;
+    d.id            = id.empty() ? ("dock/" + region) : std::move(id);
+    d.key           = d.id;
+    d.valueText     = std::move(region);
+    d.flexDirection = FlexDirection::Column;
+    d.flexGrow      = 1.f;
+    d.overflow      = OverflowMode::Clip;
+    d.children      = std::move(children);
+    return d;
+}
+
+WidgetDesc appFrame(WidgetDesc body, WidgetDesc toolbarWidget, WidgetDesc statusBarWidget, std::string id) {
+    WidgetDesc d;
+    d.type          = NodeType::AppFrame;
+    d.id            = std::move(id);
+    d.key           = d.id;
+    d.flexDirection = FlexDirection::Column;
+    d.flexGrow      = 1.f;
+    d.percentW      = 1.f;
+    d.percentH      = 1.f;
+    if (toolbarWidget.type == NodeType::Toolbar || !toolbarWidget.children.empty() || !toolbarWidget.id.empty()) {
+        d.children.push_back(std::move(toolbarWidget));
+    }
+    body.flexGrow = std::max(body.flexGrow, 1.f);
+    d.children.push_back(std::move(body));
+    if (statusBarWidget.type == NodeType::StatusBar || !statusBarWidget.children.empty() ||
+        !statusBarWidget.id.empty()) {
+        d.children.push_back(std::move(statusBarWidget));
+    }
     return d;
 }
 

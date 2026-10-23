@@ -28,18 +28,25 @@ struct CurvePoint {
  */
 class ParticleGradient {
 public:
+    /** @brief Clears . */
     void clear() { stops.clear(); }
 
+    /** @brief Adds . */
     void add(float t, float r, float g, float b, float a) {
         stops.push_back(ColorStop{t, r, g, b, a});
+        /** @brief Sort. */
         std::sort(stops.begin(), stops.end(),
                   [](const ColorStop &x, const ColorStop &y) { return x.t < y.t; });
     }
 
+    /** @brief Empty. */
     bool empty() const { return stops.empty(); }
+    /** @brief Returns the size of . */
     size_t size() const { return stops.size(); }
+    /** @brief At. */
     const ColorStop &at(size_t i) const { return stops[i]; }
 
+    /** @brief Sample. */
     void sample(float t, float &r, float &g, float &b, float &a) const {
         if (stops.empty()) {
             r = g = b = a = 1.f;
@@ -87,16 +94,22 @@ private:
  */
 class ParticleCurve {
 public:
+    /** @brief Clears . */
     void clear() { points.clear(); }
 
+    /** @brief Adds . */
     void add(float t, float v) {
         points.push_back(CurvePoint{t, v});
+        /** @brief Sort. */
         std::sort(points.begin(), points.end(),
                   [](const CurvePoint &x, const CurvePoint &y) { return x.t < y.t; });
     }
 
+    /** @brief Empty. */
     bool empty() const { return points.empty(); }
+    /** @brief Returns the size of . */
     size_t size() const { return points.size(); }
+    /** @brief At. */
     const CurvePoint &at(size_t i) const { return points[i]; }
 
     /** @brief Sample at normalized t; fallback is returned when the curve is empty. */

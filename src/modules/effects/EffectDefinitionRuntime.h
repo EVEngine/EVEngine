@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file EffectDefinitionRuntime.h
@@ -40,7 +42,7 @@ struct EffectRuntimeState {
  * contract and is atomic with respect to this adapter's typed state; callers
  * explicitly call `applyTo` to update the container-owned instance.
  */
-class EffectDefinitionRuntime final {
+class EVENGINE_API_FOUNDATION EffectDefinitionRuntime final {
 public:
     /**
      * @brief Create a typed effect runtime from a registry definition.

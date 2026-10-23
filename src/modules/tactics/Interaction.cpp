@@ -13,10 +13,6 @@
 namespace eve::tactics {
 namespace {
 
-Result<void> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 bool containsCell(const std::vector<Cell>& cells, Cell cell) {
     return std::find(cells.begin(), cells.end(), cell) != cells.end();
 }

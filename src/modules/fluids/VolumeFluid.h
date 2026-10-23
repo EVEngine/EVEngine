@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "fluids/FluidSdf.h"
@@ -271,7 +273,7 @@ struct VolumeFluidContactEvent {
 };
 
 /** @brief Explicit bounded contact lifecycle tracker; owns no solver reference. */
-class VolumeFluidContactTracker final {
+class EVENGINE_API_DOMAINS VolumeFluidContactTracker final {
 public:
     /** @brief Diffs latest contacts against the preceding successful call.
      * @param contacts Borrowed latest-step contacts; at most 65536.
@@ -512,7 +514,7 @@ struct VolumeFluidSnapshot {
  * Liquid/gas sampling uses a half-spacing separation regularizer to resolve
  * coincident zero-gradient particles; granular contacts use full spacing.
  */
-class VolumeFluid final {
+class EVENGINE_API_DOMAINS VolumeFluid final {
 public:
     /** @brief Validates settings before allocating an owning solver; errors publish no state. */
     [[nodiscard]] static Result<std::unique_ptr<VolumeFluid>> create(const VolumeFluidSettings& settings);
@@ -589,6 +591,18 @@ public:
     /** @brief Atomically updates collider samples and advances; failed steps restore prior samples and particles. */
     [[nodiscard]] Result<void> stepWithColliders(float seconds, unsigned substeps,
                                                  std::span<const VolumeFluidCollider>    colliders,
+                                                 std::span<const VolumeFluidThermalRule> rules = {});
+    /**
+     * @brief Atomically updates analytic and SDF colliders, then advances.
+     * @details Failed validation or steps restore prior analytic colliders, SDF
+     * colliders, attachments and particles. Empty `sdfColliders` clears owned SDF
+     * samples for the step the same way empty analytic input clears analytic ones.
+     * @cost Copies collider descriptions once; SDF sample buffers are moved into the
+     * owned set when validation succeeds.
+     */
+    [[nodiscard]] Result<void> stepWithColliders(float seconds, unsigned substeps,
+                                                 std::span<const VolumeFluidCollider>    colliders,
+                                                 std::span<const VolumeFluidSdfCollider> sdfColliders,
                                                  std::span<const VolumeFluidThermalRule> rules = {});
     /** @brief Returns an owning snapshot, independent of subsequent mutation or destruction. */
     [[nodiscard]] std::vector<VolumeFluidParticle> particles() const;

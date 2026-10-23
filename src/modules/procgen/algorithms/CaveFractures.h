@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 
@@ -35,6 +37,6 @@ struct CaveFractureSample {
  * @param input Point, fracture geometry, opt-in controls, and deterministic seed.
  * @return Local dissolution mask plus diagnostic aperture and branch factors.
  */
-[[nodiscard]] CaveFractureSample sampleCaveFracture(const CaveFractureInput& input);
+[[nodiscard]] EVENGINE_API_DOMAINS CaveFractureSample sampleCaveFracture(const CaveFractureInput& input);
 
 }  // namespace eve::procgen

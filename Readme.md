@@ -8,6 +8,42 @@ Evolutionary Vision Engine
 
 ## 文档导航
 
+### Windows / Linux ARM64 原生构建
+
+在 ARM64 宿主上执行，先运行 `make init/submodules`：
+
+| 平台 | Debug | Release |
+| --- | --- | --- |
+| Windows ARM64 | `make build/win32-arm64-debug JOBS=8` | `make build/win32-arm64 JOBS=8` |
+| Linux ARM64 | `make build/linux-arm64-debug JOBS=4` | `make build/linux-arm64 JOBS=4` |
+
+Windows 需要 Visual Studio ARM64 C++ 工具（含 `vcvarsarm64.bat`）、Windows SDK、
+Ninja、Git Bash，以及 Vulkan 头文件、着色器工具和 ARM64 loader 库。
+Windows 命令通过 `cmake/with-msvc.cmd --arm64` 选择原生 MSVC 环境。
+Linux 使用原生 GCC/G++、Ninja，安装与普通 Linux 构建相同的 aarch64 开发依赖。
+这些入口不使用交叉编译工具链，会检查宿主、目标与编译器是否为 ARM64。
+
+third-party 同样从固定版本源码构建为 ARM64；构建入口会先完成依赖编译与安装。
+只构建依赖可用 `make deps/win32-arm64[-debug]` 或
+`make deps/linux-arm64[-debug]`（`[-debug]` 表示可选后缀）。
+依赖缓存位于 `build/third-party/<平台>-arm64[-debug]`，安装位于
+`build/third-party-binary/<平台>-arm64[-debug]`，与已有 x64 目录隔离。
+不要通过 `EVENGINE_THIRD_PARTY_BINARY_DIR` 指向 x64 库。
+
+CMake 直接配置仍使用根目录入口：`-DEVENGINE_NATIVE_ARM64=ON`，
+配合 `-DEVENGINE_BUILD_PLATFORM=win32` 或 `linux`，并指定独立的 `-B` 目录。
+Debug 保留严格警告，Release 使用 OBJECT 链接策略。
+定向测试使用 `make test/win32-arm64-debug DOMAIN=<域>` 或
+`make test/linux-arm64-debug DOMAIN=<域>`；Linux 图形测试仍需显示服务、
+匹配 aarch64 的 Vulkan ICD 和音频后端。原有 `make debug` 默认入口保持不变。
+
+CI 使用 GitHub 托管的 `windows-11-arm` 和 `ubuntu-24.04-arm` 原生 runner，
+复用现有 Windows／Linux 变更范围判断。日常构建 Debug；`build_type=release`
+构建 Release，`build_type=both` 则构建两种配置。任务编译并链接引擎和测试程序，
+第三方依赖必须使用对应 ARM64 的预编译发布包（`EVENGINE_THIRD_PARTY_MODE=PREBUILT`）。
+依赖源码修复和二进制打包由 third-party 仓库负责；缺少包时明确失败，不在这些 CI 任务中重新编译依赖。
+目前这些任务仅检查构建，不运行 ARM64 图形测试，也不增加 SDK 发布打包。
+
 - 想先直观感受引擎的渲染效果？浏览[示例渲染画廊](docs/images/examples/README.md)——每张截图都由引擎把交换链上实际呈现的一帧原样输出。
 - [游戏开发者文档](docs/usr/README.md)：下载引擎、创建并运行游戏、调试与打包发布；[模块使用手册](docs/usr/MODULES.md) 逐个说明脚本 API 和示例。
 - [在线 API 参考（Doxygen）](https://evengine.github.io/EVEngine/)：随 GitHub Pages 持续发布，包含 C++ API 与用户手册。
@@ -131,7 +167,38 @@ bin\eve.exe run mygame
 | C++ 编译器 | 支持 **C++20** | MSVC / GCC / Clang |
 | Vulkan SDK | **≥ 1.2** | 图形后端；需正确设置环境变量 |
 
-第三方库（SDL2、Box2D、Squirrel、Poco、ImGui、OpenAL Soft、FreeType、GLM、VKBuilder 等）由 CMake 的 `ExternalProject` 自动从 [EVEngine/third-party](https://github.com/EVEngine/third-party) 拉取并编译，一般无需手动安装。
+第三方库由 [EVEngine/third-party 独立发布](https://github.com/EVEngine/third-party/releases)。
+`cmake/third_party_pin.cmake` 同时固定发布 tag 和源码提交。支持的平台默认在配置时下载、
+校验并复用预编译依赖，EVEngine release CI 只构建引擎及 SDK，不再重编这些依赖库（含 Jolt）。
+
+```powershell
+make build/win32-debug
+# 也可提前下载，准备离线依赖目录：
+python scripts/third_party_package.py win32 --configuration Debug
+```
+
+依赖包包括 Windows x64 的 Release/Debug、Linux x86_64、macOS arm64/x86_64、
+Android arm64-v8a 和 iOS arm64 真机。非 Windows 的 Debug 引擎复用 Release 依赖库。
+下载工具校验 SHA256、格式版本、发布 tag、源码提交、平台、架构和库配置；兼容目录直接复用，
+不兼容目录报错且不会覆盖。全部校验成功后才发布安装目录。
+AUTO 模式遇到下载不可用（缺少资产、网络失败等）时明确输出原因并构建固定版本源码；
+校验失败或包不兼容仍报错。PREBUILT 模式要求下载成功。
+
+需要自行编译依赖时明确指定：
+
+```powershell
+make build/win32-debug CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=SOURCE"
+```
+
+默认 `AUTO` 对已提供依赖包的目标使用二进制；Emscripten、iOS 模拟器、其他 Android ABI、
+macOS 通用架构和自定义 sanitizer/code-model 构建使用源码。`PREBUILT` 则要求目标有预编译包。
+原有 `EVENGINE_THIRD_PARTY_BINARY_DIR` 仍可指定兼容的离线/本机依赖目录。
+升级依赖时，先等 third-party 独立 release 上传完成，再更新引擎中的 tag 和提交两个固定值。
+依赖补丁由 third-party 仓库维护；引擎自有 `external/ECS.hpp`、`external/zeroerr` 的补丁留在本仓库。
+
+zip 包含头文件、静态/动态库、运行时文件、版本信息和许可文件。仍需安装平台构建工具、
+Vulkan SDK、系统开发库，并初始化引擎子模块；配置时也会拉取 ImGui 等直接参与引擎编译的源码。
+各包的编译器、系统和 SDK 兼容基线见[英文构建说明](Readme.en.md)，不兼容的工具链使用源码模式。
 
 #### Windows
 
@@ -139,11 +206,11 @@ bin\eve.exe run mygame
 |------|----------|
 | 操作系统 | Windows 10 / 11（x64） |
 | IDE / 工具链 | **Visual Studio 2026**（含「使用 C++ 的桌面开发」工作负载） |
-| CMake 生成器 | `Visual Studio 18 2026`（与仓库根目录 `Makefile` 一致） |
+| CMake 生成器 | 根目录 `Makefile` 的 Windows Debug / Release 目标使用 Ninja + MSVC；手工配置 VS 工程时可选 `Visual Studio 18 2026` |
 | Vulkan SDK | 从 [LunarG](https://vulkan.lunarg.com/) 安装，安装后确认用户环境变量 `VULKAN_SDK`（例如 `C:\VulkanSDK\1.4.357.0`），并把 `%VULKAN_SDK%\Bin` 加入 `PATH`（含 `glslc`）。装完后请**新开终端 / 重启 Cursor** 再 cmake |
 | 可选 | Git for Windows、将 CMake / Ninja 加入 `PATH` |
 
-> 若使用 Visual Studio 2022，可将 `Makefile` 中的生成器改为 `"Visual Studio 17 2022"`。
+> 若使用 Visual Studio 2022，Ninja 目标通过 `cmake/with-msvc.cmd` 定位已安装的 MSVC；手工配置 VS 工程时选择 `"Visual Studio 17 2022"`。
 
 #### Linux
 
@@ -369,7 +436,7 @@ make build/win32-debug \
 
 | 目标 | 构建目录 | 说明 |
 |------|----------|------|
-| Win32 Release | `build/win32` | VS 工程 + Release 二进制 |
+| Win32 Release | `build/win32` | Ninja + MSVC Release 二进制 |
 | Win32 Debug | `build/win32-debug` | Ninja + MSVC Debug 二进制 |
 | Linux Release | `build/linux` | Unix Makefiles |
 | Linux Debug | `build/linux-debug` | Unix Makefiles |
@@ -424,6 +491,9 @@ cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=macosx -B bu
 #### 2. 编译第三方依赖（deps）
 
 第三方通过自定义目标 `deps` / `third-party` 构建。配置完成后：
+
+默认 AUTO 优先复用固定版本 zip，下载成功时 `deps` 不再编译依赖；
+只有下载不可用或目标没有对应包时才构建源码。SOURCE 可强制源码构建。
 
 ```sh
 # 以 Windows Debug 为例
@@ -488,7 +558,7 @@ docker run -it --rm --volume="$(pwd):/home/evengine/src" evengine /bin/bash
    确认已安装 Vulkan SDK，且 `VULKAN_SDK` 指向正确路径；macOS 请 `source ~/VulkanSDK/<version>/setup-env.sh` 后再配置。重新打开终端后再 cmake。
 
 2. **Windows 生成器名称不匹配**  
-   `Makefile` 当前使用 `Visual Studio 18 2026`。若本机是 VS 2022，请改生成器字符串或升级 IDE。
+   Windows Makefile 目标使用 Ninja。手工配置 VS 工程时，请选择已安装的生成器（VS 2026 或 VS 2022）；不要复用由其他生成器配置的构建目录。
 
 3. **首次 `deps` 很慢或网络失败**  
    `third-party` 从 GitHub 拉取。可手动 `git clone https://github.com/EVEngine/third-party` 到仓库根目录的 `third-party/`，再重新配置。

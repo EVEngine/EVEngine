@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "common/Module.h"
 
@@ -18,14 +19,17 @@ class DistanceField3D;
  * Script: `physics <- eve.Physics(); world <- physics.newWorld(0, 900);`
  *         `world3 <- physics.newWorld3D(0, -9.8, 0);`
  */
-class Physics : public Module {
+class EVENGINE_API_WORLD Physics : public Module {
 public:
     Module_REG(Physics);
+    /** @brief Physics. */
     Physics();
+    /** @brief Physics. */
     ~Physics() override = default;
 
     /** @brief Pixels per meter for 2D Box2D worlds (default 30, same as LÖVE). */
     void  setMeter(float pixelsPerMeter);
+    /** @brief Returns the meter. */
     float getMeter() const;
 
     /**
@@ -55,6 +59,22 @@ public:
      * @reentrancy The factory invokes no callbacks; do not re-enter physics mutation while using the result.
      */
     World3D *newWorld3D(float gravityX, float gravityY, float gravityZ, bool sleep = true);
+
+    /** @brief Compatibility script factory selecting "box3d" or "jolt" explicitly.
+     * @param backend Stable solver name; missing providers fail without selecting another solver.
+     * @param gravityX Gravity in metres per second squared along X.
+     * @param gravityY Gravity in metres per second squared along Y.
+     * @param gravityZ Gravity in metres per second squared along Z.
+     * @param sleep Whether bodies may sleep.
+     * @return Owning world; caller deletes it on the simulation thread.
+     * @throws eve::Exception For invalid names or rejected creation. Canonical inward API is
+     * World3D::createWithBackend returning Result.
+     * @ownership Transfers ownership; no callbacks or retained Physics reference.
+     * @cost Allocates solver workspace once per world creation; reuse the world across frames.
+     */
+    World3D *newWorld3DWithBackend(const std::string &backend, float gravityX, float gravityY, float gravityZ,
+                                   bool sleep = true);
+
 
     /**
      * @brief Create a regular 3D signed-distance grid for map collision queries.

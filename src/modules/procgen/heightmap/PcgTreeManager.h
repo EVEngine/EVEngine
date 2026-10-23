@@ -12,7 +12,7 @@ class PointSet;
  * @ownership Copies positions and prototype indices; PointSet inputs are borrowed only during calls.
  * @thread Caller-thread affine; methods invoke no callbacks and read no hidden time or RNG.
  */
-class PcgTreeManager {
+class EVENGINE_API_DOMAINS PcgTreeManager {
 public:
     /** @brief Atomically reset the index to finite positive world XZ bounds. */
     [[nodiscard]] Result<void> reset(float minimumX, float minimumZ, float width, float depth);

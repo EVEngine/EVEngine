@@ -1,0 +1,179 @@
+file=cold-10000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=256 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1929216
+validation=passed checked=10000 ticks=68 checksum=6.31151e+06
+
+file=cold-100000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=256 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1925120
+validation=passed checked=100000 ticks=68 checksum=6.39614e+07
+
+file=cold-1000000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=256 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1929216
+validation=passed checked=1000000 ticks=68 checksum=6.40698e+08
+
+file=cold-3000000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=256 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1925120
+validation=passed checked=3000000 ticks=68 checksum=1.92237e+09
+
+file=deferred-10000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1925120
+validation=passed checked=10000 ticks=68 checksum=6.39352e+06
+
+file=deferred-100000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1925120
+validation=passed checked=100000 ticks=68 checksum=6.39761e+07
+
+file=deferred-1000000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1929216
+validation=passed checked=1000000 ticks=68 checksum=6.40808e+08
+
+file=deferred-3000000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1925120
+validation=passed checked=3000000 ticks=68 checksum=1.92259e+09
+
+file=dense-10000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1908736
+validation=passed checked=10000 ticks=68 checksum=6.31151e+06
+
+file=dense-100000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1925120
+validation=passed checked=100000 ticks=68 checksum=6.39614e+07
+
+file=dense-1000000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1929216
+validation=passed checked=1000000 ticks=68 checksum=6.40698e+08
+
+file=dense-3000000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1925120
+validation=passed checked=3000000 ticks=68 checksum=1.92237e+09
+
+file=dense4-10000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=48 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1925120
+validation=passed checked=10000 ticks=68 checksum=6.31151e+06
+
+file=dense4-100000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=48 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1925120
+validation=passed checked=100000 ticks=68 checksum=6.39614e+07
+
+file=dense4-1000000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=48 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1929216
+validation=passed checked=1000000 ticks=68 checksum=6.40698e+08
+
+file=dense4-3000000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=48 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1925120
+validation=passed checked=3000000 ticks=68 checksum=1.92237e+09
+
+file=holes50-10000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1929216
+validation=passed checked=5000 ticks=68 checksum=3.1532e+06
+
+file=holes50-100000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1925120
+validation=passed checked=50000 ticks=68 checksum=3.19558e+07
+
+file=holes50-1000000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1925120
+validation=passed checked=500000 ticks=68 checksum=3.20099e+08
+
+file=holes50-3000000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1925120
+validation=passed checked=1500000 ticks=68 checksum=9.60434e+08
+
+file=holes90-10000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1929216
+validation=passed checked=1000 ticks=68 checksum=630693
+
+file=holes90-100000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1925120
+validation=passed checked=10000 ticks=68 checksum=6.39098e+06
+
+file=holes90-1000000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1929216
+validation=passed checked=100000 ticks=68 checksum=6.40197e+07
+
+file=holes90-3000000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1929216
+validation=passed checked=300000 ticks=68 checksum=1.92087e+08
+
+file=inheritance-10000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1929216
+validation=passed checked=10000 ticks=68 checksum=6.31151e+06
+
+file=inheritance-100000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1925120
+validation=passed checked=100000 ticks=68 checksum=6.39614e+07
+
+file=inheritance-1000000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1929216
+validation=passed checked=1000000 ticks=68 checksum=6.40698e+08
+
+file=inheritance-3000000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1925120
+validation=passed checked=3000000 ticks=68 checksum=1.92237e+09
+
+file=refill-10000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1929216
+validation=passed checked=10000 ticks=68 checksum=6.31151e+06
+
+file=refill-100000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1904640
+validation=passed checked=100000 ticks=68 checksum=6.39614e+07
+
+file=refill-1000000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1925120
+validation=passed checked=1000000 ticks=68 checksum=6.40698e+08
+
+file=refill-3000000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1912832
+validation=passed checked=3000000 ticks=68 checksum=1.92237e+09
+
+file=vector-10000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1929216
+validation=passed checked=10000 ticks=68
+
+file=vector-100000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1925120
+validation=passed checked=100000 ticks=68
+
+file=vector-1000000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1929216
+validation=passed checked=1000000 ticks=68
+
+file=vector-3000000.log
+schema=ecs-benchmark-v1 config=Release-direct compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=5 samples=21 iterations=3 dt=0.015625
+engine_revision=unknown ecs_revision=unknown rss_before_bytes=1925120
+validation=passed checked=3000000 ticks=68

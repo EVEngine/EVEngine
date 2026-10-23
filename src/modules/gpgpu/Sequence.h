@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <string>
@@ -30,23 +32,30 @@ enum class SequenceStatus : uint8_t { Idle, Recording, Submitted, Complete, Fail
  *     // or submitAsync() + poll()/wait() to overlap unrelated CPU work
  *     staging->downloadBytes(dst, nbytes);      // host-visible memcpy
  *
+ * Vulkan sequences that bind a storage_vertex buffer execute on the graphics
+ * queue, ordering resident vertex production with same-device frame draws.
  * A Sequence is reusable after synchronous submit(), or after an asynchronous
  * submission reaches Complete/Failed. Shaders keep their bindings between
  * records; pending work retains no C++ owners, so callers must keep referenced
  * shaders and buffers alive until completion.
  */
-class Sequence {
+/** @brief EVENGINE_API_WORLD public API. */
+class EVENGINE_API_WORLD Sequence {
 public:
+    /** @brief Sequence. */
     Sequence();
+    /** @brief Sequence. */
     ~Sequence();
 
     Sequence(const Sequence &) = delete;
     Sequence &operator=(const Sequence &) = delete;
 
     /** True when the active Vulkan or WebGPU backend supports command recording. */
+    /** @brief True when available. */
     bool isAvailable() const;
 
     /** Start recording. Safe to call again after submit() to reuse. */
+    /** @brief Begins begin. */
     void begin();
 
     /**
@@ -54,6 +63,7 @@ public:
      * host-visible staging buffer immediately, so it only needs to stay
      * valid until this call returns.
      */
+    /** @brief Record upload. */
     void recordUpload(GpuBuffer *dst, const void *src, uint64_t nbytes,
                       uint64_t dstOffset = 0);
 
@@ -61,14 +71,17 @@ public:
      * Record a device->host copy into `staging` (a "staging" usage buffer).
      * Read the staging buffer after submit().
      */
+    /** @brief Record download. */
     void recordDownload(GpuBuffer *src, GpuBuffer *staging, uint64_t nbytes,
                         uint64_t srcOffset = 0);
 
     /** Record a compute dispatch using the shader's current bindings/push constants. */
+    /** @brief Record dispatch. */
     void recordDispatch(ComputeShader *shader, int groupsX, int groupsY = 1,
                         int groupsZ = 1);
 
     /** End recording, submit the whole sequence once, and wait for completion. */
+    /** @brief Submit. */
     void submit();
 
     /**

@@ -1,5 +1,8 @@
 #pragma once
+#include "common/Export.h"
+
 
 namespace eve::ui {
-void registerUIAutomationCapabilities();
+/** @brief Registers ui automation capabilities. */
+EVENGINE_API_WORLD void registerUIAutomationCapabilities();
 }

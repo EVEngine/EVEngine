@@ -8,6 +8,7 @@
 // Agent 通过 eve_play 驾驶本游戏（见 game.agent.json）：
 //   status / clock / step / observe combat-alive / capture / checkpoint
 // 不要把 eve_eval 当作官方观察路径。
+// 迭代调试时用 eve_restart（可选 args）软重启，不要杀进程重载资源。
 // 一键复现：python examples/ai-game/agent_demo.py 7529
 // ============================================================================
 
@@ -17,9 +18,30 @@ persist gameState = {
         hits = 0
         plaTimer = 0.0
         eneTimer = 0.0
+        seed = 0
         player = { hp = 100.0, maxHp = 100.0, attack = 14.0 }
         enemy  = { hp = 80.0,  maxHp = 80.0,  attack = 9.0 }
     }
+
+function restart_args() {
+    if ("restartArgs" in eve && eve.restartArgs != null) return eve.restartArgs;
+    return {};
+}
+
+function apply_restart_args(state) {
+    local args = restart_args();
+    if ("seed" in args) state.seed = args.seed.tointeger();
+    if ("enemyHp" in args) {
+        local hp = args.enemyHp.tofloat();
+        state.enemy.maxHp = hp;
+        state.enemy.hp = hp;
+    }
+    if ("playerHp" in args) {
+        local hp = args.playerHp.tofloat();
+        state.player.maxHp = hp;
+        state.player.hp = hp;
+    }
+}
 
 // --- Agent 可调用的脚本入口（命令与可序列化权威状态保持分离） ---
 game <- {};
@@ -31,12 +53,37 @@ game.reset <- function() {
     gameState.hits = 0;
     gameState.plaTimer = 0.0;
     gameState.eneTimer = 0.0;
+    apply_restart_args(gameState);
+};
+
+// Param-only soft restart path (eve_restart with reloadScripts=false).
+function publish_ai_game_world() {
+    // Title comes from config.title; systems from config.modules / live slots.
+    // publishWorldContext is only for narrative the config table does not carry.
+    if (!("dev" in eve) || !("publishWorldContext" in eve.dev)) return;
+    local result = eve.dev.publishWorldContext({
+        summary = "Minimal timed duel driven through eve_play; UI hud is the only live system surface."
+        tags = ["runtime"]
+    });
+    if (!result.ok) print("publishWorldContext failed: " + result.status.summary + "\n");
+}
+
+eve_restart <- function(args) {
+    game.reset();
+    gameState.tick = 0;
+    gameState.time = 0.0;
+    apply_restart_args(gameState);
+    publish_ai_game_world();
 };
 
 eve_init = function() {
     // `persist` preserves this root across hot reload; DevTools registration
     // additionally makes it part of explicit MCP snapshot capture/restore.
+    // Soft restart (reloadScripts=true) deletes the root so persist re-inits
+    // and eve.restartArgs can reshape the fresh defaults.
     if ("dev" in eve) eve.dev.markStateRoot("gameState");
+    publish_ai_game_world();
+    apply_restart_args(gameState);
     gfx.setBackgroundColor(0.07, 0.08, 0.12, 1.0);
     ui.setTheme("dark");
     ui.beginBuild();
@@ -75,13 +122,14 @@ eve_update = function(dt) {
     if (gameState.enemy.hp < 0.0) gameState.enemy.hp = 0.0;
 
     ui.select("hud");
-    local state = format("tick=%d  time=%.1f  hits=%d", gameState.tick, gameState.time, gameState.hits);
+    local state = format("tick=%d  time=%.1f  hits=%d  seed=%d",
+                         gameState.tick, gameState.time, gameState.hits, gameState.seed);
     local hpText = format("玩家 HP %.0f/%.0f   敌人 HP %.0f/%.0f",
                           gameState.player.hp, gameState.player.maxHp, gameState.enemy.hp, gameState.enemy.maxHp);
     ui.setText("status", state + "\n" + hpText);
     local hint = gameState.player.hp <= 0.0
-        ? "GAME OVER —— Agent 可用 eve_run_script: game.reset(); 重开"
-        : "MCP: eve_play status/observe/step/capture/checkpoint";
+        ? "GAME OVER —— Agent 可用 eve_restart 或 eve_run_script: game.reset(); 重开"
+        : "MCP: eve_play status/observe/step + eve_restart {args}";
     ui.setText("hint", hint);
 };
 

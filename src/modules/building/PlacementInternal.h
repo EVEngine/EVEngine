@@ -30,6 +30,7 @@ FreeFootprint definitionFreeFootprint(const BuildingDefinition& definition, cons
 void          applyDefinitionFreeFootprint(PlacedBuilding& placed, const BuildingDefinition& definition,
                                            const PlacementWorld& world);
 FreeFootprint placedFreeFootprint(const PlacedBuilding& placed);
+/** @brief Transform footprint vertices. @cost Copies vertex count per overlap query. */
 std::vector<FreeFootprint::Point> worldVertices(const FreeFootprint& footprint);
 bool                              isPointInPolygon(const FreeFootprint& polygon, float x, float y);
 bool                              hasFreeFootprintOverlap(const FreeFootprint& a, const FreeFootprint& b);

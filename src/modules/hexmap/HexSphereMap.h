@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file HexSphereMap.h @brief Editable spherical hex map over an icosahedral hex topology. */
 
@@ -53,11 +55,12 @@ namespace eve::hexmap {
  * only on the subdivision level, the radius and the seed. Two maps built with
  * the same triple produce identical topology, cell storage and positions.
  */
-class HexSphereMap {
+class EVENGINE_API_WORLD HexSphereMap {
 public:
     /** @brief Ratio of the default radial elevation step to the sphere radius. */
     static constexpr float kDefaultElevationRatio = 0.006f;
 
+    /** @brief Hex sphere map. */
     HexSphereMap() = default;
 
     /**

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file TargetingPipeline.h
@@ -60,6 +62,8 @@ struct TargetingSourceContext {
     QueryOrigin   origin{};
     float         dirX = 1.f;
     float         dirY = 0.f;
+    bool          usedSpatial = false; /**< Execution-only selection counters; reset by the plan. */
+    std::uint32_t scanned     = 0;
 };
 
 /**
@@ -70,6 +74,7 @@ struct TargetingSourceContext {
  */
 class ITargetingTask {
 public:
+    /** @brief Releases ITargetingTask resources. */
     virtual ~ITargetingTask() = default;
 
     /** @brief Stable task id used by presets (e.g. "sensing.filter.cone"). */
@@ -85,15 +90,48 @@ public:
 };
 
 /**
+ * @brief Immutable resolved legacy plan; owns tasks independently of its registry.
+ * @ownership Shared immutable task ownership permits plans to outlive registry replacement.
+ * @thread Execute on the source world's simulation thread; custom tasks must not mutate themselves.
+ */
+class EVENGINE_API_PLATFORM TargetingPlan {
+public:
+    /** @brief Executes resolved tasks without name lookup; never publishes partial results.
+     * @cost One candidate scan plus configured tasks per call; compile once and reuse.
+     */
+    [[nodiscard]] Result<CandidateQueryResult> execute(TargetingSourceContext& context) const;
+
+private:
+    friend class TargetingPipeline;
+    TargetingPlan() = default;
+    bool hasSort_   = false;
+    struct Step {
+        std::shared_ptr<const ITargetingTask> task;
+        TargetingTaskStep                     parameters;
+    };
+    std::vector<Step> steps_;
+    std::uint32_t     minCount_ = 0;
+    std::uint32_t     maxCount_ = std::numeric_limits<std::uint32_t>::max();
+};
+
+/**
  * @brief In-memory task + preset registry and synchronous executor.
  *
  * @thread Not synchronized; use on one simulation thread.
  * @reentrancy Tasks must not re-enter executePreset on the same pipeline.
  */
-class TargetingPipeline {
+class EVENGINE_API_PLATFORM TargetingPipeline {
 public:
     /** @brief Creates an empty pipeline. */
     TargetingPipeline() = default;
+    // Class-level dllexport instantiates every member; `tasks_` is a map of
+    // unique_ptr, so the implicit copy assignment would be a hard C2280.
+    TargetingPipeline(const TargetingPipeline&)            = delete;
+    TargetingPipeline& operator=(const TargetingPipeline&) = delete;
+    /** @brief Targeting pipeline. */
+    TargetingPipeline(TargetingPipeline&&)                 = default;
+    /** @brief Operator =. */
+    TargetingPipeline& operator=(TargetingPipeline&&)      = default;
 
     /** @brief Creates a pipeline with built-in sensing tasks and one coneSelect preset. */
     [[nodiscard]] static TargetingPipeline withBuiltins();
@@ -106,7 +144,11 @@ public:
 
     /** @brief Registers a unique task; duplicate ids fail with AlreadyExists. */
     [[nodiscard]] Result<void> registerTask(std::unique_ptr<ITargetingTask> task);
-    /** @brief Registers or replaces a preset after validating task ids exist. */
+    /** @brief Validates and resolves a legacy preset into an owning execution plan.
+     * @cost Resolves and copies steps once per definition change, not per candidate.
+     */
+    [[nodiscard]] Result<TargetingPlan> compile(const TargetingPreset& preset) const;
+    /** @brief Registers or replaces a preset transactionally after compiling it. */
     [[nodiscard]] Result<void> registerPreset(TargetingPreset preset);
     /** @brief Returns whether a preset id is registered. */
     [[nodiscard]] bool hasPreset(std::string_view presetId) const noexcept;
@@ -125,8 +167,8 @@ public:
                                                              std::string_view         presetId) const;
 
 private:
-    std::map<std::string, std::unique_ptr<ITargetingTask>, std::less<>> tasks_;
-    std::map<std::string, TargetingPreset, std::less<>>                 presets_;
+    std::map<std::string, std::shared_ptr<const ITargetingTask>, std::less<>> tasks_;
+    std::map<std::string, TargetingPlan, std::less<>>                         presets_;
 };
 
 }  // namespace eve::sensing

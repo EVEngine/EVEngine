@@ -1,3 +1,5 @@
+dofile("river.nut");
+dofile("vegetation.nut");
 // LIVING SKY — unified DayNight + Weather + volumetric clouds / height fog.
 // 1..5 weather, Space pause, Left/Right scrub time, S lightning, C camera.
 
@@ -7,11 +9,10 @@ persist skyCamera = null
 persist skyClouds = null
 persist skyFog = null
 persist skyWeather = "clear"
-persist skyCamAngle = 1.35
-persist skyAutoCamera = true
+persist skyCamAngle = 1.083
+persist skyAutoCamera = false
 persist skyStrikeDown = false
 persist skyTerrain = null
-persist skyWaterfall = null
 
 skyPresets <- {
     clear =   { rain=0.0, wind=1.0, dir=15.0, cloud=0.18, cover=0.22, density=0.48,
@@ -39,98 +40,90 @@ function addObject(mesh, x, y, z, sx, sy, sz, r, g, b, roughness) {
     return o;
 }
 
-function addModel(path, x, y, z, scale, yaw) {
-    local md = model3d.newModelDataFromFile(path);
-    for (local i = 0; i < md.getMeshCount(); ++i) {
-        local o = model3d.createRenderable(gfx, md, i);
-        o.setPosition(x, y, z);
-        o.setScale(scale, scale, scale);
-        o.setYaw(yaw);
-        o.setTint(0.58, 0.72, 0.50, 1.0);
-        o.setCastShadow(true);
-        o.setReceiveShadow(true);
-        skyProps.push(o);
+function riverGround(wx,wz) {
+    local cliff=clampf((-wz-5.4)/2.2,0.0,1.0);
+    cliff=cliff*cliff*(3.0-2.0*cliff);
+    local ground=0.55+cliff*4.8+abs(wx)*0.055;
+    ground+=0.16*math.polarY(1.0,wx*1.14+wz*0.58);
+    local nearest=100000.0, bed=0.0, width=1.0;
+    foreach (r in riverSamples) {
+        local d=(wx-r.x)*(wx-r.x)+(wz-r.z)*(wz-r.z);
+        if (d<nearest) { nearest=d; bed=r.y-0.48; width=r.width; }
     }
+    local bank=clampf((sqrt(nearest)-width*0.84)/1.3,0.0,1.0);
+    bank=bank*bank*(3.0-2.0*bank);
+    ground=bed*(1.0-bank)+ground*bank;
+    return ground;
 }
 
 function buildLivingScene() {
-    const TW = 72;
-    const TH = 72;
-    const CELL = 0.5;
+    buildRiver();
+    const TW = 100;
+    const TH = 100;
+    const CELL = 0.36;
     local heightmapResult = procgen.newHeightmap(TW, TH);
     if (!heightmapResult.ok) throw heightmapResult.status.summary;
     local hm = heightmapResult.value;
     for (local z = 0; z < TH; ++z) {
         for (local x = 0; x < TW; ++x) {
-            local wx = (x - 36) * CELL;
-            local wz = (z - 36) * CELL;
-            local side = abs(wx) / 18.0;
-            local backRaw = (-wz - 4.0) / 14.0;
-            local channelRaw = 1.0 - abs(wx) / 3.0;
-            local back = backRaw > 0.0 ? backRaw : 0.0;
-            local channel = channelRaw > 0.0 ? channelRaw : 0.0;
-            local valleySide = abs(wx) / 18.0;
-            local cliffStart = 5.5 + valleySide * valleySide * 5.8;
-            local cliffT = clampf((-wz - cliffStart) / (2.4 + valleySide * 3.8), 0.0, 1.0);
-            cliffT = cliffT * cliffT * (3.0 - 2.0 * cliffT);
-            local cliffRise = cliffT * 0.46;
-            local basin = clampf(1.0 - ((wx * wx) / 30.0 + ((wz - 4.5) * (wz - 4.5)) / 55.0),
-                                 0.0, 1.0) * 0.12;
-            local ripple = 0.035 * math.polarY(1.0, x * 0.61 + z * 0.37) +
-                           0.02 * math.polarX(1.0, x * 0.19 - z * 0.43);
-            local h = 0.12 + side * side * 0.28 + back * 0.22 + cliffRise -
-                      channel * 0.16 - basin + ripple;
-            hm.setHeight(x, z, clampf(h, 0.03, 0.92));
+            local wx = (x - 50) * CELL;
+            local wz = (z - 50) * CELL;
+            local ground=riverGround(wx,wz);
+            hm.setHeight(x,z,clampf((ground+1.5)/8.0,0.01,0.98));
         }
     }
-    local terrainMesh = eve.HeightmapTargetModule().newMesh(hm, CELL, 7.0);
-    skyTerrain = addObject(terrainMesh, -18.0, -0.85, -18.0,
+    local terrainMesh = eve.HeightmapTargetModule().newMesh(hm, CELL, 8.0);
+    skyTerrain = addObject(terrainMesh, -18.0, -1.5, -18.0,
         1.0, 1.0, 1.0, 0.17, 0.31, 0.16, 0.98);
     skyTerrain.setCastShadow(true);
-
-    local treeSites = [
-        [-12.0, 0.35, -4.2, 1.55, 8.0], [11.7, 0.35, -3.8, 1.45, -18.0],
-        [-8.7, 4.15, -10.1, 1.80, 24.0], [8.4, 4.05, -10.0, 1.75, -31.0],
-        [-14.5, 0.20, 5.4, 1.25, 46.0], [14.3, 0.18, 6.0, 1.30, -44.0]
-    ];
-    for (local i = 0; i < treeSites.len(); ++i) {
-        local t = treeSites[i];
-        local path = i < 4 ? "assets/tree_pineTallA_detailed.obj" :
-            "assets/tree_pineSmallB.obj";
-        addModel(path, t[0], t[1], t[2], t[3], t[4]);
+    local pixels=eve.Image().newEmptyImageData(TW,TH,"RGBA8");
+    for (local z=0;z<TH;++z) for (local x=0;x<TW;++x) {
+        local x1=x<TW-1 ? x+1 : x, z1=z<TH-1 ? z+1 : z;
+        local slope=(abs(hm.height(x1,z)-hm.height(x,z))+
+                     abs(hm.height(x,z1)-hm.height(x,z)))*8.0/CELL;
+        local rock=clampf((slope-0.35)/1.6,0.0,1.0);
+        local grain=0.94+0.06*vegetationHash(x,z,97);
+        local strata=0.88+0.12*math.polarY(1.0,hm.height(x,z)*180.0);
+        pixels.setPixel(x,z,((1.0-rock)*0.065+rock*0.24*strata)*grain,
+            ((1.0-rock)*0.14+rock*0.23*strata)*grain,
+            ((1.0-rock)*0.065+rock*0.19*strata)*grain,1.0);
     }
-    local rimPines = [[-5.8,4.25,-11.0,1.25],[5.5,4.15,-10.8,1.15],
-                      [-12.2,2.0,-8.5,1.15],[12.0,1.9,-8.0,1.10],
-                      [-10.5,0.25,1.0,0.90],[10.2,0.20,1.5,0.85]];
-    for (local i = 0; i < rimPines.len(); ++i) {
-        local t = rimPines[i];
-        addModel("assets/tree_pineTallA_detailed.obj", t[0], t[1], t[2], t[3], i * 41.0);
-    }
+    skyTerrain.setTexture(gfx.newTexture(pixels,false,false));
+    skyTerrain.setTint(1.0,1.0,1.0,1.0);
 
-    skyWaterfall = gfx.newWaterfall();
-    skyWaterfall.createCurvedSheet(2.65, 6.8, 28, 48, 0.75, 0.85);
-    skyWaterfall.setFlowSpeed(1.35);
-    skyWaterfall.setTurbulence(0.72);
-    skyWaterfall.setStreakCount(7);
-    skyWaterfall.setStreakScale(7.5);
-    skyWaterfall.setTopFoam(0.10);
-    skyWaterfall.setBottomFoam(0.22);
-    skyWaterfall.setFoamAmount(0.95);
-    skyWaterfall.setWaterColor(0.055, 0.28, 0.36);
-    skyWaterfall.setReflectionIntensity(0.68);
-    skyWaterfall.setSunIntensity(1.05);
-    local fallEnt = eve.Renderable3D();
-    fallEnt.setMesh(skyWaterfall.getMesh());
-    fallEnt.setShader(skyWaterfall.getShader());
-    fallEnt.setPosition(0.0, 1.45, -7.08);
-    skyProps.push(fallEnt);
+    buildNativeTrees(hm, CELL);
+    buildNativeGrass(hm, CELL);
+
+    local stone=gfx.newMeshSphere(7,5);
+    // Fixed placement sequence keeps captures and hot reload reproducible.
+    for (local i=6;i<232;i+=6) {
+        local r=riverSamples[i];
+        foreach (sign in [-1.0,1.0]) {
+            local offset=r.width+0.35+(i%5)*0.10;
+            local x=r.x+r.sx*offset*sign, z=r.z+r.sz*offset*sign;
+            local size=0.35+(i%7)*0.11;
+            local y=riverGround(x,z);
+            local rock=addObject(stone,x,y-0.12,z,size*1.5,size*0.75,size,
+                0.12+(i%3)*0.025,0.16+(i%3)*0.025,0.15+(i%3)*0.025,0.85);
+            rock.setYaw(i*37.0);
+            rock.setCastShadow(true);
+        }
+    }
+    // Large fractured boulders frame the waterfall without covering its lip.
+    foreach (sign in [-1.0,1.0]) for (local i=0;i<5;++i) {
+        local rock=addObject(stone,sign*(2.6+i*0.95),2.15+(i%2)*0.3,-6.7,
+            1.2,2.4,1.2,0.14,0.18,0.17,0.92);
+        rock.setYaw(i*31.0);
+        rock.setCastShadow(true);
+    }
+    print("LIVING_SKY_WATER_READY upstream=river drop=continuous downstream=river\n");
 }
 
 function buildSkyPanel() {
     ui.setTheme("dark");
     ui.beginBuild();
     ui.beginWindow("LIVING SKY", "root");
-    ui.text("Unified atmosphere", "title");
+    ui.text("Spline falls & river", "title");
     ui.text("", "clock");
     ui.text("", "phase");
     ui.text("Weather", "h1");
@@ -140,7 +133,7 @@ function buildSkyPanel() {
     ui.button("4  Storm", "storm");
     ui.button("5  Snow", "snow");
     ui.button("Strike lightning (S)", "strike");
-    ui.text("Space pause  •  ←/→ time  •  C camera", "hint");
+    ui.text("Space pause | arrows time | C orbit | G curve", "hint");
     ui.end();
     ui.mountBuildAs("skyPanel");
     ui.select("skyPanel");
@@ -170,7 +163,8 @@ function applySkyPreset(name) {
 
 eve_init = function() {
     skyCamera = eve.Camera3D();
-    skyCamera.setEye(0.0, 6.2, 18.0);
+    skyCamera.setEye(9.0, 8.0, 17.0);
+    skyCamera.setActive(true);
     skyCamera.setTarget(0.0, 1.8, -3.5);
     skyCamera.setFov(52.0);
     buildLivingScene();
@@ -209,11 +203,12 @@ eve_init = function() {
 };
 
 eve_update = function(dt) {
-    if (skyWaterfall != null) skyWaterfall.update(dt);
+    updateRiver(dt);
+    updateNativeVegetation(dt);
     if (skyAutoCamera) {
         skyCamAngle += dt * 0.018;
-        skyCamera.setEye(math.polarX(18.0, skyCamAngle), 6.2,
-                         math.polarY(18.0, skyCamAngle));
+        skyCamera.setEye(math.polarX(19.2, skyCamAngle), 8.0,
+                         math.polarY(19.2, skyCamAngle));
         skyCamera.setTarget(0.0, 1.8, -3.5);
     }
 
@@ -241,11 +236,11 @@ eve_update = function(dt) {
     daynight.setWeatherInfluence(p.cloud, weather.getFlash());
     daynight.update(dt, gfx);
 
-    local ex = math.polarX(18.0, skyCamAngle);
-    local ez = math.polarY(18.0, skyCamAngle);
-    skyClouds.setCamera(ex, 6.2, ez, 0.0, 1.8, -3.5, 0.0, 1.0, 0.0,
+    local ex = math.polarX(19.2, skyCamAngle);
+    local ez = math.polarY(19.2, skyCamAngle);
+    skyClouds.setCamera(ex, 8.0, ez, 0.0, 1.8, -3.5, 0.0, 1.0, 0.0,
                         52.0, 1.7778, 0.1, 120.0);
-    skyFog.setCamera(ex, 6.2, ez, 0.0, 1.8, -3.5, 0.0, 1.0, 0.0,
+    skyFog.setCamera(ex, 8.0, ez, 0.0, 1.8, -3.5, 0.0, 1.0, 0.0,
                      52.0, 1.7778, 0.1, 120.0);
     daynight.applyAtmosphere(skyClouds);
     daynight.applyAtmosphere(skyFog);

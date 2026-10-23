@@ -1,4 +1,5 @@
 #include "vehicle/VehiclePhysics.h"
+#include "vehicle/VehicleTireRuntime.h"
 
 #include "physics/Body.h"
 #include "physics/Body3D.h"
@@ -19,6 +20,7 @@ namespace eve::vehicle {
 class VehiclePhysicsBinding {
 public:
     enum class Space : std::uint8_t { TwoD, ThreeD };
+    std::shared_ptr<VehicleWheelRuntime> wheelRuntime;
 
     VehiclePhysicsBinding(eve::physics::PhysicsLink link, eve::physics::World* world,
                           std::weak_ptr<const void> lifetime)
@@ -61,6 +63,7 @@ public:
     [[nodiscard]] bool isAttached() const { return resolve2D() != nullptr || resolve3D() != nullptr; }
 
     void detach() noexcept {
+        wheelRuntime.reset();
         if (auto* body = resolve2D()) body->destroy();
         if (auto* body = resolve3D()) body->destroy();
         link_     = {};
@@ -85,7 +88,8 @@ float normalizeDeg(float deg) {
     return deg;
 }
 
-void wheelMove2D(VehicleEntity& v, eve::physics::Body* b, float dt) {
+
+void shipMove2D(VehicleEntity& v, eve::physics::Body* b, float dt) {
     const VehicleDefinition* def = v.definition()->def;
     if (def == nullptr) return;
     auto in = v.input();
@@ -107,7 +111,7 @@ void wheelMove2D(VehicleEntity& v, eve::physics::Body* b, float dt) {
     b->setLinearVelocity(std::cos(rad) * mo->speed, std::sin(rad) * mo->speed);
 }
 
-void wheelMove3D(VehicleEntity& v, eve::physics::Body3D* b, float dt) {
+void shipMove3D(VehicleEntity& v, eve::physics::Body3D* b, float dt) {
     const VehicleDefinition* def = v.definition()->def;
     if (def == nullptr) return;
     auto in = v.input();
@@ -129,88 +133,11 @@ void wheelMove3D(VehicleEntity& v, eve::physics::Body3D* b, float dt) {
     b->setLinearVelocity(std::sin(rad) * mo->speed, 0.f, std::cos(rad) * mo->speed);
 }
 
-void suspensionMove3D(VehicleEntity& v, eve::physics::Body3D* b, float dt) {
-    const VehicleDefinition* def = v.definition()->def;
-    if (def == nullptr) return;
-    eve::physics::World3D* world = b->getWorld();
-    if (world == nullptr) {
-        if (IVehicleMobility* kinematic = VehicleSystem::findMobility("kinematic")) kinematic->update(v, dt);
-        return;
-    }
-
-    auto in = v.input();
-    auto mo = v.motion();
-    mo->x   = b->getX();
-    mo->y   = b->getZ();
-
-    const float qx     = b->getRotX();
-    const float qy     = b->getRotY();
-    const float qz     = b->getRotZ();
-    const float qw     = b->getRotW();
-    const float yaw    = std::atan2(2.f * (qw * qy + qx * qz), 1.f - 2.f * (qy * qy + qz * qz));
-    mo->heading        = normalizeDeg(yaw * 180.f / kPi);
-    const float yawRad = mo->heading * kPi / 180.f;
-    const float fx     = std::sin(yawRad);
-    const float fz     = std::cos(yawRad);
-
-    const auto& wheels = def->suspension.wheels;
-    auto        sus    = v.suspension();
-    if (sus->wheels.size() != wheels.size()) sus->wheels.resize(wheels.size());
-    const uint64_t chassisMask = ~uint64_t{2};
-
-    for (size_t i = 0; i < wheels.size(); ++i) {
-        const SuspensionWheel& w  = wheels[i];
-        const float            wx = mo->x + w.x * std::cos(yawRad) + w.z * std::sin(yawRad);
-        const float            wz = mo->y - w.x * std::sin(yawRad) + w.z * std::cos(yawRad);
-        const float            mountY = b->getY() + w.y + w.restLength;
-        const float            rayLen = w.restLength + w.radius + def->suspension.maxTravel;
-        const int              hit    = world->rayCastFiltered(wx, mountY, wz, wx, mountY - rayLen, wz, chassisMask);
-
-        float compression = 0.f;
-        if (hit >= 0) {
-            const float hitDist = mountY - world->getRayHitY();
-            compression         = std::clamp(w.restLength - (hitDist - w.radius), 0.f, def->suspension.maxTravel);
-        }
-
-        auto&       ws    = sus->wheels[i];
-        const float vel   = (compression - ws.prevCompression) / std::max(dt, 1e-4f);
-        const float force = w.stiffness * compression + w.damping * vel;
-        if (force > 0.f) b->applyForceAt(0.f, force, 0.f, wx, mountY, wz);
-        ws.prevCompression = compression;
-        ws.grounded        = hit >= 0;
-    }
-
-    const float drive       = (in->brake > 0.f || in->handbrake) ? 0.f : in->throttle;
-    const float targetSpeed = drive * def->maxSpeed;
-    const float fwd =
-        std::fabs(targetSpeed) > 0.01f ? (b->getLinearVelocityX() * fx + b->getLinearVelocityZ() * fz) : 0.f;
-    float driveForce = def->suspension.driveForce * drive;
-    if (std::fabs(targetSpeed) > 0.01f) {
-        driveForce *= std::clamp(1.f - fwd / targetSpeed, 0.f, 1.f);
-    }
-    b->applyForce(fx * driveForce, 0.f, fz * driveForce);
-    b->setAngularVelocity(0.f, in->steer * def->turnRate * kPi / 180.f, 0.f);
-
-    const float vx   = b->getLinearVelocityX();
-    const float vy   = b->getLinearVelocityY();
-    const float vz   = b->getLinearVelocityZ();
-    const float rx   = fz;
-    const float rz   = -fx;
-    const float lat  = vx * rx + vz * rz;
-    const float grip = std::max(0.f, 1.f - def->suspension.lateralGrip * dt);
-    b->setLinearVelocity(fx * fwd + rx * lat * grip, vy, fz * fwd + rz * lat * grip);
-    mo->speed = fwd;
-}
-
 class SuspensionMobility3D : public IVehicleMobility {
 public:
     const char* name() const override { return "suspension"; }
     void        update(VehicleEntity& v, float dt) override {
-        const auto binding = v.physicsBody()->binding;
-        if (eve::physics::Body3D* b = binding ? binding->resolve3D() : nullptr) {
-            suspensionMove3D(v, b, dt);
-            return;
-        }
+        if (VehiclePhysics::tryWheelMove(v, dt) != VehiclePhysicsStatus::Unavailable) return;
         if (IVehicleMobility* kinematic = VehicleSystem::findMobility("kinematic")) {
             kinematic->update(v, dt);
         }
@@ -239,6 +166,7 @@ VehiclePhysicsStatus VehiclePhysics::attach2D(VehicleEntity* v, eve::physics::Wo
     v->physicsBody()->binding = std::make_shared<VehiclePhysicsBinding>(
         std::move(link).takeValue(), world, world->lifetimeToken());
     v->physicsBody()->space = "2d";
+    v->suspension()->wheels.clear();
     return VehiclePhysicsStatus::Applied;
 }
 
@@ -293,14 +221,67 @@ float VehiclePhysics::height(VehicleEntity* v) {
 VehiclePhysicsStatus VehiclePhysics::tryWheelMove(VehicleEntity& v, float dt) {
     const auto binding = v.physicsBody()->binding;
     if (eve::physics::Body* b = binding ? binding->resolve2D() : nullptr) {
-        wheelMove2D(v, b, dt);
-        return VehiclePhysicsStatus::Applied;
+        if (const auto* definition = v.definition()->def; definition && definition->mobility == "ship") {
+            shipMove2D(v, b, dt);
+            return VehiclePhysicsStatus::Applied;
+        }
+        auto synchronized = synchronizeWheelState(v);
+        if (!synchronized) return VehiclePhysicsStatus::Rejected;
+        if (synchronized.value() == VehiclePhysicsStatus::Pending) return VehiclePhysicsStatus::Pending;
+        auto mo     = v.motion();
+        mo->x       = b->getX();
+        mo->y       = b->getY();
+        mo->heading = normalizeDeg(b->getAngle() * 180.f / kPi);
+        mo->speed =
+            std::cos(b->getAngle()) * b->getLinearVelocityX() + std::sin(b->getAngle()) * b->getLinearVelocityY();
+        auto duration = Duration::fromSeconds(double(dt));
+        if (!duration) return VehiclePhysicsStatus::Rejected;
+        auto nextTick = b->getWorld()->simulationTick().incremented();
+        if (!nextTick) return VehiclePhysicsStatus::Rejected;
+        auto submitted = submitWheelStep(v, {*nextTick, duration.value()});
+        return submitted ? submitted.value() : VehiclePhysicsStatus::Rejected;
     }
     if (eve::physics::Body3D* b = binding ? binding->resolve3D() : nullptr) {
-        wheelMove3D(v, b, dt);
-        return VehiclePhysicsStatus::Applied;
+        if (const auto* definition = v.definition()->def; definition && definition->mobility == "ship") {
+            shipMove3D(v, b, dt);
+            return VehiclePhysicsStatus::Applied;
+        }
+        auto synchronized = synchronizeWheelState(v);
+        if (!synchronized) return VehiclePhysicsStatus::Rejected;
+        if (synchronized.value() == VehiclePhysicsStatus::Pending) return VehiclePhysicsStatus::Pending;
+        const float qx = b->getRotX(), qy = b->getRotY(), qz = b->getRotZ(), qw = b->getRotW();
+        const float fx = 2 * (qx * qz + qw * qy), fy = 2 * (qy * qz - qw * qx), fz = 1 - 2 * (qx * qx + qy * qy);
+        auto        mo = v.motion();
+        mo->x          = b->getX();
+        mo->y          = b->getZ();
+        mo->heading    = normalizeDeg(std::atan2(fx, fz) * 180.f / kPi);
+        mo->speed      = fx * b->getLinearVelocityX() + fy * b->getLinearVelocityY() + fz * b->getLinearVelocityZ();
+        auto duration  = Duration::fromSeconds(double(dt));
+        if (!duration) return VehiclePhysicsStatus::Rejected;
+        auto nextTick = b->getWorld()->simulationTick().incremented();
+        if (!nextTick) return VehiclePhysicsStatus::Rejected;
+        auto submitted = submitWheelStep(v, {*nextTick, duration.value()});
+        return submitted ? submitted.value() : VehiclePhysicsStatus::Rejected;
     }
     return VehiclePhysicsStatus::Unavailable;
+}
+
+Result<VehiclePhysicsStatus> VehiclePhysics::submitWheelStep(VehicleEntity& v, const SimulationStep& step) {
+    const auto binding = v.physicsBody()->binding;
+    if (!binding || !binding->isAttached())
+        return Result<VehiclePhysicsStatus>::success(VehiclePhysicsStatus::Unavailable);
+    if (auto* body = binding->resolve2D()) return tire_detail::submit2D(v, *body, binding->wheelRuntime, step);
+    if (auto* body = binding->resolve3D()) return tire_detail::submit3D(v, *body, binding->wheelRuntime, step);
+    return Result<VehiclePhysicsStatus>::success(VehiclePhysicsStatus::Unavailable);
+}
+Result<VehiclePhysicsStatus> VehiclePhysics::synchronizeWheelState(VehicleEntity& v) {
+    const auto binding = v.physicsBody()->binding;
+    if (!binding) return Result<VehiclePhysicsStatus>::success(VehiclePhysicsStatus::Unavailable);
+    if (!binding->isAttached()) {
+        binding->wheelRuntime.reset();
+        return Result<VehiclePhysicsStatus>::success(VehiclePhysicsStatus::Cancelled);
+    }
+    return tire_detail::synchronize(v, binding->wheelRuntime);
 }
 
 void VehiclePhysics::syncTrackFromBody(VehicleEntity& v) {

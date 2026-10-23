@@ -1,11 +1,12 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/ECS.h"
 #include "common/Result.h"
 #include "graphics/GpuDrivenTypes.h"
 #include "graphics/Material.h"
 #include "graphics/MeshInstanceRange.h"
-#include "zeroerr/assert.h"
 
 #include <array>
 #include <cstdint>
@@ -23,14 +24,19 @@ class Mesh;
 class Shader;
 class Texture;
 
-class Camera3D : public ecs::Entity {
+/** @brief EVENGINE_API_BACKENDS public API. */
+class EVENGINE_API_BACKENDS Camera3D : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Camera3D, ecs::Entity)
 
+    /** @brief Release. */
     void release() override {}
 
+    /** @brief Data public API. */
     struct Data {
         static constexpr int kMaxReflectionProbes = 8;
+        /** @brief ReflectionProbe public API. */
         struct ReflectionProbe {
             Texture*  cubemap = nullptr;
             glm::vec3 center{0.f};
@@ -76,14 +82,15 @@ public:
 
     COMPONENT(Data, data)
 
-    /** @ownership ECS owns the result. @lifetime Valid until ECS destroys the entity. */
-    static Camera3D *createCamera() {
-        Camera3D* c = Camera3D::create();
-        ASSERT(c != nullptr);
-        c->data()->entity = c;
-        c->data()->active = true;
-        return c;
-    }
+    /**
+     * @brief Create an active camera in the current ECS table.
+     * @param table ECS table owning the result; defaults to the calling thread's current table.
+     * @return ECS-owned camera with its self reference initialized.
+     * @ownership ECS owns the result. @lifetime Valid until ECS destroys the entity.
+     * @note Call on the current ECS table owner thread; no external callbacks are invoked.
+     * @cost Allocates entity/component storage per camera creation.
+     */
+    static Camera3D* createCamera(ecs::Table& table = *ecs::current());
 
     void setEye(float x, float y, float z);
     /** @brief Camera eye position (world space). */
@@ -193,16 +200,26 @@ public:
     float getScreenRayDirZ();
 };
 
-class Renderable3D : public ecs::Entity {
+/** @brief EVENGINE_API_BACKENDS public API. */
+class EVENGINE_API_BACKENDS Renderable3D : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Renderable3D, ecs::Entity)
 
+    /** @brief Release. */
     void release() override {}
 
+    /** @brief Transform3D public API. */
     struct Transform3D {
         float x = 0, y = 0, z = 0;
         float yaw = 0, pitch = 0, roll = 0;  // radians
         float sx = 1, sy = 1, sz = 1;
+        /** @brief Derived scene-link projection, preserving reflection and parent shear.
+         * @ownership Value owned; SceneHost supplies it on its owner thread.
+         * @remarks Direct TRS setters return this component to local TRS mode.
+         */
+        glm::mat4 linkedWorld{1.f};
+        bool      hasLinkedWorld = false;
     };
 
     struct MeshRenderer {
@@ -268,6 +285,7 @@ public:
         float lodDistances[kMaxLodLevels - 1] = {25.f, 60.f, 120.f};
         /** @brief Distance beyond which the complete LOD chain is culled; zero disables. */
         float lodCullDistance = 0.f;
+        /** @brief LodRendererState public API. */
         struct LodRendererState {
             bool configured = false;
             int  skinQuality = 0;
@@ -289,6 +307,7 @@ public:
 
         /** @brief Pick LOD mesh for a camera distance; falls back to `mesh` when LOD disabled. */
         /** @ownership Returns a borrowed mesh. @lifetime Same as the selected Graphics resource. */
+        /** @brief Mesh for distance. */
         Mesh *meshForDistance(float distance) const {
             if (lodCullDistance > 0.f && distance >= lodCullDistance) return nullptr;
             if (lodCount <= 0) return mesh;
@@ -298,6 +317,7 @@ public:
             return picked ? picked : mesh;
         }
 
+        /** @brief Lod level for distance. */
         int lodLevelForDistance(float distance) const {
             if (lodCullDistance > 0.f && distance >= lodCullDistance) return -1;
             if (lodCount <= 0) return 0;
@@ -309,13 +329,16 @@ public:
         /** @brief Select primary/secondary levels and secondary weight for the active fade policy. */
         void lodBlendForDistance(float distance, int& primary, int& secondary, float& secondaryWeight) const;
 
+        /** @brief Uses parts. */
         bool usesParts() const { return partCount > 0; }
 
+        /** @brief Effective hair. */
         bool effectiveHair() const {
             if (material) return material->isTransparentHair();
             return isHair;
         }
 
+        /** @brief Effective cast shadow. */
         bool effectiveCastShadow() const {
             if (material) return material->getCastShadow();
             return castShadow;
@@ -402,6 +425,8 @@ public:
     /** @brief Return the field-backed material roughness. */
     float getRoughness() { return meshRenderer()->roughness; }
     void  setMetallic(float metallic);
+    /** @brief Read the current material metallic scalar on the render thread. */
+    float getMetallic() { return meshRenderer()->metallic; }
     void  setRoughness(float roughness);
     /**
      * @brief Texture cell bombing — random per-cell UV offset/rotation blended across a 2×2
@@ -475,8 +500,10 @@ public:
     int  getMeshLodLevelAtDistance(float distance);
 };
 
-class RenderSystem3D {
+/** @brief EVENGINE_API_BACKENDS public API. */
+class EVENGINE_API_BACKENDS RenderSystem3D {
 public:
+    /** @brief Renders . */
     static void render(Graphics& gfx);
 
     /**
@@ -490,12 +517,22 @@ public:
      * @param lodDistanceScale Multiplier applied before selecting mesh LOD.
      * @param includeTransparent Whether transparent and hair surfaces are submitted.
      * @param useClusteredLighting Whether lights beyond the legacy pack use clustered shading.
+     * @param includePrimitives Draw persistent scene primitives for interactive viewports;
+     * false for probe/material captures so editor handles never enter baked lighting.
      */
     static void renderToCanvas(Graphics& gfx, Canvas* target, Camera3D* camera,
                                uint32_t reflectionCaptureMask = 0xffffffffu, float lodDistanceScale = 1.f,
                                bool includeTransparent = true, bool useClusteredLighting = true,
                                Texture* skyFaceTexture = nullptr, Mesh* skyQuad = nullptr,
-                               float skyFaceTextureScale = 1.f);
+                               float skyFaceTextureScale = 1.f, bool includePrimitives = false);
+
+    /**
+     * @brief Render an editor preview with directional cascaded shadows before forward shading.
+     * @ownership Target and camera are borrowed for this synchronous call only.
+     * @thread Graphics thread; does not retain arguments or invoke shadow contributor callbacks.
+     * @cost Adds three shadow-map submissions per preview frame relative to renderToCanvas.
+     */
+    static void renderWithShadowsToCanvas(Graphics& gfx, Canvas& target, Camera3D& camera);
 
     /**
      * @brief Draw custom forward geometry into reflection-probe and preview captures.
@@ -528,6 +565,7 @@ public:
      * @reentrancy The callback must not mutate this contributor registry.
      */
     using ForwardExtraDrawer =
+        /** @brief Void. */
         std::function<void(Graphics& gfx, const Camera3D::Data& cam, const glm::mat4& viewProj, float aspect)>;
 
     /** @brief Register a main forward-pass contributor. @return Non-zero removal token, or zero when empty. */
@@ -547,6 +585,7 @@ public:
      * @reentrancy The callback must not mutate this contributor registry.
      */
     using GpuOpaqueCollector =
+        /** @brief Void. */
         std::function<void(Graphics& gfx, const Camera3D::Data& cam, const glm::mat4& viewProj, float aspect,
                            std::vector<GpuInstance>& instances)>;
 
@@ -563,7 +602,9 @@ public:
      * The camera data and view-projection match the pass camera.
      */
     using GBufferExtraDrawer =
+        /** @brief Void. */
         std::function<void(Graphics& gfx, const Camera3D::Data& cam, const glm::mat4& viewProj, float aspect)>;
+    /** @brief Adds g buffer extra drawer. */
     static void addGBufferExtraDrawer(GBufferExtraDrawer drawer);
 
     /**
@@ -573,7 +614,9 @@ public:
      * gfx.drawDecal(...) there (optionally gfx.setDecalCamera first).
      */
     using DecalExtraDrawer =
+        /** @brief Void. */
         std::function<void(Graphics& gfx, const Camera3D::Data& cam, const glm::mat4& viewProj, float aspect)>;
+    /** @brief Adds decal extra drawer. */
     static void addDecalExtraDrawer(DecalExtraDrawer drawer);
 
     /**
@@ -597,8 +640,10 @@ public:
      * Registration performs no per-frame allocation.
      */
     using ShadowExtraDrawer =
+        /** @brief Void. */
         std::function<void(Graphics &gfx, const glm::mat4 &lightVP,
                            const Camera3D::Data &cam)>;
+    /** @brief Adds shadow extra drawer. */
     [[nodiscard]] static uint64_t addShadowExtraDrawer(ShadowExtraDrawer drawer);
 
     /**
@@ -612,6 +657,13 @@ public:
 
     /** @brief Legacy single directional light used when no enabled Light3D exists. */
     static void setDirectionalLight(float dx, float dy, float dz, float r, float g, float b);
+
+private:
+    enum class CanvasShadows { Disabled, Directional };
+    static void renderToCanvasImpl(Graphics& gfx, Canvas* target, Camera3D* camera, uint32_t reflectionCaptureMask,
+                                   float lodDistanceScale, bool includeTransparent, bool useClusteredLighting,
+                                   Texture* skyFaceTexture, Mesh* skyQuad, float skyFaceTextureScale,
+                                   CanvasShadows shadows, bool includePrimitives);
 };
 
 }  // namespace eve::graphics

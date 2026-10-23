@@ -275,14 +275,16 @@ Result<TerrainMultiTileReport> applyTerrainTreesMultiTile(
                 DiagnosticCode::InvalidArgument, "terrain.tree.multitile: normalized operation fitness required"));
 
     std::vector<TerrainOperationTile> operationTiles;
-    std::unordered_set<PointSet*> owners;
+    std::unordered_set<PointSet*>     owners;
     operationTiles.reserve(tiles.size());
     for (const auto& tile : tiles) {
-        if (!tile.trees || !tile.heights || !owners.insert(tile.trees).second || !validRaster(*tile.heights))
-            return Result<TerrainMultiTileReport>::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "terrain.tree.multitile: distinct outputs and finite heights required"));
-        operationTiles.push_back({tile.name, tile.originX, tile.originZ, tile.width, tile.depth,
-                                  tile.treeResolutionX, tile.treeResolutionY, tile.worldMap});
+        if (!std::isfinite(tile.originY) || !tile.trees || !tile.heights || !owners.insert(tile.trees).second ||
+            !validRaster(*tile.heights))
+            return Result<TerrainMultiTileReport>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                  "terrain.tree.multitile: distinct outputs and finite heights required"));
+        operationTiles.push_back({tile.name, tile.originX, tile.originZ, tile.width, tile.depth, tile.treeResolutionX,
+                                  tile.treeResolutionY, tile.worldMap});
     }
     auto mapped = mapTerrainOperationMultiTile(operationTiles, operationSettings, TerrainOperationDomain::Tree,
                                                 worldMapOperation, validTerrainNames);
@@ -359,7 +361,7 @@ Result<TerrainMultiTileReport> applyTerrainTreesMultiTile(
                     ProcgenPoint point;
                     point.id = mix(mix(s.namespaceId) ^ mix(stableNameHash(tile->name)) ^ mix(ordinal + 1));
                     if (!point.id) point.id = 1;
-                    double worldY = sample(*tile->heights, u, v) * s.heightScale;
+                    double worldY = tile->originY + sample(*tile->heights, u, v) * s.heightScale;
                     if (!s.snapToTerrain) {
                         if (s.yOffsetMode == TerrainTreeYOffsetMode::SeaLevel) worldY = s.seaLevel;
                         if (s.yOffsetMode == TerrainTreeYOffsetMode::Custom) worldY = s.customOffset;

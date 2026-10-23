@@ -1,4 +1,5 @@
 #include "map/Pathfinder.h"
+#include "common/Exception.h"
 
 #include "map/TileOrientation.h"
 
@@ -339,7 +340,35 @@ struct HeapNode {
 
 }  // namespace
 
+struct NavigationGridSnapshot::Data {
+    bool                      staggerAxisY = true, staggerOdd = true;
+    int                       width = 0, height = 0;
+    std::uint64_t             revision = 1;
+    NavigationTopology        topology = NavigationTopology::Ortho4;
+    std::vector<float>        costs;
+    std::vector<std::uint8_t> enterMasks, exitMasks;
+};
+int                NavigationGridSnapshot::width() const noexcept { return data_ ? data_->width : 0; }
+int                NavigationGridSnapshot::height() const noexcept { return data_ ? data_->height : 0; }
+std::uint64_t      NavigationGridSnapshot::revision() const noexcept { return data_ ? data_->revision : 0; }
+NavigationTopology NavigationGridSnapshot::topology() const noexcept {
+    return data_ ? data_->topology : NavigationTopology::Ortho4;
+}
+bool                   NavigationGridSnapshot::isStaggerAxisY() const noexcept { return !data_ || data_->staggerAxisY; }
+bool                   NavigationGridSnapshot::isStaggerOdd() const noexcept { return !data_ || data_->staggerOdd; }
+std::span<const float> NavigationGridSnapshot::costs() const noexcept {
+    return data_ ? std::span<const float>(data_->costs) : std::span<const float>{};
+}
+std::span<const std::uint8_t> NavigationGridSnapshot::enterMasks() const noexcept {
+    return data_ ? std::span<const std::uint8_t>(data_->enterMasks) : std::span<const std::uint8_t>{};
+}
+std::span<const std::uint8_t> NavigationGridSnapshot::exitMasks() const noexcept {
+    return data_ ? std::span<const std::uint8_t>(data_->exitMasks) : std::span<const std::uint8_t>{};
+}
+
 struct Pathfinder::Impl {
+    NavigationGridSnapshot lastCapture;
+    std::uint64_t          changes = 1;
     Grid grid;
     bool hasCachedField = false;
     int cachedGoalX = 0;
@@ -357,73 +386,81 @@ Pathfinder::~Pathfinder() = default;
 Pathfinder::Pathfinder(Pathfinder &&) noexcept = default;
 Pathfinder &Pathfinder::operator=(Pathfinder &&) noexcept = default;
 
+NavigationChangeStamp Pathfinder::getNavigationChangeStamp() const noexcept {
+    auto *layer = impl_->grid.layer;
+    return {impl_->changes, layer ? layer->tiles()->revision : 0};
+}
+
 void Pathfinder::bindLayer(TileLayer *layer) {
-    impl_->grid.bindLayer(layer);
     invalidateCache();
+    impl_->grid.bindLayer(layer);
 }
 
 void Pathfinder::setSize(int width, int height) {
+    invalidateCache();
     impl_->grid.clearLayer();
     impl_->grid.resize(width, height);
-    invalidateCache();
 }
 
 void Pathfinder::setTopology(const std::string &name) {
-    impl_->grid.setTopology(name);
     invalidateCache();
+    impl_->grid.setTopology(name);
 }
 
 std::string Pathfinder::getTopology() const { return topologyName(impl_->grid.topology); }
 
 void Pathfinder::setDiagonal(bool enable) {
-    impl_->grid.setDiagonal(enable);
     invalidateCache();
+    impl_->grid.setDiagonal(enable);
 }
 
 bool Pathfinder::getDiagonal() const { return impl_->grid.diagonal; }
 
 void Pathfinder::blockGid(int gid) {
-    impl_->grid.blockGid(gid);
     invalidateCache();
+    impl_->grid.blockGid(gid);
 }
 
 void Pathfinder::unblockGid(int gid) {
-    impl_->grid.unblockGid(gid);
     invalidateCache();
+    impl_->grid.unblockGid(gid);
 }
 
 void Pathfinder::clearBlockedGids() {
-    impl_->grid.clearBlockedGids();
     invalidateCache();
+    impl_->grid.clearBlockedGids();
 }
 
 void Pathfinder::setBlockEmpty(bool enable) {
-    impl_->grid.setBlockEmpty(enable);
     invalidateCache();
+    impl_->grid.setBlockEmpty(enable);
 }
 
 bool Pathfinder::getBlockEmpty() const { return impl_->grid.blockEmpty; }
 
 void Pathfinder::setBlocked(int x, int y, bool blocked) {
-    impl_->grid.setBlocked(x, y, blocked);
     invalidateCache();
+    impl_->grid.setBlocked(x, y, blocked);
 }
 
 bool Pathfinder::isWalkable(int x, int y) const { return impl_->grid.isWalkable(x, y); }
 
 void Pathfinder::setCellCost(int x, int y, float cost) {
-    impl_->grid.setCellCost(x, y, cost);
     invalidateCache();
+    impl_->grid.setCellCost(x, y, cost);
 }
 
 float Pathfinder::getCellCost(int x, int y) const { return impl_->grid.getCellCost(x, y); }
 
 void Pathfinder::syncFromLayer() {
-    impl_->grid.syncFromLayer();
     invalidateCache();
+    impl_->grid.syncFromLayer();
 }
 
 void Pathfinder::invalidateCache() {
+    if (impl_->changes == std::numeric_limits<std::uint64_t>::max())
+        throw eve::Exception("Navigation input revision exhausted");
+    ++impl_->changes;
     impl_->hasCachedField = false;
     impl_->cachedField.clear();
 }
@@ -489,6 +526,54 @@ FlowField *buildFlowFieldUncached(Grid &grid, int gx, int gy) {
 }
 
 }  // namespace
+
+Result<NavigationGridSnapshot> Pathfinder::captureNavigationGrid() try {
+    if (!impl_)
+        return Result<NavigationGridSnapshot>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "Moved-from Pathfinder", "navigationGrid"));
+    Grid staged = impl_->grid;
+    if (!ensureSynced(staged) || std::int64_t(staged.width) * staged.height > 4 * 1024 * 1024)
+        return Result<NavigationGridSnapshot>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "Unconfigured or oversized navigation grid", "navigationGrid"));
+    const auto count = static_cast<std::size_t>(std::int64_t(staged.width) * staged.height);
+    if (staged.cost.size() != count || staged.enterMask.size() != count || staged.exitMask.size() != count)
+        return Result<NavigationGridSnapshot>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "Inconsistent navigation grid buffers", "navigationGrid"));
+    for (const float cost : staged.cost)
+        if (!std::isfinite(cost))
+            return Result<NavigationGridSnapshot>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Nonfinite map navigation cost", "navigationGrid"));
+    const auto  topology = static_cast<NavigationTopology>(staged.topology);
+    const bool  axisY    = topology != NavigationTopology::Hex || staged.staggerAxisY;
+    const bool  odd      = topology != NavigationTopology::Hex || staged.staggerOdd;
+    const auto &previous = impl_->lastCapture.data_;
+    if (previous && previous->width == staged.width && previous->height == staged.height &&
+        previous->topology == topology && previous->staggerAxisY == axisY && previous->staggerOdd == odd &&
+        previous->costs == staged.cost && previous->enterMasks == staged.enterMask &&
+        previous->exitMasks == staged.exitMask)
+        return Result<NavigationGridSnapshot>::success(impl_->lastCapture, Status::success(StatusCode::NoOp));
+    if (previous && previous->revision == std::numeric_limits<std::uint64_t>::max())
+        return Result<NavigationGridSnapshot>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "Navigation capture revision exhausted", "navigationGrid"));
+    auto data          = std::make_shared<NavigationGridSnapshot::Data>();
+    data->width        = staged.width;
+    data->height       = staged.height;
+    data->topology     = topology;
+    data->revision     = previous ? previous->revision + 1 : 1;
+    data->staggerAxisY = axisY;
+    data->staggerOdd   = odd;
+    data->costs        = std::move(staged.cost);
+    data->enterMasks   = std::move(staged.enterMask);
+    data->exitMasks    = std::move(staged.exitMask);
+    NavigationGridSnapshot result;
+    result.data_       = std::move(data);
+    impl_->lastCapture = result;
+    return Result<NavigationGridSnapshot>::success(std::move(result));
+} catch (const std::exception &error) {
+    return Result<NavigationGridSnapshot>::failure(
+        Diagnostic::error(DiagnosticCode::Failed, error.what(), "navigationGrid"));
+}
+
 
 Path *Pathfinder::findPath(int sx, int sy, int gx, int gy) {
     return findPath(sx, sy, gx, gy, {});

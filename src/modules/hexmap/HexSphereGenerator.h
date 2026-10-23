@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file HexSphereGenerator.h @brief Procedural terrain generator for a spherical hex map. */
 
@@ -42,12 +44,15 @@ struct HexSphereGeneratorSettings {
  * The result is a pure function of the map's topology, its radius and the settings,
  * so two runs of the same settings produce identical cells.
  *
- * @param map Map to fill; must not be empty.
+ * @param map Map to fill; must not be empty. Scripts do not call this: they
+ *            bake through `procgen.generateHexSphere` and apply with
+ *            `hexmap.applySphereTerrain`.
  * @param settings Generator tunables.
  * @return Success, or InvalidArgument when the map has no cells.
  * @cost One 3D fBm evaluation per cell for the continents and one more for the
  *       moisture, so proportional to the cell count and dominated by the noise.
  */
-[[nodiscard]] Result<void> generateSphereMap(HexSphereMap& map, const HexSphereGeneratorSettings& settings);
+[[nodiscard]] EVENGINE_API_WORLD Result<void> generateSphereMap(HexSphereMap&                     map,
+                                                                const HexSphereGeneratorSettings& settings);
 
 }  // namespace eve::hexmap

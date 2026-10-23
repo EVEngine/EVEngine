@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "common/Value.h"
@@ -68,7 +70,7 @@ struct ClothModelTetherConstraint {
  * the same ClothModel object.
  * @reentrancy Construction and access invoke no callbacks.
  */
-class ClothModel {
+class EVENGINE_API_DOMAINS ClothModel {
 public:
     static constexpr uint32_t SchemaVersion = 1;
 

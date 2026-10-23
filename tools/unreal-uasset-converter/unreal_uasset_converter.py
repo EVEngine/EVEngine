@@ -23,7 +23,8 @@ from typing import Callable, Sequence
 REQUEST_SCHEMA = "eve.unreal-asset-export-request/1"
 RESULT_SCHEMA = "eve.unreal-asset-export-result/1"
 MANIFEST_SCHEMA = "eve.unreal-animation-conversion/1"
-TOOL_VERSION = "1.1.0"
+ASSET_MANIFEST_SCHEMA = "eve.unreal-asset-conversion/1"
+TOOL_VERSION = "1.2.0"
 _ASSET_RE = re.compile(r"^/[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)+$")
 
 
@@ -40,6 +41,8 @@ class ConversionConfig:
     unreal_editor: Path
     rights_confirmed: bool
     timeout_seconds: int
+    texture_size: int = 1024
+    preserve_path_names: bool = False
 
 
 def _version_key(path: Path) -> tuple[int, ...]:
@@ -118,7 +121,11 @@ def uasset_to_reference(project: Path, uasset: Path) -> str:
     return normalize_asset_reference("/Game/" + relative.with_suffix("").as_posix())
 
 
-def _artifact_name(asset: str, output_format: str) -> str:
+def _artifact_name(asset: str, output_format: str, preserve_path: bool = False) -> str:
+    if preserve_path:
+        package = asset.split(".", 1)[0].strip("/")
+        safe_path = re.sub(r"[^A-Za-z0-9_.-]", "_", package.replace("/", "__"))
+        return f"{safe_path}.{output_format}"
     package_name = asset.rsplit("/", 1)[-1].split(".", 1)[0]
     safe_name = re.sub(r"[^A-Za-z0-9_.-]", "_", package_name)
     return f"{safe_name}.{output_format}"
@@ -128,7 +135,7 @@ def build_request(config: ConversionConfig, result_file: Path, staging_output: P
     entries = []
     names: set[str] = set()
     for asset in config.assets:
-        output_name = _artifact_name(asset, config.output_format)
+        output_name = _artifact_name(asset, config.output_format, config.preserve_path_names)
         folded = output_name.casefold()
         if folded in names:
             raise ConversionError(
@@ -142,6 +149,7 @@ def build_request(config: ConversionConfig, result_file: Path, staging_output: P
         "outputDirectory": str(staging_output.resolve()),
         "resultFile": str(result_file.resolve()),
         "format": config.output_format,
+        "textureSize": config.texture_size,
         "assets": entries,
     }
 
@@ -310,7 +318,7 @@ def _validate_gltf(path: Path, staging_output: Path) -> tuple[dict, list[Path]]:
     return document, dependencies
 
 
-def _validate_animation_content(document: dict, asset_class: str, path: Path) -> dict:
+def _validate_asset_content(document: dict, asset_class: str, path: Path) -> dict:
     asset = document.get("asset")
     version = asset.get("version") if isinstance(asset, dict) else None
     if not isinstance(version, str) or not version.startswith("2"):
@@ -321,10 +329,52 @@ def _validate_animation_content(document: dict, asset_class: str, path: Path) ->
         if not isinstance(value, list):
             raise ConversionError(f"{path.name}: {name} must be an array")
         collections[name] = value
-    if not collections["meshes"] or not collections["skins"]:
+    if not collections["meshes"]:
+        raise ConversionError(f"{path.name}: exported {asset_class} has no mesh")
+    if asset_class != "StaticMesh" and not collections["skins"]:
         raise ConversionError(f"{path.name}: exported {asset_class} has no skinned preview mesh")
     if asset_class == "AnimSequence" and not collections["animations"]:
         raise ConversionError(f"{path.name}: exported AnimSequence has no glTF animation")
+    materials = document.get("materials", [])
+    images = document.get("images", [])
+    textures = document.get("textures", [])
+    if not isinstance(materials, list) or not isinstance(images, list) or not isinstance(textures, list):
+        raise ConversionError(f"{path.name}: materials, images, and textures must be arrays")
+    primitive_count = 0
+    primitives_without_material = 0
+    referenced_materials: set[int] = set()
+    for mesh in collections["meshes"]:
+        if not isinstance(mesh, dict) or not isinstance(mesh.get("primitives", []), list):
+            raise ConversionError(f"{path.name}: mesh primitives must be an array")
+        for primitive in mesh.get("primitives", []):
+            if not isinstance(primitive, dict):
+                raise ConversionError(f"{path.name}: invalid mesh primitive")
+            primitive_count += 1
+            material_index = primitive.get("material")
+            if material_index is None:
+                primitives_without_material += 1
+            elif type(material_index) is not int or not 0 <= material_index < len(materials):
+                raise ConversionError(f"{path.name}: primitive material index is out of range")
+            else:
+                referenced_materials.add(material_index)
+    texture_usage = {
+        "baseColor": 0,
+        "metallicRoughness": 0,
+        "normal": 0,
+        "occlusion": 0,
+        "emissive": 0,
+    }
+    for material in materials:
+        if not isinstance(material, dict):
+            raise ConversionError(f"{path.name}: invalid material entry")
+        pbr = material.get("pbrMetallicRoughness", {})
+        if not isinstance(pbr, dict):
+            raise ConversionError(f"{path.name}: pbrMetallicRoughness must be an object")
+        texture_usage["baseColor"] += int("baseColorTexture" in pbr)
+        texture_usage["metallicRoughness"] += int("metallicRoughnessTexture" in pbr)
+        texture_usage["normal"] += int("normalTexture" in material)
+        texture_usage["occlusion"] += int("occlusionTexture" in material)
+        texture_usage["emissive"] += int("emissiveTexture" in material)
     animation_names = [
         entry.get("name", "")
         for entry in collections["animations"]
@@ -335,6 +385,13 @@ def _validate_animation_content(document: dict, asset_class: str, path: Path) ->
         "skinCount": len(collections["skins"]),
         "animationCount": len(collections["animations"]),
         "animationNames": animation_names,
+        "primitiveCount": primitive_count,
+        "primitivesWithoutMaterial": primitives_without_material,
+        "materialCount": len(materials),
+        "referencedMaterialCount": len(referenced_materials),
+        "textureCount": len(textures),
+        "imageCount": len(images),
+        "materialTextureUsage": texture_usage,
     }
 
 
@@ -385,7 +442,7 @@ def _validate_result(result: dict, request: dict, staging_output: Path) -> list[
             dependencies: list[Path] = []
         else:
             document, dependencies = _validate_gltf(artifact_path, staging_output)
-        content = _validate_animation_content(document, item["assetClass"], artifact_path)
+        content = _validate_asset_content(document, item["assetClass"], artifact_path)
         claimed_files.add(artifact_path.resolve())
         claimed_files.update(dependencies)
         validated.append(
@@ -500,8 +557,9 @@ def convert(
             )
         result = _read_json_object(result_file, "Unreal result")
         artifacts = _validate_result(result, request, staging_output)
+        contains_static_mesh = any(item["assetClass"] == "StaticMesh" for item in artifacts)
         manifest = {
-            "schema": MANIFEST_SCHEMA,
+            "schema": ASSET_MANIFEST_SCHEMA if contains_static_mesh else MANIFEST_SCHEMA,
             "tool": {"name": "EVEngine Unreal uasset converter", "version": TOOL_VERSION},
             "source": {
                 "project": project.name,
@@ -522,7 +580,29 @@ def convert(
 def _config_from_args(args: argparse.Namespace) -> ConversionConfig:
     project = args.project.expanduser().resolve()
     assets = [normalize_asset_reference(value) for value in args.asset]
+    for asset_list in args.asset_list:
+        try:
+            lines = asset_list.expanduser().read_text(encoding="utf-8").splitlines()
+        except OSError as error:
+            raise ConversionError(f"cannot read asset list {asset_list}: {error}") from error
+        assets.extend(
+            normalize_asset_reference(line)
+            for line in lines
+            if line.strip() and not line.lstrip().startswith("#")
+        )
+    for audit_path in args.asset_audit:
+        audit = _read_json_object(audit_path.expanduser(), "Unreal asset audit")
+        if audit.get("schema") != "eve.unreal-asset-audit/1" or not isinstance(audit.get("assets"), list):
+            raise ConversionError(f"Unreal asset audit {audit_path} has an unsupported schema")
+        assets.extend(
+            normalize_asset_reference(entry["package"])
+            for entry in audit["assets"]
+            if isinstance(entry, dict) and entry.get("class") == "StaticMesh"
+            and isinstance(entry.get("package"), str)
+        )
     assets.extend(uasset_to_reference(project, value) for value in args.uasset)
+    excluded = {normalize_asset_reference(value) for value in args.exclude_asset}
+    assets = [asset for asset in assets if asset not in excluded]
     if not assets:
         raise ConversionError("at least one --asset or --uasset is required")
     if len(set(assets)) != len(assets):
@@ -536,16 +616,30 @@ def _config_from_args(args: argparse.Namespace) -> ConversionConfig:
         unreal_editor=editor,
         rights_confirmed=args.rights_confirmed,
         timeout_seconds=args.timeout_seconds,
+        texture_size=args.texture_size,
+        preserve_path_names=args.preserve_path_names,
     )
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Convert project-owned Unreal animation assets to glTF through Unreal Editor"
+        description="Convert project-owned Unreal static, skeletal, and animation assets to glTF through Unreal Editor"
     )
     parser.add_argument("--project", required=True, type=Path, help="source .uproject")
     parser.add_argument(
         "--asset", action="append", default=[], help="Unreal asset reference such as /Game/Anim/Run"
+    )
+    parser.add_argument(
+        "--asset-list", action="append", default=[], type=Path,
+        help="UTF-8 file containing one Unreal asset reference per line",
+    )
+    parser.add_argument(
+        "--asset-audit", action="append", default=[], type=Path,
+        help="eve.unreal-asset-audit/1 JSON whose StaticMesh packages should be converted",
+    )
+    parser.add_argument(
+        "--exclude-asset", action="append", default=[],
+        help="asset reference to omit from a list or audit after a documented export failure",
     )
     parser.add_argument(
         "--uasset",
@@ -558,6 +652,14 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--format", choices=("glb", "gltf"), default="glb")
     parser.add_argument("--unreal-editor", type=Path, help="path to UnrealEditor-Cmd")
     parser.add_argument("--timeout-seconds", type=int, default=900)
+    parser.add_argument(
+        "--texture-size", type=int, default=1024,
+        help="square material bake size in pixels (64-4096)",
+    )
+    parser.add_argument(
+        "--preserve-path-names", action="store_true",
+        help="encode the mounted package path in output names to avoid basename collisions",
+    )
     parser.add_argument(
         "--rights-confirmed",
         action="store_true",
@@ -574,6 +676,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         config = _config_from_args(args)
         if args.timeout_seconds <= 0:
             raise ConversionError("--timeout-seconds must be positive")
+        if not 64 <= args.texture_size <= 4096:
+            raise ConversionError("--texture-size must be from 64 to 4096")
         if args.dry_run:
             preview_root = config.output.parent / f".{config.output.name}.staging-preview"
             request = build_request(config, preview_root / "result.json", preview_root / "payload")

@@ -26,6 +26,7 @@ struct OverlayStyle {
  */
 class IEditorOverlay {
 public:
+    /** @brief Releases IEditorOverlay resources. */
     virtual ~IEditorOverlay() = default;
 
     /** @brief Draw a line between two viewport-space points. */
@@ -45,6 +46,7 @@ public:
  */
 class IEditorInspector {
 public:
+    /** @brief Releases IEditorInspector resources. */
     virtual ~IEditorInspector() = default;
 
     /** @brief Begin a logical group of properties. */

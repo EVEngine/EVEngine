@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file TacticsReplay.h @brief Deterministic accepted-command replay. */
 
@@ -15,7 +17,7 @@ namespace eve::tactics {
  * command carries its expected and resulting revision; divergence stops at the
  * first command and leaves the successfully applied prefix observable.
  */
-class BattleReplay final {
+class EVENGINE_API_DOMAINS BattleReplay final {
 public:
     /** @brief Return an owning copy of commands whose result is newer than fromRevision. */
     [[nodiscard]] static std::vector<BattleCommand> commandsFrom(Battle& battle, Revision fromRevision);

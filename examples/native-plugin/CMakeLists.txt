@@ -6,3 +6,6 @@ project(eve_hello_plugin LANGUAGES CXX)
 find_package(EVEngine REQUIRED)
 
 add_eve_plugin(hello_plugin SOURCES hello_plugin.cpp)
+if(MSVC)
+    target_compile_options(hello_plugin PRIVATE /utf-8 /EHsc)
+endif()

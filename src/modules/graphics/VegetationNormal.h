@@ -25,6 +25,7 @@ enum class VegetationNormalEncoding {
  * Thread-safe, reentrant, allocation-free on success, no callbacks or retained references.
  * CPU/GPU parity uses floating-point tolerance, not bitwise equality across backends.
  */
-[[nodiscard]] Result<glm::vec3> decodeVegetationNormal(glm::vec4 sample, VegetationNormalEncoding encoding,
-                                                       float strength);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<glm::vec3> decodeVegetationNormal(glm::vec4                sample,
+                                                                             VegetationNormalEncoding encoding,
+                                                                             float                    strength);
 }  // namespace eve::graphics

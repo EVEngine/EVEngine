@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file ProductControl.h
@@ -6,6 +8,7 @@
  */
 
 #include "common/GameplayControl.h"
+#include "common/GameplayInstanceCatalog.h"
 
 namespace eve::inventory {
 class Bag;
@@ -23,7 +26,7 @@ class Tracker;
  * caller-owned adapter retains only borrowed pointers, an optimistic observation
  * fingerprint and owning event projections. Destroy it before any participant.
  */
-class ProductControl final : public IGameplayControlProvider {
+class EVENGINE_API_PLATFORM ProductControl final : public IGameplayControlProvider, public IGameplayInstanceCatalog {
 public:
     /** @brief Construct over borrowed product-loop authorities and a stable instance identity. */
     ProductControl(SubjectRef instance, GameState& gameState, Tracker& tracker,
@@ -35,22 +38,31 @@ public:
     ProductControl& operator=(const ProductControl&) = delete;
 
     /** @copydoc IGameplayControlProvider::gameplayDomain */
+    /** @brief Gameplay domain. */
     [[nodiscard]] std::string_view gameplayDomain() const noexcept override;
+    /** @copydoc IGameplayInstanceCatalog::gameplayInstances */
+    /** @brief Gameplay instances. */
+    [[nodiscard]] std::vector<SubjectRef> gameplayInstances() const override;
     /** @copydoc IGameplayControlProvider::observeGameplay */
+    /** @brief Observe gameplay. */
     [[nodiscard]] Result<GameplayObservation> observeGameplay(const GameplaySession& session,
                                                                SubjectRef instance) const override;
     /** @copydoc IGameplayControlProvider::availableGameplayActions */
+    /** @brief Available gameplay actions. */
     [[nodiscard]] Result<std::vector<GameplayActionDescriptor>> availableGameplayActions(
         const GameplaySession& session, SubjectRef instance, SubjectRef subject) const override;
     /** @copydoc IGameplayControlProvider::submitGameplay */
+    /** @brief Submit gameplay. */
     [[nodiscard]] Result<GameplayCommandReceipt> submitGameplay(const GameplaySession& session,
                                                                  SubjectRef instance,
                                                                  const GameplayCommand& command) override;
     /** @copydoc IGameplayControlProvider::advanceGameplay */
+    /** @brief Advance gameplay. */
     [[nodiscard]] Result<GameplayObservation> advanceGameplay(const GameplaySession& session,
                                                                SubjectRef instance,
                                                                const SimulationStep& step) override;
     /** @copydoc IGameplayControlProvider::gameplayEvents */
+    /** @brief Gameplay events. */
     [[nodiscard]] Result<std::vector<GameplayEvent>> gameplayEvents(const GameplaySession& session,
                                                                      SubjectRef instance,
                                                                      std::uint64_t afterSequence) const override;

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file TacticsTypes.h
@@ -30,14 +32,17 @@ struct Cell {
     int y     = 0;
     int layer = 0;
 
+    /** @brief Operator ==. */
     friend bool operator==(const Cell&, const Cell&) noexcept = default;
+    /** @brief Operator <=>. */
     friend auto operator<=>(const Cell& left, const Cell& right) noexcept {
+        /** @brief Tie. */
         return std::tie(left.y, left.x, left.layer) <=> std::tie(right.y, right.x, right.layer);
     }
 };
 
 /** @brief Supported deterministic board-neighbour topologies. */
-enum class BoardTopology : std::uint8_t { Square4, Square8, HexAxial };
+enum class BoardTopology : std::uint8_t { Square4, Square8, HexAxial, ExplicitGraph };
 
 /** @brief Tactical battle lifecycle. */
 enum class BattleStatus : std::uint8_t { Setup, Running, Ended };
@@ -147,7 +152,7 @@ struct TurnResourceSpec {
  * This value is owner-thread-affine. It invokes no callbacks. Every mutation
  * preserves the cell-to-subject and subject-to-cell indexes atomically.
  */
-class BoardState {
+class EVENGINE_API_DOMAINS BoardState {
 public:
     /** @brief Construct an empty board with square-four topology. */
     BoardState() = default;
@@ -191,18 +196,19 @@ public:
     [[nodiscard]] std::vector<Cell> cells() const;
     /** @brief Return all cell facts and occupants in deterministic coordinate order. */
     [[nodiscard]] std::vector<BoardCellRecord> records() const;
-    /** @brief Return deterministic neighbouring cells that exist on this board. */
+    /** @brief Return deterministic neighbouring cells; ExplicitGraph uses declared outgoing edges only. */
     [[nodiscard]] std::vector<Cell> neighbours(Cell origin) const;
 
     /**
-     * @brief Declare a directed edge between two existing adjacent cells.
-     * @param from Source cell; it must already exist on this board.
-     * @param to Destination cell; it must already exist and be a neighbour of `from`.
-     * @param state Directed traversal facts for this one direction.
-     * @return Applied, InvalidArgument when either endpoint is missing or they are
-     *         not adjacent, or Conflict when this direction is already declared.
-     * @remarks The reverse direction is independent and stays whatever it was; a
-     *          one-way edge is `addEdge(a,b,...)` without `addEdge(b,a,...)`.
+     * @brief Declare a directed edge between existing cells.
+     * @param from Existing source cell.
+     * @param to Existing destination distinct from source; grids require adjacency.
+     * @param state Directed traversal facts copied into this board.
+     * @return Applied, NotFound for missing cells, InvalidArgument for invalid
+     *         adjacency or costs, or Conflict for an already declared direction.
+     * @remarks ExplicitGraph creates adjacency; the reverse edge is independent.
+     *          Grid edges refine existing adjacency and do not remove reverse travel.
+     *          Simulation-thread-only; retains no borrowed data and calls no callbacks.
      */
     [[nodiscard]] Result<void> addEdge(Cell from, Cell to, EdgeState state = {});
     /** @brief Return a declared directed edge, or NotFound when none is declared. */
@@ -232,6 +238,7 @@ private:
 /** @brief Tactical side short-root entity. */
 class TacticalSide : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(TacticalSide, ecs::Entity)
 
     /** @brief Release through the ECS generation boundary. */
@@ -250,6 +257,7 @@ public:
 /** @brief Tactical unit short-root entity. */
 class TacticalUnit : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(TacticalUnit, ecs::Entity)
 
     /** @brief Release through the ECS generation boundary. */
@@ -435,6 +443,7 @@ struct ObjectiveState {
 /** @brief Battle short-root and authoritative owner of board and turn state. */
 class Battle : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Battle, ecs::Entity)
 
     /** @brief Release through the ECS generation boundary. */

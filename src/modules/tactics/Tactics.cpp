@@ -39,15 +39,11 @@ struct ScriptTacticsInteraction {
     std::optional<InteractionSession> session;
 };
 
-Result<void> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 Result<SubjectRef> bindingSubject(const std::string& text, std::string path) {
     const auto id = PersistentId::parse(text);
     if (!id || id->isNil())
         return Result<SubjectRef>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected a non-nil canonical UUID", std::move(path)));
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected a non-nil canonical UUID", path));
     return Result<SubjectRef>::success(SubjectRef::fromPersistentId(*id));
 }
 
@@ -66,7 +62,7 @@ Result<LogicalId> bindingLogicalId(const std::string& text, std::string path) {
     const auto id = LogicalId::parse(text);
     if (!id)
         return Result<LogicalId>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                            "expected a namespace:name logical ID", std::move(path)));
+                                                            "expected a namespace:name logical ID", path));
     return Result<LogicalId>::success(*id);
 }
 
@@ -473,6 +469,7 @@ Module_IMPL(Tactics, new Tactics());
 
 Tactics::Tactics() {
     cap::addListener<IGameplayControlProvider>(this);
+    cap::addListener<IGameplayInstanceCatalog>(this);
     // Importing tactics is what makes grid line of sight available to the targeting pipeline. A
     // refusal here (a foreign provider already owning the capability, say) is observed rather than
     // thrown: the project keeps whatever it registered, and grid sight simply is not claimed.
@@ -490,6 +487,7 @@ TacticsBattleSession::~TacticsBattleSession() noexcept {
 }
 
 Tactics::~Tactics() {
+    cap::removeListener<IGameplayInstanceCatalog>(this);
     cap::removeListener<IGameplayControlProvider>(this);
     releaseLive<TacticalUnit>(units_);
     releaseLive<TacticalSide>(sides_);
@@ -497,6 +495,18 @@ Tactics::~Tactics() {
 }
 
 std::string_view Tactics::gameplayDomain() const noexcept { return "tactics"; }
+
+std::vector<SubjectRef> Tactics::gameplayInstances() const {
+    // One tactics instance is one battle; the identity is the battle subject.
+    std::vector<SubjectRef> result;
+    for (const auto& handle : battles_) {
+        auto* battle = dynamic_cast<Battle*>(ecs::try_get(handle));
+        if (battle != nullptr && battle->identity()->subject.isValid()) result.push_back(battle->identity()->subject);
+    }
+    std::sort(result.begin(), result.end(),
+              [](const SubjectRef& left, const SubjectRef& right) { return left.format() < right.format(); });
+    return result;
+}
 
 Result<GameplayObservation> Tactics::observeGameplay(const GameplaySession& session,
                                                        SubjectRef instance) const {
@@ -793,14 +803,12 @@ Result<ecs::EntityHandle> Tactics::newUnit(ecs::EntityHandle battleHandle, ecs::
 Result<void> Tactics::addCell(ecs::EntityHandle battleHandle, Cell cellValue, CellState state) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     if (battle->turn()->status != BattleStatus::Setup)
-        return failure(DiagnosticCode::PreconditionViolation, "tactics cells can only be added during setup",
-                       "battle.status");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "tactics cells can only be added during setup", "battle.status"));
     const auto nextRevision = battle->turn()->revision.incremented();
     if (!nextRevision)
-        return failure(DiagnosticCode::PreconditionViolation, "tactics battle revision is exhausted",
-                       "battle.revision");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "tactics battle revision is exhausted", "battle.revision"));
     auto added = battle->board()->value.addCell(cellValue, std::move(state));
     if (!added) return added;
     battle->turn()->revision = *nextRevision;
@@ -810,16 +818,21 @@ Result<void> Tactics::addCell(ecs::EntityHandle battleHandle, Cell cellValue, Ce
 Result<void> Tactics::setTopology(ecs::EntityHandle battleHandle, BoardTopology topology) {
     Battle* battle = resolveBattle(battleHandle);
     if (!battle)
-        return failure(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     if (battle->turn()->status != BattleStatus::Setup)
-        return failure(DiagnosticCode::PreconditionViolation, "tactics topology can only change during setup",
-                       "battle.status");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "tactics topology can only change during setup", "battle.status"));
     if (battle->board()->value.topology() == topology)
         return Result<void>::success(Status::success(StatusCode::NoOp));
+    if (topology != BoardTopology::Square4 && topology != BoardTopology::Square8 &&
+        topology != BoardTopology::HexAxial && topology != BoardTopology::ExplicitGraph)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown board topology", "topology"));
+    if (!battle->board()->value.edgeRecords().empty())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "choose topology before declaring edges", "topology"));
     const auto revision = battle->turn()->revision.incremented();
     if (!revision)
-        return failure(DiagnosticCode::PreconditionViolation, "tactics battle revision is exhausted",
-                       "battle.revision");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "tactics battle revision is exhausted", "battle.revision"));
     battle->board()->value.setTopology(topology);
     battle->turn()->revision = *revision;
     return Result<void>::success(Status::success(StatusCode::Applied));
@@ -828,7 +841,7 @@ Result<void> Tactics::setTopology(ecs::EntityHandle battleHandle, BoardTopology 
 Result<void> Tactics::start(ecs::EntityHandle battleHandle, std::string_view policyId) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return BattleSystem::start(*battle, std::string(policyId));
 }
 
@@ -843,7 +856,7 @@ Result<BattlePhase> Tactics::advance(ecs::EntityHandle battleHandle, const Simul
 Result<void> Tactics::endTurn(ecs::EntityHandle battleHandle, SubjectRef actor) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return BattleSystem::endTurn(*battle, actor);
 }
 
@@ -877,21 +890,21 @@ Result<MoveReceipt> Tactics::moveUnit(ecs::EntityHandle battleHandle, SubjectRef
 Result<void> Tactics::faceUnit(ecs::EntityHandle battleHandle, SubjectRef actor, int facing) {
     Battle* battle = resolveBattle(battleHandle);
     if (!battle)
-        return failure(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return BattleSystem::faceUnit(*battle, actor, facing);
 }
 
 Result<void> Tactics::waitUnit(ecs::EntityHandle battleHandle, SubjectRef actor) {
     Battle* battle = resolveBattle(battleHandle);
     if (!battle)
-        return failure(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return BattleSystem::waitUnit(*battle, actor);
 }
 
 Result<void> Tactics::finish(ecs::EntityHandle battleHandle) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return BattleSystem::finish(*battle);
 }
 
@@ -916,21 +929,21 @@ Result<ReactionReceipt> Tactics::acceptReaction(ecs::EntityHandle battleHandle, 
 Result<void> Tactics::declineReaction(ecs::EntityHandle battleHandle) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return BattleSystem::declineReaction(*battle);
 }
 
 Result<void> Tactics::addObjective(ecs::EntityHandle battleHandle, ObjectiveSpec objective) {
     Battle* battle = resolveBattle(battleHandle);
     if (!battle)
-        return failure(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return BattleSystem::addObjective(*battle, std::move(objective));
 }
 
 Result<void> Tactics::defeatUnit(ecs::EntityHandle battleHandle, SubjectRef unit) {
     Battle* battle = resolveBattle(battleHandle);
     if (!battle)
-        return failure(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return BattleSystem::defeatUnit(*battle, unit);
 }
 
@@ -978,14 +991,14 @@ Result<MoveReceipt> Tactics::previewMove(ecs::EntityHandle battleHandle, Subject
 Result<void> Tactics::previewFace(ecs::EntityHandle battleHandle, SubjectRef actor, int facing) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return BattleSystem::previewFace(*battle, actor, facing);
 }
 
 Result<void> Tactics::previewWait(ecs::EntityHandle battleHandle, SubjectRef actor) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return BattleSystem::previewWait(*battle, actor);
 }
 
@@ -1009,14 +1022,12 @@ Result<std::vector<Cell>> Tactics::cellsInRange(ecs::EntityHandle battleHandle, 
 Result<void> Tactics::addEdge(ecs::EntityHandle battleHandle, Cell from, Cell to, EdgeState state) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     if (battle->turn()->status != BattleStatus::Setup)
-        return failure(DiagnosticCode::PreconditionViolation, "tactics edges can only be added during setup",
-                       "battle.status");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "tactics edges can only be added during setup", "battle.status"));
     const auto nextRevision = battle->turn()->revision.incremented();
     if (!nextRevision)
-        return failure(DiagnosticCode::PreconditionViolation, "tactics battle revision is exhausted",
-                       "battle.revision");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "tactics battle revision is exhausted", "battle.revision"));
     auto added = battle->board()->value.addEdge(from, to, std::move(state));
     if (!added) return added;
     battle->turn()->revision = *nextRevision;
@@ -1085,7 +1096,7 @@ Result<void> Tactics::restore(ecs::EntityHandle battleHandle, const SnapshotEnve
                               const SnapshotHashProvider& hashProvider) {
     Battle* battle = resolveBattle(battleHandle);
     if (!battle)
-        return failure(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return TacticsPersistence::restore(*battle, snapshotValue, hashProvider);
 }
 
@@ -1100,7 +1111,7 @@ Result<std::vector<BattleCommand>> Tactics::commandsFrom(ecs::EntityHandle battl
 Result<void> Tactics::replay(ecs::EntityHandle battleHandle, std::span<const BattleCommand> commands) {
     Battle* battle = resolveBattle(battleHandle);
     if (!battle)
-        return failure(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return BattleReplay::replay(*battle, commands);
 }
 
@@ -1119,7 +1130,7 @@ Result<std::string> Tactics::snapshotJson(ecs::EntityHandle battleHandle) {
 Result<void> Tactics::restoreJson(ecs::EntityHandle battleHandle, std::string_view json) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     // Parsing verifies the digest before anything is mutated, and TacticsPersistence::restore
     // validates the whole candidate state before it commits, so a bad document cannot leave a
     // half-restored battle behind.
@@ -1141,7 +1152,7 @@ Result<std::string> Tactics::commandLogJson(ecs::EntityHandle battleHandle, Revi
 Result<void> Tactics::replayJson(ecs::EntityHandle battleHandle, std::string_view json) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     auto parsedValue = Value::fromJson(json);
     if (!parsedValue) return Result<void>::failure(parsedValue.status());
     // The log must describe this battle's current revision: a log captured at a different point
@@ -1292,7 +1303,7 @@ script::Borrowed<TacticsBattleSession> Tactics::resolve(TacticsBattleSessionRef 
 Result<void> Tactics::release(TacticsBattleSessionRef reference) {
     Tactics* module = ModuleManager::getInstance<Tactics>("Tactics");
     if (!module)
-        return failure(DiagnosticCode::StaleHandle, "Tactics module is no longer loaded", "battle");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "Tactics module is no longer loaded", "battle"));
     return module->sessions_.erase(reference);
 }
 
@@ -1418,7 +1429,7 @@ void Tactics::expose(ssq::Table& table) {
     battle.addFunc("release", [vm](ScriptTacticsBattle* value) {
         if (!value)
             return script::projectResult(
-                vm, failure(DiagnosticCode::InvalidArgument, "tactics battle proxy must not be null", "battle"));
+                vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "tactics battle proxy must not be null", "battle")));
         return script::projectResult(vm, Tactics::release(value->reference));
     });
     battle.addFunc("addCell", [vm](ScriptTacticsBattle* value, int x, int y, int layer, int moveCost) {
@@ -1437,9 +1448,11 @@ void Tactics::expose(ssq::Table& table) {
             parsed = BoardTopology::Square8;
         else if (topology == "hex")
             parsed = BoardTopology::HexAxial;
+        else if (topology == "graph")
+            parsed = BoardTopology::ExplicitGraph;
         else
             return script::projectResult(
-                vm, failure(DiagnosticCode::InvalidArgument, "unknown tactics board topology", "topology"));
+                vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown tactics board topology", "topology")));
         return script::projectResult(
             vm, withScriptBattle<Result<void>>(value, [&](Tactics& module, TacticsBattleSession& session) {
                 return module.setTopology(session.battle, parsed);
@@ -1487,7 +1500,7 @@ void Tactics::expose(ssq::Table& table) {
         if (!beneficiary) return script::projectResult(vm, Result<void>::failure(beneficiary.status()));
         if (requiredRound <= 0)
             return script::projectResult(
-                vm, failure(DiagnosticCode::InvalidArgument, "required round must be positive", "requiredRound"));
+                vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "required round must be positive", "requiredRound")));
         ObjectiveSpec objective;
         objective.id = id.value();
         objective.kind = ObjectiveKind::SurviveRounds;
@@ -1530,8 +1543,7 @@ void Tactics::expose(ssq::Table& table) {
                 registered += id;
             }
             return script::projectResult(
-                vm, failure(DiagnosticCode::InvalidArgument,
-                            "unknown tactics turn policy '" + policy + "'; registered: " + registered, "policy"));
+                vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown tactics turn policy '" + policy + "'; registered: " + registered, "policy")));
         }
         return script::projectResult(
             vm, withScriptBattle<Result<void>>(value, [&](Tactics& module, TacticsBattleSession& session) {

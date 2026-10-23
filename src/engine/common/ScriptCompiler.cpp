@@ -360,7 +360,41 @@ std::string BindingContract::toJson() const {
         if (i != 0) json << ',';
         json << '"' << jsonEscape(platforms[i]) << '"';
     }
-    json << "],\"documentationId\":\"" << jsonEscape(documentationId) << "\"}";
+    json << "],\"documentationId\":\"" << jsonEscape(documentationId) << "\",\"source\":\"" << jsonEscape(source)
+         << "\",\"cppSymbol\":\"" << jsonEscape(cppSymbol) << "\",\"architecture\":";
+    if (architecture) {
+        const auto& mapping = *architecture;
+        json << "{\"status\":\"mapped\",\"schemaVersion\":1,\"cppSymbol\":\"" << jsonEscape(cppSymbol)
+             << "\",\"implementationSource\":\"" << jsonEscape(mapping.implementationSource) << "\",\"stateOwner\":\""
+             << jsonEscape(mapping.stateOwner) << "\",\"ownerSource\":\"" << jsonEscape(mapping.ownerSource)
+             << "\",\"inputHash\":\"" << jsonEscape(mapping.inputHash)
+             << "\",\"evidence\":\"static-binding+reviewed-owner+test-reference\",\"limitations\":\""
+             << jsonEscape(mapping.limitations) << '"';
+        const auto writeArray = [&json](const char* name, const std::vector<std::string>& values) {
+            json << ",\"" << name << "\":[";
+            for (size_t index = 0; index < values.size(); ++index) {
+                if (index != 0) json << ',';
+                json << '"' << jsonEscape(values[index]) << '"';
+            }
+            json << ']';
+        };
+        writeArray("writes", mapping.writes);
+        writeArray("tests", mapping.tests);
+        writeArray("reads", mapping.reads);
+        json << '}';
+    } else {
+        json << "{\"status\":\"unknown\",\"reason\":\"No reviewed owner mapping for this binding\"}";
+    }
+    json << ",\"semantics\":";
+    if (semantics) {
+        json << "{\"schemaVersion\":1,\"factory\":\"" << jsonEscape(semantics->factory) << "\",\"role\":\""
+             << jsonEscape(semantics->role) << "\",\"resultClass\":\"" << jsonEscape(semantics->resultClass)
+             << "\",\"identityArgument\":" << semantics->identityArgument
+             << ",\"relatedArgument\":" << semantics->relatedArgument
+             << ",\"schema\":" << (semantics->schemaJson.empty() ? "null" : semantics->schemaJson) << '}';
+    } else
+        json << "null";
+    json << '}';
     return json.str();
 }
 
@@ -766,6 +800,7 @@ std::vector<ScriptDiagnostic> ScriptCompiler::validateProjectConfig(std::string_
 
 ScriptMetadata ScriptCompiler::analyze(std::string_view source, std::string_view canonicalUri) {
     ScriptMetadata result;
+    result.structure              = analyzeScriptStructure(source);
     result.sourceHash             = hashSource(source);
     result.canonicalUri           = std::string(canonicalUri);
     result.providerOrigin         = std::string(canonicalUri);

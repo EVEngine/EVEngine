@@ -43,7 +43,7 @@ Result<const Value::Object*> object(const Value& value, std::string path) {
     const auto* result = value.getIf<Value::Object>();
     if (!result)
         return Result<const Value::Object*>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "expected object", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "expected object", path));
     return Result<const Value::Object*>::success(result);
 }
 
@@ -59,7 +59,7 @@ Result<std::int64_t> integer(const Value& value, std::string path) {
     const auto* result = value.getIf<std::int64_t>();
     if (!result)
         return Result<std::int64_t>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "expected integer", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "expected integer", path));
     return Result<std::int64_t>::success(*result);
 }
 
@@ -67,12 +67,12 @@ Result<std::uint64_t> decimal(const Value& value, std::string path) {
     const auto* text = value.getIf<std::string>();
     if (!text)
         return Result<std::uint64_t>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "expected decimal string", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "expected decimal string", path));
     std::uint64_t result = 0;
     const auto [end, error] = std::from_chars(text->data(), text->data() + text->size(), result);
     if (error != std::errc{} || end != text->data() + text->size())
         return Result<std::uint64_t>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "invalid decimal string", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid decimal string", path));
     return Result<std::uint64_t>::success(result);
 }
 
@@ -85,7 +85,7 @@ Result<std::int64_t> signedDecimal(const Value& value, std::string path) {
     const auto [end, error] = std::from_chars(text->data(), text->data() + text->size(), result);
     if (error != std::errc{} || end != text->data() + text->size())
         return Result<std::int64_t>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "invalid signed decimal string", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid signed decimal string", path));
     return Result<std::int64_t>::success(result);
 }
 
@@ -93,12 +93,12 @@ Result<SubjectRef> subject(const Value& value, std::string path, bool allowNil =
     const auto* text = value.getIf<std::string>();
     if (!text)
         return Result<SubjectRef>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "expected subject UUID", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "expected subject UUID", path));
     if (allowNil && text->empty()) return Result<SubjectRef>::success(SubjectRef::nil());
     const auto id = PersistentId::parse(*text);
     if (!id || id->isNil())
         return Result<SubjectRef>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "invalid subject UUID", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid subject UUID", path));
     return Result<SubjectRef>::success(SubjectRef::fromPersistentId(*id));
 }
 
@@ -106,11 +106,11 @@ Result<LogicalId> logicalId(const Value& value, std::string path) {
     const auto* text = value.getIf<std::string>();
     if (!text)
         return Result<LogicalId>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "expected logical ID", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "expected logical ID", path));
     const auto result = LogicalId::parse(*text);
     if (!result)
         return Result<LogicalId>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "invalid logical ID", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid logical ID", path));
     return Result<LogicalId>::success(*result);
 }
 
@@ -119,7 +119,7 @@ Result<Cell> parseCell(const Value& value, std::string path) {
     if (!candidate) return Result<Cell>::failure(candidate.status());
     if (candidate.value()->size() != 3)
         return Result<Cell>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "cell has unknown or missing fields", std::move(path)));
+            Diagnostic::error(DiagnosticCode::ParseError, "cell has unknown or missing fields", path));
     Cell result;
     for (const auto& [name, target] : {std::pair{"x", &result.x}, {"y", &result.y}, {"layer", &result.layer}}) {
         auto member = field(*candidate.value(), name, path);
@@ -831,7 +831,8 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
             Diagnostic::error(DiagnosticCode::ParseError, "invalid board object", "payload.board"));
     auto topology = intField(*boardObject.value(), "topology", "payload.board");
     auto cellsMember = field(*boardObject.value(), "cells", "payload.board");
-    if (!everyResultValid(topology, cellsMember) || topology.value() < 0 || topology.value() > 2)
+    if (!everyResultValid(topology, cellsMember) || topology.value() < 0 ||
+        topology.value() > (sourceVersion >= SchemaVersion(7) ? 3 : 2))
         return Result<Candidate>::failure(
             Diagnostic::error(DiagnosticCode::ParseError, "invalid board topology", "payload.board.topology"));
     const auto* cells = cellsMember.value()->getIf<Value::Array>();
@@ -1036,7 +1037,8 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
         const int facingCount = result.board.topology() == BoardTopology::Square4   ? 4
                                 : result.board.topology() == BoardTopology::Square8 ? 8
                                                                                     : 6;
-        if (facing.value() < 0 || facing.value() >= facingCount)
+        if (facing.value() < 0 || facing.value() >= facingCount ||
+            (result.board.topology() == BoardTopology::ExplicitGraph && facing.value() != 0))
             return Result<Candidate>::failure(
                 Diagnostic::error(DiagnosticCode::InvariantViolation, "unit facing is invalid", path + ".facing"));
         result.units.push_back(
@@ -1163,6 +1165,22 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
 
 }  // namespace
 
+struct TacticsPersistence::PreparedRestore::Impl {
+    Battle*        battle = nullptr;
+    Candidate      candidate;
+    Revision       revision;
+    SimulationTick tick;
+
+    Impl(Battle& target, Candidate&& state, Revision savedRevision, SimulationTick savedTick)
+        : battle(&target), candidate(std::move(state)), revision(savedRevision), tick(savedTick) {}
+};
+
+TacticsPersistence::PreparedRestore::PreparedRestore(std::unique_ptr<Impl> state) : state_(std::move(state)) {}
+TacticsPersistence::PreparedRestore::~PreparedRestore()                          = default;
+TacticsPersistence::PreparedRestore::PreparedRestore(PreparedRestore&&) noexcept = default;
+TacticsPersistence::PreparedRestore& TacticsPersistence::PreparedRestore::operator=(PreparedRestore&&) noexcept =
+    default;
+
 Result<SnapshotEnvelope> TacticsPersistence::snapshot(Battle& battle, const SnapshotHashProvider& hashProvider) {
     Value::Array cells;
     for (const auto& record : battle.board()->value.records()) {
@@ -1255,9 +1273,9 @@ Result<SnapshotEnvelope> TacticsPersistence::snapshot(Battle& battle, const Snap
         {"status", Value(static_cast<int>(battle.turn()->status))},
         {"units", Value(std::move(units))},
     });
-    return makeSnapshotEnvelope(std::string(kType), schema(), SchemaVersion(6),
-                                battle.identity()->subject.persistentId(), battle.turn()->revision,
-                                battle.turn()->tick,
+    const auto version = battle.board()->value.topology() == BoardTopology::ExplicitGraph ? 7u : 6u;
+    return makeSnapshotEnvelope(std::string(kType), schema(), SchemaVersion(version),
+                                battle.identity()->subject.persistentId(), battle.turn()->revision, battle.turn()->tick,
                                 std::move(payload), hashProvider);
 }
 
@@ -1287,14 +1305,22 @@ Result<Battle::Commands> TacticsPersistence::parseCommandLog(const Value& value,
 
 Result<void> TacticsPersistence::restore(Battle& battle, const SnapshotEnvelope& source,
                                           const SnapshotHashProvider& hashProvider) {
+    auto prepared = prepareRestore(battle, source, hashProvider);
+    if (!prepared.ok()) return Result<void>::failure(prepared.status());
+    commitPrepared(std::move(prepared).takeValue());
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<TacticsPersistence::PreparedRestore> TacticsPersistence::prepareRestore(
+    Battle& battle, const SnapshotEnvelope& source, const SnapshotHashProvider& hashProvider) {
     if (source.type != kType || source.schema != schema())
-        return Result<void>::failure(
+        return Result<PreparedRestore>::failure(
             Diagnostic::error(DiagnosticCode::InvalidArgument, "snapshot does not belong to tactics battle", {}));
     if (source.instanceId != battle.identity()->subject.persistentId())
-        return Result<void>::failure(
+        return Result<PreparedRestore>::failure(
             Diagnostic::error(DiagnosticCode::Conflict, "snapshot battle identity differs from target", {}));
     auto verified = verifySnapshotEnvelope(source, hashProvider);
-    if (!verified) return Result<void>::failure(verified.status());
+    if (!verified) return Result<PreparedRestore>::failure(verified.status());
     // V1 predates board edges; V2 predates stable policy ids; V3 predates the
     // UseAbility command kind; V4 predates persisted scheduling charge and the
     // explicit round schedule; V5 predates the ability target unit and payload. Each is
@@ -1302,15 +1328,23 @@ Result<void> TacticsPersistence::restore(Battle& battle, const SnapshotEnvelope&
     // list only ever grows.
     if (source.schemaVersion != SchemaVersion(1) && source.schemaVersion != SchemaVersion(2) &&
         source.schemaVersion != SchemaVersion(3) && source.schemaVersion != SchemaVersion(4) &&
-        source.schemaVersion != SchemaVersion(5) && source.schemaVersion != SchemaVersion(6))
-        return Result<void>::failure(
+        source.schemaVersion != SchemaVersion(5) && source.schemaVersion != SchemaVersion(6) &&
+        source.schemaVersion != SchemaVersion(7))
+        return Result<PreparedRestore>::failure(
             Diagnostic::error(DiagnosticCode::UnknownVersion, "unsupported tactics battle snapshot version", {}));
     auto metadata = validateSnapshotPayloadMetadata(source.payload, source.revision, source.tick);
-    if (!metadata) return Result<void>::failure(metadata.status());
+    if (!metadata) return Result<PreparedRestore>::failure(metadata.status());
     auto candidate = parseCandidate(battle, source.payload, source.revision, source.schemaVersion);
-    if (!candidate) return Result<void>::failure(candidate.status());
+    if (!candidate) return Result<PreparedRestore>::failure(candidate.status());
 
-    Candidate restored = std::move(candidate).takeValue();
+    auto state =
+        std::make_unique<PreparedRestore::Impl>(battle, std::move(candidate).takeValue(), source.revision, source.tick);
+    return Result<PreparedRestore>::success(PreparedRestore(std::move(state)));
+}
+
+void TacticsPersistence::commitPrepared(PreparedRestore prepared) noexcept {
+    auto&      battle       = *prepared.state_->battle;
+    Candidate& restored     = prepared.state_->candidate;
     battle.board()->value = std::move(restored.board);
     battle.identity()->seed = restored.seed;
     for (auto& unit : restored.units) {
@@ -1325,8 +1359,8 @@ Result<void> TacticsPersistence::restore(Battle& battle, const SnapshotEnvelope&
     turn->status = restored.status;
     turn->phase = restored.phase;
     turn->policyId = std::move(restored.policyId);
-    turn->tick = source.tick;
-    turn->revision = source.revision;
+    turn->tick           = prepared.state_->tick;
+    turn->revision       = prepared.state_->revision;
     turn->round = restored.round;
     turn->cursor = restored.cursor;
     turn->activeUnit = restored.activeUnit;
@@ -1337,8 +1371,7 @@ Result<void> TacticsPersistence::restore(Battle& battle, const SnapshotEnvelope&
     *battle.reactions() = std::move(restored.reactions);
     *battle.commands() = std::move(restored.commands);
     *battle.objectives() = std::move(restored.objectives);
-    *battle.random() = std::move(restored.random);
-    return Result<void>::success(Status::success(StatusCode::Applied));
+    *battle.random()     = std::move(restored.random);
 }
 
 }  // namespace eve::tactics

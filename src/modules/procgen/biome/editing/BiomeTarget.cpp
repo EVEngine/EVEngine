@@ -22,7 +22,7 @@ EditorValue layerValue(const BiomeLayerValue& v) {
                                {"spatial", v.spatialAsset}, {"priority", int64_t{v.priority}},
                                {"density", v.density},      {"assets", std::move(a)}};
 }
-EditorResult<BiomeAssetValue> parseAsset(const EditorValue& v) {
+Result<BiomeAssetValue> parseAsset(const EditorValue& v) {
     BiomeAssetValue o;
     const auto *    id = field(v, "id"), *asset = field(v, "asset"), *yaw = field(v, "randomYaw");
     const auto*     ids    = id ? id->getIf<std::string>() : nullptr;
@@ -46,7 +46,7 @@ EditorResult<BiomeAssetValue> parseAsset(const EditorValue& v) {
     }
     return eve::editing::applied<BiomeAssetValue>(std::move(o));
 }
-EditorResult<BiomeLayerValue> parseLayer(const EditorValue& v) {
+Result<BiomeLayerValue> parseLayer(const EditorValue& v) {
     BiomeLayerValue o;
     const auto *    id = field(v, "id"), *name = field(v, "name"), *spatial = field(v, "spatial"),
                *priority = field(v, "priority"), *density = field(v, "density"), *assets = field(v, "assets");
@@ -194,7 +194,7 @@ EditorValue BiomeDocumentTarget::contentValue() const {
     for (const auto& v : exclusions_) exclusions.push_back(v);
     return EditorValue::Object{{"layers", std::move(layers)}, {"exclusions", std::move(exclusions)}};
 }
-EditorResult<DomainOperation> BiomeDocumentTarget::replacement(EditorValue c, std::string p) const {
+Result<DomainOperation> BiomeDocumentTarget::replacement(EditorValue c, std::string p) const {
     DomainOperation op;
     op.type        = "biome.document.replace.v1";
     op.inverseType = op.type;
@@ -206,7 +206,7 @@ EditorResult<DomainOperation> BiomeDocumentTarget::replacement(EditorValue c, st
     op.mergeKey = "biome:" + id_ + ":" + (p.empty() ? "structure" : p);
     return eve::editing::applied<DomainOperation>(std::move(op));
 }
-EditorResult<DomainOperation> BiomeDocumentTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
+Result<DomainOperation> BiomeDocumentTarget::makeSet(const SelectionSnapshot& s, const PropertyPath& p,
                                                            const EditorValue& value, PropertySetMode mode) const {
     if (mode == PropertySetMode::Reset) return makeReset(s, p);
     auto d = schema(s).find(p);
@@ -245,14 +245,14 @@ EditorResult<DomainOperation> BiomeDocumentTarget::makeSet(const SelectionSnapsh
                                                      "Biome edit produces invalid rules");
     return replacement(c.contentValue(), p.value());
 }
-EditorResult<DomainOperation> BiomeDocumentTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
+Result<DomainOperation> BiomeDocumentTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
     auto d = schema(s).find(p);
     if (!d)
         return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.biome.property"),
                                                      "Unknown Biome property");
     return makeSet(s, p, d->defaultValue, PropertySetMode::Absolute);
 }
-EditorResult<DomainOperation> BiomeDocumentTarget::makeCreateLayer(const BiomeLayerValue& v) const {
+Result<DomainOperation> BiomeDocumentTarget::makeCreateLayer(const BiomeLayerValue& v) const {
     if (v.id.empty() ||
         std::any_of(layers_.begin(), layers_.end(), [&](const auto& x) { return x.id == v.id || x.name == v.name; }))
         return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.biome.layer-id"),
@@ -264,7 +264,7 @@ EditorResult<DomainOperation> BiomeDocumentTarget::makeCreateLayer(const BiomeLa
                                                      "Biome layer is invalid");
     return replacement(c.contentValue());
 }
-EditorResult<DomainOperation> BiomeDocumentTarget::makeDeleteLayer(const ObjectId& id) const {
+Result<DomainOperation> BiomeDocumentTarget::makeDeleteLayer(const ObjectId& id) const {
     if (std::none_of(layers_.begin(), layers_.end(), [&](const auto& v) { return v.id == id; }))
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.biome.layer"),
                                                      "Biome layer does not exist");
@@ -272,7 +272,7 @@ EditorResult<DomainOperation> BiomeDocumentTarget::makeDeleteLayer(const ObjectI
     std::erase_if(c.layers_, [&](const auto& v) { return v.id == id; });
     return replacement(c.contentValue());
 }
-EditorResult<DomainOperation> BiomeDocumentTarget::makeCreateAsset(const ObjectId&        layer,
+Result<DomainOperation> BiomeDocumentTarget::makeCreateAsset(const ObjectId&        layer,
                                                                    const BiomeAssetValue& v) const {
     auto c = *this;
     auto l = std::find_if(c.layers_.begin(), c.layers_.end(), [&](const auto& x) { return x.id == layer; });
@@ -290,7 +290,7 @@ EditorResult<DomainOperation> BiomeDocumentTarget::makeCreateAsset(const ObjectI
                                                      "Biome asset is invalid");
     return replacement(c.contentValue());
 }
-EditorResult<DomainOperation> BiomeDocumentTarget::makeDeleteAsset(const ObjectId& id) const {
+Result<DomainOperation> BiomeDocumentTarget::makeDeleteAsset(const ObjectId& id) const {
     auto c       = *this;
     bool removed = false;
     for (auto& l : c.layers_) {
@@ -303,7 +303,7 @@ EditorResult<DomainOperation> BiomeDocumentTarget::makeDeleteAsset(const ObjectI
                                                      "Biome asset does not exist");
     return replacement(c.contentValue());
 }
-EditorResult<DomainOperation> BiomeDocumentTarget::makeSetExclusions(std::vector<std::string> v) const {
+Result<DomainOperation> BiomeDocumentTarget::makeSetExclusions(std::vector<std::string> v) const {
     auto c        = *this;
     c.exclusions_ = std::move(v);
     if (errors(c.validate()))
@@ -349,7 +349,7 @@ std::vector<EditorDiagnostic> BiomeDocumentTarget::validate() const {
         d.push_back(diagnostic("editor.biome.empty", DiagnosticSeverity::Warning, "Biome has no layers"));
     return d;
 }
-EditorResult<void> BiomeDocumentTarget::applyDomainOperation(const DomainOperation& op) {
+Result<void> BiomeDocumentTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "biome.document.replace.v1" ||
         !op.payload.isWithinLimits(8, 200000, 8 * 1024 * 1024))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.biome.operation"),
@@ -387,7 +387,7 @@ EditorResult<void> BiomeDocumentTarget::applyDomainOperation(const DomainOperati
 std::unique_ptr<IDomainOperationTarget> BiomeDocumentTarget::cloneDomainState() const {
     return std::make_unique<BiomeDocumentTarget>(*this);
 }
-EditorResult<void> BiomeDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> c) {
+Result<void> BiomeDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> c) {
     auto* t = dynamic_cast<BiomeDocumentTarget*>(c.get());
     if (!t || t->id_ != id_)
         return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.biome.candidate"),
@@ -398,7 +398,7 @@ EditorResult<void> BiomeDocumentTarget::commitDomainState(std::unique_ptr<IDomai
 EditorValue BiomeDocumentTarget::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"content", contentValue()}};
 }
-EditorResult<void> BiomeDocumentTarget::loadSnapshot(const EditorValue& s) {
+Result<void> BiomeDocumentTarget::loadSnapshot(const EditorValue& s) {
     const auto *v = field(s, "schemaVersion"), *content = field(s, "content");
     const auto* version = v ? v->getIf<int64_t>() : nullptr;
     if (!version || *version != 1 || !content)

@@ -1,12 +1,14 @@
 #pragma once
-#include "common/Result.h"
-#include "ui/PcgUiStatus.h"
+
 #include <array>
 #include <cstdint>
+#include "common/Export.h"
+#include "common/Result.h"
+#include "ui/PcgUiStatus.h"
 namespace ssq { class Table; }
 namespace eve::ui {
 /** @brief Seven-panel selection transaction used by Pcg photo mode. */
-class PcgPhotoModePanels {
+class EVENGINE_API_WORLD PcgPhotoModePanels {
 public:
  /** @brief Select startup panel 0..6 and atomically publish all button/panel states. */
  [[nodiscard]] Result<void> select(int panel);
@@ -17,7 +19,7 @@ public:
 private:int selected_=0;std::array<bool,7> active_{{true,false,false,false,false,false,false}};bool scrollReset_=false;uint64_t revision_=0;
 };
 /** @brief Visual snapshot matching Pcg PhotoModePanelButton. */
-class PcgPhotoModePanelButton {
+class EVENGINE_API_WORLD PcgPhotoModePanelButton {
 public:
  /** @brief Configure selected and unselected RGBA colors atomically. */
  [[nodiscard]] Result<void> configure(float nr,float ng,float nb,float na,float sr,float sg,float sb,float sa);

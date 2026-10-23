@@ -15,7 +15,7 @@ const EditorValue* field(const EditorValue& value, const char* key) {
 EditorValue entityValue(const SocialEntityRecord& e) {
     return EditorValue::Object{{"id", e.id.value()}, {"label", e.label}, {"category", e.category}};
 }
-EditorResult<SocialEntityRecord> parseEntity(const EditorValue& value) {
+Result<SocialEntityRecord> parseEntity(const EditorValue& value) {
     const auto* i        = field(value, "id");
     const auto* l        = field(value, "label");
     const auto* c        = field(value, "category");
@@ -32,7 +32,7 @@ EditorValue edgeValue(const SocialEdgeRecord& e) {
         {"id", e.id.value()}, {"source", e.source.value()}, {"target", e.target.value()}, {"kind", e.kind},
         {"type", e.type},     {"weight", e.weight}};
 }
-EditorResult<SocialEdgeRecord> parseEdge(const EditorValue& value) {
+Result<SocialEdgeRecord> parseEdge(const EditorValue& value) {
     auto str = [&](const char* k) -> const std::string* {
         const auto* v = field(value, k);
         return v ? v->getIf<std::string>() : nullptr;
@@ -81,7 +81,7 @@ TargetDescriptor SocialDocumentTarget::describe() const {
 void* SocialDocumentTarget::queryCapability(const CapabilityId& capability) {
     return capability == editorCapabilityId() ? static_cast<SocialDocumentTarget*>(this) : nullptr;
 }
-EditorResult<void> SocialDocumentTarget::applyDomainOperation(const DomainOperation& o) {
+Result<void> SocialDocumentTarget::applyDomainOperation(const DomainOperation& o) {
     if (o.target != TargetId(id_))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.social.target"),
                                           "Operation targets another social document");
@@ -128,7 +128,7 @@ EditorResult<void> SocialDocumentTarget::applyDomainOperation(const DomainOperat
 std::unique_ptr<IDomainOperationTarget> SocialDocumentTarget::cloneDomainState() const {
     return std::make_unique<SocialDocumentTarget>(*this);
 }
-EditorResult<void> SocialDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
+Result<void> SocialDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* t = dynamic_cast<SocialDocumentTarget*>(candidate.get());
     if (!t || t->id_ != id_)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.social.staging"),
@@ -138,7 +138,7 @@ EditorResult<void> SocialDocumentTarget::commitDomainState(std::unique_ptr<IDoma
 }
 std::vector<SocialEntityRecord>        SocialDocumentTarget::entities() const { return values(entities_); }
 std::vector<SocialEdgeRecord>          SocialDocumentTarget::edges() const { return values(edges_); }
-EditorResult<DomainOperation> SocialDocumentTarget::makeSetEntity(const SocialEntityRecord& e) const {
+Result<DomainOperation> SocialDocumentTarget::makeSetEntity(const SocialEntityRecord& e) const {
     if (!parseEntity(entityValue(e)).ok())
         return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.social.invalid-entity"),
                                                               "Cannot plan invalid entity");
@@ -147,7 +147,7 @@ EditorResult<DomainOperation> SocialDocumentTarget::makeSetEntity(const SocialEn
         op("social.entity.set.v1", f == entities_.end() ? "social.entity.delete.v1" : "social.entity.set.v1", id_,
            entityValue(e), f == entities_.end() ? EditorValue(e.id.value()) : entityValue(f->second), e.id));
 }
-EditorResult<DomainOperation> SocialDocumentTarget::makeDeleteEntity(const StableId& id) const {
+Result<DomainOperation> SocialDocumentTarget::makeDeleteEntity(const StableId& id) const {
     const auto f = entities_.find(id);
     if (f == entities_.end())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.social.entity-not-found"),
@@ -161,7 +161,7 @@ EditorResult<DomainOperation> SocialDocumentTarget::makeDeleteEntity(const Stabl
     return eve::editing::applied<DomainOperation>(
         op("social.entity.delete.v1", "social.entity.set.v1", id_, id.value(), entityValue(f->second), id));
 }
-EditorResult<DomainOperation> SocialDocumentTarget::makeSetEdge(const SocialEdgeRecord& e) const {
+Result<DomainOperation> SocialDocumentTarget::makeSetEdge(const SocialEdgeRecord& e) const {
     if (!parseEdge(edgeValue(e)).ok())
         return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.social.invalid-edge"),
                                                      "Cannot plan invalid edge");
@@ -178,7 +178,7 @@ EditorResult<DomainOperation> SocialDocumentTarget::makeSetEdge(const SocialEdge
         op("social.edge.set.v1", f == edges_.end() ? "social.edge.delete.v1" : "social.edge.set.v1", id_, edgeValue(e),
            f == edges_.end() ? EditorValue(e.id.value()) : edgeValue(f->second), e.id));
 }
-EditorResult<DomainOperation> SocialDocumentTarget::makeDeleteEdge(const StableId& id) const {
+Result<DomainOperation> SocialDocumentTarget::makeDeleteEdge(const StableId& id) const {
     const auto f = edges_.find(id);
     if (f == edges_.end())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.social.edge-not-found"),
@@ -223,7 +223,7 @@ EditorValue SocialDocumentTarget::snapshotValue() const {
     return EditorValue::Object{
         {"schemaVersion", int64_t{1}}, {"entities", std::move(entities)}, {"edges", std::move(edges)}};
 }
-EditorResult<void> SocialDocumentTarget::loadSnapshot(const EditorValue& s) {
+Result<void> SocialDocumentTarget::loadSnapshot(const EditorValue& s) {
     const auto *v = field(s, "schemaVersion"), *ns = field(s, "entities"), *es = field(s, "edges");
     const auto* version = v ? v->getIf<int64_t>() : nullptr;
     const auto* nodes   = ns ? ns->getIf<EditorValue::Array>() : nullptr;

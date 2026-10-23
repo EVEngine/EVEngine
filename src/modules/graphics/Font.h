@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <string>
@@ -30,22 +32,27 @@ uint32_t nextCodepointUtf8(const std::string &text, size_t &i);
  * `FontData` metrics (via FreeType) but are not drawn (no atlas entry).
  * Does not take ownership of the `FontData*` passed to the constructor.
  */
-class Font {
+class EVENGINE_API_BACKENDS Font {
 public:
     /** @brief Printable ASCII (0x20..0x7E), used when no explicit charset is given. */
     static std::string defaultCharset();
 
+    /** @brief Font. */
     Font(Graphics *gfx, font::FontData *data, std::string charset = defaultCharset());
+    /** @brief Font. */
     ~Font();
 
     Font(const Font &)            = delete;
     Font &operator=(const Font &) = delete;
 
+    /** @brief Returns the data. */
     font::FontData *getData() const { return data; }
+    /** @brief Returns the texture. */
     Texture        *getTexture() const { return atlas; }
 
     /** @brief Line height in pixels at the FontData's decoded pixel size. */
     float getHeight() const;
+    /** @brief Returns the ascent. */
     float getAscent() const;
     /** @brief Distance from the top of a line to the baseline (== getAscent()). */
     float getBaseline() const;
@@ -56,6 +63,7 @@ public:
     /** @brief Whether `codepoint` was rasterized into this Font's atlas. */
     bool hasGlyph(int codepoint) const;
 
+    /** @brief Glyph public API. */
     struct Glyph {
         float u0 = 0.f, v0 = 0.f, u1 = 0.f, v1 = 0.f;  // atlas UV rect (empty if width/height == 0)
         int   width = 0, height = 0;                    // glyph bitmap size, px

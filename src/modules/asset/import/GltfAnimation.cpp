@@ -109,18 +109,77 @@ void dependency(PreparedAssetImport& output, const AssetRef& from, const AssetRe
         {from, to, asset::EvaDependencyKind::RuntimeRequired, std::move(role), {}, std::move(type)});
 }
 
+void normalizeNodeMatrix(Value::Object& node) {
+    const auto* field = member(node, "matrix");
+    if (!field) return;
+    const auto& values = array(field);
+    require(values.size() == 16, "glTF node matrix must have 16 components");
+    float m[16];
+    for (std::size_t i = 0; i < 16; ++i) m[i] = number(values[i]);
+    require(
+        std::abs(m[3]) < 1e-5f && std::abs(m[7]) < 1e-5f && std::abs(m[11]) < 1e-5f && std::abs(m[15] - 1.f) < 1e-5f,
+        "skeletal node matrix must be affine", DiagnosticCode::Unsupported);
+    const auto length = [&](int offset) {
+        return std::sqrt(m[offset] * m[offset] + m[offset + 1] * m[offset + 1] + m[offset + 2] * m[offset + 2]);
+    };
+    const float sx = length(0), sy = length(4), sz = length(8);
+    require(sx > 1e-8f && sy > 1e-8f && sz > 1e-8f, "skeletal node matrix has zero scale", DiagnosticCode::Unsupported);
+    const float a = m[0] / sx, b = m[1] / sx, c = m[2] / sx;
+    const float d = m[4] / sy, e = m[5] / sy, f = m[6] / sy;
+    const float g = m[8] / sz, h = m[9] / sz, i = m[10] / sz;
+    require(std::abs(a * d + b * e + c * f) < 1e-4f && std::abs(a * g + b * h + c * i) < 1e-4f &&
+                std::abs(d * g + e * h + f * i) < 1e-4f &&
+                std::abs(a * (e * i - f * h) - d * (b * i - c * h) + g * (b * f - c * e) - 1.f) < 1e-4f,
+            "skeletal node matrix has shear or reflection", DiagnosticCode::Unsupported);
+    float       x = 0, y = 0, z = 0, w = 1;
+    const float trace = a + e + i;
+    if (trace > 0.f) {
+        const float s = 2.f * std::sqrt(trace + 1.f);
+        w             = 0.25f * s;
+        x             = (f - h) / s;
+        y             = (g - c) / s;
+        z             = (b - d) / s;
+    } else if (a > e && a > i) {
+        const float s = 2.f * std::sqrt(1.f + a - e - i);
+        w             = (f - h) / s;
+        x             = 0.25f * s;
+        y             = (d + b) / s;
+        z             = (g + c) / s;
+    } else if (e > i) {
+        const float s = 2.f * std::sqrt(1.f + e - a - i);
+        w             = (g - c) / s;
+        x             = (d + b) / s;
+        y             = 0.25f * s;
+        z             = (h + f) / s;
+    } else {
+        const float s = 2.f * std::sqrt(1.f + i - a - e);
+        w             = (b - d) / s;
+        x             = (g + c) / s;
+        y             = (h + f) / s;
+        z             = 0.25f * s;
+    }
+    const float qLength = std::sqrt(x * x + y * y + z * z + w * w);
+    require(qLength > 1e-8f, "skeletal node matrix has invalid rotation");
+    node.erase("matrix");
+    node["translation"] = Value(Value::Array{Value(m[12]), Value(m[13]), Value(m[14])});
+    node["rotation"] =
+        Value(Value::Array{Value(x / qLength), Value(y / qLength), Value(z / qLength), Value(w / qLength)});
+    node["scale"] = Value(Value::Array{Value(sx), Value(sy), Value(sz)});
+}
+
 void append(const GltfImportRequest& request, const Value::Object& root,
             const std::vector<std::span<const std::uint8_t>>& buffers, PreparedAssetImport& output) {
     const auto* skinValue      = member(root, "skins");
     const auto* animationValue = member(root, "animations");
     if (!skinValue && !animationValue) return;
-    const auto& nodes = array(member(root, "nodes"));
+    auto nodes = array(member(root, "nodes"));
     require(!nodes.empty() && nodes.size() <= request.limits.maximumAssets, "glTF node budget exceeded");
     std::vector<int> parents(nodes.size(), -1), mapped(nodes.size(), -1);
     for (std::size_t n = 0; n < nodes.size(); ++n) {
-        const auto& node = object(nodes[n]);
-        require(!member(node, "matrix"), "skeletal matrix nodes require TRS conversion", DiagnosticCode::Unsupported);
-        if (auto* children = member(node, "children"))
+        auto* node = nodes[n].getIf<Value::Object>();
+        require(node != nullptr, "glTF skeletal node must be an object");
+        normalizeNodeMatrix(*node);
+        if (auto* children = member(*node, "children"))
             for (const auto& child : array(children)) {
                 const auto c = index(&child, nodes.size());
                 require(c != n && parents[c] == -1, "glTF nodes contain a cycle or multiple parents");

@@ -6,7 +6,7 @@ namespace eve::hd2d_editing {
 namespace {}  // namespace
 Hd2dDocumentRuntime::Hd2dDocumentRuntime()  = default;
 Hd2dDocumentRuntime::~Hd2dDocumentRuntime() = default;
-EditorResult<hd2d::Sprite3D*> Hd2dDocumentRuntime::publishSprite(const Hd2dDocumentTarget&   document,
+Result<hd2d::Sprite3D*> Hd2dDocumentRuntime::publishSprite(const Hd2dDocumentTarget&   document,
                                                                  hd2d::Hd2D*                 module,
                                                                  graphics::Graphics*         graphics,
                                                                  graphics::Camera3D*         camera,
@@ -16,7 +16,7 @@ EditorResult<hd2d::Sprite3D*> Hd2dDocumentRuntime::publishSprite(const Hd2dDocum
             EditorStatus::Rejected, RuleId("editor.hd2d.sprite"),
             "HD2D sprite publication requires sprite preset, module and Graphics");
     auto texture = textures.texture(document.value().sourceAsset);
-    if (!texture.ok()) return EditorResult<hd2d::Sprite3D*>::failure(texture.status());
+    if (!texture.ok()) return Result<hd2d::Sprite3D*>::failure(texture.status());
     if (!texture.value())
         return eve::editing::failed<hd2d::Sprite3D*>(EditorStatus::NotFound, RuleId("editor.hd2d.texture"),
                                                      "HD2D sprite texture resolver returned no texture");
@@ -46,7 +46,7 @@ EditorResult<hd2d::Sprite3D*> Hd2dDocumentRuntime::publishSprite(const Hd2dDocum
     revision_ = document.revision();
     return eve::editing::applied<hd2d::Sprite3D*>(sprite_.get());
 }
-EditorResult<hd2d::TileMap3D*> Hd2dDocumentRuntime::publishTileMap(const Hd2dDocumentTarget& document,
+Result<hd2d::TileMap3D*> Hd2dDocumentRuntime::publishTileMap(const Hd2dDocumentTarget& document,
                                                                    hd2d::Hd2D*               module) {
     if (document.value().kind != "tilemap" || !module)
         return eve::editing::failed<hd2d::TileMap3D*>(EditorStatus::Rejected, RuleId("editor.hd2d.tilemap"),

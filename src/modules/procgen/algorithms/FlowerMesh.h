@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "common/Result.h"
 #include "procgen/MeshBuild.h"
@@ -19,6 +20,6 @@ namespace eve::procgen {
  * @thread Safe; the function mutates no shared state beyond `out`.
  * @reentrancy Does not invoke external callbacks.
  */
-[[nodiscard]] eve::Result<void> generateFlowerMesh(const Params &params, MeshBuild &out);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<void> generateFlowerMesh(const Params &params, MeshBuild &out);
 
 }  // namespace eve::procgen

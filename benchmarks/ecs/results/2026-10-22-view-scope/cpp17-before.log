@@ -1,0 +1,8 @@
+In file included from /tmp/ecs-empty-view-probe.cpp:1:
+external/ECS.hpp/src/ECS.hpp: In instantiation of ‘bool ecs::ViewIterator<B, Ts>::operator==(const ecs::ViewIterator<B, Ts>&) const [with B = Probe; Ts = {}]’:
+/tmp/ecs-empty-view-probe.cpp:12:37:   required from here
+   12 |     return view.begin() == view.end();
+      |                                     ^
+external/ECS.hpp/src/ECS.hpp:1400:12: error: zero-size array ‘ts’
+ 1400 |       bool ts[] = {BufferIterator<Ts>::operator==(other)...};
+      |            ^~

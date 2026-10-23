@@ -6,14 +6,15 @@
 #include <exception>
 #include <string>
 
-namespace eve
-{
-    
+namespace eve {
 
-class EVENGINE_API Exception : public std::exception
-{
+
+/** @brief EVENGINE_API_FOUNDATION public API. */
+class EVENGINE_API_FOUNDATION Exception : public std::exception {
 public:
+    /** @brief Exception. */
     Exception(const char *fmt, ...);
+	/** @brief Exception. */
 	virtual ~Exception() throw();
 
     /**
@@ -28,6 +29,4 @@ public:
 private:
         std::string message;
 };
-
-
-}
+}  // namespace eve

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file RTSEconomy.h
@@ -9,6 +11,7 @@
 #include "economy/EconomyLedgerResourceAccount.h"
 #include "transaction/AtomicResourcePayment.h"
 
+#include <span>
 #include <string>
 
 namespace eve::rts {
@@ -21,7 +24,7 @@ namespace eve::rts {
  * payment lifecycle work to AtomicResourcePayment. The ledger is borrowed and
  * must outlive the adapter; calls are synchronous on its owner thread.
  */
-class RTSEconomyAdapter final {
+class EVENGINE_API_DOMAINS RTSEconomyAdapter final {
 public:
     /** @brief Bind this adapter to a caller-owned RTS economy ledger. */
     explicit RTSEconomyAdapter(eve::economy::EconomyLedger& ledger);
@@ -30,6 +33,7 @@ public:
     RTSEconomyAdapter& operator=(const RTSEconomyAdapter&) = delete;
     RTSEconomyAdapter(RTSEconomyAdapter&&)                 = delete;
     RTSEconomyAdapter& operator=(RTSEconomyAdapter&&)      = delete;
+    /** @brief Rts economy adapter. */
     ~RTSEconomyAdapter()                                   = default;
 
     /**
@@ -47,6 +51,19 @@ public:
      */
     [[nodiscard]] eve::Result<eve::transaction::TransactionReceipt> pay(
         const eve::resource::CostSpec& cost, eve::transaction::ITransactionParticipant& effect,
+        std::string transactionId = {});
+
+    /**
+     * @brief Pay a multi-resource cost and publish several effects atomically.
+     * @param cost Valid canonical cost, borrowed until return.
+     * @param effects Unique non-null borrowed participants in commit order.
+     * @param transactionId Correlation id; empty uses rts.economy.payment.
+     * @return Receipt or rollback/compensation diagnostics.
+     * @remarks Synchronous owner-thread call; effects must not reenter the account.
+     * The ledger remains authoritative; no extra balance or effect store is created.
+     */
+    [[nodiscard]] eve::Result<eve::transaction::TransactionReceipt> pay(
+        const eve::resource::CostSpec& cost, std::span<eve::transaction::ITransactionParticipant*> effects,
         std::string transactionId = {});
 
     /**

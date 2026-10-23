@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file RTSTypes.h
@@ -11,14 +13,15 @@
  */
 
 #include "attributes/AttributeProjection.h"
+#include "combat/Damage.h"
 #include "common/ECS.h"
 #include "common/Identity.h"
 #include "common/Result.h"
+#include "common/RuntimeHandle.h"
 #include "common/SubjectRef.h"
-#include "combat/Damage.h"
 #include "common/Time.h"
-#include "rts/RTSEffects.h"
 #include "production/Production.h"
+#include "rts/RTSEffects.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -29,6 +32,10 @@
 #include <string>
 #include <string_view>
 #include <vector>
+
+namespace eve::crowd {
+struct CrowdAgentTag;
+}
 
 namespace eve::orders {
 class CommandQueue;
@@ -148,7 +155,7 @@ struct AbilitySpec {
 };
 
 /** @brief Entity-local sorted tags; this is the RTS entity's tag authority. */
-class TagSet {
+class EVENGINE_API_DOMAINS TagSet {
 public:
     /** @brief Add a tag in deterministic lexical order. */
     [[nodiscard]] Result<void> add(std::string_view tag);
@@ -175,17 +182,21 @@ struct EntityLinkTag {};
  * reserved for restore/import code that will validate before use.
  */
 template <typename Tag>
+/** @brief EntityLink public API. */
 class EntityLink {
 public:
     /** @brief Bind a live ECS handle, rejecting a null or stale handle. */
     [[nodiscard]] static Result<EntityLink> bind(ecs::EntityHandle handle) {
         if (ecs::try_get(handle) == nullptr) {
+            /** @brief Failure. */
             return Result<EntityLink>::failure(
+                /** @brief Error. */
                 Diagnostic::error(DiagnosticCode::StaleHandle, "RTS entity link target is not live", "link.handle"));
         }
         EntityLink result;
         result.handle_ = handle;
         result.bound_  = true;
+        /** @brief Success. */
         return Result<EntityLink>::success(std::move(result));
     }
 
@@ -230,16 +241,19 @@ struct ServiceLinkTag {};
  * valid when the optional provider is absent.
  */
 template <typename Tag>
+/** @brief ServiceLink public API. */
 class ServiceLink {
 public:
     /** @brief Bind a non-empty provider key. */
     [[nodiscard]] static Result<ServiceLink> bind(std::string_view key) {
         if (key.empty()) {
+            /** @brief Failure. */
             return Result<ServiceLink>::failure(Diagnostic::error(
                 DiagnosticCode::InvalidArgument, "RTS service link key must not be empty", "link.key"));
         }
         ServiceLink result;
         result.key_ = key;
+        /** @brief Success. */
         return Result<ServiceLink>::success(std::move(result));
     }
 
@@ -263,10 +277,15 @@ private:
     std::string key_;
 };
 
+/** @brief FactionLinkTag public API. */
 struct FactionLinkTag {};
+/** @brief WeaponLinkTag public API. */
 struct WeaponLinkTag {};
+/** @brief ResourceNodeLinkTag public API. */
 struct ResourceNodeLinkTag {};
+/** @brief BuildingLinkTag public API. */
 struct BuildingLinkTag {};
+/** @brief ContainerLinkTag public API. */
 struct ContainerLinkTag {};
 using FactionLink = EntityLink<FactionLinkTag>;
 using WeaponLink  = EntityLink<WeaponLinkTag>;
@@ -274,15 +293,25 @@ using ResourceNodeLink = EntityLink<ResourceNodeLinkTag>;
 using BuildingLink     = EntityLink<BuildingLinkTag>;
 using ContainerLink    = EntityLink<ContainerLinkTag>;
 
+/** @brief SensingLinkTag public API. */
 struct SensingLinkTag {};
+/** @brief SteeringLinkTag public API. */
 struct SteeringLinkTag {};
+/** @brief CrowdLinkTag public API. */
 struct CrowdLinkTag {};
+/** @brief ActionLinkTag public API. */
 struct ActionLinkTag {};
+/** @brief SettlementLinkTag public API. */
 struct SettlementLinkTag {};
+/** @brief PlacementLinkTag public API. */
 struct PlacementLinkTag {};
+/** @brief EconomyLinkTag public API. */
 struct EconomyLinkTag {};
+/** @brief AuthorityLinkTag public API. */
 struct AuthorityLinkTag {};
+/** @brief SocialLinkTag public API. */
 struct SocialLinkTag {};
+/** @brief GameEventLinkTag public API. */
 struct GameEventLinkTag {};
 using SensingLink    = ServiceLink<SensingLinkTag>;
 using SteeringLink   = ServiceLink<SteeringLinkTag>;
@@ -296,13 +325,19 @@ using SocialLink     = ServiceLink<SocialLinkTag>;
 using GameEventLink  = ServiceLink<GameEventLinkTag>;
 
 /** @brief Canonical attributes component adapter, backed by attributes::AttributeSet. */
-class AttributeComponent {
+class EVENGINE_API_DOMAINS AttributeComponent {
 public:
+    /** @brief Attribute component. */
     AttributeComponent();
+    /** @brief Attribute component. */
     ~AttributeComponent();
+    /** @brief Attribute component. */
     AttributeComponent(const AttributeComponent& other);
+    /** @brief Operator =. */
     AttributeComponent& operator=(const AttributeComponent& other);
+    /** @brief Attribute component. */
     AttributeComponent(AttributeComponent&& other) noexcept;
+    /** @brief Operator =. */
     AttributeComponent& operator=(AttributeComponent&& other) noexcept;
 
     /** @brief Set one authoritative base value. */
@@ -352,7 +387,7 @@ private:
 };
 
 /** @brief Generic orders component adapter; the queue remains the sole order owner. */
-class OrderComponent {
+class EVENGINE_API_DOMAINS OrderComponent {
 public:
     /** @brief Complete RTS order projection snapshot; entity handles must be rebound by the owning domain. */
     struct Snapshot {
@@ -395,6 +430,9 @@ public:
 
 private:
     friend class RTSProductionActionAdapter;
+    friend class RTS;
+    friend class CommandFanOutSystem;
+    std::uint64_t                       membershipEpoch_ = 0;
     [[nodiscard]] orders::CommandQueue* queueForComposition() noexcept;
 
     struct Impl;
@@ -402,34 +440,44 @@ private:
 };
 
 /** @brief Production adapter whose queue owns all task state. */
-class ProductionComponent {
+class EVENGINE_API_DOMAINS ProductionComponent {
 public:
+    /** @brief Production component. */
     ProductionComponent();
+    /** @brief Production component. */
     ~ProductionComponent();
+    /** @brief Production component. */
     ProductionComponent(const ProductionComponent& other);
+    /** @brief Operator =. */
     ProductionComponent& operator=(const ProductionComponent& other);
+    /** @brief Production component. */
     ProductionComponent(ProductionComponent&& other) noexcept;
+    /** @brief Operator =. */
     ProductionComponent& operator=(ProductionComponent&& other) noexcept;
 
     /** @brief Enqueue a production task with an injected simulation duration. */
     [[nodiscard]] Result<std::string> enqueue(std::string_view owner, std::string_view kind, std::string_view product,
                                               Duration duration, int priority = 0);
+    /** @brief Enqueue a fully validated canonical request, including a pinned definition handle. */
+    [[nodiscard]] Result<std::string> enqueue(production::ProductionRequest request);
     /** @brief Advance the queue using a caller-owned deterministic step. */
     [[nodiscard]] Result<void> advance(const SimulationStep& step);
     /** @brief Return the number of retained tasks. */
     [[nodiscard]] std::size_t taskCount() const noexcept;
     /** @brief Borrow a retained canonical task by enqueue index. */
-    [[nodiscard]] OptionalRef<production::ProductionTask> taskAt(int index);
+    [[nodiscard]] OptionalRef<const production::ProductionTask> taskAt(int index);
     /** @brief Borrow a retained canonical task by stable task id. */
-    [[nodiscard]] OptionalRef<production::ProductionTask> find(std::string_view taskId);
+    [[nodiscard]] OptionalRef<const production::ProductionTask> find(std::string_view taskId);
     /** @brief Pause a queued or running task through the canonical queue. */
     [[nodiscard]] Result<void> pause(std::string_view taskId);
     /** @brief Resume a paused task through the canonical queue. */
     [[nodiscard]] Result<void> resume(std::string_view taskId);
     /** @brief Cancel a non-terminal task through the canonical queue. */
     [[nodiscard]] Result<void> cancel(std::string_view taskId, std::string_view reason = "cancelled");
-    /** @brief Copy completed canonical tasks of one kind for domain settlement. */
-    [[nodiscard]] std::vector<production::ProductionTask> completed(std::string_view kind) const;
+    /** @brief Copy work-complete tasks of one kind that await domain settlement. */
+    [[nodiscard]] std::vector<production::ProductionTask> readyToSettle(std::string_view kind) const;
+    /** @brief Commit one domain settlement with an idempotency receipt. */
+    [[nodiscard]] Result<void> settle(std::string_view taskId, production::ProductionSettlementReceipt receipt);
     /** @brief Serialize the canonical production queue for persistence/replay. */
     [[nodiscard]] Result<std::string> snapshot() const;
     /** @brief Transactionally restore the canonical production queue. */
@@ -437,6 +485,7 @@ public:
 
 private:
     friend class RTSProductionActionAdapter;
+    friend class RTS;
     [[nodiscard]] production::WorkQueue* queueForComposition() noexcept;
 
     struct Impl;
@@ -449,8 +498,9 @@ private:
  * This class owns no generic gameplay behavior. Its components are the
  * composition points consumed by RTS systems and adapters.
  */
-class Unit : public ecs::Entity {
+class EVENGINE_API_DOMAINS Unit : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Unit, ecs::Entity)
 
     /** @brief Release the entity through the ECS generation boundary. */
@@ -495,6 +545,9 @@ public:
         CrowdLink link;
         float     radius  = 0.5f;
         float     heading = 0.0f;
+        RuntimeHandle<eve::crowd::CrowdAgentTag> runtimeAgent;
+        std::uint64_t                            runtimeOwner = 0;
+        std::string                              runtimeBindingKey;  ///< Derived cache; never serialized as authority.
     };
     /** @brief Weapon entity link. */
     struct Weapon {
@@ -534,6 +587,12 @@ public:
         bool                       trafficWaiting = false;
         bool                       unreachable = false;
         bool                       unreachableReported = false;
+        float formationSpeedFactor = 1.f;  ///< Rebuilt movement-group projection; never an independent speed authority.
+        std::optional<WorldPosition> formationTarget;  ///< Derived moving slot; rebuilt each step, excluded from saves.
+        std::optional<WorldPosition>
+             combatSlotTarget;  ///< Derived infantry melee approach slot; expires each step, excluded from saves.
+        bool combatSlotWaiting = false;  ///< Derived rear-row admission; suppresses melee firing, not physical contact.
+        std::optional<WorldPosition> trafficRecoveryTarget;  ///< Derived evacuation step; does not replace the order.
     };
     /** @brief Vision contribution projected into a faction-owned canonical map FOV provider. */
     struct Vision {
@@ -564,7 +623,7 @@ public:
         ecs::EntityHandle target{};
         CombatStance      stance           = CombatStance::Defensive;
         float             acquisitionRange = 0.0f;
-        float             engagementRange  = 0.0f;
+        float engagementRange = 0.0f;  ///< Cached effective firing range; zero while the selected target is occluded.
         float             leashRange       = 0.0f;
         float             guardX           = 0.0f;
         float             guardY           = 0.0f;
@@ -624,7 +683,9 @@ public:
     };
     /** @brief Ability cooldowns and an optional deterministic cast/channel in progress. */
     struct Abilities {
+        /** @brief Cooldown public API. */
         struct Cooldown { std::string id; float remaining = 0.0f; };
+        /** @brief Channel public API. */
         struct Channel {
             AbilitySpec spec;
             ecs::EntityHandle target{};
@@ -788,8 +849,9 @@ public:
 };
 
 /** @brief RTS building domain root with placement and production composition. */
-class Building : public ecs::Entity {
+class EVENGINE_API_DOMAINS Building : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Building, ecs::Entity)
 
     /** @brief Release the entity through the ECS generation boundary. */
@@ -1018,8 +1080,9 @@ public:
 };
 
 /** @brief Harvestable RTS resource node; deposited balances are owned by an external resource account. */
-class ResourceNode : public ecs::Entity {
+class EVENGINE_API_DOMAINS ResourceNode : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(ResourceNode, ecs::Entity)
 
     /** @brief Release the node through the ECS generation boundary. */
@@ -1067,6 +1130,7 @@ public:
 /** @brief Player domain root; selection is RTS-local, authority/economy/social are links. */
 class Player : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Player, ecs::Entity)
 
     /** @brief Release the entity through the ECS generation boundary. */
@@ -1123,8 +1187,9 @@ public:
 };
 
 /** @brief Faction domain root; membership is a set of typed runtime handles. */
-class Faction : public ecs::Entity {
+class EVENGINE_API_DOMAINS Faction : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Faction, ecs::Entity)
 
     /** @brief Release the entity through the ECS generation boundary. */
@@ -1179,6 +1244,7 @@ public:
     };
     /** @brief Cross-factory resource floors reserved for production at or above a priority threshold. */
     struct ProductionPolicy {
+        /** @brief Reserve public API. */
         struct Reserve {
             std::int64_t amount = 0;
             int minimumPriority = 0;
@@ -1187,6 +1253,7 @@ public:
     };
     /** @brief Persistent last-known enemy contacts derived from the faction's canonical FOV provider. */
     struct Intel {
+        /** @brief Contact public API. */
         struct Contact {
             SubjectRef    subject;
             std::string   kind;
@@ -1203,6 +1270,8 @@ public:
     struct Technology {
         std::vector<std::string> unlocked;
         std::vector<std::string> consumedTasks;
+        /** @brief Validated immutable rule payload accepted for each completed research id. */
+        std::map<std::string, Value::Object> unlockedDefinitions;
     };
 
     COMPONENT(Identity, identity)
@@ -1235,9 +1304,11 @@ enum class VictoryRule : std::uint8_t { Annihilation, DestroyHeadquarters, Resou
 enum class MatchPhase : std::uint8_t { Setup, Running, Finished };
 
 /** @brief Independent match composition root; factions may participate in different matches. */
-class Match : public ecs::Entity {
+class EVENGINE_API_DOMAINS Match : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Match, ecs::Entity)
+    /** @brief Release. */
     void release() override { ecs::DestroyEntity(this); }
 
     /** @brief Runtime and persistent identity. */
@@ -1253,6 +1324,7 @@ public:
     };
     /** @brief One faction's team and elimination projection. */
     struct Participants {
+        /** @brief Entry public API. */
         struct Entry {
             FactionLink faction;
             int team = 0;
@@ -1270,6 +1342,7 @@ public:
     };
     /** @brief Deterministic retained lifecycle events. */
     struct Events {
+        /** @brief Event public API. */
         struct Event {
             std::uint64_t sequence = 0;
             std::string kind;

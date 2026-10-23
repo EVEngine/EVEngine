@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Data.h"
 
@@ -8,7 +10,7 @@ namespace eve {
 namespace data {
 
 /** @brief In-memory byte buffer implementing eve::Data (ref-counted). */
-class ByteData : public eve::Data {
+class EVENGINE_API_FOUNDATION ByteData : public eve::Data {
 public:
     /** @brief Allocates an uninitialized buffer of the given size. */
     ByteData(size_t size);
@@ -18,11 +20,14 @@ public:
     ByteData(void *d, size_t size, bool own);
     /** @brief Deep-copies another buffer. */
     ByteData(const ByteData &d);
+    /** @brief Byte data. */
     virtual ~ByteData();
 
     /** @brief Implements eve::Data. */
     ByteData *clone() const override;
+    /** @brief Returns the data. */
     void     *getData() const override;
+    /** @brief Returns the size. */
     size_t    getSize() const override;
 
 private:

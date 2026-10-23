@@ -1,5 +1,6 @@
 #include "keyboard/sdl/Keyboard.h"
 
+#include "keyboard/sdl/EventSinkOwner.h"
 #include "window/Window.h"
 
 #include <SDL2/SDL.h>
@@ -10,9 +11,11 @@ namespace eve::keyboard::sdl {
 Keyboard::Keyboard() {
     // Video subsystem owns the keyboard state / text input on most backends.
     SDL_InitSubSystem(SDL_INIT_VIDEO);
+    bindKeyboardEventSinkOwner(this);
 }
 
 Keyboard::~Keyboard() {
+    bindKeyboardEventSinkOwner(nullptr);
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 

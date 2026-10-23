@@ -27,7 +27,7 @@ struct SplinePathDragPreview {
 };
 
 /** @brief Builds sampled path, anchor and Bezier handle overlay primitives. */
-class SplinePathGizmoBuilder {
+class EVENGINE_API_ORCHESTRATION SplinePathGizmoBuilder {
 public:
     /** @brief Build an immutable overlay with bounded path sampling. */
     [[nodiscard]] editing::GizmoSnapshot build(const SplinePathDocument& document, int sampleCount = 64,
@@ -39,20 +39,20 @@ public:
  * @ownership Borrows the document; the caller must finish or cancel before destroying it.
  * @thread Viewport/editor thread only; no callbacks are retained or invoked.
  */
-class SplinePathDragSession {
+class EVENGINE_API_ORCHESTRATION SplinePathDragSession {
 public:
     /** @brief Create an idle session borrowing an authoritative spline document. */
     explicit SplinePathDragSession(SplinePathDocument* document, int sampleCount = 64);
     /** @brief Pick the nearest anchor or Bezier handle sphere intersected by a world ray. */
-    [[nodiscard]] EditorResult<SplinePathDragPreview> beginDrag(double rayOriginX, double rayOriginY, double rayOriginZ,
+    [[nodiscard]] Result<SplinePathDragPreview> beginDrag(double rayOriginX, double rayOriginY, double rayOriginZ,
                                                                 double rayDirectionX, double rayDirectionY,
                                                                 double rayDirectionZ);
     /** @brief Project a pointer ray onto the original camera-facing drag plane and update only the draft. */
-    [[nodiscard]] EditorResult<SplinePathDragPreview> updateDrag(double rayOriginX, double rayOriginY,
+    [[nodiscard]] Result<SplinePathDragPreview> updateDrag(double rayOriginX, double rayOriginY,
                                                                  double rayOriginZ, double rayDirectionX,
                                                                  double rayDirectionY, double rayDirectionZ);
     /** @brief Produce one reversible point replacement operation without applying it. */
-    [[nodiscard]] EditorResult<DomainOperation> finishDrag();
+    [[nodiscard]] Result<DomainOperation> finishDrag();
     /** @brief Discard transient state without changing the document. */
     void cancelDrag();
     /** @brief Report whether a drag owns transient state. */
@@ -63,7 +63,7 @@ public:
     [[nodiscard]] const std::string& activeHandle() const noexcept { return activeHandle_; }
 
 private:
-    [[nodiscard]] EditorResult<SplinePathDragPreview> previewCurrent() const;
+    [[nodiscard]] Result<SplinePathDragPreview> previewCurrent() const;
     SplinePathDocument*                               document_     = nullptr;
     int                                               sampleCount_  = 64;
     Revision                                          baseRevision_ = 0;

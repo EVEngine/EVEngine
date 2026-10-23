@@ -32,11 +32,11 @@ vk::Format imageFormat(ShaderImageFormat value) {
         case ShaderImageFormat::BC3Srgb: return vk::Format::eBc3SrgbBlock;
         case ShaderImageFormat::BC7: return vk::Format::eBc7UnormBlock;
         case ShaderImageFormat::BC7Srgb: return vk::Format::eBc7SrgbBlock;
+        case ShaderImageFormat::RGBA16Unorm: return vk::Format::eR16G16B16A16Unorm;
+        case ShaderImageFormat::RGBA16Float: return vk::Format::eR16G16B16A16Sfloat;
+        case ShaderImageFormat::RGBA32Float: return vk::Format::eR32G32B32A32Sfloat;
     }
     return vk::Format::eUndefined;
-}
-Result<void> failure(std::string message, DiagnosticCode code = DiagnosticCode::InvalidArgument) {
-    return Result<void>::failure(Diagnostic::error(code, std::move(message), "shader.resources"));
 }
 }  // namespace
 
@@ -80,10 +80,12 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
                               [&](const auto& gpu) { return gpu->owner == &shader; });
     if (!initialized || found == ownedGpuShaders.end() || !(*found)->isMesh3D || (*found)->isHair3D ||
         shader.isXray() || swapchainPassOpen || offscreen3DPassOpen)
-        return failure("Expected an owned, ordinary mesh shader outside frame submission");
-    if (inputs.images.empty() || inputs.images.size() > 16 || inputs.constants.size() > 65536 ||
-        inputs.constants.size() % 16 != 0)
-        return failure("Expected 1-16 images and at most 64 KiB of aligned uniform bytes");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Expected an owned, ordinary mesh shader outside frame submission", "shader.resources"));
+    if ((inputs.images.empty() && inputs.constants.empty() && inputs.instanceMatrices.empty()) ||
+        inputs.images.size() > 16 || inputs.constants.size() > 65536 || inputs.constants.size() % 16 != 0)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument,
+            "Expected resource inputs, at most 16 images and 64 KiB of aligned uniform bytes", "shader.resources"));
     std::set<uint32_t>                          bindings;
     std::vector<std::vector<ShaderImageRegion>> regions;
     const auto&                                 limits        = device.physical_device.properties.limits;
@@ -92,25 +94,28 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
     if (inputs.instanceMatrices.size() > limits.maxStorageBufferRange ||
         (!inputs.instanceMatrices.empty() &&
          (limits.maxPerStageDescriptorStorageBuffers < 2 || limits.maxDescriptorSetStorageBuffers < 2)))
-        return failure("Instance matrix buffer exceeds device limits", DiagnosticCode::Unsupported);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Instance matrix buffer exceeds device limits", "shader.resources"));
     if (inputs.images.size() + 13 > limits.maxPerStageDescriptorSamplers ||
         inputs.images.size() + 13 > limits.maxPerStageDescriptorSampledImages ||
         inputs.constants.size() > limits.maxUniformBufferRange)
-        return failure("Resource program exceeds device descriptor or uniform limits", DiagnosticCode::Unsupported);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Resource program exceeds device descriptor or uniform limits", "shader.resources"));
     for (const auto& image : inputs.images) {
-        if (!bindings.insert(image.binding).second) return failure("Duplicate resource image binding");
+        if (!bindings.insert(image.binding).second) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Duplicate resource image binding", "shader.resources"));
         auto layout = shaderImageRegions(image);
         if (!layout) return Result<void>::failure(layout.status());
-        if (image.width > limits.maxImageDimension2D || image.height > limits.maxImageDimension2D ||
+        const auto dimensionLimit = image.dimension == ShaderImageDimension::Image3D ? limits.maxImageDimension3D
+                                    : image.dimension == ShaderImageDimension::Cube  ? limits.maxImageDimensionCube
+                                                                                     : limits.maxImageDimension2D;
+        if (image.width > dimensionLimit || image.height > dimensionLimit || image.depth > limits.maxImageDimension3D ||
             image.layers > limits.maxImageArrayLayers)
-            return failure("Resource image exceeds device dimensions", DiagnosticCode::Unsupported);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Resource image exceeds device dimensions", "shader.resources"));
         const auto flags = device.physical_device->getFormatProperties(imageFormat(image.format)).optimalTilingFeatures;
         const auto required = vk::FormatFeatureFlagBits::eSampledImage | vk::FormatFeatureFlagBits::eTransferDst;
         if ((flags & required) != required ||
             ((image.sampler.min == FilterMode::Linear || image.sampler.mag == FilterMode::Linear ||
               image.sampler.mipmap == MipmapMode::Linear) &&
              !(flags & vk::FormatFeatureFlagBits::eSampledImageFilterLinear)))
-            return failure("Device cannot sample the requested image format/filter", DiagnosticCode::Unsupported);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Device cannot sample the requested image format/filter", "shader.resources"));
         regions.push_back(std::move(layout).takeValue());
     }
     auto admitted = detail::validateResourceShaderStages(vertSpv, fragSpv, inputs);
@@ -132,8 +137,9 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
         if (!inputs.instanceMatrices.empty())
             layout.emplace_back(33, vk::DescriptorType::eStorageBuffer, 1, vk::ShaderStageFlagBits::eVertex);
         resources.setLayout = device->createDescriptorSetLayoutUnique(vk::DescriptorSetLayoutCreateInfo{{}, layout});
-        std::vector<vk::DescriptorPoolSize> poolSizes{
-            {vk::DescriptorType::eCombinedImageSampler, uint32_t(inputs.images.size())}};
+        std::vector<vk::DescriptorPoolSize> poolSizes;
+        if (!inputs.images.empty())
+            poolSizes.emplace_back(vk::DescriptorType::eCombinedImageSampler, uint32_t(inputs.images.size()));
         if (!inputs.constants.empty()) poolSizes.emplace_back(vk::DescriptorType::eUniformBuffer, 1);
         if (!inputs.instanceMatrices.empty()) poolSizes.emplace_back(vk::DescriptorType::eStorageBuffer, 1);
         resources.pool       = device->createDescriptorPoolUnique(vk::DescriptorPoolCreateInfo{{}, 1, poolSizes});
@@ -174,10 +180,10 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
                             !input.contentOwner.owner_before(owner) && shape.format == input.format &&
                             shape.dimension == input.dimension && shape.width == input.width &&
                             shape.height == input.height && shape.layers == input.layers &&
-                            shape.mipLevels == input.mipLevels && a.min == b.min && a.mag == b.mag &&
-                            a.mipmap == b.mipmap && a.repeatU == b.repeatU && a.repeatV == b.repeatV &&
-                            a.repeatW == b.repeatW && a.maxAnisotropy == b.maxAnisotropy && a.lodBias == b.lodBias &&
-                            a.minLod == b.minLod && a.maxLod == b.maxLod) {
+                            shape.depth == input.depth && shape.mipLevels == input.mipLevels && a.min == b.min &&
+                            a.mag == b.mag && a.mipmap == b.mipmap && a.repeatU == b.repeatU &&
+                            a.repeatV == b.repeatV && a.repeatW == b.repeatW && a.maxAnisotropy == b.maxAnisotropy &&
+                            a.lodBias == b.lodBias && a.minLod == b.minLod && a.maxLod == b.maxLod) {
                             output = image;
                             break;
                         }
@@ -192,9 +198,10 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
                 output->shape.contentOwner.reset();
                 output->contentOwner = input.contentOwner;
                 vk::ImageCreateInfo info{};
-                info.imageType   = vk::ImageType::e2D;
+                info.imageType =
+                    input.dimension == ShaderImageDimension::Image3D ? vk::ImageType::e3D : vk::ImageType::e2D;
                 info.format      = imageFormat(input.format);
-                info.extent      = vk::Extent3D{input.width, input.height, 1};
+                info.extent      = vk::Extent3D{input.width, input.height, input.depth};
                 info.mipLevels   = input.mipLevels;
                 info.arrayLayers = input.layers;
                 info.samples     = vk::SampleCountFlagBits::e1;
@@ -219,6 +226,7 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
                                                       input.layers};
                 const auto viewType = input.dimension == ShaderImageDimension::Cube      ? vk::ImageViewType::eCube
                                       : input.dimension == ShaderImageDimension::Array2D ? vk::ImageViewType::e2DArray
+                                      : input.dimension == ShaderImageDimension::Image3D ? vk::ImageViewType::e3D
                                                                                          : vk::ImageViewType::e2D;
                 output->view        = device->createImageViewUnique(
                     vk::ImageViewCreateInfo{{}, *output->image, viewType, info.format, {}, range});
@@ -232,7 +240,7 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
                     copies.emplace_back(
                         offset, 0, 0,
                         vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, region.mip, region.layer, 1},
-                        vk::Offset3D{}, vk::Extent3D{region.width, region.height, 1});
+                        vk::Offset3D{}, vk::Extent3D{region.width, region.height, region.depth});
                 }
                 auto staging = std::make_unique<vkb::GenericBuffer>(
                     device, vk::BufferUsageFlagBits::eTransferSrc, stagingSize,
@@ -325,7 +333,7 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
         for (auto pipeline :
              {candidate->mesh3dPipeline, candidate->mesh3dOffscreenPipeline, candidate->mesh3dHdrOffscreenPipeline})
             if (pipeline) device->destroyPipeline(pipeline);
-        return failure(error.what(), DiagnosticCode::Failed);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, error.what(), "shader.resources"));
     }
     auto& old = **found;
     for (auto pipeline :

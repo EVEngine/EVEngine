@@ -142,7 +142,7 @@ Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, const TextureCr
 Result<Texture *> Graphics::newTextureMipChain(uint32_t width, uint32_t height, uint32_t levels,
                                                std::span<const uint8_t> rgba) {
     auto fail = [](DiagnosticCode code, std::string message) {
-        return Result<Texture *>::failure(Diagnostic::error(code, std::move(message), {}, {}, "graphics.texture.mips"));
+        return Result<Texture *>::failure(Diagnostic::error(code, message, {}, {}, "graphics.texture.mips"));
     };
     if (!initialized) return fail(DiagnosticCode::Failed, "graphics is not initialized");
     const auto maximum = device.physical_device.properties.limits.maxImageDimension2D;
@@ -202,7 +202,7 @@ Result<Texture *> Graphics::newTextureArrayRgba16f(uint32_t width, uint32_t heig
                                                    std::span<const uint16_t> rgbaHalf) {
     auto fail = [](DiagnosticCode code, std::string message) {
         return Result<Texture *>::failure(
-            Diagnostic::error(code, std::move(message), {}, {}, "graphics.texture.array"));
+            Diagnostic::error(code, message, {}, {}, "graphics.texture.array"));
     };
     if (!initialized) return fail(DiagnosticCode::Failed, "graphics is not initialized");
     const auto    &limits = device.physical_device.properties.limits;
@@ -256,7 +256,7 @@ Result<Texture *> Graphics::newTexture3DRgba8(uint32_t width, uint32_t height, u
                                               std::span<const uint8_t> rgba) {
     auto fail = [](DiagnosticCode code, std::string message) {
         return Result<Texture *>::failure(
-            Diagnostic::error(code, std::move(message), {}, {}, "graphics.texture.volume"));
+            Diagnostic::error(code, message, {}, {}, "graphics.texture.volume"));
     };
     if (!initialized) return fail(DiagnosticCode::Failed, "graphics is not initialized");
     const auto    &limits = device.physical_device.properties.limits;
@@ -764,23 +764,24 @@ Texture *Graphics::newTexture(image::ImageData *data, const TextureCreateInfo &i
                       static_cast<const uint8_t *>(data->getData()), info);
 }
 
-
-void Graphics::setTextureSampler(Texture *texture, const TextureSampler &sampler) {
-    ensureFileTexturesReady();
-    if (!texture || !texture->gpuHandle || !initialized) return;
-    for (auto &owned : ownedGpuTextures) {
-        if (owned.get() != texture->gpuHandle) continue;
-        // In-flight frames may still be sampling the old sampler / descriptor.
-        waitForSharedGpuResources();
-        if (owned->sampler) device->destroySampler(owned->sampler);
-        owned->samplerState = sampler;
-        owned->sampler = createVkSampler(sampler, owned->mipLevels);
-        texture->sampler = sampler;
-        if (!owned->isCube) writeCombinedImageDescriptor(owned.get());
-        invalidateTextureBindings();
-        return;
+ResultRef<Texture> Graphics::newSharedTexture(image::ImageData *data, const std::string &contentKey) {
+    if (!data || contentKey.empty() || data->getFormat() != "RGBA8")
+        return ResultRef<Texture>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                             "RGBA8 image and nonempty content key are required", {},
+                                                             {}, "graphics.texture.shared"));
+    if (auto found = sharedTexturesByContent.find(contentKey); found != sharedTexturesByContent.end())
+        return ResultRef<Texture>::success(std::ref(*found->second));
+    try {
+        Texture *texture = newTexture(data);
+        if (!texture) throw Exception("shared texture upload produced no texture");
+        sharedTexturesByContent.emplace(contentKey, texture);
+        return ResultRef<Texture>::success(std::ref(*texture));
+    } catch (const std::exception &error) {
+        return ResultRef<Texture>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, error.what(), {}, {}, "graphics.texture.shared"));
     }
 }
+
 
 bool Graphics::releaseTexture(Texture *texture) {
     if (!texture) return false;
@@ -794,6 +795,12 @@ bool Graphics::releaseTexture(Texture *texture) {
         for (auto it = texturesByPath.begin(); it != texturesByPath.end();) {
             if (it->second == texture)
                 it = texturesByPath.erase(it);
+            else
+                ++it;
+        }
+        for (auto it = sharedTexturesByContent.begin(); it != sharedTexturesByContent.end();) {
+            if (it->second == texture)
+                it = sharedTexturesByContent.erase(it);
             else
                 ++it;
         }
@@ -827,11 +834,17 @@ bool Graphics::releaseTexture(Texture *texture) {
         else
             ++it;
     }
+    for (auto it = sharedTexturesByContent.begin(); it != sharedTexturesByContent.end();) {
+        if (it->second == texture)
+            it = sharedTexturesByContent.erase(it);
+        else
+            ++it;
+    }
 
     // In-flight frames may still sample the image / sampler; drain first.
     waitForSharedGpuResources();
     unregisterBindlessTexture(gpu);
-    if ((*gpuIt)->sampler) device->destroySampler((*gpuIt)->sampler);
+    if ((*gpuIt)->sampler && !(*gpuIt)->sharedSampler) device->destroySampler((*gpuIt)->sampler);
     texture->gpuHandle = nullptr;
     ownedGpuTextures.erase(gpuIt);
     // Transfer the CPU facade to the caller instead of destroying it.
@@ -1061,7 +1074,7 @@ bool Graphics::replaceTexturePixelsRGBA(Texture *tex, int w, int h, const uint8_
         // samples it is a typical TDR. Drain first, then drop cached sets.
         waitForSharedGpuResources();
         unregisterBindlessTexture(static_cast<GpuTexture *>(oldHandle));
-        if (owned->sampler) device->destroySampler(owned->sampler);
+        if (owned->sampler && !owned->sharedSampler) device->destroySampler(owned->sampler);
         owned = std::move(gpu);
         tex->gpuHandle = owned.get();
         tex->width = w;
@@ -1088,57 +1101,5 @@ bool Graphics::replaceTexturePixelsRGBA(Texture *tex, int w, int h, const uint8_
     return true;
 }
 
-Texture *Graphics::newTextureFromFile(const std::string &filename) {
-    ASSERT(!filename.empty());
-    if (filename.empty()) throw Exception("newTextureFromFile: empty filename");
-
-    const std::string key = normalizeTexPath(filename);
-    if (!fileTextureSourceExists(filename) && !fileTextureSourceExists(key))
-        throw Exception("Could not load image file: %s", filename.c_str());
-
-    auto it = texturesByPath.find(key);
-    if (it != texturesByPath.end() && it->second) {
-        requestFileImageDecode(key);
-        if (it->second->hasDeferredFilePixels()) return it->second;
-        auto waited = eve::ResourceManager::getInstance().waitFor(key);
-        if (!waited.ok()) throw Exception("%s", waited.status().describe().c_str());
-        auto *data = dynamic_cast<image::ImageData *>(&waited.value().get());
-        if (!data || !replaceTexturePixels(it->second, data))
-            throw Exception("newTextureFromFile: reload failed '%s'", filename.c_str());
-        return it->second;
-    }
-
-    requestFileImageDecode(key);
-    auto tex = std::make_unique<Texture>();
-    tex->markDeferredFilePixels(this);
-    Texture *raw = tex.get();
-    ownedTextures.push_back(std::move(tex));
-    texturesByPath[key] = raw;
-    deferredFileTextures_.push_back({key, raw});
-    return raw;
-}
-
-bool Graphics::uploadDeferredFileTexture(Texture *texture, image::ImageData *data) {
-    return replaceTexturePixels(texture, data);
-}
-
-bool Graphics::reloadTextureFromFile(const std::string &filename) {
-    if (filename.empty()) return false;
-    const std::string key = normalizeTexPath(filename);
-    auto it = texturesByPath.find(key);
-    if (it == texturesByPath.end() || !it->second) return false;
-
-    ensureFileTexturesReady();
-    image::ImageData *data = nullptr;
-    try {
-        auto *imgMod = image::Image::create();
-        eve::ref<image::ImageData> cached(imgMod->newImageDataFromFile(filename));
-        data = cached.get();
-    } catch (...) {
-        return false;
-    }
-    if (!data) return false;
-    return replaceTexturePixels(it->second, data);
-}
 
 }  // namespace eve::graphics::vulkan

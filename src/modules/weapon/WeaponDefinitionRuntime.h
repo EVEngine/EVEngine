@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file WeaponDefinitionRuntime.h
@@ -29,7 +31,8 @@ class Weapon;
  * @return A value-owned projection for one consumer, or a structured parse failure.
  * @remarks The returned value is independent of the registry and does not form a second store.
  */
-[[nodiscard]] eve::Result<WeaponDefinition> parseWeaponDefinition(const eve::definitions::Definition& source);
+[[nodiscard]] EVENGINE_API_WORLD eve::Result<WeaponDefinition> parseWeaponDefinition(
+    const eve::definitions::Definition& source);
 
 /**
  * @brief Mutable state owned by one typed weapon runtime instance.
@@ -63,7 +66,7 @@ struct WeaponRuntimeState {
  * clamping it to the new typed limits. `RejectWhileActive` rejects replacement
  * while the instance is marked active.
  */
-class WeaponDefinitionRuntime final {
+class EVENGINE_API_WORLD WeaponDefinitionRuntime final {
 public:
     /**
      * @brief Create from a common `weapon:<name>` definition reference.
@@ -87,10 +90,13 @@ public:
         Weapon& module, std::string_view definitionId, eve::PersistentId instanceId,
         eve::definition::ReloadPolicy policy = eve::definition::ReloadPolicy::RebuildInstance);
 
+    /** @brief Weapon definition runtime. */
     WeaponDefinitionRuntime(WeaponDefinitionRuntime&&) noexcept            = default;
+    /** @brief Operator =. */
     WeaponDefinitionRuntime& operator=(WeaponDefinitionRuntime&&) noexcept = default;
     WeaponDefinitionRuntime(const WeaponDefinitionRuntime&)                = delete;
     WeaponDefinitionRuntime& operator=(const WeaponDefinitionRuntime&)     = delete;
+    /** @brief Weapon definition runtime. */
     ~WeaponDefinitionRuntime()                                             = default;
 
     /** @brief Borrow the common instance identity and exact definition generation. */

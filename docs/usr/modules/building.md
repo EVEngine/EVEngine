@@ -42,9 +42,9 @@ local ghost = building.newGhost();
 building <- eve.Building();
 building.registerBuildingsFromJson(@"
 [
-  {\"id\":\"house\",\"displayName\":\"House\",\"footprintW\":2,\"footprintH\":2,
-   \"tags\":[\"house\"],\"cost\":{\"wood\":20}},
-  {\"id\":\"road\",\"footprintW\":1,\"footprintH\":1,\"tags\":[\"road\"]}
+  {""id"":""house"",""displayName"":""House"",""footprintW"":2,""footprintH"":2,
+   ""tags"":[""house""],""cost"":{""wood"":20}},
+  {""id"":""road"",""footprintW"":1,""footprintH"":1,""tags"":[""road""]}
 ]
 ");
 
@@ -54,6 +54,7 @@ world.fillTerrain(1);
 
 ghost <- building.newGhost();
 ghost.setBuildingId("house");
+local mouseX = 96.0, mouseY = 96.0; // 独立示例的放置点；游戏中用相机换算后的鼠标位置
 ghost.setFromWorld(world, mouseX, mouseY); // 按定义 snapMode 吸附
 if (ghost.validate(world)) {
     local id = world.placeGhost(ghost);
@@ -86,7 +87,7 @@ PlacementSystem::registerValidateRule("needGold",
 
 建筑定义 `"validateRule":"needGold"`；脚本侧只需选用该规则名。
 
-## API 快查
+## 绑定与行为说明
 
 ### `Building`（模块）
 
@@ -107,6 +108,7 @@ PlacementSystem::registerValidateRule("needGold",
 | 方法 | 说明 |
 |------|------|
 | `setOrigin` / `setCellSize` / `worldToCell*` / `cellToWorld*` | 坐标 |
+| `getId` / `getWidth` / `getHeight` / `destroy` | 世界身份、格网尺寸与释放 |
 | `fillTerrain` / `setTerrain` / `getTerrain` | 地形语义 |
 | `canPlace` / `canPlaceReason` / `placeAt` / `placeAtWorld` / `placeGhost` | 放置 |
 | `removeBuilding` / `moveBuilding` / `clearBuildings` | 拆除与移动 |
@@ -118,6 +120,14 @@ PlacementSystem::registerValidateRule("needGold",
 |------|------|
 | `setBuildingId` / `setCell` / `setFromWorld` / `setRotationDeg` / `rotateBy` | 姿态 |
 | `validate(world)` / `isValid` / `getReason` | 校验结果 |
+| `destroy` | 释放鬼影 |
+
+### `PlacementSession`
+
+| 方法 | 说明 |
+|------|------|
+| `startPlacement` / `updateFromSurface` / `updateFromWorld` / `setMode` / `execute` | 会话放置流 |
+| `isActive` / `destroy` | 会话是否进行中、释放 |
 
 ## 生命周期注意
 
@@ -616,3 +626,15 @@ prepare 的候选世界先完成占用，再检查完整终态的邻接与支撑
 `validateBlueprint` 对已解析的 `blueprint` 做格式与定义一致性校验，返回规范蓝图；它不受村镇当前占地影响。
 
 脚本协议的回执限制为 100000 个 Value 节点、64 层嵌套；放置/移动/改造在发布前检查完整回执容量，超限返回错误且不改变世界。大世界请使用原生 API，并按文档的完整世界复制成本预算。
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](building/api-reference.md)，使用前先确认本章的前置条件与生命周期。
+
+## 集成任务：把放置接到经营游戏
+
+加载定义 → 创建 PlacementWorld → 更新 Ghost → validate → 成功 place → BuildingFX.sync。预览阶段不扣资源、不占格、不创建永久物理体。费用、背包/库存和世界放置可能同时失败，不能只因为 ghost.validate 成功就直接改余额；用领域事务提交并检查最终结果。拆除先检查支撑关系，cascade 明确处理依赖。恢复文档后重建 structural links 和可视化，格占用世界仍是权威。
+
+完整项目：[examples/building](../../../examples/building/README.md)，
+其 [main.nut](../../../examples/building/main.nut) 展示实际生命周期。
+先验证现有资产可加载，再换成自己的资源。测试失败、取消、资源缺失和旧 revision，
+不能只以脚本没有语法错误作为渲染或玩法正确的证据。

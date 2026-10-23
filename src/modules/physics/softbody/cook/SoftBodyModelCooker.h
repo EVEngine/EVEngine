@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "physics/softbody/SoftBodyModel.h"
@@ -18,7 +20,7 @@ namespace eve::physics::softbody_cook {
  * @thread Worker-safe and reentrant; performs no IO, callbacks or global mutation.
  */
 [[nodiscard("check soft-body model cooking")]]
-eve::Result<SoftBodyModel> cookSoftBodyModel(const eve::asset::CanonicalMeshData& mesh,
-                                             const SoftBodyModelDefinition&       definition);
+EVENGINE_API_WORLD eve::Result<SoftBodyModel> cookSoftBodyModel(const eve::asset::CanonicalMeshData& mesh,
+                                                                const SoftBodyModelDefinition&       definition);
 
 }  // namespace eve::physics::softbody_cook

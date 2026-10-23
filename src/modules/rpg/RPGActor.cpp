@@ -7,23 +7,9 @@
 #include "rpg/TraitSystem.h"
 #include "rpg/VitalsSystem.h"
 
-#include <algorithm>
 #include <utility>
 
 namespace eve::rpg {
-
-namespace {
-
-// 按 handle（id + generation）而非裸指针跟踪存活 actor：
-// ECS 的 entity 槽位在销毁后会被复用，复用后地址相同但其实是另一个实体，
-// 裸指针 + is_entity_visible 无法区分这种复用（复用后 flags 会被重置，
-// 旧的裸指针看起来又"活"了），必须连同 generation 一起校验才安全。
-std::vector<ecs::EntityHandle> &registryStorage() {
-    static std::vector<ecs::EntityHandle> v;
-    return v;
-}
-
-}  // namespace
 
 RPGActor *RPGActor::createActor() {
     RPGActor *actor = RPGActor::create();
@@ -35,22 +21,18 @@ RPGActor *RPGActor::createActor() {
     actor->vitals();
     actor->traits();
     actor->classInfo();
-    registryStorage().push_back(ecs::handle_of(actor));
     return actor;
 }
 
 const std::vector<RPGActor *> &RPGActor::liveActors() {
+    // Prefer ViewIterator::entity() over a parallel handle registry: the ECS
+    // View already skips dead/staging slots, and freelist reuse cannot resurrect
+    // a previous incarnation inside the same live View.
     static std::vector<RPGActor *> resolved;
-    auto &handles = registryStorage();
-
-    handles.erase(std::remove_if(handles.begin(), handles.end(),
-                                  [](const ecs::EntityHandle &h) { return ecs::try_get(h) == nullptr; }),
-                  handles.end());
-
     resolved.clear();
-    resolved.reserve(handles.size());
-    for (const ecs::EntityHandle &h : handles)
-        resolved.push_back(static_cast<RPGActor *>(ecs::try_get(h)));
+    auto view = ecs::View<RPGActor, RPGActor::Attributes>();
+    for (auto it = view.begin(); it != view.end(); ++it)
+        resolved.push_back(it.entity());
     return resolved;
 }
 

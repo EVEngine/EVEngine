@@ -1,5 +1,7 @@
 # Canonical material schema v9
 
+Historical schema: the current write format is [material v15](canonical-material-v15.md).
+
 Schema v9 adds optional `vegetationAlpha` and `vegetationFields` objects.
 `vegetationAlpha` owns `global`, `variation`, and `detailFade`; the numeric
 values are finite values in `[0,1]`. `vegetationFields` owns the Colors and

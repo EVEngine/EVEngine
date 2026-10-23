@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file EconomyLedgerResourceAccount.h
@@ -26,7 +28,7 @@ namespace eve::economy {
  * The referenced ledger is borrowed and must outlive this adapter. Operations
  * are synchronous and must be called on the owner thread.
  */
-class EconomyLedgerResourceAccount final : public eve::resource::IResourceAccount {
+class EVENGINE_API_FOUNDATION EconomyLedgerResourceAccount final : public eve::resource::IResourceAccount {
 public:
     /** @brief Bind an account adapter to an existing caller-owned ledger. */
     explicit EconomyLedgerResourceAccount(EconomyLedger& ledger);
@@ -36,25 +38,32 @@ public:
     EconomyLedgerResourceAccount(EconomyLedgerResourceAccount&&)                 = delete;
     EconomyLedgerResourceAccount& operator=(EconomyLedgerResourceAccount&&)      = delete;
 
+    /** @brief Economy ledger resource account. */
     ~EconomyLedgerResourceAccount() override = default;
 
     /** @copydoc eve::resource::IResourceAccount::canAfford */
+    /** @brief Can afford. */
     [[nodiscard]] eve::Result<eve::resource::Affordability> canAfford(
         const eve::resource::CostSpec& cost) const override;
 
     /** @copydoc eve::resource::IResourceAccount::reserve */
+    /** @brief Reserve. */
     [[nodiscard]] eve::Result<eve::resource::Reservation> reserve(const eve::resource::CostSpec& cost) override;
 
     /** @copydoc eve::resource::IResourceAccount::debit */
+    /** @brief Debit. */
     [[nodiscard]] eve::Result<eve::resource::Receipt> debit(const eve::resource::CostSpec& cost) override;
 
     /** @copydoc eve::resource::IResourceAccount::credit */
+    /** @brief Credit. */
     [[nodiscard]] eve::Result<eve::resource::Receipt> credit(const eve::resource::CostSpec& cost) override;
 
     /** @copydoc eve::resource::IResourceAccount::commit */
+    /** @brief Commit. */
     [[nodiscard]] eve::Result<eve::resource::Receipt> commit(const eve::resource::Reservation& reservation) override;
 
     /** @copydoc eve::resource::IResourceAccount::rollback */
+    /** @brief Rollback. */
     [[nodiscard]] eve::Result<void> rollback(const eve::resource::Reservation& reservation) override;
 
 private:

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/Export.h"
 #include "editor/EditorTool.h"
 
 #include <memory>
@@ -14,13 +15,16 @@ namespace eve::editor {
  * Pointer/key callbacks return bit flags: 1 handled, 2 capture pointer, 4 release
  * pointer. Missing callbacks behave like the default IEditorTool implementation.
  */
-class ScriptEditorTool final : public IEditorTool {
+class EVENGINE_API_ORCHESTRATION ScriptEditorTool final : public IEditorTool {
 public:
+    /** @brief Constructs a ScriptEditorTool. */
     ScriptEditorTool(std::string id, std::string label);
+    /** @brief Releases ScriptEditorTool resources. */
     ~ScriptEditorTool() override;
     ScriptEditorTool(const ScriptEditorTool &) = delete;
     ScriptEditorTool &operator=(const ScriptEditorTool &) = delete;
 
+    /** @brief Descriptor. */
     const ToolDescriptor &descriptor() const override;
     /** @brief Set the shortcut shown by hosts. */
     void setShortcut(const std::string &shortcut);
@@ -37,11 +41,17 @@ public:
     /** @brief Set a closure invoked when the current gesture is cancelled. */
     void setCancelCallback(ssq::Object callback);
 
+    /** @brief Activate. */
     void activate(EditorContext &context) override;
+    /** @brief Deactivate. */
     void deactivate(EditorContext &context) override;
+    /** @brief Pointer event. */
     ToolResponse pointerEvent(EditorContext &context, const EditorPointerEvent &event) override;
+    /** @brief Key event. */
     ToolResponse keyEvent(EditorContext &context, const EditorKeyEvent &event) override;
+    /** @brief Updates . */
     void update(EditorContext &context, float dt) override;
+    /** @brief Cancel. */
     void cancel(EditorContext &context) override;
 
 private:

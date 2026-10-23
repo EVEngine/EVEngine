@@ -17,6 +17,7 @@ layout(location = 7) in flat uint vInstanceId;
 struct Light3D {
     vec4 posRadius;
     vec4 color;
+    vec4 spot;
 };
 
 layout(set = 0, binding = 0, std140) uniform Frame {
@@ -50,6 +51,7 @@ layout(set = 0, binding = 4, std140) uniform ShadowFrame {
     vec4 bias;
     vec4 cascadeBias;
     vec4 cascadeTexel;
+    vec4 cascadeUvScale;
 } shadow;
 
 layout(set = 0, binding = 5) uniform sampler2DArrayShadow shadowMap;

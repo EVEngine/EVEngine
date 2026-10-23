@@ -10,14 +10,24 @@
 namespace eve::action {
 namespace {
 
+template <class T>
+Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
+    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
+}
+
 Result<void> failure(DiagnosticCode code, std::string message, std::string path = {}) {
     return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
 }
 
 Result<void> failureFrom(const Status& status) { return Result<void>::failure(status); }
 
-bool isEmptyCondition(const decision::Condition& condition) {
-    return condition.kind() == decision::ConditionKind::All && condition.children().empty() && condition.isValid();
+template <class T>
+Result<T> failureFrom(const Status& status) {
+    return Result<T>::failure(status);
+}
+
+bool isEmptyCondition(const condition::Condition& condition) {
+    return condition.kind() == condition::ConditionKind::All && condition.children().empty() && condition.isValid();
 }
 
 bool isTerminal(ActionPhase phase) {
@@ -36,7 +46,7 @@ Status notFoundStatus() {
 
 Status invalidStatus(std::string message, std::string path = {}) {
     return Status::failure(StatusCode::Rejected,
-                           Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
+                           Diagnostic::error(DiagnosticCode::InvalidArgument, message, path));
 }
 
 Status pendingStatus() { return Status::success(StatusCode::Pending); }
@@ -57,24 +67,58 @@ const char* actionPhaseName(ActionPhase phase) noexcept {
     return "unknown";
 }
 
+Result<Duration> ActionTiming::total() const {
+    auto windupAndActive = windup.tryAdd(active);
+    if (!windupAndActive) return Result<Duration>::failure(windupAndActive.status());
+    return windupAndActive.value().tryAdd(recover);
+}
+
+Result<ActionTiming> actionTimingFromPhysicalSections(const ActionTimeline& timeline) {
+    if (timeline.splitTimestamps.size() > 2)
+        return Result<ActionTiming>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "action timing assembly from physical sections supports at most two splits "
+                              "(windup|active|recover); more splits remain montage sections only",
+                              "timeline.splitTimestamps"));
+    ActionTiming timing;
+    const auto&  splits = timeline.splitTimestamps;
+    if (splits.empty()) {
+        timing.active = timeline.duration;
+    } else if (splits.size() == 1) {
+        if (splits[0] > timeline.duration)
+            return Result<ActionTiming>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                   "physical split is outside the timeline duration",
+                                                                   "timeline.splitTimestamps"));
+        timing.windup = splits[0];
+        timing.active = Duration::fromNanoseconds(timeline.duration.nanoseconds() - splits[0].nanoseconds());
+    } else {
+        if (splits[0] > splits[1] || splits[1] > timeline.duration)
+            return Result<ActionTiming>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                   "physical splits are outside the timeline duration",
+                                                                   "timeline.splitTimestamps"));
+        timing.windup  = splits[0];
+        timing.active  = Duration::fromNanoseconds(splits[1].nanoseconds() - splits[0].nanoseconds());
+        timing.recover = Duration::fromNanoseconds(timeline.duration.nanoseconds() - splits[1].nanoseconds());
+    }
+    return Result<ActionTiming>::success(timing);
+}
+
 Result<void> ActionDefinition::validate() const {
-    if (!id.isValid()) return failure(DiagnosticCode::InvalidArgument, "action definition id is invalid", "id");
+    if (!id.isValid()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "action definition id is invalid", "id"));
     if (!condition.isValid())
-        return failure(DiagnosticCode::InvalidArgument, "action condition is invalid", "condition");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "action condition is invalid", "condition"));
     if (timing.windup.nanoseconds() < 0 || timing.active.nanoseconds() < 0 || timing.recover.nanoseconds() < 0)
-        return failure(DiagnosticCode::InvalidArgument, "action phase durations must be non-negative", "timing");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "action phase durations must be non-negative", "timing"));
 
     switch (targetingMode) {
         case TargetingMode::None:
         case TargetingMode::Explicit:
             if (targetingSpec)
-                return failure(DiagnosticCode::InvalidArgument, "targetingSpec is only valid for Query actions",
-                               "targetingSpec");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "targetingSpec is only valid for Query actions", "targetingSpec"));
             break;
         case TargetingMode::Query:
             if (!targetingSpec)
-                return failure(DiagnosticCode::InvalidArgument, "Query actions require a targetingSpec",
-                               "targetingSpec");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Query actions require a targetingSpec", "targetingSpec"));
             {
                 auto valid = targetingSpec->validate();
                 if (!valid) return failureFrom(valid.status());
@@ -83,24 +127,25 @@ Result<void> ActionDefinition::validate() const {
     }
 
     if (cost && !cost->isValid())
-        return failure(DiagnosticCode::InvalidArgument, "action cost must be a validated non-empty CostSpec", "cost");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "action cost must be a validated non-empty CostSpec", "cost"));
     for (const auto& effectId : effectIds) {
         if (effectId.empty())
-            return failure(DiagnosticCode::InvalidArgument, "action effect ids must not be empty", "effectIds");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "action effect ids must not be empty", "effectIds"));
     }
     if (timeline) {
         auto timelineValid = timeline->validate();
         if (!timelineValid) return failureFrom(timelineValid.status());
         if (timeline->actionId != id)
-            return failure(DiagnosticCode::InvalidArgument, "action timeline id does not match its definition",
-                           "timeline.actionId");
-        auto windupAndActive = timing.windup.tryAdd(timing.active);
-        if (!windupAndActive) return failureFrom(windupAndActive.status());
-        auto total = windupAndActive.value().tryAdd(timing.recover);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "action timeline id does not match its definition", "timeline.actionId"));
+        // timing remains the phase authority; timeline.duration is a consistency constraint only.
+        // splitTimestamps are physical sections and are not required to match phase boundaries.
+        auto total = timing.total();
         if (!total) return failureFrom(total.status());
         if (timeline->duration != total.value())
-            return failure(DiagnosticCode::InvalidArgument,
-                           "action timeline duration must equal windup + active + recover", "timeline.durationNs");
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                  "action timeline duration must equal timing.total() (windup + active + recover)",
+                                  "timeline.durationNs"));
     }
     return Result<void>::success();
 }
@@ -109,29 +154,24 @@ Result<void> ActionRequest::validate(const ActionDefinition& definition) const {
     auto definitionValid = definition.validate();
     if (!definitionValid) return failureFrom(definitionValid.status());
     if (actionId != definition.id)
-        return failure(DiagnosticCode::InvalidArgument, "action request id does not match its definition", "actionId");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "action request id does not match its definition", "actionId"));
 
     switch (definition.targetingMode) {
         case TargetingMode::None:
             if (!targetEntities.empty() || targetingQuery)
-                return failure(DiagnosticCode::InvalidArgument, "a non-targeted action cannot carry target selection",
-                               "targets");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "a non-targeted action cannot carry target selection", "targets"));
             break;
         case TargetingMode::Explicit:
             if (targetEntities.empty())
-                return failure(DiagnosticCode::PreconditionViolation, "an Explicit action requires at least one target",
-                               "targetEntities");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "an Explicit action requires at least one target", "targetEntities"));
             if (targetingQuery)
-                return failure(DiagnosticCode::InvalidArgument, "Explicit actions cannot carry a targeting query",
-                               "targetingQuery");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Explicit actions cannot carry a targeting query", "targetingQuery"));
             break;
         case TargetingMode::Query:
             if (!targetingQuery)
-                return failure(DiagnosticCode::PreconditionViolation, "a Query action requires a targeting query",
-                               "targetingQuery");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "a Query action requires a targeting query", "targetingQuery"));
             if (!targetEntities.empty())
-                return failure(DiagnosticCode::InvalidArgument, "Query actions cannot carry explicit targets",
-                               "targetEntities");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Query actions cannot carry explicit targets", "targetEntities"));
             {
                 auto valid = targetingQuery->validate();
                 if (!valid) return failureFrom(valid.status());
@@ -194,24 +234,22 @@ Result<void> ActionRuntime::validateExecution(ActionExecution& execution) {
 
     if (!isEmptyCondition(definition.condition)) {
         if (services_.conditions == nullptr)
-            return failure(DiagnosticCode::Unsupported, "action condition requires an evaluator",
-                           "services.conditions");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "action condition requires an evaluator", "services.conditions"));
         auto condition = services_.conditions->evaluate(definition, request);
         if (!condition) return failureFrom(condition.status());
         auto checked = std::move(condition).takeValue();
         if (!checked.passed()) {
             DiagnosticDetails details;
-            details.emplace_back("reason", decision::conditionReasonCodeName(checked.reasonCode()));
+            details.emplace_back("reason", condition::conditionReasonCodeName(checked.reasonCode()));
             return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
                                                            "action condition was rejected", "condition",
-                                                           std::move(details)));
+                                                           details));
         }
     }
 
     if (definition.targetingMode == TargetingMode::Query) {
         if (services_.targeting == nullptr)
-            return failure(DiagnosticCode::Unsupported, "Query action requires a target resolver",
-                           "services.targeting");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Query action requires a target resolver", "services.targeting"));
         sensing::TargetingQuery query = *request.targetingQuery;
         query.spec                    = *definition.targetingSpec;
         auto targets                  = services_.targeting->resolve(query);
@@ -221,16 +259,14 @@ Result<void> ActionRuntime::validateExecution(ActionExecution& execution) {
 
     if (definition.activeExecutionRequired || !definition.effectIds.empty()) {
         if (services_.effects == nullptr && services_.transactionEffect == nullptr)
-            return failure(DiagnosticCode::Unsupported, "action Active phase requires an effect executor",
-                           "services.effects");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "action Active phase requires an effect executor", "services.effects"));
     }
 
     if (definition.cost) {
         const bool transactionBacked =
             services_.transactionEffect != nullptr && services_.transactionAccount != nullptr;
         if (services_.resources == nullptr && !transactionBacked)
-            return failure(DiagnosticCode::Unsupported, "cost-bearing action requires a resource provider",
-                           "services.resources");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "cost-bearing action requires a resource provider", "services.resources"));
         auto affordability = services_.resources != nullptr
                                  ? services_.resources->canAfford(definition, request, *definition.cost)
                                  : services_.transactionAccount->canAfford(*definition.cost);
@@ -245,7 +281,7 @@ Result<void> ActionRuntime::validateExecution(ActionExecution& execution) {
             }
             return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
                                                            "action resource cost is not affordable", "cost",
-                                                           std::move(details)));
+                                                           details));
         }
     }
     return Result<void>::success(Status::success(StatusCode::Applied));
@@ -257,8 +293,7 @@ Result<void> ActionRuntime::enterActive(ActionExecution& execution, SimulationTi
 
     if (services_.transactionEffect != nullptr) {
         if (definition.cost && services_.transactionAccount == nullptr)
-            return failure(DiagnosticCode::Unsupported, "transaction-backed action cost requires an account",
-                           "services.transactionAccount");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "transaction-backed action cost requires an account", "services.transactionAccount"));
 
         const std::string transactionId = request.transactionId.empty() ? "action." + definition.id.format() + "." +
                                                                               std::to_string(execution.id_.value())
@@ -278,23 +313,20 @@ Result<void> ActionRuntime::enterActive(ActionExecution& execution, SimulationTi
     std::unique_ptr<IActionEffectOperation> stagedEffect;
     if (definition.activeExecutionRequired || !definition.effectIds.empty()) {
         if (services_.effects == nullptr)
-            return failure(DiagnosticCode::Unsupported, "action Active phase requires an effect executor",
-                           "services.effects");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "action Active phase requires an effect executor", "services.effects"));
         auto prepared = services_.effects->prepare(
             definition, request, execution.resolvedTargets_ ? &*execution.resolvedTargets_ : nullptr, tick);
         if (!prepared) return failureFrom(prepared.status());
         stagedEffect = std::move(prepared).takeValue();
         if (!stagedEffect)
-            return failure(DiagnosticCode::InvariantViolation, "effect executor returned an empty staged operation",
-                           "effects");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, "effect executor returned an empty staged operation", "effects"));
     }
 
     std::optional<resource::Reservation> reservation;
     if (definition.cost) {
         if (services_.resources == nullptr) {
             if (stagedEffect) stagedEffect->rollback();
-            return failure(DiagnosticCode::Unsupported, "activating a cost-bearing action requires a resource provider",
-                           "services.resources");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "activating a cost-bearing action requires a resource provider", "services.resources"));
         }
         auto reserved = services_.resources->reserve(definition, request, *definition.cost);
         if (!reserved) {
@@ -304,8 +336,7 @@ Result<void> ActionRuntime::enterActive(ActionExecution& execution, SimulationTi
         auto credential = std::move(reserved).takeValue();
         if (!credential.isValid()) {
             if (stagedEffect) stagedEffect->rollback();
-            return failure(DiagnosticCode::InvariantViolation, "resource provider returned an invalid reservation",
-                           "cost.reservation");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, "resource provider returned an invalid reservation", "cost.reservation"));
         }
         reservation = std::move(credential);
 
@@ -346,6 +377,72 @@ Result<void> ActionRuntime::addElapsed(ActionExecution& execution, Duration amou
     execution.phaseElapsed_ = std::move(phase).takeValue();
     execution.totalElapsed_ = std::move(total).takeValue();
     return Result<void>::success();
+}
+
+Result<std::pair<Duration, Duration>> ActionRuntime::mapSimulationDelta(ActionExecution& execution,
+                                                                        Duration delta) const {
+    if (delta.isZero() || !execution.definition_.timeline)
+        return Result<std::pair<Duration, Duration>>::success({delta, delta});
+
+    const auto& timeline = *execution.definition_.timeline;
+    Duration    cursor   = execution.totalElapsed_;
+    Duration    remaining = delta;
+    Duration    authored  = Duration::zero();
+    while (!remaining.isZero() && cursor < timeline.duration) {
+        const auto split = std::upper_bound(timeline.splitTimestamps.begin(), timeline.splitTimestamps.end(), cursor);
+        const std::size_t sectionIndex = static_cast<std::size_t>(split - timeline.splitTimestamps.begin());
+        auto              range        = timeline.sectionRange(sectionIndex);
+        if (!range) return failureFrom<std::pair<Duration, Duration>>(range.status());
+        const Duration sectionEnd = range.value().second;
+        const Duration rawSpan = Duration::fromNanoseconds(sectionEnd.nanoseconds() - range.value().first.nanoseconds());
+        const Duration authoredRemaining = Duration::fromNanoseconds(sectionEnd.nanoseconds() - cursor.nanoseconds());
+        const auto override = execution.sectionTimingOverrides_.find(sectionIndex);
+        if (override == execution.sectionTimingOverrides_.end()) {
+            const Duration slice             = std::min(remaining, authoredRemaining);
+            auto           nextAuthored      = authored.tryAdd(slice);
+            if (!nextAuthored) return failureFrom<std::pair<Duration, Duration>>(nextAuthored.status());
+            authored = std::move(nextAuthored).takeValue();
+            cursor   = Duration::fromNanoseconds(cursor.nanoseconds() + slice.nanoseconds());
+            remaining = Duration::fromNanoseconds(remaining.nanoseconds() - slice.nanoseconds());
+            continue;
+        }
+
+        auto&        timing = override->second;
+        const double rate   = rawSpan.seconds() / timing.targetDuration.seconds();
+        const Duration authoredFromAnchor =
+            Duration::fromNanoseconds(sectionEnd.nanoseconds() - timing.authoredAnchor.nanoseconds());
+        auto totalSimulationToBoundary = authoredFromAnchor.scaled(1.0 / rate);
+        if (!totalSimulationToBoundary)
+            return failureFrom<std::pair<Duration, Duration>>(totalSimulationToBoundary.status());
+        const Duration simulationToBoundary = Duration::fromNanoseconds(std::max<std::int64_t>(
+            0, totalSimulationToBoundary.value().nanoseconds() - timing.simulationElapsed.nanoseconds()));
+        if (remaining < simulationToBoundary) {
+            auto nextSimulationElapsed = timing.simulationElapsed.tryAdd(remaining);
+            if (!nextSimulationElapsed)
+                return failureFrom<std::pair<Duration, Duration>>(nextSimulationElapsed.status());
+            auto mappedFromAnchor = nextSimulationElapsed.value().scaled(rate);
+            if (!mappedFromAnchor)
+                return failureFrom<std::pair<Duration, Duration>>(mappedFromAnchor.status());
+            const Duration mapped = Duration::fromNanoseconds(
+                timing.authoredAnchor.nanoseconds() + mappedFromAnchor.value().nanoseconds() - cursor.nanoseconds());
+            auto nextAuthored = authored.tryAdd(mapped);
+            if (!nextAuthored) return failureFrom<std::pair<Duration, Duration>>(nextAuthored.status());
+            authored                 = std::move(nextAuthored).takeValue();
+            timing.simulationElapsed = std::move(nextSimulationElapsed).takeValue();
+            remaining                = Duration::zero();
+            break;
+        }
+
+        auto nextAuthored = authored.tryAdd(authoredRemaining);
+        if (!nextAuthored) return failureFrom<std::pair<Duration, Duration>>(nextAuthored.status());
+        authored = std::move(nextAuthored).takeValue();
+        cursor   = sectionEnd;
+        timing.simulationElapsed = totalSimulationToBoundary.value();
+        remaining = Duration::fromNanoseconds(remaining.nanoseconds() - simulationToBoundary.nanoseconds());
+    }
+
+    const Duration consumed = Duration::fromNanoseconds(delta.nanoseconds() - remaining.nanoseconds());
+    return Result<std::pair<Duration, Duration>>::success({authored, consumed});
 }
 
 void ActionRuntime::transition(ActionExecution& execution, ActionPhase next, SimulationTick tick,
@@ -390,7 +487,11 @@ Result<ActionAdvance> ActionRuntime::advance(ActionExecutionId id, SimulationTic
     if (execution->phase_ == ActionPhase::Cancelled || execution->phase_ == ActionPhase::Failed)
         return Result<ActionAdvance>::failure(execution->status());
 
-    Duration                      remaining = delta;
+    auto mappedDelta = mapSimulationDelta(*execution, delta);
+    if (!mappedDelta) return failureFrom<ActionAdvance>(mappedDelta.status());
+    auto mapped = std::move(mappedDelta).takeValue();
+    Duration                      remaining = mapped.first;
+    const Duration                inputConsumed = mapped.second;
     std::vector<ActionTransition> transitions;
     for (int guard = 0; guard < 8; ++guard) {
         if (execution->phase_ == ActionPhase::Requested) {
@@ -519,6 +620,7 @@ Result<ActionAdvance> ActionRuntime::advance(ActionExecutionId id, SimulationTic
                              std::move(transitions),
                              execution->phaseElapsed_,
                              execution->totalElapsed_,
+                             inputConsumed,
                              std::move(timelineEvents),
                              std::move(activeBlocks)};
         return Result<ActionAdvance>::success(std::move(result), Status::success(StatusCode::Applied));
@@ -528,9 +630,55 @@ Result<ActionAdvance> ActionRuntime::advance(ActionExecutionId id, SimulationTic
                          std::move(transitions),
                          execution->phaseElapsed_,
                          execution->totalElapsed_,
+                         inputConsumed,
                          std::move(timelineEvents),
                          std::move(activeBlocks)};
     return Result<ActionAdvance>::success(std::move(result), pendingStatus());
+}
+
+Result<void> ActionRuntime::setSectionTimingOverride(ActionExecutionId id, std::size_t sectionIndex,
+                                                     Duration targetDuration) {
+    ActionExecution* execution = find(id);
+    if (execution == nullptr) return Result<void>::failure(notFoundStatus());
+    if (!execution->definition_.timeline)
+        return failure(DiagnosticCode::Conflict, "action execution has no timeline", "timeline");
+    if (targetDuration <= Duration::zero())
+        return failure(DiagnosticCode::InvalidArgument, "target section duration must be positive",
+                       "targetDuration");
+    auto range = execution->definition_.timeline->sectionRange(sectionIndex);
+    if (!range) return failureFrom(range.status());
+    const auto found = execution->sectionTimingOverrides_.find(sectionIndex);
+    if (found != execution->sectionTimingOverrides_.end() && found->second.targetDuration == targetDuration)
+        return Result<void>::success(Status::success(StatusCode::NoOp));
+    const Duration anchor = std::clamp(execution->totalElapsed_, range.value().first, range.value().second);
+    execution->sectionTimingOverrides_[sectionIndex] =
+        ActionExecution::SectionTimingOverride{targetDuration, anchor, Duration::zero()};
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<void> ActionRuntime::clearSectionTimingOverride(ActionExecutionId id, std::size_t sectionIndex) {
+    ActionExecution* execution = find(id);
+    if (execution == nullptr) return Result<void>::failure(notFoundStatus());
+    if (!execution->definition_.timeline)
+        return failure(DiagnosticCode::Conflict, "action execution has no timeline", "timeline");
+    auto range = execution->definition_.timeline->sectionRange(sectionIndex);
+    if (!range) return failureFrom(range.status());
+    return Result<void>::success(Status::success(execution->sectionTimingOverrides_.erase(sectionIndex) > 0
+                                                    ? StatusCode::Applied
+                                                    : StatusCode::NoOp));
+}
+
+Result<double> ActionRuntime::sectionProgress(ActionExecutionId id, std::size_t sectionIndex) const {
+    const ActionExecution* execution = find(id);
+    if (execution == nullptr) return failureFrom<double>(notFoundStatus());
+    if (!execution->definition_.timeline)
+        return failure<double>(DiagnosticCode::Conflict, "action execution has no timeline", "timeline");
+    auto range = execution->definition_.timeline->sectionRange(sectionIndex);
+    if (!range) return failureFrom<double>(range.status());
+    const auto span = range.value().second.nanoseconds() - range.value().first.nanoseconds();
+    const auto offset = std::clamp(execution->totalElapsed_.nanoseconds() - range.value().first.nanoseconds(),
+                                   std::int64_t{0}, span);
+    return Result<double>::success(span == 0 ? 1.0 : static_cast<double>(offset) / static_cast<double>(span));
 }
 
 Result<void> ActionRuntime::cancel(ActionExecutionId id, SimulationTick tick) {

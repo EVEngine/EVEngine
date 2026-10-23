@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file ActionTimeline.h
@@ -22,12 +24,15 @@ namespace eve::action {
 /** @brief Canonical schema identifier for persisted action timelines. */
 inline constexpr std::string_view kActionTimelineSchemaId = "eve.action.timeline";
 /** @brief Current action timeline schema version. */
-inline constexpr std::uint64_t kActionTimelineSchemaVersion = 4;
+inline constexpr std::uint64_t kActionTimelineSchemaVersion = 5;
 
 /** @brief Built-in deterministic cross-fade curve evaluated without asset callbacks. */
 enum class ActionBlendCurve : std::uint8_t {
     Linear,
+    EaseIn,
+    EaseOut,
     EaseInOut,
+    SmoothStep,
 };
 
 /** @brief Montage-wide presentation settings persisted with the action timeline. */
@@ -43,6 +48,7 @@ struct ActionMontageSettings {
     bool          rootMotionVertical   = true;
     bool          rootMotionRotation   = true;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionMontageSettings&) const = default;
 };
 
@@ -58,20 +64,33 @@ struct ActionAnimationSection {
     Duration    start   = Duration::zero();
     Duration    end     = Duration::zero();
     Duration    blendIn = Duration::zero();
+    /** @brief Duration of the outgoing envelope before a following gap. */
+    Duration blendOut = Duration::zero();
     /** @brief Clip-local trim-in timestamp. */
     Duration sourceStart = Duration::zero();
     /** @brief Clip-local trim-out timestamp; zero means the physical clip end. */
     Duration sourceEnd = Duration::zero();
     /** @brief Curve used for the incoming cross-fade. */
-    ActionBlendCurve blendCurve = ActionBlendCurve::EaseInOut;
+    ActionBlendCurve blendInCurve = ActionBlendCurve::EaseInOut;
+    /** @brief Curve used for the outgoing envelope before a following gap. */
+    ActionBlendCurve blendOutCurve = ActionBlendCurve::EaseInOut;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionAnimationSection&) const = default;
 };
 
 /** @brief Stable persisted name for a montage cross-fade curve. */
-[[nodiscard]] std::string_view actionBlendCurveName(ActionBlendCurve curve) noexcept;
+[[nodiscard]] EVENGINE_API_PLATFORM std::string_view actionBlendCurveName(ActionBlendCurve curve) noexcept;
 /** @brief Parse a persisted montage cross-fade curve name. */
-[[nodiscard]] std::optional<ActionBlendCurve> actionBlendCurveFromName(std::string_view name) noexcept;
+[[nodiscard]] EVENGINE_API_PLATFORM std::optional<ActionBlendCurve> actionBlendCurveFromName(
+    std::string_view name) noexcept;
+/**
+ * @brief Evaluate a deterministic built-in blend curve for a normalized input.
+ * @param curve Curve algorithm selected by persisted enum value.
+ * @param normalized Input clamped to the inclusive range [0,1].
+ * @return Deterministic normalized curve output in [0,1].
+ */
+[[nodiscard]] EVENGINE_API_PLATFORM double evaluateActionBlendCurve(ActionBlendCurve curve, double normalized) noexcept;
 
 /** @brief Semantic lane kind; hosts choose presentation without changing data. */
 enum class ActionTrackKind : std::uint8_t {
@@ -86,9 +105,9 @@ enum class ActionTrackKind : std::uint8_t {
 };
 
 /** @brief Stable lowercase protocol spelling for a track kind. */
-[[nodiscard]] std::string_view actionTrackKindName(ActionTrackKind kind) noexcept;
+[[nodiscard]] EVENGINE_API_PLATFORM std::string_view actionTrackKindName(ActionTrackKind kind) noexcept;
 /** @brief Parse a stable track kind spelling. */
-[[nodiscard]] Result<ActionTrackKind> parseActionTrackKind(std::string_view text);
+[[nodiscard]] EVENGINE_API_PLATFORM Result<ActionTrackKind> parseActionTrackKind(std::string_view text);
 
 /** @brief Instantaneous typed event placed on an action track. */
 struct ActionNotify {
@@ -98,6 +117,7 @@ struct ActionNotify {
     Value::Object payload;
     bool          enabled = true;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionNotify&) const = default;
 };
 
@@ -110,6 +130,7 @@ struct ActionNotifyState {
     Value::Object payload;
     bool          enabled = true;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionNotifyState&) const = default;
 };
 
@@ -123,6 +144,7 @@ struct ActionTrack {
     std::vector<ActionNotify>      notifies;
     std::vector<ActionNotifyState> states;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionTrack&) const = default;
 };
 
@@ -143,6 +165,7 @@ struct ActionTimelineEvent {
     Duration                time = Duration::zero();
     Value::Object           payload;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionTimelineEvent&) const = default;
 };
 
@@ -155,6 +178,7 @@ struct ActionActiveBlock {
     Duration      duration  = Duration::zero();
     Value::Object payload;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionActiveBlock&) const = default;
 };
 
@@ -165,7 +189,7 @@ struct ActionActiveBlock {
  * resources are referenced by URI/type payloads and resolved by downstream
  * adapters; this L1 module never depends on those presentation modules.
  */
-struct ActionTimeline {
+struct EVENGINE_API_PLATFORM ActionTimeline {
     SchemaVersion schemaVersion{kActionTimelineSchemaVersion};
     LogicalId     actionId;
     Duration      duration = Duration::zero();
@@ -173,7 +197,12 @@ struct ActionTimeline {
     std::string                         animationUri;
     std::vector<ActionAnimationSection> animationSections;
     ActionMontageSettings               montage;
-    /** @brief Sorted objective split timestamps forming N+1 physical sections. */
+    /**
+     * @brief Sorted objective split timestamps forming N+1 physical sections.
+     * @remarks Owned by the timeline for editor/montage sectioning. ActionRuntime
+     *          never reads these as phase boundaries; optional ability/definition
+     *          assembly may project at most two splits via `actionTimingFromPhysicalSections`.
+     */
     std::vector<Duration>    splitTimestamps;
     std::vector<ActionTrack> tracks;
     Value::Object            metadata;

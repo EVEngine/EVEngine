@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "pixelworld/PixelWorldGeneration.h"
@@ -9,7 +11,7 @@
 namespace eve::pixelworld {
 
 /** @brief Encode schema `eve.pixelworld.generation-request` version 1 canonically. */
-[[nodiscard]] eve::Result<std::string> encodePixelWorldGenerationRequestJson(
+[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<std::string> encodePixelWorldGenerationRequestJson(
     const PixelWorldGenerationRequest& request);
 
 /**
@@ -17,7 +19,7 @@ namespace eve::pixelworld {
  * @remarks Unknown fields and versions are rejected. The returned request owns every
  * stamp cell, and decoding cannot mutate a live PixelWorld.
  */
-[[nodiscard]] eve::Result<PixelWorldGenerationRequest>
+[[nodiscard]] eve::Result<PixelWorldGenerationRequest> EVENGINE_API_FOUNDATION
 decodePixelWorldGenerationRequestJson(std::string_view json);
 
 }  // namespace eve::pixelworld

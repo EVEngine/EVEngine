@@ -2,6 +2,7 @@
 #include <array>
 #include <cstdint>
 #include <span>
+#include "common/Export.h"
 #include "common/Result.h"
 #include "graphics/PbrSurface.h"
 
@@ -42,10 +43,9 @@ struct VegetationSurface {
  * Updated positions and bounds are shared by color, depth and shadow passes.
  * @return Validation failure before upload; Unsupported if backend cannot update geometry.
  */
-[[nodiscard]] Result<void> updateVegetationMesh(Graphics& graphics, Mesh& mesh, const VegetationField& field,
-                                                std::span<const VegetationVertex> vertices,
-                                                const VegetationMotion& motion, std::span<const float> texcoords,
-                                                std::span<const uint32_t> indices);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> updateVegetationMesh(
+    Graphics& graphics, Mesh& mesh, const VegetationField& field, std::span<const VegetationVertex> vertices,
+    const VegetationMotion& motion, std::span<const float> texcoords, std::span<const uint32_t> indices);
 
 /** @brief Apply an independently sampled field to a masked double-sided PBR material.
  * Render-thread only, no callbacks; material is borrowed during this call only.
@@ -53,6 +53,7 @@ struct VegetationSurface {
      * @return InvalidArgument before mutation; otherwise applies tint, wetness, overlay,
  * emission and alpha atomically with respect to validation. No texture creation occurs.
  */
-[[nodiscard]] Result<void> applyVegetationSurface(Material& material, const VegetationSample& sample,
-                                                  const VegetationSurface& surface);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> applyVegetationSurface(Material&                material,
+                                                                        const VegetationSample&  sample,
+                                                                        const VegetationSurface& surface);
 }  // namespace eve::graphics

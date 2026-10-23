@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "audio/editing/AudioEditingTypes.h"
 
@@ -26,40 +28,52 @@ struct AudioTransportSnapshot {
 /** @brief Minimal playback backend boundary used by the deterministic transport controller. */
 class IAudioTransportBackend {
 public:
+    /** @brief Releases IAudioTransportBackend resources. */
     virtual ~IAudioTransportBackend() = default;
+    /** @brief Play. */
     virtual void play() = 0;
+    /** @brief Pause. */
     virtual void pause() = 0;
+    /** @brief Stops . */
     virtual void stop() = 0;
     /** @brief Seek the backend playhead. @return Structured failure when the backend rejects the position. */
-    virtual EditorResult<void> seek(double seconds) = 0;
+    virtual Result<void> seek(double seconds) = 0;
+    /** @brief Tell. */
     virtual double tell() const = 0;
+    /** @brief Duration. */
     virtual double duration() const = 0;
+    /** @brief Playing. */
     virtual bool playing() const = 0;
+    /** @brief Sets the native looping. */
     virtual void setNativeLooping(bool enabled) = 0;
 };
 
 /** @brief Revision-safe play/pause/seek/custom-loop state machine for asset audition. */
-class AudioAuditionTransport {
+class EVENGINE_API_BACKENDS AudioAuditionTransport {
 public:
     /** @brief Bind a borrowed backend and stop any previously bound audition. */
-    EditorResult<void> bind(StableId asset, Revision sourceRevision,
+    Result<void> bind(StableId asset, Revision sourceRevision,
                             IAudioTransportBackend* backend);
     /** @brief Configure a bounded loop range; zero end uses the clip duration. */
-    EditorResult<void> setLoop(Revision expectedRevision, bool enabled,
+    Result<void> setLoop(Revision expectedRevision, bool enabled,
                                double startSeconds = 0.0, double endSeconds = 0.0);
-    EditorResult<void> play(Revision expectedRevision);
-    EditorResult<void> pause(Revision expectedRevision);
-    EditorResult<void> stop(Revision expectedRevision);
-    EditorResult<void> seek(Revision expectedRevision, double seconds);
+    /** @brief Play. */
+    Result<void> play(Revision expectedRevision);
+    /** @brief Pause. */
+    Result<void> pause(Revision expectedRevision);
+    /** @brief Stops . */
+    Result<void> stop(Revision expectedRevision);
+    /** @brief Seeks . */
+    Result<void> seek(Revision expectedRevision, double seconds);
     /** @brief Poll backend state and wrap the custom loop without changing documents. */
-    EditorResult<AudioTransportSnapshot> update(Revision expectedRevision);
+    Result<AudioTransportSnapshot> update(Revision expectedRevision);
     /** @brief Read the current playhead only for the bound source revision. */
-    EditorResult<AudioTransportSnapshot> snapshot(Revision expectedRevision) const;
+    Result<AudioTransportSnapshot> snapshot(Revision expectedRevision) const;
     /** @brief Stop and forget the borrowed backend. */
     void unbind();
 
 private:
-    EditorResult<void> validateRevision(Revision expectedRevision) const;
+    Result<void> validateRevision(Revision expectedRevision) const;
     AudioTransportSnapshot observe() const;
     StableId asset_;
     Revision revision_ = 0;
@@ -71,16 +85,25 @@ private:
 };
 
 /** @brief Non-owning transport backend for a live OpenAL-backed audio Source. */
-class AudioSourceTransportBackend final : public IAudioTransportBackend {
+class EVENGINE_API_BACKENDS AudioSourceTransportBackend final : public IAudioTransportBackend {
 public:
+    /** @brief Audio source transport backend. */
     explicit AudioSourceTransportBackend(audio::Source* source) : source_(source) {}
+    /** @brief Play. */
     void play() override;
+    /** @brief Pause. */
     void pause() override;
+    /** @brief Stops . */
     void stop() override;
-    EditorResult<void> seek(double seconds) override;
+    /** @brief Seeks . */
+    Result<void> seek(double seconds) override;
+    /** @brief Tell. */
     double tell() const override;
+    /** @brief Duration. */
     double duration() const override;
+    /** @brief Playing. */
     bool playing() const override;
+    /** @brief Sets the native looping. */
     void setNativeLooping(bool enabled) override;
 private:
     audio::Source* source_ = nullptr;

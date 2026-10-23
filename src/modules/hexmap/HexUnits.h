@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file HexUnits.h @brief Units that occupy cells, travel along paths and carry vision. */
 
@@ -64,8 +66,9 @@ struct HexUnitSample {
  *
  * Thread affinity: main thread only; no locking and no callbacks.
  */
-class HexUnitRegistry {
+class EVENGINE_API_WORLD HexUnitRegistry {
 public:
+    /** @brief Hex unit registry. */
     HexUnitRegistry() = default;
 
     /** @brief Current tuning. */

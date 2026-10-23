@@ -14,23 +14,34 @@ namespace eve::ui {
 /** @brief Dear ImGui + SDL input + Vulkan present overlay. */
 class ImGuiBackend final : public UIBackend {
 public:
+    /** @brief Constructs a ImGuiBackend. */
     ImGuiBackend() = default;
+    /** @brief Releases ImGuiBackend resources. */
     ~ImGuiBackend() override;
 
     ImGuiBackend(const ImGuiBackend &) = delete;
     ImGuiBackend &operator=(const ImGuiBackend &) = delete;
 
+    /** @brief Initializes . */
     bool init(SDL_Window *window, eve::graphics::Graphics *gfx) override;
+    /** @brief Shutdown. */
     void shutdown() override;
+    /** @brief True when initialized. */
     bool isInitialized() const override { return initialized_; }
 
+    /** @brief Process event. */
     void processEvent(const SDL_Event *event) override;
+    /** @brief Creates a frame. @ownership Caller deletes unless documented otherwise. */
     void newFrame() override;
 
+    /** @brief Want capture mouse. */
     bool wantCaptureMouse() const override;
+    /** @brief Want capture keyboard. */
     bool wantCaptureKeyboard() const override;
 
+    /** @brief Sets the scale. */
     void setScale(float scale) override;
+    /** @brief Returns the scale. */
     float getScale() const override { return uiScale_; }
 
 private:

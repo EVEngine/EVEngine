@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Time.h"
 
@@ -21,7 +23,7 @@ namespace eve::rpg {
  * one ActionRuntime and may submit the produced values to it. RPG condition,
  * resource-account and effect providers are injected into that runtime.
  */
-class SkillActionAdapter {
+class EVENGINE_API_PLATFORM SkillActionAdapter {
 public:
     /**
      * @brief Build the common definition for one RPG skill.

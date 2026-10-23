@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <Poco/AutoPtr.h>
 #include <Poco/DOM/Document.h>
@@ -7,15 +9,18 @@ namespace eve {
 namespace data {
 
 /** @brief Thin RAII wrapper over a Poco XML DOM document. */
-class XmlDocument {
+class EVENGINE_API_FOUNDATION XmlDocument {
 public:
     /** @brief Creates an empty document. */
     XmlDocument();
     /** @brief Takes ownership of an existing Poco DOM document. */
     explicit XmlDocument(Poco::AutoPtr<Poco::XML::Document> doc);
+    /** @brief Xml document. */
     XmlDocument(XmlDocument&&) noexcept;
+    /** @brief Operator =. */
     XmlDocument& operator=(XmlDocument&&) noexcept;
     XmlDocument(const XmlDocument&) = delete;
+    /** @brief Xml document. */
     ~XmlDocument() = default;
 
     /** @brief True when no underlying document is held. */
@@ -23,9 +28,11 @@ public:
 
     /** @brief Underlying Poco document access. */
     Poco::XML::Document*       get();
+    /** @brief Returns the value. */
     const Poco::XML::Document* get() const;
     /** @brief Convenience pointer/ref access. */
     Poco::XML::Document*       operator->();
+    /** @brief Operator *. */
     Poco::XML::Document&       operator*();
 
 private:

@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-22",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "compiler": "g++ (Debian 14.2.0-19) 14.2.0",
+  "engine_head": "10f6faa7509e4a108ee5f2e6b6e3be357e99af26",
+  "ecs_head": "9949054f1871ff7ea3c2b9a250d417d62a732f53",
+  "before_source_sha256": "2ccbd1433c67f7d12855fc6c7acbb1edf9bf261606bb820621452138c7fe99bf",
+  "after_source_sha256": "b3338a92d27fc979755b4996f36aaaf7ad4075097770b713b5e008c1b5ee4d35",
+  "before_binary_sha256": "708edc0262b80138f4f577430a972d280f6f349c4f02ce567a69d00868261b66",
+  "after_binary_sha256": "05956d40bf39abcb98e24bc00e0d1ccc58999ba51fcb83ea4d92a79b7ceb4f3f",
+  "entities": 1000000,
+  "samples": 11,
+  "warmup": 3,
+  "iterations": 3,
+  "rounds": 3,
+  "order": "before/after in odd rounds; after/before in even round",
+  "load_note": "Final paired measurements after compilation completed, CPU 4 pinned; shared VM and source gate still running. Earlier contended records retained in contended/.",
+  "cpu_max": "400000 100000",
+  "memory_max": "17179869184",
+  "affinity": "taskset -c 4"
+}
