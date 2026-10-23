@@ -260,6 +260,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [blender_hot_reload](blender_hot_reload/README.md) | Blender 保存 → GLB → `SceneLoader.load` → 卸载旧 SceneHost 的热重载往返 |
 | [model-converter](model-converter/README.md) | 驱动 Blender 把 OBJ 转换成 GLB 并回载（modelconverter 插件） |
 | [archspace-editor](archspace-editor/README.md) | 户型文档烘焙：房间 / 走廊 / 门 / 窗 / 家具 → 带开洞的渲染器中立网格，经 `gfx.newMeshFromArrays` 上传 |
+| [archspace-floorplan](archspace-floorplan/README.md) | 完整户型：客厅 / 卧室 / 卫生间 / 厨房 / 门厅 + 多门窗与家具，鸟瞰烘焙截图 |
 
 ## 插件与脚本包（不是 eve run 项目）
 
