@@ -4,6 +4,7 @@
 #include <imgui.h>
 
 #include <algorithm>
+#include <cfloat>
 
 namespace eve::ui {
 namespace {
@@ -375,6 +376,12 @@ void measureNode(UIHost::Tree &tree, int index) {
 
     switch (n.type) {
     case NodeType::Text: {
+        if (n.fontSize > 0.f) {
+            const ImVec2 textSize = ImGui::GetFont()->CalcTextSizeA(n.fontSize, FLT_MAX, n.wrapWidth, n.text.c_str());
+            n.measuredW           = textSize.x;
+            n.measuredH           = textSize.y;
+            break;
+        }
         const ImVec2 t = n.wrapWidth > 0.f
                              ? ImGui::CalcTextSize(n.text.c_str(), nullptr, false, n.wrapWidth)
                              : ImGui::CalcTextSize(n.text.c_str());
@@ -444,6 +451,8 @@ void measureNode(UIHost::Tree &tree, int index) {
         n.measuredW = 100.f;
         n.measuredH = ImGui::GetFrameHeight();
         break;
+    case NodeType::FilledImage:
+    case NodeType::RadialFill:
     case NodeType::Image:
     case NodeType::ImageButton:
         n.measuredW = n.sizeX > 0.f ? n.sizeX : 32.f;

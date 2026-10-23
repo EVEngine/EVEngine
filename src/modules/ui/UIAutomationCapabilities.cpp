@@ -40,6 +40,8 @@ const char* nodeTypeName(NodeType type) {
         case NodeType::Separator: return "separator";
         case NodeType::Checkbox: return "checkbox";
         case NodeType::Slider: return "slider";
+        case NodeType::FilledImage: return "filled-image";
+        case NodeType::RadialFill: return "radial-fill";
         case NodeType::Progress: return "progress";
         case NodeType::InputText: return "inputText";
         case NodeType::CollapsingHeader: return "collapsingHeader";
@@ -169,8 +171,8 @@ Poco::JSON::Object::Ptr nodeJson(const UIHost::Tree& tree, int index) {
     if (node.type == NodeType::Checkbox || node.type == NodeType::Switch ||
         node.type == NodeType::MenuItem)
         out->set("checked", node.checked);
-    if (node.type == NodeType::Slider || node.type == NodeType::Progress ||
-        node.type == NodeType::Combo || node.type == NodeType::SplitPane) {
+    if (node.type == NodeType::Slider || node.type == NodeType::Progress || node.type == NodeType::FilledImage ||
+        node.type == NodeType::RadialFill || node.type == NodeType::Combo || node.type == NodeType::SplitPane) {
         out->set("value", node.value);
         out->set("min", node.minValue);
         out->set("max", node.maxValue);

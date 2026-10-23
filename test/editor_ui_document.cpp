@@ -1,4 +1,5 @@
 #include <cmath>
+#include <limits>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <string>
 #include "common/Module.h"
@@ -6,6 +7,8 @@
 #include "editor/EditorIds.h"
 #include "editor/EditorTransactionService.h"
 #include "ui/Theme.h"
+#include "ui/UIHost.h"
+#include "ui/Widget.h"
 #include "ui/editing/UiDocument.h"
 #include "ui/editing/UiTheme.h"
 #include "zeroerr/assert.h"
@@ -144,7 +147,7 @@ TEST_CASE("editor.ui.multi_selection_layout_inspector_is_atomic_and_reports_mixe
         REQUIRE(commitUi(target, transactions, operation.value(), std::string("ui.create.") + id).ok());
     }
     const SelectionSnapshot selection = uiSelection(target, {"left", "right"});
-    CHECK_EQ(target.schema(selection).properties.size(), static_cast<std::size_t>(25));
+    CHECK_EQ(target.schema(selection).properties.size(), static_cast<std::size_t>(31));
     auto size = target.makeSet(selection, PropertyPath("layout.size"), EditorValue::Array{180.0, 42.0},
                                PropertySetMode::Absolute);
     REQUIRE(size.ok());
@@ -357,4 +360,110 @@ TEST_CASE("editor.ui.theme_editor_script_composes_workspace_and_transactions") {
     CHECK(vm.find("state").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("stateSelected").toString(), std::string("studio"));
     CHECK_EQ(vm.find("stateCount").toInt(), 3);
+}
+
+TEST_CASE("editor.ui.hud_fill_snapshot_roundtrip_and_runtime_publication_are_atomic") {
+    UiDocumentTarget document("hud-fill");
+    auto             root = document.makeCreate({ObjectId("root"), {}, "window", "HUD", {0, 0, 800, 600}});
+    REQUIRE(root.ok());
+    REQUIRE(document.applyDomainOperation(root.value()).ok());
+    auto bar = document.makeCreate({ObjectId("hp"), ObjectId("root"), "filled-image", "HP", {20, 30, 200, 24}});
+    REQUIRE(bar.ok());
+    REQUIRE(document.applyDomainOperation(bar.value()).ok());
+    UiContentValue content;
+    content.value         = .75;
+    content.fillDirection = "left";
+    auto set              = document.makeSetContent(ObjectId("hp"), content);
+    REQUIRE(set.ok());
+    REQUIRE(document.applyDomainOperation(set.value()).ok());
+    UiDocumentTarget restored("restored-hud");
+    REQUIRE(restored.loadSnapshot(document.snapshotValue()).ok());
+    CHECK_EQ(restored.widget(ObjectId("hp")).value().content.value, .75);
+    const auto handle = eve::ui::UIHost::createHost("document-hud");
+    auto       host   = eve::ui::UIHost::resolve(handle);
+    REQUIRE(host.has_value());
+    UiDocumentRuntimeBridge bridge;
+    REQUIRE(bridge.publish(restored, ObjectId("root"), &host->get()).ok());
+    CHECK_EQ(host->get().findById("hp")->get().value, .75f);
+    CHECK_EQ(int(host->get().findById("hp")->get().fillDirection), int(eve::ui::FillDirection::Left));
+    content.textureAsset = "missing.png";
+    auto asset           = restored.makeSetContent(ObjectId("hp"), content);
+    REQUIRE(asset.ok());
+    REQUIRE(restored.applyDomainOperation(asset.value()).ok());
+    CHECK(!bridge.publish(restored, ObjectId("root"), &host->get()).ok());
+    CHECK_EQ(host->get().findById("hp")->get().value, .75f);
+    content.value = 2.0;
+    CHECK(!document.makeSetContent(ObjectId("hp"), content).ok());
+    ecs::DestroyEntity(&host->get());
+}
+
+TEST_CASE("editor.ui.hud_fill_legacy_migration_and_unknown_versions_preserve_document") {
+    UiDocumentTarget source("legacy-hud");
+    auto             create = source.makeCreate({ObjectId("hp"), {}, "progress", "HP", {0, 0, 200, 24}});
+    REQUIRE(create.ok());
+    REQUIRE(source.applyDomainOperation(create.value()).ok());
+    auto  snapshot        = source.snapshotValue();
+    auto& root            = *snapshot.getIf<EditorValue::Object>();
+    root["schemaVersion"] = int64_t{2};
+    auto& widgets         = *root.at("widgets").getIf<EditorValue::Array>();
+    auto& widget          = *widgets[0].getIf<EditorValue::Object>();
+    auto& content         = *widget.at("content").getIf<EditorValue::Object>();
+    for (const char* field :
+         {"value", "fillDirection", "fillStretch", "fillStartDegrees", "fillClockwise", "fillInnerRadius"})
+        content.erase(field);
+    UiDocumentTarget restored("migration-hud");
+    REQUIRE(restored.loadSnapshot(snapshot).ok());
+    CHECK_EQ(restored.widget(ObjectId("hp")).value().content.value, 0.0);
+    root["schemaVersion"] = int64_t{99};
+    CHECK(!restored.loadSnapshot(snapshot).ok());
+    CHECK(restored.widget(ObjectId("hp")).ok());
+    root["schemaVersion"] = int64_t{3};
+    content["value"]      = std::numeric_limits<double>::quiet_NaN();
+    CHECK(!restored.loadSnapshot(snapshot).ok());
+    CHECK(restored.widget(ObjectId("hp")).ok());
+}
+
+TEST_CASE("editor.ui.hud_texture_resolution_caches_keys_and_preserves_tree_on_failure") {
+    UiDocumentTarget document("textured-hud");
+    auto             root = document.makeCreate({ObjectId("root"), {}, "window", "HUD", {0, 0, 800, 600}});
+    REQUIRE(root.ok());
+    REQUIRE(document.applyDomainOperation(root.value()).ok());
+    for (const char* name : {"hp", "shield"}) {
+        auto create = document.makeCreate({ObjectId(name), ObjectId("root"), "filled-image", name, {0, 0, 200, 24}});
+        REQUIRE(create.ok());
+        REQUIRE(document.applyDomainOperation(create.value()).ok());
+        UiContentValue content;
+        content.textureAsset = "hud/bar";
+        auto set             = document.makeSetContent(ObjectId(name), content);
+        REQUIRE(set.ok());
+        REQUIRE(document.applyDomainOperation(set.value()).ok());
+    }
+    auto handle = eve::ui::UIHost::createHost("resolved-textures");
+    auto host   = eve::ui::UIHost::resolve(handle);
+    REQUIRE(host.has_value());
+    UiDocumentRuntimeBridge bridge;
+    int                     calls    = 0;
+    UiTextureResolver       resolver = [&](const std::string& key) {
+        ++calls;
+        CHECK_EQ(key, std::string("hud/bar"));
+        return eve::editing::applied<std::uint64_t>(42);
+    };
+    REQUIRE(bridge.publish(document, ObjectId("root"), &host->get(), resolver).ok());
+    CHECK_EQ(calls, 1);
+    CHECK_EQ(host->get().findById("hp")->get().textureId, 42u);
+    CHECK_EQ(host->get().findById("shield")->get().textureId, 42u);
+    auto token = host->get().nodeHandle("hp");
+    REQUIRE(token.has_value());
+    UiTextureResolver fail = [](const std::string&) {
+        return eve::editing::failed<std::uint64_t>(EditorStatus::NotFound, RuleId("test.missing"), "missing texture");
+    };
+    CHECK(!bridge.publish(document, ObjectId("root"), &host->get(), fail).ok());
+    CHECK(eve::ui::UIHost::resolveNode(*token).has_value());
+    CHECK_EQ(host->get().findById("hp")->get().textureId, 42u);
+    CHECK(!bridge
+               .publish(document, ObjectId("root"), &host->get(),
+                        [](const std::string&) { return eve::editing::applied<std::uint64_t>(0); })
+               .ok());
+    CHECK_EQ(host->get().findById("hp")->get().textureId, 42u);
+    ecs::DestroyEntity(&host->get());
 }

@@ -23,7 +23,7 @@ namespace eve::graphics {
 class Canvas;
 class Graphics;
 class Texture;
-}
+}  // namespace eve::graphics
 
 namespace eve::ui {
 
@@ -246,6 +246,20 @@ public:
                          const std::string &id = "");
     /** @brief Adds a progress bar. */
     void addProgress(float fraction, const std::string &id = "", const std::string &overlay = "");
+    /** @brief Adds a linear filled image; layout keeps its complete rectangle. @thread UI thread; no callbacks. */
+    void addFilledImage(const std::string &id, float width, float height, float fraction);
+    /** @brief Adds a solid radial sector/ring overlay. @thread UI thread; no callbacks. */
+    void addRadialFill(const std::string &id, float width, float height, float fraction);
+    /** @brief Adds a composed resource bar with /value, /trail and /label child IDs. @thread UI thread. */
+    void addResourceBar(const std::string &id, float width, float height, float fraction);
+    /** @brief Adds a composed skill slot; click ID ends in /activate. @thread UI thread; caller owns icon registration.
+     */
+    void addSkillSlot(const std::string &id, float size, uint64_t iconTexture, float cooldown, const std::string &key);
+    /** @brief Configures the last built fill: right/left/down/up; stretch retains complete UVs. @thread UI thread. */
+    void setItemFillDirection(const std::string &direction, bool stretch);
+    /** @brief Configures the last radial fill; degrees point right at zero, inner radius is [0,1]. @thread UI thread.
+     */
+    void setItemRadialFill(float startDegrees, bool clockwise, float innerRadius);
     /** Colored / textured image; size 0 = default (32px or flex-assigned). */
     /** @brief Adds image. */
     void addImage(const std::string &id = "", float width = 0.f, float height = 0.f);
@@ -447,6 +461,15 @@ public:
     void setHostModal(bool modal);
     /** @brief Sets the host overlay. */
     void setHostOverlay(bool overlay);
+    /** @brief Makes a display-only host ignore mouse and keyboard input. @thread UI thread; no callbacks. */
+    void setHostInputTransparent(bool transparent);
+    /** @brief Enables fit-scaled design units on this screen host; positive finite dimensions/scale required.
+     * @thread UI thread. @reentrancy Invokes no callbacks. World anchors use their own projection instead. */
+    void setHostHudCanvas(float referenceWidth, float referenceHeight, float userScale);
+    /** @brief Returns this host to existing pixel layout. @thread UI thread; no callbacks. */
+    void clearHostHudCanvas();
+    /** @brief Sets nonnegative safe margins in display logical pixels. @thread UI thread; no callbacks. */
+    void setHostSafeArea(float left, float top, float right, float bottom);
     /** @brief Sets overlay opacity (0..1); zero also removes the host border and outer padding. */
     void setHostOverlayAlpha(float alpha);
     /** @brief Allows or prevents user movement after the initial position. */
@@ -555,6 +578,14 @@ public:
      */
     void animateItemPos(const std::string &id, float x, float y, float durationMs,
                         const std::string &ease = "smoothstep", float delayMs = 0.f);
+    /** @brief Animate a normalized HUD fill on the selected host without rebuilding the tree.
+     * @param id Node id. @param value Target clamped to [0,1].
+     * @param durationMs Duration; <=0 jumps after delay. @param ease Easing name.
+     * @param delayMs Delay in milliseconds. Replacing a tween starts from its current sample.
+     * @note Missing host/node is a no-op; nonfinite inputs are rejected by the driver.
+     */
+    void animateItemValue(const std::string &id, float value, float durationMs, const std::string &ease = "smoothstep",
+                          float delayMs = 0.f);
     /** @brief Cancel pending host-level tweens on the selected host. */
     void cancelHostTweens();
     /**
