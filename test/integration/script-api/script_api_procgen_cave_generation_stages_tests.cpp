@@ -24,7 +24,7 @@ TEST_CASE("procgen.stages.scriptOwnsFieldsAndComposesCaveWithoutGraphics") {
         local mesh = need(generation.buildMesh());
         vertexCount <- mesh.getVertexCount();
     )"));
-    CHECK(vm.get<bool>("unknownRejected"));
-    CHECK(vm.get<bool>("staleRejected"));
-    CHECK(vm.get<int>("vertexCount") > 0);
+    REQUIRE(vm.get<bool>("unknownRejected"));
+    REQUIRE(vm.get<bool>("staleRejected"));
+    REQUIRE(vm.get<int>("vertexCount") > 0);
 }

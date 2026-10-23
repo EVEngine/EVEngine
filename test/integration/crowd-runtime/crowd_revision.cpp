@@ -68,36 +68,36 @@ TEST_CASE("crowd.revision.scriptStatusAndStepReportExposeStaleField") {
 TEST_CASE("crowd.revision.terrainAndGoalsInvalidateSamplingUntilRebuild") {
     CrowdField field;
     field.resize(8, 8, 1.f, 0.f, 0.f);
-    CHECK(field.state() == FieldState::Unbuilt);
+    REQUIRE(field.state() == FieldState::Unbuilt);
     field.setGoal(7, 0);
     field.build();
-    CHECK(field.state() == FieldState::Ready);
+    REQUIRE(field.state() == FieldState::Ready);
     const auto built = field.builtRevision();
     field.setGoal(7, 0);
     field.addGoal(7, 0);
-    CHECK_EQ(field.revision(), built);
-    CHECK(field.state() == FieldState::Ready);
+    REQUIRE_EQ(field.revision(), built);
+    REQUIRE(field.state() == FieldState::Ready);
     float dx = 0.f, dy = 0.f;
     field.flowAtCell(0, 0, dx, dy);
-    CHECK(dx > 0.f);
+    REQUIRE(dx > 0.f);
     field.setBlocked(4, 4, true);
-    CHECK(field.state() == FieldState::Stale);
-    CHECK(field.revision() > built);
+    REQUIRE(field.state() == FieldState::Stale);
+    REQUIRE(field.revision() > built);
     field.flowAtCell(0, 0, dx, dy);
-    CHECK_EQ(dx, 0.f);
-    CHECK_EQ(dy, 0.f);
-    CHECK_EQ(field.costAtWorld(0.5f, 0.5f), CrowdField::kUnreachable);
+    REQUIRE_EQ(dx, 0.f);
+    REQUIRE_EQ(dy, 0.f);
+    REQUIRE_EQ(field.costAtWorld(0.5f, 0.5f), CrowdField::kUnreachable);
     const auto revision = field.revision();
     field.setBlocked(4, 4, true);
-    CHECK_EQ(field.revision(), revision);
+    REQUIRE_EQ(field.revision(), revision);
     field.build();
-    CHECK(field.isBuilt());
-    CHECK_EQ(field.builtRevision(), field.revision());
+    REQUIRE(field.isBuilt());
+    REQUIRE_EQ(field.builtRevision(), field.revision());
     field.addGoal(0, 7);
-    CHECK(field.state() == FieldState::Stale);
+    REQUIRE(field.state() == FieldState::Stale);
     field.flowAtWorld(0.5f, 0.5f, dx, dy);
-    CHECK_EQ(dx, 0.f);
-    CHECK_EQ(dy, 0.f);
+    REQUIRE_EQ(dx, 0.f);
+    REQUIRE_EQ(dy, 0.f);
 }
 
 TEST_CASE("crowd.revision.staleFlowStopsDrivingButLatestWallStillConstrains") {

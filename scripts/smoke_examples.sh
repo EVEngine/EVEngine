@@ -117,7 +117,7 @@ for name in "${EXAMPLES[@]}"; do
   else
     # Windows: GNU timeout on MSYS cannot reliably terminate the native GUI
     # process (SIGTERM is ignored), so launch in the background and force-kill
-    # by image name with taskkill below.
+    # only its own MSYS PID below (never all processes with the same image name).
     ( cd "$dir" && exec "$EVE_BIN" run $extra >"$log" 2>&1 ) &
   fi
   pid=$!
@@ -136,13 +136,16 @@ for name in "${EXAMPLES[@]}"; do
     if [[ "$use_timeout" -eq 0 ]] && kill -0 "$pid" 2>/dev/null; then
       killed_by_harness=1
       if is_windows; then
-        taskkill //F //IM "$(basename "$EVE_BIN")" >/dev/null 2>&1 || true
-      fi
-      kill "$pid" 2>/dev/null || true
-      # macOS ships without GNU timeout; bound shutdown just like timeout -k.
-      sleep 3
-      if kill -0 "$pid" 2>/dev/null; then
-        kill -KILL "$pid" 2>/dev/null || true
+        # MSYS kill resolves its PID to the matching native Windows process.
+        # The shell builtin cannot force termination of a native GUI process.
+        /bin/kill -f -s KILL "$pid" 2>/dev/null || true
+      else
+        kill "$pid" 2>/dev/null || true
+        # macOS ships without GNU timeout; bound shutdown just like timeout -k.
+        sleep 3
+        if kill -0 "$pid" 2>/dev/null; then
+          kill -KILL "$pid" 2>/dev/null || true
+        fi
       fi
     fi
     wait "$pid" 2>/dev/null

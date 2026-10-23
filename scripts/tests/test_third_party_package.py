@@ -175,7 +175,7 @@ class CMakeReleaseSelectionTests(unittest.TestCase):
                                     capture_output=True, text=True, encoding="utf-8")
             self.assertEqual(result.returncode, 0, result.stderr)
 
-    def configure(self, mode, target="win32", download_result=0, cached_prefix=False):
+    def configure(self, mode, target="win32", download_result=0, cached_prefix=False, architecture="AMD64"):
         with tempfile.TemporaryDirectory() as raw:
             root = Path(raw)
             (root / "scripts").mkdir()
@@ -187,7 +187,7 @@ class CMakeReleaseSelectionTests(unittest.TestCase):
             (root / "CMakeLists.txt").write_text(
                 "cmake_minimum_required(VERSION 3.21)\nproject(ReleaseSelection NONE)\n"
                 f"set(EVENGINE_THIRD_PARTY_MODE {mode})\nset(BUILD_PLATFORM {target})\n"
-                "set(CMAKE_SYSTEM_PROCESSOR AMD64)\nset(CMAKE_BUILD_TYPE Debug)\n"
+                f"set(CMAKE_SYSTEM_PROCESSOR {architecture})\nset(CMAKE_BUILD_TYPE Debug)\n"
                 "set(TP_BUILD_PATH win32-debug)\nset(EVENGINE_THIRD_PARTY_RELEASE v1.0.0)\n"
                 + ('set(EVENGINE_THIRD_PARTY_BINARY_DIR "previous-prefix" CACHE PATH "")\n' if cached_prefix else "")
                 + ('set(EVENGINE_TP_AUTOMATIC_PREFIX "previous-prefix" CACHE INTERNAL "")\n' if cached_prefix and mode == "AUTO" else "")
@@ -209,6 +209,15 @@ class CMakeReleaseSelectionTests(unittest.TestCase):
         result, invoked = self.configure("SOURCE")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(invoked, "")
+
+    def test_native_arm64_targets_download_matching_packages(self):
+        for target, configuration in (("win32", "Debug"), ("linux", "Release")):
+            for architecture in ("arm64", "aarch64"):
+                with self.subTest(target=target, architecture=architecture):
+                    result, invoked = self.configure("PREBUILT", target, architecture=architecture)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertIn("--architecture arm64", invoked)
+                    self.assertIn(f"--configuration {configuration}", invoked)
 
     def test_source_mode_clears_previous_prebuilt_selection(self):
         result, invoked = self.configure("SOURCE", cached_prefix=True)

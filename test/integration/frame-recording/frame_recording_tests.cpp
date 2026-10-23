@@ -57,7 +57,8 @@ TEST_CASE("graphics.frameRecording.fxaaSlotReuseResizeAndPersistentCanvas") {
             win->close();
         }
     } cleanup{win};
-    SDL_HideWindow(static_cast<SDL_Window *>(win->getHandle()));
+    // Keep the window visible: resizing a hidden Cocoa window can leave its
+    // Vulkan drawable at 1x1 even though SDL reports the requested logical size.
     gfx->setScreenReadbackEnabled(true);
     auto *camera = Camera3D::createCamera();
     camera->setEye(0.f, 0.f, 4.f);

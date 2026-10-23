@@ -11,3 +11,11 @@ function levelJsonDecode(text) {
     if(!decoded.ok) throw decoded.status.summary;
     return decoded.value;
 }
+
+/** @brief Stable object order for transaction candidate snapshots. */
+function levelSortedKeys(value) {
+    local keys = [];
+    foreach (key, item in value) keys.push(key);
+    keys.sort();
+    return keys;
+}
