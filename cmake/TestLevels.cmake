@@ -6,8 +6,11 @@ function(eve_configure_test_levels OUTPUT)
   get_filename_component(_root "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/.." ABSOLUTE)
   find_package(Python3 COMPONENTS Interpreter REQUIRED)
   set(_metadata "${CMAKE_CURRENT_BINARY_DIR}/test_levels.cmake")
+  # Literal identities now come from C++; editing a test must refresh discovery
+  # even when its file default needs no policy change.
+  file(GLOB_RECURSE _level_sources "${_root}/test/*.cpp")
   set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
-    "${_root}/test/test_levels.json" "${_root}/scripts/test_levels.py")
+    "${_root}/test/test_levels.json" "${_root}/scripts/test_levels.py" ${_level_sources})
   execute_process(
     COMMAND "${Python3_EXECUTABLE}" -X utf8 "${_root}/scripts/test_levels.py"
             --emit-cmake "${_metadata}"
