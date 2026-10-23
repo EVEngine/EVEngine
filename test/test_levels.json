@@ -28,7 +28,7 @@
       },
       "module": "scene_editing"
     },
-    "transaction_contracts/main.cpp": {
+    "transaction_contracts/transaction_contracts_main.cpp": {
       "role": "helper",
       "default": "local-logic",
       "cases": {},
