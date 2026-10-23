@@ -2295,6 +2295,16 @@ public:
     // &buffers, Texture *texture) = 0;
 
 protected:
+    friend class Exposure;
+    /** @brief Internal fully overwritten outputs; temporal histories are excluded. */
+    enum class FramePostTarget { SpatialAA, Exposure };
+    /** @brief Prepare a pipeline output for this acquired frame.
+     * @ownership Borrows backend-owned Canvas; render thread only, no callbacks.
+     * @lifetime Contents last until this output is rewritten; resize or graphics teardown invalidates it.
+     * @cost Allocates an HDR target per size/frame slot on first use; steady-state selection is constant time.
+     * Backends with synchronous offscreen work use the default shared target. Allocation failures throw. */
+    virtual Canvas                    &prepareFramePostTarget(FramePostTarget target, int width, int height);
+    Canvas                            *sharedFramePostTargets_[2]{};
     std::unique_ptr<FrameCaptureStore> frameCaptures_;
     /** @brief DeferredFileTexture public API. */
     struct DeferredFileTexture {

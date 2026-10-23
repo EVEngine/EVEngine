@@ -221,6 +221,7 @@ bool privateUseGlyph(const std::string &text, ImWchar *out) {
 
 bool isInteractive(NodeType type) {
     switch (type) {
+        case NodeType::Link:
         case NodeType::Button:
         case NodeType::Checkbox:
         case NodeType::Slider:
@@ -900,6 +901,11 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             ImGui::TextUnformatted(n.text.c_str());
         }
         break;
+    case NodeType::Link: {
+        if (controls::textLink(nodeLabel(n, "Link").c_str()) == controls::ControlEdit::Changed)
+            pushPending(host, n, "click", n.handlerClick);
+        break;
+    }
     case NodeType::Button: {
         ImWchar iconCodepoint = 0;
         const bool iconOnly = privateUseGlyph(n.text, &iconCodepoint);
@@ -1121,7 +1127,8 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
     case NodeType::InputText: {
         const char *label = n.text.empty() ? "Input" : n.text.c_str();
         std::string edited = n.valueText;
-        if (controls::inputText(label, edited) == controls::ControlEdit::Changed) {
+        if (controls::inputText(label, edited, n.multiline, ImVec2(n.sizeX, n.sizeY > 0.f ? n.sizeY : 96.f), n.readOnly,
+                                n.placeholder.c_str()) == controls::ControlEdit::Changed) {
             n.valueText = std::move(edited);
             pushPending(host, n, "text", n.handlerText, false, 0.f, n.valueText);
         }
@@ -1762,8 +1769,10 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
     }
 
     renderDragDrop(host, n);
-    if (!n.tooltip.empty() && ImGui::IsItemHovered(ImGuiHoveredFlags_None))
-        ImGui::SetTooltip("%s", n.tooltip.c_str());
+    const std::string &tip = !n.enabled && !n.disabledReason.empty() ? n.disabledReason : n.tooltip;
+    if (!tip.empty() && (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) || n.focused))
+        ImGui::SetTooltip("%s", tip.c_str());
+    if (!n.helpText.empty()) ImGui::TextDisabled("%s", n.helpText.c_str());
 
     if (styleVarCount > 0) ImGui::PopStyleVar(styleVarCount);
     if (styleColorCount > 0) ImGui::PopStyleColor(styleColorCount);

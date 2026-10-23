@@ -262,6 +262,47 @@ TEST_CASE("UI.editorKit.scriptBuilderAndSerialization") {
     CHECK(!current->meta()->lockSize);
     CHECK(current->meta()->overlayBgAlpha == 0.85f);
 }
+TEST_CASE("UI.editorKit.textToolsRoundTripAndReconcile") {
+    UI *ui = UI::create();
+    REQUIRE(ui != nullptr);
+    ui->beginBuild();
+    ui->beginWindow("Text tools", "root");
+    ui->addLink("Documentation", "https://example.com/docs", "docs");
+    ui->addInputText("Notes", "First line\n第二行", "notes");
+    ui->setItemTextInput(true, true, "Enter notes");
+    ui->setItemHelp("Plain text notes", "Document is locked");
+    ui->end();
+    REQUIRE(ui->mountBuildAs("text_tools"));
+    const std::string saved = ui->saveTreeJson();
+    REQUIRE(ui->loadTreeJson(saved));
+    UINode *docs  = findNode(*ui, "docs");
+    UINode *notes = findNode(*ui, "notes");
+    REQUIRE(docs != nullptr);
+    REQUIRE(notes != nullptr);
+    REQUIRE(docs->type == NodeType::Link);
+    REQUIRE(docs->valueText == "https://example.com/docs");
+    REQUIRE(docs->accessibilityRole == AccessibilityRole::Link);
+    REQUIRE(notes->multiline);
+    REQUIRE(notes->readOnly);
+    REQUIRE(notes->valueText == "First line\n第二行");
+    REQUIRE(notes->placeholder == "Enter notes");
+    REQUIRE(notes->helpText == "Plain text notes");
+    REQUIRE(notes->disabledReason == "Document is locked");
+
+    UIHost *host = resolveHost(ui->current());
+    REQUIRE(host != nullptr);
+    applyTree(host, window("Text tools",
+                           {link("Documentation", "resource://manual", "docs"),
+                            inputText("Notes", "Editable", "notes").withTextInput(false).withHelp("Updated help")},
+                           "root"));
+    REQUIRE(findNode(host, "notes")->multiline == false);
+    REQUIRE(findNode(host, "notes")->readOnly == false);
+    REQUIRE(findNode(host, "notes")->disabledReason.empty());
+    REQUIRE(findNode(host, "notes")->helpText == "Updated help");
+    REQUIRE(findNode(host, "docs")->valueText == "resource://manual");
+}
+
+
 }  // namespace test_UIEditorKit_unit
 #endif
 

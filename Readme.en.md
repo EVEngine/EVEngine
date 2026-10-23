@@ -8,6 +8,46 @@ Evolutionary Vision Engine
 
 ## Documentation
 
+### Native ARM64 builds (Windows and Linux)
+
+Run these commands on an ARM64 host; these configurations reject cross compilation
+and non-ARM64 compilers. Initialize submodules first (`make init/submodules`).
+
+| Host | Debug | Release |
+| --- | --- | --- |
+| Windows ARM64 | `make build/win32-arm64-debug JOBS=8` | `make build/win32-arm64 JOBS=8` |
+| Linux ARM64 | `make build/linux-arm64-debug JOBS=4` | `make build/linux-arm64 JOBS=4` |
+
+Windows requires Visual Studio's ARM64 C++ tools (including `vcvarsarm64.bat`),
+Windows SDK, Ninja, Git Bash, and Vulkan headers, shader tools and ARM64 loader
+libraries. The Makefile invokes `cmake/with-msvc.cmd --arm64` for every configure
+and build, selecting the native ARM64 MSVC environment. Linux requires native
+GCC/G++, Ninja and the same development packages as the standard Linux build,
+installed for aarch64. No cross toolchain file is used.
+
+The existing CMake entry point also accepts `-DEVENGINE_NATIVE_ARM64=ON` together
+with `-DEVENGINE_BUILD_PLATFORM=win32` or `linux`. On Windows invoke CMake through
+`cmake/with-msvc.cmd --arm64`. Use a separate `-B build/<platform>-arm64[-debug]`
+directory. Dependencies build into `build/third-party/<platform>-arm64[-debug]`
+and install into `build/third-party-binary/<platform>-arm64[-debug]`; never reuse
+x64 prebuilt dependencies through `EVENGINE_THIRD_PARTY_BINARY_DIR`.
+
+To build and install only the matching third-party libraries, use
+`make deps/win32-arm64-debug`, `make deps/win32-arm64`,
+`make deps/linux-arm64-debug`, or `make deps/linux-arm64`.
+The `build/` targets run this dependency step automatically. Windows dependencies
+inherit the native ARM64 MSVC environment; Linux dependencies receive the parent's
+native C/C++ compilers. Both architectures share pinned dependency source code,
+while compiled libraries and dependency CMake caches remain separate.
+
+Debug keeps strict warnings and the existing development linkage policy; Release
+selects OBJECT linkage. Run a targeted host test with, for example,
+`make test/win32-arm64-debug DOMAIN=math` or
+`make test/linux-arm64-debug DOMAIN=math` (use an existing test domain).
+Linux graphics tests still require a display/Vulkan ICD and audio backend;
+use the aarch64 system's installed Lavapipe ICD rather than an x86_64 ICD path.
+These explicit targets do not change the existing `make debug` default.
+
 English user guides are maintained by hand; Chinese is the authoritative source. Guides not yet translated are marked Chinese in the English handbook.
 
 - Want to see what the engine renders before running anything? Browse the [example render gallery](docs/images/examples/README.en.md) — every screenshot is a real presented frame written by the engine itself.
