@@ -4,6 +4,8 @@ import os
 import shutil
 import subprocess
 import tempfile
+import re
+import textwrap
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -159,12 +161,21 @@ endif()
             self.assertIn("Incomplete pinned Dawn glfw checkout", result.stderr)
 
 
-class DawnCiDependencyCheckTests(unittest.TestCase):
-    def check_dependencies(self, root):
+class DawnCiConfigureTests(unittest.TestCase):
+    def check_dependencies(self, root, cmake_status):
         workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
-        start = workflow.index("          dawn_tp=build/webgpu-macos/")
-        end = workflow.index("          for attempt in", start)
-        script = workflow[start:end] + "\ndawn_deps_ok\n"
+        step = workflow.split("      - name: Configure native Dawn smoke lane\n", 1)[1]
+        step = step.split("      - name:", 1)[0]
+        script = textwrap.dedent(step.split("        run: |\n", 1)[1])
+        script = re.sub(r"\$\{\{.*?\}\}", "", script)
+        binaries = root / "bin"
+        binaries.mkdir(exist_ok=True)
+        cmake = binaries / "cmake"
+        cmake.write_text(f"#!/bin/sh\necho attempt >> attempts\nexit {cmake_status}\n", encoding="utf-8")
+        cmake.chmod(0o755)
+        sleep = binaries / "sleep"
+        sleep.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        sleep.chmod(0o755)
         bash = "bash"
         if os.name == "nt":
             git = shutil.which("git")
@@ -173,18 +184,19 @@ class DawnCiDependencyCheckTests(unittest.TestCase):
             git_path = Path(git).resolve()
             candidates = [parent / "bin" / "bash.exe" for parent in git_path.parents]
             bash = str(next(path for path in candidates if path.is_file()))
-        return subprocess.run([bash, "-c", script], cwd=root, check=False,
+        env = {**os.environ, "PATH": str(binaries) + os.pathsep + os.environ["PATH"]}
+        return subprocess.run([bash, "-c", script], cwd=root, env=env, check=False,
                               capture_output=True, text=True, encoding="utf-8")
 
-    def test_accepts_prepared_headers_outside_dawn_checkout(self):
+    def test_cmake_validates_prepared_dependencies_and_failed_configures_are_bounded(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            for relative in ["dawn-src/third_party/abseil-cpp", "dawn-src/third_party/glfw3/src",
-                             "eve_spirv_headers-src"]:
-                directory = root / "build/webgpu-macos/_deps" / relative
-                directory.mkdir(parents=True)
-                (directory / "CMakeLists.txt").write_text("# fixture\n", encoding="utf-8")
-            result = self.check_dependencies(root)
+            # Dependency layout is owned and checked by CMake, not CI shell guesses.
+            result = self.check_dependencies(root, 0)
             self.assertEqual(result.returncode, 0, result.stderr)
-            (root / "build/webgpu-macos/_deps/eve_spirv_headers-src/CMakeLists.txt").unlink()
-            self.assertNotEqual(self.check_dependencies(root).returncode, 0)
+            attempts = root / "attempts"
+            self.assertEqual(len(attempts.read_text(encoding="utf-8").splitlines()), 1)
+            attempts.unlink()
+            result = self.check_dependencies(root, 1)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertEqual(len(attempts.read_text(encoding="utf-8").splitlines()), 3)
